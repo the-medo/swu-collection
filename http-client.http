@@ -15,3 +15,7 @@ Content-Type: application/json
 {
     "key": "value"
 }
+
+###
+# Get collection
+GET {{api}}collection/twi
