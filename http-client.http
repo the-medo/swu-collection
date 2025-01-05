@@ -1,0 +1,17 @@
+# Jetbrains http client file
+
+# Variables
+@api = http://localhost:3000/api/
+
+###
+# Get collection
+GET {{api}}collection
+
+###
+# Post to collection
+POST {{api}}collection
+Content-Type: application/json
+
+{
+    "key": "value"
+}
