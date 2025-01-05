@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
-import { collectionCardSchema, fakeCollectionCards } from '../types/CollectionCard.ts';
+import { collectionCardSchema, fakeCollectionCards } from '../../types/CollectionCard.ts';
 import { z } from 'zod';
-import { SwuSet } from '../types/SwuSet.ts';
+import { SwuSet } from '../../types/SwuSet.ts';
 import { zValidator } from '@hono/zod-validator';
 
 const swuSetSchema = z.nativeEnum(SwuSet);
