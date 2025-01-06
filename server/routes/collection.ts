@@ -10,6 +10,9 @@ export const collectionRoute = new Hono()
   .get('/', c => {
     return c.json({ collection: fakeCollectionCards });
   })
+  .get('/collection-size', c => {
+    return c.json({ totalOwned: fakeCollectionCards.reduce((p, c) => p + c.owned, 0) });
+  })
   .post('/', zValidator('json', collectionCardSchema), async c => {
     const data = await c.req.valid('json');
     const collectionCard = collectionCardSchema.parse(data);
