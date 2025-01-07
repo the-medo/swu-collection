@@ -7,13 +7,14 @@ import {
   CardTitle,
 } from '@/components/ui/card.tsx';
 import { useEffect, useState } from 'react';
+import { api } from '@/lib/api';
 
 function App() {
   const [collectionSize, setCollectionSize] = useState(0);
 
   useEffect(() => {
     async function fetchCollectionSize() {
-      const response = await fetch('/api/collection/collection-size');
+      const response = await api.collection['collection-size'].$get();
       const data = await response.json();
       setCollectionSize(data.totalOwned);
     }

@@ -7,9 +7,10 @@ const app = new Hono();
 
 app.use('*', logger());
 
-app.route('/api/collection', collectionRoute);
+const apiRoutes = app.basePath('/api').route('/api/collection', collectionRoute);
 
 app.get('*', serveStatic({ root: './frontend/dist' }));
 app.get('*', serveStatic({ path: './frontend/dist/index.html' }));
 
 export default app;
+export type ApiRoutes = typeof apiRoutes;
