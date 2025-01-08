@@ -23,7 +23,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
   SidebarSeparator,
-} from '@/components/ui/sidebar';
+} from '@/components/ui/sidebar.tsx';
 import { Link } from '@tanstack/react-router';
 import { Input } from '@/components/ui/input.tsx';
 

@@ -1,4 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
+import CollectionSizeCard from '@/components/app/collections/CollectionSizeCard/CollectionSizeCard.tsx';
+import CollectionTable from '@/components/app/collections/CollectionTable/CollectionTable.tsx';
 
 export const Route = createFileRoute('/collections/your')({
   component: YourCollections,
@@ -7,7 +9,10 @@ export const Route = createFileRoute('/collections/your')({
 function YourCollections() {
   return (
     <div className="p-2">
-      <h3>Welcome in your collections!</h3>
+      <div className="flex gap-4 items-start">
+        <CollectionTable />
+        <CollectionSizeCard />
+      </div>
     </div>
   );
 }
