@@ -6,20 +6,25 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card.tsx';
-import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
+
+async function getCollectionSize() {
+  const response = await api.collection['collection-size'].$get();
+  if (!response.ok) {
+    throw new Error('Something went wrong');
+  }
+  const data = await response.json();
+  return data;
+}
 
 function App() {
-  const [collectionSize, setCollectionSize] = useState(0);
+  const { isPending, isFetching, error, data } = useQuery({
+    queryKey: ['get-collection-size'],
+    queryFn: getCollectionSize,
+  });
 
-  useEffect(() => {
-    async function fetchCollectionSize() {
-      const response = await api.collection['collection-size'].$get();
-      const data = await response.json();
-      setCollectionSize(data.totalOwned);
-    }
-    fetchCollectionSize();
-  }, []);
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div className="p-8">
@@ -29,7 +34,7 @@ function App() {
           <CardDescription>Collection total </CardDescription>
         </CardHeader>
         <CardContent>
-          <p>Total: {collectionSize}</p>
+          <p>Total: {isPending || isFetching ? '...' : data.totalOwned}</p>
         </CardContent>
         <CardFooter>{/*<p>Card Footer</p>*/}</CardFooter>
       </Card>
