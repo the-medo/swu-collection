@@ -7,7 +7,7 @@ export const Route = createRootRoute({
     <>
       <SidebarProvider>
         <LeftSidebar />
-        <main className="w-full">
+        <main className="w-full p-2">
           <SidebarTrigger />
           <Outlet />
         </main>

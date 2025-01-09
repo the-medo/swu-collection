@@ -103,7 +103,7 @@ export function LeftSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
         {groups.map(g => (
-          <SidebarGroup>
+          <SidebarGroup key={g.title}>
             <SidebarGroupLabel>{g.title}</SidebarGroupLabel>
             <SidebarGroupAction title={g.actionLabel}>
               <Plus /> <span className="sr-only">{g.actionLabel}</span>

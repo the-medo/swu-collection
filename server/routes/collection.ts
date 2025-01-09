@@ -17,6 +17,7 @@ export const collectionRoute = new Hono()
     const data = await c.req.valid('json');
     const collectionCard = collectionCardSchema.parse(data);
     c.status(201);
+    fakeCollectionCards.push(collectionCard);
     return c.json(collectionCard);
   })
   .get('/:set', c => {
