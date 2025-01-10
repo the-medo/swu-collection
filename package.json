@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "start": "bun server/index.ts",
-    "dev": "bun --watch server/index.ts"
+    "dev": "bun --watch server/index.ts",
+    "generate": "bun drizzle-kit generate",
+    "migrate": "bun migrate.ts"
   },
   "devDependencies": {
     "@better-auth/cli": "^1.1.10",
