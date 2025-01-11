@@ -54,7 +54,7 @@ CREATE TABLE "card" (
 );
 --> statement-breakpoint
 CREATE TABLE "collection_card" (
-	"collection_id" integer NOT NULL,
+	"collection_id" text NOT NULL,
 	"card_id" integer NOT NULL,
 	"set_id" integer NOT NULL,
 	"set_number" integer NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE "collection_card" (
 );
 --> statement-breakpoint
 CREATE TABLE "collection" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text,
 	"title" varchar NOT NULL,
 	"wantlist" boolean NOT NULL,

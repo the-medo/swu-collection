@@ -1,4 +1,4 @@
-import { boolean, index, integer, pgTable, primaryKey } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
 import { card } from './card.ts';
 import { collection } from './collection.ts';
 import { set } from './set.ts';
@@ -6,7 +6,7 @@ import { set } from './set.ts';
 export const collection_card = pgTable(
   'collection_card',
   {
-    collection_id: integer('collection_id')
+    collection_id: text('collection_id')
       .notNull()
       .references(() => collection.id),
     card_id: integer('card_id')

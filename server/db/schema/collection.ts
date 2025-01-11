@@ -2,7 +2,7 @@ import { boolean, pgTable, serial, text, timestamp, uuid, varchar } from 'drizzl
 import { user } from './auth-schema.ts';
 
 export const collection = pgTable('collection', {
-  id: serial('id').primaryKey(),
+  id: text('id').primaryKey(),
   user_id: text('user_id').references(() => user.id),
   title: varchar('title').notNull(),
   wantlist: boolean('wantlist').notNull(),

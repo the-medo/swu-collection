@@ -1,5 +1,5 @@
 {
-  "id": "b10027a6-cc31-432f-8aeb-55b25a8f2541",
+  "id": "9459dd2a-d00b-4fa5-8cf9-e3a1a256fb63",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -365,7 +365,7 @@
       "columns": {
         "collection_id": {
           "name": "collection_id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -481,7 +481,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },

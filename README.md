@@ -6,7 +6,7 @@
 
 ### Start database (postgres in docker):
 1. `docker pull postgres:16-alpine`
-2. `docker run -d --name swubase-postgres -p 5442:5432 postgres:16-alpine`
+2. `docker run -d --name swubase-postgres -e POSTGRES_PASSWORD=password -p 5442:5432 postgres:16-alpine`
 
 
 ### Create .env file
