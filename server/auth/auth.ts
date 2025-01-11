@@ -3,6 +3,13 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '../db';
 import { authSchema } from '../db/schema/auth-schema.ts';
 
+export type AuthExtension = {
+  Variables: {
+    user: typeof auth.$Infer.Session.user | null;
+    session: typeof auth.$Infer.Session.session | null;
+  };
+};
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',

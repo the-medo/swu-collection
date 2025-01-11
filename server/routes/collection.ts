@@ -3,15 +3,21 @@ import { collectionCardSchema, fakeCollectionCards } from '../../types/Collectio
 import { z } from 'zod';
 import { SwuSet } from '../../types/SwuSet.ts';
 import { zValidator } from '@hono/zod-validator';
+import type { AuthExtension } from '../auth/auth.ts';
 
 const swuSetSchema = z.nativeEnum(SwuSet);
 
-export const collectionRoute = new Hono()
+export const collectionRoute = new Hono<AuthExtension>()
   .get('/', c => {
     return c.json({ collection: fakeCollectionCards });
   })
   .get('/collection-size', c => {
-    return c.json({ totalOwned: fakeCollectionCards.reduce((p, c) => p + c.owned, 0) });
+    const user = c.get('user');
+    console.log(user);
+    return c.json({
+      totalOwned: fakeCollectionCards.reduce((p, c) => p + c.owned, 0),
+      user: user?.id,
+    });
   })
   .post('/', zValidator('json', collectionCardSchema), async c => {
     const data = await c.req.valid('json');
