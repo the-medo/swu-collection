@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/sidebar.tsx';
 import { Link } from '@tanstack/react-router';
 import { Input } from '@/components/ui/input.tsx';
+import SignIn from '@/components/app/auth/SignIn.tsx';
 
 const groups = [
   {
@@ -126,7 +127,9 @@ export function LeftSidebar() {
         ))}
       </SidebarContent>
       <SidebarSeparator />
-      <SidebarFooter>User info</SidebarFooter>
+      <SidebarFooter>
+        <SignIn />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
