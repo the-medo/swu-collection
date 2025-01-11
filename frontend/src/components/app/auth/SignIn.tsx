@@ -8,22 +8,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { signIn, signOut, useSession } from '@/lib/auth-client';
+import { signIn, useSession } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
+import { NavUser } from '@/components/app/auth/NavUser.tsx';
 
 export default function SignIn() {
   const session = useSession();
 
   if (session.data) {
-    return (
-      <Button
-        onClick={async () => {
-          await signOut();
-        }}
-      >
-        Sign out
-      </Button>
-    );
+    return <NavUser />;
   }
 
   return (
