@@ -19,3 +19,8 @@ Content-Type: application/json
 ###
 # Get collection
 GET {{api}}collection/twi
+
+###
+GET https://admin.starwarsunlimited.com/api/card-list?locale=en&orderBy[expansion][id]=asc&sort[0]=type.sortValue%3Aasc%2C%20expansion.sortValue%3Adesc%2CcardNumber%3Aasc%2C&filters[$and][0][variantOf][id][$null]=true&filters[$and][1][expansion][id][$in][0]=2&aspectMethod=0&traitMethod=0&pagination[page]=1&pagination[pageSize]=150
+###
+GET https://admin.starwarsunlimited.com/api/card-list?locale=en&orderBy[expansion][id]=asc&sort[0]=type.sortValue%3Aasc%2C%20expansion.sortValue%3Adesc%2CcardNumber%3Aasc%2C&filters[$and][0][variantOf][id][$null]=true&filters[$and][1][expansion][id][$in][0]=2&aspectMethod=0&traitMethod=0&pagination[page]=2&pagination[pageSize]=150
