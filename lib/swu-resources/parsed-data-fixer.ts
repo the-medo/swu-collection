@@ -10,15 +10,22 @@ async function modifyFileContent(filePath: string) {
 
     const jsonData = JSON.parse(data);
 
-    jsonData.variants = jsonData.printings.map((p: any) => ({
-      ...p,
-      variantId: p.image.front.replace('-front.webp', ''),
-    }));
-    delete jsonData.printings;
+    if (jsonData.printings) {
+      jsonData.variants = jsonData.printings.map((p: any) => ({
+        ...p,
+        variantId: p.image.front.replace('-front.webp', ''),
+      }));
+      delete jsonData.printings;
+    }
 
     if (jsonData.cardId.endsWith('--')) {
       willRename = true;
       jsonData.cardId = jsonData.cardId.slice(0, -2);
+    }
+
+    if (jsonData.subtitle === '') {
+      jsonData.name = jsonData.name.slice(0, -2);
+      jsonData.subtitle = null;
     }
 
     await fsPromises.writeFile(filePath, JSON.stringify(jsonData, null, 2), 'utf8');

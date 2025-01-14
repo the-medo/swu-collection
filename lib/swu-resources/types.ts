@@ -54,10 +54,10 @@ export interface CardVariant {
   };
 }
 
-export interface CardDataWithVariants {
+export interface CardDataWithVariants<T = CardVariant[]> {
   cardId: string;
   updatedAt: string;
-  variants: CardVariant[];
+  variants: T;
   title: string;
   subtitle?: string;
   name: string;
@@ -84,3 +84,6 @@ export interface CardDataWithVariants {
   arenas: SwuArena[];
   rarity: SwuRarity;
 }
+
+export type CardListVariants = Record<string, CardVariant | undefined>;
+export type CardList = Record<string, CardDataWithVariants<CardListVariants> | undefined>;
