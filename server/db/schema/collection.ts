@@ -1,7 +1,7 @@
 import { boolean, pgTable, serial, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
 
-export const collection = pgTable('collection', {
+export const collectionTable = pgTable('collection', {
   id: text('id').primaryKey(),
   user_id: text('user_id').references(() => user.id),
   title: varchar('title').notNull(),

@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
 import { collectionCardSchema, fakeCollectionCards } from '../../types/CollectionCard.ts';
 import { z } from 'zod';
-import { SwuSet } from '../../types/SwuSet.ts';
 import { zValidator } from '@hono/zod-validator';
 import type { AuthExtension } from '../auth/auth.ts';
+import { SwuSet } from '../../types/enums.ts';
 
 const swuSetSchema = z.nativeEnum(SwuSet);
 
@@ -14,8 +14,9 @@ export const collectionRoute = new Hono<AuthExtension>()
   .get('/collection-size', c => {
     const user = c.get('user');
     console.log(user);
+    if (!user) return c.body(null, 401);
     return c.json({
-      totalOwned: fakeCollectionCards.reduce((p, c) => p + c.owned, 0),
+      totalOwned: fakeCollectionCards.reduce((p, c) => p + 1, 0),
       user: user?.id,
     });
   })
@@ -28,6 +29,6 @@ export const collectionRoute = new Hono<AuthExtension>()
   })
   .get('/:set', c => {
     const set = swuSetSchema.parse(c.req.param('set'));
-    const collection = fakeCollectionCards.filter(fcc => fcc.set === set);
+    const collection = fakeCollectionCards.filter(fcc => true);
     return c.json({ collection: collection });
   });

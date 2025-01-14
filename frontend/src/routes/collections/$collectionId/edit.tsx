@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useForm } from '@tanstack/react-form';
 import { api } from '@/lib/api.ts';
-import { SwuSet } from '../../../../../types/SwuSet.ts';
+import { SwuSet } from '../../../../../types/enums.ts';
 
 export const Route = createFileRoute('/collections/$collectionId/edit')({
   component: RouteComponent,

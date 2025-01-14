@@ -1,4 +1,4 @@
-import { SwuArena, SwuAspect, SwuRarity, type SwuSet } from '../../types/SwuSet.ts';
+import { SwuArena, SwuAspect, SwuRarity, SwuSet } from '../../types/enums.ts';
 
 export interface ParsedCardData {
   swuId: number;

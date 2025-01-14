@@ -1,25 +1,21 @@
-import { boolean, integer, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
-import { card } from './card.ts';
-import { collection } from './collection.ts';
-import { set } from './set.ts';
+import { boolean, index, integer, numeric, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
+import { collectionTable } from './collection.ts';
 
-export const collection_card = pgTable(
+export const collectionCardTable = pgTable(
   'collection_card',
   {
     collection_id: text('collection_id')
       .notNull()
-      .references(() => collection.id),
-    card_id: integer('card_id')
-      .notNull()
-      .references(() => card.id),
-    set_id: integer('set_id')
-      .notNull()
-      .references(() => set.id),
-    set_number: integer('set_number').notNull(),
+      .references(() => collectionTable.id),
+    card_id: text('card_id').notNull(),
+    variant_id: text('variant_id').notNull(),
     foil: boolean('foil').notNull().default(false),
-    special: boolean('special').notNull().default(false),
-    amount: integer('amount').notNull(),
     condition: integer('condition').notNull().default(1),
+    language: text('language'),
+    note: text('note'),
+    amount: integer('amount').notNull(),
+    amount2: integer('amount2'),
+    price: numeric('price', { precision: 12, scale: 2 }),
   },
   table => {
     return {
@@ -27,13 +23,18 @@ export const collection_card = pgTable(
         name: 'collection_card_pk',
         columns: [
           table.collection_id,
-          table.set_id,
-          table.set_number,
+          table.card_id,
+          table.variant_id,
           table.foil,
-          table.special,
           table.condition,
+          table.language,
         ],
       }),
+      cardIdIdx: index('card_id_idx').on(table.card_id),
+      variantIdIdx: index('variant_id_idx').on(table.variant_id),
+      foilIdx: index('foil_idx').on(table.foil),
+      conditionIdx: index('condition_idx').on(table.condition),
+      languageIdx: index('language_idx').on(table.language),
     };
   },
 );
