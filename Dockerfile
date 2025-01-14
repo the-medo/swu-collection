@@ -1,4 +1,4 @@
-ARG BUN_VERSION=1.1.21
+ARG BUN_VERSION=1.3.0
 FROM oven/bun:${BUN_VERSION}-slim as base
 
 LABEL launch_runtime="Bun"
@@ -13,10 +13,10 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
 
 COPY --link bun.lockb package.json ./
-RUN bun install --ci
+RUN bun install --production --ci
 
 COPY --link frontend/bun.lockb frontend/package.json ./frontend/
-RUN cd frontend && bun install --ci
+RUN cd frontend && bun install --production --ci
 
 COPY --link . .
 

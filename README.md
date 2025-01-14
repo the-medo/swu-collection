@@ -1,7 +1,7 @@
 # SWU Base
 
 ## Prerequisities
-1. Docker installed
+1. Docker installed (used only for local DB, but you can use something else)
 2. bun installed
 
 ### Start database (postgres in docker):
@@ -14,7 +14,8 @@ Currently it is possible to sign in only using github / google, so you will need
 ```env
 DATABASE_URL=postgresql://postgres:password@localhost:5442/postgres
 BETTER_AUTH_SECRET=___random_string
-BETTER_AUTH_URL=http://localhost:3010
+BETTER_AUTH_URL=http://localhost:5173
+VITE_BETTER_AUTH_URL=http://localhost:5173
 GITHUB_CLIENT_ID=client_id_from_your_github_app
 GITHUB_CLIENT_SECRET=client_secret_from_your_github_app
 GOOGLE_CLIENT_ID=client_id_from_your_google_app
