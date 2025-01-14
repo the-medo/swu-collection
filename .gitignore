@@ -173,3 +173,7 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# Resource parsing stuff
+/lib/swu-resources/output/*
+/lib/swu-resources/test-jsons

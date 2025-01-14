@@ -1,16 +1,17 @@
-import type { CardPrinting, ParsedCardData } from '../types.ts';
+import type { CardVariant, ParsedCardData } from '../types.ts';
 import path from 'path';
 import fs from 'fs';
-import { mergeParsedCardAndPrintings } from './mergeParsedCardAndPrintings.ts';
+import { mergeParsedCardAndVariants } from './mergeParsedCardAndVariants.ts';
 import { createFileName } from './createFileName.ts';
 import { delay } from './delay.ts';
-import { processPrintingWithoutImages } from './processPrintingWithoutImages.ts';
-import { mergePrintingsWithoutImages } from './mergePrintingsWithoutImages.ts';
-import { processPrintingImages } from './processPrintingImages.ts';
-import { downloadAndTransformPrintingImages } from './downloadAndTransformPrintingImages.ts';
+import { processVariantWithoutImages } from './processVariantWithoutImages.ts';
+import { mergeVariantsWithoutImages } from './mergeVariantsWithoutImages.ts';
+import { processVariantImages } from './processVariantImages.ts';
+import { downloadAndTransformVariantImages } from './downloadAndTransformVariantImages.ts';
 
 export async function processCard(card: any) {
   const c = card.attributes;
+  if (c.subtitle === '') c.subtitle = null;
   const cardName = c.subtitle !== null ? `${c.title}, ${c.subtitle}` : c.title;
 
   try {
@@ -69,30 +70,30 @@ export async function processCard(card: any) {
     fs.writeFileSync(filepath, JSON.stringify(parsedCard, null, 2));
     console.log(`Saved ${parsedCard.name} to ${filepath}`);
 
-    const printingsResponse = await fetch(
+    const variantsResponse = await fetch(
       `https://admin.starwarsunlimited.com/api/card/printings/${parsedCard.swuId}?locale=all`,
     );
 
-    if (!printingsResponse.ok) {
-      throw new Error(`HTTP error! status: ${printingsResponse.status}`);
+    if (!variantsResponse.ok) {
+      throw new Error(`HTTP error! status: ${variantsResponse.status}`);
     }
 
-    const printings = (await printingsResponse.json()) as any;
+    const variants = (await variantsResponse.json()) as any;
     await delay(1000);
 
-    let allPrintings: CardPrinting[] = [
-      processPrintingWithoutImages(printings.data.original),
-      ...printings.data.printings.map((x: any) => processPrintingWithoutImages(x)),
+    let allVariants: CardVariant[] = [
+      processVariantWithoutImages(variants.data.original),
+      ...variants.data.printings.map((x: any) => processVariantWithoutImages(x)),
     ];
 
-    allPrintings = mergePrintingsWithoutImages(allPrintings);
+    allVariants = mergeVariantsWithoutImages(allVariants);
 
-    for (const p of allPrintings) {
-      await processPrintingImages(p);
-      await downloadAndTransformPrintingImages(p, parsedCard.cardId);
+    for (const p of allVariants) {
+      await processVariantImages(p);
+      await downloadAndTransformVariantImages(p, parsedCard.cardId);
     }
 
-    const finalObject = mergeParsedCardAndPrintings(allPrintings, parsedCard);
+    const finalObject = mergeParsedCardAndVariants(allVariants, parsedCard);
 
     filename = createFileName(parsedCard.cardId);
     dirpath = path.resolve(`./lib/swu-resources/output/cards`);

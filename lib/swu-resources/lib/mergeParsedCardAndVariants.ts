@@ -1,16 +1,16 @@
-import type { CardDataWithPrintings, CardPrinting, ParsedCardData } from '../types.ts';
+import type { CardDataWithVariants, CardVariant, ParsedCardData } from '../types.ts';
 
-export function mergeParsedCardAndPrintings(
-  printings: CardPrinting[],
+export function mergeParsedCardAndVariants(
+  variants: CardVariant[],
   c: ParsedCardData,
-): CardDataWithPrintings {
+): CardDataWithVariants {
   return {
     cardId: c.cardId,
     updatedAt: c.updatedAt,
     name: c.name,
     title: c.title,
     subtitle: c.subtitle,
-    printings: printings,
+    variants: variants,
 
     type: c.type,
     rarity: c.rarity,

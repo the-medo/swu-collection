@@ -1,13 +1,13 @@
-import type { CardPrinting } from '../types.ts';
+import type { CardVariant } from '../types.ts';
 import { setInfo } from '../set-info.ts';
 
-export function processPrintingWithoutImages(printing: any): CardPrinting {
-  const id = printing.id;
+export function processVariantWithoutImages(variant: any): CardVariant {
+  const id = variant.id;
 
-  const expansion = printing.expansion.code.toLowerCase();
-  const variantType = printing.variantTypes[0];
-  const cardCount = printing.cardCount;
-  let setName = printing.expansion.name;
+  const expansion = variant.expansion.code.toLowerCase();
+  const variantType = variant.variantTypes[0];
+  const cardCount = variant.cardCount;
+  let setName = variant.expansion.name;
   let baseSet = true;
   let variantName = variantType.name;
   let hasFoil = false;
@@ -30,18 +30,19 @@ export function processPrintingWithoutImages(printing: any): CardPrinting {
   }
 
   return {
+    variantId: '', //filled later
     swuId: id,
     set: expansion,
     fullSetName: setName,
-    cardNo: printing.cardNumber,
+    cardNo: variant.cardNumber,
     baseSet,
     hasNonfoil,
     hasFoil,
     variantName,
-    artist: printing.artist,
+    artist: variant.artist,
     image: {
-      front: '',
-      back: '',
+      front: '', //filled later
+      back: '', //filled later
     },
   };
 }

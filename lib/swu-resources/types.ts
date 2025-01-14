@@ -37,7 +37,8 @@ export interface ParsedCardData {
   rarity: SwuRarity;
 }
 
-export interface CardPrinting {
+export interface CardVariant {
+  variantId: string;
   swuId: number;
   set: SwuSet;
   fullSetName: string;
@@ -53,10 +54,10 @@ export interface CardPrinting {
   };
 }
 
-export interface CardDataWithPrintings {
+export interface CardDataWithVariants {
   cardId: string;
   updatedAt: string;
-  printings: CardPrinting[];
+  variants: CardVariant[];
   title: string;
   subtitle?: string;
   name: string;

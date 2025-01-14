@@ -36,6 +36,7 @@ async function main() {
 
         for (const card of data) {
           cardCounter++;
+          if (cardCounter <= 511) continue;
           console.log(`==================== CARD ${cardCounter} ====================`);
           await processCard(card);
           console.log(`=============================================================`);
