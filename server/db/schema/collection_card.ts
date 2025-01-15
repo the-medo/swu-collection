@@ -1,14 +1,23 @@
-import { boolean, index, integer, numeric, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
-import { collectionTable } from './collection.ts';
+import {
+  boolean,
+  index,
+  integer,
+  numeric,
+  pgTable,
+  primaryKey,
+  text,
+  uuid,
+} from 'drizzle-orm/pg-core';
+import { collection } from './collection.ts';
 
-export const collectionCardTable = pgTable(
+export const collectionCard = pgTable(
   'collection_card',
   {
-    collection_id: text('collection_id')
+    collectionId: uuid('collection_id')
       .notNull()
-      .references(() => collectionTable.id),
-    card_id: text('card_id').notNull(),
-    variant_id: text('variant_id').notNull(),
+      .references(() => collection.id),
+    cardId: text('card_id').notNull(),
+    variantId: text('variant_id').notNull(),
     foil: boolean('foil').notNull().default(false),
     condition: integer('condition').notNull().default(1),
     language: text('language'),
@@ -22,16 +31,16 @@ export const collectionCardTable = pgTable(
       pk: primaryKey({
         name: 'collection_card_pk',
         columns: [
-          table.collection_id,
-          table.card_id,
-          table.variant_id,
+          table.collectionId,
+          table.cardId,
+          table.variantId,
           table.foil,
           table.condition,
           table.language,
         ],
       }),
-      cardIdIdx: index('card_id_idx').on(table.card_id),
-      variantIdIdx: index('variant_id_idx').on(table.variant_id),
+      cardIdIdx: index('card_id_idx').on(table.cardId),
+      variantIdIdx: index('variant_id_idx').on(table.variantId),
       foilIdx: index('foil_idx').on(table.foil),
       conditionIdx: index('condition_idx').on(table.condition),
       languageIdx: index('language_idx').on(table.language),

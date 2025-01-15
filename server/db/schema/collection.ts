@@ -1,12 +1,14 @@
-import { boolean, pgTable, serial, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
 
-export const collectionTable = pgTable('collection', {
-  id: text('id').primaryKey(),
-  user_id: text('user_id').references(() => user.id),
+export const collection = pgTable('collection', {
+  id: uuid('id').defaultRandom().notNull().primaryKey(), //text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id),
   title: varchar('title').notNull(),
   wantlist: boolean('wantlist').notNull(),
   public: boolean('public').notNull().default(false),
-  created_at: timestamp('created_at').notNull().defaultNow(),
-  updated_at: timestamp('updated_at').notNull().defaultNow(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
