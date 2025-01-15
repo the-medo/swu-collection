@@ -177,3 +177,4 @@ dist
 # Resource parsing stuff
 /lib/swu-resources/output/*
 /lib/swu-resources/test-jsons
+http-client.private.env.json

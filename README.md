@@ -20,6 +20,7 @@ GITHUB_CLIENT_ID=client_id_from_your_github_app
 GITHUB_CLIENT_SECRET=client_secret_from_your_github_app
 GOOGLE_CLIENT_ID=client_id_from_your_google_app
 GOOGLE_CLIENT_SECRET=client_secret_from_your_google_app
+CONTINENTL_API_KEY=(api key for https://continentl.com/)
 ```
 
 _TODO: provide localhost callback URLS for github/google_
