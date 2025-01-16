@@ -5,8 +5,10 @@
   "scripts": {
     "start": "bun server/index.ts",
     "dev": "bun --watch server/index.ts",
-    "generate": "bun drizzle-kit generate",
-    "migrate": "bun migrate.ts"
+    "auth-generate": "npx @better-auth/cli generate --config server/auth/auth.ts",
+    "db-generate": "bun drizzle-kit generate",
+    "db-migrate": "bun migrate.ts",
+    "db-docker": "docker run -d --name swubase-postgres -e POSTGRES_PASSWORD=password -p 5442:5432 postgres:16-alpine"
   },
   "devDependencies": {
     "@better-auth/cli": "^1.1.10",

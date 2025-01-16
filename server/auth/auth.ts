@@ -36,6 +36,24 @@ export const auth = betterAuth({
         unique: true,
         defaultValue: () => generateDisplayName(),
       },
+      country: {
+        type: 'string',
+        required: false,
+        returned: true,
+        defaultValue: () => generateDisplayName(),
+      },
+      state: {
+        type: 'string',
+        required: false,
+        returned: true,
+        defaultValue: () => generateDisplayName(),
+      },
+      currency: {
+        type: 'string',
+        required: true,
+        returned: true,
+        defaultValue: 'USD',
+      },
     },
   },
   socialProviders: {
