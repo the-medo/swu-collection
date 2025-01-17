@@ -4,6 +4,8 @@ import { collectionRoute } from './routes/collection.ts';
 import { serveStatic } from 'hono/bun';
 import { authRoute } from './routes/auth.ts';
 import { auth, type AuthExtension } from './auth/auth.ts';
+import { cardsRoute } from './routes/cards.ts';
+import { worldRoute } from './routes/world.ts';
 
 const app = new Hono<AuthExtension>();
 
@@ -23,8 +25,10 @@ app.use('*', logger()).use('*', async (c, next) => {
 
 const apiRoutes = app
   .basePath('/api')
+  .route('/auth', authRoute)
+  .route('/world', worldRoute)
   .route('/collection', collectionRoute)
-  .route('/auth', authRoute);
+  .route('/cards', cardsRoute);
 
 app.get('*', serveStatic({ root: './frontend/dist' }));
 app.get('*', serveStatic({ path: './frontend/dist/index.html' }));
