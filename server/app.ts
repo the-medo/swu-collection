@@ -6,6 +6,7 @@ import { authRoute } from './routes/auth.ts';
 import { auth, type AuthExtension } from './auth/auth.ts';
 import { cardsRoute } from './routes/cards.ts';
 import { worldRoute } from './routes/world.ts';
+import { userRoute } from './routes/user.ts';
 
 const app = new Hono<AuthExtension>();
 
@@ -28,7 +29,8 @@ const apiRoutes = app
   .route('/auth', authRoute)
   .route('/world', worldRoute)
   .route('/collection', collectionRoute)
-  .route('/cards', cardsRoute);
+  .route('/cards', cardsRoute)
+  .route('/user', userRoute);
 
 app.get('*', serveStatic({ root: './frontend/dist' }));
 app.get('*', serveStatic({ path: './frontend/dist/index.html' }));

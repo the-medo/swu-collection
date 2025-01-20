@@ -4,6 +4,10 @@ import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import type { AuthExtension } from '../auth/auth.ts';
 import { SwuSet } from '../../types/enums.ts';
+import { db } from '../db';
+import { collection } from '../db/schema/collection.ts';
+import { and, eq, sql } from 'drizzle-orm';
+import { user } from '../db/schema/auth-schema.ts';
 
 const swuSetSchema = z.nativeEnum(SwuSet);
 
@@ -14,8 +18,39 @@ export const collectionRoute = new Hono<AuthExtension>()
    * - filter by params
    * - only public!
    * */
-  .get('/', c => {
-    return c.json({ data: [] });
+  .get('/', async c => {
+    const country = c.req.query('country');
+    const state = c.req.query('state');
+    const limit = Number(c.req.query('limit') ?? 50);
+    const offset = Number(c.req.query('offset') ?? 0);
+    const sort = c.req.query('sort') ?? 'created_at';
+    const order = c.req.query('order') === 'desc' ? 'desc' : 'asc';
+
+    if (state && !country) {
+      return c.json({ error: 'State parameter requires country' }, 400);
+    }
+
+    const filters = [eq(collection.public, true)];
+
+    if (country) {
+      filters.push(eq(user.country, country));
+    }
+
+    if (state) {
+      filters.push(eq(user.state, state));
+    }
+
+    const collections = await db
+      .select()
+      .from(collection)
+      .innerJoin(user, eq(collection.userId, user.id))
+      .where(and(...filters))
+      .orderBy(sql`${sort} ${order}`)
+      .limit(limit)
+      .offset(offset);
+
+    // Return the result
+    return c.json({ data: collections });
   })
   /**
    * Create new collection (or wantlist)
