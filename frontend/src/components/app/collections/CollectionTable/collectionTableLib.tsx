@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { CollectionCard } from '../../../../../../types/CollectionCard.ts';
+import { ZCollectionCard } from '../../../../../../types/ZCollectionCard.ts';
 
-export const collectionTableLib: ColumnDef<CollectionCard>[] = [
+export const collectionTableLib: ColumnDef<ZCollectionCard>[] = [
   {
     accessorKey: 'set',
     header: 'Set',

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { collectionCardSchema, fakeCollectionCards } from '../../types/CollectionCard.ts';
+import { zCollectionCardSchema, fakeCollectionCards } from '../../types/ZCollectionCard.ts';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import type { AuthExtension } from '../auth/auth.ts';
@@ -8,8 +8,7 @@ import { db } from '../db';
 import { collection } from '../db/schema/collection.ts';
 import { and, eq, sql } from 'drizzle-orm';
 import { user } from '../db/schema/auth-schema.ts';
-
-const swuSetSchema = z.nativeEnum(SwuSet);
+import { zCollectionCreateRequest } from '../../types/ZCollection.ts';
 
 export const collectionRoute = new Hono<AuthExtension>()
   /**
@@ -55,8 +54,20 @@ export const collectionRoute = new Hono<AuthExtension>()
   /**
    * Create new collection (or wantlist)
    * */
-  .post('/', async c => {
-    return c.json({ data: [] });
+  .post('/', zValidator('json', zCollectionCreateRequest), async c => {
+    const user = c.get('user');
+    const data = c.req.valid('json');
+    if (!user) return c.json({ message: 'Unauthorized' }, 401);
+
+    const newCollection = await db
+      .insert(collection)
+      .values({
+        userId: user.id,
+        ...data,
+      })
+      .returning();
+
+    return c.json({ data: newCollection }, 201);
   })
   /**
    * Get contents of collection (or wantlist) :id
