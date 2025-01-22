@@ -1,18 +1,16 @@
 import { Hono } from 'hono';
-import {
-  zCollectionCardSchema,
-  fakeCollectionCards,
-  zCollectionCardUpdateRequest,
-} from '../../types/ZCollectionCard.ts';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import type { AuthExtension } from '../auth/auth.ts';
-import { SwuSet } from '../../types/enums.ts';
 import { db } from '../db';
 import { collection } from '../db/schema/collection.ts';
 import { and, eq, getTableColumns, or, sql } from 'drizzle-orm';
 import { user } from '../db/schema/auth-schema.ts';
 import { zCollectionCreateRequest, zCollectionUpdateRequest } from '../../types/ZCollection.ts';
+import {
+  zCollectionCardUpdateRequest,
+  zCollectionCardDeleteRequest,
+} from '../../types/ZCollectionCard.ts';
 import { collectionCard } from '../db/schema/collection_card.ts';
 
 export const collectionRoute = new Hono<AuthExtension>()
@@ -143,6 +141,7 @@ export const collectionRoute = new Hono<AuthExtension>()
   /**
    * Insert / upsert card(+variant) into collection (wantlist)
    * - only user's collection
+   * - in case of amount = 0, delete card from collection
    * */
   .post('/:id/card', zValidator('json', zCollectionCardUpdateRequest), async c => {
     const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
@@ -150,30 +149,27 @@ export const collectionRoute = new Hono<AuthExtension>()
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const isOwner = eq(collection.userId, user.id);
     const collectionId = eq(collection.id, paramCollectionId);
 
     const col = (await db.select().from(collection).where(collectionId))[0];
     if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
 
+    const cardCollectionId = eq(collectionCard.collectionId, paramCollectionId);
     const cardId = eq(collectionCard.cardId, data.cardId);
     const variantId = eq(collectionCard.variantId, data.variantId);
     const foil = eq(collectionCard.foil, data.foil);
     const condition = eq(collectionCard.condition, data.condition);
     const language = eq(collectionCard.language, data.language);
 
-    const primaryKeyFilters = [collectionId, cardId, variantId, foil, condition, language];
+    const primaryKeyFilters = [cardCollectionId, cardId, variantId, foil, condition, language];
 
     if (data.amount !== undefined && data.amount === 0) {
-      const deletedCollectionCard = await db
-        .delete(collectionCard)
-        .where(and(...primaryKeyFilters));
+      const deletedCollectionCard = (
+        await db.delete(collectionCard).where(and(...primaryKeyFilters))
+      )[0];
 
       return c.json({ data: deletedCollectionCard });
-    }
-
-    if (data.newFoil || data.newCondition || data.newLanguage) {
     }
 
     const newCollectionCard = await db
@@ -199,8 +195,32 @@ export const collectionRoute = new Hono<AuthExtension>()
    * Remove card(+variant) from collection (wantlist)
    * - only user's collection
    * */
-  .delete('/:id/card', async c => {
-    return c.json({ data: [] });
+  .delete('/:id/card', zValidator('json', zCollectionCardDeleteRequest), async c => {
+    const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+    const data = c.req.valid('json');
+    const user = c.get('user');
+    if (!user) return c.json({ message: 'Unauthorized' }, 401);
+
+    const collectionId = eq(collection.id, paramCollectionId);
+
+    const col = (await db.select().from(collection).where(collectionId))[0];
+    if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
+    if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
+
+    const cardCollectionId = eq(collectionCard.collectionId, paramCollectionId);
+    const cardId = eq(collectionCard.cardId, data.cardId);
+    const variantId = eq(collectionCard.variantId, data.variantId);
+    const foil = eq(collectionCard.foil, data.foil);
+    const condition = eq(collectionCard.condition, data.condition);
+    const language = eq(collectionCard.language, data.language);
+
+    const primaryKeyFilters = [cardCollectionId, cardId, variantId, foil, condition, language];
+
+    const deletedCollectionCard = (
+      await db.delete(collectionCard).where(and(...primaryKeyFilters))
+    )[0];
+
+    return c.json({ data: deletedCollectionCard });
   })
   /**
    * Bulk action with collection (wantlist)
@@ -211,27 +231,3 @@ export const collectionRoute = new Hono<AuthExtension>()
   .post('/:id/bulk', async c => {
     return c.json({ data: [] });
   });
-
-/*
-  .get('/collection-size', c => {
-    const user = c.get('user');
-    console.log(user);
-    if (!user) return c.body(null, 401);
-    return c.json({
-      totalOwned: fakeCollectionCards.reduce((p, c) => p + 1, 0),
-      user: user?.id,
-    });
-  })
-  .post('/', zValidator('json', collectionCardSchema), async c => {
-    const data = await c.req.valid('json');
-    const collectionCard = collectionCardSchema.parse(data);
-    c.status(201);
-    fakeCollectionCards.push(collectionCard);
-    return c.json(collectionCard);
-  })
-  .get('/:set', c => {
-    const set = swuSetSchema.parse(c.req.param('set'));
-    const collection = fakeCollectionCards.filter(fcc => true);
-    return c.json({ collection: collection });
-  });
-*/

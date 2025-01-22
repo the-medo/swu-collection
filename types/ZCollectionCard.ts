@@ -39,15 +39,21 @@ export const zCollectionCardUpdateRequest = zCollectionCardSchema
     foil: true,
     condition: true,
     language: true,
-  })
-  .extend({
-    newFoil: z.boolean().optional(),
-    newCondition: z.nativeEnum(CardCondition).optional(),
-    newLanguage: z.nativeEnum(CardLanguage).optional(),
   });
+
+export const zCollectionCardDeleteRequest = zCollectionCardSchema
+  .pick({
+    cardId: true,
+    variantId: true,
+    foil: true,
+    condition: true,
+    language: true,
+  })
+  .required();
 
 export type ZCollectionCard = z.infer<typeof zCollectionCardSchema>;
 export type ZCollectionCardCreateRequest = z.infer<typeof zCollectionCardCreateRequest>;
 export type ZCollectionCardUpdateRequest = z.infer<typeof zCollectionCardUpdateRequest>;
+export type ZCollectionCardDeleteRequest = z.infer<typeof zCollectionCardDeleteRequest>;
 
 export const fakeCollectionCards: ZCollectionCard[] = [];
