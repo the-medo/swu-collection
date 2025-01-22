@@ -1,14 +1,19 @@
 import { Hono } from 'hono';
-import { zCollectionCardSchema, fakeCollectionCards } from '../../types/ZCollectionCard.ts';
+import {
+  zCollectionCardSchema,
+  fakeCollectionCards,
+  zCollectionCardUpdateRequest,
+} from '../../types/ZCollectionCard.ts';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import type { AuthExtension } from '../auth/auth.ts';
 import { SwuSet } from '../../types/enums.ts';
 import { db } from '../db';
 import { collection } from '../db/schema/collection.ts';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, getTableColumns, or, sql } from 'drizzle-orm';
 import { user } from '../db/schema/auth-schema.ts';
-import { zCollectionCreateRequest } from '../../types/ZCollection.ts';
+import { zCollectionCreateRequest, zCollectionUpdateRequest } from '../../types/ZCollection.ts';
+import { collectionCard } from '../db/schema/collection_card.ts';
 
 export const collectionRoute = new Hono<AuthExtension>()
   /**
@@ -71,31 +76,124 @@ export const collectionRoute = new Hono<AuthExtension>()
   })
   /**
    * Get contents of collection (or wantlist) :id
-   * - only public collection
+   * - only public or owned collection
    * */
-  .get('/:id', c => {
-    return c.json({ data: [] });
+  .get('/:id', async c => {
+    const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+    const user = c.get('user');
+
+    const isPublic = eq(collection.public, true);
+    const isOwner = user ? eq(collection.userId, user.id) : null;
+
+    const collectionContents = await db
+      .select({ ...getTableColumns(collectionCard) })
+      .from(collectionCard)
+      .innerJoin(collection, eq(collectionCard.collectionId, collection.id))
+      .where(and(eq(collection.id, paramCollectionId), isOwner ? or(isOwner, isPublic) : isPublic));
+
+    return c.json({ data: collectionContents });
   })
   /**
    * Update parameters of collection (or wantlist) :id
    * - only user's collection
    * */
-  .put('/:id', c => {
-    return c.json({ data: [] });
+  .put('/:id', zValidator('json', zCollectionUpdateRequest), async c => {
+    const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+    const data = c.req.valid('json');
+    const user = c.get('user');
+    if (!user) return c.json({ message: 'Unauthorized' }, 401);
+
+    const isOwner = eq(collection.userId, user.id);
+    const collectionId = eq(collection.id, paramCollectionId);
+
+    const updatedCollection = await db
+      .update(collection)
+      .set({
+        ...data,
+        updatedAt: sql`NOW()`,
+      })
+      .where(and(isOwner, collectionId))
+      .returning();
+
+    return c.json({ data: updatedCollection });
   })
   /**
    * Delete collection (or wantlist) :id
    * - only user's collection
    * */
-  .delete('/:id', c => {
-    return c.json({ data: [] });
+  .delete('/:id', async c => {
+    const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+    const user = c.get('user');
+    if (!user) return c.json({ message: 'Unauthorized' }, 401);
+
+    const isOwner = eq(collection.userId, user.id);
+    const collectionId = eq(collection.id, paramCollectionId);
+
+    const col = (await db.select().from(collection).where(collectionId))[0];
+
+    if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
+    if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
+
+    //delete collection_card
+    await db.delete(collectionCard).where(collectionId);
+    const deletedCollection = await db.delete(collection).where(collectionId).returning();
+
+    return c.json({ data: deletedCollection });
   })
   /**
    * Insert / upsert card(+variant) into collection (wantlist)
    * - only user's collection
    * */
-  .post('/:id/card', async c => {
-    return c.json({ data: [] });
+  .post('/:id/card', zValidator('json', zCollectionCardUpdateRequest), async c => {
+    const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+    const data = c.req.valid('json');
+    const user = c.get('user');
+    if (!user) return c.json({ message: 'Unauthorized' }, 401);
+
+    const isOwner = eq(collection.userId, user.id);
+    const collectionId = eq(collection.id, paramCollectionId);
+
+    const col = (await db.select().from(collection).where(collectionId))[0];
+    if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
+    if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
+
+    const cardId = eq(collectionCard.cardId, data.cardId);
+    const variantId = eq(collectionCard.variantId, data.variantId);
+    const foil = eq(collectionCard.foil, data.foil);
+    const condition = eq(collectionCard.condition, data.condition);
+    const language = eq(collectionCard.language, data.language);
+
+    const primaryKeyFilters = [collectionId, cardId, variantId, foil, condition, language];
+
+    if (data.amount !== undefined && data.amount === 0) {
+      const deletedCollectionCard = await db
+        .delete(collectionCard)
+        .where(and(...primaryKeyFilters));
+
+      return c.json({ data: deletedCollectionCard });
+    }
+
+    if (data.newFoil || data.newCondition || data.newLanguage) {
+    }
+
+    const newCollectionCard = await db
+      .insert(collectionCard)
+      .values({ ...data, collectionId: paramCollectionId, amount: data.amount ?? 0 })
+      .onConflictDoUpdate({
+        target: [
+          collectionCard.collectionId,
+          collectionCard.cardId,
+          collectionCard.variantId,
+          collectionCard.foil,
+          collectionCard.condition,
+          collectionCard.language,
+        ],
+        set: {
+          ...data,
+        },
+      });
+
+    return c.json({ data: newCollectionCard });
   })
   /**
    * Remove card(+variant) from collection (wantlist)

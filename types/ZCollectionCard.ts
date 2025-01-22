@@ -22,6 +22,9 @@ export const zCollectionCardCreateRequest = zCollectionCardSchema
   .required({
     cardId: true,
     variantId: true,
+    foil: true,
+    condition: true,
+    language: true,
     amount: true,
   });
 
@@ -33,6 +36,14 @@ export const zCollectionCardUpdateRequest = zCollectionCardSchema
   .required({
     cardId: true,
     variantId: true,
+    foil: true,
+    condition: true,
+    language: true,
+  })
+  .extend({
+    newFoil: z.boolean().optional(),
+    newCondition: z.nativeEnum(CardCondition).optional(),
+    newLanguage: z.nativeEnum(CardLanguage).optional(),
   });
 
 export type ZCollectionCard = z.infer<typeof zCollectionCardSchema>;
