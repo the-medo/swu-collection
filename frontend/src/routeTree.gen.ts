@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as CardsImport } from './routes/cards'
 import { Route as AboutImport } from './routes/about'
+import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
 import { Route as WantlistsYourImport } from './routes/wantlists/your'
 import { Route as WantlistsPublicImport } from './routes/wantlists/public'
@@ -24,6 +25,7 @@ import { Route as DecksNewImport } from './routes/decks/new'
 import { Route as CollectionsYourImport } from './routes/collections/your'
 import { Route as CollectionsPublicImport } from './routes/collections/public'
 import { Route as CollectionsNewImport } from './routes/collections/new'
+import { Route as AuthenticatedSettingsImport } from './routes/_authenticated.settings'
 import { Route as WantlistsWantlistIdIndexImport } from './routes/wantlists/$wantlistId/index'
 import { Route as DecksDeckIdIndexImport } from './routes/decks/$deckId/index'
 import { Route as CollectionsCollectionIdIndexImport } from './routes/collections/$collectionId/index'
@@ -42,6 +44,11 @@ const CardsRoute = CardsImport.update({
 const AboutRoute = AboutImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthenticatedRoute = AuthenticatedImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -111,6 +118,12 @@ const CollectionsNewRoute = CollectionsNewImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AuthenticatedSettingsRoute = AuthenticatedSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
 const WantlistsWantlistIdIndexRoute = WantlistsWantlistIdIndexImport.update({
   id: '/wantlists/$wantlistId/',
   path: '/wantlists/$wantlistId/',
@@ -160,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedImport
+      parentRoute: typeof rootRoute
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -173,6 +193,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/cards'
       preLoaderRoute: typeof CardsImport
       parentRoute: typeof rootRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsImport
+      parentRoute: typeof AuthenticatedImport
     }
     '/collections/new': {
       id: '/collections/new'
@@ -291,10 +318,24 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/cards': typeof CardsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/collections/new': typeof CollectionsNewRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -315,8 +356,10 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/cards': typeof CardsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/collections/new': typeof CollectionsNewRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -338,8 +381,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/cards': typeof CardsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/collections/new': typeof CollectionsNewRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -362,8 +407,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | ''
     | '/about'
     | '/cards'
+    | '/settings'
     | '/collections/new'
     | '/collections/public'
     | '/collections/your'
@@ -383,8 +430,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | ''
     | '/about'
     | '/cards'
+    | '/settings'
     | '/collections/new'
     | '/collections/public'
     | '/collections/your'
@@ -404,8 +453,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/cards'
+    | '/_authenticated/settings'
     | '/collections/new'
     | '/collections/public'
     | '/collections/your'
@@ -427,6 +478,7 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
   CardsRoute: typeof CardsRoute
   CollectionsNewRoute: typeof CollectionsNewRoute
@@ -449,6 +501,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
   CardsRoute: CardsRoute,
   CollectionsNewRoute: CollectionsNewRoute,
@@ -480,6 +533,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/_authenticated",
         "/about",
         "/cards",
         "/collections/new",
@@ -503,11 +557,21 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.tsx"
     },
+    "/_authenticated": {
+      "filePath": "_authenticated.tsx",
+      "children": [
+        "/_authenticated/settings"
+      ]
+    },
     "/about": {
       "filePath": "about.tsx"
     },
     "/cards": {
       "filePath": "cards.tsx"
+    },
+    "/_authenticated/settings": {
+      "filePath": "_authenticated.settings.tsx",
+      "parent": "/_authenticated"
     },
     "/collections/new": {
       "filePath": "collections/new.tsx"

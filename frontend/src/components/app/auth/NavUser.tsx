@@ -16,6 +16,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { signOut, useSession } from '@/lib/auth-client.ts';
+import { Link } from '@tanstack/react-router';
 export function NavUser() {
   const session = useSession();
 
@@ -64,17 +65,20 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Settings />
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem>
+              <Link to={'/settings'}>
+                <DropdownMenuItem className="cursor-pointer">
+                  <Settings />
+                  Settings
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuItem className="cursor-pointer">
                 <Bell />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem
+              className="cursor-pointer"
               onSelect={async () => {
                 await signOut();
               }}
