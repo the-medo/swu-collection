@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/sidebar';
 import { signOut, useSession } from '@/lib/auth-client.ts';
 import { Link } from '@tanstack/react-router';
+
 export function NavUser() {
   const session = useSession();
 
