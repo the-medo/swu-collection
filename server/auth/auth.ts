@@ -1,4 +1,4 @@
-import { betterAuth, createMiddleware } from 'better-auth';
+import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '../db';
 import { authSchema } from '../db/schema/auth-schema.ts';
@@ -53,6 +53,9 @@ export const auth = betterAuth({
         required: true,
         returned: true,
         defaultValue: 'USD',
+        /*validator: {
+          input: ;
+        }*/
       },
     },
   },
