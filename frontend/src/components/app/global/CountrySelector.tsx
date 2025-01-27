@@ -53,7 +53,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   return (
     <div className="flex items-center gap-4">
       <Select value={country ?? undefined} onValueChange={onChangeHandler}>
-        <SelectTrigger className="w-[250px]">
+        <SelectTrigger className="w-[300px]">
           {country && (
             <img src={selectedCountry?.flag} alt={selectedCountry?.code} className="w-6" />
           )}

@@ -51,7 +51,7 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
   return (
     <div className="flex items-center gap-4">
       <Select value={Currency ?? undefined} onValueChange={onChangeHandler}>
-        <SelectTrigger className="w-[250px]">
+        <SelectTrigger className="w-[300px]">
           <SelectValue placeholder="Select a currency" />
         </SelectTrigger>
         <SelectContent>
