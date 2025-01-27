@@ -27,6 +27,8 @@ import {
 import { Link } from '@tanstack/react-router';
 import { Input } from '@/components/ui/input.tsx';
 import SignIn from '@/components/app/auth/SignIn.tsx';
+import { useUser } from '@/hooks/useUser.ts';
+import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.tsx';
 
 const groups = [
   {
@@ -39,6 +41,7 @@ const groups = [
         title: 'Your decks',
         url: '/decks/your',
         icon: BookCheck,
+        authenticated: true,
       },
       {
         title: 'Public decks',
@@ -54,14 +57,24 @@ const groups = [
   },
   {
     title: 'Collections',
-    actionLabel: 'Add Collection',
     action: () => {},
     icon: BookOpenCheck,
+    sidebarGroupAction: (
+      <NewCollectionDialog
+        trigger={
+          <SidebarGroupAction title="Add Collection">
+            <Plus /> <span className="sr-only">Add Collection</span>
+          </SidebarGroupAction>
+        }
+        wantlist={false}
+      />
+    ),
     items: [
       {
         title: 'Your collections',
         url: '/collections/your',
         icon: BookOpenCheck,
+        authenticated: true,
       },
       {
         title: 'Public collections',
@@ -72,14 +85,24 @@ const groups = [
   },
   {
     title: 'Wantlists',
-    actionLabel: 'Add Wantlist',
     action: () => {},
     icon: ScrollText,
+    sidebarGroupAction: (
+      <NewCollectionDialog
+        trigger={
+          <SidebarGroupAction title="Add Wantlist">
+            <Plus /> <span className="sr-only">Add Wantlist</span>
+          </SidebarGroupAction>
+        }
+        wantlist={true}
+      />
+    ),
     items: [
       {
         title: 'Your wantlists',
         url: '/wantlists/your',
         icon: ScrollText,
+        authenticated: true,
       },
       {
         title: 'Public wantlists',
@@ -91,6 +114,8 @@ const groups = [
 ];
 
 export function LeftSidebar() {
+  const user = useUser();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -106,21 +131,21 @@ export function LeftSidebar() {
         {groups.map(g => (
           <SidebarGroup key={g.title}>
             <SidebarGroupLabel>{g.title}</SidebarGroupLabel>
-            <SidebarGroupAction title={g.actionLabel}>
-              <Plus /> <span className="sr-only">{g.actionLabel}</span>
-            </SidebarGroupAction>
+            {g.sidebarGroupAction ?? null}
             <SidebarGroupContent>
               <SidebarMenu>
-                {g.items.map(i => (
-                  <SidebarMenuItem key={i.title}>
-                    <SidebarMenuButton asChild>
-                      <Link to={i.url} className="[&.active]:font-bold">
-                        <i.icon />
-                        <span>{i.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {g.items.map(i =>
+                  !i.authenticated || (i.authenticated && user) ? (
+                    <SidebarMenuItem key={i.title}>
+                      <SidebarMenuButton asChild>
+                        <Link to={i.url} className="[&.active]:font-bold">
+                          <i.icon />
+                          <span>{i.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ) : null,
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

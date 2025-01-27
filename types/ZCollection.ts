@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const zCollectionSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),
-  title: z.string(),
+  title: z.string().min(3).max(255),
   wantlist: z.boolean().default(false),
   public: z.boolean().default(false),
   createdAt: z.string().datetime(),
