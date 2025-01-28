@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/input.tsx';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.tsx';
+import Logo from '../../../../assets/logo.svg';
 
 const groups = [
   {
@@ -119,7 +120,7 @@ export function LeftSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <h1 className="font-bold text-2xl">SWU Base</h1>
+        <img src={Logo} alt="Logo" className="self-center" />
       </SidebarHeader>
       <SidebarSeparator />
       <SidebarContent>
