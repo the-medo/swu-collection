@@ -20,7 +20,10 @@ GITHUB_CLIENT_ID=client_id_from_your_github_app
 GITHUB_CLIENT_SECRET=client_secret_from_your_github_app
 GOOGLE_CLIENT_ID=client_id_from_your_google_app
 GOOGLE_CLIENT_SECRET=client_secret_from_your_google_app
-CONTINENTL_API_KEY=(api key for https://continentl.com/)
+CONTINENTL_API_KEY=(optional - api key for https://continentl.com/)
+R2_ACCESS_KEY_ID=(optional - only if you want to upload images/files to your bucket)
+R2_SECRET_ACCESS_KEY=(optional - like above)
+R2_ENDPOINT=(optional - like above)
 ```
 
 _TODO: provide localhost callback URLS for github/google_
