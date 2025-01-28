@@ -16,6 +16,8 @@ export const userRoute = new Hono<AuthExtension>().get('/:id/collection', async 
     .from(collection)
     .where(and(eq(collection.userId, paramUserId), isOwner ? or(isOwner, isPublic) : isPublic));
 
+  await new Promise(resolve => setTimeout(resolve, 2000));
+
   return c.json({
     userId: paramUserId,
     collections: userCollections,

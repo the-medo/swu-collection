@@ -1,7 +1,7 @@
 import { api } from '@/lib/api.ts';
 import { useQuery } from '@tanstack/react-query';
 import { DataTable } from '@/components/ui/data-table.tsx';
-import { collectionTableLib } from '@/components/app/collections/CollectionTable/collectionTableLib.tsx';
+import { collectionCardTableLib } from '@/components/app/collections/CollectionTable/collectionCardTableLib.tsx';
 
 async function getCollection() {
   const response = await api.collection.$get();
@@ -12,7 +12,7 @@ async function getCollection() {
   return data;
 }
 
-function CollectionTable() {
+function CollectionCardTable() {
   const { isPending, isFetching, error, data } = useQuery({
     queryKey: ['get-collection'],
     queryFn: getCollection,
@@ -23,9 +23,9 @@ function CollectionTable() {
   if (isPending || isFetching) return <p>Loading...</p>;
   return (
     <div className="w-9/12">
-      <DataTable columns={collectionTableLib} data={data.collection} />
+      <DataTable columns={collectionCardTableLib} data={data.collection} />
     </div>
   );
 }
 
-export default CollectionTable;
+export default CollectionCardTable;

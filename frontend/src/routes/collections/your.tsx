@@ -1,18 +1,22 @@
 import { createFileRoute } from '@tanstack/react-router';
-import CollectionSizeCard from '@/components/app/collections/CollectionSizeCard/CollectionSizeCard.tsx';
-import CollectionTable from '@/components/app/collections/CollectionTable/CollectionTable.tsx';
+import { AuthorizedRouteComponent } from '../_authenticated';
+import UserCollections from '@/components/app/collections/UserCollections/UserCollections.tsx';
+import { useUser } from '@/hooks/useUser.ts';
 
 export const Route = createFileRoute('/collections/your')({
   component: YourCollections,
 });
 
 function YourCollections() {
+  const user = useUser();
+
   return (
-    <div className="p-2">
-      <div className="flex gap-4 items-start">
-        <CollectionTable />
-        <CollectionSizeCard />
+    <AuthorizedRouteComponent>
+      <div className="p-2">
+        <div className="flex gap-4 items-start">
+          <UserCollections userId={user?.id} loading={!user} />
+        </div>
       </div>
-    </div>
+    </AuthorizedRouteComponent>
   );
 }

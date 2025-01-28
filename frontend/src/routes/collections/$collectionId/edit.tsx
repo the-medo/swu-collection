@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { useForm } from '@tanstack/react-form';
 import { api } from '@/lib/api.ts';
 import { SwuSet } from '../../../../../types/enums.ts';
+import { AuthorizedRouteComponent } from '@/routes/_authenticated.tsx';
 
 export const Route = createFileRoute('/collections/$collectionId/edit')({
   component: RouteComponent,
@@ -41,65 +42,67 @@ function RouteComponent() {
   });
 
   return (
-    <div>
-      <form
-        className="max-w-3xl m-auto"
-        onSubmit={e => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
-        }}
-      >
-        <form.Field
-          name="set"
-          children={field => (
-            <>
-              <Label htmlFor={field.name}>Set</Label>
-              <Input
-                type="text"
-                id={field.name}
-                placeholder="Set"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(e.target.value)}
-              />
-            </>
-          )}
-        />
-        <form.Field
-          name="setNumber"
-          children={field => (
-            <>
-              <Label htmlFor={field.name}>Card number</Label>
-              <Input
-                name={field.name}
-                type="number"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(parseInt(e.target.value))}
-              />
-            </>
-          )}
-        />
-        <form.Field
-          name="owned"
-          children={field => (
-            <>
-              <Label htmlFor={field.name}>Owned</Label>
-              <Input
-                type="number"
-                name={field.name}
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(parseInt(e.target.value))}
-              />
-            </>
-          )}
-        />
-        <Button type="submit" className="mt-4">
-          Create collection card
-        </Button>
-      </form>
-    </div>
+    <AuthorizedRouteComponent>
+      <div>
+        <form
+          className="max-w-3xl m-auto"
+          onSubmit={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            void form.handleSubmit();
+          }}
+        >
+          <form.Field
+            name="set"
+            children={field => (
+              <>
+                <Label htmlFor={field.name}>Set</Label>
+                <Input
+                  type="text"
+                  id={field.name}
+                  placeholder="Set"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={e => field.handleChange(e.target.value)}
+                />
+              </>
+            )}
+          />
+          <form.Field
+            name="setNumber"
+            children={field => (
+              <>
+                <Label htmlFor={field.name}>Card number</Label>
+                <Input
+                  name={field.name}
+                  type="number"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={e => field.handleChange(parseInt(e.target.value))}
+                />
+              </>
+            )}
+          />
+          <form.Field
+            name="owned"
+            children={field => (
+              <>
+                <Label htmlFor={field.name}>Owned</Label>
+                <Input
+                  type="number"
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={e => field.handleChange(parseInt(e.target.value))}
+                />
+              </>
+            )}
+          />
+          <Button type="submit" className="mt-4">
+            Create collection card
+          </Button>
+        </form>
+      </div>
+    </AuthorizedRouteComponent>
   );
 }

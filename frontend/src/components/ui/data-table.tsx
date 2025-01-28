@@ -10,15 +10,22 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton.tsx';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  loading?: boolean;
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  loading = false,
+}: DataTableProps<TData, TValue>) {
   const table = useReactTable({
-    data,
+    // @ts-ignore
+    data: loading ? [{}, {}, {}] : data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -47,7 +54,14 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                 {row.getVisibleCells().map(cell => (
                   <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {loading ? (
+                      <Skeleton
+                        className="size-4 w-full rounded-md"
+                        data-sidebar="menu-skeleton-icon"
+                      />
+                    ) : (
+                      flexRender(cell.column.columnDef.cell, cell.getContext())
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
