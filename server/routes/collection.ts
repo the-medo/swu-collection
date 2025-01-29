@@ -12,6 +12,9 @@ import {
   zCollectionCardDeleteRequest,
 } from '../../types/ZCollectionCard.ts';
 import { collectionCard } from '../db/schema/collection_card.ts';
+import { selectUser } from './user.ts';
+
+export const selectCollection = getTableColumns(collection);
 
 export const collectionRoute = new Hono<AuthExtension>()
   /**
@@ -43,7 +46,10 @@ export const collectionRoute = new Hono<AuthExtension>()
     }
 
     const collections = await db
-      .select()
+      .select({
+        user: selectUser,
+        collection: selectCollection,
+      })
       .from(collection)
       .innerJoin(user, eq(collection.userId, user.id))
       .where(and(...filters))

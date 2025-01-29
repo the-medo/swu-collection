@@ -14,5 +14,3 @@ export function useUser() {
       }
     : null;
 }
-
-export type User = ReturnType<typeof useUser>;

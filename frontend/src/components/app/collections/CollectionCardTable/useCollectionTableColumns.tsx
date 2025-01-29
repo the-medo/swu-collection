@@ -5,7 +5,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -14,9 +13,9 @@ import { useCurrencyList } from '@/api/useCurrencyList.ts';
 import { useCountryList } from '@/api/useCountryList.ts';
 import { CountryCode, CurrencyCode } from '../../../../../../server/db/lists.ts';
 import { Link } from '@tanstack/react-router';
-import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
 import { publicRenderer } from '@/lib/table/publicRenderer.tsx';
 import { CollectionTableData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
+import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
 
 interface CollectionTableColumnsProps {
   showOwner?: boolean;
@@ -37,13 +36,27 @@ export function useCollectionTableColumns({
   return useMemo(() => {
     const definitions: ColumnDef<CollectionTableData>[] = [];
 
+    if (showPublic) {
+      definitions.push({
+        id: 'collectionPublic',
+        accessorKey: 'collection.public',
+        header: 'Public',
+        cell: ({ row }) => {
+          return publicRenderer(row.original.collection.public);
+        },
+      });
+    }
+
     definitions.push({
-      accessorKey: 'title',
+      id: 'collectionTitle',
+      accessorKey: 'collection.title',
       header: 'Title',
-      cell: ({ row }) => {
-        const title = row.getValue('title') as string;
+      cell: ({ getValue, row }) => {
+        const title = getValue() as string;
+        const collectionId = row.getValue('collection.id') as string;
+
         return (
-          <Link to={'/collection/' + row.original.id} className="font-bold">
+          <Link to={'/collections/' + collectionId} className="font-bold">
             <Button variant="link" className="w-full justify-start">
               {title}
             </Button>
@@ -56,12 +69,12 @@ export function useCollectionTableColumns({
       definitions.push({
         accessorKey: 'user.displayName',
         header: 'Owner',
-        cell: ({ row }) => {
-          const user = row.original.user;
-          if (!user) return <div className="text-xs">- unknown user -</div>;
+        cell: ({ getValue, row }) => {
+          const userId = row.getValue('user.id') as string;
+          const displayName = getValue() as string;
           return (
-            <Link to={'/user/' + user.id} className="text-xs">
-              {user.displayName}
+            <Link to={'/user/' + userId} className="text-xs">
+              {displayName}
             </Link>
           );
         },
@@ -70,18 +83,18 @@ export function useCollectionTableColumns({
 
     if (showState) {
       definitions.push({
-        accessorKey: 'user',
+        accessorKey: 'user.country',
         header: () => <div className="text-right">Country and State / Region</div>,
         cell: ({ row }) => {
-          const countryCode = row.original.user?.country as CountryCode | null;
-          const state = row.original.user?.state as string | null;
+          const countryCode = row.getValue('user.country') as CountryCode | null;
+          const state = row.getValue('user.state') as string | null;
           const country = countryCode ? countryData?.countries[countryCode] : undefined;
 
           return (
             <div className="justify-end flex items-center gap-2 text-xs">
               {countryCode && <img src={country?.flag} alt={country?.code} className="w-6" />}
               {country?.name ?? ' - '}
-              {state ? ` / ${state}` : ''}
+              {state ? ` | ${state}` : ''}
             </div>
           );
         },
@@ -93,7 +106,7 @@ export function useCollectionTableColumns({
         accessorKey: 'user.currency',
         header: 'Currency',
         cell: ({ row }) => {
-          const currencyCode = row.original.user?.currency as CurrencyCode;
+          const currencyCode = row.getValue('user.currency') as CurrencyCode;
           const currency = currencyData?.currencies[currencyCode];
 
           return (
@@ -105,31 +118,19 @@ export function useCollectionTableColumns({
       });
     }
 
-    if (showPublic) {
-      definitions.push({
-        accessorKey: 'public',
-        header: 'Public',
-        cell: ({ row }) => {
-          return publicRenderer(row.getValue('public'));
-        },
-      });
-    }
-
     definitions.push({
-      accessorKey: 'createdAt',
+      accessorKey: 'collection.createdAt',
       header: () => <div className="text-right">Created At</div>,
-      cell: ({ row }) => {
-        const value = new Date(row.getValue('createdAt'));
-        const formatted = Intl.DateTimeFormat('en-US', {}).format(value);
-        return <div className="text-right font-medium">{formatted}</div>;
+      cell: ({ getValue }) => {
+        return dateRenderer(getValue() as string);
       },
     });
 
     definitions.push({
-      accessorKey: 'updatedAt',
+      accessorKey: 'collection.updatedAt',
       header: () => <div className="text-right">Updated At</div>,
-      cell: ({ row }) => {
-        return dateRenderer(row.getValue('updatedAt'));
+      cell: ({ getValue }) => {
+        return dateRenderer(getValue() as string);
       },
     });
 
@@ -137,7 +138,8 @@ export function useCollectionTableColumns({
       id: 'actions',
       header: () => <div className="text-right">Actions</div>,
       cell: ({ row }) => {
-        const payment = row.original;
+        const collectionId = row.getValue('collection.id') as string;
+        const userId = row.getValue('user.id') as string;
 
         return (
           <DropdownMenu>
@@ -151,12 +153,15 @@ export function useCollectionTableColumns({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>
-                Copy payment ID
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(collectionId)}>
+                Copy collection ID
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(userId)}>
+                Copy user ID
+              </DropdownMenuItem>
+              {/*<DropdownMenuSeparator />
               <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
+              <DropdownMenuItem>View payment details</DropdownMenuItem>*/}
             </DropdownMenuContent>
           </DropdownMenu>
         );
