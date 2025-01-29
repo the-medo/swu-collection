@@ -1,21 +1,6 @@
-import { ColumnDef } from '@tanstack/react-table';
 import { ZCollection } from '../../../../../../types/ZCollection.ts';
+import { User } from '@/hooks/useUser.ts';
 
-export const collectionTableLib: ColumnDef<ZCollection>[] = [
-  {
-    accessorKey: 'title',
-    header: 'Title',
-  },
-  {
-    accessorKey: 'public',
-    header: 'Public',
-  },
-  {
-    accessorKey: 'createdAt',
-    header: 'Created At',
-  },
-  {
-    accessorKey: 'updatedAt',
-    header: 'Updated At',
-  },
-];
+export type CollectionTableData = {
+  user: User;
+} & ZCollection;
