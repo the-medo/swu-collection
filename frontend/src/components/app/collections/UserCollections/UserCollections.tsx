@@ -2,7 +2,7 @@ import { useGetUserCollections } from '@/api/useGetUserCollections.ts';
 import CollectionTable from '../CollectionCardTable/CollectionTable';
 
 interface UserCollectionsProps {
-  userId: string;
+  userId: string | undefined;
   loading?: boolean;
 }
 

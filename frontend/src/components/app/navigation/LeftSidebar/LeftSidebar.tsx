@@ -29,7 +29,9 @@ import { Input } from '@/components/ui/input.tsx';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.tsx';
-import Logo from '../../../../assets/logo.svg';
+import LogoLightTheme from '../../../../assets/logo-light-theme.svg';
+import LogoDarkTheme from '../../../../assets/logo-dark-theme.svg';
+import { useTheme } from '@/components/theme-provider.tsx';
 
 const groups = [
   {
@@ -116,11 +118,16 @@ const groups = [
 
 export function LeftSidebar() {
   const user = useUser();
+  const { theme } = useTheme();
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <img src={Logo} alt="Logo" className="self-center" />
+        <img
+          src={theme === 'light' ? LogoLightTheme : LogoDarkTheme}
+          alt="Logo"
+          className="self-center"
+        />
       </SidebarHeader>
       <SidebarSeparator />
       <SidebarContent>

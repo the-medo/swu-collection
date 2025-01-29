@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 
 async function getUserCollections(userId: string) {
@@ -14,10 +14,10 @@ async function getUserCollections(userId: string) {
   return data;
 }
 
-export const useGetUserCollections = (userId: string) => {
+export const useGetUserCollections = (userId: string | undefined) => {
   return useQuery({
     queryKey: ['collections', userId],
-    queryFn: () => getUserCollections(userId),
+    queryFn: userId ? () => getUserCollections(userId) : skipToken,
     staleTime: Infinity,
   });
 };

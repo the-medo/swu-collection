@@ -27,6 +27,11 @@
         stroke-miterlimit: 10;
       }
 
+      .dark .cls-2 {
+        stroke: red;
+        stroke-miterlimit: 10;
+      }
+
       .cls-3 {
         stroke-width: 4.55px;
       }
