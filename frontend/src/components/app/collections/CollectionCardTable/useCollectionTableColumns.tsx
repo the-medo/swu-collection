@@ -41,8 +41,8 @@ export function useCollectionTableColumns({
         id: 'collectionPublic',
         accessorKey: 'collection.public',
         header: 'Public',
-        cell: ({ row }) => {
-          return publicRenderer(row.original.collection.public);
+        cell: ({ getValue }) => {
+          return publicRenderer(getValue() as boolean);
         },
       });
     }
@@ -53,7 +53,7 @@ export function useCollectionTableColumns({
       header: 'Title',
       cell: ({ getValue, row }) => {
         const title = getValue() as string;
-        const collectionId = row.getValue('collection.id') as string;
+        const collectionId = row.original.collection.id as string; //.getValue('collection.id') doesn't work??
 
         return (
           <Link to={'/collections/' + collectionId} className="font-bold">
@@ -70,7 +70,7 @@ export function useCollectionTableColumns({
         accessorKey: 'user.displayName',
         header: 'Owner',
         cell: ({ getValue, row }) => {
-          const userId = row.getValue('user.id') as string;
+          const userId = row.original.user.id as string;
           const displayName = getValue() as string;
           return (
             <Link to={'/user/' + userId} className="text-xs">
@@ -86,8 +86,8 @@ export function useCollectionTableColumns({
         accessorKey: 'user.country',
         header: () => <div className="text-right">Country and State / Region</div>,
         cell: ({ row }) => {
-          const countryCode = row.getValue('user.country') as CountryCode | null;
-          const state = row.getValue('user.state') as string | null;
+          const countryCode = row.original.user.country as CountryCode | null;
+          const state = row.original.user.state as string | null;
           const country = countryCode ? countryData?.countries[countryCode] : undefined;
 
           return (
@@ -106,7 +106,7 @@ export function useCollectionTableColumns({
         accessorKey: 'user.currency',
         header: 'Currency',
         cell: ({ row }) => {
-          const currencyCode = row.getValue('user.currency') as CurrencyCode;
+          const currencyCode = row.original.user.currency as CurrencyCode;
           const currency = currencyData?.currencies[currencyCode];
 
           return (
@@ -138,8 +138,8 @@ export function useCollectionTableColumns({
       id: 'actions',
       header: () => <div className="text-right">Actions</div>,
       cell: ({ row }) => {
-        const collectionId = row.getValue('collection.id') as string;
-        const userId = row.getValue('user.id') as string;
+        const collectionId = row.original.collection.id;
+        const userId = row.original.user.id;
 
         return (
           <DropdownMenu>

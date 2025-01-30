@@ -26,9 +26,10 @@ export const collectionRoute = new Hono<AuthExtension>()
   .get('/', async c => {
     const country = c.req.query('country');
     const state = c.req.query('state');
+    const wantlist = c.req.query('wantlist') === 'true';
     const limit = Number(c.req.query('limit') ?? 50);
     const offset = Number(c.req.query('offset') ?? 0);
-    const sort = c.req.query('sort') ?? 'created_at';
+    const sort = c.req.query('sort') ?? 'collection.created_at';
     const order = c.req.query('order') === 'desc' ? 'desc' : 'asc';
 
     if (state && !country) {
@@ -45,6 +46,8 @@ export const collectionRoute = new Hono<AuthExtension>()
       filters.push(eq(user.state, state));
     }
 
+    filters.push(eq(collection.wantlist, wantlist));
+
     const collections = await db
       .select({
         user: selectUser,
@@ -53,12 +56,12 @@ export const collectionRoute = new Hono<AuthExtension>()
       .from(collection)
       .innerJoin(user, eq(collection.userId, user.id))
       .where(and(...filters))
-      .orderBy(sql`${sort} ${order}`)
+      .orderBy(sql.raw(`${sort} ${order}`))
       .limit(limit)
       .offset(offset);
 
     // Return the result
-    return c.json({ data: collections });
+    return c.json(collections);
   })
   /**
    * Create new collection (or wantlist)
