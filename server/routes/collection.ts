@@ -3,18 +3,18 @@ import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import type { AuthExtension } from '../auth/auth.ts';
 import { db } from '../db';
-import { collection } from '../db/schema/collection.ts';
 import { and, eq, getTableColumns, or, sql } from 'drizzle-orm';
-import { user } from '../db/schema/auth-schema.ts';
+import { collection as collectionTable } from '../db/schema/collection.ts';
+import { collectionCard as collectionCardTable } from '../db/schema/collection_card.ts';
+import { user as userTable } from '../db/schema/auth-schema.ts';
 import { zCollectionCreateRequest, zCollectionUpdateRequest } from '../../types/ZCollection.ts';
 import {
   zCollectionCardUpdateRequest,
   zCollectionCardDeleteRequest,
 } from '../../types/ZCollectionCard.ts';
-import { collectionCard } from '../db/schema/collection_card.ts';
 import { selectUser } from './user.ts';
 
-export const selectCollection = getTableColumns(collection);
+export const selectCollection = getTableColumns(collectionTable);
 
 export const collectionRoute = new Hono<AuthExtension>()
   /**
@@ -36,25 +36,25 @@ export const collectionRoute = new Hono<AuthExtension>()
       return c.json({ error: 'State parameter requires country' }, 400);
     }
 
-    const filters = [eq(collection.public, true)];
+    const filters = [eq(collectionTable.public, true)];
 
     if (country) {
-      filters.push(eq(user.country, country));
+      filters.push(eq(userTable.country, country));
     }
 
     if (state) {
-      filters.push(eq(user.state, state));
+      filters.push(eq(userTable.state, state));
     }
 
-    filters.push(eq(collection.wantlist, wantlist));
+    filters.push(eq(collectionTable.wantlist, wantlist));
 
     const collections = await db
       .select({
         user: selectUser,
         collection: selectCollection,
       })
-      .from(collection)
-      .innerJoin(user, eq(collection.userId, user.id))
+      .from(collectionTable)
+      .innerJoin(userTable, eq(collectionTable.userId, userTable.id))
       .where(and(...filters))
       .orderBy(sql.raw(`${sort} ${order}`))
       .limit(limit)
@@ -72,7 +72,7 @@ export const collectionRoute = new Hono<AuthExtension>()
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
     const newCollection = await db
-      .insert(collection)
+      .insert(collectionTable)
       .values({
         userId: user.id,
         ...data,
@@ -82,23 +82,28 @@ export const collectionRoute = new Hono<AuthExtension>()
     return c.json({ data: newCollection }, 201);
   })
   /**
-   * Get contents of collection (or wantlist) :id
+   * Get collection / wantlist details
    * - only public or owned collection
    * */
   .get('/:id', async c => {
     const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
     const user = c.get('user');
 
-    const isPublic = eq(collection.public, true);
-    const isOwner = user ? eq(collection.userId, user.id) : null;
+    const isPublic = eq(collectionTable.public, true);
+    const isOwner = user ? eq(collectionTable.userId, user.id) : null;
 
-    const collectionContents = await db
-      .select({ ...getTableColumns(collectionCard) })
-      .from(collectionCard)
-      .innerJoin(collection, eq(collectionCard.collectionId, collection.id))
-      .where(and(eq(collection.id, paramCollectionId), isOwner ? or(isOwner, isPublic) : isPublic));
+    const collectionData = await db
+      .select({
+        user: selectUser,
+        collection: selectCollection,
+      })
+      .from(collectionTable)
+      .innerJoin(userTable, eq(collectionTable.userId, userTable.id))
+      .where(
+        and(eq(collectionTable.id, paramCollectionId), isOwner ? or(isOwner, isPublic) : isPublic),
+      );
 
-    return c.json({ data: collectionContents });
+    return c.json(collectionData[0]);
   })
   /**
    * Update parameters of collection (or wantlist) :id
@@ -110,11 +115,11 @@ export const collectionRoute = new Hono<AuthExtension>()
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const isOwner = eq(collection.userId, user.id);
-    const collectionId = eq(collection.id, paramCollectionId);
+    const isOwner = eq(collectionTable.userId, user.id);
+    const collectionId = eq(collectionTable.id, paramCollectionId);
 
     const updatedCollection = await db
-      .update(collection)
+      .update(collectionTable)
       .set({
         ...data,
         updatedAt: sql`NOW()`,
@@ -133,19 +138,40 @@ export const collectionRoute = new Hono<AuthExtension>()
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const isOwner = eq(collection.userId, user.id);
-    const collectionId = eq(collection.id, paramCollectionId);
+    const isOwner = eq(collectionTable.userId, user.id);
+    const collectionId = eq(collectionTable.id, paramCollectionId);
 
-    const col = (await db.select().from(collection).where(collectionId))[0];
+    const col = (await db.select().from(collectionTable).where(collectionId))[0];
 
     if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
 
     //delete collection_card
-    await db.delete(collectionCard).where(collectionId);
-    const deletedCollection = await db.delete(collection).where(collectionId).returning();
+    await db.delete(collectionCardTable).where(collectionId);
+    const deletedCollection = await db.delete(collectionTable).where(collectionId).returning();
 
     return c.json({ data: deletedCollection });
+  })
+  /**
+   * Get contents of collection (or wantlist) :id
+   * - only public or owned collection
+   * */
+  .get('/:id/card', async c => {
+    const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+    const user = c.get('user');
+
+    const isPublic = eq(collectionTable.public, true);
+    const isOwner = user ? eq(collectionTable.userId, user.id) : null;
+
+    const collectionContents = await db
+      .select({ ...getTableColumns(collectionCardTable) })
+      .from(collectionCardTable)
+      .innerJoin(collectionTable, eq(collectionCardTable.collectionId, collectionTable.id))
+      .where(
+        and(eq(collectionTable.id, paramCollectionId), isOwner ? or(isOwner, isPublic) : isPublic),
+      );
+
+    return c.json({ data: collectionContents });
   })
   /**
    * Insert / upsert card(+variant) into collection (wantlist)
@@ -158,40 +184,40 @@ export const collectionRoute = new Hono<AuthExtension>()
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const collectionId = eq(collection.id, paramCollectionId);
+    const collectionId = eq(collectionTable.id, paramCollectionId);
 
-    const col = (await db.select().from(collection).where(collectionId))[0];
+    const col = (await db.select().from(collectionTable).where(collectionId))[0];
     if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
 
-    const cardCollectionId = eq(collectionCard.collectionId, paramCollectionId);
-    const cardId = eq(collectionCard.cardId, data.cardId);
-    const variantId = eq(collectionCard.variantId, data.variantId);
-    const foil = eq(collectionCard.foil, data.foil);
-    const condition = eq(collectionCard.condition, data.condition);
-    const language = eq(collectionCard.language, data.language);
+    const cardCollectionId = eq(collectionCardTable.collectionId, paramCollectionId);
+    const cardId = eq(collectionCardTable.cardId, data.cardId);
+    const variantId = eq(collectionCardTable.variantId, data.variantId);
+    const foil = eq(collectionCardTable.foil, data.foil);
+    const condition = eq(collectionCardTable.condition, data.condition);
+    const language = eq(collectionCardTable.language, data.language);
 
     const primaryKeyFilters = [cardCollectionId, cardId, variantId, foil, condition, language];
 
     if (data.amount !== undefined && data.amount === 0) {
       const deletedCollectionCard = (
-        await db.delete(collectionCard).where(and(...primaryKeyFilters))
+        await db.delete(collectionCardTable).where(and(...primaryKeyFilters))
       )[0];
 
       return c.json({ data: deletedCollectionCard });
     }
 
     const newCollectionCard = await db
-      .insert(collectionCard)
+      .insert(collectionCardTable)
       .values({ ...data, collectionId: paramCollectionId, amount: data.amount ?? 0 })
       .onConflictDoUpdate({
         target: [
-          collectionCard.collectionId,
-          collectionCard.cardId,
-          collectionCard.variantId,
-          collectionCard.foil,
-          collectionCard.condition,
-          collectionCard.language,
+          collectionCardTable.collectionId,
+          collectionCardTable.cardId,
+          collectionCardTable.variantId,
+          collectionCardTable.foil,
+          collectionCardTable.condition,
+          collectionCardTable.language,
         ],
         set: {
           ...data,
@@ -210,23 +236,23 @@ export const collectionRoute = new Hono<AuthExtension>()
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const collectionId = eq(collection.id, paramCollectionId);
+    const collectionId = eq(collectionTable.id, paramCollectionId);
 
-    const col = (await db.select().from(collection).where(collectionId))[0];
+    const col = (await db.select().from(collectionTable).where(collectionId))[0];
     if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
 
-    const cardCollectionId = eq(collectionCard.collectionId, paramCollectionId);
-    const cardId = eq(collectionCard.cardId, data.cardId);
-    const variantId = eq(collectionCard.variantId, data.variantId);
-    const foil = eq(collectionCard.foil, data.foil);
-    const condition = eq(collectionCard.condition, data.condition);
-    const language = eq(collectionCard.language, data.language);
+    const cardCollectionId = eq(collectionCardTable.collectionId, paramCollectionId);
+    const cardId = eq(collectionCardTable.cardId, data.cardId);
+    const variantId = eq(collectionCardTable.variantId, data.variantId);
+    const foil = eq(collectionCardTable.foil, data.foil);
+    const condition = eq(collectionCardTable.condition, data.condition);
+    const language = eq(collectionCardTable.language, data.language);
 
     const primaryKeyFilters = [cardCollectionId, cardId, variantId, foil, condition, language];
 
     const deletedCollectionCard = (
-      await db.delete(collectionCard).where(and(...primaryKeyFilters))
+      await db.delete(collectionCardTable).where(and(...primaryKeyFilters))
     )[0];
 
     return c.json({ data: deletedCollectionCard });
