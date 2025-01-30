@@ -1,0 +1,27 @@
+h1 {
+    @apply scroll-m-20 text-4xl mb-2 font-extrabold tracking-tight lg:text-5xl;
+}
+
+h2 {
+    @apply scroll-m-20 border-b pb-2 mb-2 text-3xl font-semibold tracking-tight;
+}
+
+h3 {
+    @apply scroll-m-20 text-2xl mb-2 font-semibold tracking-tight;
+}
+
+h4 {
+    @apply scroll-m-20 text-xl mb-2 font-semibold tracking-tight;
+}
+
+h5 {
+    @apply scroll-m-20 text-lg mb-2 font-semibold tracking-tight;
+}
+
+h6 {
+    @apply scroll-m-20 mb-2 font-semibold tracking-tight;
+}
+
+p {
+    @apply leading-7;
+}
