@@ -73,7 +73,7 @@ export function useCollectionTableColumns({
           const userId = row.original.user.id as string;
           const displayName = getValue() as string;
           return (
-            <Link to={'/user/' + userId} className="text-xs">
+            <Link to={'/users/' + userId} className="text-xs">
               {displayName}
             </Link>
           );

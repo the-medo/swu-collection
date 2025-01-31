@@ -26,6 +26,7 @@ import { Route as CollectionsYourImport } from './routes/collections/your'
 import { Route as CollectionsPublicImport } from './routes/collections/public'
 import { Route as AuthenticatedSettingsImport } from './routes/_authenticated.settings'
 import { Route as WantlistsWantlistIdIndexImport } from './routes/wantlists/$wantlistId/index'
+import { Route as UsersUserIdIndexImport } from './routes/users/$userId/index'
 import { Route as DecksDeckIdIndexImport } from './routes/decks/$deckId/index'
 import { Route as CollectionsCollectionIdIndexImport } from './routes/collections/$collectionId/index'
 import { Route as WantlistsWantlistIdEditImport } from './routes/wantlists/$wantlistId/edit'
@@ -120,6 +121,12 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsImport.update({
 const WantlistsWantlistIdIndexRoute = WantlistsWantlistIdIndexImport.update({
   id: '/wantlists/$wantlistId/',
   path: '/wantlists/$wantlistId/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UsersUserIdIndexRoute = UsersUserIdIndexImport.update({
+  id: '/users/$userId/',
+  path: '/users/$userId/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -292,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DecksDeckIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/users/$userId/': {
+      id: '/users/$userId/'
+      path: '/users/$userId'
+      fullPath: '/users/$userId'
+      preLoaderRoute: typeof UsersUserIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wantlists/$wantlistId/': {
       id: '/wantlists/$wantlistId/'
       path: '/wantlists/$wantlistId'
@@ -336,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/wantlists/$wantlistId/edit': typeof WantlistsWantlistIdEditRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
+  '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
 
@@ -359,6 +374,7 @@ export interface FileRoutesByTo {
   '/wantlists/$wantlistId/edit': typeof WantlistsWantlistIdEditRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
+  '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
 
@@ -383,6 +399,7 @@ export interface FileRoutesById {
   '/wantlists/$wantlistId/edit': typeof WantlistsWantlistIdEditRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
+  '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
 }
 
@@ -408,6 +425,7 @@ export interface FileRouteTypes {
     | '/wantlists/$wantlistId/edit'
     | '/collections/$collectionId'
     | '/decks/$deckId'
+    | '/users/$userId'
     | '/wantlists/$wantlistId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -430,6 +448,7 @@ export interface FileRouteTypes {
     | '/wantlists/$wantlistId/edit'
     | '/collections/$collectionId'
     | '/decks/$deckId'
+    | '/users/$userId'
     | '/wantlists/$wantlistId'
   id:
     | '__root__'
@@ -452,6 +471,7 @@ export interface FileRouteTypes {
     | '/wantlists/$wantlistId/edit'
     | '/collections/$collectionId/'
     | '/decks/$deckId/'
+    | '/users/$userId/'
     | '/wantlists/$wantlistId/'
   fileRoutesById: FileRoutesById
 }
@@ -475,6 +495,7 @@ export interface RootRouteChildren {
   WantlistsWantlistIdEditRoute: typeof WantlistsWantlistIdEditRoute
   CollectionsCollectionIdIndexRoute: typeof CollectionsCollectionIdIndexRoute
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
+  UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
 }
 
@@ -497,6 +518,7 @@ const rootRouteChildren: RootRouteChildren = {
   WantlistsWantlistIdEditRoute: WantlistsWantlistIdEditRoute,
   CollectionsCollectionIdIndexRoute: CollectionsCollectionIdIndexRoute,
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
+  UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
 }
 
@@ -528,6 +550,7 @@ export const routeTree = rootRoute
         "/wantlists/$wantlistId/edit",
         "/collections/$collectionId/",
         "/decks/$deckId/",
+        "/users/$userId/",
         "/wantlists/$wantlistId/"
       ]
     },
@@ -591,6 +614,9 @@ export const routeTree = rootRoute
     },
     "/decks/$deckId/": {
       "filePath": "decks/$deckId/index.tsx"
+    },
+    "/users/$userId/": {
+      "filePath": "users/$userId/index.tsx"
     },
     "/wantlists/$wantlistId/": {
       "filePath": "wantlists/$wantlistId/index.tsx"
