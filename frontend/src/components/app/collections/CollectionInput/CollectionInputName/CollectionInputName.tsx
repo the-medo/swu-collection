@@ -19,17 +19,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion.tsx';
-import { Switch } from '@/components/ui/switch.tsx';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select.tsx';
-import { Input } from '@/components/ui/input.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { useCollectionInputNameStore } from '@/components/app/collections/CollectionInput/CollectionInputName/useCollectionInputNameStore.tsx';
+import {
+  useCollectionInputNameStore,
+  useCollectionInputNameStoreActions,
+} from '@/components/app/collections/CollectionInput/CollectionInputName/useCollectionInputNameStore.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import * as React from 'react';
+import DefaultVariantNameSelect from '@/components/app/collections/CollectionInput/components/DefaultVariantNameSelect.tsx';
+import DefaultFoilSwitch from '@/components/app/collections/CollectionInput/components/DefaultFoilSwitch.tsx';
+import DefaultAmountInput from '@/components/app/collections/CollectionInput/components/DefaultAmountInput.tsx';
+import CardImage from '@/components/app/global/CardImage.tsx';
+import AmountInput from '@/components/app/collections/CollectionInput/components/AmountInput.tsx';
+import FoilSwitch from '@/components/app/collections/CollectionInput/components/FoilSwitch.tsx';
+import { cn } from '@/lib/utils.ts';
 
 // https://github.com/pacocoursey/cmdk/discussions/221#discussioncomment-11247291
 
@@ -40,18 +43,32 @@ interface CollectionInputNameProps {
 const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId }) => {
   const {
     open,
-    setOpen,
     search,
-    setSearch,
     selectedVariantId,
-    setSelectedVariantId,
     selectedCardId,
-    setSelectedCardId,
     options,
     variantOptions,
     isFetching,
     cardList,
+    card: { card, variant, isSelectedVariant },
+    defaultVariantName,
+    defaultFoil,
+    defaultAmount,
+    amount,
+    foil,
   } = useCollectionInputNameStore();
+
+  const {
+    setOpen,
+    setSearch,
+    setSelectedVariantId,
+    setSelectedCardId,
+    setDefaultVariantName,
+    setDefaultFoil,
+    setDefaultAmount,
+    setAmount,
+    setFoil,
+  } = useCollectionInputNameStoreActions();
 
   return (
     <Card>
@@ -59,7 +76,9 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
         <CardTitle>Insert cards by name</CardTitle>
         <CardDescription className="flex flex-col gap-2">
           Search for a card, select version and insert it into the collection.
-          <span className="text-xs">Collection id: {collectionId}</span>
+          <span className="text-xs">
+            Collection id: {collectionId} {isSelectedVariant}
+          </span>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -67,48 +86,13 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
           <AccordionItem value="item-1">
             <AccordionTrigger>Inserting defaults</AccordionTrigger>
             <AccordionContent>
-              <div className="grid grid-cols-[auto,1fr] grid-rows-3 gap-4 p-4">
-                <div className="col-span-2">
-                  <Select>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select default version" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Standard">
-                        <b>Standard</b> version by default
-                      </SelectItem>
-                      <SelectItem value="Hyperspace">
-                        <b>Hyperspace</b> version by default
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Switch id="switch-1" />
-                </div>
-                <div className="flex flex-col justify-center">
-                  <label htmlFor="switch-1" className="font-semibold">
-                    Always foil
-                  </label>
-                  <span className="text-sm text-gray-500">
-                    Card will be automatically marked as foil
-                  </span>
-                </div>
-                <div>
-                  <Input
-                    id="amount-input"
-                    name="amount-input"
-                    placeholder=""
-                    className="w-12 px-1 pl-2"
-                    type="number"
-                  />
-                </div>
-                <div className="flex flex-col justify-center">
-                  <label htmlFor="amount-input" className="font-semibold">
-                    Default amount
-                  </label>
-                  <span className="text-sm text-gray-500">Empty or 0 means no default</span>
-                </div>
+              <div className="grid grid-cols-[auto,1fr,auto] grid-rows-3 gap-4 p-4">
+                <DefaultVariantNameSelect
+                  value={defaultVariantName}
+                  onChange={setDefaultVariantName}
+                />
+                <DefaultFoilSwitch value={defaultFoil} onChange={setDefaultFoil} />
+                <DefaultAmountInput value={defaultAmount} onChange={setDefaultAmount} />
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -164,13 +148,11 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                           // setOpen(false);
                         }}
                       >
-                        <img
-                          src={
-                            'https://images.swubase.com/cards/' +
-                            card?.variants[i.defaultVariant]?.image.front
-                          }
-                          alt="card-img"
-                          className="h-20"
+                        <CardImage
+                          size="w75"
+                          card={card}
+                          cardVariantId={i.defaultVariant}
+                          canDisplayBackSide={false}
                         />
                         <span>{card?.name}</span>
                       </CommandItem>
@@ -186,10 +168,11 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                           setOpen(false);
                         }}
                       >
-                        <img
-                          src={'https://images.swubase.com/cards/' + vo.image.front}
-                          alt="card-img"
-                          className="h-20"
+                        <CardImage
+                          size="w75"
+                          card={card}
+                          cardVariantId={vo.variantId}
+                          canDisplayBackSide={false}
                         />
                         <span>{vo.variantName}</span>
                       </CommandItem>
@@ -203,6 +186,23 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
           <span>{selectedCardId}</span>
           <span>{selectedVariantId}</span>
         </div>
+
+        <div className={cn('flex gap-4')}>
+          <div className="h-[279px] w-[200px] min-h-[279px] min-w-[200px] flex items-center justify-center">
+            <CardImage
+              card={card}
+              cardVariantId={variant?.variantId}
+              size={card?.front?.horizontal ? 'w100' : 'w200'}
+              foil={foil}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <FoilSwitch value={foil} onChange={setFoil} />
+            <AmountInput value={amount} onChange={setAmount} />
+          </div>
+        </div>
+
+        <Button className="w-full">Add to collection</Button>
       </CardContent>
     </Card>
   );

@@ -13,13 +13,13 @@ const cardImageVariants = cva('', {
   variants: {
     // This axis controls the base size variant
     size: {
-      original: 'h-[418px] w-[300px]',
-      w200: 'h-[279px] w-[200px]',
-      w100: 'h-[140px] w-[100px]',
-      w75: 'h-[105px] w-[75px]',
-      w50: 'h-[70px] w-[50px]',
-      h350: 'h-[350px] w-[250px]',
-      h250: 'h-[250px] w-[180px]',
+      original: 'h-[418px] w-[300px] min-h-[418px] min-w-[300px]',
+      w200: 'h-[279px] w-[200px] min-h-[279px] min-w-[200px]',
+      w100: 'h-[140px] w-[100px] min-h-[140px] min-w-[100px]',
+      w75: 'h-[105px] w-[75px] min-h-[105px] min-w-[75px]',
+      w50: 'h-[70px] w-[50px] min-h-[70px] min-w-[50px]',
+      h350: 'h-[350px] w-[250px] min-h-[350px] min-w-[250px]',
+      h250: 'h-[250px] w-[180px] min-h-[250px] min-w-[180px]',
     },
     // Orientation: horizontal or not
     horizontal: {
@@ -30,17 +30,37 @@ const cardImageVariants = cva('', {
   // When horizontal is true, swap the width and height for each variant.
   compoundVariants: [
     // For original
-    { size: 'original', horizontal: true, className: 'h-[300px] w-[418px]' },
+    {
+      size: 'original',
+      horizontal: true,
+      className: 'h-[300px] w-[418px] min-h-[300px] min-w-[418px]',
+    },
     // For width-based variants
-    { size: 'w200', horizontal: true, className: 'h-[200px] w-[279px]' },
-    { size: 'w100', horizontal: true, className: 'h-[100px] w-[140px]' },
-    { size: 'w75', horizontal: true, className: 'h-[75px] w-[105px]' },
-    { size: 'w50', horizontal: true, className: 'h-[50px] w-[70px]' },
+    {
+      size: 'w200',
+      horizontal: true,
+      className: 'h-[200px] w-[279px] min-h-[200px] min-w-[279px]',
+    },
+    {
+      size: 'w100',
+      horizontal: true,
+      className: 'h-[100px] w-[140px] min-h-[100px] min-w-[140px]',
+    },
+    { size: 'w75', horizontal: true, className: 'h-[75px] w-[105px] min-h-[75px] min-w-[105px]' },
+    { size: 'w50', horizontal: true, className: 'h-[50px] w-[70px] min-h-[50px] min-w-[70px]' },
     // For height-based variants:
     // For h350 (original: 250x350), horizontal becomes 350x250.
-    { size: 'h350', horizontal: true, className: 'h-[250px] w-[350px]' },
+    {
+      size: 'h350',
+      horizontal: true,
+      className: 'h-[250px] w-[350px] min-h-[250px] min-w-[350px]',
+    },
     // For h250 (original: 180x250), horizontal becomes 250x180.
-    { size: 'h250', horizontal: true, className: 'h-[180px] w-[250px]' },
+    {
+      size: 'h250',
+      horizontal: true,
+      className: 'h-[180px] w-[250px] min-h-[180px] min-w-[250px]',
+    },
   ],
   defaultVariants: {
     size: 'original',
@@ -117,7 +137,7 @@ const CardImage: React.FC<CardImageProps> = ({
               'm-0 p-0',
             )}
           >
-            <CardImage card={card} cardVariantId={cardVariantId} backSide={true} />
+            <CardImage card={card} cardVariantId={cardVariantId} backSide={true} size="original" />
           </PopoverContent>
         </Popover>
       )}

@@ -1,4 +1,4 @@
-import { CardVariant } from '../../../lib/swu-resources/types.ts';
+import { CardVariant } from '../../../../lib/swu-resources/types.ts';
 
 const variantSortValue: Record<string, number | undefined> = {
   Standard: 0,
