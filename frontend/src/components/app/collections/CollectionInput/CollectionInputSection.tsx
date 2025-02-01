@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
-import CollectionInputName from '@/components/app/collections/CollectionInput/CollectionInputName.tsx';
+import CollectionInputName from '@/components/app/collections/CollectionInput/CollectionInputName/CollectionInputName.tsx';
 import CollectionInputNumber from '@/components/app/collections/CollectionInput/CollectionInputNumber.tsx';
 import CollectionInputBulk from '@/components/app/collections/CollectionInput/CollectionInputBulk.tsx';
 
