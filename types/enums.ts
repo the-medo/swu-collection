@@ -9,11 +9,11 @@ export enum CardCondition {
 }
 
 export enum CardLanguage {
-  EN = 'en',
-  DE = 'de',
-  ES = 'es',
-  FR = 'fr',
-  IT = 'it',
+  EN = 'EN',
+  DE = 'DE',
+  ES = 'ES',
+  FR = 'FR',
+  IT = 'IT',
 }
 
 export enum SwuSet {
