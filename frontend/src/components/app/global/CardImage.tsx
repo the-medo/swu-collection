@@ -29,33 +29,36 @@ const cardImageVariants = cva('', {
   },
   // When horizontal is true, swap the width and height for each variant.
   compoundVariants: [
-    // For original
     {
       size: 'original',
       horizontal: true,
       className: 'h-[300px] w-[418px] min-h-[300px] min-w-[418px]',
     },
-    // For width-based variants
     {
       size: 'w200',
       horizontal: true,
-      className: 'h-[200px] w-[279px] min-h-[200px] min-w-[279px]',
+      className: 'h-[144px] w-[200px] min-h-[144px] min-w-[200px]',
     },
     {
       size: 'w100',
       horizontal: true,
-      className: 'h-[100px] w-[140px] min-h-[100px] min-w-[140px]',
+      className: 'h-[72px] w-[100px] min-h-[72px] min-w-[100px]',
     },
-    { size: 'w75', horizontal: true, className: 'h-[75px] w-[105px] min-h-[75px] min-w-[105px]' },
-    { size: 'w50', horizontal: true, className: 'h-[50px] w-[70px] min-h-[50px] min-w-[70px]' },
-    // For height-based variants:
-    // For h350 (original: 250x350), horizontal becomes 350x250.
+    {
+      size: 'w75',
+      horizontal: true,
+      className: 'h-[54px] w-[75px] min-h-[54px] min-w-[75px]',
+    },
+    {
+      size: 'w50',
+      horizontal: true,
+      className: 'h-[36px] w-[50px] min-h-[36px] min-w-[50px]',
+    },
     {
       size: 'h350',
       horizontal: true,
       className: 'h-[250px] w-[350px] min-h-[250px] min-w-[350px]',
     },
-    // For h250 (original: 180x250), horizontal becomes 250x180.
     {
       size: 'h250',
       horizontal: true,
@@ -106,7 +109,7 @@ const CardImage: React.FC<CardImageProps> = ({
   return (
     <div className={cn(classes, 'relative')}>
       <img
-        className="h-full w-full absolute top-0 left-0"
+        className={cn(classes, 'h-full w-full absolute top-0 left-0')}
         src={'https://images.swubase.com/cards/' + (backSide ? img.back : img.front)}
         alt={`card-${card?.cardId}`}
       />
@@ -137,7 +140,13 @@ const CardImage: React.FC<CardImageProps> = ({
               'm-0 p-0',
             )}
           >
-            <CardImage card={card} cardVariantId={cardVariantId} backSide={true} size="original" />
+            <CardImage
+              card={card}
+              cardVariantId={cardVariantId}
+              backSide={true}
+              size="original"
+              foil={foil}
+            />
           </PopoverContent>
         </Popover>
       )}

@@ -29,8 +29,10 @@ const CollectionDetail: React.FC = () => {
         }
         loading={loading}
       />
-      <CollectionContents collectionId={collectionId} />
-      {user?.id === collectionUserId && <CollectionInputSection collectionId={collectionId} />}
+      <div className="flex flex-row gap-4">
+        <CollectionContents collectionId={collectionId} />
+        {user?.id === collectionUserId && <CollectionInputSection collectionId={collectionId} />}
+      </div>
     </>
   );
 };

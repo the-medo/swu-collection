@@ -213,12 +213,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
 
         <div className={cn('flex gap-4')}>
           <div className="h-[279px] w-[200px] min-h-[279px] min-w-[200px] flex items-center justify-center">
-            <CardImage
-              card={card}
-              cardVariantId={variant?.variantId}
-              size={card?.front?.horizontal ? 'w100' : 'w200'}
-              foil={foil}
-            />
+            <CardImage card={card} cardVariantId={variant?.variantId} foil={foil} />
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex gap-2">
