@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/select';
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
-import { Button } from '@/components/ui/button.tsx';
 import { CardCondition } from '../../../../../types/enums.ts';
 import { cardConditionArray } from '../../../../../types/iterableEnumInfo.ts';
 
@@ -21,7 +20,6 @@ export interface CardConditionSelectProps {
 const CardConditionSelect: React.FC<CardConditionSelectProps> = ({
   onChange,
   value,
-  allowClear = true,
   showFullName = false,
 }) => {
   const [cardCondition, setCardCondition] = React.useState<CardCondition | null>(value ?? null);
@@ -36,27 +34,19 @@ const CardConditionSelect: React.FC<CardConditionSelectProps> = ({
     [onChange],
   );
 
-  const onClear = useCallback(() => {
-    onChange(null);
-    setCardCondition(null);
-  }, [onChange]);
-
   return (
-    <div className="flex items-center gap-4">
-      <Select value={cardCondition?.toString() ?? undefined} onValueChange={onChangeHandler}>
-        <SelectTrigger className="w-[300px]">
-          <SelectValue placeholder="Condition" />
-        </SelectTrigger>
-        <SelectContent>
-          {cardConditionArray.map(l => (
-            <SelectItem key={l.condition} value={l.condition.toString()}>
-              {l.condition} {showFullName && `- ${l.fullName}`}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {allowClear && <Button onClick={onClear}>Clear</Button>}
-    </div>
+    <Select value={cardCondition?.toString() ?? undefined} onValueChange={onChangeHandler}>
+      <SelectTrigger>
+        <SelectValue placeholder="Condition" />
+      </SelectTrigger>
+      <SelectContent>
+        {cardConditionArray.map(l => (
+          <SelectItem key={l.condition} value={l.condition.toString()}>
+            {l.shortName} {showFullName && `- ${l.fullName}`}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
 

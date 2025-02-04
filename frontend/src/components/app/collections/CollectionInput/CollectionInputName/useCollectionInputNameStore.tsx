@@ -13,7 +13,6 @@ interface CollectionInputNameStore {
   foil: boolean;
   amount: number;
   note: string;
-
   language: CardLanguage;
   condition: CardCondition;
 
@@ -21,6 +20,8 @@ interface CollectionInputNameStore {
   defaultNote: string;
   defaultFoil: boolean;
   defaultAmount: number | undefined;
+  defaultLanguage: CardLanguage;
+  defaultCondition: CardCondition;
 }
 
 const defaultState: CollectionInputNameStore = {
@@ -31,7 +32,6 @@ const defaultState: CollectionInputNameStore = {
   foil: false,
   amount: 1,
   note: '',
-
   language: CardLanguage.EN,
   condition: CardCondition.NM,
 
@@ -39,6 +39,8 @@ const defaultState: CollectionInputNameStore = {
   defaultNote: '',
   defaultFoil: false,
   defaultAmount: undefined,
+  defaultLanguage: CardLanguage.EN,
+  defaultCondition: CardCondition.NM,
 };
 
 const store = new Store<CollectionInputNameStore>(defaultState);
@@ -49,14 +51,25 @@ const setSelectedCardId = (selectedCardId: string | undefined) =>
   store.setState(state => ({ ...state, selectedCardId }));
 const setSelectedVariantId = (selectedVariantId: string | undefined) =>
   store.setState(state => ({ ...state, selectedVariantId }));
+const setFoil = (foil: boolean) => store.setState(state => ({ ...state, foil }));
+const setAmount = (amount: number) => store.setState(state => ({ ...state, amount }));
+const setNote = (note: string) => store.setState(state => ({ ...state, note }));
+const setLanguage = (language: CardLanguage) => store.setState(state => ({ ...state, language }));
+const setCondition = (condition: CardCondition) =>
+  store.setState(state => ({ ...state, condition }));
+
 const setDefaultVariantName = (defaultVariantName: string) =>
   store.setState(state => ({ ...state, defaultVariantName }));
+const setDefaultNote = (defaultNote: string) =>
+  store.setState(state => ({ ...state, defaultNote }));
 const setDefaultFoil = (defaultFoil: boolean) =>
   store.setState(state => ({ ...state, defaultFoil }));
 const setDefaultAmount = (defaultAmount: number | undefined) =>
   store.setState(state => ({ ...state, defaultAmount }));
-const setFoil = (foil: boolean) => store.setState(state => ({ ...state, foil }));
-const setAmount = (amount: number) => store.setState(state => ({ ...state, amount }));
+const setDefaultLanguage = (defaultLanguage: CardLanguage) =>
+  store.setState(state => ({ ...state, defaultLanguage }));
+const setDefaultCondition = (defaultCondition: CardCondition) =>
+  store.setState(state => ({ ...state, defaultCondition }));
 
 const resetState = () => store.setState(() => ({ ...defaultState }));
 const resetStateWithDefaults = () =>
@@ -65,8 +78,14 @@ const resetStateWithDefaults = () =>
     defaultFoil: state.defaultFoil,
     defaultAmount: state.defaultAmount,
     defaultVariantName: state.defaultVariantName,
+    defaultNote: state.defaultNote,
+    defaultLanguage: state.defaultLanguage,
+    defaultCondition: state.defaultCondition,
+    language: state.defaultLanguage,
+    condition: state.defaultCondition,
     foil: state.defaultFoil ?? false,
     amount: state.defaultAmount ?? 1,
+    note: state.defaultNote ?? '',
   }));
 
 export function useCollectionInputNameStore() {
@@ -74,11 +93,18 @@ export function useCollectionInputNameStore() {
   const search = useStore(store, state => state.search);
   const selectedCardId = useStore(store, state => state.selectedCardId);
   const selectedVariantId = useStore(store, state => state.selectedVariantId);
+  const amount = useStore(store, state => state.amount);
+  const foil = useStore(store, state => state.foil);
+  const note = useStore(store, state => state.note);
+  const language = useStore(store, state => state.language);
+  const condition = useStore(store, state => state.condition);
+
   const defaultVariantName = useStore(store, state => state.defaultVariantName);
   const defaultFoil = useStore(store, state => state.defaultFoil);
   const defaultAmount = useStore(store, state => state.defaultAmount);
-  const amount = useStore(store, state => state.amount);
-  const foil = useStore(store, state => state.foil);
+  const defaultNote = useStore(store, state => state.defaultNote);
+  const defaultLanguage = useStore(store, state => state.defaultLanguage);
+  const defaultCondition = useStore(store, state => state.defaultCondition);
 
   let { data: cardList, isFetching } = useCardList();
 
@@ -141,40 +167,29 @@ export function useCollectionInputNameStore() {
     };
   }, [selectedCardId, selectedVariantId, cardList]);
 
-  return useMemo(
-    () => ({
-      open,
-      search,
-      selectedCardId,
-      selectedVariantId,
-      options,
-      variantOptions,
-      isFetching,
-      cardList,
-      card,
-      defaultVariantName,
-      defaultFoil,
-      defaultAmount,
-      amount,
-      foil,
-    }),
-    [
-      open,
-      search,
-      selectedCardId,
-      selectedVariantId,
-      options,
-      variantOptions,
-      isFetching,
-      cardList,
-      card,
-      defaultVariantName,
-      defaultFoil,
-      defaultAmount,
-      amount,
-      foil,
-    ],
-  );
+  return {
+    open,
+    search,
+    selectedCardId,
+    selectedVariantId,
+    options,
+    variantOptions,
+    isFetching,
+    cardList,
+    card,
+    amount,
+    foil,
+    note,
+    language,
+    condition,
+
+    defaultVariantName,
+    defaultFoil,
+    defaultAmount,
+    defaultNote,
+    defaultLanguage,
+    defaultCondition,
+  };
 }
 
 export function useCollectionInputNameStoreActions() {
@@ -185,9 +200,17 @@ export function useCollectionInputNameStoreActions() {
     setSelectedVariantId,
     setFoil,
     setAmount,
+    setNote,
+    setLanguage,
+    setCondition,
+
     setDefaultVariantName,
     setDefaultFoil,
     setDefaultAmount,
+    setDefaultNote,
+    setDefaultLanguage,
+    setDefaultCondition,
+
     resetState,
     resetStateWithDefaults,
   };

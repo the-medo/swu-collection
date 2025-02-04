@@ -34,7 +34,7 @@ const DefaultVariantNameSelect: React.FC<DefaultVariantNameSelectProps> = ({ val
           </SelectContent>
         </Select>
         {value !== 'empty' && (
-          <Button size="outline" size="icon" onClick={() => onChange('empty')}>
+          <Button variant="outline" size="icon" onClick={() => onChange('empty')}>
             <X size={16} />
           </Button>
         )}

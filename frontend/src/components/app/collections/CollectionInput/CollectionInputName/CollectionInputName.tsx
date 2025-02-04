@@ -13,12 +13,6 @@ import {
   CommandItem,
 } from '@/components/ui/command.tsx';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import {
   useCollectionInputNameStore,
@@ -26,13 +20,15 @@ import {
 } from '@/components/app/collections/CollectionInput/CollectionInputName/useCollectionInputNameStore.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import * as React from 'react';
-import DefaultVariantNameSelect from '@/components/app/collections/CollectionInput/components/DefaultVariantNameSelect.tsx';
-import DefaultFoilSwitch from '@/components/app/collections/CollectionInput/components/DefaultFoilSwitch.tsx';
-import DefaultAmountInput from '@/components/app/collections/CollectionInput/components/DefaultAmountInput.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import AmountInput from '@/components/app/collections/CollectionInput/components/AmountInput.tsx';
 import FoilSwitch from '@/components/app/collections/CollectionInput/components/FoilSwitch.tsx';
 import { cn } from '@/lib/utils.ts';
+import CardLanguageSelect from '@/components/app/global/CardLanguageSelect.tsx';
+import CardConditionSelect from '@/components/app/global/CardConditionSelect.tsx';
+import NoteInput from '@/components/app/collections/CollectionInput/components/NoteInput.tsx';
+import InsertingDefaults from '@/components/app/collections/CollectionInput/CollectionInputName/InsertingDefaults.tsx';
+import { useRef } from 'react';
 
 // https://github.com/pacocoursey/cmdk/discussions/221#discussioncomment-11247291
 
@@ -41,6 +37,9 @@ interface CollectionInputNameProps {
 }
 
 const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId }) => {
+  const amountInputRef = useRef<HTMLInputElement>(null);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+
   const {
     open,
     search,
@@ -50,12 +49,13 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
     variantOptions,
     isFetching,
     cardList,
-    card: { card, variant, isSelectedVariant },
-    defaultVariantName,
-    defaultFoil,
     defaultAmount,
+    card: { card, variant, isSelectedVariant },
     amount,
+    note,
     foil,
+    language,
+    condition,
   } = useCollectionInputNameStore();
 
   const {
@@ -63,10 +63,10 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
     setSearch,
     setSelectedVariantId,
     setSelectedCardId,
-    setDefaultVariantName,
-    setDefaultFoil,
-    setDefaultAmount,
+    setLanguage,
+    setCondition,
     setAmount,
+    setNote,
     setFoil,
   } = useCollectionInputNameStoreActions();
 
@@ -82,21 +82,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
-            <AccordionTrigger>Inserting defaults</AccordionTrigger>
-            <AccordionContent>
-              <div className="grid grid-cols-[auto,1fr,auto] grid-rows-3 gap-4 p-4">
-                <DefaultVariantNameSelect
-                  value={defaultVariantName}
-                  onChange={setDefaultVariantName}
-                />
-                <DefaultFoilSwitch value={defaultFoil} onChange={setDefaultFoil} />
-                <DefaultAmountInput value={defaultAmount} onChange={setDefaultAmount} />
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <InsertingDefaults />
         <Popover open={open}>
           <Command className="border w-[350px]" shouldFilter={false}>
             <PopoverTrigger asChild>
@@ -113,11 +99,9 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                   }}
                   onKeyDown={e => setOpen(e.key !== 'Escape')}
                   onMouseDown={() => {
-                    // setSearch('');
                     setOpen(true);
                   }}
                   onFocus={() => {
-                    // setSearch('');
                     setOpen(true);
                   }}
                 />
@@ -166,6 +150,11 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                         onSelect={() => {
                           setSelectedVariantId(vo.variantId);
                           setOpen(false);
+                          if (defaultAmount) {
+                            addButtonRef.current?.focus();
+                          } else {
+                            amountInputRef.current?.focus();
+                          }
                         }}
                       >
                         <CardImage
@@ -197,12 +186,19 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
             />
           </div>
           <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <CardLanguageSelect value={language} onChange={setLanguage} showFullName={false} />
+              <CardConditionSelect value={condition} onChange={setCondition} showFullName={false} />
+            </div>
             <FoilSwitch value={foil} onChange={setFoil} />
-            <AmountInput value={amount} onChange={setAmount} />
+            <NoteInput value={note} onChange={setNote} />
+            <AmountInput value={amount} onChange={setAmount} ref={amountInputRef} />
           </div>
         </div>
 
-        <Button className="w-full">Add to collection</Button>
+        <Button className="w-full focus:border-2 focus:border-black" ref={addButtonRef}>
+          Add to collection
+        </Button>
       </CardContent>
     </Card>
   );
