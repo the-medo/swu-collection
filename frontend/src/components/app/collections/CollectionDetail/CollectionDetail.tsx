@@ -3,6 +3,7 @@ import { getRouteApi, Link } from '@tanstack/react-router';
 import { useUser } from '@/hooks/useUser';
 import LoadingTitle from '../../global/LoadingTitle';
 import CollectionInputSection from '@/components/app/collections/CollectionInput/CollectionInputSection.tsx';
+import CollectionContents from '@/components/app/collections/CollectionContents/CollectionContents.tsx';
 
 const routeApi = getRouteApi('/collections/$collectionId/');
 
@@ -28,6 +29,7 @@ const CollectionDetail: React.FC = () => {
         }
         loading={loading}
       />
+      <CollectionContents collectionId={collectionId} />
       {user?.id === collectionUserId && <CollectionInputSection collectionId={collectionId} />}
     </>
   );

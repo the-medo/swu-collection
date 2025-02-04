@@ -163,8 +163,10 @@ export const collectionRoute = new Hono<AuthExtension>()
     const isPublic = eq(collectionTable.public, true);
     const isOwner = user ? eq(collectionTable.userId, user.id) : null;
 
+    const { collectionId, ...columns } = getTableColumns(collectionCardTable);
+
     const collectionContents = await db
-      .select({ ...getTableColumns(collectionCardTable) })
+      .select(columns)
       .from(collectionCardTable)
       .innerJoin(collectionTable, eq(collectionCardTable.collectionId, collectionTable.id))
       .where(
