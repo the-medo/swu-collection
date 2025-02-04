@@ -28,7 +28,9 @@ import CardLanguageSelect from '@/components/app/global/CardLanguageSelect.tsx';
 import CardConditionSelect from '@/components/app/global/CardConditionSelect.tsx';
 import NoteInput from '@/components/app/collections/CollectionInput/components/NoteInput.tsx';
 import InsertingDefaults from '@/components/app/collections/CollectionInput/CollectionInputName/InsertingDefaults.tsx';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
+import { usePostCollectionCard } from '@/api/usePostCollectionCard.ts';
+import { cardConditionArray } from '../../../../../../../types/iterableEnumInfo.ts';
 
 // https://github.com/pacocoursey/cmdk/discussions/221#discussioncomment-11247291
 
@@ -39,11 +41,12 @@ interface CollectionInputNameProps {
 const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId }) => {
   const amountInputRef = useRef<HTMLInputElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
+  const mutation = usePostCollectionCard(collectionId);
 
   const {
     open,
     search,
-    // selectedVariantId,
+    selectedVariantId,
     selectedCardId,
     options,
     variantOptions,
@@ -68,7 +71,31 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
     setAmount,
     setNote,
     setFoil,
+    resetStateWithDefaults,
   } = useCollectionInputNameStoreActions();
+
+  const submitHandler = useCallback(async () => {
+    try {
+      console.log('SUBMITTED');
+      if (selectedCardId && selectedVariantId) {
+        await mutation.mutateAsync({
+          cardId: selectedCardId,
+          variantId: selectedVariantId,
+          foil,
+          condition: cardConditionArray.find(c => c.condition === condition)?.numericValue ?? 1,
+          language,
+          amount,
+          note,
+        });
+
+        resetStateWithDefaults();
+      }
+      // Optionally clear the form or show a success message.
+    } catch (error) {
+      // Handle errors here.
+      console.error(error);
+    }
+  }, [selectedCardId, selectedVariantId, foil, condition, language, amount, note]);
 
   return (
     <Card>
@@ -214,8 +241,13 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
           </div>
         </div>
 
-        <Button className="w-full focus:border-2 focus:border-black" ref={addButtonRef}>
-          Add to collection
+        <Button
+          className="w-full focus:border-2 focus:border-black"
+          ref={addButtonRef}
+          disabled={mutation.isPending}
+          onClick={submitHandler}
+        >
+          {mutation.isPending ? '...' : 'Add to collection'}
         </Button>
       </CardContent>
     </Card>

@@ -1,4 +1,3 @@
-import { useUser } from '@/hooks/useUser';
 import { useGetCollectionCards } from '@/api/useGetCollectionCards.ts';
 
 interface CollectionContentsProps {
@@ -6,12 +5,16 @@ interface CollectionContentsProps {
 }
 
 const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId }) => {
-  const user = useUser();
   const { data, isFetching } = useGetCollectionCards(collectionId);
 
   const loading = isFetching;
 
-  return <>{JSON.stringify(data)}</>;
+  return (
+    <>
+      {loading}
+      {JSON.stringify(data)}
+    </>
+  );
 };
 
 export default CollectionContents;

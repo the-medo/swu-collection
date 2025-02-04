@@ -11,6 +11,7 @@ import { zCollectionCreateRequest, zCollectionUpdateRequest } from '../../types/
 import {
   zCollectionCardUpdateRequest,
   zCollectionCardDeleteRequest,
+  zCollectionCardCreateRequest,
 } from '../../types/ZCollectionCard.ts';
 import { selectUser } from './user.ts';
 
@@ -180,7 +181,7 @@ export const collectionRoute = new Hono<AuthExtension>()
    * - only user's collection
    * - in case of amount = 0, delete card from collection
    * */
-  .post('/:id/card', zValidator('json', zCollectionCardUpdateRequest), async c => {
+  .post('/:id/card', zValidator('json', zCollectionCardCreateRequest), async c => {
     const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
     const data = c.req.valid('json');
     const user = c.get('user');
@@ -203,10 +204,13 @@ export const collectionRoute = new Hono<AuthExtension>()
 
     if (data.amount !== undefined && data.amount === 0) {
       const deletedCollectionCard = (
-        await db.delete(collectionCardTable).where(and(...primaryKeyFilters))
+        await db
+          .delete(collectionCardTable)
+          .where(and(...primaryKeyFilters))
+          .returning()
       )[0];
 
-      return c.json({ data: deletedCollectionCard });
+      return c.json({ data: deletedCollectionCard }, 201);
     }
 
     const newCollectionCard = await db
@@ -224,9 +228,10 @@ export const collectionRoute = new Hono<AuthExtension>()
         set: {
           ...data,
         },
-      });
+      })
+      .returning();
 
-    return c.json({ data: newCollectionCard });
+    return c.json({ data: newCollectionCard[0] }, 201);
   })
   /**
    * Remove card(+variant) from collection (wantlist)

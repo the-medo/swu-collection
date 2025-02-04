@@ -6,7 +6,7 @@ export const zCollectionCardSchema = z.object({
   cardId: z.string(),
   variantId: z.string(),
   foil: z.boolean().default(false),
-  condition: z.nativeEnum(CardCondition).default(CardCondition.NM),
+  condition: z.number().int().min(0).max(6),
   language: z.nativeEnum(CardLanguage).default(CardLanguage.EN),
   note: z.string().nullable(),
   amount: z.number().int().min(0),
