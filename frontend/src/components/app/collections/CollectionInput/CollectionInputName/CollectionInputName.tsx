@@ -43,7 +43,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
   const {
     open,
     search,
-    selectedVariantId,
+    // selectedVariantId,
     selectedCardId,
     options,
     variantOptions,
@@ -172,8 +172,16 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
           </Command>
         </Popover>
         <div className="flex flex-col gap-2">
-          <span>{selectedCardId}</span>
-          <span>{selectedVariantId}</span>
+          {variant && (
+            <div className="flex gap-2 justify-between">
+              <div>
+                <span>Version:</span> <span className="font-bold">{variant?.variantName}</span>
+              </div>
+              <div>
+                <span>Set:</span> <span className="font-bold">{variant?.set.toUpperCase()}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className={cn('flex gap-4')}>
@@ -187,8 +195,18 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex gap-2">
-              <CardLanguageSelect value={language} onChange={setLanguage} showFullName={false} />
-              <CardConditionSelect value={condition} onChange={setCondition} showFullName={false} />
+              <CardLanguageSelect
+                value={language}
+                onChange={setLanguage}
+                showFullName={false}
+                emptyOption={false}
+              />
+              <CardConditionSelect
+                value={condition}
+                onChange={setCondition}
+                showFullName={false}
+                emptyOption={false}
+              />
             </div>
             <FoilSwitch value={foil} onChange={setFoil} />
             <NoteInput value={note} onChange={setNote} />

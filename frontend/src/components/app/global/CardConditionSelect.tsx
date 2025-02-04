@@ -10,36 +10,65 @@ import { useCallback, useEffect } from 'react';
 import { CardCondition } from '../../../../../types/enums.ts';
 import { cardConditionArray } from '../../../../../types/iterableEnumInfo.ts';
 
-export interface CardConditionSelectProps {
-  onChange: (v: CardCondition | null) => void;
-  value?: CardCondition | null;
-  allowClear?: boolean;
+export type CardConditionSelectProps = {
   showFullName?: boolean;
-}
+} & (
+  | {
+      value: CardCondition;
+      emptyOption: false;
+      onChange: (v: CardCondition) => void;
+    }
+  | {
+      value: CardCondition | null;
+      emptyOption: true;
+      onChange: (v: CardCondition | null) => void;
+      allowClear?: boolean;
+    }
+);
 
 const CardConditionSelect: React.FC<CardConditionSelectProps> = ({
   onChange,
   value,
+  emptyOption,
   showFullName = false,
 }) => {
-  const [cardCondition, setCardCondition] = React.useState<CardCondition | null>(value ?? null);
+  // When emptyOption is allowed, state can be "empty" or a CardCondition.
+  const [cardCondition, setCardCondition] = React.useState<CardCondition | 'empty'>(
+    value ?? 'empty',
+  );
 
-  useEffect(() => setCardCondition(value ?? null), [value]);
+  useEffect(() => {
+    setCardCondition(value ?? 'empty');
+  }, [value]);
 
   const onChangeHandler = useCallback(
-    (v: string) => {
-      onChange(v as unknown as CardCondition);
-      setCardCondition(v as unknown as CardCondition);
+    (v: CardCondition | 'empty') => {
+      if (!emptyOption && v === 'empty') {
+        throw new Error('Empty option is not allowed');
+      }
+      if (v === 'empty' && emptyOption) {
+        setCardCondition('empty');
+        onChange(null);
+      } else if (v !== 'empty') {
+        setCardCondition(v);
+        onChange(v);
+      }
     },
-    [onChange],
+    [onChange, emptyOption],
   );
 
   return (
-    <Select value={cardCondition?.toString() ?? undefined} onValueChange={onChangeHandler}>
+    <Select
+      value={cardCondition === 'empty' ? undefined : cardCondition}
+      onValueChange={onChangeHandler}
+    >
       <SelectTrigger>
         <SelectValue placeholder="Condition" />
       </SelectTrigger>
       <SelectContent>
+        {emptyOption && (
+          <SelectItem value="empty">{showFullName ? '- no condition -' : '-'}</SelectItem>
+        )}
         {cardConditionArray.map(l => (
           <SelectItem key={l.condition} value={l.condition.toString()}>
             {l.shortName} {showFullName && `- ${l.fullName}`}

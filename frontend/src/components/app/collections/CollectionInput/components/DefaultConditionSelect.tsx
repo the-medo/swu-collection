@@ -7,15 +7,20 @@ import { cardConditionArray } from '../../../../../../../types/iterableEnumInfo.
 import { SelectItem } from '@/components/ui/select.tsx';
 
 interface DefaultLanguageSelectProps {
-  onChange: (v: CardCondition | null) => void;
-  value?: CardCondition | null;
+  onChange: (v: CardCondition) => void;
+  value: CardCondition;
 }
 
 const DefaultLanguageSelect: React.FC<DefaultLanguageSelectProps> = ({ value, onChange }) => {
   return (
     <>
       <div className="col-span-2 flex flex-row gap-4 items-center self-center">
-        <CardConditionSelect value={value} onChange={onChange} showFullName={true} />
+        <CardConditionSelect
+          value={value}
+          onChange={onChange}
+          showFullName={true}
+          emptyOption={false}
+        />
       </div>
       <div className="self-center">
         <Popover>

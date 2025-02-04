@@ -10,26 +10,44 @@ import { useCallback, useEffect } from 'react';
 import { CardLanguage } from '../../../../../types/enums.ts';
 import { languageArray } from '../../../../../types/iterableEnumInfo.ts';
 
-export interface CardLanguageSelectProps {
-  onChange: (v: CardLanguage | null) => void;
-  value?: CardLanguage | null;
-  allowClear?: boolean;
+export type CardLanguageSelectProps = {
   showFullName?: boolean;
-}
+} & (
+  | {
+      value: CardLanguage;
+      emptyOption: false;
+      onChange: (v: CardLanguage) => void;
+    }
+  | {
+      value: CardLanguage | null;
+      emptyOption: true;
+      onChange: (v: CardLanguage | null) => void;
+      allowClear?: boolean;
+    }
+);
 
 const CardLanguageSelect: React.FC<CardLanguageSelectProps> = ({
   onChange,
   value,
+  emptyOption,
   showFullName = false,
 }) => {
-  const [cardLanguage, setCardLanguage] = React.useState<CardLanguage | null>(value ?? null);
+  const [cardLanguage, setCardLanguage] = React.useState<CardLanguage | 'empty'>(value ?? 'empty');
 
-  useEffect(() => setCardLanguage(value ?? null), [value]);
+  useEffect(() => setCardLanguage(value ?? 'empty'), [value]);
 
   const onChangeHandler = useCallback(
-    (v: CardLanguage) => {
-      onChange(v);
-      setCardLanguage(v);
+    (v: CardLanguage | 'empty') => {
+      if (!emptyOption && v === 'empty') {
+        throw new Error('Empty option is not allowed');
+      }
+      if (v === 'empty' && emptyOption) {
+        setCardLanguage('empty');
+        onChange(null);
+      } else if (v !== 'empty') {
+        onChange(v);
+        setCardLanguage(v);
+      }
     },
     [onChange],
   );
@@ -40,6 +58,9 @@ const CardLanguageSelect: React.FC<CardLanguageSelectProps> = ({
         <SelectValue placeholder="Language" />
       </SelectTrigger>
       <SelectContent>
+        {emptyOption && (
+          <SelectItem value="empty">{showFullName ? '- no language -' : '-'}</SelectItem>
+        )}
         {languageArray.map(l => (
           <SelectItem key={l.language} value={l.language}>
             <div className="flex items-center gap-2">

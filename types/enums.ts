@@ -1,11 +1,11 @@
 export enum CardCondition {
-  MINT = 0,
-  NM = 1,
-  EX = 2,
-  GD = 3,
-  LP = 4,
-  PL = 5,
-  PO = 6,
+  MT = 'MT',
+  NM = 'NM',
+  EX = 'EX',
+  GD = 'GD',
+  LP = 'LP',
+  PL = 'PL',
+  PO = 'PO',
 }
 
 export enum CardLanguage {

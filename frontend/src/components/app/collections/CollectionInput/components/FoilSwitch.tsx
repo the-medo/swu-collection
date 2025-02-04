@@ -8,14 +8,12 @@ interface DefaultFoilSwitchProps {
 
 const FoilSwitch: React.FC<DefaultFoilSwitchProps> = ({ value, onChange }) => {
   return (
-    <>
+    <div className="flex flex-row items-center gap-2">
       <label htmlFor="switch-1" className="font-semibold">
         Foil
       </label>
-      <div>
-        <Switch id="switch-1" value={value ? 'on' : 'off'} onCheckedChange={onChange} />
-      </div>
-    </>
+      <Switch id="switch-1" value={value ? 'on' : 'off'} onCheckedChange={onChange} />
+    </div>
   );
 };
 

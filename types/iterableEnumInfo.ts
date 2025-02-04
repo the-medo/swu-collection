@@ -45,7 +45,7 @@ export type CardConditionInfo = {
 
 export const cardConditionArray: CardConditionInfo[] = [
   {
-    condition: CardCondition.MINT,
+    condition: CardCondition.MT,
     fullName: 'Mint',
     shortName: 'MT',
   },

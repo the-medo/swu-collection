@@ -6,15 +6,20 @@ import { CardLanguage } from '../../../../../../../types/enums.ts';
 import { languageArray } from '../../../../../../../types/iterableEnumInfo.ts';
 
 interface DefaultLanguageSelectProps {
-  onChange: (v: CardLanguage | null) => void;
-  value?: CardLanguage | null;
+  onChange: (v: CardLanguage) => void;
+  value: CardLanguage;
 }
 
 const DefaultLanguageSelect: React.FC<DefaultLanguageSelectProps> = ({ value, onChange }) => {
   return (
     <>
       <div className="col-span-2 flex flex-row gap-4 items-center self-center">
-        <CardLanguageSelect value={value} onChange={onChange} showFullName={true} />
+        <CardLanguageSelect
+          value={value}
+          onChange={onChange}
+          showFullName={true}
+          emptyOption={false}
+        />
       </div>
       <div className="self-center">
         <Popover>
