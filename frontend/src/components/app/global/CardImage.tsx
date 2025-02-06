@@ -9,7 +9,7 @@ import { RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
 
 // Base aspect ratio: 300:418 (~0.7177)
-const cardImageVariants = cva('', {
+export const cardImageVariants = cva('', {
   variants: {
     // This axis controls the base size variant
     size: {
@@ -78,6 +78,7 @@ type CardImageProps = {
   canDisplayBackSide?: boolean;
   backSide?: boolean;
   foil?: boolean;
+  forceHorizontal?: boolean;
 } & CardImageVariantProps;
 
 const CardImage: React.FC<CardImageProps> = ({
@@ -87,6 +88,7 @@ const CardImage: React.FC<CardImageProps> = ({
   canDisplayBackSide = true,
   backSide = false,
   foil = false,
+  forceHorizontal = false,
 }) => {
   const img = useMemo(() => {
     if (!card || !cardVariantId) return undefined;
@@ -111,7 +113,7 @@ const CardImage: React.FC<CardImageProps> = ({
       className={cn(
         cardImageVariants({
           size: size || 'original',
-          horizontal: false,
+          horizontal: forceHorizontal,
         }),
         'relative rounded-lg bg-gray-200',
       )}

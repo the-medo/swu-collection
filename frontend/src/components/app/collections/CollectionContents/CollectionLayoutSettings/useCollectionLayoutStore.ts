@@ -11,14 +11,14 @@ export enum CollectionGroupBy {
   RARITY = 'rarity',
   ASPECT = 'aspect',
   CARD_TYPE = 'card_type',
-  VERSION_NAME = 'version_name',
+  VARIANT_NAME = 'variant_name',
 }
 
 export const GROUP_BY_OPTIONS = [
   { value: CollectionGroupBy.RARITY, label: 'Rarity' },
   { value: CollectionGroupBy.ASPECT, label: 'Aspect' },
   { value: CollectionGroupBy.CARD_TYPE, label: 'Card Type' },
-  { value: CollectionGroupBy.VERSION_NAME, label: 'Version Name' },
+  { value: CollectionGroupBy.VARIANT_NAME, label: 'Variant Name' },
 ];
 export type GroupByOptions = (typeof GROUP_BY_OPTIONS)[number];
 
@@ -28,7 +28,7 @@ export enum CollectionSortBy {
   CARD_COST = 'card_cost',
   RARITY = 'rarity',
   ASPECT = 'aspect',
-  VERSION_NAME = 'version_name',
+  VARIANT_NAME = 'variant_name',
 }
 
 interface CollectionLayoutStore {
