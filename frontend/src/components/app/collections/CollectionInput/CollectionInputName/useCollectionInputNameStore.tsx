@@ -112,7 +112,7 @@ export function useCollectionInputNameStore() {
     if (!cardList) return [];
     let s = search?.toLowerCase() ?? '';
     const filteredOptions: { cardId: string; variantIds: string[]; defaultVariant: string }[] = [];
-    cardList.cardIds.find(i => {
+    cardList.cardIds?.find(i => {
       const card = cardList.cards[i];
       if (card?.name.toLowerCase().includes(s)) {
         const variantIds = Object.keys(card.variants);

@@ -9,7 +9,7 @@ export type CardListResponse = {
 
 export const useCardList = (): UseQueryResult<CardListResponse> => {
   return useQuery({
-    queryKey: ['countries'],
+    queryKey: ['cardList'],
     queryFn: async () => {
       const response = await api.cards.$get();
       if (!response.ok) {

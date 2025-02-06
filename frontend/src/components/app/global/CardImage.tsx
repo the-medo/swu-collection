@@ -107,9 +107,17 @@ const CardImage: React.FC<CardImageProps> = ({
   if (!img) return <Skeleton className={cn(classes, 'rounded-xl')} />;
 
   return (
-    <div className={cn(classes, 'relative')}>
+    <div
+      className={cn(
+        cardImageVariants({
+          size: size || 'original',
+          horizontal: false,
+        }),
+        'relative rounded-xl bg-gray-400',
+      )}
+    >
       <img
-        className={cn(classes, 'h-full w-full absolute top-0 left-0')}
+        className={cn(classes, ' absolute top-0 left-0')}
         src={'https://images.swubase.com/cards/' + (backSide ? img.back : img.front)}
         alt={`card-${card?.cardId}`}
       />

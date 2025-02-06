@@ -1,6 +1,7 @@
 import { useGetCollectionCards } from '@/api/useGetCollectionCards.ts';
 import { useCardList } from '@/api/useCardList.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
+import CollectionLayout from '@/components/app/collections/CollectionContents/CollectionLayout/CollectionLayout.tsx';
 
 interface CollectionContentsProps {
   collectionId: string;
@@ -18,6 +19,7 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
     <div className="flex flex-col gap-2">
       {loading}
       {JSON.stringify(data)}
+      <CollectionLayout />
       <div className="flex gap-4">
         {cards.map(c => {
           const card = cardList?.cards[c.cardId];
