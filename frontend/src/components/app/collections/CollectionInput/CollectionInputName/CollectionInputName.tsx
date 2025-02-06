@@ -31,6 +31,9 @@ import InsertingDefaults from '@/components/app/collections/CollectionInput/Coll
 import { useCallback, useRef } from 'react';
 import { usePostCollectionCard } from '@/api/usePostCollectionCard.ts';
 import { cardConditionArray } from '../../../../../../../types/iterableEnumInfo.ts';
+import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
+import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
+import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 
 // https://github.com/pacocoursey/cmdk/discussions/221#discussioncomment-11247291
 
@@ -39,6 +42,7 @@ interface CollectionInputNameProps {
 }
 
 const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId }) => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const amountInputRef = useRef<HTMLInputElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const mutation = usePostCollectionCard(collectionId);
@@ -76,7 +80,6 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
 
   const submitHandler = useCallback(async () => {
     try {
-      console.log('SUBMITTED');
       if (selectedCardId && selectedVariantId) {
         await mutation.mutateAsync({
           cardId: selectedCardId,
@@ -87,8 +90,8 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
           amount,
           note,
         });
-
         resetStateWithDefaults();
+        searchInputRef.current?.focus();
       }
       // Optionally clear the form or show a success message.
     } catch (error) {
@@ -131,6 +134,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                   onFocus={() => {
                     setOpen(true);
                   }}
+                  ref={searchInputRef}
                 />
               )}
             </PopoverTrigger>
@@ -148,7 +152,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
               <CommandList>
                 <CommandEmpty>No results found.</CommandEmpty>
                 {!selectedCardId &&
-                  options.map(i => {
+                  options?.map(i => {
                     const card = cardList?.cards[i.cardId];
                     return (
                       <CommandItem
@@ -165,12 +169,26 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                           cardVariantId={i.defaultVariant}
                           canDisplayBackSide={false}
                         />
-                        <span>{card?.name}</span>
+                        <div className="flex flex-col gap-2 w-full">
+                          <span className="font-medium">{card?.name}</span>
+                          <div className="flex gap-2 w-full justify-between">
+                            <span>{card?.type}</span>
+                            <div className="flex gap-2">
+                              {card?.cost !== null ? (
+                                <CostIcon cost={card?.cost ?? 0} size="medium" />
+                              ) : null}
+                              {card?.aspects.map(a => <AspectIcon aspect={a} size="medium" />)}
+                              {card?.rarity ? (
+                                <RarityIcon rarity={card.rarity} size="small" />
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
                       </CommandItem>
                     );
                   })}
                 {selectedCardId &&
-                  variantOptions.map(vo => {
+                  variantOptions?.map(vo => {
                     return (
                       <CommandItem
                         key={vo.variantId}

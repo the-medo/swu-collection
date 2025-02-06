@@ -113,11 +113,11 @@ const CardImage: React.FC<CardImageProps> = ({
           size: size || 'original',
           horizontal: false,
         }),
-        'relative rounded-xl bg-gray-400',
+        'relative rounded-lg bg-gray-200',
       )}
     >
       <img
-        className={cn(classes, ' absolute top-0 left-0')}
+        className={cn(classes, ' absolute top-[50%] left-0 transform -translate-y-1/2')}
         src={'https://images.swubase.com/cards/' + (backSide ? img.back : img.front)}
         alt={`card-${card?.cardId}`}
       />

@@ -18,20 +18,20 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
   return (
     <div className="flex flex-col gap-2">
       {loading}
-      {JSON.stringify(data)}
       <CollectionLayoutSettings />
-      <div className="flex gap-4">
+      <div className="flex gap-4 flex-wrap">
         {cards.map(c => {
           const card = cardList?.cards[c.cardId];
           // const variant = card?.variants[c.variantId];
 
           return (
-            <div className="max-w-[200px]">
+            <div className="max-w-[200px]" key={`${c.variantId}-${c.foil}`}>
               <CardImage card={card} cardVariantId={c.variantId} size="w200" foil={c.foil} />
             </div>
           );
         })}
       </div>
+      {JSON.stringify(data)}
     </div>
   );
 };

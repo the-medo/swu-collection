@@ -40,7 +40,7 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
     // On success, update the cache for the GET query.
     onSuccess: result => {
       // result should be something like { data: newCard }
-      queryClient.setQueryData(['collection-content', collectionId], (oldData: any) => {
+      queryClient.setQueryData(['collection-content', collectionId], oldData => {
         // If there's no data cached yet, initialize with the new card.
         if (!oldData) {
           return { data: [result.data] };
