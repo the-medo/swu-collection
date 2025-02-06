@@ -1,6 +1,6 @@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
 import { Grip, LayoutGrid, LayoutList, Rows4 } from 'lucide-react';
-import { CollectionLayout } from '@/components/app/collections/CollectionContents/CollectionLayout/useCollectionLayoutStore.ts';
+import { CollectionLayout } from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
 import { useCallback } from 'react';
 
 interface CollectionLayoutToggleGroupProps {

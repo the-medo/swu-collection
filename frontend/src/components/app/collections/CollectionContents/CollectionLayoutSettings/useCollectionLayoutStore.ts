@@ -14,6 +14,14 @@ export enum CollectionGroupBy {
   VERSION_NAME = 'version_name',
 }
 
+export const GROUP_BY_OPTIONS = [
+  { value: CollectionGroupBy.RARITY, label: 'Rarity' },
+  { value: CollectionGroupBy.ASPECT, label: 'Aspect' },
+  { value: CollectionGroupBy.CARD_TYPE, label: 'Card Type' },
+  { value: CollectionGroupBy.VERSION_NAME, label: 'Version Name' },
+];
+export type GroupByOptions = (typeof GROUP_BY_OPTIONS)[number];
+
 export enum CollectionSortBy {
   CARD_TYPE = 'card_type',
   CARD_NAME = 'card_name',
