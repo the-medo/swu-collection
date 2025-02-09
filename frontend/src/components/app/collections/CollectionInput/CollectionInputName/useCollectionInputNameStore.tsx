@@ -1,7 +1,7 @@
 import { Store, useStore } from '@tanstack/react-store';
 import { useCardList } from '@/api/useCardList.ts';
 import { useMemo } from 'react';
-import { variantSorter } from '@/lib/cards/variantSorter.ts';
+import { variants } from '@/lib/cards/variants.ts';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 import { CardCondition, CardLanguage } from '../../../../../../../types/enums.ts';
 
@@ -138,7 +138,7 @@ export function useCollectionInputNameStore() {
     if (!card) return [];
     const variantIds = Object.keys(card.variants);
 
-    return variantIds.map(vid => card.variants[vid]!).sort(variantSorter);
+    return variantIds.map(vid => card.variants[vid]!).sort(variants);
   }, [cardList, selectedCardId]);
 
   const card = useMemo(() => {

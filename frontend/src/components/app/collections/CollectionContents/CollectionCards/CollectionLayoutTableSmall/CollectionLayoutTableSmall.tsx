@@ -1,6 +1,7 @@
 import { useCardList } from '@/api/useCardList.ts';
 import type { CollectionCard } from '../../../../../../../../types/CollectionCard.ts';
-import { Skeleton } from '@/components/ui/skeleton.tsx';
+import { useCollectionCardTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/useCollectionCardTableColumns.tsx';
+import { DataTable } from '@/components/ui/data-table.tsx';
 
 interface CollectionLayoutTableSmallProps {
   cards: CollectionCard[];
@@ -9,30 +10,13 @@ interface CollectionLayoutTableSmallProps {
 
 const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({ cards }) => {
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
+  const columns = useCollectionCardTableColumns({
+    cardList: cardList?.cards,
+  });
 
   const loading = isFetchingCardList;
 
-  return (
-    <div className="flex gap-4 flex-wrap">
-      {cards.map(c => {
-        const card = cardList?.cards[c.cardId];
-
-        if (loading) {
-          return (
-            <div className="w-full flex ">
-              <Skeleton key={c.variantId} className="w-full rounded-md" />
-            </div>
-          );
-        }
-
-        return (
-          <div className="w-full flex gap-4 ">
-            <span className="font-medium">{card?.name}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
+  return <DataTable columns={columns} data={cards} loading={loading} />;
 };
 
 export default CollectionLayoutTableSmall;
