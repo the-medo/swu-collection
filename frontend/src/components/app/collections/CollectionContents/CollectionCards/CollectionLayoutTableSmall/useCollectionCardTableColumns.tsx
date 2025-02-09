@@ -12,6 +12,9 @@ import { CardCondition, CardLanguage } from '../../../../../../../../types/enums
 import { languageRenderer } from '@/lib/table/languageRenderer.tsx';
 import { conditionRenderer } from '@/lib/table/conditionRenderer.tsx';
 import { variantRenderer } from '@/lib/table/variantRenderer.tsx';
+import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
+import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
+import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 
 interface CollectionCardTableColumnsProps {
   cardList: CardList | undefined;
@@ -32,6 +35,25 @@ export function useCollectionCardTableColumns({
       cell: ({ getValue }) => {
         const amount = getValue() as number;
         return <Input value={amount} type="number" className="w-20" />;
+      },
+    });
+
+    definitions.push({
+      id: 'cardId',
+      accessorKey: 'cardId',
+      header: 'Cost',
+      cell: ({ getValue }) => {
+        const cardId = getValue() as string;
+
+        const card = cardList?.[cardId];
+        if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+
+        return (
+          <div className="flex gap-1">
+            {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
+            {card?.aspects.map(a => <AspectIcon aspect={a} size="small" />)}
+          </div>
+        );
       },
     });
 
@@ -98,6 +120,49 @@ export function useCollectionCardTableColumns({
       accessorKey: 'condition',
       header: 'Cond.',
       cell: ({ getValue }) => conditionRenderer(getValue() as CardCondition),
+    });
+
+    definitions.push({
+      id: 'cardId',
+      accessorKey: 'cardId',
+      header: 'Set',
+      cell: ({ getValue, row }) => {
+        const cardId = getValue() as string;
+        const variantId = row.original.variantId;
+
+        const card = cardList?.[cardId];
+        if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+        const variant = card.variants[variantId];
+
+        return (
+          <span className="text-xs font-medium text-gray-500">{variant?.set.toUpperCase()}</span>
+        );
+      },
+    });
+
+    definitions.push({
+      id: 'cardId',
+      accessorKey: 'cardId',
+      header: 'R.',
+      cell: ({ getValue }) => {
+        const cardId = getValue() as string;
+
+        const card = cardList?.[cardId];
+        if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+
+        return <RarityIcon rarity={card.rarity} size="small" />;
+      },
+    });
+
+    definitions.push({
+      id: 'note',
+      accessorKey: 'note',
+      header: 'Note',
+      cell: ({ getValue }) => {
+        const note = getValue() as string;
+
+        return <span className="text-sm text-gray-500">{note}</span>;
+      },
     });
 
     /*definitions.push({
