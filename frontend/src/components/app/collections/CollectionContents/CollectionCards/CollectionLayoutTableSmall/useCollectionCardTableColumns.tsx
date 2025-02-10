@@ -127,6 +127,22 @@ export function useCollectionCardTableColumns({
     definitions.push({
       id: 'cardId',
       accessorKey: 'cardId',
+      header: 'Card No.',
+      cell: ({ getValue, row }) => {
+        const cardId = getValue() as string;
+        const variantId = row.original.variantId;
+
+        const card = cardList?.[cardId];
+        if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+        const variant = card.variants[variantId];
+
+        return <span className="text-xs text-gray-500">{variant?.cardNo}</span>;
+      },
+    });
+
+    definitions.push({
+      id: 'cardId',
+      accessorKey: 'cardId',
       header: 'Set',
       cell: ({ getValue, row }) => {
         const cardId = getValue() as string;

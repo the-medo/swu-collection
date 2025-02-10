@@ -54,8 +54,8 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
 
   return (
     <>
-      <Accordion type="multiple" className="pl-4" defaultValue={cardGroupData.sortedIds}>
-        {cardGroupData.sortedIds.map(id => {
+      <Accordion type="multiple" className="pl-4" defaultValue={cardGroupData?.sortedIds}>
+        {cardGroupData?.sortedIds.map(id => {
           const cards = cardGroupData.groups[id]?.cards ?? [];
           const label = cardGroupData.groups[id]?.label;
           const title = parentTitle !== '' ? `${parentTitle} - ${label}` : label;

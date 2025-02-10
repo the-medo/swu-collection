@@ -21,6 +21,9 @@ export type Currency = {
 export type CurrencyList = Record<CurrencyCode, Currency>;
 
 const cardList = cardListData as unknown as CardList;
+Object.entries(cardList).forEach(([cardId, card]) => {
+  card?.aspects.sort((a, b) => (['Heroism', 'Villainy'].includes(a) ? 1 : -1));
+});
 
 const countryList = {} as CountryList;
 countryData.forEach(p => {

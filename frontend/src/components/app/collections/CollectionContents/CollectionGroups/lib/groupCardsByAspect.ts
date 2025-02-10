@@ -50,8 +50,10 @@ export const groupCardsByAspect = (cardList: CardList, cards: CollectionCard[]):
       if (aspects.length === 0) {
         groups.NoAspect?.cards.push(card);
       } else {
-        aspects.forEach(a => {
-          groups[a]?.cards.push(card);
+        aspects.forEach((a, i) => {
+          if (i === 0 || aspects[i - 1] !== a) {
+            groups[a]?.cards.push(card);
+          }
         });
       }
     }
