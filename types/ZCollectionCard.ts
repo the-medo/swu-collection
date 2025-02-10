@@ -28,18 +28,23 @@ export const zCollectionCardCreateRequest = zCollectionCardSchema
     amount: true,
   });
 
-export const zCollectionCardUpdateRequest = zCollectionCardSchema
-  .omit({
-    collectionId: true, //part of api route
-  })
-  .partial()
-  .required({
-    cardId: true,
-    variantId: true,
-    foil: true,
-    condition: true,
-    language: true,
-  });
+export const zCollectionCardUpdateRequest = z.object({
+  id: zCollectionCardSchema
+    .pick({
+      cardId: true,
+      variantId: true,
+      foil: true,
+      condition: true,
+      language: true,
+    })
+    .required(),
+  data: zCollectionCardSchema
+    .omit({
+      collectionId: true,
+      cardId: true,
+    })
+    .partial(),
+});
 
 export const zCollectionCardDeleteRequest = zCollectionCardSchema
   .pick({

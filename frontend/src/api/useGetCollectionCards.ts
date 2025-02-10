@@ -1,8 +1,13 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { CollectionCard } from '../../../types/CollectionCard.ts';
+
+export interface CollectionCardResponse {
+  data: CollectionCard[];
+}
 
 export const useGetCollectionCards = (collectionId: string | undefined) => {
-  return useQuery({
+  return useQuery<CollectionCardResponse>({
     queryKey: ['collection-content', collectionId],
     queryFn: collectionId
       ? async () => {
