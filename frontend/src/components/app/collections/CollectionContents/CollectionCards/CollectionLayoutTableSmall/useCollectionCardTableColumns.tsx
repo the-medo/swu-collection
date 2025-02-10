@@ -6,7 +6,7 @@ import { CardList } from '../../../../../../../../lib/swu-resources/types.ts';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
-import { Star } from 'lucide-react';
+import { NotebookPen, Star } from 'lucide-react';
 import { CardCondition, CardLanguage } from '../../../../../../../../types/enums.ts';
 import { languageRenderer } from '@/lib/table/languageRenderer.tsx';
 import { conditionRenderer } from '@/lib/table/conditionRenderer.tsx';
@@ -15,24 +15,26 @@ import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 import {
-  CollectionCardIdentification,
   getCollectionCardIdentificationKey,
   usePutCollectionCard,
 } from '@/api/usePutCollectionCard.ts';
 import CollectionCardInput, {
   CollectionCardInputProps,
 } from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
+import { getIdentificationFromCollectionCard } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 
 interface CollectionCardTableColumnsProps {
   collectionId: string;
   cardList: CardList | undefined;
   currency?: string;
+  owned?: boolean;
 }
 
 export function useCollectionCardTableColumns({
   collectionId,
   cardList,
   currency = '',
+  owned = false,
 }: CollectionCardTableColumnsProps): ColumnDef<CollectionCard>[] {
   const { data: currencyData } = useCurrencyList();
   const mutation = usePutCollectionCard(collectionId);
@@ -56,24 +58,22 @@ export function useCollectionCardTableColumns({
       header: 'Qty',
       cell: ({ getValue, row }) => {
         const amount = getValue() as number;
-        const id: CollectionCardIdentification = {
-          cardId: row.original.cardId,
-          variantId: row.original.variantId,
-          foil: row.original.foil,
-          condition: Number(row.original.condition),
-          language: row.original.language,
-        };
 
-        return (
-          // @ts-ignore
-          <CollectionCardInput
-            key={getCollectionCardIdentificationKey(id)}
-            id={id}
-            field="amount"
-            value={amount}
-            onChange={onChange}
-          />
-        );
+        if (owned) {
+          const id = getIdentificationFromCollectionCard(row.original);
+          return (
+            // @ts-ignore
+            <CollectionCardInput
+              key={getCollectionCardIdentificationKey(id)}
+              id={id}
+              field="amount"
+              value={amount}
+              onChange={onChange}
+            />
+          );
+        }
+
+        return <div className="font-medium text-right w-8">{amount}</div>;
       },
     });
 
@@ -213,30 +213,70 @@ export function useCollectionCardTableColumns({
       id: 'note',
       accessorKey: 'note',
       header: 'Note',
-      cell: ({ getValue }) => {
+      cell: ({ getValue, row }) => {
         const note = getValue() as string;
 
-        return <span className="text-sm text-gray-500">{note}</span>;
+        if (owned) {
+          const id = getIdentificationFromCollectionCard(row.original);
+
+          return (
+            // @ts-ignore
+            <CollectionCardInput
+              key={getCollectionCardIdentificationKey(id)}
+              id={id}
+              field="note"
+              value={note}
+              onChange={onChange}
+            />
+          );
+        }
+
+        if (note === '') return null;
+
+        return (
+          <div className="text-sm text-gray-500 relative group w-20 flex gap-1 items-center">
+            <NotebookPen className="max-w-3 min-w-3 max-h-3 min-h-3" />
+            <span
+              className="text-left truncate max-w-full text-ellipsis overflow-hidden whitespace-nowrap"
+              title={note}
+            >
+              {note}
+            </span>
+            <span className="invisible absolute bottom-6 left-0 z-10 w-max bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:visible group-hover:opacity-100">
+              {note}
+            </span>
+          </div>
+        );
       },
     });
 
     definitions.push({
       accessorKey: 'price',
       header: 'Price',
-      cell: ({ getValue }) => {
-        const price = getValue() as number;
+      cell: ({ getValue, row }) => {
+        const price = getValue() as number | undefined;
+        const id = getIdentificationFromCollectionCard(row.original);
 
-        return price ? (
-          <div>
-            {price}
-            {currency}
+        return (
+          <div className="flex gap-2 items-center w-full justify-end">
+            {owned ? (
+              //@ts-ignore
+              <CollectionCardInput
+                key={getCollectionCardIdentificationKey(id)}
+                id={id}
+                field="price"
+                value={price}
+                onChange={onChange}
+              />
+            ) : (
+              <span>{price}</span>
+            )}
+            <span>{price ? currency : '-'}</span>
           </div>
-        ) : (
-          '-'
         );
       },
     });
 
     return definitions;
-  }, [cardList, currencyData, currency]);
+  }, [cardList, currencyData, currency, owned]);
 }

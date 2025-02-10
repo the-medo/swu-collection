@@ -15,18 +15,22 @@ export type CollectionCardInputProps = {
       onChange: (id: CollectionCardIdentification, field: 'amount', value: number) => void;
     }
   | {
-      field: 'amount2' | 'price';
+      field: 'amount2';
       value: number | undefined;
       onChange: (
         id: CollectionCardIdentification,
-        field: 'amount2' | 'price',
+        field: 'amount2',
         value: number | undefined,
       ) => void;
     }
   | {
-      field: 'note';
-      value: string;
-      onChange: (id: CollectionCardIdentification, field: 'note', value: string) => void;
+      field: 'note' | 'price';
+      value: string | undefined;
+      onChange: (
+        id: CollectionCardIdentification,
+        field: 'note' | 'price',
+        value: string | undefined,
+      ) => void;
     }
 );
 
@@ -58,7 +62,7 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let newValue = undefined;
 
-    if (field === 'note') {
+    if (field === 'note' || field === 'price') {
       newValue = event.target.value;
     } else if (field === 'amount') {
       newValue = Number(event.target.value);
@@ -79,7 +83,11 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
     <Input
       id={key}
       placeholder=""
-      className={cn({ 'w-16 px-1 pl-2': field !== 'note' })}
+      className={cn({
+        'w-16 h-8 px-1 pl-2 text-right': field === 'amount' || field === 'amount2',
+        'w-24 h-8 px-1 pl-2 text-right': field === 'price',
+        'h-8': field === 'note',
+      })}
       type={field === 'note' ? 'text' : 'number'}
       value={inputValue}
       onChange={handleChange}

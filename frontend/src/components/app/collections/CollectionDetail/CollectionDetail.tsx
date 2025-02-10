@@ -14,6 +14,7 @@ const CollectionDetail: React.FC = () => {
 
   const collectionUserId = data?.user.id ?? '';
   const loading = isFetching;
+  const owned = user?.id === collectionUserId;
 
   return (
     <>
@@ -30,8 +31,8 @@ const CollectionDetail: React.FC = () => {
         loading={loading}
       />
       <div className="flex flex-row gap-4">
-        <CollectionContents collectionId={collectionId} />
-        {user?.id === collectionUserId && <CollectionInputSection collectionId={collectionId} />}
+        <CollectionContents collectionId={collectionId} owned={owned} />
+        {owned && <CollectionInputSection collectionId={collectionId} />}
       </div>
     </>
   );

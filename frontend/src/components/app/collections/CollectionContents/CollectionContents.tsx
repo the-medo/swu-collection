@@ -5,9 +5,10 @@ import { CollectionCard } from '../../../../../../types/CollectionCard.ts';
 
 interface CollectionContentsProps {
   collectionId: string;
+  owned: boolean;
 }
 
-const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId }) => {
+const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId, owned }) => {
   const { data } = useGetCollectionCards(collectionId);
 
   const cards = (data?.data ?? []) as unknown as CollectionCard[];
@@ -15,7 +16,7 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
   return (
     <div className="flex flex-col gap-2 w-full">
       <CollectionLayoutSettings />
-      <CollectionGroups depth={0} cards={cards} collectionId={collectionId} />
+      <CollectionGroups depth={0} cards={cards} collectionId={collectionId} owned={owned} />
     </div>
   );
 };

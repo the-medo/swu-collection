@@ -5,12 +5,14 @@ import { DataTable } from '@/components/ui/data-table.tsx';
 
 interface CollectionLayoutTableSmallProps {
   collectionId: string;
+  owned: boolean;
   cards: CollectionCard[];
   horizontal?: boolean;
 }
 
 const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({
   collectionId,
+  owned,
   cards,
 }) => {
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
@@ -18,6 +20,7 @@ const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({
     collectionId,
     cardList: cardList?.cards,
     currency: 'Kč',
+    owned,
   });
 
   const loading = isFetchingCardList;

@@ -20,6 +20,7 @@ import * as React from 'react';
 
 interface CollectionGroupsProps {
   collectionId: string;
+  owned: boolean;
   cards: CollectionCard[];
   depth: number;
   horizontal?: boolean;
@@ -28,6 +29,7 @@ interface CollectionGroupsProps {
 
 const CollectionGroups: React.FC<CollectionGroupsProps> = ({
   collectionId,
+  owned,
   cards,
   depth,
   horizontal = false,
@@ -52,9 +54,10 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
     } else if (layout === CollectionLayout.TABLE_SMALL) {
       return (
         <CollectionLayoutTableSmall
+          collectionId={collectionId}
+          owned={owned}
           cards={cards}
           horizontal={horizontal}
-          collectionId={collectionId}
         />
       );
     }
@@ -80,6 +83,7 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
                   horizontal={horizontal || cardGroupData.groups[id]?.horizontal}
                   parentTitle={title}
                   collectionId={collectionId}
+                  owned={owned}
                 />
               </AccordionContent>
             </AccordionItem>
