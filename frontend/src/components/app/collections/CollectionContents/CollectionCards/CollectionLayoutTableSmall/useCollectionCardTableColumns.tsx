@@ -14,7 +14,11 @@ import { variantRenderer } from '@/lib/table/variantRenderer.tsx';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
-import { CollectionCardIdentification, usePutCollectionCard } from '@/api/usePutCollectionCard.ts';
+import {
+  CollectionCardIdentification,
+  getCollectionCardIdentificationKey,
+  usePutCollectionCard,
+} from '@/api/usePutCollectionCard.ts';
 import CollectionCardInput, {
   CollectionCardInputProps,
 } from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
@@ -33,6 +37,7 @@ export function useCollectionCardTableColumns({
   const { data: currencyData } = useCurrencyList();
   const mutation = usePutCollectionCard(collectionId);
 
+  // @ts-ignore
   const onChange: CollectionCardInputProps['onChange'] = useCallback(async (id, field, value) => {
     await mutation.mutateAsync({
       id: id,
@@ -59,8 +64,16 @@ export function useCollectionCardTableColumns({
           language: row.original.language,
         };
 
-        // @ts-ignore
-        return <CollectionCardInput id={id} field="amount" value={amount} onChange={onChange} />;
+        return (
+          // @ts-ignore
+          <CollectionCardInput
+            key={getCollectionCardIdentificationKey(id)}
+            id={id}
+            field="amount"
+            value={amount}
+            onChange={onChange}
+          />
+        );
       },
     });
 

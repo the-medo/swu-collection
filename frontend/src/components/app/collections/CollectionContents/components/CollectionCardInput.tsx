@@ -1,15 +1,13 @@
 import * as React from 'react';
 import { Input } from '@/components/ui/input.tsx';
-import {
-  CollectionCardIdentification,
-  getCollectionCardIdentificationKey,
-} from '@/api/usePutCollectionCard.ts';
+import { CollectionCardIdentification } from '@/api/usePutCollectionCard.ts';
 import { cn } from '@/lib/utils.ts';
 import debounce from 'lodash.debounce';
 import { useEffect } from 'react';
 
 export type CollectionCardInputProps = {
   id: CollectionCardIdentification;
+  key: string;
 } & (
   | {
       field: 'amount';
@@ -34,15 +32,15 @@ export type CollectionCardInputProps = {
 
 export type CollectionCardInputField = CollectionCardInputProps['field'];
 
-const DEBOUNCE_DELAY = 300;
+const DEBOUNCE_DELAY = 500;
 
 const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   id,
+  key,
   field,
   value,
   onChange,
 }) => {
-  const key = getCollectionCardIdentificationKey(id);
   const [inputValue, setInputValue] = React.useState<string | number | undefined>(value);
 
   useEffect(() => {
@@ -58,18 +56,17 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue =
-      field === 'note' ? event.target.value : Number(event.target.value) || undefined;
+    let newValue = undefined;
+
+    if (field === 'note') {
+      newValue = event.target.value;
+    } else if (field === 'amount') {
+      newValue = Number(event.target.value);
+    } else {
+      newValue = Number(event.target.value) || undefined;
+    }
     setInputValue(newValue);
     debouncedOnChange(newValue);
-
-    /*if (field === 'note') {
-      onChange(id, field, event.target.value);
-    } else if (field === 'amount') {
-      onChange(id, field, Number(event.target.value));
-    } else {
-      onChange(id, field, Number(event.target.value) || undefined);
-    }*/
   };
 
   useEffect(() => {
@@ -82,7 +79,7 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
     <Input
       id={key}
       placeholder=""
-      className={cn({ 'w-12 px-1 pl-2': field !== 'note' })}
+      className={cn({ 'w-16 px-1 pl-2': field !== 'note' })}
       type={field === 'note' ? 'text' : 'number'}
       value={inputValue}
       onChange={handleChange}

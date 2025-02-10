@@ -3,6 +3,7 @@ import { api } from '@/lib/api.ts';
 import { CardLanguage } from '../../../types/enums.ts';
 import { CollectionCardResponse } from './useGetCollectionCards.ts';
 import { CollectionCard } from '../../../types/CollectionCard.ts';
+import { toast } from '@/hooks/use-toast.ts';
 
 // Define the shape of the card data you're sending to the POST endpoint.
 export type CardUpdateData = {
@@ -33,7 +34,11 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
       });
 
       if (!response.ok) {
-        throw new Error('Something went wrong while adding the card');
+        throw new Error(
+          response.statusText === 'Internal Server Error'
+            ? 'Something went wrong while updating the card'
+            : response.statusText,
+        );
       }
 
       return response.json() as unknown as { data: CollectionCard };
@@ -84,6 +89,13 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
           };
         },
       );
+    },
+    onError: error => {
+      toast({
+        variant: 'destructive',
+        title: 'Error while inserting the card',
+        description: (error as Error).toString(),
+      });
     },
   });
 };

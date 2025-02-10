@@ -49,7 +49,11 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
       });
 
       if (!response.ok) {
-        throw new Error('Something went wrong while adding the card');
+        throw new Error(
+          response.statusText === 'Internal Server Error'
+            ? 'Something went wrong while updating the card'
+            : response.statusText,
+        );
       }
 
       return response.json() as unknown as { data: CollectionCard };
@@ -101,6 +105,13 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
           };
         },
       );
+    },
+    onError: error => {
+      toast({
+        variant: 'destructive',
+        title: 'Error while updating the card',
+        description: (error as Error).toString(),
+      });
     },
   });
 };
