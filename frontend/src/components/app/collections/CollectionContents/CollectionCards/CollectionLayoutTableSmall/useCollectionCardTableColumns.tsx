@@ -18,10 +18,12 @@ import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 
 interface CollectionCardTableColumnsProps {
   cardList: CardList | undefined;
+  currency?: string;
 }
 
 export function useCollectionCardTableColumns({
   cardList,
+  currency = '',
 }: CollectionCardTableColumnsProps): ColumnDef<CollectionCard>[] {
   const { data: currencyData } = useCurrencyList();
 
@@ -34,7 +36,7 @@ export function useCollectionCardTableColumns({
       header: 'Qty',
       cell: ({ getValue }) => {
         const amount = getValue() as number;
-        return <Input value={amount} type="number" className="w-20" />;
+        return <Input value={amount} type="number" className="w-12 px-1 pl-2" />;
       },
     });
 
@@ -165,21 +167,23 @@ export function useCollectionCardTableColumns({
       },
     });
 
-    /*definitions.push({
-      accessorKey: 'user.currency',
-      header: 'Currency',
-      cell: ({ row }) => {
-        const currencyCode = row.original.user.currency as CurrencyCode;
-        const currency = currencyData?.currencies[currencyCode];
+    definitions.push({
+      accessorKey: 'price',
+      header: 'Price',
+      cell: ({ getValue }) => {
+        const price = getValue() as number;
 
-        return (
+        return price ? (
           <div>
-            {currency?.code} ({currency?.symbol})
+            {price}
+            {currency}
           </div>
+        ) : (
+          '-'
         );
       },
-    });*/
+    });
 
     return definitions;
-  }, [cardList, currencyData]);
+  }, [cardList, currencyData, currency]);
 }

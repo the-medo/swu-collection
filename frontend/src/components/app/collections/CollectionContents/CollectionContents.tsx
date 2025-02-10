@@ -13,7 +13,7 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
   const cards = (data?.data ?? []) as unknown as CollectionCard[];
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 w-full">
       <CollectionLayoutSettings />
       <CollectionGroups depth={0} cards={cards} />
     </div>

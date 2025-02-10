@@ -12,6 +12,7 @@ const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
   const columns = useCollectionCardTableColumns({
     cardList: cardList?.cards,
+    currency: 'Kč',
   });
 
   const loading = isFetchingCardList;
