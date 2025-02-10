@@ -1,8 +1,7 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useCurrencyList } from '@/api/useCurrencyList.ts';
 import type { CollectionCard } from '../../../../../../../../types/CollectionCard.ts';
-import { Input } from '@/components/ui/input.tsx';
 import { CardList } from '../../../../../../../../lib/swu-resources/types.ts';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
@@ -15,17 +14,33 @@ import { variantRenderer } from '@/lib/table/variantRenderer.tsx';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
+import { CollectionCardIdentification, usePutCollectionCard } from '@/api/usePutCollectionCard.ts';
+import CollectionCardInput, {
+  CollectionCardInputProps,
+} from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
 
 interface CollectionCardTableColumnsProps {
+  collectionId: string;
   cardList: CardList | undefined;
   currency?: string;
 }
 
 export function useCollectionCardTableColumns({
+  collectionId,
   cardList,
   currency = '',
 }: CollectionCardTableColumnsProps): ColumnDef<CollectionCard>[] {
   const { data: currencyData } = useCurrencyList();
+  const mutation = usePutCollectionCard(collectionId);
+
+  const onChange: CollectionCardInputProps['onChange'] = useCallback(async (id, field, value) => {
+    await mutation.mutateAsync({
+      id: id,
+      data: {
+        [field]: value,
+      },
+    });
+  }, []);
 
   return useMemo(() => {
     const definitions: ColumnDef<CollectionCard>[] = [];
@@ -34,14 +49,23 @@ export function useCollectionCardTableColumns({
       id: 'amount',
       accessorKey: 'amount',
       header: 'Qty',
-      cell: ({ getValue }) => {
+      cell: ({ getValue, row }) => {
         const amount = getValue() as number;
-        return <Input value={amount} type="number" className="w-12 px-1 pl-2" />;
+        const id: CollectionCardIdentification = {
+          cardId: row.original.cardId,
+          variantId: row.original.variantId,
+          foil: row.original.foil,
+          condition: Number(row.original.condition),
+          language: row.original.language,
+        };
+
+        // @ts-ignore
+        return <CollectionCardInput id={id} field="amount" value={amount} onChange={onChange} />;
       },
     });
 
     definitions.push({
-      id: 'cardId',
+      id: 'cost',
       accessorKey: 'cardId',
       header: 'Cost',
       cell: ({ getValue }) => {
@@ -53,7 +77,7 @@ export function useCollectionCardTableColumns({
         return (
           <div className="flex gap-1">
             {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
-            {card?.aspects.map(a => <AspectIcon aspect={a} size="small" />)}
+            {card?.aspects.map((a, i) => <AspectIcon key={`${a}${i}`} aspect={a} size="small" />)}
           </div>
         );
       },
@@ -125,7 +149,7 @@ export function useCollectionCardTableColumns({
     });
 
     definitions.push({
-      id: 'cardId',
+      id: 'cardNo',
       accessorKey: 'cardId',
       header: 'Card No.',
       cell: ({ getValue, row }) => {
@@ -141,7 +165,7 @@ export function useCollectionCardTableColumns({
     });
 
     definitions.push({
-      id: 'cardId',
+      id: 'set',
       accessorKey: 'cardId',
       header: 'Set',
       cell: ({ getValue, row }) => {
@@ -159,7 +183,7 @@ export function useCollectionCardTableColumns({
     });
 
     definitions.push({
-      id: 'cardId',
+      id: 'rarity',
       accessorKey: 'cardId',
       header: 'R.',
       cell: ({ getValue }) => {

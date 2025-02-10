@@ -4,13 +4,18 @@ import { useCollectionCardTableColumns } from '@/components/app/collections/Coll
 import { DataTable } from '@/components/ui/data-table.tsx';
 
 interface CollectionLayoutTableSmallProps {
+  collectionId: string;
   cards: CollectionCard[];
   horizontal?: boolean;
 }
 
-const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({ cards }) => {
+const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({
+  collectionId,
+  cards,
+}) => {
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
   const columns = useCollectionCardTableColumns({
+    collectionId,
     cardList: cardList?.cards,
     currency: 'Kč',
   });

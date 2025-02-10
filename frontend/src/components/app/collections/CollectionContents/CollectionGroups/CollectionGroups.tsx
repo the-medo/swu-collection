@@ -19,6 +19,7 @@ import {
 import * as React from 'react';
 
 interface CollectionGroupsProps {
+  collectionId: string;
   cards: CollectionCard[];
   depth: number;
   horizontal?: boolean;
@@ -26,6 +27,7 @@ interface CollectionGroupsProps {
 }
 
 const CollectionGroups: React.FC<CollectionGroupsProps> = ({
+  collectionId,
   cards,
   depth,
   horizontal = false,
@@ -48,7 +50,13 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
     } else if (layout === CollectionLayout.TABLE_IMAGE) {
       return <CollectionLayoutTableImage cards={cards} horizontal={horizontal} />;
     } else if (layout === CollectionLayout.TABLE_SMALL) {
-      return <CollectionLayoutTableSmall cards={cards} horizontal={horizontal} />;
+      return (
+        <CollectionLayoutTableSmall
+          cards={cards}
+          horizontal={horizontal}
+          collectionId={collectionId}
+        />
+      );
     }
   }
 
@@ -71,6 +79,7 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
                   cards={cards}
                   horizontal={horizontal || cardGroupData.groups[id]?.horizontal}
                   parentTitle={title}
+                  collectionId={collectionId}
                 />
               </AccordionContent>
             </AccordionItem>

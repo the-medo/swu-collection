@@ -15,7 +15,7 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
   return (
     <div className="flex flex-col gap-2 w-full">
       <CollectionLayoutSettings />
-      <CollectionGroups depth={0} cards={cards} />
+      <CollectionGroups depth={0} cards={cards} collectionId={collectionId} />
     </div>
   );
 };

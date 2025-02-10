@@ -3,6 +3,7 @@ import { api } from '@/lib/api.ts';
 import { CardLanguage } from '../../../types/enums.ts';
 import { CollectionCardResponse } from './useGetCollectionCards.ts';
 import { CollectionCard } from '../../../types/CollectionCard.ts';
+import { toast } from '@/hooks/use-toast.ts';
 
 export type CollectionCardIdentification = {
   cardId: string;
@@ -12,12 +13,16 @@ export type CollectionCardIdentification = {
   language: CardLanguage;
 };
 
+export const getCollectionCardIdentificationKey = (id: CollectionCardIdentification) => {
+  return `${id.cardId}:${id.variantId}:${id.foil}:${id.condition}:${id.language}`;
+};
+
 export type CollectionCardUpdateData = {
-  variantId: string;
-  foil: boolean;
-  condition: number;
-  language: CardLanguage;
-  amount: number;
+  variantId?: string;
+  foil?: boolean;
+  condition?: number;
+  language?: CardLanguage;
+  amount?: number;
   note?: string;
   amount2?: number | null;
   price?: string | null;
@@ -72,6 +77,10 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
 
           if (cardIndex >= 0) {
             const updatedCard = result.data;
+
+            toast({
+              title: `Updated!`,
+            });
 
             return {
               ...oldData,

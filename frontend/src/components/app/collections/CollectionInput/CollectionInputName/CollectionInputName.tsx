@@ -177,7 +177,9 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                               {card?.cost !== null ? (
                                 <CostIcon cost={card?.cost ?? 0} size="medium" />
                               ) : null}
-                              {card?.aspects.map(a => <AspectIcon aspect={a} size="medium" />)}
+                              {card?.aspects.map((a, i) => (
+                                <AspectIcon key={`${a}${i}`} aspect={a} size="medium" />
+                              ))}
                               {card?.rarity ? (
                                 <RarityIcon rarity={card.rarity} size="small" />
                               ) : null}
