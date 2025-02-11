@@ -20,6 +20,7 @@ export enum SwuSet {
   SOR = 'sor',
   TWI = 'twi',
   SHD = 'shd',
+  JTL = 'jtl',
 }
 
 export enum SwuAspect {

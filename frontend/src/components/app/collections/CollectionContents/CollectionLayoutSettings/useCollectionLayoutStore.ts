@@ -9,16 +9,22 @@ export enum CollectionLayout {
 
 export enum CollectionGroupBy {
   RARITY = 'rarity',
-  ASPECT = 'aspect',
+  ASPECT_SOFT = 'aspect-soft',
+  ASPECT_HARD = 'aspect-hard',
   CARD_TYPE = 'card_type',
   VARIANT_NAME = 'variant_name',
+  SET = 'set',
+  COST = 'cost',
 }
 
 export const GROUP_BY_OPTIONS = [
   { value: CollectionGroupBy.RARITY, label: 'Rarity' },
-  { value: CollectionGroupBy.ASPECT, label: 'Aspect' },
+  { value: CollectionGroupBy.ASPECT_SOFT, label: 'Aspect (soft)' },
+  { value: CollectionGroupBy.ASPECT_HARD, label: 'Aspect (hard)' },
   { value: CollectionGroupBy.CARD_TYPE, label: 'Card Type' },
   { value: CollectionGroupBy.VARIANT_NAME, label: 'Variant Name' },
+  { value: CollectionGroupBy.SET, label: 'Set' },
+  { value: CollectionGroupBy.COST, label: 'Cost' },
 ];
 export type GroupByOptions = (typeof GROUP_BY_OPTIONS)[number];
 

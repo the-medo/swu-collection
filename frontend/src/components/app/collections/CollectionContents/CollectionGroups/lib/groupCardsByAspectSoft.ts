@@ -5,7 +5,10 @@ import {
   CardGroups,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 
-export const groupCardsByAspect = (cardList: CardList, cards: CollectionCard[]): CardGroupData => {
+export const groupCardsByAspectSoft = (
+  cardList: CardList,
+  cards: CollectionCard[],
+): CardGroupData => {
   const groups: CardGroups = {
     Vigilance: {
       id: 'Vigilance',
