@@ -39,12 +39,21 @@ export enum CollectionSortBy {
 
 interface CollectionLayoutStore {
   layout: CollectionLayout;
+  collectionInfo: Record<
+    string,
+    | {
+        currency: string;
+        owned: boolean;
+      }
+    | undefined
+  >;
   groupBy: CollectionGroupBy[];
   sortBy: CollectionSortBy[];
 }
 
 const defaultState: CollectionLayoutStore = {
   layout: CollectionLayout.TABLE_SMALL,
+  collectionInfo: {},
   groupBy: [],
   sortBy: [],
 };
@@ -52,6 +61,11 @@ const defaultState: CollectionLayoutStore = {
 const store = new Store<CollectionLayoutStore>(defaultState);
 
 const setLayout = (layout: CollectionLayout) => store.setState(state => ({ ...state, layout }));
+const setCollectionInfo = (collectionId: string, currency: string, owned: boolean) =>
+  store.setState(state => ({
+    ...state,
+    collectionInfo: { ...state.collectionInfo, [collectionId]: { currency, owned } },
+  }));
 const addGroupBy = (newGroupBy: CollectionGroupBy) =>
   store.setState(state => {
     if (state.groupBy.includes(newGroupBy)) return state;
@@ -91,6 +105,10 @@ export function useCollectionLayoutStore() {
   };
 }
 
+export function useCollectionInfo(collectionId: string) {
+  return useStore(store, state => state.collectionInfo[collectionId]);
+}
+
 export function useCollectionLayoutStoreActions() {
   return {
     setLayout,
@@ -100,5 +118,6 @@ export function useCollectionLayoutStoreActions() {
     addSortBy,
     removeSortBy,
     changeSortBy,
+    setCollectionInfo,
   };
 }

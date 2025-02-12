@@ -1,60 +1,31 @@
 import { useCardList } from '@/api/useCardList.ts';
-import CardImage, { cardImageVariants } from '@/components/app/global/CardImage.tsx';
 import type { CollectionCard } from '../../../../../../../../types/CollectionCard.ts';
-import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { cn } from '@/lib/utils.ts';
+import { useCollectionCardTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/useCollectionCardTableColumns.tsx';
+import { DataTable } from '@/components/ui/data-table.tsx';
+import { CollectionLayout } from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
 
 interface CollectionLayoutTableImageProps {
+  collectionId: string;
   cards: CollectionCard[];
   horizontal?: boolean;
 }
 
 const CollectionLayoutTableImage: React.FC<CollectionLayoutTableImageProps> = ({
+  collectionId,
   cards,
   horizontal = false,
 }) => {
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
+  const columns = useCollectionCardTableColumns({
+    collectionId,
+    cardList: cardList?.cards,
+    layout: CollectionLayout.TABLE_IMAGE,
+    forceHorizontal: horizontal,
+  });
 
   const loading = isFetchingCardList;
 
-  return (
-    <div className="flex gap-4 flex-wrap">
-      {cards.map(c => {
-        const card = cardList?.cards[c.cardId];
-
-        if (loading) {
-          return (
-            <div className="w-full flex gap-4 ">
-              <Skeleton
-                key={c.variantId}
-                className={cn(
-                  cardImageVariants({
-                    size: 'w50',
-                    horizontal: false,
-                  }),
-                  'rounded-lg',
-                )}
-              />
-              <Skeleton key={c.variantId} className="w-full rounded-md" />
-            </div>
-          );
-        }
-
-        return (
-          <div className="w-full flex gap-4 ">
-            <CardImage
-              card={card}
-              cardVariantId={c.variantId}
-              size="w50"
-              foil={c.foil}
-              forceHorizontal={horizontal}
-            />
-            <span className="font-medium">{card?.name}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
+  return <DataTable columns={columns} data={cards} loading={loading} />;
 };
 
 export default CollectionLayoutTableImage;

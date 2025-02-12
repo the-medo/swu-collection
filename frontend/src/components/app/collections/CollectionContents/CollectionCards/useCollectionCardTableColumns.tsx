@@ -1,13 +1,13 @@
 import { useCallback, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useCurrencyList } from '@/api/useCurrencyList.ts';
-import type { CollectionCard } from '../../../../../../../../types/CollectionCard.ts';
-import { CardList } from '../../../../../../../../lib/swu-resources/types.ts';
+import type { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
+import { CardList } from '../../../../../../../lib/swu-resources/types.ts';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { NotebookPen, Star } from 'lucide-react';
-import { CardCondition, CardLanguage } from '../../../../../../../../types/enums.ts';
+import { CardCondition, CardLanguage } from '../../../../../../../types/enums.ts';
 import { languageRenderer } from '@/lib/table/languageRenderer.tsx';
 import { conditionRenderer } from '@/lib/table/conditionRenderer.tsx';
 import { variantRenderer } from '@/lib/table/variantRenderer.tsx';
@@ -22,22 +22,35 @@ import CollectionCardInput, {
   CollectionCardInputProps,
 } from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
 import { getIdentificationFromCollectionCard } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
+import {
+  CollectionLayout,
+  useCollectionInfo,
+} from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
 
 interface CollectionCardTableColumnsProps {
   collectionId: string;
   cardList: CardList | undefined;
-  currency?: string;
-  owned?: boolean;
+  layout: CollectionLayout;
+  forceHorizontal?: boolean;
 }
 
 export function useCollectionCardTableColumns({
   collectionId,
   cardList,
-  currency = '',
-  owned = false,
+  layout,
+  forceHorizontal = false,
 }: CollectionCardTableColumnsProps): ColumnDef<CollectionCard>[] {
   const { data: currencyData } = useCurrencyList();
   const mutation = usePutCollectionCard(collectionId);
+  const collectionInfo = useCollectionInfo(collectionId);
+
+  let currency = '-';
+  let owned = false;
+
+  if (collectionInfo) {
+    currency = collectionInfo.currency;
+    owned = collectionInfo.owned;
+  }
 
   // @ts-ignore
   const onChange: CollectionCardInputProps['onChange'] = useCallback(async (id, field, value) => {
@@ -51,6 +64,28 @@ export function useCollectionCardTableColumns({
 
   return useMemo(() => {
     const definitions: ColumnDef<CollectionCard>[] = [];
+
+    if (layout === CollectionLayout.TABLE_IMAGE) {
+      definitions.push({
+        id: 'image',
+        accessorKey: 'cardId',
+        header: '',
+        cell: ({ row }) => {
+          const card = cardList?.[row.original.cardId];
+
+          return (
+            // @ts-ignore
+            <CardImage
+              card={card}
+              cardVariantId={row.original.variantId}
+              size="w50"
+              foil={row.original.foil}
+              forceHorizontal={forceHorizontal}
+            />
+          );
+        },
+      });
+    }
 
     definitions.push({
       id: 'amount',
@@ -77,24 +112,26 @@ export function useCollectionCardTableColumns({
       },
     });
 
-    definitions.push({
-      id: 'cost',
-      accessorKey: 'cardId',
-      header: 'Cost',
-      cell: ({ getValue }) => {
-        const cardId = getValue() as string;
+    if (layout === CollectionLayout.TABLE_SMALL) {
+      definitions.push({
+        id: 'cost',
+        accessorKey: 'cardId',
+        header: 'Cost',
+        cell: ({ getValue }) => {
+          const cardId = getValue() as string;
 
-        const card = cardList?.[cardId];
-        if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+          const card = cardList?.[cardId];
+          if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
 
-        return (
-          <div className="flex gap-1">
-            {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
-            {card?.aspects.map((a, i) => <AspectIcon key={`${a}${i}`} aspect={a} size="small" />)}
-          </div>
-        );
-      },
-    });
+          return (
+            <div className="flex gap-1">
+              {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
+              {card?.aspects.map((a, i) => <AspectIcon key={`${a}${i}`} aspect={a} size="small" />)}
+            </div>
+          );
+        },
+      });
+    }
 
     definitions.push({
       id: 'cardId',
@@ -111,10 +148,26 @@ export function useCollectionCardTableColumns({
         return (
           <HoverCard openDelay={0} closeDelay={0}>
             <HoverCardTrigger>
-              <span>{card.name}</span>
+              <div className="flex py-1 gap-1 flex-col">
+                <span>{card.name}</span>
+                {layout === CollectionLayout.TABLE_IMAGE && (
+                  <div className="flex gap-1">
+                    {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
+                    {card?.aspects.map((a, i) => (
+                      <AspectIcon key={`${a}${i}`} aspect={a} size="small" />
+                    ))}
+                  </div>
+                )}
+              </div>
             </HoverCardTrigger>
             <HoverCardContent side="right" className=" w-fit">
-              <CardImage card={card} cardVariantId={variantId} size="w200" foil={foil} />
+              <CardImage
+                card={card}
+                cardVariantId={variantId}
+                size={card?.front?.horizontal ? 'h350' : 'w200'}
+                foil={foil}
+                forceHorizontal={card?.front?.horizontal}
+              />
             </HoverCardContent>
           </HoverCard>
         );
@@ -278,5 +331,5 @@ export function useCollectionCardTableColumns({
     });
 
     return definitions;
-  }, [cardList, currencyData, currency, owned]);
+  }, [cardList, currencyData, currency, owned, layout, forceHorizontal]);
 }
