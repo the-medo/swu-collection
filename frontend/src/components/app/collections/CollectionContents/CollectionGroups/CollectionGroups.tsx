@@ -44,7 +44,13 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
 
   if (depth === groupBy.length) {
     if (layout === CollectionLayout.IMAGE_BIG) {
-      return <CollectionLayoutImageBig cards={cards} horizontal={horizontal} />;
+      return (
+        <CollectionLayoutImageBig
+          collectionId={collectionId}
+          cards={cards}
+          horizontal={horizontal}
+        />
+      );
     } else if (layout === CollectionLayout.IMAGE_SMALL) {
       return <CollectionLayoutImageSmall cards={cards} horizontal={horizontal} />;
     } else if (layout === CollectionLayout.TABLE_IMAGE) {

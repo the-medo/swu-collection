@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useCurrencyList } from '@/api/useCurrencyList.ts';
 import type { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
@@ -6,7 +6,7 @@ import { CardList } from '../../../../../../../lib/swu-resources/types.ts';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
-import { NotebookPen, Star } from 'lucide-react';
+import { NotebookPen } from 'lucide-react';
 import { CardCondition, CardLanguage } from '../../../../../../../types/enums.ts';
 import { languageRenderer } from '@/lib/table/languageRenderer.tsx';
 import { conditionRenderer } from '@/lib/table/conditionRenderer.tsx';
@@ -14,18 +14,15 @@ import { variantRenderer } from '@/lib/table/variantRenderer.tsx';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
-import {
-  getCollectionCardIdentificationKey,
-  usePutCollectionCard,
-} from '@/api/usePutCollectionCard.ts';
-import CollectionCardInput, {
-  CollectionCardInputProps,
-} from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
+import { getCollectionCardIdentificationKey } from '@/api/usePutCollectionCard.ts';
+import CollectionCardInput from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
 import { getIdentificationFromCollectionCard } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import {
   CollectionLayout,
   useCollectionInfo,
 } from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
+import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
+import { foilRenderer } from '@/lib/table/foilRenderer.tsx';
 
 interface CollectionCardTableColumnsProps {
   collectionId: string;
@@ -41,26 +38,8 @@ export function useCollectionCardTableColumns({
   forceHorizontal = false,
 }: CollectionCardTableColumnsProps): ColumnDef<CollectionCard>[] {
   const { data: currencyData } = useCurrencyList();
-  const mutation = usePutCollectionCard(collectionId);
-  const collectionInfo = useCollectionInfo(collectionId);
-
-  let currency = '-';
-  let owned = false;
-
-  if (collectionInfo) {
-    currency = collectionInfo.currency;
-    owned = collectionInfo.owned;
-  }
-
-  // @ts-ignore
-  const onChange: CollectionCardInputProps['onChange'] = useCallback(async (id, field, value) => {
-    await mutation.mutateAsync({
-      id: id,
-      data: {
-        [field]: value,
-      },
-    });
-  }, []);
+  const { currency, owned } = useCollectionInfo(collectionId);
+  const onChange = useCollectionCardInput(collectionId);
 
   return useMemo(() => {
     const definitions: ColumnDef<CollectionCard>[] = [];
@@ -193,11 +172,7 @@ export function useCollectionCardTableColumns({
       id: 'foil',
       accessorKey: 'foil',
       header: 'F',
-      cell: ({ getValue }) => {
-        const foil = getValue() as boolean;
-
-        return foil ? <Star className="w-4 h-4 text-yellow-600" /> : null;
-      },
+      cell: ({ getValue }) => foilRenderer(getValue() as boolean),
     });
 
     definitions.push({

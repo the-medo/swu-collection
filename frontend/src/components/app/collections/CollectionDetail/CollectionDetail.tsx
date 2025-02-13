@@ -21,7 +21,7 @@ const CollectionDetail: React.FC = () => {
   const owned = user?.id === collectionUserId;
 
   useEffect(() => {
-    setCollectionInfo(collectionId, collectionCurrency ?? '-', owned);
+    setCollectionInfo(collectionId, collectionCurrency ?? '-', false);
   }, [owned, collectionCurrency]);
 
   return (

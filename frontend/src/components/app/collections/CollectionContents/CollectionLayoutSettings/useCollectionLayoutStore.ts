@@ -106,7 +106,9 @@ export function useCollectionLayoutStore() {
 }
 
 export function useCollectionInfo(collectionId: string) {
-  return useStore(store, state => state.collectionInfo[collectionId]);
+  return (
+    useStore(store, state => state.collectionInfo[collectionId]) ?? { currency: '-', owned: false }
+  );
 }
 
 export function useCollectionLayoutStoreActions() {
