@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { CardDataWithVariants, CardListVariants } from '../../../../../lib/swu-resources/types.ts';
-import { useMemo } from 'react';
+import { PropsWithChildren, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
@@ -79,7 +79,8 @@ type CardImageProps = {
   backSide?: boolean;
   foil?: boolean;
   forceHorizontal?: boolean;
-} & CardImageVariantProps;
+} & CardImageVariantProps &
+  PropsWithChildren;
 
 const CardImage: React.FC<CardImageProps> = ({
   card,
@@ -89,6 +90,7 @@ const CardImage: React.FC<CardImageProps> = ({
   backSide = false,
   foil = false,
   forceHorizontal = false,
+  children,
 }) => {
   const img = useMemo(() => {
     if (!card || !cardVariantId) return undefined;
@@ -130,6 +132,7 @@ const CardImage: React.FC<CardImageProps> = ({
           alt={`card-${card?.cardId}`}
         />
       )}
+      {children ?? null}
       {canDisplayBackSide && hasBack && !backSide && (
         <Popover>
           <PopoverTrigger>

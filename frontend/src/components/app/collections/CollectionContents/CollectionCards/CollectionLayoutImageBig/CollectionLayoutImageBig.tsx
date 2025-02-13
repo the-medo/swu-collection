@@ -52,15 +52,44 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
         const id = getIdentificationFromCollectionCard(c);
 
         return (
-          <div className="max-w-[200px] flex flex-col gap-1" key={`${c.variantId}-${c.foil}`}>
+          <div
+            className="max-w-[200px] flex flex-col gap-1 rounded-lg bg-gray-200"
+            key={`${c.variantId}-${c.foil}`}
+          >
             <CardImage
               card={card}
               cardVariantId={c.variantId}
+              canDisplayBackSide={false}
               size="w200"
               foil={c.foil}
               forceHorizontal={horizontal}
-            />
-            <div className="flex items-center gap-1 w-full">
+            >
+              {(c.price || owned) && (
+                <div className="absolute bottom-0 right-0 w-fit min-w-20 flex grow-0 items-center gap-1 bg-gray-200 bg-opacity-80 py-2 px-2 mr-0 mb-0">
+                  <div className="flex gap-2 items-center w-full justify-end">
+                    {owned ? (
+                      //@ts-ignore
+                      <CollectionCardInput
+                        key={getCollectionCardIdentificationKey(id)}
+                        id={id}
+                        field="price"
+                        value={c.price}
+                        onChange={onChange}
+                      />
+                    ) : (
+                      <span>{c.price}</span>
+                    )}
+                    <span>{currency}</span>
+                  </div>
+                </div>
+              )}
+            </CardImage>
+            <div className="flex items-center gap-1 p-2 pt-0 pb-1 w-full">
+              <div className="flex items-center gap-1 w-full">
+                {foilRenderer(c.foil)}
+                {conditionRenderer(c.condition)}
+                {languageRenderer(c.language, false)}
+              </div>
               <div>
                 {owned ? (
                   // @ts-ignore
@@ -72,27 +101,9 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
                     onChange={onChange}
                   />
                 ) : (
-                  <div className="font-medium text-right w-8">{c.amount}</div>
+                  <div className="font-bold text-center px-2 rounded-lg bg-white">{c.amount}x</div>
                 )}
               </div>
-              {foilRenderer(c.foil)}
-              {conditionRenderer(c.condition)}
-              {languageRenderer(c.language, false)}
-            </div>
-            <div className="flex gap-2 items-center w-full justify-end">
-              {owned ? (
-                //@ts-ignore
-                <CollectionCardInput
-                  key={getCollectionCardIdentificationKey(id)}
-                  id={id}
-                  field="price"
-                  value={c.price}
-                  onChange={onChange}
-                />
-              ) : (
-                <span>{c.price}</span>
-              )}
-              <span>{c.price ? currency : '-'}</span>
             </div>
           </div>
         );
