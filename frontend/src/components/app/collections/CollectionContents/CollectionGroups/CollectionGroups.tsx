@@ -52,7 +52,13 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
         />
       );
     } else if (layout === CollectionLayout.IMAGE_SMALL) {
-      return <CollectionLayoutImageSmall cards={cards} horizontal={horizontal} />;
+      return (
+        <CollectionLayoutImageSmall
+          collectionId={collectionId}
+          cards={cards}
+          horizontal={horizontal}
+        />
+      );
     } else if (layout === CollectionLayout.TABLE_IMAGE) {
       return (
         <CollectionLayoutTableImage

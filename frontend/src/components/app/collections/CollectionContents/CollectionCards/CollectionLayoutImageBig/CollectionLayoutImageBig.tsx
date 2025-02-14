@@ -59,7 +59,7 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
             <CardImage
               card={card}
               cardVariantId={c.variantId}
-              canDisplayBackSide={false}
+              backSideButton={'left'}
               size="w200"
               foil={c.foil}
               forceHorizontal={horizontal}

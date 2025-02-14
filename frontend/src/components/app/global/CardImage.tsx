@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { CardDataWithVariants, CardListVariants } from '../../../../../lib/swu-resources/types.ts';
-import { PropsWithChildren, useMemo } from 'react';
+import { PropsWithChildren } from 'react';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
@@ -75,7 +75,7 @@ type CardImageVariantProps = Omit<VariantProps<typeof cardImageVariants>, 'horiz
 type CardImageProps = {
   card?: CardDataWithVariants<CardListVariants>;
   cardVariantId?: string;
-  canDisplayBackSide?: boolean;
+  backSideButton?: false | 'mid' | 'left' | 'right';
   backSide?: boolean;
   foil?: boolean;
   forceHorizontal?: boolean;
@@ -86,19 +86,13 @@ const CardImage: React.FC<CardImageProps> = ({
   card,
   cardVariantId,
   size = 'w200',
-  canDisplayBackSide = true,
+  backSideButton = 'mid',
   backSide = false,
   foil = false,
   forceHorizontal = false,
   children,
 }) => {
-  const img = useMemo(() => {
-    if (!card || !cardVariantId) return undefined;
-    const v = card.variants[cardVariantId];
-
-    return v?.image;
-  }, [card, cardVariantId]);
-
+  const img = card?.variants[cardVariantId ?? '']?.image;
   const horizontalFront = card?.front.horizontal ?? false;
   const horizontalBack = card?.back?.horizontal ?? false;
   const hasBack = !!card?.back;
@@ -133,13 +127,17 @@ const CardImage: React.FC<CardImageProps> = ({
         />
       )}
       {children ?? null}
-      {canDisplayBackSide && hasBack && !backSide && (
+      {backSideButton !== false && hasBack && !backSide && (
         <Popover>
           <PopoverTrigger>
             <Button
               variant="outline"
-              size="icon"
-              className="absolute bottom-4 left-[50%] transform -translate-x-1/2"
+              size="iconSmall"
+              className={cn('absolute bottom-2 ', {
+                'left-[50%] transform -translate-x-1/2': backSideButton === 'mid',
+                'left-2': backSideButton === 'left',
+                'right-2': backSideButton === 'right',
+              })}
             >
               <RotateCcw />
             </Button>

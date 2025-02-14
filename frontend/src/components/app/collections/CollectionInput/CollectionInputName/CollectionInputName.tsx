@@ -167,7 +167,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                           size="w75"
                           card={card}
                           cardVariantId={i.defaultVariant}
-                          canDisplayBackSide={false}
+                          backSideButton={false}
                         />
                         <div className="flex flex-col gap-2 w-full">
                           <span className="font-medium">{card?.name}</span>
@@ -208,7 +208,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                           size="w75"
                           card={card}
                           cardVariantId={vo.variantId}
-                          canDisplayBackSide={false}
+                          backSideButton={false}
                         />
                         <span>{vo.variantName}</span>
                       </CommandItem>
