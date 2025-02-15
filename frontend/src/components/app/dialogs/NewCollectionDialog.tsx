@@ -3,7 +3,6 @@ import * as React from 'react';
 import { useUser } from '@/hooks/useUser.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useForm } from '@tanstack/react-form';
-import { api } from '@/lib/api.ts';
 import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -11,6 +10,8 @@ import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { useState } from 'react';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useNavigate } from '@tanstack/react-router';
+import { Textarea } from '@/components/ui/textarea.tsx';
+import { usePostCollection } from '@/api/usePostCollection.ts';
 
 type NewCollectionDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
   wantlist: boolean;
@@ -26,44 +27,39 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const collectionOrWantlist = wantlist ? 'Wantlist' : 'Collection';
+  const postCollectionMutation = usePostCollection();
 
   const form = useForm<{
     title: string;
+    description: string;
     public: boolean;
   }>({
     defaultValues: {
       title: `My ${collectionOrWantlist}`,
+      description: ``,
       public: false,
     },
     onSubmit: async ({ value }) => {
-      api.collection
-        .$post({
-          json: {
-            title: value.title,
-            wantlist,
-            public: value.public,
-          },
-        })
-        .then(async res => {
-          console.log(res);
-          if (res.ok) {
+      // Call our hook's mutation function.
+      postCollectionMutation.mutate(
+        {
+          title: value.title,
+          description: value.description,
+          wantlist,
+          public: value.public,
+        },
+        {
+          onSuccess: result => {
             toast({
               title: `${collectionOrWantlist} "${value.title}" created!`,
             });
-            const { data } = await res.json();
-            await navigate({ to: `/collections/${data[0].id}` });
+            // Navigate to the newly created collection.
+            const createdCollection = result.data[0];
+            navigate({ to: `/collections/${createdCollection.id}` });
             setOpen(false);
-          } else {
-            throw new Error(res.statusText);
-          }
-        })
-        .catch(e => {
-          toast({
-            variant: 'destructive',
-            title: `Error while creating ${collectionOrWantlist}`,
-            description: e.toString(),
-          });
-        });
+          },
+        },
+      );
     },
   });
 
@@ -93,6 +89,21 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
                   className=""
                   id={field.name}
                   placeholder="Title"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={e => field.handleChange(e.target.value)}
+                />
+              </div>
+            )}
+          />
+          <form.Field
+            name="description"
+            children={field => (
+              <div className="flex flex-col gap-2">
+                <Textarea
+                  className=""
+                  id={field.name}
+                  placeholder="Description"
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={e => field.handleChange(e.target.value)}

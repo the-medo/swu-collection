@@ -5,7 +5,7 @@ const PAGE_SIZE = 20;
 
 export const useGetCollections = (wantlist: boolean = false) => {
   return useInfiniteQuery({
-    queryKey: ['public-collections'],
+    queryKey: ['public-collections', wantlist ? '1' : '0'],
     queryFn: async ({ pageParam }) => {
       const response = await api.collection.$get({
         query: {

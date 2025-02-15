@@ -5,9 +5,15 @@ import { collection } from '../db/schema/collection.ts';
 import { and, eq, getTableColumns, or } from 'drizzle-orm';
 import { user } from '../db/schema/auth-schema.ts';
 import type { User } from '../../types/User.ts';
+import type { Collection } from '../../types/Collection.ts';
 
 const { email, emailVerified, ...selectUser } = getTableColumns(user);
 export { selectUser };
+
+export type UserCollectionsResponse = {
+  userId: string;
+  collections: Collection[];
+};
 
 export const userRoute = new Hono<AuthExtension>()
   .get('/:id/collection', async c => {
@@ -24,7 +30,7 @@ export const userRoute = new Hono<AuthExtension>()
 
     await new Promise(resolve => setTimeout(resolve, 300));
 
-    return c.json({
+    return c.json<UserCollectionsResponse>({
       userId: paramUserId,
       collections: userCollections,
     });
@@ -34,5 +40,5 @@ export const userRoute = new Hono<AuthExtension>()
 
     const u = await db.select(selectUser).from(user).where(eq(user.id, paramUserId));
 
-    return c.json(u[0] as User);
+    return c.json(u[0] as unknown as User);
   });
