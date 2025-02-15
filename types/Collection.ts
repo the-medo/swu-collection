@@ -5,6 +5,6 @@ export interface Collection {
   description: string;
   wantlist: boolean;
   public: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }

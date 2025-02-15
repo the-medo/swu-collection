@@ -15,7 +15,6 @@ import {
 } from '../../types/ZCollectionCard.ts';
 import { selectUser } from './user.ts';
 import type { CollectionCard } from '../../types/CollectionCard.ts';
-import type { CardCondition } from '../../types/enums.ts';
 
 export const selectCollection = getTableColumns(collectionTable);
 
@@ -95,18 +94,23 @@ export const collectionRoute = new Hono<AuthExtension>()
     const isPublic = eq(collectionTable.public, true);
     const isOwner = user ? eq(collectionTable.userId, user.id) : null;
 
-    const collectionData = await db
-      .select({
-        user: selectUser,
-        collection: selectCollection,
-      })
-      .from(collectionTable)
-      .innerJoin(userTable, eq(collectionTable.userId, userTable.id))
-      .where(
-        and(eq(collectionTable.id, paramCollectionId), isOwner ? or(isOwner, isPublic) : isPublic),
-      );
+    const collectionData = (
+      await db
+        .select({
+          user: selectUser,
+          collection: selectCollection,
+        })
+        .from(collectionTable)
+        .innerJoin(userTable, eq(collectionTable.userId, userTable.id))
+        .where(
+          and(
+            eq(collectionTable.id, paramCollectionId),
+            isOwner ? or(isOwner, isPublic) : isPublic,
+          ),
+        )
+    )[0];
 
-    return c.json(collectionData[0]);
+    return c.json(collectionData);
   })
   /**
    * Update parameters of collection (or wantlist) :id
@@ -121,14 +125,16 @@ export const collectionRoute = new Hono<AuthExtension>()
     const isOwner = eq(collectionTable.userId, user.id);
     const collectionId = eq(collectionTable.id, paramCollectionId);
 
-    const updatedCollection = await db
-      .update(collectionTable)
-      .set({
-        ...data,
-        updatedAt: sql`NOW()`,
-      })
-      .where(and(isOwner, collectionId))
-      .returning();
+    const updatedCollection = (
+      await db
+        .update(collectionTable)
+        .set({
+          ...data,
+          updatedAt: sql`NOW()`,
+        })
+        .where(and(isOwner, collectionId))
+        .returning()
+    )[0];
 
     return c.json({ data: updatedCollection });
   })

@@ -1,5 +1,6 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { UserCollectionsResponse } from '../../../server/routes/user.ts';
 
 export const useGetUserCollections = (userId: string | undefined) => {
   return useQuery({
@@ -14,7 +15,7 @@ export const useGetUserCollections = (userId: string | undefined) => {
           if (!response.ok) {
             throw new Error('Something went wrong');
           }
-          const data = await response.json();
+          const data = (await response.json()) as unknown as UserCollectionsResponse;
           return data;
         }
       : skipToken,

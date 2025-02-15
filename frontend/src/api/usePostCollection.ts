@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
+import { UserCollectionsResponse } from '../../../server/routes/user.ts';
 
 export type PostCollectionRequest = {
   title: string;
@@ -9,19 +10,6 @@ export type PostCollectionRequest = {
   wantlist: boolean;
   public: boolean;
 };
-
-export interface Collection {
-  id: string;
-  title: string;
-  description: string;
-  wantlist: boolean;
-  public: boolean;
-  // add other fields if needed
-}
-
-export interface UserCollectionsResponse {
-  collections: Collection[];
-}
 
 /**
  * Hook to create a new collection.
@@ -46,10 +34,11 @@ export const usePostCollection = () => {
     },
     onSuccess: result => {
       queryClient.setQueryData<UserCollectionsResponse>(['collections', user?.id], oldData => {
+        if (!user?.id) return undefined;
         if (!oldData) {
-          return { collections: [result.data[0]] };
+          return { userId: user.id, collections: [result.data[0]] };
         }
-        return { collections: [...oldData.collections, result.data[0]] };
+        return { userId: user.id, collections: [...oldData.collections, result.data[0]] };
       });
     },
     onError: (error: any) => {
