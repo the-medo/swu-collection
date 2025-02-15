@@ -4,6 +4,7 @@ export const zCollectionSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),
   title: z.string().min(3).max(255),
+  description: z.string(),
   wantlist: z.boolean().default(false),
   public: z.boolean().default(false),
   createdAt: z.string().datetime(),
@@ -12,6 +13,7 @@ export const zCollectionSchema = z.object({
 
 export const zCollectionCreateRequest = zCollectionSchema.pick({
   title: true,
+  description: true,
   wantlist: true,
   public: true,
 });
@@ -24,6 +26,7 @@ export const zCollectionUpdateRequest = zCollectionSchema
   .pick({
     //id: true, //should be part of api route
     title: true,
+    description: true,
     public: true,
   })
   .partial();

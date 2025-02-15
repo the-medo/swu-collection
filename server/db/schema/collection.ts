@@ -7,6 +7,7 @@ export const collection = pgTable('collection', {
     .notNull()
     .references(() => user.id),
   title: varchar('title').notNull(),
+  description: varchar('description').notNull().default(''),
   wantlist: boolean('wantlist').notNull(),
   public: boolean('public').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
