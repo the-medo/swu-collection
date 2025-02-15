@@ -11,23 +11,35 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
+import { cn } from '@/lib/utils.ts';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   loading?: boolean;
+  defaultColumn?: {
+    size: number;
+    minSize: number;
+    maxSize: number;
+  };
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   loading = false,
+  defaultColumn = {
+    size: 0,
+    minSize: 0,
+    maxSize: Number.MAX_SAFE_INTEGER,
+  },
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     // @ts-ignore
     data: loading ? [{}, {}, {}] : data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    defaultColumn,
   });
 
   return (
@@ -38,7 +50,12 @@ export function DataTable<TData, TValue>({
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map(header => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    className={cn({
+                      [`w-${header.getSize()}`]: header.getSize() > 0,
+                    })}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -53,7 +70,13 @@ export function DataTable<TData, TValue>({
             table.getRowModel().rows.map(row => (
               <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                 {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={cn({
+                      [`w-${cell.column.getSize()} min-w-${cell.column.getSize()}`]:
+                        cell.column.getSize() > 0,
+                    })}
+                  >
                     {loading ? (
                       <Skeleton
                         className="size-4 w-full rounded-md"

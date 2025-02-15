@@ -23,6 +23,7 @@ import {
 } from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
 import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
 import { foilRenderer } from '@/lib/table/foilRenderer.tsx';
+import { cn } from '@/lib/utils.ts';
 
 interface CollectionCardTableColumnsProps {
   collectionId: string;
@@ -49,6 +50,7 @@ export function useCollectionCardTableColumns({
         id: 'image',
         accessorKey: 'cardId',
         header: '',
+        size: 12,
         cell: ({ row }) => {
           const card = cardList?.[row.original.cardId];
 
@@ -70,6 +72,7 @@ export function useCollectionCardTableColumns({
       id: 'amount',
       accessorKey: 'amount',
       header: 'Qty',
+      size: 4,
       cell: ({ getValue, row }) => {
         const amount = getValue() as number;
 
@@ -96,14 +99,15 @@ export function useCollectionCardTableColumns({
         id: 'cost',
         accessorKey: 'cardId',
         header: 'Cost',
+        size: 16,
         cell: ({ getValue }) => {
           const cardId = getValue() as string;
 
           const card = cardList?.[cardId];
-          if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+          if (!card) return <Skeleton className="w-16 h-4 rounded-md" />;
 
           return (
-            <div className="flex gap-1">
+            <div className="flex gap-1 w-16">
               {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
               {card?.aspects.map((a, i) => <AspectIcon key={`${a}${i}`} aspect={a} size="small" />)}
             </div>
@@ -157,12 +161,13 @@ export function useCollectionCardTableColumns({
       id: 'variantId',
       accessorKey: 'variantId',
       header: 'Variant',
+      size: 16,
       cell: ({ getValue, row }) => {
         const cardId = row.original.cardId;
         const variantId = getValue() as string;
 
         const card = cardList?.[cardId];
-        if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+        if (!card) return <Skeleton className="w-16 h-4 rounded-md" />;
         const variant = card.variants[variantId];
         return variantRenderer(variant?.variantName ?? '');
       },
@@ -172,6 +177,7 @@ export function useCollectionCardTableColumns({
       id: 'foil',
       accessorKey: 'foil',
       header: 'F',
+      size: 4,
       cell: ({ getValue }) => foilRenderer(getValue() as boolean),
     });
 
@@ -179,6 +185,7 @@ export function useCollectionCardTableColumns({
       id: 'language',
       accessorKey: 'language',
       header: 'Lang.',
+      size: 12,
       cell: ({ getValue }) => languageRenderer(getValue() as CardLanguage),
     });
 
@@ -186,22 +193,24 @@ export function useCollectionCardTableColumns({
       id: 'condition',
       accessorKey: 'condition',
       header: 'Cond.',
+      size: 8,
       cell: ({ getValue }) => conditionRenderer(getValue() as CardCondition),
     });
 
     definitions.push({
       id: 'cardNo',
       accessorKey: 'cardId',
-      header: 'Card No.',
+      header: 'No.',
+      size: 8,
       cell: ({ getValue, row }) => {
         const cardId = getValue() as string;
         const variantId = row.original.variantId;
 
         const card = cardList?.[cardId];
-        if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+        if (!card) return <Skeleton className="w-8 h-4 rounded-md" />;
         const variant = card.variants[variantId];
 
-        return <span className="text-xs text-gray-500">{variant?.cardNo}</span>;
+        return <span className="text-xs text-gray-500 w-8">{variant?.cardNo}</span>;
       },
     });
 
@@ -209,16 +218,19 @@ export function useCollectionCardTableColumns({
       id: 'set',
       accessorKey: 'cardId',
       header: 'Set',
+      size: 8,
       cell: ({ getValue, row }) => {
         const cardId = getValue() as string;
         const variantId = row.original.variantId;
 
         const card = cardList?.[cardId];
-        if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+        if (!card) return <Skeleton className="w-8 h-4 rounded-md" />;
         const variant = card.variants[variantId];
 
         return (
-          <span className="text-xs font-medium text-gray-500">{variant?.set.toUpperCase()}</span>
+          <span className="text-xs font-medium text-gray-500 w-8">
+            {variant?.set.toUpperCase()}
+          </span>
         );
       },
     });
@@ -227,11 +239,12 @@ export function useCollectionCardTableColumns({
       id: 'rarity',
       accessorKey: 'cardId',
       header: 'R.',
+      size: 4,
       cell: ({ getValue }) => {
         const cardId = getValue() as string;
 
         const card = cardList?.[cardId];
-        if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+        if (!card) return <Skeleton className="w-4 h-4 rounded-md" />;
 
         return <RarityIcon rarity={card.rarity} size="small" />;
       },
@@ -241,6 +254,7 @@ export function useCollectionCardTableColumns({
       id: 'note',
       accessorKey: 'note',
       header: 'Note',
+      size: 20,
       cell: ({ getValue, row }) => {
         const note = getValue() as string;
 
@@ -259,10 +273,10 @@ export function useCollectionCardTableColumns({
           );
         }
 
-        if (note === '') return null;
+        if (note === '') return <div className="w-20 min-w-20"></div>;
 
         return (
-          <div className="text-sm text-gray-500 relative group w-20 flex gap-1 items-center">
+          <div className="text-sm text-gray-500 relative group w-20 min-w-20 max-w-20 flex gap-1 items-center">
             <NotebookPen className="max-w-3 min-w-3 max-h-3 min-h-3" />
             <span
               className="text-left truncate max-w-full text-ellipsis overflow-hidden whitespace-nowrap"
@@ -281,12 +295,18 @@ export function useCollectionCardTableColumns({
     definitions.push({
       accessorKey: 'price',
       header: 'Price',
+      size: owned ? 32 : 20,
       cell: ({ getValue, row }) => {
         const price = getValue() as number | undefined;
         const id = getIdentificationFromCollectionCard(row.original);
 
         return (
-          <div className="flex gap-2 items-center w-full justify-end">
+          <div
+            className={cn('flex gap-2 items-center justify-end', {
+              'w-32': owned,
+              'w-20': !owned,
+            })}
+          >
             {owned ? (
               //@ts-ignore
               <CollectionCardInput

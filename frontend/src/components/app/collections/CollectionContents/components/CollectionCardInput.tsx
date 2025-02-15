@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 export type CollectionCardInputProps = {
   id: CollectionCardIdentification;
   key: string;
+  wide?: boolean;
 } & (
   | {
       field: 'amount';
@@ -42,6 +43,7 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   id,
   key,
   field,
+  wide = false,
   value,
   onChange,
 }) => {
@@ -83,10 +85,11 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
     <Input
       id={key}
       placeholder=""
-      className={cn({
-        'w-16 h-8 px-1 pl-2 text-right': field === 'amount' || field === 'amount2',
-        'w-24 h-8 px-1 pl-2 text-right': field === 'price',
-        'h-8': field === 'note',
+      className={cn('h-8', {
+        'px-1 pl-2 text-right': field !== 'note',
+        'w-16': (field === 'amount' || field === 'amount2') && !wide,
+        'w-24': field === 'price' && !wide,
+        'w-full': wide,
       })}
       type={field === 'note' ? 'text' : 'number'}
       value={inputValue}
