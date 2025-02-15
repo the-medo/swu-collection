@@ -11,7 +11,7 @@ interface CollectionInputNameStore {
   selectedCardId: string | undefined;
   selectedVariantId: string | undefined;
   foil: boolean;
-  amount: number;
+  amount: number | undefined;
   note: string;
   language: CardLanguage;
   condition: CardCondition;
@@ -52,7 +52,7 @@ const setSelectedCardId = (selectedCardId: string | undefined) =>
 const setSelectedVariantId = (selectedVariantId: string | undefined) =>
   store.setState(state => ({ ...state, selectedVariantId }));
 const setFoil = (foil: boolean) => store.setState(state => ({ ...state, foil }));
-const setAmount = (amount: number) => store.setState(state => ({ ...state, amount }));
+const setAmount = (amount: number | undefined) => store.setState(state => ({ ...state, amount }));
 const setNote = (note: string) => store.setState(state => ({ ...state, note }));
 const setLanguage = (language: CardLanguage) => store.setState(state => ({ ...state, language }));
 const setCondition = (condition: CardCondition) =>
@@ -156,8 +156,16 @@ export function useCollectionInputNameStore() {
     let variant = selectedVariantId ? card.variants[selectedVariantId] : undefined;
     const isSelectedVariant = !!variant;
     if (!isSelectedVariant) {
-      const defaultVariant = selectDefaultVariant(card);
-      if (defaultVariant) variant = card.variants[defaultVariant];
+      const defaultVariant = selectDefaultVariant(
+        card,
+        defaultVariantName !== 'empty' ? defaultVariantName : 'Standard',
+      );
+      if (defaultVariant) {
+        variant = card.variants[defaultVariant];
+        if (defaultVariantName !== 'empty') {
+          setSelectedVariantId(variant?.variantId);
+        }
+      }
     }
 
     return {
@@ -165,7 +173,7 @@ export function useCollectionInputNameStore() {
       variant,
       isSelectedVariant,
     };
-  }, [selectedCardId, selectedVariantId, cardList]);
+  }, [defaultVariantName, selectedCardId, selectedVariantId, cardList]);
 
   return {
     open,

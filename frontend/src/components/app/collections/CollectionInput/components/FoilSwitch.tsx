@@ -12,7 +12,7 @@ const FoilSwitch: React.FC<DefaultFoilSwitchProps> = ({ value, onChange }) => {
       <label htmlFor="switch-1" className="font-semibold">
         Foil
       </label>
-      <Switch id="switch-1" value={value ? 'on' : 'off'} onCheckedChange={onChange} />
+      <Switch id="switch-1" checked={value} onCheckedChange={onChange} />
     </div>
   );
 };

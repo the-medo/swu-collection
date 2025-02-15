@@ -56,6 +56,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
     variantOptions,
     isFetching,
     cardList,
+    defaultVariantName,
     defaultAmount,
     card: { card, variant, isSelectedVariant },
     amount,
@@ -80,7 +81,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
 
   const submitHandler = useCallback(async () => {
     try {
-      if (selectedCardId && selectedVariantId) {
+      if (selectedCardId && selectedVariantId && amount) {
         await mutation.mutateAsync({
           cardId: selectedCardId,
           variantId: selectedVariantId,
@@ -99,6 +100,8 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
       console.error(error);
     }
   }, [selectedCardId, selectedVariantId, foil, condition, language, amount, note]);
+
+  const canSubmit = !!selectedCardId && !!selectedVariantId && amount !== undefined && amount > 0;
 
   return (
     <Card>
@@ -161,6 +164,14 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                           setSelectedCardId(i.cardId);
                           setSearch(card?.name ?? '');
                           // setOpen(false);
+                          if (defaultVariantName !== 'empty') {
+                            setOpen(false);
+                            if (defaultAmount) {
+                              addButtonRef.current?.focus();
+                            } else {
+                              amountInputRef.current?.focus();
+                            }
+                          }
                         }}
                       >
                         <CardImage
@@ -222,7 +233,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
           {variant && (
             <div className="flex gap-2 justify-between">
               <div>
-                <span>Version:</span> <span className="font-bold">{variant?.variantName}</span>
+                <span>Variant:</span> <span className="font-bold">{variant?.variantName}</span>
               </div>
               <div>
                 <span>Set:</span> <span className="font-bold">{variant?.set.toUpperCase()}</span>
@@ -257,10 +268,12 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
         </div>
 
         <Button
-          className="w-full focus:border-2 focus:border-black"
           ref={addButtonRef}
+          className={cn('w-full focus:border-2 focus:border-black', {
+            'opacity-50': !canSubmit, //because disabled button can't be focused ans we want to focus it right after card selection if we have default variant selection
+          })}
           disabled={mutation.isPending}
-          onClick={submitHandler}
+          onClick={canSubmit ? submitHandler : undefined}
         >
           {mutation.isPending ? '...' : 'Add to collection'}
         </Button>

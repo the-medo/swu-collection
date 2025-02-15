@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input.tsx';
 
 interface DefaultAmountInputProps {
   value: number | undefined;
-  onChange: (value: number) => void;
+  onChange: (value: number | undefined) => void;
 }
 
 const AmountInput = React.forwardRef<HTMLInputElement, DefaultAmountInputProps>(
@@ -22,7 +22,7 @@ const AmountInput = React.forwardRef<HTMLInputElement, DefaultAmountInputProps>(
             // className="w-full"
             type="number"
             value={value}
-            onChange={e => onChange(Number(e.target.value) || 1)}
+            onChange={e => onChange(Number(e.target.value) || undefined)}
           />
         </div>
       </>
