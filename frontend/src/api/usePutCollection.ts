@@ -4,6 +4,7 @@ import { toast } from '@/hooks/use-toast.ts';
 import { Collection } from '../../../types/Collection.ts';
 import type { ZCollectionUpdateRequest } from '../../../types/ZCollection.ts';
 import { InferResponseType } from 'hono';
+import { updateGetUserCollections } from '@/api/useGetUserCollections.ts';
 
 export interface CollectionResponse {
   data: Collection[];
@@ -41,8 +42,13 @@ export const usePutCollection = () => {
         },
       }));
 
-      // Optionally, you could also update a list of user collections if needed:
-      // queryClient.invalidateQueries(['collections', userId]);
+      updateGetUserCollections(result.data.userId, oldData => {
+        if (!oldData) return oldData;
+        const updatedCollections = oldData.collections.map(col =>
+          col.id === result.data.id ? result.data : col,
+        );
+        return { ...oldData, collections: updatedCollections };
+      });
     },
     onError: (error: any) => {
       toast({

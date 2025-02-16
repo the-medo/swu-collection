@@ -1,6 +1,7 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { UserCollectionsResponse } from '../../../server/routes/user.ts';
+import { queryClient } from '@/queryClient.ts';
 
 export const useGetUserCollections = (userId: string | undefined) => {
   return useQuery({
@@ -21,4 +22,18 @@ export const useGetUserCollections = (userId: string | undefined) => {
       : skipToken,
     staleTime: Infinity,
   });
+};
+
+export const updateGetUserCollections = (
+  userId: string,
+  updateCallback: (
+    data: UserCollectionsResponse | undefined,
+  ) => UserCollectionsResponse | undefined,
+) => {
+  queryClient.setQueryData<UserCollectionsResponse | undefined>(
+    ['collections', userId],
+    (oldData: UserCollectionsResponse | undefined) => {
+      return updateCallback(oldData);
+    },
+  );
 };

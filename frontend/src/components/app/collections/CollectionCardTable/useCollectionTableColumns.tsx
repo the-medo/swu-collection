@@ -16,6 +16,7 @@ import { Link } from '@tanstack/react-router';
 import { publicRenderer } from '@/lib/table/publicRenderer.tsx';
 import { CollectionTableData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
+import { usePutCollection } from '@/api/usePutCollection.ts';
 
 interface CollectionTableColumnsProps {
   showOwner?: boolean;
@@ -32,6 +33,7 @@ export function useCollectionTableColumns({
 }: CollectionTableColumnsProps): ColumnDef<CollectionTableData>[] {
   const { data: currencyData } = useCurrencyList();
   const { data: countryData } = useCountryList();
+  const putCollectionMutation = usePutCollection();
 
   return useMemo(() => {
     const definitions: ColumnDef<CollectionTableData>[] = [];
@@ -41,8 +43,23 @@ export function useCollectionTableColumns({
         id: 'collectionPublic',
         accessorKey: 'collection.public',
         header: 'Public',
-        cell: ({ getValue }) => {
-          return publicRenderer(getValue() as boolean);
+        size: 12,
+        cell: ({ getValue, row }) => {
+          const collectionId = row.original.collection.id as string;
+          return (
+            <Button
+              variant="link"
+              className="flex flex-col gap-0 p-0 w-full items-start justify-center"
+              onClick={() => {
+                putCollectionMutation.mutate({
+                  collectionId: collectionId,
+                  public: !(getValue() as boolean),
+                });
+              }}
+            >
+              {publicRenderer(getValue() as boolean)}
+            </Button>
+          );
         },
       });
     }
@@ -57,8 +74,16 @@ export function useCollectionTableColumns({
 
         return (
           <Link to={'/collections/' + collectionId} className="font-bold">
-            <Button variant="link" className="w-full justify-start">
+            <Button
+              variant="link"
+              className="flex flex-col gap-0 p-0 w-full items-start justify-center"
+            >
               {title}
+              {row.original.collection.description && (
+                <span className="text-xs font-normal italic pl-4 max-w-80 truncate ellipsis overflow-hidden whitespace-nowrap">
+                  {row.original.collection.description}
+                </span>
+              )}
             </Button>
           </Link>
         );
@@ -69,6 +94,7 @@ export function useCollectionTableColumns({
       definitions.push({
         accessorKey: 'user.displayName',
         header: 'Owner',
+        size: 64,
         cell: ({ getValue, row }) => {
           const userId = row.original.user.id as string;
           const displayName = getValue() as string;
@@ -84,6 +110,7 @@ export function useCollectionTableColumns({
     if (showState) {
       definitions.push({
         accessorKey: 'user.country',
+        size: 64,
         header: () => <div className="text-right">Country and State / Region</div>,
         cell: ({ row }) => {
           const countryCode = row.original.user.country as CountryCode | null;
@@ -105,6 +132,7 @@ export function useCollectionTableColumns({
       definitions.push({
         accessorKey: 'user.currency',
         header: 'Currency',
+        size: 24,
         cell: ({ row }) => {
           const currencyCode = row.original.user.currency as CurrencyCode;
           const currency = currencyData?.currencies[currencyCode];
@@ -120,6 +148,7 @@ export function useCollectionTableColumns({
 
     definitions.push({
       accessorKey: 'collection.createdAt',
+      size: 24,
       header: () => <div className="text-right">Created At</div>,
       cell: ({ getValue }) => {
         return dateRenderer(getValue() as string);
@@ -128,6 +157,7 @@ export function useCollectionTableColumns({
 
     definitions.push({
       accessorKey: 'collection.updatedAt',
+      size: 24,
       header: () => <div className="text-right">Updated At</div>,
       cell: ({ getValue }) => {
         return dateRenderer(getValue() as string);
@@ -136,6 +166,7 @@ export function useCollectionTableColumns({
 
     definitions.push({
       id: 'actions',
+      size: 12,
       header: () => <div className="text-right">Actions</div>,
       cell: ({ row }) => {
         const collectionId = row.original.collection.id;
