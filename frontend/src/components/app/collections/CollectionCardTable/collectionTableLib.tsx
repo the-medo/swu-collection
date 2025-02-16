@@ -3,7 +3,7 @@ import { User } from '../../../../../../types/User.ts';
 import { CollectionCard } from '../../../../../../types/CollectionCard.ts';
 import { CollectionCardIdentification } from '@/api/usePutCollectionCard.ts';
 
-export type CollectionTableData = {
+export type UserCollectionData = {
   user: User;
   collection: ZCollection;
 };

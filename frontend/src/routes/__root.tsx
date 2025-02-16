@@ -10,7 +10,7 @@ export const Route = createRootRoute({
       <SidebarProvider>
         <LeftSidebar />
         <main className="w-full p-2">
-          <div className="flex gap-2">
+          <div className="flex gap-2 pb-2">
             <SidebarTrigger />
             <ModeToggle />
           </div>

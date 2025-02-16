@@ -1,6 +1,6 @@
 import CollectionTable from '../CollectionCardTable/CollectionTable';
 import { useMemo } from 'react';
-import { CollectionTableData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
+import { UserCollectionData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import { useGetCollections } from '@/api/useGetCollections.ts';
 
 interface PublicCollectionsProps {}
@@ -10,7 +10,7 @@ const PublicCollections: React.FC<PublicCollectionsProps> = ({}) => {
 
   const load = isFetching;
 
-  const collections: CollectionTableData[] = useMemo(() => {
+  const collections: UserCollectionData[] = useMemo(() => {
     if (data) {
       return data.pages.flat();
     }

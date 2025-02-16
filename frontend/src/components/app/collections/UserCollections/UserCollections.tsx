@@ -2,7 +2,7 @@ import { useGetUserCollections } from '@/api/useGetUserCollections.ts';
 import CollectionTable from '../CollectionCardTable/CollectionTable';
 import { useMemo } from 'react';
 import { useGetUser } from '@/api/useGetUser.ts';
-import { CollectionTableData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
+import { UserCollectionData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 
 interface UserCollectionsProps {
   userId: string | undefined;
@@ -15,7 +15,7 @@ const UserCollections: React.FC<UserCollectionsProps> = ({ userId, loading = fal
 
   const load = isFetching || loading || isFetchingUser;
 
-  const collections: CollectionTableData[] = useMemo(() => {
+  const collections: UserCollectionData[] = useMemo(() => {
     if (user && data) {
       return data.collections.map(c => ({
         collection: c,

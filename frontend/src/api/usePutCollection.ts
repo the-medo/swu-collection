@@ -28,13 +28,12 @@ export const usePutCollection = () => {
         throw new Error(response.statusText);
       }
 
-      // Assuming the endpoint returns { data: [updatedCollection] }
       return response.json();
     },
     onSuccess: result => {
       const $getCollection = api.collection[':id'].$get;
       type ResType = InferResponseType<typeof $getCollection>;
-      // Update the cache for the single collection
+
       queryClient.setQueryData(['collection', result.data.id], (oldData: ResType) => ({
         ...oldData,
         collection: {

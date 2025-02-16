@@ -123,7 +123,7 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ trigger, co
         </form>
       ) : (
         <>
-          Please sign in to create update {collectionOrWantlist.toLowerCase()}.
+          Please sign in to update {collectionOrWantlist.toLowerCase()}.
           <SignIn />
         </>
       )}

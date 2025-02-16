@@ -110,6 +110,10 @@ export const collectionRoute = new Hono<AuthExtension>()
         )
     )[0];
 
+    if (!collectionData) {
+      return c.json({ message: "Collection doesn't exist" }, 404);
+    }
+
     return c.json(collectionData);
   })
   /**
@@ -156,8 +160,10 @@ export const collectionRoute = new Hono<AuthExtension>()
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
 
     //delete collection_card
-    await db.delete(collectionCardTable).where(collectionId);
-    const deletedCollection = await db.delete(collectionTable).where(collectionId).returning();
+    await db
+      .delete(collectionCardTable)
+      .where(eq(collectionCardTable.collectionId, paramCollectionId));
+    const deletedCollection = (await db.delete(collectionTable).where(collectionId).returning())[0];
 
     return c.json({ data: deletedCollection });
   })
