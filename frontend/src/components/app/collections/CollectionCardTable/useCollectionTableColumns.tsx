@@ -5,10 +5,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { MoreHorizontal } from 'lucide-react';
+import { LinkIcon, MoreHorizontal, PencilIcon, TrashIcon } from 'lucide-react';
 import { useCurrencyList } from '@/api/useCurrencyList.ts';
 import { useCountryList } from '@/api/useCountryList.ts';
 import { CountryCode, CurrencyCode } from '../../../../../../server/db/lists.ts';
@@ -17,6 +18,9 @@ import { publicRenderer } from '@/lib/table/publicRenderer.tsx';
 import { UserCollectionData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
 import { usePutCollection } from '@/api/usePutCollection.ts';
+import { useUser } from '@/hooks/useUser.ts';
+import DeleteCollectionDialog from '@/components/app/dialogs/DeleteCollectionDialog.tsx';
+import EditCollectionDialog from '@/components/app/dialogs/EditCollectionDialog.tsx';
 
 interface CollectionTableColumnsProps {
   showOwner?: boolean;
@@ -31,6 +35,7 @@ export function useCollectionTableColumns({
   showState,
   showCurrency,
 }: CollectionTableColumnsProps): ColumnDef<UserCollectionData>[] {
+  const user = useUser();
   const { data: currencyData } = useCurrencyList();
   const { data: countryData } = useCountryList();
   const putCollectionMutation = usePutCollection();
@@ -43,7 +48,7 @@ export function useCollectionTableColumns({
         id: 'collectionPublic',
         accessorKey: 'collection.public',
         header: 'Public',
-        size: 12,
+        size: 20,
         cell: ({ getValue, row }) => {
           const collectionId = row.original.collection.id as string;
           return (
@@ -70,7 +75,7 @@ export function useCollectionTableColumns({
       header: 'Title',
       cell: ({ getValue, row }) => {
         const title = getValue() as string;
-        const collectionId = row.original.collection.id as string; //.getValue('collection.id') doesn't work??
+        const collectionId = row.original.collection.id as string;
 
         return (
           <Link to={'/collections/' + collectionId} className="font-bold">
@@ -173,28 +178,62 @@ export function useCollectionTableColumns({
         const userId = row.original.user.id;
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="text-right">
-                <Button variant="ghost" className="h-8 w-8 p-0 text-right">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(collectionId)}>
-                Copy collection ID
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(userId)}>
-                Copy user ID
-              </DropdownMenuItem>
-              {/*<DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>*/}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex gap-1">
+            <Button
+              size="iconMedium"
+              className="p-0"
+              onClick={() =>
+                navigator.clipboard.writeText(
+                  `${window.location.origin}/collections/${collectionId}`,
+                )
+              }
+            >
+              <span className="sr-only">Copy link</span>
+              <LinkIcon className="h-4 w-4" />
+            </Button>
+            {user && user?.id === userId && (
+              <>
+                <EditCollectionDialog
+                  collection={row.original.collection}
+                  trigger={
+                    <Button size="iconMedium" className="p-0">
+                      <span className="sr-only">Edit collection</span>
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                  }
+                />
+                <DeleteCollectionDialog
+                  collection={row.original.collection}
+                  trigger={
+                    <Button variant="destructive" size="iconMedium" className="p-0">
+                      <span className="sr-only">Delete collection</span>
+                      <TrashIcon className="h-4 w-4" />
+                    </Button>
+                  }
+                />
+              </>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="text-right">
+                  <Button variant="ghost" size="iconMedium" className="p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(collectionId)}>
+                  Copy collection ID
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(userId)}>
+                  Copy user ID
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
     });

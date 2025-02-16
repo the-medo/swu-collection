@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { Collection } from '../../../../../types/Collection.ts';
@@ -31,9 +31,9 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ trigger, co
     public: boolean;
   }>({
     defaultValues: {
-      title: collection.title,
-      description: collection.description,
-      public: collection.public,
+      title: collection.title ?? '',
+      description: collection.description ?? '',
+      public: collection.public ?? false,
     },
     onSubmit: async ({ value }) => {
       // Call our hook's mutation function.
@@ -56,12 +56,25 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ trigger, co
     },
   });
 
+  const onOpenChange = useCallback(
+    (open: boolean) => {
+      setOpen(open);
+      if (open) {
+        /*
+        Its possible to set public field outside of this modal (by clicking the badge), but in that case the default values are already set - this sets it to correct value.
+         */
+        form.setFieldValue('public', collection.public);
+      }
+    },
+    [collection.public],
+  );
+
   return (
     <Dialog
       trigger={trigger}
       header={`Edit ${collectionOrWantlist}`}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
     >
       {user ? (
         <form
