@@ -4,7 +4,7 @@ import {
   CollectionLayout,
   useCollectionInfo,
   useCollectionLayoutStoreActions,
-} from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
+} from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { useCallback } from 'react';
 import { getRouteApi } from '@tanstack/react-router';
 

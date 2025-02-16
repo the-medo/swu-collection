@@ -1,7 +1,7 @@
 import {
   CollectionGroupBy,
   GroupByOptions,
-} from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
+} from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { useCallback } from 'react';
 import {
   Select,

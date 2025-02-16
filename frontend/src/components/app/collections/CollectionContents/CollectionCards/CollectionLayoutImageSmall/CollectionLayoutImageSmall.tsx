@@ -4,7 +4,7 @@ import type { CollectionCard } from '../../../../../../../../types/CollectionCar
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cn } from '@/lib/utils.ts';
 import CollectionCardHoverDetail from '@/components/app/collections/CollectionCardDetail/CollectionCardHoverDetail.tsx';
-import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
+import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 
 interface CollectionLayoutImageSmallProps {
   collectionId: string;

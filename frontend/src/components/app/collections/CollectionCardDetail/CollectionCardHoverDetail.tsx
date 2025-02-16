@@ -3,7 +3,7 @@ import {
   CardDataWithVariants,
   CardListVariants,
 } from '../../../../../../lib/swu-resources/types.ts';
-import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
+import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
 import { PropsWithChildren } from 'react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';

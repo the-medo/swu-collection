@@ -5,7 +5,7 @@ import LoadingTitle from '../../global/LoadingTitle';
 import CollectionInputSection from '@/components/app/collections/CollectionInput/CollectionInputSection.tsx';
 import CollectionContents from '@/components/app/collections/CollectionContents/CollectionContents.tsx';
 import { useEffect } from 'react';
-import { useCollectionLayoutStoreActions } from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
+import { useCollectionLayoutStoreActions } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import EditCollectionDialog from '@/components/app/dialogs/EditCollectionDialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { publicRenderer } from '@/lib/table/publicRenderer.tsx';

@@ -20,7 +20,7 @@ import { getIdentificationFromCollectionCard } from '@/components/app/collection
 import {
   CollectionLayout,
   useCollectionInfo,
-} from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
+} from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
 import { foilRenderer } from '@/lib/table/foilRenderer.tsx';
 import { cn } from '@/lib/utils.ts';

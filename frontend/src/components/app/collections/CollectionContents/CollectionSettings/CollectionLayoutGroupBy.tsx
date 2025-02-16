@@ -3,8 +3,8 @@ import {
   GROUP_BY_OPTIONS,
   useCollectionLayoutStore,
   useCollectionLayoutStoreActions,
-} from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
-import CollectionLayoutGroupBySelect from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/CollectionLayoutGroupBySelect.tsx';
+} from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
+import CollectionLayoutGroupBySelect from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionLayoutGroupBySelect.tsx';
 import { useCallback } from 'react';
 
 interface CollectionLayoutGroupByProps {}

@@ -1,9 +1,9 @@
-import CollectionLayoutToggleGroup from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/CollectionLayoutToggleGroup.tsx';
+import CollectionLayoutToggleGroup from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionLayoutToggleGroup.tsx';
 import {
   useCollectionLayoutStore,
   useCollectionLayoutStoreActions,
-} from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
-import CollectionLayoutGroupBy from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/CollectionLayoutGroupBy.tsx';
+} from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
+import CollectionLayoutGroupBy from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionLayoutGroupBy.tsx';
 import { Card, CardHeader } from '@/components/ui/card.tsx';
 
 interface CollectionLayoutSettingsProps {}

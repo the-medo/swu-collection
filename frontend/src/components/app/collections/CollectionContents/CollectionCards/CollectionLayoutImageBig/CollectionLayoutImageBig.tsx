@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils.ts';
 import { getIdentificationFromCollectionCard } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import CollectionCardInput from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
 import { getCollectionCardIdentificationKey } from '@/api/usePutCollectionCard.ts';
-import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionLayoutSettings/useCollectionLayoutStore.ts';
+import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
 import { languageRenderer } from '@/lib/table/languageRenderer.tsx';
 import { conditionRenderer } from '@/lib/table/conditionRenderer.tsx';
