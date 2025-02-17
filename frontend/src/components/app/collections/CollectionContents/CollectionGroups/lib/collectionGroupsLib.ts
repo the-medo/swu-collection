@@ -1,6 +1,9 @@
 import { CollectionCard } from '../../../../../../../../types/CollectionCard.ts';
 import type { CardList } from '../../../../../../../../lib/swu-resources/types.ts';
-import { CollectionGroupBy } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
+import {
+  CollectionGroupBy,
+  CollectionSortBy,
+} from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { groupCardsByAspectSoft } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByAspectSoft.ts';
 import { groupCardsByRarity } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByRarity.ts';
 import { groupCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCardType.ts';
@@ -8,6 +11,8 @@ import { groupCardsByVersionName } from '@/components/app/collections/Collection
 import { groupCardsByAspectHard } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByAspectHard.ts';
 import { groupCardsBySet } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsBySet.ts';
 import { groupCardsByCost } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCost.ts';
+import { sortCardsByCardCost } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardCost.ts';
+import { sortCardsByCardName } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardName.ts';
 
 type CardGroup = {
   id: string;
@@ -43,5 +48,26 @@ export const groupCardsBy = (
       return groupCardsBySet(cardList, cards);
     case CollectionGroupBy.COST:
       return groupCardsByCost(cardList, cards);
+  }
+};
+
+export const sortCardsBy = (
+  cardList: CardList,
+  cards: CollectionCard[],
+  sorts: CollectionSortBy[],
+) => {
+  const sortBy = sorts[0];
+
+  switch (sortBy) {
+    case CollectionSortBy.CARD_COST:
+      console.log('Sorting', CollectionSortBy.CARD_COST);
+      sortCardsByCardCost(cardList, cards);
+      return;
+    case CollectionSortBy.CARD_NAME:
+      console.log('Sorting', CollectionSortBy.CARD_NAME);
+      sortCardsByCardName(cards);
+      return;
+    default:
+      return;
   }
 };

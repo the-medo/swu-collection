@@ -37,6 +37,16 @@ export enum CollectionSortBy {
   VARIANT_NAME = 'variant_name',
 }
 
+export const SORT_BY_OPTIONS = [
+  { value: CollectionSortBy.CARD_NAME, label: 'Name' },
+  { value: CollectionSortBy.CARD_COST, label: 'Cost' },
+  { value: CollectionSortBy.RARITY, label: 'Rarity' },
+  { value: CollectionSortBy.ASPECT, label: 'Aspect' },
+  { value: CollectionSortBy.CARD_TYPE, label: 'Card Type' },
+  { value: CollectionSortBy.VARIANT_NAME, label: 'Variant Name' },
+];
+export type SortByOptions = (typeof SORT_BY_OPTIONS)[number];
+
 interface CollectionLayoutStore {
   layout: CollectionLayout;
   collectionInfo: Record<
@@ -55,7 +65,7 @@ const defaultState: CollectionLayoutStore = {
   layout: CollectionLayout.TABLE_SMALL,
   collectionInfo: {},
   groupBy: [],
-  sortBy: [],
+  sortBy: [CollectionSortBy.CARD_NAME],
 };
 
 const store = new Store<CollectionLayoutStore>(defaultState);

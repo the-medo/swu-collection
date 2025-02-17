@@ -9,7 +9,10 @@ import CollectionLayoutTableImage from '@/components/app/collections/CollectionC
 import CollectionLayoutTableSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmall.tsx';
 import { useMemo } from 'react';
 import { useCardList } from '@/api/useCardList.ts';
-import { groupCardsBy } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
+import {
+  groupCardsBy,
+  sortCardsBy,
+} from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import {
   Accordion,
   AccordionContent,
@@ -33,7 +36,7 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
   horizontal = false,
   parentTitle = '',
 }) => {
-  const { groupBy, layout } = useCollectionLayoutStore();
+  const { groupBy, sortBy, layout } = useCollectionLayoutStore();
   const { data: cardList } = useCardList();
 
   const groupByValue = groupBy[depth];
@@ -43,9 +46,12 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
   }, [groupByValue, cards]);
 
   if (depth === groupBy.length) {
+    if (cardList) sortCardsBy(cardList.cards, cards, sortBy);
+
     if (layout === CollectionLayout.IMAGE_BIG) {
       return (
         <CollectionLayoutImageBig
+          key={sortBy.join('-')}
           collectionId={collectionId}
           cards={cards}
           horizontal={horizontal}
@@ -54,6 +60,7 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
     } else if (layout === CollectionLayout.IMAGE_SMALL) {
       return (
         <CollectionLayoutImageSmall
+          key={sortBy.join('-')}
           collectionId={collectionId}
           cards={cards}
           horizontal={horizontal}
@@ -62,6 +69,7 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
     } else if (layout === CollectionLayout.TABLE_IMAGE) {
       return (
         <CollectionLayoutTableImage
+          key={sortBy.join('-')}
           collectionId={collectionId}
           cards={cards}
           horizontal={horizontal}
@@ -70,6 +78,7 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
     } else if (layout === CollectionLayout.TABLE_SMALL) {
       return (
         <CollectionLayoutTableSmall
+          key={sortBy.join('-')}
           collectionId={collectionId}
           cards={cards}
           horizontal={horizontal}

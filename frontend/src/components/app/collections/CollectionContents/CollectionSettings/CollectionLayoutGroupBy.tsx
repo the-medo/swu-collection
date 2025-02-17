@@ -43,6 +43,7 @@ const CollectionLayoutGroupBy: React.FC<CollectionLayoutGroupByProps> = ({}) => 
       ))}
       {groupBy.length < GROUP_BY_OPTIONS.length && (
         <CollectionLayoutGroupBySelect
+          key={`last-${groupBy.length}`}
           index={groupBy.length}
           options={options}
           value={undefined}
