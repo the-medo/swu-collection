@@ -13,6 +13,10 @@ import { groupCardsBySet } from '@/components/app/collections/CollectionContents
 import { groupCardsByCost } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCost.ts';
 import { sortCardsByCardCost } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardCost.ts';
 import { sortCardsByCardName } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardName.ts';
+import { sortCardsByCardRarity } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardRarity.ts';
+import { sortCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardType.ts';
+import { sortCardsByCardAspects } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardAspects.ts';
+import { sortCardsByVariantName } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByVariantName.ts';
 
 type CardGroup = {
   id: string;
@@ -51,23 +55,35 @@ export const groupCardsBy = (
   }
 };
 
+export type CollectionCardSorter = (
+  cardList: CardList,
+  sorters: CollectionSortBy[],
+) => (cardA: CollectionCard, cardB: CollectionCard) => number;
+
+export const getCollectionCardSorter = (sortBy: CollectionSortBy): CollectionCardSorter => {
+  switch (sortBy) {
+    case CollectionSortBy.CARD_COST:
+      return sortCardsByCardCost;
+    case CollectionSortBy.CARD_NAME:
+      return sortCardsByCardName;
+    case CollectionSortBy.RARITY:
+      return sortCardsByCardRarity;
+    case CollectionSortBy.CARD_TYPE:
+      return sortCardsByCardType;
+    case CollectionSortBy.ASPECT:
+      return sortCardsByCardAspects;
+    case CollectionSortBy.VARIANT_NAME:
+      return sortCardsByVariantName;
+    default:
+      return sortCardsByCardName;
+  }
+};
+
 export const sortCardsBy = (
   cardList: CardList,
   cards: CollectionCard[],
   sorts: CollectionSortBy[],
 ) => {
-  const sortBy = sorts[0];
-
-  switch (sortBy) {
-    case CollectionSortBy.CARD_COST:
-      console.log('Sorting', CollectionSortBy.CARD_COST);
-      sortCardsByCardCost(cardList, cards);
-      return;
-    case CollectionSortBy.CARD_NAME:
-      console.log('Sorting', CollectionSortBy.CARD_NAME);
-      sortCardsByCardName(cards);
-      return;
-    default:
-      return;
-  }
+  const [sortBy, ...nextSorts] = sorts;
+  cards.sort(getCollectionCardSorter(sortBy)(cardList, nextSorts));
 };

@@ -24,12 +24,12 @@ export enum SwuSet {
 }
 
 export enum SwuAspect {
-  GREEN = 'Command',
-  RED = 'Aggression',
-  YELLOW = 'Cunning',
-  BLUE = 'Vigilance',
-  WHITE = 'Heroism',
-  BLACK = 'Villainy',
+  COMMAND = 'Command',
+  AGGRESSION = 'Aggression',
+  CUNNING = 'Cunning',
+  VIGILANCE = 'Vigilance',
+  HEROISM = 'Heroism',
+  VILLAINY = 'Villainy',
 }
 
 export enum SwuRarity {

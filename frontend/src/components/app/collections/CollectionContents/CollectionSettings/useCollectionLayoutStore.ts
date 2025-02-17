@@ -29,10 +29,10 @@ export const GROUP_BY_OPTIONS = [
 export type GroupByOptions = (typeof GROUP_BY_OPTIONS)[number];
 
 export enum CollectionSortBy {
-  CARD_TYPE = 'card_type',
-  CARD_NAME = 'card_name',
-  CARD_COST = 'card_cost',
   RARITY = 'rarity',
+  CARD_COST = 'card_cost',
+  CARD_NAME = 'card_name',
+  CARD_TYPE = 'card_type',
   ASPECT = 'aspect',
   VARIANT_NAME = 'variant_name',
 }
