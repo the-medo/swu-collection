@@ -1,11 +1,4 @@
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card.tsx';
-import {
   Command,
   CommandList,
   CommandEmpty,
@@ -104,17 +97,12 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
   const canSubmit = !!selectedCardId && !!selectedVariantId && amount !== undefined && amount > 0;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Insert cards by name</CardTitle>
-        <CardDescription className="flex flex-col gap-2">
-          Search for a card, select version and insert it into the collection.
-          <span className="text-xs">
-            Collection id: {collectionId} {isSelectedVariant}
-          </span>
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2">
+    <div className="flex flex-col gap-2">
+      Search for a card, select version and insert it into the collection.
+      <span className="text-xs">
+        Collection id: {collectionId} {isSelectedVariant}
+      </span>
+      <div className="space-y-2">
         <InsertingDefaults />
         <Popover open={open}>
           <Command className="border w-[350px]" shouldFilter={false}>
@@ -277,8 +265,8 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
         >
           {mutation.isPending ? '...' : 'Add to collection'}
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
