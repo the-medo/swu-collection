@@ -6,7 +6,7 @@ import {
 } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import { variantNameSorter } from '@/lib/cards/variants.ts';
 
-export const groupCardsByVersionName = (
+export const groupCardsByVariantName = (
   cardList: CardList,
   cards: CollectionCard[],
 ): CardGroupData => {

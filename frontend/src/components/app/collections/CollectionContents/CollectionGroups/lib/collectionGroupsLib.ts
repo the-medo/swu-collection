@@ -7,7 +7,7 @@ import {
 import { groupCardsByAspectSoft } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByAspectSoft.ts';
 import { groupCardsByRarity } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByRarity.ts';
 import { groupCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCardType.ts';
-import { groupCardsByVersionName } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByVersionName.ts';
+import { groupCardsByVariantName } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByVariantName.ts';
 import { groupCardsByAspectHard } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByAspectHard.ts';
 import { groupCardsBySet } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsBySet.ts';
 import { groupCardsByCost } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCost.ts';
@@ -17,6 +17,9 @@ import { sortCardsByCardRarity } from '@/components/app/collections/CollectionCo
 import { sortCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardType.ts';
 import { sortCardsByCardAspects } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardAspects.ts';
 import { sortCardsByVariantName } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByVariantName.ts';
+import { sortCardsByCardNumber } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardNumber.ts';
+import { sortCardsByPrice } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByPrice.ts';
+import { sortCardsByQty } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByQty.ts';
 
 type CardGroup = {
   id: string;
@@ -47,7 +50,7 @@ export const groupCardsBy = (
     case CollectionGroupBy.CARD_TYPE:
       return groupCardsByCardType(cardList, cards);
     case CollectionGroupBy.VARIANT_NAME:
-      return groupCardsByVersionName(cardList, cards);
+      return groupCardsByVariantName(cardList, cards);
     case CollectionGroupBy.SET:
       return groupCardsBySet(cardList, cards);
     case CollectionGroupBy.COST:
@@ -74,6 +77,12 @@ export const getCollectionCardSorter = (sortBy: CollectionSortBy): CollectionCar
       return sortCardsByCardAspects;
     case CollectionSortBy.VARIANT_NAME:
       return sortCardsByVariantName;
+    case CollectionSortBy.CARD_NUMBER:
+      return sortCardsByCardNumber;
+    case CollectionSortBy.PRICE:
+      return sortCardsByPrice;
+    case CollectionSortBy.QUANTITY:
+      return sortCardsByQty;
     default:
       return sortCardsByCardName;
   }

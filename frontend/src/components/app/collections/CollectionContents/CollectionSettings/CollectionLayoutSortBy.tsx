@@ -32,7 +32,7 @@ const CollectionLayoutSortBy: React.FC<CollectionLayoutSortByProps> = ({}) => {
   return (
     <div className="flex gap-2 items-center">
       <span className="font-bold">Sort by: </span>
-      {/*{sortBy.map((g, i) => (
+      {sortBy.map((g, i) => (
         <CollectionLayoutSortBySelect
           key={`${g}-${i}`}
           index={i}
@@ -40,13 +40,13 @@ const CollectionLayoutSortBy: React.FC<CollectionLayoutSortByProps> = ({}) => {
           value={SORT_BY_OPTIONS.find(go => go.value === g)}
           setValue={onValueChange}
         />
-      ))}*/}
+      ))}
       {sortBy.length < SORT_BY_OPTIONS.length && (
         <CollectionLayoutSortBySelect
           key={`last-${sortBy.length}`}
-          index={0}
+          index={sortBy.length}
           options={options}
-          value={SORT_BY_OPTIONS.find(go => go.value === sortBy[0])}
+          value={undefined}
           setValue={onValueChange}
         />
       )}

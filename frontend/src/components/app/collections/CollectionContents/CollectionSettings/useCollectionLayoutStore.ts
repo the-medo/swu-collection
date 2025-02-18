@@ -30,6 +30,9 @@ export type GroupByOptions = (typeof GROUP_BY_OPTIONS)[number];
 
 export enum CollectionSortBy {
   RARITY = 'rarity',
+  PRICE = 'price',
+  QUANTITY = 'qty',
+  CARD_NUMBER = 'card_number',
   CARD_COST = 'card_cost',
   CARD_NAME = 'card_name',
   CARD_TYPE = 'card_type',
@@ -39,11 +42,14 @@ export enum CollectionSortBy {
 
 export const SORT_BY_OPTIONS = [
   { value: CollectionSortBy.CARD_NAME, label: 'Name' },
+  { value: CollectionSortBy.PRICE, label: 'Price' },
+  { value: CollectionSortBy.CARD_NUMBER, label: 'Card No.' },
   { value: CollectionSortBy.CARD_COST, label: 'Cost' },
   { value: CollectionSortBy.RARITY, label: 'Rarity' },
   { value: CollectionSortBy.ASPECT, label: 'Aspect' },
   { value: CollectionSortBy.CARD_TYPE, label: 'Card Type' },
   { value: CollectionSortBy.VARIANT_NAME, label: 'Variant Name' },
+  { value: CollectionSortBy.QUANTITY, label: 'Quantity' },
 ];
 export type SortByOptions = (typeof SORT_BY_OPTIONS)[number];
 
