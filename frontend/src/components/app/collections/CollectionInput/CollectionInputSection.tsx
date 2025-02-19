@@ -19,8 +19,8 @@ const CollectionInputSection: React.FC<CollectionInputSectionProps> = ({ collect
   return (
     <Card>
       <Tabs defaultValue="name" className="w-[400px]">
-        <CardHeader>
-          <CardTitle>Insert cards by...</CardTitle>
+        <CardHeader className="pb-0">
+          <CardTitle className="pb-2">Insert cards to collection </CardTitle>
           <CardDescription>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="name">Name</TabsTrigger>

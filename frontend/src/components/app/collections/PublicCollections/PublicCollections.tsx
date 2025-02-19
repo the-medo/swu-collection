@@ -2,11 +2,23 @@ import CollectionTable from '../CollectionCardTable/CollectionTable';
 import { useMemo } from 'react';
 import { UserCollectionData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import { useGetCollections } from '@/api/useGetCollections.ts';
+import { usePublicCollectionsStore } from '@/components/app/collections/PublicCollections/usePublicCollectionsStore.ts';
 
 interface PublicCollectionsProps {}
 
-const PublicCollections: React.FC<PublicCollectionsProps> = ({}) => {
-  const { data, isFetching } = useGetCollections();
+const PublicCollections: React.FC<PublicCollectionsProps> = () => {
+  const { country, state } = usePublicCollectionsStore();
+
+  const params = useMemo(
+    () => ({
+      wantlist: false,
+      country: country ?? undefined,
+      state: state ?? undefined,
+    }),
+    [country, state],
+  );
+
+  const { data, isFetching } = useGetCollections(params);
 
   const load = isFetching;
 
@@ -17,7 +29,11 @@ const PublicCollections: React.FC<PublicCollectionsProps> = ({}) => {
     return [];
   }, [data]);
 
-  return <CollectionTable variant="public" collections={collections} loading={load} />;
+  return (
+    <>
+      <CollectionTable variant="public" collections={collections} loading={load} />
+    </>
+  );
 };
 
 export default PublicCollections;

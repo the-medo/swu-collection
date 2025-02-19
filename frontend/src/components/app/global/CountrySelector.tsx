@@ -22,10 +22,14 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   value,
   allowClear = true,
 }) => {
+  console.log('Hmmm');
   const [country, setCountry] = React.useState<CountryCode | null>(value ?? null);
   const { data: data } = useCountryList();
 
-  useEffect(() => setCountry(value ?? null), [value]);
+  useEffect(() => {
+    console.log('Hee!');
+    setCountry(value ?? null);
+  }, [value]);
 
   const countryKeys = useMemo(
     () => (data?.countries ? Object.keys(data.countries) : []) as CountryCode[],
@@ -50,9 +54,23 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
     [data?.countries, country],
   );
 
+  const onOpenChange = useCallback((open: boolean) => {
+    console.log('Open changed', open);
+    setTimeout(() => {
+      document.body.style.pointerEvents = 'auto';
+    }, 100);
+
+    if (!open) {
+    }
+  }, []);
+
   return (
     <div className="flex items-center gap-4">
-      <Select value={country ?? undefined} onValueChange={onChangeHandler}>
+      <Select
+        value={country ?? undefined}
+        onValueChange={onChangeHandler}
+        onOpenChange={onOpenChange}
+      >
         <SelectTrigger className="w-[300px]">
           {country && (
             <img src={selectedCountry?.flag} alt={selectedCountry?.code} className="w-6" />

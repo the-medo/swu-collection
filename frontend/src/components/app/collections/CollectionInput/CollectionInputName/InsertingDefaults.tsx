@@ -42,7 +42,7 @@ const InsertingDefaults: React.FC<InsertingDefaultsProps> = ({}) => {
       <AccordionItem value="item-1">
         <AccordionTrigger>Inserting defaults</AccordionTrigger>
         <AccordionContent>
-          <div className="grid grid-cols-[auto,1fr,auto] grid-rows-3 gap-4 p-4">
+          <div className="grid grid-cols-[auto,1fr,auto] grid-rows-3 gap-4 p-4 pt-0">
             <DefaultVariantNameSelect value={defaultVariantName} onChange={setDefaultVariantName} />
             <DefaultFoilSwitch value={defaultFoil} onChange={setDefaultFoil} />
             <DefaultNoteInput value={defaultNote} onChange={setDefaultNote} />
