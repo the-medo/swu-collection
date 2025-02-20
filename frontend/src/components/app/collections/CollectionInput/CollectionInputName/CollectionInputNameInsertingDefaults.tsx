@@ -16,9 +16,11 @@ import DefaultAmountInput from '@/components/app/collections/CollectionInput/com
 import DefaultLanguageSelect from '@/components/app/collections/CollectionInput/components/DefaultLanguageSelect.tsx';
 import DefaultConditionSelect from '@/components/app/collections/CollectionInput/components/DefaultConditionSelect.tsx';
 
-interface InsertingDefaultsProps {}
+interface CollectionInputNameInsertingDefaultsProps {}
 
-const InsertingDefaults: React.FC<InsertingDefaultsProps> = ({}) => {
+const CollectionInputNameInsertingDefaults: React.FC<
+  CollectionInputNameInsertingDefaultsProps
+> = ({}) => {
   const {
     defaultVariantName,
     defaultFoil,
@@ -56,4 +58,4 @@ const InsertingDefaults: React.FC<InsertingDefaultsProps> = ({}) => {
   );
 };
 
-export default InsertingDefaults;
+export default CollectionInputNameInsertingDefaults;

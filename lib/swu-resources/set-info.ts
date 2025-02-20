@@ -1,3 +1,5 @@
+import { SwuSet } from '../../types/enums.ts';
+
 export type SetInfo = {
   code: string;
   name: string;
@@ -6,26 +8,35 @@ export type SetInfo = {
   expansionId: number;
 };
 
-export const setInfo: Record<string, SetInfo | undefined> = {
-  sor: {
-    code: 'SOR',
+export const setInfo: Record<SwuSet, SetInfo> = {
+  [SwuSet.SOR]: {
+    code: SwuSet.SOR,
     name: 'Spark of Rebellion',
     cardCount: 252,
     sortValue: 1,
     expansionId: 2,
   },
-  shd: {
-    code: 'SHD',
+  [SwuSet.SHD]: {
+    code: SwuSet.SHD,
     name: 'Shadows of the Galaxy',
     cardCount: 262,
     sortValue: 2,
     expansionId: 8,
   },
-  twi: {
-    code: 'TWI',
+  [SwuSet.TWI]: {
+    code: SwuSet.TWI,
     name: 'Twilight of the Republic',
     cardCount: 257,
     sortValue: 3,
     expansionId: 18,
   },
+  [SwuSet.JTL]: {
+    code: SwuSet.JTL,
+    name: 'Jump to Lightspeed',
+    cardCount: 257,
+    sortValue: 4,
+    expansionId: 18,
+  },
 } as const;
+
+export const setArray: SetInfo[] = Object.values(setInfo);

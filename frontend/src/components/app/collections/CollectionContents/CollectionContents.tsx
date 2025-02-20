@@ -2,10 +2,11 @@ import { useGetCollectionCards } from '@/api/useGetCollectionCards.ts';
 import CollectionLayoutSettings from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionLayoutSettings.tsx';
 import CollectionGroups from '@/components/app/collections/CollectionContents/CollectionGroups/CollectionGroups.tsx';
 import { CollectionCard } from '../../../../../../types/CollectionCard.ts';
-import CollectionFilter from '@/components/app/collections/CollectionContents/CollectionFilter/CollectionFilter.tsx';
-import { useCollectionFilterStore } from '@/components/app/collections/CollectionContents/CollectionFilter/useCollectionFilterStore.ts';
+import CollectionFilter from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionFilter.tsx';
+import { useCollectionFilterStore } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionFilterStore.ts';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils.ts';
+import { Card, CardHeader } from '@/components/ui/card.tsx';
 
 interface CollectionContentsProps {
   collectionId: string;
@@ -42,8 +43,12 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <CollectionLayoutSettings />
-      <CollectionFilter />
+      <Card>
+        <CardHeader className="p-2 flex flex-col gap-2">
+          <CollectionLayoutSettings />
+          <CollectionFilter />
+        </CardHeader>
+      </Card>
       <div
         className={cn('flex', {
           'opacity-50': loading,

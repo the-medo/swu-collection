@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils.ts';
 import CardLanguageSelect from '@/components/app/global/CardLanguageSelect.tsx';
 import CardConditionSelect from '@/components/app/global/CardConditionSelect.tsx';
 import NoteInput from '@/components/app/collections/CollectionInput/components/NoteInput.tsx';
-import InsertingDefaults from '@/components/app/collections/CollectionInput/CollectionInputName/InsertingDefaults.tsx';
+import CollectionInputNameInsertingDefaults from '@/components/app/collections/CollectionInput/CollectionInputName/CollectionInputNameInsertingDefaults.tsx';
 import { useCallback, useRef } from 'react';
 import { usePostCollectionCard } from '@/api/usePostCollectionCard.ts';
 import { cardConditionArray } from '../../../../../../../types/iterableEnumInfo.ts';
@@ -51,7 +51,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
     cardList,
     defaultVariantName,
     defaultAmount,
-    card: { card, variant, isSelectedVariant },
+    card: { card, variant },
     amount,
     note,
     foil,
@@ -98,7 +98,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
 
   return (
     <div className="flex flex-col gap-2">
-      <InsertingDefaults />
+      <CollectionInputNameInsertingDefaults />
       <Popover open={open}>
         <Command className="border w-[350px]" shouldFilter={false}>
           <PopoverTrigger asChild>
