@@ -1,18 +1,19 @@
 import * as React from 'react';
 import CountrySelector from '@/components/app/global/CountrySelector.tsx';
 import CountryStateSelector from '@/components/app/global/CountryStateSelector.tsx';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { CountryCode } from '../../../../../../server/db/lists.ts';
-import {
-  usePublicCollectionsStore,
-  usePublicCollectionsStoreActions,
-} from '@/components/app/collections/PublicCollections/usePublicCollectionsStore.ts';
+import { usePublicCollectionsStoreActions } from '@/components/app/collections/PublicCollections/usePublicCollectionsStore.ts';
+import { Card, CardHeader } from '@/components/ui/card.tsx';
+import { Button } from '@/components/ui/button.tsx';
 
 interface CountryAndStateSelectorsProps {}
 
 const CountryAndStateSelectors: React.FC<CountryAndStateSelectorsProps> = () => {
-  const { country, state } = usePublicCollectionsStore();
-  const { setCountry, setState } = usePublicCollectionsStoreActions();
+  const [country, setCountry] = useState<CountryCode | null>();
+  const [state, setState] = useState<string | null>();
+  const { setCountry: setStoreCountry, setState: setStoreState } =
+    usePublicCollectionsStoreActions();
 
   const onChangeCountry = useCallback((c: CountryCode | null) => {
     setCountry(c);
@@ -21,17 +22,27 @@ const CountryAndStateSelectors: React.FC<CountryAndStateSelectorsProps> = () => 
 
   const onChangeState = useCallback((s: string | null) => setState(s), []);
 
+  const onSubmit = useCallback(() => {
+    setStoreCountry(country ?? null);
+    setStoreState(state ?? null);
+  }, [country, state]);
+
   return (
-    <>
-      <CountrySelector value={country} onChangeCountry={onChangeCountry} />
-      {country && (
-        <CountryStateSelector
-          countryCode={country}
-          value={state}
-          onChangeCountryState={onChangeState}
-        />
-      )}
-    </>
+    <Card className="absolute bottom-4 right-4">
+      <CardHeader className="p-2">
+        <CountrySelector value={country} onChangeCountry={onChangeCountry} />
+        {country && (
+          <CountryStateSelector
+            countryCode={country}
+            value={state}
+            onChangeCountryState={onChangeState}
+          />
+        )}
+        <Button onClick={onSubmit} className="btn btn-primary">
+          Submit
+        </Button>
+      </CardHeader>
+    </Card>
   );
 };
 

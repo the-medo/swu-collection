@@ -4,7 +4,7 @@ import debounce from 'lodash.debounce';
 import {
   useCollectionFilterStore,
   useCollectionFilterStoreActions,
-} from '@/components/app/collections/CollectionContents/CollectionFilter/useCollectionFilterStore.ts';
+} from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionFilterStore.ts';
 import { Input } from '@/components/ui/input.tsx';
 
 const DEBOUNCE_DELAY = 250;
