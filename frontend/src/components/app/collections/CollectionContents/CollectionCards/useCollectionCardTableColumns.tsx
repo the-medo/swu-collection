@@ -19,7 +19,9 @@ import CollectionCardInput from '@/components/app/collections/CollectionContents
 import { getIdentificationFromCollectionCard } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import {
   CollectionLayout,
+  CollectionSortBy,
   useCollectionInfo,
+  useCollectionLayoutStoreActions,
 } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
 import { foilRenderer } from '@/lib/table/foilRenderer.tsx';
@@ -38,6 +40,7 @@ export function useCollectionCardTableColumns({
   layout,
   forceHorizontal = false,
 }: CollectionCardTableColumnsProps): ColumnDef<CollectionCard>[] {
+  const { setSortBy } = useCollectionLayoutStoreActions();
   const { data: currencyData } = useCurrencyList();
   const { currency, owned } = useCollectionInfo(collectionId);
   const onChange = useCollectionCardInput(collectionId);
@@ -71,7 +74,11 @@ export function useCollectionCardTableColumns({
     definitions.push({
       id: 'amount',
       accessorKey: 'amount',
-      header: 'Qty',
+      header: () => (
+        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.QUANTITY])}>
+          Qty
+        </div>
+      ),
       size: 4,
       cell: ({ getValue, row }) => {
         const amount = getValue() as number;
@@ -98,7 +105,11 @@ export function useCollectionCardTableColumns({
       definitions.push({
         id: 'cost',
         accessorKey: 'cardId',
-        header: 'Cost',
+        header: () => (
+          <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.CARD_COST])}>
+            Cost
+          </div>
+        ),
         size: 16,
         cell: ({ getValue }) => {
           const cardId = getValue() as string;
@@ -119,7 +130,11 @@ export function useCollectionCardTableColumns({
     definitions.push({
       id: 'cardId',
       accessorKey: 'cardId',
-      header: 'Card',
+      header: () => (
+        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.CARD_NAME])}>
+          Card
+        </div>
+      ),
       cell: ({ getValue, row }) => {
         const cardId = getValue() as string;
         const variantId = row.original.variantId;
@@ -160,7 +175,11 @@ export function useCollectionCardTableColumns({
     definitions.push({
       id: 'variantId',
       accessorKey: 'variantId',
-      header: 'Variant',
+      header: () => (
+        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.VARIANT_NAME])}>
+          Variant
+        </div>
+      ),
       size: 16,
       cell: ({ getValue, row }) => {
         const cardId = row.original.cardId;
@@ -200,7 +219,11 @@ export function useCollectionCardTableColumns({
     definitions.push({
       id: 'cardNo',
       accessorKey: 'cardId',
-      header: 'No.',
+      header: () => (
+        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.CARD_NUMBER])}>
+          No.
+        </div>
+      ),
       size: 8,
       cell: ({ getValue, row }) => {
         const cardId = getValue() as string;
@@ -238,7 +261,11 @@ export function useCollectionCardTableColumns({
     definitions.push({
       id: 'rarity',
       accessorKey: 'cardId',
-      header: 'R.',
+      header: () => (
+        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.RARITY])}>
+          R.
+        </div>
+      ),
       size: 4,
       cell: ({ getValue }) => {
         const cardId = getValue() as string;
@@ -294,7 +321,11 @@ export function useCollectionCardTableColumns({
 
     definitions.push({
       accessorKey: 'price',
-      header: 'Price',
+      header: () => (
+        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.PRICE])}>
+          Price
+        </div>
+      ),
       size: owned ? 32 : 20,
       cell: ({ getValue, row }) => {
         const price = getValue() as number | undefined;

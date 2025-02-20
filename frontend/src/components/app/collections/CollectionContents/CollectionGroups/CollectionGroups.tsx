@@ -89,7 +89,7 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
 
   return (
     <>
-      <Accordion type="multiple" className="pl-4" defaultValue={cardGroupData?.sortedIds}>
+      <Accordion type="multiple" className="pl-4 w-full" defaultValue={cardGroupData?.sortedIds}>
         {cardGroupData?.sortedIds.map(id => {
           const cards = cardGroupData.groups[id]?.cards ?? [];
           const label = cardGroupData.groups[id]?.label;

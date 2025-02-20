@@ -95,6 +95,10 @@ const changeGroupBy = (changedGroupBy: CollectionGroupBy, index: number) =>
   store.setState(state => {
     return { ...state, groupBy: state.groupBy.map((g, i) => (i === index ? changedGroupBy : g)) };
   });
+const setSortBy = (newSortBy: CollectionSortBy[]) =>
+  store.setState(state => {
+    return { ...state, sortBy: newSortBy };
+  });
 const addSortBy = (newSortBy: CollectionSortBy) =>
   store.setState(state => {
     if (state.sortBy.includes(newSortBy)) return state;
@@ -133,6 +137,7 @@ export function useCollectionLayoutStoreActions() {
     addGroupBy,
     removeGroupBy,
     changeGroupBy,
+    setSortBy,
     addSortBy,
     removeSortBy,
     changeSortBy,
