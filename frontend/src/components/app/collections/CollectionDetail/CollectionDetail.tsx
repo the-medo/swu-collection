@@ -12,6 +12,7 @@ import { publicRenderer } from '@/lib/table/publicRenderer.tsx';
 import DeleteCollectionDialog from '@/components/app/dialogs/DeleteCollectionDialog.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import CollectionStats from '@/components/app/collections/CollectionStats/CollectionStats.tsx';
+import CollectionActions from '@/components/app/collections/CollectionActions/CollectionActions.tsx';
 
 const routeApi = getRouteApi('/collections/$collectionId/');
 
@@ -72,6 +73,7 @@ const CollectionDetail: React.FC = () => {
       <div className="flex flex-row gap-4">
         <CollectionContents collectionId={collectionId} />
         <div className="flex flex-col gap-4 w-[400px]">
+          <CollectionActions collectionId={collectionId} />
           <CollectionStats collectionId={collectionId} />
           {owned && <CollectionInputSection collectionId={collectionId} />}
         </div>
