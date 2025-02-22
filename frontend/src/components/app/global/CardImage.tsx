@@ -111,7 +111,7 @@ const CardImage: React.FC<CardImageProps> = ({
           size: size || 'original',
           horizontal: forceHorizontal,
         }),
-        'relative rounded-lg bg-gray-200',
+        'relative rounded-lg  bg-secondary',
       )}
     >
       <img

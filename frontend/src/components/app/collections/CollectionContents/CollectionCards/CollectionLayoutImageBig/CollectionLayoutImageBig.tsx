@@ -53,7 +53,7 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
 
         return (
           <div
-            className="max-w-[200px] flex flex-col gap-1 rounded-lg bg-gray-200"
+            className="max-w-[200px] flex flex-col gap-1 rounded-lg bg-secondary"
             key={`${c.variantId}-${c.foil}`}
           >
             <CardImage
@@ -65,7 +65,7 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
               forceHorizontal={horizontal}
             >
               {(c.price || owned) && (
-                <div className="absolute bottom-0 right-0 w-fit min-w-20 flex grow-0 items-center gap-1 bg-gray-200 bg-opacity-80 py-2 px-2 mr-0 mb-0">
+                <div className="absolute bottom-0 right-0 w-fit min-w-20 flex grow-0 items-center gap-1 bg-secondary bg-opacity-80 py-2 px-2 mr-0 mb-0">
                   <div className="flex gap-2 items-center w-full justify-end">
                     {owned ? (
                       //@ts-ignore
@@ -101,7 +101,9 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
                     onChange={onChange}
                   />
                 ) : (
-                  <div className="font-bold text-center px-2 rounded-lg bg-white">{c.amount}x</div>
+                  <div className="font-bold text-center px-2 rounded-lg bg-background">
+                    {c.amount}x
+                  </div>
                 )}
               </div>
             </div>

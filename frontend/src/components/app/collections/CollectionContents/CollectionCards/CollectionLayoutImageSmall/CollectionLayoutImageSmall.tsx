@@ -45,7 +45,7 @@ const CollectionLayoutImageSmall: React.FC<CollectionLayoutImageSmallProps> = ({
         return (
           <CollectionCardHoverDetail cardData={card} collectionId={collectionId} collectionCard={c}>
             <div
-              className="max-w-[100px] flex flex-col gap-1 bg-gray-200 rounded-lg"
+              className="max-w-[100px] flex flex-col gap-1 bg-secondary gray-200 rounded-lg"
               key={`${c.variantId}-${c.foil}`}
             >
               <CardImage
@@ -56,12 +56,12 @@ const CollectionLayoutImageSmall: React.FC<CollectionLayoutImageSmallProps> = ({
                 forceHorizontal={horizontal}
                 backSideButton={false}
               >
-                <div className="absolute bottom-0 right-0 w-fit flex flex-col grow-0 items-end mr-1 mb-1 bg-white opacity-90 rounded-lg">
+                <div className="absolute bottom-0 right-0 w-fit flex flex-col grow-0 items-end mr-1 mb-1 bg-background opacity-90 rounded-lg">
                   <div className="font-medium text-sm px-2">{c.amount}x</div>
                 </div>
               </CardImage>
               {c.price && (
-                <div className="text-xs p-1 pt-0 text-gray-700 text-right">
+                <div className="text-xs p-1 pt-0 text-secondary-foreground text-right">
                   {c.price} {currency}
                 </div>
               )}
