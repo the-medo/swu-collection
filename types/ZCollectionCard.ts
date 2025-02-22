@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CardCondition, CardLanguage } from './enums.ts';
+import { CardCondition, CardLanguage, SwuRarity, SwuSet } from './enums.ts';
 
 export const zCollectionCardSchema = z.object({
   collectionId: z.string().uuid(),
@@ -56,9 +56,20 @@ export const zCollectionCardDeleteRequest = zCollectionCardSchema
   })
   .required();
 
+export const zCollectionBulkInsertRequest = z.object({
+  condition: z.number().int().min(0).max(6),
+  language: z.nativeEnum(CardLanguage).default(CardLanguage.EN),
+  sets: z.array(z.nativeEnum(SwuSet)),
+  rarities: z.array(z.nativeEnum(SwuRarity)),
+  variants: z.array(z.string()),
+  note: z.string().nullable(),
+  amount: z.number().int().min(-3).max(3),
+});
+
 export type ZCollectionCard = z.infer<typeof zCollectionCardSchema>;
 export type ZCollectionCardCreateRequest = z.infer<typeof zCollectionCardCreateRequest>;
 export type ZCollectionCardUpdateRequest = z.infer<typeof zCollectionCardUpdateRequest>;
 export type ZCollectionCardDeleteRequest = z.infer<typeof zCollectionCardDeleteRequest>;
+export type ZCollectionBulkInsertRequest = z.infer<typeof zCollectionBulkInsertRequest>;
 
 export const fakeCollectionCards: ZCollectionCard[] = [];

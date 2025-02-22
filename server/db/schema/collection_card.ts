@@ -9,6 +9,7 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 import { collection } from './collection.ts';
+import type { InferInsertModel } from 'drizzle-orm';
 
 export const collectionCard = pgTable(
   'collection_card',
@@ -47,3 +48,5 @@ export const collectionCard = pgTable(
     };
   },
 );
+
+export type InsertCollectionCard = InferInsertModel<typeof collectionCard>;
