@@ -12,11 +12,12 @@ import RarityMultiSelect from '@/components/app/global/RarityMultiSelect.tsx';
 import { MultiSelect } from '@/components/ui/multi-select.tsx';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { usePostCollectionCard } from '@/api/usePostCollectionCard.ts';
 import { useCallback } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Label } from '@/components/ui/label.tsx';
+import { usePostCollectionBulk } from '@/api/usePostCollectionBulk.ts';
+import { cardConditionObj } from '../../../../../../../types/iterableEnumInfo.ts';
 
 const variantOptions = [
   { value: 'Standard', label: 'Standard' },
@@ -26,7 +27,7 @@ const variantOptions = [
 ];
 
 interface CollectionInputBulkProps {
-  collectionId: string | undefined;
+  collectionId: string;
 }
 
 const CollectionInputBulk: React.FC<CollectionInputBulkProps> = ({ collectionId }) => {
@@ -43,13 +44,32 @@ const CollectionInputBulk: React.FC<CollectionInputBulkProps> = ({ collectionId 
     setVariants,
   } = useCollectionInputBulkStoreActions();
 
-  const mutation = usePostCollectionCard(collectionId);
+  const mutation = usePostCollectionBulk(collectionId);
   const canSubmit =
-    areYouSure && amount !== 0 && variants.length > 0 && sets.length > 0 && rarities.length > 0;
+    areYouSure &&
+    !mutation.isPending &&
+    amount !== 0 &&
+    variants.length > 0 &&
+    sets.length > 0 &&
+    rarities.length > 0;
 
-  const submitHandler = useCallback(() => {
-    console.log('submitHandler');
-  }, []);
+  const submitHandler = useCallback(async () => {
+    if (!canSubmit) return;
+    try {
+      await mutation.mutateAsync({
+        condition: cardConditionObj[condition].numericValue,
+        language,
+        sets,
+        rarities,
+        variants,
+        note,
+        amount: amount ?? 0,
+      });
+      setAreYouSure(false);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [canSubmit, condition, language, sets, rarities, variants, note, amount]);
 
   return (
     <div className="flex flex-col gap-2">

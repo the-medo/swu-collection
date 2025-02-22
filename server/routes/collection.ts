@@ -443,7 +443,8 @@ export const collectionRoute = new Hono<AuthExtension>()
 
     const deletedCollectionCards = await db
       .delete(collectionCardTable)
-      .where(and(cardCollectionId, lte(collectionCardTable.amount, 0)));
+      .where(and(cardCollectionId, lte(collectionCardTable.amount, 0)))
+      .returning();
 
     return c.json({
       data: {
