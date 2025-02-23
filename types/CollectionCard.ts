@@ -1,10 +1,10 @@
-import { CardCondition, type CardLanguage } from './enums.ts';
+import { type CardLanguage } from './enums.ts';
 
 export interface CollectionCard {
   cardId: string;
   variantId: string;
   foil: boolean;
-  condition: CardCondition;
+  condition: number;
   language: CardLanguage;
   note: string;
   amount: number;

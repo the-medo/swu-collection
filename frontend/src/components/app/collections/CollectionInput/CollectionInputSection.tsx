@@ -13,7 +13,7 @@ import * as React from 'react';
 import CollectionInputImport from '@/components/app/collections/CollectionInput/CollectionInputImport/CollectionInputImport.tsx';
 
 interface CollectionInputSectionProps {
-  collectionId: string | undefined;
+  collectionId: string;
 }
 
 const CollectionInputSection: React.FC<CollectionInputSectionProps> = ({ collectionId }) => {

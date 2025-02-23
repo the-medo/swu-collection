@@ -7,7 +7,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { NotebookPen } from 'lucide-react';
-import { CardCondition, CardLanguage } from '../../../../../../../types/enums.ts';
+import { CardLanguage } from '../../../../../../../types/enums.ts';
 import { languageRenderer } from '@/lib/table/languageRenderer.tsx';
 import { conditionRenderer } from '@/lib/table/conditionRenderer.tsx';
 import { variantRenderer } from '@/lib/table/variantRenderer.tsx';
@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils.ts';
 interface CollectionCardTableColumnsProps {
   collectionId: string;
   cardList: CardList | undefined;
-  layout: CollectionLayout;
+  layout: CollectionLayout | 'table-duplicate';
   forceHorizontal?: boolean;
 }
 
@@ -127,50 +127,54 @@ export function useCollectionCardTableColumns({
       });
     }
 
-    definitions.push({
-      id: 'cardId',
-      accessorKey: 'cardId',
-      header: () => (
-        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.CARD_NAME])}>
-          Card
-        </div>
-      ),
-      cell: ({ getValue, row }) => {
-        const cardId = getValue() as string;
-        const variantId = row.original.variantId;
-        const foil = row.original.foil;
+    if (layout !== 'table-duplicate') {
+      definitions.push({
+        id: 'cardId',
+        accessorKey: 'cardId',
+        header: () => (
+          <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.CARD_NAME])}>
+            Card
+          </div>
+        ),
+        cell: ({ getValue, row }) => {
+          const cardId = getValue() as string;
+          const variantId = row.original.variantId;
+          const foil = row.original.foil;
 
-        const card = cardList?.[cardId];
-        if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+          const card = cardList?.[cardId];
+          if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
 
-        return (
-          <HoverCard openDelay={0} closeDelay={0}>
-            <HoverCardTrigger>
-              <div className="flex py-1 gap-1 flex-col">
-                <span>{card.name}</span>
-                {layout === CollectionLayout.TABLE_IMAGE && (
-                  <div className="flex gap-1">
-                    {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
-                    {card?.aspects.map((a, i) => (
-                      <AspectIcon key={`${a}${i}`} aspect={a} size="small" />
-                    ))}
-                  </div>
-                )}
-              </div>
-            </HoverCardTrigger>
-            <HoverCardContent side="right" className=" w-fit">
-              <CardImage
-                card={card}
-                cardVariantId={variantId}
-                size={card?.front?.horizontal ? 'h350' : 'w200'}
-                foil={foil}
-                forceHorizontal={card?.front?.horizontal}
-              />
-            </HoverCardContent>
-          </HoverCard>
-        );
-      },
-    });
+          return (
+            <HoverCard openDelay={0} closeDelay={0}>
+              <HoverCardTrigger>
+                <div className="flex py-1 gap-1 flex-col">
+                  <span>{card.name}</span>
+                  {layout === CollectionLayout.TABLE_IMAGE && (
+                    <div className="flex gap-1">
+                      {card?.cost !== null ? (
+                        <CostIcon cost={card?.cost ?? 0} size="small" />
+                      ) : null}
+                      {card?.aspects.map((a, i) => (
+                        <AspectIcon key={`${a}${i}`} aspect={a} size="small" />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent side="right" className=" w-fit">
+                <CardImage
+                  card={card}
+                  cardVariantId={variantId}
+                  size={card?.front?.horizontal ? 'h350' : 'w200'}
+                  foil={foil}
+                  forceHorizontal={card?.front?.horizontal}
+                />
+              </HoverCardContent>
+            </HoverCard>
+          );
+        },
+      });
+    }
 
     definitions.push({
       id: 'variantId',
@@ -213,29 +217,31 @@ export function useCollectionCardTableColumns({
       accessorKey: 'condition',
       header: 'Cond.',
       size: 8,
-      cell: ({ getValue }) => conditionRenderer(getValue() as CardCondition),
+      cell: ({ getValue }) => conditionRenderer(getValue() as number),
     });
 
-    definitions.push({
-      id: 'cardNo',
-      accessorKey: 'cardId',
-      header: () => (
-        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.CARD_NUMBER])}>
-          No.
-        </div>
-      ),
-      size: 8,
-      cell: ({ getValue, row }) => {
-        const cardId = getValue() as string;
-        const variantId = row.original.variantId;
+    if (layout !== 'table-duplicate') {
+      definitions.push({
+        id: 'cardNo',
+        accessorKey: 'cardId',
+        header: () => (
+          <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.CARD_NUMBER])}>
+            No.
+          </div>
+        ),
+        size: 8,
+        cell: ({ getValue, row }) => {
+          const cardId = getValue() as string;
+          const variantId = row.original.variantId;
 
-        const card = cardList?.[cardId];
-        if (!card) return <Skeleton className="w-8 h-4 rounded-md" />;
-        const variant = card.variants[variantId];
+          const card = cardList?.[cardId];
+          if (!card) return <Skeleton className="w-8 h-4 rounded-md" />;
+          const variant = card.variants[variantId];
 
-        return <span className="text-xs text-gray-500 w-8">{variant?.cardNo}</span>;
-      },
-    });
+          return <span className="text-xs text-gray-500 w-8">{variant?.cardNo}</span>;
+        },
+      });
+    }
 
     definitions.push({
       id: 'set',
@@ -258,24 +264,26 @@ export function useCollectionCardTableColumns({
       },
     });
 
-    definitions.push({
-      id: 'rarity',
-      accessorKey: 'cardId',
-      header: () => (
-        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.RARITY])}>
-          R.
-        </div>
-      ),
-      size: 4,
-      cell: ({ getValue }) => {
-        const cardId = getValue() as string;
+    if (layout !== 'table-duplicate') {
+      definitions.push({
+        id: 'rarity',
+        accessorKey: 'cardId',
+        header: () => (
+          <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.RARITY])}>
+            R.
+          </div>
+        ),
+        size: 4,
+        cell: ({ getValue }) => {
+          const cardId = getValue() as string;
 
-        const card = cardList?.[cardId];
-        if (!card) return <Skeleton className="w-4 h-4 rounded-md" />;
+          const card = cardList?.[cardId];
+          if (!card) return <Skeleton className="w-4 h-4 rounded-md" />;
 
-        return <RarityIcon rarity={card.rarity} size="small" />;
-      },
-    });
+          return <RarityIcon rarity={card.rarity} size="small" />;
+        },
+      });
+    }
 
     definitions.push({
       id: 'note',

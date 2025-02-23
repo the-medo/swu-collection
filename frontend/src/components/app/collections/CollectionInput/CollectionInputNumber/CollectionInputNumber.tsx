@@ -18,9 +18,10 @@ import {
 import { Input } from '@/components/ui/input.tsx';
 import CollectionInputNumberInsertingDefaults from '@/components/app/collections/CollectionInput/CollectionInputNumber/CollectionInputNumberInsertingDefaults.tsx';
 import SetSelect from '@/components/app/global/SetSelect.tsx';
+import CollectionDuplicates from '@/components/app/collections/CollectionInput/CollectionDuplicates/CollectionDuplicates.tsx';
 
 interface CollectionInputNumberProps {
-  collectionId: string | undefined;
+  collectionId: string;
 }
 
 const CollectionInputNumber: React.FC<CollectionInputNumberProps> = ({ collectionId }) => {
@@ -156,6 +157,14 @@ const CollectionInputNumber: React.FC<CollectionInputNumberProps> = ({ collectio
       >
         {mutation.isPending ? '...' : 'Add to collection'}
       </Button>
+      <CollectionDuplicates
+        collectionId={collectionId}
+        selectedCardId={selectedCardId}
+        selectedVariantId={selectedVariantId}
+        foil={foil}
+        condition={condition}
+        language={language}
+      />
     </div>
   );
 };

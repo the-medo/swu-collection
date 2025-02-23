@@ -27,11 +27,12 @@ import { cardConditionArray } from '../../../../../../../types/iterableEnumInfo.
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
+import CollectionDuplicates from '@/components/app/collections/CollectionInput/CollectionDuplicates/CollectionDuplicates.tsx';
 
 // https://github.com/pacocoursey/cmdk/discussions/221#discussioncomment-11247291
 
 interface CollectionInputNameProps {
-  collectionId: string | undefined;
+  collectionId: string;
 }
 
 const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId }) => {
@@ -258,6 +259,14 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
       >
         {mutation.isPending ? '...' : 'Add to collection'}
       </Button>
+      <CollectionDuplicates
+        collectionId={collectionId}
+        selectedCardId={selectedCardId}
+        selectedVariantId={selectedVariantId}
+        foil={foil}
+        condition={condition}
+        language={language}
+      />
     </div>
   );
 };
