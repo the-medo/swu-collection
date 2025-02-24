@@ -54,7 +54,7 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
           'opacity-50': loading,
         })}
       >
-        <CollectionGroups depth={0} cards={cards} collectionId={collectionId} />
+        <CollectionGroups depth={0} cards={cards} collectionId={collectionId} loading={loading} />
       </div>
     </div>
   );

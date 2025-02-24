@@ -8,12 +8,14 @@ interface CollectionLayoutTableImageProps {
   collectionId: string;
   cards: CollectionCard[];
   horizontal?: boolean;
+  dataTransforming?: boolean;
 }
 
 const CollectionLayoutTableImage: React.FC<CollectionLayoutTableImageProps> = ({
   collectionId,
   cards,
   horizontal = false,
+  dataTransforming,
 }) => {
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
   const columns = useCollectionCardTableColumns({
@@ -23,7 +25,7 @@ const CollectionLayoutTableImage: React.FC<CollectionLayoutTableImageProps> = ({
     forceHorizontal: horizontal,
   });
 
-  const loading = isFetchingCardList;
+  const loading = isFetchingCardList || dataTransforming;
 
   return <DataTable columns={columns} data={cards} loading={loading} />;
 };

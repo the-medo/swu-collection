@@ -17,7 +17,7 @@ const CollectionActions: React.FC<CollectionActionsProps> = ({ collectionId }) =
 
   return (
     <Card>
-      <CardContent className="flex gap-2 items-center p-2">
+      <CardContent className="flex gap-2 items-center p-2 flex-wrap">
         <Button
           size="sm"
           className={cn({

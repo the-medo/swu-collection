@@ -16,18 +16,20 @@ interface CollectionLayoutImageBigProps {
   collectionId: string;
   cards: CollectionCard[];
   horizontal?: boolean;
+  dataTransforming?: boolean;
 }
 
 const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
   collectionId,
   cards,
   horizontal = false,
+  dataTransforming,
 }) => {
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
   const { currency, owned } = useCollectionInfo(collectionId);
   const onChange = useCollectionCardInput(collectionId);
 
-  const loading = isFetchingCardList;
+  const loading = isFetchingCardList || dataTransforming;
 
   return (
     <div className="flex gap-4 flex-wrap">

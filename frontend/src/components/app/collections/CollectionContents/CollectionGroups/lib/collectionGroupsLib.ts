@@ -94,5 +94,5 @@ export const sortCardsBy = (
   sorts: CollectionSortBy[],
 ) => {
   const [sortBy, ...nextSorts] = sorts;
-  cards.sort(getCollectionCardSorter(sortBy)(cardList, nextSorts));
+  return cards.toSorted(getCollectionCardSorter(sortBy)(cardList, nextSorts));
 };

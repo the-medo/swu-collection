@@ -22,12 +22,10 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   value,
   allowClear = true,
 }) => {
-  console.log('Hmmm');
   const [country, setCountry] = React.useState<CountryCode | null>(value ?? null);
   const { data: data } = useCountryList();
 
   useEffect(() => {
-    console.log('Hee!');
     setCountry(value ?? null);
   }, [value]);
 
@@ -55,7 +53,6 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   );
 
   const onOpenChange = useCallback((open: boolean) => {
-    console.log('Open changed', open);
     setTimeout(() => {
       document.body.style.pointerEvents = 'auto';
     }, 100);

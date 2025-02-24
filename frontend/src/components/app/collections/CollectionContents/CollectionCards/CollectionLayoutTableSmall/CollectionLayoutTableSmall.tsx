@@ -8,12 +8,14 @@ interface CollectionLayoutTableSmallProps {
   collectionId: string;
   cards: CollectionCard[];
   horizontal?: boolean;
+  dataTransforming?: boolean;
 }
 
 const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({
   collectionId,
   cards,
   horizontal = false,
+  dataTransforming,
 }) => {
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
   const columns = useCollectionCardTableColumns({
@@ -23,7 +25,7 @@ const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({
     forceHorizontal: horizontal,
   });
 
-  const loading = isFetchingCardList;
+  const loading = isFetchingCardList || dataTransforming;
 
   return <DataTable columns={columns} data={cards} loading={loading} />;
 };

@@ -68,8 +68,6 @@ export const collectionRoute = new Hono<AuthExtension>()
       .limit(limit)
       .offset(offset);
 
-    console.log('Returning... ', collections);
-
     // Return the result
     return c.json(collections);
   })

@@ -25,8 +25,6 @@ function RouteComponent() {
       owned: 1,
     },
     onSubmit: async ({ value }) => {
-      // Do something with form data
-      console.log(value);
       const res = await api.collection.$post({
         json: {
           ...value,

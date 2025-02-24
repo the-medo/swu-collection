@@ -41,8 +41,6 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
         });
       });
 
-      console.log({ cardsByCardNo });
-
       return {
         cards: data.cards,
         cardIds,

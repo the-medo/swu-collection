@@ -7,9 +7,10 @@ import CollectionLayoutImageBig from '@/components/app/collections/CollectionCon
 import CollectionLayoutImageSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutImageSmall/CollectionLayoutImageSmall.tsx';
 import CollectionLayoutTableImage from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableImage/CollectionLayoutTableImage.tsx';
 import CollectionLayoutTableSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmall.tsx';
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useCardList } from '@/api/useCardList.ts';
 import {
+  CardGroupData,
   groupCardsBy,
   sortCardsBy,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
@@ -27,6 +28,7 @@ interface CollectionGroupsProps {
   depth: number;
   horizontal?: boolean;
   parentTitle?: string;
+  loading?: boolean;
 }
 
 const CollectionGroups: React.FC<CollectionGroupsProps> = ({
@@ -35,26 +37,55 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
   depth,
   horizontal = false,
   parentTitle = '',
+  loading,
 }) => {
   const { groupBy, sortBy, layout } = useCollectionLayoutStore();
-  const { data: cardList } = useCardList();
+  const { data: cardList, isFetching: isFetchingCardList } = useCardList();
+  const [groupLoading, setGroupLoading] = useState<boolean>(true);
+  const [sortLoading, setSortLoading] = useState<boolean>(true);
+  const [cardData, setCardData] = useState<CollectionCard[]>([]);
+  const [groupData, setGroupData] = useState<CardGroupData>();
 
   const groupByValue = groupBy[depth];
 
-  const cardGroupData = useMemo(() => {
-    return groupCardsBy(cardList?.cards ?? {}, cards, groupByValue);
-  }, [groupByValue, cards]);
+  useEffect(() => {
+    let handle: Timer | undefined = undefined;
+    if (!cardList) return;
+    setGroupLoading(true);
+
+    handle = setTimeout(() => {
+      setGroupData(groupCardsBy(cardList?.cards ?? {}, cards, groupByValue));
+      setGroupLoading(false);
+    }, 0);
+
+    return () => clearTimeout(handle);
+  }, [cardList, groupByValue, cards]);
+
+  useEffect(() => {
+    let handle: Timer | undefined = undefined;
+    if (!cardList) return;
+    if (depth !== groupBy.length) return;
+    setSortLoading(true);
+
+    handle = setTimeout(() => {
+      setCardData(sortCardsBy(cardList.cards, cards, sortBy));
+      setSortLoading(false);
+    }, 0);
+
+    return () => clearTimeout(handle);
+  }, [depth, cardList, groupBy.length, sortBy, cards]);
+
+  const dataTransforming = groupLoading || sortLoading || loading || isFetchingCardList;
 
   if (depth === groupBy.length) {
-    if (cardList) sortCardsBy(cardList.cards, cards, sortBy);
-
     if (layout === CollectionLayout.IMAGE_BIG) {
       return (
         <CollectionLayoutImageBig
           key={sortBy.join('-')}
           collectionId={collectionId}
-          cards={cards}
+          cards={cardData}
           horizontal={horizontal}
+          dataTransforming={dataTransforming}
         />
       );
     } else if (layout === CollectionLayout.IMAGE_SMALL) {
@@ -62,8 +93,9 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
         <CollectionLayoutImageSmall
           key={sortBy.join('-')}
           collectionId={collectionId}
-          cards={cards}
+          cards={cardData}
           horizontal={horizontal}
+          dataTransforming={dataTransforming}
         />
       );
     } else if (layout === CollectionLayout.TABLE_IMAGE) {
@@ -71,8 +103,9 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
         <CollectionLayoutTableImage
           key={sortBy.join('-')}
           collectionId={collectionId}
-          cards={cards}
+          cards={cardData}
           horizontal={horizontal}
+          dataTransforming={dataTransforming}
         />
       );
     } else if (layout === CollectionLayout.TABLE_SMALL) {
@@ -80,8 +113,9 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
         <CollectionLayoutTableSmall
           key={sortBy.join('-')}
           collectionId={collectionId}
-          cards={cards}
+          cards={cardData}
           horizontal={horizontal}
+          dataTransforming={dataTransforming}
         />
       );
     }
@@ -89,10 +123,10 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
 
   return (
     <>
-      <Accordion type="multiple" className="pl-4 w-full" defaultValue={cardGroupData?.sortedIds}>
-        {cardGroupData?.sortedIds.map(id => {
-          const cards = cardGroupData.groups[id]?.cards ?? [];
-          const label = cardGroupData.groups[id]?.label;
+      <Accordion type="multiple" className="pl-4 w-full" defaultValue={groupData?.sortedIds}>
+        {groupData?.sortedIds.map(id => {
+          const cards = groupData.groups[id]?.cards ?? [];
+          const label = groupData.groups[id]?.label;
           const title = parentTitle !== '' ? `${parentTitle} - ${label}` : label;
           if (cards.length === 0) return null;
           return (
@@ -104,9 +138,10 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
                 <CollectionGroups
                   depth={depth + 1}
                   cards={cards}
-                  horizontal={horizontal || cardGroupData.groups[id]?.horizontal}
+                  horizontal={horizontal || groupData.groups[id]?.horizontal}
                   parentTitle={title}
                   collectionId={collectionId}
+                  loading={dataTransforming}
                 />
               </AccordionContent>
             </AccordionItem>

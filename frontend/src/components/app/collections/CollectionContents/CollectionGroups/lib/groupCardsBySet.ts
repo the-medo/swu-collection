@@ -31,7 +31,6 @@ export const groupCardsBySet = (cardList: CardList, cards: CollectionCard[]): Ca
 
   cards.forEach(card => {
     const set = cardList[card.cardId]?.variants[card.variantId]?.set?.toString();
-    console.log(set);
     if (set) groups[set]?.cards.push(card);
   });
 

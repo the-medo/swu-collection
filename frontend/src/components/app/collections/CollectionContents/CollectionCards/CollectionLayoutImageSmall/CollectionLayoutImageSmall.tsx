@@ -10,17 +10,19 @@ interface CollectionLayoutImageSmallProps {
   collectionId: string;
   cards: CollectionCard[];
   horizontal?: boolean;
+  dataTransforming?: boolean;
 }
 
 const CollectionLayoutImageSmall: React.FC<CollectionLayoutImageSmallProps> = ({
   collectionId,
   cards,
   horizontal = false,
+  dataTransforming,
 }) => {
   const { currency } = useCollectionInfo(collectionId);
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
 
-  const loading = isFetchingCardList;
+  const loading = isFetchingCardList || dataTransforming;
 
   return (
     <div className="flex gap-4 flex-wrap">

@@ -19,7 +19,6 @@ export const useDeleteCollection = () => {
     onSuccess: result => {
       const deletedCollection = result.data;
 
-      console.log(['collection', deletedCollection?.id]);
       queryClient.invalidateQueries({
         queryKey: ['collection', deletedCollection?.id],
         exact: true,

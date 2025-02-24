@@ -40,8 +40,6 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
   }, [selectedCardId, collectionCards]);
 
   const inCollection = useMemo(() => {
-    console.log(collectionCards?.data ?? []);
-
     let exact: CollectionCard | undefined = undefined;
     let sameVariant: CollectionCard[] = [];
     let differentVariant: CollectionCard[] = [];
@@ -76,7 +74,12 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
 
   const loading = isFetching || isFetchingCardList;
 
-  return <DataTable columns={columns} data={inCollection.data} loading={loading} />;
+  return (
+    <div className="flex flex-col gap-4">
+      <span className="font-bold">Already owned versions of this card:</span>
+      <DataTable columns={columns} data={inCollection.data} loading={loading} />
+    </div>
+  );
 };
 
 export default CollectionDuplicates;
