@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils.ts';
 import { useMemo } from 'react';
 import { useCardList } from '@/api/useCardList.ts';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
+import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 
 interface CollectionStatsProps {
   collectionId: string;
@@ -18,6 +19,7 @@ const CollectionStats: React.FC<CollectionStatsProps> = ({ collectionId }) => {
   const { data: cardList } = useCardList();
   const collectionCurrency = data?.user.currency;
   const loading = isFetching || isFetchingCollectionCards;
+  const { collectionOrWantlist } = useCollectionInfo(collectionId);
 
   const stats = useMemo(() => {
     let totalPrice = 0;
@@ -49,7 +51,7 @@ const CollectionStats: React.FC<CollectionStatsProps> = ({ collectionId }) => {
     <Card className={cn({ 'opacity-50': loading })}>
       <CardHeader>
         <CardTitle className="flex justify-between items-start">
-          <span>Collection stats</span>{' '}
+          <span>{collectionOrWantlist} stats</span>{' '}
           <div className="flex flex-col gap-0">
             <span className="font-normal text-sm text-gray-500">
               {stats.totalCount} total cards

@@ -14,7 +14,7 @@ function PagePublicCollections() {
         <h3>Collections</h3>
         <NewCollectionDialog trigger={<Button>New collection</Button>} wantlist={false} />
       </div>
-      <PublicCollections />
+      <PublicCollections wantlist={false} />
     </div>
   );
 }

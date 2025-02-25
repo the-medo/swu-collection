@@ -5,14 +5,16 @@ import { useGetCollections } from '@/api/useGetCollections.ts';
 import { usePublicCollectionsStore } from '@/components/app/collections/PublicCollections/usePublicCollectionsStore.ts';
 import CountryAndStateSelectors from '@/components/app/collections/PublicCollections/CountryAndStateSelectors.tsx';
 
-interface PublicCollectionsProps {}
+interface PublicCollectionsProps {
+  wantlist?: boolean;
+}
 
-const PublicCollections: React.FC<PublicCollectionsProps> = () => {
+const PublicCollections: React.FC<PublicCollectionsProps> = ({ wantlist = false }) => {
   const { country, state } = usePublicCollectionsStore();
 
   const params = useMemo(
     () => ({
-      wantlist: false,
+      wantlist,
       country: country ?? undefined,
       state: state ?? undefined,
     }),

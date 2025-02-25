@@ -7,6 +7,7 @@ import { CardCondition, CardLanguage } from '../../../../../../../types/enums.ts
 import { cardConditionObj } from '../../../../../../../types/iterableEnumInfo.ts';
 import { useCollectionCardTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/useCollectionCardTableColumns.tsx';
 import { DataTable } from '@/components/ui/data-table.tsx';
+import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 
 interface CollectionDuplicatesProps {
   collectionId: string;
@@ -27,6 +28,7 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
 }) => {
   const { data: collectionCards, isFetching } = useGetCollectionCards(collectionId);
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
+  const { collectionOrWantlist } = useCollectionInfo(collectionId);
 
   const columns = useCollectionCardTableColumns({
     collectionId,
@@ -74,9 +76,15 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
 
   const loading = isFetching || isFetchingCardList;
 
+  if (inCollection.data.length === 0) return null;
+
   return (
-    <div className="flex flex-col gap-4">
-      <span className="font-bold">Already owned versions of this card:</span>
+    <div className="flex flex-col gap-2">
+      {collectionOrWantlist === 'Collection' ? (
+        <span className="font-bold">Already owned versions of this card:</span>
+      ) : (
+        <span className="font-bold">Already wanted versions of this card:</span>
+      )}
       <DataTable columns={columns} data={inCollection.data} loading={loading} />
     </div>
   );

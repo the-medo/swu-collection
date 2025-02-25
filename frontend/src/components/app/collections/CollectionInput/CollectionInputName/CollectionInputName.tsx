@@ -28,6 +28,7 @@ import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 import CollectionDuplicates from '@/components/app/collections/CollectionInput/CollectionDuplicates/CollectionDuplicates.tsx';
+import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 
 // https://github.com/pacocoursey/cmdk/discussions/221#discussioncomment-11247291
 
@@ -40,6 +41,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
   const amountInputRef = useRef<HTMLInputElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const mutation = usePostCollectionCard(collectionId);
+  const { collectionOrWantlist } = useCollectionInfo(collectionId);
 
   const {
     open,
@@ -257,7 +259,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
         disabled={mutation.isPending}
         onClick={canSubmit ? submitHandler : undefined}
       >
-        {mutation.isPending ? '...' : 'Add to collection'}
+        {mutation.isPending ? '...' : `Add to ${collectionOrWantlist.toLowerCase()}`}
       </Button>
       <CollectionDuplicates
         collectionId={collectionId}

@@ -18,6 +18,7 @@ import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { usePostCollectionBulk } from '@/api/usePostCollectionBulk.ts';
 import { cardConditionObj } from '../../../../../../../types/iterableEnumInfo.ts';
+import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 
 const variantOptions = [
   { value: 'Standard', label: 'Standard' },
@@ -33,6 +34,7 @@ interface CollectionInputBulkProps {
 const CollectionInputBulk: React.FC<CollectionInputBulkProps> = ({ collectionId }) => {
   const { areYouSure, amount, note, language, condition, sets, rarities, variants } =
     useCollectionInputBulkStore();
+  const { collectionOrWantlist } = useCollectionInfo(collectionId);
   const {
     setAreYouSure,
     setAmount,
@@ -124,7 +126,7 @@ const CollectionInputBulk: React.FC<CollectionInputBulkProps> = ({ collectionId 
           disabled={!canSubmit || mutation.isPending}
           onClick={canSubmit ? submitHandler : undefined}
         >
-          {mutation.isPending ? '...' : 'Add to collection'}
+          {mutation.isPending ? '...' : `Add to ${collectionOrWantlist.toLowerCase()}`}
         </Button>
       </div>
     </div>

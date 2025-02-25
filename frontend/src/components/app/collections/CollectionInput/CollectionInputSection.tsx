@@ -11,17 +11,22 @@ import {
 } from '@/components/ui/card.tsx';
 import * as React from 'react';
 import CollectionInputImport from '@/components/app/collections/CollectionInput/CollectionInputImport/CollectionInputImport.tsx';
+import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 
 interface CollectionInputSectionProps {
   collectionId: string;
 }
 
 const CollectionInputSection: React.FC<CollectionInputSectionProps> = ({ collectionId }) => {
+  const { collectionOrWantlist } = useCollectionInfo(collectionId);
+
   return (
     <Card>
       <Tabs defaultValue="name" className="w-[400px]">
         <CardHeader className="pb-0">
-          <CardTitle className="pb-2">Insert cards to collection </CardTitle>
+          <CardTitle className="pb-2">
+            Insert cards to {collectionOrWantlist.toLowerCase()}{' '}
+          </CardTitle>
           <CardDescription>
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="name">Name</TabsTrigger>

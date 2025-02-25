@@ -17,7 +17,6 @@ import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
 import { Route as WantlistsYourImport } from './routes/wantlists/your'
 import { Route as WantlistsPublicImport } from './routes/wantlists/public'
-import { Route as WantlistsNewImport } from './routes/wantlists/new'
 import { Route as DecksYourImport } from './routes/decks/your'
 import { Route as DecksTournamentImport } from './routes/decks/tournament'
 import { Route as DecksPublicImport } from './routes/decks/public'
@@ -29,9 +28,7 @@ import { Route as WantlistsWantlistIdIndexImport } from './routes/wantlists/$wan
 import { Route as UsersUserIdIndexImport } from './routes/users/$userId/index'
 import { Route as DecksDeckIdIndexImport } from './routes/decks/$deckId/index'
 import { Route as CollectionsCollectionIdIndexImport } from './routes/collections/$collectionId/index'
-import { Route as WantlistsWantlistIdEditImport } from './routes/wantlists/$wantlistId/edit'
 import { Route as DecksDeckIdEditImport } from './routes/decks/$deckId/edit'
-import { Route as CollectionsCollectionIdEditImport } from './routes/collections/$collectionId/edit'
 
 // Create/Update Routes
 
@@ -67,12 +64,6 @@ const WantlistsYourRoute = WantlistsYourImport.update({
 const WantlistsPublicRoute = WantlistsPublicImport.update({
   id: '/wantlists/public',
   path: '/wantlists/public',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const WantlistsNewRoute = WantlistsNewImport.update({
-  id: '/wantlists/new',
-  path: '/wantlists/new',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -143,24 +134,11 @@ const CollectionsCollectionIdIndexRoute =
     getParentRoute: () => rootRoute,
   } as any)
 
-const WantlistsWantlistIdEditRoute = WantlistsWantlistIdEditImport.update({
-  id: '/wantlists/$wantlistId/edit',
-  path: '/wantlists/$wantlistId/edit',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const DecksDeckIdEditRoute = DecksDeckIdEditImport.update({
   id: '/decks/$deckId/edit',
   path: '/decks/$deckId/edit',
   getParentRoute: () => rootRoute,
 } as any)
-
-const CollectionsCollectionIdEditRoute =
-  CollectionsCollectionIdEditImport.update({
-    id: '/collections/$collectionId/edit',
-    path: '/collections/$collectionId/edit',
-    getParentRoute: () => rootRoute,
-  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -243,13 +221,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DecksYourImport
       parentRoute: typeof rootRoute
     }
-    '/wantlists/new': {
-      id: '/wantlists/new'
-      path: '/wantlists/new'
-      fullPath: '/wantlists/new'
-      preLoaderRoute: typeof WantlistsNewImport
-      parentRoute: typeof rootRoute
-    }
     '/wantlists/public': {
       id: '/wantlists/public'
       path: '/wantlists/public'
@@ -264,25 +235,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WantlistsYourImport
       parentRoute: typeof rootRoute
     }
-    '/collections/$collectionId/edit': {
-      id: '/collections/$collectionId/edit'
-      path: '/collections/$collectionId/edit'
-      fullPath: '/collections/$collectionId/edit'
-      preLoaderRoute: typeof CollectionsCollectionIdEditImport
-      parentRoute: typeof rootRoute
-    }
     '/decks/$deckId/edit': {
       id: '/decks/$deckId/edit'
       path: '/decks/$deckId/edit'
       fullPath: '/decks/$deckId/edit'
       preLoaderRoute: typeof DecksDeckIdEditImport
-      parentRoute: typeof rootRoute
-    }
-    '/wantlists/$wantlistId/edit': {
-      id: '/wantlists/$wantlistId/edit'
-      path: '/wantlists/$wantlistId/edit'
-      fullPath: '/wantlists/$wantlistId/edit'
-      preLoaderRoute: typeof WantlistsWantlistIdEditImport
       parentRoute: typeof rootRoute
     }
     '/collections/$collectionId/': {
@@ -342,12 +299,9 @@ export interface FileRoutesByFullPath {
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
-  '/wantlists/new': typeof WantlistsNewRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
-  '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
-  '/wantlists/$wantlistId/edit': typeof WantlistsWantlistIdEditRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
@@ -366,12 +320,9 @@ export interface FileRoutesByTo {
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
-  '/wantlists/new': typeof WantlistsNewRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
-  '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
-  '/wantlists/$wantlistId/edit': typeof WantlistsWantlistIdEditRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
@@ -391,12 +342,9 @@ export interface FileRoutesById {
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
-  '/wantlists/new': typeof WantlistsNewRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
-  '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
-  '/wantlists/$wantlistId/edit': typeof WantlistsWantlistIdEditRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
@@ -417,12 +365,9 @@ export interface FileRouteTypes {
     | '/decks/public'
     | '/decks/tournament'
     | '/decks/your'
-    | '/wantlists/new'
     | '/wantlists/public'
     | '/wantlists/your'
-    | '/collections/$collectionId/edit'
     | '/decks/$deckId/edit'
-    | '/wantlists/$wantlistId/edit'
     | '/collections/$collectionId'
     | '/decks/$deckId'
     | '/users/$userId'
@@ -440,12 +385,9 @@ export interface FileRouteTypes {
     | '/decks/public'
     | '/decks/tournament'
     | '/decks/your'
-    | '/wantlists/new'
     | '/wantlists/public'
     | '/wantlists/your'
-    | '/collections/$collectionId/edit'
     | '/decks/$deckId/edit'
-    | '/wantlists/$wantlistId/edit'
     | '/collections/$collectionId'
     | '/decks/$deckId'
     | '/users/$userId'
@@ -463,12 +405,9 @@ export interface FileRouteTypes {
     | '/decks/public'
     | '/decks/tournament'
     | '/decks/your'
-    | '/wantlists/new'
     | '/wantlists/public'
     | '/wantlists/your'
-    | '/collections/$collectionId/edit'
     | '/decks/$deckId/edit'
-    | '/wantlists/$wantlistId/edit'
     | '/collections/$collectionId/'
     | '/decks/$deckId/'
     | '/users/$userId/'
@@ -487,12 +426,9 @@ export interface RootRouteChildren {
   DecksPublicRoute: typeof DecksPublicRoute
   DecksTournamentRoute: typeof DecksTournamentRoute
   DecksYourRoute: typeof DecksYourRoute
-  WantlistsNewRoute: typeof WantlistsNewRoute
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
-  CollectionsCollectionIdEditRoute: typeof CollectionsCollectionIdEditRoute
   DecksDeckIdEditRoute: typeof DecksDeckIdEditRoute
-  WantlistsWantlistIdEditRoute: typeof WantlistsWantlistIdEditRoute
   CollectionsCollectionIdIndexRoute: typeof CollectionsCollectionIdIndexRoute
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
@@ -510,12 +446,9 @@ const rootRouteChildren: RootRouteChildren = {
   DecksPublicRoute: DecksPublicRoute,
   DecksTournamentRoute: DecksTournamentRoute,
   DecksYourRoute: DecksYourRoute,
-  WantlistsNewRoute: WantlistsNewRoute,
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
-  CollectionsCollectionIdEditRoute: CollectionsCollectionIdEditRoute,
   DecksDeckIdEditRoute: DecksDeckIdEditRoute,
-  WantlistsWantlistIdEditRoute: WantlistsWantlistIdEditRoute,
   CollectionsCollectionIdIndexRoute: CollectionsCollectionIdIndexRoute,
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
@@ -542,12 +475,9 @@ export const routeTree = rootRoute
         "/decks/public",
         "/decks/tournament",
         "/decks/your",
-        "/wantlists/new",
         "/wantlists/public",
         "/wantlists/your",
-        "/collections/$collectionId/edit",
         "/decks/$deckId/edit",
-        "/wantlists/$wantlistId/edit",
         "/collections/$collectionId/",
         "/decks/$deckId/",
         "/users/$userId/",
@@ -591,23 +521,14 @@ export const routeTree = rootRoute
     "/decks/your": {
       "filePath": "decks/your.tsx"
     },
-    "/wantlists/new": {
-      "filePath": "wantlists/new.tsx"
-    },
     "/wantlists/public": {
       "filePath": "wantlists/public.tsx"
     },
     "/wantlists/your": {
       "filePath": "wantlists/your.tsx"
     },
-    "/collections/$collectionId/edit": {
-      "filePath": "collections/$collectionId/edit.tsx"
-    },
     "/decks/$deckId/edit": {
       "filePath": "decks/$deckId/edit.tsx"
-    },
-    "/wantlists/$wantlistId/edit": {
-      "filePath": "wantlists/$wantlistId/edit.tsx"
     },
     "/collections/$collectionId/": {
       "filePath": "collections/$collectionId/index.tsx"

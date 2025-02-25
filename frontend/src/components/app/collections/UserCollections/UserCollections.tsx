@@ -7,9 +7,14 @@ import { UserCollectionData } from '@/components/app/collections/CollectionCardT
 interface UserCollectionsProps {
   userId: string | undefined;
   loading?: boolean;
+  wantlist?: boolean;
 }
 
-const UserCollections: React.FC<UserCollectionsProps> = ({ userId, loading = false }) => {
+const UserCollections: React.FC<UserCollectionsProps> = ({
+  userId,
+  loading = false,
+  wantlist = false,
+}) => {
   const { data: user, isFetching: isFetchingUser } = useGetUser(userId);
   const { data, isFetching } = useGetUserCollections(userId);
 
@@ -17,13 +22,15 @@ const UserCollections: React.FC<UserCollectionsProps> = ({ userId, loading = fal
 
   const collections: UserCollectionData[] = useMemo(() => {
     if (user && data) {
-      return data.collections.map(c => ({
-        collection: c,
-        user,
-      }));
+      return data.collections
+        .filter(c => c.wantlist === wantlist)
+        .map(c => ({
+          collection: c,
+          user,
+        }));
     }
     return [];
-  }, [user, data]);
+  }, [user, data, wantlist]);
 
   return <CollectionTable variant="user" collections={collections} loading={load} />;
 };

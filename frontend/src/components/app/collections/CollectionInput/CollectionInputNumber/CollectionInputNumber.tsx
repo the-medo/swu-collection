@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input.tsx';
 import CollectionInputNumberInsertingDefaults from '@/components/app/collections/CollectionInput/CollectionInputNumber/CollectionInputNumberInsertingDefaults.tsx';
 import SetSelect from '@/components/app/global/SetSelect.tsx';
 import CollectionDuplicates from '@/components/app/collections/CollectionInput/CollectionDuplicates/CollectionDuplicates.tsx';
+import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 
 interface CollectionInputNumberProps {
   collectionId: string;
@@ -29,6 +30,7 @@ const CollectionInputNumber: React.FC<CollectionInputNumberProps> = ({ collectio
   const amountInputRef = useRef<HTMLInputElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const mutation = usePostCollectionCard(collectionId);
+  const { collectionOrWantlist } = useCollectionInfo(collectionId);
 
   const {
     search,
@@ -155,7 +157,7 @@ const CollectionInputNumber: React.FC<CollectionInputNumberProps> = ({ collectio
         disabled={mutation.isPending}
         onClick={canSubmit ? submitHandler : undefined}
       >
-        {mutation.isPending ? '...' : 'Add to collection'}
+        {mutation.isPending ? '...' : `Add to ${collectionOrWantlist.toLowerCase()}`}
       </Button>
       <CollectionDuplicates
         collectionId={collectionId}

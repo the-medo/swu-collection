@@ -20,7 +20,7 @@ function YourCollections() {
           <NewCollectionDialog trigger={<Button>New collection</Button>} wantlist={false} />
         </div>
         <div className="flex gap-4 items-start min-w-[400px] w-full">
-          <UserCollections userId={user?.id} loading={!user} />
+          <UserCollections userId={user?.id} loading={!user} wantlist={false} />
         </div>
       </div>
     </AuthorizedRouteComponent>

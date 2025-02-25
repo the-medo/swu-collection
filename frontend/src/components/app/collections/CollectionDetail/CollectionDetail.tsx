@@ -27,15 +27,18 @@ const CollectionDetail: React.FC = () => {
   const loading = isFetching;
   const owned = user?.id === collectionUserId;
 
+  const wantlist = !!data?.collection.wantlist;
+  const collectionOrWantlist = wantlist ? 'Wantlist' : 'Collection';
+
   useEffect(() => {
-    setCollectionInfo(collectionId, collectionCurrency ?? '-', false);
-  }, [owned, collectionCurrency]);
+    setCollectionInfo(collectionId, collectionCurrency ?? '-', owned, collectionOrWantlist);
+  }, [owned, collectionCurrency, collectionOrWantlist]);
 
   if (error?.status === 404) {
     return (
       <Error404
-        title="Collection not found"
-        description="The collection you are looking for does not exist. It is possible that it was deleted or it is not public."
+        title={`${collectionOrWantlist} not found`}
+        description={`The ${collectionOrWantlist} you are looking for does not exist. It is possible that it was deleted or it is not public.`}
       />
     );
   }
@@ -47,7 +50,7 @@ const CollectionDetail: React.FC = () => {
           mainTitle={data?.collection.title}
           subTitle={
             <>
-              collection by{' '}
+              {collectionOrWantlist.toLowerCase()} by{' '}
               <Link to={`/users/$userId`} params={{ userId: collectionUserId }}>
                 {data?.user.displayName}
               </Link>
@@ -60,11 +63,11 @@ const CollectionDetail: React.FC = () => {
             {publicRenderer(data?.collection.public)}
             <EditCollectionDialog
               collection={data?.collection}
-              trigger={<Button>Edit collection</Button>}
+              trigger={<Button>Edit {collectionOrWantlist}</Button>}
             />
             <DeleteCollectionDialog
               collection={data?.collection}
-              trigger={<Button variant="destructive">Delete collection</Button>}
+              trigger={<Button variant="destructive">Delete {collectionOrWantlist}</Button>}
             />
           </div>
         )}
