@@ -1,6 +1,6 @@
 CREATE TABLE "deck_card" (
-	"deck_id" text NOT NULL,
-	"card_id" uuid NOT NULL,
+	"deck_id" uuid NOT NULL,
+	"card_id" varchar NOT NULL,
 	"board" integer DEFAULT 1 NOT NULL,
 	"note" varchar DEFAULT '' NOT NULL,
 	CONSTRAINT "deck_card-pk" PRIMARY KEY("deck_id","card_id","board")

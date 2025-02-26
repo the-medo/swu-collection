@@ -1,13 +1,13 @@
-import { pgTable, text, uuid, integer, varchar, primaryKey, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, integer, varchar, primaryKey, index } from 'drizzle-orm/pg-core';
 import { deck } from './deck.ts';
 
 export const deckCard = pgTable(
   'deck_card',
   {
-    deckId: text('deck_id')
+    deckId: uuid('deck_id')
       .notNull()
       .references(() => deck.id),
-    cardId: uuid('card_id').notNull(),
+    cardId: varchar('card_id').notNull(),
     board: integer('board').notNull().default(1),
     note: varchar('note').notNull().default(''),
   },

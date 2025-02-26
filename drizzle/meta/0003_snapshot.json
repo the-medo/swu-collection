@@ -1,5 +1,5 @@
 {
-  "id": "b1888233-697f-4c30-a1ee-8ab556a24337",
+  "id": "5ca18289-c185-4b0d-b665-c9c95eb49918",
   "prevId": "7c8cdacb-efc6-4305-ba1a-5362cbdec243",
   "version": "7",
   "dialect": "postgresql",
@@ -598,13 +598,13 @@
       "columns": {
         "deck_id": {
           "name": "deck_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
         "card_id": {
           "name": "card_id",
-          "type": "uuid",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
