@@ -15,6 +15,13 @@
       "when": 1739639137163,
       "tag": "0001_wooden_anthem",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1740602349505,
+      "tag": "0002_great_eternals",
+      "breakpoints": true
     }
   ]
 }
