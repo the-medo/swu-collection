@@ -10,6 +10,7 @@ export const deckCard = pgTable(
     cardId: varchar('card_id').notNull(),
     board: integer('board').notNull().default(1),
     note: varchar('note').notNull().default(''),
+    quantity: integer('quantity').notNull(),
   },
   table => {
     return {

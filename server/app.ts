@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { collectionRoute } from './routes/collection.ts';
+import { deckRoute } from './routes/deck.ts';
 import { serveStatic } from 'hono/bun';
 import { authRoute } from './routes/auth.ts';
 import { auth, type AuthExtension } from './auth/auth.ts';
@@ -29,6 +30,7 @@ const apiRoutes = app
   .route('/auth', authRoute)
   .route('/world', worldRoute)
   .route('/collection', collectionRoute)
+  .route('/deck', deckRoute)
   .route('/cards', cardsRoute)
   .route('/user', userRoute);
 

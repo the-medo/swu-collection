@@ -1,0 +1,1 @@
+ALTER TABLE "deck_card" ADD COLUMN "quantity" integer NOT NULL;
