@@ -12,11 +12,43 @@ export const zDeckCardCreateRequest = zDeckCardSchema.partial({
   note: true,
 });
 
-export const zDeckCardUpdateRequest = zDeckCardSchema.partial({
-  note: true,
-  quantity: true,
+export const zDeckCardUpdateRequest = z.object({
+  id: zDeckCardSchema
+    .pick({
+      deckId: true,
+      cardId: true,
+      board: true,
+    })
+    .required(),
+  data: zDeckCardSchema
+    .omit({
+      deckId: true,
+      cardId: true,
+      board: true,
+    })
+    .partial(),
 });
+
+export const zDeckCardDeleteRequest = zDeckCardSchema
+  .pick({
+    deckId: true,
+    cardId: true,
+    board: true,
+  })
+  .required();
+
+
 
 export type ZDeckCard = z.infer<typeof zDeckCardSchema>;
 export type ZDeckCardCreateRequest = z.infer<typeof zDeckCardCreateRequest>;
 export type ZDeckCardUpdateRequest = z.infer<typeof zDeckCardUpdateRequest>;
+export type ZDeckCardDeleteRequest = z.infer<typeof zDeckCardDeleteRequest>;
+
+export interface DeckCard {
+  deckId: string;
+  cardId: string;
+  board: number;
+  note?: string;
+  quantity: number;
+}
+
