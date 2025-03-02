@@ -32,6 +32,7 @@ import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.ts
 import LogoLightTheme from '../../../../assets/logo-light-theme.svg';
 import LogoDarkTheme from '../../../../assets/logo-dark-theme.svg';
 import { useTheme } from '@/components/theme-provider.tsx';
+import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog.tsx';
 
 const groups = [
   {
@@ -39,6 +40,15 @@ const groups = [
     actionLabel: 'Add Deck',
     action: () => {},
     icon: BookCheck,
+    sidebarGroupAction: (
+      <NewDeckDialog
+        trigger={
+          <SidebarGroupAction title="Add Collection">
+            <Plus /> <span className="sr-only">Add Collection</span>
+          </SidebarGroupAction>
+        }
+      />
+    ),
     items: [
       {
         title: 'Your decks',

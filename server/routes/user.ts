@@ -2,10 +2,12 @@ import { Hono } from 'hono';
 import type { AuthExtension } from '../auth/auth.ts';
 import { db } from '../db';
 import { collection } from '../db/schema/collection.ts';
+import { deck } from '../db/schema/deck.ts';
 import { and, eq, getTableColumns, or } from 'drizzle-orm';
 import { user } from '../db/schema/auth-schema.ts';
 import type { User } from '../../types/User.ts';
 import type { Collection } from '../../types/Collection.ts';
+import type { Deck } from '../../types/Deck.ts';
 
 const { email, emailVerified, ...selectUser } = getTableColumns(user);
 export { selectUser };
@@ -13,6 +15,11 @@ export { selectUser };
 export type UserCollectionsResponse = {
   userId: string;
   collections: Collection[];
+};
+
+export type UserDecksResponse = {
+  userId: string;
+  decks: Deck[];
 };
 
 export const userRoute = new Hono<AuthExtension>()
@@ -33,6 +40,25 @@ export const userRoute = new Hono<AuthExtension>()
     return c.json<UserCollectionsResponse>({
       userId: paramUserId,
       collections: userCollections,
+    });
+  })
+  .get('/:id/deck', async c => {
+    const paramUserId = c.req.param('id');
+    const user = c.get('user');
+
+    const isPublic = eq(deck.public, true);
+    const isOwner = user ? eq(deck.userId, user.id) : null;
+
+    const userDecks = await db
+      .select()
+      .from(deck)
+      .where(and(eq(deck.userId, paramUserId), isOwner ? or(isOwner, isPublic) : isPublic));
+
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    return c.json<UserDecksResponse>({
+      userId: paramUserId,
+      decks: userDecks,
     });
   })
   .get('/:id', async c => {
