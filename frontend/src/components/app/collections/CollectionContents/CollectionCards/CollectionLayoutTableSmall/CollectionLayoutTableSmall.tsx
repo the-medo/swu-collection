@@ -1,4 +1,4 @@
-import { useCardList } from '@/api/useCardList.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
 import type { CollectionCard } from '../../../../../../../../types/CollectionCard.ts';
 import { useCollectionCardTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/useCollectionCardTableColumns.tsx';
 import { DataTable } from '@/components/ui/data-table.tsx';

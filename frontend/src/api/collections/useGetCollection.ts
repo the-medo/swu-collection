@@ -1,6 +1,6 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import type { ErrorWithStatus } from '../../../types/ErrorWithStatus.ts';
+import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
 import { UserCollectionData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 
 export const useGetCollection = (collectionId: string | undefined) => {

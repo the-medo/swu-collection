@@ -1,7 +1,7 @@
-import { useGetUserCollections } from '@/api/useGetUserCollections.ts';
+import { useGetUserCollections } from '@/api/user/useGetUserCollections.ts';
 import CollectionTable from '../CollectionCardTable/CollectionTable';
 import { useMemo } from 'react';
-import { useGetUser } from '@/api/useGetUser.ts';
+import { useGetUser } from '@/api/user/useGetUser.ts';
 import { UserCollectionData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 
 interface UserCollectionsProps {

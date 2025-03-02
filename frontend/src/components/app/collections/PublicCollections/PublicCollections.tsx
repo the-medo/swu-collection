@@ -1,7 +1,7 @@
 import CollectionTable from '../CollectionCardTable/CollectionTable';
 import { useMemo } from 'react';
 import { UserCollectionData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
-import { useGetCollections } from '@/api/useGetCollections.ts';
+import { useGetCollections } from '@/api/collections/useGetCollections.ts';
 import { usePublicCollectionsStore } from '@/components/app/collections/PublicCollections/usePublicCollectionsStore.ts';
 import CountryAndStateSelectors from '@/components/app/collections/PublicCollections/CountryAndStateSelectors.tsx';
 

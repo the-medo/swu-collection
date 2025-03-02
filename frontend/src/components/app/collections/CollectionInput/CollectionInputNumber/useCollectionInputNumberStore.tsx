@@ -1,5 +1,5 @@
 import { Store, useStore } from '@tanstack/react-store';
-import { useCardList } from '@/api/useCardList.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCallback, useMemo } from 'react';
 import { CardCondition, CardLanguage, SwuSet } from '../../../../../../../types/enums.ts';
 

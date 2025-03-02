@@ -1,10 +1,10 @@
-import { useGetCollection } from '@/api/useGetCollection.ts';
+import { useGetCollection } from '@/api/collections/useGetCollection.ts';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import * as React from 'react';
-import { useGetCollectionCards } from '@/api/useGetCollectionCards.ts';
+import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards.ts';
 import { cn } from '@/lib/utils.ts';
 import { useMemo } from 'react';
-import { useCardList } from '@/api/useCardList.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 

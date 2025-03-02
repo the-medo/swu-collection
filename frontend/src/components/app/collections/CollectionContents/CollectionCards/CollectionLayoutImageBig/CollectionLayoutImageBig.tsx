@@ -1,11 +1,11 @@
-import { useCardList } from '@/api/useCardList.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage, { cardImageVariants } from '@/components/app/global/CardImage.tsx';
 import type { CollectionCard } from '../../../../../../../../types/CollectionCard.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cn } from '@/lib/utils.ts';
 import { getIdentificationFromCollectionCard } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import CollectionCardInput from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
-import { getCollectionCardIdentificationKey } from '@/api/usePutCollectionCard.ts';
+import { getCollectionCardIdentificationKey } from '@/api/collections/usePutCollectionCard.ts';
 import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
 import { languageRenderer } from '@/lib/table/languageRenderer.tsx';

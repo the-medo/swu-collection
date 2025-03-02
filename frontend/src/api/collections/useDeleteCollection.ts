@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
-import { updateGetUserCollections } from '@/api/useGetUserCollections.ts';
+import { updateGetUserCollections } from '@/api/user/useGetUserCollections.ts';
 
 export const useDeleteCollection = () => {
   const queryClient = useQueryClient();

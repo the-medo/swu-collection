@@ -11,7 +11,7 @@ import { useState } from 'react';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useNavigate } from '@tanstack/react-router';
 import { Textarea } from '@/components/ui/textarea.tsx';
-import { usePostDeck } from '@/api/usePostDeck.ts';
+import { usePostDeck } from '@/api/decks/usePostDeck.ts';
 
 type NewDeckDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {};
 

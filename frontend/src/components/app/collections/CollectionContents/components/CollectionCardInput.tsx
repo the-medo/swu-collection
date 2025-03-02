@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Input } from '@/components/ui/input.tsx';
-import { CollectionCardIdentification } from '@/api/usePutCollectionCard.ts';
+import { CollectionCardIdentification } from '@/api/collections/usePutCollectionCard.ts';
 import { cn } from '@/lib/utils.ts';
 import debounce from 'lodash.debounce';
 import { useEffect } from 'react';

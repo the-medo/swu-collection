@@ -1,6 +1,6 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { CollectionCard } from '../../../types/CollectionCard.ts';
+import { CollectionCard } from '../../../../types/CollectionCard.ts';
 
 export interface CollectionCardResponse {
   data: CollectionCard[];

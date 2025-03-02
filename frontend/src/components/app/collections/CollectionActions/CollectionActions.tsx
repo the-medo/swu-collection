@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { BookCopy, LinkIcon, ScrollText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
-import { useGetCollection } from '@/api/useGetCollection.ts';
+import { useGetCollection } from '@/api/collections/useGetCollection.ts';
 import { cn } from '@/lib/utils.ts';
 import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 

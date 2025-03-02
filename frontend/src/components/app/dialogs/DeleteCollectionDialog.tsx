@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { useState } from 'react';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { Collection } from '../../../../../types/Collection.ts';
-import { useDeleteCollection } from '@/api/useDeleteCollection.ts';
+import { useDeleteCollection } from '@/api/collections/useDeleteCollection.ts';
 import { Label } from '@/components/ui/label.tsx';
 import { useNavigate } from '@tanstack/react-router';
 

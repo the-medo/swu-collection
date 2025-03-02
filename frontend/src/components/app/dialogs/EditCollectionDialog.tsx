@@ -11,7 +11,7 @@ import { useCallback, useState } from 'react';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { Collection } from '../../../../../types/Collection.ts';
-import { usePutCollection } from '@/api/usePutCollection.ts';
+import { usePutCollection } from '@/api/collections/usePutCollection.ts';
 
 type EditCollectionDialogProps = Pick<DialogProps, 'trigger'> & {
   collection: Collection;

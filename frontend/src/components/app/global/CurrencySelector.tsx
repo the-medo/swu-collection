@@ -9,7 +9,7 @@ import * as React from 'react';
 import { CurrencyCode } from '../../../../../server/db/lists.ts';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import { useCurrencyList } from '@/api/useCurrencyList.ts';
+import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
 
 export interface CurrencySelectorProps {
   onChangeCurrency: (v: CurrencyCode | null) => void;

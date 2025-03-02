@@ -10,14 +10,14 @@ import {
 } from '@/components/ui/dropdown-menu.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { LinkIcon, MoreHorizontal, PencilIcon, TrashIcon } from 'lucide-react';
-import { useCurrencyList } from '@/api/useCurrencyList.ts';
-import { useCountryList } from '@/api/useCountryList.ts';
+import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
+import { useCountryList } from '@/api/lists/useCountryList.ts';
 import { CountryCode, CurrencyCode } from '../../../../../../server/db/lists.ts';
 import { Link } from '@tanstack/react-router';
 import { publicRenderer } from '@/lib/table/publicRenderer.tsx';
 import { UserCollectionData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
-import { usePutCollection } from '@/api/usePutCollection.ts';
+import { usePutCollection } from '@/api/collections/usePutCollection.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import DeleteCollectionDialog from '@/components/app/dialogs/DeleteCollectionDialog.tsx';
 import EditCollectionDialog from '@/components/app/dialogs/EditCollectionDialog.tsx';

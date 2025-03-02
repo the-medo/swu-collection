@@ -1,4 +1,4 @@
-import { useCardList } from '@/api/useCardList.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage, { cardImageVariants } from '@/components/app/global/CardImage.tsx';
 import type { CollectionCard } from '../../../../../../../../types/CollectionCard.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';

@@ -22,7 +22,7 @@ import CardConditionSelect from '@/components/app/global/CardConditionSelect.tsx
 import NoteInput from '@/components/app/collections/CollectionInput/components/NoteInput.tsx';
 import CollectionInputNameInsertingDefaults from '@/components/app/collections/CollectionInput/CollectionInputName/CollectionInputNameInsertingDefaults.tsx';
 import { useCallback, useRef } from 'react';
-import { usePostCollectionCard } from '@/api/usePostCollectionCard.ts';
+import { usePostCollectionCard } from '@/api/collections/usePostCollectionCard.ts';
 import { cardConditionArray } from '../../../../../../../types/iterableEnumInfo.ts';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';

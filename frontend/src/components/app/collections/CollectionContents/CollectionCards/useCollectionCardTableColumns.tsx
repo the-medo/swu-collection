@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { useCurrencyList } from '@/api/useCurrencyList.ts';
+import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
 import type { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
 import { CardList } from '../../../../../../../lib/swu-resources/types.ts';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
@@ -14,7 +14,7 @@ import { variantRenderer } from '@/lib/table/variantRenderer.tsx';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
-import { getCollectionCardIdentificationKey } from '@/api/usePutCollectionCard.ts';
+import { getCollectionCardIdentificationKey } from '@/api/collections/usePutCollectionCard.ts';
 import CollectionCardInput from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
 import { getIdentificationFromCollectionCard } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import {

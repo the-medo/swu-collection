@@ -1,7 +1,7 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import type { CardList, CardVariant } from '../../../lib/swu-resources/types.ts';
-import { SwuSet } from '../../../types/enums.ts';
+import type { CardList, CardVariant } from '../../../../lib/swu-resources/types.ts';
+import { SwuSet } from '../../../../types/enums.ts';
 
 export type CardsBySetAndNumber = Partial<
   Record<SwuSet, Record<number, { variant: CardVariant; cardId: string }> | undefined>

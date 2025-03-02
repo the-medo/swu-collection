@@ -11,7 +11,7 @@ import { useState } from 'react';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useNavigate } from '@tanstack/react-router';
 import { Textarea } from '@/components/ui/textarea.tsx';
-import { usePostCollection } from '@/api/usePostCollection.ts';
+import { usePostCollection } from '@/api/collections/usePostCollection.ts';
 
 type NewCollectionDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
   wantlist: boolean;

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
-import type { ZCollectionBulkInsertRequest } from '../../../types/ZCollectionCard.ts';
+import type { ZCollectionBulkInsertRequest } from '../../../../types/ZCollectionCard.ts';
 
 export type PostCollectionBulkResponse = {
   changed: number;

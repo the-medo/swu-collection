@@ -1,4 +1,4 @@
-import { useGetCollectionCards } from '@/api/useGetCollectionCards.ts';
+import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards.ts';
 import CollectionLayoutSettings from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionLayoutSettings.tsx';
 import CollectionGroups from '@/components/app/collections/CollectionContents/CollectionGroups/CollectionGroups.tsx';
 import { CollectionCard } from '../../../../../../types/CollectionCard.ts';

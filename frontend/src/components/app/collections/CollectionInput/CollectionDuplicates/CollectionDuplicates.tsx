@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useGetCollectionCards } from '@/api/useGetCollectionCards.ts';
+import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards.ts';
 import { useMemo } from 'react';
-import { useCardList } from '@/api/useCardList.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
 import { CollectionCard } from '../../../../../../../types/CollectionCard';
 import { CardCondition, CardLanguage } from '../../../../../../../types/enums.ts';
 import { cardConditionObj } from '../../../../../../../types/iterableEnumInfo.ts';

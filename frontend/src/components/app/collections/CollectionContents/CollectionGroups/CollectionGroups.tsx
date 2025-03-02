@@ -8,7 +8,7 @@ import CollectionLayoutImageSmall from '@/components/app/collections/CollectionC
 import CollectionLayoutTableImage from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableImage/CollectionLayoutTableImage.tsx';
 import CollectionLayoutTableSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmall.tsx';
 import { useEffect, useState } from 'react';
-import { useCardList } from '@/api/useCardList.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
 import {
   CardGroupData,
   groupCardsBy,

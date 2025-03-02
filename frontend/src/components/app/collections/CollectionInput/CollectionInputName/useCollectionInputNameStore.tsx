@@ -1,5 +1,5 @@
 import { Store, useStore } from '@tanstack/react-store';
-import { useCardList } from '@/api/useCardList.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
 import { useMemo } from 'react';
 import { variants } from '@/lib/cards/variants.ts';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';

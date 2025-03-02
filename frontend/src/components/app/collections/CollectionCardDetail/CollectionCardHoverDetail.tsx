@@ -10,7 +10,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import CollectionCardInput from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
-import { getCollectionCardIdentificationKey } from '@/api/usePutCollectionCard.ts';
+import { getCollectionCardIdentificationKey } from '@/api/collections/usePutCollectionCard.ts';
 import { getIdentificationFromCollectionCard } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import { languageRenderer } from '@/lib/table/languageRenderer.tsx';
 import { conditionRenderer } from '@/lib/table/conditionRenderer.tsx';

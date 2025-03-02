@@ -1,4 +1,4 @@
-import { useGetCollection } from '@/api/useGetCollection.ts';
+import { useGetCollection } from '@/api/collections/useGetCollection.ts';
 import { getRouteApi, Link } from '@tanstack/react-router';
 import { useUser } from '@/hooks/useUser';
 import LoadingTitle from '../../global/LoadingTitle';

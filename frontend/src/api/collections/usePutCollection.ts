@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
-import { Collection } from '../../../types/Collection.ts';
-import type { ZCollectionUpdateRequest } from '../../../types/ZCollection.ts';
+import { Collection } from '../../../../types/Collection.ts';
+import type { ZCollectionUpdateRequest } from '../../../../types/ZCollection.ts';
 import { InferResponseType } from 'hono';
-import { updateGetUserCollections } from '@/api/useGetUserCollections.ts';
+import { updateGetUserCollections } from '@/api/user/useGetUserCollections.ts';
 
 export interface CollectionResponse {
   data: Collection[];

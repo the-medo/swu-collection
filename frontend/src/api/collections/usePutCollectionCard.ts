@@ -1,34 +1,49 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { CardLanguage } from '../../../types/enums.ts';
+import { CardLanguage } from '../../../../types/enums.ts';
 import { CollectionCardResponse } from './useGetCollectionCards.ts';
-import { CollectionCard } from '../../../types/CollectionCard.ts';
+import { CollectionCard } from '../../../../types/CollectionCard.ts';
 import { toast } from '@/hooks/use-toast.ts';
 
-// Define the shape of the card data you're sending to the POST endpoint.
-export type CardUpdateData = {
+export type CollectionCardIdentification = {
   cardId: string;
   variantId: string;
   foil: boolean;
   condition: number;
   language: CardLanguage;
-  amount: number;
+};
+
+export const getCollectionCardIdentificationKey = (id: CollectionCardIdentification) => {
+  return `${id.cardId}:${id.variantId}:${id.foil}:${id.condition}:${id.language}`;
+};
+
+export type CollectionCardUpdateData = {
+  variantId?: string;
+  foil?: boolean;
+  condition?: number;
+  language?: CardLanguage;
+  amount?: number;
   note?: string;
   amount2?: number | null;
   price?: string | null;
 };
 
-export const usePostCollectionCard = (collectionId: string | undefined) => {
+type CollectionCardUpdateRequest = {
+  id: CollectionCardIdentification;
+  data: CollectionCardUpdateData;
+};
+
+export const usePutCollectionCard = (collectionId: string | undefined) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     // The mutation function posts the card to the collection.
-    mutationFn: async (cardData: CardUpdateData) => {
+    mutationFn: async (cardData: CollectionCardUpdateRequest) => {
       if (!collectionId) {
         throw new Error('Collection id is required');
       }
 
-      const response = await api.collection[':id'].card.$post({
+      const response = await api.collection[':id'].card.$put({
         param: { id: collectionId },
         json: cardData,
       });
@@ -43,9 +58,7 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
 
       return response.json() as unknown as { data: CollectionCard };
     },
-    // On success, update the cache for the GET query.
-    onSuccess: result => {
-      // result should be something like { data: newCard }
+    onSuccess: (result, vars) => {
       queryClient.setQueryData<CollectionCardResponse>(
         ['collection-content', collectionId],
         oldData => {
@@ -53,33 +66,36 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
             return { data: [result.data] };
           }
 
+          const { id } = vars;
+
           const { data: existingCards } = oldData;
 
           const cardIndex = existingCards.findIndex(
             (card: CollectionCard) =>
-              card.cardId === result.data.cardId &&
-              card.variantId === result.data.variantId &&
-              card.foil === result.data.foil &&
-              card.condition === result.data.condition &&
-              card.language === result.data.language,
+              card.cardId === id.cardId &&
+              card.variantId === id.variantId &&
+              card.foil === id.foil &&
+              Number(card.condition) === id.condition &&
+              card.language === id.language,
           );
 
           if (cardIndex >= 0) {
-            const updatedCard = {
-              ...existingCards[cardIndex],
-              amount: (existingCards[cardIndex].amount || 0) + (result.data.amount || 0),
-              amount2: (existingCards[cardIndex].amount2 || 0) + (result.data.amount2 || 0),
-              note: result.data.note ?? existingCards[cardIndex].note,
-              price: result.data.price ?? existingCards[cardIndex].price,
-            } as CollectionCard;
+            const updatedCard = result.data;
+
+            toast({
+              title: `Updated!`,
+            });
 
             return {
               ...oldData,
-              data: [
-                ...existingCards.slice(0, cardIndex),
-                updatedCard,
-                ...existingCards.slice(cardIndex + 1),
-              ],
+              data:
+                updatedCard.amount === 0 && !updatedCard.amount2
+                  ? [...existingCards.slice(0, cardIndex), ...existingCards.slice(cardIndex + 1)]
+                  : [
+                      ...existingCards.slice(0, cardIndex),
+                      updatedCard,
+                      ...existingCards.slice(cardIndex + 1),
+                    ],
             };
           }
 
@@ -93,7 +109,7 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
     onError: error => {
       toast({
         variant: 'destructive',
-        title: 'Error while inserting the card',
+        title: 'Error while updating the card',
         description: (error as Error).toString(),
       });
     },

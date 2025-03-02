@@ -2,28 +2,28 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
-import { UserDecksResponse } from '../../../server/routes/user.ts';
+import { UserCollectionsResponse } from '../../../../server/routes/user.ts';
 
-export type PostDeckRequest = {
-  format: number;
-  name: string;
+export type PostCollectionRequest = {
+  title: string;
   description: string;
+  wantlist: boolean;
   public: boolean;
 };
 
 /**
  * Hook to create a new collection.
  */
-export const usePostDeck = () => {
+export const usePostCollection = () => {
   const user = useUser();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: PostDeckRequest) => {
+    mutationFn: async (payload: PostCollectionRequest) => {
       if (!user?.id) {
         throw new Error('User id is required');
       }
-      const response = await api.deck.$post({
+      const response = await api.collection.$post({
         json: payload,
       });
       if (!response.ok) {
@@ -33,18 +33,18 @@ export const usePostDeck = () => {
       return data;
     },
     onSuccess: result => {
-      queryClient.setQueryData<UserDecksResponse>(['decks', user?.id], oldData => {
+      queryClient.setQueryData<UserCollectionsResponse>(['collections', user?.id], oldData => {
         if (!user?.id) return undefined;
         if (!oldData) {
-          return { userId: user.id, decks: [result.data[0]] };
+          return { userId: user.id, collections: [result.data[0]] };
         }
-        return { userId: user.id, decks: [...oldData.decks, result.data[0]] };
+        return { userId: user.id, collections: [...oldData.collections, result.data[0]] };
       });
     },
     onError: (error: any) => {
       toast({
         variant: 'destructive',
-        title: 'Error while creating a deck',
+        title: 'Error while creating collection',
         description: error.toString(),
       });
     },

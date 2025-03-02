@@ -16,7 +16,7 @@ import { useCallback } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Label } from '@/components/ui/label.tsx';
-import { usePostCollectionBulk } from '@/api/usePostCollectionBulk.ts';
+import { usePostCollectionBulk } from '@/api/collections/usePostCollectionBulk.ts';
 import { cardConditionObj } from '../../../../../../../types/iterableEnumInfo.ts';
 import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 

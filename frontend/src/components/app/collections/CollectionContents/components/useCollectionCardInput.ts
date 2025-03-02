@@ -1,4 +1,4 @@
-import { usePutCollectionCard } from '@/api/usePutCollectionCard.ts';
+import { usePutCollectionCard } from '@/api/collections/usePutCollectionCard.ts';
 import { useCallback } from 'react';
 import { CollectionCardInputProps } from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
 
