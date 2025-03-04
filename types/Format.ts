@@ -34,3 +34,8 @@ export const formatData: Format[] = [
       'Constructed format with only common and uncommon rarity cards. Other rules vary (banned cards, rare leaders,...)',
   },
 ];
+
+export const formatDataById: Record<number, Format> = {};
+formatData.forEach(format => {
+  formatDataById[format.id] = format;
+});
