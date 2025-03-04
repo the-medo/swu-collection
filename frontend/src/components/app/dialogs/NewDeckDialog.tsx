@@ -12,6 +12,7 @@ import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useNavigate } from '@tanstack/react-router';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { usePostDeck } from '@/api/decks/usePostDeck.ts';
+import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 
 type NewDeckDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {};
 
@@ -23,11 +24,13 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
   const postCollectionMutation = usePostDeck();
 
   const form = useForm<{
+    format: number;
     name: string;
     description: string;
     public: boolean;
   }>({
     defaultValues: {
+      format: 1,
       name: `My deck`,
       description: ``,
       public: false,
@@ -36,7 +39,7 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
       // Call our hook's mutation function.
       postCollectionMutation.mutate(
         {
-          format: 1,
+          format: value.format,
           name: value.name,
           description: value.description,
           public: value.public,
@@ -73,6 +76,18 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
             void form.handleSubmit();
           }}
         >
+          <form.Field
+            name="format"
+            children={field => (
+              <div className="flex flex-col gap-2">
+                <FormatSelect
+                  value={field.state.value}
+                  allowEmpty={false}
+                  onChange={e => field.handleChange(e ?? 1)}
+                />
+              </div>
+            )}
+          />
           <form.Field
             name="name"
             children={field => (
