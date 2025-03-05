@@ -12,6 +12,7 @@ import {
 import { PropsWithChildren, useMemo } from 'react';
 import * as React from 'react';
 import { DialogProps as RadixDialogProps } from '@radix-ui/react-dialog';
+import { cn } from '@/lib/utils.ts';
 
 export interface DialogProps extends PropsWithChildren, RadixDialogProps {
   trigger: React.ReactNode;
@@ -19,6 +20,7 @@ export interface DialogProps extends PropsWithChildren, RadixDialogProps {
   header?: string | React.ReactNode;
   headerDescription?: string;
   footer?: React.ReactNode;
+  contentClassName?: string;
 }
 
 const Dialog: React.FC<DialogProps> = ({
@@ -28,23 +30,24 @@ const Dialog: React.FC<DialogProps> = ({
   headerDescription,
   footer,
   children,
+  contentClassName,
   ...rest
 }) => {
   const headerComponent = useMemo(() => {
     if (!header) return null;
     if (typeof header === 'string')
       return (
-        <DialogHeader>
+        <DialogHeader className="bg-background">
           <DialogTitle>{header}</DialogTitle>
           {headerDescription && <DialogDescription>{headerDescription}</DialogDescription>}
         </DialogHeader>
       );
-    return <DialogHeader>{header}</DialogHeader>;
+    return <DialogHeader className="bg-background">{header}</DialogHeader>;
   }, [header]);
 
   const footerComponent = useMemo(() => {
     if (!footer) return null;
-    return <DialogFooter>{footer}</DialogFooter>;
+    return <DialogFooter className="bg-background mt-auto">{footer}</DialogFooter>;
   }, [footer]);
 
   return (
@@ -52,9 +55,15 @@ const Dialog: React.FC<DialogProps> = ({
       <DialogTrigger asChild disabled={triggerDisabled}>
         {trigger}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]" aria-describedby={headerDescription}>
+      <DialogContent
+        className={cn(
+          'sm:max-w-[425px] md:max-h-[90%] flex flex-col max-h-[90vh]',
+          contentClassName,
+        )}
+        aria-describedby={headerDescription}
+      >
         {headerComponent}
-        {children}
+        <div className="overflow-y-auto flex-grow">{children}</div>
         {footerComponent}
       </DialogContent>
     </DialogRoot>
