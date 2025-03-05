@@ -13,6 +13,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { usePostDeck } from '@/api/decks/usePostDeck.ts';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
+import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
 
 type NewDeckDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {};
 
@@ -20,6 +21,7 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
   const navigate = useNavigate();
   const user = useUser();
   const [open, setOpen] = useState(false);
+  const [selectedLeader1, setSelectedLeader1] = useState<string | undefined>(undefined);
   const { toast } = useToast();
   const postCollectionMutation = usePostDeck();
 
@@ -103,6 +105,11 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
                 />
               </div>
             )}
+          />
+          <LeaderSelector
+            trigger={null}
+            leaderCardId={selectedLeader1}
+            onLeaderSelected={setSelectedLeader1}
           />
           <form.Field
             name="description"

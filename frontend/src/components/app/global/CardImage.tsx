@@ -14,6 +14,7 @@ export const cardImageVariants = cva('', {
     // This axis controls the base size variant
     size: {
       original: 'h-[418px] w-[300px] min-h-[418px] min-w-[300px]',
+      w300: 'h-[418px] w-[300px] min-h-[418px] min-w-[300px]',
       w200: 'h-[279px] w-[200px] min-h-[279px] min-w-[200px]',
       w100: 'h-[140px] w-[100px] min-h-[140px] min-w-[100px]',
       w75: 'h-[105px] w-[75px] min-h-[105px] min-w-[75px]',
@@ -33,6 +34,11 @@ export const cardImageVariants = cva('', {
       size: 'original',
       horizontal: true,
       className: 'h-[300px] w-[418px] min-h-[300px] min-w-[418px]',
+    },
+    {
+      size: 'w300',
+      horizontal: true,
+      className: 'h-[215px] w-[300px] min-h-[215px] min-w-[300px]',
     },
     {
       size: 'w200',
@@ -99,10 +105,15 @@ const CardImage: React.FC<CardImageProps> = ({
 
   const classes = cardImageVariants({
     size: size || 'original',
-    horizontal: backSide ? horizontalBack : horizontalFront,
+    horizontal: forceHorizontal || (backSide ? horizontalBack : horizontalFront),
   });
 
-  if (!img) return <Skeleton className={cn(classes, 'rounded-xl')} />;
+  if (!img)
+    return (
+      <Skeleton className={cn(classes, 'rounded-xl flex items-center justify-center')}>
+        {children ?? null}
+      </Skeleton>
+    );
 
   return (
     <div
