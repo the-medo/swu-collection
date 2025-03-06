@@ -77,7 +77,7 @@ const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
     }
   };
 
-  const classNames = cn('flex justify-start flex-wrap');
+  const toggleGroupClassNames = cn('flex justify-start flex-wrap');
 
   const aspectOptions = useMemo(() => {
     return aspectArray.map(aspect => (
@@ -85,7 +85,7 @@ const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
         key={aspect}
         value={aspect}
         className={cn('flex items-center gap-1 py-1', {
-          'ml-8': aspect === SwuAspect.HEROISM || aspect === SwuAspect.VIGILANCE,
+          // 'ml-8': aspect === SwuAspect.HEROISM || aspect === SwuAspect.VIGILANCE,
         })}
       >
         <AspectIcon aspect={aspect} size={iconSize} />
@@ -95,23 +95,15 @@ const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
   }, [showLabel]);
 
   return (
-    <div className={cn('flex items-center gap-2', className)}>
-      {showAllOption && (
-        <div className="flex items-center gap-2">
-          <Button onClick={handleAllSelection}>{allLabel}</Button>
-        </div>
-      )}
-      {showNoneOption && (
-        <div className="flex items-center gap-2">
-          <Button onClick={handleNoneSelection}>{noneLabel}</Button>
-        </div>
-      )}
+    <div className={cn('flex flex-wrap flex-grow items-center gap-2', className)}>
+      {showAllOption && <Button onClick={handleAllSelection}>{allLabel}</Button>}
+      {showNoneOption && <Button onClick={handleNoneSelection}>{noneLabel}</Button>}
       <div className="flex items-center">
         {multiSelect ? (
           <ToggleGroup
             type={'multiple'}
             value={value}
-            className={classNames}
+            className={toggleGroupClassNames}
             onValueChange={handleAspectSelectionMultiple}
           >
             {aspectOptions}

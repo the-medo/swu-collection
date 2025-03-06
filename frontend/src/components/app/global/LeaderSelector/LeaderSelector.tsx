@@ -6,7 +6,7 @@ import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 import { sortCardsByCardAspects } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardAspects.ts';
 import { Button } from '@/components/ui/button.tsx';
-import { Crown } from 'lucide-react';
+import { Crown, Search } from 'lucide-react';
 import { CollectionSortBy } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { createFakeCollectionCard } from '../../../../../../types/CollectionCard.ts';
 import MultiAspectFilter from '@/components/app/global/MultiAspectFilter/MultiAspectFilter.tsx';
@@ -16,6 +16,7 @@ import {
   CardDataWithVariants,
   CardListVariants,
 } from '../../../../../../lib/swu-resources/types.ts';
+import { Input } from '@/components/ui/input.tsx';
 
 type LeaderSelectorProps = Pick<DialogProps, 'trigger'> & {
   leaderCardId?: string;
@@ -29,6 +30,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [localLeaderCardId, setLocalLeaderCardId] = useState<string | undefined>(leaderCardId);
+  const [search, setSearch] = useState<string>('');
   const [aspectFilter, setAspectFilter] = useState<SwuAspect[]>(aspectArray);
   const { data: cardList } = useCardList();
 
@@ -51,8 +53,6 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       const notFoundAspects = (card?.aspects ?? []).filter(a => !transformedAspectsForFilter[a]);
       let notFoundAspect: SwuAspect | undefined = notFoundAspects?.[0];
 
-      console.log(card?.cardId, notFoundAspects);
-
       // Filter rule for Heroism + Villainy leaders (Chancellor Palpatine)
       if (
         notFoundAspects.length === 1 &&
@@ -72,6 +72,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       Object.values(cardList?.cardsByCardType['Leader'] ?? {})
         .filter(Boolean)
         .filter(filteringByAspects)
+        .filter(l => search === '' || l?.name.toLowerCase().includes(search.toLowerCase()))
         .map(l => {
           const variantId = selectDefaultVariant(l!) ?? '';
           return {
@@ -84,7 +85,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
           if (!leaderSorter) return 0;
           return leaderSorter(a.fakeCollectionCardForSorting, b.fakeCollectionCardForSorting);
         }),
-    [cardList, filteringByAspects],
+    [cardList, filteringByAspects, search],
   );
 
   const selectedLeader = useMemo(() => {
@@ -120,11 +121,19 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
 
   const headerDescription = useMemo(() => {
     return (
-      <>
+      <div className="flex flex-wrap gap-2 items-center">
+        <div className="flex flex-grow min-w-[200px]">
+          <Input
+            icon={Search}
+            placeholder="Search"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
         <MultiAspectFilter value={aspectFilter} onChange={setAspectFilter} multiSelect={true} />
-      </>
+      </div>
     );
-  }, [aspectFilter]);
+  }, [search, aspectFilter]);
 
   const footer = useMemo(() => {
     return (
@@ -169,7 +178,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       footer={footer}
       open={open}
       onOpenChange={setOpen}
-      contentClassName={`md:max-w-[90%]`}
+      contentClassName={`md:max-w-[90%] min-h-[90%]`}
     >
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap gap-2">
@@ -188,6 +197,12 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
               />
             </div>
           ))}
+          {leaders.length === 0 && (
+            <div className="flex flex-col gap-2">
+              <h4>No leaders found</h4>
+              <p>Try changing the search or filter.</p>
+            </div>
+          )}
         </div>
       </div>
     </Dialog>
