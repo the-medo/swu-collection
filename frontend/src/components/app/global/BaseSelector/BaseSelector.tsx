@@ -17,6 +17,7 @@ import {
   CardListVariants,
 } from '../../../../../../lib/swu-resources/types.ts';
 import { Input } from '@/components/ui/input.tsx';
+import { Switch } from '@/components/ui/switch.tsx';
 
 type BaseSelectorProps = Pick<DialogProps, 'trigger'> & {
   baseCardId?: string;
@@ -25,6 +26,7 @@ type BaseSelectorProps = Pick<DialogProps, 'trigger'> & {
 
 const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBaseSelected }) => {
   const [open, setOpen] = useState(false);
+  const [allBasicBases, setAllBasicBases] = useState(false);
   const [localBaseCardId, setLocalBaseCardId] = useState<string | undefined>(baseCardId);
   const [search, setSearch] = useState<string>('');
   const [aspectFilter, setAspectFilter] = useState<SwuAspect[]>(aspectArray);
@@ -54,10 +56,36 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
     [transformedAspectsForFilter],
   );
 
+  const filteringByBasicBases = useCallback(
+    (card: CardDataWithVariants<CardListVariants> | undefined) => {
+      if (allBasicBases || search !== '') return true;
+      return card?.text !== '' && card?.text !== null;
+    },
+    [search, allBasicBases],
+  );
+
+  const oneBasicBaseOfEach = useMemo(() => {
+    if (allBasicBases || search !== '') return [];
+    const sorBasicBases: Record<string, true | undefined> = {
+      'capital-city': true, // vigilance
+      'command-center': true, // command
+      'catacombs-of-cadera': true, // aggression
+      'administrator-s-tower': true, // cunning
+    };
+
+    return Object.values(cardList?.cardsByCardType['Base'] ?? {}).filter(
+      (card: CardDataWithVariants<CardListVariants> | undefined) => {
+        return sorBasicBases[card?.cardId ?? ''];
+      },
+    );
+  }, [search, allBasicBases]);
+
   const bases = useMemo(
     () =>
       Object.values(cardList?.cardsByCardType['Base'] ?? {})
         .filter(Boolean)
+        .filter(filteringByBasicBases)
+        .concat(oneBasicBaseOfEach)
         .filter(filteringByAspects)
         .filter(l => search === '' || l?.name.toLowerCase().includes(search.toLowerCase()))
         .map(l => {
@@ -71,8 +99,15 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
         .sort((a, b) => {
           if (!baseSorter) return 0;
           return baseSorter(a.fakeCollectionCardForSorting, b.fakeCollectionCardForSorting);
+        })
+        .sort((a, b) => {
+          return (a.card?.text === '' || a.card?.text === null) &&
+            b.card?.text !== '' &&
+            b.card?.text !== null
+            ? -1
+            : 0;
         }),
-    [cardList, filteringByAspects, search],
+    [cardList, filteringByAspects, filteringByBasicBases, search],
   );
 
   const selectedBase = useMemo(() => {
@@ -118,9 +153,15 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
           />
         </div>
         <MultiAspectFilter value={aspectFilter} onChange={setAspectFilter} multiSelect={true} />
+        <div className="flex flex-row items-center gap-2">
+          <label htmlFor="switch-1" className="font-semibold">
+            Display all basic bases
+          </label>
+          <Switch id="switch-1" checked={allBasicBases} onCheckedChange={setAllBasicBases} />
+        </div>
       </div>
     );
-  }, [search, aspectFilter]);
+  }, [search, aspectFilter, allBasicBases]);
 
   const footer = useMemo(() => {
     return (
@@ -173,6 +214,12 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
             <div
               className="cursor-pointer"
               onClick={() => setLocalBaseCardId(base?.card?.cardId)}
+              onDoubleClick={() => {
+                const baseId = base?.card?.cardId;
+                setLocalBaseCardId(baseId);
+                onBaseSelected(baseId);
+                setOpen(false);
+              }}
               key={base?.card?.cardId}
             >
               <CardImage

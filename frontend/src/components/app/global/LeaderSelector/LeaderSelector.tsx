@@ -187,6 +187,12 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
             <div
               className="cursor-pointer"
               onClick={() => setLocalLeaderCardId(leader?.card?.cardId)}
+              onDoubleClick={() => {
+                const leaderId = leader?.card?.cardId;
+                setLocalLeaderCardId(leaderId);
+                onLeaderSelected(leaderId);
+                setOpen(false);
+              }}
               key={leader?.card?.cardId}
             >
               <CardImage
