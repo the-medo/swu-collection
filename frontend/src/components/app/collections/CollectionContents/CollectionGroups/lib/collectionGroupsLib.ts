@@ -21,17 +21,17 @@ import { sortCardsByCardNumber } from '@/components/app/collections/CollectionCo
 import { sortCardsByPrice } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByPrice.ts';
 import { sortCardsByQty } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByQty.ts';
 
-type CardGroup = {
+type CardGroup<T = CollectionCard> = {
   id: string;
   label: string;
-  cards: CollectionCard[];
+  cards: T[];
   horizontal?: boolean;
 };
 
-export type CardGroups = Record<string, CardGroup | undefined>;
+export type CardGroups<T = CollectionCard> = Record<string, CardGroup<T> | undefined>;
 
-export type CardGroupData = {
-  groups: CardGroups;
+export type CardGroupData<T = CollectionCard> = {
+  groups: CardGroups<T>;
   sortedIds: string[];
 };
 

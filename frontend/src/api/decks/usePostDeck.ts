@@ -3,23 +3,17 @@ import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { UserDecksResponse } from '../../../../server/routes/user.ts';
-
-export type PostDeckRequest = {
-  format: number;
-  name: string;
-  description: string;
-  public: boolean;
-};
+import { ZDeckCreateRequest } from '../../../../types/ZDeck.ts';
 
 /**
- * Hook to create a new collection.
+ * Hook to create a new deck.
  */
 export const usePostDeck = () => {
   const user = useUser();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: PostDeckRequest) => {
+    mutationFn: async (payload: ZDeckCreateRequest) => {
       if (!user?.id) {
         throw new Error('User id is required');
       }

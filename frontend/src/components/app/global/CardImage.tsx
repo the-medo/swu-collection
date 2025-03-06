@@ -76,7 +76,7 @@ export const cardImageVariants = cva('', {
     horizontal: false,
   },
 });
-type CardImageVariantProps = Omit<VariantProps<typeof cardImageVariants>, 'horizontal'>;
+export type CardImageVariantProps = Omit<VariantProps<typeof cardImageVariants>, 'horizontal'>;
 
 type CardImageProps = {
   card?: CardDataWithVariants<CardListVariants>;

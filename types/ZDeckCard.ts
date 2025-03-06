@@ -8,7 +8,7 @@ export const zDeckCardSchema = z.object({
   quantity: z.number().int().min(1),
 });
 
-export const zDeckCardCreateRequest = zDeckCardSchema.partial({
+export const zDeckCardCreateRequest = zDeckCardSchema.omit({ deckId: true }).partial({
   note: true,
 });
 
@@ -37,8 +37,6 @@ export const zDeckCardDeleteRequest = zDeckCardSchema
   })
   .required();
 
-
-
 export type ZDeckCard = z.infer<typeof zDeckCardSchema>;
 export type ZDeckCardCreateRequest = z.infer<typeof zDeckCardCreateRequest>;
 export type ZDeckCardUpdateRequest = z.infer<typeof zDeckCardUpdateRequest>;
@@ -51,4 +49,3 @@ export interface DeckCard {
   note?: string;
   quantity: number;
 }
-

@@ -7,9 +7,9 @@ export const useDeleteDeck = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (collectionId: string) => {
+    mutationFn: async (deckId: string) => {
       const response = await api.deck[':id'].$delete({
-        param: { id: collectionId },
+        param: { id: deckId },
       });
       if (!response.ok) {
         throw new Error(response.statusText);
@@ -28,7 +28,7 @@ export const useDeleteDeck = () => {
         if (!oldData) return oldData;
         return {
           ...oldData,
-          collections: oldData.decks.filter(col => col.id !== deletedDeck.id),
+          decks: oldData.decks.filter(col => col.id !== deletedDeck.id),
         };
       });
     },

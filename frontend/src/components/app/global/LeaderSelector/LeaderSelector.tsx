@@ -2,7 +2,7 @@ import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
 import * as React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import CardImage from '@/components/app/global/CardImage.tsx';
+import CardImage, { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 import { sortCardsByCardAspects } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardAspects.ts';
 import { Button } from '@/components/ui/button.tsx';
@@ -17,16 +17,21 @@ import {
   CardListVariants,
 } from '../../../../../../lib/swu-resources/types.ts';
 import { Input } from '@/components/ui/input.tsx';
+import { cn } from '@/lib/utils.ts';
 
 type LeaderSelectorProps = Pick<DialogProps, 'trigger'> & {
   leaderCardId?: string;
-  onLeaderSelected: (leaderCardId: string | undefined) => void;
+  onLeaderSelected?: (leaderCardId: string | undefined) => void;
+  editable?: boolean;
+  size?: CardImageVariantProps['size'];
 };
 
 const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   trigger,
   leaderCardId,
   onLeaderSelected,
+  editable = true,
+  size = 'w200',
 }) => {
   const [open, setOpen] = useState(false);
   const [localLeaderCardId, setLocalLeaderCardId] = useState<string | undefined>(leaderCardId);
@@ -99,8 +104,8 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   const localTrigger = useMemo(() => {
     if (!selectedLeader) {
       return (
-        <div className="cursor-pointer">
-          <CardImage forceHorizontal size="w200" backSideButton={false}>
+        <div className={cn({ 'cursor-pointer': editable })}>
+          <CardImage forceHorizontal backSideButton={editable ? false : 'mid'} size={size}>
             <h6 className="flex gap-2">
               <Crown /> Leader
             </h6>
@@ -109,16 +114,17 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       );
     }
     return (
-      <div className="cursor-pointer">
+      <div className={cn({ 'cursor-pointer': editable })}>
         <CardImage
           card={selectedLeader.card}
           cardVariantId={selectedLeader.variantId}
           forceHorizontal={true}
-          backSideButton={false}
+          backSideButton={editable ? false : 'mid'}
+          size={size}
         />
       </div>
     );
-  }, [selectedLeader]);
+  }, [selectedLeader, size]);
 
   const headerDescription = useMemo(() => {
     return (
@@ -161,7 +167,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
         </div>
         <Button
           onClick={() => {
-            onLeaderSelected(localSelectedLeader?.card?.cardId);
+            if (onLeaderSelected) onLeaderSelected(localSelectedLeader?.card?.cardId);
             setOpen(false);
           }}
         >
@@ -170,6 +176,8 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       </div>
     );
   }, [onLeaderSelected, localSelectedLeader]);
+
+  if (!editable) return trigger ?? localTrigger;
 
   return (
     <Dialog
@@ -190,7 +198,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
               onDoubleClick={() => {
                 const leaderId = leader?.card?.cardId;
                 setLocalLeaderCardId(leaderId);
-                onLeaderSelected(leaderId);
+                if (onLeaderSelected) onLeaderSelected(leaderId);
                 setOpen(false);
               }}
               key={leader?.card?.cardId}

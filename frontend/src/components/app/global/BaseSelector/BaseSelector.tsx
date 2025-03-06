@@ -2,7 +2,7 @@ import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
 import * as React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import CardImage from '@/components/app/global/CardImage.tsx';
+import CardImage, { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 import { sortCardsByCardAspects } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardAspects.ts';
 import { Button } from '@/components/ui/button.tsx';
@@ -18,13 +18,22 @@ import {
 } from '../../../../../../lib/swu-resources/types.ts';
 import { Input } from '@/components/ui/input.tsx';
 import { Switch } from '@/components/ui/switch.tsx';
+import { cn } from '@/lib/utils.ts';
 
 type BaseSelectorProps = Pick<DialogProps, 'trigger'> & {
   baseCardId?: string;
-  onBaseSelected: (baseCardId: string | undefined) => void;
+  onBaseSelected?: (baseCardId: string | undefined) => void;
+  editable?: boolean;
+  size?: CardImageVariantProps['size'];
 };
 
-const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBaseSelected }) => {
+const BaseSelector: React.FC<BaseSelectorProps> = ({
+  trigger,
+  baseCardId,
+  onBaseSelected,
+  editable = true,
+  size = 'w200',
+}) => {
   const [open, setOpen] = useState(false);
   const [allBasicBases, setAllBasicBases] = useState(false);
   const [localBaseCardId, setLocalBaseCardId] = useState<string | undefined>(baseCardId);
@@ -80,10 +89,13 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
     );
   }, [search, allBasicBases]);
 
+  const allBases = useMemo(() => {
+    return Object.values(cardList?.cardsByCardType['Base'] ?? {}).filter(Boolean);
+  }, [cardList?.cardsByCardType['Base']]);
+
   const bases = useMemo(
     () =>
-      Object.values(cardList?.cardsByCardType['Base'] ?? {})
-        .filter(Boolean)
+      allBases
         .filter(filteringByBasicBases)
         .concat(oneBasicBaseOfEach)
         .filter(filteringByAspects)
@@ -111,18 +123,18 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
   );
 
   const selectedBase = useMemo(() => {
-    return bases.find(base => base?.card?.cardId === baseCardId);
-  }, [baseCardId]);
+    return allBases.find(base => base?.cardId === baseCardId);
+  }, [allBases, baseCardId]);
 
   const localSelectedBase = useMemo(() => {
-    return bases.find(base => base?.card?.cardId === localBaseCardId);
+    return allBases.find(base => base?.cardId === localBaseCardId);
   }, [localBaseCardId]);
 
   const localTrigger = useMemo(() => {
     if (!selectedBase) {
       return (
-        <div className="cursor-pointer">
-          <CardImage forceHorizontal size="w200">
+        <div className={cn({ 'cursor-pointer': editable })}>
+          <CardImage forceHorizontal size={size}>
             <h6 className="flex gap-2">
               <Castle /> Base
             </h6>
@@ -131,15 +143,16 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
       );
     }
     return (
-      <div className="cursor-pointer">
+      <div className={cn({ 'cursor-pointer': editable })}>
         <CardImage
-          card={selectedBase.card}
-          cardVariantId={selectedBase.variantId}
+          card={selectedBase}
+          cardVariantId={selectDefaultVariant(selectedBase)}
           forceHorizontal={true}
+          size={size}
         />
       </div>
     );
-  }, [selectedBase]);
+  }, [selectedBase, size]);
 
   const headerDescription = useMemo(() => {
     return (
@@ -168,8 +181,8 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
       <div className="flex flex-wrap gap-2 w-full justify-between items-center">
         <div className="flex flex-wrap gap-2 items-center">
           <CardImage
-            card={localSelectedBase?.card}
-            cardVariantId={localSelectedBase?.variantId}
+            card={localSelectedBase}
+            cardVariantId={localSelectedBase ? selectDefaultVariant(localSelectedBase) : undefined}
             forceHorizontal={true}
             size="w100"
             backSideButton={false}
@@ -177,7 +190,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
 
           {localSelectedBase ? (
             <>
-              <h4>{localSelectedBase?.card?.name} </h4>
+              <h4>{localSelectedBase?.name} </h4>
               <Button onClick={() => setLocalBaseCardId(undefined)} variant="outline">
                 Clear
               </Button>
@@ -188,7 +201,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
         </div>
         <Button
           onClick={() => {
-            onBaseSelected(localSelectedBase?.card?.cardId);
+            if (onBaseSelected) onBaseSelected(localSelectedBase?.cardId);
             setOpen(false);
           }}
         >
@@ -217,7 +230,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBase
               onDoubleClick={() => {
                 const baseId = base?.card?.cardId;
                 setLocalBaseCardId(baseId);
-                onBaseSelected(baseId);
+                if (onBaseSelected) onBaseSelected(baseId);
                 setOpen(false);
               }}
               key={base?.card?.cardId}

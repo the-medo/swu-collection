@@ -4,12 +4,13 @@ import {
   CardGroupData,
   CardGroups,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
+import { DeckCard } from '../../../../../../../../types/ZDeckCard.ts';
 
-export const groupCardsByCardType = (
+export const groupCardsByCardType = <T extends CollectionCard | DeckCard = CollectionCard>(
   cardList: CardList,
-  cards: CollectionCard[],
-): CardGroupData => {
-  const groups: CardGroups = {
+  cards: T[],
+): CardGroupData<T> => {
+  const groups: CardGroups<T> = {
     Leader: {
       id: 'Leader',
       label: 'Leader',

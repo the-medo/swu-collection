@@ -49,6 +49,9 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
           name: value.name,
           description: value.description,
           public: value.public,
+          leaderCardId1: selectedLeader1,
+          leaderCardId2: selectedLeader2,
+          baseCardId: selectedBase,
         },
         {
           onSuccess: result => {
@@ -84,6 +87,22 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
           }}
         >
           <form.Field
+            name="name"
+            children={field => (
+              <div className="flex flex-col gap-2">
+                <Input
+                  type="text"
+                  className=""
+                  id={field.name}
+                  placeholder="Deck name"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={e => field.handleChange(e.target.value)}
+                />
+              </div>
+            )}
+          />
+          <form.Field
             name="format"
             children={field => (
               <div className="flex flex-col gap-2">
@@ -111,22 +130,6 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
                     onBaseSelected={setSelectedBase}
                   />
                 </div>
-              </div>
-            )}
-          />
-          <form.Field
-            name="name"
-            children={field => (
-              <div className="flex flex-col gap-2">
-                <Input
-                  type="text"
-                  className=""
-                  id={field.name}
-                  placeholder="Deck name"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={e => field.handleChange(e.target.value)}
-                />
               </div>
             )}
           />

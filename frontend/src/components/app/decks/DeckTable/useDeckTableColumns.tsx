@@ -20,6 +20,9 @@ import { getFormatName, UserDeckData } from './deckTableLib.tsx';
 import { useCountryList } from '@/api/lists/useCountryList.ts';
 import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
 import DeleteDeckDialog from '@/components/app/dialogs/DeleteDeckDialog.tsx';
+import CardImage from '@/components/app/global/CardImage.tsx';
+import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+import EditDeckDialog from '@/components/app/dialogs/EditDeckDialog.tsx';
 
 interface DeckTableColumnsProps {
   showOwner?: boolean;
@@ -39,31 +42,51 @@ export function useDeckTableColumns({
   return useMemo(() => {
     const definitions: ColumnDef<UserDeckData>[] = [];
 
-    if (showPublic) {
-      definitions.push({
-        id: 'deckPublic',
-        accessorKey: 'deck.public',
-        header: 'Public',
-        size: 20,
-        cell: ({ getValue, row }) => {
-          const deckId = row.original.deck.id as string;
-          return (
-            <Button
-              variant="link"
-              className="flex flex-col gap-0 p-0 w-full items-start justify-center"
-              onClick={() => {
-                putDeckMutation.mutate({
-                  id: deckId,
-                  public: !(getValue() as boolean),
-                });
-              }}
+    // Leader and Base cards
+    definitions.push({
+      id: 'leaders',
+      header: 'Leaders/Base',
+      size: 24,
+      cell: ({ row }) => {
+        const deck = row.original.deck;
+
+        const leader1 = deck.leaderCardId1 ? cardList?.cards[deck.leaderCardId1] : undefined;
+        const leader2 = deck.leaderCardId2 ? cardList?.cards[deck.leaderCardId2] : undefined;
+        const base = deck.baseCardId ? cardList?.cards[deck.baseCardId] : undefined;
+
+        return (
+          <div className="flex gap-2">
+            <CardImage
+              card={leader1}
+              cardVariantId={leader1 ? selectDefaultVariant(leader1) : undefined}
+              forceHorizontal={true}
+              size="w100"
+              backSideButton={false}
             >
-              {publicRenderer(getValue() as boolean)}
-            </Button>
-          );
-        },
-      });
-    }
+              No leader
+            </CardImage>
+            {leader2 && (
+              <CardImage
+                card={leader2}
+                cardVariantId={leader1 ? selectDefaultVariant(leader2) : undefined}
+                forceHorizontal={true}
+                size="w100"
+                backSideButton={false}
+              />
+            )}
+            <CardImage
+              card={base}
+              cardVariantId={base ? selectDefaultVariant(base) : undefined}
+              forceHorizontal={true}
+              size="w100"
+              backSideButton={false}
+            >
+              No base
+            </CardImage>
+          </div>
+        );
+      },
+    });
 
     definitions.push({
       id: 'deckName',
@@ -119,37 +142,6 @@ export function useDeckTableColumns({
       });
     }
 
-    // Leader and Base cards
-    definitions.push({
-      id: 'leaders',
-      header: 'Leaders/Base',
-      size: 24,
-      cell: ({ row }) => {
-        const deck = row.original.deck;
-        const leaders = [];
-
-        if (deck.leaderCardId1 && cardList?.cards[deck.leaderCardId1]) {
-          leaders.push(cardList.cards[deck.leaderCardId1]?.name);
-        }
-
-        if (deck.leaderCardId2 && cardList?.cards[deck.leaderCardId2]) {
-          leaders.push(cardList.cards[deck.leaderCardId2]?.name);
-        }
-
-        const base =
-          deck.baseCardId && cardList?.cards[deck.baseCardId]
-            ? cardList.cards[deck.baseCardId]?.name
-            : null;
-
-        return (
-          <div className="text-xs">
-            {leaders.length > 0 && <div>Leaders: {leaders.join(', ')}</div>}
-            {base && <div>Base: {base}</div>}
-          </div>
-        );
-      },
-    });
-
     definitions.push({
       accessorKey: 'deck.createdAt',
       size: 24,
@@ -167,6 +159,32 @@ export function useDeckTableColumns({
         return dateRenderer(getValue() as string);
       },
     });
+
+    if (showPublic) {
+      definitions.push({
+        id: 'deckPublic',
+        accessorKey: 'deck.public',
+        header: 'Public',
+        size: 20,
+        cell: ({ getValue, row }) => {
+          const deckId = row.original.deck.id as string;
+          return (
+            <Button
+              variant="link"
+              className="flex flex-col gap-0 p-0 w-full items-start justify-center"
+              onClick={() => {
+                putDeckMutation.mutate({
+                  deckId: deckId,
+                  public: !(getValue() as boolean),
+                });
+              }}
+            >
+              {publicRenderer(getValue() as boolean)}
+            </Button>
+          );
+        },
+      });
+    }
 
     definitions.push({
       id: 'actions',
@@ -190,12 +208,15 @@ export function useDeckTableColumns({
             </Button>
             {user && user?.id === userId && (
               <>
-                <Link to={`/decks/$deckId`} params={{ deckId: deckId }}>
-                  <Button size="iconMedium" className="p-0">
-                    <span className="sr-only">Edit deck</span>
-                    <PencilIcon className="h-4 w-4" />
-                  </Button>
-                </Link>
+                <EditDeckDialog
+                  deck={row.original.deck}
+                  trigger={
+                    <Button size="iconMedium" className="p-0">
+                      <span className="sr-only">Edit deck</span>
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                  }
+                />
                 <DeleteDeckDialog
                   deck={row.original.deck}
                   trigger={
