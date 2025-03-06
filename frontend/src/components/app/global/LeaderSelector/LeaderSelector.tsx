@@ -1,6 +1,6 @@
 import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
 import * as React from 'react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
@@ -9,6 +9,13 @@ import { Button } from '@/components/ui/button.tsx';
 import { Crown } from 'lucide-react';
 import { CollectionSortBy } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { createFakeCollectionCard } from '../../../../../../types/CollectionCard.ts';
+import MultiAspectFilter from '@/components/app/global/MultiAspectFilter/MultiAspectFilter.tsx';
+import { SwuAspect } from '../../../../../../types/enums.ts';
+import { aspectArray } from '../../../../../../types/iterableEnumInfo.ts';
+import {
+  CardDataWithVariants,
+  CardListVariants,
+} from '../../../../../../lib/swu-resources/types.ts';
 
 type LeaderSelectorProps = Pick<DialogProps, 'trigger'> & {
   leaderCardId?: string;
@@ -20,8 +27,9 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   leaderCardId,
   onLeaderSelected,
 }) => {
-  const [localLeaderCardId, setLocalLeaderCardId] = useState<string | undefined>(leaderCardId);
   const [open, setOpen] = useState(false);
+  const [localLeaderCardId, setLocalLeaderCardId] = useState<string | undefined>(leaderCardId);
+  const [aspectFilter, setAspectFilter] = useState<SwuAspect[]>(aspectArray);
   const { data: cardList } = useCardList();
 
   const leaderSorter = useMemo(
@@ -30,10 +38,40 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
     [cardList],
   );
 
+  const transformedAspectsForFilter = useMemo(() => {
+    const transformedAspects: Partial<Record<SwuAspect, true | undefined>> = {};
+    aspectFilter.forEach(aspect => {
+      transformedAspects[aspect] = true;
+    });
+    return transformedAspects;
+  }, [aspectFilter]);
+
+  const filteringByAspects = useCallback(
+    (card: CardDataWithVariants<CardListVariants> | undefined) => {
+      const notFoundAspects = (card?.aspects ?? []).filter(a => !transformedAspectsForFilter[a]);
+      let notFoundAspect: SwuAspect | undefined = notFoundAspects?.[0];
+
+      console.log(card?.cardId, notFoundAspects);
+
+      // Filter rule for Heroism + Villainy leaders (Chancellor Palpatine)
+      if (
+        notFoundAspects.length === 1 &&
+        ((notFoundAspect === SwuAspect.HEROISM && card?.aspects.includes(SwuAspect.VILLAINY)) ||
+          (notFoundAspect === SwuAspect.VILLAINY && card?.aspects.includes(SwuAspect.HEROISM)))
+      ) {
+        notFoundAspect = undefined;
+      }
+
+      return notFoundAspect === undefined;
+    },
+    [transformedAspectsForFilter],
+  );
+
   const leaders = useMemo(
     () =>
       Object.values(cardList?.cardsByCardType['Leader'] ?? {})
         .filter(Boolean)
+        .filter(filteringByAspects)
         .map(l => {
           const variantId = selectDefaultVariant(l!) ?? '';
           return {
@@ -46,7 +84,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
           if (!leaderSorter) return 0;
           return leaderSorter(a.fakeCollectionCardForSorting, b.fakeCollectionCardForSorting);
         }),
-    [cardList],
+    [cardList, filteringByAspects],
   );
 
   const selectedLeader = useMemo(() => {
@@ -81,8 +119,12 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   }, [selectedLeader]);
 
   const headerDescription = useMemo(() => {
-    return 'Here will be some filters and stuff';
-  }, []);
+    return (
+      <>
+        <MultiAspectFilter value={aspectFilter} onChange={setAspectFilter} multiSelect={true} />
+      </>
+    );
+  }, [aspectFilter]);
 
   const footer = useMemo(() => {
     return (

@@ -18,7 +18,7 @@ export interface DialogProps extends PropsWithChildren, RadixDialogProps {
   trigger: React.ReactNode;
   triggerDisabled?: boolean;
   header?: string | React.ReactNode;
-  headerDescription?: string;
+  headerDescription?: string | React.ReactNode;
   footer?: React.ReactNode;
   contentClassName?: string;
 }
@@ -34,7 +34,7 @@ const Dialog: React.FC<DialogProps> = ({
   ...rest
 }) => {
   const headerComponent = useMemo(() => {
-    if (!header) return null;
+    if (!header) return undefined;
     if (typeof header === 'string')
       return (
         <DialogHeader className="bg-background">
@@ -43,10 +43,10 @@ const Dialog: React.FC<DialogProps> = ({
         </DialogHeader>
       );
     return <DialogHeader className="bg-background">{header}</DialogHeader>;
-  }, [header]);
+  }, [header, headerDescription]);
 
   const footerComponent = useMemo(() => {
-    if (!footer) return null;
+    if (!footer) return undefined;
     return <DialogFooter className="bg-background mt-auto">{footer}</DialogFooter>;
   }, [footer]);
 

@@ -15,9 +15,9 @@ export const aspectSortValues: Record<string, number> = {
   [SwuAspect.VILLAINY]: 6000,
 };
 
-const aspects = Object.values(SwuAspect);
-aspects.forEach(aspect => {
-  aspects.forEach(aspect2 => {
+export const ASPECTS = Object.values(SwuAspect);
+ASPECTS.forEach(aspect => {
+  ASPECTS.forEach(aspect2 => {
     aspectSortValues[[aspect, aspect2].join(',')] =
       aspectSortValues[aspect] + aspectSortValues[aspect2] / 100;
   });

@@ -1,4 +1,4 @@
-import { CardLanguage, CardCondition } from './enums.ts';
+import { CardLanguage, CardCondition, SwuAspect } from './enums.ts';
 
 export const getLanguageFlagUrl = (language: CardLanguage) =>
   `https://images.swubase.com/flags/languages/${language}.png`;
@@ -96,3 +96,12 @@ export const cardConditionArray: CardConditionInfo[] = Object.values(cardConditi
 cardConditionArray.forEach(
   condition => (cardConditionNumericObj[condition.numericValue] = condition),
 );
+
+export const aspectArray = [
+  SwuAspect.VIGILANCE,
+  SwuAspect.COMMAND,
+  SwuAspect.AGGRESSION,
+  SwuAspect.CUNNING,
+  SwuAspect.HEROISM,
+  SwuAspect.VILLAINY,
+];
