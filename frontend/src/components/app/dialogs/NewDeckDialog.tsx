@@ -14,6 +14,8 @@ import { Textarea } from '@/components/ui/textarea.tsx';
 import { usePostDeck } from '@/api/decks/usePostDeck.ts';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
+import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx';
+import { formatDataById } from '../../../../../types/Format.ts';
 
 type NewDeckDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {};
 
@@ -22,6 +24,8 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
   const user = useUser();
   const [open, setOpen] = useState(false);
   const [selectedLeader1, setSelectedLeader1] = useState<string | undefined>(undefined);
+  const [selectedLeader2, setSelectedLeader2] = useState<string | undefined>(undefined);
+  const [selectedBase, setSelectedBase] = useState<string | undefined>(undefined);
   const { toast } = useToast();
   const postCollectionMutation = usePostDeck();
 
@@ -68,6 +72,7 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
       header={`New deck`}
       open={open}
       onOpenChange={setOpen}
+      contentClassName="md:min-w-[500px]"
     >
       {user ? (
         <form
@@ -87,6 +92,25 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
                   allowEmpty={false}
                   onChange={e => field.handleChange(e ?? 1)}
                 />
+                <div className="flex flex-wrap gap-2 w-full justify-center items-center">
+                  <LeaderSelector
+                    trigger={null}
+                    leaderCardId={selectedLeader1}
+                    onLeaderSelected={setSelectedLeader1}
+                  />
+                  {formatDataById[Number(field.state.value)]?.leaderCount === 2 && (
+                    <LeaderSelector
+                      trigger={null}
+                      leaderCardId={selectedLeader2}
+                      onLeaderSelected={setSelectedLeader2}
+                    />
+                  )}
+                  <BaseSelector
+                    trigger={null}
+                    baseCardId={selectedBase}
+                    onBaseSelected={setSelectedBase}
+                  />
+                </div>
               </div>
             )}
           />
@@ -105,11 +129,6 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
                 />
               </div>
             )}
-          />
-          <LeaderSelector
-            trigger={null}
-            leaderCardId={selectedLeader1}
-            onLeaderSelected={setSelectedLeader1}
           />
           <form.Field
             name="description"

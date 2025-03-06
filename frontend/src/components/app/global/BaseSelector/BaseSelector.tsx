@@ -6,7 +6,7 @@ import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 import { sortCardsByCardAspects } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardAspects.ts';
 import { Button } from '@/components/ui/button.tsx';
-import { Crown, Search } from 'lucide-react';
+import { Castle, Search } from 'lucide-react';
 import { CollectionSortBy } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { createFakeCollectionCard } from '../../../../../../types/CollectionCard.ts';
 import MultiAspectFilter from '@/components/app/global/MultiAspectFilter/MultiAspectFilter.tsx';
@@ -18,23 +18,19 @@ import {
 } from '../../../../../../lib/swu-resources/types.ts';
 import { Input } from '@/components/ui/input.tsx';
 
-type LeaderSelectorProps = Pick<DialogProps, 'trigger'> & {
-  leaderCardId?: string;
-  onLeaderSelected: (leaderCardId: string | undefined) => void;
+type BaseSelectorProps = Pick<DialogProps, 'trigger'> & {
+  baseCardId?: string;
+  onBaseSelected: (baseCardId: string | undefined) => void;
 };
 
-const LeaderSelector: React.FC<LeaderSelectorProps> = ({
-  trigger,
-  leaderCardId,
-  onLeaderSelected,
-}) => {
+const BaseSelector: React.FC<BaseSelectorProps> = ({ trigger, baseCardId, onBaseSelected }) => {
   const [open, setOpen] = useState(false);
-  const [localLeaderCardId, setLocalLeaderCardId] = useState<string | undefined>(leaderCardId);
+  const [localBaseCardId, setLocalBaseCardId] = useState<string | undefined>(baseCardId);
   const [search, setSearch] = useState<string>('');
   const [aspectFilter, setAspectFilter] = useState<SwuAspect[]>(aspectArray);
   const { data: cardList } = useCardList();
 
-  const leaderSorter = useMemo(
+  const baseSorter = useMemo(
     () =>
       cardList ? sortCardsByCardAspects(cardList.cards, [CollectionSortBy.CARD_NAME]) : undefined,
     [cardList],
@@ -53,23 +49,14 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       const notFoundAspects = (card?.aspects ?? []).filter(a => !transformedAspectsForFilter[a]);
       let notFoundAspect: SwuAspect | undefined = notFoundAspects?.[0];
 
-      // Filter rule for Heroism + Villainy leaders (Chancellor Palpatine)
-      if (
-        notFoundAspects.length === 1 &&
-        ((notFoundAspect === SwuAspect.HEROISM && card?.aspects.includes(SwuAspect.VILLAINY)) ||
-          (notFoundAspect === SwuAspect.VILLAINY && card?.aspects.includes(SwuAspect.HEROISM)))
-      ) {
-        notFoundAspect = undefined;
-      }
-
       return notFoundAspect === undefined;
     },
     [transformedAspectsForFilter],
   );
 
-  const leaders = useMemo(
+  const bases = useMemo(
     () =>
-      Object.values(cardList?.cardsByCardType['Leader'] ?? {})
+      Object.values(cardList?.cardsByCardType['Base'] ?? {})
         .filter(Boolean)
         .filter(filteringByAspects)
         .filter(l => search === '' || l?.name.toLowerCase().includes(search.toLowerCase()))
@@ -82,27 +69,27 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
           };
         })
         .sort((a, b) => {
-          if (!leaderSorter) return 0;
-          return leaderSorter(a.fakeCollectionCardForSorting, b.fakeCollectionCardForSorting);
+          if (!baseSorter) return 0;
+          return baseSorter(a.fakeCollectionCardForSorting, b.fakeCollectionCardForSorting);
         }),
     [cardList, filteringByAspects, search],
   );
 
-  const selectedLeader = useMemo(() => {
-    return leaders.find(leader => leader?.card?.cardId === leaderCardId);
-  }, [leaderCardId]);
+  const selectedBase = useMemo(() => {
+    return bases.find(base => base?.card?.cardId === baseCardId);
+  }, [baseCardId]);
 
-  const localSelectedLeader = useMemo(() => {
-    return leaders.find(leader => leader?.card?.cardId === localLeaderCardId);
-  }, [localLeaderCardId]);
+  const localSelectedBase = useMemo(() => {
+    return bases.find(base => base?.card?.cardId === localBaseCardId);
+  }, [localBaseCardId]);
 
   const localTrigger = useMemo(() => {
-    if (!selectedLeader) {
+    if (!selectedBase) {
       return (
         <div className="cursor-pointer">
-          <CardImage forceHorizontal size="w200" backSideButton={false}>
+          <CardImage forceHorizontal size="w200">
             <h6 className="flex gap-2">
-              <Crown /> Leader
+              <Castle /> Base
             </h6>
           </CardImage>
         </div>
@@ -111,14 +98,13 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
     return (
       <div className="cursor-pointer">
         <CardImage
-          card={selectedLeader.card}
-          cardVariantId={selectedLeader.variantId}
+          card={selectedBase.card}
+          cardVariantId={selectedBase.variantId}
           forceHorizontal={true}
-          backSideButton={false}
         />
       </div>
     );
-  }, [selectedLeader]);
+  }, [selectedBase]);
 
   const headerDescription = useMemo(() => {
     return (
@@ -141,27 +127,27 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       <div className="flex flex-wrap gap-2 w-full justify-between items-center">
         <div className="flex flex-wrap gap-2 items-center">
           <CardImage
-            card={localSelectedLeader?.card}
-            cardVariantId={localSelectedLeader?.variantId}
+            card={localSelectedBase?.card}
+            cardVariantId={localSelectedBase?.variantId}
             forceHorizontal={true}
             size="w100"
             backSideButton={false}
           />
 
-          {localSelectedLeader ? (
+          {localSelectedBase ? (
             <>
-              <h4>{localSelectedLeader?.card?.name} </h4>
-              <Button onClick={() => setLocalLeaderCardId(undefined)} variant="outline">
+              <h4>{localSelectedBase?.card?.name} </h4>
+              <Button onClick={() => setLocalBaseCardId(undefined)} variant="outline">
                 Clear
               </Button>
             </>
           ) : (
-            <h4>No selected leader</h4>
+            <h4>No selected base</h4>
           )}
         </div>
         <Button
           onClick={() => {
-            onLeaderSelected(localSelectedLeader?.card?.cardId);
+            onBaseSelected(localSelectedBase?.card?.cardId);
             setOpen(false);
           }}
         >
@@ -169,12 +155,12 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
         </Button>
       </div>
     );
-  }, [onLeaderSelected, localSelectedLeader]);
+  }, [onBaseSelected, localSelectedBase]);
 
   return (
     <Dialog
       trigger={trigger ?? localTrigger}
-      header={`Select a leader`}
+      header={`Select a base`}
       headerDescription={headerDescription}
       footer={footer}
       open={open}
@@ -183,24 +169,24 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
     >
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap gap-2">
-          {leaders.map(leader => (
+          {bases.map(base => (
             <div
               className="cursor-pointer"
-              onClick={() => setLocalLeaderCardId(leader?.card?.cardId)}
-              key={leader?.card?.cardId}
+              onClick={() => setLocalBaseCardId(base?.card?.cardId)}
+              key={base?.card?.cardId}
             >
               <CardImage
-                key={leader?.card?.cardId}
-                card={leader.card}
-                cardVariantId={leader.variantId}
+                key={base?.card?.cardId}
+                card={base.card}
+                cardVariantId={base.variantId}
                 forceHorizontal={true}
                 size="w300"
               />
             </div>
           ))}
-          {leaders.length === 0 && (
+          {bases.length === 0 && (
             <div className="flex flex-col gap-2">
-              <h4>No leaders found</h4>
+              <h4>No bases found</h4>
               <p>Try changing the search or filter.</p>
             </div>
           )}
@@ -210,4 +196,4 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   );
 };
 
-export default LeaderSelector;
+export default BaseSelector;
