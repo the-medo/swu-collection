@@ -19,6 +19,7 @@ import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 import * as React from 'react';
 import { Input } from '@/components/ui/input.tsx';
+import BoardSelect from '@/components/app/global/BoardSelect/BoardSelect.tsx';
 
 interface DeckInputCommandProps {
   deckId: string;
@@ -29,16 +30,16 @@ const DeckInputCommand: React.FC<DeckInputCommandProps> = ({ deckId }) => {
   const amountInputRef = useRef<HTMLInputElement>(null);
   const mutation = usePostDeckCard(deckId);
 
-  const { open, search, options, isFetching, cardList, amount } = useDeckInputCommandStore();
+  const { open, search, options, isFetching, cardList, amount, board } = useDeckInputCommandStore();
 
-  const { setOpen, setSearch, setAmount } = useDeckInputCommandStoreActions();
+  const { setOpen, setSearch, setAmount, setBoard } = useDeckInputCommandStoreActions();
 
   const submitHandler = useCallback(
     async (cardId: string) => {
       try {
         if (amount !== 0) {
           await mutation.mutateAsync({
-            board: 1,
+            board,
             cardId,
             quantity: amount ?? 0,
           });
@@ -50,7 +51,7 @@ const DeckInputCommand: React.FC<DeckInputCommandProps> = ({ deckId }) => {
         console.error(error);
       }
     },
-    [amount],
+    [board, amount],
   );
 
   return (
@@ -142,6 +143,7 @@ const DeckInputCommand: React.FC<DeckInputCommandProps> = ({ deckId }) => {
           </PopoverContent>
         </Command>
       </Popover>
+      <BoardSelect value={board} onChange={setBoard} />
     </div>
   );
 };
