@@ -35,6 +35,12 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
       usedCards[c.cardId] = card;
     });
 
+    for (let i = 1; i <= 3; i++) {
+      cardsByBoard[i].sort(
+        (a, b) => (cardList?.cards[a.cardId]?.cost ?? 0) - (cardList?.cards[b.cardId]?.cost ?? 0),
+      );
+    }
+
     const mainboardGroups = cardList
       ? groupCardsByCardType(cardList?.cards, cardsByBoard[1])
       : undefined;
@@ -58,7 +64,9 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
           if (group.cards.length === 0) return null;
           return (
             <div className="flex flex-col gap-1 w-[350px] p-1 break-inside-avoid">
-              <span className="font-medium">{group.label}</span>
+              <span className="font-medium">
+                {group.label} ({group.cards.reduce((p, c) => p + c.quantity, 0)})
+              </span>
               {group.cards.map(c => {
                 return (
                   <DeckCardRow
@@ -73,7 +81,9 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
           );
         })}
         <div className="flex flex-col gap-1 w-[350px] p-1 bg-yellow-100">
-          <span className="font-medium">Sideboard</span>
+          <span className="font-medium">
+            Sideboard ({cardsByBoard[2].reduce((p, c) => p + c.quantity, 0)})
+          </span>
           {cardsByBoard[2].length === 0 && <span className="text-sm">No cards in sideboard</span>}
           {cardsByBoard[2].map(c => {
             return (
@@ -82,17 +92,25 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
           })}
         </div>
       </article>
-      <div className="flex flex-col mt-8 gap-1 w-full">
-        <span className="font-medium">Maybeboard</span>
-        <div className={columnClasses}>
-          {cardsByBoard[3].length === 0 && <span className="text-sm">No cards in maybeboard</span>}
-          {cardsByBoard[3].map(c => {
-            return (
-              <DeckCardRow key={c.cardId} deckId={deckId} deckCard={c} card={usedCards[c.cardId]} />
-            );
-          })}
+      {cardsByBoard[3].length > 0 && (
+        <div className="flex flex-col mt-8 gap-1 w-full">
+          <span className="font-medium">
+            Maybeboard ({cardsByBoard[3].reduce((p, c) => p + c.quantity, 0)})
+          </span>
+          <div className={columnClasses}>
+            {cardsByBoard[3].map(c => {
+              return (
+                <DeckCardRow
+                  key={c.cardId}
+                  deckId={deckId}
+                  deckCard={c}
+                  card={usedCards[c.cardId]}
+                />
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -8,7 +8,8 @@ import { useGetDeck } from '@/api/decks/useGetDeck';
 import EditDeckDialog from '../../dialogs/EditDeckDialog';
 import DeleteDeckDialog from '../../dialogs/DeleteDeckDialog';
 import DeckContents from '../DeckContents/DeckContents';
-import DeckActions from '@/components/app/decks/DeckActions/DeckActions.tsx';
+import { useDeckLayoutStoreActions } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { useEffect } from 'react';
 
 const routeApi = getRouteApi('/decks/$deckId/');
 
@@ -16,10 +17,16 @@ const DeckDetail: React.FC = () => {
   const user = useUser();
   const { deckId } = routeApi.useParams();
   const { data, isFetching, error } = useGetDeck(deckId);
+  const { setDeckInfo } = useDeckLayoutStoreActions();
 
   const deckUserId = data?.user?.id ?? '';
   const loading = isFetching;
+  const format = data?.deck.format ?? 1;
   const owned = user?.id === deckUserId;
+
+  useEffect(() => {
+    setDeckInfo(deckId, format, owned);
+  }, [deckId, format, owned]);
 
   if (error?.status === 404) {
     return (

@@ -1,21 +1,41 @@
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
 import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx';
-import { useUser } from '@/hooks/useUser.ts';
 import { formatDataById } from '../../../../../../types/Format.ts';
 import DeckCards from '@/components/app/decks/DeckContents/DeckCards/DeckCards.tsx';
 import DeckInputCommand from '@/components/app/decks/DeckContents/DeckInputCommand/DeckInputCommand.tsx';
+import { useDeckInfo } from './useDeckLayoutStore.ts';
+import { usePutDeck } from '@/api/decks/usePutDeck.ts';
+import { useCallback } from 'react';
+import { toast } from '@/hooks/use-toast.ts';
 
 interface DeckContentsProps {
   deckId: string;
 }
 
 const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
-  const user = useUser();
   const { data } = useGetDeck(deckId);
-  const owned = user?.id === data?.user?.id;
+  const { format, owned } = useDeckInfo(deckId);
+  const putDeckMutation = usePutDeck(deckId);
 
-  const deckFormatInfo = formatDataById[data?.deck.format ?? 1];
+  const updateDeck = useCallback(
+    (data: {
+      leaderCardId1?: string | null;
+      leaderCardId2?: string | null;
+      baseCardId?: string | null;
+    }) => {
+      putDeckMutation.mutate(data, {
+        onSuccess: () => {
+          toast({
+            title: `Deck updated!`,
+          });
+        },
+      });
+    },
+    [],
+  );
+
+  const deckFormatInfo = formatDataById[format];
 
   return (
     <div className="flex max-xl:flex-col justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
@@ -23,6 +43,9 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
         <LeaderSelector
           trigger={null}
           leaderCardId={data?.deck.leaderCardId1 ?? undefined}
+          onLeaderSelected={(cardId: string | undefined) =>
+            updateDeck({ leaderCardId1: cardId ?? null })
+          }
           editable={owned}
           size="w300"
         />
@@ -30,6 +53,9 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
           <LeaderSelector
             trigger={null}
             leaderCardId={data?.deck.leaderCardId2 ?? undefined}
+            onLeaderSelected={(cardId: string | undefined) =>
+              updateDeck({ leaderCardId2: cardId ?? null })
+            }
             editable={owned}
             size="w300"
           />
@@ -37,12 +63,15 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
         <BaseSelector
           trigger={null}
           baseCardId={data?.deck.baseCardId ?? undefined}
+          onBaseSelected={(cardId: string | undefined) =>
+            updateDeck({ baseCardId: cardId ?? null })
+          }
           editable={owned}
           size="w300"
         />
       </div>
       <div className="flex flex-col gap-2 w-full">
-        <DeckInputCommand deckId={deckId} />
+        {owned && <DeckInputCommand deckId={deckId} />}
         <DeckCards deckId={deckId} />
       </div>
     </div>

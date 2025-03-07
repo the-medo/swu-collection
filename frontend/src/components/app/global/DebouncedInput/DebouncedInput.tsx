@@ -39,6 +39,8 @@ const inputVariants = cva('px-1', {
 
 export type DebouncedInputProps = VariantProps<typeof inputVariants> & {
   className?: string;
+  min?: number;
+  max?: number;
 } & (
     | {
         type: 'text';
@@ -63,6 +65,8 @@ const DebouncedInput: React.FC<DebouncedInputProps> = ({
   type,
   value,
   onChange,
+  min,
+  max,
 }) => {
   const [inputValue, setInputValue] = React.useState<string | undefined>(
     type === 'number' ? value?.toString() : value,
@@ -105,6 +109,8 @@ const DebouncedInput: React.FC<DebouncedInputProps> = ({
       type={type}
       value={inputValue}
       onChange={handleChange}
+      min={min}
+      max={max}
     />
   );
 };

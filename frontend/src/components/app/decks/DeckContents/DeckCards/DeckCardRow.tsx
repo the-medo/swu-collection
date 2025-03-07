@@ -14,6 +14,7 @@ import { usePutDeckCard } from '@/api/decks/usePutDeckCard.ts';
 import { useCallback } from 'react';
 import { toast } from '@/hooks/use-toast.ts';
 import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInput.tsx';
+import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 
 interface DeckCardRowProps {
   deckId: string;
@@ -22,6 +23,7 @@ interface DeckCardRowProps {
 }
 
 const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card }) => {
+  const { owned } = useDeckInfo(deckId);
   const defaultVariant = card ? selectDefaultVariant(card) : '';
   const mutation = usePutDeckCard(deckId);
 
@@ -52,15 +54,21 @@ const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card }) => 
   return (
     <div className="flex gap-2 border-t-[1px] py-1 w-[350px] items-center">
       <div>
-        <DebouncedInput
-          type="number"
-          onChange={quantityChangeHandler}
-          value={deckCard.quantity}
-          width="sm"
-          size="xs"
-          alignment="right"
-          appearance="ghost"
-        />
+        {owned ? (
+          <DebouncedInput
+            type="number"
+            onChange={quantityChangeHandler}
+            value={deckCard.quantity}
+            width="sm"
+            size="xs"
+            alignment="right"
+            appearance="ghost"
+            min={0}
+            max={15}
+          />
+        ) : (
+          <span className="text-md px-2">{deckCard.quantity}</span>
+        )}
       </div>
 
       <HoverCard openDelay={0} closeDelay={0}>
