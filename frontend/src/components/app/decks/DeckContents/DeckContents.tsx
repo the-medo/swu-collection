@@ -18,8 +18,8 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
   const deckFormatInfo = formatDataById[data?.deck.format ?? 1];
 
   return (
-    <div className="flex gap-2 w-full">
-      <div className="flex flex-col gap-2">
+    <div className="flex max-xl:flex-col justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
+      <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center flex-col gap-2">
         <LeaderSelector
           trigger={null}
           leaderCardId={data?.deck.leaderCardId1 ?? undefined}

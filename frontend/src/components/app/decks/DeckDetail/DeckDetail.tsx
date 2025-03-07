@@ -32,7 +32,7 @@ const DeckDetail: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-row gap-4 items-center justify-between">
+      <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
         <LoadingTitle
           mainTitle={data?.deck.name}
           subTitle={

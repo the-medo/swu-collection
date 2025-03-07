@@ -46,35 +46,20 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
     };
   }, [cardList, deckCards]);
 
+  const columnClasses = 'columns-1 lg:columns-2 min-[1660px]:columns-3 gap-4 space-y-4';
+
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="flex flex-grow gap-4">
-        <div className="flex flex-col gap-1">
-          <div className="flex flex-col max-h-[400px] flex-wrap gap-4">
-            {mainboardGroups?.sortedIds.map(groupName => {
-              const group = mainboardGroups?.groups[groupName];
+      <article className={columnClasses}>
+        {mainboardGroups?.sortedIds.map(groupName => {
+          const group = mainboardGroups?.groups[groupName];
 
-              if (!group) return null;
-              if (group.cards.length === 0) return null;
-              return (
-                <div className="flex flex-col gap-1 w-[350px+1] p-1">
-                  <span className="font-medium">{group.label}</span>
-                  {group.cards.map(c => {
-                    return (
-                      <DeckCardRow
-                        key={c.cardId}
-                        deckId={deckId}
-                        deckCard={c}
-                        card={usedCards[c.cardId]}
-                      />
-                    );
-                  })}
-                </div>
-              );
-            })}
-            <div className="flex flex-col gap-1 w-[350px+1] p-1 bg-yellow-100">
-              <span className="font-medium">Sideboard</span>
-              {cardsByBoard[2].map(c => {
+          if (!group) return null;
+          if (group.cards.length === 0) return null;
+          return (
+            <div className="flex flex-col gap-1 w-[350px] p-1 break-inside-avoid">
+              <span className="font-medium">{group.label}</span>
+              {group.cards.map(c => {
                 return (
                   <DeckCardRow
                     key={c.cardId}
@@ -85,12 +70,20 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
                 );
               })}
             </div>
-          </div>
+          );
+        })}
+        <div className="flex flex-col gap-1 w-[350px] p-1 bg-yellow-100">
+          <span className="font-medium">Sideboard</span>
+          {cardsByBoard[2].map(c => {
+            return (
+              <DeckCardRow key={c.cardId} deckId={deckId} deckCard={c} card={usedCards[c.cardId]} />
+            );
+          })}
         </div>
-      </div>
+      </article>
       <div className="flex flex-col mt-8 gap-1 w-full">
         <span className="font-medium">Maybeboard</span>
-        <div className="flex flex-wrap w-full">
+        <div className={columnClasses}>
           {cardsByBoard[2].map(c => {
             return (
               <div key={c.cardId} className="mr-4">
