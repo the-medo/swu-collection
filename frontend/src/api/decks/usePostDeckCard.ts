@@ -47,7 +47,7 @@ export const usePostDeckCard = (deckId: string | undefined) => {
         if (cardIndex >= 0) {
           const updatedCard = {
             ...existingCards[cardIndex],
-            quantity: (existingCards[cardIndex].quantity || 0) + (result.data.quantity || 0),
+            quantity: result.data.quantity || 0,
             note: result.data.note ?? existingCards[cardIndex].note,
           } as DeckCard;
 
