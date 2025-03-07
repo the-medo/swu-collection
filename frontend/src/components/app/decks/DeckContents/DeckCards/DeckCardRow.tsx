@@ -10,6 +10,10 @@ import CardImage, { cardImageVariants } from '@/components/app/global/CardImage.
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
+import { usePutDeckCard } from '@/api/decks/usePutDeckCard.ts';
+import { useCallback } from 'react';
+import { toast } from '@/hooks/use-toast.ts';
+import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInput.tsx';
 
 interface DeckCardRowProps {
   deckId: string;
@@ -17,12 +21,48 @@ interface DeckCardRowProps {
   card: CardDataWithVariants<CardListVariants> | undefined;
 }
 
-const DeckCardRow: React.FC<DeckCardRowProps> = ({ /*deckId,*/ deckCard, card }) => {
+const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card }) => {
   const defaultVariant = card ? selectDefaultVariant(card) : '';
+  const mutation = usePutDeckCard(deckId);
+
+  const quantityChangeHandler = useCallback(
+    (quantity: number | undefined) => {
+      mutation.mutate(
+        {
+          id: {
+            cardId: deckCard.cardId,
+            board: deckCard.board,
+          },
+          data: {
+            quantity: quantity ?? 0,
+          },
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: `Card updated`,
+            });
+          },
+        },
+      );
+    },
+    [deckCard],
+  );
 
   return (
     <div className="flex gap-2 border-t-[1px] py-1 w-[350px] items-center">
-      <span className="font-medium text-sm">{deckCard.quantity}</span>
+      <div>
+        <DebouncedInput
+          type="number"
+          onChange={quantityChangeHandler}
+          value={deckCard.quantity}
+          width="sm"
+          size="xs"
+          alignment="right"
+          appearance="ghost"
+        />
+      </div>
+
       <HoverCard openDelay={0} closeDelay={0}>
         <HoverCardTrigger asChild>
           <div className="flex gap-1 font text-sm w-full items-center justify-between">

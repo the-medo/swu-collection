@@ -5,7 +5,7 @@ export const zDeckCardSchema = z.object({
   cardId: z.string(),
   board: z.number().int().min(1).max(3),
   note: z.string().nullable(),
-  quantity: z.number().int().min(1),
+  quantity: z.number().int().min(0),
 });
 
 export const zDeckCardCreateRequest = zDeckCardSchema.omit({ deckId: true }).partial({

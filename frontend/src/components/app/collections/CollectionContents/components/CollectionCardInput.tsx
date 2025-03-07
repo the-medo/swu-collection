@@ -9,6 +9,7 @@ export type CollectionCardInputProps = {
   id: CollectionCardIdentification;
   key: string;
   wide?: boolean;
+  ghost?: boolean;
 } & (
   | {
       field: 'amount';
@@ -33,6 +34,11 @@ export type CollectionCardInputProps = {
         value: string | undefined,
       ) => void;
     }
+  | {
+      field: 'deckCardQuantity';
+      value: number | undefined;
+      onChange: (value: number | undefined) => void;
+    }
 );
 
 export type CollectionCardInputField = CollectionCardInputProps['field'];
@@ -44,6 +50,7 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   key,
   field,
   wide = false,
+  ghost = false,
   value,
   onChange,
 }) => {
@@ -56,7 +63,11 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   const debouncedOnChange = React.useMemo(
     () =>
       debounce((value: unknown) => {
-        onChange(id, field as never, value as never);
+        if (field === 'deckCardQuantity') {
+          onChange(value as number);
+        } else {
+          onChange(id, field as never, value as never);
+        }
       }, DEBOUNCE_DELAY),
     [id, field, onChange],
   );
@@ -90,6 +101,7 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
         'w-16': (field === 'amount' || field === 'amount2') && !wide,
         'w-24': field === 'price' && !wide,
         'w-full': wide,
+        'px-1 pl-1 text-right border-0': ghost,
       })}
       type={field === 'note' ? 'text' : 'number'}
       value={inputValue}

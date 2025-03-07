@@ -74,6 +74,7 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
         })}
         <div className="flex flex-col gap-1 w-[350px] p-1 bg-yellow-100">
           <span className="font-medium">Sideboard</span>
+          {cardsByBoard[2].length === 0 && <span className="text-sm">No cards in sideboard</span>}
           {cardsByBoard[2].map(c => {
             return (
               <DeckCardRow key={c.cardId} deckId={deckId} deckCard={c} card={usedCards[c.cardId]} />
@@ -84,11 +85,10 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
       <div className="flex flex-col mt-8 gap-1 w-full">
         <span className="font-medium">Maybeboard</span>
         <div className={columnClasses}>
-          {cardsByBoard[2].map(c => {
+          {cardsByBoard[3].length === 0 && <span className="text-sm">No cards in maybeboard</span>}
+          {cardsByBoard[3].map(c => {
             return (
-              <div key={c.cardId} className="mr-4">
-                <DeckCardRow deckId={deckId} deckCard={c} card={usedCards[c.cardId]} />
-              </div>
+              <DeckCardRow key={c.cardId} deckId={deckId} deckCard={c} card={usedCards[c.cardId]} />
             );
           })}
         </div>
