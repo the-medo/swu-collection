@@ -11,7 +11,7 @@ export async function processVariantImages(variant: CardVariant): Promise<CardVa
   }
 
   const variantDetails = (await variantDetailResponse.json()) as any;
-  await delay(1000);
+  await delay(500);
 
   variant.image = {
     front: variantDetails.data.attributes.artFront.data.attributes.url,

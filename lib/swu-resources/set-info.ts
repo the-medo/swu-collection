@@ -33,9 +33,9 @@ export const setInfo: Record<SwuSet, SetInfo> = {
   [SwuSet.JTL]: {
     code: SwuSet.JTL,
     name: 'Jump to Lightspeed',
-    cardCount: 257,
+    cardCount: 262,
     sortValue: 4,
-    expansionId: 18,
+    expansionId: 23,
   },
 } as const;
 

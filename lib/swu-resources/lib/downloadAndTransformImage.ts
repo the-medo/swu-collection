@@ -15,7 +15,7 @@ export async function downloadAndTransformImage(url: string, filename: string): 
   }
 
   try {
-    await delay(1000);
+    await delay(500);
 
     const myUrl = new URL(url);
     console.log(`Downloading image: ${myUrl}`);

@@ -79,7 +79,7 @@ export async function processCard(card: any) {
     }
 
     const variants = (await variantsResponse.json()) as any;
-    await delay(1000);
+    await delay(500);
 
     let allVariants: CardVariant[] = [
       processVariantWithoutImages(variants.data.original),
