@@ -1,5 +1,6 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { User } from '../../../../types/User.ts';
 
 async function getUser(userId: string) {
   const response = await api.user[':id'].$get({
