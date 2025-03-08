@@ -25,7 +25,7 @@ const CollectionInputSection: React.FC<CollectionInputSectionProps> = ({ collect
       <Tabs defaultValue="name" className="w-[400px]">
         <CardHeader className="pb-0">
           <CardTitle className="pb-2">
-            Insert cards to {collectionOrWantlist.toLowerCase()}{' '}
+            Insert cards to {collectionOrWantlist?.toLowerCase()}{' '}
           </CardTitle>
           <CardDescription>
             <TabsList className="grid w-full grid-cols-4">

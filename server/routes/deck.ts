@@ -7,7 +7,11 @@ import { db } from '../db';
 import { selectUser } from './user.ts';
 import { user as userTable } from '../db/schema/auth-schema.ts';
 import { zValidator } from '@hono/zod-validator';
-import { zDeckCreateRequest, zDeckUpdateRequest } from '../../types/ZDeck.ts';
+import {
+  zDeckCreateRequest,
+  zDeckImportSwudbRequest,
+  zDeckUpdateRequest,
+} from '../../types/ZDeck.ts';
 import {
   type DeckCard,
   zDeckCardCreateRequest,
@@ -15,6 +19,7 @@ import {
   zDeckCardDeleteRequest,
 } from '../../types/ZDeckCard.ts';
 import { z } from 'zod';
+import { parseSwudbDeck } from '../lib/deckLib.ts';
 
 export const selectDeck = getTableColumns(deckTable);
 
@@ -84,12 +89,7 @@ export const deckRoute = new Hono<AuthExtension>()
         })
         .from(deckTable)
         .innerJoin(userTable, eq(deckTable.userId, userTable.id))
-        .where(
-          and(
-            eq(deckTable.id, paramDeckId),
-            isOwner ? or(isOwner, isPublic) : isPublic,
-          ),
-        )
+        .where(and(eq(deckTable.id, paramDeckId), isOwner ? or(isOwner, isPublic) : isPublic))
     )[0];
 
     if (!deckData) {
@@ -135,9 +135,7 @@ export const deckRoute = new Hono<AuthExtension>()
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
 
     //delete collection_card
-    await db
-      .delete(deckCardTable)
-      .where(eq(deckCardTable.deckId, paramDeckId));
+    await db.delete(deckCardTable).where(eq(deckCardTable.deckId, paramDeckId));
     const deletedDeck = (await db.delete(deckTable).where(deckId).returning())[0];
 
     return c.json({ data: deletedDeck });
@@ -177,11 +175,7 @@ export const deckRoute = new Hono<AuthExtension>()
       .insert(deckCardTable)
       .values({ ...data, deckId: paramDeckId, note: data.note ?? '' })
       .onConflictDoUpdate({
-        target: [
-          deckCardTable.deckId,
-          deckCardTable.cardId,
-          deckCardTable.board,
-        ],
+        target: [deckCardTable.deckId, deckCardTable.cardId, deckCardTable.board],
         set: {
           quantity: sql`${deckCardTable.quantity} + ${data.quantity ?? 0}`,
           note: sql`${data.note ?? deckCardTable.note}`,
@@ -252,11 +246,64 @@ export const deckRoute = new Hono<AuthExtension>()
 
     const primaryKeyFilters = [deckId, cardId, board];
 
-    const deletedDeckCard = (
-      await db.delete(deckCardTable).where(and(...primaryKeyFilters))
-    )[0];
+    const deletedDeckCard = (await db.delete(deckCardTable).where(and(...primaryKeyFilters)))[0];
 
     return c.json({ data: deletedDeckCard });
   })
+  .post('/:id/duplicate', async c => {
+    const paramDeckId = z.string().uuid().parse(c.req.param('id'));
+  })
+  .post('/import-swudb', zValidator('json', zDeckImportSwudbRequest), async c => {
+    const data = c.req.valid('json');
+    const user = c.get('user');
+    if (!user) return c.json({ message: 'Unauthorized' }, 401);
+    const swudbDeckId = data.swudbDeckId;
+    const apiUrl = `https://swudb.com/api/deck/${swudbDeckId}`;
+    const deckResponse = await fetch(apiUrl);
 
-;
+    console.log(deckResponse);
+
+    if (!deckResponse.ok) {
+      if (deckResponse.status === 404) {
+        return c.json(
+          { message: `Importing deck failed. Make sure that your deck is published!` },
+          404,
+        );
+      }
+
+      return c.json({ message: `Error - ${deckResponse.statusText}` }, 500);
+    }
+
+    const deck = (await deckResponse.json()) as any;
+    const parsedDeck = parseSwudbDeck(deck, 'asdf');
+
+    const deckName = `${deck.deckName} by ${deck.authorName}`;
+
+    const description =
+      parsedDeck.errors.length > 0
+        ? 'There was a problem pairing these cards to our system, please try to add them manually: ' +
+          parsedDeck.errors.join('; ')
+        : '';
+
+    const newDeck = (
+      await db
+        .insert(deckTable)
+        .values({
+          userId: user.id,
+          format: parsedDeck.format,
+          name: deckName,
+          leaderCardId1: parsedDeck.leader1,
+          leaderCardId2: parsedDeck.leader2,
+          baseCardId: parsedDeck.base,
+          public: false,
+          description,
+        })
+        .returning()
+    )[0];
+
+    await db
+      .insert(deckCardTable)
+      .values(parsedDeck.cards.map(c => ({ ...c, deckId: newDeck.id })));
+
+    return c.json({ data: { deck: newDeck, errors: parsedDeck.errors } }, 201);
+  });

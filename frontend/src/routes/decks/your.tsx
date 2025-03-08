@@ -3,7 +3,7 @@ import { AuthorizedRouteComponent } from '../_authenticated';
 import { useUser } from '@/hooks/useUser.ts';
 import { Button } from '@/components/ui/button.tsx';
 import UserDecks from '@/components/app/decks/UserDecks/UserDecks.tsx';
-import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog';
+import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog/NewDeckDialog.tsx';
 
 export const Route = createFileRoute('/decks/your')({
   component: YourDecks,

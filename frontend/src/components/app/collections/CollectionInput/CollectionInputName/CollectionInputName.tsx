@@ -259,7 +259,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
         disabled={mutation.isPending}
         onClick={canSubmit ? submitHandler : undefined}
       >
-        {mutation.isPending ? '...' : `Add to ${collectionOrWantlist.toLowerCase()}`}
+        {mutation.isPending ? '...' : `Add to ${collectionOrWantlist?.toLowerCase()}`}
       </Button>
       <CollectionDuplicates
         collectionId={collectionId}

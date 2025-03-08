@@ -43,6 +43,11 @@ export const zDeckUpdateRequest = zDeckSchema
   })
   .partial();
 
+export const zDeckImportSwudbRequest = z.object({
+  swudbDeckId: z.string(),
+});
+
 export type ZDeck = z.infer<typeof zDeckSchema>;
 export type ZDeckCreateRequest = z.infer<typeof zDeckCreateRequest>;
 export type ZDeckUpdateRequest = z.infer<typeof zDeckUpdateRequest>;
+export type ZDeckImportSwudbRequest = z.infer<typeof zDeckImportSwudbRequest>;

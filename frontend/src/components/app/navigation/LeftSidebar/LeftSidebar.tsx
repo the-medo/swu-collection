@@ -32,7 +32,7 @@ import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.ts
 import LogoLightTheme from '../../../../assets/logo-light-theme.svg';
 import LogoDarkTheme from '../../../../assets/logo-dark-theme.svg';
 import { useTheme } from '@/components/theme-provider.tsx';
-import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog.tsx';
+import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog/NewDeckDialog.tsx';
 
 const groups = [
   {

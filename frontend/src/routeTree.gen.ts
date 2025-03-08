@@ -20,7 +20,6 @@ import { Route as WantlistsPublicImport } from './routes/wantlists/public'
 import { Route as DecksYourImport } from './routes/decks/your'
 import { Route as DecksTournamentImport } from './routes/decks/tournament'
 import { Route as DecksPublicImport } from './routes/decks/public'
-import { Route as DecksNewImport } from './routes/decks/new'
 import { Route as CollectionsYourImport } from './routes/collections/your'
 import { Route as CollectionsPublicImport } from './routes/collections/public'
 import { Route as AuthenticatedSettingsImport } from './routes/_authenticated.settings'
@@ -82,12 +81,6 @@ const DecksTournamentRoute = DecksTournamentImport.update({
 const DecksPublicRoute = DecksPublicImport.update({
   id: '/decks/public',
   path: '/decks/public',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DecksNewRoute = DecksNewImport.update({
-  id: '/decks/new',
-  path: '/decks/new',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -193,13 +186,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsYourImport
       parentRoute: typeof rootRoute
     }
-    '/decks/new': {
-      id: '/decks/new'
-      path: '/decks/new'
-      fullPath: '/decks/new'
-      preLoaderRoute: typeof DecksNewImport
-      parentRoute: typeof rootRoute
-    }
     '/decks/public': {
       id: '/decks/public'
       path: '/decks/public'
@@ -295,7 +281,6 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
-  '/decks/new': typeof DecksNewRoute
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
@@ -316,7 +301,6 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
-  '/decks/new': typeof DecksNewRoute
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
@@ -338,7 +322,6 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
-  '/decks/new': typeof DecksNewRoute
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
@@ -361,7 +344,6 @@ export interface FileRouteTypes {
     | '/settings'
     | '/collections/public'
     | '/collections/your'
-    | '/decks/new'
     | '/decks/public'
     | '/decks/tournament'
     | '/decks/your'
@@ -381,7 +363,6 @@ export interface FileRouteTypes {
     | '/settings'
     | '/collections/public'
     | '/collections/your'
-    | '/decks/new'
     | '/decks/public'
     | '/decks/tournament'
     | '/decks/your'
@@ -401,7 +382,6 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/collections/public'
     | '/collections/your'
-    | '/decks/new'
     | '/decks/public'
     | '/decks/tournament'
     | '/decks/your'
@@ -422,7 +402,6 @@ export interface RootRouteChildren {
   CardsRoute: typeof CardsRoute
   CollectionsPublicRoute: typeof CollectionsPublicRoute
   CollectionsYourRoute: typeof CollectionsYourRoute
-  DecksNewRoute: typeof DecksNewRoute
   DecksPublicRoute: typeof DecksPublicRoute
   DecksTournamentRoute: typeof DecksTournamentRoute
   DecksYourRoute: typeof DecksYourRoute
@@ -442,7 +421,6 @@ const rootRouteChildren: RootRouteChildren = {
   CardsRoute: CardsRoute,
   CollectionsPublicRoute: CollectionsPublicRoute,
   CollectionsYourRoute: CollectionsYourRoute,
-  DecksNewRoute: DecksNewRoute,
   DecksPublicRoute: DecksPublicRoute,
   DecksTournamentRoute: DecksTournamentRoute,
   DecksYourRoute: DecksYourRoute,
@@ -471,7 +449,6 @@ export const routeTree = rootRoute
         "/cards",
         "/collections/public",
         "/collections/your",
-        "/decks/new",
         "/decks/public",
         "/decks/tournament",
         "/decks/your",
@@ -508,9 +485,6 @@ export const routeTree = rootRoute
     },
     "/collections/your": {
       "filePath": "collections/your.tsx"
-    },
-    "/decks/new": {
-      "filePath": "decks/new.tsx"
     },
     "/decks/public": {
       "filePath": "decks/public.tsx"

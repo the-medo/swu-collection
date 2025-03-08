@@ -2,6 +2,7 @@ import type { CardList } from '../../lib/swu-resources/types.ts';
 import cardListData from './json/card-list.json';
 import countryData from './json/country-list.ts';
 import currencyData from './json/currency-list.ts';
+import type { CardsBySetAndNumber } from '../../frontend/src/api/lists/useCardList.ts';
 
 export type CountryCode = (typeof countryData)[number]['code'];
 export type Country = {
@@ -23,6 +24,32 @@ export type CurrencyList = Record<CurrencyCode, Currency>;
 const cardList = cardListData as unknown as CardList;
 Object.entries(cardList).forEach(([cardId, card]) => {
   card?.aspects.sort((a, b) => (['Heroism', 'Villainy'].includes(a) ? 1 : -1));
+});
+
+const validVariantNames: Record<string, true | undefined> = {
+  Standard: true,
+  Hyperspace: true,
+  'Standard Foil': true,
+  'Hyperspace Foil': true,
+  Showcase: true,
+};
+
+export const cardsBySetAndNumber: CardsBySetAndNumber = {};
+Object.keys(cardList).forEach(cid => {
+  const card = cardList[cid];
+  const variantIds = Object.keys(card?.variants ?? {});
+  const type = card?.type ?? 'Unknown';
+
+  variantIds.forEach(vid => {
+    const v = card?.variants[vid];
+    if (v && v.baseSet && validVariantNames[v.variantName]) {
+      if (!cardsBySetAndNumber[v.set]) cardsBySetAndNumber[v.set] = {};
+      cardsBySetAndNumber[v.set]![v.cardNo] = {
+        variant: v,
+        cardId: cid,
+      };
+    }
+  });
 });
 
 const countryList = {} as CountryList;

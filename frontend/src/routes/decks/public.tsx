@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
-import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog.tsx';
+import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog/NewDeckDialog.tsx';
 import PublicDecks from '@/components/app/decks/PublicDecks/PublicDecks.tsx';
 
 export const Route = createFileRoute('/decks/public')({

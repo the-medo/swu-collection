@@ -18,7 +18,7 @@ const CollectionLayoutToggleGroup: React.FC<CollectionLayoutToggleGroupProps> = 
   setValue,
 }) => {
   const { collectionId } = getRouteApi('/collections/$collectionId/').useParams();
-  const { owned } = useCollectionInfo(collectionId);
+  const { owned, collectionOrWantlist } = useCollectionInfo(collectionId);
   const { setCollectionInfo } = useCollectionLayoutStoreActions();
 
   const onValueChange = useCallback(
@@ -29,9 +29,9 @@ const CollectionLayoutToggleGroup: React.FC<CollectionLayoutToggleGroupProps> = 
   );
   const onOwnerChange = useCallback(
     (v: string) => {
-      setCollectionInfo(collectionId, 'CZK', v === '1');
+      setCollectionInfo(collectionId, 'CZK', v === '1', collectionOrWantlist);
     },
-    [setValue],
+    [setValue, collectionOrWantlist],
   );
 
   return (
