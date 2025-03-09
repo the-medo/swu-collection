@@ -9,7 +9,7 @@ import { mergeVariantsWithoutImages } from './mergeVariantsWithoutImages.ts';
 import { processVariantImages } from './processVariantImages.ts';
 import { downloadAndTransformVariantImages } from './downloadAndTransformVariantImages.ts';
 
-export async function processCard(card: any) {
+export async function processCard(card: any, skipExisting = true) {
   const c = card.attributes;
   if (c.subtitle === '') c.subtitle = null;
   const cardName = c.subtitle !== null ? `${c.title}, ${c.subtitle}` : c.title;
@@ -62,7 +62,7 @@ export async function processCard(card: any) {
     let filepath = path.join(dirpath, `${filename}.json`);
     fs.mkdirSync(dirpath, { recursive: true });
 
-    if (fs.existsSync(filepath)) {
+    if (fs.existsSync(filepath) && skipExisting) {
       console.log(`File ${filepath} already exists, skipping.`);
       return;
     }

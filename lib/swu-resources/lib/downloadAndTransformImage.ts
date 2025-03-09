@@ -5,13 +5,23 @@ import sharp from 'sharp';
 import { delay } from './delay.ts';
 import { pngImagePath, webpImagePath } from '../raw-data-parser.ts';
 
-export async function downloadAndTransformImage(url: string, filename: string): Promise<void> {
+export async function downloadAndTransformImage(
+  url: string,
+  filename: string,
+): Promise<{ horizontal?: boolean }> {
   const pngImageFilename = join(pngImagePath, filename + '.png');
   const webpImageFilename = join(webpImagePath, filename + '.webp');
+  let horizontal = false;
 
   if (fs.existsSync(pngImageFilename)) {
     console.log(`Image ${pngImageFilename} already exists, skipping download.`);
-    return;
+    try {
+      const metadata = await sharp(pngImageFilename).metadata();
+      horizontal = (metadata.width || 0) > (metadata.height || 0);
+    } catch (error) {
+      console.error('Error getting image dimensions:', error);
+    }
+    return { horizontal };
   }
 
   try {
@@ -43,11 +53,15 @@ export async function downloadAndTransformImage(url: string, filename: string): 
   }
 
   try {
+    // Get image dimensions
+    const metadata = await sharp(pngImageFilename).metadata();
+    horizontal = (metadata.width || 0) > (metadata.height || 0);
+
     await sharp(pngImageFilename).webp({ quality: 80 }).toFile(webpImageFilename);
     console.log(`Image transformed successfully to ${webpImageFilename}`);
   } catch (error) {
     console.error('Error downloading image:', error);
   }
 
-  return;
+  return { horizontal };
 }

@@ -83,7 +83,20 @@ async function main() {
           cardCounter++;
           if (params.start && cardCounter < startFrom) continue;
           console.log(`==================== CARD ${cardCounter} ====================`);
-          await processCard(card);
+          let skipExisting = true;
+          if (params.skipExisting) {
+            if (params.skipExisting === 'true') {
+              skipExisting = true;
+            } else if (params.skipExisting === 'false') {
+              skipExisting = false;
+            } else {
+              console.error(
+                `Invalid value for --skipExisting: ${params.skipExisting}. Must be true or false.`,
+              );
+              process.exit(1);
+            }
+          }
+          await processCard(card, skipExisting);
           console.log(`=============================================================`);
         }
       }
@@ -100,13 +113,14 @@ if (params.help || params.h) {
   Usage: bun ./raw-data-parser.ts [options]
   
   Options:
-    --url=<url>             Custom API URL to fetch cards from
-                            Use {expansionId} and {page} as placeholders
-    --urlfile=<path>        Path to a file containing the URL to use
-                            This is preferred for complex URLs with special characters
-    --expansions=<ids>      Comma-separated expansion IDs to process
-    --start=<number>        Start processing from this card number
-    --help, -h              Show this help message
+    --url=<url>                 Custom API URL to fetch cards from
+                                Use {expansionId} and {page} as placeholders
+    --urlfile=<path>            Path to a file containing the URL to use
+                                This is preferred for complex URLs with special characters
+    --expansions=<ids>          Comma-separated expansion IDs to process
+    --start=<number>            Start processing from this card number
+    --skipExisting=true|false   Skip cards with existing JSON file (default: true)
+    --help, -h                  Show this help message
   
   Examples:
     bun ./raw-data-parser.ts

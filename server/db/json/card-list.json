@@ -4054,7 +4054,7 @@
         "set": "twi",
         "fullSetName": "Twilight of the Republic",
         "cardNo": 3,
-        "baseSet": false,
+        "baseSet": true,
         "hasNonfoil": true,
         "hasFoil": true,
         "variantName": "Hyperspace",
@@ -9346,7 +9346,7 @@
         "set": "twi",
         "fullSetName": "Twilight of the Republic",
         "cardNo": 4,
-        "baseSet": false,
+        "baseSet": true,
         "hasNonfoil": true,
         "hasFoil": true,
         "variantName": "Hyperspace",
@@ -16775,7 +16775,7 @@
         "set": "jtl",
         "fullSetName": "Jump to Lightspeed",
         "cardNo": 3,
-        "baseSet": false,
+        "baseSet": true,
         "hasNonfoil": true,
         "hasFoil": false,
         "variantName": "Standard",
@@ -43596,7 +43596,7 @@
         "set": "jtl",
         "fullSetName": "Jump to Lightspeed",
         "cardNo": 4,
-        "baseSet": false,
+        "baseSet": true,
         "hasNonfoil": true,
         "hasFoil": false,
         "variantName": "Standard",
@@ -54728,6 +54728,9 @@
         "hasFoil": false,
         "variantName": "Standard",
         "artist": "Marko Fiedler",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "annihilator--tagge-s-flagship-41-jump-to-lightspeed-front.webp",
           "back": null
@@ -54744,6 +54747,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace",
         "artist": "Marko Fiedler",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "annihilator--tagge-s-flagship-303-jump-to-lightspeed---hyperspace-front.webp",
           "back": null
@@ -54760,6 +54766,9 @@
         "hasFoil": false,
         "variantName": "Standard Foil",
         "artist": "Marko Fiedler",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "annihilator--tagge-s-flagship-539-jump-to-lightspeed---standard-foil-front.webp",
           "back": null
@@ -54776,6 +54785,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace Foil",
         "artist": "Marko Fiedler",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "annihilator--tagge-s-flagship-775-jump-to-lightspeed---hyperspace-foil-front.webp",
           "back": null
@@ -54792,6 +54804,9 @@
         "hasFoil": false,
         "variantName": "Foil Prestige",
         "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": true
+        },
         "image": {
           "front": "annihilator--tagge-s-flagship-1054-jump-to-lightspeed---foil-prestige-front.webp",
           "back": null
@@ -54808,6 +54823,9 @@
         "hasFoil": false,
         "variantName": "Standard Prestige",
         "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": true
+        },
         "image": {
           "front": "annihilator--tagge-s-flagship-1018-jump-to-lightspeed---standard-prestige-front.webp",
           "back": null
@@ -54824,6 +54842,9 @@
         "hasFoil": false,
         "variantName": "Serialized Prestige",
         "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": true
+        },
         "image": {
           "front": "annihilator--tagge-s-flagship-1090-jump-to-lightspeed---serialized-prestige-front.webp",
           "back": null
@@ -60696,6 +60717,9 @@
         "hasFoil": false,
         "variantName": "Standard",
         "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "devastator--hunting-the-rebellion-143-jump-to-lightspeed-front.webp",
           "back": null
@@ -60712,6 +60736,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace",
         "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "devastator--hunting-the-rebellion-405-jump-to-lightspeed---hyperspace-front.webp",
           "back": null
@@ -60728,6 +60755,9 @@
         "hasFoil": false,
         "variantName": "Standard Foil",
         "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "devastator--hunting-the-rebellion-641-jump-to-lightspeed---standard-foil-front.webp",
           "back": null
@@ -60744,6 +60774,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace Foil",
         "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "devastator--hunting-the-rebellion-877-jump-to-lightspeed---hyperspace-foil-front.webp",
           "back": null
@@ -60760,6 +60793,9 @@
         "hasFoil": false,
         "variantName": "Standard Prestige",
         "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "devastator--hunting-the-rebellion-1032-jump-to-lightspeed---standard-prestige-front.webp",
           "back": null
@@ -60776,6 +60812,9 @@
         "hasFoil": false,
         "variantName": "Foil Prestige",
         "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "devastator--hunting-the-rebellion-1068-jump-to-lightspeed---foil-prestige-front.webp",
           "back": null
@@ -60792,6 +60831,9 @@
         "hasFoil": false,
         "variantName": "Serialized Prestige",
         "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "devastator--hunting-the-rebellion-1104-jump-to-lightspeed---serialized-prestige-front.webp",
           "back": null
@@ -62154,6 +62196,9 @@
         "hasFoil": false,
         "variantName": "Standard",
         "artist": "French Carlomagno",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "executor--might-of-the-empire-90-jump-to-lightspeed-front.webp",
           "back": null
@@ -62170,6 +62215,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace",
         "artist": "French Carlomagno",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "executor--might-of-the-empire-352-jump-to-lightspeed---hyperspace-front.webp",
           "back": null
@@ -62186,6 +62234,9 @@
         "hasFoil": false,
         "variantName": "Standard Foil",
         "artist": "French Carlomagno",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "executor--might-of-the-empire-588-jump-to-lightspeed---standard-foil-front.webp",
           "back": null
@@ -62202,6 +62253,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace Foil",
         "artist": "French Carlomagno",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "executor--might-of-the-empire-824-jump-to-lightspeed---hyperspace-foil-front.webp",
           "back": null
@@ -62218,6 +62272,9 @@
         "hasFoil": false,
         "variantName": "Foil Prestige",
         "artist": "Darren Tan",
+        "front": {
+          "horizontal": true
+        },
         "image": {
           "front": "executor--might-of-the-empire-1061-jump-to-lightspeed---foil-prestige-front.webp",
           "back": null
@@ -62234,6 +62291,9 @@
         "hasFoil": false,
         "variantName": "Standard Prestige",
         "artist": "Darren Tan",
+        "front": {
+          "horizontal": true
+        },
         "image": {
           "front": "executor--might-of-the-empire-1025-jump-to-lightspeed---standard-prestige-front.webp",
           "back": null
@@ -62250,6 +62310,9 @@
         "hasFoil": false,
         "variantName": "Serialized Prestige",
         "artist": "Darren Tan",
+        "front": {
+          "horizontal": true
+        },
         "image": {
           "front": "executor--might-of-the-empire-1097-jump-to-lightspeed---serialized-prestige-front.webp",
           "back": null
@@ -64515,6 +64578,9 @@
         "hasFoil": false,
         "variantName": "Standard",
         "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "home-one--on-my-mark-204-jump-to-lightspeed-front.webp",
           "back": null
@@ -64531,6 +64597,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace",
         "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "home-one--on-my-mark-466-jump-to-lightspeed---hyperspace-front.webp",
           "back": null
@@ -64547,6 +64616,9 @@
         "hasFoil": false,
         "variantName": "Standard Foil",
         "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "home-one--on-my-mark-702-jump-to-lightspeed---standard-foil-front.webp",
           "back": null
@@ -64563,6 +64635,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace Foil",
         "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "home-one--on-my-mark-938-jump-to-lightspeed---hyperspace-foil-front.webp",
           "back": null
@@ -64579,6 +64654,9 @@
         "hasFoil": false,
         "variantName": "Standard Prestige",
         "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "home-one--on-my-mark-1043-jump-to-lightspeed---standard-prestige-front.webp",
           "back": null
@@ -64595,6 +64673,9 @@
         "hasFoil": false,
         "variantName": "Foil Prestige",
         "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "home-one--on-my-mark-1079-jump-to-lightspeed---foil-prestige-front.webp",
           "back": null
@@ -64611,6 +64692,9 @@
         "hasFoil": false,
         "variantName": "Serialized Prestige",
         "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "home-one--on-my-mark-1115-jump-to-lightspeed---serialized-prestige-front.webp",
           "back": null
@@ -66303,6 +66387,9 @@
         "hasFoil": false,
         "variantName": "Standard",
         "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "invincible--naval-adversary-191-jump-to-lightspeed-front.webp",
           "back": null
@@ -66319,6 +66406,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace",
         "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "invincible--naval-adversary-453-jump-to-lightspeed---hyperspace-front.webp",
           "back": null
@@ -66335,6 +66425,9 @@
         "hasFoil": false,
         "variantName": "Standard Foil",
         "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "invincible--naval-adversary-689-jump-to-lightspeed---standard-foil-front.webp",
           "back": null
@@ -66351,6 +66444,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace Foil",
         "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "invincible--naval-adversary-925-jump-to-lightspeed---hyperspace-foil-front.webp",
           "back": null
@@ -66367,6 +66463,9 @@
         "hasFoil": false,
         "variantName": "Standard Prestige",
         "artist": "Frank Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "invincible--naval-adversary-1040-jump-to-lightspeed---standard-prestige-front.webp",
           "back": null
@@ -66383,6 +66482,9 @@
         "hasFoil": false,
         "variantName": "Foil Prestige",
         "artist": "Frank Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "invincible--naval-adversary-1076-jump-to-lightspeed---foil-prestige-front.webp",
           "back": null
@@ -66399,6 +66501,9 @@
         "hasFoil": false,
         "variantName": "Serialized Prestige",
         "artist": "Frank Cannels",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "invincible--naval-adversary-1112-jump-to-lightspeed---serialized-prestige-front.webp",
           "back": null
@@ -71322,6 +71427,9 @@
         "hasFoil": false,
         "variantName": "Standard",
         "artist": "Sebastián Guidobono",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "profundity--we-fight--154-jump-to-lightspeed-front.webp",
           "back": null
@@ -71338,6 +71446,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace",
         "artist": "Sebastián Guidobono",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "profundity--we-fight--416-jump-to-lightspeed---hyperspace-front.webp",
           "back": null
@@ -71354,6 +71465,9 @@
         "hasFoil": false,
         "variantName": "Standard Foil",
         "artist": "Sebastián Guidobono",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "profundity--we-fight--652-jump-to-lightspeed---standard-foil-front.webp",
           "back": null
@@ -71370,6 +71484,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace Foil",
         "artist": "Sebastián Guidobono",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "profundity--we-fight--888-jump-to-lightspeed---hyperspace-foil-front.webp",
           "back": null
@@ -71386,6 +71503,9 @@
         "hasFoil": false,
         "variantName": "Standard Prestige",
         "artist": "Vincent Dutrait",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "profundity--we-fight--1035-jump-to-lightspeed---standard-prestige-front.webp",
           "back": null
@@ -71402,6 +71522,9 @@
         "hasFoil": false,
         "variantName": "Foil Prestige",
         "artist": "Vincent Dutrait",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "profundity--we-fight--1071-jump-to-lightspeed---foil-prestige-front.webp",
           "back": null
@@ -71418,6 +71541,9 @@
         "hasFoil": false,
         "variantName": "Serialized Prestige",
         "artist": "Vincent Dutrait",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "profundity--we-fight--1107-jump-to-lightspeed---serialized-prestige-front.webp",
           "back": null
@@ -72023,6 +72149,9 @@
         "hasFoil": false,
         "variantName": "Standard",
         "artist": "Ario Anindito",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "radiant-vii--ambassadors--arrival-226-jump-to-lightspeed-front.webp",
           "back": null
@@ -72039,6 +72168,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace",
         "artist": "Ario Anindito",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "radiant-vii--ambassadors--arrival-488-jump-to-lightspeed---hyperspace-front.webp",
           "back": null
@@ -72055,6 +72187,9 @@
         "hasFoil": false,
         "variantName": "Standard Foil",
         "artist": "Ario Anindito",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "radiant-vii--ambassadors--arrival-724-jump-to-lightspeed---standard-foil-front.webp",
           "back": null
@@ -72071,6 +72206,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace Foil",
         "artist": "Ario Anindito",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "radiant-vii--ambassadors--arrival-960-jump-to-lightspeed---hyperspace-foil-front.webp",
           "back": null
@@ -72087,6 +72225,9 @@
         "hasFoil": false,
         "variantName": "Standard Prestige",
         "artist": "Cole Marchetti",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "radiant-vii--ambassadors--arrival-1045-jump-to-lightspeed---standard-prestige-front.webp",
           "back": null
@@ -72103,6 +72244,9 @@
         "hasFoil": false,
         "variantName": "Foil Prestige",
         "artist": "Cole Marchetti",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "radiant-vii--ambassadors--arrival-1081-jump-to-lightspeed---foil-prestige-front.webp",
           "back": null
@@ -72119,6 +72263,9 @@
         "hasFoil": false,
         "variantName": "Serialized Prestige",
         "artist": "Cole Marchetti",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "radiant-vii--ambassadors--arrival-1117-jump-to-lightspeed---serialized-prestige-front.webp",
           "back": null
@@ -74819,6 +74966,9 @@
         "hasFoil": false,
         "variantName": "Standard",
         "artist": "Eric Hibbeler",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "shadow-caster--just-business-169-jump-to-lightspeed-front.webp",
           "back": null
@@ -74835,6 +74985,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace",
         "artist": "Eric Hibbeler",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "shadow-caster--just-business-431-jump-to-lightspeed---hyperspace-front.webp",
           "back": null
@@ -74851,6 +75004,9 @@
         "hasFoil": false,
         "variantName": "Standard Foil",
         "artist": "Eric Hibbeler",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "shadow-caster--just-business-667-jump-to-lightspeed---standard-foil-front.webp",
           "back": null
@@ -74867,6 +75023,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace Foil",
         "artist": "Eric Hibbeler",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "shadow-caster--just-business-903-jump-to-lightspeed---hyperspace-foil-front.webp",
           "back": null
@@ -74883,6 +75042,9 @@
         "hasFoil": false,
         "variantName": "Standard Prestige",
         "artist": "Cole Marchetti",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "shadow-caster--just-business-1036-jump-to-lightspeed---standard-prestige-front.webp",
           "back": null
@@ -74899,6 +75061,9 @@
         "hasFoil": false,
         "variantName": "Foil Prestige",
         "artist": "Cole Marchetti",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "shadow-caster--just-business-1072-jump-to-lightspeed---foil-prestige-front.webp",
           "back": null
@@ -74915,6 +75080,9 @@
         "hasFoil": false,
         "variantName": "Serialized Prestige",
         "artist": "Cole Marchetti",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "shadow-caster--just-business-1108-jump-to-lightspeed---serialized-prestige-front.webp",
           "back": null
@@ -77572,6 +77740,9 @@
         "hasFoil": false,
         "variantName": "Standard",
         "artist": "David Buisan",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-ghost--heart-of-the-family-53-jump-to-lightspeed-front.webp",
           "back": null
@@ -77588,6 +77759,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace",
         "artist": "David Buisan",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-ghost--heart-of-the-family-315-jump-to-lightspeed---hyperspace-front.webp",
           "back": null
@@ -77604,6 +77778,9 @@
         "hasFoil": false,
         "variantName": "Standard Foil",
         "artist": "David Buisan",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-ghost--heart-of-the-family-551-jump-to-lightspeed---standard-foil-front.webp",
           "back": null
@@ -77620,6 +77797,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace Foil",
         "artist": "David Buisan",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-ghost--heart-of-the-family-787-jump-to-lightspeed---hyperspace-foil-front.webp",
           "back": null
@@ -77636,6 +77816,9 @@
         "hasFoil": false,
         "variantName": "Standard Prestige",
         "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-ghost--heart-of-the-family-1020-jump-to-lightspeed---standard-prestige-front.webp",
           "back": null
@@ -77652,6 +77835,9 @@
         "hasFoil": false,
         "variantName": "Foil Prestige",
         "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-ghost--heart-of-the-family-1056-jump-to-lightspeed---foil-prestige-front.webp",
           "back": null
@@ -77668,6 +77854,9 @@
         "hasFoil": false,
         "variantName": "Serialized Prestige",
         "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-ghost--heart-of-the-family-1092-jump-to-lightspeed---serialized-prestige-front.webp",
           "back": null
@@ -77976,6 +78165,9 @@
         "hasFoil": false,
         "variantName": "Standard",
         "artist": "Eslam AboShady",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-starhawk--prototype-battleship-105-jump-to-lightspeed-front.webp",
           "back": null
@@ -77992,6 +78184,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace",
         "artist": "Eslam AboShady",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-starhawk--prototype-battleship-367-jump-to-lightspeed---hyperspace-front.webp",
           "back": null
@@ -78008,6 +78203,9 @@
         "hasFoil": false,
         "variantName": "Standard Foil",
         "artist": "Eslam AboShady",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-starhawk--prototype-battleship-603-jump-to-lightspeed---standard-foil-front.webp",
           "back": null
@@ -78024,6 +78222,9 @@
         "hasFoil": false,
         "variantName": "Hyperspace Foil",
         "artist": "Eslam AboShady",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-starhawk--prototype-battleship-839-jump-to-lightspeed---hyperspace-foil-front.webp",
           "back": null
@@ -78040,6 +78241,9 @@
         "hasFoil": false,
         "variantName": "Standard Prestige",
         "artist": "Eslam AboShady",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-starhawk--prototype-battleship-1029-jump-to-lightspeed---standard-prestige-front.webp",
           "back": null
@@ -78056,6 +78260,9 @@
         "hasFoil": false,
         "variantName": "Foil Prestige",
         "artist": "Eslam AboShady",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-starhawk--prototype-battleship-1065-jump-to-lightspeed---foil-prestige-front.webp",
           "back": null
@@ -78072,6 +78279,9 @@
         "hasFoil": false,
         "variantName": "Serialized Prestige",
         "artist": "Eslam AboShady",
+        "front": {
+          "horizontal": false
+        },
         "image": {
           "front": "the-starhawk--prototype-battleship-1101-jump-to-lightspeed---serialized-prestige-front.webp",
           "back": null
@@ -78775,7 +78985,7 @@
         "set": "jtl",
         "fullSetName": "Jump to Lightspeed",
         "cardNo": 1,
-        "baseSet": false,
+        "baseSet": true,
         "hasNonfoil": true,
         "hasFoil": false,
         "variantName": "Standard",
@@ -80620,7 +80830,7 @@
         "set": "jtl",
         "fullSetName": "Jump to Lightspeed",
         "cardNo": 2,
-        "baseSet": false,
+        "baseSet": true,
         "hasNonfoil": true,
         "hasFoil": false,
         "variantName": "Standard",
@@ -81007,6 +81217,189 @@
       "Twi'lek",
       "Spectre",
       "Pilot"
+    ]
+  },
+  "rich-reward": {
+    "cardId": "rich-reward",
+    "updatedAt": "2024-07-15T18:07:14.250Z",
+    "name": "Rich Reward",
+    "title": "Rich Reward",
+    "subtitle": null,
+    "variants": {
+      "rich-reward-261-shadows-of-the-galaxy": {
+        "variantId": "rich-reward-261-shadows-of-the-galaxy",
+        "swuId": 6586,
+        "set": "shd",
+        "fullSetName": "Shadows of the Galaxy",
+        "cardNo": 261,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "Rebecca Farrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rich-reward-261-shadows-of-the-galaxy-front.webp",
+          "back": null
+        }
+      },
+      "rich-reward-522-shadows-of-the-galaxy": {
+        "variantId": "rich-reward-522-shadows-of-the-galaxy",
+        "swuId": 7803,
+        "set": "shd",
+        "fullSetName": "Shadows of the Galaxy",
+        "cardNo": 522,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Hyperspace",
+        "artist": "Rebecca Farrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rich-reward-522-shadows-of-the-galaxy-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Upgrade",
+    "rarity": "Common",
+    "cost": 1,
+    "hp": null,
+    "power": null,
+    "upgradeHp": 0,
+    "upgradePower": 0,
+    "deployBox": null,
+    "epicAction": null,
+    "rules": null,
+    "text": "Attached unit gains: “Bounty — Give an Experience token to each of up to 2 units.” (When this unit is defeated or captured, its opponent collects its bounty.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [],
+    "keywords": [
+      "Bounty"
+    ],
+    "traits": [
+      "Bounty",
+      "Condition"
+    ]
+  },
+  "stolen-at-hauler": {
+    "cardId": "stolen-at-hauler",
+    "updatedAt": "2025-03-06T20:33:04.850Z",
+    "name": "Stolen AT-Hauler",
+    "title": "Stolen AT-Hauler",
+    "subtitle": null,
+    "variants": {
+      "stolen-at-hauler-221-jump-to-lightspeed": {
+        "variantId": "stolen-at-hauler-221-jump-to-lightspeed",
+        "swuId": 20576,
+        "set": "jtl",
+        "fullSetName": "Jump to Lightspeed",
+        "cardNo": 221,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Christian Papazoglakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "stolen-at-hauler-221-jump-to-lightspeed-front.webp",
+          "back": null
+        }
+      },
+      "stolen-at-hauler-483-jump-to-lightspeed---hyperspace": {
+        "variantId": "stolen-at-hauler-483-jump-to-lightspeed---hyperspace",
+        "swuId": 21916,
+        "set": "jtl",
+        "fullSetName": "Jump to Lightspeed - Hyperspace",
+        "cardNo": 483,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Hyperspace",
+        "artist": "Christian Papazoglakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "stolen-at-hauler-483-jump-to-lightspeed---hyperspace-front.webp",
+          "back": null
+        }
+      },
+      "stolen-at-hauler-719-jump-to-lightspeed---standard-foil": {
+        "variantId": "stolen-at-hauler-719-jump-to-lightspeed---standard-foil",
+        "swuId": 23206,
+        "set": "jtl",
+        "fullSetName": "Jump to Lightspeed - Standard Foil",
+        "cardNo": 719,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard Foil",
+        "artist": "Christian Papazoglakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "stolen-at-hauler-719-jump-to-lightspeed---standard-foil-front.webp",
+          "back": null
+        }
+      },
+      "stolen-at-hauler-955-jump-to-lightspeed---hyperspace-foil": {
+        "variantId": "stolen-at-hauler-955-jump-to-lightspeed---hyperspace-foil",
+        "swuId": 24386,
+        "set": "jtl",
+        "fullSetName": "Jump to Lightspeed - Hyperspace Foil",
+        "cardNo": 955,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Hyperspace Foil",
+        "artist": "Christian Papazoglakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "stolen-at-hauler-955-jump-to-lightspeed---hyperspace-foil-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Legendary",
+    "cost": 3,
+    "hp": 5,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": "“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\nAn opponent can't play Stolen AT-Hauler if they can't take an action to play it, such as if they have already taken the initiative or the unit is defeated during the regroup phase.\n",
+    "text": "When Defeated: Choose an opponent. For this phase, they may play this unit from its owner's discard pile for free.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Underworld",
+      "Vehicle",
+      "Transport"
     ]
   }
 }

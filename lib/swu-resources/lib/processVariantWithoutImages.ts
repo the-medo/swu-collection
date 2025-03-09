@@ -40,6 +40,8 @@ export function processVariantWithoutImages(variant: any): CardVariant {
     hasFoil,
     variantName,
     artist: variant.artist,
+    front: undefined,
+    back: undefined,
     image: {
       front: '', //filled later
       back: '', //filled later

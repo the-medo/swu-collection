@@ -52,6 +52,12 @@ export interface CardVariant {
     front: string;
     back: string | null;
   };
+  front?: {
+    horizontal?: boolean;
+  };
+  back?: {
+    horizontal?: boolean;
+  };
 }
 
 export interface CardDataWithVariants<T = CardVariant[]> {
