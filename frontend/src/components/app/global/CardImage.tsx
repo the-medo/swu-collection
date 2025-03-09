@@ -98,9 +98,10 @@ const CardImage: React.FC<CardImageProps> = ({
   forceHorizontal = false,
   children,
 }) => {
-  const img = card?.variants[cardVariantId ?? '']?.image;
-  const horizontalFront = card?.front.horizontal ?? false;
-  const horizontalBack = card?.back?.horizontal ?? false;
+  const variant = card?.variants[cardVariantId ?? ''];
+  const img = variant?.image;
+  const horizontalFront = card?.front.horizontal || variant?.front?.horizontal || false;
+  const horizontalBack = card?.back?.horizontal || variant?.back?.horizontal || false;
   const hasBack = !!card?.back;
 
   const classes = cardImageVariants({

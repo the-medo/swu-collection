@@ -11,7 +11,6 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as CardsImport } from './routes/cards'
 import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
@@ -22,20 +21,16 @@ import { Route as DecksTournamentImport } from './routes/decks/tournament'
 import { Route as DecksPublicImport } from './routes/decks/public'
 import { Route as CollectionsYourImport } from './routes/collections/your'
 import { Route as CollectionsPublicImport } from './routes/collections/public'
+import { Route as CardsSearchImport } from './routes/cards/search'
 import { Route as AuthenticatedSettingsImport } from './routes/_authenticated.settings'
 import { Route as WantlistsWantlistIdIndexImport } from './routes/wantlists/$wantlistId/index'
 import { Route as UsersUserIdIndexImport } from './routes/users/$userId/index'
 import { Route as DecksDeckIdIndexImport } from './routes/decks/$deckId/index'
 import { Route as CollectionsCollectionIdIndexImport } from './routes/collections/$collectionId/index'
 import { Route as DecksDeckIdEditImport } from './routes/decks/$deckId/edit'
+import { Route as CardsDetailCardIdImport } from './routes/cards/detail/$cardId'
 
 // Create/Update Routes
-
-const CardsRoute = CardsImport.update({
-  id: '/cards',
-  path: '/cards',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const AboutRoute = AboutImport.update({
   id: '/about',
@@ -96,6 +91,12 @@ const CollectionsPublicRoute = CollectionsPublicImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const CardsSearchRoute = CardsSearchImport.update({
+  id: '/cards/search',
+  path: '/cards/search',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AuthenticatedSettingsRoute = AuthenticatedSettingsImport.update({
   id: '/settings',
   path: '/settings',
@@ -133,6 +134,12 @@ const DecksDeckIdEditRoute = DecksDeckIdEditImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const CardsDetailCardIdRoute = CardsDetailCardIdImport.update({
+  id: '/cards/detail/$cardId',
+  path: '/cards/detail/$cardId',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -158,19 +165,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
-    '/cards': {
-      id: '/cards'
-      path: '/cards'
-      fullPath: '/cards'
-      preLoaderRoute: typeof CardsImport
-      parentRoute: typeof rootRoute
-    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsImport
       parentRoute: typeof AuthenticatedImport
+    }
+    '/cards/search': {
+      id: '/cards/search'
+      path: '/cards/search'
+      fullPath: '/cards/search'
+      preLoaderRoute: typeof CardsSearchImport
+      parentRoute: typeof rootRoute
     }
     '/collections/public': {
       id: '/collections/public'
@@ -219,6 +226,13 @@ declare module '@tanstack/react-router' {
       path: '/wantlists/your'
       fullPath: '/wantlists/your'
       preLoaderRoute: typeof WantlistsYourImport
+      parentRoute: typeof rootRoute
+    }
+    '/cards/detail/$cardId': {
+      id: '/cards/detail/$cardId'
+      path: '/cards/detail/$cardId'
+      fullPath: '/cards/detail/$cardId'
+      preLoaderRoute: typeof CardsDetailCardIdImport
       parentRoute: typeof rootRoute
     }
     '/decks/$deckId/edit': {
@@ -277,8 +291,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
-  '/cards': typeof CardsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
   '/decks/public': typeof DecksPublicRoute
@@ -286,6 +300,7 @@ export interface FileRoutesByFullPath {
   '/decks/your': typeof DecksYourRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
+  '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
@@ -297,8 +312,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
-  '/cards': typeof CardsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
   '/decks/public': typeof DecksPublicRoute
@@ -306,6 +321,7 @@ export interface FileRoutesByTo {
   '/decks/your': typeof DecksYourRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
+  '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
@@ -318,8 +334,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
-  '/cards': typeof CardsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
   '/decks/public': typeof DecksPublicRoute
@@ -327,6 +343,7 @@ export interface FileRoutesById {
   '/decks/your': typeof DecksYourRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
+  '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
@@ -340,8 +357,8 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
-    | '/cards'
     | '/settings'
+    | '/cards/search'
     | '/collections/public'
     | '/collections/your'
     | '/decks/public'
@@ -349,6 +366,7 @@ export interface FileRouteTypes {
     | '/decks/your'
     | '/wantlists/public'
     | '/wantlists/your'
+    | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/collections/$collectionId'
     | '/decks/$deckId'
@@ -359,8 +377,8 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
-    | '/cards'
     | '/settings'
+    | '/cards/search'
     | '/collections/public'
     | '/collections/your'
     | '/decks/public'
@@ -368,6 +386,7 @@ export interface FileRouteTypes {
     | '/decks/your'
     | '/wantlists/public'
     | '/wantlists/your'
+    | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/collections/$collectionId'
     | '/decks/$deckId'
@@ -378,8 +397,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
-    | '/cards'
     | '/_authenticated/settings'
+    | '/cards/search'
     | '/collections/public'
     | '/collections/your'
     | '/decks/public'
@@ -387,6 +406,7 @@ export interface FileRouteTypes {
     | '/decks/your'
     | '/wantlists/public'
     | '/wantlists/your'
+    | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/collections/$collectionId/'
     | '/decks/$deckId/'
@@ -399,7 +419,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
-  CardsRoute: typeof CardsRoute
+  CardsSearchRoute: typeof CardsSearchRoute
   CollectionsPublicRoute: typeof CollectionsPublicRoute
   CollectionsYourRoute: typeof CollectionsYourRoute
   DecksPublicRoute: typeof DecksPublicRoute
@@ -407,6 +427,7 @@ export interface RootRouteChildren {
   DecksYourRoute: typeof DecksYourRoute
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
+  CardsDetailCardIdRoute: typeof CardsDetailCardIdRoute
   DecksDeckIdEditRoute: typeof DecksDeckIdEditRoute
   CollectionsCollectionIdIndexRoute: typeof CollectionsCollectionIdIndexRoute
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
@@ -418,7 +439,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
-  CardsRoute: CardsRoute,
+  CardsSearchRoute: CardsSearchRoute,
   CollectionsPublicRoute: CollectionsPublicRoute,
   CollectionsYourRoute: CollectionsYourRoute,
   DecksPublicRoute: DecksPublicRoute,
@@ -426,6 +447,7 @@ const rootRouteChildren: RootRouteChildren = {
   DecksYourRoute: DecksYourRoute,
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
+  CardsDetailCardIdRoute: CardsDetailCardIdRoute,
   DecksDeckIdEditRoute: DecksDeckIdEditRoute,
   CollectionsCollectionIdIndexRoute: CollectionsCollectionIdIndexRoute,
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
@@ -446,7 +468,7 @@ export const routeTree = rootRoute
         "/",
         "/_authenticated",
         "/about",
-        "/cards",
+        "/cards/search",
         "/collections/public",
         "/collections/your",
         "/decks/public",
@@ -454,6 +476,7 @@ export const routeTree = rootRoute
         "/decks/your",
         "/wantlists/public",
         "/wantlists/your",
+        "/cards/detail/$cardId",
         "/decks/$deckId/edit",
         "/collections/$collectionId/",
         "/decks/$deckId/",
@@ -473,12 +496,12 @@ export const routeTree = rootRoute
     "/about": {
       "filePath": "about.tsx"
     },
-    "/cards": {
-      "filePath": "cards.tsx"
-    },
     "/_authenticated/settings": {
       "filePath": "_authenticated.settings.tsx",
       "parent": "/_authenticated"
+    },
+    "/cards/search": {
+      "filePath": "cards/search.tsx"
     },
     "/collections/public": {
       "filePath": "collections/public.tsx"
@@ -500,6 +523,9 @@ export const routeTree = rootRoute
     },
     "/wantlists/your": {
       "filePath": "wantlists/your.tsx"
+    },
+    "/cards/detail/$cardId": {
+      "filePath": "cards/detail/$cardId.tsx"
     },
     "/decks/$deckId/edit": {
       "filePath": "decks/$deckId/edit.tsx"

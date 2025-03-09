@@ -72,34 +72,44 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
     [transformedAspectsForFilter],
   );
 
+  const cardTransformer = (l: CardDataWithVariants<CardListVariants> | undefined) => {
+    const variantId = selectDefaultVariant(l!) ?? '';
+    return {
+      card: l,
+      variantId,
+      fakeCollectionCardForSorting: createFakeCollectionCard(l!.cardId, variantId),
+    };
+  };
+
+  const allLeaders = useMemo(
+    () =>
+      Object.values(cardList?.cardsByCardType['Leader'] ?? {})
+        .filter(Boolean)
+        .map(cardTransformer),
+    [cardList],
+  );
+
   const leaders = useMemo(
     () =>
       Object.values(cardList?.cardsByCardType['Leader'] ?? {})
         .filter(Boolean)
         .filter(filteringByAspects)
         .filter(l => search === '' || l?.name.toLowerCase().includes(search.toLowerCase()))
-        .map(l => {
-          const variantId = selectDefaultVariant(l!) ?? '';
-          return {
-            card: l,
-            variantId,
-            fakeCollectionCardForSorting: createFakeCollectionCard(l!.cardId, variantId),
-          };
-        })
+        .map(cardTransformer)
         .sort((a, b) => {
           if (!leaderSorter) return 0;
           return leaderSorter(a.fakeCollectionCardForSorting, b.fakeCollectionCardForSorting);
         }),
-    [cardList, filteringByAspects, search],
+    [allLeaders, filteringByAspects, search],
   );
 
   const selectedLeader = useMemo(() => {
-    return leaders.find(leader => leader?.card?.cardId === leaderCardId);
-  }, [leaderCardId]);
+    return allLeaders.find(leader => leader?.card?.cardId === leaderCardId);
+  }, [allLeaders, leaderCardId]);
 
   const localSelectedLeader = useMemo(() => {
-    return leaders.find(leader => leader?.card?.cardId === localLeaderCardId);
-  }, [localLeaderCardId]);
+    return allLeaders.find(leader => leader?.card?.cardId === localLeaderCardId);
+  }, [allLeaders, localLeaderCardId]);
 
   const localTrigger = useMemo(() => {
     if (!selectedLeader) {

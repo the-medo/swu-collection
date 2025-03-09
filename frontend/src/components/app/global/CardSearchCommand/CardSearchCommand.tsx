@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import {
   useCardSearchCommandStore,
   useCardSearchCommandStoreActions,
@@ -17,15 +17,27 @@ import CardImage from '@/components/app/global/CardImage.tsx';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
+import { useNavigate } from '@tanstack/react-router';
+import { Route } from '@/routes/__root.tsx';
 
 interface CardSearchCommandProps {}
 
 const CardSearchCommand: React.FC<CardSearchCommandProps> = ({}) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate({ from: Route.fullPath });
 
   const { open, search, options, isFetching, cardList } = useCardSearchCommandStore();
 
   const { setOpen, setSearch } = useCardSearchCommandStoreActions();
+
+  const onShowAllResults = useCallback(() => {
+    setSearch('');
+    setOpen(false);
+    navigate({
+      to: '/cards/search',
+      search: prev => ({ ...prev, q: search }),
+    });
+  }, [search]);
 
   return (
     <Popover open={open}>
@@ -64,13 +76,7 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({}) => {
         >
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
-            <CommandItem
-              onSelect={() => {
-                setSearch('');
-                setOpen(false);
-                // submitHandler(i.cardId);
-              }}
-            >
+            <CommandItem onSelect={onShowAllResults}>
               <div className="flex flex-col gap-2 p-4 w-full font-medium">
                 {options?.length > 0
                   ? 'Show all results'
@@ -85,7 +91,9 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({}) => {
                   onSelect={() => {
                     setSearch('');
                     setOpen(false);
-                    // submitHandler(i.cardId);
+                    navigate({
+                      search: prev => ({ ...prev, modalCardId: i.cardId }),
+                    });
                   }}
                 >
                   <CardImage
