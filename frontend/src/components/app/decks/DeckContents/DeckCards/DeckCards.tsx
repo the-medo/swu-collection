@@ -80,7 +80,7 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
             </div>
           );
         })}
-        <div className="flex flex-col gap-1 w-[350px] p-1 bg-yellow-100">
+        <div className="flex flex-col gap-1 w-[350px] p-1 bg-accent">
           <span className="font-medium">
             Sideboard ({cardsByBoard[2].reduce((p, c) => p + c.quantity, 0)})
           </span>

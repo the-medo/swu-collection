@@ -6,7 +6,6 @@ import {
   ScrollText,
   BookCheck,
   Book,
-  Search,
 } from 'lucide-react';
 
 import {
@@ -25,7 +24,6 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar.tsx';
 import { Link } from '@tanstack/react-router';
-import { Input } from '@/components/ui/input.tsx';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.tsx';
@@ -33,6 +31,7 @@ import LogoLightTheme from '../../../../assets/logo-light-theme.svg';
 import LogoDarkTheme from '../../../../assets/logo-dark-theme.svg';
 import { useTheme } from '@/components/theme-provider.tsx';
 import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog/NewDeckDialog.tsx';
+import CardSearchCommand from '@/components/app/global/CardSearchCommand/CardSearchCommand.tsx';
 
 const groups = [
   {
@@ -143,7 +142,7 @@ export function LeftSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <Input icon={Search} placeholder="Search" />
+            <CardSearchCommand />
           </SidebarGroupContent>
         </SidebarGroup>
         {groups.map(g => (
