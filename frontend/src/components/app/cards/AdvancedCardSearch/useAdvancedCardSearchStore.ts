@@ -5,10 +5,14 @@ import { RangeFilterType } from '@/components/app/global/RangeFilter/RangeFilter
 import { filterCards } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { Route, ZAdvancedSearchParams } from '@/routes/cards/search.tsx';
 
 // Define the store state shape
 export interface AdvancedCardSearchStore {
+  searchInitialized: boolean;
+
   // Text search
   name: string;
   text: string;
@@ -41,6 +45,8 @@ export interface AdvancedCardSearchStore {
 
 // Default state values
 const defaultState: AdvancedCardSearchStore = {
+  searchInitialized: false,
+
   name: '',
   text: '',
 
@@ -68,24 +74,83 @@ const defaultState: AdvancedCardSearchStore = {
 // Create the store
 const store = new Store<AdvancedCardSearchStore>(defaultState);
 
-// Load saved filters from localStorage on initialization
-try {
-  const savedFilters = localStorage.getItem('advanced-card-search-filters');
-  if (savedFilters) {
-    const parsedFilters = JSON.parse(savedFilters);
-    // Only update the filter values, not the search state
+// Helper function to parse range string (like "2-5") into RangeFilterType
+const parseRangeString = (rangeStr?: string): RangeFilterType => {
+  if (!rangeStr) return {};
+
+  const [min, max] = rangeStr.split('-').map(Number);
+  const result: RangeFilterType = {};
+
+  if (!isNaN(min)) result.min = min;
+  if (!isNaN(max)) result.max = max;
+
+  return result;
+};
+
+// Helper function to stringify a RangeFilterType to "min-max" format
+export const stringifyRange = (range: RangeFilterType): string | undefined => {
+  if (!range.min && !range.max) return undefined;
+  return `${range.min || ''}-${range.max || ''}`;
+};
+
+export const useInitializeStoreFromUrlParams = () => {
+  const {
+    name,
+    text,
+    cardTypes,
+    aspects,
+    arenas,
+    traits,
+    keywords,
+    variants,
+    cost,
+    power,
+    hp,
+    upgradePower,
+    upgradeHp,
+  } = useSearch({ from: Route.fullPath });
+
+  const init = () =>
     store.setState(state => ({
       ...state,
-      ...parsedFilters,
-      isSearching: false,
-      searchResults: [],
+      searchInitialized: false,
+      name: name ?? defaultState.name,
+      text: text ?? defaultState.text,
+      cardTypes: cardTypes ?? defaultState.cardTypes,
+      aspects: (aspects ?? defaultState.aspects) as SwuAspect[],
+      arenas: (arenas ?? defaultState.arenas) as SwuArena[],
+      traits: traits ?? defaultState.traits,
+      keywords: keywords ?? defaultState.keywords,
+      variants: variants ?? defaultState.variants,
+      cost: parseRangeString(cost) ?? defaultState.cost,
+      power: parseRangeString(power) ?? defaultState.power,
+      hp: parseRangeString(hp) ?? defaultState.hp,
+      upgradePower: parseRangeString(upgradePower) ?? defaultState.upgradePower,
+      upgradeHp: parseRangeString(upgradeHp) ?? defaultState.upgradeHp,
     }));
-  }
-} catch (error) {
-  console.error('Failed to load saved filters:', error);
-}
+
+  useEffect(() => {
+    init();
+  }, [
+    name,
+    text,
+    cardTypes,
+    aspects,
+    arenas,
+    traits,
+    keywords,
+    variants,
+    cost,
+    power,
+    hp,
+    upgradePower,
+    upgradeHp,
+  ]);
+};
 
 // Actions
+const setSearchInitialized = (searchInitialized: boolean) =>
+  store.setState(state => ({ ...state, searchInitialized }));
 
 // Text filters
 const setName = (name: string) => store.setState(state => ({ ...state, name }));
@@ -143,32 +208,11 @@ const resetFilters = () =>
     resultsView: state.resultsView,
   }));
 
-// Save filters to localStorage
-const saveFilters = () => {
-  const state = store.state;
-  const filtersToSave = {
-    name: state.name,
-    text: state.text,
-    cardTypes: state.cardTypes,
-    aspects: state.aspects,
-    arenas: state.arenas,
-    traits: state.traits,
-    keywords: state.keywords,
-    variants: state.variants,
-    cost: state.cost,
-    power: state.power,
-    hp: state.hp,
-    upgradePower: state.upgradePower,
-    upgradeHp: state.upgradeHp,
-    filtersExpanded: state.filtersExpanded,
-    resultsView: state.resultsView,
-  };
-
-  localStorage.setItem('advanced-card-search-filters', JSON.stringify(filtersToSave));
-};
-
 // Access the store state
 export function useAdvancedCardSearchStore() {
+  const navigate = useNavigate({ from: Route.fullPath });
+  const searchInitialized = useStore(store, state => state.searchInitialized);
+
   // Extract all the parts of the state we need
   const name = useStore(store, state => state.name);
   const text = useStore(store, state => state.text);
@@ -198,9 +242,6 @@ export function useAdvancedCardSearchStore() {
       setIsSearching(true);
 
       try {
-        // Save filters for future use
-        saveFilters();
-
         // Execute the search
         const results = await filterCards(cardListData.cards, cardListData.cardIds, {
           name,
@@ -218,7 +259,31 @@ export function useAdvancedCardSearchStore() {
           upgradeHp,
         });
 
+        const searchParams: ZAdvancedSearchParams = {
+          name: name || undefined,
+          text: text || undefined,
+          cardTypes: cardTypes.length ? cardTypes : undefined,
+          aspects: aspects.length ? aspects : undefined,
+          arenas: arenas.length ? arenas : undefined,
+          traits: traits.length ? traits : undefined,
+          keywords: keywords.length ? keywords : undefined,
+          variants: variants.length ? variants : undefined,
+          cost: stringifyRange(cost),
+          power: stringifyRange(power),
+          hp: stringifyRange(hp),
+          upgradePower: stringifyRange(upgradePower),
+          upgradeHp: stringifyRange(upgradeHp),
+          view: resultsView,
+        };
+
+        (Object.keys(searchParams) as (keyof ZAdvancedSearchParams)[]).forEach(key => {
+          if (searchParams[key] === undefined) delete searchParams[key];
+        });
+
         setSearchResults(results);
+        navigate({
+          search: () => ({ ...searchParams }),
+        });
 
         toast({
           title: 'Search completed',
@@ -272,6 +337,8 @@ export function useAdvancedCardSearchStore() {
     upgradeHp.max !== undefined;
 
   return {
+    searchInitialized,
+
     // Text search
     name,
     text,
@@ -308,6 +375,8 @@ export function useAdvancedCardSearchStore() {
 // Access the store actions
 export function useAdvancedCardSearchStoreActions() {
   return {
+    setSearchInitialized,
+
     // Text filters
     setName,
     setText,
@@ -339,6 +408,5 @@ export function useAdvancedCardSearchStoreActions() {
 
     // Other actions
     resetFilters,
-    saveFilters,
   };
 }

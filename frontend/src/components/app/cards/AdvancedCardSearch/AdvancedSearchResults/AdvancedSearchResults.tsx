@@ -83,7 +83,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({ hasActive
             <p className="text-muted-foreground max-w-md mt-2">
               {hasActiveFilters
                 ? "Try adjusting your search filters to find what you're looking for."
-                : 'Use the filters on the left to search for cards.'}
+                : ''}
             </p>
           </div>
         ) : (

@@ -33,9 +33,9 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({}) => {
   const onShowAllResults = useCallback(() => {
     setSearch('');
     setOpen(false);
-    navigate({
+    void navigate({
       to: '/cards/search',
-      search: prev => ({ ...prev, q: search }),
+      search: prev => ({ ...prev, name: search }),
     });
   }, [search]);
 

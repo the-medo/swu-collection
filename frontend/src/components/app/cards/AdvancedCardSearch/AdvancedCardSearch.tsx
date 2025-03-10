@@ -1,16 +1,20 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useCardList } from '@/api/lists/useCardList';
 import { useToast } from '@/hooks/use-toast';
-import { useAdvancedCardSearchStore } from './useAdvancedCardSearchStore';
+import {
+  useAdvancedCardSearchStore,
+  useAdvancedCardSearchStoreActions,
+  useInitializeStoreFromUrlParams,
+} from './useAdvancedCardSearchStore';
 import AdvancedSearchFilters from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchFilters.tsx';
 import AdvancedSearchResults from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/AdvancedSearchResults.tsx';
 
 const AdvancedCardSearch: React.FC = () => {
+  useInitializeStoreFromUrlParams();
   const { toast } = useToast();
-
   const { data: cardListData } = useCardList();
-
-  const { hasActiveFilters, handleSearch } = useAdvancedCardSearchStore();
+  const { searchInitialized, hasActiveFilters, handleSearch } = useAdvancedCardSearchStore();
+  const { setSearchInitialized } = useAdvancedCardSearchStoreActions();
 
   const onSearch = useCallback(() => {
     if (!cardListData) {
@@ -23,7 +27,14 @@ const AdvancedCardSearch: React.FC = () => {
     }
 
     void handleSearch(cardListData);
-  }, [handleSearch]);
+  }, [cardListData, handleSearch]);
+
+  useEffect(() => {
+    if (cardListData && !searchInitialized) {
+      setSearchInitialized(true);
+      if (hasActiveFilters) onSearch();
+    }
+  }, [hasActiveFilters, cardListData, searchInitialized, onSearch]);
 
   return (
     <div className="flex flex-col gap-4">
