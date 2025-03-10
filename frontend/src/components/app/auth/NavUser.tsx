@@ -1,4 +1,4 @@
-import { Bell, ChevronsUpDown, LogOut, Settings } from 'lucide-react';
+import { Bell, ChevronsUpDown, LogOut, Moon, Settings, Sun } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -17,9 +17,12 @@ import {
 } from '@/components/ui/sidebar';
 import { signOut, useSession } from '@/lib/auth-client.ts';
 import { Link } from '@tanstack/react-router';
+import { useTheme } from '@/components/theme-provider.tsx';
+import { useCallback } from 'react';
 
 export function NavUser() {
   const session = useSession();
+  const { theme, setTheme } = useTheme();
 
   const user = session.data?.user;
 
@@ -27,6 +30,15 @@ export function NavUser() {
   const userAvatar = user?.image ?? '';
 
   const { isMobile } = useSidebar();
+
+  const switchTheme = useCallback(() => {
+    if (theme === 'light') {
+      setTheme('dark');
+    } else {
+      setTheme('light');
+    }
+  }, [theme]);
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -77,6 +89,12 @@ export function NavUser() {
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" onSelect={switchTheme}>
+              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span>Toggle theme</span>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer"
