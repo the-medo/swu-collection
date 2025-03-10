@@ -2,6 +2,10 @@ import { Store, useStore } from '@tanstack/react-store';
 import { SwuAspect } from '../../../../../../types/enums';
 import { SwuArena } from '../../../../../../types/enums.ts';
 import { RangeFilterType } from '@/components/app/global/RangeFilter/RangeFilter.tsx';
+import { filterCards } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
+import { toast } from '@/hooks/use-toast.ts';
+import { CardListResponse } from '@/api/lists/useCardList.ts';
+import { useCallback } from 'react';
 
 // Define the store state shape
 export interface AdvancedCardSearchStore {
@@ -189,6 +193,84 @@ export function useAdvancedCardSearchStore() {
   const filtersExpanded = useStore(store, state => state.filtersExpanded);
   const resultsView = useStore(store, state => state.resultsView);
 
+  const handleSearch = useCallback(
+    async (cardListData: CardListResponse) => {
+      setIsSearching(true);
+
+      try {
+        // Save filters for future use
+        saveFilters();
+
+        // Execute the search
+        const results = await filterCards(cardListData.cards, cardListData.cardIds, {
+          name,
+          text,
+          cardTypes,
+          aspects,
+          arenas,
+          traits,
+          keywords,
+          variants,
+          cost,
+          power,
+          hp,
+          upgradePower,
+          upgradeHp,
+        });
+
+        setSearchResults(results);
+
+        toast({
+          title: 'Search completed',
+          description: `Found ${results.length} cards matching your criteria.`,
+        });
+      } catch (error) {
+        console.error('Search error:', error);
+        toast({
+          title: 'Search error',
+          description: 'An error occurred while searching.',
+          variant: 'destructive',
+        });
+        setSearchResults([]);
+      }
+    },
+    [
+      name,
+      text,
+      cardTypes,
+      aspects,
+      arenas,
+      traits,
+      keywords,
+      variants,
+      cost,
+      power,
+      hp,
+      upgradePower,
+      upgradeHp,
+    ],
+  );
+
+  const hasActiveFilters =
+    name !== '' ||
+    text !== '' ||
+    cardTypes.length > 0 ||
+    aspects.length > 0 ||
+    arenas.length > 0 ||
+    traits.length > 0 ||
+    keywords.length > 0 ||
+    variants.length > 0 ||
+    cost.min !== undefined ||
+    cost.max !== undefined ||
+    power.min !== undefined ||
+    power.max !== undefined ||
+    hp.min !== undefined ||
+    hp.max !== undefined ||
+    upgradePower.min !== undefined ||
+    upgradePower.max !== undefined ||
+    upgradeHp.min !== undefined ||
+    upgradeHp.max !== undefined;
+
   return {
     // Text search
     name,
@@ -211,11 +293,13 @@ export function useAdvancedCardSearchStore() {
     upgradePower,
     upgradeHp,
 
-    // Search state
+    // Search and search state
+    handleSearch,
     isSearching,
     searchResults,
 
     // UI state
+    hasActiveFilters,
     filtersExpanded,
     resultsView,
   };
