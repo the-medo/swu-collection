@@ -89,6 +89,11 @@ export interface CardDataWithVariants<T = CardVariant[]> {
   keywords: string[];
   arenas: SwuArena[];
   rarity: SwuRarity;
+  aspectMap: Partial<Record<SwuAspect, number | undefined>>;
+  arenaMap: Partial<Record<SwuArena, boolean>>;
+  traitMap: Record<string, boolean> | undefined;
+  keywordMap: Record<string, boolean> | undefined;
+  variantMap: Record<string, string | undefined> | undefined;
 }
 
 export type CardListVariants = Record<string, CardVariant | undefined>;

@@ -32,9 +32,10 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
 
   // Get the current variant object based on selected id
   const selectedVariant = useMemo(() => {
-    if (!card || !selectedVariantId) return undefined;
+    if (!card) return undefined;
+    if (!selectedVariantId && defaultVariantId) return card.variants[defaultVariantId];
     return card.variants[selectedVariantId];
-  }, [card, selectedVariantId]);
+  }, [card, defaultVariantId, selectedVariantId]);
 
   // Get all variants for the card
   const allVariants = useMemo(() => {
