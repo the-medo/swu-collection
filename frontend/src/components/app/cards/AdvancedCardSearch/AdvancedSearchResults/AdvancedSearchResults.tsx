@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Grid, List, Loader2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
@@ -36,36 +35,34 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({ hasActive
   };
 
   return (
-    <Card className="flex-1">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="flex items-center gap-2">
-            Search Results
-            {searchResults.length > 0 && (
-              <span className="text-sm text-muted-foreground">({searchResults.length} cards)</span>
-            )}
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Button
-              variant={resultsView === 'grid' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => setResultsView('grid')}
-              title="Grid view"
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={resultsView === 'list' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => setResultsView('list')}
-              title="List view"
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
+    <div className="flex-1 min-h-full p-2">
+      <div className="flex justify-between items-center p-2">
+        <h3 className="text-2xl flex items-center gap-2">
+          Search Results
+          {searchResults.length > 0 && (
+            <span className="text-sm text-muted-foreground">({searchResults.length} cards)</span>
+          )}
+        </h3>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={resultsView === 'grid' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setResultsView('grid')}
+            title="Grid view"
+          >
+            <Grid className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={resultsView === 'list' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setResultsView('list')}
+            title="List view"
+          >
+            <List className="h-4 w-4" />
+          </Button>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div>
         {isLoadingCardList ? (
           <div className="flex items-center justify-center h-96">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -87,7 +84,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({ hasActive
             </p>
           </div>
         ) : (
-          <ScrollArea className="h-[calc(100vh-200px)]">
+          <ScrollArea className="h-[calc(100vh-80px)]">
             {resultsView === 'grid' ? (
               <GridView
                 cardListData={cardListData}
@@ -103,8 +100,8 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({ hasActive
             )}
           </ScrollArea>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

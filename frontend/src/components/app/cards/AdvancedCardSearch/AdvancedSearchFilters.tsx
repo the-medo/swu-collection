@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useCardList } from '@/api/lists/useCardList';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Accordion,
   AccordionContent,
@@ -23,6 +22,7 @@ import { SwuArena } from '../../../../../../types/enums.ts';
 import GenericMultiSelect from '@/components/app/global/GenericMultiSelect/GenericMultiSelect.tsx';
 import RangeFilter from '@/components/app/global/RangeFilter/RangeFilter.tsx';
 import { cn } from '@/lib/utils.ts';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 // Available card types
 const CARD_TYPES = ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'];
@@ -32,7 +32,7 @@ interface AdvancedSearchFiltersProps {
 }
 
 const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch }) => {
-  // Get card data
+  const { open: sidebarOpen } = useSidebar();
   const { data: cardListData, isLoading: isLoadingCardList } = useCardList();
 
   // Get search store state and actions
@@ -92,37 +92,38 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
   };
 
   return (
-    <Card
-      className={cn(
-        'transition-all duration-300 overflow-hidden',
-        filtersExpanded ? 'w-full md:w-1/3' : 'w-full md:w-auto',
-      )}
+    <div
+      className={cn('overflow-hidden w-full md:border-r max-md:border-b p-2', {
+        'md:w-[50px]': !filtersExpanded,
+        'lg:w-[400px]': filtersExpanded && sidebarOpen,
+        'md:w-[400px]': filtersExpanded && !sidebarOpen,
+      })}
     >
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Search Filters
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setFiltersExpanded(!filtersExpanded)}
-              title={filtersExpanded ? 'Collapse filters' : 'Expand filters'}
-            >
-              {filtersExpanded ? <X className="h-4 w-4" /> : <Filter className="h-4 w-4" />}
-            </Button>
-          </div>
+      <div
+        className={cn('flex transition-all duration-300  justify-between items-center p-2', {
+          'md:-rotate-90 md:origin-bottom-left md:w-[200px] md:translate-x-[50px] md:translate-y-[200px]':
+            !filtersExpanded,
+        })}
+      >
+        <h3>Search Filters</h3>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setFiltersExpanded(!filtersExpanded)}
+            title={filtersExpanded ? 'Collapse filters' : 'Expand filters'}
+          >
+            {filtersExpanded ? <X className="h-4 w-4" /> : <Filter className="h-4 w-4" />}
+          </Button>
         </div>
-      </CardHeader>
+      </div>
 
       {filtersExpanded && (
-        <CardContent className="pb-4">
-          <ScrollArea className="h-[calc(100vh-280px)] pr-4">
+        <div className="px-2">
+          <ScrollArea className="h-[calc(100vh-145px)]">
             <div className="space-y-4">
               {/* Text search fields */}
-              <div className="space-y-2">
+              <div className="space-y-2 pr-4">
                 <Label htmlFor="name-search">Card Name</Label>
                 <Input
                   id="name-search"
@@ -132,7 +133,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 pr-4">
                 <Label htmlFor="text-search">Card Text</Label>
                 <Input
                   id="text-search"
@@ -174,7 +175,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
                       value={aspects}
                       onChange={setAspects}
                       multiSelect={true}
-                      showLabel={true}
+                      showLabel={false}
                     />
                   </AccordionContent>
                 </AccordionItem>
@@ -203,7 +204,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
 
               {/* Traits filter */}
               <Accordion type="single" collapsible defaultValue="traits" className="w-full">
-                <AccordionItem value="traits">
+                <AccordionItem value="traits" className="pr-4">
                   <AccordionTrigger>Traits</AccordionTrigger>
                   <AccordionContent>
                     {cardListData ? (
@@ -224,7 +225,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
 
               {/* Keywords filter */}
               <Accordion type="single" collapsible defaultValue="keywords" className="w-full">
-                <AccordionItem value="keywords">
+                <AccordionItem value="keywords" className="pr-4">
                   <AccordionTrigger>Keywords</AccordionTrigger>
                   <AccordionContent>
                     {cardListData ? (
@@ -245,7 +246,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
 
               {/* Variants filter */}
               <Accordion type="single" collapsible defaultValue="variants" className="w-full">
-                <AccordionItem value="variants">
+                <AccordionItem value="variants" className="pr-4">
                   <AccordionTrigger>Variants</AccordionTrigger>
                   <AccordionContent>
                     {cardListData ? (
@@ -266,7 +267,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
 
               {/* Numeric Ranges */}
               <Accordion type="single" collapsible defaultValue="numeric" className="w-full">
-                <AccordionItem value="numeric">
+                <AccordionItem value="numeric" className="pr-4">
                   <AccordionTrigger>Numeric Values</AccordionTrigger>
                   <AccordionContent>
                     <div className="space-y-4">
@@ -315,9 +316,9 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
               )}
             </Button>
           </div>
-        </CardContent>
+        </div>
       )}
-    </Card>
+    </div>
   );
 };
 

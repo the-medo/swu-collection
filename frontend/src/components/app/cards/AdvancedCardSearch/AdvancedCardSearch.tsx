@@ -8,10 +8,13 @@ import {
 } from './useAdvancedCardSearchStore';
 import AdvancedSearchFilters from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchFilters.tsx';
 import AdvancedSearchResults from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/AdvancedSearchResults.tsx';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
+import { cn } from '@/lib/utils.ts';
 
 const AdvancedCardSearch: React.FC = () => {
   useInitializeStoreFromUrlParams();
   const { toast } = useToast();
+  const { open: sidebarOpen } = useSidebar();
   const { data: cardListData } = useCardList();
   const { searchInitialized, hasActiveFilters, handleSearch } = useAdvancedCardSearchStore();
   const { setSearchInitialized } = useAdvancedCardSearchStoreActions();
@@ -37,11 +40,14 @@ const AdvancedCardSearch: React.FC = () => {
   }, [hasActiveFilters, cardListData, searchInitialized, onSearch]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col md:flex-row gap-4">
-        <AdvancedSearchFilters onSearch={onSearch} />
-        <AdvancedSearchResults hasActiveFilters={hasActiveFilters} />
-      </div>
+    <div
+      className={cn(
+        'flex flex-col lg:flex-row min-h-[100vh] -m-2',
+        sidebarOpen ? 'lg:flex-row' : 'md:flex-row',
+      )}
+    >
+      <AdvancedSearchFilters onSearch={onSearch} />
+      <AdvancedSearchResults hasActiveFilters={hasActiveFilters} />
     </div>
   );
 };
