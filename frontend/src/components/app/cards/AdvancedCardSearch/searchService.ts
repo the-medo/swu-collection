@@ -59,15 +59,35 @@ export const filterCards = async (
           }
         }
 
-        // Check aspects filter using the optimized aspectMap
+        // Check aspects filter - similar to LeaderSelector approach
         if (filters.aspects && filters.aspects.length > 0) {
-          // If any aspect is required, at least one must match
-          const hasRequiredAspect = filters.aspects.some(
-            aspect => card.aspectMap[aspect] !== undefined && card.aspectMap[aspect]! > 0,
+          if (card.aspects.length === 0) return false;
+          // Find aspects from the card that aren't in the filter
+          const notFoundAspects = card.aspects.filter(
+            cardAspect => !filters.aspects!.includes(cardAspect),
           );
 
-          if (!hasRequiredAspect) {
-            return false;
+          // If any aspect is missing, fail the filter unless it's the specific Heroism/Villainy exception
+          if (notFoundAspects.length > 0) {
+            // Special handling for Heroism + Villainy (like Chancellor Palpatine)
+            if (notFoundAspects.length === 1) {
+              const notFoundAspect = notFoundAspects[0];
+
+              if (
+                (notFoundAspect === SwuAspect.HEROISM &&
+                  card.aspects.includes(SwuAspect.VILLAINY) &&
+                  filters.aspects.includes(SwuAspect.VILLAINY)) ||
+                (notFoundAspect === SwuAspect.VILLAINY &&
+                  card.aspects.includes(SwuAspect.HEROISM) &&
+                  filters.aspects.includes(SwuAspect.HEROISM))
+              ) {
+                // This is fine - special case for Heroism/Villainy
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
           }
         }
 

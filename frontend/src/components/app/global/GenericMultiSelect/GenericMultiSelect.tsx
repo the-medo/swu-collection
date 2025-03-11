@@ -38,6 +38,7 @@ const GenericMultiSelect: React.FC<GenericMultiSelectProps> = ({
         options={formattedOptions}
         onValueChange={onChange}
         value={value}
+        defaultValue={value}
         placeholder={placeholder}
         variant="inverted"
         maxCount={maxCount}

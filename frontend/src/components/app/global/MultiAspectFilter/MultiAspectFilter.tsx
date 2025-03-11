@@ -10,6 +10,7 @@ export interface MultiAspectFilterProps {
   value: SwuAspect[];
   onChange: (value: SwuAspect[]) => void;
   multiSelect?: boolean;
+  multiMainAspects?: boolean;
   showAllOption?: boolean;
   showNoneOption?: boolean;
   showLabel?: boolean;
@@ -24,6 +25,7 @@ const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
   value,
   onChange,
   multiSelect = false,
+  multiMainAspects = false,
   showAllOption = true,
   showNoneOption = true,
   showLabel = true,
@@ -41,6 +43,8 @@ const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
   };
 
   const handleAspectSelectionMultiple = (aspect: SwuAspect[]) => {
+    if (multiMainAspects) return onChange(aspect);
+
     const notInValue = aspect.filter(a => !value.includes(a))[0];
     const inValue = value.filter(a => !aspect.includes(a))[0];
     const selectedHV = aspect.filter(a => a === SwuAspect.HEROISM || a === SwuAspect.VILLAINY);
