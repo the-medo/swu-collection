@@ -1,10 +1,12 @@
-import { SwuAspect, SwuArena } from '../../../../../../types/enums';
+import { SwuAspect, SwuArena, SwuRarity, SwuSet } from '../../../../../../types/enums';
 import { RangeFilterType } from '../../global/RangeFilter/RangeFilter';
 import { CardList } from '../../../../../../lib/swu-resources/types.ts';
 
 interface SearchFilters {
   name?: string;
   text?: string;
+  sets?: SwuSet[];
+  rarities?: SwuRarity[];
   cardTypes?: string[];
   aspects?: SwuAspect[];
   arenas?: SwuArena[];
@@ -48,6 +50,25 @@ export const filterCards = async (
             .toLowerCase();
 
           if (!cardText.includes(textLower)) {
+            return false;
+          }
+        }
+
+        // Check sets filter
+        if (filters.sets && filters.sets.length > 0) {
+          // Check if any variant of this card is from one of the filtered sets
+          const hasMatchingSet = Object.values(card.variants).some(
+            variant => variant && filters.sets!.includes(variant.set),
+          );
+
+          if (!hasMatchingSet) {
+            return false;
+          }
+        }
+
+        // Check rarity filter
+        if (filters.rarities && filters.rarities.length > 0) {
+          if (!filters.rarities.includes(card.rarity)) {
             return false;
           }
         }

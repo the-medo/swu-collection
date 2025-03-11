@@ -5,11 +5,12 @@ import { MultiSelect } from '@/components/ui/multi-select.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 
 export type RarityMultiSelectProps = {
+  value?: SwuRarity[];
   defaultValue: SwuRarity[];
   onChange: (v: SwuRarity[]) => void;
 };
 
-const RarityMultiSelect: React.FC<RarityMultiSelectProps> = ({ onChange, defaultValue }) => {
+const RarityMultiSelect: React.FC<RarityMultiSelectProps> = ({ onChange, value, defaultValue }) => {
   const options = useMemo(() => {
     return Object.values(SwuRarity).map(s => ({
       value: s.toString(),
@@ -22,6 +23,7 @@ const RarityMultiSelect: React.FC<RarityMultiSelectProps> = ({ onChange, default
     <MultiSelect
       options={options}
       onValueChange={onChange as (v: string[]) => void}
+      value={value}
       defaultValue={defaultValue}
       placeholder="Select rarities"
       variant="inverted"

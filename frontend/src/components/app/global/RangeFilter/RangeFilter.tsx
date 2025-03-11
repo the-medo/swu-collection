@@ -53,23 +53,22 @@ const RangeFilter: React.FC<RangeFilterProps> = ({ label, value, onChange, class
   };
 
   return (
-    <div className={cn('space-y-2', className)}>
-      <Label>{label}</Label>
-      <div className="flex items-center gap-2">
+    <div className={cn('flex items-center gap-2 w-full', className)}>
+      <Label className="w-full">{label}</Label>
+      <div className="flex gap-2">
         <Input
           type="number"
           placeholder="Min"
           value={min}
           onChange={handleMinChange}
-          className="w-24"
+          className="w-20"
         />
-        <span>to</span>
         <Input
           type="number"
           placeholder="Max"
           value={max}
           onChange={handleMaxChange}
-          className="w-24"
+          className="w-20"
         />
       </div>
     </div>

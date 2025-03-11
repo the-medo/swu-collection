@@ -2,12 +2,16 @@ import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { zodValidator } from '@tanstack/zod-adapter';
 import AdvancedCardSearch from '@/components/app/cards/AdvancedCardSearch/AdvancedCardSearch.tsx';
-import { SwuArena, SwuAspect } from '../../../../types/enums.ts';
+import { SwuArena, SwuAspect, SwuRarity, SwuSet } from '../../../../types/enums.ts';
 
 const searchParams = z.object({
   // Text search
   name: z.string().optional(),
   text: z.string().optional(),
+
+  // Set and Rarity filters
+  sets: z.array(z.enum(Object.values(SwuSet) as [string, ...string[]])).optional(),
+  rarities: z.array(z.enum(Object.values(SwuRarity) as [string, ...string[]])).optional(),
 
   // Type filters
   cardTypes: z.array(z.string()).optional(),

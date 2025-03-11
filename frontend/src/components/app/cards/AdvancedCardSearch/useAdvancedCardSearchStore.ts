@@ -1,6 +1,6 @@
 import { Store, useStore } from '@tanstack/react-store';
 import { SwuAspect } from '../../../../../../types/enums';
-import { SwuArena } from '../../../../../../types/enums.ts';
+import { SwuArena, SwuRarity, SwuSet } from '../../../../../../types/enums.ts';
 import { RangeFilterType } from '@/components/app/global/RangeFilter/RangeFilter.tsx';
 import { filterCards } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
 import { toast } from '@/hooks/use-toast.ts';
@@ -16,6 +16,10 @@ export interface AdvancedCardSearchStore {
   // Text search
   name: string;
   text: string;
+
+  // Set and Rarity filters
+  sets: SwuSet[];
+  rarities: SwuRarity[];
 
   // Type filters
   cardTypes: string[];
@@ -49,6 +53,9 @@ const defaultState: AdvancedCardSearchStore = {
 
   name: '',
   text: '',
+
+  sets: [],
+  rarities: [],
 
   cardTypes: [],
 
@@ -97,6 +104,8 @@ export const useInitializeStoreFromUrlParams = () => {
   const {
     name,
     text,
+    sets,
+    rarities,
     cardTypes,
     aspects,
     arenas,
@@ -116,6 +125,8 @@ export const useInitializeStoreFromUrlParams = () => {
       searchInitialized: false,
       name: name ?? defaultState.name,
       text: text ?? defaultState.text,
+      sets: (sets ?? defaultState.sets) as SwuSet[],
+      rarities: (rarities ?? defaultState.rarities) as SwuRarity[],
       cardTypes: cardTypes ?? defaultState.cardTypes,
       aspects: (aspects ?? defaultState.aspects) as SwuAspect[],
       arenas: (arenas ?? defaultState.arenas) as SwuArena[],
@@ -134,6 +145,8 @@ export const useInitializeStoreFromUrlParams = () => {
   }, [
     name,
     text,
+    sets,
+    rarities,
     cardTypes,
     aspects,
     arenas,
@@ -156,6 +169,11 @@ const setSearchInitialized = (searchInitialized: boolean) =>
 const setName = (name: string) => store.setState(state => ({ ...state, name }));
 
 const setText = (text: string) => store.setState(state => ({ ...state, text }));
+
+// Sets and Rarities filters
+const setSets = (sets: SwuSet[]) => store.setState(state => ({ ...state, sets }));
+
+const setRarities = (rarities: SwuRarity[]) => store.setState(state => ({ ...state, rarities }));
 
 // Type filters
 const setCardTypes = (cardTypes: string[]) => store.setState(state => ({ ...state, cardTypes }));
@@ -217,6 +235,9 @@ export function useAdvancedCardSearchStore() {
   const name = useStore(store, state => state.name);
   const text = useStore(store, state => state.text);
 
+  const sets = useStore(store, state => state.sets);
+  const rarities = useStore(store, state => state.rarities);
+
   const cardTypes = useStore(store, state => state.cardTypes);
 
   const aspects = useStore(store, state => state.aspects);
@@ -237,6 +258,25 @@ export function useAdvancedCardSearchStore() {
   const filtersExpanded = useStore(store, state => state.filtersExpanded);
   const resultsView = useStore(store, state => state.resultsView);
 
+  // Calculate active filters count
+  const activeFiltersCount = [
+    name !== '',
+    text !== '',
+    sets.length > 0,
+    rarities.length > 0,
+    cardTypes.length > 0,
+    aspects.length > 0,
+    arenas.length > 0,
+    traits.length > 0,
+    keywords.length > 0,
+    variants.length > 0,
+    cost.min !== undefined || cost.max !== undefined,
+    power.min !== undefined || power.max !== undefined,
+    hp.min !== undefined || hp.max !== undefined,
+    upgradePower.min !== undefined || upgradePower.max !== undefined,
+    upgradeHp.min !== undefined || upgradeHp.max !== undefined,
+  ].filter(Boolean).length;
+
   const handleSearch = useCallback(
     async (cardListData: CardListResponse) => {
       setIsSearching(true);
@@ -246,6 +286,8 @@ export function useAdvancedCardSearchStore() {
         const results = await filterCards(cardListData.cards, cardListData.cardIds, {
           name,
           text,
+          sets,
+          rarities,
           cardTypes,
           aspects,
           arenas,
@@ -262,6 +304,8 @@ export function useAdvancedCardSearchStore() {
         const searchParams: ZAdvancedSearchParams = {
           name: name || undefined,
           text: text || undefined,
+          sets: sets.length ? sets : undefined,
+          rarities: rarities.length ? rarities : undefined,
           cardTypes: cardTypes.length ? cardTypes : undefined,
           aspects: aspects.length ? aspects : undefined,
           arenas: arenas.length ? arenas : undefined,
@@ -302,6 +346,8 @@ export function useAdvancedCardSearchStore() {
     [
       name,
       text,
+      sets,
+      rarities,
       cardTypes,
       aspects,
       arenas,
@@ -319,6 +365,8 @@ export function useAdvancedCardSearchStore() {
   const hasActiveFilters =
     name !== '' ||
     text !== '' ||
+    sets.length > 0 ||
+    rarities.length > 0 ||
     cardTypes.length > 0 ||
     aspects.length > 0 ||
     arenas.length > 0 ||
@@ -342,6 +390,10 @@ export function useAdvancedCardSearchStore() {
     // Text search
     name,
     text,
+
+    // Set and Rarity filters
+    sets,
+    rarities,
 
     // Type filters
     cardTypes,
@@ -367,6 +419,7 @@ export function useAdvancedCardSearchStore() {
 
     // UI state
     hasActiveFilters,
+    activeFiltersCount,
     filtersExpanded,
     resultsView,
   };
@@ -380,6 +433,10 @@ export function useAdvancedCardSearchStoreActions() {
     // Text filters
     setName,
     setText,
+
+    // Set and Rarity filters
+    setSets,
+    setRarities,
 
     // Type filters
     setCardTypes,
@@ -397,10 +454,6 @@ export function useAdvancedCardSearchStoreActions() {
     setHpRange,
     setUpgradePowerRange,
     setUpgradeHpRange,
-
-    // Search state
-    setIsSearching,
-    setSearchResults,
 
     // UI state
     setFiltersExpanded,

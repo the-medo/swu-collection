@@ -16,6 +16,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command';
+import { useEffect } from 'react';
 
 /**
  * Variants for the multi-select component to handle different styles.
@@ -112,6 +113,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
       options,
       onValueChange,
       variant,
+      value,
       defaultValue = [],
       placeholder = 'Select options',
       animation = 0,
@@ -126,6 +128,10 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
     const [selectedValues, setSelectedValues] = React.useState<string[]>(defaultValue);
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
+
+    useEffect(() => {
+      if (value && Array.isArray(value)) setSelectedValues(value);
+    }, [value]);
 
     const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {

@@ -6,12 +6,14 @@ import { MultiSelect } from '@/components/ui/multi-select.tsx';
 
 export type SetMultiSelectProps = {
   showFullName?: boolean;
+  value?: SwuSet[];
   defaultValue: SwuSet[];
   onChange: (v: SwuSet[]) => void;
 };
 
 const SetMultiSelect: React.FC<SetMultiSelectProps> = ({
   onChange,
+  value,
   defaultValue,
   showFullName = false,
 }) => {
@@ -26,6 +28,7 @@ const SetMultiSelect: React.FC<SetMultiSelectProps> = ({
     <MultiSelect
       options={options}
       onValueChange={onChange as (v: string[]) => void}
+      value={value}
       defaultValue={defaultValue}
       placeholder="Select sets"
       variant="inverted"
