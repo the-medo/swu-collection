@@ -8,6 +8,8 @@ import CardImage from '@/components/app/global/CardImage';
 import { cn } from '@/lib/utils';
 import { raritySortValues } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardRarity.ts';
 import { useAdvancedCardSearchStore } from '@/components/app/cards/AdvancedCardSearch/useAdvancedCardSearchStore.ts';
+import { Loader2 } from 'lucide-react';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 
 export type CardLayoutType = 'imageBig' | 'imageSmall' | 'tableImage' | 'tableSmall';
 
@@ -72,10 +74,28 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
     });
   }, [cardListData, searchResults, sortField, sortOrder]);
 
+  // Configure infinite scrolling
+  // Grid layouts need more initial items but smaller batches for smooth scrolling
+  const isGridLayout = layoutType === 'imageBig' || layoutType === 'imageSmall';
+  const initialItemsToLoad = isGridLayout ? 60 : 40;
+  const itemsPerBatch = isGridLayout ? 30 : 20;
+
+  const { itemsToShow, isLoading, hasMore, observerTarget } = useInfiniteScroll({
+    totalItems: sortedResults.length,
+    initialItemsToLoad,
+    itemsPerBatch,
+    threshold: 300,
+  });
+
+  // Only take the subset of results we want to display
+  const visibleResults = useMemo(() => {
+    return sortedResults.slice(0, itemsToShow);
+  }, [sortedResults, itemsToShow]);
+
   // Memoize the data transformation for the table
   const tableData = useMemo<SearchCardData[]>(() => {
-    return sortedResults.map(cardId => ({ cardId }));
-  }, [sortedResults]);
+    return visibleResults.map(cardId => ({ cardId }));
+  }, [visibleResults]);
 
   const onSortChange = useCallback(
     (field: SortField) => {
@@ -105,48 +125,86 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
     <div className="w-full">
       {/* Card display */}
       {layoutType === 'imageBig' || layoutType === 'imageSmall' ? (
-        <div
-          className={cn('grid gap-4', {
-            'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6':
-              layoutType === 'imageBig',
-            'grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10':
-              layoutType === 'imageSmall',
-          })}
-        >
-          {sortedResults.map(cardId => {
-            const card = cardListData.cards[cardId];
-            if (!card) return null;
+        <div className="relative">
+          <div
+            className={cn('grid gap-4', {
+              'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6':
+                layoutType === 'imageBig',
+              'grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10':
+                layoutType === 'imageSmall',
+            })}
+          >
+            {visibleResults.map(cardId => {
+              const card = cardListData.cards[cardId];
+              if (!card) return null;
 
-            const defaultVariant = selectDefaultVariant(card);
+              const defaultVariant = selectDefaultVariant(card);
 
-            return (
-              <div
-                key={cardId}
-                className="cursor-pointer hover:scale-105 transition-transform flex flex-col items-center"
-                onClick={() => onCardClick(cardId)}
-              >
-                <CardImage
-                  card={card}
-                  cardVariantId={defaultVariant}
-                  size={layoutType === 'imageBig' ? 'w200' : 'w100'}
-                  backSideButton={false}
-                />
+              return (
                 <div
-                  className="mt-1 text-sm font-medium text-center truncate w-full"
-                  title={card.name}
+                  key={cardId}
+                  className="cursor-pointer hover:scale-105 transition-transform flex flex-col items-center"
+                  onClick={() => onCardClick(cardId)}
                 >
-                  {card.name}
+                  <CardImage
+                    card={card}
+                    cardVariantId={defaultVariant}
+                    size={layoutType === 'imageBig' ? 'w200' : 'w100'}
+                    backSideButton={false}
+                  />
+                  <div
+                    className="mt-1 text-sm font-medium text-center truncate w-full"
+                    title={card.name}
+                  >
+                    {card.name}
+                  </div>
                 </div>
+              );
+            })}
+          </div>
+
+          {/* Loading indicator and sentinel for infinite scroll */}
+          <div ref={observerTarget} className="h-4 mt-4 flex justify-center items-center">
+            {isLoading && (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+                <span>Loading more cards...</span>
               </div>
-            );
-          })}
+            )}
+          </div>
+
+          {/* Show a "no more cards" message when all are loaded */}
+          {!hasMore && sortedResults.length > initialItemsToLoad && (
+            <div className="text-center text-muted-foreground p-4">
+              All {sortedResults.length} cards loaded
+            </div>
+          )}
         </div>
       ) : (
-        <DataTable
-          columns={columns}
-          data={tableData}
-          onRowClick={row => onCardClick(row.original.cardId)}
-        />
+        <div className="relative">
+          <DataTable
+            columns={columns}
+            data={tableData}
+            onRowClick={row => onCardClick(row.original.cardId)}
+          />
+
+          {/* Loading indicator and sentinel for infinite scroll */}
+          <div ref={observerTarget} className="h-4 mt-4 flex justify-center items-center">
+            {isLoading && (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+                <span>Loading more cards...</span>
+              </div>
+            )}
+          </div>
+
+          {/* Show a message for table views too */}
+          {!hasMore && sortedResults.length > initialItemsToLoad && (
+            <div className="text-center text-muted-foreground p-4">
+              All {sortedResults.length} cards loaded
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
