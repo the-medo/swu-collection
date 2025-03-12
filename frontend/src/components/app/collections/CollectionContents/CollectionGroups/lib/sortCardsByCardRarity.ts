@@ -11,7 +11,7 @@ export const raritySortValues = {
   [SwuRarity.UNCOMMON]: 30,
   [SwuRarity.SPECIAL]: 20,
   [SwuRarity.RARE]: 10,
-  [SwuRarity.LEGENDARY]: 0,
+  [SwuRarity.LEGENDARY]: 1,
 };
 
 export const sortCardsByCardRarity: CollectionCardSorter = (

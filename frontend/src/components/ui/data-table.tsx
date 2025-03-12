@@ -1,6 +1,6 @@
 'use client';
 
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, flexRender, getCoreRowModel, Row, useReactTable } from '@tanstack/react-table';
 
 import {
   Table,
@@ -22,6 +22,7 @@ interface DataTableProps<TData, TValue> {
     minSize: number;
     maxSize: number;
   };
+  onRowClick?: (row: Row<TData>) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -33,6 +34,7 @@ export function DataTable<TData, TValue>({
     minSize: 0,
     maxSize: Number.MAX_SAFE_INTEGER,
   },
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     // @ts-ignore
@@ -68,7 +70,11 @@ export function DataTable<TData, TValue>({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map(row => (
-              <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+              <TableRow
+                key={row.id}
+                onClick={() => onRowClick?.(row)}
+                data-state={row.getIsSelected() && 'selected'}
+              >
                 {row.getVisibleCells().map(cell => (
                   <TableCell
                     key={cell.id}

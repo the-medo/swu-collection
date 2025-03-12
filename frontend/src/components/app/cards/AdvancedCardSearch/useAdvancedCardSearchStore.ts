@@ -8,6 +8,8 @@ import { CardListResponse } from '@/api/lists/useCardList.ts';
 import { useCallback, useEffect } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route, ZAdvancedSearchParams } from '@/routes/cards/search.tsx';
+import { CardLayoutType } from './AdvancedSearchResults/SearchCardLayout';
+import { SortField, SortOrder } from './AdvancedSearchResults/useSearchCardTableColumns';
 
 // Define the store state shape
 export interface AdvancedCardSearchStore {
@@ -44,7 +46,9 @@ export interface AdvancedCardSearchStore {
 
   // UI state
   filtersExpanded: boolean;
-  resultsView: 'grid' | 'list';
+  resultsLayout: CardLayoutType;
+  sortField: SortField;
+  sortOrder: SortOrder;
 }
 
 // Default state values
@@ -75,7 +79,9 @@ const defaultState: AdvancedCardSearchStore = {
   searchResults: [],
 
   filtersExpanded: true,
-  resultsView: 'grid',
+  resultsLayout: 'imageBig',
+  sortField: 'name',
+  sortOrder: 'asc',
 };
 
 // Create the store
@@ -213,8 +219,12 @@ const setSearchResults = (searchResults: string[]) =>
 const setFiltersExpanded = (filtersExpanded: boolean) =>
   store.setState(state => ({ ...state, filtersExpanded }));
 
-const setResultsView = (resultsView: 'grid' | 'list') =>
-  store.setState(state => ({ ...state, resultsView }));
+const setResultsLayout = (resultsLayout: CardLayoutType) =>
+  store.setState(state => ({ ...state, resultsLayout }));
+
+const setSortField = (sortField: SortField) => store.setState(state => ({ ...state, sortField }));
+
+const setSortOrder = (sortOrder: SortOrder) => store.setState(state => ({ ...state, sortOrder }));
 
 // Reset all filters
 const resetFilters = () =>
@@ -223,7 +233,9 @@ const resetFilters = () =>
     isSearching: state.isSearching,
     searchResults: state.searchResults,
     filtersExpanded: state.filtersExpanded,
-    resultsView: state.resultsView,
+    resultsLayout: state.resultsLayout,
+    sortField: state.sortField,
+    sortOrder: state.sortOrder,
   }));
 
 // Access the store state
@@ -256,7 +268,9 @@ export function useAdvancedCardSearchStore() {
   const searchResults = useStore(store, state => state.searchResults);
 
   const filtersExpanded = useStore(store, state => state.filtersExpanded);
-  const resultsView = useStore(store, state => state.resultsView);
+  const resultsLayout = useStore(store, state => state.resultsLayout);
+  const sortField = useStore(store, state => state.sortField);
+  const sortOrder = useStore(store, state => state.sortOrder);
 
   // Calculate active filters count
   const activeFiltersCount = [
@@ -317,7 +331,7 @@ export function useAdvancedCardSearchStore() {
           hp: stringifyRange(hp),
           upgradePower: stringifyRange(upgradePower),
           upgradeHp: stringifyRange(upgradeHp),
-          view: resultsView,
+          resultsLayout: resultsLayout || 'imageBig',
         };
 
         (Object.keys(searchParams) as (keyof ZAdvancedSearchParams)[]).forEach(key => {
@@ -359,6 +373,7 @@ export function useAdvancedCardSearchStore() {
       hp,
       upgradePower,
       upgradeHp,
+      resultsLayout,
     ],
   );
 
@@ -421,7 +436,31 @@ export function useAdvancedCardSearchStore() {
     hasActiveFilters,
     activeFiltersCount,
     filtersExpanded,
-    resultsView,
+    resultsLayout,
+    sortField,
+    sortOrder,
+
+    // Actions
+    setName,
+    setText,
+    setSets,
+    setRarities,
+    setCardTypes,
+    setAspects,
+    setArenas,
+    setTraits,
+    setKeywords,
+    setVariants,
+    setCostRange,
+    setPowerRange,
+    setHpRange,
+    setUpgradePowerRange,
+    setUpgradeHpRange,
+    setFiltersExpanded,
+    setResultsLayout,
+    setSortField,
+    setSortOrder,
+    resetFilters,
   };
 }
 
@@ -457,7 +496,9 @@ export function useAdvancedCardSearchStoreActions() {
 
     // UI state
     setFiltersExpanded,
-    setResultsView,
+    setResultsLayout,
+    setSortField,
+    setSortOrder,
 
     // Other actions
     resetFilters,

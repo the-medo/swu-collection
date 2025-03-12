@@ -31,7 +31,9 @@ const searchParams = z.object({
   upgradeHp: z.string().optional(),
 
   // UI state
-  view: z.enum(['grid', 'list']).optional(),
+  resultsLayout: z.enum(['imageBig', 'imageSmall', 'tableImage', 'tableSmall']).optional(),
+  sort: z.enum(['name', 'cardNumber', 'cost', 'type', 'rarity']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
 });
 
 export type ZAdvancedSearchParams = z.infer<typeof searchParams>;
