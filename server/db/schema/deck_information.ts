@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, integer, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, uuid, integer, index, timestamp } from 'drizzle-orm/pg-core';
 import { deck } from './deck.ts';
 
 export const deckInformation = pgTable(
@@ -11,6 +11,8 @@ export const deckInformation = pgTable(
 
     favoritesCount: integer('favorites_count').notNull().default(0),
     commentsCount: integer('comments_count').notNull().default(0),
+    score: integer('score').notNull().default(0),
+    scoredAt: timestamp('scored_at').notNull().defaultNow(),
 
     aspectCommand: integer('aspect_command').notNull().default(0),
     aspectVigilance: integer('aspect_vigilance').notNull().default(0),

@@ -43,6 +43,13 @@
       "when": 1741819948680,
       "tag": "0005_slimy_slayback",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1741884302696,
+      "tag": "0006_dapper_virginia_dare",
+      "breakpoints": true
     }
   ]
 }

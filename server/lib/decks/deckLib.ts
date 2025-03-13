@@ -1,6 +1,6 @@
-import { cardsBySetAndNumber } from '../db/lists.ts';
-import type { SwuSet } from '../../types/enums.ts';
-import type { DeckCard } from '../../types/ZDeckCard.ts';
+import { cardsBySetAndNumber } from '../../db/lists.ts';
+import type { SwuSet } from '../../../types/enums.ts';
+import type { DeckCard } from '../../../types/ZDeckCard.ts';
 
 const parseSwudbDeckCard = (cardData: any) => {
   let error: string | false = false;

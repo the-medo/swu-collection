@@ -5,7 +5,7 @@ export const zDeckSchema = z.object({
   userId: z.string().uuid(),
   format: z.number().int(),
   name: z.string().min(3).max(255),
-  description: z.string().nullable(),
+  description: z.string().default(''),
   leaderCardId1: z.string().nullable(),
   leaderCardId2: z.string().nullable(),
   baseCardId: z.string().nullable(),
