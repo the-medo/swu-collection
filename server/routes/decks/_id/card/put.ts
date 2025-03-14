@@ -9,7 +9,7 @@ import { db } from '../../../../db';
 import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
 
 export const deckIdCardPutRoute = new Hono<AuthExtension>().put(
-  '/:id/card',
+  '/',
   zValidator('json', zDeckCardUpdateRequest),
   async c => {
     const paramDeckId = z.string().uuid().parse(c.req.param('id'));

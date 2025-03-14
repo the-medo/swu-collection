@@ -1,5 +1,4 @@
 import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
-import * as React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage, { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
@@ -152,6 +151,18 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
     );
   }, [search, aspectFilter]);
 
+  const handleSave = useCallback(
+    (leaderCardId: string | undefined) => {
+      setOpen(false); // First close the dialog
+
+      // Then use a small timeout to update the state AFTER the dialog has closed
+      setTimeout(() => {
+        if (onLeaderSelected) onLeaderSelected(leaderCardId);
+      }, 10);
+    },
+    [onLeaderSelected],
+  );
+
   const footer = useMemo(() => {
     return (
       <div className="flex flex-wrap gap-2 w-full justify-between items-center">
@@ -175,14 +186,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
             <h4>No selected leader</h4>
           )}
         </div>
-        <Button
-          onClick={() => {
-            if (onLeaderSelected) onLeaderSelected(localSelectedLeader?.card?.cardId);
-            setOpen(false);
-          }}
-        >
-          Save
-        </Button>
+        <Button onClick={() => handleSave(localSelectedLeader?.card?.cardId)}>Save</Button>
       </div>
     );
   }, [onLeaderSelected, localSelectedLeader]);
@@ -205,12 +209,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
             <div
               className="cursor-pointer"
               onClick={() => setLocalLeaderCardId(leader?.card?.cardId)}
-              onDoubleClick={() => {
-                const leaderId = leader?.card?.cardId;
-                setLocalLeaderCardId(leaderId);
-                if (onLeaderSelected) onLeaderSelected(leaderId);
-                setOpen(false);
-              }}
+              onDoubleClick={() => handleSave(leader?.card?.cardId)}
               key={leader?.card?.cardId}
             >
               <CardImage

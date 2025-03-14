@@ -176,6 +176,18 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
     );
   }, [search, aspectFilter, allBasicBases]);
 
+  const handleSave = useCallback(
+    (baseCardId: string | undefined) => {
+      setOpen(false); // First close the dialog
+
+      // Then use a small timeout to update the state AFTER the dialog has closed
+      setTimeout(() => {
+        if (onBaseSelected) onBaseSelected(baseCardId);
+      }, 10);
+    },
+    [onBaseSelected],
+  );
+
   const footer = useMemo(() => {
     return (
       <div className="flex flex-wrap gap-2 w-full justify-between items-center">
@@ -199,14 +211,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
             <h4>No selected base</h4>
           )}
         </div>
-        <Button
-          onClick={() => {
-            if (onBaseSelected) onBaseSelected(localSelectedBase?.cardId);
-            setOpen(false);
-          }}
-        >
-          Save
-        </Button>
+        <Button onClick={() => handleSave(localSelectedBase?.cardId)}>Save</Button>
       </div>
     );
   }, [onBaseSelected, localSelectedBase]);
@@ -227,12 +232,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
             <div
               className="cursor-pointer"
               onClick={() => setLocalBaseCardId(base?.card?.cardId)}
-              onDoubleClick={() => {
-                const baseId = base?.card?.cardId;
-                setLocalBaseCardId(baseId);
-                if (onBaseSelected) onBaseSelected(baseId);
-                setOpen(false);
-              }}
+              onDoubleClick={() => handleSave(base?.card?.cardId)}
               key={base?.card?.cardId}
             >
               <CardImage

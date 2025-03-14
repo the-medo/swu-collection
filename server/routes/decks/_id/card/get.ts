@@ -7,7 +7,7 @@ import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
 import { db } from '../../../../db';
 import type { DeckCard } from '../../../../../types/ZDeckCard.ts';
 
-export const deckIdCardGetRoute = new Hono<AuthExtension>().get('/:id/card', async c => {
+export const deckIdCardGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const paramDeckId = z.string().uuid().parse(c.req.param('id'));
   const user = c.get('user');
 

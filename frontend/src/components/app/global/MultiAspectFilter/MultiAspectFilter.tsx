@@ -66,6 +66,7 @@ const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
       onChange(aspect);
     }
   };
+
   const handleAspectSelectionSingle = (aspect: SwuAspect) => {
     onChange([aspect]);
   };
