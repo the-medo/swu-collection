@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { LinkIcon, MoreHorizontal, PencilIcon, TrashIcon } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { publicRenderer } from '@/lib/table/publicRenderer.tsx';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
@@ -19,10 +19,9 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { getFormatName, UserDeckData } from './deckTableLib.tsx';
 import { useCountryList } from '@/api/lists/useCountryList.ts';
 import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
-import DeleteDeckDialog from '@/components/app/dialogs/DeleteDeckDialog.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
-import EditDeckDialog from '@/components/app/dialogs/EditDeckDialog.tsx';
+import { cn } from '@/lib/utils.ts';
 
 interface DeckTableColumnsProps {
   showOwner?: boolean;
@@ -55,7 +54,7 @@ export function useDeckTableColumns({
         const base = deck.baseCardId ? cardList?.cards[deck.baseCardId] : undefined;
 
         return (
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <CardImage
               card={leader1}
               cardVariantId={leader1 ? selectDefaultVariant(leader1) : undefined}
@@ -66,23 +65,27 @@ export function useDeckTableColumns({
               No leader
             </CardImage>
             {leader2 && (
+              <div className="-ml-14">
+                <CardImage
+                  card={leader2}
+                  cardVariantId={leader1 ? selectDefaultVariant(leader2) : undefined}
+                  forceHorizontal={true}
+                  size="w100"
+                  backSideButton={false}
+                />
+              </div>
+            )}
+            <div className={cn({ '-ml-12': !!leader2 })}>
               <CardImage
-                card={leader2}
-                cardVariantId={leader1 ? selectDefaultVariant(leader2) : undefined}
+                card={base}
+                cardVariantId={base ? selectDefaultVariant(base) : undefined}
                 forceHorizontal={true}
                 size="w100"
                 backSideButton={false}
-              />
-            )}
-            <CardImage
-              card={base}
-              cardVariantId={base ? selectDefaultVariant(base) : undefined}
-              forceHorizontal={true}
-              size="w100"
-              backSideButton={false}
-            >
-              No base
-            </CardImage>
+              >
+                No base
+              </CardImage>
+            </div>
           </div>
         );
       },
@@ -143,18 +146,9 @@ export function useDeckTableColumns({
     }
 
     definitions.push({
-      accessorKey: 'deck.createdAt',
-      size: 24,
-      header: () => <div className="text-right">Created At</div>,
-      cell: ({ getValue }) => {
-        return dateRenderer(getValue() as string);
-      },
-    });
-
-    definitions.push({
       accessorKey: 'deck.updatedAt',
       size: 24,
-      header: () => <div className="text-right">Updated At</div>,
+      header: () => <div className="text-right">Updated</div>,
       cell: ({ getValue }) => {
         return dateRenderer(getValue() as string);
       },
@@ -195,60 +189,34 @@ export function useDeckTableColumns({
         const userId = row.original.user.id;
 
         return (
-          <div className="flex gap-1">
-            <Button
-              size="iconMedium"
-              className="p-0"
-              onClick={() =>
-                navigator.clipboard.writeText(`${window.location.origin}/decks/${deckId}`)
-              }
-            >
-              <span className="sr-only">Copy link</span>
-              <LinkIcon className="h-4 w-4" />
-            </Button>
-            {user && user?.id === userId && (
-              <>
-                <EditDeckDialog
-                  deck={row.original.deck}
-                  trigger={
-                    <Button size="iconMedium" className="p-0">
-                      <span className="sr-only">Edit deck</span>
-                      <PencilIcon className="h-4 w-4" />
-                    </Button>
-                  }
-                />
-                <DeleteDeckDialog
-                  deck={row.original.deck}
-                  trigger={
-                    <Button variant="destructive" size="iconMedium" className="p-0">
-                      <span className="sr-only">Delete deck</span>
-                      <TrashIcon className="h-4 w-4" />
-                    </Button>
-                  }
-                />
-              </>
-            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <div className="text-right">
-                  <Button variant="ghost" size="iconMedium" className="p-0">
-                    <span className="sr-only">Open menu</span>
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(deckId)}>
-                  Copy deck ID
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(userId)}>
-                  Copy user ID
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="text-right">
+                <Button variant="ghost" size="iconMedium" className="p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() =>
+                  navigator.clipboard.writeText(`${window.location.origin}/decks/${deckId}`)
+                }
+              >
+                Copy link
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(deckId)}>
+                Copy deck ID
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(userId)}>
+                Copy user ID
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     });

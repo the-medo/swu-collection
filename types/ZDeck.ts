@@ -1,5 +1,14 @@
 import { z } from 'zod';
 
+export const DeckSortField = {
+  CREATED_AT: 'deck.created_at',
+  UPDATED_AT: 'deck.updated_at',
+  NAME: 'deck.name',
+  FORMAT: 'deck.format',
+  FAVORITES: 'deck_information.favorites_count',
+  SCORE: 'deck_information.score',
+} as const;
+
 export const zDeckSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),

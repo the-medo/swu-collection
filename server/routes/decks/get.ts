@@ -10,15 +10,7 @@ import { withPagination } from '../../lib/withPagination.ts';
 import { zPaginationParams } from '../../../types/ZPaginationParams.ts';
 import { z } from 'zod';
 import { SwuAspect } from '../../../types/enums.ts';
-
-export const DeckSortField = {
-  CREATED_AT: 'deck.created_at',
-  UPDATED_AT: 'deck.updated_at',
-  NAME: 'deck.name',
-  FORMAT: 'deck.format',
-  FAVORITES: 'deck_information.favorites_count',
-  SCORE: 'deck_information.score',
-} as const;
+import { DeckSortField } from '../../../types/ZDeck.ts';
 
 export const zDeckQueryParams = zPaginationParams.extend({
   userId: z.string().optional(),

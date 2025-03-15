@@ -1,17 +1,25 @@
-import { useMemo, useState } from 'react';
-import { GetDecksRequest, useGetDecks } from '@/api/decks/useGetDecks.ts';
+import { useMemo, useEffect } from 'react';
+import { useGetDecks } from '@/api/decks/useGetDecks.ts';
 import DeckTable from '@/components/app/decks/DeckTable/DeckTable.tsx';
 import { UserDeckData } from '@/api/user/useGetUserDecks.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Loader2 } from 'lucide-react';
 import DeckFilters from '@/components/app/decks/DeckFilters/DeckFilters.tsx';
+import { useDeckFilterStore } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
 
 interface PublicDecksProps {}
 
 const PublicDecks: React.FC<PublicDecksProps> = ({}) => {
-  const [filters, setFilters] = useState<GetDecksRequest>({});
+  const { toRequestParams } = useDeckFilterStore();
 
-  const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } = useGetDecks(filters);
+  const filters = useMemo(() => toRequestParams(), [toRequestParams]);
+
+  const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage, refetch } =
+    useGetDecks(filters);
+
+  useEffect(() => {
+    refetch();
+  }, [filters, refetch]);
 
   const decks: UserDeckData[] = useMemo(() => {
     if (!data) return [];
@@ -22,7 +30,7 @@ const PublicDecks: React.FC<PublicDecksProps> = ({}) => {
 
   return (
     <>
-      <DeckFilters filters={filters} onFiltersChange={setFilters} />
+      <DeckFilters filters={filters} onFiltersChange={() => {}} />
       <DeckTable variant="public" decks={decks} loading={loading} />
 
       {hasNextPage && (
