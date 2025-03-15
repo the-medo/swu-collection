@@ -26,7 +26,7 @@ export const useImportSwudbDeck = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['decks', user?.id] });
+      void queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });
     },
     onError: error => {
       toast({

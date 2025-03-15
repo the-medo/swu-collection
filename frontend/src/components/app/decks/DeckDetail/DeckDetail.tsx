@@ -10,6 +10,7 @@ import DeleteDeckDialog from '../../dialogs/DeleteDeckDialog';
 import DeckContents from '../DeckContents/DeckContents';
 import { useDeckLayoutStoreActions } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { useEffect } from 'react';
+import DeckActions from '@/components/app/decks/DeckActions/DeckActions.tsx';
 
 const routeApi = getRouteApi('/decks/$deckId/');
 
@@ -66,9 +67,6 @@ const DeckDetail: React.FC = () => {
       <div className="flex flex-row gap-4 text-sm italic mb-2">{data?.deck.description}</div>
       <div className="flex flex-grow flex-row gap-4">
         <DeckContents deckId={deckId} />
-        {/*<div className="flex flex-col gap-4 w-[400px]">
-          <DeckActions deckId={deckId} />
-        </div>*/}
       </div>
     </>
   );
