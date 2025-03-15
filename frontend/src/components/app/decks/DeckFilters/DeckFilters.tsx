@@ -1,6 +1,4 @@
-import { useCallback, useEffect } from 'react';
-import { GetDecksRequest } from '@/api/decks/useGetDecks.ts';
-import { Dispatch, SetStateAction } from 'react';
+import { useCallback } from 'react';
 import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
 import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx';
 import MultiAspectFilter from '@/components/app/global/MultiAspectFilter/MultiAspectFilter.tsx';
@@ -18,31 +16,23 @@ import {
 } from '@/components/ui/dropdown-menu.tsx';
 import { DeckSortField } from '../../../../../../types/ZDeck.ts';
 
-interface DeckFiltersProps {
-  filters: GetDecksRequest;
-  onFiltersChange: Dispatch<SetStateAction<GetDecksRequest>>;
-}
+interface DeckFiltersProps {}
 
-const DeckFilters: React.FC<DeckFiltersProps> = ({ onFiltersChange }) => {
+const DeckFilters: React.FC<DeckFiltersProps> = () => {
   const {
     leaders,
     base,
     aspects,
     format,
-    sortField,
-    sortOrder,
+    sortField = 'deck.updated_at',
+    sortOrder = 'desc',
     activeFiltersCount,
     hasActiveFilters,
-    toRequestParams,
+    initialized,
   } = useDeckFilterStore();
 
   const { setLeaders, setBase, setAspects, setFormat, setSortField, setSortOrder, resetFilters } =
     useDeckFilterStoreActions();
-
-  // Update filters prop when store values change
-  useEffect(() => {
-    onFiltersChange(toRequestParams());
-  }, [leaders, base, aspects, format, sortField, sortOrder]);
 
   // Leader selection handling
   const onLeaderChange = useCallback((leaderCardId: string | undefined) => {
@@ -93,12 +83,15 @@ const DeckFilters: React.FC<DeckFiltersProps> = ({ onFiltersChange }) => {
     [sortField, sortOrder],
   );
 
-  // Handle filter reset
   const handleResetFilters = useCallback(() => {
     setTimeout(() => {
       resetFilters();
     }, 50);
   }, []);
+
+  if (!initialized) {
+    return <div className="mb-4 p-2 flex justify-center">Loading filters...</div>;
+  }
 
   return (
     <div className="mb-4 p-2 flex flex-wrap items-center gap-2">

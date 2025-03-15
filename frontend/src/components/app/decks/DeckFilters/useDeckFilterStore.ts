@@ -2,12 +2,17 @@ import { Store, useStore } from '@tanstack/react-store';
 import { SwuAspect } from '../../../../../../types/enums.ts';
 import { GetDecksRequest } from '@/api/decks/useGetDecks.ts';
 import { DeckSortField } from '../../../../../../types/ZDeck.ts';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import type { DeckQueryParams } from '../../../../../../server/routes/decks/get.ts';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { Route, GlobalSearchParams } from '@/routes/__root.tsx';
 
 export type SortOrder = 'asc' | 'desc';
 
 export interface DeckFilterStore {
+  // Flag to track initialization state
+  initialized: boolean;
+
   // Filter state
   leaders: string[];
   base: string | undefined;
@@ -15,11 +20,12 @@ export interface DeckFilterStore {
   format: number | undefined;
 
   // Sorting state
-  sortField: string;
-  sortOrder: SortOrder;
+  sortField?: string;
+  sortOrder?: SortOrder;
 }
 
 const defaultState: DeckFilterStore = {
+  initialized: false,
   leaders: [],
   base: undefined,
   aspects: [],
@@ -31,7 +37,53 @@ const defaultState: DeckFilterStore = {
 
 const store = new Store<DeckFilterStore>(defaultState);
 
+// Initialize store from URL parameters
+export function useInitializeDeckFilterFromUrlParams() {
+  const { deckLeaders, deckBase, deckAspects, deckFormat, deckSort, deckOrder } = useSearch({
+    strict: false,
+  });
+
+  const init = useCallback(() => {
+    store.setState(state => ({
+      ...state,
+      initialized: true,
+      leaders: deckLeaders ?? defaultState.leaders,
+      base: deckBase ?? defaultState.base,
+      aspects: deckAspects ?? defaultState.aspects,
+      format: deckFormat ?? defaultState.format,
+      sortField: deckSort ?? defaultState.sortField,
+      sortOrder: deckOrder ?? defaultState.sortOrder,
+    }));
+  }, [deckLeaders, deckBase, deckAspects, deckFormat, deckSort, deckOrder]);
+
+  useEffect(() => {
+    if (!store.state.initialized) {
+      init();
+    }
+  }, [init]);
+
+  useEffect(() => {
+    return () => {
+      store.setState(state => ({
+        ...state,
+        initialized: false,
+        leaders: [],
+        base: undefined,
+        aspects: [],
+        format: undefined,
+        sortField: undefined,
+        sortOrder: undefined,
+      }));
+    };
+  }, []);
+
+  return { init };
+}
+
 // Actions
+const setInitialized = (initialized: boolean) =>
+  store.setState(state => ({ ...state, initialized }));
+
 const setLeaders = (leaders: string[]) => store.setState(state => ({ ...state, leaders }));
 
 const setBase = (base: string | undefined) => store.setState(state => ({ ...state, base }));
@@ -47,16 +99,19 @@ const setSortOrder = (sortOrder: SortOrder) => store.setState(state => ({ ...sta
 const resetFilters = () =>
   store.setState(state => ({
     ...defaultState,
+    initialized: true,
     sortField: state.sortField,
     sortOrder: state.sortOrder,
   }));
 
 export function useDeckFilterStore() {
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  const initialized = useStore(store, state => state.initialized);
   const leaders = useStore(store, state => state.leaders);
   const base = useStore(store, state => state.base);
   const aspects = useStore(store, state => state.aspects);
   const format = useStore(store, state => state.format);
-
   const sortField = useStore(store, state => state.sortField);
   const sortOrder = useStore(store, state => state.sortOrder);
 
@@ -69,6 +124,43 @@ export function useDeckFilterStore() {
   ].filter(Boolean).length;
 
   const hasActiveFilters = activeFiltersCount > 0;
+
+  // Sync URL with store state
+  useEffect(() => {
+    if (initialized) {
+      const searchParams: Partial<GlobalSearchParams> = {
+        deckLeaders: leaders.length > 0 ? leaders : undefined,
+        deckBase: base,
+        deckAspects: aspects.length > 0 ? aspects : undefined,
+        deckFormat: format,
+        deckSort: sortField as GlobalSearchParams['deckSort'],
+        deckOrder: sortOrder as 'asc' | 'desc',
+      };
+
+      // Clean up undefined values
+      Object.entries(searchParams).forEach(([key, value]) => {
+        if (value === undefined) {
+          delete searchParams[key as keyof GlobalSearchParams];
+        }
+      });
+
+      navigate({
+        search: old => {
+          // Create a new object without any deck filter params
+          const filteredOld = { ...old };
+          ['deckLeaders', 'deckBase', 'deckAspects', 'deckFormat', 'deckSort', 'deckOrder'].forEach(
+            key => {
+              delete filteredOld[key as keyof GlobalSearchParams];
+            },
+          );
+
+          // Return the filtered old params with the new ones
+          return { ...filteredOld, ...searchParams };
+        },
+        replace: true,
+      });
+    }
+  }, [initialized, leaders, base, aspects, format, sortField, sortOrder, navigate]);
 
   // Convert to API request format
   const toRequestParams = useCallback(
@@ -84,6 +176,9 @@ export function useDeckFilterStore() {
   );
 
   return {
+    // Initialization state
+    initialized,
+
     // Filter state
     leaders,
     base,
@@ -105,6 +200,7 @@ export function useDeckFilterStore() {
 
 export function useDeckFilterStoreActions() {
   return {
+    setInitialized,
     setLeaders,
     setBase,
     setAspects,

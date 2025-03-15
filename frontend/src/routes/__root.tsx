@@ -6,10 +6,31 @@ import { Toaster } from '@/components/ui/toaster.tsx';
 import { z } from 'zod';
 import CardDetailDialog from '@/components/app/cards/CardDetailDialog/CardDetailDialog.tsx';
 import SidebarTriggerButton from '@/components/app/navigation/TopMenu/SidebarTriggerButton.tsx';
+import { DeckSortField } from '../../../types/ZDeck.ts';
+import { SwuAspect } from '../../../types/enums.ts';
 
 const globalSearchParams = z.object({
+  // Card detail dialog
   modalCardId: z.string().optional(),
+
+  // Deck filter params
+  deckLeaders: z.array(z.string()).optional(),
+  deckBase: z.string().optional(),
+  deckAspects: z.array(z.nativeEnum(SwuAspect)).optional(),
+  deckFormat: z.coerce.number().int().positive().optional(),
+  deckSort: z
+    .enum([
+      DeckSortField.CREATED_AT,
+      DeckSortField.UPDATED_AT,
+      DeckSortField.NAME,
+      DeckSortField.FORMAT,
+      DeckSortField.FAVORITES,
+      DeckSortField.SCORE,
+    ])
+    .optional(),
+  deckOrder: z.enum(['asc', 'desc']).optional(),
 });
+export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 
 export const Route = createRootRoute({
   component: () => (
