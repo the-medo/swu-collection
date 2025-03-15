@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { GetDecksRequest, useGetDecks } from '@/api/decks/useGetDecks.ts';
 import DeckTable from '@/components/app/decks/DeckTable/DeckTable.tsx';
 import { UserDeckData } from '@/api/user/useGetUserDecks.ts';
@@ -13,14 +13,16 @@ import {
 interface PublicDecksProps {}
 
 const PublicDecks: React.FC<PublicDecksProps> = ({}) => {
-  useInitializeDeckFilterFromUrlParams();
+  const initialized = useInitializeDeckFilterFromUrlParams();
+  const { toRequestParams } = useDeckFilterStore();
+  const [filters, setFilters] = useState<GetDecksRequest>({});
 
-  const { toRequestParams, initialized } = useDeckFilterStore();
-
-  const filters: GetDecksRequest = useMemo(
-    () => (initialized ? toRequestParams() : { order: 'desc' }),
-    [initialized, toRequestParams],
-  );
+  useEffect(() => {
+    if (!initialized) return;
+    setTimeout(() => {
+      setFilters(toRequestParams());
+    }, 50);
+  }, [initialized, toRequestParams]);
 
   const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } = useGetDecks(filters);
 
@@ -33,7 +35,7 @@ const PublicDecks: React.FC<PublicDecksProps> = ({}) => {
 
   return (
     <>
-      <DeckFilters />
+      <DeckFilters initialized={initialized} />
       <DeckTable variant="public" decks={decks} loading={loading} />
 
       {hasNextPage && (

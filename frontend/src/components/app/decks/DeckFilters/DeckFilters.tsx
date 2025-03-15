@@ -16,9 +16,11 @@ import {
 } from '@/components/ui/dropdown-menu.tsx';
 import { DeckSortField } from '../../../../../../types/ZDeck.ts';
 
-interface DeckFiltersProps {}
+interface DeckFiltersProps {
+  initialized?: boolean;
+}
 
-const DeckFilters: React.FC<DeckFiltersProps> = () => {
+const DeckFilters: React.FC<DeckFiltersProps> = ({ initialized }) => {
   const {
     leaders,
     base,
@@ -28,7 +30,6 @@ const DeckFilters: React.FC<DeckFiltersProps> = () => {
     sortOrder = 'desc',
     activeFiltersCount,
     hasActiveFilters,
-    initialized,
   } = useDeckFilterStore();
 
   const { setLeaders, setBase, setAspects, setFormat, setSortField, setSortOrder, resetFilters } =
@@ -90,11 +91,11 @@ const DeckFilters: React.FC<DeckFiltersProps> = () => {
   }, []);
 
   if (!initialized) {
-    return <div className="mb-4 p-2 flex justify-center">Loading filters...</div>;
+    return <div className="p-2 flex justify-center">Loading filters...</div>;
   }
 
   return (
-    <div className="mb-4 p-2 flex flex-wrap items-center gap-2">
+    <div className="p-2 flex flex-wrap items-center gap-2">
       <LeaderSelector
         trigger={null}
         size="w100"

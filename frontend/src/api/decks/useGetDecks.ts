@@ -8,6 +8,7 @@ export type GetDecksRequest = Partial<DeckQueryParams>;
 
 export const useGetDecks = (props: GetDecksRequest) => {
   const {
+    userId,
     format,
     leaders,
     base,
@@ -19,8 +20,9 @@ export const useGetDecks = (props: GetDecksRequest) => {
 
   // Create a stable query key based on all filter parameters
   const qk = [
-    'public-decks',
+    'decks',
     {
+      userId,
       format,
       leaders,
       base,
@@ -39,6 +41,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
 
       const response = await api.deck.$get({
         query: {
+          userId,
           format: format?.toString(),
           leaders: leadersParam,
           base,

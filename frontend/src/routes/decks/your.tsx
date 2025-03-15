@@ -19,7 +19,7 @@ function YourDecks() {
           <h3>Your decks</h3>
           <NewDeckDialog trigger={<Button>New deck</Button>} />
         </div>
-        <div className="flex gap-4 items-start min-w-[400px] w-full">
+        <div className="flex flex-col gap-2 items-start min-w-[400px] w-full">
           <UserDecks userId={user?.id} loading={!user} />
         </div>
       </div>

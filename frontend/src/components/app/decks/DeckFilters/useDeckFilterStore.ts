@@ -39,45 +39,43 @@ const store = new Store<DeckFilterStore>(defaultState);
 
 // Initialize store from URL parameters
 export function useInitializeDeckFilterFromUrlParams() {
+  const initialized = useStore(store, state => state.initialized);
   const { deckLeaders, deckBase, deckAspects, deckFormat, deckSort, deckOrder } = useSearch({
     strict: false,
   });
 
-  const init = useCallback(() => {
-    store.setState(state => ({
-      ...state,
-      initialized: true,
-      leaders: deckLeaders ?? defaultState.leaders,
-      base: deckBase ?? defaultState.base,
-      aspects: deckAspects ?? defaultState.aspects,
-      format: deckFormat ?? defaultState.format,
-      sortField: deckSort ?? defaultState.sortField,
-      sortOrder: deckOrder ?? defaultState.sortOrder,
-    }));
-  }, [deckLeaders, deckBase, deckAspects, deckFormat, deckSort, deckOrder]);
-
   useEffect(() => {
-    if (!store.state.initialized) {
-      init();
+    if (!initialized) {
+      console.log('Hmmm');
+      store.setState(state => ({
+        ...state,
+        initialized: true,
+        leaders: deckLeaders ?? defaultState.leaders,
+        base: deckBase ?? defaultState.base,
+        aspects: deckAspects ?? defaultState.aspects,
+        format: deckFormat ?? defaultState.format,
+        sortField: deckSort ?? defaultState.sortField,
+        sortOrder: deckOrder ?? defaultState.sortOrder,
+      }));
     }
-  }, [init]);
+  }, [initialized]);
 
   useEffect(() => {
     return () => {
       store.setState(state => ({
         ...state,
         initialized: false,
-        leaders: [],
-        base: undefined,
-        aspects: [],
-        format: undefined,
-        sortField: undefined,
-        sortOrder: undefined,
+        // leaders: [],
+        // base: undefined,
+        // aspects: [],
+        // format: undefined,
+        // sortField: undefined,
+        // sortOrder: undefined,
       }));
     };
   }, []);
 
-  return { init };
+  return initialized;
 }
 
 // Actions
@@ -164,7 +162,8 @@ export function useDeckFilterStore() {
 
   // Convert to API request format
   const toRequestParams = useCallback(
-    (): GetDecksRequest => ({
+    (userId?: string): GetDecksRequest => ({
+      userId,
       leaders: leaders.length > 0 ? leaders : undefined,
       base,
       aspects: aspects.length > 0 ? aspects : undefined,
@@ -176,9 +175,6 @@ export function useDeckFilterStore() {
   );
 
   return {
-    // Initialization state
-    initialized,
-
     // Filter state
     leaders,
     base,
