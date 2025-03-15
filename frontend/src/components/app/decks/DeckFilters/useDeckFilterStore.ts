@@ -2,7 +2,7 @@ import { Store, useStore } from '@tanstack/react-store';
 import { SwuAspect } from '../../../../../../types/enums.ts';
 import { GetDecksRequest } from '@/api/decks/useGetDecks.ts';
 import { DeckSortField } from '../../../../../../types/ZDeck.ts';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { DeckQueryParams } from '../../../../../../server/routes/decks/get.ts';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route, GlobalSearchParams } from '@/routes/__root.tsx';
@@ -37,40 +37,32 @@ const defaultState: DeckFilterStore = {
 
 const store = new Store<DeckFilterStore>(defaultState);
 
-// Initialize store from URL parameters
 export function useInitializeDeckFilterFromUrlParams() {
-  const initialized = useStore(store, state => state.initialized);
+  // const initialized = useStore(store, state => state.initialized);
+
   const { deckLeaders, deckBase, deckAspects, deckFormat, deckSort, deckOrder } = useSearch({
     strict: false,
   });
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!initialized) {
-      console.log('Hmmm');
-      store.setState(state => ({
-        ...state,
-        initialized: true,
-        leaders: deckLeaders ?? defaultState.leaders,
-        base: deckBase ?? defaultState.base,
-        aspects: deckAspects ?? defaultState.aspects,
-        format: deckFormat ?? defaultState.format,
-        sortField: deckSort ?? defaultState.sortField,
-        sortOrder: deckOrder ?? defaultState.sortOrder,
-      }));
-    }
-  }, [initialized]);
+    setInitialized(true);
 
-  useEffect(() => {
+    store.setState(state => ({
+      ...state,
+      initialized: true,
+      leaders: deckLeaders ?? defaultState.leaders,
+      base: deckBase ?? defaultState.base,
+      aspects: deckAspects ?? defaultState.aspects,
+      format: deckFormat ?? defaultState.format,
+      sortField: deckSort ?? defaultState.sortField,
+      sortOrder: deckOrder ?? defaultState.sortOrder,
+    }));
+
     return () => {
       store.setState(state => ({
         ...state,
         initialized: false,
-        // leaders: [],
-        // base: undefined,
-        // aspects: [],
-        // format: undefined,
-        // sortField: undefined,
-        // sortOrder: undefined,
       }));
     };
   }, []);
@@ -142,7 +134,7 @@ export function useDeckFilterStore() {
         }
       });
 
-      navigate({
+      void navigate({
         search: old => {
           // Create a new object without any deck filter params
           const filteredOld = { ...old };
@@ -158,7 +150,7 @@ export function useDeckFilterStore() {
         replace: true,
       });
     }
-  }, [initialized, leaders, base, aspects, format, sortField, sortOrder, navigate]);
+  }, [initialized, leaders, base, aspects, format, sortField, sortOrder]);
 
   // Convert to API request format
   const toRequestParams = useCallback(

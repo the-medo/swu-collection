@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
-import { updateGetUserDecks } from '@/api/user/useGetUserDecks.ts';
 
 export const useDeleteDeck = () => {
   const queryClient = useQueryClient();
@@ -22,14 +21,6 @@ export const useDeleteDeck = () => {
       queryClient.invalidateQueries({
         queryKey: ['deck', deletedDeck?.id],
         exact: true,
-      });
-
-      updateGetUserDecks(deletedDeck.userId, oldData => {
-        if (!oldData) return oldData;
-        return {
-          ...oldData,
-          decks: oldData.decks.filter(col => col.id !== deletedDeck.id),
-        };
       });
     },
     onError: (error: any) => {

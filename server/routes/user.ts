@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import type { AuthExtension } from '../auth/auth.ts';
 import { db } from '../db';
 import { collection } from '../db/schema/collection.ts';
-import { deck } from '../db/schema/deck.ts';
 import { and, eq, getTableColumns, or, sql } from 'drizzle-orm';
 import { user } from '../db/schema/auth-schema.ts';
 import type { User } from '../../types/User.ts';
@@ -43,29 +42,6 @@ export const userRoute = new Hono<AuthExtension>()
     return c.json<UserCollectionsResponse>({
       userId: paramUserId,
       collections: userCollections,
-    });
-  })
-  .get('/:id/deck', async c => {
-    const paramUserId = c.req.param('id');
-    const user = c.get('user');
-
-    const sort = c.req.query('sort') ?? 'deck.updated_at';
-    const order = c.req.query('order') === 'asc' ? 'asc' : 'desc';
-
-    const isPublic = eq(deck.public, true);
-    const isOwner = user ? eq(deck.userId, user.id) : null;
-
-    const userDecks = await db
-      .select()
-      .from(deck)
-      .where(and(eq(deck.userId, paramUserId), isOwner ? or(isOwner, isPublic) : isPublic))
-      .orderBy(sql.raw(`${sort} ${order}`));
-
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    return c.json<UserDecksResponse>({
-      userId: paramUserId,
-      decks: userDecks,
     });
   })
   .get('/:id', async c => {

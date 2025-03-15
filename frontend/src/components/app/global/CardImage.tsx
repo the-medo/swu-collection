@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { CardDataWithVariants, CardListVariants } from '../../../../../lib/swu-resources/types.ts';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
@@ -98,6 +98,7 @@ const CardImage: React.FC<CardImageProps> = ({
   forceHorizontal = false,
   children,
 }) => {
+  const [open, setOpen] = useState(false);
   const variant = card?.variants[cardVariantId ?? ''];
   const img = variant?.image;
   const horizontalFront = card?.front.horizontal || variant?.front?.horizontal || false;
@@ -140,7 +141,7 @@ const CardImage: React.FC<CardImageProps> = ({
       )}
       {children ?? null}
       {backSideButton !== false && hasBack && !backSide && (
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger>
             <Button
               variant="outline"
@@ -150,6 +151,10 @@ const CardImage: React.FC<CardImageProps> = ({
                 'left-2': backSideButton === 'left',
                 'right-2': backSideButton === 'right',
               })}
+              onClick={event => {
+                event.preventDefault();
+                setOpen(true);
+              }}
             >
               <RotateCcw />
             </Button>

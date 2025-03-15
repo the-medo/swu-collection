@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { InferResponseType } from 'hono';
-import { updateGetUserDecks } from '../user/useGetUserDecks.ts';
 import { ZDeckUpdateRequest } from '../../../../types/ZDeck.ts';
 
 export const usePutDeck = (deckId: string | undefined) => {
@@ -39,14 +38,6 @@ export const usePutDeck = (deckId: string | undefined) => {
           ...result.data,
         },
       }));
-
-      updateGetUserDecks(result.data.userId, oldData => {
-        if (!oldData) return oldData;
-        const updatedDecks = oldData.decks.map(col =>
-          col.id === result.data.id ? result.data : col,
-        );
-        return { ...oldData, decks: updatedDecks };
-      });
 
       toast({
         title: 'Deck updated successfully',

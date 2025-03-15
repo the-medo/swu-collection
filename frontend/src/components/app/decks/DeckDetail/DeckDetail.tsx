@@ -10,7 +10,6 @@ import DeleteDeckDialog from '../../dialogs/DeleteDeckDialog';
 import DeckContents from '../DeckContents/DeckContents';
 import { useDeckLayoutStoreActions } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { useEffect } from 'react';
-import DeckActions from '@/components/app/decks/DeckActions/DeckActions.tsx';
 
 const routeApi = getRouteApi('/decks/$deckId/');
 

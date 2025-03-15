@@ -24,7 +24,7 @@ const DeckFiltersAccordion: React.FC<DeckFiltersAccordionProps> = ({
     <Accordion
       type="single"
       collapsible
-      defaultValue={defaultOpen ? 'filters' : undefined}
+      defaultValue={defaultOpen || activeFiltersCount > 0 ? 'filters' : undefined}
       className="w-full mb-2 sticky"
     >
       <AccordionItem value="filters" className="border rounded-md">

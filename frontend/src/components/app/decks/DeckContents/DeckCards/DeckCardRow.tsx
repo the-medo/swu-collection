@@ -15,6 +15,8 @@ import { useCallback } from 'react';
 import { toast } from '@/hooks/use-toast.ts';
 import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInput.tsx';
 import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { useNavigate } from '@tanstack/react-router';
+import { Route } from '@/routes/__root.tsx';
 
 interface DeckCardRowProps {
   deckId: string;
@@ -23,6 +25,7 @@ interface DeckCardRowProps {
 }
 
 const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card }) => {
+  const navigate = useNavigate({ from: Route.fullPath });
   const { owned } = useDeckInfo(deckId);
   const defaultVariant = card ? selectDefaultVariant(card) : '';
   const mutation = usePutDeckCard(deckId);
@@ -73,7 +76,14 @@ const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card }) => 
 
       <HoverCard openDelay={0} closeDelay={0}>
         <HoverCardTrigger asChild>
-          <div className="flex gap-1 font text-sm w-full items-center justify-between">
+          <div
+            className="flex gap-1 font text-sm w-full items-center justify-between cursor-pointer"
+            onClick={() => {
+              void navigate({
+                search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
+              });
+            }}
+          >
             <span>{card?.name}</span>
             <div className="flex gap-0 w-[50px]">
               {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="xSmall" /> : null}
@@ -90,8 +100,9 @@ const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card }) => 
               size: 'original',
               horizontal: card?.front.horizontal ?? false,
             }),
-            'm-0 p-0',
+            'm-0 p-0 w-fit',
           )}
+          side="right"
         >
           <CardImage card={card} cardVariantId={defaultVariant} size="original" />
         </HoverCardContent>

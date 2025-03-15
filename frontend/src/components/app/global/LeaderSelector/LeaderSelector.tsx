@@ -115,8 +115,8 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       return (
         <div className={cn({ 'cursor-pointer': editable })}>
           <CardImage forceHorizontal backSideButton={editable ? false : 'mid'} size={size}>
-            <h6 className="flex gap-2">
-              <Crown /> Leader
+            <h6 className="flex mb-0 gap-2 items-center">
+              <Crown size={20} /> Leader
             </h6>
           </CardImage>
         </div>
@@ -128,12 +128,13 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
           card={selectedLeader.card}
           cardVariantId={selectedLeader.variantId}
           forceHorizontal={true}
-          backSideButton={editable ? false : 'mid'}
+          // backSideButton={editable ? false : 'mid'}
+          backSideButton={'mid'}
           size={size}
         />
       </div>
     );
-  }, [selectedLeader, size]);
+  }, [selectedLeader, size, editable]);
 
   const headerDescription = useMemo(() => {
     return (

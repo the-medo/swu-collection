@@ -143,7 +143,7 @@ const DeckInputCommand: React.FC<DeckInputCommandProps> = ({ deckId }) => {
           </PopoverContent>
         </Command>
       </Popover>
-      <BoardSelect value={board} onChange={setBoard} />
+      <BoardSelect value={board} onChange={setBoard} deckId={deckId} />
     </div>
   );
 };
