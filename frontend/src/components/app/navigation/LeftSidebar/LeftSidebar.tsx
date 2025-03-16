@@ -32,6 +32,7 @@ import LogoDarkTheme from '../../../../assets/logo-dark-theme.svg';
 import { useTheme } from '@/components/theme-provider.tsx';
 import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog/NewDeckDialog.tsx';
 import CardSearchCommand from '@/components/app/global/CardSearchCommand/CardSearchCommand.tsx';
+import SocialLinks from '@/components/app/navigation/LeftSidebar/SocialLinks.tsx';
 
 const groups = [
   {
@@ -168,6 +169,7 @@ export function LeftSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
+      <SocialLinks />
       <SidebarSeparator />
       <SidebarFooter>
         <SignIn />
