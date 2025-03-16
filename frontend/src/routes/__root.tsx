@@ -8,6 +8,8 @@ import CardDetailDialog from '@/components/app/cards/CardDetailDialog/CardDetail
 import SidebarTriggerButton from '@/components/app/navigation/TopMenu/SidebarTriggerButton.tsx';
 import { DeckSortField } from '../../../types/ZDeck.ts';
 import { SwuAspect } from '../../../types/enums.ts';
+import CookieConsent from '@/components/app/pages/CookieConsent.tsx';
+import Footer from '@/components/app/pages/Footer.tsx';
 
 const globalSearchParams = z.object({
   // Card detail dialog
@@ -36,14 +38,20 @@ export const Route = createRootRoute({
   component: () => (
     <>
       <SidebarProvider>
-        <LeftSidebar />
-        <main className="w-full p-2">
-          <SidebarTriggerButton />
-          <Outlet />
-        </main>
+        <div className="flex w-full">
+          <LeftSidebar />
+          <div className="flex flex-col w-full">
+            <main className="w-full p-2">
+              <SidebarTriggerButton />
+              <Outlet />
+            </main>
+            <Footer />
+          </div>
+        </div>
         <Toaster />
       </SidebarProvider>
       <CardDetailDialog />
+      <CookieConsent />
     </>
   ),
   validateSearch: zodValidator(globalSearchParams),
