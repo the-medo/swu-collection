@@ -2,10 +2,11 @@ import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import packageInfo from '../../../../../package.json';
+import { cn } from '@/lib/utils.ts';
 
 const SocialLinks: React.FC = () => {
   return (
-    <div className="flex items-center gap-2 px-3 py-2">
+    <div className={cn('flex items-center gap-2 px-3 py-2')}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>

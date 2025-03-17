@@ -6,6 +6,7 @@ import {
   ScrollText,
   BookCheck,
   Book,
+  Search,
 } from 'lucide-react';
 
 import {
@@ -22,6 +23,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
   SidebarSeparator,
+  useSidebar,
 } from '@/components/ui/sidebar.tsx';
 import { Link } from '@tanstack/react-router';
 import SignIn from '@/components/app/auth/SignIn.tsx';
@@ -129,6 +131,7 @@ const groups = [
 export function LeftSidebar() {
   const user = useUser();
   const { theme } = useTheme();
+  const { open } = useSidebar();
 
   return (
     <Sidebar collapsible="icon">
@@ -142,8 +145,18 @@ export function LeftSidebar() {
       <SidebarSeparator />
       <SidebarContent>
         <SidebarGroup>
+          {/*<SidebarGroupLabel>Search</SidebarGroupLabel>*/}
           <SidebarGroupContent>
-            <CardSearchCommand />
+            {open ? (
+              <CardSearchCommand />
+            ) : (
+              <SidebarMenuButton asChild>
+                <Link to="/cards/search" className="[&.active]:font-bold">
+                  <Search />
+                  <span>Search</span>
+                </Link>
+              </SidebarMenuButton>
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
         {groups.map(g => (
@@ -169,7 +182,7 @@ export function LeftSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SocialLinks />
+      {open && <SocialLinks />}
       <SidebarSeparator />
       <SidebarFooter>
         <SignIn />

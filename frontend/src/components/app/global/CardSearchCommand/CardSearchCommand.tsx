@@ -56,9 +56,6 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({}) => {
               onMouseDown={() => {
                 setOpen(true);
               }}
-              onFocus={() => {
-                setOpen(true);
-              }}
               ref={searchInputRef}
             />
           )}
