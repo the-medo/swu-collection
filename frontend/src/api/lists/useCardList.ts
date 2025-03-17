@@ -8,6 +8,9 @@ import type {
 } from '../../../../lib/swu-resources/types.ts';
 import { SwuSet } from '../../../../types/enums.ts';
 
+const STORAGE_KEY = 'swubase-card-list';
+const VERSION_KEY = 'swubase-card-list-version';
+
 export type CardsBySetAndNumber = Partial<
   Record<SwuSet, Record<number, { variant: CardVariant; cardId: string }> | undefined>
 >;
@@ -29,13 +32,39 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
   return useQuery({
     queryKey: ['cardList'],
     queryFn: async () => {
-      const response = await api.cards.$get();
-      if (!response.ok) {
+      const storedVersion = localStorage.getItem(VERSION_KEY);
+      const storedData = localStorage.getItem(STORAGE_KEY);
+
+      let cardListData: CardList | undefined = undefined;
+
+      try {
+        const versionResponse = await api.cards.$post({
+          json: { lastUpdated: storedVersion || undefined },
+        });
+
+        if (!versionResponse.ok) {
+          throw new Error('Failed to check version');
+        }
+
+        const versionData = await versionResponse.json();
+        if (versionData.needsUpdate) {
+          cardListData = versionData.cards;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(cardListData));
+          localStorage.setItem(VERSION_KEY, versionData.lastUpdated);
+        } else if (storedData) {
+          cardListData = JSON.parse(storedData);
+        }
+      } catch (error) {
+        if (storedData) {
+          cardListData = JSON.parse(storedData);
+        }
+      }
+
+      if (!cardListData) {
         throw new Error('Something went wrong');
       }
-      const data = await response.json();
 
-      const cardIds = Object.keys(data.cards).sort((a, b) => a.localeCompare(b));
+      const cardIds = Object.keys(cardListData).sort((a, b) => a.localeCompare(b));
       const cardsByCardNo: CardsBySetAndNumber = {};
       const cardsByCardType: CardsByCardType = {};
       const allTraits = new Set<string>();
@@ -43,7 +72,7 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
       const allVariants = new Set<string>();
 
       cardIds.forEach(cid => {
-        const card = data.cards[cid];
+        const card = cardListData[cid];
         if (!card) return;
         const variantIds = Object.keys(card.variants ?? {});
         const type = card?.type ?? 'Unknown';
@@ -102,7 +131,7 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
       });
 
       return {
-        cards: data.cards,
+        cards: cardListData,
         cardIds,
         cardsByCardNo,
         cardsByCardType,
