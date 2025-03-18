@@ -14,19 +14,20 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
 
 # Install backend dependencies
-COPY package.json bun.lockb ./
-RUN bun install --production --frozen-lockfile
+COPY --link package.json bun.lockb ./
+RUN bun install --production --ci
 
 # Install frontend dependencies
-COPY frontend/package.json frontend/bun.lockb ./frontend/
-RUN cd frontend && bun install --production --frozen-lockfile
+COPY --link frontend/package.json frontend/bun.lockb ./frontend/
+RUN cd frontend && bun install --ci
 
 # Copy source code
-COPY . .
+COPY --link . .
 
 # Build frontend
 WORKDIR /app/frontend
-RUN bun run build
+
+RUN bun run direct-build
 
 # Clean up frontend directory, leaving only dist folder
 RUN find . -mindepth 1 ! -regex '^./dist\(/.*\)?' -delete
