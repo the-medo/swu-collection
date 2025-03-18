@@ -1,5 +1,5 @@
-ARG BUN_VERSION=1.1.21
-FROM oven/bun:${BUN_VERSION}-slim as base
+ARG BUN_VERSION=1.2.5
+FROM oven/bun:${BUN_VERSION} as base
 
 LABEL launch_runtime="Bun"
 
