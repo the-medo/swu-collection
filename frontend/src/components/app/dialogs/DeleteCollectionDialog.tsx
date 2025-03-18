@@ -95,10 +95,10 @@ const DeleteCollectionDialog: React.FC<DeleteCollectionDialogProps> = ({ trigger
           </Button>
         </form>
       ) : (
-        <>
+        <div className="flex flex-col gap-4">
           Please sign in to delete {collectionOrWantlist.toLowerCase()}.
           <SignIn />
-        </>
+        </div>
       )}
     </Dialog>
   );

@@ -75,7 +75,7 @@ const LandingPage: React.FC = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-sm mx-auto mb-8 flex justify-center"
+        className="w-full max-w-xs mx-auto mb-8 flex justify-center"
       >
         <img
           src={theme === 'light' ? LogoLightTheme : LogoDarkTheme}
@@ -104,7 +104,7 @@ const LandingPage: React.FC = () => {
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-primary/20 rounded-lg blur-md"></div>
           <div className="relative bg-card border rounded-lg p-2">
-            <CardSearchCommand />
+            <CardSearchCommand id="card-search-homepage" />
           </div>
         </div>
       </motion.div>

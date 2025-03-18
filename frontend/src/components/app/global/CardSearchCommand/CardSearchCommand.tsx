@@ -20,15 +20,19 @@ import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 import { useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 
-interface CardSearchCommandProps {}
+interface CardSearchCommandProps {
+  /** used to determine open state and search string, since there can be multiple
+    instances of CardSearchCommand on the same page (eg. homepage with expanded sidebar) */
+  id: string;
+}
 
-const CardSearchCommand: React.FC<CardSearchCommandProps> = ({}) => {
+const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate({ from: Route.fullPath });
 
-  const { open, search, options, isFetching, cardList } = useCardSearchCommandStore();
+  const { open, search, options, isFetching, cardList } = useCardSearchCommandStore(id);
 
-  const { setOpen, setSearch } = useCardSearchCommandStoreActions();
+  const { setOpen, setSearch } = useCardSearchCommandStoreActions(id);
 
   const onShowAllResults = useCallback(() => {
     setSearch('');

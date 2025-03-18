@@ -143,10 +143,10 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
           </Button>
         </form>
       ) : (
-        <>
+        <div className="flex flex-col gap-4">
           Please sign in to update deck.
           <SignIn />
-        </>
+        </div>
       )}
     </Dialog>
   );

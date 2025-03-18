@@ -92,10 +92,10 @@ const DeleteDeckDialog: React.FC<DeleteDeckDialogProps> = ({ trigger, deck }) =>
           </Button>
         </form>
       ) : (
-        <>
+        <div className="flex flex-col gap-4">
           Please sign in to delete deck.
           <SignIn />
-        </>
+        </div>
       )}
     </Dialog>
   );

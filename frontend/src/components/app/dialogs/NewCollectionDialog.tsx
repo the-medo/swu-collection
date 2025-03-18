@@ -130,10 +130,10 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
           </Button>
         </form>
       ) : (
-        <>
+        <div className="flex flex-col gap-4">
           Please sign in to create new {collectionOrWantlist.toLowerCase()}.
           <SignIn />
-        </>
+        </div>
       )}
     </Dialog>
   );

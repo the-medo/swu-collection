@@ -3,26 +3,29 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { useMemo } from 'react';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 
-interface CardSearchCommandStore {
-  open: boolean;
-  search: string;
-}
+type CardSearchCommandStore = Record<
+  string,
+  | {
+      open?: boolean;
+      search?: string;
+    }
+  | undefined
+>;
 
-const defaultState: CardSearchCommandStore = {
-  open: false,
-  search: '',
-};
+const defaultState: CardSearchCommandStore = {};
 
 const store = new Store<CardSearchCommandStore>(defaultState);
 
-const setOpen = (open: boolean) => store.setState(state => ({ ...state, open }));
-const setSearch = (search: string) => store.setState(state => ({ ...state, search }));
+const setOpen = (id: string, open: boolean) =>
+  store.setState(state => ({ ...state, [id]: { ...state[id], open } }));
+const setSearch = (id: string, search: string) =>
+  store.setState(state => ({ ...state, [id]: { ...state[id], search } }));
 
 const resetState = () => store.setState(() => ({ ...defaultState }));
 
-export function useCardSearchCommandStore() {
-  const open = useStore(store, state => state.open);
-  const search = useStore(store, state => state.search);
+export function useCardSearchCommandStore(id: string) {
+  const open = useStore(store, state => state[id]?.open ?? false);
+  const search = useStore(store, state => state[id]?.search ?? '');
 
   let { data: cardList, isFetching } = useCardList();
 
@@ -58,10 +61,10 @@ export function useCardSearchCommandStore() {
   };
 }
 
-export function useCardSearchCommandStoreActions() {
+export function useCardSearchCommandStoreActions(id: string) {
   return {
-    setOpen,
-    setSearch,
+    setOpen: (open: boolean) => setOpen(id, open),
+    setSearch: (search: string) => setSearch(id, search),
 
     resetState,
   };

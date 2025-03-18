@@ -136,19 +136,16 @@ export function LeftSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <img
-          src={theme === 'light' ? LogoLightTheme : LogoDarkTheme}
-          alt="Logo"
-          className="self-center"
-        />
+        <Link to="/" className="self-center">
+          <img src={theme === 'light' ? LogoLightTheme : LogoDarkTheme} alt="Logo" />
+        </Link>
       </SidebarHeader>
       <SidebarSeparator />
       <SidebarContent>
         <SidebarGroup>
-          {/*<SidebarGroupLabel>Search</SidebarGroupLabel>*/}
           <SidebarGroupContent>
             {open ? (
-              <CardSearchCommand />
+              <CardSearchCommand id="card-search-left-sidebar" />
             ) : (
               <SidebarMenuButton asChild>
                 <Link to="/cards/search" className="[&.active]:font-bold">
@@ -182,10 +179,10 @@ export function LeftSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      {open && <SocialLinks />}
+      <SocialLinks />
       <SidebarSeparator />
       <SidebarFooter>
-        <SignIn />
+        <SignIn isLeftSidebar />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

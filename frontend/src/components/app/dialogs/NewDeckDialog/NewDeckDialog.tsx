@@ -180,10 +180,10 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
           </TabsContent>
         </Tabs>
       ) : (
-        <>
+        <div className="flex flex-col gap-4">
           Please sign in to create new deck.
           <SignIn />
-        </>
+        </div>
       )}
     </Dialog>
   );

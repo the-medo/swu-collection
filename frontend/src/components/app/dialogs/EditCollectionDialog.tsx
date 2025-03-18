@@ -135,10 +135,10 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ trigger, co
           </Button>
         </form>
       ) : (
-        <>
+        <div className="flex flex-col gap-4">
           Please sign in to update {collectionOrWantlist.toLowerCase()}.
           <SignIn />
-        </>
+        </div>
       )}
     </Dialog>
   );

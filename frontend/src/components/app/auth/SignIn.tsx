@@ -11,18 +11,31 @@ import {
 import { signIn, useSession } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { NavUser } from '@/components/app/auth/NavUser.tsx';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
+import { LogIn } from 'lucide-react';
 
-export default function SignIn() {
+interface SignInProps {
+  isLeftSidebar?: boolean;
+}
+
+export default function SignIn({ isLeftSidebar }: SignInProps) {
+  const { open } = useSidebar();
   const session = useSession();
 
-  if (session.data) {
+  if (session.data && isLeftSidebar) {
     return <NavUser />;
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild disabled={session.isPending}>
-        <Button>{session.isPending ? '...' : 'Sign In'}</Button>
+        {open ? (
+          <Button>{session.isPending ? '...' : 'Sign In'}</Button>
+        ) : (
+          <Button size="icon" className="h-8 w-8 [&_svg]:size-4">
+            <LogIn />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
