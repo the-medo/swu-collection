@@ -19,7 +19,7 @@ RUN bun install --production --ci
 
 # Install frontend dependencies
 COPY --link frontend/package.json frontend/bun.lockb ./frontend/
-RUN cd frontend && bun install --production --ci
+RUN cd frontend && bun install --ci
 
 # Copy source code
 COPY --link . .
