@@ -1,5 +1,6 @@
 import { getTableColumns } from 'drizzle-orm';
 import { deck as deckTable } from '../db/schema/deck.ts';
+import { deckInformation as deckInformationTable } from '../db/schema/deck_information.ts';
 import { Hono } from 'hono';
 import type { AuthExtension } from '../auth/auth.ts';
 import { deckGetRoute } from './decks/get.ts';
@@ -15,6 +16,7 @@ import { deckIdDuplicatePostRoute } from './decks/_id/duplicate/post.ts';
 import { decksImportSwudbPostRoute } from './decks/import-swudb/post.ts';
 
 export const selectDeck = getTableColumns(deckTable);
+export const selectDeckInformation = getTableColumns(deckInformationTable);
 
 export const deckRoute = new Hono<AuthExtension>()
   .route('/', deckGetRoute)

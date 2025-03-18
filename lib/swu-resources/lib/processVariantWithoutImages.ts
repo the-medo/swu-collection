@@ -1,5 +1,6 @@
 import type { CardVariant } from '../types.ts';
 import { setInfo } from '../set-info.ts';
+import type { SwuSet } from '../../../types/enums.ts';
 
 export function processVariantWithoutImages(variant: any): CardVariant {
   const id = variant.id;
@@ -13,7 +14,7 @@ export function processVariantWithoutImages(variant: any): CardVariant {
   let hasFoil = false;
   let hasNonfoil = false;
 
-  const swubaseExpansion = setInfo[expansion];
+  const swubaseExpansion = setInfo[expansion as SwuSet];
 
   if (swubaseExpansion) {
     if (cardCount === swubaseExpansion.cardCount) {

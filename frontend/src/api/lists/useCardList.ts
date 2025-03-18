@@ -7,6 +7,7 @@ import type {
   CardVariant,
 } from '../../../../lib/swu-resources/types.ts';
 import { SwuSet } from '../../../../types/enums.ts';
+import { setInfo } from '../../../../lib/swu-resources/set-info.ts';
 
 const STORAGE_KEY = 'swubase-card-list';
 const VERSION_KEY = 'swubase-card-list-version';
@@ -114,13 +115,28 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
         if (!cardsByCardType[type]) cardsByCardType[type] = {};
         cardsByCardType[type][cid] = card;
 
+        const validCardVariants: Record<string, true | undefined> = {
+          Standard: true,
+          'Standard Foil': true,
+          Hyperspace: true,
+          'Hyperspace Foil': true,
+          Showcase: true,
+          'Standard Prestige': true,
+          'Foil Prestige': true,
+          'Serialized Prestige': true,
+        };
+
         if (!card.variantMap) card.variantMap = {};
         variantIds.forEach(vid => {
           const v = card?.variants[vid];
           if (!v) return;
           card.variantMap![v.variantName] = vid;
           allVariants.add(v.variantName);
-          if (v && v.baseSet && ['Standard', 'Hyperspace', 'Showcase'].includes(v.variantName)) {
+          if (
+            v &&
+            (v.baseSet || setInfo[v.set].sortValue >= setInfo[SwuSet.JTL].sortValue) &&
+            validCardVariants[v.variantName]
+          ) {
             if (!cardsByCardNo[v.set]) cardsByCardNo[v.set] = {};
             cardsByCardNo[v.set]![v.cardNo] = {
               variant: v,
@@ -129,6 +145,8 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
           }
         });
       });
+
+      console.log({ cardsByCardNo });
 
       return {
         cards: cardListData,

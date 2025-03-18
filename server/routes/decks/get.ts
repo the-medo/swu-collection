@@ -11,6 +11,8 @@ import { zPaginationParams } from '../../../types/ZPaginationParams.ts';
 import { z } from 'zod';
 import { SwuAspect } from '../../../types/enums.ts';
 import { DeckSortField } from '../../../types/ZDeck.ts';
+import { selectUser } from '../user.ts';
+import { selectDeck, selectDeckInformation } from '../deck.ts';
 
 export const zDeckQueryParams = zPaginationParams.extend({
   userId: z.string().optional(),
@@ -95,7 +97,11 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
 
     // Create a query builder that we can conditionally modify
     let query = db
-      .select()
+      .select({
+        user: selectUser,
+        deck: selectDeck,
+        deck_information: selectDeckInformation,
+      })
       .from(deckTable)
       .innerJoin(userTable, eq(deckTable.userId, userTable.id))
       .$dynamic();

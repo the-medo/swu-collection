@@ -43146,7 +43146,7 @@
         "set": "twi",
         "fullSetName": "Twilight of the Republic",
         "cardNo": 7,
-        "baseSet": true,
+        "baseSet": false,
         "hasNonfoil": true,
         "hasFoil": false,
         "variantName": "Hyperspace",
