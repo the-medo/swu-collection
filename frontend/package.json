@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "bunx --bun vite",
     "build": "bunx --bun vite build",
+    "direct-build": "bun run scripts/direct-build.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
