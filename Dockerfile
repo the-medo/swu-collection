@@ -9,23 +9,32 @@ ENV NODE_ENV="production"
 
 FROM base as build
 
+# Install necessary build dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
 
-COPY --link bun.lockb package.json ./
-RUN bun install --production --ci
+# Install backend dependencies
+COPY package.json bun.lockb ./
+RUN bun install --production --frozen-lockfile
 
-COPY --link frontend/bun.lockb frontend/package.json ./frontend/
-RUN cd frontend && bun install --production --ci
+# Install frontend dependencies
+COPY frontend/package.json frontend/bun.lockb ./frontend/
+RUN cd frontend && bun install --production --frozen-lockfile
 
-COPY --link . .
+# Copy source code
+COPY . .
 
+# Build frontend
 WORKDIR /app/frontend
 RUN bun run build
+
+# Clean up frontend directory, leaving only dist folder
 RUN find . -mindepth 1 ! -regex '^./dist\(/.*\)?' -delete
 
+# Final stage
 FROM base
 
+# Copy built application
 COPY --from=build /app /app
 
 EXPOSE 3010
