@@ -35,6 +35,7 @@ import { useTheme } from '@/components/theme-provider.tsx';
 import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog/NewDeckDialog.tsx';
 import CardSearchCommand from '@/components/app/global/CardSearchCommand/CardSearchCommand.tsx';
 import SocialLinks from '@/components/app/navigation/LeftSidebar/SocialLinks.tsx';
+import { cn } from '@/lib/utils.ts';
 
 const groups = [
   {
@@ -131,13 +132,24 @@ const groups = [
 export function LeftSidebar() {
   const user = useUser();
   const { theme } = useTheme();
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
-        <Link to="/" className="self-center">
-          <img src={theme === 'light' ? LogoLightTheme : LogoDarkTheme} alt="Logo" />
+        <Link to="/" className={cn({ 'self-center': !isMobile, 'self-start pl-4': isMobile })}>
+          {isMobile ? (
+            <div className="w-full flex justify-between gap-4">
+              <img
+                src={theme === 'light' ? LogoLightTheme : LogoDarkTheme}
+                className="w-8 h-8"
+                alt="Logo"
+              />
+              <h4>SWU Base</h4>
+            </div>
+          ) : (
+            <img src={theme === 'light' ? LogoLightTheme : LogoDarkTheme} alt="Logo" />
+          )}
         </Link>
       </SidebarHeader>
       <SidebarSeparator />

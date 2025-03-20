@@ -39,13 +39,13 @@ export const Route = createRootRoute({
     <>
       <SidebarProvider>
         <LeftSidebar />
-        <SidebarTriggerButton />
-        <main className="w-full p-2">
+        <main className="w-full h-[100vh] max-h-[100vh] p-2">
           <div className="flex flex-col w-full">
             <Outlet />
             <CardDetailDialog />
           </div>
           <Footer />
+          <SidebarTriggerButton />
         </main>
       </SidebarProvider>
       <CookieConsent />
