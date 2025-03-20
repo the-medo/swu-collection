@@ -5,7 +5,7 @@ interface CollectionLayoutSettingsProps {}
 
 const CollectionLayoutSettings: React.FC<CollectionLayoutSettingsProps> = ({}) => {
   return (
-    <div className="flex gap-2 justify-between pl-2">
+    <div className="flex flex-col md:flex-row gap-2 justify-between pl-2">
       <CollectionLayoutGroupBy />
       <CollectionLayoutSortBy />
     </div>

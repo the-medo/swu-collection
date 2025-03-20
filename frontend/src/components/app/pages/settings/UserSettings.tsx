@@ -58,11 +58,10 @@ const UserSettings: React.FC<UserSettingsProps> = ({}) => {
           children={field => (
             <div className="flex flex-col gap-2">
               <Label htmlFor={field.name}>Display name</Label>
-              <div className="flex gap-2">
-                <div className="w-[300px]">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="w-[300px] max-sm:w-full">
                   <Input
                     type="text"
-                    className=""
                     id={field.name}
                     placeholder="Display name"
                     value={field.state.value}

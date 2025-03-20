@@ -31,7 +31,7 @@ const CollectionLayoutGroupBy: React.FC<CollectionLayoutGroupByProps> = ({}) => 
 
   return (
     <div className="flex gap-2 items-center">
-      <span className="font-bold">Group by: </span>
+      <span className="font-bold max-md:w-[100px]">Group by: </span>
       {groupBy.map((g, i) => (
         <CollectionLayoutGroupBySelect
           key={`${g}-${i}`}

@@ -12,7 +12,7 @@ const CollectionFilter: React.FC<CollectionFilterProps> = ({}) => {
   const { setLayout } = useCollectionLayoutStoreActions();
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col-reverse md:flex-row gap-2 pl-2">
       <CollectionFilterInput />
       <CollectionLayoutToggleGroup value={layout} setValue={setLayout} />
     </div>
