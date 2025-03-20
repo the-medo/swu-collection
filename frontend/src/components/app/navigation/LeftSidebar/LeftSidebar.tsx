@@ -134,7 +134,7 @@ export function LeftSidebar() {
   const { open } = useSidebar();
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
         <Link to="/" className="self-center">
           <img src={theme === 'light' ? LogoLightTheme : LogoDarkTheme} alt="Logo" />

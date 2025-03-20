@@ -68,7 +68,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
         onValueChange={onChangeHandler}
         onOpenChange={onOpenChange}
       >
-        <SelectTrigger className="w-[300px]">
+        <SelectTrigger className="sm:w-[300px]">
           {country && (
             <img src={selectedCountry?.flag} alt={selectedCountry?.code} className="w-6" />
           )}

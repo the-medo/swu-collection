@@ -65,7 +65,7 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
           )}
         </PopoverTrigger>
         <PopoverContent
-          className="w-[450px] ml-2 p-0"
+          className="md:w-[450px] ml-2 p-0"
           onOpenAutoFocus={e => e.preventDefault()}
           onInteractOutside={e => {
             if (e.target instanceof Element && e.target.hasAttribute('cmdk-input')) {
@@ -111,7 +111,7 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
                         {card?.cost !== null ? (
                           <CostIcon cost={card?.cost ?? 0} size="medium" />
                         ) : null}
-                        {card?.aspects.map((a, i) => (
+                        {card?.aspects?.map((a, i) => (
                           <AspectIcon key={`${a}${i}`} aspect={a} size="medium" />
                         ))}
                         {card?.rarity ? <RarityIcon rarity={card.rarity} size="small" /> : null}

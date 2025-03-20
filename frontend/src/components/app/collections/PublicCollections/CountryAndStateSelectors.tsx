@@ -28,7 +28,7 @@ const CountryAndStateSelectors: React.FC<CountryAndStateSelectorsProps> = () => 
   }, [country, state]);
 
   return (
-    <Card className="absolute bottom-4 right-4">
+    <Card className="fixed bottom-4 right-4">
       <CardHeader className="p-2">
         <CountrySelector value={country} onChangeCountry={onChangeCountry} />
         {country && (
