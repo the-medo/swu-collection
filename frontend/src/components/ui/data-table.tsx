@@ -12,9 +12,21 @@ import {
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cn } from '@/lib/utils.ts';
+import { Card, CardContent } from '@/components/ui/card.tsx';
+import { RowData } from '@tanstack/table-core/src/types.ts';
+
+export type DataTableViewMode = 'table' | 'box';
+
+export type ExtendedColumnDef<TData extends RowData, TValue = unknown> = ColumnDef<
+  TData,
+  TValue
+> & {
+  displayBoxHeader?: boolean;
+  displayInBoxView?: boolean;
+};
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+  columns: ExtendedColumnDef<TData, TValue>[];
   data: TData[];
   loading?: boolean;
   defaultColumn?: {
@@ -23,6 +35,7 @@ interface DataTableProps<TData, TValue> {
     maxSize: number;
   };
   onRowClick?: (row: Row<TData>) => void;
+  view?: DataTableViewMode;
 }
 
 export function DataTable<TData, TValue>({
@@ -35,6 +48,7 @@ export function DataTable<TData, TValue>({
     maxSize: Number.MAX_SAFE_INTEGER,
   },
   onRowClick,
+  view = 'table',
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     // @ts-ignore
@@ -43,6 +57,58 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     defaultColumn,
   });
+
+  if (view === 'box') {
+    return (
+      <div className="space-y-4 w-full">
+        {table.getRowModel().rows?.length ? (
+          table.getRowModel().rows.map(row => (
+            <Card
+              key={row.id}
+              className={cn('overflow-hidden transition-colors hover:bg-muted/50 cursor-pointer', {
+                'animate-pulse': loading,
+              })}
+              onClick={() => onRowClick?.(row)}
+            >
+              <CardContent className="p-4 space-y-2">
+                {row.getVisibleCells().map(cell => {
+                  // Get header content to use as label
+                  const columnDef = cell.column.columnDef as ExtendedColumnDef<TData>;
+                  const headerContent = columnDef.header;
+
+                  if (columnDef.displayInBoxView === false) return null;
+
+                  return (
+                    <div key={cell.id} className="flex justify-between items-center gap-2">
+                      {/* Only show header if it's not empty */}
+                      {headerContent &&
+                        headerContent !== '' &&
+                        columnDef.displayBoxHeader !== false && (
+                          <div className="font-medium text-sm text-muted-foreground">
+                            {typeof headerContent === 'string' ? headerContent : headerContent({})}
+                          </div>
+                        )}
+                      <div className={cn('flex-grow', headerContent ? 'text-right' : '')}>
+                        {loading ? (
+                          <Skeleton className="h-4 w-full rounded-md" />
+                        ) : (
+                          flexRender(cell.column.columnDef.cell, cell.getContext())
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Card>
+            <CardContent className="h-24 flex items-center justify-center">No results.</CardContent>
+          </Card>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-md border w-full">
