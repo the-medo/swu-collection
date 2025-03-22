@@ -63,11 +63,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
 
   return (
     <div className="flex items-center gap-4">
-      <Select
-        value={country ?? undefined}
-        onValueChange={onChangeHandler}
-        onOpenChange={onOpenChange}
-      >
+      <Select value={country ?? ''} onValueChange={onChangeHandler} onOpenChange={onOpenChange}>
         <SelectTrigger className="sm:w-[300px]">
           {country && (
             <img src={selectedCountry?.flag} alt={selectedCountry?.code} className="w-6" />

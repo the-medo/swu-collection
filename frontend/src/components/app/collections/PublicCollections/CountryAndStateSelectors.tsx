@@ -23,8 +23,10 @@ const CountryAndStateSelectors: React.FC<CountryAndStateSelectorsProps> = () => 
   const onChangeState = useCallback((s: string | null) => setState(s), []);
 
   const onSubmit = useCallback(() => {
-    setStoreCountry(country ?? null);
-    setStoreState(state ?? null);
+    setTimeout(() => {
+      setStoreCountry(country ?? null);
+      setStoreState(state ?? null);
+    }, 100);
   }, [country, state]);
 
   return (
