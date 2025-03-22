@@ -2,6 +2,7 @@ import { Store, useStore } from '@tanstack/react-store';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCallback, useMemo } from 'react';
 import { CardCondition, CardLanguage, SwuSet } from '../../../../../../../types/enums.ts';
+import { getFoilBasedOnVariantAndSet } from '@/components/app/collections/CollectionInput/collectionInputLib.ts';
 
 interface CollectionInputNumberStore {
   search: string;
@@ -107,12 +108,13 @@ export function useCollectionInputNumberStore() {
       if (card) {
         setSelectedCardId(card.cardId);
         setSelectedVariantId(card.variant.variantId);
+        setFoil(getFoilBasedOnVariantAndSet(card.variant, defaultFoil));
       } else {
         setSelectedCardId(undefined);
         setSelectedVariantId(undefined);
       }
     },
-    [set, cardList],
+    [set, cardList, defaultFoil],
   );
 
   const card = useMemo(() => {

@@ -13,8 +13,25 @@ import { PropsWithChildren, useMemo } from 'react';
 import * as React from 'react';
 import { DialogProps as RadixDialogProps } from '@radix-ui/react-dialog';
 import { cn } from '@/lib/utils.ts';
+import { cva, type VariantProps } from 'class-variance-authority';
 
-export interface DialogProps extends PropsWithChildren, RadixDialogProps {
+const dialogVariants = cva('max-w-[100vw] lg:max-w-[90vw] max-h-[100vh] lg:max-h-[90vh] ', {
+  variants: {
+    size: {
+      default: 'lg:max-w-[425px]',
+      medium: 'lg:max-w-[800px]',
+      large: '',
+    },
+  },
+  defaultVariants: {
+    size: 'default',
+  },
+});
+
+export interface DialogProps
+  extends PropsWithChildren,
+    RadixDialogProps,
+    VariantProps<typeof dialogVariants> {
   trigger: React.ReactNode;
   triggerDisabled?: boolean;
   header?: string | React.ReactNode;
@@ -31,6 +48,7 @@ const Dialog: React.FC<DialogProps> = ({
   footer,
   children,
   contentClassName,
+  size,
   ...rest
 }) => {
   const headerComponent = useMemo(() => {
@@ -56,11 +74,8 @@ const Dialog: React.FC<DialogProps> = ({
         {trigger}
       </DialogTrigger>
       <DialogContent
-        className={cn(
-          'sm:max-w-[425px] md:max-h-[90%] flex flex-col max-h-[90vh]',
-          contentClassName,
-        )}
-        aria-describedby={headerDescription}
+        className={cn('flex flex-col p-2 md:p-4', contentClassName, dialogVariants({ size }))}
+        aria-describedby={typeof headerDescription === 'string' ? headerDescription : undefined}
       >
         {headerComponent}
         <div className="overflow-y-auto flex-grow">{children}</div>

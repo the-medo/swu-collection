@@ -49,8 +49,8 @@ const CountryStateSelector: React.FC<CountryStateSelectorProps> = ({
 
   return (
     <div className="flex items-center gap-4">
-      <Select value={countryState ?? undefined} onValueChange={onChangeHandler}>
-        <SelectTrigger className="w-[300px]">
+      <Select value={countryState ?? ''} onValueChange={onChangeHandler}>
+        <SelectTrigger className="sm:w-[300px]">
           <SelectValue placeholder="Select a state / region" />
         </SelectTrigger>
         <SelectContent>

@@ -31,7 +31,7 @@ const CollectionLayoutSortBy: React.FC<CollectionLayoutSortByProps> = ({}) => {
 
   return (
     <div className="flex gap-2 items-center">
-      <span className="font-bold">Sort by: </span>
+      <span className="font-bold max-md:w-[100px]">Sort by: </span>
       {sortBy.map((g, i) => (
         <CollectionLayoutSortBySelect
           key={`${g}-${i}`}

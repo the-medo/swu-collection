@@ -50,7 +50,7 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
         </CardHeader>
       </Card>
       <div
-        className={cn('flex', {
+        className={cn('flex flex-col md:flex-row', {
           'opacity-50': loading,
         })}
       >

@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,16 +21,21 @@ import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
+import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 
 interface DeckTableColumnsProps {
+  view?: DataTableViewMode;
+  isCompactBoxView?: boolean; // applies only in Box view
   showOwner?: boolean;
   showPublic?: boolean;
 }
 
 export function useDeckTableColumns({
+  view = 'table',
+  isCompactBoxView = false,
   showOwner,
   showPublic,
-}: DeckTableColumnsProps): ColumnDef<UserDeckData>[] {
+}: DeckTableColumnsProps): ExtendedColumnDef<UserDeckData>[] {
   const user = useUser();
   const { data: currencyData } = useCurrencyList();
   const { data: countryData } = useCountryList();
@@ -39,13 +43,14 @@ export function useDeckTableColumns({
   const putDeckMutation = usePutDeck(undefined);
 
   return useMemo(() => {
-    const definitions: ColumnDef<UserDeckData>[] = [];
+    const definitions: ExtendedColumnDef<UserDeckData>[] = [];
 
     // Leader and Base cards
     definitions.push({
       id: 'leaders',
       header: 'Leaders/Base',
       size: 24,
+      displayBoxHeader: false,
       cell: ({ row }) => {
         const deck = row.original.deck;
 
@@ -54,7 +59,11 @@ export function useDeckTableColumns({
         const base = deck.baseCardId ? cardList?.cards[deck.baseCardId] : undefined;
 
         return (
-          <div className="flex gap-1">
+          <div
+            className={cn('flex gap-1', {
+              'justify-center': view === 'box',
+            })}
+          >
             <CardImage
               card={leader1}
               cardVariantId={leader1 ? selectDefaultVariant(leader1) : undefined}
@@ -95,6 +104,7 @@ export function useDeckTableColumns({
       id: 'deckName',
       accessorKey: 'deck.name',
       header: 'Name',
+      displayBoxHeader: false,
       cell: ({ getValue, row }) => {
         const name = getValue() as string;
         const deckId = row.original.deck.id as string;
@@ -103,11 +113,26 @@ export function useDeckTableColumns({
           <Link to={'/decks/' + deckId} className="font-bold">
             <Button
               variant="link"
-              className="flex flex-col gap-0 p-0 w-full items-start justify-center"
+              className={cn('flex flex-col gap-0 p-0 w-full items-start justify-center', {
+                'items-center': view === 'box',
+              })}
             >
-              {name}
+              <span
+                className={cn({
+                  'truncate ellipsis max-w-[75vw]': view === 'box',
+                })}
+              >
+                {name}
+              </span>
               {row.original.deck.description && (
-                <span className="text-xs font-normal italic pl-4 max-w-80 truncate ellipsis overflow-hidden whitespace-nowrap">
+                <span
+                  className={cn(
+                    'text-xs font-normal italic max-w-80 truncate ellipsis overflow-hidden whitespace-nowrap',
+                    {
+                      'truncate ellipsis max-w-[75vw]': view === 'box',
+                    },
+                  )}
+                >
                   {row.original.deck.description}
                 </span>
               )}
@@ -122,6 +147,7 @@ export function useDeckTableColumns({
       accessorKey: 'deck.format',
       header: 'Format',
       size: 24,
+      displayInBoxView: !isCompactBoxView,
       cell: ({ getValue }) => {
         const format = getValue() as number;
         return <div className="text-sm">{getFormatName(format)}</div>;
@@ -148,7 +174,8 @@ export function useDeckTableColumns({
     definitions.push({
       accessorKey: 'deck.updatedAt',
       size: 24,
-      header: () => <div className="text-right">Updated</div>,
+      displayInBoxView: !isCompactBoxView,
+      header: view === 'box' ? 'Updated' : () => <div className="text-right">Updated</div>,
       cell: ({ getValue }) => {
         return dateRenderer(getValue() as string);
       },
@@ -160,22 +187,15 @@ export function useDeckTableColumns({
         accessorKey: 'deck.public',
         header: 'Public',
         size: 20,
+        displayInBoxView: !isCompactBoxView,
         cell: ({ getValue, row }) => {
           const deckId = row.original.deck.id as string;
-          return (
-            <Button
-              variant="link"
-              className="flex flex-col gap-0 p-0 w-full items-start justify-center"
-              onClick={() => {
-                putDeckMutation.mutate({
-                  deckId: deckId,
-                  public: !(getValue() as boolean),
-                });
-              }}
-            >
-              {publicRenderer(getValue() as boolean)}
-            </Button>
-          );
+          return publicRenderer(getValue() as boolean, () => {
+            putDeckMutation.mutate({
+              deckId: deckId,
+              public: !(getValue() as boolean),
+            });
+          });
         },
       });
     }
@@ -183,7 +203,9 @@ export function useDeckTableColumns({
     definitions.push({
       id: 'actions',
       size: 12,
-      header: () => <div className="text-right">Actions</div>,
+      header: view === 'box' ? 'asdf' : () => <div className="text-right">Actions</div>,
+      displayBoxHeader: false,
+      displayInBoxView: !isCompactBoxView,
       cell: ({ row }) => {
         const deckId = row.original.deck.id;
         const userId = row.original.user.id;
@@ -222,5 +244,5 @@ export function useDeckTableColumns({
     });
 
     return definitions;
-  }, [cardList, countryData, currencyData, putDeckMutation, user]);
+  }, [cardList, countryData, currencyData, putDeckMutation, user, view, isCompactBoxView]);
 }

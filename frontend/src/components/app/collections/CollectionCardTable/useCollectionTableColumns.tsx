@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,8 +20,10 @@ import { usePutCollection } from '@/api/collections/usePutCollection.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import DeleteCollectionDialog from '@/components/app/dialogs/DeleteCollectionDialog.tsx';
 import EditCollectionDialog from '@/components/app/dialogs/EditCollectionDialog.tsx';
+import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 
 interface CollectionTableColumnsProps {
+  view?: DataTableViewMode;
   showOwner?: boolean;
   showPublic?: boolean;
   showState?: boolean;
@@ -30,49 +31,25 @@ interface CollectionTableColumnsProps {
 }
 
 export function useCollectionTableColumns({
+  view,
   showOwner,
   showPublic,
   showState,
   showCurrency,
-}: CollectionTableColumnsProps): ColumnDef<UserCollectionData>[] {
+}: CollectionTableColumnsProps): ExtendedColumnDef<UserCollectionData>[] {
   const user = useUser();
   const { data: currencyData } = useCurrencyList();
   const { data: countryData } = useCountryList();
   const putCollectionMutation = usePutCollection();
 
   return useMemo(() => {
-    const definitions: ColumnDef<UserCollectionData>[] = [];
-
-    if (showPublic) {
-      definitions.push({
-        id: 'collectionPublic',
-        accessorKey: 'collection.public',
-        header: 'Public',
-        size: 20,
-        cell: ({ getValue, row }) => {
-          const collectionId = row.original.collection.id as string;
-          return (
-            <Button
-              variant="link"
-              className="flex flex-col gap-0 p-0 w-full items-start justify-center"
-              onClick={() => {
-                putCollectionMutation.mutate({
-                  collectionId: collectionId,
-                  public: !(getValue() as boolean),
-                });
-              }}
-            >
-              {publicRenderer(getValue() as boolean)}
-            </Button>
-          );
-        },
-      });
-    }
+    const definitions: ExtendedColumnDef<UserCollectionData>[] = [];
 
     definitions.push({
       id: 'collectionTitle',
       accessorKey: 'collection.title',
       header: 'Title',
+      displayBoxHeader: false,
       cell: ({ getValue, row }) => {
         const title = getValue() as string;
         const collectionId = row.original.collection.id as string;
@@ -83,9 +60,11 @@ export function useCollectionTableColumns({
               variant="link"
               className="flex flex-col gap-0 p-0 w-full items-start justify-center"
             >
-              {title}
+              <span className="max-w-80 truncate ellipsis overflow-hidden whitespace-nowrap">
+                {title}
+              </span>
               {row.original.collection.description && (
-                <span className="text-xs font-normal italic pl-4 max-w-80 truncate ellipsis overflow-hidden whitespace-nowrap">
+                <span className="text-xs font-normal italic max-w-80 truncate ellipsis overflow-hidden whitespace-nowrap">
                   {row.original.collection.description}
                 </span>
               )}
@@ -95,14 +74,43 @@ export function useCollectionTableColumns({
       },
     });
 
+    const stateRenderer: ExtendedColumnDef<UserCollectionData>['cell'] = ({ row }) => {
+      const countryCode = row.original.user.country as CountryCode | null;
+      const state = row.original.user.state as string | null;
+      const country = countryCode ? countryData?.countries[countryCode] : undefined;
+
+      return (
+        <div className="justify-end flex items-center gap-2 text-xs">
+          {countryCode && <img src={country?.flag} alt={country?.code} className="w-6" />}
+          {country?.name ?? ' - '}
+          {state ? ` | ${state}` : ''}
+        </div>
+      );
+    };
+
     if (showOwner) {
       definitions.push({
         accessorKey: 'user.displayName',
         header: 'Owner',
         size: 64,
-        cell: ({ getValue, row }) => {
+        displayBoxHeader: false,
+        cell: context => {
+          const { getValue, row } = context;
           const userId = row.original.user.id as string;
           const displayName = getValue() as string;
+
+          if (showState && view === 'box') {
+            return (
+              <Link
+                to={'/users/' + userId}
+                className="text-xs flex flex-wrap gap-4 justify-center "
+              >
+                <span className="font-bold">{displayName}</span>
+                {stateRenderer(context)}
+              </Link>
+            );
+          }
+
           return (
             <Link to={'/users/' + userId} className="text-xs">
               {displayName}
@@ -112,24 +120,31 @@ export function useCollectionTableColumns({
       });
     }
 
+    if (showPublic) {
+      definitions.push({
+        id: 'collectionPublic',
+        accessorKey: 'collection.public',
+        header: 'Public',
+        size: 20,
+        cell: ({ getValue, row }) => {
+          const collectionId = row.original.collection.id as string;
+          return publicRenderer(getValue() as boolean, () => {
+            putCollectionMutation.mutate({
+              collectionId: collectionId,
+              public: !(getValue() as boolean),
+            });
+          });
+        },
+      });
+    }
+
     if (showState) {
       definitions.push({
         accessorKey: 'user.country',
         size: 64,
+        displayInBoxView: false,
         header: () => <div className="text-right">Country and State / Region</div>,
-        cell: ({ row }) => {
-          const countryCode = row.original.user.country as CountryCode | null;
-          const state = row.original.user.state as string | null;
-          const country = countryCode ? countryData?.countries[countryCode] : undefined;
-
-          return (
-            <div className="justify-end flex items-center gap-2 text-xs">
-              {countryCode && <img src={country?.flag} alt={country?.code} className="w-6" />}
-              {country?.name ?? ' - '}
-              {state ? ` | ${state}` : ''}
-            </div>
-          );
-        },
+        cell: stateRenderer,
       });
     }
 
@@ -138,6 +153,7 @@ export function useCollectionTableColumns({
         accessorKey: 'user.currency',
         header: 'Currency',
         size: 24,
+        displayInBoxView: false,
         cell: ({ row }) => {
           const currencyCode = row.original.user.currency as CurrencyCode;
           const currency = currencyData?.currencies[currencyCode];
@@ -173,12 +189,13 @@ export function useCollectionTableColumns({
       id: 'actions',
       size: 12,
       header: () => <div className="text-right">Actions</div>,
+      displayBoxHeader: false,
       cell: ({ row }) => {
         const collectionId = row.original.collection.id;
         const userId = row.original.user.id;
 
         return (
-          <div className="flex gap-1">
+          <div className="flex gap-1 justify-end">
             <Button
               size="iconMedium"
               className="p-0"
@@ -239,5 +256,5 @@ export function useCollectionTableColumns({
     });
 
     return definitions;
-  }, [countryData, currencyData]);
+  }, [countryData, currencyData, view, showOwner, showPublic, showState, showCurrency]);
 }

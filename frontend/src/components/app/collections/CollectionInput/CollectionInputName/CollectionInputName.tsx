@@ -60,12 +60,12 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
     foil,
     language,
     condition,
+    setSelectedVariant,
   } = useCollectionInputNameStore();
 
   const {
     setOpen,
     setSearch,
-    setSelectedVariantId,
     setSelectedCardId,
     setLanguage,
     setCondition,
@@ -114,7 +114,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                 onValueChange={v => {
                   setSearch(v);
                   setSelectedCardId(undefined);
-                  setSelectedVariantId(undefined);
+                  setSelectedVariant(undefined);
                 }}
                 onKeyDown={e => setOpen(e.key !== 'Escape')}
                 onMouseDown={() => {
@@ -190,7 +190,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
                     <CommandItem
                       key={vo.variantId}
                       onSelect={() => {
-                        setSelectedVariantId(vo.variantId);
+                        setSelectedVariant(vo.variantId);
                         setOpen(false);
                         if (defaultAmount) {
                           addButtonRef.current?.focus();

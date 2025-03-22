@@ -23,12 +23,14 @@ const CountryAndStateSelectors: React.FC<CountryAndStateSelectorsProps> = () => 
   const onChangeState = useCallback((s: string | null) => setState(s), []);
 
   const onSubmit = useCallback(() => {
-    setStoreCountry(country ?? null);
-    setStoreState(state ?? null);
+    setTimeout(() => {
+      setStoreCountry(country ?? null);
+      setStoreState(state ?? null);
+    }, 100);
   }, [country, state]);
 
   return (
-    <Card className="absolute bottom-4 right-4">
+    <Card className="fixed bottom-4 right-4">
       <CardHeader className="p-2">
         <CountrySelector value={country} onChangeCountry={onChangeCountry} />
         {country && (

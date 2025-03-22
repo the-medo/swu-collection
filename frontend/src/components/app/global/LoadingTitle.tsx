@@ -22,7 +22,7 @@ const LoadingTitle: React.FC<LoadingTitleProps> = ({ mainTitle, subTitle, loadin
   }
 
   return (
-    <div className="flex max-lg:flex-col items-end gap-2 lg:min-w-[400px]">
+    <div className="flex max-lg:flex-col items-center lg:items-end gap-2 lg:min-w-[400px]">
       <h3>{mainTitle}</h3>
       {subTitle && <h6>{subTitle}</h6>}
     </div>

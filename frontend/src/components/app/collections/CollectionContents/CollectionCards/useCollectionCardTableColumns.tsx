@@ -148,7 +148,7 @@ export function useCollectionCardTableColumns({
             <HoverCard openDelay={0} closeDelay={0}>
               <HoverCardTrigger>
                 <div className="flex py-1 gap-1 flex-col">
-                  <span>{card.name}</span>
+                  <span className="min-w-[250px]">{card.name}</span>
                   {layout === CollectionLayout.TABLE_IMAGE && (
                     <div className="flex gap-1">
                       {card?.cost !== null ? (

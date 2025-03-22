@@ -1,7 +1,7 @@
 import { Store, useStore } from '@tanstack/react-store';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useMemo } from 'react';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+import { searchForCommandOptions } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
 
 type CardSearchCommandStore = Record<
   string,
@@ -29,28 +29,7 @@ export function useCardSearchCommandStore(id: string) {
 
   let { data: cardList, isFetching } = useCardList();
 
-  const options = useMemo(() => {
-    if (!cardList) return [];
-    let s = search?.toLowerCase() ?? '';
-    const filteredOptions: { cardId: string; variantIds: string[]; defaultVariant: string }[] = [];
-    cardList.cardIds?.find(i => {
-      const card = cardList.cards[i];
-      if (card?.name.toLowerCase().includes(s)) {
-        const variantIds = Object.keys(card.variants);
-        if (variantIds.length === 0) return false;
-
-        filteredOptions.push({
-          cardId: i,
-          variantIds,
-          defaultVariant: selectDefaultVariant(card) ?? '',
-        });
-        if (filteredOptions.length >= 7) return true;
-      }
-      return false;
-    });
-
-    return filteredOptions;
-  }, [cardList, search]);
+  const options = useMemo(() => searchForCommandOptions(cardList, search), [cardList, search]);
 
   return {
     open,

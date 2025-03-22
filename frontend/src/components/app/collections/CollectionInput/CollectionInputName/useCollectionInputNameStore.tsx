@@ -1,9 +1,11 @@
 import { Store, useStore } from '@tanstack/react-store';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { variants } from '@/lib/cards/variants.ts';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 import { CardCondition, CardLanguage } from '../../../../../../../types/enums.ts';
+import { getFoilBasedOnVariantAndSet } from '@/components/app/collections/CollectionInput/collectionInputLib.ts';
+import { searchForCommandOptions } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
 
 interface CollectionInputNameStore {
   open: boolean;
@@ -50,7 +52,9 @@ const setSearch = (search: string) => store.setState(state => ({ ...state, searc
 const setSelectedCardId = (selectedCardId: string | undefined) =>
   store.setState(state => ({ ...state, selectedCardId }));
 const setSelectedVariantId = (selectedVariantId: string | undefined) =>
-  store.setState(state => ({ ...state, selectedVariantId }));
+  store.setState(state => {
+    return { ...state, selectedVariantId };
+  });
 const setFoil = (foil: boolean) => store.setState(state => ({ ...state, foil }));
 const setAmount = (amount: number | undefined) => store.setState(state => ({ ...state, amount }));
 const setNote = (note: string) => store.setState(state => ({ ...state, note }));
@@ -108,28 +112,25 @@ export function useCollectionInputNameStore() {
 
   let { data: cardList, isFetching } = useCardList();
 
-  const options = useMemo(() => {
-    if (!cardList) return [];
-    let s = search?.toLowerCase() ?? '';
-    const filteredOptions: { cardId: string; variantIds: string[]; defaultVariant: string }[] = [];
-    cardList.cardIds?.find(i => {
-      const card = cardList.cards[i];
-      if (card?.name.toLowerCase().includes(s)) {
-        const variantIds = Object.keys(card.variants);
-        if (variantIds.length === 0) return false;
-
-        filteredOptions.push({
-          cardId: i,
-          variantIds,
-          defaultVariant: selectDefaultVariant(card) ?? '',
-        });
-        if (filteredOptions.length >= 7) return true;
+  const setSelectedVariant = useCallback(
+    (selectedVariantId: string | undefined) => {
+      if (!selectedCardId || !selectedVariantId) {
+        setSelectedVariantId(undefined);
+        return;
       }
-      return false;
-    });
+      const cardVariant = cardList?.cards[selectedCardId]?.variants[selectedVariantId];
+      if (cardVariant) {
+        setSelectedVariantId(selectedVariantId);
+        setFoil(getFoilBasedOnVariantAndSet(cardVariant, defaultFoil));
+      } else {
+        setSelectedCardId(undefined);
+        setSelectedVariantId(undefined);
+      }
+    },
+    [selectedCardId, defaultFoil],
+  );
 
-    return filteredOptions;
-  }, [cardList, search]);
+  const options = useMemo(() => searchForCommandOptions(cardList, search), [cardList, search]);
 
   const variantOptions = useMemo(() => {
     if (!cardList) return [];
@@ -190,6 +191,8 @@ export function useCollectionInputNameStore() {
     note,
     language,
     condition,
+
+    setSelectedVariant,
 
     defaultVariantName,
     defaultFoil,

@@ -38,20 +38,18 @@ export const Route = createRootRoute({
   component: () => (
     <>
       <SidebarProvider>
-        <div className="flex w-full">
-          <LeftSidebar />
+        <LeftSidebar />
+        <main className="w-full h-[100vh] max-h-[100vh] overflow-y-scroll p-2">
           <div className="flex flex-col w-full">
-            <main className="w-full p-2">
-              <SidebarTriggerButton />
-              <Outlet />
-            </main>
-            <Footer />
+            <Outlet />
+            <CardDetailDialog />
           </div>
-        </div>
-        <Toaster />
+          <Footer />
+          <SidebarTriggerButton />
+        </main>
       </SidebarProvider>
-      <CardDetailDialog />
       <CookieConsent />
+      <Toaster />
     </>
   ),
   validateSearch: zodValidator(globalSearchParams),
