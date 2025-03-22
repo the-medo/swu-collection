@@ -14,12 +14,12 @@ function YourCollections() {
 
   return (
     <AuthorizedRouteComponent>
-      <div className="p-2 w-100">
+      <div className="p-2 w-full">
         <div className="flex flex-row gap-4 items-center justify-between mb-2">
           <h3>Your collections</h3>
           <NewCollectionDialog trigger={<Button>New collection</Button>} wantlist={false} />
         </div>
-        <div className="flex gap-4 items-start min-w-[400px] w-full">
+        <div className="flex gap-4 items-start w-full">
           <UserCollections userId={user?.id} loading={!user} wantlist={false} />
         </div>
       </div>

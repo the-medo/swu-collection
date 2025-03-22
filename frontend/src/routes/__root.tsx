@@ -39,7 +39,7 @@ export const Route = createRootRoute({
     <>
       <SidebarProvider>
         <LeftSidebar />
-        <main className="w-full h-[100vh] max-h-[100vh] p-2">
+        <main className="w-full h-[100vh] max-h-[100vh] overflow-y-scroll p-2">
           <div className="flex flex-col w-full">
             <Outlet />
             <CardDetailDialog />
