@@ -49,7 +49,7 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
 
         const versionData = await versionResponse.json();
         if (versionData.needsUpdate) {
-          cardListData = versionData.cards;
+          if ('cards' in versionData) cardListData = versionData.cards as CardList;
           localStorage.setItem(STORAGE_KEY, JSON.stringify(cardListData));
           localStorage.setItem(VERSION_KEY, versionData.lastUpdated);
         } else if (storedData) {
@@ -145,8 +145,6 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
           }
         });
       });
-
-      console.log({ cardsByCardNo });
 
       return {
         cards: cardListData,
