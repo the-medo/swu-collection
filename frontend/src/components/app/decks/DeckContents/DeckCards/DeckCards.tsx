@@ -52,7 +52,7 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
     };
   }, [cardList, deckCards]);
 
-  const columnClasses = 'columns-1 lg:columns-2 min-[1660px]:columns-3 gap-4 space-y-4';
+  const columnClasses = 'columns-1 md:columns-2 min-[1660px]:columns-3 gap-4 space-y-4';
 
   return (
     <div className="flex w-full flex-col gap-4">

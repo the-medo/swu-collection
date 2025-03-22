@@ -18,7 +18,7 @@ const CardDetailDialog: React.FC<CardDetailDialogProps> = () => {
     <Dialog
       trigger={null}
       open={true}
-      contentClassName={`md:max-w-[90%] min-h-[90%]`}
+      contentClassName={`w-[100vw] h-[100vh] md:max-w-[90%] min-h-[90%]`}
       onOpenChange={o => {
         if (!o) {
           navigate({
@@ -26,6 +26,7 @@ const CardDetailDialog: React.FC<CardDetailDialogProps> = () => {
           });
         }
       }}
+      size="large"
     >
       <CardDetail cardId={modalCardId} />
     </Dialog>

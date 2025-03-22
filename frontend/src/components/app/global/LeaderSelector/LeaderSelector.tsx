@@ -17,6 +17,7 @@ import {
 } from '../../../../../../lib/swu-resources/types.ts';
 import { Input } from '@/components/ui/input.tsx';
 import { cn } from '@/lib/utils.ts';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 type LeaderSelectorProps = Pick<DialogProps, 'trigger'> & {
   leaderCardId?: string;
@@ -32,6 +33,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   editable = true,
   size = 'w200',
 }) => {
+  const { isMobile } = useSidebar();
   const [open, setOpen] = useState(false);
   const [localLeaderCardId, setLocalLeaderCardId] = useState<string | undefined>(leaderCardId);
   const [search, setSearch] = useState<string>('');
@@ -147,7 +149,12 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <MultiAspectFilter value={aspectFilter} onChange={setAspectFilter} multiSelect={true} />
+        <MultiAspectFilter
+          value={aspectFilter}
+          onChange={setAspectFilter}
+          multiSelect={true}
+          showLabel={!isMobile}
+        />
       </div>
     );
   }, [search, aspectFilter]);
@@ -202,7 +209,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       footer={footer}
       open={open}
       onOpenChange={setOpen}
-      contentClassName={`md:max-w-[90%] min-h-[90%]`}
+      size="large"
     >
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap gap-2">

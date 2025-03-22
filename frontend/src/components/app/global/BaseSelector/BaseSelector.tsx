@@ -225,6 +225,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
       open={open}
       onOpenChange={setOpen}
       contentClassName={`md:max-w-[90%] min-h-[90%]`}
+      size="large"
     >
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap gap-2">

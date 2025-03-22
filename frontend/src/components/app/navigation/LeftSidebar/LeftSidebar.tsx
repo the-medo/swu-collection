@@ -132,7 +132,7 @@ const groups = [
 export function LeftSidebar() {
   const user = useUser();
   const { theme } = useTheme();
-  const { open, isMobile } = useSidebar();
+  const { open, isMobile, setOpenMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
@@ -178,7 +178,13 @@ export function LeftSidebar() {
                   !i.authenticated || (i.authenticated && user) ? (
                     <SidebarMenuItem key={i.title}>
                       <SidebarMenuButton asChild>
-                        <Link to={i.url} className="[&.active]:font-bold">
+                        <Link
+                          to={i.url}
+                          className="[&.active]:font-bold"
+                          onClick={() => {
+                            setOpenMobile(false);
+                          }}
+                        >
                           <i.icon />
                           <span>{i.title}</span>
                         </Link>

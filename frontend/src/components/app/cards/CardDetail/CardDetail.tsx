@@ -34,7 +34,7 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
   const selectedVariant = useMemo(() => {
     if (!card) return undefined;
     if (!selectedVariantId && defaultVariantId) return card.variants[defaultVariantId];
-    return card.variants[selectedVariantId];
+    return selectedVariantId ? card.variants[selectedVariantId] : undefined;
   }, [card, defaultVariantId, selectedVariantId]);
 
   // Get all variants for the card
@@ -86,18 +86,6 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                   <PropertyRow label="Card Number" value={selectedVariant.cardNo.toString()} />
                   <PropertyRow label="Variant" value={selectedVariant.variantName} />
                   <PropertyRow label="Artist" value={selectedVariant.artist || 'Unknown'} />
-                  <PropertyRow
-                    label="Availability"
-                    value={
-                      <span>
-                        {selectedVariant.hasNonfoil && selectedVariant.hasFoil
-                          ? 'Non-foil & Foil'
-                          : selectedVariant.hasNonfoil
-                            ? 'Non-foil Only'
-                            : 'Foil Only'}
-                      </span>
-                    }
-                  />
                 </div>
                 <Separator className="my-1" />
                 <div

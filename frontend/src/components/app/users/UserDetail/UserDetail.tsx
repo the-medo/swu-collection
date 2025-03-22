@@ -53,7 +53,7 @@ const UserDetail: React.FC = () => {
         </Avatar>
         <div className="flex flex-col gap-2">
           <h2>{user?.displayName}</h2>
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             {country && (
               <>
                 <img src={country?.flag} alt={country?.code} className="w-6" />
