@@ -151,9 +151,9 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
         cardIds,
         cardsByCardNo,
         cardsByCardType,
-        allTraits,
-        allKeywords,
-        allVariants,
+        allTraits: [...allTraits].sort((a, b) => a.localeCompare(b)),
+        allKeywords: [...allKeywords].sort((a, b) => a.localeCompare(b)),
+        allVariants: [...allVariants].sort((a, b) => a.localeCompare(b)),
       };
     },
     staleTime: Infinity,

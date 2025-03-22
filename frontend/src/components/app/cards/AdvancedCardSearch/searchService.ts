@@ -1,6 +1,86 @@
 import { SwuAspect, SwuArena, SwuRarity, SwuSet } from '../../../../../../types/enums';
 import { RangeFilterType } from '../../global/RangeFilter/RangeFilter';
 import { CardList } from '../../../../../../lib/swu-resources/types.ts';
+import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+import { CardListResponse } from '@/api/lists/useCardList.ts';
+
+/**
+ * Normalize text for searching by:
+ * - Converting to lowercase
+ * - Removing diacritics
+ * - Removing special characters like commas, quotes, etc.
+ */
+export function normalizeText(text: string): string {
+  if (!text) return '';
+
+  // Convert to lowercase and normalize Unicode (NFD decomposition)
+  return (
+    text
+      .toLowerCase()
+      // Normalize to decompose characters with diacritics
+      .normalize('NFD')
+      // Remove the diacritic marks
+      .replace(/[\u0300-\u036f]/g, '')
+      // Remove special characters (keep letters, numbers, and spaces)
+      .replace(/[^\w\s]/g, '')
+  );
+}
+
+export const splitToSearchWords = (text: string): string[] => {
+  return normalizeText(text)
+    .split(/\s+/)
+    .filter(word => word.length > 0);
+};
+
+/**
+ * Checks if all words in the search text are present in the target text.
+ * Both texts are normalized before comparison.
+ *
+ * searchText: string => will be normalized and split into words
+ * searchText: string[] => will NOT be normalized and the words should be normalized before passed to the function
+ */
+export function containsAllWords(targetText: string, searchText: string | string[]): boolean {
+  if (!searchText) return true;
+  if (!targetText) return false;
+
+  const normalizedTarget = normalizeText(targetText);
+
+  if (typeof searchText === 'string') {
+    return splitToSearchWords(searchText).every(word => normalizedTarget.includes(word));
+  }
+  return searchText.every(word => normalizedTarget.includes(word));
+}
+
+/**
+ * Finds first 10 results based on search string, using advanced search
+ * @param cardList
+ * @param searchText
+ */
+export function searchForCommandOptions(
+  cardList: CardListResponse | undefined,
+  searchText: string,
+) {
+  if (!cardList) return [];
+  const searchWords = splitToSearchWords(searchText);
+  const filteredOptions: { cardId: string; variantIds: string[]; defaultVariant: string }[] = [];
+  cardList.cardIds?.find(i => {
+    const card = cardList.cards[i];
+    if (card && containsAllWords(card.name, searchWords)) {
+      const variantIds = Object.keys(card.variants);
+      if (variantIds.length === 0) return false;
+
+      filteredOptions.push({
+        cardId: i,
+        variantIds,
+        defaultVariant: selectDefaultVariant(card) ?? '',
+      });
+      if (filteredOptions.length >= 10) return true;
+    }
+    return false;
+  });
+
+  return filteredOptions;
+}
 
 interface SearchFilters {
   name?: string;
@@ -37,19 +117,17 @@ export const filterCards = async (
         if (!card) return false;
 
         // Check name filter
-        if (filters.name && !card.name.toLowerCase().includes(filters.name.toLowerCase())) {
+        if (filters.name && !containsAllWords(card.name, filters.name)) {
           return false;
         }
 
         // Check text filter
         if (filters.text) {
-          const textLower = filters.text.toLowerCase();
           const cardText = [card.text, card.rules, card.deployBox, card.epicAction]
             .filter(Boolean)
-            .join(' ')
-            .toLowerCase();
+            .join(' ');
 
-          if (!cardText.includes(textLower)) {
+          if (!containsAllWords(cardText, filters.text)) {
             return false;
           }
         }

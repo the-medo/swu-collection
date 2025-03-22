@@ -19,17 +19,19 @@ import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 import { useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 interface CardSearchCommandProps {
   /** used to determine open state and search string, since there can be multiple
     instances of CardSearchCommand on the same page (eg. homepage with expanded sidebar) */
-  id: string;
+  id: 'card-search-left-sidebar' | 'card-search-homepage';
 }
 
 const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate({ from: Route.fullPath });
 
+  const { isMobile, setOpenMobile } = useSidebar();
   const { open, search, options, isFetching, cardList } = useCardSearchCommandStore(id);
 
   const { setOpen, setSearch } = useCardSearchCommandStoreActions(id);
@@ -41,7 +43,8 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
       to: '/cards/search',
       search: prev => ({ ...prev, name: search }),
     });
-  }, [search]);
+    if (isMobile && id === 'card-search-left-sidebar') setOpenMobile(false);
+  }, [id, search]);
 
   return (
     <Popover open={open}>

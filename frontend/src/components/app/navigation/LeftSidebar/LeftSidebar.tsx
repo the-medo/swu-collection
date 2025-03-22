@@ -137,7 +137,11 @@ export function LeftSidebar() {
   return (
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
-        <Link to="/" className={cn({ 'self-center': !isMobile, 'self-start pl-4': isMobile })}>
+        <Link
+          to="/"
+          className={cn({ 'self-center': !isMobile, 'self-start pl-4': isMobile })}
+          onClick={() => setOpenMobile(false)}
+        >
           {isMobile ? (
             <div className="w-full flex justify-between gap-4">
               <img

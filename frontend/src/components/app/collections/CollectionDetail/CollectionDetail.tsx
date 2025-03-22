@@ -45,7 +45,7 @@ const CollectionDetail: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
         <LoadingTitle
           mainTitle={data?.collection.title}
           subTitle={
@@ -73,9 +73,9 @@ const CollectionDetail: React.FC = () => {
         )}
       </div>
       <div className="flex flex-row gap-4 text-sm italic mb-2">{data?.collection.description}</div>
-      <div className="flex flex-col-reverse md:flex-row gap-4">
+      <div className="flex flex-col-reverse lg:flex-row gap-4">
         <CollectionContents collectionId={collectionId} />
-        <div className="flex flex-col gap-4 w-full md:w-[400px]">
+        <div className="flex flex-col gap-4 w-full lg:w-[400px]">
           <CollectionActions collectionId={collectionId} />
           <CollectionStats collectionId={collectionId} />
           {owned && <CollectionInputSection collectionId={collectionId} />}

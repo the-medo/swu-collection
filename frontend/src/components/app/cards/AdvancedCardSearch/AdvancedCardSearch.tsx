@@ -34,8 +34,10 @@ const AdvancedCardSearch: React.FC = () => {
 
   useEffect(() => {
     if (cardListData && !searchInitialized) {
-      setSearchInitialized(true);
-      if (hasActiveFilters) onSearch();
+      if (hasActiveFilters) {
+        setSearchInitialized(true);
+        onSearch();
+      }
     }
   }, [hasActiveFilters, cardListData, searchInitialized, onSearch]);
 

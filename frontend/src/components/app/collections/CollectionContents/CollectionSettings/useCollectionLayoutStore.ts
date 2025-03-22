@@ -68,8 +68,20 @@ interface CollectionLayoutStore {
   sortBy: CollectionSortBy[];
 }
 
+const getDefaultLayout = () => {
+  const layout = localStorage.getItem('collectionLayout');
+  if (layout) {
+    if (Object.values(CollectionLayout).includes(layout as CollectionLayout)) {
+      return layout as CollectionLayout;
+    }
+  }
+  if (!window) return CollectionLayout.TABLE_SMALL;
+  if (window.innerWidth < 1024) return CollectionLayout.TABLE_IMAGE;
+  return CollectionLayout.TABLE_SMALL;
+};
+
 const defaultState: CollectionLayoutStore = {
-  layout: CollectionLayout.TABLE_SMALL,
+  layout: getDefaultLayout(),
   collectionInfo: {},
   groupBy: [],
   sortBy: [CollectionSortBy.CARD_NAME],
@@ -77,7 +89,10 @@ const defaultState: CollectionLayoutStore = {
 
 const store = new Store<CollectionLayoutStore>(defaultState);
 
-const setLayout = (layout: CollectionLayout) => store.setState(state => ({ ...state, layout }));
+const setLayout = (layout: CollectionLayout) => {
+  localStorage.setItem('collectionLayout', layout);
+  store.setState(state => ({ ...state, layout }));
+};
 const setCollectionInfo = (
   collectionId: string,
   currency: string,

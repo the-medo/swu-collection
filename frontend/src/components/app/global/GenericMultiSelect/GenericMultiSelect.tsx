@@ -14,7 +14,6 @@ export type GenericMultiSelectProps = {
 };
 
 const GenericMultiSelect: React.FC<GenericMultiSelectProps> = ({
-  label,
   placeholder,
   options,
   value,
@@ -34,7 +33,6 @@ const GenericMultiSelect: React.FC<GenericMultiSelectProps> = ({
   return (
     <div className={cn('space-y-2', className)}>
       <MultiSelect
-        label={label}
         options={formattedOptions}
         onValueChange={onChange}
         value={value}
