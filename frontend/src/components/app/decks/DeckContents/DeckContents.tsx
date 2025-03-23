@@ -9,6 +9,7 @@ import { usePutDeck } from '@/api/decks/usePutDeck.ts';
 import { useCallback } from 'react';
 import { toast } from '@/hooks/use-toast.ts';
 import DeckActions from '@/components/app/decks/DeckActions/DeckActions.tsx';
+import DeckLayoutSelector from '@/components/app/decks/DeckContents/DeckLayoutSelector/DeckLayoutSelector.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -74,7 +75,10 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
         <DeckActions deckId={deckId} />
       </div>
       <div className="flex flex-col gap-2 w-full">
-        {owned && <DeckInputCommand deckId={deckId} />}
+        <div className="flex justify-between">
+          {owned && <DeckInputCommand deckId={deckId} />}
+          <DeckLayoutSelector />
+        </div>
         <DeckCards deckId={deckId} />
       </div>
     </div>
