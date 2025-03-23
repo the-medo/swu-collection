@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ClipboardCopy, SquareArrowUpRight } from 'lucide-react';
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import DeckCardQuantitySelector from '@/components/app/decks/DeckContents/DeckCards/DeckCardQuantitySelector.tsx';
 import { DeckCardDropdownMenuProps } from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 import { useNavigate } from '@tanstack/react-router';
@@ -89,6 +89,7 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
                 disabled={!owned}
               />
             </div>
+            <DropdownMenuSeparator />
           </div>
         )}
       </div>

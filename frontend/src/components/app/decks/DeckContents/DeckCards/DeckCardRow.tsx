@@ -18,8 +18,8 @@ import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutSt
 import { useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
-
 import { CardInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
+import DeckCardBoardMoveButtons from '@/components/app/decks/DeckContents/DeckCards/DeckCardBoardMoveButtons.tsx';
 
 export interface DeckCardRowProps {
   deckId: string;
@@ -80,21 +80,42 @@ const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card, cardI
             )}
           </div>
           <div
-            className="flex gap-1 font text-sm w-full items-center justify-between cursor-pointer"
+            className="flex gap-1 font text-sm w-full items-center justify-between cursor-pointer group"
             onClick={() => {
               void navigate({
                 search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
               });
             }}
           >
-            <span>{card?.name}</span>
+            <span
+              className={cn({
+                'group-hover:hidden': owned,
+              })}
+            >
+              {card?.name}
+            </span>
             <div className="flex gap-2 justify-end">
-              <div className="flex gap-0 w-[50px] justify-end">
+              <div
+                className={cn('flex gap-0 w-[50px] justify-end', {
+                  'group-hover:hidden': owned,
+                })}
+              >
                 {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="xSmall" /> : null}
                 {card?.aspects.map((a, i) => (
                   <AspectIcon key={`${a}${i}`} aspect={a} size="xSmall" />
                 ))}
               </div>
+              {owned && (
+                <div className="hidden group-hover:flex gap-8 items-center w-full">
+                  <DeckCardBoardMoveButtons
+                    deckId={deckId}
+                    deckCard={deckCard}
+                    card={card}
+                    cardInBoards={cardInBoards}
+                    onChange={quantityChangeHandler}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <DeckCardDropdownMenu
