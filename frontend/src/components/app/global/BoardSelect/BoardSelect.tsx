@@ -1,7 +1,19 @@
-import React, { useMemo } from 'react';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { cn } from '@/lib/utils';
-import { useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
+import React from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import { useBoardDeckData } from '@/components/app/global/BoardSelect/useBoardDeckData.ts';
+
+const boardObj: Record<number, { name: string; shortName: string }> = {
+  1: { name: 'Maindeck', shortName: 'MD' },
+  2: { name: 'Sideboard', shortName: 'SB' },
+  3: { name: 'Maybeboard', shortName: 'MB' },
+};
 
 export interface BoardSelectProps {
   deckId: string;
@@ -10,37 +22,28 @@ export interface BoardSelectProps {
 }
 
 const BoardSelect: React.FC<BoardSelectProps> = ({ deckId, value, onChange }) => {
-  const { data: deckCardsData } = useGetDeckCards(deckId);
-
-  const boardCardCounts = useMemo(() => {
-    const counts: Record<number, number> = {
-      1: 0,
-      2: 0,
-      3: 0,
-    };
-
-    (deckCardsData?.data ?? []).forEach(
-      c => (counts[c.board] += c.quantity),
-      [deckCardsData?.data],
-    );
-
-    return counts;
-  }, [deckCardsData?.data]);
+  const boardCardCounts = useBoardDeckData(deckId);
 
   return (
-    <div className={cn('flex flex-wrap flex-grow items-center gap-2')}>
-      <div className="flex items-center">
-        <ToggleGroup
-          type={'single'}
-          value={value.toString()}
-          onValueChange={v => onChange(Number(v))}
-        >
-          <ToggleGroupItem value="1">Maindeck ({boardCardCounts[1]})</ToggleGroupItem>
-          <ToggleGroupItem value="2">Sideboard ({boardCardCounts[2]})</ToggleGroupItem>
-          <ToggleGroupItem value="3">Maybeboard ({boardCardCounts[3]})</ToggleGroupItem>
-        </ToggleGroup>
-      </div>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div className="flex gap-2 items-center">
+          <span className="text-sm font-semibold">Insert into:</span>
+          <Button variant="outline" className="w-[70px] text-xs justify-between">
+            {boardObj[value].shortName}
+          </Button>
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuRadioGroup value={value.toString()} onValueChange={v => onChange(Number(v))}>
+          {[1, 2, 3].map(l => (
+            <DropdownMenuRadioItem key={l} value={l.toString()}>
+              {boardObj[l].name} ({boardCardCounts[l]})
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

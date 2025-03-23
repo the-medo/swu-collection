@@ -55,7 +55,7 @@ const DeckInputCommand: React.FC<DeckInputCommandProps> = ({ deckId }) => {
   );
 
   return (
-    <div className="flex flex-wrap gap-2 items-center">
+    <div className="flex flex-wrap gap-2 items-center max-lg:justify-center">
       <div className="flex gap-2 items-center">
         <div className="w-20">
           <Input

@@ -13,7 +13,7 @@ import {
   useDeckLayoutStoreActions,
 } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { deckLayoutArray, deckLayoutObj } from '../../../../../../../types/iterableEnumInfo.ts';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 interface DeckLayoutSelectorProps {}
 
@@ -28,10 +28,13 @@ const DeckLayoutSelector: React.FC<DeckLayoutSelectorProps> = ({}) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-[200px] justify-between">
-          {layout !== undefined ? deckLayoutObj[layout]?.title : 'Unknown layout'}
-          <Eye className="h-4 w-4 ml-2" />
-        </Button>
+        <div className="flex gap-2 items-center">
+          <span className="text-sm font-semibold">View:</span>
+          <Button variant="outline" className=" text-xs w-[170px] justify-between">
+            {layout !== undefined ? deckLayoutObj[layout]?.title : 'Unknown layout'}
+            <Eye className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuRadioGroup value={layout} onValueChange={onValueChange}>
