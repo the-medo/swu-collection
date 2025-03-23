@@ -3,7 +3,7 @@ import type { AuthExtension } from '../../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { zDeckCardUpdateRequest } from '../../../../../types/ZDeckCard.ts';
 import { z } from 'zod';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { db } from '../../../../db';
 import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
@@ -30,12 +30,21 @@ export const deckIdCardPutRoute = new Hono<AuthExtension>().put(
     const primaryKeyFilters = [deckId, cardId, board];
 
     const updatedDeckCard = await db
-      .update(deckCardTable)
-      .set({
-        ...data,
-        note: data.note ?? undefined,
+      .insert(deckCardTable)
+      .values({
+        deckId: paramDeckId,
+        cardId: id.cardId,
+        board: id.board,
+        note: data.note ?? '',
+        quantity: data.quantity ?? 0,
       })
-      .where(and(...primaryKeyFilters))
+      .onConflictDoUpdate({
+        target: [deckCardTable.deckId, deckCardTable.cardId, deckCardTable.board],
+        set: {
+          ...data,
+          note: data.note ?? undefined,
+        },
+      })
       .returning();
 
     const result = updatedDeckCard[0];

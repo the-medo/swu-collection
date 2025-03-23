@@ -76,7 +76,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
         <DeckActions deckId={deckId} />
       </div>
       <div className="flex flex-col gap-2 w-full">
-        <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center">
+        <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">
           {owned && <DeckInputCommand deckId={deckId} />}
           <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
             <DeckBoardCardCounts deckId={deckId} />

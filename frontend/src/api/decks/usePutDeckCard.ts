@@ -29,6 +29,49 @@ export const usePutDeckCard = (deckId: string | undefined) => {
         throw new Error('Deck id is required');
       }
 
+      queryClient.setQueryData<DeckCardResponse>(['deck-content', deckId], oldData => {
+        if (!oldData) {
+          return undefined;
+        }
+
+        const { id, data: updateRequestData } = cardData;
+        const { data: existingCards } = oldData;
+
+        const cardIndex = existingCards.findIndex((card: DeckCard) => {
+          console.log({ card, id });
+          return card.cardId === id.cardId && card.board === id.board;
+        });
+
+        if (cardIndex >= 0) {
+          const updatedCard = { ...existingCards[cardIndex], ...updateRequestData };
+
+          return {
+            ...oldData,
+            data:
+              updateRequestData.quantity === 0
+                ? [...existingCards.slice(0, cardIndex), ...existingCards.slice(cardIndex + 1)]
+                : [
+                    ...existingCards.slice(0, cardIndex),
+                    updatedCard,
+                    ...existingCards.slice(cardIndex + 1),
+                  ],
+          };
+        }
+
+        return {
+          ...oldData,
+          data: [
+            ...existingCards,
+            {
+              deckId,
+              cardId: id.cardId,
+              board: id.board,
+              ...updateRequestData,
+            } as DeckCard,
+          ],
+        };
+      });
+
       const response = await api.deck[':id'].card.$put({
         param: { id: deckId },
         json: {
@@ -50,43 +93,9 @@ export const usePutDeckCard = (deckId: string | undefined) => {
 
       return response.json() as unknown as { data: DeckCard };
     },
-    onSuccess: (result, vars) => {
-      queryClient.setQueryData<DeckCardResponse>(['deck-content', deckId], oldData => {
-        if (!oldData) {
-          return { data: [result.data] };
-        }
-
-        const { id } = vars;
-        const { data: existingCards } = oldData;
-
-        const cardIndex = existingCards.findIndex(
-          (card: DeckCard) => card.cardId === id.cardId && card.board === id.board,
-        );
-
-        if (cardIndex >= 0) {
-          const updatedCard = result.data;
-
-          toast({
-            title: `Updated!`,
-          });
-
-          return {
-            ...oldData,
-            data:
-              updatedCard.quantity === 0
-                ? [...existingCards.slice(0, cardIndex), ...existingCards.slice(cardIndex + 1)]
-                : [
-                    ...existingCards.slice(0, cardIndex),
-                    updatedCard,
-                    ...existingCards.slice(cardIndex + 1),
-                  ],
-          };
-        }
-
-        return {
-          ...oldData,
-          data: [...existingCards, result.data],
-        };
+    onSuccess: () => {
+      toast({
+        title: `Updated!`,
       });
     },
     onError: error => {

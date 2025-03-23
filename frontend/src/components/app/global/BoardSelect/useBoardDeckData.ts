@@ -14,7 +14,10 @@ export const useBoardDeckData = (deckId: string): BoardCardCounts => {
     };
 
     (deckCardsData?.data ?? []).forEach(
-      c => (counts[c.board] += c.quantity),
+      c => {
+        if (!c) return;
+        counts[c.board] += c.quantity;
+      },
       [deckCardsData?.data],
     );
 

@@ -17,26 +17,30 @@ import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInpu
 import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
+import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 
-interface DeckCardRowProps {
+import { CardInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
+
+export interface DeckCardRowProps {
   deckId: string;
   deckCard: DeckCard;
   card: CardDataWithVariants<CardListVariants> | undefined;
+  cardInBoards: CardInBoards;
 }
 
-const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card }) => {
+const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card, cardInBoards }) => {
   const navigate = useNavigate({ from: Route.fullPath });
   const { owned } = useDeckInfo(deckId);
   const defaultVariant = card ? selectDefaultVariant(card) : '';
   const mutation = usePutDeckCard(deckId);
 
   const quantityChangeHandler = useCallback(
-    (quantity: number | undefined) => {
+    (quantity: number | undefined, board?: number) => {
       mutation.mutate(
         {
           id: {
             cardId: deckCard.cardId,
-            board: deckCard.board,
+            board: board ?? deckCard.board,
           },
           data: {
             quantity: quantity ?? 0,
@@ -55,27 +59,26 @@ const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card }) => 
   );
 
   return (
-    <div className="flex gap-2 border-t-[1px] py-1 w-[350px] items-center">
-      <div>
-        {owned ? (
-          <DebouncedInput
-            type="number"
-            onChange={quantityChangeHandler}
-            value={deckCard.quantity}
-            width="sm"
-            size="xs"
-            alignment="right"
-            appearance="ghost"
-            min={0}
-            max={15}
-          />
-        ) : (
-          <span className="text-md px-2">{deckCard.quantity}</span>
-        )}
-      </div>
-
-      <HoverCard openDelay={0} closeDelay={0}>
-        <HoverCardTrigger asChild>
+    <HoverCard openDelay={0} closeDelay={0}>
+      <HoverCardTrigger asChild>
+        <div className="flex gap-2 border-t-[1px] py-1 w-[350px] items-center">
+          <div>
+            {owned ? (
+              <DebouncedInput
+                type="number"
+                onChange={quantityChangeHandler}
+                value={deckCard.quantity}
+                width="sm"
+                size="xs"
+                alignment="right"
+                appearance="ghost"
+                min={0}
+                max={15}
+              />
+            ) : (
+              <span className="text-md px-2">{deckCard.quantity}</span>
+            )}
+          </div>
           <div
             className="flex gap-1 font text-sm w-full items-center justify-between cursor-pointer"
             onClick={() => {
@@ -85,29 +88,39 @@ const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card }) => 
             }}
           >
             <span>{card?.name}</span>
-            <div className="flex gap-0 w-[50px]">
-              {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="xSmall" /> : null}
-              {card?.aspects.map((a, i) => (
-                <AspectIcon key={`${a}${i}`} aspect={a} size="xSmall" />
-              ))}
+            <div className="flex gap-2 justify-end">
+              <div className="flex gap-0 w-[50px] justify-end">
+                {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="xSmall" /> : null}
+                {card?.aspects.map((a, i) => (
+                  <AspectIcon key={`${a}${i}`} aspect={a} size="xSmall" />
+                ))}
+              </div>
             </div>
           </div>
-        </HoverCardTrigger>
+          <DeckCardDropdownMenu
+            deckId={deckId}
+            deckCard={deckCard}
+            card={card}
+            owned={owned}
+            cardInBoards={cardInBoards}
+            onQuantityChange={quantityChangeHandler}
+          />
+        </div>
+      </HoverCardTrigger>
 
-        <HoverCardContent
-          className={cn(
-            cardImageVariants({
-              size: 'original',
-              horizontal: card?.front.horizontal ?? false,
-            }),
-            'm-0 p-0 w-fit',
-          )}
-          side="right"
-        >
-          <CardImage card={card} cardVariantId={defaultVariant} size="original" />
-        </HoverCardContent>
-      </HoverCard>
-    </div>
+      <HoverCardContent
+        className={cn(
+          cardImageVariants({
+            size: 'original',
+            horizontal: card?.front.horizontal ?? false,
+          }),
+          'm-0 p-0 w-fit',
+        )}
+        side="right"
+      >
+        <CardImage card={card} cardVariantId={defaultVariant} size="original" />
+      </HoverCardContent>
+    </HoverCard>
   );
 };
 

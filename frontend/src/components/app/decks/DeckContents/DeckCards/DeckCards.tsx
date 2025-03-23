@@ -8,6 +8,7 @@ import type {
   CardListVariants,
 } from '../../../../../../../lib/swu-resources/types.ts';
 import DeckCardRow from '@/components/app/decks/DeckContents/DeckCards/DeckCardRow.tsx';
+import { CardsInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 
 interface DeckCardsProps {
   deckId: string;
@@ -19,7 +20,7 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
 
   const deckCards = deckCardsData?.data ?? [];
 
-  const { mainboardGroups, cardsByBoard, usedCards } = useMemo(() => {
+  const { mainboardGroups, cardsByBoard, usedCards, usedCardsInBoards } = useMemo(() => {
     const cardsByBoard: Record<number, DeckCard[]> = {
       1: [],
       2: [],
@@ -27,9 +28,13 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
     };
 
     const usedCards: Record<string, CardDataWithVariants<CardListVariants> | undefined> = {};
+    const usedCardsInBoards: CardsInBoards = {};
 
     deckCards.forEach(c => {
+      if (!c) return;
       cardsByBoard[c.board].push(c);
+      if (!usedCardsInBoards[c.cardId]) usedCardsInBoards[c.cardId] = {};
+      usedCardsInBoards[c.cardId]![c.board] = c.quantity;
 
       const card = cardList?.cards[c.cardId];
       usedCards[c.cardId] = card;
@@ -49,6 +54,7 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
       mainboardGroups,
       cardsByBoard,
       usedCards,
+      usedCardsInBoards,
     };
   }, [cardList, deckCards]);
 
@@ -74,6 +80,7 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
                     deckId={deckId}
                     deckCard={c}
                     card={usedCards[c.cardId]}
+                    cardInBoards={usedCardsInBoards[c.cardId]}
                   />
                 );
               })}
@@ -87,7 +94,13 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
           {cardsByBoard[2].length === 0 && <span className="text-sm">No cards in sideboard</span>}
           {cardsByBoard[2].map(c => {
             return (
-              <DeckCardRow key={c.cardId} deckId={deckId} deckCard={c} card={usedCards[c.cardId]} />
+              <DeckCardRow
+                key={c.cardId}
+                deckId={deckId}
+                deckCard={c}
+                card={usedCards[c.cardId]}
+                cardInBoards={usedCardsInBoards[c.cardId]}
+              />
             );
           })}
         </div>
@@ -105,6 +118,7 @@ const DeckCards: React.FC<DeckCardsProps> = ({ deckId }) => {
                   deckId={deckId}
                   deckCard={c}
                   card={usedCards[c.cardId]}
+                  cardInBoards={usedCardsInBoards[c.cardId]}
                 />
               );
             })}
