@@ -3,11 +3,8 @@ import type {
   CardDataWithVariants,
   CardListVariants,
 } from '../../../../../../../../../lib/swu-resources/types.ts';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
 import * as React from 'react';
-import CardImage, { cardImageVariants } from '@/components/app/global/CardImage.tsx';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import { usePutDeckCard } from '@/api/decks/usePutDeckCard.ts';
@@ -20,6 +17,7 @@ import { Route } from '@/routes/__root.tsx';
 import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 import { DeckCardInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import DeckCardBoardMoveButtons from '@/components/app/decks/DeckContents/DeckCards/DeckCardBoardMoveButtons.tsx';
+import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 export type DeckCardRowVariant = 'normal' | 'compact';
@@ -40,9 +38,8 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   cardInBoards,
 }) => {
   const navigate = useNavigate({ from: Route.fullPath });
-  const { owned } = useDeckInfo(deckId);
   const { isMobile } = useSidebar();
-  const defaultVariant = card ? selectDefaultVariant(card) : '';
+  const { owned } = useDeckInfo(deckId);
   const mutation = usePutDeckCard(deckId);
 
   const quantityChangeHandler = useCallback(
@@ -70,103 +67,85 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   );
 
   return (
-    <HoverCard openDelay={0} closeDelay={0}>
-      <HoverCardTrigger>
+    <DeckCardHoverImage card={card}>
+      <div
+        className={cn('flex gap-2 w-[350px] items-center', {
+          'py-1 border-t-[1px]': variant === 'normal',
+          'py-0': variant === 'compact',
+        })}
+      >
+        <div>
+          {owned ? (
+            <DebouncedInput
+              type="number"
+              onChange={quantityChangeHandler}
+              value={deckCard.quantity}
+              width="sm"
+              size="xs"
+              alignment="right"
+              appearance="ghost"
+              min={0}
+              max={15}
+            />
+          ) : (
+            <span className="text-md px-2">{deckCard.quantity}</span>
+          )}
+        </div>
         <div
-          className={cn('flex gap-2 w-[350px] items-center', {
-            'py-1 border-t-[1px]': variant === 'normal',
-            'py-0': variant === 'compact',
-          })}
+          className={cn(
+            'flex gap-1 font text-sm w-full items-center justify-between cursor-pointer',
+            {
+              group: owned && !isMobile,
+            },
+          )}
+          onClick={() => {
+            void navigate({
+              search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
+            });
+          }}
         >
-          <div>
-            {owned ? (
-              <DebouncedInput
-                type="number"
-                onChange={quantityChangeHandler}
-                value={deckCard.quantity}
-                width="sm"
-                size="xs"
-                alignment="right"
-                appearance="ghost"
-                min={0}
-                max={15}
-              />
-            ) : (
-              <span className="text-md px-2">{deckCard.quantity}</span>
-            )}
-          </div>
-          <div
-            className={cn(
-              'flex gap-1 font text-sm w-full items-center justify-between cursor-pointer',
-              {
-                group: owned && !isMobile,
-              },
-            )}
-            onClick={() => {
-              void navigate({
-                search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
-              });
-            }}
+          <span
+            className={cn('max-w-[220px] truncate ellipsis overflow-hidden whitespace-nowrap', {
+              'group-hover:hidden': owned,
+              'text-xs': variant === 'compact',
+            })}
           >
-            <span
-              className={cn('max-w-[220px] truncate ellipsis overflow-hidden whitespace-nowrap', {
+            {card?.name}
+          </span>
+          <div className="flex gap-2 justify-end">
+            <div
+              className={cn('flex gap-0 w-[50px] justify-end', {
                 'group-hover:hidden': owned,
-                'text-xs': variant === 'compact',
               })}
             >
-              {card?.name}
-            </span>
-            <div className="flex gap-2 justify-end">
-              <div
-                className={cn('flex gap-0 w-[50px] justify-end', {
-                  'group-hover:hidden': owned,
-                })}
-              >
-                {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="xSmall" /> : null}
-                {card?.aspects.map((a, i) => (
-                  <AspectIcon key={`${a}${i}`} aspect={a} size="xSmall" />
-                ))}
-              </div>
-              {owned && (
-                <div className="hidden group-hover:flex gap-8 items-center w-full">
-                  <DeckCardBoardMoveButtons
-                    deckId={deckId}
-                    deckCard={deckCard}
-                    card={card}
-                    cardInBoards={cardInBoards}
-                    onChange={quantityChangeHandler}
-                  />
-                </div>
-              )}
+              {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="xSmall" /> : null}
+              {card?.aspects.map((a, i) => (
+                <AspectIcon key={`${a}${i}`} aspect={a} size="xSmall" />
+              ))}
             </div>
+            {owned && (
+              <div className="hidden group-hover:flex gap-8 items-center w-full">
+                <DeckCardBoardMoveButtons
+                  deckId={deckId}
+                  deckCard={deckCard}
+                  card={card}
+                  cardInBoards={cardInBoards}
+                  onChange={quantityChangeHandler}
+                />
+              </div>
+            )}
           </div>
-          <DeckCardDropdownMenu
-            deckId={deckId}
-            deckCard={deckCard}
-            card={card}
-            owned={owned}
-            cardInBoards={cardInBoards}
-            onQuantityChange={quantityChangeHandler}
-          />
         </div>
-      </HoverCardTrigger>
-
-      {isMobile ? null : (
-        <HoverCardContent
-          className={cn(
-            cardImageVariants({
-              size: 'original',
-              horizontal: card?.front.horizontal ?? false,
-            }),
-            'm-0 p-0 w-fit',
-          )}
-          side="right"
-          avoidCollisions={true}
-        >
-          <CardImage card={card} cardVariantId={defaultVariant} size="original" />
-        </HoverCardContent>
-      )}
-    </HoverCard>
+        <DeckCardDropdownMenu
+          deckId={deckId}
+          deckCard={deckCard}
+          card={card}
+          owned={owned}
+          cardInBoards={cardInBoards}
+          onQuantityChange={quantityChangeHandler}
+        />
+      </div>
+    </DeckCardHoverImage>
   );
 };
 
