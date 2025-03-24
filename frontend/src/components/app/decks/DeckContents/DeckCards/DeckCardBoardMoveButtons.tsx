@@ -1,11 +1,11 @@
 import { DeckCardQuantityChangeHandler } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
-import { DeckCardRowProps } from '@/components/app/decks/DeckContents/DeckCards/DeckCardRow.tsx';
+import { DeckCardTextRowProps } from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutText/DeckCardTextRow.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { ChevronDown, ChevronsDown, ChevronsUp, ChevronUp } from 'lucide-react';
 import * as React from 'react';
 import { useCallback } from 'react';
 
-interface DeckCardBoardMoveButtonsProps extends DeckCardRowProps {
+interface DeckCardBoardMoveButtonsProps extends DeckCardTextRowProps {
   onChange: DeckCardQuantityChangeHandler;
 }
 

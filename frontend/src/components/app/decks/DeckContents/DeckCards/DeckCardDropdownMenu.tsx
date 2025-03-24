@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DeckCardRowProps } from './DeckCardRow';
+import { DeckCardTextRowProps } from './DeckLayout/DeckLayoutText/DeckCardTextRow.tsx';
 import { ChevronDownCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import {
@@ -10,7 +10,7 @@ import {
 import DeckCardActions from '@/components/app/decks/DeckContents/DeckCards/DeckCardActions.tsx';
 import { DeckCardQuantityChangeHandler } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 
-export interface DeckCardDropdownMenuProps extends DeckCardRowProps {
+export interface DeckCardDropdownMenuProps extends DeckCardTextRowProps {
   owned?: boolean;
   onQuantityChange?: DeckCardQuantityChangeHandler;
 }
@@ -23,7 +23,7 @@ const DeckCardDropdownMenu: React.FC<DeckCardDropdownMenuProps> = ({ ...props })
           <ChevronDownCircle className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="flex flex-row ">
+      <DropdownMenuContent className="flex flex-row max-md:flex-col-reverse ">
         <DeckCardActions {...props} display="dropdown-menu" />
       </DropdownMenuContent>
     </DropdownMenu>

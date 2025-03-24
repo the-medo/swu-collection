@@ -1,8 +1,8 @@
-import { DeckCard } from '../../../../../../../types/ZDeckCard.ts';
+import { DeckCard } from '../../../../../../../../../types/ZDeckCard.ts';
 import type {
   CardDataWithVariants,
   CardListVariants,
-} from '../../../../../../../lib/swu-resources/types.ts';
+} from '../../../../../../../../../lib/swu-resources/types.ts';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
 import * as React from 'react';
@@ -18,19 +18,30 @@ import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutSt
 import { useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
-import { CardInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
+import { DeckCardInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import DeckCardBoardMoveButtons from '@/components/app/decks/DeckContents/DeckCards/DeckCardBoardMoveButtons.tsx';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
 
-export interface DeckCardRowProps {
+export type DeckCardRowVariant = 'normal' | 'compact';
+
+export interface DeckCardTextRowProps {
+  variant?: DeckCardRowVariant;
   deckId: string;
   deckCard: DeckCard;
   card: CardDataWithVariants<CardListVariants> | undefined;
-  cardInBoards: CardInBoards;
+  cardInBoards: DeckCardInBoards;
 }
 
-const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card, cardInBoards }) => {
+const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
+  variant = 'normal',
+  deckId,
+  deckCard,
+  card,
+  cardInBoards,
+}) => {
   const navigate = useNavigate({ from: Route.fullPath });
   const { owned } = useDeckInfo(deckId);
+  const { isMobile } = useSidebar();
   const defaultVariant = card ? selectDefaultVariant(card) : '';
   const mutation = usePutDeckCard(deckId);
 
@@ -60,8 +71,13 @@ const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card, cardI
 
   return (
     <HoverCard openDelay={0} closeDelay={0}>
-      <HoverCardTrigger asChild>
-        <div className="flex gap-2 border-t-[1px] py-1 w-[350px] items-center">
+      <HoverCardTrigger>
+        <div
+          className={cn('flex gap-2 w-[350px] items-center', {
+            'py-1 border-t-[1px]': variant === 'normal',
+            'py-0': variant === 'compact',
+          })}
+        >
           <div>
             {owned ? (
               <DebouncedInput
@@ -80,7 +96,12 @@ const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card, cardI
             )}
           </div>
           <div
-            className="flex gap-1 font text-sm w-full items-center justify-between cursor-pointer group"
+            className={cn(
+              'flex gap-1 font text-sm w-full items-center justify-between cursor-pointer',
+              {
+                group: owned && !isMobile,
+              },
+            )}
             onClick={() => {
               void navigate({
                 search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
@@ -88,8 +109,9 @@ const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card, cardI
             }}
           >
             <span
-              className={cn({
+              className={cn('max-w-[220px] truncate ellipsis overflow-hidden whitespace-nowrap', {
                 'group-hover:hidden': owned,
+                'text-xs': variant === 'compact',
               })}
             >
               {card?.name}
@@ -129,20 +151,23 @@ const DeckCardRow: React.FC<DeckCardRowProps> = ({ deckId, deckCard, card, cardI
         </div>
       </HoverCardTrigger>
 
-      <HoverCardContent
-        className={cn(
-          cardImageVariants({
-            size: 'original',
-            horizontal: card?.front.horizontal ?? false,
-          }),
-          'm-0 p-0 w-fit',
-        )}
-        side="right"
-      >
-        <CardImage card={card} cardVariantId={defaultVariant} size="original" />
-      </HoverCardContent>
+      {isMobile ? null : (
+        <HoverCardContent
+          className={cn(
+            cardImageVariants({
+              size: 'original',
+              horizontal: card?.front.horizontal ?? false,
+            }),
+            'm-0 p-0 w-fit',
+          )}
+          side="right"
+          avoidCollisions={true}
+        >
+          <CardImage card={card} cardVariantId={defaultVariant} size="original" />
+        </HoverCardContent>
+      )}
     </HoverCard>
   );
 };
 
-export default DeckCardRow;
+export default DeckCardTextRow;

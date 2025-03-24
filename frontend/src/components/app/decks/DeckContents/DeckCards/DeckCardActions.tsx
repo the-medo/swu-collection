@@ -25,7 +25,7 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
 
   return (
     <>
-      <div className="border-r p-2">
+      <div className="md:border-r p-2">
         <DropdownMenuItem
           className="cursor-pointer"
           onSelect={() => {
