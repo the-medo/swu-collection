@@ -4,6 +4,7 @@ import {
   useDeckLayoutStore,
 } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import DeckLayoutText from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutText/DeckLayoutText.tsx';
+import DeckLayoutVisualGrid from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutVisualGrid/DeckLayoutVisualGrid.tsx';
 
 interface DeckLayoutProps {
   deckId: string;
@@ -22,6 +23,8 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({ deckId, deckCardsForLayout }) =
       return (
         <DeckLayoutText variant="compact" deckId={deckId} deckCardsForLayout={deckCardsForLayout} />
       );
+    case DeckLayoutEnum.VISUAL_GRID:
+      return <DeckLayoutVisualGrid deckId={deckId} deckCardsForLayout={deckCardsForLayout} />;
     default:
       return null;
   }
