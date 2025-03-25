@@ -68,7 +68,7 @@ interface CollectionLayoutStore {
   sortBy: CollectionSortBy[];
 }
 
-const getDefaultLayout = () => {
+const getDefaultCollectionLayout = () => {
   const layout = localStorage.getItem('collectionLayout');
   if (layout) {
     if (Object.values(CollectionLayout).includes(layout as CollectionLayout)) {
@@ -81,7 +81,7 @@ const getDefaultLayout = () => {
 };
 
 const defaultState: CollectionLayoutStore = {
-  layout: getDefaultLayout(),
+  layout: getDefaultCollectionLayout(),
   collectionInfo: {},
   groupBy: [],
   sortBy: [CollectionSortBy.CARD_NAME],

@@ -1,4 +1,5 @@
 import { CardLanguage, CardCondition, SwuAspect } from './enums.ts';
+import { DeckLayout } from '../frontend/src/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 
 export const getLanguageFlagUrl = (language: CardLanguage) =>
   `https://images.swubase.com/flags/languages/${language}.png`;
@@ -105,3 +106,26 @@ export const aspectArray = [
   SwuAspect.HEROISM,
   SwuAspect.VILLAINY,
 ];
+
+export const deckLayoutObj: Record<DeckLayout, { title: string }> = {
+  [DeckLayout.TEXT]: {
+    title: 'Text',
+  },
+  [DeckLayout.TEXT_CONDENSED]: {
+    title: 'Text Condensed',
+  },
+  [DeckLayout.VISUAL_GRID]: {
+    title: 'Image Grid',
+  },
+  [DeckLayout.VISUAL_GRID_OVERLAP]: {
+    title: 'Image Grid - Overlap',
+  },
+  [DeckLayout.VISUAL_STACKS]: {
+    title: 'Image Stacks',
+  },
+  [DeckLayout.VISUAL_STACKS_SPLIT]: {
+    title: 'Image Stacks - Split',
+  },
+};
+
+export const deckLayoutArray = Object.values(DeckLayout);
