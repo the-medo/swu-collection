@@ -115,16 +115,16 @@ export const deckLayoutObj: Record<DeckLayout, { title: string }> = {
     title: 'Text Condensed',
   },
   [DeckLayout.VISUAL_GRID]: {
-    title: 'Visual Grid',
+    title: 'Image Grid',
+  },
+  [DeckLayout.VISUAL_GRID_OVERLAP]: {
+    title: 'Image Grid - Overlap',
   },
   [DeckLayout.VISUAL_STACKS]: {
-    title: 'Visual Stacks',
+    title: 'Image Stacks',
   },
   [DeckLayout.VISUAL_STACKS_SPLIT]: {
-    title: 'Visual Stacks Split',
-  },
-  [DeckLayout.VISUAL_SPOILER]: {
-    title: 'Visual Spoiler',
+    title: 'Image Stacks - Split',
   },
 };
 

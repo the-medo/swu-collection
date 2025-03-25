@@ -4,21 +4,21 @@ import DeckCardVisualItem from './DeckCardVisualItem.tsx';
 import { DeckLayout } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { cn } from '@/lib/utils.ts';
 
-export type DeckLayoutVisualGridVariant = 'overlap' | 'no-overlap';
+export type DeckLayoutVisualStacksVariant = 'normal' | 'split';
 
-interface DeckLayoutVisualGridProps {
-  variant: DeckLayoutVisualGridVariant;
+interface DeckLayoutVisualStacksProps {
+  variant: DeckLayoutVisualStacksVariant;
   deckId: string;
   deckCardsForLayout: DeckCardsForLayout;
 }
 
-const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
+const DeckLayoutVisualStacks: React.FC<DeckLayoutVisualStacksProps> = ({
   variant,
   deckId,
   deckCardsForLayout: { mainboardGroups, cardsByBoard, usedCardsInBoards, usedCards },
 }) => {
   const deckLayout =
-    variant === 'overlap' ? DeckLayout.VISUAL_GRID_OVERLAP : DeckLayout.VISUAL_GRID;
+    variant === 'normal' ? DeckLayout.VISUAL_STACKS : DeckLayout.VISUAL_STACKS_SPLIT;
 
   return (
     <div className="flex flex-wrap">
@@ -28,7 +28,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
         if (!group || group.cards.length === 0) return null;
 
         return (
-          <div key={groupName} className="flex-none w-full px-3">
+          <div key={groupName} className="flex-none px-3">
             <div className="whitespace-nowrap mb-2">
               <span className="inline-block border-b">
                 <span className="inline-block text-end mr-2">{/* Type icon could go here */}</span>
@@ -38,23 +38,23 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
                 </span>
               </span>
             </div>
-            <ul className="flex flex-col">
-              <div
-                className={cn('pr-4 mb-6 relative', {
-                  'pt-[140px]': variant === 'overlap',
-                })}
-              >
-                {group.cards.map(card => (
-                  <DeckCardVisualItem
-                    key={card.cardId}
-                    deckLayout={deckLayout}
-                    deckId={deckId}
-                    deckCard={card}
-                    card={usedCards[card.cardId]}
-                    cardInBoards={usedCardsInBoards[card.cardId]}
-                  />
-                ))}
-              </div>
+            <ul className="flex flex-col pt-[240px]">
+              {group.cards.map(card =>
+                (variant === 'normal' ? [1] : Array.from({ length: card.quantity })).map((_, i) => {
+                  return (
+                    <DeckCardVisualItem
+                      key={`${card.cardId}-${i}`}
+                      deckLayout={deckLayout}
+                      deckId={deckId}
+                      deckCard={card}
+                      card={usedCards[card.cardId]}
+                      cardInBoards={usedCardsInBoards[card.cardId]}
+                      displayDropdown={i === 0}
+                      displayQuantity={i === 0}
+                    />
+                  );
+                }),
+              )}
             </ul>
           </div>
         );
@@ -62,7 +62,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
 
       {/* Sideboard */}
       {cardsByBoard[2].length > 0 && (
-        <div className="flex-none w-full px-3">
+        <div className="flex-none px-3">
           <div className="whitespace-nowrap mb-2">
             <span className="inline-block border-b">
               <span className="inline-block text-end mr-2">
@@ -75,11 +75,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
             </span>
           </div>
           <ul className="flex flex-col">
-            <div
-              className={cn('pr-4 mb-6 relative', {
-                'pt-[140px]': variant === 'overlap',
-              })}
-            >
+            <div className="pr-4 mb-6 pt-[240px] relative">
               {cardsByBoard[2].map(card => (
                 <DeckCardVisualItem
                   key={card.cardId}
@@ -97,7 +93,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
 
       {/* Maybeboard */}
       {cardsByBoard[3].length > 0 && (
-        <div className="flex-none w-full px-3">
+        <div className="flex-none px-3">
           <div className="whitespace-nowrap mb-2">
             <span className="inline-block border-b">
               <span className="inline-block text-end mr-2">
@@ -110,11 +106,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
             </span>
           </div>
           <ul className="flex flex-col">
-            <div
-              className={cn('pr-4 mb-6 relative', {
-                'pt-[140px]': variant === 'overlap',
-              })}
-            >
+            <div className={cn('pr-4 mb-6 pt-[240px] relative')}>
               {cardsByBoard[3].map(card => (
                 <DeckCardVisualItem
                   key={card.cardId}
@@ -133,4 +125,4 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
   );
 };
 
-export default DeckLayoutVisualGrid;
+export default DeckLayoutVisualStacks;

@@ -5,6 +5,7 @@ import {
 } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import DeckLayoutText from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutText/DeckLayoutText.tsx';
 import DeckLayoutVisualGrid from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutVisualGrid/DeckLayoutVisualGrid.tsx';
+import DeckLayoutVisualStacks from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutVisualGrid/DeckLayoutVisualStacks.tsx';
 
 interface DeckLayoutProps {
   deckId: string;
@@ -23,8 +24,38 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({ deckId, deckCardsForLayout }) =
       return (
         <DeckLayoutText variant="compact" deckId={deckId} deckCardsForLayout={deckCardsForLayout} />
       );
+    case DeckLayoutEnum.VISUAL_GRID_OVERLAP:
+      return (
+        <DeckLayoutVisualGrid
+          variant="overlap"
+          deckId={deckId}
+          deckCardsForLayout={deckCardsForLayout}
+        />
+      );
     case DeckLayoutEnum.VISUAL_GRID:
-      return <DeckLayoutVisualGrid deckId={deckId} deckCardsForLayout={deckCardsForLayout} />;
+      return (
+        <DeckLayoutVisualGrid
+          variant="no-overlap"
+          deckId={deckId}
+          deckCardsForLayout={deckCardsForLayout}
+        />
+      );
+    case DeckLayoutEnum.VISUAL_STACKS:
+      return (
+        <DeckLayoutVisualStacks
+          variant="normal"
+          deckId={deckId}
+          deckCardsForLayout={deckCardsForLayout}
+        />
+      );
+    case DeckLayoutEnum.VISUAL_STACKS_SPLIT:
+      return (
+        <DeckLayoutVisualStacks
+          variant="split"
+          deckId={deckId}
+          deckCardsForLayout={deckCardsForLayout}
+        />
+      );
     default:
       return null;
   }

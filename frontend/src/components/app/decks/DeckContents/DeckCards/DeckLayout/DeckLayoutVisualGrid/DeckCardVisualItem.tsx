@@ -5,7 +5,7 @@ import type {
 } from '../../../../../../../../../lib/swu-resources/types.ts';
 import * as React from 'react';
 import { useCallback } from 'react';
-import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { DeckLayout, useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { usePutDeckCard } from '@/api/decks/usePutDeckCard.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useNavigate } from '@tanstack/react-router';
@@ -18,16 +18,22 @@ import { cn } from '@/lib/utils.ts';
 
 interface DeckCardVisualItemProps {
   deckId: string;
+  deckLayout: DeckLayout;
   deckCard: DeckCard;
   card: CardDataWithVariants<CardListVariants> | undefined;
   cardInBoards: DeckCardInBoards;
+  displayQuantity?: boolean;
+  displayDropdown?: boolean;
 }
 
 const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
   deckId,
+  deckLayout,
   deckCard,
   card,
   cardInBoards,
+  displayQuantity = true,
+  displayDropdown = true,
 }) => {
   const navigate = useNavigate({ from: Route.fullPath });
   const { owned } = useDeckInfo(deckId);
@@ -61,22 +67,32 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
   return (
     <div
       className={cn(
-        'relative inline-block align-middle mr-[1px] -mt-[140px] rounded-[4.75%/3.5%] isolate group',
-        { 'cursor-pointer': true },
+        'relative inline-block align-middle mr-[1px] rounded-[4.75%/3.5%] isolate group',
+        {
+          'cursor-pointer': true,
+          '-mt-[140px]': deckLayout === DeckLayout.VISUAL_GRID_OVERLAP,
+          '-mt-[240px]':
+            deckLayout === DeckLayout.VISUAL_STACKS ||
+            deckLayout === DeckLayout.VISUAL_STACKS_SPLIT,
+        },
       )}
       data-card-id={deckCard.cardId}
     >
-      <div className="absolute top-8 right-3 px-2 z-10 bg-black/80 rounded flex gap-2 items-center">
-        <span className="font-semibold">x{deckCard.quantity}</span>
-        <DeckCardDropdownMenu
-          deckId={deckId}
-          deckCard={deckCard}
-          card={card}
-          owned={owned}
-          cardInBoards={cardInBoards}
-          onQuantityChange={quantityChangeHandler}
-        />
-      </div>
+      {(displayDropdown || displayQuantity) && (
+        <div className="absolute top-0 -right-3 px-2 z-10 b-1 border-2 border-foreground/30 bg-background/80 rounded flex gap-2 items-center">
+          {displayQuantity && <span className="font-semibold">x{deckCard.quantity}</span>}
+          {displayDropdown && (
+            <DeckCardDropdownMenu
+              deckId={deckId}
+              deckCard={deckCard}
+              card={card}
+              owned={owned}
+              cardInBoards={cardInBoards}
+              onQuantityChange={quantityChangeHandler}
+            />
+          )}
+        </div>
+      )}
 
       {/* Card Image */}
       <div
