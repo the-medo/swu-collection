@@ -10,7 +10,11 @@ import {
   type InsertCollectionCard,
 } from '../db/schema/collection_card.ts';
 import { user as userTable } from '../db/schema/auth-schema.ts';
-import { zCollectionCreateRequest, zCollectionUpdateRequest } from '../../types/ZCollection.ts';
+import {
+  zCollectionCreateRequest,
+  zCollectionDuplicateRequest,
+  zCollectionUpdateRequest,
+} from '../../types/ZCollection.ts';
 import {
   zCollectionCardUpdateRequest,
   zCollectionCardDeleteRequest,
@@ -20,7 +24,7 @@ import {
 import { selectUser } from './user.ts';
 import type { CollectionCard } from '../../types/CollectionCard.ts';
 import { cardList } from '../db/lists.ts';
-import { type SwuRarity, SwuSet } from '../../types/enums.ts';
+import { CollectionType, type SwuRarity, SwuSet } from '../../types/enums.ts';
 
 export const selectCollection = getTableColumns(collectionTable);
 
@@ -431,4 +435,58 @@ export const collectionRoute = new Hono<AuthExtension>()
         amount,
       },
     });
+  })
+  .post('/:id/duplicate', zValidator('json', zCollectionDuplicateRequest), async c => {
+    const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+    const data = c.req.valid('json');
+    const user = c.get('user');
+
+    if (!user) return c.json({ message: 'Unauthorized' }, 401);
+
+    const isPublic = eq(collectionTable.public, true);
+    const isOwner = eq(collectionTable.userId, user.id);
+
+    // Get the source collection
+    const sourceCollection = (
+      await db
+        .select()
+        .from(collectionTable)
+        .where(
+          and(
+            eq(collectionTable.id, paramCollectionId),
+            or(isOwner, isPublic), // User must be owner or collection must be public
+          ),
+        )
+    )[0];
+
+    if (!sourceCollection) {
+      return c.json({ message: "Source collection doesn't exist" }, 404);
+    }
+
+    // Create a new collection with copied data
+    const newCollection = await db
+      .insert(collectionTable)
+      .values({
+        ...data,
+        userId: user.id,
+        description: sourceCollection.description,
+      })
+      .returning();
+
+    // Copy all cards from the source collection to the new one
+    const sourceCards = await db
+      .select()
+      .from(collectionCardTable)
+      .where(eq(collectionCardTable.collectionId, paramCollectionId));
+
+    if (sourceCards.length > 0) {
+      const cardInserts = sourceCards.map(card => ({
+        ...card,
+        collectionId: newCollection[0].id,
+      }));
+
+      await db.insert(collectionCardTable).values(cardInserts);
+    }
+
+    return c.json({ data: newCollection[0] }, 201);
   });

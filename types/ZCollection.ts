@@ -32,6 +32,13 @@ export const zCollectionUpdateRequest = zCollectionSchema
   })
   .partial();
 
+export const zCollectionDuplicateRequest = z.object({
+  title: z.string().min(3).max(255),
+  collectionType: z.nativeEnum(CollectionType).default(CollectionType.COLLECTION),
+  public: z.boolean().default(false),
+});
+
 export type ZCollection = z.infer<typeof zCollectionSchema>;
 export type ZCollectionCreateRequest = z.infer<typeof zCollectionCreateRequest>;
 export type ZCollectionUpdateRequest = z.infer<typeof zCollectionUpdateRequest>;
+export type ZCollectionDuplicateRequest = z.infer<typeof zCollectionDuplicateRequest>;
