@@ -30,6 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
+import DeckImageButton from '@/components/app/decks/DeckContents/DeckImage/DeckImageButton.tsx';
 
 interface DeckActionsProps {
   deckId: string;
@@ -177,7 +178,7 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="sm" variant="outline">
+            <Button size="sm">
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
@@ -206,6 +207,7 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <DeckImageButton deckId={deckId} />
 
         <Button size="sm" disabled onClick={() => {}}>
           <ScrollText className="h-4 w-4 mr-2" />

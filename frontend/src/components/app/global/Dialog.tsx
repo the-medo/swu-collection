@@ -14,6 +14,7 @@ import * as React from 'react';
 import { DialogProps as RadixDialogProps } from '@radix-ui/react-dialog';
 import { cn } from '@/lib/utils.ts';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const dialogVariants = cva('max-w-[100vw] lg:max-w-[90vw] max-h-[100vh] lg:max-h-[90vh] ', {
   variants: {
@@ -36,6 +37,7 @@ export interface DialogProps
   triggerDisabled?: boolean;
   header?: string | React.ReactNode;
   headerDescription?: string | React.ReactNode;
+  headerHidden?: boolean;
   footer?: React.ReactNode;
   contentClassName?: string;
 }
@@ -45,6 +47,7 @@ const Dialog: React.FC<DialogProps> = ({
   triggerDisabled = false,
   header,
   headerDescription,
+  headerHidden = false,
   footer,
   children,
   contentClassName,
@@ -53,15 +56,19 @@ const Dialog: React.FC<DialogProps> = ({
 }) => {
   const headerComponent = useMemo(() => {
     if (!header) return undefined;
-    if (typeof header === 'string')
-      return (
+    let h = null;
+    if (typeof header === 'string') {
+      h = (
         <DialogHeader className="bg-background">
           <DialogTitle>{header}</DialogTitle>
           {headerDescription && <DialogDescription>{headerDescription}</DialogDescription>}
         </DialogHeader>
       );
-    return <DialogHeader className="bg-background">{header}</DialogHeader>;
-  }, [header, headerDescription]);
+    } else {
+      h = <DialogHeader className="bg-background">{header}</DialogHeader>;
+    }
+    return headerHidden ? <VisuallyHidden>{h}</VisuallyHidden> : h;
+  }, [header, headerHidden, headerDescription]);
 
   const footerComponent = useMemo(() => {
     if (!footer) return undefined;
