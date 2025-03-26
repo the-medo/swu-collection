@@ -3,11 +3,12 @@ import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { UserCollectionsResponse } from '../../../../server/routes/user.ts';
+import { CollectionType } from '../../../../types/enums.ts';
 
 export type PostCollectionRequest = {
   title: string;
   description: string;
-  wantlist: boolean;
+  collectionType: CollectionType;
   public: boolean;
 };
 

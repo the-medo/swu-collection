@@ -34,7 +34,7 @@ interface CollectionInputBulkProps {
 const CollectionInputBulk: React.FC<CollectionInputBulkProps> = ({ collectionId }) => {
   const { areYouSure, amount, note, language, condition, sets, rarities, variants } =
     useCollectionInputBulkStore();
-  const { collectionOrWantlist } = useCollectionInfo(collectionId);
+  const { cardListString } = useCollectionInfo(collectionId);
   const {
     setAreYouSure,
     setAmount,
@@ -126,7 +126,7 @@ const CollectionInputBulk: React.FC<CollectionInputBulkProps> = ({ collectionId 
           disabled={!canSubmit || mutation.isPending}
           onClick={canSubmit ? submitHandler : undefined}
         >
-          {mutation.isPending ? '...' : `Add to ${collectionOrWantlist.toLowerCase()}`}
+          {mutation.isPending ? '...' : `Add to ${cardListString.toLowerCase()}`}
         </Button>
       </div>
     </div>

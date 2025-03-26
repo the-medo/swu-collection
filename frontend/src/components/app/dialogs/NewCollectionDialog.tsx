@@ -12,21 +12,23 @@ import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useNavigate } from '@tanstack/react-router';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { usePostCollection } from '@/api/collections/usePostCollection.ts';
+import { CollectionType } from '../../../../../types/enums.ts';
+import { collectionTypeTitle } from '../../../../../types/iterableEnumInfo.ts';
 
 type NewCollectionDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
-  wantlist: boolean;
+  collectionType: CollectionType;
 };
 
 const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
   trigger,
   triggerDisabled,
-  wantlist,
+  collectionType,
 }) => {
   const navigate = useNavigate();
   const user = useUser();
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
-  const collectionOrWantlist = wantlist ? 'Wantlist' : 'Collection';
+  const cardListString = collectionTypeTitle[collectionType];
   const postCollectionMutation = usePostCollection();
 
   const form = useForm<{
@@ -35,7 +37,7 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
     public: boolean;
   }>({
     defaultValues: {
-      title: `My ${collectionOrWantlist}`,
+      title: `My ${cardListString}`,
       description: ``,
       public: false,
     },
@@ -45,13 +47,13 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
         {
           title: value.title,
           description: value.description,
-          wantlist,
+          collectionType,
           public: value.public,
         },
         {
           onSuccess: result => {
             toast({
-              title: `${collectionOrWantlist} "${value.title}" created!`,
+              title: `${cardListString} "${value.title}" created!`,
             });
             // Navigate to the newly created collection.
             const createdCollection = result.data[0];
@@ -67,7 +69,7 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
     <Dialog
       trigger={trigger}
       triggerDisabled={triggerDisabled}
-      header={`New ${collectionOrWantlist}`}
+      header={`New ${cardListString}`}
       open={open}
       onOpenChange={setOpen}
     >
@@ -131,7 +133,7 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
         </form>
       ) : (
         <div className="flex flex-col gap-4">
-          Please sign in to create new {collectionOrWantlist.toLowerCase()}.
+          Please sign in to create new {cardListString.toLowerCase()}.
           <SignIn />
         </div>
       )}

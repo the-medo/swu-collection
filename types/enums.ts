@@ -44,3 +44,9 @@ export enum SwuArena {
   GROUND = 'Ground',
   SPACE = 'Space',
 }
+
+export enum CollectionType {
+  COLLECTION = 1,
+  WANTLIST = 2,
+  OTHER = 3,
+}

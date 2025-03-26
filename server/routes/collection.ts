@@ -34,7 +34,7 @@ export const collectionRoute = new Hono<AuthExtension>()
   .get('/', async c => {
     const country = c.req.query('country');
     const state = c.req.query('state');
-    const wantlist = c.req.query('wantlist') === 'true';
+    const collectionType = Number(c.req.query('collectionType') ?? 1);
     const limit = Number(c.req.query('limit') ?? 50);
     const offset = Number(c.req.query('offset') ?? 0);
     const sort = c.req.query('sort') ?? 'collection.created_at';
@@ -54,7 +54,7 @@ export const collectionRoute = new Hono<AuthExtension>()
       filters.push(eq(userTable.state, state));
     }
 
-    filters.push(eq(collectionTable.wantlist, wantlist));
+    filters.push(eq(collectionTable.collectionType, collectionType));
 
     const collections = await db
       .select({
@@ -162,7 +162,7 @@ export const collectionRoute = new Hono<AuthExtension>()
 
     const col = (await db.select().from(collectionTable).where(collectionId))[0];
 
-    if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
+    if (!col) return c.json({ message: "Card collection doesn't exist" }, 500);
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
 
     //delete collection_card
@@ -212,26 +212,6 @@ export const collectionRoute = new Hono<AuthExtension>()
     const col = (await db.select().from(collectionTable).where(collectionId))[0];
     if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
-
-    // const cardCollectionId = eq(collectionCardTable.collectionId, paramCollectionId);
-    // const cardId = eq(collectionCardTable.cardId, data.cardId);
-    // const variantId = eq(collectionCardTable.variantId, data.variantId);
-    // const foil = eq(collectionCardTable.foil, data.foil);
-    // const condition = eq(collectionCardTable.condition, data.condition);
-    // const language = eq(collectionCardTable.language, data.language);
-
-    // const primaryKeyFilters = [cardCollectionId, cardId, variantId, foil, condition, language];
-
-    // if (data.amount !== undefined && data.amount === 0) {
-    //   const deletedCollectionCard = (
-    //     await db
-    //       .delete(collectionCardTable)
-    //       .where(and(...primaryKeyFilters))
-    //       .returning()
-    //   )[0];
-    //
-    //   return c.json({ data: deletedCollectionCard }, 201);
-    // }
 
     const newCollectionCard = await db
       .insert(collectionCardTable)
@@ -352,7 +332,7 @@ export const collectionRoute = new Hono<AuthExtension>()
     const collectionId = eq(collectionTable.id, paramCollectionId);
 
     const col = (await db.select().from(collectionTable).where(collectionId))[0];
-    if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
+    if (!col) return c.json({ message: "Card collection doesn't exist" }, 500);
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
 
     const cardCollectionId = eq(collectionCardTable.collectionId, paramCollectionId);

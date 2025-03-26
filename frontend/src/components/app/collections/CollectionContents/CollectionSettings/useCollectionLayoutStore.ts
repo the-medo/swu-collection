@@ -60,7 +60,8 @@ interface CollectionLayoutStore {
     | {
         currency: string;
         owned: boolean;
-        collectionOrWantlist: string;
+        collectionType: number;
+        cardListString: string;
       }
     | undefined
   >;
@@ -97,13 +98,14 @@ const setCollectionInfo = (
   collectionId: string,
   currency: string,
   owned: boolean,
-  collectionOrWantlist: string,
+  collectionType: number,
+  cardListString: string,
 ) =>
   store.setState(state => ({
     ...state,
     collectionInfo: {
       ...state.collectionInfo,
-      [collectionId]: { currency, owned, collectionOrWantlist },
+      [collectionId]: { currency, owned, collectionType, cardListString },
     },
   }));
 const addGroupBy = (newGroupBy: CollectionGroupBy) =>
@@ -154,7 +156,8 @@ export function useCollectionInfo(collectionId: string) {
     useStore(store, state => state.collectionInfo[collectionId]) ?? {
       currency: '-',
       owned: false,
-      collectionOrWantlist: 'Collection',
+      collectionType: 1,
+      cardListString: 'Collection',
     }
   );
 }

@@ -28,7 +28,7 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
 }) => {
   const { data: collectionCards, isFetching } = useGetCollectionCards(collectionId);
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
-  const { collectionOrWantlist } = useCollectionInfo(collectionId);
+  const { cardListString } = useCollectionInfo(collectionId);
 
   const columns = useCollectionCardTableColumns({
     collectionId,
@@ -80,7 +80,7 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
 
   return (
     <div className="flex flex-col gap-2">
-      {collectionOrWantlist === 'Collection' ? (
+      {cardListString === 'Collection' ? (
         <span className="font-bold">Already owned versions of this card:</span>
       ) : (
         <span className="font-bold">Already wanted versions of this card:</span>

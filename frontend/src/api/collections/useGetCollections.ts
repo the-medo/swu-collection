@@ -1,24 +1,24 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { CollectionType } from '../../../../types/enums.ts';
 
 const PAGE_SIZE = 20;
 
 export type GetCollectionsRequest = {
-  wantlist?: boolean;
+  collectionType?: CollectionType;
   country?: string;
   state?: string;
 };
 
-export const useGetCollections = ({ wantlist, country, state }: GetCollectionsRequest) => {
-  const qk = `public-collections-${wantlist ? '1' : '0'}-${country ?? 'x'}-${state ?? 'x'}`;
-  // const qk = `public-collections-${wantlist ? '1' : '0'}`;
+export const useGetCollections = ({ collectionType, country, state }: GetCollectionsRequest) => {
+  const qk = `public-collections-${collectionType ? '1' : '0'}-${country ?? 'x'}-${state ?? 'x'}`;
 
   return useInfiniteQuery({
     queryKey: [qk],
     queryFn: async ({ pageParam }) => {
       const response = await api.collection.$get({
         query: {
-          wantlist: wantlist,
+          collectionType: collectionType,
           country: country ?? undefined,
           state: state ?? undefined,
           top: PAGE_SIZE,

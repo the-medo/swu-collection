@@ -37,8 +37,6 @@ export const userRoute = new Hono<AuthExtension>()
       .where(and(eq(collection.userId, paramUserId), isOwner ? or(isOwner, isPublic) : isPublic))
       .orderBy(sql.raw(`${sort} ${order}`));
 
-    await new Promise(resolve => setTimeout(resolve, 300));
-
     return c.json<UserCollectionsResponse>({
       userId: paramUserId,
       collections: userCollections,

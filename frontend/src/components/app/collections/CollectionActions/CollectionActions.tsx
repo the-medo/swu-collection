@@ -14,7 +14,7 @@ interface CollectionActionsProps {
 const CollectionActions: React.FC<CollectionActionsProps> = ({ collectionId }) => {
   const { toast } = useToast();
   const { data } = useGetCollection(collectionId);
-  const { collectionOrWantlist } = useCollectionInfo(collectionId);
+  const { cardListString } = useCollectionInfo(collectionId);
   const collectionLink = `${window.location.origin}/collections/${collectionId}`;
 
   return (
@@ -38,10 +38,6 @@ const CollectionActions: React.FC<CollectionActionsProps> = ({ collectionId }) =
         <Button size="sm" disabled onClick={() => {}}>
           <BookCopy className="h-4 w-4" />
           Duplicate
-        </Button>
-        <Button size="sm" disabled onClick={() => {}}>
-          <ScrollText className="h-4 w-4" />
-          Compare with {collectionOrWantlist === 'Collection' ? 'wantlist' : 'collection'}
         </Button>
       </CardContent>
     </Card>

@@ -41,7 +41,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
   const amountInputRef = useRef<HTMLInputElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const mutation = usePostCollectionCard(collectionId);
-  const { collectionOrWantlist } = useCollectionInfo(collectionId);
+  const { cardListString } = useCollectionInfo(collectionId);
 
   const {
     open,
@@ -259,7 +259,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
         disabled={mutation.isPending}
         onClick={canSubmit ? submitHandler : undefined}
       >
-        {mutation.isPending ? '...' : `Add to ${collectionOrWantlist?.toLowerCase()}`}
+        {mutation.isPending ? '...' : `Add to ${cardListString?.toLowerCase()}`}
       </Button>
       <CollectionDuplicates
         collectionId={collectionId}

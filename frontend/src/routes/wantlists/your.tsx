@@ -4,6 +4,7 @@ import { AuthorizedRouteComponent } from '@/routes/_authenticated.tsx';
 import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import UserCollections from '@/components/app/collections/UserCollections/UserCollections.tsx';
+import { CollectionType } from '../../../../types/enums.ts';
 
 export const Route = createFileRoute('/wantlists/your')({
   component: YourWantlists,
@@ -17,10 +18,17 @@ function YourWantlists() {
       <div className="p-2 w-full">
         <div className="flex flex-row gap-4 items-center justify-between mb-2">
           <h3>Your wantlists</h3>
-          <NewCollectionDialog trigger={<Button>New wantlist</Button>} wantlist={true} />
+          <NewCollectionDialog
+            trigger={<Button>New wantlist</Button>}
+            collectionType={CollectionType.WANTLIST}
+          />
         </div>
         <div className="flex gap-4 items-start w-full">
-          <UserCollections userId={user?.id} loading={!user} wantlist={true} />
+          <UserCollections
+            userId={user?.id}
+            loading={!user}
+            collectionType={CollectionType.WANTLIST}
+          />
         </div>
       </div>
     </AuthorizedRouteComponent>

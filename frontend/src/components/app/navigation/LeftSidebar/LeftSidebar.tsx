@@ -1,12 +1,13 @@
 import {
-  Plus,
-  TrophyIcon,
-  BookOpenCheck,
-  BookOpen,
-  ScrollText,
-  BookCheck,
   Book,
+  BookCheck,
+  BookOpen,
+  BookOpenCheck,
+  NotebookTabs,
+  Plus,
+  ScrollText,
   Search,
+  TrophyIcon,
 } from 'lucide-react';
 
 import {
@@ -19,6 +20,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
@@ -36,6 +38,7 @@ import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog/NewDeckDialog.
 import CardSearchCommand from '@/components/app/global/CardSearchCommand/CardSearchCommand.tsx';
 import SocialLinks from '@/components/app/navigation/LeftSidebar/SocialLinks.tsx';
 import { cn } from '@/lib/utils.ts';
+import { CollectionType } from '../../../../../../types/enums.ts';
 
 const groups = [
   {
@@ -72,53 +75,64 @@ const groups = [
     ],
   },
   {
-    title: 'Collections',
+    title: 'Lists',
     action: () => {},
     icon: BookOpenCheck,
-    sidebarGroupAction: (
-      <NewCollectionDialog
-        trigger={
-          <SidebarGroupAction title="Add Collection">
-            <Plus /> <span className="sr-only">Add Collection</span>
-          </SidebarGroupAction>
-        }
-        wantlist={false}
-      />
-    ),
+    sidebarGroupAction: null,
     items: [
       {
         title: 'Your collections',
         url: '/collections/your',
         icon: BookOpenCheck,
         authenticated: true,
+        menuAction: (
+          <NewCollectionDialog
+            trigger={
+              <SidebarMenuAction title="Add Collection">
+                <Plus /> <span className="sr-only">Add Collection</span>
+              </SidebarMenuAction>
+            }
+            collectionType={CollectionType.COLLECTION}
+          />
+        ),
       },
-      {
-        title: 'Public collections',
-        url: '/collections/public',
-        icon: BookOpen,
-      },
-    ],
-  },
-  {
-    title: 'Wantlists',
-    action: () => {},
-    icon: ScrollText,
-    sidebarGroupAction: (
-      <NewCollectionDialog
-        trigger={
-          <SidebarGroupAction title="Add Wantlist">
-            <Plus /> <span className="sr-only">Add Wantlist</span>
-          </SidebarGroupAction>
-        }
-        wantlist={true}
-      />
-    ),
-    items: [
       {
         title: 'Your wantlists',
         url: '/wantlists/your',
         icon: ScrollText,
         authenticated: true,
+        menuAction: (
+          <NewCollectionDialog
+            trigger={
+              <SidebarMenuAction title="Add Wantlist">
+                <Plus /> <span className="sr-only">Add Wantlist</span>
+              </SidebarMenuAction>
+            }
+            collectionType={CollectionType.WANTLIST}
+          />
+        ),
+      },
+      {
+        title: 'Your other lists',
+        url: '/lists/your',
+        icon: NotebookTabs,
+        authenticated: true,
+        menuAction: (
+          <NewCollectionDialog
+            trigger={
+              <SidebarMenuAction title="Add Wantlist">
+                <Plus /> <span className="sr-only">Add card list</span>
+              </SidebarMenuAction>
+            }
+            collectionType={CollectionType.OTHER}
+          />
+        ),
+        separator: true,
+      },
+      {
+        title: 'Public collections',
+        url: '/collections/public',
+        icon: BookOpen,
       },
       {
         title: 'Public wantlists',
@@ -180,20 +194,24 @@ export function LeftSidebar() {
               <SidebarMenu>
                 {g.items.map(i =>
                   !i.authenticated || (i.authenticated && user) ? (
-                    <SidebarMenuItem key={i.title}>
-                      <SidebarMenuButton asChild>
-                        <Link
-                          to={i.url}
-                          className="[&.active]:font-bold"
-                          onClick={() => {
-                            setOpenMobile(false);
-                          }}
-                        >
-                          <i.icon />
-                          <span>{i.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
+                    <>
+                      <SidebarMenuItem key={i.title}>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            to={i.url}
+                            className="[&.active]:font-bold"
+                            onClick={() => {
+                              setOpenMobile(false);
+                            }}
+                          >
+                            <i.icon />
+                            <span>{i.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                        {'menuAction' in i ? i.menuAction : null}
+                      </SidebarMenuItem>
+                      {'separator' in i && i.separator ? <SidebarSeparator /> : null}
+                    </>
                   ) : null,
                 )}
               </SidebarMenu>

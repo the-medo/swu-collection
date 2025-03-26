@@ -23,7 +23,7 @@ interface CollectionInputSectionProps {
 }
 
 const CollectionInputSection: React.FC<CollectionInputSectionProps> = ({ collectionId }) => {
-  const { collectionOrWantlist } = useCollectionInfo(collectionId);
+  const { cardListString } = useCollectionInfo(collectionId);
   const { isMobile } = useSidebar();
   const [open, setOpen] = useState(!isMobile);
 
@@ -43,7 +43,7 @@ const CollectionInputSection: React.FC<CollectionInputSectionProps> = ({ collect
                 <ChevronRight className={cn('h-4 w-4 transition-all', { 'rotate-90': open })} />
               </Button>
             )}
-            <span>Insert cards to {collectionOrWantlist?.toLowerCase()}</span>
+            <span>Insert cards to {cardListString?.toLowerCase()}</span>
           </CardTitle>
           {open && (
             <CardDescription>
