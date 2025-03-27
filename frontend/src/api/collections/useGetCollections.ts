@@ -11,7 +11,7 @@ export type GetCollectionsRequest = {
 };
 
 export const useGetCollections = ({ collectionType, country, state }: GetCollectionsRequest) => {
-  const qk = `public-collections-${collectionType ? '1' : '0'}-${country ?? 'x'}-${state ?? 'x'}`;
+  const qk = `public-collections-${collectionType}-${country ?? 'x'}-${state ?? 'x'}`;
 
   return useInfiniteQuery({
     queryKey: [qk],

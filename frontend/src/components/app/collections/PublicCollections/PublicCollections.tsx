@@ -4,21 +4,22 @@ import { UserCollectionData } from '@/components/app/collections/CollectionCardT
 import { useGetCollections } from '@/api/collections/useGetCollections.ts';
 import { usePublicCollectionsStore } from '@/components/app/collections/PublicCollections/usePublicCollectionsStore.ts';
 import CountryAndStateSelectors from '@/components/app/collections/PublicCollections/CountryAndStateSelectors.tsx';
+import { CollectionType } from '../../../../../../types/enums.ts';
 
 interface PublicCollectionsProps {
-  wantlist?: boolean;
+  collectionType: CollectionType;
 }
 
-const PublicCollections: React.FC<PublicCollectionsProps> = ({ wantlist = false }) => {
+const PublicCollections: React.FC<PublicCollectionsProps> = ({ collectionType }) => {
   const { country, state } = usePublicCollectionsStore();
 
   const params = useMemo(
     () => ({
-      wantlist,
+      collectionType,
       country: country ?? undefined,
       state: state ?? undefined,
     }),
-    [country, state],
+    [collectionType, country, state],
   );
 
   const { data, isFetching } = useGetCollections(params);
