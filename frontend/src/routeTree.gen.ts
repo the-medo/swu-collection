@@ -18,6 +18,7 @@ import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
 import { Route as NotificationsIndexImport } from './routes/notifications/index'
 import { Route as MessagesIndexImport } from './routes/messages/index'
+import { Route as ComparerIndexImport } from './routes/comparer/index'
 import { Route as WantlistsYourImport } from './routes/wantlists/your'
 import { Route as WantlistsPublicImport } from './routes/wantlists/public'
 import { Route as ListsYourImport } from './routes/lists/your'
@@ -76,6 +77,12 @@ const NotificationsIndexRoute = NotificationsIndexImport.update({
 const MessagesIndexRoute = MessagesIndexImport.update({
   id: '/messages/',
   path: '/messages/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ComparerIndexRoute = ComparerIndexImport.update({
+  id: '/comparer/',
+  path: '/comparer/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -291,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WantlistsYourImport
       parentRoute: typeof rootRoute
     }
+    '/comparer/': {
+      id: '/comparer/'
+      path: '/comparer'
+      fullPath: '/comparer'
+      preLoaderRoute: typeof ComparerIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/messages/': {
       id: '/messages/'
       path: '/messages'
@@ -387,6 +401,7 @@ export interface FileRoutesByFullPath {
   '/lists/your': typeof ListsYourRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
+  '/comparer': typeof ComparerIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
@@ -414,6 +429,7 @@ export interface FileRoutesByTo {
   '/lists/your': typeof ListsYourRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
+  '/comparer': typeof ComparerIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
@@ -442,6 +458,7 @@ export interface FileRoutesById {
   '/lists/your': typeof ListsYourRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
+  '/comparer/': typeof ComparerIndexRoute
   '/messages/': typeof MessagesIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
@@ -471,6 +488,7 @@ export interface FileRouteTypes {
     | '/lists/your'
     | '/wantlists/public'
     | '/wantlists/your'
+    | '/comparer'
     | '/messages'
     | '/notifications'
     | '/cards/detail/$cardId'
@@ -497,6 +515,7 @@ export interface FileRouteTypes {
     | '/lists/your'
     | '/wantlists/public'
     | '/wantlists/your'
+    | '/comparer'
     | '/messages'
     | '/notifications'
     | '/cards/detail/$cardId'
@@ -523,6 +542,7 @@ export interface FileRouteTypes {
     | '/lists/your'
     | '/wantlists/public'
     | '/wantlists/your'
+    | '/comparer/'
     | '/messages/'
     | '/notifications/'
     | '/cards/detail/$cardId'
@@ -550,6 +570,7 @@ export interface RootRouteChildren {
   ListsYourRoute: typeof ListsYourRoute
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
+  ComparerIndexRoute: typeof ComparerIndexRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
   CardsDetailCardIdRoute: typeof CardsDetailCardIdRoute
@@ -576,6 +597,7 @@ const rootRouteChildren: RootRouteChildren = {
   ListsYourRoute: ListsYourRoute,
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
+  ComparerIndexRoute: ComparerIndexRoute,
   MessagesIndexRoute: MessagesIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
   CardsDetailCardIdRoute: CardsDetailCardIdRoute,
@@ -611,6 +633,7 @@ export const routeTree = rootRoute
         "/lists/your",
         "/wantlists/public",
         "/wantlists/your",
+        "/comparer/",
         "/messages/",
         "/notifications/",
         "/cards/detail/$cardId",
@@ -670,6 +693,9 @@ export const routeTree = rootRoute
     },
     "/wantlists/your": {
       "filePath": "wantlists/your.tsx"
+    },
+    "/comparer/": {
+      "filePath": "comparer/index.tsx"
     },
     "/messages/": {
       "filePath": "messages/index.tsx"

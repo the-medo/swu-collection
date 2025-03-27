@@ -7,6 +7,9 @@ import { useGetCollection } from '@/api/collections/useGetCollection.ts';
 import { cn } from '@/lib/utils.ts';
 import DuplicateCollectionDialog from '@/components/app/dialogs/DuplicateCollectionDialog.tsx';
 import { useUser } from '@/hooks/useUser.ts';
+import AddToComparerButton from '@/components/app/comparer/SidebarComparer/AddToComparerButton.tsx';
+import { ComparerEntryAdditionalData } from '@/components/app/comparer/useComparerStore.ts';
+import { useMemo } from 'react';
 
 interface CollectionActionsProps {
   collectionId: string;
@@ -17,6 +20,14 @@ const CollectionActions: React.FC<CollectionActionsProps> = ({ collectionId }) =
   const { data } = useGetCollection(collectionId);
   const user = useUser();
   const collectionLink = `${window.location.origin}/collections/${collectionId}`;
+
+  const collectionType = data?.collection.collectionType;
+  const additionalData: ComparerEntryAdditionalData = useMemo(
+    () => ({
+      title: data?.collection.title,
+    }),
+    [data?.collection],
+  );
 
   return (
     <Card>
@@ -47,6 +58,13 @@ const CollectionActions: React.FC<CollectionActionsProps> = ({ collectionId }) =
             }
           />
         )}
+        <AddToComparerButton
+          id={collectionId}
+          dataType="collection"
+          collectionType={collectionType}
+          additionalData={additionalData}
+          size="sm"
+        />
       </CardContent>
     </Card>
   );

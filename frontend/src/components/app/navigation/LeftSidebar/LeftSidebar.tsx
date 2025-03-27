@@ -5,6 +5,7 @@ import {
   BookOpenCheck,
   NotebookTabs,
   Plus,
+  Scale,
   ScrollText,
   Search,
   TrophyIcon,
@@ -39,6 +40,7 @@ import CardSearchCommand from '@/components/app/global/CardSearchCommand/CardSea
 import SocialLinks from '@/components/app/navigation/LeftSidebar/SocialLinks.tsx';
 import { cn } from '@/lib/utils.ts';
 import { CollectionType } from '../../../../../../types/enums.ts';
+import SidebarComparer from '../../comparer/SidebarComparer/SidebarComparer.tsx';
 
 const groups = [
   {
@@ -218,6 +220,17 @@ export function LeftSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+        <SidebarGroup>
+          <SidebarGroupLabel>Comparer</SidebarGroupLabel>
+          <SidebarGroupAction title="Open comparer">
+            <Link to={'/comparer'}>
+              <Scale className="w-4 h-4" /> <span className="sr-only">Open comparer</span>
+            </Link>
+          </SidebarGroupAction>
+          <SidebarGroupContent>
+            <SidebarComparer />
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SocialLinks />
       <SidebarSeparator />
