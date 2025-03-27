@@ -22,7 +22,7 @@ const DeleteCollectionDialog: React.FC<DeleteCollectionDialogProps> = ({ trigger
   const user = useUser();
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
-  const collectionOrWantlist = wantlist ? 'Wantlist' : 'Collection';
+  const cardListString = wantlist ? 'Wantlist' : 'Collection';
   const deleteCollectionMutation = useDeleteCollection();
 
   const form = useForm<{
@@ -36,7 +36,7 @@ const DeleteCollectionDialog: React.FC<DeleteCollectionDialogProps> = ({ trigger
         deleteCollectionMutation.mutate(collection.id, {
           onSuccess: () => {
             toast({
-              title: `${collectionOrWantlist} deleted`,
+              title: `${cardListString} deleted`,
             });
             setOpen(false);
             navigate({ to: `/collections/your` });
@@ -45,7 +45,7 @@ const DeleteCollectionDialog: React.FC<DeleteCollectionDialogProps> = ({ trigger
       } else {
         toast({
           variant: 'destructive',
-          title: `Please type "DELETE" to confirm deletion of ${collectionOrWantlist.toLowerCase()}`,
+          title: `Please type "DELETE" to confirm deletion of ${cardListString.toLowerCase()}`,
           description: 'It needs to be in capital letters.',
         });
       }
@@ -55,14 +55,14 @@ const DeleteCollectionDialog: React.FC<DeleteCollectionDialogProps> = ({ trigger
   return (
     <Dialog
       trigger={trigger}
-      header={`Delete ${collectionOrWantlist} "${collection.title}"`}
+      header={`Delete ${cardListString} "${collection.title}"`}
       open={open}
       onOpenChange={setOpen}
     >
       <div className="text-sm">
-        You are about to delete this {collectionOrWantlist.toLowerCase()}. All contents will be
-        deleted. This action cannot be undone. All links to this{' '}
-        {collectionOrWantlist.toLowerCase()} will no longer be valid.
+        You are about to delete this {cardListString.toLowerCase()}. All contents will be deleted.
+        This action cannot be undone. All links to this {cardListString.toLowerCase()} will no
+        longer be valid.
       </div>
       {user ? (
         <form
@@ -96,7 +96,7 @@ const DeleteCollectionDialog: React.FC<DeleteCollectionDialogProps> = ({ trigger
         </form>
       ) : (
         <div className="flex flex-col gap-4">
-          Please sign in to delete {collectionOrWantlist.toLowerCase()}.
+          Please sign in to delete {cardListString.toLowerCase()}.
           <SignIn />
         </div>
       )}

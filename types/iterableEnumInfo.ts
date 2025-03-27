@@ -1,4 +1,4 @@
-import { CardLanguage, CardCondition, SwuAspect } from './enums.ts';
+import { CardLanguage, CardCondition, SwuAspect, CollectionType } from './enums.ts';
 import { DeckLayout } from '../frontend/src/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 
 export const getLanguageFlagUrl = (language: CardLanguage) =>
@@ -129,3 +129,9 @@ export const deckLayoutObj: Record<DeckLayout, { title: string }> = {
 };
 
 export const deckLayoutArray = Object.values(DeckLayout);
+
+export const collectionTypeTitle: Record<CollectionType, string> = {
+  [CollectionType.COLLECTION]: 'Collection',
+  [CollectionType.WANTLIST]: 'Wantlist',
+  [CollectionType.OTHER]: 'Card list',
+};

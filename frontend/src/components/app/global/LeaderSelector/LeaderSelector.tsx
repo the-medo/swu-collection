@@ -130,7 +130,6 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
           card={selectedLeader.card}
           cardVariantId={selectedLeader.variantId}
           forceHorizontal={true}
-          // backSideButton={editable ? false : 'mid'}
           backSideButton={'mid'}
           size={size}
         />

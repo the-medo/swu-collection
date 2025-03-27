@@ -13,6 +13,8 @@ import DeleteCollectionDialog from '@/components/app/dialogs/DeleteCollectionDia
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import CollectionStats from '@/components/app/collections/CollectionStats/CollectionStats.tsx';
 import CollectionActions from '@/components/app/collections/CollectionActions/CollectionActions.tsx';
+import { collectionTypeTitle } from '../../../../../../types/iterableEnumInfo.ts';
+import { CollectionType } from '../../../../../../types/enums.ts';
 
 const routeApi = getRouteApi('/collections/$collectionId/');
 
@@ -27,18 +29,24 @@ const CollectionDetail: React.FC = () => {
   const loading = isFetching;
   const owned = user?.id === collectionUserId;
 
-  const wantlist = !!data?.collection.wantlist;
-  const collectionOrWantlist = wantlist ? 'Wantlist' : 'Collection';
+  const collectionType = data?.collection.collectionType ?? CollectionType.COLLECTION;
+  const cardListString = collectionTypeTitle[collectionType];
 
   useEffect(() => {
-    setCollectionInfo(collectionId, collectionCurrency ?? '-', owned, collectionOrWantlist);
-  }, [owned, collectionCurrency, collectionOrWantlist]);
+    setCollectionInfo(
+      collectionId,
+      collectionCurrency ?? '-',
+      owned,
+      collectionType,
+      cardListString,
+    );
+  }, [owned, collectionCurrency, collectionType, cardListString]);
 
   if (error?.status === 404) {
     return (
       <Error404
-        title={`${collectionOrWantlist} not found`}
-        description={`The ${collectionOrWantlist} you are looking for does not exist. It is possible that it was deleted or it is not public.`}
+        title={`${cardListString} not found`}
+        description={`The ${cardListString} you are looking for does not exist. It is possible that it was deleted or it is not public.`}
       />
     );
   }
@@ -50,7 +58,7 @@ const CollectionDetail: React.FC = () => {
           mainTitle={data?.collection.title}
           subTitle={
             <>
-              {collectionOrWantlist.toLowerCase()} by{' '}
+              {cardListString.toLowerCase()} by{' '}
               <Link to={`/users/$userId`} params={{ userId: collectionUserId }}>
                 {data?.user.displayName}
               </Link>
@@ -63,11 +71,11 @@ const CollectionDetail: React.FC = () => {
             {publicRenderer(data?.collection.public)}
             <EditCollectionDialog
               collection={data?.collection}
-              trigger={<Button>Edit {collectionOrWantlist}</Button>}
+              trigger={<Button>Edit {cardListString}</Button>}
             />
             <DeleteCollectionDialog
               collection={data?.collection}
-              trigger={<Button variant="destructive">Delete {collectionOrWantlist}</Button>}
+              trigger={<Button variant="destructive">Delete {cardListString}</Button>}
             />
           </div>
         )}

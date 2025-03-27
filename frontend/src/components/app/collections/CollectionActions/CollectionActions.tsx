@@ -1,11 +1,15 @@
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import * as React from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import { BookCopy, LinkIcon, ScrollText } from 'lucide-react';
+import { Copy, LinkIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useGetCollection } from '@/api/collections/useGetCollection.ts';
 import { cn } from '@/lib/utils.ts';
-import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
+import DuplicateCollectionDialog from '@/components/app/dialogs/DuplicateCollectionDialog.tsx';
+import { useUser } from '@/hooks/useUser.ts';
+import AddToComparerButton from '@/components/app/comparer/SidebarComparer/AddToComparerButton.tsx';
+import { ComparerEntryAdditionalData } from '@/components/app/comparer/useComparerStore.ts';
+import { useMemo } from 'react';
 
 interface CollectionActionsProps {
   collectionId: string;
@@ -14,8 +18,16 @@ interface CollectionActionsProps {
 const CollectionActions: React.FC<CollectionActionsProps> = ({ collectionId }) => {
   const { toast } = useToast();
   const { data } = useGetCollection(collectionId);
-  const { collectionOrWantlist } = useCollectionInfo(collectionId);
+  const user = useUser();
   const collectionLink = `${window.location.origin}/collections/${collectionId}`;
+
+  const collectionType = data?.collection.collectionType;
+  const additionalData: ComparerEntryAdditionalData = useMemo(
+    () => ({
+      title: data?.collection.title,
+    }),
+    [data?.collection],
+  );
 
   return (
     <Card>
@@ -35,14 +47,24 @@ const CollectionActions: React.FC<CollectionActionsProps> = ({ collectionId }) =
           <LinkIcon className="h-4 w-4" />
           Copy link {!data?.collection.public && '(private!)'}
         </Button>
-        <Button size="sm" disabled onClick={() => {}}>
-          <BookCopy className="h-4 w-4" />
-          Duplicate
-        </Button>
-        <Button size="sm" disabled onClick={() => {}}>
-          <ScrollText className="h-4 w-4" />
-          Compare with {collectionOrWantlist === 'Collection' ? 'wantlist' : 'collection'}
-        </Button>
+        {data?.collection && (
+          <DuplicateCollectionDialog
+            collection={data.collection}
+            trigger={
+              <Button size="sm" disabled={!user}>
+                <Copy className="h-4 w-4 mr-1" />
+                Duplicate
+              </Button>
+            }
+          />
+        )}
+        <AddToComparerButton
+          id={collectionId}
+          dataType="collection"
+          collectionType={collectionType}
+          additionalData={additionalData}
+          size="sm"
+        />
       </CardContent>
     </Card>
   );

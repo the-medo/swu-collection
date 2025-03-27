@@ -1,33 +1,33 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { AuthorizedRouteComponent } from '../_authenticated';
-import UserCollections from '@/components/app/collections/UserCollections/UserCollections.tsx';
 import { useUser } from '@/hooks/useUser.ts';
+import { AuthorizedRouteComponent } from '@/routes/_authenticated.tsx';
 import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import UserCollections from '@/components/app/collections/UserCollections/UserCollections.tsx';
 import { CollectionType } from '../../../../types/enums.ts';
 
-export const Route = createFileRoute('/collections/your')({
-  component: YourCollections,
+export const Route = createFileRoute('/lists/your')({
+  component: YourCardLists,
 });
 
-function YourCollections() {
+function YourCardLists() {
   const user = useUser();
 
   return (
     <AuthorizedRouteComponent>
       <div className="p-2 w-full">
         <div className="flex flex-row gap-4 items-center justify-between mb-2">
-          <h3>Your collections</h3>
+          <h3>Your card lists</h3>
           <NewCollectionDialog
-            trigger={<Button>New collection</Button>}
-            collectionType={CollectionType.COLLECTION}
+            trigger={<Button>New card list</Button>}
+            collectionType={CollectionType.OTHER}
           />
         </div>
         <div className="flex gap-4 items-start w-full">
           <UserCollections
             userId={user?.id}
             loading={!user}
-            collectionType={CollectionType.COLLECTION}
+            collectionType={CollectionType.OTHER}
           />
         </div>
       </div>

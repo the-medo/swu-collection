@@ -11,6 +11,7 @@ import * as React from 'react';
 import UserCollections from '@/components/app/collections/UserCollections/UserCollections.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
+import { CollectionType } from '../../../../../../types/enums.ts';
 
 const routeApi = getRouteApi('/users/$userId/');
 
@@ -75,10 +76,10 @@ const UserDetail: React.FC = () => {
           <UserDecks userId={userId} />
         </TabsContent>
         <TabsContent value="collections">
-          <UserCollections userId={userId} />
+          <UserCollections userId={userId} collectionType={CollectionType.COLLECTION} />
         </TabsContent>
         <TabsContent value="wantlists">
-          <UserCollections userId={userId} wantlist />
+          <UserCollections userId={userId} collectionType={CollectionType.WANTLIST} />
         </TabsContent>
       </Tabs>
     </div>

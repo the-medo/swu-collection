@@ -19,7 +19,7 @@ const CollectionStats: React.FC<CollectionStatsProps> = ({ collectionId }) => {
   const { data: cardList } = useCardList();
   const collectionCurrency = data?.user.currency;
   const loading = isFetching || isFetchingCollectionCards;
-  const { collectionOrWantlist } = useCollectionInfo(collectionId);
+  const { cardListString } = useCollectionInfo(collectionId);
 
   const stats = useMemo(() => {
     let totalPrice = 0;
@@ -51,7 +51,7 @@ const CollectionStats: React.FC<CollectionStatsProps> = ({ collectionId }) => {
     <Card className={cn({ 'opacity-50': loading })}>
       <CardHeader>
         <CardTitle className="flex justify-between items-start">
-          <span>{collectionOrWantlist} stats</span>{' '}
+          <span>{cardListString} stats</span>{' '}
           <div className="flex flex-col gap-0">
             <span className="font-normal text-sm text-gray-500">
               {stats.totalCount} total cards

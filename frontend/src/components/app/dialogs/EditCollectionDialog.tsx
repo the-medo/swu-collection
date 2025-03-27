@@ -22,7 +22,7 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ trigger, co
   const user = useUser();
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
-  const collectionOrWantlist = wantlist ? 'Wantlist' : 'Collection';
+  const cardListString = wantlist ? 'Wantlist' : 'Collection';
   const putCollectionMutation = usePutCollection();
 
   const form = useForm<{
@@ -47,7 +47,7 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ trigger, co
         {
           onSuccess: () => {
             toast({
-              title: `${collectionOrWantlist} updated!`,
+              title: `${cardListString} updated!`,
             });
             setOpen(false);
           },
@@ -72,7 +72,7 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ trigger, co
   return (
     <Dialog
       trigger={trigger}
-      header={`Edit ${collectionOrWantlist}`}
+      header={`Edit ${cardListString}`}
       open={open}
       onOpenChange={onOpenChange}
     >
@@ -136,7 +136,7 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ trigger, co
         </form>
       ) : (
         <div className="flex flex-col gap-4">
-          Please sign in to update {collectionOrWantlist.toLowerCase()}.
+          Please sign in to update {cardListString.toLowerCase()}.
           <SignIn />
         </div>
       )}
