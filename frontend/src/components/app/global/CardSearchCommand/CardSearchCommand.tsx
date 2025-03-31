@@ -49,7 +49,7 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
   return (
     <Popover open={open}>
       <Command className="border w-full" shouldFilter={false}>
-        <PopoverTrigger asChild>
+        <PopoverTrigger>
           {isFetching ? (
             <Skeleton className={`h-11 w-full`} />
           ) : (

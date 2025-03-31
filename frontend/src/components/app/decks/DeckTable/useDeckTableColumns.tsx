@@ -211,7 +211,7 @@ export function useDeckTableColumns({
         const userId = row.original.user.id;
 
         return (
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <div className="text-right">
                 <Button variant="ghost" size="iconMedium" className="p-0">

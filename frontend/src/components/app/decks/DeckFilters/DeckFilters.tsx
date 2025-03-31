@@ -116,7 +116,7 @@ const DeckFilters: React.FC<DeckFiltersProps> = ({ initialized }) => {
         className="justify-start"
       />
 
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="w-[200px] justify-between">
             {format !== undefined ? formatData.find(f => f.id === format)?.name : 'All Formats'}
@@ -135,7 +135,7 @@ const DeckFilters: React.FC<DeckFiltersProps> = ({ initialized }) => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="w-[200px] justify-between">
             {getSortLabel(sortField)} {getSortIcon(sortField)}

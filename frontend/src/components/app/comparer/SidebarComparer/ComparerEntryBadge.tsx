@@ -57,7 +57,7 @@ const ComparerEntryBadge: React.FC<ComparerEntryBadgeProps> = ({
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <Tooltip>
         <TooltipTrigger asChild>
           <DropdownMenuTrigger asChild>

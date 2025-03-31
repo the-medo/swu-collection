@@ -122,7 +122,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({ hasActive
           <>
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center space-x-2">
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
                       Sort by: {sortField.charAt(0).toUpperCase() + sortField.slice(1)}

@@ -4,14 +4,13 @@ import * as React from 'react';
 import { CardCondition } from '../../../../../../../types/enums.ts';
 import CardConditionSelect from '@/components/app/global/CardConditionSelect.tsx';
 import { cardConditionArray } from '../../../../../../../types/iterableEnumInfo.ts';
-import { SelectItem } from '@/components/ui/select.tsx';
 
-interface DefaultLanguageSelectProps {
+interface DefaultConditionSelectProps {
   onChange: (v: CardCondition) => void;
   value: CardCondition;
 }
 
-const DefaultLanguageSelect: React.FC<DefaultLanguageSelectProps> = ({ value, onChange }) => {
+const DefaultConditionSelect: React.FC<DefaultConditionSelectProps> = ({ value, onChange }) => {
   return (
     <>
       <div className="col-span-2 flex flex-row gap-4 items-center self-center">
@@ -29,13 +28,13 @@ const DefaultLanguageSelect: React.FC<DefaultLanguageSelectProps> = ({ value, on
           </PopoverTrigger>
           <PopoverContent className="flex flex-col gap-2 text-sm">
             <h4>Default card condition</h4>
-            <span>
+            <ul>
               {cardConditionArray.map(l => (
-                <SelectItem key={l.condition} value={l.condition.toString()}>
-                  {l.condition} - ${l.fullName}
-                </SelectItem>
+                <li key={l.condition} className="flex items-center gap-2">
+                  {l.condition} - {l.fullName}
+                </li>
               ))}
-            </span>
+            </ul>
           </PopoverContent>
         </Popover>
       </div>
@@ -43,4 +42,4 @@ const DefaultLanguageSelect: React.FC<DefaultLanguageSelectProps> = ({ value, on
   );
 };
 
-export default DefaultLanguageSelect;
+export default DefaultConditionSelect;

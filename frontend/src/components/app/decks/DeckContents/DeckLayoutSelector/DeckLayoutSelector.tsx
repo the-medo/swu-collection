@@ -26,7 +26,7 @@ const DeckLayoutSelector: React.FC<DeckLayoutSelectorProps> = ({}) => {
   }, []);
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <div className="flex gap-2 items-center">
           <span className="text-sm font-semibold">View:</span>

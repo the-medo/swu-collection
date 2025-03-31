@@ -17,13 +17,13 @@ export interface DeckCardDropdownMenuProps extends DeckCardTextRowProps {
 
 const DeckCardDropdownMenu: React.FC<DeckCardDropdownMenuProps> = ({ ...props }) => {
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="iconXSmall">
           <ChevronDownCircle className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="flex flex-row max-md:flex-col-reverse ">
+      <DropdownMenuContent align="end" className="flex flex-row max-md:flex-col-reverse ">
         <DeckCardActions {...props} display="dropdown-menu" />
       </DropdownMenuContent>
     </DropdownMenu>

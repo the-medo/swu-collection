@@ -28,7 +28,7 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar.tsx';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.tsx';
@@ -41,6 +41,8 @@ import SocialLinks from '@/components/app/navigation/LeftSidebar/SocialLinks.tsx
 import { cn } from '@/lib/utils.ts';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import SidebarComparer from '../../comparer/SidebarComparer/SidebarComparer.tsx';
+import { Route } from '@/routes/__root.tsx';
+import { Fragment } from 'react';
 
 const groups = [
   {
@@ -147,6 +149,7 @@ const groups = [
 
 export function LeftSidebar() {
   const user = useUser();
+  const navigate = useNavigate({ from: Route.fullPath });
   const { theme } = useTheme();
   const { open, isMobile, setOpenMobile } = useSidebar();
 
@@ -194,38 +197,44 @@ export function LeftSidebar() {
             {g.sidebarGroupAction ?? null}
             <SidebarGroupContent>
               <SidebarMenu>
-                {g.items.map(i =>
-                  !i.authenticated || (i.authenticated && user) ? (
-                    <>
-                      <SidebarMenuItem key={i.title}>
-                        <SidebarMenuButton asChild>
-                          <Link
-                            to={i.url}
-                            className="[&.active]:font-bold"
-                            onClick={() => {
-                              setOpenMobile(false);
-                            }}
-                          >
-                            <i.icon />
-                            <span>{i.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                        {'menuAction' in i ? i.menuAction : null}
-                      </SidebarMenuItem>
-                      {'separator' in i && i.separator ? <SidebarSeparator /> : null}
-                    </>
-                  ) : null,
-                )}
+                {g.items.map(i => (
+                  <Fragment key={i.title}>
+                    {!i.authenticated || (i.authenticated && user) ? (
+                      <>
+                        <SidebarMenuItem>
+                          <SidebarMenuButton asChild>
+                            <Link
+                              to={i.url}
+                              className="[&.active]:font-bold"
+                              onClick={() => {
+                                setOpenMobile(false);
+                              }}
+                            >
+                              <i.icon />
+                              <span>{i.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                          {'menuAction' in i ? i.menuAction : null}
+                        </SidebarMenuItem>
+                        {'separator' in i && i.separator ? <SidebarSeparator /> : null}
+                      </>
+                    ) : null}
+                  </Fragment>
+                ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
         <SidebarGroup>
           <SidebarGroupLabel>Comparer</SidebarGroupLabel>
-          <SidebarGroupAction title="Open comparer">
-            <Link to={'/comparer'}>
-              <Scale className="w-4 h-4" /> <span className="sr-only">Open comparer</span>
-            </Link>
+          <SidebarGroupAction
+            title="Open comparer"
+            onClick={() => {
+              void navigate({ to: `/comparer` });
+              setOpenMobile(false);
+            }}
+          >
+            <Scale className="w-4 h-4" /> <span className="sr-only">Open comparer</span>
           </SidebarGroupAction>
           <SidebarGroupContent>
             <SidebarComparer />

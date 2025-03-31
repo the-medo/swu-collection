@@ -1,6 +1,14 @@
 import * as React from 'react';
 import { useComparerStore } from '@/components/app/comparer/useComparerStore';
-import { Scale, BookOpenCheck, ScrollText, NotebookTabs } from 'lucide-react';
+import {
+  Scale,
+  BookOpenCheck,
+  ScrollText,
+  NotebookTabs,
+  SquareArrowOutUpRight,
+  X,
+  Crown,
+} from 'lucide-react';
 import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Link } from '@tanstack/react-router';
@@ -171,32 +179,38 @@ const ComparerPage: React.FC = () => {
             {collectionsEntries.map(entry => (
               <div
                 key={entry.id}
-                className={`flex gap-2 items-center justify-between border rounded-md p-2 ${entry.id === mainId ? 'border-primary bg-primary/10' : 'border-muted'}`}
+                className={`flex max-lg:flex-col gap-2 items-center justify-between border rounded-md p-2 ${entry.id === mainId ? 'border-primary bg-primary/10' : 'border-muted'}`}
               >
                 <div className="flex gap-2 items-center">
-                  {renderCollectionTypeBadge(entry.collectionType)}
                   <span className="font-medium">
                     {entry.additionalData?.title ?? '- Unknown -'}
                   </span>
                 </div>
                 <div className="ml-4 flex gap-2">
-                  {entry.id === mainId && <Badge variant="default">Main</Badge>}
+                  {renderCollectionTypeBadge(entry.collectionType)}
+                  {entry.id === mainId && (
+                    <Badge variant="default">
+                      Main <Crown size={16} className="ml-2" />
+                    </Badge>
+                  )}
                   {entry.id !== mainId && (
-                    <Button size="sm" variant="outline" onClick={() => setMainId(entry.id)}>
-                      Make Main
+                    <Button size="iconSmall" variant="outline" onClick={() => setMainId(entry.id)}>
+                      <Crown />
                     </Button>
                   )}
 
-                  <Button size="sm" variant="outline" asChild>
-                    <Link to={'/collections/' + entry.id}>Open</Link>
+                  <Button size="iconSmall" variant="outline" asChild>
+                    <Link to={'/collections/' + entry.id}>
+                      <SquareArrowOutUpRight />
+                    </Link>
                   </Button>
 
                   <Button
-                    size="sm"
+                    size="iconSmall"
                     variant="destructive"
                     onClick={() => removeComparerEntry(entry.id)}
                   >
-                    Remove
+                    <X />
                   </Button>
                 </div>
               </div>

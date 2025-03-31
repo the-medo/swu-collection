@@ -230,7 +230,7 @@ export function useCollectionTableColumns({
                 />
               </>
             )}
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <div className="text-right">
                   <Button variant="ghost" size="iconMedium" className="p-0">

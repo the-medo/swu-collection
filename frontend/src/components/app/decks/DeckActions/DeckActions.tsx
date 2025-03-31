@@ -176,7 +176,7 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
           {duplicateMutation.isPending ? 'Duplicating...' : 'Duplicate'}
         </Button>
 
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button size="sm">
               <Download className="h-4 w-4 mr-2" />

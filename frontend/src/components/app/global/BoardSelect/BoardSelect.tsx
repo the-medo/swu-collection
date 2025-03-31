@@ -25,7 +25,7 @@ const BoardSelect: React.FC<BoardSelectProps> = ({ deckId, value, onChange }) =>
   const boardCardCounts = useBoardDeckData(deckId);
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <div className="flex gap-2 items-center">
           <span className="text-sm font-semibold">Insert into:</span>
