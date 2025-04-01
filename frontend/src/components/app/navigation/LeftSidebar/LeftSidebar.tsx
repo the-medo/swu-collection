@@ -3,6 +3,7 @@ import {
   BookCheck,
   BookOpen,
   BookOpenCheck,
+  Hammer,
   NotebookTabs,
   Plus,
   Scale,
@@ -171,7 +172,11 @@ export function LeftSidebar() {
               <h4>SWU Base</h4>
             </div>
           ) : (
-            <img src={theme === 'light' ? LogoLightTheme : LogoDarkTheme} alt="Logo" />
+            <img
+              src={theme === 'light' ? LogoLightTheme : LogoDarkTheme}
+              alt="Logo"
+              className="w-32"
+            />
           )}
         </Link>
       </SidebarHeader>
@@ -225,6 +230,26 @@ export function LeftSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to={'/tools'}
+                    className="[&.active]:font-bold"
+                    onClick={() => {
+                      setOpenMobile(false);
+                    }}
+                  >
+                    <Hammer />
+                    <span>Tools</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Comparer</SidebarGroupLabel>
           <SidebarGroupAction

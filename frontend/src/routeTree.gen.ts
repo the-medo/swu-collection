@@ -16,6 +16,7 @@ import { Route as PrivacyImport } from './routes/privacy'
 import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
+import { Route as ToolsIndexImport } from './routes/tools/index'
 import { Route as NotificationsIndexImport } from './routes/notifications/index'
 import { Route as MessagesIndexImport } from './routes/messages/index'
 import { Route as ComparerIndexImport } from './routes/comparer/index'
@@ -31,6 +32,7 @@ import { Route as CardsSearchImport } from './routes/cards/search'
 import { Route as AuthenticatedSettingsImport } from './routes/_authenticated.settings'
 import { Route as WantlistsWantlistIdIndexImport } from './routes/wantlists/$wantlistId/index'
 import { Route as UsersUserIdIndexImport } from './routes/users/$userId/index'
+import { Route as ToolsDeckFormatConverterIndexImport } from './routes/tools/deck-format-converter/index'
 import { Route as ListsCardListIdIndexImport } from './routes/lists/$cardListId/index'
 import { Route as DecksDeckIdIndexImport } from './routes/decks/$deckId/index'
 import { Route as CollectionsCollectionIdIndexImport } from './routes/collections/$collectionId/index'
@@ -65,6 +67,12 @@ const AuthenticatedRoute = AuthenticatedImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ToolsIndexRoute = ToolsIndexImport.update({
+  id: '/tools/',
+  path: '/tools/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -157,6 +165,13 @@ const UsersUserIdIndexRoute = UsersUserIdIndexImport.update({
   path: '/users/$userId/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const ToolsDeckFormatConverterIndexRoute =
+  ToolsDeckFormatConverterIndexImport.update({
+    id: '/tools/deck-format-converter/',
+    path: '/tools/deck-format-converter/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const ListsCardListIdIndexRoute = ListsCardListIdIndexImport.update({
   id: '/lists/$cardListId/',
@@ -319,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotificationsIndexImport
       parentRoute: typeof rootRoute
     }
+    '/tools/': {
+      id: '/tools/'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof ToolsIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/cards/detail/$cardId': {
       id: '/cards/detail/$cardId'
       path: '/cards/detail/$cardId'
@@ -352,6 +374,13 @@ declare module '@tanstack/react-router' {
       path: '/lists/$cardListId'
       fullPath: '/lists/$cardListId'
       preLoaderRoute: typeof ListsCardListIdIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/tools/deck-format-converter/': {
+      id: '/tools/deck-format-converter/'
+      path: '/tools/deck-format-converter'
+      fullPath: '/tools/deck-format-converter'
+      preLoaderRoute: typeof ToolsDeckFormatConverterIndexImport
       parentRoute: typeof rootRoute
     }
     '/users/$userId/': {
@@ -404,11 +433,13 @@ export interface FileRoutesByFullPath {
   '/comparer': typeof ComparerIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/notifications': typeof NotificationsIndexRoute
+  '/tools': typeof ToolsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
+  '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
@@ -432,11 +463,13 @@ export interface FileRoutesByTo {
   '/comparer': typeof ComparerIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/notifications': typeof NotificationsIndexRoute
+  '/tools': typeof ToolsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
+  '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
@@ -461,11 +494,13 @@ export interface FileRoutesById {
   '/comparer/': typeof ComparerIndexRoute
   '/messages/': typeof MessagesIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
+  '/tools/': typeof ToolsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
   '/lists/$cardListId/': typeof ListsCardListIdIndexRoute
+  '/tools/deck-format-converter/': typeof ToolsDeckFormatConverterIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
 }
@@ -491,11 +526,13 @@ export interface FileRouteTypes {
     | '/comparer'
     | '/messages'
     | '/notifications'
+    | '/tools'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/collections/$collectionId'
     | '/decks/$deckId'
     | '/lists/$cardListId'
+    | '/tools/deck-format-converter'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
   fileRoutesByTo: FileRoutesByTo
@@ -518,11 +555,13 @@ export interface FileRouteTypes {
     | '/comparer'
     | '/messages'
     | '/notifications'
+    | '/tools'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/collections/$collectionId'
     | '/decks/$deckId'
     | '/lists/$cardListId'
+    | '/tools/deck-format-converter'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
   id:
@@ -545,11 +584,13 @@ export interface FileRouteTypes {
     | '/comparer/'
     | '/messages/'
     | '/notifications/'
+    | '/tools/'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/collections/$collectionId/'
     | '/decks/$deckId/'
     | '/lists/$cardListId/'
+    | '/tools/deck-format-converter/'
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
   fileRoutesById: FileRoutesById
@@ -573,11 +614,13 @@ export interface RootRouteChildren {
   ComparerIndexRoute: typeof ComparerIndexRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
+  ToolsIndexRoute: typeof ToolsIndexRoute
   CardsDetailCardIdRoute: typeof CardsDetailCardIdRoute
   DecksDeckIdEditRoute: typeof DecksDeckIdEditRoute
   CollectionsCollectionIdIndexRoute: typeof CollectionsCollectionIdIndexRoute
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
+  ToolsDeckFormatConverterIndexRoute: typeof ToolsDeckFormatConverterIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
 }
@@ -600,11 +643,13 @@ const rootRouteChildren: RootRouteChildren = {
   ComparerIndexRoute: ComparerIndexRoute,
   MessagesIndexRoute: MessagesIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
+  ToolsIndexRoute: ToolsIndexRoute,
   CardsDetailCardIdRoute: CardsDetailCardIdRoute,
   DecksDeckIdEditRoute: DecksDeckIdEditRoute,
   CollectionsCollectionIdIndexRoute: CollectionsCollectionIdIndexRoute,
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
+  ToolsDeckFormatConverterIndexRoute: ToolsDeckFormatConverterIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
 }
@@ -636,11 +681,13 @@ export const routeTree = rootRoute
         "/comparer/",
         "/messages/",
         "/notifications/",
+        "/tools/",
         "/cards/detail/$cardId",
         "/decks/$deckId/edit",
         "/collections/$collectionId/",
         "/decks/$deckId/",
         "/lists/$cardListId/",
+        "/tools/deck-format-converter/",
         "/users/$userId/",
         "/wantlists/$wantlistId/"
       ]
@@ -703,6 +750,9 @@ export const routeTree = rootRoute
     "/notifications/": {
       "filePath": "notifications/index.tsx"
     },
+    "/tools/": {
+      "filePath": "tools/index.tsx"
+    },
     "/cards/detail/$cardId": {
       "filePath": "cards/detail/$cardId.tsx"
     },
@@ -717,6 +767,9 @@ export const routeTree = rootRoute
     },
     "/lists/$cardListId/": {
       "filePath": "lists/$cardListId/index.tsx"
+    },
+    "/tools/deck-format-converter/": {
+      "filePath": "tools/deck-format-converter/index.tsx"
     },
     "/users/$userId/": {
       "filePath": "users/$userId/index.tsx"

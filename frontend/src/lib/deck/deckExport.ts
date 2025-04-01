@@ -1,6 +1,10 @@
 import { Deck } from '../../../../types/Deck.ts';
 import { DeckCard } from '../../../../types/ZDeckCard.ts';
-import { CardList } from '../../../../lib/swu-resources/types.ts';
+import {
+  CardDataWithVariants,
+  CardList,
+  CardListVariants,
+} from '../../../../lib/swu-resources/types.ts';
 import { User } from '../../../../types/User.ts';
 import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
 
@@ -204,6 +208,45 @@ function formatCardId(cardId: string, cardList: CardList): string {
   }
 
   return cardId; // Fallback to original ID
+}
+
+/**
+ * Format card ID to preferred format (e.g. SOR_092)
+ */
+export function formatCardIdFromCard(
+  cardId: string,
+  card: CardDataWithVariants<CardListVariants> | undefined,
+): string {
+  if (!card || !card.variants) return cardId;
+
+  // Find the primary variant
+  const variantIds = Object.keys(card.variants);
+  if (variantIds.length === 0) return cardId;
+
+  // Try to find standard variant first
+  let primaryVariantId = null;
+  for (const id of variantIds) {
+    const variant = card.variants[id];
+    if (variant && variant.variantName === 'Standard') {
+      primaryVariantId = id;
+      break;
+    }
+  }
+
+  // If no standard variant found, use the first one
+  if (!primaryVariantId) {
+    primaryVariantId = variantIds[0];
+  }
+
+  const primaryVariant = card.variants[primaryVariantId];
+
+  if (primaryVariant) {
+    const setCode = primaryVariant.set.toUpperCase();
+    const cardNumber = primaryVariant.cardNo.toString().padStart(3, '0');
+    return `${setCode}_${cardNumber}`;
+  }
+
+  return cardId;
 }
 
 /**
