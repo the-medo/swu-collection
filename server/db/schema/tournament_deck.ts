@@ -1,6 +1,7 @@
 import { pgTable, varchar, integer, boolean, uuid, primaryKey } from 'drizzle-orm/pg-core';
 import { tournament } from './tournament.ts';
 import { relations } from 'drizzle-orm';
+import { deck } from './deck.ts';
 
 // Tournament Deck Schema
 export const tournamentDeck = pgTable(
@@ -9,7 +10,9 @@ export const tournamentDeck = pgTable(
     tournamentId: uuid('tournament_id')
       .notNull()
       .references(() => tournament.id),
-    deckId: uuid('deck_id').notNull(), // references decks table
+    deckId: uuid('deck_id')
+      .notNull()
+      .references(() => deck.id),
     placement: integer('placement'),
     topRelativeToPlayerCount: boolean('top_relative_to_player_count').notNull(),
     recordWin: integer('record_win').notNull(),
