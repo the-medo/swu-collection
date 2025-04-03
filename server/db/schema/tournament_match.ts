@@ -15,13 +15,14 @@ import { deck } from './deck.ts';
 
 // Tournament Matches Schema
 export const tournamentMatch = pgTable(
-  'tournament_matches',
+  'tournament_match',
   {
     id: uuid('id').primaryKey().defaultRandom(),
     tournamentId: uuid('tournament_id')
       .notNull()
       .references(() => tournament.id),
     round: integer('round').notNull(),
+
     p1Username: varchar('p1_username', { length: 255 }).notNull(),
     p1DeckId: uuid('p1_deck_id')
       .notNull()
@@ -40,9 +41,9 @@ export const tournamentMatch = pgTable(
   },
   table => {
     return {
-      round1Idx: index('tournament-match_round_idx').on(table.round),
-      username1Idx: index('tournament-match_username1_idx').on(table.p1Username),
-      username2Idx: index('tournament-match_username2_idx').on(table.p2Username),
+      round1Idx: index('tournament_match-round_idx').on(table.round),
+      username1Idx: index('tournament_match-username1_idx').on(table.p1Username),
+      username2Idx: index('tournament_match-username2_idx').on(table.p2Username),
     };
   },
 );

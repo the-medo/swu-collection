@@ -57,6 +57,13 @@
       "when": 1743016890504,
       "tag": "0007_wet_vengeance",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1743709055241,
+      "tag": "0008_heavy_sunspot",
+      "breakpoints": true
     }
   ]
 }
