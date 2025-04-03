@@ -38,7 +38,7 @@
     "@tanstack/react-store": "^0.7.0",
     "@tanstack/react-table": "^8.20.6",
     "@tanstack/zod-adapter": "^1.114.3",
-    "better-auth": "^1.1.10",
+    "better-auth": "^1.2.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",

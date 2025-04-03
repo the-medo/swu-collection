@@ -1,15 +1,19 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar, integer, date, uuid, timestamp, index } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, integer, date, uuid, timestamp, index, text } from 'drizzle-orm/pg-core';
 import { tournamentType } from './tournament_type.ts';
 import { tournamentDeck } from './tournament_deck.ts';
 import { tournamentMatch } from './tournament_match.ts';
 import { format } from './format.ts';
+import { user } from './auth-schema.ts';
 
 // Tournament Schema
 export const tournament = pgTable(
   'tournament',
   {
     id: uuid('id').primaryKey().defaultRandom(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id),
     type: varchar('type', { length: 50 })
       .notNull()
       .references(() => tournamentType.id),
