@@ -16,7 +16,7 @@ export const usePutTournament = (tournamentId: string) => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error(errorData.message || 'Failed to update tournament');
+        throw new Error('message' in errorData ? errorData.message : 'Failed to update tournament');
       }
 
       return response.json() as Promise<{ data: Tournament }>;

@@ -15,7 +15,7 @@ export const usePostTournament = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error(errorData.message || 'Failed to create tournament');
+        throw new Error('message' in errorData ? errorData.message : 'Failed to create tournament');
       }
 
       return response.json() as Promise<{ data: Tournament }>;

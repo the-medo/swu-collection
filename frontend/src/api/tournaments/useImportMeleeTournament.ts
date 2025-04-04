@@ -18,7 +18,11 @@ export const useImportMeleeTournament = (tournamentId: string) => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error(errorData.message || 'Failed to import tournament data from Melee.gg');
+        throw new Error(
+          'message' in errorData
+            ? errorData.message
+            : 'Failed to import tournament data from Melee.gg',
+        );
       }
 
       return response.json();
