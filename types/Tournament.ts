@@ -1,3 +1,5 @@
+import type { User } from './User.ts';
+
 export interface Tournament {
   id: string;
   userId: string;
@@ -27,10 +29,7 @@ export interface TournamentType {
 export interface TournamentData {
   tournament: Tournament;
   tournamentType: TournamentType;
-  user: {
-    id: string;
-    displayName: string;
-  };
+  user: User;
 }
 
 export const tournamentTypes = ['local', 'showdown', 'ma1', 'pq', 'ma2', 'sq', 'rq', 'gc'] as const;

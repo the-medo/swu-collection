@@ -23,7 +23,7 @@ export const useGetTournament = (tournamentId: string | undefined) => {
             throw new Error('Something went wrong');
           }
           const data = await response.json();
-          return data;
+          return data as TournamentData;
         }
       : skipToken,
     retry: (failureCount, error) => (error.status === 404 ? false : failureCount < 3),

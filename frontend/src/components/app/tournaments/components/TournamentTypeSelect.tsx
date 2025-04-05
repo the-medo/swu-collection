@@ -32,7 +32,7 @@ const TournamentTypeSelect: React.FC<TournamentTypeSelectProps> = ({
 }) => {
   const handleChange = useCallback(
     (newValue: string) => {
-      if (newValue === '') {
+      if (newValue === '' || newValue === '-all-') {
         onChange(undefined);
       } else {
         onChange(newValue);
@@ -47,7 +47,7 @@ const TournamentTypeSelect: React.FC<TournamentTypeSelectProps> = ({
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {emptyOption && <SelectItem value="">All types</SelectItem>}
+        {emptyOption && <SelectItem value="-all-">All types</SelectItem>}
 
         {tournamentTypes.map(type => (
           <SelectItem key={type} value={type} className="flex items-center">

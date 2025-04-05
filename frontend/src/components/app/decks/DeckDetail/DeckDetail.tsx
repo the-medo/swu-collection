@@ -15,6 +15,8 @@ const routeApi = getRouteApi('/decks/$deckId/');
 
 const DeckDetail: React.FC = () => {
   const user = useUser();
+
+  console.log({ user });
   const { deckId } = routeApi.useParams();
   const { data, isFetching, error } = useGetDeck(deckId);
   const { setDeckInfo } = useDeckLayoutStoreActions();

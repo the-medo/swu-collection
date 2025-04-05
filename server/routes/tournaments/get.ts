@@ -89,10 +89,10 @@ export const tournamentGetRoute = new Hono<AuthExtension>().get(
 
     // Date range filters
     if (minDate) {
-      filters.push(gte(tournamentTable.date, minDate));
+      filters.push(gte(tournamentTable.date, new Date(minDate)));
     }
     if (maxDate) {
-      filters.push(lte(tournamentTable.date, maxDate));
+      filters.push(lte(tournamentTable.date, new Date(maxDate)));
     }
 
     // Build the query with all filters

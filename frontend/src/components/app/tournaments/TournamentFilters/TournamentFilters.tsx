@@ -19,9 +19,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion.tsx';
-import { tournamentTypes } from '../../../../../../types/Tournament.ts';
 import { SwuSet } from '../../../../../../types/enums.ts';
 import TournamentTypeSelect from '@/components/app/tournaments/components/TournamentTypeSelect.tsx';
+import ContinentSelect from '../components/ContinentSelect.tsx';
+import { DatePicker } from '@/components/ui/date-picker.tsx';
 
 interface TournamentFiltersProps {
   onApplyFilters: (filters: TournamentFilterValues) => void;
@@ -34,11 +35,10 @@ export interface TournamentFilterValues {
   set?: SwuSet;
   format?: number;
   continent?: string;
+  date?: string;
   sort?: string;
   order?: 'asc' | 'desc';
 }
-
-const continents = ['Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania'];
 
 const sortOptions = [
   { value: 'tournament.date', label: 'Date' },
@@ -70,13 +70,13 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({
 
   // Apply filters
   const applyFilters = () => {
-    onApplyFilters(filters);
+    setTimeout(() => onApplyFilters(filters), 50);
   };
 
   // Reset filters
   const resetFilters = () => {
     setFilters({});
-    onApplyFilters({});
+    setTimeout(() => onApplyFilters({}), 50);
   };
 
   return (
@@ -104,10 +104,20 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({
             <div className="space-y-2">
               <Label htmlFor="type">Tournament Type</Label>
               <TournamentTypeSelect
-                value={filters.type}
+                value={filters.type || ''}
                 onChange={value => handleFilterChange('type', value)}
                 showFullName={true}
                 emptyOption={true}
+              />
+            </div>
+
+            {/* Date */}
+            <div className="space-y-2">
+              <Label htmlFor="date">Date</Label>
+              <DatePicker
+                date={filters.date}
+                onDateChange={date => handleFilterChange('date', date)}
+                placeholder="Filter by date"
               />
             </div>
 
@@ -115,7 +125,7 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({
             <div className="space-y-2">
               <Label htmlFor="format">Format</Label>
               <FormatSelect
-                value={filters.format}
+                value={filters.format || null}
                 onChange={value => handleFilterChange('format', value)}
                 allowEmpty={true}
               />
@@ -125,7 +135,7 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({
             <div className="space-y-2">
               <Label htmlFor="set">Set</Label>
               <SetSelect
-                value={filters.set}
+                value={filters.set || null}
                 emptyOption={true}
                 onChange={value => handleFilterChange('set', value)}
                 showFullName
@@ -153,22 +163,12 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({
             {/* Continent */}
             <div className="space-y-2">
               <Label htmlFor="continent">Continent</Label>
-              <Select
-                value={filters.continent || ''}
-                onValueChange={value => handleFilterChange('continent', value || undefined)}
-              >
-                <SelectTrigger id="continent">
-                  <SelectValue placeholder="All continents" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All continents</SelectItem>
-                  {continents.map(continent => (
-                    <SelectItem key={continent} value={continent}>
-                      {continent}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <ContinentSelect
+                value={filters.continent}
+                onChange={value => handleFilterChange('continent', value)}
+                emptyOption={true}
+                placeholder="All continents"
+              />
             </div>
 
             {/* Sort */}

@@ -3,23 +3,20 @@ import { useForm } from '@tanstack/react-form';
 import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
-import { formatDate } from '@/lib/locale';
 import { Tournament } from '../../../../../types/Tournament.ts';
 import {
   ZTournamentCreateRequest,
   ZTournamentUpdateRequest,
 } from '../../../../../types/ZTournament.ts';
 import { SwuSet } from '../../../../../types/enums.ts';
-import { setArray } from '../../../../../lib/swu-resources/set-info.ts';
 import TournamentTypeSelect from '@/components/app/tournaments/components/TournamentTypeSelect.tsx';
+import ContinentSelect from '@/components/app/tournaments/components/ContinentSelect.tsx';
+import { DatePicker } from '@/components/ui/date-picker.tsx';
+import { format } from 'date-fns';
+import SetSelect from '@/components/app/global/SetSelect.tsx';
+import CountrySelector from '@/components/app/global/CountrySelector.tsx';
+import { CountryCode } from '../../../../../server/db/lists.ts';
 
 interface TournamentFormProps {
   initialData?: Tournament;
@@ -27,13 +24,11 @@ interface TournamentFormProps {
   isSubmitting: boolean;
 }
 
-const continents = ['Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania'];
-
 const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, isSubmitting }) => {
   const form = useForm<ZTournamentCreateRequest>({
     defaultValues: {
       type: (initialData?.type as any) || 'local_tournament',
-      season: initialData?.season || 1,
+      season: initialData?.season || 0,
       set: initialData?.set || SwuSet.JTL,
       metaShakeup: initialData?.metaShakeup || '',
       location: initialData?.location || '',
@@ -43,7 +38,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
       meleeId: initialData?.meleeId || '',
       format: initialData?.format || 1,
       days: initialData?.days || 1,
-      date: initialData?.date ? formatDate(initialData.date) : formatDate(new Date()),
+      date: initialData?.date ?? format(new Date(), 'yyyy-MM-dd'),
     },
     onSubmit: async ({ value }) => {
       onSubmit(value);
@@ -115,18 +110,11 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
           children={field => (
             <div className="space-y-2">
               <Label htmlFor={field.name}>Set *</Label>
-              <Select value={field.state.value} onValueChange={value => field.handleChange(value)}>
-                <SelectTrigger id={field.name}>
-                  <SelectValue placeholder="Select set" />
-                </SelectTrigger>
-                <SelectContent>
-                  {setArray.map(set => (
-                    <SelectItem key={set.code} value={set.code}>
-                      {set.name} ({set.code.toUpperCase()})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SetSelect
+                value={field.state.value as SwuSet}
+                emptyOption={false}
+                onChange={(value: SwuSet) => field.handleChange(value)}
+              />
             </div>
           )}
         />
@@ -143,8 +131,8 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
                 placeholder="Season number"
                 value={field.state.value}
                 onBlur={field.handleBlur}
-                onChange={e => field.handleChange(parseInt(e.target.value) || 1)}
-                min={1}
+                onChange={e => field.handleChange(parseInt(e.target.value) || 0)}
+                min={0}
                 required
               />
             </div>
@@ -157,17 +145,10 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
           children={field => (
             <div className="space-y-2">
               <Label htmlFor={field.name}>Tournament Date *</Label>
-              <Input
-                id={field.name}
-                type="date"
-                value={
-                  typeof field.state.value === 'string'
-                    ? field.state.value
-                    : formatDate(field.state.value)
-                }
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(e.target.value)}
-                required
+              <DatePicker
+                date={field.state.value}
+                onDateChange={date => field.handleChange(date || new Date().toISOString())}
+                placeholder="Select tournament date"
               />
             </div>
           )}
@@ -200,13 +181,9 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
           children={field => (
             <div className="space-y-2">
               <Label htmlFor={field.name}>Location *</Label>
-              <Input
-                id={field.name}
-                placeholder="City, Country"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(e.target.value)}
-                required
+              <CountrySelector
+                value={field.state.value as CountryCode}
+                onChangeCountry={(e: CountryCode | null) => field.handleChange(e || 'US')}
               />
             </div>
           )}
@@ -218,18 +195,11 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
           children={field => (
             <div className="space-y-2">
               <Label htmlFor={field.name}>Continent *</Label>
-              <Select value={field.state.value} onValueChange={value => field.handleChange(value)}>
-                <SelectTrigger id={field.name}>
-                  <SelectValue placeholder="Select continent" />
-                </SelectTrigger>
-                <SelectContent>
-                  {continents.map(continent => (
-                    <SelectItem key={continent} value={continent}>
-                      {continent}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <ContinentSelect
+                value={field.state.value}
+                onChange={value => field.handleChange(value || '')}
+                emptyOption={false}
+              />
             </div>
           )}
         />

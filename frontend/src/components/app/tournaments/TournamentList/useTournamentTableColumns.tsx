@@ -11,9 +11,13 @@ import { Button } from '@/components/ui/button.tsx';
 import { MoreHorizontal, Trophy } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
-import { useTournamentPermissions } from '@/hooks/useTournamentPermissions.ts';
+import { usePermissions } from '@/hooks/usePermissions.ts';
 import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table.tsx';
-import { Tournament, tournamentTypesInfo } from '../../../../../../types/Tournament.ts';
+import {
+  Tournament,
+  TournamentData,
+  tournamentTypesInfo,
+} from '../../../../../../types/Tournament.ts';
 import { formatDataById } from '../../../../../../types/Format.ts';
 
 interface TournamentTableColumnsProps {
@@ -26,22 +30,24 @@ export function useTournamentTableColumns({
   // view = 'table',
   onEdit,
   onDelete,
-}: TournamentTableColumnsProps): ExtendedColumnDef<Tournament>[] {
-  const { canUpdate, canDelete } = useTournamentPermissions();
+}: TournamentTableColumnsProps): ExtendedColumnDef<TournamentData>[] {
+  const hasPermission = usePermissions();
+
+  const canUpdate = hasPermission('tournament', 'update');
+  const canDelete = hasPermission('tournament', 'delete');
 
   return useMemo(() => {
-    const definitions: ExtendedColumnDef<Tournament>[] = [];
+    const definitions: ExtendedColumnDef<TournamentData>[] = [];
 
     // Name column
     definitions.push({
       id: 'name',
-      accessorKey: 'name',
+      accessorKey: 'tournament.name',
       header: 'Name',
       displayBoxHeader: false,
       cell: ({ getValue, row }) => {
         const name = getValue() as string;
-        const tournamentId = row.original.id as string;
-        const date = row.original.date;
+        const tournamentId = row.original.tournament.id as string;
 
         return (
           <Link to={'/tournaments/' + tournamentId} className="font-bold">
@@ -49,10 +55,29 @@ export function useTournamentTableColumns({
               variant="link"
               className="flex flex-col gap-0 p-0 w-full items-start justify-center"
             >
-              <span>{name}</span>
-              <span className="text-xs font-normal">{dateRenderer(date)}</span>
+              {name}
             </Button>
           </Link>
+        );
+      },
+    });
+
+    // Date column
+    definitions.push({
+      id: 'date',
+      accessorKey: 'tournament.date',
+      header: 'Date',
+      displayBoxHeader: false,
+      cell: ({ getValue }) => {
+        const date = getValue() as string;
+
+        return (
+          <Button
+            variant="link"
+            className="flex flex-col gap-0 p-0 w-full items-start justify-center"
+          >
+            {dateRenderer(date)}
+          </Button>
         );
       },
     });
@@ -60,7 +85,7 @@ export function useTournamentTableColumns({
     // Type column
     definitions.push({
       id: 'type',
-      accessorKey: 'type',
+      accessorKey: 'tournament.type',
       header: 'Type',
       cell: ({ getValue }) => {
         const type = getValue() as keyof typeof tournamentTypesInfo;
@@ -78,7 +103,7 @@ export function useTournamentTableColumns({
     // Format column
     definitions.push({
       id: 'format',
-      accessorKey: 'format',
+      accessorKey: 'tournament.format',
       header: 'Format',
       cell: ({ getValue }) => {
         const format = getValue() as number;
@@ -89,11 +114,11 @@ export function useTournamentTableColumns({
     // Location column
     definitions.push({
       id: 'location',
-      accessorKey: 'location',
+      accessorKey: 'tournament.location',
       header: 'Location',
       cell: ({ getValue, row }) => {
         const location = getValue() as string;
-        const continent = row.original.continent;
+        const continent = row.original.tournament.continent;
         return (
           <div className="flex flex-col">
             <span>{location}</span>
@@ -106,7 +131,7 @@ export function useTournamentTableColumns({
     // Players column
     definitions.push({
       id: 'attendance',
-      accessorKey: 'attendance',
+      accessorKey: 'tournament.attendance',
       header: 'Players',
       cell: ({ getValue }) => {
         const attendance = getValue() as number;
@@ -118,7 +143,7 @@ export function useTournamentTableColumns({
     definitions.push({
       id: 'actions',
       cell: ({ row }) => {
-        const tournament = row.original;
+        const tournament = row.original.tournament;
 
         return (
           <DropdownMenu modal={false}>

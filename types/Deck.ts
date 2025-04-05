@@ -1,3 +1,5 @@
+import type { User } from './User.ts';
+
 export interface Deck {
   id: string;
   userId: string;
@@ -10,4 +12,9 @@ export interface Deck {
   public: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface DeckData {
+  deck: Deck;
+  user: User;
 }

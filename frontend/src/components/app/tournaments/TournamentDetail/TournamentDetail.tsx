@@ -9,9 +9,8 @@ import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
 import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTournamentDialog.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
-import { useTournamentPermissions } from '@/hooks/useTournamentPermissions.ts';
+import { usePermissions } from '@/hooks/usePermissions.ts';
 import { formatDataById } from '../../../../../../types/Format.ts';
-import { tournamentTypesInfo } from '../../../../../../types/Tournament.ts';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -19,7 +18,7 @@ interface TournamentDetailProps {
 
 const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => {
   const { data, isFetching, error } = useGetTournament(tournamentId);
-  const { canUpdate, canDelete } = useTournamentPermissions();
+  const hasPermission = usePermissions();
 
   // Handle 404 error
   if (error?.status === 404) {
@@ -30,6 +29,9 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
       />
     );
   }
+
+  const canUpdate = hasPermission('tournament', 'update');
+  const canDelete = hasPermission('tournament', 'delete');
 
   const loading = isFetching;
   const tournament = data?.tournament;
@@ -69,30 +71,29 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
               />
             )}
 
-            {tournament.meleeId ? (
+            {tournament.meleeId && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() =>
-                  window.open(`https://melee.gg/tournament/${tournament.meleeId}`, '_blank')
+                  window.open(`https://melee.gg/Tournament/View/${tournament.meleeId}`, '_blank')
                 }
               >
                 <Trophy className="h-4 w-4 mr-2" />
                 View on Melee.gg
               </Button>
-            ) : (
-              canUpdate && (
-                <ImportMeleeTournamentDialog
-                  trigger={
-                    <Button size="sm" variant="outline">
-                      <Database className="h-4 w-4 mr-2" />
-                      Import from Melee.gg
-                    </Button>
-                  }
-                  tournamentId={tournamentId}
-                  meleeId={tournament.meleeId}
-                />
-              )
+            )}
+            {canUpdate && (
+              <ImportMeleeTournamentDialog
+                trigger={
+                  <Button size="sm" variant="outline">
+                    <Database className="h-4 w-4 mr-2" />
+                    Import from Melee.gg
+                  </Button>
+                }
+                tournamentId={tournamentId}
+                meleeId={tournament.meleeId}
+              />
             )}
 
             {canDelete && (
@@ -141,15 +142,11 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
             {tournamentType && (
               <div className="flex items-center gap-2">
                 <Trophy
-                  className={`h-4 w-4 ${tournamentTypesInfo[tournamentType.id]?.major === 1 ? 'text-amber-500' : ''}`}
+                  className={`h-4 w-4 ${tournamentType?.major === 1 ? 'text-amber-500' : ''}`}
                 />
                 <span className="font-medium">Type:</span>
-                <span>
-                  {tournamentType?.name ||
-                    tournamentTypesInfo[tournamentType.id]?.name ||
-                    tournament.type}
-                </span>
-                {tournamentTypesInfo[tournamentType.id]?.major === 1 && (
+                <span>{tournamentType?.name || tournament.type}</span>
+                {tournamentType?.major === 1 && (
                   <span className="text-xs px-2 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 rounded-full ml-2">
                     Major
                   </span>

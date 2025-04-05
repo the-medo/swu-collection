@@ -16,7 +16,7 @@ export const zTournamentSchema = z.object({
   id: z.string().uuid(),
   userId: z.string(),
   type: z.string(),
-  season: z.number().int().positive(),
+  season: z.number().int().min(0),
   set: z.enum(Object.values(SwuSet) as [string, ...string[]]),
   metaShakeup: z.string().nullable().optional(),
   location: z.string().min(1).max(255),
@@ -36,7 +36,7 @@ export const zTournamentSchema = z.object({
       },
     ),
   days: z.number().int().positive(),
-  date: z.string().or(z.date()),
+  date: z.string(),
   createdAt: z.string().datetime().optional(),
   updatedAt: z.string().datetime().optional(),
 });

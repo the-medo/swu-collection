@@ -1,10 +1,10 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
-import type { UserDeckData } from '../user/useGetUserDecks.ts';
+import { DeckData } from '../../../../types/Deck.ts';
 
 export const useGetDeck = (deckId: string | undefined) => {
-  return useQuery<UserDeckData, ErrorWithStatus>({
+  return useQuery<DeckData, ErrorWithStatus>({
     queryKey: ['deck', deckId],
     queryFn: deckId
       ? async () => {
@@ -23,7 +23,7 @@ export const useGetDeck = (deckId: string | undefined) => {
             throw new Error('Something went wrong');
           }
           const data = await response.json();
-          return data;
+          return data as DeckData;
         }
       : skipToken,
     retry: (failureCount, error) => (error.status === 404 ? false : failureCount < 3),

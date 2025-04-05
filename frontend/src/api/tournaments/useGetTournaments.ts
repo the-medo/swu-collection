@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { Tournament } from '../../../../types/Tournament.ts';
+import { TournamentData } from '../../../../types/Tournament.ts';
 
 const PAGE_SIZE = 20;
 
@@ -10,12 +10,13 @@ export type GetTournamentsRequest = {
   set?: string;
   format?: number;
   continent?: string;
+  date?: Date;
   sort?: string;
   order?: 'asc' | 'desc';
 };
 
 export interface TournamentsResponse {
-  data: Tournament[];
+  data: TournamentData[];
   pagination: {
     limit: number;
     offset: number;
@@ -24,7 +25,16 @@ export interface TournamentsResponse {
 }
 
 export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
-  const { type, season, set, format, continent, sort = 'tournament.date', order = 'desc' } = props;
+  const {
+    type,
+    season,
+    set,
+    format,
+    continent,
+    date,
+    sort = 'tournament.date',
+    order = 'desc',
+  } = props;
 
   // Create a stable query key based on all filter parameters
   const qk = [
@@ -35,6 +45,7 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
       set,
       format,
       continent,
+      date: date?.toISOString(),
       sort,
       order,
     },
@@ -50,6 +61,7 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
           set,
           format: format?.toString(),
           continent,
+          minDate: date?.toISOString(),
           sort,
           order,
           limit: PAGE_SIZE.toString(),
@@ -61,7 +73,7 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
         throw new Error('Something went wrong');
       }
 
-      return (await response.json()) as TournamentsResponse;
+      return await response.json();
     },
     initialPageParam: 0,
     getNextPageParam: lastPage => {
