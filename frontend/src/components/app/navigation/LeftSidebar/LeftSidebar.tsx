@@ -74,7 +74,7 @@ const groups = [
       },
       {
         title: 'Tournament decks',
-        url: '/decks/tournament',
+        url: '/tournaments',
         icon: TrophyIcon,
       },
     ],
