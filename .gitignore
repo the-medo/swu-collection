@@ -178,4 +178,5 @@ dist
 /lib/swu-resources/output/*
 /lib/swu-resources/test-jsons
 /lib/swu-resources/url.txt
+http-client.http
 http-client.private.env.json

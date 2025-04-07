@@ -28,7 +28,7 @@ const FormatSelect: React.FC<FormatSelectProps> = ({
   const stringValue = value ? value.toString() : '';
 
   const handleChange = (newValue: string) => {
-    if (newValue === '') {
+    if (newValue === '' || newValue === '-all-') {
       onChange(null);
     } else {
       onChange(parseInt(newValue));
@@ -42,7 +42,7 @@ const FormatSelect: React.FC<FormatSelectProps> = ({
           <SelectValue placeholder="Select format" />
         </SelectTrigger>
         <SelectContent>
-          {allowEmpty && <SelectItem value="">No format</SelectItem>}
+          {allowEmpty && <SelectItem value="-all-">No format</SelectItem>}
           {formatData.map(format => (
             <SelectItem key={format.id} value={format.id.toString()}>
               {format.name}

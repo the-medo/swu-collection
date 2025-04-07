@@ -3,6 +3,8 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '../db';
 import { authSchema } from '../db/schema/auth-schema.ts';
 import { generateDisplayName } from './generateDisplayName.ts';
+import { admin as adminPlugin } from 'better-auth/plugins';
+import { ac, admin, moderator, organizer } from './permissions';
 
 export type AuthExtension = {
   Variables: {
@@ -12,6 +14,16 @@ export type AuthExtension = {
 };
 
 export const auth = betterAuth({
+  plugins: [
+    adminPlugin({
+      ac,
+      roles: {
+        admin,
+        moderator,
+        organizer,
+      },
+    }),
+  ],
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema: {

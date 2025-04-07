@@ -16,6 +16,7 @@ import { Route as PrivacyImport } from './routes/privacy'
 import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
+import { Route as TournamentsIndexImport } from './routes/tournaments/index'
 import { Route as ToolsIndexImport } from './routes/tools/index'
 import { Route as NotificationsIndexImport } from './routes/notifications/index'
 import { Route as MessagesIndexImport } from './routes/messages/index'
@@ -32,6 +33,7 @@ import { Route as CardsSearchImport } from './routes/cards/search'
 import { Route as AuthenticatedSettingsImport } from './routes/_authenticated.settings'
 import { Route as WantlistsWantlistIdIndexImport } from './routes/wantlists/$wantlistId/index'
 import { Route as UsersUserIdIndexImport } from './routes/users/$userId/index'
+import { Route as TournamentsTournamentIdIndexImport } from './routes/tournaments/$tournamentId/index'
 import { Route as ToolsDeckFormatConverterIndexImport } from './routes/tools/deck-format-converter/index'
 import { Route as ListsCardListIdIndexImport } from './routes/lists/$cardListId/index'
 import { Route as DecksDeckIdIndexImport } from './routes/decks/$deckId/index'
@@ -67,6 +69,12 @@ const AuthenticatedRoute = AuthenticatedImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TournamentsIndexRoute = TournamentsIndexImport.update({
+  id: '/tournaments/',
+  path: '/tournaments/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -165,6 +173,13 @@ const UsersUserIdIndexRoute = UsersUserIdIndexImport.update({
   path: '/users/$userId/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const TournamentsTournamentIdIndexRoute =
+  TournamentsTournamentIdIndexImport.update({
+    id: '/tournaments/$tournamentId/',
+    path: '/tournaments/$tournamentId/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const ToolsDeckFormatConverterIndexRoute =
   ToolsDeckFormatConverterIndexImport.update({
@@ -341,6 +356,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsIndexImport
       parentRoute: typeof rootRoute
     }
+    '/tournaments/': {
+      id: '/tournaments/'
+      path: '/tournaments'
+      fullPath: '/tournaments'
+      preLoaderRoute: typeof TournamentsIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/cards/detail/$cardId': {
       id: '/cards/detail/$cardId'
       path: '/cards/detail/$cardId'
@@ -381,6 +403,13 @@ declare module '@tanstack/react-router' {
       path: '/tools/deck-format-converter'
       fullPath: '/tools/deck-format-converter'
       preLoaderRoute: typeof ToolsDeckFormatConverterIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/tournaments/$tournamentId/': {
+      id: '/tournaments/$tournamentId/'
+      path: '/tournaments/$tournamentId'
+      fullPath: '/tournaments/$tournamentId'
+      preLoaderRoute: typeof TournamentsTournamentIdIndexImport
       parentRoute: typeof rootRoute
     }
     '/users/$userId/': {
@@ -434,12 +463,14 @@ export interface FileRoutesByFullPath {
   '/messages': typeof MessagesIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/tools': typeof ToolsIndexRoute
+  '/tournaments': typeof TournamentsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
+  '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
@@ -464,12 +495,14 @@ export interface FileRoutesByTo {
   '/messages': typeof MessagesIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/tools': typeof ToolsIndexRoute
+  '/tournaments': typeof TournamentsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
+  '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
@@ -495,12 +528,14 @@ export interface FileRoutesById {
   '/messages/': typeof MessagesIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/tools/': typeof ToolsIndexRoute
+  '/tournaments/': typeof TournamentsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
   '/lists/$cardListId/': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter/': typeof ToolsDeckFormatConverterIndexRoute
+  '/tournaments/$tournamentId/': typeof TournamentsTournamentIdIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
 }
@@ -527,12 +562,14 @@ export interface FileRouteTypes {
     | '/messages'
     | '/notifications'
     | '/tools'
+    | '/tournaments'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/collections/$collectionId'
     | '/decks/$deckId'
     | '/lists/$cardListId'
     | '/tools/deck-format-converter'
+    | '/tournaments/$tournamentId'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
   fileRoutesByTo: FileRoutesByTo
@@ -556,12 +593,14 @@ export interface FileRouteTypes {
     | '/messages'
     | '/notifications'
     | '/tools'
+    | '/tournaments'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/collections/$collectionId'
     | '/decks/$deckId'
     | '/lists/$cardListId'
     | '/tools/deck-format-converter'
+    | '/tournaments/$tournamentId'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
   id:
@@ -585,12 +624,14 @@ export interface FileRouteTypes {
     | '/messages/'
     | '/notifications/'
     | '/tools/'
+    | '/tournaments/'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/collections/$collectionId/'
     | '/decks/$deckId/'
     | '/lists/$cardListId/'
     | '/tools/deck-format-converter/'
+    | '/tournaments/$tournamentId/'
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
   fileRoutesById: FileRoutesById
@@ -615,12 +656,14 @@ export interface RootRouteChildren {
   MessagesIndexRoute: typeof MessagesIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
   ToolsIndexRoute: typeof ToolsIndexRoute
+  TournamentsIndexRoute: typeof TournamentsIndexRoute
   CardsDetailCardIdRoute: typeof CardsDetailCardIdRoute
   DecksDeckIdEditRoute: typeof DecksDeckIdEditRoute
   CollectionsCollectionIdIndexRoute: typeof CollectionsCollectionIdIndexRoute
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
   ToolsDeckFormatConverterIndexRoute: typeof ToolsDeckFormatConverterIndexRoute
+  TournamentsTournamentIdIndexRoute: typeof TournamentsTournamentIdIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
 }
@@ -644,12 +687,14 @@ const rootRouteChildren: RootRouteChildren = {
   MessagesIndexRoute: MessagesIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
   ToolsIndexRoute: ToolsIndexRoute,
+  TournamentsIndexRoute: TournamentsIndexRoute,
   CardsDetailCardIdRoute: CardsDetailCardIdRoute,
   DecksDeckIdEditRoute: DecksDeckIdEditRoute,
   CollectionsCollectionIdIndexRoute: CollectionsCollectionIdIndexRoute,
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
   ToolsDeckFormatConverterIndexRoute: ToolsDeckFormatConverterIndexRoute,
+  TournamentsTournamentIdIndexRoute: TournamentsTournamentIdIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
 }
@@ -682,12 +727,14 @@ export const routeTree = rootRoute
         "/messages/",
         "/notifications/",
         "/tools/",
+        "/tournaments/",
         "/cards/detail/$cardId",
         "/decks/$deckId/edit",
         "/collections/$collectionId/",
         "/decks/$deckId/",
         "/lists/$cardListId/",
         "/tools/deck-format-converter/",
+        "/tournaments/$tournamentId/",
         "/users/$userId/",
         "/wantlists/$wantlistId/"
       ]
@@ -753,6 +800,9 @@ export const routeTree = rootRoute
     "/tools/": {
       "filePath": "tools/index.tsx"
     },
+    "/tournaments/": {
+      "filePath": "tournaments/index.tsx"
+    },
     "/cards/detail/$cardId": {
       "filePath": "cards/detail/$cardId.tsx"
     },
@@ -770,6 +820,9 @@ export const routeTree = rootRoute
     },
     "/tools/deck-format-converter/": {
       "filePath": "tools/deck-format-converter/index.tsx"
+    },
+    "/tournaments/$tournamentId/": {
+      "filePath": "tournaments/$tournamentId/index.tsx"
     },
     "/users/$userId/": {
       "filePath": "users/$userId/index.tsx"

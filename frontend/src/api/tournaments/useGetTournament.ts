@@ -1,29 +1,29 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
-import { DeckData } from '../../../../types/Deck.ts';
+import type { TournamentData } from '../../../../types/Tournament.ts';
 
-export const useGetDeck = (deckId: string | undefined) => {
-  return useQuery<DeckData, ErrorWithStatus>({
-    queryKey: ['deck', deckId],
-    queryFn: deckId
+export const useGetTournament = (tournamentId: string | undefined) => {
+  return useQuery<TournamentData, ErrorWithStatus>({
+    queryKey: ['tournament', tournamentId],
+    queryFn: tournamentId
       ? async () => {
-          const response = await api.deck[':id'].$get({
+          const response = await api.tournament[':id'].$get({
             param: {
-              id: deckId,
+              id: tournamentId,
             },
           });
           if (!response.ok) {
             if (response.status === 404) {
               // Create a custom error with a status property
-              const error: ErrorWithStatus = new Error('Deck not found');
+              const error: ErrorWithStatus = new Error('Tournament not found');
               error.status = 404;
               throw error;
             }
             throw new Error('Something went wrong');
           }
           const data = await response.json();
-          return data as DeckData;
+          return data as TournamentData;
         }
       : skipToken,
     retry: (failureCount, error) => (error.status === 404 ? false : failureCount < 3),
