@@ -51,7 +51,8 @@ export async function runTournamentImport(tournamentId: string) {
 
   tournamentDecks.forEach(td => {
     if (!td.meleePlayerUsername) {
-      throw new Error('Melee player username is empty');
+      console.warn('Melee player username is empty');
+      return;
     }
     playerInfo[td.meleePlayerUsername] = {
       deckId: td.deckId,
@@ -66,7 +67,8 @@ export async function runTournamentImport(tournamentId: string) {
   for (const d of parsedStandings) {
     if (d.exists) {
       if (d.tournamentDeck.deckId === '') {
-        throw new Error('Deck ID is empty but it is supposed to exist');
+        console.warn('Deck ID is empty but it is supposed to exist');
+        continue;
       }
       await db.delete(deckCardTable).where(eq(deckCardTable.deckId, d.tournamentDeck.deckId));
       await db.delete(entityResource).where(eq(entityResource.entityId, d.tournamentDeck.deckId));
@@ -110,14 +112,17 @@ export async function runTournamentImport(tournamentId: string) {
         resourceUrl: `https://melee.gg/Tournament/View/${meleeTournamentId}`,
         title: 'Melee tournament',
       },
-      {
+    ];
+
+    if (d.tournamentDeck.meleeDecklistGuid && d.tournamentDeck.meleeDecklistGuid !== '') {
+      resources.push({
         entityType: 'deck',
         entityId: d.tournamentDeck.deckId,
         resourceType: 'melee',
         resourceUrl: `https://melee.gg/Decklist/View/${d.tournamentDeck.meleeDecklistGuid}`,
         title: 'Melee decklist',
-      },
-    ];
+      });
+    }
 
     await db.insert(entityResource).values(resources);
 
@@ -140,7 +145,7 @@ export async function runTournamentImport(tournamentId: string) {
       console.warn('Melee decklist GUID is empty');
     } else {
       const decklistText = await fetchDecklistView(d.tournamentDeck.meleeDecklistGuid);
-      if (decklistText) {
+      if (decklistText && decklistText !== '') {
         const cards = parseTextToSwubase(decklistText, cardList, d.tournamentDeck.deckId);
 
         console.log(`Updating leader and base to: ${cards.leader1} ${cards.leader2} ${cards.base}`);

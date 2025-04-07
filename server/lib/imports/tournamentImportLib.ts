@@ -117,7 +117,8 @@ export async function fetchDeckMatchesWithMeleeDeckIds(
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch deck matches: ${response.status} ${response.statusText}`);
+      console.warn(`Failed to fetch deck matches: ${response.status} ${response.statusText}`);
+      return [];
     }
 
     // Return the JSON response
@@ -202,7 +203,8 @@ export async function fetchDecklistView(decklistId: string) {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch deck view: ${response.status} ${response.statusText}`);
+      console.warn(`Failed to fetch deck view: ${response.status} ${response.statusText}`);
+      return '';
     }
 
     const html = await response.text();
@@ -210,7 +212,8 @@ export async function fetchDecklistView(decklistId: string) {
     const decklist = document.querySelector('pre#decklist-swu-text')?.textContent;
 
     if (!decklist) {
-      throw new Error(`decklist-swu-text not found in ${url}`);
+      console.warn(`decklist-swu-text not found in ${url}`);
+      return '';
     }
 
     return decklist;
