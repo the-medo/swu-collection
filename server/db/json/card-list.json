@@ -81401,5 +81401,75 @@
       "Vehicle",
       "Transport"
     ]
+  },
+  "force-throw": {
+    "cardId": "force-throw",
+    "updatedAt": "2024-07-15T17:51:09.461Z",
+    "name": "Force Throw",
+    "title": "Force Throw",
+    "subtitle": null,
+    "variants": {
+      "force-throw-167-spark-of-rebellion": {
+        "variantId": "force-throw-167-spark-of-rebellion",
+        "swuId": 410,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 167,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "Elena Skitalets",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "force-throw-167-spark-of-rebellion-front.webp",
+          "back": null
+        }
+      },
+      "force-throw-430-spark-of-rebellion": {
+        "variantId": "force-throw-430-spark-of-rebellion",
+        "swuId": 971,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 430,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Hyperspace",
+        "artist": "Elena Skitales",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "force-throw-430-spark-of-rebellion-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Uncommon",
+    "cost": 1,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": null,
+    "rules": null,
+    "text": "Choose a player. That player discards a card from their hand. Then, if you control a FORCE unit, you may deal damage to a unit equal to the cost of the discarded card.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Force"
+    ]
   }
 }

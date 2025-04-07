@@ -123,10 +123,11 @@ if (params.help || params.h) {
     --help, -h                  Show this help message
   
   Examples:
-    bun ./raw-data-parser.ts
-    bun ./raw-data-parser.ts --url="https://custom-api.com/cards?expansion={expansionId}&page={page}"
-    bun ./raw-data-parser.ts --expansions=sor,shd,twi
-    bun ./raw-data-parser.ts --start=50
+    bun ./lib/swu-resources/raw-data-parser.ts --urlfile=lib/swu-resources/url.txt
+    bun ./lib/swu-resources/raw-data-parser.ts
+    bun ./lib/swu-resources/raw-data-parser.ts --url="https://custom-api.com/cards?expansion={expansionId}&page={page}"
+    bun ./lib/swu-resources/raw-data-parser.ts --expansions=sor,shd,twi
+    bun ./lib/swu-resources/raw-data-parser.ts --start=50
   `);
   process.exit(0);
 }
