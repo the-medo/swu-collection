@@ -139,22 +139,31 @@ export async function fetchDeckMatchesWithMeleeDeckIds(
         gameDraw = 3;
         points += 1;
         result = 1;
+      } else if (match.Result.includes(' forfeited the match')) {
+        console.log(`Doing nothing - ${match.Result}`);
+        //not sure if only one player or both of them - edge case, whatever
       } else {
         const matchResult = match.Result.split(' won ');
         const gameResult = matchResult.pop();
         const userName = matchResult.join(' won '); //just in case someone is named "Dude won the Potato"
         const results = gameResult.split('-');
 
-        if (userName === p1Username) {
-          gameWin = results[0] ?? 0;
-          gameLose = results[1] ?? 0;
-          gameDraw = results[2] ?? 0;
-          result = 3;
-          points += 3;
+        if (matchResult.length === 1 && results.length === 3) {
+          if (userName === p1Username) {
+            gameWin = results[0] ?? 0;
+            gameLose = results[1] ?? 0;
+            gameDraw = results[2] ?? 0;
+            result = 3;
+            points += 3;
+          } else {
+            gameWin = results[1] ?? 0;
+            gameLose = results[0] ?? 0;
+            gameDraw = results[2] ?? 0;
+          }
         } else {
-          gameWin = results[1] ?? 0;
-          gameLose = results[0] ?? 0;
-          gameDraw = results[2] ?? 0;
+          console.log(
+            `Not sure what to do, doing nothing: matchResult.length = ${matchResult.length}; results.length = ${results.length};`,
+          );
         }
       }
 
