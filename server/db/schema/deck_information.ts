@@ -1,5 +1,6 @@
 import { pgTable, text, uuid, integer, index, timestamp } from 'drizzle-orm/pg-core';
 import { deck } from './deck.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 export const deckInformation = pgTable(
   'deck_information',
@@ -35,3 +36,5 @@ export const deckInformation = pgTable(
     };
   },
 );
+
+export type DeckInformation = InferSelectModel<typeof deckInformation>;

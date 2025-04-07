@@ -6,7 +6,6 @@ import { db } from '../../../../db';
 import { tournamentDeck as tournamentDeckTable } from '../../../../db/schema/tournament_deck.ts';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckInformation as deckInformationTable } from '../../../../db/schema/deck_information.ts';
-import { selectDeck, selectDeckInformation } from '../../../deck.ts';
 
 export const tournamentIdDecksGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const paramTournamentId = z.string().uuid().parse(c.req.param('id'));
@@ -15,8 +14,8 @@ export const tournamentIdDecksGetRoute = new Hono<AuthExtension>().get('/', asyn
   const tournamentDecks = await db
     .select({
       tournamentDeck: tournamentDeckTable,
-      deck: selectDeck,
-      deckInformation: selectDeckInformation,
+      deck: deckTable,
+      deckInformation: deckInformationTable,
     })
     .from(tournamentDeckTable)
     .leftJoin(deckTable, eq(tournamentDeckTable.deckId, deckTable.id))
