@@ -1,6 +1,10 @@
-import { CardList } from '../../../../../../lib/swu-resources/types.ts';
-import { DeckExportJSON, DeckExportJSONCard, formatCardIdFromCard } from '@/lib/deck/deckExport.ts';
-import { DeckCard } from '../../../../../../types/ZDeckCard.ts';
+import {
+  type DeckExportJSON,
+  type DeckExportJSONCard,
+  formatCardIdFromCard,
+} from './deckExport.ts';
+import type { CardList } from '../../../lib/swu-resources/types.ts';
+import type { DeckCard } from '../../../types/ZDeckCard.ts';
 
 interface ParsedSection {
   name: string;

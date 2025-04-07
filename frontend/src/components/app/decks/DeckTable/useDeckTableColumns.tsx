@@ -19,7 +19,7 @@ import { getFormatName, UserDeckData } from './deckTableLib.tsx';
 import { useCountryList } from '@/api/lists/useCountryList.ts';
 import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
 import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 

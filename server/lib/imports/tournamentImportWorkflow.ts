@@ -13,7 +13,7 @@ import { tournamentMatch, type TournamentMatchInsert } from '../../db/schema/tou
 import { deckCard as deckCardTable } from '../../db/schema/deck_card.ts';
 import { entityResource, type EntityResourceInsert } from '../../db/schema/entity_resource.ts';
 import { deck as deckTable } from '../../db/schema/deck.ts';
-import { parseTextToSwubase } from '../../../frontend/src/components/app/tools/DeckFormatConverter/deckConverterService.tsx';
+import { parseTextToSwubase } from '../decks/deckConverterService.tsx';
 import { cardList } from '../../db/lists.ts';
 import { updateDeckInformation } from '../decks/updateDeckInformation.ts';
 

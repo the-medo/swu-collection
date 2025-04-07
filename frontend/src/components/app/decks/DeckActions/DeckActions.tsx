@@ -21,7 +21,7 @@ import {
   createDeckJsonExport,
   createDeckTextExport,
   downloadAsFile,
-} from '@/lib/deck/deckExport.ts';
+} from '../../../../../../server/lib/decks/deckExport.ts';
 import {
   DropdownMenu,
   DropdownMenuContent,

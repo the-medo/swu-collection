@@ -1,12 +1,12 @@
-import { Deck } from '../../../../types/Deck.ts';
-import { DeckCard } from '../../../../types/ZDeckCard.ts';
-import {
+import type { Deck } from '../../../types/Deck.ts';
+import type { User } from '../../../types/User.ts';
+import type { DeckCard } from '../../../types/ZDeckCard.ts';
+import type {
   CardDataWithVariants,
   CardList,
   CardListVariants,
-} from '../../../../lib/swu-resources/types.ts';
-import { User } from '../../../../types/User.ts';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+} from '../../../lib/swu-resources/types.ts';
+import { selectDefaultVariant } from '../cards/selectDefaultVariant.ts';
 
 export interface DeckExportJSONCard {
   id: string;

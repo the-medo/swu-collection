@@ -1,8 +1,8 @@
 import { Store, useStore } from '@tanstack/react-store';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCallback, useMemo } from 'react';
-import { variants } from '@/lib/cards/variants.ts';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+import { variants } from '../../../../../../../server/lib/cards/variants.ts';
+import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { CardCondition, CardLanguage } from '../../../../../../../types/enums.ts';
 import { getFoilBasedOnVariantAndSet } from '@/components/app/collections/CollectionInput/collectionInputLib.ts';
 import { searchForCommandOptions } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';

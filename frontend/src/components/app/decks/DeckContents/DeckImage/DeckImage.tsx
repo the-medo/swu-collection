@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useDeckData } from './../useDeckData';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant';
+import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { formatDataById } from '../../../../../../../types/Format.ts';
 
 interface DeckImageProps {

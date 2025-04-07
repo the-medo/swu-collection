@@ -3,7 +3,7 @@ import { PropsWithChildren } from 'react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
 import { cn } from '@/lib/utils.ts';
 import CardImage, { cardImageVariants } from '@/components/app/global/CardImage.tsx';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+import { selectDefaultVariant } from '../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import type {
   CardDataWithVariants,
   CardListVariants,

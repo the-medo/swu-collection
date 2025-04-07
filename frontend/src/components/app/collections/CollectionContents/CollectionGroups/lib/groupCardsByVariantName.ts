@@ -4,7 +4,7 @@ import {
   CardGroupData,
   CardGroups,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
-import { variantNameSorter } from '@/lib/cards/variants.ts';
+import { variantNameSorter } from '../../../../../../../../server/lib/cards/variants.ts';
 
 export const groupCardsByVariantName = (
   cardList: CardList,

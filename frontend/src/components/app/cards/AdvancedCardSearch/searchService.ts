@@ -1,7 +1,7 @@
 import { SwuAspect, SwuArena, SwuRarity, SwuSet } from '../../../../../../types/enums';
 import { RangeFilterType } from '../../global/RangeFilter/RangeFilter';
 import { CardList } from '../../../../../../lib/swu-resources/types.ts';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
 
 /**
