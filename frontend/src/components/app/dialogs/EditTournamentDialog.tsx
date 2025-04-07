@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { usePutTournament } from '@/api/tournaments/usePutTournament.ts';
 import TournamentForm from '@/components/app/tournaments/TournamentForm.tsx';
 import { ZTournamentUpdateRequest } from '../../../../../types/ZTournament.ts';
-import { Tournament } from '../../../../../types/Tournament.ts';
+import { TournamentStringDate } from '../../../../../types/Tournament.ts';
 
 type EditTournamentDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
-  tournament: Tournament;
+  tournament: TournamentStringDate;
 };
 
 const EditTournamentDialog: React.FC<EditTournamentDialogProps> = ({

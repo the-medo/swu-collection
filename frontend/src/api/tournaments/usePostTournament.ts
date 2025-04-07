@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
-import { Tournament } from '../../../../types/Tournament.ts';
+import { TournamentStringDate } from '../../../../types/Tournament.ts';
 import { ZTournamentCreateRequest } from '../../../../types/ZTournament.ts';
 
 export const usePostTournament = () => {
@@ -18,7 +18,7 @@ export const usePostTournament = () => {
         throw new Error('message' in errorData ? errorData.message : 'Failed to create tournament');
       }
 
-      return response.json() as Promise<{ data: Tournament }>;
+      return response.json() as Promise<{ data: TournamentStringDate }>;
     },
     onSuccess: result => {
       // Invalidate relevant queries

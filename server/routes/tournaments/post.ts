@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../auth/auth.ts';
+import { auth, type AuthExtension } from '../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { zTournamentCreateRequest } from '../../../types/ZTournament.ts';
 import { db } from '../../db';
@@ -12,6 +12,24 @@ export const tournamentPostRoute = new Hono<AuthExtension>().post(
     const user = c.get('user');
     const data = c.req.valid('json');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
+
+    const hasPermission = await auth.api.userHasPermission({
+      body: {
+        userId: user.id,
+        permission: {
+          tournament: ['create'],
+        },
+      },
+    });
+
+    if (!hasPermission.success) {
+      return c.json(
+        {
+          message: "You don't have permission to create a deck.",
+        },
+        403,
+      );
+    }
 
     // Convert string date to a Date object if needed
     const dateValue = typeof data.date === 'string' ? new Date(data.date) : data.date;

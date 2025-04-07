@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { Loader2 } from 'lucide-react';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
-import { Tournament } from '../../../../../../types/Tournament.ts';
+import { TournamentStringDate } from '../../../../../../types/Tournament.ts';
 
 interface TournamentListProps {
   filters?: {
@@ -27,8 +27,8 @@ const TournamentList: React.FC<TournamentListProps> = ({
   order = 'desc',
 }) => {
   // State for dialogs
-  const [tournamentToEdit, setTournamentToEdit] = useState<Tournament | null>(null);
-  const [tournamentToDelete, setTournamentToDelete] = useState<Tournament | null>(null);
+  const [tournamentToEdit, setTournamentToEdit] = useState<TournamentStringDate | null>(null);
+  const [tournamentToDelete, setTournamentToDelete] = useState<TournamentStringDate | null>(null);
 
   // Fetch tournaments data
   const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } = useGetTournaments({

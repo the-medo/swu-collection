@@ -1,5 +1,5 @@
-// server/db/schema/entity_resource.ts
 import { pgTable, uuid, varchar, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 
 export const entityResource = pgTable(
   'entity_resource',
@@ -25,3 +25,6 @@ export const entityResource = pgTable(
     };
   },
 );
+
+export type EntityResource = InferSelectModel<typeof entityResource>;
+export type EntityResourceInsert = InferInsertModel<typeof entityResource>;

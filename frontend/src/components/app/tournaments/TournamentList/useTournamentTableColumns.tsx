@@ -14,7 +14,7 @@ import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
 import { usePermissions } from '@/hooks/usePermissions.ts';
 import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 import {
-  Tournament,
+  TournamentStringDate,
   TournamentData,
   tournamentTypesInfo,
 } from '../../../../../../types/Tournament.ts';
@@ -22,8 +22,8 @@ import { formatDataById } from '../../../../../../types/Format.ts';
 
 interface TournamentTableColumnsProps {
   view?: DataTableViewMode;
-  onEdit?: (tournament: Tournament) => void;
-  onDelete?: (tournament: Tournament) => void;
+  onEdit?: (tournament: TournamentStringDate) => void;
+  onDelete?: (tournament: TournamentStringDate) => void;
 }
 
 export function useTournamentTableColumns({

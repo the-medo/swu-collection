@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { type InferSelectModel, relations } from 'drizzle-orm';
 import { pgTable, varchar, integer, date, uuid, timestamp, index, text } from 'drizzle-orm/pg-core';
 import { tournamentType } from './tournament_type.ts';
 import { tournamentDeck } from './tournament_deck.ts';
@@ -52,3 +52,5 @@ export const tournamentRelations = relations(tournament, ({ one, many }) => ({
   decks: many(tournamentDeck),
   matches: many(tournamentMatch),
 }));
+
+export type Tournament = InferSelectModel<typeof tournament>;

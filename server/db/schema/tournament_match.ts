@@ -1,15 +1,5 @@
-import { relations } from 'drizzle-orm';
-import {
-  pgTable,
-  varchar,
-  integer,
-  boolean,
-  date,
-  uuid,
-  primaryKey,
-  text,
-  index,
-} from 'drizzle-orm/pg-core';
+import { type InferInsertModel, type InferSelectModel, relations } from 'drizzle-orm';
+import { pgTable, varchar, integer, boolean, uuid, index } from 'drizzle-orm/pg-core';
 import { tournament } from './tournament.ts';
 import { deck } from './deck.ts';
 
@@ -55,3 +45,6 @@ export const tournamentMatchRelations = relations(tournamentMatch, ({ one }) => 
     references: [tournament.id],
   }),
 }));
+
+export type TournamentMatch = InferSelectModel<typeof tournamentMatch>;
+export type TournamentMatchInsert = InferInsertModel<typeof tournamentMatch>;

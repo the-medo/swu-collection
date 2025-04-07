@@ -1,6 +1,6 @@
 import type { User } from './User.ts';
 
-export interface Tournament {
+export interface TournamentStringDate {
   id: string;
   userId: string;
   type: string;
@@ -27,7 +27,7 @@ export interface TournamentType {
 }
 
 export interface TournamentData {
-  tournament: Tournament;
+  tournament: TournamentStringDate;
   tournamentType: TournamentType;
   user: User;
 }

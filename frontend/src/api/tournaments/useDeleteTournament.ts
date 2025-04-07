@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
-import { Tournament } from '../../../../types/Tournament.ts';
+import { TournamentStringDate } from '../../../../types/Tournament.ts';
 
 export const useDeleteTournament = () => {
   const queryClient = useQueryClient();
@@ -17,7 +17,7 @@ export const useDeleteTournament = () => {
         throw new Error('message' in errorData ? errorData.message : 'Failed to delete tournament');
       }
 
-      return response.json() as Promise<{ data: Tournament }>;
+      return response.json() as Promise<{ data: TournamentStringDate }>;
     },
     onSuccess: result => {
       // Invalidate and remove tournament from cache

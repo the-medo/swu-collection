@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { useForm } from '@tanstack/react-form';
-import { Tournament } from '../../../../../types/Tournament.ts';
+import { TournamentStringDate } from '../../../../../types/Tournament.ts';
 
 type DeleteTournamentDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
-  tournament: Tournament;
+  tournament: TournamentStringDate;
 };
 
 const DeleteTournamentDialog: React.FC<DeleteTournamentDialogProps> = ({

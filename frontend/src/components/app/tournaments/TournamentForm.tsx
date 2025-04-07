@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
-import { Tournament } from '../../../../../types/Tournament.ts';
+import { TournamentStringDate } from '../../../../../types/Tournament.ts';
 import {
   ZTournamentCreateRequest,
   ZTournamentUpdateRequest,
@@ -19,7 +19,7 @@ import CountrySelector from '@/components/app/global/CountrySelector.tsx';
 import { CountryCode } from '../../../../../server/db/lists.ts';
 
 interface TournamentFormProps {
-  initialData?: Tournament;
+  initialData?: TournamentStringDate;
   onSubmit: ((data: ZTournamentCreateRequest) => void) | ((data: ZTournamentUpdateRequest) => void);
   isSubmitting: boolean;
 }
