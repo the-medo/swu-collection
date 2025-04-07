@@ -227,11 +227,11 @@ export const parseStandingsToTournamentDeck = (
 ): { tournamentDeck: TournamentDeck; decklistName: string; exists: boolean } => {
   const decklistInfo = standing.Decklists[0];
   const placement = standing.Rank;
-  const meleeDecklistGuid = decklistInfo.DecklistId;
+  const meleeDecklistGuid = decklistInfo?.DecklistId;
   const meleePlayerUsername = standing.Team.Players[0].DisplayName;
 
   const exists = availableDecks.find(d => d.meleeDecklistGuid === meleeDecklistGuid);
-  const decklistName = `#${placement} ${tournament.name} - ${meleePlayerUsername} [${decklistInfo.DecklistName}]`;
+  const decklistName = `#${placement} ${tournament.name} - ${meleePlayerUsername} [${decklistInfo?.DecklistName}]`;
 
   const result = {
     tournamentDeck: {
