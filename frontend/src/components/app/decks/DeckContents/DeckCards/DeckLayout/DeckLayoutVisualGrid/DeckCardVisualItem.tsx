@@ -13,7 +13,7 @@ import { Route } from '@/routes/__root.tsx';
 import { DeckCardInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+import { selectDefaultVariant } from '../../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
 
 interface DeckCardVisualItemProps {

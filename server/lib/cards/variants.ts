@@ -1,4 +1,4 @@
-import { CardVariant } from '../../../../lib/swu-resources/types.ts';
+import type { CardVariant } from '../../../lib/swu-resources/types.ts';
 
 export interface VariantInfo {
   name: string;

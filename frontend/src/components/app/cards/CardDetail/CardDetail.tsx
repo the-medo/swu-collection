@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useMemo, useState } from 'react';
 import CardImage from '@/components/app/global/CardImage.tsx';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Separator } from '@/components/ui/separator.tsx';

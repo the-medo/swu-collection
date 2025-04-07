@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import AspectIcon from '@/components/app/global/icons/AspectIcon';
 import CostIcon from '@/components/app/global/icons/CostIcon';
 import RarityIcon from '@/components/app/global/icons/RarityIcon';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant';
+import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import CardImage from '@/components/app/global/CardImage';
 import { CardLayoutType } from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/SearchCardLayout.tsx';
 

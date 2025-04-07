@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage, { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant.ts';
+import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { sortCardsByCardAspects } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardAspects.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Castle, Search } from 'lucide-react';

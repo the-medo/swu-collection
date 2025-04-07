@@ -6,11 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Copy, Download, Upload, RefreshCw, Save, FileUp, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useCardList } from '@/api/lists/useCardList';
-import type { DeckExportJSON } from '@/lib/deck/deckExport';
+import type { DeckExportJSON } from '../../../../../../server/lib/decks/deckExport.ts';
 import {
   parseMeleeToText,
   parseTextToJson,
-} from '@/components/app/tools/DeckFormatConverter/deckConverterService';
+} from '../../../../../../server/lib/decks/deckConverterService.tsx';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 

@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { useCardList } from '@/api/lists/useCardList';
 import { SortField, SearchCardData, useSearchCardTableColumns } from './useSearchCardTableColumns';
 import { DataTable } from '@/components/ui/data-table';
-import { selectDefaultVariant } from '@/lib/cards/selectDefaultVariant';
+import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import CardImage from '@/components/app/global/CardImage';
 import { cn } from '@/lib/utils';
 import { raritySortValues } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardRarity.ts';

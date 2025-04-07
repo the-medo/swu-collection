@@ -4,7 +4,7 @@ import {
 } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import type { CardList } from '../../../../../../../../lib/swu-resources/types.ts';
 import { CollectionSortBy } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
-import { variantNameSorter } from '@/lib/cards/variants.ts';
+import { variantNameSorter } from '../../../../../../../../server/lib/cards/variants.ts';
 
 export const sortCardsByVariantName: CollectionCardSorter = (
   cardList: CardList,
