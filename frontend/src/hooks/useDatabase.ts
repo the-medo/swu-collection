@@ -9,7 +9,10 @@ export function useDatabase() {
     // Open the database connection when the hook is first used
     const initDb = async () => {
       try {
-        await db.open();
+        // Check if the database is already open
+        if (!db.isOpen()) {
+          await db.open();
+        }
         setIsReady(true);
       } catch (err) {
         console.error('Failed to open database', err);
@@ -19,8 +22,10 @@ export function useDatabase() {
 
     initDb();
 
+    // Don't close the database connection when unmounting - keep it open for the app lifecycle
     return () => {
-      db.close();
+      // Don't close the database when the component unmounts
+      // This avoids the "Database has been closed" error
     };
   }, []);
 
