@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ExternalLink, Trophy } from 'lucide-react';
+import { ExternalLink, Trophy, X } from 'lucide-react';
 import {
   TournamentDeckResponse,
   useGetTournamentDecks,
@@ -15,6 +15,7 @@ import { transformTopPlacementsAccordingToAttendance } from '../lib/tournament-a
 import { extractDeckNameFromBrackets } from '../lib/extractDeckNameFromBrackets';
 import { Button } from '@/components/ui/button.tsx';
 import { Link } from '@tanstack/react-router';
+import DeckContents from '@/components/app/decks/DeckContents/DeckContents.tsx';
 
 interface TournamentTopBracketProps {
   tournamentId: string;
@@ -29,8 +30,21 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
   const { data: cardListData } = useCardList();
   const [highlightedPlayer, setHighlightedPlayer] = useState<string | null>(null);
   const [rounds, setRounds] = useState<number[]>([]);
+  const [selectedDeckId, setSelectedDeckId] = useState<string>();
 
   const attendance = tournamentData?.tournament?.attendance || 0;
+
+  // Remove value from selectedDeckId on Esc key press
+  // TODO - works fine, but when user closes modal (deck image, card detail,...) and wants to close it with Esc, it also closes the deck - fix it
+  /*React.useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSelectedDeckId(undefined);
+      }
+    };
+    window.addEventListener('keydown', handleEscKey);
+    return () => window.removeEventListener('keydown', handleEscKey);
+  }, []);*/
 
   // Determine actual top to display based on attendance
   const actualTop = useMemo(() => {
@@ -320,6 +334,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
         )}
         onMouseEnter={() => setHighlightedPlayer(username)}
         onMouseLeave={() => setHighlightedPlayer(null)}
+        onClick={() => setSelectedDeckId(deck.tournamentDeck.deckId)}
       >
         <div className="flex gap-1 flex-shrink-0">
           {leaderCard && (
@@ -389,7 +404,8 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
             </h4>
             {placementGroup.decks.map(deck => {
               const username = deck.tournamentDeck.meleePlayerUsername || 'Unknown';
-              const isHighlighted = highlightedPlayer === username;
+              const isHighlighted =
+                highlightedPlayer === username || selectedDeckId === deck.tournamentDeck.deckId;
 
               // Get leader and base card info
               const leaderCard = deck.deck?.leaderCardId1
@@ -403,13 +419,14 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
                 <div
                   key={deck.tournamentDeck.deckId}
                   className={cn(
-                    'p-2 rounded-md transition-colors border flex gap-2 items-center',
+                    'p-2 rounded-md transition-colors border flex gap-2 items-center cursor-pointer',
                     isHighlighted
                       ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500'
                       : 'hover:bg-muted/50 border-transparent',
                   )}
                   onMouseEnter={() => setHighlightedPlayer(username)}
                   onMouseLeave={() => setHighlightedPlayer(null)}
+                  onClick={() => setSelectedDeckId(deck.tournamentDeck.deckId)}
                 >
                   <div className="flex gap-1 flex-shrink-0">
                     {leaderCard && (
@@ -479,64 +496,75 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
   }
 
   return (
-    <div className="flex flex-col lg:flex-row">
-      {/* Placements sidebar */}
-
-      {/* Bracket visualization */}
-      <div className="flex-1 overflow-x-auto mt-8 lg:mt-0">
-        <div className="flex min-w-max gap-4">
-          {bracketData &&
-            bracketData.map((round, roundIndex) => (
-              <div key={roundIndex} className="flex flex-col w-72">
-                <h4 className="text-center font-medium mb-4 text-muted-foreground">
-                  {roundIndex === 0 && actualTop === 8
-                    ? 'Quarterfinals'
-                    : roundIndex === 0 && actualTop === 4
-                      ? 'Semifinals'
-                      : roundIndex === 1 && actualTop === 8
+    <div className="flex flex-col lg:flex-row gap-4">
+      {selectedDeckId ? (
+        <div className="flex-1 mt-8 lg:mt-0 relative">
+          <Button
+            variant="outline"
+            size="iconSmall"
+            className="absolute top-2 right-2"
+            onClick={() => setSelectedDeckId(null)}
+          >
+            <X />
+          </Button>
+          <DeckContents deckId={selectedDeckId} />
+        </div>
+      ) : (
+        <div className="flex-1 overflow-x-auto mt-8 lg:mt-0">
+          <div className="flex min-w-max gap-4">
+            {bracketData &&
+              bracketData.map((round, roundIndex) => (
+                <div key={roundIndex} className="flex flex-col w-72">
+                  <h4 className="text-center font-medium mb-4 text-muted-foreground">
+                    {roundIndex === 0 && actualTop === 8
+                      ? 'Quarterfinals'
+                      : roundIndex === 0 && actualTop === 4
                         ? 'Semifinals'
-                        : roundIndex === bracketData.length - 1
-                          ? 'Finals'
-                          : `Round ${rounds[roundIndex]}`}
-                </h4>
+                        : roundIndex === 1 && actualTop === 8
+                          ? 'Semifinals'
+                          : roundIndex === bracketData.length - 1
+                            ? 'Finals'
+                            : `Round ${rounds[roundIndex]}`}
+                  </h4>
 
-                <div className="flex flex-col">
-                  {round.map((match, matchIndex) => {
-                    const matchHeight = 2 ** roundIndex * 150; // Progressively increase the height
+                  <div className="flex flex-col">
+                    {round.map((match, matchIndex) => {
+                      const matchHeight = 2 ** roundIndex * 150; // Progressively increase the height
 
-                    return (
-                      <div
-                        key={matchIndex}
-                        className="flex flex-col relative"
-                        style={{ height: matchHeight }}
-                      >
-                        <div className="flex items-center h-full">
-                          <div className="flex flex-col gap-1 absolute top-1/2 -translate-y-1/2 transform">
-                            {renderPlayer(
-                              match.player1,
-                              match.winner === match.player1,
-                              true,
-                              match.gameWins,
-                              match.gameLosses,
-                            )}
-                            <div className="h-px bg-muted-foreground/30 mx-2"></div>
-                            {renderPlayer(
-                              match.player2,
-                              match.winner === match.player2,
-                              true,
-                              match.gameWins,
-                              match.gameLosses,
-                            )}
+                      return (
+                        <div
+                          key={matchIndex}
+                          className="flex flex-col relative"
+                          style={{ height: matchHeight }}
+                        >
+                          <div className="flex items-center h-full">
+                            <div className="flex flex-col gap-1 absolute top-1/2 -translate-y-1/2 transform">
+                              {renderPlayer(
+                                match.player1,
+                                match.winner === match.player1,
+                                true,
+                                match.gameWins,
+                                match.gameLosses,
+                              )}
+                              <div className="h-px bg-muted-foreground/30 mx-2"></div>
+                              {renderPlayer(
+                                match.player2,
+                                match.winner === match.player2,
+                                true,
+                                match.gameWins,
+                                match.gameLosses,
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+          </div>
         </div>
-      </div>
+      )}
       {renderPlacements()}
     </div>
   );
