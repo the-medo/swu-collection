@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
-import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, MapPinIcon, Trophy, Users, Database, Edit, Trash2 } from 'lucide-react';
+import { CalendarIcon, MapPinIcon, Users, Trophy, Database, Edit, Trash2 } from 'lucide-react';
 import { formatDate } from '@/lib/locale.ts';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
@@ -37,26 +36,12 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
   const loading = isFetching;
   const tournament = data?.tournament;
   const tournamentType = data?.tournamentType;
-  const user = data?.user;
 
   return (
     <div className="space-y-6">
       {/* Tournament header */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-        <LoadingTitle
-          mainTitle={tournament?.name}
-          subTitle={
-            user ? (
-              <>
-                created by{' '}
-                <Link to={`/users/$userId`} params={{ userId: user.id }}>
-                  {user.displayName}
-                </Link>
-              </>
-            ) : undefined
-          }
-          loading={loading}
-        />
+        <LoadingTitle mainTitle={tournament?.name} loading={loading} />
 
         {!loading && tournament && (
           <div className="flex flex-wrap gap-2">
@@ -114,65 +99,105 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
 
       {/* Tournament info */}
       {!loading && tournament && (
-        <div className="grid grid-cols-1 md:grid-cols-[350px_1fr] gap-4">
-          {/* Left column */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <CalendarIcon className="h-4 w-4" />
-              <span className="font-medium">Date:</span>
-              <span>{formatDate(tournament.date)}</span>
-              {tournament.days > 1 && <span>({tournament.days} days)</span>}
-            </div>
+        <div className="grid grid-cols-1 gap-4">
+          {/* Tournament Info Table */}
+          <div className="bg-card rounded-md border shadow-sm p-3">
+            <table className="w-full text-sm">
+              <tbody>
+                <tr>
+                  <td className="py-1.5 pr-2 w-32">
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">Date:</span>
+                    </div>
+                  </td>
+                  <td className="py-1.5">
+                    {formatDate(tournament.date)}
+                    {tournament.days > 1 && (
+                      <span className="ml-2 text-muted-foreground">({tournament.days} days)</span>
+                    )}
+                  </td>
+                  <td className="py-1.5 pr-2 w-32">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">Format:</span>
+                    </div>
+                  </td>
+                  <td className="py-1.5">{formatDataById[tournament.format]?.name || 'Unknown'}</td>
+                </tr>
 
-            <div className="flex items-center gap-2">
-              <MapPinIcon className="h-4 w-4" />
-              <span className="font-medium">Location:</span>
-              <span>{tournament.location}</span>
-              <span className="text-muted-foreground">({tournament.continent})</span>
-            </div>
+                <tr>
+                  <td className="py-1.5 pr-2">
+                    <div className="flex items-center gap-2">
+                      <MapPinIcon className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">Location:</span>
+                    </div>
+                  </td>
+                  <td className="py-1.5">
+                    {tournament.location}
+                    <span className="ml-2 text-muted-foreground">({tournament.continent})</span>
+                  </td>
+                  <td className="py-1.5 pr-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">Set:</span>
+                    </div>
+                  </td>
+                  <td className="py-1.5">
+                    {tournament.set.toUpperCase()}
+                    <span className="ml-2 text-muted-foreground">Season {tournament.season}</span>
+                  </td>
+                </tr>
 
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <span className="font-medium">Attendance:</span>
-              <span>{tournament.attendance} players</span>
-              {tournament.days > 1 && <span>({tournament.dayTwoPlayerCount} day two)</span>}
-            </div>
+                <tr>
+                  <td className="py-1.5 pr-2">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">Attendance:</span>
+                    </div>
+                  </td>
+                  <td className="py-1.5">
+                    {tournament.attendance} players
+                    {tournament.days > 1 && (
+                      <span className="ml-2 text-muted-foreground">
+                        ({tournament.dayTwoPlayerCount} day two)
+                      </span>
+                    )}
+                  </td>
+                  <td className="py-1.5 pr-2">
+                    {tournament.metaShakeup && (
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">Meta Shakeup:</span>
+                      </div>
+                    )}
+                  </td>
+                  <td className="py-1.5">{tournament.metaShakeup}</td>
+                </tr>
 
-            {tournamentType && (
-              <div className="flex items-center gap-2">
-                <Trophy
-                  className={`h-4 w-4 ${tournamentType?.major === 1 ? 'text-amber-500' : ''}`}
-                />
-                <span className="font-medium">Type:</span>
-                <span>{tournamentType?.name || tournament.type}</span>
-                {tournamentType?.major === 1 && (
-                  <span className="text-xs px-2 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 rounded-full ml-2">
-                    Major
-                  </span>
-                )}
-              </div>
-            )}
-
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Format:</span>
-              <span>{formatDataById[tournament.format]?.name || 'Unknown'}</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Set:</span>
-              <span>{tournament.set.toUpperCase()}</span>
-              <span className="text-muted-foreground">Season {tournament.season}</span>
-            </div>
-
-            {tournament.metaShakeup && (
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Meta Shakeup:</span>
-                <span>{tournament.metaShakeup}</span>
-              </div>
-            )}
+                <tr>
+                  <td className="py-1.5 pr-2">
+                    <div className="flex items-center gap-2">
+                      <Trophy className={`h-4 w-4 text-muted-foreground`} />
+                      <span className="font-medium">Type:</span>
+                    </div>
+                  </td>
+                  <td className="py-1.5">
+                    {tournamentType?.name || tournament.type}
+                    {tournamentType?.major === 1 && (
+                      <span className="ml-2 text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 rounded-full">
+                        Major
+                      </span>
+                    )}
+                  </td>
+                  <td className="py-1.5 pr-2"></td>
+                  <td className="py-1.5"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <TournamentTopBracket tournamentId={tournamentId} top={8} />
+          {/* Tournament Bracket */}
+          <div className="bg-card rounded-md border shadow-sm p-3">
+            <TournamentTopBracket tournamentId={tournamentId} top={8} />
+          </div>
         </div>
       )}
 
