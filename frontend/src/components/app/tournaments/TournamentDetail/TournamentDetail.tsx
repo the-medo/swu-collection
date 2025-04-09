@@ -11,6 +11,7 @@ import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTou
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { usePermissions } from '@/hooks/usePermissions.ts';
 import { formatDataById } from '../../../../../../types/Format.ts';
+import TournamentTopBracket from '../TournamentTopBracket/TournamentTopBracket.tsx';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -113,7 +114,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
 
       {/* Tournament info */}
       {!loading && tournament && (
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-[350px_1fr] gap-4">
           {/* Left column */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -136,10 +137,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
               <span>{tournament.attendance} players</span>
               {tournament.days > 1 && <span>({tournament.dayTwoPlayerCount} day two)</span>}
             </div>
-          </div>
 
-          {/* Right column */}
-          <div className="space-y-4">
             {tournamentType && (
               <div className="flex items-center gap-2">
                 <Trophy
@@ -173,6 +171,8 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
               </div>
             )}
           </div>
+
+          <TournamentTopBracket tournamentId={tournamentId} top={8} />
         </div>
       )}
 
