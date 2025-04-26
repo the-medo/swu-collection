@@ -4,7 +4,7 @@ import { TournamentMatch } from '../../../../server/db/schema/tournament_match.t
 import { useGetTournament } from './useGetTournament.ts';
 import { getStoredTournamentMatches, isDataStale, storeTournamentMatches } from '@/lib/db.ts';
 
-export interface TournamentMatchesResponse {
+export interface GetTournamentMatchesResponse {
   data: TournamentMatch[];
 }
 
@@ -12,7 +12,7 @@ export const useGetTournamentMatches = (tournamentId: string | undefined) => {
   const { data: tournamentData } = useGetTournament(tournamentId);
   const tournamentUpdatedAt = tournamentData?.tournament?.updatedAt;
 
-  return useQuery<TournamentMatchesResponse>({
+  return useQuery<GetTournamentMatchesResponse>({
     queryKey: ['tournament-matches', tournamentId],
     queryFn:
       tournamentId && tournamentUpdatedAt

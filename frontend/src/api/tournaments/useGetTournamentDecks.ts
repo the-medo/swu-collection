@@ -12,12 +12,16 @@ export interface TournamentDeckResponse {
   deckInformation: DeckInformation | null;
 }
 
+export interface GetTournamentDeckResponse {
+  data: TournamentDeckResponse[];
+}
+
 export const useGetTournamentDecks = (tournamentId: string | undefined) => {
   // First, get the tournament to check its updatedAt timestamp
   const { data: tournamentData } = useGetTournament(tournamentId);
   const tournamentUpdatedAt = tournamentData?.tournament?.updatedAt;
 
-  return useQuery<{ data: TournamentDeckResponse[] }>({
+  return useQuery<GetTournamentDeckResponse>({
     queryKey: ['tournament-decks', tournamentId],
     queryFn:
       tournamentId && tournamentUpdatedAt
@@ -48,7 +52,7 @@ export const useGetTournamentDecks = (tournamentId: string | undefined) => {
               throw new Error('Something went wrong');
             }
 
-            const newData = await response.json();
+            const newData = (await response.json()) as GetTournamentDeckResponse;
 
             // Cache the new data
             await storeTournamentDecks(tournamentId, newData.data);
