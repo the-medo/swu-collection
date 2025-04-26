@@ -2,26 +2,25 @@ import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
 import { Button } from '@/components/ui/button';
-import { TabsContent } from '@/components/ui/tabs';
 import { Database, Edit, Trash2, Trophy } from 'lucide-react';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
 import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTournamentDialog.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { usePermissions } from '@/hooks/usePermissions.ts';
-import { 
-  TournamentTabs, 
-  DetailAndBracketTab, 
-  MetaAnalysisTab, 
-  MatchupsTab, 
-  AllDecksTab 
-} from '../TournamentTabs';
+import { TournamentTabs } from '../TournamentTabs';
 
 interface TournamentDetailProps {
   tournamentId: string;
+  children?: React.ReactNode;
+  activeTab?: string;
 }
 
-const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => {
+const TournamentDetail: React.FC<TournamentDetailProps> = ({
+  tournamentId,
+  children,
+  activeTab,
+}) => {
   const { data, isFetching, error } = useGetTournament(tournamentId);
   const hasPermission = usePermissions();
 
@@ -40,7 +39,6 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
 
   const loading = isFetching;
   const tournament = data?.tournament;
-  const tournamentType = data?.tournamentType;
 
   return (
     <div className="space-y-6">
@@ -103,20 +101,10 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
       </div>
 
       {/* Tournament tabs */}
-      <TournamentTabs tournamentId={tournamentId}>
-        <TabsContent value="details">
-          <DetailAndBracketTab tournamentId={tournamentId} />
-        </TabsContent>
-        <TabsContent value="meta">
-          <MetaAnalysisTab tournamentId={tournamentId} />
-        </TabsContent>
-        <TabsContent value="matchups">
-          <MatchupsTab tournamentId={tournamentId} />
-        </TabsContent>
-        <TabsContent value="decks">
-          <AllDecksTab tournamentId={tournamentId} />
-        </TabsContent>
-      </TournamentTabs>
+      <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} />
+
+      {/* Tab content */}
+      {children}
     </div>
   );
 };

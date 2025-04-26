@@ -1,12 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router';
-import TournamentDetail from '@/components/app/tournaments/TournamentDetail/TournamentDetail.tsx';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/tournaments/$tournamentId/')({
-  component: TournamentDetailPage,
+  beforeLoad: ({ params }) => {
+    // Redirect to the details tab by default
+    throw redirect({
+      to: '/tournaments/$tournamentId/details',
+      params: { tournamentId: params.tournamentId },
+    });
+  },
 });
-
-function TournamentDetailPage() {
-  const { tournamentId } = Route.useParams();
-
-  return <TournamentDetail tournamentId={tournamentId} />;
-}
