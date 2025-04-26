@@ -16,6 +16,7 @@ import { extractDeckNameFromBrackets } from '../lib/extractDeckNameFromBrackets'
 import { Button } from '@/components/ui/button.tsx';
 import { Link } from '@tanstack/react-router';
 import DeckContents from '@/components/app/decks/DeckContents/DeckContents.tsx';
+import { MatchData } from '@/components/app/tournaments/lib/tournamentLib.ts';
 
 interface TournamentTopBracketProps {
   tournamentId: string;
@@ -59,7 +60,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     if (!decksData || !('data' in decksData)) return [];
 
     // Sort by placement
-    const sortedDecks = [...decksData.data]
+    const sortedDecks: TournamentDeckResponse[] = [...decksData.data]
       .filter(d => d.tournamentDeck.placement !== null && d.tournamentDeck.placement <= actualTop)
       .sort((a, b) => (a.tournamentDeck.placement || 99) - (b.tournamentDeck.placement || 99));
 
@@ -68,14 +69,13 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
 
   // Process matches to create bracket structure
   const bracketData = useMemo(() => {
+    console.log({ matchesData, topDecks });
     if (!matchesData?.data || !topDecks.length) return null;
 
     // Get the final round matches
     const roundNumbers = [...new Set(matchesData.data.map(m => m.round))].sort((a, b) => b - a);
     setRounds(roundNumbers);
 
-    // Create bracket based on top size
-    const rounds = [];
     const playerIdMap = new Map();
 
     // Map deck IDs to player data
@@ -147,7 +147,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
         const prevRoundMatches = processedRounds[i - 1];
 
         // Organize matches to maintain bracket continuity
-        const organizedMatches = [];
+        const organizedMatches: MatchData[] = [];
 
         // For each previous round match
         prevRoundMatches.forEach(prevMatch => {
@@ -288,7 +288,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     // 5th-8th places if top 8
     if (actualTop >= 8) {
       const fifthToEighthDecks = topDecks.filter(
-        d => d.tournamentDeck.placement >= 5 && d.tournamentDeck.placement <= 8,
+        d => (d.tournamentDeck.placement ?? 0) >= 5 && (d.tournamentDeck.placement ?? 0) <= 8,
       );
       if (fifthToEighthDecks.length) {
         result.push({
@@ -503,7 +503,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
             variant="outline"
             size="iconSmall"
             className="absolute top-2 right-2"
-            onClick={() => setSelectedDeckId(null)}
+            onClick={() => setSelectedDeckId(undefined)}
           >
             <X />
           </Button>
