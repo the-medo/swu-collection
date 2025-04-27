@@ -15,7 +15,8 @@ export function useLabel() {
   const { data: cardListData } = useCardList();
 
   return useCallback(
-    (value: string, metaInfo: MetaInfo, type: 'text' | 'compact' | 'image') => {
+    (value: string | undefined, metaInfo: MetaInfo, type: 'text' | 'compact' | 'image') => {
+      if (!value) return value;
       if (!cardListData) return value;
       const cardList = cardListData.cards;
 

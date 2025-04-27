@@ -10,23 +10,12 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from 'recharts'
 import { useMemo } from 'react';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
-import MetaPercentageTable from './MetaPercentageTable/MetaPercentageTable.tsx';
+import TournamentMetaTooltip from './TournamentMetaTooltip';
 import { Props } from 'recharts/types/component/Label';
-import { useComparerStore } from '@/components/app/comparer/useComparerStore.ts';
-
-interface AnalysisDataItem {
-  key: string;
-  count: number;
-  data?: {
-    all: number;
-    top8: number;
-    day2: number;
-    top64: number;
-    conversionTop8: string;
-    conversionDay2: string;
-    conversionTop64: string;
-  };
-}
+import {
+  AnalysisDataItem,
+  getTotalDeckCountBasedOnMetaPart,
+} from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 
 interface TournamentMetaChartProps {
   analysisData: AnalysisDataItem[];
@@ -94,19 +83,10 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
     [chartData],
   );
 
-  const totalDeckCountBasedOnMetaPart = useMemo(() => {
-    switch (metaPart) {
-      case 'all':
-        return totalDecks;
-      case 'day2':
-        return day2Decks;
-      case 'top8':
-        return 8;
-      case 'top64':
-        return 64;
-    }
-    return 0;
-  }, [metaPart, totalDecks, day2Decks]);
+  const totalDeckCountBasedOnMetaPart = useMemo(
+    () => getTotalDeckCountBasedOnMetaPart(metaPart, totalDecks, day2Decks),
+    [metaPart, totalDecks, day2Decks],
+  );
 
   if (analysisData.length === 0) {
     return <p className="text-muted-foreground">No data available for the selected filters.</p>;
@@ -138,35 +118,18 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
                   const payload = props.payload;
                   const data = payload.data;
 
-                  // Create tooltip content with deck name and additional data
+                  // Use the shared tooltip component
                   return (
-                    <div className="space-y-2">
-                      {labelRenderer(payload.name, metaInfo as MetaInfo, 'image')}
-                      <div className="flex gap-2 items-center">
-                        <div className="rounded-full p-4 flex items-center justify-center size-[50px] border text-xl font-medium bg-accent">
-                          {value}
-                        </div>
-                        <div className="text-lg">/</div>
-                        <div className="text-lg">{totalDeckCountBasedOnMetaPart}</div>
-                        <div className="ml-4 text-lg italic">
-                          {totalDeckCountBasedOnMetaPart > 0
-                            ? '(' +
-                              (((value as number) / totalDeckCountBasedOnMetaPart) * 100).toFixed(
-                                1,
-                              ) +
-                              '%)'
-                            : ''}
-                        </div>
-                      </div>
-
-                      {data && (
-                        <MetaPercentageTable
-                          data={data}
-                          totalDecks={totalDecks}
-                          day2Decks={day2Decks}
-                        />
-                      )}
-                    </div>
+                    <TournamentMetaTooltip
+                      name={payload.name}
+                      metaInfo={metaInfo as MetaInfo}
+                      labelRenderer={labelRenderer}
+                      value={value as number}
+                      totalDeckCountBasedOnMetaPart={totalDeckCountBasedOnMetaPart}
+                      data={data}
+                      totalDecks={totalDecks}
+                      day2Decks={day2Decks}
+                    />
                   );
                 }}
               />

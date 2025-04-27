@@ -151,7 +151,11 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
 
       // Convert map to array and sort by count
       return Array.from(countMap.entries())
-        .map(([key, count]) => ({ key, count }))
+        .map(([key, count]) => ({
+          key,
+          count,
+          percentage: parseFloat(((count / decksToAnalyze.length) * 100).toFixed(1)),
+        }))
         .sort((a, b) => b.count - a.count);
     },
     [cardListData, getBaseKey],
@@ -252,25 +256,10 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
         <TournamentMetaDataTable
           analysisData={analysisData}
           metaInfo={metaInfo}
-          totalDecks={decks.length}
-          metaPartsData={{
-            all: allMetaPartsAnalysis.all.map(item => ({
-              ...item,
-              percentage: parseFloat(((item.count / metaPartsDecks.all.length) * 100).toFixed(1)),
-            })),
-            top8: allMetaPartsAnalysis.top8.map(item => ({
-              ...item,
-              percentage: parseFloat(((item.count / metaPartsDecks.top8.length) * 100).toFixed(1)),
-            })),
-            day2: allMetaPartsAnalysis.day2.map(item => ({
-              ...item,
-              percentage: parseFloat(((item.count / metaPartsDecks.day2.length) * 100).toFixed(1)),
-            })),
-            top64: allMetaPartsAnalysis.top64.map(item => ({
-              ...item,
-              percentage: parseFloat(((item.count / metaPartsDecks.top64.length) * 100).toFixed(1)),
-            })),
-          }}
+          metaPart={metaPart}
+          totalDecks={totalDeckCount}
+          day2Decks={day2DeckCount}
+          metaPartsData={allMetaPartsAnalysis}
         />
       )}
     </div>

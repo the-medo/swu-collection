@@ -34,7 +34,7 @@ export const MetaPercentageTable: React.FC<MetaPercentageTableProps> = ({
             <td className="px-2 py-1">Percentage</td>
             <td className="px-2 py-1 flex flex-col gap-0 items-center">
               <span>Conversion rate</span>
-              <span className="text-[10px]">(from all decks)</span>
+              <span className="text-[10px]">(from {data.all} decks)</span>
             </td>
           </tr>
         </thead>

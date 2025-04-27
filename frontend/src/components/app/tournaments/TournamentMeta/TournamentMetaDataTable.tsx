@@ -5,19 +5,18 @@ import { ColumnDef } from '@tanstack/react-table';
 import { MetaInfo } from './MetaInfoSelector';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
-
-interface AnalysisDataItem {
-  key: string;
-  count: number;
-  percentage: number;
-}
+import TournamentMetaTooltip from './TournamentMetaTooltip';
+import { AnalysisDataItem, getTotalDeckCountBasedOnMetaPart } from './tournamentMetaLib.ts';
+import { MetaPart } from '@/components/app/tournaments/TournamentMeta/MetaPartSelector.tsx';
 
 interface TournamentMetaDataTableProps {
   analysisData: AnalysisDataItem[];
+  metaPart: MetaPart;
   metaInfo: MetaInfo;
   totalDecks: number;
+  day2Decks: number;
   metaPartsData?: {
     all: AnalysisDataItem[];
     top8: AnalysisDataItem[];
@@ -28,7 +27,10 @@ interface TournamentMetaDataTableProps {
 
 const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
   analysisData,
+  metaPart,
   metaInfo,
+  totalDecks,
+  day2Decks,
   metaPartsData,
 }) => {
   const labelRenderer = useLabel();
@@ -36,6 +38,11 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
     id: 'count',
     desc: true,
   });
+
+  const totalDeckCountBasedOnMetaPart = useMemo(
+    () => getTotalDeckCountBasedOnMetaPart(metaPart, totalDecks, day2Decks),
+    [metaPart, totalDecks, day2Decks],
+  );
 
   if (analysisData.length === 0) {
     return <p className="text-muted-foreground">No data available for the selected filters.</p>;
@@ -54,45 +61,31 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
         return (a.count - b.count) * multiplier;
       }
       if (sorting.id === 'percentage') {
-        return (a.percentage - b.percentage) * multiplier;
+        return (a.count - b.count) * multiplier;
+        // return (a.percentage - b.percentage) * multiplier;
       }
 
       // Meta part columns
       if (metaPartsData) {
         // Top 8
-        if (sorting.id === 'top8Count') {
+        if (sorting.id === 'top8Count' || sorting.id === 'top8Percentage') {
           const aCount = metaPartsData.top8.find(d => d.key === a.key)?.count || 0;
           const bCount = metaPartsData.top8.find(d => d.key === b.key)?.count || 0;
           return (aCount - bCount) * multiplier;
         }
-        if (sorting.id === 'top8Percentage') {
-          const aPercentage = metaPartsData.top8.find(d => d.key === a.key)?.percentage || 0;
-          const bPercentage = metaPartsData.top8.find(d => d.key === b.key)?.percentage || 0;
-          return (aPercentage - bPercentage) * multiplier;
-        }
 
         // Day 2
-        if (sorting.id === 'day2Count') {
+        if (sorting.id === 'day2Count' || sorting.id === 'day2Percentage') {
           const aCount = metaPartsData.day2.find(d => d.key === a.key)?.count || 0;
           const bCount = metaPartsData.day2.find(d => d.key === b.key)?.count || 0;
           return (aCount - bCount) * multiplier;
         }
-        if (sorting.id === 'day2Percentage') {
-          const aPercentage = metaPartsData.day2.find(d => d.key === a.key)?.percentage || 0;
-          const bPercentage = metaPartsData.day2.find(d => d.key === b.key)?.percentage || 0;
-          return (aPercentage - bPercentage) * multiplier;
-        }
 
         // Top 64
-        if (sorting.id === 'top64Count') {
+        if (sorting.id === 'top64Count' || sorting.id === 'top64Percentage') {
           const aCount = metaPartsData.top64.find(d => d.key === a.key)?.count || 0;
           const bCount = metaPartsData.top64.find(d => d.key === b.key)?.count || 0;
           return (aCount - bCount) * multiplier;
-        }
-        if (sorting.id === 'top64Percentage') {
-          const aPercentage = metaPartsData.top64.find(d => d.key === a.key)?.percentage || 0;
-          const bPercentage = metaPartsData.top64.find(d => d.key === b.key)?.percentage || 0;
-          return (aPercentage - bPercentage) * multiplier;
         }
       }
 
@@ -125,22 +118,35 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
       header: () => (
         <Button
           variant="ghost"
-          className="p-0 font-bold flex items-center"
+          className="p-0 font-bold flex items-center w-full"
           onClick={() => handleSort('key')}
         >
           {renderSortIcon('key')}
         </Button>
       ),
-      cell: ({ row }) => (
-        <Tooltip delayDuration={200}>
-          <TooltipTrigger asChild>
-            {labelRenderer(row.original.key, metaInfo, 'compact')}
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            {labelRenderer(row.original.key, metaInfo, 'image')}
-          </TooltipContent>
-        </Tooltip>
-      ),
+      cell: ({ row }) => {
+        const metaPartData = row.original.data;
+
+        return (
+          <Tooltip delayDuration={200}>
+            <TooltipTrigger asChild>
+              {labelRenderer(row.original.key, metaInfo, 'compact')}
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <TournamentMetaTooltip
+                name={row.original.key}
+                metaInfo={metaInfo}
+                labelRenderer={labelRenderer}
+                value={row.original.count}
+                totalDeckCountBasedOnMetaPart={totalDeckCountBasedOnMetaPart}
+                data={metaPartData}
+                totalDecks={totalDecks}
+                day2Decks={day2Decks}
+              />
+            </TooltipContent>
+          </Tooltip>
+        );
+      },
     },
     {
       id: 'count',
@@ -170,45 +176,45 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
           {renderSortIcon('percentage')}
         </Button>
       ),
-      cell: ({ row }) => `${row.original.percentage.toFixed(1)}%`,
+      cell: ({ row }) => `${row.original.percentage?.toFixed(1)}%`,
     },
   ];
 
   // Add columns for meta parts if available
   if (metaPartsData) {
-    if (metaPartsData.top8.length > 0) {
+    if (metaPartsData.top64.length > 0) {
       columns.push(
         {
-          id: 'top8Count',
+          id: 'top64Count',
           header: () => (
             <Button
               variant="ghost"
               className="p-0 font-bold flex items-center"
-              onClick={() => handleSort('top8Count')}
+              onClick={() => handleSort('top64Count')}
             >
-              Top 8 Count
-              {renderSortIcon('top8Count')}
+              Top 64 Count
+              {renderSortIcon('top64Count')}
             </Button>
           ),
           cell: ({ row }) => {
-            const item = metaPartsData.top8.find(d => d.key === row.original.key);
+            const item = metaPartsData.top64.find(d => d.key === row.original.key);
             return item ? item.count : 0;
           },
         },
         {
-          id: 'top8Percentage',
+          id: 'top64Percentage',
           header: () => (
             <Button
               variant="ghost"
               className="p-0 font-bold flex items-center"
-              onClick={() => handleSort('top8Percentage')}
+              onClick={() => handleSort('top64Percentage')}
             >
-              Top 8 %{renderSortIcon('top8Percentage')}
+              Top 64 %{renderSortIcon('top64Percentage')}
             </Button>
           ),
           cell: ({ row }) => {
-            const item = metaPartsData.top8.find(d => d.key === row.original.key);
-            return item ? `${item.percentage.toFixed(1)}%` : '0.0%';
+            const item = metaPartsData.top64.find(d => d.key === row.original.key);
+            return item ? `${item.percentage?.toFixed(1)}%` : '0.0%';
           },
         },
       );
@@ -246,45 +252,45 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
           ),
           cell: ({ row }) => {
             const item = metaPartsData.day2.find(d => d.key === row.original.key);
-            return item ? `${item.percentage.toFixed(1)}%` : '0.0%';
+            return item ? `${item.percentage?.toFixed(1)}%` : '0.0%';
           },
         },
       );
     }
 
-    if (metaPartsData.top64.length > 0) {
+    if (metaPartsData.top8.length > 0) {
       columns.push(
         {
-          id: 'top64Count',
+          id: 'top8Count',
           header: () => (
             <Button
               variant="ghost"
               className="p-0 font-bold flex items-center"
-              onClick={() => handleSort('top64Count')}
+              onClick={() => handleSort('top8Count')}
             >
-              Top 64 Count
-              {renderSortIcon('top64Count')}
+              Top 8 Count
+              {renderSortIcon('top8Count')}
             </Button>
           ),
           cell: ({ row }) => {
-            const item = metaPartsData.top64.find(d => d.key === row.original.key);
+            const item = metaPartsData.top8.find(d => d.key === row.original.key);
             return item ? item.count : 0;
           },
         },
         {
-          id: 'top64Percentage',
+          id: 'top8Percentage',
           header: () => (
             <Button
               variant="ghost"
               className="p-0 font-bold flex items-center"
-              onClick={() => handleSort('top64Percentage')}
+              onClick={() => handleSort('top8Percentage')}
             >
-              Top 64 %{renderSortIcon('top64Percentage')}
+              Top 8 %{renderSortIcon('top8Percentage')}
             </Button>
           ),
           cell: ({ row }) => {
-            const item = metaPartsData.top64.find(d => d.key === row.original.key);
-            return item ? `${item.percentage.toFixed(1)}%` : '0.0%';
+            const item = metaPartsData.top8.find(d => d.key === row.original.key);
+            return item ? `${item.percentage?.toFixed(1)}%` : '0.0%';
           },
         },
       );
