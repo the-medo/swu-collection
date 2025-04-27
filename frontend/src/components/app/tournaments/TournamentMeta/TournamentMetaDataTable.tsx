@@ -65,6 +65,12 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
         // return (a.percentage - b.percentage) * multiplier;
       }
 
+      if (sorting.id === 'winrate') {
+        const aWinrate = a.winrate || 0;
+        const bWinrate = b.winrate || 0;
+        return (aWinrate - bWinrate) * multiplier;
+      }
+
       // Meta part columns
       if (metaPartsData) {
         // Top 8
@@ -177,6 +183,21 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
         </Button>
       ),
       cell: ({ row }) => `${row.original.percentage?.toFixed(1)}%`,
+    },
+    {
+      id: 'winrate',
+      accessorKey: 'winrate',
+      header: () => (
+        <Button
+          variant="ghost"
+          className="p-0 font-bold flex items-center"
+          onClick={() => handleSort('winrate')}
+        >
+          Winrate
+          {renderSortIcon('winrate')}
+        </Button>
+      ),
+      cell: ({ row }) => row.original.winrate ? `${row.original.winrate}%` : 'N/A',
     },
   ];
 

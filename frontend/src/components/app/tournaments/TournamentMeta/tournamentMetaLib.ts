@@ -16,6 +16,9 @@ export type TournamentDataMap = Record<string, TournamentAnalyzerData | undefine
 export interface AnalysisDataItem {
   key: string;
   count: number;
+  wins?: number;
+  losses?: number;
+  winrate?: number;
   data?: {
     all: number;
     top8: number;

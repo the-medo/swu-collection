@@ -71,6 +71,8 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
       if (!decksToAnalyze.length || !cardListData) return [];
 
       const countMap = new Map<string, number>();
+      const winsMap = new Map<string, number>();
+      const lossesMap = new Map<string, number>();
 
       decksToAnalyze.forEach(deck => {
         if (!deck.deck) return;
@@ -136,6 +138,9 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
             if (metaInfoType === 'aspects') {
               aspects.forEach(a => {
                 countMap.set(a, (countMap.get(a) || 0) + 1);
+                // Also track wins and losses for each aspect
+                winsMap.set(a, (winsMap.get(a) || 0) + (deck.tournamentDeck.recordWin || 0));
+                lossesMap.set(a, (lossesMap.get(a) || 0) + (deck.tournamentDeck.recordLose || 0));
               });
             } else {
               key = aspects.sort().join('-');
@@ -146,16 +151,29 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
 
         if (key) {
           countMap.set(key, (countMap.get(key) || 0) + 1);
+          // Track wins and losses for each key
+          winsMap.set(key, (winsMap.get(key) || 0) + (deck.tournamentDeck.recordWin || 0));
+          lossesMap.set(key, (lossesMap.get(key) || 0) + (deck.tournamentDeck.recordLose || 0));
         }
       });
 
       // Convert map to array and sort by count
       return Array.from(countMap.entries())
-        .map(([key, count]) => ({
-          key,
-          count,
-          percentage: parseFloat(((count / decksToAnalyze.length) * 100).toFixed(1)),
-        }))
+        .map(([key, count]) => {
+          const wins = winsMap.get(key) || 0;
+          const losses = lossesMap.get(key) || 0;
+          const totalGames = wins + losses;
+          const winrate = totalGames > 0 ? parseFloat((wins / totalGames * 100).toFixed(1)) : 0;
+
+          return {
+            key,
+            count,
+            wins,
+            losses,
+            winrate,
+            percentage: parseFloat(((count / decksToAnalyze.length) * 100).toFixed(1)),
+          };
+        })
         .sort((a, b) => b.count - a.count);
     },
     [cardListData, getBaseKey],

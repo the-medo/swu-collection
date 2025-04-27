@@ -45,6 +45,8 @@ const CustomLabel = (props: CustomLabelProps) => {
   const labelX = (x as number) - 8; // Position left of the bar
   const labelY = y as number; // Center vertically
 
+  console.log(props);
+
   return (
     <foreignObject
       x={labelX - 250}
@@ -75,6 +77,7 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
       name: item.key || 'Unknown',
       value: item.count,
       data: item.data, // additional data for tooltip
+      winrate: item.winrate,
     }));
   }, [analysisData, metaPart]);
 
@@ -98,7 +101,7 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
         <BarChart
           layout="vertical"
           data={chartData}
-          margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
+          margin={{ top: 20, right: 70, left: 100, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" />
@@ -154,6 +157,16 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
               )}
             />
             <LabelList dataKey="value" position="right" />
+            <LabelList
+              dataKey="winrate"
+              position="right"
+              offset={35}
+              formatter={(value: string) => `(WR:${value}%)`}
+              style={{
+                fontSize: '10px',
+                fontStyle: 'italic',
+              }}
+            />
           </Bar>
           <ChartLegend>
             <ChartLegendContent />
