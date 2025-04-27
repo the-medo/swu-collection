@@ -1,20 +1,31 @@
 import * as React from 'react';
+import { useMemo } from 'react';
+import TournamentMatchups from '@/components/app/tournaments/TournamentMatchups/TournamentMatchups.tsx';
+import {
+  useTournamentMetaActions,
+  useTournamentMetaStore,
+} from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
+import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentDataLoader.tsx';
 
 interface MatchupsTabProps {
   tournamentId: string;
 }
 
 const MatchupsTab: React.FC<MatchupsTabProps> = ({ tournamentId }) => {
+  const { decks, tournaments, matches } = useTournamentMetaStore();
+  const { setTournamentIds } = useTournamentMetaActions();
+  const tournamentIds = useMemo(() => [tournamentId], [tournamentId]);
+
+  React.useEffect(() => {
+    setTournamentIds(tournamentIds);
+  }, [tournamentIds, setTournamentIds]);
+
   return (
-    <div className="space-y-6">
-      <div className="bg-card rounded-md border shadow-sm p-6">
-        <h3 className="text-lg font-semibold mb-4">Matchups</h3>
-        <div className="bg-muted p-8 rounded-md text-center">
-          <p className="text-muted-foreground">
-            Tournament matchup analysis will be displayed here.
-          </p>
-        </div>
-      </div>
+    <div className="space-y-4 p-4">
+      {tournamentIds.map(tid => (
+        <TournamentDataLoader tournamentId={tid} key={tid} />
+      ))}
+      <TournamentMatchups decks={decks} tournaments={tournaments} matches={matches} />
     </div>
   );
 };
