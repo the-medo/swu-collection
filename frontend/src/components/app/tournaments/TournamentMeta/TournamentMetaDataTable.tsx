@@ -6,6 +6,7 @@ import { MetaInfo } from './MetaInfoSelector';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useState } from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 
 interface AnalysisDataItem {
   key: string;
@@ -28,7 +29,6 @@ interface TournamentMetaDataTableProps {
 const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
   analysisData,
   metaInfo,
-  totalDecks,
   metaPartsData,
 }) => {
   const labelRenderer = useLabel();
@@ -111,7 +111,11 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
 
   const renderSortIcon = (columnId: string) => {
     if (sorting.id !== columnId) return null;
-    return sorting.desc ? <ArrowDown className="ml-1 h-4 w-4" /> : <ArrowUp className="ml-1 h-4 w-4" />;
+    return sorting.desc ? (
+      <ArrowDown className="ml-1 h-4 w-4" />
+    ) : (
+      <ArrowUp className="ml-1 h-4 w-4" />
+    );
   };
 
   const columns: ColumnDef<AnalysisDataItem>[] = [
@@ -124,11 +128,19 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
           className="p-0 font-bold flex items-center"
           onClick={() => handleSort('key')}
         >
-          {metaInfo === 'aspects' || metaInfo === 'aspectsDetailed' ? 'Aspect(s)' : 'Deck'}
           {renderSortIcon('key')}
         </Button>
       ),
-      cell: ({ row }) => labelRenderer(row.original.key, metaInfo, 'compact'),
+      cell: ({ row }) => (
+        <Tooltip delayDuration={200}>
+          <TooltipTrigger asChild>
+            {labelRenderer(row.original.key, metaInfo, 'compact')}
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            {labelRenderer(row.original.key, metaInfo, 'image')}
+          </TooltipContent>
+        </Tooltip>
+      ),
     },
     {
       id: 'count',
@@ -191,15 +203,14 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
               className="p-0 font-bold flex items-center"
               onClick={() => handleSort('top8Percentage')}
             >
-              Top 8 %
-              {renderSortIcon('top8Percentage')}
+              Top 8 %{renderSortIcon('top8Percentage')}
             </Button>
           ),
           cell: ({ row }) => {
             const item = metaPartsData.top8.find(d => d.key === row.original.key);
             return item ? `${item.percentage.toFixed(1)}%` : '0.0%';
           },
-        }
+        },
       );
     }
 
@@ -230,15 +241,14 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
               className="p-0 font-bold flex items-center"
               onClick={() => handleSort('day2Percentage')}
             >
-              Day 2 %
-              {renderSortIcon('day2Percentage')}
+              Day 2 %{renderSortIcon('day2Percentage')}
             </Button>
           ),
           cell: ({ row }) => {
             const item = metaPartsData.day2.find(d => d.key === row.original.key);
             return item ? `${item.percentage.toFixed(1)}%` : '0.0%';
           },
-        }
+        },
       );
     }
 
@@ -269,15 +279,14 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
               className="p-0 font-bold flex items-center"
               onClick={() => handleSort('top64Percentage')}
             >
-              Top 64 %
-              {renderSortIcon('top64Percentage')}
+              Top 64 %{renderSortIcon('top64Percentage')}
             </Button>
           ),
           cell: ({ row }) => {
             const item = metaPartsData.top64.find(d => d.key === row.original.key);
             return item ? `${item.percentage.toFixed(1)}%` : '0.0%';
           },
-        }
+        },
       );
     }
   }

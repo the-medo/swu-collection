@@ -9,6 +9,7 @@ import CardImage from '@/components/app/global/CardImage.tsx';
 import { isAspect } from '@/lib/cards/isAspect.ts';
 import { getBaseShortcut } from '@/lib/cards/getBaseShortcut.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { cn } from '@/lib/utils.ts';
 
 export function useLabel() {
   const { data: cardListData } = useCardList();
@@ -72,7 +73,11 @@ export function useLabel() {
         return `${leaderCardId ? cardList[leaderCardId]?.name : ''}${baseCardId ? cardList[baseCardId]?.name : ''}${aspects.length ? ` ${aspects.join(', ')}` : ''}`;
       } else if (type === 'compact') {
         return (
-          <div className="flex flex-row gap-2">
+          <div
+            className={cn('flex flex-row gap-2', {
+              'justify-end': metaInfo === 'leadersAndBase',
+            })}
+          >
             {leaderCardId && (
               <>
                 <span>{cardList[leaderCardId]?.title}</span>
