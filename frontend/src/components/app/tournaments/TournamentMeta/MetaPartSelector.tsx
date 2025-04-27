@@ -12,7 +12,10 @@ interface MetaPartSelectorProps {
 const MetaPartSelector: React.FC<MetaPartSelectorProps> = ({ value, onChange }) => {
   const onValueChange = useCallback(
     (v: string) => {
-      onChange(v as MetaPart);
+      // If v is empty (deselection), don't update the value
+      if (v) {
+        onChange(v as MetaPart);
+      }
     },
     [onChange],
   );

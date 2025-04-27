@@ -18,7 +18,10 @@ interface MetaInfoSelectorProps {
 const MetaInfoSelector: React.FC<MetaInfoSelectorProps> = ({ value, onChange }) => {
   const onValueChange = useCallback(
     (v: string) => {
-      onChange(v as MetaInfo);
+      // If v is empty (deselection), don't update the value
+      if (v) {
+        onChange(v as MetaInfo);
+      }
     },
     [onChange],
   );

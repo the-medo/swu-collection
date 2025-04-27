@@ -6,7 +6,7 @@ import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { isBasicBase } from '@/lib/cards/isBasicBase.ts';
 import { useCallback, useMemo, useState } from 'react';
-import TournamentMetaTable from './TournamentMetaTable';
+import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
 import { Button } from '@/components/ui/button';
 import { BarChart, TableIcon } from 'lucide-react';
@@ -204,9 +204,10 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
       return {
         ...item,
         data,
+        percentage: parseFloat(((item.count / filteredDecks.length) * 100).toFixed(1)),
       };
     });
-  }, [allMetaPartsAnalysis, metaPart]);
+  }, [allMetaPartsAnalysis, metaPart, filteredDecks.length]);
 
   return (
     <div className="space-y-4">
@@ -248,10 +249,28 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
           day2Decks={day2DeckCount}
         />
       ) : (
-        <TournamentMetaTable
+        <TournamentMetaDataTable
           analysisData={analysisData}
           metaInfo={metaInfo}
           totalDecks={decks.length}
+          metaPartsData={{
+            all: allMetaPartsAnalysis.all.map(item => ({
+              ...item,
+              percentage: parseFloat(((item.count / metaPartsDecks.all.length) * 100).toFixed(1)),
+            })),
+            top8: allMetaPartsAnalysis.top8.map(item => ({
+              ...item,
+              percentage: parseFloat(((item.count / metaPartsDecks.top8.length) * 100).toFixed(1)),
+            })),
+            day2: allMetaPartsAnalysis.day2.map(item => ({
+              ...item,
+              percentage: parseFloat(((item.count / metaPartsDecks.day2.length) * 100).toFixed(1)),
+            })),
+            top64: allMetaPartsAnalysis.top64.map(item => ({
+              ...item,
+              percentage: parseFloat(((item.count / metaPartsDecks.top64.length) * 100).toFixed(1)),
+            })),
+          }}
         />
       )}
     </div>
