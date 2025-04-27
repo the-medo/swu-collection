@@ -6,6 +6,10 @@ import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { isBasicBase } from '@/lib/cards/isBasicBase.ts';
 import { useCallback, useMemo, useState } from 'react';
+import TournamentMetaTable from './TournamentMetaTable';
+import TournamentMetaChart from './TournamentMetaChart';
+import { Button } from '@/components/ui/button';
+import { BarChart, TableIcon } from 'lucide-react';
 
 interface TournamentMetaAnalyzerProps {
   decks: TournamentDeckResponse[];
@@ -15,6 +19,7 @@ interface TournamentMetaAnalyzerProps {
 const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, tournaments }) => {
   const [metaPart, setMetaPart] = useState<MetaPart>('all');
   const [metaInfo, setMetaInfo] = useState<MetaInfo>('leaders');
+  const [viewMode, setViewMode] = useState<'chart' | 'table'>('chart');
   const { data: cardListData } = useCardList();
 
   // Filter decks based on selected meta part
@@ -144,7 +149,27 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold mb-4">Tournament Meta Analysis</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold mb-4">Tournament Meta Analysis</h2>
+        <div className="flex gap-2">
+          <Button
+            variant={viewMode === 'chart' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setViewMode('chart')}
+          >
+            <BarChart className="h-4 w-4 mr-2" />
+            Chart
+          </Button>
+          <Button
+            variant={viewMode === 'table' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setViewMode('table')}
+          >
+            <TableIcon className="h-4 w-4 mr-2" />
+            Table
+          </Button>
+        </div>
+      </div>
 
       <div className="flex flex-row gap-4 flex-wrap justify-between">
         <MetaPartSelector value={metaPart} onChange={setMetaPart} />
@@ -153,33 +178,18 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
 
       <h3 className="text-lg font-semibold mb-4">Total decks analyzed: {filteredDecks.length}</h3>
 
-      {analysisData.length > 0 ? (
-        <div className="border border-border rounded-md p-4 mt-4">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="text-left p-2 border-b">
-                  {metaInfo === 'aspects' || metaInfo === 'aspectsDetailed' ? 'Aspect(s)' : 'Deck'}
-                </th>
-                <th className="text-right p-2 border-b">Count</th>
-                <th className="text-right p-2 border-b">Percentage</th>
-              </tr>
-            </thead>
-            <tbody>
-              {analysisData.map(({ key, count }) => (
-                <tr key={key}>
-                  <th className="text-left p-2 border-b font-normal">{key || 'Unknown'}</th>
-                  <td className="text-right p-2 border-b">{count}</td>
-                  <td className="text-right p-2 border-b">
-                    {((count / filteredDecks.length) * 100).toFixed(1)}%
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {viewMode === 'chart' ? (
+        <TournamentMetaChart 
+          analysisData={analysisData} 
+          metaInfo={metaInfo} 
+          totalDecks={filteredDecks.length} 
+        />
       ) : (
-        <p className="text-muted-foreground">No data available for the selected filters.</p>
+        <TournamentMetaTable 
+          analysisData={analysisData} 
+          metaInfo={metaInfo} 
+          totalDecks={filteredDecks.length} 
+        />
       )}
     </div>
   );
