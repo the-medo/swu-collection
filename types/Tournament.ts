@@ -14,6 +14,7 @@ export interface TournamentStringDate {
   meleeId: string | null;
   format: number;
   days: number;
+  dayTwoPlayerCount: number | null;
   date: string;
   createdAt: string;
   updatedAt: string;

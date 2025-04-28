@@ -174,7 +174,7 @@ export async function fetchDeckMatchesWithMeleeDeckIds(
         p1Username,
         p1DeckId: deckId,
         p1Points: pointsBefore,
-        p2Username: isBye ? null : (match.OpponentUsername ?? ''),
+        p2Username: isBye ? null : (match.Opponent ?? ''), //There is also OpponentUsername, but we want display name
         p2DeckId: isBye ? null : (match.OpponentDecklistGuid ?? ''),
         p2Points: isBye ? null : pointsBefore, //this can be inaccurate and is updated later
         gameWin,
@@ -256,4 +256,31 @@ export const parseStandingsToTournamentDeck = (
   console.log(`Parsed ${result.exists ? 'existing' : 'new'} decklist: ${result.decklistName}`);
 
   return result;
+};
+
+export const parseStandingsToTournamentDeck2 = (
+  standing: any,
+  tournament: Tournament,
+  availableDecks: TournamentDeck[],
+): {
+  meleeDecklistGuid?: string;
+  meleePlayerUsername?: string;
+  oldUsername?: string;
+  exists: boolean;
+  realDecklistId?: string;
+} => {
+  const decklistInfo = standing.Decklists[0];
+  const meleeDecklistGuid = decklistInfo?.DecklistId;
+  const meleePlayerUsername = standing.Team.Players[0].DisplayName;
+  const oldUsername = standing.Team.Players[0].Username;
+
+  const exists = availableDecks.find(d => d.meleeDecklistGuid === meleeDecklistGuid);
+
+  return {
+    meleeDecklistGuid,
+    meleePlayerUsername,
+    oldUsername,
+    exists: !!exists,
+    realDecklistId: exists?.deckId,
+  };
 };

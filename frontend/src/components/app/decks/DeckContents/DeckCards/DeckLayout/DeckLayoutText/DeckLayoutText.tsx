@@ -14,10 +14,11 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
   deckId,
   deckCardsForLayout: { mainboardGroups, cardsByBoard, usedCardsInBoards, usedCards },
 }) => {
-  const columnClasses = 'columns-1 md:columns-2 min-[1660px]:columns-3 gap-4 space-y-4';
+  const columnClasses =
+    '@container columns-1 @[700px]:columns-2 @[1050px]:columns-3 gap-4 space-y-4';
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <div className="@container flex w-full flex-col gap-4">
       <article className={columnClasses}>
         {mainboardGroups?.sortedIds.map(groupName => {
           const group = mainboardGroups?.groups[groupName];

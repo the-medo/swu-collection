@@ -36,6 +36,7 @@ export const zTournamentSchema = z.object({
       },
     ),
   days: z.number().int().positive(),
+  dayTwoPlayerCount: z.number().int().min(0),
   date: z.string(),
   createdAt: z.string().datetime().optional(),
   updatedAt: z.string().datetime().optional(),

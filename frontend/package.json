@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "1.4.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
@@ -33,6 +33,7 @@
     "@radix-ui/react-toggle-group": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@radix-ui/react-visually-hidden": "^1.1.2",
+    "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/react-query": "^5.62.16",
     "@tanstack/react-router": "^1.95.1",
     "@tanstack/react-store": "^0.7.0",
@@ -43,12 +44,14 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
     "date-fns": "^4.1.0",
+    "dexie": "^4.0.11",
     "lodash.debounce": "^4.0.8",
-    "lucide-react": "^0.469.0",
+    "lucide-react": "^0.487.0",
     "motion": "^12.5.0",
     "react": "^18.3.1",
     "react-day-picker": "8.10.1",
     "react-dom": "^18.3.1",
+    "recharts": "^2.15.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vite-plugin-svgr": "^4.3.0"

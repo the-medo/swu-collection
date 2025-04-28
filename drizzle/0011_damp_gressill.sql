@@ -1,0 +1,1 @@
+ALTER TABLE "tournament" ADD COLUMN "day_two_player_count" integer;

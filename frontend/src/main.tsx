@@ -7,6 +7,7 @@ import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
 import { ThemeProvider } from './components/theme-provider';
 import { queryClient } from '@/queryClient.ts';
+import { DatabaseProvider } from '@/providers/DatabaseProvider.tsx';
 
 const router = createRouter({ routeTree });
 
@@ -20,7 +21,9 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <RouterProvider router={router} />
+        <DatabaseProvider>
+          <RouterProvider router={router} />
+        </DatabaseProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>,

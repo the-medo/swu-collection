@@ -10,6 +10,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
 import { format } from './format.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 export const deck = pgTable(
   'deck',
@@ -43,3 +44,5 @@ export const deck = pgTable(
     };
   },
 );
+
+export type Deck = InferSelectModel<typeof deck>;

@@ -38,6 +38,10 @@ import { Route as ToolsDeckFormatConverterIndexImport } from './routes/tools/dec
 import { Route as ListsCardListIdIndexImport } from './routes/lists/$cardListId/index'
 import { Route as DecksDeckIdIndexImport } from './routes/decks/$deckId/index'
 import { Route as CollectionsCollectionIdIndexImport } from './routes/collections/$collectionId/index'
+import { Route as TournamentsTournamentIdMetaImport } from './routes/tournaments/$tournamentId/meta'
+import { Route as TournamentsTournamentIdMatchupsImport } from './routes/tournaments/$tournamentId/matchups'
+import { Route as TournamentsTournamentIdDetailsImport } from './routes/tournaments/$tournamentId/details'
+import { Route as TournamentsTournamentIdDecksImport } from './routes/tournaments/$tournamentId/decks'
 import { Route as DecksDeckIdEditImport } from './routes/decks/$deckId/edit'
 import { Route as CardsDetailCardIdImport } from './routes/cards/detail/$cardId'
 
@@ -204,6 +208,34 @@ const CollectionsCollectionIdIndexRoute =
   CollectionsCollectionIdIndexImport.update({
     id: '/collections/$collectionId/',
     path: '/collections/$collectionId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const TournamentsTournamentIdMetaRoute =
+  TournamentsTournamentIdMetaImport.update({
+    id: '/tournaments/$tournamentId/meta',
+    path: '/tournaments/$tournamentId/meta',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const TournamentsTournamentIdMatchupsRoute =
+  TournamentsTournamentIdMatchupsImport.update({
+    id: '/tournaments/$tournamentId/matchups',
+    path: '/tournaments/$tournamentId/matchups',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const TournamentsTournamentIdDetailsRoute =
+  TournamentsTournamentIdDetailsImport.update({
+    id: '/tournaments/$tournamentId/details',
+    path: '/tournaments/$tournamentId/details',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const TournamentsTournamentIdDecksRoute =
+  TournamentsTournamentIdDecksImport.update({
+    id: '/tournaments/$tournamentId/decks',
+    path: '/tournaments/$tournamentId/decks',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -377,6 +409,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DecksDeckIdEditImport
       parentRoute: typeof rootRoute
     }
+    '/tournaments/$tournamentId/decks': {
+      id: '/tournaments/$tournamentId/decks'
+      path: '/tournaments/$tournamentId/decks'
+      fullPath: '/tournaments/$tournamentId/decks'
+      preLoaderRoute: typeof TournamentsTournamentIdDecksImport
+      parentRoute: typeof rootRoute
+    }
+    '/tournaments/$tournamentId/details': {
+      id: '/tournaments/$tournamentId/details'
+      path: '/tournaments/$tournamentId/details'
+      fullPath: '/tournaments/$tournamentId/details'
+      preLoaderRoute: typeof TournamentsTournamentIdDetailsImport
+      parentRoute: typeof rootRoute
+    }
+    '/tournaments/$tournamentId/matchups': {
+      id: '/tournaments/$tournamentId/matchups'
+      path: '/tournaments/$tournamentId/matchups'
+      fullPath: '/tournaments/$tournamentId/matchups'
+      preLoaderRoute: typeof TournamentsTournamentIdMatchupsImport
+      parentRoute: typeof rootRoute
+    }
+    '/tournaments/$tournamentId/meta': {
+      id: '/tournaments/$tournamentId/meta'
+      path: '/tournaments/$tournamentId/meta'
+      fullPath: '/tournaments/$tournamentId/meta'
+      preLoaderRoute: typeof TournamentsTournamentIdMetaImport
+      parentRoute: typeof rootRoute
+    }
     '/collections/$collectionId/': {
       id: '/collections/$collectionId/'
       path: '/collections/$collectionId'
@@ -466,6 +526,10 @@ export interface FileRoutesByFullPath {
   '/tournaments': typeof TournamentsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
+  '/tournaments/$tournamentId/decks': typeof TournamentsTournamentIdDecksRoute
+  '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
+  '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
+  '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
@@ -498,6 +562,10 @@ export interface FileRoutesByTo {
   '/tournaments': typeof TournamentsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
+  '/tournaments/$tournamentId/decks': typeof TournamentsTournamentIdDecksRoute
+  '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
+  '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
+  '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
@@ -531,6 +599,10 @@ export interface FileRoutesById {
   '/tournaments/': typeof TournamentsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
+  '/tournaments/$tournamentId/decks': typeof TournamentsTournamentIdDecksRoute
+  '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
+  '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
+  '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
   '/lists/$cardListId/': typeof ListsCardListIdIndexRoute
@@ -565,6 +637,10 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
+    | '/tournaments/$tournamentId/decks'
+    | '/tournaments/$tournamentId/details'
+    | '/tournaments/$tournamentId/matchups'
+    | '/tournaments/$tournamentId/meta'
     | '/collections/$collectionId'
     | '/decks/$deckId'
     | '/lists/$cardListId'
@@ -596,6 +672,10 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
+    | '/tournaments/$tournamentId/decks'
+    | '/tournaments/$tournamentId/details'
+    | '/tournaments/$tournamentId/matchups'
+    | '/tournaments/$tournamentId/meta'
     | '/collections/$collectionId'
     | '/decks/$deckId'
     | '/lists/$cardListId'
@@ -627,6 +707,10 @@ export interface FileRouteTypes {
     | '/tournaments/'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
+    | '/tournaments/$tournamentId/decks'
+    | '/tournaments/$tournamentId/details'
+    | '/tournaments/$tournamentId/matchups'
+    | '/tournaments/$tournamentId/meta'
     | '/collections/$collectionId/'
     | '/decks/$deckId/'
     | '/lists/$cardListId/'
@@ -659,6 +743,10 @@ export interface RootRouteChildren {
   TournamentsIndexRoute: typeof TournamentsIndexRoute
   CardsDetailCardIdRoute: typeof CardsDetailCardIdRoute
   DecksDeckIdEditRoute: typeof DecksDeckIdEditRoute
+  TournamentsTournamentIdDecksRoute: typeof TournamentsTournamentIdDecksRoute
+  TournamentsTournamentIdDetailsRoute: typeof TournamentsTournamentIdDetailsRoute
+  TournamentsTournamentIdMatchupsRoute: typeof TournamentsTournamentIdMatchupsRoute
+  TournamentsTournamentIdMetaRoute: typeof TournamentsTournamentIdMetaRoute
   CollectionsCollectionIdIndexRoute: typeof CollectionsCollectionIdIndexRoute
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
@@ -690,6 +778,10 @@ const rootRouteChildren: RootRouteChildren = {
   TournamentsIndexRoute: TournamentsIndexRoute,
   CardsDetailCardIdRoute: CardsDetailCardIdRoute,
   DecksDeckIdEditRoute: DecksDeckIdEditRoute,
+  TournamentsTournamentIdDecksRoute: TournamentsTournamentIdDecksRoute,
+  TournamentsTournamentIdDetailsRoute: TournamentsTournamentIdDetailsRoute,
+  TournamentsTournamentIdMatchupsRoute: TournamentsTournamentIdMatchupsRoute,
+  TournamentsTournamentIdMetaRoute: TournamentsTournamentIdMetaRoute,
   CollectionsCollectionIdIndexRoute: CollectionsCollectionIdIndexRoute,
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
@@ -730,6 +822,10 @@ export const routeTree = rootRoute
         "/tournaments/",
         "/cards/detail/$cardId",
         "/decks/$deckId/edit",
+        "/tournaments/$tournamentId/decks",
+        "/tournaments/$tournamentId/details",
+        "/tournaments/$tournamentId/matchups",
+        "/tournaments/$tournamentId/meta",
         "/collections/$collectionId/",
         "/decks/$deckId/",
         "/lists/$cardListId/",
@@ -808,6 +904,18 @@ export const routeTree = rootRoute
     },
     "/decks/$deckId/edit": {
       "filePath": "decks/$deckId/edit.tsx"
+    },
+    "/tournaments/$tournamentId/decks": {
+      "filePath": "tournaments/$tournamentId/decks.tsx"
+    },
+    "/tournaments/$tournamentId/details": {
+      "filePath": "tournaments/$tournamentId/details.tsx"
+    },
+    "/tournaments/$tournamentId/matchups": {
+      "filePath": "tournaments/$tournamentId/matchups.tsx"
+    },
+    "/tournaments/$tournamentId/meta": {
+      "filePath": "tournaments/$tournamentId/meta.tsx"
     },
     "/collections/$collectionId/": {
       "filePath": "collections/$collectionId/index.tsx"

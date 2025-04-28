@@ -38,6 +38,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
       meleeId: initialData?.meleeId || '',
       format: initialData?.format || 1,
       days: initialData?.days || 1,
+      dayTwoPlayerCount: initialData?.dayTwoPlayerCount || 0,
       date: initialData?.date ?? format(new Date(), 'yyyy-MM-dd'),
     },
     onSubmit: async ({ value }) => {
@@ -168,7 +169,27 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
                 onBlur={field.handleBlur}
                 onChange={e => field.handleChange(parseInt(e.target.value) || 1)}
                 min={1}
-                max={7}
+                max={3}
+                required
+              />
+            </div>
+          )}
+        />
+
+        {/* Days */}
+        <form.Field
+          name="dayTwoPlayerCount"
+          children={field => (
+            <div className="space-y-2">
+              <Label htmlFor={field.name}>Day 2 player count</Label>
+              <Input
+                id={field.name}
+                type="number"
+                placeholder="Day 2 player count"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={e => field.handleChange(parseInt(e.target.value) || 0)}
+                min={0}
                 required
               />
             </div>

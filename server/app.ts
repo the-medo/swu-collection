@@ -9,6 +9,7 @@ import { cardsRoute } from './routes/cards.ts';
 import { worldRoute } from './routes/world.ts';
 import { userRoute } from './routes/user.ts';
 import { tournamentRoute } from './routes/tournament.ts';
+import { entitiesRoute } from './routes/entity.ts';
 
 const app = new Hono<AuthExtension>();
 
@@ -34,7 +35,8 @@ const apiRoutes = app
   .route('/deck', deckRoute)
   .route('/cards', cardsRoute)
   .route('/user', userRoute)
-  .route('/tournament', tournamentRoute);
+  .route('/tournament', tournamentRoute)
+  .route('/entities', entitiesRoute);
 
 app.get('*', serveStatic({ root: './frontend/dist' }));
 app.get('*', serveStatic({ path: './frontend/dist/index.html' }));

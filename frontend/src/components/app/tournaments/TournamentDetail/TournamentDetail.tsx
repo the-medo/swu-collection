@@ -1,22 +1,26 @@
 import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
-import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, MapPinIcon, Trophy, Users, Database, Edit, Trash2 } from 'lucide-react';
-import { formatDate } from '@/lib/locale.ts';
+import { Database, Edit, Trash2, Trophy } from 'lucide-react';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
 import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTournamentDialog.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { usePermissions } from '@/hooks/usePermissions.ts';
-import { formatDataById } from '../../../../../../types/Format.ts';
+import { TournamentTabs } from '../TournamentTabs';
 
 interface TournamentDetailProps {
   tournamentId: string;
+  children?: React.ReactNode;
+  activeTab?: string;
 }
 
-const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => {
+const TournamentDetail: React.FC<TournamentDetailProps> = ({
+  tournamentId,
+  children,
+  activeTab,
+}) => {
   const { data, isFetching, error } = useGetTournament(tournamentId);
   const hasPermission = usePermissions();
 
@@ -35,27 +39,12 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
 
   const loading = isFetching;
   const tournament = data?.tournament;
-  const tournamentType = data?.tournamentType;
-  const user = data?.user;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* Tournament header */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-        <LoadingTitle
-          mainTitle={tournament?.name}
-          subTitle={
-            user ? (
-              <>
-                created by{' '}
-                <Link to={`/users/$userId`} params={{ userId: user.id }}>
-                  {user.displayName}
-                </Link>
-              </>
-            ) : undefined
-          }
-          loading={loading}
-        />
+        <LoadingTitle mainTitle={tournament?.name} loading={loading} />
 
         {!loading && tournament && (
           <div className="flex flex-wrap gap-2">
@@ -111,77 +100,11 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournamentId }) => 
         )}
       </div>
 
-      {/* Tournament info */}
-      {!loading && tournament && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left column */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <CalendarIcon className="h-4 w-4" />
-              <span className="font-medium">Date:</span>
-              <span>{formatDate(tournament.date)}</span>
-              {tournament.days > 1 && <span>({tournament.days} days)</span>}
-            </div>
+      {/* Tournament tabs */}
+      <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} />
 
-            <div className="flex items-center gap-2">
-              <MapPinIcon className="h-4 w-4" />
-              <span className="font-medium">Location:</span>
-              <span>{tournament.location}</span>
-              <span className="text-muted-foreground">({tournament.continent})</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <span className="font-medium">Attendance:</span>
-              <span>{tournament.attendance} players</span>
-            </div>
-          </div>
-
-          {/* Right column */}
-          <div className="space-y-4">
-            {tournamentType && (
-              <div className="flex items-center gap-2">
-                <Trophy
-                  className={`h-4 w-4 ${tournamentType?.major === 1 ? 'text-amber-500' : ''}`}
-                />
-                <span className="font-medium">Type:</span>
-                <span>{tournamentType?.name || tournament.type}</span>
-                {tournamentType?.major === 1 && (
-                  <span className="text-xs px-2 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 rounded-full ml-2">
-                    Major
-                  </span>
-                )}
-              </div>
-            )}
-
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Format:</span>
-              <span>{formatDataById[tournament.format]?.name || 'Unknown'}</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Set:</span>
-              <span>{tournament.set.toUpperCase()}</span>
-              <span className="text-muted-foreground">Season {tournament.season}</span>
-            </div>
-
-            {tournament.metaShakeup && (
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Meta Shakeup:</span>
-                <span>{tournament.metaShakeup}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Tournament results section - This will be implemented later */}
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold mb-4">Top Decks</h3>
-        <div className="bg-muted p-8 rounded-md text-center">
-          <p className="text-muted-foreground">Tournament deck results will be displayed here.</p>
-        </div>
-      </div>
+      {/* Tab content */}
+      {children}
     </div>
   );
 };

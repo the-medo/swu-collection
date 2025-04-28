@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label.tsx';
 import { useForm } from '@tanstack/react-form';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
 
 type ImportMeleeTournamentDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
   tournamentId: string;
@@ -26,11 +27,12 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
   const form = useForm({
     defaultValues: {
       meleeId: meleeId || '',
+      isFix: false,
     },
     onSubmit: async ({ value }) => {
       if (value.meleeId) {
         importMeleeMutation.mutate(
-          { meleeId: value.meleeId },
+          { meleeId: value.meleeId, isFix: value.isFix },
           {
             onSuccess: () => {
               setOpen(false);
@@ -82,6 +84,26 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
                 />
                 <p className="text-xs text-muted-foreground">
                   You can find the tournament ID in the URL of the Melee.gg tournament page.
+                </p>
+              </div>
+            )}
+          />
+
+          <form.Field
+            name="isFix"
+            children={field => (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={field.name}
+                    checked={field.state.value}
+                    onBlur={field.handleBlur}
+                    onCheckedChange={e => field.handleChange(!!e)}
+                  />
+                  <Label htmlFor={field.name}>Fix Mode</Label>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Enable this option to update or correct existing tournament data instead of performing a full import.
                 </p>
               </div>
             )}

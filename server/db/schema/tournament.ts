@@ -29,6 +29,7 @@ export const tournament = pgTable(
       .notNull()
       .references(() => format.id),
     days: integer('days').notNull(),
+    dayTwoPlayerCount: integer('day_two_player_count'),
     date: date('date', { mode: 'date' }).notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),

@@ -10,11 +10,26 @@ export const useImportMeleeTournament = (tournamentId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: ImportMeleeRequest) => {
-      const response = await api.tournament[':id']['import-melee'].$post({
-        param: { id: tournamentId },
-        json: data,
-      });
+    mutationFn: async (
+      data: ImportMeleeRequest & {
+        isFix?: boolean;
+      },
+    ) => {
+      let response: any;
+
+      const { isFix, ...requestData } = data;
+
+      if (isFix) {
+        response = await api.tournament[':id']['import-melee'].$patch({
+          param: { id: tournamentId },
+          json: requestData,
+        });
+      } else {
+        response = await api.tournament[':id']['import-melee'].$post({
+          param: { id: tournamentId },
+          json: requestData,
+        });
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
