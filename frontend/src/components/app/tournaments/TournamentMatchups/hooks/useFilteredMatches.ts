@@ -7,8 +7,8 @@ import { MatchFilter } from '../types';
 export function useFilteredMatches(
   matches: TournamentMatch[],
   matchFilter: MatchFilter,
-  minRound: number,
-  minPoints: number,
+  minRound: number | undefined,
+  minPoints: number | undefined,
   tournaments: TournamentInfoMap,
   decks: TournamentDeckResponse[]
 ) {
@@ -44,12 +44,17 @@ export function useFilteredMatches(
         });
       case 'custom':
         return matches.filter(match => {
-          const hasMinRound = match.round >= minRound;
+          // Use default values when undefined
+          const effectiveMinRound = minRound ?? 1;
+          const effectiveMinPoints = minPoints ?? 0;
+
+          const hasMinRound = match.round >= effectiveMinRound;
 
           // Check if either player has the minimum points
           // This is a simplification - adjust as needed
           const hasMinPoints =
-            match.p1Points >= minPoints || (match.p2Points !== null && match.p2Points >= minPoints);
+            match.p1Points >= effectiveMinPoints || 
+            (match.p2Points !== null && match.p2Points >= effectiveMinPoints);
 
           return hasMinRound && hasMinPoints;
         });

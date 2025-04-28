@@ -101,7 +101,7 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
         <BarChart
           layout="vertical"
           data={chartData}
-          margin={{ top: 20, right: 70, left: 100, bottom: 20 }}
+          margin={{ top: 0, right: 70, left: 100, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" />

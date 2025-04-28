@@ -17,51 +17,51 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
 }) => {
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-4 mb-6 rounded-lg bg-muted p-1">
-        <Link 
-          to={`/tournaments/$tournamentId/details`} 
+      <div className="grid grid-cols-4 mb-2 rounded-lg bg-muted p-1">
+        <Link
+          to={`/tournaments/$tournamentId/details`}
           params={{ tournamentId }}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-            activeTab === 'details' 
-              ? 'bg-background text-foreground shadow-sm' 
-              : 'text-muted-foreground hover:text-foreground'
+            activeTab === 'details'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
           )}
         >
           Details & Bracket
         </Link>
-        <Link 
-          to={`/tournaments/$tournamentId/meta`} 
+        <Link
+          to={`/tournaments/$tournamentId/meta`}
           params={{ tournamentId }}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-            activeTab === 'meta' 
-              ? 'bg-background text-foreground shadow-sm' 
-              : 'text-muted-foreground hover:text-foreground'
+            activeTab === 'meta'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
           )}
         >
           Meta Analysis
         </Link>
-        <Link 
-          to={`/tournaments/$tournamentId/matchups`} 
+        <Link
+          to={`/tournaments/$tournamentId/matchups`}
           params={{ tournamentId }}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-            activeTab === 'matchups' 
-              ? 'bg-background text-foreground shadow-sm' 
-              : 'text-muted-foreground hover:text-foreground'
+            activeTab === 'matchups'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
           )}
         >
           Matchups
         </Link>
-        <Link 
-          to={`/tournaments/$tournamentId/decks`} 
+        <Link
+          to={`/tournaments/$tournamentId/decks`}
           params={{ tournamentId }}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-            activeTab === 'decks' 
-              ? 'bg-background text-foreground shadow-sm' 
-              : 'text-muted-foreground hover:text-foreground'
+            activeTab === 'decks'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
           )}
         >
           All Decks

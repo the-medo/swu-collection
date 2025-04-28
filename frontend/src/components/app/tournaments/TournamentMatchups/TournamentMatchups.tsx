@@ -21,8 +21,8 @@ export interface TournamentMatchupsProps {
 
 const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tournaments, matches }) => {
   const [matchFilter, setMatchFilter] = useState<MatchFilter>('all');
-  const [minRound, setMinRound] = useState<number>(1);
-  const [minPoints, setMinPoints] = useState<number>(0);
+  const [minRound, setMinRound] = useState<number | undefined>(undefined);
+  const [minPoints, setMinPoints] = useState<number | undefined>(undefined);
   const [metaInfo, setMetaInfo] = useState<MetaInfo>('leaders');
   const [displayMode, setDisplayMode] = useState<MatchupDisplayMode>('winLoss');
   const { data: cardListData } = useCardList();
@@ -40,13 +40,9 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
   const matchupData = useMatchupData(filteredMatches, filteredDecks, cardListData, metaInfo);
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold mb-4">Tournament Matchups</h2>
+    <div className="space-y-2">
+      <div className="flex flex-row gap-4 flex-wrap items-start justify-between">
         <DisplayModeSelector value={displayMode} onChange={setDisplayMode} />
-      </div>
-
-      <div className="flex flex-row gap-4 flex-wrap justify-between">
         <MatchFilterSelector
           value={matchFilter}
           onChange={setMatchFilter}
@@ -58,16 +54,13 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
         <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
       </div>
 
-      <h3 className="text-lg font-semibold mb-4">
-        Total matches analyzed: {filteredMatches.length}
-      </h3>
-
       {matchupData.keys.length > 0 ? (
         <MatchupTable
           matchupData={matchupData}
           displayMode={displayMode}
           metaInfo={metaInfo}
           labelRenderer={labelRenderer}
+          totalMatchesAnalyzed={filteredMatches.length}
         />
       ) : (
         <p className="text-muted-foreground">No data available for the selected filters.</p>

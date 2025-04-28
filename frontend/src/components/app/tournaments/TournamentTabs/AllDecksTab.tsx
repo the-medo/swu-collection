@@ -11,7 +11,7 @@ const AllDecksTab: React.FC<AllDecksTabProps> = ({ tournamentId }) => {
         <h3 className="text-lg font-semibold mb-4">All Decks</h3>
         <div className="bg-muted p-8 rounded-md text-center">
           <p className="text-muted-foreground">
-            All tournament decks will be displayed here.
+            All tournament decks with additional filters will be displayed here.
           </p>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 import { TournamentMatch } from '../../../../../../../server/db/schema/tournament_match.ts';
-import { MatchupData } from '../types';
+import { MatchupDataMap, MatchupTotalData } from '../types';
 import { MetaInfo } from '../../TournamentMeta/MetaInfoSelector.tsx';
 import { getBaseKey } from '../utils/getBaseKey';
 
@@ -91,7 +91,8 @@ export function useMatchupData(
 
   // Analyze matchups using actual match data
   return useMemo(() => {
-    if (!filteredMatches.length || !cardListData) return { keys: [], matchups: {} as MatchupData };
+    if (!filteredMatches.length || !cardListData)
+      return { keys: [], matchups: {} as MatchupDataMap };
 
     // Get all unique deck keys
     const deckKeys = new Set<string>();
@@ -121,7 +122,7 @@ export function useMatchupData(
     });
 
     // Create a map to store matchup data
-    const matchups: MatchupData = {};
+    const matchups: MatchupDataMap = {};
 
     // Initialize matchup data
     Array.from(deckKeys).forEach(key1 => {
@@ -179,15 +180,7 @@ export function useMatchupData(
 
     // Calculate total match count and win/loss stats for each deck type
     const matchCounts = new Map<string, number>();
-    const totalStats = new Map<
-      string,
-      {
-        totalWins: number;
-        totalLosses: number;
-        totalGameWins: number;
-        totalGameLosses: number;
-      }
-    >();
+    const totalStats = new Map<string, MatchupTotalData>();
 
     // Count total matches and calculate total wins/losses for each deck type
     Array.from(deckKeys).forEach(key => {

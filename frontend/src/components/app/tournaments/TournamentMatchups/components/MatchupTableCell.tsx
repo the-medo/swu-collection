@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { MatchupData, MatchupDisplayMode } from '../types';
+import { MatchupDataMap, MatchupDisplayMode } from '../types';
 import { getWinrateColorClass } from '../utils/getWinrateColorClass';
 import { cn } from '@/lib/utils.ts';
 
 export interface MatchupTableCellProps {
   rowKey: string;
   colKey: string;
-  matchups: MatchupData;
+  matchups: MatchupDataMap;
   displayMode: MatchupDisplayMode;
   isHovered: boolean;
   onMouseEnter: () => void;

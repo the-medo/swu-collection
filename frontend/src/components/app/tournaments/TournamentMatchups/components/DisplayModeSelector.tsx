@@ -26,10 +26,10 @@ export const DisplayModeSelector: React.FC<DisplayModeSelectorProps> = ({ value,
       onValueChange={onValueChange}
       className="justify-start gap-2"
     >
-      <ToggleGroupItem value="winLoss">Match Win/Loss</ToggleGroupItem>
-      <ToggleGroupItem value="winrate">Match Winrate %</ToggleGroupItem>
-      <ToggleGroupItem value="gameWinLoss">Game Win/Loss</ToggleGroupItem>
-      <ToggleGroupItem value="gameWinrate">Game Winrate %</ToggleGroupItem>
+      <ToggleGroupItem value="winLoss">M W/L</ToggleGroupItem>
+      <ToggleGroupItem value="winrate">M WR%</ToggleGroupItem>
+      <ToggleGroupItem value="gameWinLoss">G W/L</ToggleGroupItem>
+      <ToggleGroupItem value="gameWinrate">G WR%</ToggleGroupItem>
     </ToggleGroup>
   );
 };

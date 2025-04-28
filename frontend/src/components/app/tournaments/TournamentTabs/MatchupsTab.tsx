@@ -21,7 +21,7 @@ const MatchupsTab: React.FC<MatchupsTabProps> = ({ tournamentId }) => {
   }, [tournamentIds, setTournamentIds]);
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-2 px-2">
       {tournamentIds.map(tid => (
         <TournamentDataLoader tournamentId={tid} key={tid} />
       ))}

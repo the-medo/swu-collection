@@ -73,7 +73,7 @@ const groups = [
         icon: Book,
       },
       {
-        title: 'Tournament decks',
+        title: 'Meta analysis',
         url: '/tournaments',
         icon: TrophyIcon,
       },

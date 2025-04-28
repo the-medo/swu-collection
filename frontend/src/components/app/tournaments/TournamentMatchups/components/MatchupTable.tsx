@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { MatchupData, MatchupDisplayMode } from '../types';
+import { MatchupDataMap, MatchupDisplayMode, MatchupTotalData } from '../types';
 import { MatchupTableCell } from './MatchupTableCell';
 import { getWinrateColorClass } from '../utils/getWinrateColorClass';
 import { cn } from '@/lib/utils.ts';
@@ -10,12 +10,13 @@ import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.t
 export interface MatchupTableProps {
   matchupData: {
     keys: string[];
-    matchups: MatchupData;
-    totalStats?: Map<string, { totalWins: number; totalLosses: number }>;
+    matchups: MatchupDataMap;
+    totalStats?: Map<string, MatchupTotalData>;
   };
   displayMode: MatchupDisplayMode;
   metaInfo: MetaInfo;
   labelRenderer: ReturnType<typeof useLabel>;
+  totalMatchesAnalyzed: number;
 }
 
 export const MatchupTable: React.FC<MatchupTableProps> = ({
@@ -23,6 +24,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   displayMode,
   metaInfo,
   labelRenderer,
+  totalMatchesAnalyzed,
 }) => {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [hoveredCol, setHoveredCol] = useState<string | null>(null);
@@ -33,7 +35,8 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         <thead>
           <tr>
             <td className="p-2 border text-center font-semibold align-bottom min-w-[80px]">
-              Total
+              <div>Total</div>
+              <span className="text-[10px] font-semibold mb-4">{totalMatchesAnalyzed} mtch</span>
             </td>
             <td className="p-2 border"></td>
             {matchupData.keys.map(key => (

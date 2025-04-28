@@ -41,7 +41,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   const tournament = data?.tournament;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* Tournament header */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
         <LoadingTitle mainTitle={tournament?.name} loading={loading} />

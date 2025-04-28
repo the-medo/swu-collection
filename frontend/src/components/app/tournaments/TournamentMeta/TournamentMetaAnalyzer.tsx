@@ -3,13 +3,14 @@ import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.
 import { TournamentInfoMap } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import MetaPartSelector, { MetaPart } from './MetaPartSelector';
 import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
+import ViewModeSelector, { ViewMode } from './ViewModeSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { isBasicBase } from '@/lib/cards/isBasicBase.ts';
 import { useCallback, useMemo, useState } from 'react';
 import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
-import { Button } from '@/components/ui/button';
-import { BarChart, TableIcon } from 'lucide-react';
+import { Alert } from '@/components/ui/alert.tsx';
+import { InfoIcon } from 'lucide-react';
 
 interface TournamentMetaAnalyzerProps {
   decks: TournamentDeckResponse[];
@@ -19,7 +20,7 @@ interface TournamentMetaAnalyzerProps {
 const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, tournaments }) => {
   const [metaPart, setMetaPart] = useState<MetaPart>('all');
   const [metaInfo, setMetaInfo] = useState<MetaInfo>('leaders');
-  const [viewMode, setViewMode] = useState<'chart' | 'table'>('chart');
+  const [viewMode, setViewMode] = useState<ViewMode>('chart');
   const { data: cardListData } = useCardList();
 
   // Compute filtered decks for all meta parts
@@ -163,7 +164,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
           const wins = winsMap.get(key) || 0;
           const losses = lossesMap.get(key) || 0;
           const totalGames = wins + losses;
-          const winrate = totalGames > 0 ? parseFloat((wins / totalGames * 100).toFixed(1)) : 0;
+          const winrate = totalGames > 0 ? parseFloat(((wins / totalGames) * 100).toFixed(1)) : 0;
 
           return {
             key,
@@ -232,35 +233,31 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   }, [allMetaPartsAnalysis, metaPart, filteredDecks.length]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold mb-4">Tournament Meta Analysis</h2>
-        <div className="flex gap-2">
-          <Button
-            variant={viewMode === 'chart' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setViewMode('chart')}
-          >
-            <BarChart className="h-4 w-4 mr-2" />
-            Chart
-          </Button>
-          <Button
-            variant={viewMode === 'table' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setViewMode('table')}
-          >
-            <TableIcon className="h-4 w-4 mr-2" />
-            Table
-          </Button>
-        </div>
-      </div>
-
+    <div className="space-y-2">
       <div className="flex flex-row gap-4 flex-wrap justify-between">
+        <ViewModeSelector value={viewMode} onChange={setViewMode} />
         <MetaPartSelector value={metaPart} onChange={setMetaPart} />
         <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
       </div>
 
-      <h3 className="text-lg font-semibold mb-4">Total decks analyzed: {filteredDecks.length}</h3>
+      <div className="flex items-center gap-4 flex-wrap justify-between">
+        <span className="text-[10px] w-auto">Total decks analyzed: {filteredDecks.length}</span>
+        <Alert variant="info" size="xs" className="w-auto">
+          <InfoIcon className="size-4 top-0 left-0" />{' '}
+          <ul className="">
+            <li>
+              Winrates are computed from filtered decks, so decks in top 8 will have naturally
+              higher winrates than others. Mirror matches are not cleared from this view.
+            </li>
+            {metaInfo === 'aspects' && (
+              <li>
+                In case of double aspect decks, aspect is counted twice. Percentages can be skewed
+                because of this.
+              </li>
+            )}
+          </ul>
+        </Alert>
+      </div>
 
       {viewMode === 'chart' ? (
         <TournamentMetaChart
