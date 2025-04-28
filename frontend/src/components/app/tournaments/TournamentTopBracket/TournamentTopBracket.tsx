@@ -307,7 +307,6 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     isWinner = false,
     showScore = false,
     gameWins = 0,
-    gameLosses = 0,
   ) => {
     if (!deck)
       return (
@@ -382,7 +381,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
                 : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
             )}
           >
-            {isWinner ? gameWins : gameLosses}
+            {gameWins}
           </div>
         )}
         {isWinner && deck.tournamentDeck.placement === 1 && !showScore && (
@@ -544,14 +543,12 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
                                 match.winner === match.player1,
                                 true,
                                 match.gameWins,
-                                match.gameLosses,
                               )}
                               <div className="h-px bg-muted-foreground/30 mx-2"></div>
                               {renderPlayer(
                                 match.player2,
                                 match.winner === match.player2,
                                 true,
-                                match.gameWins,
                                 match.gameLosses,
                               )}
                             </div>

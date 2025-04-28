@@ -11,6 +11,7 @@ import { tournamentIdDeleteRoute } from './tournaments/_id/delete.ts';
 import { tournamentIdImportMeleePostRoute } from './tournaments/_id/import-melee/post.ts';
 import { tournamentIdDecksGetRoute } from './tournaments/_id/decks/get.ts';
 import { tournamentIdMatchesGetRoute } from './tournaments/_id/matches/get.ts';
+import { tournamentIdImportMeleePatchRoute } from './tournaments/_id/import-melee/patch.ts';
 
 export const selectTournament = getTableColumns(tournamentTable);
 export const selectTournamentType = getTableColumns(tournamentTypeTable);
@@ -22,5 +23,6 @@ export const tournamentRoute = new Hono<AuthExtension>()
   .route('/:id', tournamentIdPutRoute)
   .route('/:id', tournamentIdDeleteRoute)
   .route('/:id/import-melee', tournamentIdImportMeleePostRoute)
+  .route('/:id/import-melee', tournamentIdImportMeleePatchRoute)
   .route('/:id/decks', tournamentIdDecksGetRoute)
   .route('/:id/matches', tournamentIdMatchesGetRoute);
