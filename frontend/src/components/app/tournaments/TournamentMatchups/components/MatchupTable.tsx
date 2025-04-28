@@ -65,8 +65,19 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
                       'p-2 border text-center w-[70px] text-xs font-semibold',
                       hoveredRow === rowKey && 'bg-accent',
                     );
-                  const { totalWins, totalLosses } = stats;
-                  const total = totalWins + totalLosses;
+
+                  // Determine which stats to use based on display mode
+                  let displayWins, displayLosses, total;
+
+                  if (displayMode === 'winLoss' || displayMode === 'winrate') {
+                    displayWins = stats.totalWins;
+                    displayLosses = stats.totalLosses;
+                  } else {
+                    displayWins = stats.totalGameWins;
+                    displayLosses = stats.totalGameLosses;
+                  }
+
+                  total = displayWins + displayLosses;
 
                   if (total === 0)
                     return cn(
@@ -75,7 +86,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
                     );
 
                   // Calculate winrate and color class
-                  const winrate = (totalWins / total) * 100;
+                  const winrate = (displayWins / total) * 100;
                   const colorClass = getWinrateColorClass(winrate);
 
                   return cn(
@@ -88,15 +99,25 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
                 {(() => {
                   const stats = matchupData.totalStats?.get(rowKey);
                   if (!stats) return '-';
-                  const { totalWins, totalLosses } = stats;
-                  const total = totalWins + totalLosses;
+                  const { totalWins, totalLosses, totalGameWins, totalGameLosses } = stats;
 
-                  if (total === 0) return '-';
+                  if (displayMode === 'winLoss' || displayMode === 'winrate') {
+                    const total = totalWins + totalLosses;
+                    if (total === 0) return '-';
 
-                  const winrate = (totalWins / total) * 100;
-                  return displayMode === 'winLoss'
-                    ? `${Math.round(totalWins)}/${Math.round(totalLosses)}`
-                    : `${winrate.toFixed(1)}%`;
+                    const winrate = (totalWins / total) * 100;
+                    return displayMode === 'winLoss'
+                      ? `${Math.round(totalWins)}/${Math.round(totalLosses)}`
+                      : `${winrate.toFixed(1)}%`;
+                  } else {
+                    const totalGames = totalGameWins + totalGameLosses;
+                    if (totalGames === 0) return '-';
+
+                    const gameWinrate = (totalGameWins / totalGames) * 100;
+                    return displayMode === 'gameWinLoss'
+                      ? `${Math.round(totalGameWins)}/${Math.round(totalGameLosses)}`
+                      : `${gameWinrate.toFixed(1)}%`;
+                  }
                 })()}
               </td>
               <td

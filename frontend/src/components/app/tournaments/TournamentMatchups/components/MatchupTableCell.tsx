@@ -29,14 +29,28 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
 
   const wins = matchups[rowKey]?.[colKey]?.wins || 0;
   const losses = matchups[rowKey]?.[colKey]?.losses || 0;
-  const total = wins + losses;
+  const gameWins = matchups[rowKey]?.[colKey]?.gameWins || 0;
+  const gameLosses = matchups[rowKey]?.[colKey]?.gameLosses || 0;
+
+  // Determine which stats to use based on display mode
+  let displayWins, displayLosses, total;
+
+  if (displayMode === 'winLoss' || displayMode === 'winrate') {
+    displayWins = wins;
+    displayLosses = losses;
+    total = wins + losses;
+  } else {
+    displayWins = gameWins;
+    displayLosses = gameLosses;
+    total = gameWins + gameLosses;
+  }
 
   // If there's no data, show a dash
   if (total === 0) {
     return <td className="p-2 border text-center w-[50px] text-xs">-</td>;
   }
 
-  const winrate = (wins / total) * 100;
+  const winrate = (displayWins / total) * 100;
   const colorClass = getWinrateColorClass(winrate);
 
   return (
@@ -49,9 +63,9 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {displayMode === 'winLoss' ? (
+      {displayMode === 'winLoss' || displayMode === 'gameWinLoss' ? (
         <>
-          {Math.round(wins)}/{Math.round(losses)}
+          {Math.round(displayWins)}/{Math.round(displayLosses)}
         </>
       ) : (
         `${winrate.toFixed(1)}%`

@@ -9,7 +9,7 @@ export function useMatchupData(
   filteredMatches: TournamentMatch[],
   filteredDecks: TournamentDeckResponse[],
   cardListData: any,
-  metaInfo: MetaInfo
+  metaInfo: MetaInfo,
 ) {
   // Helper function to get key for a deck based on meta info
   const getDeckKey = useCallback(
@@ -29,7 +29,11 @@ export function useMatchupData(
             .filter(Boolean)
             .sort()
             .join('-');
-          const baseKeyValue = getBaseKey(deck.deck.baseCardId, deck.deckInformation?.baseAspect, cardListData);
+          const baseKeyValue = getBaseKey(
+            deck.deck.baseCardId,
+            deck.deckInformation?.baseAspect,
+            cardListData,
+          );
           key = `${leaderKey}|${baseKeyValue}`;
           break;
         case 'bases':
@@ -125,7 +129,7 @@ export function useMatchupData(
       Array.from(deckKeys).forEach(key2 => {
         if (key1 !== key2) {
           // Ignore mirror matches
-          matchups[key1][key2] = { wins: 0, losses: 0 };
+          matchups[key1][key2] = { wins: 0, losses: 0, gameWins: 0, gameLosses: 0 };
         }
       });
     });
@@ -156,18 +160,42 @@ export function useMatchupData(
         matchups[p1Key][p2Key].losses += 1;
         matchups[p2Key][p1Key].wins += 1;
       }
-      // Draws are not counted in win/loss
+
+      // Draws are not counted in win/loss of matches, but in games it is 1-1
+      // We assume that players drew after 1-1 and not 0-0
+      if (match.gameDraw === 3) {
+        match.gameWin = 1;
+        match.gameLose = 1;
+      }
+
+      // Track game wins and losses
+      if (match.gameWin > 0 || match.gameLose > 0) {
+        matchups[p1Key][p2Key].gameWins += match.gameWin;
+        matchups[p1Key][p2Key].gameLosses += match.gameLose;
+        matchups[p2Key][p1Key].gameWins += match.gameLose;
+        matchups[p2Key][p1Key].gameLosses += match.gameWin;
+      }
     });
 
     // Calculate total match count and win/loss stats for each deck type
     const matchCounts = new Map<string, number>();
-    const totalStats = new Map<string, { totalWins: number; totalLosses: number }>();
+    const totalStats = new Map<
+      string,
+      {
+        totalWins: number;
+        totalLosses: number;
+        totalGameWins: number;
+        totalGameLosses: number;
+      }
+    >();
 
     // Count total matches and calculate total wins/losses for each deck type
     Array.from(deckKeys).forEach(key => {
       let totalMatches = 0;
       let totalWins = 0;
       let totalLosses = 0;
+      let totalGameWins = 0;
+      let totalGameLosses = 0;
 
       // Sum up all wins and losses for this deck type
       Array.from(deckKeys).forEach(otherKey => {
@@ -176,11 +204,13 @@ export function useMatchupData(
           totalMatches += winsLosses.wins + winsLosses.losses;
           totalWins += winsLosses.wins;
           totalLosses += winsLosses.losses;
+          totalGameWins += winsLosses.gameWins;
+          totalGameLosses += winsLosses.gameLosses;
         }
       });
 
       matchCounts.set(key, totalMatches);
-      totalStats.set(key, { totalWins, totalLosses });
+      totalStats.set(key, { totalWins, totalLosses, totalGameWins, totalGameLosses });
     });
 
     // Sort keys by total match count (descending)
