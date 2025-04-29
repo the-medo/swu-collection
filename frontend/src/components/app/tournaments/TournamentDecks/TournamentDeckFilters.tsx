@@ -15,13 +15,7 @@ interface TournamentDeckFiltersProps {}
 
 const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
   const initialized = useInitializeDeckFilterFromUrlParams();
-  const {
-    leaders,
-    base,
-    aspects,
-    activeFiltersCount,
-    hasActiveFilters,
-  } = useDeckFilterStore();
+  const { leaders, base, aspects, activeFiltersCount, hasActiveFilters } = useDeckFilterStore();
 
   const { setLeaders, setBase, setAspects, resetFilters } = useDeckFilterStoreActions();
 
@@ -51,7 +45,7 @@ const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
   }
 
   return (
-    <div className="p-2 flex flex-wrap items-center gap-2 mb-4">
+    <div className="flex flex-wrap items-center gap-2 mb-0">
       <LeaderSelector
         trigger={null}
         size="w100"
@@ -72,16 +66,9 @@ const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
         className="justify-start"
       />
 
-      <div className="flex justify-end pt-2">
-        <Button
-          variant="secondary"
-          disabled={!hasActiveFilters}
-          onClick={handleResetFilters}
-          size="sm"
-        >
-          <RefreshCcw className="h-4 w-4 mr-2" /> Reset Filters ({activeFiltersCount})
-        </Button>
-      </div>
+      <Button variant="default" disabled={!hasActiveFilters} onClick={handleResetFilters} size="sm">
+        <RefreshCcw className="h-4 w-4 mr-2" /> Reset Filters ({activeFiltersCount})
+      </Button>
     </div>
   );
 };

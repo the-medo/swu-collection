@@ -7,14 +7,29 @@ import { useDeckFilterStore } from '@/components/app/decks/DeckFilters/useDeckFi
 import { getAspectsFromDeckInformation } from '@/components/app/tournaments/lib/getAspectsFromDeckInformation.ts';
 import { isBasicBase } from '@/lib/cards/isBasicBase.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
+import { Button } from '@/components/ui/button.tsx';
+import { X } from 'lucide-react';
+import DeckContents from '@/components/app/decks/DeckContents/DeckContents.tsx';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { Route } from '@/routes/__root.tsx';
 
 interface TournamentDeckTableProps {
   decks: TournamentDeckResponse[];
 }
 
 const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
+  const search = useSearch({ strict: false });
+  const navigate = useNavigate({ from: Route.fullPath });
   const { leaders, base, aspects } = useDeckFilterStore();
   const { data: cardListData } = useCardList();
+
+  const selectedDeckId = search.maDeckId;
+
+  const setSelectedDeckId = (value: string | undefined) => {
+    navigate({
+      search: prev => ({ ...prev, maDeckId: value }),
+    });
+  };
 
   const basicBaseFilter = useMemo(() => {
     if (!base || !cardListData) return false;
@@ -74,9 +89,28 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
   const columns = useTournamentDeckTableColumns();
 
   return (
-    <div>
-      <DataTable columns={columns} data={sortedDecks} loading={false} view="table" />
-      {sortedDecks.length === 0 && (
+    <div className="flex flex-row gap-2">
+      {sortedDecks.length > 0 ? (
+        <>
+          <div className="w-[420px]">
+            <DataTable columns={columns} data={sortedDecks} loading={false} view="table" />
+          </div>
+
+          {selectedDeckId && (
+            <div className="flex-1 mt-8 lg:mt-0 relative">
+              <Button
+                variant="outline"
+                size="iconSmall"
+                className="absolute top-2 right-2"
+                onClick={() => setSelectedDeckId(undefined)}
+              >
+                <X />
+              </Button>
+              <DeckContents deckId={selectedDeckId} />
+            </div>
+          )}
+        </>
+      ) : (
         <div className="bg-muted p-8 rounded-md text-center">
           <p className="text-muted-foreground">No decks match the selected filters.</p>
         </div>

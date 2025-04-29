@@ -15,7 +15,12 @@ export function useLabel() {
   const { data: cardListData } = useCardList();
 
   return useCallback(
-    (value: string | undefined, metaInfo: MetaInfo, type: 'text' | 'compact' | 'image') => {
+    (
+      value: string | undefined,
+      metaInfo: MetaInfo,
+      type: 'text' | 'compact' | 'image',
+      align: 'left' | 'right' = 'left',
+    ) => {
       if (!value) return value;
       if (!cardListData) return value;
       const cardList = cardListData.cards;
@@ -76,24 +81,27 @@ export function useLabel() {
         return (
           <div
             className={cn('flex flex-row gap-2', {
-              'justify-end': metaInfo === 'leadersAndBase',
+              'justify-end': metaInfo === 'leadersAndBase' && align === 'right',
+              'justify-between': metaInfo === 'leadersAndBase' && align === 'left',
             })}
           >
             {leaderCardId && (
-              <>
+              <div className="flex flex-row gap-2">
                 <span>{cardList[leaderCardId]?.title}</span>
                 {leaderSet && (
                   <span className="w-[25px] text-[10px]">({leaderSet.toUpperCase()})</span>
                 )}
-              </>
+              </div>
             )}
-            {baseCard && metaInfo !== 'leadersAndBase' && <span>{baseCard.name}</span>}
-            {aspects.map(a => (
-              <AspectIcon aspect={a} size={aspectIconSize} />
-            ))}
-            {metaInfo === 'leadersAndBase' && (
-              <span className="w-[20px]">{getBaseShortcut(baseCard?.name)}</span>
-            )}
+            <div className="flex flex-row gap-2">
+              {baseCard && metaInfo !== 'leadersAndBase' && <span>{baseCard.name}</span>}
+              {aspects.map(a => (
+                <AspectIcon aspect={a} size={aspectIconSize} />
+              ))}
+              {metaInfo === 'leadersAndBase' && (
+                <span className="w-[20px]">{getBaseShortcut(baseCard?.name)}</span>
+              )}
+            </div>
           </div>
         );
       } else if (type === 'image') {

@@ -16,8 +16,8 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
     // Placement column
     definitions.push({
       id: 'placement',
-      header: 'Placement',
-      size: 24,
+      header: '#',
+      size: 16,
       cell: ({ row }) => {
         const placement = row.original.tournamentDeck.placement;
         return (
@@ -32,7 +32,6 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
     definitions.push({
       id: 'deck',
       header: 'Deck',
-      size: 48,
       cell: ({ row }) => {
         const tournamentDeck = row.original;
         if (!tournamentDeck) return 'N/A';
@@ -41,8 +40,8 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
 
         return (
           <Link
-            to={`/decks/$deckId`}
-            params={{ deckId: tournamentDeck.deck?.id ?? '' }}
+            to={``}
+            search={p => ({ ...p, maDeckId: tournamentDeck.deck?.id })}
             className="hover:underline"
           >
             {labelRenderer(key, 'leadersAndBase', 'compact')}
@@ -55,7 +54,7 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
     definitions.push({
       id: 'score',
       header: 'Score',
-      size: 24,
+      size: 16,
       cell: ({ row }) => {
         const td = row.original.tournamentDeck;
         return (
@@ -66,7 +65,7 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
       },
     });
 
-    // Player name column
+    /*// Player name column
     definitions.push({
       id: 'player',
       header: 'Player',
@@ -77,7 +76,7 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
 
         return <div>{username}</div>;
       },
-    });
+    });*/
 
     return definitions;
   }, [labelRenderer, cardListData]);

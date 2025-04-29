@@ -21,27 +21,20 @@ const AllDecksTab: React.FC<AllDecksTabProps> = ({ tournamentId }) => {
   }, [tournamentId]);
 
   return (
-    <div className="space-y-6">
-      <div className="bg-card rounded-md border shadow-sm p-6">
-        <h3 className="text-lg font-semibold mb-4">All Decks</h3>
+    <div className="space-y-2">
+      {/* Tournament data loader */}
+      <TournamentDataLoader tournamentId={tournamentId} />
 
-        {/* Tournament data loader */}
-        <TournamentDataLoader tournamentId={tournamentId} />
-
-        {isLoaded ? (
-          <>
-            {/* Filters */}
-            <TournamentDeckFilters />
-
-            {/* Decks table */}
-            <TournamentDeckTable decks={decks} />
-          </>
-        ) : (
-          <div className="bg-muted p-8 rounded-md text-center">
-            <p className="text-muted-foreground">Loading tournament decks...</p>
-          </div>
-        )}
-      </div>
+      {isLoaded ? (
+        <>
+          <TournamentDeckFilters />
+          <TournamentDeckTable decks={decks} />
+        </>
+      ) : (
+        <div className="bg-muted p-8 rounded-md text-center">
+          <p className="text-muted-foreground">Loading tournament decks...</p>
+        </div>
+      )}
     </div>
   );
 };

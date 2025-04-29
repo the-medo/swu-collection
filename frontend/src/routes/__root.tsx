@@ -34,7 +34,9 @@ const globalSearchParams = z.object({
 
   // Meta analysis params
   maMetaPart: z.enum(['all', 'top8', 'day2', 'top64']).optional(),
-  maMetaInfo: z.enum(['leaders', 'leadersAndBase', 'bases', 'aspects', 'aspectsBase', 'aspectsDetailed']).optional(),
+  maMetaInfo: z
+    .enum(['leaders', 'leadersAndBase', 'bases', 'aspects', 'aspectsBase', 'aspectsDetailed'])
+    .optional(),
   maViewMode: z.enum(['chart', 'table']).optional(),
 
   // Matchup analysis params
@@ -42,6 +44,9 @@ const globalSearchParams = z.object({
   maMinRound: z.coerce.number().int().positive().optional(),
   maMinPoints: z.coerce.number().int().positive().optional(),
   maDisplayMode: z.enum(['winLoss', 'winrate', 'gameWinLoss', 'gameWinrate']).optional(),
+
+  // Tournament decks
+  maDeckId: z.string().optional(),
 });
 export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 
