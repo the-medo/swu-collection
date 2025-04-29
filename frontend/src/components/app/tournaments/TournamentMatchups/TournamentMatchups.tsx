@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useLabel } from '../TournamentMeta/useLabel.tsx';
 import MetaInfoSelector, { MetaInfo } from '../TournamentMeta/MetaInfoSelector.tsx';
@@ -12,6 +11,8 @@ import { useMatchupData } from './hooks/useMatchupData';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 import { TournamentInfoMap } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { TournamentMatch } from '../../../../../../server/db/schema/tournament_match.ts';
+import { useSearch, useNavigate } from '@tanstack/react-router';
+import { Route } from '@/routes/__root.tsx';
 
 export interface TournamentMatchupsProps {
   decks: TournamentDeckResponse[];
@@ -20,11 +21,47 @@ export interface TournamentMatchupsProps {
 }
 
 const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tournaments, matches }) => {
-  const [matchFilter, setMatchFilter] = useState<MatchFilter>('all');
-  const [minRound, setMinRound] = useState<number | undefined>(undefined);
-  const [minPoints, setMinPoints] = useState<number | undefined>(undefined);
-  const [metaInfo, setMetaInfo] = useState<MetaInfo>('leaders');
-  const [displayMode, setDisplayMode] = useState<MatchupDisplayMode>('winLoss');
+  const search = useSearch({ strict: false });
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  // Use URL parameters with fallbacks to default values
+  const matchFilter = (search.maMatchFilter as MatchFilter) || 'all';
+  const minRound = search.maMinRound as number | undefined;
+  const minPoints = search.maMinPoints as number | undefined;
+  const metaInfo = (search.maMetaInfo as MetaInfo) || 'leaders';
+  const displayMode = (search.maDisplayMode as MatchupDisplayMode) || 'winLoss';
+
+  // Functions to update URL parameters
+  const setMatchFilter = (value: MatchFilter) => {
+    navigate({
+      search: prev => ({ ...prev, maMatchFilter: value }),
+    });
+  };
+
+  const setMinRound = (value: number | undefined) => {
+    navigate({
+      search: prev => ({ ...prev, maMinRound: value }),
+    });
+  };
+
+  const setMinPoints = (value: number | undefined) => {
+    navigate({
+      search: prev => ({ ...prev, maMinPoints: value }),
+    });
+  };
+
+  const setMetaInfo = (value: MetaInfo) => {
+    navigate({
+      search: prev => ({ ...prev, maMetaInfo: value }),
+    });
+  };
+
+  const setDisplayMode = (value: MatchupDisplayMode) => {
+    navigate({
+      search: prev => ({ ...prev, maDisplayMode: value }),
+    });
+  };
+
   const { data: cardListData } = useCardList();
   const labelRenderer = useLabel();
 
