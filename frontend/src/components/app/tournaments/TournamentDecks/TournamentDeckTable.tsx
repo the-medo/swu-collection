@@ -89,19 +89,25 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
   const columns = useTournamentDeckTableColumns();
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-col lg:flex-row gap-2">
       {sortedDecks.length > 0 ? (
         <>
-          <div className="w-[420px]">
+          <div
+            className="w-full lg:w-[40%] xl:w-[30%] h-[300px] lg:h-[calc(100vh-200px)] overflow-auto border rounded-md"
+            id="tournament-deck-table"
+          >
             <DataTable columns={columns} data={sortedDecks} loading={false} view="table" />
           </div>
 
           {selectedDeckId && (
-            <div className="flex-1 mt-8 lg:mt-0 relative">
+            <div
+              className="scroll-smooth flex-1 lg:mt-0 relative h-auto lg:h-[calc(100vh-200px)] overflow-auto border rounded-md p-2"
+              id="tournament-deck-detail"
+            >
               <Button
                 variant="outline"
                 size="iconSmall"
-                className="absolute top-2 right-2"
+                className="absolute top-2 right-2 z-10"
                 onClick={() => setSelectedDeckId(undefined)}
               >
                 <X />

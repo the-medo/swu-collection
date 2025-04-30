@@ -5,10 +5,12 @@ import { ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { getDeckKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { useIsMobile } from '@/hooks/use-mobile.tsx';
 
 export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDeckResponse>[] {
   const labelRenderer = useLabel();
   const { data: cardListData } = useCardList();
+  const isMobile = useIsMobile();
 
   return useMemo(() => {
     const definitions: ExtendedColumnDef<TournamentDeckResponse>[] = [];
@@ -42,6 +44,7 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
           <Link
             to={``}
             search={p => ({ ...p, maDeckId: tournamentDeck.deck?.id })}
+            hash={isMobile ? 'tournament-deck-detail' : undefined}
             className="hover:underline"
           >
             {labelRenderer(key, 'leadersAndBase', 'compact')}
@@ -79,5 +82,5 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
     });*/
 
     return definitions;
-  }, [labelRenderer, cardListData]);
+  }, [labelRenderer, cardListData, isMobile]);
 }
