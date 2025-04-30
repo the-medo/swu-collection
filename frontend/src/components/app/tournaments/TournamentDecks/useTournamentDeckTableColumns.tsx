@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
-import { Link } from '@tanstack/react-router';
 import { ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -41,14 +40,7 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
         const key = getDeckKey(tournamentDeck, 'leadersAndBase', cardListData);
 
         return (
-          <Link
-            to={``}
-            search={p => ({ ...p, maDeckId: tournamentDeck.deck?.id })}
-            hash={isMobile ? 'tournament-deck-detail' : undefined}
-            className="hover:underline"
-          >
-            {labelRenderer(key, 'leadersAndBase', 'compact')}
-          </Link>
+          <div className="hover:underline">{labelRenderer(key, 'leadersAndBase', 'compact')}</div>
         );
       },
     });
