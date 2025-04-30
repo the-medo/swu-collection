@@ -13,7 +13,8 @@ import { entitiesRoute } from './routes/entity.ts';
 
 const app = new Hono<AuthExtension>();
 
-app.use('*', logger()).use('*', async (c, next) => {
+app.use('*', logger());
+app.use('*', async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
   if (!session) {
@@ -24,6 +25,25 @@ app.use('*', logger()).use('*', async (c, next) => {
 
   c.set('user', session.user);
   c.set('session', session.session);
+  return next();
+});
+
+// Block common sensitive files pattern
+app.use('*', async (c, next) => {
+  const path = new URL(c.req.url).pathname;
+  const blockedPatterns = [
+    /\/\.env(\.[a-zA-Z0-9]+)?$/, // .env files
+    /\/\.git\/.*/, // Git configs
+    /\/\.aws\/.*/, // AWS credentials
+    /\/config\.(json|ya?ml|py)$/, // Config files
+    /\/(config|secrets)\/.*\.(json|ya?ml)$/, // Config directories
+    /\/phpinfo$/, // PHP info
+    /\/(wp-content|wp-admin)\/.*/, // WordPress paths
+  ];
+
+  if (blockedPatterns.some(pattern => pattern.test(path))) {
+    return c.text('Not Found', 404);
+  }
   return next();
 });
 
