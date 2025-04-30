@@ -3,7 +3,7 @@ import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.
 import { TournamentMatch } from '../../../../../../../server/db/schema/tournament_match.ts';
 import { MatchupDataMap, MatchupTotalData } from '../types';
 import { MetaInfo } from '../../TournamentMeta/MetaInfoSelector.tsx';
-import { getBaseKey } from '../utils/getBaseKey';
+import { getDeckKey as getDeckKeyBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 
 export function useMatchupData(
   filteredMatches: TournamentMatch[],
@@ -13,79 +13,7 @@ export function useMatchupData(
 ) {
   // Helper function to get key for a deck based on meta info
   const getDeckKey = useCallback(
-    (deck: TournamentDeckResponse) => {
-      if (!deck.deck || !cardListData) return '';
-
-      let key = '';
-
-      switch (metaInfo) {
-        case 'leaders':
-          // Use leader card IDs as key
-          key = [deck.deck.leaderCardId1, deck.deck.leaderCardId2].filter(Boolean).sort().join('-');
-          break;
-        case 'leadersAndBase':
-          // Use leader card IDs and base card ID as key
-          const leaderKey = [deck.deck.leaderCardId1, deck.deck.leaderCardId2]
-            .filter(Boolean)
-            .sort()
-            .join('-');
-          const baseKeyValue = getBaseKey(
-            deck.deck.baseCardId,
-            deck.deckInformation?.baseAspect,
-            cardListData,
-          );
-          key = `${leaderKey}|${baseKeyValue}`;
-          break;
-        case 'bases':
-          key = getBaseKey(deck.deck.baseCardId, deck.deckInformation?.baseAspect, cardListData);
-          break;
-        case 'aspectsBase':
-          // Use base aspect as key
-          if (deck.deckInformation?.baseAspect) {
-            key = deck.deckInformation.baseAspect;
-          } else {
-            key = 'no-aspect';
-          }
-          break;
-        case 'aspects':
-        case 'aspectsDetailed':
-          // Create a key based on which aspects are used
-          const aspects: string[] = [];
-          if (deck.deckInformation?.aspectCommand)
-            Array.from({ length: deck.deckInformation?.aspectCommand }).forEach(() =>
-              aspects.push('Command'),
-            );
-          if (deck.deckInformation?.aspectVigilance)
-            Array.from({ length: deck.deckInformation?.aspectVigilance }).forEach(() =>
-              aspects.push('Vigilance'),
-            );
-          if (deck.deckInformation?.aspectAggression)
-            Array.from({ length: deck.deckInformation?.aspectAggression }).forEach(() =>
-              aspects.push('Aggression'),
-            );
-          if (deck.deckInformation?.aspectCunning)
-            Array.from({ length: deck.deckInformation?.aspectCunning }).forEach(() =>
-              aspects.push('Cunning'),
-            );
-          if (deck.deckInformation?.aspectHeroism)
-            Array.from({ length: deck.deckInformation?.aspectHeroism }).forEach(() =>
-              aspects.push('Heroism'),
-            );
-          if (deck.deckInformation?.aspectVillainy)
-            Array.from({ length: deck.deckInformation?.aspectVillainy }).forEach(() =>
-              aspects.push('Villainy'),
-            );
-          if (metaInfo === 'aspects') {
-            // For 'aspects', we'll just use the first aspect as the key
-            key = aspects[0] || 'no-aspect';
-          } else {
-            key = aspects.sort().join('-') || 'no-aspect';
-          }
-          break;
-      }
-
-      return key;
-    },
+    (deck: TournamentDeckResponse) => getDeckKeyBasedOnMetaInfo(deck, metaInfo, cardListData),
     [cardListData, metaInfo],
   );
 

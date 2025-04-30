@@ -6,11 +6,13 @@ import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
 import ViewModeSelector, { ViewMode } from './ViewModeSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { isBasicBase } from '@/lib/cards/isBasicBase.ts';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
 import { Alert } from '@/components/ui/alert.tsx';
 import { InfoIcon } from 'lucide-react';
+import { useSearch, useNavigate } from '@tanstack/react-router';
+import { Route } from '@/routes/__root.tsx';
 
 interface TournamentMetaAnalyzerProps {
   decks: TournamentDeckResponse[];
@@ -18,9 +20,33 @@ interface TournamentMetaAnalyzerProps {
 }
 
 const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, tournaments }) => {
-  const [metaPart, setMetaPart] = useState<MetaPart>('all');
-  const [metaInfo, setMetaInfo] = useState<MetaInfo>('leaders');
-  const [viewMode, setViewMode] = useState<ViewMode>('chart');
+  const search = useSearch({ strict: false });
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  // Use URL parameters with fallbacks to default values
+  const metaPart = (search.maMetaPart as MetaPart) || 'all';
+  const metaInfo = (search.maMetaInfo as MetaInfo) || 'leaders';
+  const viewMode = (search.maViewMode as ViewMode) || 'chart';
+
+  // Functions to update URL parameters
+  const setMetaPart = (value: MetaPart) => {
+    navigate({
+      search: prev => ({ ...prev, maMetaPart: value }),
+    });
+  };
+
+  const setMetaInfo = (value: MetaInfo) => {
+    navigate({
+      search: prev => ({ ...prev, maMetaInfo: value }),
+    });
+  };
+
+  const setViewMode = (value: ViewMode) => {
+    navigate({
+      search: prev => ({ ...prev, maViewMode: value }),
+    });
+  };
+
   const { data: cardListData } = useCardList();
 
   // Compute filtered decks for all meta parts
