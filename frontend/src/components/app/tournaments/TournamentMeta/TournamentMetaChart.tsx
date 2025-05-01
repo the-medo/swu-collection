@@ -7,7 +7,7 @@ import {
   ChartLegendContent,
 } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from 'recharts';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import TournamentMetaTooltip from './TournamentMetaTooltip';
@@ -16,6 +16,7 @@ import {
   AnalysisDataItem,
   getTotalDeckCountBasedOnMetaPart,
 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 
 interface TournamentMetaChartProps {
   analysisData: AnalysisDataItem[];
@@ -40,12 +41,11 @@ interface CustomLabelProps extends Props {
 }
 
 const CustomLabel = (props: CustomLabelProps) => {
+  const { setTournamentDeckKey } = useTournamentMetaActions();
   const { x, y, name, labelRenderer, metaInfo } = props;
 
   const labelX = (x as number) - 8; // Position left of the bar
   const labelY = y as number; // Center vertically
-
-  console.log(props);
 
   return (
     <foreignObject
@@ -54,6 +54,13 @@ const CustomLabel = (props: CustomLabelProps) => {
       width={250}
       height={BAR_THICKNESS}
       style={{ overflow: 'visible' }}
+      className="cursor-pointer"
+      onClick={() => {
+        setTournamentDeckKey({
+          key: name,
+          metaInfo,
+        });
+      }}
     >
       <div className="flex items-center justify-end w-full h-full">
         {labelRenderer(name, metaInfo, 'compact')}
@@ -70,6 +77,7 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
   day2Decks,
 }) => {
   const labelRenderer = useLabel();
+  const { setTournamentDeckKey } = useTournamentMetaActions();
 
   // Map all items for visualization
   const chartData = useMemo(() => {
@@ -89,6 +97,15 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
   const totalDeckCountBasedOnMetaPart = useMemo(
     () => getTotalDeckCountBasedOnMetaPart(metaPart, totalDecks, day2Decks),
     [metaPart, totalDecks, day2Decks],
+  );
+
+  const onBarClick = useCallback(
+    p =>
+      setTournamentDeckKey({
+        key: p.name,
+        metaInfo,
+      }),
+    [metaInfo],
   );
 
   if (analysisData.length === 0) {
@@ -144,6 +161,8 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
             fill="var(--color-data)"
             barSize={BAR_THICKNESS}
             minPointSize={3}
+            className="cursor-pointer"
+            onClick={onBarClick}
           >
             <LabelList
               dataKey="name"

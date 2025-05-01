@@ -10,6 +10,15 @@ export type MetaInfo =
   | 'aspectsBase'
   | 'aspectsDetailed';
 
+export const metaInfoArray: [string, ...string[]] = [
+  'leaders',
+  'leadersAndBase',
+  'bases',
+  'aspects',
+  'aspectsBase',
+  'aspectsDetailed',
+] as const;
+
 interface MetaInfoSelectorProps {
   value: MetaInfo;
   onChange: (value: MetaInfo) => void;

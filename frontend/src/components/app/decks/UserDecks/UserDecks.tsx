@@ -16,8 +16,8 @@ interface UserDecksProps {
 }
 
 const UserDecks: React.FC<UserDecksProps> = ({ userId, loading = false }) => {
-  const initialized = useInitializeDeckFilterFromUrlParams();
-  const { toRequestParams } = useDeckFilterStore();
+  const initialized = useInitializeDeckFilterFromUrlParams({});
+  const { toRequestParams } = useDeckFilterStore({});
 
   const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } = useGetDecks(
     toRequestParams(userId),

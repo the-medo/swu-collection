@@ -80,20 +80,20 @@ export function useLabel() {
       } else if (type === 'compact') {
         return (
           <div
-            className={cn('flex flex-row gap-2', {
+            className={cn('flex flex-row gap-2 items-center', {
               'justify-end': metaInfo === 'leadersAndBase' && align === 'right',
               'justify-between': metaInfo === 'leadersAndBase' && align === 'left',
             })}
           >
             {leaderCardId && (
-              <div className="flex flex-row gap-2">
+              <div className="flex flex-row gap-2 items-center">
                 <span>{cardList[leaderCardId]?.title}</span>
                 {leaderSet && (
                   <span className="w-[25px] text-[10px]">({leaderSet.toUpperCase()})</span>
                 )}
               </div>
             )}
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2 items-center">
               {baseCard && metaInfo !== 'leadersAndBase' && <span>{baseCard.name}</span>}
               {aspects.map(a => (
                 <AspectIcon aspect={a} size={aspectIconSize} />

@@ -10,6 +10,7 @@ import { DeckSortField } from '../../../types/ZDeck.ts';
 import { SwuAspect } from '../../../types/enums.ts';
 import CookieConsent from '@/components/app/pages/CookieConsent.tsx';
 import Footer from '@/components/app/pages/Footer.tsx';
+import { metaInfoArray } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 
 const globalSearchParams = z.object({
   // Card detail dialog
@@ -34,9 +35,7 @@ const globalSearchParams = z.object({
 
   // Meta analysis params
   maMetaPart: z.enum(['all', 'top8', 'day2', 'top64']).optional(),
-  maMetaInfo: z
-    .enum(['leaders', 'leadersAndBase', 'bases', 'aspects', 'aspectsBase', 'aspectsDetailed'])
-    .optional(),
+  maMetaInfo: z.enum([...metaInfoArray]).optional(),
   maViewMode: z.enum(['chart', 'table']).optional(),
 
   // Matchup analysis params
@@ -47,6 +46,8 @@ const globalSearchParams = z.object({
 
   // Tournament decks
   maDeckId: z.string().optional(),
+  maDeckKey: z.string().optional(),
+  maDeckKeyType: z.enum([...metaInfoArray]).optional(),
 });
 export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 
