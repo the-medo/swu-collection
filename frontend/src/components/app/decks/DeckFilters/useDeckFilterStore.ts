@@ -37,11 +37,7 @@ const defaultState: DeckFilterStore = {
 
 const store = new Store<DeckFilterStore>(defaultState);
 
-type Props = {
-  sortable?: boolean;
-};
-
-export function useInitializeDeckFilterFromUrlParams({ sortable }: Props) {
+export function useInitializeDeckFilterFromUrlParams(sortable?: boolean) {
   // const initialized = useStore(store, state => state.initialized);
 
   const { deckLeaders, deckBase, deckAspects, deckFormat, deckSort, deckOrder } = useSearch({
@@ -104,7 +100,7 @@ const resetFilters = () =>
     sortOrder: state.sortOrder,
   }));
 
-export function useDeckFilterStore({ sortable }: Props) {
+export function useDeckFilterStore(sortable?: boolean) {
   const navigate = useNavigate({ from: Route.fullPath });
 
   const initialized = useStore(store, state => state.initialized);

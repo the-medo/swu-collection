@@ -20,7 +20,7 @@ interface TournamentDeckTableProps {
 }
 
 const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
-  const { leaders, base, aspects } = useDeckFilterStore({ sortable: false });
+  const { leaders, base, aspects } = useDeckFilterStore(false);
   const { data: cardListData } = useCardList();
   const isMobile = useIsMobile();
 

@@ -24,10 +24,8 @@ const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
   const keyMetaInfo = search.maDeckKeyType;
   const labelRenderer = useLabel();
 
-  const initialized = useInitializeDeckFilterFromUrlParams({ sortable: false });
-  const { leaders, base, aspects, activeFiltersCount } = useDeckFilterStore({
-    sortable: false,
-  });
+  const initialized = useInitializeDeckFilterFromUrlParams(false);
+  const { leaders, base, aspects, activeFiltersCount } = useDeckFilterStore(false);
 
   const activeFilters = activeFiltersCount || (key && keyMetaInfo ? 1 : 0);
 

@@ -19,8 +19,8 @@ export type UserDeckData = {
 interface PublicDecksProps {}
 
 const PublicDecks: React.FC<PublicDecksProps> = ({}) => {
-  const initialized = useInitializeDeckFilterFromUrlParams({});
-  const { toRequestParams } = useDeckFilterStore({});
+  const initialized = useInitializeDeckFilterFromUrlParams();
+  const { toRequestParams } = useDeckFilterStore();
 
   const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useGetDecks(toRequestParams());
