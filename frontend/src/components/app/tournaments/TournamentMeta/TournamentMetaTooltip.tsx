@@ -2,7 +2,7 @@ import * as React from 'react';
 import { MetaInfo } from './MetaInfoSelector';
 import MetaPercentageTable from './MetaPercentageTable/MetaPercentageTable';
 
-interface TournamentMetaTooltipProps {
+export interface TournamentMetaTooltipProps {
   name: string;
   metaInfo: MetaInfo;
   labelRenderer: (
@@ -46,11 +46,11 @@ const TournamentMetaTooltip: React.FC<TournamentMetaTooltipProps> = ({
       : null;
 
   return (
-    <div className="space-y-2">
-      {labelRenderer(name, metaInfo, 'image')}
+    <div className="space-y-4 flex flex-col items-center text-center">
+      <div className="flex justify-center">{labelRenderer(name, metaInfo, 'image')}</div>
 
       {value && totalDeckCountBasedOnMetaPart && (
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center justify-center">
           <div className="rounded-full p-4 flex items-center justify-center size-[50px] border text-xl font-medium bg-accent">
             {value}
           </div>
@@ -61,17 +61,19 @@ const TournamentMetaTooltip: React.FC<TournamentMetaTooltipProps> = ({
       )}
 
       {data && (
-        <MetaPercentageTable
-          data={{
-            ...data,
-            percentageAll: data.percentageAll || '0.0%',
-            percentageTop8: data.percentageTop8 || '0.0%',
-            percentageDay2: data.percentageDay2 || '0.0%',
-            percentageTop64: data.percentageTop64 || '0.0%',
-          }}
-          totalDecks={totalDecks}
-          day2Decks={day2Decks}
-        />
+        <div className="w-full flex justify-center">
+          <MetaPercentageTable
+            data={{
+              ...data,
+              percentageAll: data.percentageAll || '0.0%',
+              percentageTop8: data.percentageTop8 || '0.0%',
+              percentageDay2: data.percentageDay2 || '0.0%',
+              percentageTop64: data.percentageTop64 || '0.0%',
+            }}
+            totalDecks={totalDecks}
+            day2Decks={day2Decks}
+          />
+        </div>
       )}
     </div>
   );

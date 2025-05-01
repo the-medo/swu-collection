@@ -23,6 +23,7 @@ export function useLabel() {
     ) => {
       if (!value) return value;
       if (!cardListData) return value;
+      if (value === 'Others') return 'Others';
       const cardList = cardListData.cards;
 
       let leaderCardId: string | undefined;
@@ -66,7 +67,7 @@ export function useLabel() {
           break;
       }
 
-      if (baseCardId) {
+      if (baseCardId && type !== 'text') {
         aspects.push(...(cardList[baseCardId]?.aspects ?? []));
       }
 
@@ -76,7 +77,7 @@ export function useLabel() {
       const leaderSet = defaultVariant ? leaderCard?.variants[defaultVariant]?.set : undefined;
 
       if (type === 'text') {
-        return `${leaderCardId ? cardList[leaderCardId]?.name : ''}${baseCardId ? cardList[baseCardId]?.name : ''}${aspects.length ? ` ${aspects.join(', ')}` : ''}`;
+        return `${leaderCardId ? cardList[leaderCardId]?.title : ''} ${leaderSet ? `(${leaderSet?.toUpperCase()})` : ''} ${baseCardId ? cardList[baseCardId]?.name : ''}${aspects.length ? ` ${aspects.join(', ')}` : ''}`;
       } else if (type === 'compact') {
         return (
           <div
@@ -109,7 +110,7 @@ export function useLabel() {
           <div className="flex flex-row gap-2 items-center">
             {leaderCardId && (
               <CardImage
-                size="w300"
+                size="w200"
                 forceHorizontal={true}
                 card={cardList[leaderCardId]}
                 cardVariantId={leaderCard ? selectDefaultVariant(leaderCard) : undefined}
@@ -118,7 +119,7 @@ export function useLabel() {
             )}
             {baseCardId && (
               <CardImage
-                size="w300"
+                size="w200"
                 forceHorizontal={true}
                 card={cardList[baseCardId]}
                 cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}
