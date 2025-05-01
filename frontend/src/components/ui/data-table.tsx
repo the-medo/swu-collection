@@ -35,6 +35,7 @@ interface DataTableProps<TData, TValue> {
     maxSize: number;
   };
   onRowClick?: (row: Row<TData>) => void;
+  isRowHighlighted?: (row: Row<TData>) => void;
   view?: DataTableViewMode;
 }
 
@@ -48,6 +49,7 @@ export function DataTable<TData, TValue>({
     maxSize: Number.MAX_SAFE_INTEGER,
   },
   onRowClick,
+  isRowHighlighted,
   view = 'table',
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
@@ -139,7 +141,12 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 onClick={() => onRowClick?.(row)}
-                data-state={row.getIsSelected() && 'selected'}
+                data-state={
+                  isRowHighlighted?.(row) ? 'highlighted' : row.getIsSelected() && 'selected'
+                }
+                className={cn({
+                  'cursor-pointer': !!onRowClick,
+                })}
               >
                 {row.getVisibleCells().map(cell => (
                   <TableCell

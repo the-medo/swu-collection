@@ -6,6 +6,11 @@ import { getBaseKey } from '@/components/app/tournaments/TournamentMatchups/util
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
 
+export interface TournamentDeckKey {
+  key?: string;
+  metaInfo?: MetaInfo;
+}
+
 export type TournamentInfoMap = Record<string, TournamentData>;
 
 export type TournamentAnalyzerData = {

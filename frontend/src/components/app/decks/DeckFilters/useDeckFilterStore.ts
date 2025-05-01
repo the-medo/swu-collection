@@ -37,7 +37,7 @@ const defaultState: DeckFilterStore = {
 
 const store = new Store<DeckFilterStore>(defaultState);
 
-export function useInitializeDeckFilterFromUrlParams() {
+export function useInitializeDeckFilterFromUrlParams(sortable?: boolean) {
   // const initialized = useStore(store, state => state.initialized);
 
   const { deckLeaders, deckBase, deckAspects, deckFormat, deckSort, deckOrder } = useSearch({
@@ -55,9 +55,15 @@ export function useInitializeDeckFilterFromUrlParams() {
       base: deckBase ?? defaultState.base,
       aspects: deckAspects ?? defaultState.aspects,
       format: deckFormat ?? defaultState.format,
-      sortField: deckSort ?? defaultState.sortField,
-      sortOrder: deckOrder ?? defaultState.sortOrder,
     }));
+
+    if (sortable) {
+      store.setState(state => ({
+        ...state,
+        sortField: deckSort ?? defaultState.sortField,
+        sortOrder: deckOrder ?? defaultState.sortOrder,
+      }));
+    }
 
     return () => {
       store.setState(state => ({
@@ -94,7 +100,7 @@ const resetFilters = () =>
     sortOrder: state.sortOrder,
   }));
 
-export function useDeckFilterStore() {
+export function useDeckFilterStore(sortable?: boolean) {
   const navigate = useNavigate({ from: Route.fullPath });
 
   const initialized = useStore(store, state => state.initialized);
@@ -123,9 +129,12 @@ export function useDeckFilterStore() {
         deckBase: base,
         deckAspects: aspects.length > 0 ? aspects : undefined,
         deckFormat: format,
-        deckSort: sortField as GlobalSearchParams['deckSort'],
-        deckOrder: sortOrder as 'asc' | 'desc',
       };
+
+      if (sortable) {
+        searchParams.deckSort = sortField as GlobalSearchParams['deckSort'];
+        searchParams.deckOrder = sortOrder as 'asc' | 'desc';
+      }
 
       // Clean up undefined values
       Object.entries(searchParams).forEach(([key, value]) => {

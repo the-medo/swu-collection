@@ -2,6 +2,7 @@ import { Store, useStore } from '@tanstack/react-store';
 import {
   TournamentAnalyzerData,
   TournamentDataMap,
+  TournamentDeckKey,
   TournamentInfoMap,
 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useMemo } from 'react';
@@ -11,11 +12,13 @@ import { TournamentMatch } from '../../../../../../server/db/schema/tournament_m
 interface TournamentMetaStore {
   tournamentIds: string[];
   tournamentData: TournamentDataMap;
+  selectedDeckKey: TournamentDeckKey;
 }
 
 const defaultState: TournamentMetaStore = {
   tournamentIds: [],
   tournamentData: {},
+  selectedDeckKey: {},
 };
 
 const store = new Store<TournamentMetaStore>(defaultState);
@@ -31,6 +34,13 @@ const setTournamentData = (tournamentId: string, data: TournamentAnalyzerData) =
   store.setState(state => ({
     ...state,
     tournamentData: { ...state.tournamentData, [tournamentId]: data },
+  }));
+};
+
+const setTournamentDeckKey = (data: TournamentDeckKey) => {
+  store.setState(state => ({
+    ...state,
+    selectedDeckKey: data,
   }));
 };
 
@@ -65,9 +75,14 @@ export function useTournamentMetaStore() {
   return { tournamentIds, isLoaded, matches, decks, tournaments };
 }
 
+export function useSelectedDeckKey() {
+  return useStore(store, state => state.selectedDeckKey);
+}
+
 export function useTournamentMetaActions() {
   return {
     setTournamentIds,
     setTournamentData,
+    setTournamentDeckKey,
   };
 }

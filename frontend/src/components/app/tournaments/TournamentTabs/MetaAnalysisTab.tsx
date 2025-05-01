@@ -1,17 +1,25 @@
 import * as React from 'react';
 import TournamentMeta from '@/components/app/tournaments/TournamentMeta/TournamentMeta.tsx';
 import { useMemo } from 'react';
+import TournamentDeckKeyFloater, {
+  TournamentDeckKeyFloaterRoutes,
+} from '@/components/app/tournaments/TournamentDecks/TournamentDeckKeyFloater.tsx';
 
 interface MetaAnalysisTabProps {
   tournamentId: string;
+  /**
+   * Used for redirect in TournamentDeckKeyFloater
+   */
+  route: TournamentDeckKeyFloaterRoutes;
 }
 
-const MetaAnalysisTab: React.FC<MetaAnalysisTabProps> = ({ tournamentId }) => {
+const MetaAnalysisTab: React.FC<MetaAnalysisTabProps> = ({ tournamentId, route }) => {
   const tournamentIds = useMemo(() => [tournamentId], [tournamentId]);
 
   return (
     <div className="space-y-2">
       <TournamentMeta tournamentIds={tournamentIds} />
+      <TournamentDeckKeyFloater route={route} />
     </div>
   );
 };

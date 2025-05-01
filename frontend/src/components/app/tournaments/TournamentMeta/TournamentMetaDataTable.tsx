@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { useLabel } from './useLabel.tsx';
 import { DataTable } from '@/components/ui/data-table.tsx';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { MetaInfo } from './MetaInfoSelector';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import TournamentMetaTooltip from './TournamentMetaTooltip';
 import { AnalysisDataItem, getTotalDeckCountBasedOnMetaPart } from './tournamentMetaLib.ts';
 import { MetaPart } from '@/components/app/tournaments/TournamentMeta/MetaPartSelector.tsx';
+import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 
 interface TournamentMetaDataTableProps {
   analysisData: AnalysisDataItem[];
@@ -34,6 +35,7 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
   metaPartsData,
 }) => {
   const labelRenderer = useLabel();
+  const { setTournamentDeckKey } = useTournamentMetaActions();
   const [sorting, setSorting] = useState<{ id: string; desc: boolean }>({
     id: 'count',
     desc: true,
@@ -197,7 +199,7 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
           {renderSortIcon('winrate')}
         </Button>
       ),
-      cell: ({ row }) => row.original.winrate ? `${row.original.winrate}%` : 'N/A',
+      cell: ({ row }) => (row.original.winrate ? `${row.original.winrate}%` : 'N/A'),
     },
   ];
 
@@ -318,9 +320,19 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
     }
   }
 
+  const onRowClick = useCallback(
+    (row: Row<AnalysisDataItem>) => {
+      setTournamentDeckKey({
+        key: row.original.key,
+        metaInfo,
+      });
+    },
+    [metaInfo],
+  );
+
   return (
     <div className="mt-4">
-      <DataTable columns={columns} data={sortedData} />
+      <DataTable onRowClick={onRowClick} columns={columns} data={sortedData} />
     </div>
   );
 };

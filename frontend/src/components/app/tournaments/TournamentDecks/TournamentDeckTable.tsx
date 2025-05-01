@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 import { useTournamentDeckTableColumns } from './useTournamentDeckTableColumns.tsx';
@@ -7,29 +7,28 @@ import { useDeckFilterStore } from '@/components/app/decks/DeckFilters/useDeckFi
 import { getAspectsFromDeckInformation } from '@/components/app/tournaments/lib/getAspectsFromDeckInformation.ts';
 import { isBasicBase } from '@/lib/cards/isBasicBase.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { Button } from '@/components/ui/button.tsx';
-import { X } from 'lucide-react';
-import DeckContents from '@/components/app/decks/DeckContents/DeckContents.tsx';
+import TournamentDeckDetail from '@/components/app/tournaments/TournamentDecks/TournamentDeckDetail.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
+import { Row } from '@tanstack/react-table';
+import { useIsMobile } from '@/hooks/use-mobile.tsx';
+import { getDeckKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 
 interface TournamentDeckTableProps {
   decks: TournamentDeckResponse[];
 }
 
 const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
+  const { leaders, base, aspects } = useDeckFilterStore(false);
+  const { data: cardListData } = useCardList();
+  const isMobile = useIsMobile();
+
   const search = useSearch({ strict: false });
   const navigate = useNavigate({ from: Route.fullPath });
-  const { leaders, base, aspects } = useDeckFilterStore();
-  const { data: cardListData } = useCardList();
-
   const selectedDeckId = search.maDeckId;
-
-  const setSelectedDeckId = (value: string | undefined) => {
-    navigate({
-      search: prev => ({ ...prev, maDeckId: value }),
-    });
-  };
+  const key = search.maDeckKey;
+  const keyMetaInfo = search.maDeckKeyType;
 
   const basicBaseFilter = useMemo(() => {
     if (!base || !cardListData) return false;
@@ -39,6 +38,10 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
   // Filter decks based on selected filters
   const filteredDecks = useMemo(() => {
     if (!decks.length || !cardListData) return [];
+
+    if (key && keyMetaInfo) {
+      return decks.filter(deck => key === getDeckKey(deck, keyMetaInfo as MetaInfo, cardListData));
+    }
 
     return decks.filter(deck => {
       // Filter by leader
@@ -75,7 +78,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
 
       return true;
     });
-  }, [decks, leaders, base, aspects, basicBaseFilter]);
+  }, [decks, leaders, base, aspects, basicBaseFilter, key, keyMetaInfo]);
 
   // Sort decks by placement
   const sortedDecks = useMemo(() => {
@@ -88,33 +91,44 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
 
   const columns = useTournamentDeckTableColumns();
 
+  const onRowClick = useCallback((row: Row<TournamentDeckResponse>) => {
+    navigate({
+      search: prev => ({ ...prev, maDeckId: row.original.deck?.id }),
+      hash: isMobile ? 'tournament-deck-detail' : undefined,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (key && keyMetaInfo) {
+      if (!selectedDeckId && sortedDecks.length > 0) {
+        navigate({
+          search: p => ({ ...p, maDeckId: sortedDecks[0].deck?.id }),
+        });
+      }
+    }
+  }, [key, keyMetaInfo]);
+
+  const isRowHighlighted = (row: Row<TournamentDeckResponse>) =>
+    row.original.deck?.id === selectedDeckId;
+
   return (
     <div className="flex flex-col lg:flex-row gap-2">
       {sortedDecks.length > 0 ? (
         <>
           <div
-            className="w-full lg:w-[40%] xl:w-[30%] h-[300px] lg:h-[calc(100vh-200px)] overflow-auto border rounded-md"
+            className="w-full lg:w-[40%] xl:w-[30%] max-w-[400px] h-[300px] lg:h-[calc(100vh-200px)] overflow-auto border rounded-md"
             id="tournament-deck-table"
           >
-            <DataTable columns={columns} data={sortedDecks} loading={false} view="table" />
+            <DataTable
+              columns={columns}
+              data={sortedDecks}
+              loading={false}
+              view="table"
+              onRowClick={onRowClick}
+              isRowHighlighted={isRowHighlighted}
+            />
           </div>
-
-          {selectedDeckId && (
-            <div
-              className="scroll-smooth flex-1 lg:mt-0 relative h-auto lg:h-[calc(100vh-200px)] overflow-auto border rounded-md p-2"
-              id="tournament-deck-detail"
-            >
-              <Button
-                variant="outline"
-                size="iconSmall"
-                className="absolute top-2 right-2 z-10"
-                onClick={() => setSelectedDeckId(undefined)}
-              >
-                <X />
-              </Button>
-              <DeckContents deckId={selectedDeckId} />
-            </div>
-          )}
+          <TournamentDeckDetail />
         </>
       ) : (
         <div className="bg-muted p-8 rounded-md text-center">

@@ -10,12 +10,24 @@ import {
   useDeckFilterStoreActions,
   useInitializeDeckFilterFromUrlParams,
 } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
+import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
+import { Route } from '@/routes/__root.tsx';
 
 interface TournamentDeckFiltersProps {}
 
 const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
-  const initialized = useInitializeDeckFilterFromUrlParams();
-  const { leaders, base, aspects, activeFiltersCount, hasActiveFilters } = useDeckFilterStore();
+  const search = useSearch({ strict: false });
+  const navigate = useNavigate({ from: Route.fullPath });
+  const key = search.maDeckKey;
+  const keyMetaInfo = search.maDeckKeyType;
+  const labelRenderer = useLabel();
+
+  const initialized = useInitializeDeckFilterFromUrlParams(false);
+  const { leaders, base, aspects, activeFiltersCount } = useDeckFilterStore(false);
+
+  const activeFilters = activeFiltersCount || (key && keyMetaInfo ? 1 : 0);
 
   const { setLeaders, setBase, setAspects, resetFilters } = useDeckFilterStoreActions();
 
@@ -37,6 +49,9 @@ const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
   const handleResetFilters = useCallback(() => {
     setTimeout(() => {
       resetFilters();
+      navigate({
+        search: prev => ({ ...prev, maDeckKey: undefined, maDeckKeyType: undefined }),
+      });
     }, 50);
   }, []);
 
@@ -46,29 +61,42 @@ const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
 
   return (
     <div className="flex flex-wrap items-center gap-2 mb-0">
-      <LeaderSelector
-        trigger={null}
-        size="w100"
-        leaderCardId={leaders[0]}
-        onLeaderSelected={onLeaderChange}
-      />
-
-      <BaseSelector trigger={null} size="w100" baseCardId={base} onBaseSelected={onBaseChange} />
-
-      <MultiAspectFilter
-        value={aspects}
-        onChange={onAspectChange}
-        multiSelect={true}
-        multiMainAspects={true}
-        showLabel={false}
-        showAllOption={false}
-        showNoneOption={false}
-        className="justify-start"
-      />
-
-      <Button variant="default" disabled={!hasActiveFilters} onClick={handleResetFilters} size="sm">
-        <RefreshCcw className="h-4 w-4 mr-2" /> Reset Filters ({activeFiltersCount})
+      <Button variant="default" disabled={!activeFilters} onClick={handleResetFilters} size="sm">
+        <RefreshCcw className="h-4 w-4 mr-2" /> Reset Filters ({activeFilters})
       </Button>
+      {key && keyMetaInfo ? (
+        <div className="flex flex-row gap-2 items-center p-2">
+          <span className="font-bold">Filtered by key:</span>
+          {labelRenderer(key, keyMetaInfo as MetaInfo, 'compact', 'left')}
+        </div>
+      ) : (
+        <>
+          <LeaderSelector
+            trigger={null}
+            size="w100"
+            leaderCardId={leaders[0]}
+            onLeaderSelected={onLeaderChange}
+          />
+
+          <BaseSelector
+            trigger={null}
+            size="w100"
+            baseCardId={base}
+            onBaseSelected={onBaseChange}
+          />
+
+          <MultiAspectFilter
+            value={aspects}
+            onChange={onAspectChange}
+            multiSelect={true}
+            multiMainAspects={true}
+            showLabel={false}
+            showAllOption={false}
+            showNoneOption={false}
+            className="justify-start"
+          />
+        </>
+      )}
     </div>
   );
 };

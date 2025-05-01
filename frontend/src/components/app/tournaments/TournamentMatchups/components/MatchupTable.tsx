@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { MatchupDataMap, MatchupDisplayMode, MatchupTotalData } from '../types';
 import { MatchupTableCell } from './MatchupTableCell';
 import { getWinrateColorClass } from '../utils/getWinrateColorClass';
 import { cn } from '@/lib/utils.ts';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
+import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 
 export interface MatchupTableProps {
   matchupData: {
@@ -28,6 +29,18 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
 }) => {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [hoveredCol, setHoveredCol] = useState<string | null>(null);
+
+  const { setTournamentDeckKey } = useTournamentMetaActions();
+
+  const onRowClick = useCallback(
+    (key: string) => {
+      setTournamentDeckKey({
+        key,
+        metaInfo,
+      });
+    },
+    [metaInfo],
+  );
 
   return (
     <div className="overflow-x-auto">
@@ -125,9 +138,10 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
               </td>
               <td
                 className={cn(
-                  'p-1 border w-[250px] min-w-[250px]',
+                  'p-1 border w-[250px] min-w-[250px] cursor-pointer',
                   hoveredRow === rowKey && 'bg-accent font-semibold',
                 )}
+                onClick={() => onRowClick(rowKey)}
               >
                 {labelRenderer(rowKey, metaInfo, 'compact')}
               </td>
