@@ -9,6 +9,7 @@ import {
   getTotalDeckCountBasedOnMetaPart,
 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
+import { usePieChartColors } from '@/components/app/tournaments/TournamentMeta/usePieChartColors.tsx';
 
 interface TournamentMetaPieChartProps {
   analysisData: AnalysisDataItem[];
@@ -51,6 +52,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
   day2Decks,
 }) => {
   const labelRenderer = useLabel();
+  const pieChartColorDefinitions = usePieChartColors();
   const { setTournamentDeckKey } = useTournamentMetaActions();
   const [hoveredItem, setHoveredItem] = useState<any>(null);
 
@@ -164,6 +166,12 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
     [chartData],
   );
 
+  const chartDefs = chartData.map(i => pieChartColorDefinitions(i.id, metaInfo));
+  const fill = chartData.map((item) => ({
+    match: {id: item.id},
+    id: item.id,
+  }));
+
   if (analysisData.length === 0) {
     return <p className="text-muted-foreground">No data available for the selected filters.</p>;
   }
@@ -196,30 +204,8 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
             from: 'color',
             modifiers: [['darker', 2]],
           }}
-          defs={[
-            {
-              id: 'dots',
-              type: 'patternDots',
-              background: 'inherit',
-              color: 'rgba(255, 255, 255, 0.3)',
-              size: 4,
-              padding: 1,
-              stagger: true,
-            },
-            {
-              id: 'lines',
-              type: 'patternLines',
-              background: 'inherit',
-              color: 'rgba(255, 255, 255, 0.3)',
-              rotation: -45,
-              lineWidth: 2,
-              spacing: 10,
-            },
-          ]}
-          fill={chartData.map((item, index) => ({
-            match: { id: item.id },
-            id: index % 2 === 0 ? 'dots' : 'lines',
-          }))}
+          defs={chartDefs}
+          fill={fill}
           onClick={handlePieClick}
           onMouseEnter={handleMouseEnter}
           tooltip={({ datum }) => (
