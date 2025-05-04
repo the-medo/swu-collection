@@ -15,12 +15,13 @@ import { Props } from 'recharts/types/component/Label';
 import {
   AnalysisDataItem,
   getTotalDeckCountBasedOnMetaPart,
+  labelWidthBasedOnMetaInfo,
 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 
 interface TournamentMetaChartProps {
   analysisData: AnalysisDataItem[];
-  metaInfo: string;
+  metaInfo: MetaInfo;
   metaPart: string;
   totalDecks: number;
   day2Decks: number;
@@ -47,11 +48,13 @@ const CustomLabel = (props: CustomLabelProps) => {
   const labelX = (x as number) - 8; // Position left of the bar
   const labelY = y as number; // Center vertically
 
+  const labelWidth = labelWidthBasedOnMetaInfo[metaInfo];
+
   return (
     <foreignObject
-      x={labelX - 250}
+      x={labelX - labelWidth}
       y={labelY}
-      width={250}
+      width={labelWidth}
       height={BAR_THICKNESS}
       style={{ overflow: 'visible' }}
       className="cursor-pointer"
@@ -100,11 +103,12 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
   );
 
   const onBarClick = useCallback(
-    p =>
+    (p: { name: string }) => {
       setTournamentDeckKey({
         key: p.name,
         metaInfo,
-      }),
+      });
+    },
     [metaInfo],
   );
 
@@ -118,14 +122,14 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
         <BarChart
           layout="vertical"
           data={chartData}
-          margin={{ top: 0, right: 70, left: 100, bottom: 20 }}
+          margin={{ top: 0, right: 50, left: 20, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" />
           <YAxis
             dataKey="name"
             type="category"
-            width={200}
+            width={labelWidthBasedOnMetaInfo[metaInfo]}
             tick={{ fontSize: 12, display: 'none' }}
             // tickFormatter={props => labelRenderer(props, metaInfo as MetaInfo, 'compact')}
             interval={0}
@@ -175,11 +179,10 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
                 />
               )}
             />
-            <LabelList dataKey="value" position="right" />
+            <LabelList dataKey="value" position="insideRight" style={{ fontWeight: 'bold' }} />
             <LabelList
               dataKey="winrate"
               position="right"
-              offset={35}
               formatter={(value: string) => `(WR:${value}%)`}
               style={{
                 fontSize: '10px',

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { MatchupDataMap, MatchupDisplayMode, MatchupTotalData } from '../types';
 import { MatchupTableCell } from './MatchupTableCell';
 import { getWinrateColorClass } from '../utils/getWinrateColorClass';
@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils.ts';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
+import { labelWidthBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 
 export interface MatchupTableProps {
   matchupData: {
@@ -42,6 +43,21 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     [metaInfo],
   );
 
+  const labelWidth = useMemo(
+    () => ({
+      width: `${labelWidthBasedOnMetaInfo[metaInfo]}px`,
+      minWidth: `${labelWidthBasedOnMetaInfo[metaInfo]}px`,
+    }),
+    [metaInfo],
+  );
+
+  const labelHeight = useMemo(
+    () => ({
+      height: `${labelWidthBasedOnMetaInfo[metaInfo]}px`,
+    }),
+    [metaInfo],
+  );
+
   return (
     <div className="overflow-x-auto">
       <table className="border-collapse">
@@ -60,7 +76,10 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
                   hoveredCol === key && 'opacity-90 bg-accent',
                 )}
               >
-                <div className="transform -rotate-90 origin-bottom-left whitespace-nowrap h-[250px] flex items-end translate-x-1/2 ml-[20px] transform-gpu">
+                <div
+                  className="transform text-[13px] -rotate-90 origin-bottom-left whitespace-nowrap flex items-end translate-x-1/2 ml-[20px] transform-gpu"
+                  style={labelHeight}
+                >
                   {labelRenderer(key, metaInfo, 'compact')}
                 </div>
               </td>
@@ -138,10 +157,11 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
               </td>
               <td
                 className={cn(
-                  'p-1 border w-[250px] min-w-[250px] cursor-pointer',
+                  'p-1 border cursor-pointer text-[13px]',
                   hoveredRow === rowKey && 'bg-accent font-semibold',
                 )}
                 onClick={() => onRowClick(rowKey)}
+                style={labelWidth}
               >
                 {labelRenderer(rowKey, metaInfo, 'compact')}
               </td>
