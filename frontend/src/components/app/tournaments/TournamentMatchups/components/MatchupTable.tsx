@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MatchupDataMap, MatchupDisplayMode, MatchupTotalData } from '../types';
 import { MatchupTableCell } from './MatchupTableCell';
 import { getWinrateColorClass } from '../utils/getWinrateColorClass';
@@ -30,6 +30,19 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
 }) => {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [hoveredCol, setHoveredCol] = useState<string | null>(null);
+  const [filterText, setFilterText] = useState<string>('');
+  const [debouncedFilterText, setDebouncedFilterText] = useState<string>('');
+
+  // Debounce filter text changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedFilterText(filterText);
+    }, 75); // 75ms debounce
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [filterText]);
 
   const { setTournamentDeckKey } = useTournamentMetaActions();
 
@@ -58,16 +71,40 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     [metaInfo],
   );
 
+  // Filter keys based on the debounced filter text
+  const filteredKeys = useMemo(() => {
+    if (!debouncedFilterText) return matchupData.keys;
+    return matchupData.keys.filter(key =>
+      key.toLowerCase().includes(debouncedFilterText.toLowerCase()),
+    );
+  }, [debouncedFilterText, matchupData.keys]);
+
   return (
-    <div className="overflow-x-auto">
+    <div className="relative overflow-x-auto overflow-y-auto max-h-[100vh]">
       <table className="border-collapse">
-        <thead>
+        <thead className="sticky top-0 z-20 bg-background">
           <tr>
             <td className="p-2 border text-center font-semibold align-bottom min-w-[80px]">
               <div>Total</div>
               <span className="text-[10px] font-semibold mb-4">{totalMatchesAnalyzed} mtch</span>
             </td>
-            <td className="p-2 border"></td>
+            <td className="p-2 align-bottom border">
+              {filterText && (
+                <div
+                  className="text-[10px] text-muted-foreground cursor-pointer mt-1 text-right"
+                  onClick={() => setFilterText('')}
+                >
+                  Clear filter
+                </div>
+              )}
+              <input
+                type="text"
+                placeholder="Filter..."
+                value={filterText}
+                onChange={e => setFilterText(e.target.value)}
+                className="w-full text-sm p-1 rounded border"
+              />
+            </td>
             {matchupData.keys.map(key => (
               <td
                 key={key}
@@ -87,7 +124,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {matchupData.keys.map(rowKey => (
+          {filteredKeys.map(rowKey => (
             <tr
               key={rowKey}
               className={cn('h-[20px] text-sm', hoveredRow === rowKey && 'bg-accent')}
