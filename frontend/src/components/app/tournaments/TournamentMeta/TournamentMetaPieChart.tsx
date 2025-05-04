@@ -10,6 +10,7 @@ import {
 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import { usePieChartColors } from '@/components/app/tournaments/TournamentMeta/usePieChartColors.tsx';
+import { useTheme } from '@/components/theme-provider.tsx';
 
 interface TournamentMetaPieChartProps {
   analysisData: AnalysisDataItem[];
@@ -52,6 +53,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
   day2Decks,
 }) => {
   const labelRenderer = useLabel();
+  const { theme } = useTheme();
   const pieChartColorDefinitions = usePieChartColors();
   const { setTournamentDeckKey } = useTournamentMetaActions();
   const [hoveredItem, setHoveredItem] = useState<any>(null);
@@ -167,8 +169,8 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
   );
 
   const chartDefs = chartData.map(i => pieChartColorDefinitions(i.id, metaInfo));
-  const fill = chartData.map((item) => ({
-    match: {id: item.id},
+  const fill = chartData.map(item => ({
+    match: { id: item.id },
     id: item.id,
   }));
 
@@ -189,20 +191,19 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
           padAngle={0.7}
           cornerRadius={3}
           activeOuterRadiusOffset={8}
-          borderWidth={1}
-          borderColor={{
-            from: 'color',
-            modifiers: [['darker', 0.2]],
-          }}
           arcLinkLabelsSkipAngle={10}
-          arcLinkLabelsTextColor="#333333"
+          colors={['#3B3B3B']}
+          arcLinkLabelsTextColor={{
+            from: 'color',
+            modifiers: [[theme === 'light' ? 'darker' : 'brighter', 3]],
+          }}
           arcLinkLabelsThickness={2}
           arcLinkLabelsColor={{ from: 'color' }}
           arcLinkLabel={datum => labelRenderer(datum.label as string, metaInfo, 'text') as string}
           arcLabelsSkipAngle={10}
           arcLabelsTextColor={{
             from: 'color',
-            modifiers: [['darker', 2]],
+            modifiers: [['brighter', 10]],
           }}
           defs={chartDefs}
           fill={fill}
