@@ -1,12 +1,15 @@
 import * as React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MatchupDataMap, MatchupDisplayMode, MatchupTotalData } from '../types';
 import { MatchupTableCell } from './MatchupTableCell';
-import { getWinrateColorClass } from '../utils/getWinrateColorClass';
-import { cn } from '@/lib/utils.ts';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
+import { labelWidthBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import RowTotalCell from '@/components/app/tournaments/TournamentMatchups/components/MatchupRowTotalCell.tsx';
+import { cn } from '@/lib/utils.ts';
+
+const MemoizedCell = React.memo(MatchupTableCell);
 
 export interface MatchupTableProps {
   matchupData: {
@@ -27,8 +30,32 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   labelRenderer,
   totalMatchesAnalyzed,
 }) => {
-  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
-  const [hoveredCol, setHoveredCol] = useState<string | null>(null);
+  const [filterText, setFilterText] = useState<string>('');
+  const [debouncedFilterText, setDebouncedFilterText] = useState<string>('');
+  const tableRef = useRef<HTMLTableElement>(null);
+  const [hoveredCol, setHoveredCol] = useState<number | null>(null);
+
+  // Debounce filter text changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedFilterText(filterText);
+    }, 75); // 75ms debounce
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [filterText]);
+
+  // Set data-highlighted attribute on the table when hovering columns
+  useEffect(() => {
+    if (!tableRef.current) return;
+
+    if (hoveredCol !== null) {
+      tableRef.current.setAttribute('data-highlighted-col', String(hoveredCol));
+    } else {
+      tableRef.current.removeAttribute('data-highlighted-col');
+    }
+  }, [hoveredCol]);
 
   const { setTournamentDeckKey } = useTournamentMetaActions();
 
@@ -39,28 +66,93 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         metaInfo,
       });
     },
+    [metaInfo, setTournamentDeckKey],
+  );
+
+  const labelWidth = useMemo(
+    () => ({
+      width: `${labelWidthBasedOnMetaInfo[metaInfo]}px`,
+      minWidth: `${labelWidthBasedOnMetaInfo[metaInfo]}px`,
+    }),
     [metaInfo],
   );
 
+  const labelHeight = useMemo(
+    () => ({
+      height: `${labelWidthBasedOnMetaInfo[metaInfo]}px`,
+    }),
+    [metaInfo],
+  );
+
+  // Filter keys based on the debounced filter text
+  const filteredKeys = useMemo(() => {
+    if (!debouncedFilterText) return matchupData.keys;
+    return matchupData.keys.filter(key =>
+      key.toLowerCase().includes(debouncedFilterText.toLowerCase()),
+    );
+  }, [debouncedFilterText, matchupData.keys]);
+
+  // Handler for column headers
+  const handleColumnHeaderEnter = useCallback((index: number) => {
+    setHoveredCol(index);
+  }, []);
+
+  useEffect(() => {
+    if (!tableRef.current) return;
+
+    // Remove existing highlights
+    tableRef.current.querySelectorAll('td.highlight-col').forEach(el => {
+      el.classList.remove('highlight-col', 'brightness-90', 'bg-accent');
+    });
+
+    // Apply new highlights
+    if (hoveredCol !== null) {
+      tableRef.current.querySelectorAll(`td[data-column-index="${hoveredCol}"]`).forEach(el => {
+        el.classList.add('highlight-col', 'brightness-90', 'bg-accent');
+      });
+    }
+  }, [hoveredCol]);
+
   return (
-    <div className="overflow-x-auto">
-      <table className="border-collapse">
-        <thead>
+    <div className="relative overflow-x-auto overflow-y-auto max-h-[100vh]">
+      <table
+        ref={tableRef}
+        className={cn('border-collapse matchup-table td[data-[column-index=3]:bg-primary]')}
+      >
+        <thead className="sticky top-0 z-20 bg-background">
           <tr>
             <td className="p-2 border text-center font-semibold align-bottom min-w-[80px]">
               <div>Total</div>
               <span className="text-[10px] font-semibold mb-4">{totalMatchesAnalyzed} mtch</span>
             </td>
-            <td className="p-2 border"></td>
-            {matchupData.keys.map(key => (
+            <td className="p-2 align-bottom border">
+              {filterText && (
+                <div
+                  className="text-[10px] text-muted-foreground cursor-pointer mt-1 text-right"
+                  onClick={() => setFilterText('')}
+                >
+                  Clear filter
+                </div>
+              )}
+              <input
+                type="text"
+                placeholder="Filter..."
+                value={filterText}
+                onChange={e => setFilterText(e.target.value)}
+                className="w-full text-sm p-1 rounded border"
+              />
+            </td>
+            {matchupData.keys.map((key, colIndex) => (
               <td
                 key={key}
-                className={cn(
-                  'p-2 border w-[40px] max-w-[40px]',
-                  hoveredCol === key && 'opacity-90 bg-accent',
-                )}
+                data-column-index={colIndex + 2} // +2 because of the two initial columns
+                className="p-2 border w-[40px] max-w-[40px] column-header"
+                onMouseEnter={() => handleColumnHeaderEnter(colIndex + 2)}
               >
-                <div className="transform -rotate-90 origin-bottom-left whitespace-nowrap h-[250px] flex items-end translate-x-1/2 ml-[20px] transform-gpu">
+                <div
+                  className="text-[13px] -rotate-90 origin-bottom-left whitespace-nowrap flex items-end translate-x-1/2 ml-[20px] transform-gpu"
+                  style={labelHeight}
+                >
                   {labelRenderer(key, metaInfo, 'compact')}
                 </div>
               </td>
@@ -68,99 +160,29 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {matchupData.keys.map(rowKey => (
-            <tr
-              key={rowKey}
-              className={cn('h-[20px] text-sm', hoveredRow === rowKey && 'bg-accent')}
-            >
+          {filteredKeys.map(rowKey => (
+            <tr key={rowKey} className="h-[20px] text-sm hover:bg-accent hover:brightness-90">
+              <RowTotalCell
+                rowKey={rowKey}
+                totalStats={matchupData.totalStats}
+                displayMode={displayMode}
+              />
               <td
-                className={(() => {
-                  const stats = matchupData.totalStats?.get(rowKey);
-                  if (!stats)
-                    return cn(
-                      'p-2 border text-center w-[70px] text-xs font-semibold',
-                      hoveredRow === rowKey && 'bg-accent',
-                    );
-
-                  // Determine which stats to use based on display mode
-                  let displayWins, displayLosses, total;
-
-                  if (displayMode === 'winLoss' || displayMode === 'winrate') {
-                    displayWins = stats.totalWins;
-                    displayLosses = stats.totalLosses;
-                  } else {
-                    displayWins = stats.totalGameWins;
-                    displayLosses = stats.totalGameLosses;
-                  }
-
-                  total = displayWins + displayLosses;
-
-                  if (total === 0)
-                    return cn(
-                      'p-2 border text-center w-[70px] text-xs font-semibold',
-                      hoveredRow === rowKey && 'bg-accent',
-                    );
-
-                  // Calculate winrate and color class
-                  const winrate = (displayWins / total) * 100;
-                  const colorClass = getWinrateColorClass(winrate);
-
-                  return cn(
-                    'p-2 border text-center w-[70px] text-xs font-semibold',
-                    colorClass,
-                    hoveredRow === rowKey && 'bg-accent',
-                  );
-                })()}
-              >
-                {(() => {
-                  const stats = matchupData.totalStats?.get(rowKey);
-                  if (!stats) return '-';
-                  const { totalWins, totalLosses, totalGameWins, totalGameLosses } = stats;
-
-                  if (displayMode === 'winLoss' || displayMode === 'winrate') {
-                    const total = totalWins + totalLosses;
-                    if (total === 0) return '-';
-
-                    const winrate = (totalWins / total) * 100;
-                    return displayMode === 'winLoss'
-                      ? `${Math.round(totalWins)}/${Math.round(totalLosses)}`
-                      : `${winrate.toFixed(1)}%`;
-                  } else {
-                    const totalGames = totalGameWins + totalGameLosses;
-                    if (totalGames === 0) return '-';
-
-                    const gameWinrate = (totalGameWins / totalGames) * 100;
-                    return displayMode === 'gameWinLoss'
-                      ? `${Math.round(totalGameWins)}/${Math.round(totalGameLosses)}`
-                      : `${gameWinrate.toFixed(1)}%`;
-                  }
-                })()}
-              </td>
-              <td
-                className={cn(
-                  'p-1 border w-[250px] min-w-[250px] cursor-pointer',
-                  hoveredRow === rowKey && 'bg-accent font-semibold',
-                )}
+                className="p-1 border cursor-pointer text-[13px]"
                 onClick={() => onRowClick(rowKey)}
+                style={labelWidth}
               >
                 {labelRenderer(rowKey, metaInfo, 'compact')}
               </td>
-              {matchupData.keys.map(colKey => (
-                <MatchupTableCell
+              {matchupData.keys.map((colKey, colIndex) => (
+                <MemoizedCell
                   key={colKey}
                   rowKey={rowKey}
                   colKey={colKey}
                   matchups={matchupData.matchups}
                   displayMode={displayMode}
-                  isHovered={(hoveredRow === rowKey || hoveredCol === colKey) && rowKey !== colKey}
-                  onMouseEnter={() => {
-                    setHoveredRow(rowKey);
-                    setHoveredCol(colKey);
-                  }}
-                  onMouseLeave={() => {
-                    setHoveredRow(null);
-                    setHoveredCol(null);
-                  }}
+                  setHoveredCol={setHoveredCol}
+                  columnIndex={colIndex + 2} // +2 because of the two initial columns
                 />
               ))}
             </tr>

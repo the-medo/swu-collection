@@ -156,7 +156,7 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
     <Card className="border-0 shadow-none">
       <CardContent className="flex gap-2 items-center p-2 flex-wrap">
         <Button
-          size="sm"
+          size="xs"
           className={cn({
             'opacity-80': !deckData?.deck.public,
           })}
@@ -171,14 +171,14 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
           Copy link {!deckData?.deck.public && '(private!)'}
         </Button>
 
-        <Button size="sm" onClick={handleDuplicate} disabled={duplicateMutation.isPending}>
+        <Button size="xs" onClick={handleDuplicate} disabled={duplicateMutation.isPending}>
           <BookCopy className="h-4 w-4 mr-2" />
           {duplicateMutation.isPending ? 'Duplicating...' : 'Duplicate'}
         </Button>
 
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button size="sm">
+            <Button size="xs">
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
@@ -209,10 +209,10 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
         </DropdownMenu>
         <DeckImageButton deckId={deckId} />
 
-        <Button size="sm" disabled onClick={() => {}}>
+        {/*<Button size="xs" disabled onClick={() => {}}>
           <ScrollText className="h-4 w-4 mr-2" />
           Compare with other deck
-        </Button>
+        </Button>*/}
       </CardContent>
     </Card>
   );

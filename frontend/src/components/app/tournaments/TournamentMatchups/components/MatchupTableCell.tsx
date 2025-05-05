@@ -2,15 +2,15 @@ import * as React from 'react';
 import { MatchupDataMap, MatchupDisplayMode } from '../types';
 import { getWinrateColorClass } from '../utils/getWinrateColorClass';
 import { cn } from '@/lib/utils.ts';
+import { useCallback } from 'react';
 
 export interface MatchupTableCellProps {
   rowKey: string;
   colKey: string;
   matchups: MatchupDataMap;
   displayMode: MatchupDisplayMode;
-  isHovered: boolean;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
+  setHoveredCol: React.Dispatch<React.SetStateAction<number | null>>;
+  columnIndex: number;
 }
 
 export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
@@ -18,15 +18,9 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
   colKey,
   matchups,
   displayMode,
-  isHovered,
-  onMouseEnter,
-  onMouseLeave,
+  setHoveredCol,
+  columnIndex,
 }) => {
-  // If it's a mirror match, just show a dash
-  if (rowKey === colKey) {
-    return <td className="p-2 border text-center w-[50px] text-xs">-</td>;
-  }
-
   const wins = matchups[rowKey]?.[colKey]?.wins || 0;
   const losses = matchups[rowKey]?.[colKey]?.losses || 0;
   const gameWins = matchups[rowKey]?.[colKey]?.gameWins || 0;
@@ -45,9 +39,21 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
     total = gameWins + gameLosses;
   }
 
+  const onMouseEnter = useCallback(() => {
+    setHoveredCol(columnIndex);
+  }, [columnIndex]);
+
   // If there's no data, show a dash
-  if (total === 0) {
-    return <td className="p-2 border text-center w-[50px] text-xs">-</td>;
+  if (total === 0 || rowKey === colKey) {
+    return (
+      <td
+        className={cn('p-2 border text-center w-[50px] text-xs')}
+        onMouseEnter={onMouseEnter}
+        data-column-index={columnIndex}
+      >
+        -
+      </td>
+    );
   }
 
   const winrate = (displayWins / total) * 100;
@@ -55,13 +61,9 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
 
   return (
     <td
-      className={cn(
-        'p-2 border text-center w-[50px] text-xs',
-        colorClass,
-        isHovered && 'opacity-90',
-      )}
+      className={cn('p-2 border text-center w-[50px] text-xs', colorClass)}
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      data-column-index={columnIndex}
     >
       {displayMode === 'winLoss' || displayMode === 'gameWinLoss' ? (
         <>

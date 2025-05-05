@@ -11,12 +11,14 @@ import { toast } from '@/hooks/use-toast.ts';
 import DeckActions from '@/components/app/decks/DeckActions/DeckActions.tsx';
 import DeckLayoutSelector from '@/components/app/decks/DeckContents/DeckLayoutSelector/DeckLayoutSelector.tsx';
 import DeckBoardCardCounts from '@/components/app/decks/DeckContents/DeckBoardCardCounts/DeckBoardCardCounts.tsx';
+import DeckMatches from '@/components/app/decks/DeckContents/DeckMatches/DeckMatches.tsx';
 
 interface DeckContentsProps {
   deckId: string;
+  setDeckId?: (id: string) => void;
 }
 
-const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
+const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId }) => {
   const { data } = useGetDeck(deckId);
   const { format, owned } = useDeckInfo(deckId);
   const putDeckMutation = usePutDeck(deckId);
@@ -42,7 +44,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
 
   return (
     <div className="flex max-xl:flex-col justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
-      <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center flex-col gap-2">
+      <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center max-xl:w-auto w-[350px] flex-col gap-2">
         <LeaderSelector
           trigger={null}
           leaderCardId={data?.deck.leaderCardId1 ?? undefined}
@@ -74,6 +76,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
         />
 
         <DeckActions deckId={deckId} />
+        <DeckMatches deckId={deckId} setDeckId={setDeckId} />
       </div>
       <div className="flex flex-col gap-2 w-full">
         <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">

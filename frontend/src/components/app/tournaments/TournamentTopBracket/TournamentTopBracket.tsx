@@ -506,7 +506,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
           >
             <X />
           </Button>
-          <DeckContents deckId={selectedDeckId} />
+          <DeckContents deckId={selectedDeckId} setDeckId={setSelectedDeckId} />
         </div>
       ) : (
         <div className="flex-1 overflow-x-auto mt-8 lg:mt-0">

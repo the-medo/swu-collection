@@ -9,6 +9,7 @@ import { isBasicBase } from '@/lib/cards/isBasicBase.ts';
 import { useCallback, useMemo } from 'react';
 import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
+import TournamentMetaPieChart from './TournamentMetaPieChart';
 import { Alert } from '@/components/ui/alert.tsx';
 import { InfoIcon } from 'lucide-react';
 import { useSearch, useNavigate } from '@tanstack/react-router';
@@ -286,13 +287,26 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
       </div>
 
       {viewMode === 'chart' ? (
-        <TournamentMetaChart
-          analysisData={analysisData}
-          metaInfo={metaInfo}
-          metaPart={metaPart}
-          totalDecks={totalDeckCount}
-          day2Decks={day2DeckCount}
-        />
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="w-full md:w-1/3">
+            <TournamentMetaPieChart
+              analysisData={analysisData}
+              metaInfo={metaInfo}
+              metaPart={metaPart}
+              totalDecks={totalDeckCount}
+              day2Decks={day2DeckCount}
+            />
+          </div>
+          <div className="w-full md:w-2/3">
+            <TournamentMetaChart
+              analysisData={analysisData}
+              metaInfo={metaInfo}
+              metaPart={metaPart}
+              totalDecks={totalDeckCount}
+              day2Decks={day2DeckCount}
+            />
+          </div>
+        </div>
       ) : (
         <TournamentMetaDataTable
           analysisData={analysisData}
