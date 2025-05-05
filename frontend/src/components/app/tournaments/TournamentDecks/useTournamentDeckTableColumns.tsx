@@ -53,25 +53,25 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
       cell: ({ row }) => {
         const td = row.original.tournamentDeck;
         return (
-          <div className="text-center">
+          <div className="text-center text-xs">
             {td.recordWin}-{td.recordLose}-{td.recordDraw}
           </div>
         );
       },
     });
 
-    /*// Player name column
+    // Player name column
     definitions.push({
       id: 'player',
       header: 'Player',
-      size: 32,
+      size: 20,
       cell: ({ row }) => {
         const username = row.original.tournamentDeck.meleePlayerUsername;
         if (!username) return 'N/A';
 
-        return <div>{username}</div>;
+        return <div className="text-xs">{username}</div>;
       },
-    });*/
+    });
 
     return definitions;
   }, [labelRenderer, cardListData, isMobile]);

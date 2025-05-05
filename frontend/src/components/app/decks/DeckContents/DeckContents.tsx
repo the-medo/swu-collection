@@ -15,9 +15,10 @@ import DeckMatches from '@/components/app/decks/DeckContents/DeckMatches/DeckMat
 
 interface DeckContentsProps {
   deckId: string;
+  setDeckId?: (id: string) => void;
 }
 
-const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
+const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId }) => {
   const { data } = useGetDeck(deckId);
   const { format, owned } = useDeckInfo(deckId);
   const putDeckMutation = usePutDeck(deckId);
@@ -75,7 +76,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId }) => {
         />
 
         <DeckActions deckId={deckId} />
-        <DeckMatches deckId={deckId} />
+        <DeckMatches deckId={deckId} setDeckId={setDeckId} />
       </div>
       <div className="flex flex-col gap-2 w-full">
         <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">

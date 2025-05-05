@@ -33,7 +33,8 @@ export const useGetDeckTournament = (deckId: string | undefined) => {
           if (!response.ok) {
             throw new Error('Something went wrong');
           }
-          return response.json() as DeckTournamentResponse;
+
+          return (await response.json()) as DeckTournamentResponse;
         }
       : skipToken,
     staleTime: Infinity,

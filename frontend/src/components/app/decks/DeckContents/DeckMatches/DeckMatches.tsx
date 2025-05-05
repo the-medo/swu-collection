@@ -6,9 +6,10 @@ import { cn } from '@/lib/utils.ts';
 
 interface DeckMatchesProps {
   deckId: string;
+  setDeckId?: (id: string) => void;
 }
 
-const DeckMatches: React.FC<DeckMatchesProps> = ({ deckId }) => {
+const DeckMatches: React.FC<DeckMatchesProps> = ({ deckId, setDeckId }) => {
   const { data: tournamentData } = useGetDeckTournament(deckId);
   const labelRenderer = useLabel();
   const { data: cardListData } = useCardList();
@@ -39,7 +40,11 @@ const DeckMatches: React.FC<DeckMatchesProps> = ({ deckId }) => {
               className={cn({
                 'bg-green-100 dark:bg-green-900': isWin,
                 'bg-red-100 dark:bg-red-900': !isWin && !isDraw,
+                'hover:underline cursor-pointer': !!setDeckId,
               })}
+              onClick={
+                d.opponentDeck && setDeckId ? () => setDeckId(d.opponentDeck!.id) : undefined
+              }
             >
               <td
                 className={cn('font-bold px-1', {

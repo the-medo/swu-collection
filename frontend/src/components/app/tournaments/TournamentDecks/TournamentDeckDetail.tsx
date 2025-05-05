@@ -33,7 +33,7 @@ const TournamentDeckDetail: React.FC<TournamentDeckDetailProps> = ({}) => {
           >
             <X />
           </Button>
-          <DeckContents deckId={selectedDeckId} />
+          <DeckContents deckId={selectedDeckId} setDeckId={setSelectedDeckId} />
         </>
       ) : (
         <div className="flex w-full h-full items-center justify-center">
