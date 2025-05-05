@@ -40,7 +40,9 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
         const key = getDeckKey(tournamentDeck, 'leadersAndBase', cardListData);
 
         return (
-          <div className="hover:underline">{labelRenderer(key, 'leadersAndBase', 'compact')}</div>
+          <div className="hover:underline w-48 text-xs">
+            {labelRenderer(key, 'leadersAndBase', 'compact')}
+          </div>
         );
       },
     });
@@ -69,7 +71,7 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
         const username = row.original.tournamentDeck.meleePlayerUsername;
         if (!username) return 'N/A';
 
-        return <div className="text-xs">{username}</div>;
+        return <div className="text-[10px]">{username}</div>;
       },
     });
 

@@ -133,7 +133,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
   const localTrigger = useMemo(() => {
     if (!selectedBase) {
       return (
-        <div className={cn({ 'cursor-pointer': editable })}>
+        <div className={cn('w-fit', { 'cursor-pointer': editable })}>
           <CardImage forceHorizontal size={size}>
             <h6 className="flex gap-2 mb-0 items-center">
               <Castle size={20} /> Base
@@ -143,7 +143,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
       );
     }
     return (
-      <div className={cn({ 'cursor-pointer': editable })}>
+      <div className={cn('w-fit', { 'cursor-pointer': editable })}>
         <CardImage
           card={selectedBase}
           cardVariantId={selectDefaultVariant(selectedBase)}
@@ -215,6 +215,8 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
       </div>
     );
   }, [onBaseSelected, localSelectedBase]);
+
+  if (!editable) return trigger ?? localTrigger;
 
   return (
     <Dialog

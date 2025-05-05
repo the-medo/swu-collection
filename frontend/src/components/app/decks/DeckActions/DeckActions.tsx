@@ -209,10 +209,10 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
         </DropdownMenu>
         <DeckImageButton deckId={deckId} />
 
-        <Button size="xs" disabled onClick={() => {}}>
+        {/*<Button size="xs" disabled onClick={() => {}}>
           <ScrollText className="h-4 w-4 mr-2" />
           Compare with other deck
-        </Button>
+        </Button>*/}
       </CardContent>
     </Card>
   );

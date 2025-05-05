@@ -14,7 +14,7 @@ const DeckMatches: React.FC<DeckMatchesProps> = ({ deckId, setDeckId }) => {
   const labelRenderer = useLabel();
   const { data: cardListData } = useCardList();
 
-  if (!tournamentData) return null;
+  if (!tournamentData || !tournamentData.data) return null;
 
   const tournamentDeck = tournamentData?.data.tournamentDeck;
   const playerName = tournamentDeck.meleePlayerUsername;
@@ -37,7 +37,7 @@ const DeckMatches: React.FC<DeckMatchesProps> = ({ deckId, setDeckId }) => {
 
           return (
             <tr
-              className={cn({
+              className={cn('border', {
                 'bg-green-100 dark:bg-green-900': isWin,
                 'bg-red-100 dark:bg-red-900': !isWin && !isDraw,
                 'hover:underline cursor-pointer': !!setDeckId,
@@ -47,7 +47,7 @@ const DeckMatches: React.FC<DeckMatchesProps> = ({ deckId, setDeckId }) => {
               }
             >
               <td
-                className={cn('font-bold px-1', {
+                className={cn('font-bold px-1 text-sm w-[40px]', {
                   'text-green-600': isWin,
                   'text-red-500': !isWin && !isDraw,
                 })}
@@ -56,8 +56,12 @@ const DeckMatches: React.FC<DeckMatchesProps> = ({ deckId, setDeckId }) => {
                   ? `${d.match.gameWin}-${d.match.gameLose}`
                   : `${d.match.gameLose}-${d.match.gameWin}`}
               </td>
-              <td className="text-xs"> vs. {isP1 ? d.match.p2Username : d.match.p1Username}</td>
-              <td className="px-1 w-[220px] text-[12px]">
+              <td className="text-[10px]">
+                <div className="w-[60px] truncate overflow-hidden whitespace-nowrap">
+                  {isP1 ? d.match.p2Username : d.match.p1Username}
+                </div>
+              </td>
+              <td className="px-1 w-[200px] text-[12px]">
                 {labelRenderer(
                   getDeckLeadersAndBaseKey(d.opponentDeck, d.opponentDeckInfo, cardListData),
                   'leadersAndBase',

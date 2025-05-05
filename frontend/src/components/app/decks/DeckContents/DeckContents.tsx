@@ -44,7 +44,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId }) => {
 
   return (
     <div className="flex max-xl:flex-col justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
-      <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center flex-col gap-2">
+      <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center max-xl:w-auto w-[350px] flex-col gap-2">
         <LeaderSelector
           trigger={null}
           leaderCardId={data?.deck.leaderCardId1 ?? undefined}

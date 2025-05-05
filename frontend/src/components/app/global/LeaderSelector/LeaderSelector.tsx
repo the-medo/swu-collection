@@ -115,7 +115,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   const localTrigger = useMemo(() => {
     if (!selectedLeader) {
       return (
-        <div className={cn({ 'cursor-pointer': editable })}>
+        <div className={cn('w-fit', { 'cursor-pointer': editable })}>
           <CardImage forceHorizontal backSideButton={editable ? false : 'mid'} size={size}>
             <h6 className="flex mb-0 gap-2 items-center">
               <Crown size={20} /> Leader
@@ -125,7 +125,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       );
     }
     return (
-      <div className={cn({ 'cursor-pointer': editable })}>
+      <div className={cn('w-fit', { 'cursor-pointer': editable })}>
         <CardImage
           card={selectedLeader.card}
           cardVariantId={selectedLeader.variantId}

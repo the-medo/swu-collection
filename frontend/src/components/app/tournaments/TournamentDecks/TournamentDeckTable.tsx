@@ -116,7 +116,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
       {sortedDecks.length > 0 ? (
         <>
           <div
-            className="w-full lg:w-[40%] xl:w-[30%] max-w-[500px] h-[300px] lg:h-[calc(100vh-200px)] overflow-auto border rounded-md"
+            className="w-full lg:w-[40%] xl:w-[30%] max-w-[400px] h-[300px] lg:h-[calc(100vh-200px)] overflow-auto border rounded-md"
             id="tournament-deck-table"
           >
             <DataTable
