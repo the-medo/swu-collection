@@ -12,13 +12,13 @@ export interface DeckTournamentMatch {
   opponentDeckInfo: DeckInformation | null;
 }
 
-export interface DeckTournamentResponse {
+export type DeckTournamentResponse = {
   data: {
     tournament: TournamentStringDate;
     tournamentDeck: TournamentDeck;
     matches: DeckTournamentMatch[];
-  } | null;
-}
+  };
+};
 
 export const useGetDeckTournament = (deckId: string | undefined) => {
   return useQuery<DeckTournamentResponse>({
@@ -33,7 +33,7 @@ export const useGetDeckTournament = (deckId: string | undefined) => {
           if (!response.ok) {
             throw new Error('Something went wrong');
           }
-          return response.json();
+          return response.json() as DeckTournamentResponse;
         }
       : skipToken,
     staleTime: Infinity,
