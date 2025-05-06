@@ -11,12 +11,17 @@ export interface GetTournamentMatchesResponse {
 export const useGetTournamentMatches = (tournamentId: string | undefined) => {
   const { data: tournamentData } = useGetTournament(tournamentId);
   const tournamentUpdatedAt = tournamentData?.tournament?.updatedAt;
+  const imported = tournamentData?.tournament?.imported;
 
   return useQuery<GetTournamentMatchesResponse>({
     queryKey: ['tournament-matches', tournamentId],
     queryFn:
       tournamentId && tournamentUpdatedAt
         ? async () => {
+            if (!imported) {
+              return { data: [] };
+            }
+
             // Try to get cached data first
             const cachedData = await getStoredTournamentMatches(tournamentId);
 

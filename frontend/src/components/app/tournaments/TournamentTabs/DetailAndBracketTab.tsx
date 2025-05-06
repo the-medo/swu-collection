@@ -116,9 +116,7 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({ tournamentId 
           </div>
 
           {/* Tournament Bracket */}
-          <div className="bg-card rounded-md border shadow-sm p-3">
-            <TournamentTopBracket tournamentId={tournamentId} top={8} />
-          </div>
+          <TournamentTopBracket tournamentId={tournamentId} top={8} />
         </div>
       )}
     </div>

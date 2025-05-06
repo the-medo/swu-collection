@@ -18,6 +18,7 @@ export interface TournamentStringDate {
   date: string;
   createdAt: string;
   updatedAt: string;
+  imported: boolean;
 }
 
 export interface TournamentType {

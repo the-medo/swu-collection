@@ -9,6 +9,7 @@ import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTou
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { usePermissions } from '@/hooks/usePermissions.ts';
 import { TournamentTabs } from '../TournamentTabs';
+import NoTournamentData from '@/components/app/tournaments/components/NoTournamentData.tsx';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -99,12 +100,9 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
           </div>
         )}
       </div>
-
-      {/* Tournament tabs */}
       <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} />
-
-      {/* Tab content */}
-      {children}
+      {activeTab === 'details' || tournament?.imported ? children : null}
+      <NoTournamentData tournamentId={tournamentId} />
     </div>
   );
 };
