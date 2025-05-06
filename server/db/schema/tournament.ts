@@ -1,5 +1,15 @@
 import { type InferSelectModel, relations } from 'drizzle-orm';
-import { pgTable, varchar, integer, date, uuid, timestamp, index, text } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  varchar,
+  integer,
+  date,
+  uuid,
+  timestamp,
+  index,
+  text,
+  boolean,
+} from 'drizzle-orm/pg-core';
 import { tournamentType } from './tournament_type.ts';
 import { tournamentDeck } from './tournament_deck.ts';
 import { tournamentMatch } from './tournament_match.ts';
@@ -33,6 +43,7 @@ export const tournament = pgTable(
     date: date('date', { mode: 'date' }).notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    imported: boolean('imported').notNull().default(false),
   },
   table => {
     return {
