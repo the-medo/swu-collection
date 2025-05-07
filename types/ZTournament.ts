@@ -8,17 +8,34 @@ export const TournamentSortField = {
   UPDATED_AT: 'tournament.updated_at',
   NAME: 'tournament.name',
   ATTENDANCE: 'tournament.attendance',
-  SEASON: 'tournament.season',
+  SEASON: 'meta.season',
   TYPE: 'tournament_type.sort_value',
 } as const;
+
+export const zMetaSchema = z.object({
+  id: z.number().int(),
+  set: z.enum(Object.values(SwuSet) as [string, ...string[]]),
+  name: z.string().min(1).max(255),
+  format: z
+    .number()
+    .int()
+    .refine(
+      val => {
+        return formatData.some(format => format.id === val);
+      },
+      {
+        message: 'Invalid format ID',
+      },
+    ),
+  date: z.string(),
+  season: z.number().int().min(0),
+});
 
 export const zTournamentSchema = z.object({
   id: z.string().uuid(),
   userId: z.string(),
   type: z.string(),
-  season: z.number().int().min(0),
-  set: z.enum(Object.values(SwuSet) as [string, ...string[]]),
-  metaShakeup: z.string().nullable().optional(),
+  meta: z.number().int().optional(),
   location: z.string().min(1).max(255),
   continent: z.string().min(1).max(100),
   name: z.string().min(1).max(255),
@@ -63,6 +80,7 @@ export const zTournamentImportMeleeRequest = z.object({
 });
 
 export type ZTournament = z.infer<typeof zTournamentSchema>;
+export type ZMeta = z.infer<typeof zMetaSchema>;
 export type ZTournamentCreateRequest = z.infer<typeof zTournamentCreateRequest>;
 export type ZTournamentUpdateRequest = z.infer<typeof zTournamentUpdateRequest>;
 export type ZTournamentImportMeleeRequest = z.infer<typeof zTournamentImportMeleeRequest>;

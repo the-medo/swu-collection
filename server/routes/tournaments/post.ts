@@ -40,7 +40,6 @@ export const tournamentPostRoute = new Hono<AuthExtension>().post(
         userId: user.id,
         ...data,
         date: dateValue,
-        metaShakeup: data.metaShakeup || null,
         meleeId: data.meleeId || null,
       })
       .returning();

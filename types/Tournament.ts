@@ -1,4 +1,5 @@
 import type { User } from './User.ts';
+import type { Meta } from '../server/db/schema/meta.ts';
 
 export interface TournamentStringDate {
   id: string;
@@ -32,6 +33,7 @@ export interface TournamentData {
   tournament: TournamentStringDate;
   tournamentType: TournamentType;
   user: User;
+  meta: Meta;
 }
 
 export const tournamentTypes = ['local', 'showdown', 'ma1', 'pq', 'ma2', 'sq', 'rq', 'gc'] as const;

@@ -4,6 +4,7 @@ import { defaultStatements, adminAc } from 'better-auth/plugins/admin/access';
 const statement = {
   ...defaultStatements,
   tournament: ['create', 'update', 'delete', 'import'],
+  meta: ['create', 'update'],
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -19,5 +20,6 @@ export const organizer = ac.newRole({
 
 export const admin = ac.newRole({
   tournament: ['create', 'update', 'delete', 'import'],
+  meta: ['create', 'update'],
   ...adminAc.statements,
 });
