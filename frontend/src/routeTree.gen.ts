@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as TermsImport } from './routes/terms'
 import { Route as PrivacyImport } from './routes/privacy'
+import { Route as AdminImport } from './routes/admin'
 import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
@@ -56,6 +57,12 @@ const TermsRoute = TermsImport.update({
 const PrivacyRoute = PrivacyImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminRoute = AdminImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -274,6 +281,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminImport
       parentRoute: typeof rootRoute
     }
     '/privacy': {
@@ -507,6 +521,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -543,6 +558,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -580,6 +596,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -618,6 +635,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
+    | '/admin'
     | '/privacy'
     | '/terms'
     | '/settings'
@@ -653,6 +671,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
+    | '/admin'
     | '/privacy'
     | '/terms'
     | '/settings'
@@ -688,6 +707,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/admin'
     | '/privacy'
     | '/terms'
     | '/_authenticated/settings'
@@ -725,6 +745,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   CardsSearchRoute: typeof CardsSearchRoute
@@ -760,6 +781,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   CardsSearchRoute: CardsSearchRoute,
@@ -804,6 +826,7 @@ export const routeTree = rootRoute
         "/",
         "/_authenticated",
         "/about",
+        "/admin",
         "/privacy",
         "/terms",
         "/cards/search",
@@ -846,6 +869,9 @@ export const routeTree = rootRoute
     },
     "/about": {
       "filePath": "about.tsx"
+    },
+    "/admin": {
+      "filePath": "admin.tsx"
     },
     "/privacy": {
       "filePath": "privacy.tsx"
