@@ -55,7 +55,12 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
     // Update the tournament with the meleeId
     await db.update(tournamentTable).set({ meleeId }).where(and(condIsOwner, condTournamentId));
 
-    await runTournamentImport(paramTournamentId);
+    runTournamentImport(paramTournamentId).then(async () => {
+      await db
+        .update(tournamentTable)
+        .set({ imported: true })
+        .where(and(condIsOwner, condTournamentId));
+    });
 
     // Mock response - in a real implementation, this would fetch data from melee.gg
     // and process it to insert decks and matches

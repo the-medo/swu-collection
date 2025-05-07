@@ -52,13 +52,11 @@ export const auth = betterAuth({
         type: 'string',
         required: false,
         returned: true,
-        defaultValue: () => generateDisplayName(),
       },
       state: {
         type: 'string',
         required: false,
         returned: true,
-        defaultValue: () => generateDisplayName(),
       },
       currency: {
         type: 'string',
