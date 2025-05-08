@@ -3,6 +3,7 @@ import {
   BookCheck,
   BookOpen,
   BookOpenCheck,
+  ChartPieIcon,
   Hammer,
   NotebookTabs,
   Plus,
@@ -43,39 +44,45 @@ import { cn } from '@/lib/utils.ts';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import SidebarComparer from '../../comparer/SidebarComparer/SidebarComparer.tsx';
 import { Route } from '@/routes/__root.tsx';
-import { Fragment } from 'react';
+import { Fragment, useCallback } from 'react';
 
 const groups = [
   {
-    title: 'Decks',
+    title: 'Analysis & Decks',
     actionLabel: 'Add Deck',
     action: () => {},
     icon: BookCheck,
-    sidebarGroupAction: (
-      <NewDeckDialog
-        trigger={
-          <SidebarGroupAction title="Add Collection">
-            <Plus /> <span className="sr-only">Add Collection</span>
-          </SidebarGroupAction>
-        }
-      />
-    ),
     items: [
+      {
+        title: 'Meta analysis',
+        url: '/meta',
+        icon: ChartPieIcon,
+      },
+      {
+        title: 'Tournaments',
+        url: '/tournaments',
+        icon: TrophyIcon,
+        separator: true,
+      },
       {
         title: 'Your decks',
         url: '/decks/your',
         icon: BookCheck,
         authenticated: true,
+        menuAction: (
+          <NewDeckDialog
+            trigger={
+              <SidebarMenuAction title="Add Collection">
+                <Plus /> <span className="sr-only">Add Collection</span>
+              </SidebarMenuAction>
+            }
+          />
+        ),
       },
       {
-        title: 'Public decks',
+        title: 'Decks',
         url: '/decks/public',
         icon: Book,
-      },
-      {
-        title: 'Meta analysis',
-        url: '/tournaments',
-        icon: TrophyIcon,
       },
     ],
   },
@@ -135,12 +142,12 @@ const groups = [
         separator: true,
       },
       {
-        title: 'Public collections',
+        title: 'Collections',
         url: '/collections/public',
         icon: BookOpen,
       },
       {
-        title: 'Public wantlists',
+        title: 'Wantlists',
         url: '/wantlists/public',
         icon: ScrollText,
       },

@@ -4,13 +4,23 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import packageInfo from '../../../../../package.json';
 import { cn } from '@/lib/utils.ts';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
-import { MessageSquare, Bell } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
+import { Sun, Moon } from 'lucide-react';
 import { useSession } from '@/lib/auth-client.ts';
+import { useTheme } from '@/components/theme-provider.tsx';
+import { useCallback } from 'react';
 
 const SocialLinks: React.FC = () => {
   const { open } = useSidebar();
   const session = useSession();
+  const { theme, setTheme } = useTheme();
+
+  const switchTheme = useCallback(() => {
+    if (theme === 'light') {
+      setTheme('dark');
+    } else {
+      setTheme('light');
+    }
+  }, [theme, setTheme]);
 
   return (
     <div
@@ -19,6 +29,18 @@ const SocialLinks: React.FC = () => {
       })}
     >
       <div className={cn('flex items-center gap-2', { 'flex-col': !open })}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 [&_svg]:size-4 fill-foreground stroke-foreground"
+          onClick={switchTheme}
+          asChild
+        >
+          <div>
+            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </div>
+        </Button>
         {/*{session.data && (
           <>
             <Button
