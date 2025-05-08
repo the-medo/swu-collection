@@ -20,6 +20,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as TournamentsIndexImport } from './routes/tournaments/index'
 import { Route as ToolsIndexImport } from './routes/tools/index'
 import { Route as NotificationsIndexImport } from './routes/notifications/index'
+import { Route as MetaIndexImport } from './routes/meta/index'
 import { Route as MessagesIndexImport } from './routes/messages/index'
 import { Route as ComparerIndexImport } from './routes/comparer/index'
 import { Route as WantlistsYourImport } from './routes/wantlists/your'
@@ -98,6 +99,12 @@ const ToolsIndexRoute = ToolsIndexImport.update({
 const NotificationsIndexRoute = NotificationsIndexImport.update({
   id: '/notifications/',
   path: '/notifications/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MetaIndexRoute = MetaIndexImport.update({
+  id: '/meta/',
+  path: '/meta/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -388,6 +395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessagesIndexImport
       parentRoute: typeof rootRoute
     }
+    '/meta/': {
+      id: '/meta/'
+      path: '/meta'
+      fullPath: '/meta'
+      preLoaderRoute: typeof MetaIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/notifications/': {
       id: '/notifications/'
       path: '/notifications'
@@ -536,6 +550,7 @@ export interface FileRoutesByFullPath {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
   '/messages': typeof MessagesIndexRoute
+  '/meta': typeof MetaIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
@@ -573,6 +588,7 @@ export interface FileRoutesByTo {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
   '/messages': typeof MessagesIndexRoute
+  '/meta': typeof MetaIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
@@ -611,6 +627,7 @@ export interface FileRoutesById {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer/': typeof ComparerIndexRoute
   '/messages/': typeof MessagesIndexRoute
+  '/meta/': typeof MetaIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/tools/': typeof ToolsIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
@@ -650,6 +667,7 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer'
     | '/messages'
+    | '/meta'
     | '/notifications'
     | '/tools'
     | '/tournaments'
@@ -686,6 +704,7 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer'
     | '/messages'
+    | '/meta'
     | '/notifications'
     | '/tools'
     | '/tournaments'
@@ -722,6 +741,7 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer/'
     | '/messages/'
+    | '/meta/'
     | '/notifications/'
     | '/tools/'
     | '/tournaments/'
@@ -759,6 +779,7 @@ export interface RootRouteChildren {
   WantlistsYourRoute: typeof WantlistsYourRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
+  MetaIndexRoute: typeof MetaIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
   ToolsIndexRoute: typeof ToolsIndexRoute
   TournamentsIndexRoute: typeof TournamentsIndexRoute
@@ -795,6 +816,7 @@ const rootRouteChildren: RootRouteChildren = {
   WantlistsYourRoute: WantlistsYourRoute,
   ComparerIndexRoute: ComparerIndexRoute,
   MessagesIndexRoute: MessagesIndexRoute,
+  MetaIndexRoute: MetaIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
   ToolsIndexRoute: ToolsIndexRoute,
   TournamentsIndexRoute: TournamentsIndexRoute,
@@ -840,6 +862,7 @@ export const routeTree = rootRoute
         "/wantlists/your",
         "/comparer/",
         "/messages/",
+        "/meta/",
         "/notifications/",
         "/tools/",
         "/tournaments/",
@@ -915,6 +938,9 @@ export const routeTree = rootRoute
     },
     "/messages/": {
       "filePath": "messages/index.tsx"
+    },
+    "/meta/": {
+      "filePath": "meta/index.tsx"
     },
     "/notifications/": {
       "filePath": "notifications/index.tsx"

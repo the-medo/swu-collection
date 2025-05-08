@@ -9,22 +9,22 @@ import TournamentDeckFilters from '../TournamentDecks/TournamentDeckFilters.tsx'
 import TournamentDeckTable from '../TournamentDecks/TournamentDeckTable.tsx';
 
 interface AllDecksTabProps {
-  tournamentId: string;
+  tournamentIds: string[];
 }
 
-const AllDecksTab: React.FC<AllDecksTabProps> = ({ tournamentId }) => {
+const AllDecksTab: React.FC<AllDecksTabProps> = ({ tournamentIds }) => {
   const { decks, isLoaded } = useTournamentMetaStore();
   const { setTournamentIds } = useTournamentMetaActions();
 
   useEffect(() => {
-    setTournamentIds([tournamentId]);
-  }, [tournamentId]);
+    setTournamentIds(tournamentIds);
+  }, [tournamentIds]);
 
   return (
     <div className="space-y-2">
-      {/* Tournament data loader */}
-      <TournamentDataLoader tournamentId={tournamentId} />
-
+      {tournamentIds.map(tid => (
+        <TournamentDataLoader tournamentId={tid} key={tid} />
+      ))}
       {isLoaded ? (
         <>
           <TournamentDeckFilters />

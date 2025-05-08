@@ -34,7 +34,16 @@ export interface TournamentData {
   meta: Meta;
 }
 
-export const tournamentTypes = ['local', 'showdown', 'ma1', 'pq', 'ma2', 'sq', 'rq', 'gc'] as const;
+export const tournamentTypes: [string, ...string[]] = [
+  'local',
+  'showdown',
+  'ma1',
+  'pq',
+  'ma2',
+  'sq',
+  'rq',
+  'gc',
+] as const;
 
 export const tournamentTypesInfo = {
   local: { name: 'LGS tournament', sortValue: 10, major: 0 },

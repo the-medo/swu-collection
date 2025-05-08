@@ -20,7 +20,7 @@ import {
 } from '../../../../../../types/Tournament.ts';
 import { formatDataById } from '../../../../../../types/Format.ts';
 
-interface TournamentTableColumnsProps {
+export interface TournamentTableColumnsProps {
   view?: DataTableViewMode;
   onEdit?: (tournament: TournamentStringDate) => void;
   onDelete?: (tournament: TournamentStringDate) => void;

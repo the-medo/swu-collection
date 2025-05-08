@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,13 +13,24 @@ export interface MetaSelectorProps {
   value?: number;
   onChange: (value: number) => void;
   queryParams?: MetaQueryParams;
+  formatId?: number;
 }
 
-const MetaSelector: React.FC<MetaSelectorProps> = ({ value, onChange, queryParams = {} }) => {
+const MetaSelector: React.FC<MetaSelectorProps> = ({
+  value,
+  onChange,
+  queryParams = {},
+  formatId,
+}) => {
   const { data, isLoading, error } = useGetMetas(queryParams);
 
+  const options = useMemo(
+    () => (formatId ? data?.data.filter(f => f.format.id === formatId) : data?.data),
+    [formatId, data],
+  );
+
   // Find the selected meta to display its name in the button
-  const selectedMeta = data?.data.find(item => item.meta.id === value);
+  const selectedMeta = options?.find(item => item.meta.id === value);
 
   // Convert value to string for RadioGroup since it expects a string
   const valueAsString = value !== undefined ? String(value) : undefined;
@@ -48,7 +59,7 @@ const MetaSelector: React.FC<MetaSelectorProps> = ({ value, onChange, queryParam
           <div className="p-2 text-sm text-red-500">Error loading metas</div>
         ) : (
           <DropdownMenuRadioGroup value={valueAsString} onValueChange={handleValueChange}>
-            {data?.data.map(item => (
+            {options?.map(item => (
               <DropdownMenuRadioItem key={item.meta.id} value={String(item.meta.id)}>
                 {item.meta.name} ({item.format.name})
               </DropdownMenuRadioItem>

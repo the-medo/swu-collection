@@ -11,17 +11,16 @@ import TournamentDeckKeyFloater, {
 } from '@/components/app/tournaments/TournamentDecks/TournamentDeckKeyFloater.tsx';
 
 interface MatchupsTabProps {
-  tournamentId: string;
+  tournamentIds: string[];
   /**
    * Used for redirect in TournamentDeckKeyFloater
    */
   route: TournamentDeckKeyFloaterRoutes;
 }
 
-const MatchupsTab: React.FC<MatchupsTabProps> = ({ tournamentId, route }) => {
+const MatchupsTab: React.FC<MatchupsTabProps> = ({ tournamentIds, route }) => {
   const { decks, tournaments, matches } = useTournamentMetaStore();
   const { setTournamentIds } = useTournamentMetaActions();
-  const tournamentIds = useMemo(() => [tournamentId], [tournamentId]);
 
   React.useEffect(() => {
     setTournamentIds(tournamentIds);

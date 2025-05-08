@@ -11,7 +11,7 @@ function TournamentMatchupsPage() {
 
   return (
     <TournamentDetail tournamentId={tournamentId} activeTab="matchups">
-      <MatchupsTab tournamentId={tournamentId} route={Route} />
+      <MatchupsTab tournamentIds={[tournamentId]} route={Route} />
     </TournamentDetail>
   );
 }
