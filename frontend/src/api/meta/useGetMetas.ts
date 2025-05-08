@@ -51,6 +51,6 @@ export const useGetMetas = (params: MetaQueryParams = {}) => {
       const data = await response.json();
       return data as MetasResponse;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: Infinity,
   });
 };

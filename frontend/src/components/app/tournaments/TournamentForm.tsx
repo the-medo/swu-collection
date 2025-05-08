@@ -9,14 +9,14 @@ import {
   ZTournamentCreateRequest,
   ZTournamentUpdateRequest,
 } from '../../../../../types/ZTournament.ts';
-import { SwuSet } from '../../../../../types/enums.ts';
 import TournamentTypeSelect from '@/components/app/tournaments/components/TournamentTypeSelect.tsx';
 import ContinentSelect from '@/components/app/tournaments/components/ContinentSelect.tsx';
 import { DatePicker } from '@/components/ui/date-picker.tsx';
 import { format } from 'date-fns';
 import CountrySelector from '@/components/app/global/CountrySelector.tsx';
-import MetaSelector from '@/components/app/global/MetaSelector.tsx';
+import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector.tsx';
 import { CountryCode } from '../../../../../server/db/lists.ts';
+import { formatData } from '../../../../../types/Format.ts';
 
 interface TournamentFormProps {
   initialData?: TournamentStringDate;
@@ -27,7 +27,7 @@ interface TournamentFormProps {
 const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, isSubmitting }) => {
   const form = useForm<ZTournamentCreateRequest>({
     defaultValues: {
-      type: (initialData?.type as any) || 'local_tournament',
+      type: initialData?.type ?? 'local_tournament',
       location: initialData?.location || '',
       continent: initialData?.continent || 'Europe',
       name: initialData?.name || '',
@@ -80,7 +80,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
               <Label htmlFor={field.name}>Tournament Type *</Label>
               <TournamentTypeSelect
                 value={field.state.value}
-                onChange={value => field.handleChange(value)}
+                onChange={value => field.handleChange(value ?? '')}
                 showFullName={true}
                 emptyOption={false}
               />
@@ -96,7 +96,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
               <Label htmlFor={field.name}>Format *</Label>
               <FormatSelect
                 value={field.state.value}
-                onChange={value => field.handleChange(value)}
+                onChange={value => field.handleChange(value ?? formatData[0].id)}
                 allowEmpty={false}
               />
             </div>
@@ -111,7 +111,9 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
               <Label htmlFor={field.name}>Tournament Date *</Label>
               <DatePicker
                 date={field.state.value}
-                onDateChange={date => field.handleChange(date)}
+                onDateChange={date =>
+                  field.handleChange(date ?? new Date().toISOString().split('T')[0])
+                }
                 placeholder="Select tournament date"
               />
             </div>
@@ -149,6 +151,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
                 value={field.state.value as CountryCode}
                 onChangeCountry={(e: CountryCode | null) => field.handleChange(e || 'US')}
                 allowClear={false}
+                fullWidth={true}
               />
             </div>
           )}
@@ -165,7 +168,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
                 onChange={value => field.handleChange(value || '')}
                 emptyOption={false}
               />
-              {field.state.value}
             </div>
           )}
         />
@@ -217,9 +219,10 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
             <div className="space-y-2">
               <Label htmlFor={field.name}>Meta</Label>
               <MetaSelector
-                value={field.state.value || null}
-                emptyOption={true}
-                onChange={value => field.handleChange(value)}
+                value={field.state.value || undefined}
+                onChange={value => {
+                  field.handleChange(value);
+                }}
               />
             </div>
           )}

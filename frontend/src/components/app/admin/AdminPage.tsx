@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useRole } from '@/hooks/useRole';
 import { Navigate } from '@tanstack/react-router';
 import { MetaTable } from './MetaTable';
@@ -14,24 +14,15 @@ export function AdminPage() {
   }
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground">Manage your application settings and data</p>
-      </div>
-
+    <div className="container mx-auto">
       <Tabs defaultValue="metas" className="w-full">
-        <TabsList className="mb-4">
+        <TabsList>
           <TabsTrigger value="metas">Metas</TabsTrigger>
         </TabsList>
 
         <TabsContent value="metas">
           <Card>
-            <CardHeader>
-              <CardTitle>Metas Management</CardTitle>
-              <CardDescription>Manage meta information for the application</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
               <MetaTable />
             </CardContent>
           </Card>
