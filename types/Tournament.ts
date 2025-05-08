@@ -5,12 +5,10 @@ export interface TournamentStringDate {
   id: string;
   userId: string;
   type: string;
-  season: number;
-  set: string;
-  metaShakeup: string | null;
   location: string;
   continent: string;
   name: string;
+  meta: number;
   attendance: number;
   meleeId: string | null;
   format: number;
