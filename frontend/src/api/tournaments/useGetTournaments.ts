@@ -11,6 +11,7 @@ export type GetTournamentsRequest = {
   format?: number;
   continent?: string;
   date?: Date;
+  meta?: number;
   sort?: string;
   order?: 'asc' | 'desc';
 };
@@ -32,6 +33,7 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
     format,
     continent,
     date,
+    meta,
     sort = 'tournament.date',
     order = 'desc',
   } = props;
@@ -46,6 +48,7 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
       format,
       continent,
       date: date?.toISOString(),
+      meta,
       sort,
       order,
     },
@@ -62,6 +65,7 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
           format: format?.toString(),
           continent,
           minDate: date?.toISOString(),
+          meta,
           sort,
           order,
           limit: PAGE_SIZE.toString(),

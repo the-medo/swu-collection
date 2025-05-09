@@ -41,12 +41,23 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
           </Button>
         </div>
         <Button
-          onClick={() =>
-            navigate({
-              to: '../decks',
-              search: prev => ({ ...prev, maDeckKey: key, maDeckKeyType: metaInfo }),
-            })
-          }
+          onClick={() => {
+            if (route === MetaRoute) {
+              navigate({
+                search: prev => ({
+                  ...prev,
+                  page: 'decks',
+                  maDeckKey: key,
+                  maDeckKeyType: metaInfo,
+                }),
+              });
+            } else {
+              navigate({
+                to: '../decks',
+                search: prev => ({ ...prev, maDeckKey: key, maDeckKeyType: metaInfo }),
+              });
+            }
+          }}
           className="btn btn-primary"
         >
           Display decks
