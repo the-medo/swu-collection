@@ -14,6 +14,9 @@ import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cn } from '@/lib/utils.ts';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { RowData } from '@tanstack/table-core/src/types.ts';
+import { MutableRefObject } from 'react';
+import { Loader2 } from 'lucide-react';
+import * as React from 'react';
 
 export type DataTableViewMode = 'table' | 'box';
 
@@ -37,6 +40,8 @@ interface DataTableProps<TData, TValue> {
   onRowClick?: (row: Row<TData>) => void;
   isRowHighlighted?: (row: Row<TData>) => void;
   view?: DataTableViewMode;
+  infiniteScrollObserver?: MutableRefObject<HTMLDivElement>;
+  infiniteScrollLoading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -51,6 +56,8 @@ export function DataTable<TData, TValue>({
   onRowClick,
   isRowHighlighted,
   view = 'table',
+  infiniteScrollObserver,
+  infiniteScrollLoading,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     // @ts-ignore
@@ -172,6 +179,23 @@ export function DataTable<TData, TValue>({
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
+              </TableCell>
+            </TableRow>
+          )}
+          {infiniteScrollObserver && (
+            <TableRow>
+              <TableCell>
+                <div
+                  ref={infiniteScrollObserver}
+                  className="h-4 mt-4 flex justify-center items-center"
+                >
+                  {infiniteScrollLoading && (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+                      <span>Loading...</span>
+                    </div>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           )}

@@ -14,6 +14,7 @@ import { Row } from '@tanstack/react-table';
 import { useIsMobile } from '@/hooks/use-mobile.tsx';
 import { getDeckKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 
 interface TournamentDeckTableProps {
   decks: TournamentDeckResponse[];
@@ -108,12 +109,23 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
     }
   }, [key, keyMetaInfo]);
 
+  const { itemsToShow, observerTarget } = useInfiniteScroll({
+    totalItems: sortedDecks.length,
+    initialItemsToLoad: 50,
+    itemsPerBatch: 50,
+    threshold: 300,
+  });
+
+  const visibleDecks = useMemo(() => {
+    return sortedDecks.slice(0, itemsToShow);
+  }, [sortedDecks, itemsToShow]);
+
   const isRowHighlighted = (row: Row<TournamentDeckResponse>) =>
     row.original.deck?.id === selectedDeckId;
 
   return (
     <div className="flex flex-col lg:flex-row gap-2">
-      {sortedDecks.length > 0 ? (
+      {visibleDecks.length > 0 ? (
         <>
           <div
             className="w-full lg:w-[40%] xl:w-[30%] max-w-[400px] h-[300px] lg:h-[calc(100vh-200px)] overflow-auto border rounded-md"
@@ -121,11 +133,12 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
           >
             <DataTable
               columns={columns}
-              data={sortedDecks}
+              data={visibleDecks}
               loading={false}
               view="table"
               onRowClick={onRowClick}
               isRowHighlighted={isRowHighlighted}
+              infiniteScrollObserver={observerTarget}
             />
           </div>
           <TournamentDeckDetail />
