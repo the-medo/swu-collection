@@ -1,10 +1,21 @@
 import { type InferSelectModel, relations } from 'drizzle-orm';
-import { pgTable, varchar, integer, date, uuid, timestamp, index, text } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  varchar,
+  integer,
+  date,
+  uuid,
+  timestamp,
+  index,
+  text,
+  boolean,
+} from 'drizzle-orm/pg-core';
 import { tournamentType } from './tournament_type.ts';
 import { tournamentDeck } from './tournament_deck.ts';
 import { tournamentMatch } from './tournament_match.ts';
 import { format } from './format.ts';
 import { user } from './auth-schema.ts';
+import { meta } from './meta.ts';
 
 // Tournament Schema
 export const tournament = pgTable(
@@ -17,9 +28,6 @@ export const tournament = pgTable(
     type: varchar('type', { length: 50 })
       .notNull()
       .references(() => tournamentType.id),
-    season: integer('season').notNull(),
-    set: varchar('set', { length: 50 }).notNull(),
-    metaShakeup: varchar('meta_shakeup'),
     location: varchar('location', { length: 255 }).notNull(),
     continent: varchar('continent', { length: 100 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
@@ -28,18 +36,18 @@ export const tournament = pgTable(
     format: integer('format')
       .notNull()
       .references(() => format.id),
+    meta: integer('meta').references(() => meta.id),
     days: integer('days').notNull(),
     dayTwoPlayerCount: integer('day_two_player_count'),
     date: date('date', { mode: 'date' }).notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    imported: boolean('imported').notNull().default(false),
   },
   table => {
     return {
       dateIdx: index('tournament-date_idx').on(table.date),
-      seasonIdx: index('tournament-season_idx').on(table.season),
-      setIdx: index('tournament-set_idx').on(table.set),
-      metaShakeupIdx: index('tournament-meta_shakeup_idx').on(table.metaShakeup),
+      metaIdx: index('tournament-meta_idx').on(table.meta),
     };
   },
 );

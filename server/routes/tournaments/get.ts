@@ -4,10 +4,11 @@ import { zValidator } from '@hono/zod-validator';
 import { and, eq, gte, lte, or, sql } from 'drizzle-orm';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import { tournamentType as tournamentTypeTable } from '../../db/schema/tournament_type.ts';
+import { meta as metaTable } from '../../db/schema/meta.ts';
 import { db } from '../../db';
 import { withPagination } from '../../lib/withPagination.ts';
 import { zTournamentQueryParams } from '../../../types/ZTournamentParams.ts';
-import { selectTournament, selectTournamentType } from '../tournament.ts';
+import { selectTournament, selectTournamentType, selectMeta } from '../tournament.ts';
 import { user as userTable } from '../../db/schema/auth-schema.ts';
 import { selectUser } from '../user.ts';
 
@@ -21,7 +22,7 @@ export const tournamentGetRoute = new Hono<AuthExtension>().get(
       season,
       minSeason,
       set,
-      minMetaShakeup,
+      meta,
       location,
       continent,
       minAttendance,
@@ -45,21 +46,21 @@ export const tournamentGetRoute = new Hono<AuthExtension>().get(
       filters.push(gte(tournamentTypeTable.sortValue, minType));
     }
 
-    // Season filter - either exact season or minimum season
+    // Meta filter - exact meta ID
+    if (meta !== undefined) {
+      filters.push(eq(tournamentTable.meta, meta));
+    }
+
+    // Season filter - either exact season or minimum season (now in meta table)
     if (season !== undefined) {
-      filters.push(eq(tournamentTable.season, season));
+      filters.push(eq(metaTable.season, season));
     } else if (minSeason !== undefined) {
-      filters.push(gte(tournamentTable.season, minSeason));
+      filters.push(gte(metaTable.season, minSeason));
     }
 
-    // Set filter - exact set only
+    // Set filter - exact set only (now in meta table)
     if (set) {
-      filters.push(eq(tournamentTable.set, set));
-    }
-
-    // Meta shakeup filter - events after a specific meta change
-    if (minMetaShakeup) {
-      filters.push(gte(tournamentTable.metaShakeup, minMetaShakeup));
+      filters.push(eq(metaTable.set, set));
     }
 
     // Location filter
@@ -101,10 +102,12 @@ export const tournamentGetRoute = new Hono<AuthExtension>().get(
         tournament: selectTournament,
         tournamentType: selectTournamentType,
         user: selectUser,
+        meta: selectMeta,
       })
       .from(tournamentTable)
       .innerJoin(tournamentTypeTable, eq(tournamentTable.type, tournamentTypeTable.id))
       .innerJoin(userTable, eq(tournamentTable.userId, userTable.id))
+      .leftJoin(metaTable, eq(tournamentTable.meta, metaTable.id))
       .$dynamic();
 
     // Apply all filters

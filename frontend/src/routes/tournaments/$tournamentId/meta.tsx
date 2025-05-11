@@ -11,7 +11,7 @@ function TournamentMetaPage() {
 
   return (
     <TournamentDetail tournamentId={tournamentId} activeTab="meta">
-      <MetaAnalysisTab tournamentId={tournamentId} route={Route} />
+      <MetaAnalysisTab tournamentIds={[tournamentId]} route={Route} />
     </TournamentDetail>
   );
 }

@@ -10,17 +10,20 @@ import * as React from 'react';
 import { CountryCode } from '../../../../../server/db/lists.ts';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button.tsx';
+import { cn } from '@/lib/utils.ts';
 
 export interface CountrySelectorProps {
   onChangeCountry: (v: CountryCode | null) => void;
   value?: CountryCode | null;
   allowClear?: boolean;
+  fullWidth?: boolean;
 }
 
 const CountrySelector: React.FC<CountrySelectorProps> = ({
   onChangeCountry,
   value,
   allowClear = true,
+  fullWidth = false,
 }) => {
   const [country, setCountry] = React.useState<CountryCode | null>(value ?? null);
   const { data: data } = useCountryList();
@@ -52,19 +55,22 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
     [data?.countries, country],
   );
 
-  const onOpenChange = useCallback((open: boolean) => {
+  /* hotfix */
+  const onOpenChange = useCallback(() => {
     setTimeout(() => {
       document.body.style.pointerEvents = 'auto';
     }, 100);
-
-    if (!open) {
-    }
   }, []);
 
   return (
     <div className="flex items-center gap-4">
       <Select value={country ?? ''} onValueChange={onChangeHandler} onOpenChange={onOpenChange}>
-        <SelectTrigger className="sm:w-[300px]">
+        <SelectTrigger
+          className={cn({
+            'w-full': fullWidth,
+            'sm:w-[300px]': !fullWidth,
+          })}
+        >
           {country && (
             <img src={selectedCountry?.flag} alt={selectedCountry?.code} className="w-6" />
           )}

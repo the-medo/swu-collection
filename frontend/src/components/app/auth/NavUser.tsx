@@ -1,4 +1,4 @@
-import { Bell, ChevronsUpDown, LogOut, Moon, Settings, Sun } from 'lucide-react';
+import { Bell, ChevronsUpDown, LogOut, Moon, Settings, ShieldCheck, Sun } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -19,10 +19,12 @@ import { signOut, useSession } from '@/lib/auth-client.ts';
 import { Link } from '@tanstack/react-router';
 import { useTheme } from '@/components/theme-provider.tsx';
 import { useCallback } from 'react';
+import { useRole } from '@/hooks/useRole.ts';
 
 export function NavUser() {
   const session = useSession();
   const { theme, setTheme } = useTheme();
+  const hasRole = useRole();
 
   const user = session.data?.user;
 
@@ -30,6 +32,7 @@ export function NavUser() {
   const userAvatar = user?.image ?? '';
 
   const { isMobile } = useSidebar();
+  const isAdmin = hasRole('admin');
 
   const switchTheme = useCallback(() => {
     if (theme === 'light') {
@@ -88,6 +91,14 @@ export function NavUser() {
                 <Bell />
                 Notifications
               </DropdownMenuItem>
+              {isAdmin && (
+                <Link to={'/admin'}>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <ShieldCheck />
+                    Admin dashboard
+                  </DropdownMenuItem>
+                </Link>
+              )}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" onSelect={switchTheme}>

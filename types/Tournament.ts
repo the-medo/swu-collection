@@ -1,15 +1,14 @@
 import type { User } from './User.ts';
+import type { Meta } from '../server/db/schema/meta.ts';
 
 export interface TournamentStringDate {
   id: string;
   userId: string;
   type: string;
-  season: number;
-  set: string;
-  metaShakeup: string | null;
   location: string;
   continent: string;
   name: string;
+  meta: number;
   attendance: number;
   meleeId: string | null;
   format: number;
@@ -18,6 +17,7 @@ export interface TournamentStringDate {
   date: string;
   createdAt: string;
   updatedAt: string;
+  imported: boolean;
 }
 
 export interface TournamentType {
@@ -31,9 +31,19 @@ export interface TournamentData {
   tournament: TournamentStringDate;
   tournamentType: TournamentType;
   user: User;
+  meta: Meta;
 }
 
-export const tournamentTypes = ['local', 'showdown', 'ma1', 'pq', 'ma2', 'sq', 'rq', 'gc'] as const;
+export const tournamentTypes: [string, ...string[]] = [
+  'local',
+  'showdown',
+  'ma1',
+  'pq',
+  'ma2',
+  'sq',
+  'rq',
+  'gc',
+] as const;
 
 export const tournamentTypesInfo = {
   local: { name: 'LGS tournament', sortValue: 10, major: 0 },

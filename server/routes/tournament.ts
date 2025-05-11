@@ -1,6 +1,7 @@
 import { getTableColumns } from 'drizzle-orm';
 import { tournament as tournamentTable } from '../db/schema/tournament.ts';
 import { tournamentType as tournamentTypeTable } from '../db/schema/tournament_type.ts';
+import { meta as metaTable } from '../db/schema/meta.ts';
 import { Hono } from 'hono';
 import type { AuthExtension } from '../auth/auth.ts';
 import { tournamentGetRoute } from './tournaments/get.ts';
@@ -15,6 +16,7 @@ import { tournamentIdImportMeleePatchRoute } from './tournaments/_id/import-mele
 
 export const selectTournament = getTableColumns(tournamentTable);
 export const selectTournamentType = getTableColumns(tournamentTypeTable);
+export const selectMeta = getTableColumns(metaTable);
 
 export const tournamentRoute = new Hono<AuthExtension>()
   .route('/', tournamentGetRoute)

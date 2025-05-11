@@ -9,14 +9,14 @@ import {
   ZTournamentCreateRequest,
   ZTournamentUpdateRequest,
 } from '../../../../../types/ZTournament.ts';
-import { SwuSet } from '../../../../../types/enums.ts';
 import TournamentTypeSelect from '@/components/app/tournaments/components/TournamentTypeSelect.tsx';
 import ContinentSelect from '@/components/app/tournaments/components/ContinentSelect.tsx';
 import { DatePicker } from '@/components/ui/date-picker.tsx';
 import { format } from 'date-fns';
-import SetSelect from '@/components/app/global/SetSelect.tsx';
 import CountrySelector from '@/components/app/global/CountrySelector.tsx';
+import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector.tsx';
 import { CountryCode } from '../../../../../server/db/lists.ts';
+import { formatData } from '../../../../../types/Format.ts';
 
 interface TournamentFormProps {
   initialData?: TournamentStringDate;
@@ -27,10 +27,7 @@ interface TournamentFormProps {
 const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, isSubmitting }) => {
   const form = useForm<ZTournamentCreateRequest>({
     defaultValues: {
-      type: (initialData?.type as any) || 'local_tournament',
-      season: initialData?.season || 0,
-      set: initialData?.set || SwuSet.JTL,
-      metaShakeup: initialData?.metaShakeup || '',
+      type: initialData?.type ?? 'local_tournament',
       location: initialData?.location || '',
       continent: initialData?.continent || 'Europe',
       name: initialData?.name || '',
@@ -40,6 +37,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
       days: initialData?.days || 1,
       dayTwoPlayerCount: initialData?.dayTwoPlayerCount || 0,
       date: initialData?.date ?? format(new Date(), 'yyyy-MM-dd'),
+      meta: initialData?.meta || null,
     },
     onSubmit: async ({ value }) => {
       onSubmit(value);
@@ -82,7 +80,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
               <Label htmlFor={field.name}>Tournament Type *</Label>
               <TournamentTypeSelect
                 value={field.state.value}
-                onChange={value => field.handleChange(value || 'local')}
+                onChange={value => field.handleChange(value ?? '')}
                 showFullName={true}
                 emptyOption={false}
               />
@@ -98,43 +96,8 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
               <Label htmlFor={field.name}>Format *</Label>
               <FormatSelect
                 value={field.state.value}
-                onChange={value => field.handleChange(value || 1)}
+                onChange={value => field.handleChange(value ?? formatData[0].id)}
                 allowEmpty={false}
-              />
-            </div>
-          )}
-        />
-
-        {/* Set */}
-        <form.Field
-          name="set"
-          children={field => (
-            <div className="space-y-2">
-              <Label htmlFor={field.name}>Set *</Label>
-              <SetSelect
-                value={field.state.value as SwuSet}
-                emptyOption={false}
-                onChange={(value: SwuSet) => field.handleChange(value)}
-              />
-            </div>
-          )}
-        />
-
-        {/* Season */}
-        <form.Field
-          name="season"
-          children={field => (
-            <div className="space-y-2">
-              <Label htmlFor={field.name}>Season *</Label>
-              <Input
-                id={field.name}
-                type="number"
-                placeholder="Season number"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(parseInt(e.target.value) || 0)}
-                min={0}
-                required
               />
             </div>
           )}
@@ -148,7 +111,9 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
               <Label htmlFor={field.name}>Tournament Date *</Label>
               <DatePicker
                 date={field.state.value}
-                onDateChange={date => field.handleChange(date || new Date().toISOString())}
+                onDateChange={date =>
+                  field.handleChange(date ?? new Date().toISOString().split('T')[0])
+                }
                 placeholder="Select tournament date"
               />
             </div>
@@ -167,29 +132,9 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
                 placeholder="Number of days"
                 value={field.state.value}
                 onBlur={field.handleBlur}
-                onChange={e => field.handleChange(parseInt(e.target.value) || 1)}
+                onChange={e => field.handleChange(parseInt(e.target.value))}
                 min={1}
                 max={3}
-                required
-              />
-            </div>
-          )}
-        />
-
-        {/* Days */}
-        <form.Field
-          name="dayTwoPlayerCount"
-          children={field => (
-            <div className="space-y-2">
-              <Label htmlFor={field.name}>Day 2 player count</Label>
-              <Input
-                id={field.name}
-                type="number"
-                placeholder="Day 2 player count"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(parseInt(e.target.value) || 0)}
-                min={0}
                 required
               />
             </div>
@@ -205,6 +150,8 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
               <CountrySelector
                 value={field.state.value as CountryCode}
                 onChangeCountry={(e: CountryCode | null) => field.handleChange(e || 'US')}
+                allowClear={false}
+                fullWidth={true}
               />
             </div>
           )}
@@ -237,7 +184,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
                 placeholder="Number of participants"
                 value={field.state.value}
                 onBlur={field.handleBlur}
-                onChange={e => field.handleChange(parseInt(e.target.value) || 0)}
+                onChange={e => field.handleChange(parseInt(e.target.value) ?? undefined)}
                 min={0}
                 required
               />
@@ -245,18 +192,44 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
           )}
         />
 
-        {/* Meta Shakeup */}
+        {/* Days */}
         <form.Field
-          name="metaShakeup"
+          name="dayTwoPlayerCount"
           children={field => (
             <div className="space-y-2">
-              <Label htmlFor={field.name}>Meta Shakeup</Label>
+              <Label htmlFor={field.name}>Day 2 player count</Label>
               <Input
                 id={field.name}
-                placeholder="Meta shakeup (optional)"
-                value={field.state.value || ''}
+                type="number"
+                placeholder="Day 2 player count"
+                value={field.state.value}
                 onBlur={field.handleBlur}
-                onChange={e => field.handleChange(e.target.value)}
+                onChange={e => field.handleChange(parseInt(e.target.value))}
+                min={0}
+                required
+              />
+            </div>
+          )}
+        />
+
+        {/* Meta */}
+        <form.Field
+          name="meta"
+          children={field => (
+            <div className="space-y-2">
+              <Label htmlFor={field.name}>Meta</Label>
+              <form.Subscribe
+                selector={state => state.values.format}
+                children={formatValue => (
+                  <MetaSelector
+                    value={field.state.value || null}
+                    onChange={value => {
+                      field.handleChange(value);
+                    }}
+                    emptyOption={true}
+                    formatId={formatValue}
+                  />
+                )}
               />
             </div>
           )}

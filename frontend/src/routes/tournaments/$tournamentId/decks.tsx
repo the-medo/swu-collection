@@ -11,7 +11,7 @@ function TournamentDecksPage() {
 
   return (
     <TournamentDetail tournamentId={tournamentId} activeTab="decks">
-      <AllDecksTab tournamentId={tournamentId} />
+      <AllDecksTab tournamentIds={[tournamentId]} />
     </TournamentDetail>
   );
 }

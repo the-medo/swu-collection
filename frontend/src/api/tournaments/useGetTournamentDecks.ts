@@ -20,6 +20,7 @@ export const useGetTournamentDecks = (tournamentId: string | undefined) => {
   // First, get the tournament to check its updatedAt timestamp
   const { data: tournamentData } = useGetTournament(tournamentId);
   const tournamentUpdatedAt = tournamentData?.tournament?.updatedAt;
+  const imported = tournamentData?.tournament?.imported;
 
   return useQuery<GetTournamentDeckResponse>({
     queryKey: ['tournament-decks', tournamentId],
@@ -27,6 +28,10 @@ export const useGetTournamentDecks = (tournamentId: string | undefined) => {
       tournamentId && tournamentUpdatedAt
         ? async () => {
             if (!tournamentId) throw new Error('Tournament ID is required');
+
+            if (!imported) {
+              return { data: [] };
+            }
 
             // Try to get cached data first
             const cachedData = await getStoredTournamentDecks(tournamentId);

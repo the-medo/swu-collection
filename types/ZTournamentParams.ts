@@ -8,15 +8,15 @@ export const zTournamentQueryParams = zPaginationParams.extend({
   type: z.string().optional(),
   minType: z.coerce.number().int().optional(),
 
-  // Season filter - can be exact season or minimum season
+  // Season filter - can be exact season or minimum season (now in meta table)
   season: z.coerce.number().int().optional(),
   minSeason: z.coerce.number().int().optional(),
 
-  // Set filter - only one set at a time
+  // Set filter - only one set at a time (now in meta table)
   set: z.enum(Object.values(SwuSet) as [string, ...string[]]).optional(),
 
-  // Meta shakeup filter - events after a certain meta change
-  minMetaShakeup: z.string().optional(),
+  // Meta filter - exact meta ID
+  meta: z.coerce.number().int().optional(),
 
   // Location and continental filters
   location: z.string().optional(),

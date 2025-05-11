@@ -6,12 +6,10 @@ import {
   useGetTournamentDecks,
 } from '@/api/tournaments/useGetTournamentDecks';
 import { useGetTournamentMatches } from '@/api/tournaments/useGetTournamentMatches';
-import { useGetTournament } from '@/api/tournaments/useGetTournament';
 import { useCardList } from '@/api/lists/useCardList';
 import { cn } from '@/lib/utils';
 import CardImage from '@/components/app/global/CardImage';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant';
-import { transformTopPlacementsAccordingToAttendance } from '../lib/tournament-attendance-vs-top';
 import { extractDeckNameFromBrackets } from '../lib/extractDeckNameFromBrackets';
 import { Button } from '@/components/ui/button.tsx';
 import { Link } from '@tanstack/react-router';
@@ -25,15 +23,12 @@ interface TournamentTopBracketProps {
 }
 
 const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentId, top = 8 }) => {
-  const { data: tournamentData } = useGetTournament(tournamentId);
   const { data: decksData, isLoading: isLoadingDecks } = useGetTournamentDecks(tournamentId);
   const { data: matchesData, isLoading: isLoadingMatches } = useGetTournamentMatches(tournamentId);
   const { data: cardListData } = useCardList();
   const [highlightedPlayer, setHighlightedPlayer] = useState<string | null>(null);
   const [rounds, setRounds] = useState<number[]>([]);
   const [selectedDeckId, setSelectedDeckId] = useState<string>();
-
-  const attendance = tournamentData?.tournament?.attendance || 0;
 
   // Remove value from selectedDeckId on Esc key press
   // TODO - works fine, but when user closes modal (deck image, card detail,...) and wants to close it with Esc, it also closes the deck - fix it
@@ -47,25 +42,17 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     return () => window.removeEventListener('keydown', handleEscKey);
   }, []);*/
 
-  // Determine actual top to display based on attendance
-  const actualTop = useMemo(() => {
-    if (attendance > 0) {
-      return transformTopPlacementsAccordingToAttendance(attendance, top) || top;
-    }
-    return top;
-  }, [attendance, top]);
-
   // Extract top placements
   const topDecks = useMemo(() => {
     if (!decksData || !('data' in decksData)) return [];
 
     // Sort by placement
     const sortedDecks: TournamentDeckResponse[] = [...decksData.data]
-      .filter(d => d.tournamentDeck.placement !== null && d.tournamentDeck.placement <= actualTop)
+      .filter(d => d.tournamentDeck.placement !== null && d.tournamentDeck.placement <= top)
       .sort((a, b) => (a.tournamentDeck.placement || 99) - (b.tournamentDeck.placement || 99));
 
     return sortedDecks;
-  }, [decksData, actualTop]);
+  }, [decksData, top]);
 
   // Process matches to create bracket structure
   const bracketData = useMemo(() => {
@@ -87,7 +74,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     });
 
     // We need to identify the final rounds
-    const requiredRounds = Math.log2(actualTop);
+    const requiredRounds = Math.log2(top);
     let finalRounds = roundNumbers.slice(0, requiredRounds);
 
     // If we don't have enough rounds in the data, we might need padding
@@ -250,7 +237,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     }
 
     return processedRounds.reverse(); // Reverse to start with earlier rounds
-  }, [matchesData, topDecks, actualTop]);
+  }, [matchesData, topDecks, top]);
 
   // Create structured placements for the sidebar
   const placements = useMemo(() => {
@@ -286,7 +273,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     }
 
     // 5th-8th places if top 8
-    if (actualTop >= 8) {
+    if (top >= 8) {
       const fifthToEighthDecks = topDecks.filter(
         d => (d.tournamentDeck.placement ?? 0) >= 5 && (d.tournamentDeck.placement ?? 0) <= 8,
       );
@@ -299,7 +286,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     }
 
     return result;
-  }, [topDecks, actualTop]);
+  }, [topDecks, top]);
 
   // Render a player entry in the bracket
   const renderPlayer = (
@@ -487,82 +474,80 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
   }
 
   if (!topDecks.length) {
-    return (
-      <div className="w-full p-8 text-center">
-        <p className="text-muted-foreground">No tournament data available.</p>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4">
-      {selectedDeckId ? (
-        <div className="flex-1 mt-8 lg:mt-0 relative">
-          <Button
-            variant="outline"
-            size="iconSmall"
-            className="absolute top-2 right-2"
-            onClick={() => setSelectedDeckId(undefined)}
-          >
-            <X />
-          </Button>
-          <DeckContents deckId={selectedDeckId} setDeckId={setSelectedDeckId} />
-        </div>
-      ) : (
-        <div className="flex-1 overflow-x-auto mt-8 lg:mt-0">
-          <div className="flex min-w-max gap-4">
-            {bracketData &&
-              bracketData.map((round, roundIndex) => (
-                <div key={roundIndex} className="flex flex-col w-72">
-                  <h4 className="text-center font-medium mb-4 text-muted-foreground">
-                    {roundIndex === 0 && actualTop === 8
-                      ? 'Quarterfinals'
-                      : roundIndex === 0 && actualTop === 4
-                        ? 'Semifinals'
-                        : roundIndex === 1 && actualTop === 8
+    <div className="bg-card rounded-md border shadow-sm p-3">
+      <div className="flex flex-col lg:flex-row gap-4">
+        {selectedDeckId ? (
+          <div className="flex-1 mt-8 lg:mt-0 relative">
+            <Button
+              variant="outline"
+              size="iconSmall"
+              className="absolute top-2 right-2"
+              onClick={() => setSelectedDeckId(undefined)}
+            >
+              <X />
+            </Button>
+            <DeckContents deckId={selectedDeckId} setDeckId={setSelectedDeckId} />
+          </div>
+        ) : (
+          <div className="flex-1 overflow-x-auto mt-8 lg:mt-0">
+            <div className="flex min-w-max gap-4">
+              {bracketData &&
+                bracketData.map((round, roundIndex) => (
+                  <div key={roundIndex} className="flex flex-col w-72">
+                    <h4 className="text-center font-medium mb-4 text-muted-foreground">
+                      {roundIndex === 0 && top === 8
+                        ? 'Quarterfinals'
+                        : roundIndex === 0 && top === 4
                           ? 'Semifinals'
-                          : roundIndex === bracketData.length - 1
-                            ? 'Finals'
-                            : `Round ${rounds[roundIndex]}`}
-                  </h4>
+                          : roundIndex === 1 && top === 8
+                            ? 'Semifinals'
+                            : roundIndex === bracketData.length - 1
+                              ? 'Finals'
+                              : `Round ${rounds[roundIndex]}`}
+                    </h4>
 
-                  <div className="flex flex-col">
-                    {round.map((match, matchIndex) => {
-                      const matchHeight = 2 ** roundIndex * 150; // Progressively increase the height
+                    <div className="flex flex-col">
+                      {round.map((match, matchIndex) => {
+                        const matchHeight = 2 ** roundIndex * 150; // Progressively increase the height
 
-                      return (
-                        <div
-                          key={matchIndex}
-                          className="flex flex-col relative"
-                          style={{ height: matchHeight }}
-                        >
-                          <div className="flex items-center h-full">
-                            <div className="flex flex-col gap-1 absolute top-1/2 -translate-y-1/2 transform">
-                              {renderPlayer(
-                                match.player1,
-                                match.winner === match.player1,
-                                true,
-                                match.gameWins,
-                              )}
-                              <div className="h-px bg-muted-foreground/30 mx-2"></div>
-                              {renderPlayer(
-                                match.player2,
-                                match.winner === match.player2,
-                                true,
-                                match.gameLosses,
-                              )}
+                        return (
+                          <div
+                            key={matchIndex}
+                            className="flex flex-col relative"
+                            style={{ height: matchHeight }}
+                          >
+                            <div className="flex items-center h-full">
+                              <div className="flex flex-col gap-1 absolute top-1/2 -translate-y-1/2 transform">
+                                {renderPlayer(
+                                  match.player1,
+                                  match.winner === match.player1,
+                                  true,
+                                  match.gameWins,
+                                )}
+                                <div className="h-px bg-muted-foreground/30 mx-2"></div>
+                                {renderPlayer(
+                                  match.player2,
+                                  match.winner === match.player2,
+                                  true,
+                                  match.gameLosses,
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
-        </div>
-      )}
-      {renderPlacements()}
+        )}
+        {renderPlacements()}
+      </div>
     </div>
   );
 };

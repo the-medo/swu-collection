@@ -17,6 +17,7 @@ interface FormatSelectProps {
   onChange: (value: number | null) => void;
   allowEmpty?: boolean;
   className?: string;
+  showInfoTooltip?: boolean;
 }
 
 const FormatSelect: React.FC<FormatSelectProps> = ({
@@ -24,6 +25,7 @@ const FormatSelect: React.FC<FormatSelectProps> = ({
   onChange,
   allowEmpty = true,
   className = '',
+  showInfoTooltip = true,
 }) => {
   const stringValue = value ? value.toString() : '';
 
@@ -57,29 +59,31 @@ const FormatSelect: React.FC<FormatSelectProps> = ({
         </Button>
       )}
 
-      <Popover>
-        <PopoverTrigger>
-          <Info size={16} />
-        </PopoverTrigger>
-        <PopoverContent className="flex flex-col gap-2 text-sm max-w-md">
-          <h4 className="font-bold">Format Information</h4>
-          {value !== null ? (
-            <div>
-              <h5 className="font-semibold">{formatData.find(f => f.id === value)?.name}</h5>
-              <p>{formatData.find(f => f.id === value)?.description}</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {formatData.map(format => (
-                <div key={format.id} className="border-b pb-2 last:border-0">
-                  <h5 className="font-semibold">{format.name}</h5>
-                  <p>{format.description}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </PopoverContent>
-      </Popover>
+      {showInfoTooltip && (
+        <Popover>
+          <PopoverTrigger>
+            <Info size={16} />
+          </PopoverTrigger>
+          <PopoverContent className="flex flex-col gap-2 text-sm max-w-md">
+            <h4 className="font-bold">Format Information</h4>
+            {value !== null ? (
+              <div>
+                <h5 className="font-semibold">{formatData.find(f => f.id === value)?.name}</h5>
+                <p>{formatData.find(f => f.id === value)?.description}</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {formatData.map(format => (
+                  <div key={format.id} className="border-b pb-2 last:border-0">
+                    <h5 className="font-semibold">{format.name}</h5>
+                    <p>{format.description}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
+      )}
     </div>
   );
 };

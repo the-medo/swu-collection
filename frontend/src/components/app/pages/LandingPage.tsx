@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
-import { BookCheck, BookOpen, ScrollText } from 'lucide-react';
+import { BookCheck, BookOpen, PieChart, ScrollText } from 'lucide-react';
 import CardSearchCommand from '@/components/app/global/CardSearchCommand/CardSearchCommand';
 import LogoLightTheme from '../../../assets/logo-light-theme.svg';
 import LogoDarkTheme from '../../../assets/logo-dark-theme.svg';
@@ -28,13 +28,16 @@ const FeatureCard = ({ title, description, icon, to, delay }: FeatureCardProps) 
       <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-primary/50 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-300"></div>
       <Link
         to={to}
-        className="relative flex flex-col h-full gap-2 p-6 bg-card rounded-lg border shadow-md hover:shadow-lg transition-all duration-300"
+        className="relative flex h-full gap-4 p-6 bg-card rounded-lg border shadow-md hover:shadow-lg transition-all duration-300"
       >
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-bold">{title}</h3>
-          <div className="text-primary">{icon}</div>
+        <div className="text-primary flex-shrink-0 flex items-start pt-1">
+          {/* Enlarged icon - now rendered on the left */}
+          {React.cloneElement(icon as React.ReactElement, { size: 36 })}
         </div>
-        <p className="text-muted-foreground">{description}</p>
+        <div className="flex flex-col">
+          <h3 className="text-xl font-bold mb-2">{title}</h3>
+          <p className="text-muted-foreground">{description}</p>
+        </div>
       </Link>
     </motion.div>
   );
@@ -46,7 +49,14 @@ const LandingPage: React.FC = () => {
 
   const features = [
     {
-      title: 'Browse Decks',
+      title: 'Meta analysis',
+      description: 'Analysis of competetive scene - metagame breakdown, matchups, decks, etc.',
+      icon: <PieChart size={24} />,
+      to: '/meta',
+      delay: 0.1,
+    },
+    {
+      title: 'Decks',
       description: 'Explore community decks, find inspiration, and share your own creations.',
       icon: <BookCheck size={24} />,
       to: '/decks/public',
@@ -127,7 +137,7 @@ const LandingPage: React.FC = () => {
       )}
 
       {/* Feature Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-full mt-4">
         {features.map((feature, index) => (
           <FeatureCard key={index} {...feature} />
         ))}

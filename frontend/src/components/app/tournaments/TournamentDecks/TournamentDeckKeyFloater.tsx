@@ -10,11 +10,13 @@ import { X } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
 import { Route as TournamentDeckMetaRoute } from '@/routes/tournaments/$tournamentId/meta.tsx';
 import { Route as TournamentDeckMatchupsRoute } from '@/routes/tournaments/$tournamentId/matchups.tsx';
+import { Route as MetaRoute } from '@/routes/meta';
 // import { Route } from '@/routes/__root.tsx';
 
 export type TournamentDeckKeyFloaterRoutes =
   | typeof TournamentDeckMatchupsRoute
-  | typeof TournamentDeckMetaRoute;
+  | typeof TournamentDeckMetaRoute
+  | typeof MetaRoute;
 
 interface TournamentDeckKeyFloaterProps {
   route: TournamentDeckKeyFloaterRoutes;
@@ -39,12 +41,23 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
           </Button>
         </div>
         <Button
-          onClick={() =>
-            navigate({
-              to: '../decks',
-              search: prev => ({ ...prev, maDeckKey: key, maDeckKeyType: metaInfo }),
-            })
-          }
+          onClick={() => {
+            if (route === MetaRoute) {
+              navigate({
+                search: prev => ({
+                  ...prev,
+                  page: 'decks',
+                  maDeckKey: key,
+                  maDeckKeyType: metaInfo,
+                }),
+              });
+            } else {
+              navigate({
+                to: '../decks',
+                search: prev => ({ ...prev, maDeckKey: key, maDeckKeyType: metaInfo }),
+              });
+            }
+          }}
           className="btn btn-primary"
         >
           Display decks

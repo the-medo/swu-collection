@@ -13,12 +13,14 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as TermsImport } from './routes/terms'
 import { Route as PrivacyImport } from './routes/privacy'
+import { Route as AdminImport } from './routes/admin'
 import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
 import { Route as TournamentsIndexImport } from './routes/tournaments/index'
 import { Route as ToolsIndexImport } from './routes/tools/index'
 import { Route as NotificationsIndexImport } from './routes/notifications/index'
+import { Route as MetaIndexImport } from './routes/meta/index'
 import { Route as MessagesIndexImport } from './routes/messages/index'
 import { Route as ComparerIndexImport } from './routes/comparer/index'
 import { Route as WantlistsYourImport } from './routes/wantlists/your'
@@ -59,6 +61,12 @@ const PrivacyRoute = PrivacyImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AdminRoute = AdminImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AboutRoute = AboutImport.update({
   id: '/about',
   path: '/about',
@@ -91,6 +99,12 @@ const ToolsIndexRoute = ToolsIndexImport.update({
 const NotificationsIndexRoute = NotificationsIndexImport.update({
   id: '/notifications/',
   path: '/notifications/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MetaIndexRoute = MetaIndexImport.update({
+  id: '/meta/',
+  path: '/meta/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -276,6 +290,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminImport
+      parentRoute: typeof rootRoute
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -372,6 +393,13 @@ declare module '@tanstack/react-router' {
       path: '/messages'
       fullPath: '/messages'
       preLoaderRoute: typeof MessagesIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/meta/': {
+      id: '/meta/'
+      path: '/meta'
+      fullPath: '/meta'
+      preLoaderRoute: typeof MetaIndexImport
       parentRoute: typeof rootRoute
     }
     '/notifications/': {
@@ -507,6 +535,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -521,6 +550,7 @@ export interface FileRoutesByFullPath {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
   '/messages': typeof MessagesIndexRoute
+  '/meta': typeof MetaIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
@@ -543,6 +573,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -557,6 +588,7 @@ export interface FileRoutesByTo {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
   '/messages': typeof MessagesIndexRoute
+  '/meta': typeof MetaIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
@@ -580,6 +612,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -594,6 +627,7 @@ export interface FileRoutesById {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer/': typeof ComparerIndexRoute
   '/messages/': typeof MessagesIndexRoute
+  '/meta/': typeof MetaIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/tools/': typeof ToolsIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
@@ -618,6 +652,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
+    | '/admin'
     | '/privacy'
     | '/terms'
     | '/settings'
@@ -632,6 +667,7 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer'
     | '/messages'
+    | '/meta'
     | '/notifications'
     | '/tools'
     | '/tournaments'
@@ -653,6 +689,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
+    | '/admin'
     | '/privacy'
     | '/terms'
     | '/settings'
@@ -667,6 +704,7 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer'
     | '/messages'
+    | '/meta'
     | '/notifications'
     | '/tools'
     | '/tournaments'
@@ -688,6 +726,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/admin'
     | '/privacy'
     | '/terms'
     | '/_authenticated/settings'
@@ -702,6 +741,7 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer/'
     | '/messages/'
+    | '/meta/'
     | '/notifications/'
     | '/tools/'
     | '/tournaments/'
@@ -725,6 +765,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   CardsSearchRoute: typeof CardsSearchRoute
@@ -738,6 +779,7 @@ export interface RootRouteChildren {
   WantlistsYourRoute: typeof WantlistsYourRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
+  MetaIndexRoute: typeof MetaIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
   ToolsIndexRoute: typeof ToolsIndexRoute
   TournamentsIndexRoute: typeof TournamentsIndexRoute
@@ -760,6 +802,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   CardsSearchRoute: CardsSearchRoute,
@@ -773,6 +816,7 @@ const rootRouteChildren: RootRouteChildren = {
   WantlistsYourRoute: WantlistsYourRoute,
   ComparerIndexRoute: ComparerIndexRoute,
   MessagesIndexRoute: MessagesIndexRoute,
+  MetaIndexRoute: MetaIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
   ToolsIndexRoute: ToolsIndexRoute,
   TournamentsIndexRoute: TournamentsIndexRoute,
@@ -804,6 +848,7 @@ export const routeTree = rootRoute
         "/",
         "/_authenticated",
         "/about",
+        "/admin",
         "/privacy",
         "/terms",
         "/cards/search",
@@ -817,6 +862,7 @@ export const routeTree = rootRoute
         "/wantlists/your",
         "/comparer/",
         "/messages/",
+        "/meta/",
         "/notifications/",
         "/tools/",
         "/tournaments/",
@@ -846,6 +892,9 @@ export const routeTree = rootRoute
     },
     "/about": {
       "filePath": "about.tsx"
+    },
+    "/admin": {
+      "filePath": "admin.tsx"
     },
     "/privacy": {
       "filePath": "privacy.tsx"
@@ -889,6 +938,9 @@ export const routeTree = rootRoute
     },
     "/messages/": {
       "filePath": "messages/index.tsx"
+    },
+    "/meta/": {
+      "filePath": "meta/index.tsx"
     },
     "/notifications/": {
       "filePath": "notifications/index.tsx"

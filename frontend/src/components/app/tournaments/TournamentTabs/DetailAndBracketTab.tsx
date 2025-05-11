@@ -15,6 +15,7 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({ tournamentId 
   const loading = isFetching;
   const tournament = data?.tournament;
   const tournamentType = data?.tournamentType;
+  const meta = data?.meta;
 
   return (
     <div className="space-y-6">
@@ -63,8 +64,14 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({ tournamentId 
                     </div>
                   </td>
                   <td className="py-1.5">
-                    {tournament.set.toUpperCase()}
-                    <span className="ml-2 text-muted-foreground">Season {tournament.season}</span>
+                    {meta ? (
+                      <>
+                        {meta.set.toUpperCase()}
+                        <span className="ml-2 text-muted-foreground">Season {meta.season}</span>
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">No meta data available</span>
+                    )}
                   </td>
                 </tr>
 
@@ -84,13 +91,13 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({ tournamentId 
                     )}
                   </td>
                   <td className="py-1.5 pr-2">
-                    {tournament.metaShakeup && (
+                    {meta && (
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">Meta Shakeup:</span>
+                        <span className="font-medium">Meta Name:</span>
                       </div>
                     )}
                   </td>
-                  <td className="py-1.5">{tournament.metaShakeup}</td>
+                  <td className="py-1.5">{meta?.name}</td>
                 </tr>
 
                 <tr>
@@ -116,9 +123,7 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({ tournamentId 
           </div>
 
           {/* Tournament Bracket */}
-          <div className="bg-card rounded-md border shadow-sm p-3">
-            <TournamentTopBracket tournamentId={tournamentId} top={8} />
-          </div>
+          <TournamentTopBracket tournamentId={tournamentId} top={8} />
         </div>
       )}
     </div>
