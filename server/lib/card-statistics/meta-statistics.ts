@@ -200,22 +200,19 @@ async function computeMetaStatistics(
 /**
  * Saves meta statistics to the database
  * @param statistics - Meta statistics result
+ * @param metaId
  */
-async function saveMetaStatistics(statistics: MetaStatisticsResult) {
+async function saveMetaStatistics(statistics: MetaStatisticsResult, metaId: number) {
   const { cardStats, cardStatsLeader, cardStatsLeaderBase } = statistics;
 
   // Begin transaction
   await db.transaction(async tx => {
+    // Truncate existing data
+    await tx.delete(cardStatMeta).where(eq(cardStatMeta.metaId, metaId));
+    await tx.delete(cardStatMetaLeader).where(eq(cardStatMetaLeader.metaId, metaId));
+    await tx.delete(cardStatMetaLeaderBase).where(eq(cardStatMetaLeaderBase.metaId, metaId));
+
     if (cardStats.length > 0) {
-      const metaId = cardStats[0].metaId;
-
-      // Truncate existing data
-      await tx.delete(cardStatMeta).where(eq(cardStatMeta.metaId, metaId));
-
-      await tx.delete(cardStatMetaLeader).where(eq(cardStatMetaLeader.metaId, metaId));
-
-      await tx.delete(cardStatMetaLeaderBase).where(eq(cardStatMetaLeaderBase.metaId, metaId));
-
       // Insert new data
       if (cardStats.length > 0) {
         await tx.insert(cardStatMeta).values(cardStats);
@@ -245,7 +242,7 @@ export async function computeAndSaveMetaStatistics(metaId: number): Promise<Meta
   const statistics = await computeMetaStatistics(metaId, tournamentIds);
 
   // Save statistics to database
-  await saveMetaStatistics(statistics);
+  await saveMetaStatistics(statistics, metaId);
 
   return statistics;
 }

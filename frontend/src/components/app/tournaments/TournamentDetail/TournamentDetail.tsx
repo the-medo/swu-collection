@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
 import { Button } from '@/components/ui/button';
-import { Database, Edit, Trash2, Trophy } from 'lucide-react';
+import { Database, Edit, Trash2, Trophy, ChartColumn } from 'lucide-react';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
 import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTournamentDialog.tsx';
@@ -10,6 +10,9 @@ import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { usePermissions } from '@/hooks/usePermissions.ts';
 import { TournamentTabs } from '../TournamentTabs';
 import NoTournamentData from '@/components/app/tournaments/components/NoTournamentData.tsx';
+import { useComputeCardStats } from '@/api/card-stats/useComputeCardStats.ts';
+import { toast } from '@/hooks/use-toast.ts';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -24,6 +27,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
 }) => {
   const { data, isFetching, error } = useGetTournament(tournamentId);
   const hasPermission = usePermissions();
+  const computeCardStats = useComputeCardStats();
 
   // Handle 404 error
   if (error?.status === 404) {
@@ -37,6 +41,23 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
 
   const canUpdate = hasPermission('tournament', 'update');
   const canDelete = hasPermission('tournament', 'delete');
+  const canComputeStats = hasPermission('statistics', 'compute');
+
+  const handleComputeStats = async () => {
+    try {
+      await computeCardStats.mutateAsync({ tournamentId });
+      toast({
+        title: 'Card statistics computed',
+        description: 'Tournament card statistics have been recomputed successfully.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to compute tournament card statistics.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const loading = isFetching;
   const tournament = data?.tournament;
@@ -96,6 +117,27 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
                 }
                 tournament={tournament}
               />
+            )}
+
+            {canComputeStats && tournament.imported && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleComputeStats}
+                      disabled={computeCardStats.isPending}
+                    >
+                      <ChartColumn className="h-4 w-4" />
+                      {computeCardStats.isPending ? 'Computing...' : 'Recompute Card Stats'}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Recompute card statistics for this tournament</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
         )}

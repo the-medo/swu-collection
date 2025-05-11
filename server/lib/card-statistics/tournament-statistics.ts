@@ -194,42 +194,40 @@ function computeTournamentStatistics(
 /**
  * Saves tournament statistics to the database
  * @param statistics - Tournament statistics result
+ * @param tournamentId
  */
-async function saveTournamentStatistics(statistics: TournamentStatisticsResult) {
+async function saveTournamentStatistics(
+  statistics: TournamentStatisticsResult,
+  tournamentId: string,
+) {
   const { cardStats, cardStatsLeader, cardStatsLeaderBase } = statistics;
 
   // Begin transaction
   await db.transaction(async tx => {
+    // Truncate existing data
+    await tx.delete(cardStatTournament).where(eq(cardStatTournament.tournamentId, tournamentId));
+    await tx
+      .delete(cardStatTournamentLeader)
+      .where(eq(cardStatTournamentLeader.tournamentId, tournamentId));
+    await tx
+      .delete(cardStatTournamentLeaderBase)
+      .where(eq(cardStatTournamentLeaderBase.tournamentId, tournamentId));
+
+    // Insert new data
     if (cardStats.length > 0) {
-      const tournamentId = cardStats[0].tournamentId;
+      await tx.insert(cardStatTournament).values(cardStats as CardStatTournamentInsert[]);
+    }
 
-      // Truncate existing data
-      await tx.delete(cardStatTournament).where(eq(cardStatTournament.tournamentId, tournamentId));
-
+    if (cardStatsLeader.length > 0) {
       await tx
-        .delete(cardStatTournamentLeader)
-        .where(eq(cardStatTournamentLeader.tournamentId, tournamentId));
+        .insert(cardStatTournamentLeader)
+        .values(cardStatsLeader as CardStatTournamentLeaderInsert[]);
+    }
 
+    if (cardStatsLeaderBase.length > 0) {
       await tx
-        .delete(cardStatTournamentLeaderBase)
-        .where(eq(cardStatTournamentLeaderBase.tournamentId, tournamentId));
-
-      // Insert new data
-      if (cardStats.length > 0) {
-        await tx.insert(cardStatTournament).values(cardStats as CardStatTournamentInsert[]);
-      }
-
-      if (cardStatsLeader.length > 0) {
-        await tx
-          .insert(cardStatTournamentLeader)
-          .values(cardStatsLeader as CardStatTournamentLeaderInsert[]);
-      }
-
-      if (cardStatsLeaderBase.length > 0) {
-        await tx
-          .insert(cardStatTournamentLeaderBase)
-          .values(cardStatsLeaderBase as CardStatTournamentLeaderBaseInsert[]);
-      }
+        .insert(cardStatTournamentLeaderBase)
+        .values(cardStatsLeaderBase as CardStatTournamentLeaderBaseInsert[]);
     }
   });
 }
@@ -249,7 +247,7 @@ export async function computeAndSaveTournamentStatistics(
   const statistics = computeTournamentStatistics(tournamentId, tournamentDecks, decks, deckCards);
 
   // Save statistics to database
-  await saveTournamentStatistics(statistics);
+  await saveTournamentStatistics(statistics, tournamentId);
 
   return statistics;
 }

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { and, eq, sql } from 'drizzle-orm';
 import { tournament as tournamentTable } from '../../../db/schema/tournament.ts';
 import { db } from '../../../db';
+import { computeAndSaveMetaStatistics } from '../../../lib/card-statistics';
 
 export const tournamentIdPutRoute = new Hono<AuthExtension>().put(
   '/',
@@ -18,6 +19,24 @@ export const tournamentIdPutRoute = new Hono<AuthExtension>().put(
 
     const isOwner = eq(tournamentTable.userId, user.id);
     const tournamentId = eq(tournamentTable.id, paramTournamentId);
+
+    // Get the current tournament data to check if meta is changing and if tournament is imported
+    const currentTournament = (
+      await db.select().from(tournamentTable).where(and(isOwner, tournamentId))
+    )[0];
+
+    if (!currentTournament) {
+      return c.json(
+        {
+          message: "Tournament doesn't exist or you don't have permission to update it",
+        },
+        404
+      );
+    }
+
+    // Check if meta field is being updated and tournament is imported
+    const isMetaUpdated = data.meta !== undefined && data.meta !== currentTournament.meta;
+    const isImported = currentTournament.imported;
 
     // Convert string date to a Date object if needed
     const dateValue = data.date
@@ -43,6 +62,30 @@ export const tournamentIdPutRoute = new Hono<AuthExtension>().put(
         },
         404,
       );
+    }
+
+    // If meta field was updated and tournament is imported, compute card statistics for both old and new meta
+    if (isMetaUpdated && isImported) {
+      // Store the old and new meta values
+      const oldMeta = currentTournament.meta;
+      const newMeta = updatedTournament.meta;
+
+      // Compute statistics for both metas (if they exist)
+      // We need to do this after the update to ensure we're working with the latest data
+      try {
+        // Compute statistics for old meta if it exists
+        if (oldMeta) {
+          await computeAndSaveMetaStatistics(oldMeta);
+        }
+
+        // Compute statistics for new meta if it exists
+        if (newMeta) {
+          await computeAndSaveMetaStatistics(newMeta);
+        }
+      } catch (error) {
+        console.error('Error computing card statistics after meta update:', error);
+        // We don't want to fail the request if statistics computation fails
+      }
     }
 
     return c.json({ data: updatedTournament });

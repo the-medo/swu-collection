@@ -8,12 +8,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, ChartColumn } from 'lucide-react';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
 import { ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 import { MetaData } from '@/api/meta/useGetMetas.ts';
 import { formatDataById } from '../../../../../types/Format.ts';
 import { SwuSet } from '../../../../../types/enums.ts';
+import { useComputeCardStats } from '@/api/card-stats/useComputeCardStats.ts';
+import { toast } from '@/hooks/use-toast.ts';
+import { usePermissions } from '@/hooks/usePermissions.ts';
 
 interface MetaTableColumnsProps {
   onEdit?: (meta: MetaData['meta']) => void;
@@ -24,6 +27,26 @@ export function useMetaTableColumns({
   onEdit,
   onDelete,
 }: MetaTableColumnsProps = {}): ExtendedColumnDef<MetaData>[] {
+  const computeCardStats = useComputeCardStats();
+  const hasPermission = usePermissions();
+  const canComputeStats = hasPermission('statistics', 'compute');
+
+  const handleComputeStats = async (metaId: number) => {
+    try {
+      await computeCardStats.mutateAsync({ metaId });
+      toast({
+        title: 'Statistics computed',
+        description: 'Meta card statistics have been recomputed successfully.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to compute meta card statistics.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return useMemo(() => {
     const definitions: ExtendedColumnDef<MetaData>[] = [];
 
@@ -111,17 +134,25 @@ export function useMetaTableColumns({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              
+
               {onEdit && (
-                <DropdownMenuItem onClick={() => onEdit(meta)}>
-                  Edit meta
+                <DropdownMenuItem onClick={() => onEdit(meta)}>Edit meta</DropdownMenuItem>
+              )}
+
+              {canComputeStats && (
+                <DropdownMenuItem
+                  onClick={() => handleComputeStats(meta.id)}
+                  disabled={computeCardStats.isPending}
+                >
+                  <ChartColumn className="h-4 w-4 mr-2" />
+                  {computeCardStats.isPending ? 'Computing...' : 'Recompute card statistics'}
                 </DropdownMenuItem>
               )}
 
               {onDelete && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => onDelete(meta)}
                     className="text-destructive focus:text-destructive"
                   >
@@ -136,5 +167,5 @@ export function useMetaTableColumns({
     });
 
     return definitions;
-  }, [onEdit, onDelete]);
+  }, [onEdit, onDelete, canComputeStats, handleComputeStats, computeCardStats.isPending]);
 }
