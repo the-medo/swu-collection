@@ -5,7 +5,7 @@ import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.
 import { useTournamentDeckTableColumns } from './useTournamentDeckTableColumns.tsx';
 import { useDeckFilterStore } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
 import { getAspectsFromDeckInformation } from '@/components/app/tournaments/lib/getAspectsFromDeckInformation.ts';
-import { isBasicBase } from '@/lib/cards/isBasicBase.ts';
+import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import TournamentDeckDetail from '@/components/app/tournaments/TournamentDecks/TournamentDeckDetail.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';

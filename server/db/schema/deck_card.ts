@@ -1,5 +1,6 @@
 import { pgTable, uuid, integer, varchar, primaryKey, index } from 'drizzle-orm/pg-core';
 import { deck } from './deck.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 export const deckCard = pgTable(
   'deck_card',
@@ -23,3 +24,5 @@ export const deckCard = pgTable(
     };
   },
 );
+
+export type DeckCard = InferSelectModel<typeof deckCard>;

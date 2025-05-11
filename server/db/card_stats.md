@@ -84,6 +84,7 @@ Additional requirements:
 - take only decks with valid leaders and bases (sometimes they can be null, thats not a valid deck)
 - get all this data to memory from drizzle and compute it in memory - thats going to be a lot cleaner than making complicated insert/select, especially when all three card stat tournament tables can be computed from the same data
 - make it a function that i will just call from inside of endpoint
+- make separate functions for computing the statistics and for importing the statistics (so i can log them out for testing, for example)
 - always truncate the data we are computing (no update)
 
 Third - create endpoints and frontend api hooks for calling recomputation

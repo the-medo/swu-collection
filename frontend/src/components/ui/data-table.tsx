@@ -13,10 +13,9 @@ import {
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cn } from '@/lib/utils.ts';
 import { Card, CardContent } from '@/components/ui/card.tsx';
-import { RowData } from '@tanstack/table-core/src/types.ts';
-import { MutableRefObject } from 'react';
+import { RowData } from '@tanstack/table-core';
 import { Loader2 } from 'lucide-react';
-import * as React from 'react';
+import { RefObject } from 'react';
 
 export type DataTableViewMode = 'table' | 'box';
 
@@ -40,7 +39,7 @@ interface DataTableProps<TData, TValue> {
   onRowClick?: (row: Row<TData>) => void;
   isRowHighlighted?: (row: Row<TData>) => void;
   view?: DataTableViewMode;
-  infiniteScrollObserver?: MutableRefObject<HTMLDivElement>;
+  infiniteScrollObserver?: RefObject<HTMLDivElement>;
   infiniteScrollLoading?: boolean;
 }
 
