@@ -5,6 +5,7 @@ const statement = {
   ...defaultStatements,
   tournament: ['create', 'update', 'delete', 'import'],
   meta: ['create', 'update', 'delete'],
+  statistics: ['compute'],
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -21,5 +22,6 @@ export const organizer = ac.newRole({
 export const admin = ac.newRole({
   tournament: ['create', 'update', 'delete', 'import'],
   meta: ['create', 'update', 'delete'],
+  statistics: ['compute'],
   ...adminAc.statements,
 });
