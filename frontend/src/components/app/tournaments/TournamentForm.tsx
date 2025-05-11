@@ -37,7 +37,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
       days: initialData?.days || 1,
       dayTwoPlayerCount: initialData?.dayTwoPlayerCount || 0,
       date: initialData?.date ?? format(new Date(), 'yyyy-MM-dd'),
-      meta: initialData?.meta || undefined,
+      meta: initialData?.meta || null,
     },
     onSubmit: async ({ value }) => {
       onSubmit(value);
@@ -218,11 +218,18 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
           children={field => (
             <div className="space-y-2">
               <Label htmlFor={field.name}>Meta</Label>
-              <MetaSelector
-                value={field.state.value || undefined}
-                onChange={value => {
-                  field.handleChange(value);
-                }}
+              <form.Subscribe
+                selector={state => state.values.format}
+                children={formatValue => (
+                  <MetaSelector
+                    value={field.state.value || null}
+                    onChange={value => {
+                      field.handleChange(value);
+                    }}
+                    emptyOption={true}
+                    formatId={formatValue}
+                  />
+                )}
               />
             </div>
           )}

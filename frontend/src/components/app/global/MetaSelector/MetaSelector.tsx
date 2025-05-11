@@ -1,73 +1,100 @@
-import React, { useMemo } from 'react';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { MetaQueryParams, useGetMetas } from '@/api/meta';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select.tsx';
+import * as React from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { MetaQueryParams, useGetMetas } from '@/api/meta/useGetMetas.ts';
 
-export interface MetaSelectorProps {
-  value?: number;
-  onChange: (value: number) => void;
+export type MetaSelectorProps = {
+  showFormat?: boolean;
   queryParams?: MetaQueryParams;
   formatId?: number;
-}
+} & (
+  | {
+      value: number;
+      emptyOption: false;
+      onChange: (v: number) => void;
+    }
+  | {
+      value: number | null;
+      emptyOption: true;
+      onChange: (v: number | null) => void;
+      allowClear?: boolean;
+    }
+);
 
 const MetaSelector: React.FC<MetaSelectorProps> = ({
-  value,
   onChange,
+  value,
+  emptyOption,
+  showFormat = true,
   queryParams = {},
   formatId,
 }) => {
-  const { data, isLoading, error } = useGetMetas(queryParams);
+  const { data: metasResponse, isLoading } = useGetMetas(queryParams);
 
-  const options = useMemo(
-    () => (formatId ? data?.data.filter(f => f.format.id === formatId) : data?.data),
-    [formatId, data],
+  const metas = useMemo(
+    () =>
+      (formatId
+        ? metasResponse?.data.filter(f => f.format.id === formatId)
+        : metasResponse?.data) || [],
+    [metasResponse, formatId],
   );
 
-  // Find the selected meta to display its name in the button
-  const selectedMeta = options?.find(item => item.meta.id === value);
+  const [selectedMeta, setSelectedMeta] = React.useState<number | 'empty'>(value ?? 'empty');
 
-  // Convert value to string for RadioGroup since it expects a string
-  const valueAsString = value !== undefined ? String(value) : undefined;
+  useEffect(() => {
+    setSelectedMeta(value ?? 'empty');
+  }, [value]);
 
-  const handleValueChange = React.useCallback(
-    (newValue: string) => {
-      console.log('New value selected:', newValue);
-      onChange(Number(newValue));
+  const onChangeHandler = useCallback(
+    (v: string) => {
+      const metaId = v === 'empty' ? 'empty' : parseInt(v);
+
+      if (!emptyOption && metaId === 'empty') {
+        throw new Error('Empty option is not allowed');
+      }
+
+      if (metaId === 'empty' && emptyOption) {
+        setSelectedMeta('empty');
+        onChange(null);
+      } else if (metaId !== 'empty') {
+        onChange(metaId);
+        setSelectedMeta(metaId);
+      }
     },
-    [onChange],
+    [onChange, emptyOption],
   );
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className="min-w-[150px] w-full text-xs justify-between"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Loading...' : selectedMeta ? selectedMeta.meta.name : 'Select Meta'}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
-        {error ? (
-          <div className="p-2 text-sm text-red-500">Error loading metas</div>
-        ) : (
-          <DropdownMenuRadioGroup value={valueAsString} onValueChange={handleValueChange}>
-            {options?.map(item => (
-              <DropdownMenuRadioItem key={item.meta.id} value={String(item.meta.id)}>
-                {item.meta.name} ({item.format.name})
-              </DropdownMenuRadioItem>
-            ))}
-          </DropdownMenuRadioGroup>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Select
+      value={selectedMeta === 'empty' ? 'empty' : selectedMeta.toString()}
+      onValueChange={onChangeHandler}
+      disabled={isLoading}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Select Meta" />
+      </SelectTrigger>
+      <SelectContent>
+        {emptyOption && <SelectItem value="empty">- No Meta -</SelectItem>}
+        {metas.map(meta => (
+          <SelectItem key={meta.meta.id} value={meta.meta.id.toString()}>
+            <div className="flex gap-2 flex-grow justify-between">
+              <span>{meta.meta.name}</span>
+              {showFormat && (
+                <span className="text-muted-foreground">
+                  [{meta.format.name} - {meta.meta.set.toUpperCase()} S{meta.meta.season}]
+                </span>
+              )}
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
 

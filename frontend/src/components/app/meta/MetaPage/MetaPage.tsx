@@ -6,8 +6,10 @@ import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector.tsx';
 import TournamentTypeSelect from '@/components/app/tournaments/components/TournamentTypeSelect.tsx';
-import { Route } from '@/routes/meta';
+import { DEFAULT_MIN_TOURNAMENT_TYPE, Route } from '@/routes/meta';
 import MetaPageContent from '@/components/app/meta/MetaPageContent/MetaPageContent.tsx';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 
 function MetaPage() {
   const navigate = useNavigate({ from: Route.fullPath });
@@ -60,6 +62,23 @@ function MetaPage() {
     return data.data.length > 0 ? currentMeta?.meta.id : undefined;
   }, [data, formatId, metaId, currentMeta]);
 
+  if (isLoading) {
+    return (
+      <div className="p-2 h-full">
+        <div className="flex flex-row gap-4 items-center justify-between mb-4">
+          <h3>Meta</h3>
+          <span className="text-gray-600">Format</span>
+          <Skeleton className="h-12 w-full rounded-lg" />
+          <Skeleton className="h-12 w-full rounded-lg" />
+          <Skeleton className="h-12 w-full rounded-lg" />
+        </div>
+        <Skeleton className="h-[500px] w-full rounded-lg flex items-center justify-center">
+          Loading...
+        </Skeleton>
+      </div>
+    );
+  }
+
   return (
     <div className="p-2">
       <div className="flex flex-row gap-4 items-center justify-between mb-4">
@@ -71,10 +90,13 @@ function MetaPage() {
           allowEmpty={false}
           showInfoTooltip={false}
         />
-        {isLoading ? (
-          <Skeleton className="h-12 w-full rounded-lg" />
-        ) : (
-          <MetaSelector formatId={formatId} value={selectedMetaId} onChange={setMeta} />
+        {selectedMetaId && (
+          <MetaSelector
+            formatId={formatId}
+            value={selectedMetaId}
+            onChange={setMeta}
+            emptyOption={false}
+          />
         )}
         <TournamentTypeSelect
           value={minTournamentType}
@@ -83,11 +105,19 @@ function MetaPage() {
           emptyOption={false}
         />
       </div>
-      <MetaPageContent
-        formatId={formatId}
-        metaId={selectedMetaId}
-        minTournamentType={minTournamentType}
-      />
+      {selectedMetaId ? (
+        <MetaPageContent
+          formatId={formatId}
+          metaId={selectedMetaId}
+          minTournamentType={minTournamentType}
+        />
+      ) : (
+        <Alert variant="warning">
+          <AlertCircle className="h-4 w-4 text-yellow-500 stroke-yellow-500" />
+          <AlertTitle className="text-sm">Meta not selected</AlertTitle>
+          <AlertDescription className="pt-4">Please select Meta to continue</AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }

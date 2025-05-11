@@ -35,7 +35,7 @@ export const zTournamentSchema = z.object({
   id: z.string().uuid(),
   userId: z.string(),
   type: z.string(),
-  meta: z.number().int().optional(),
+  meta: z.number().int().nullable().optional(),
   location: z.string().min(1).max(255),
   continent: z.string().min(1).max(100),
   name: z.string().min(1).max(255),
