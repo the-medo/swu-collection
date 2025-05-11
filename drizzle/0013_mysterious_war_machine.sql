@@ -20,3 +20,35 @@ CREATE INDEX "tournament-meta_idx" ON "tournament" USING btree ("meta");--> stat
 ALTER TABLE "tournament" DROP COLUMN "season";--> statement-breakpoint
 ALTER TABLE "tournament" DROP COLUMN "set";--> statement-breakpoint
 ALTER TABLE "tournament" DROP COLUMN "meta_shakeup";
+
+-- -- -- simple seeding of meta table
+INSERT INTO meta (id, set, name, format, date, season)
+VALUES
+    (1, 'jtl','JTL - set release',1,'2025-03-14',0),
+    (2, 'jtl','JTL - Jango, TDR and DJ bans',1,'2025-04-11',0),
+    (3, 'jtl','JTL - set release',2,'2025-03-14',0),
+    (4, 'jtl','JTL - set release',3,'2025-03-14',0),
+    (5, 'jtl','JTL - set release',4,'2025-03-14',0),
+    (6, 'jtl','JTL - set release',5,'2025-03-14',0)
+ON CONFLICT (id)
+    DO UPDATE SET
+      set = EXCLUDED.set,
+      name = EXCLUDED.name,
+      format = EXCLUDED.format,
+      date = EXCLUDED.date,
+      season = EXCLUDED.season;
+
+
+-- Update tournament meta based on format and date
+UPDATE tournament t
+SET meta = (
+    -- Subquery to find the most recent meta for the tournament's format
+    -- that is valid (meta.date <= tournament.date)
+    SELECT m.id
+    FROM meta m
+    WHERE m.format = t.format  -- Match the format
+      AND m.date::date <= t.date     -- Meta must be valid on or before the tournament date
+    ORDER BY m.date DESC       -- Get the most recent meta
+    LIMIT 1
+)
+WHERE t.meta IS NULL;
