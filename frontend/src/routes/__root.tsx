@@ -12,6 +12,7 @@ import CookieConsent from '@/components/app/pages/CookieConsent.tsx';
 import Footer from '@/components/app/pages/Footer.tsx';
 import { metaInfoArray } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { cardStatsTabsArray } from '@/components/app/card-stats/CardStatsTabs/CardStatsTabs.tsx';
+import { aspectTabOptions } from '@/components/app/card-stats/AspectCardStats/AspectCardStats.tsx';
 
 const globalSearchParams = z.object({
   // Card detail dialog
@@ -54,6 +55,7 @@ const globalSearchParams = z.object({
   csPage: z.enum([...cardStatsTabsArray]).optional(),
   csLeaderId: z.string().optional(),
   csLeaderAndBaseId: z.string().optional(),
+  csAspect: z.enum([...aspectTabOptions]).optional(),
 
   // Card statistics filters and sorters
   csSortBy: z.enum(['md', 'sb', 'total', 'avgMd', 'avgTotal', 'deckCount', 'winRate']).optional(),
