@@ -81,29 +81,37 @@ function MetaPage() {
 
   return (
     <div className="p-2">
-      <div className="flex flex-row gap-4 items-center justify-between mb-4">
-        <h3>Meta</h3>
-        <span className="text-gray-600">Format</span>
-        <FormatSelect
-          value={formatId}
-          onChange={setFormat}
-          allowEmpty={false}
-          showInfoTooltip={false}
-        />
-        {selectedMetaId && (
-          <MetaSelector
-            formatId={formatId}
-            value={selectedMetaId}
-            onChange={setMeta}
+      <div className="flex flex-row flex-wrap gap-4 items-center justify-between mb-4">
+        <h3 className="mb-0">Meta</h3>
+        <div className="flex flex-row flex-1 gap-2 items-center min-w-[200px]">
+          <span className="text-gray-600">Format</span>
+          <FormatSelect
+            value={formatId}
+            onChange={setFormat}
+            allowEmpty={false}
+            showInfoTooltip={false}
+            className="w-full"
+          />
+        </div>
+
+        <div className="flex flex-1 min-w-[350px]">
+          {selectedMetaId && (
+            <MetaSelector
+              formatId={formatId}
+              value={selectedMetaId}
+              onChange={setMeta}
+              emptyOption={false}
+            />
+          )}
+        </div>
+        <div className="flex flex-1 min-w-[200px]">
+          <TournamentTypeSelect
+            value={minTournamentType}
+            onChange={setMinTournamentType}
+            showFullName={true}
             emptyOption={false}
           />
-        )}
-        <TournamentTypeSelect
-          value={minTournamentType}
-          onChange={setMinTournamentType}
-          showFullName={true}
-          emptyOption={false}
-        />
+        </div>
       </div>
       {selectedMetaId ? (
         <MetaPageContent

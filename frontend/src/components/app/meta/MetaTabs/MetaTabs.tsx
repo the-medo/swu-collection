@@ -33,7 +33,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) =
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-5 mb-2 rounded-lg bg-muted p-1">
+      <div className="grid grid-cols-3 md:grid-cols-5 mb-2 rounded-lg bg-muted p-1">
         <Link
           to={Route.fullPath}
           search={prev => ({ ...prev, page: 'tournaments' })}

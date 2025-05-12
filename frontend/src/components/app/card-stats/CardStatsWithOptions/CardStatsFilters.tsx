@@ -86,10 +86,10 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
 
   return (
     <div className={cn('space-y-4', className)}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
         {/* Sort By */}
-        <div className="flex items-center gap-4 pr-8">
-          <Label htmlFor="sort-by" className="w-32 flex-shrink-0">
+        <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
+          <Label htmlFor="sort-by" className="max-xl:w-32 flex-shrink-0">
             Sort by:
           </Label>
           <Select value={sortBy} onValueChange={handleSortByChange} className="flex-1">
@@ -109,8 +109,8 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
         </div>
 
         {/* Group By */}
-        <div className="flex items-center gap-4 pr-8">
-          <Label htmlFor="group-by" className="w-32 flex-shrink-0">
+        <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
+          <Label htmlFor="group-by" className="max-xl:w-32 flex-shrink-0">
             Group by:
           </Label>
           <Select value={groupBy} onValueChange={handleGroupByChange} className="flex-1">
@@ -126,8 +126,8 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
         </div>
 
         {/* Min Deck Count */}
-        <div className="flex items-center gap-4 pr-8">
-          <Label htmlFor="min-deck-count" className="w-32 flex-shrink-0">
+        <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
+          <Label htmlFor="min-deck-count" className="max-xl:w-32 flex-shrink-0">
             Min. Deck Count:
           </Label>
           <Input
@@ -142,8 +142,8 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
         </div>
 
         {/* Card Search */}
-        <div className="flex items-center gap-4 pr-8">
-          <Label htmlFor="card-search" className="w-32 flex-shrink-0">
+        <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
+          <Label htmlFor="card-search" className="max-xl:w-32 flex-shrink-0">
             Card Search:
           </Label>
           <Input

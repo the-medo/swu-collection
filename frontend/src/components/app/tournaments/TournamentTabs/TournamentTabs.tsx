@@ -17,7 +17,7 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
 }) => {
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-5 mb-2 rounded-lg bg-muted p-1">
+      <div className="grid grid-cols-3 md:grid-cols-5 mb-2 rounded-lg bg-muted p-1">
         <Link
           to={`/tournaments/$tournamentId/details`}
           params={{ tournamentId }}
