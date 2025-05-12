@@ -6,6 +6,7 @@ import {
   AllDecksTab,
   MatchupsTab,
   MetaAnalysisTab,
+  CardStatsTab,
 } from '@/components/app/tournaments/TournamentTabs';
 import { TournamentData } from '../../../../../../types/Tournament.ts';
 import { useMemo } from 'react';
@@ -31,7 +32,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, tournaments }) => {
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-4 mb-2 rounded-lg bg-muted p-1">
+      <div className="grid grid-cols-5 mb-2 rounded-lg bg-muted p-1">
         <Link
           to={Route.fullPath}
           search={prev => ({ ...prev, page: 'tournaments' })}
@@ -83,6 +84,18 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, tournaments }) => {
         >
           All Decks
         </Link>
+        <Link
+          to={Route.fullPath}
+          search={prev => ({ ...prev, page: 'card-stats' })}
+          className={cn(
+            'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
+            page === 'card-stats'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
+          )}
+        >
+          Card Statistics
+        </Link>
       </div>
       {page === 'tournaments' && (
         <>
@@ -93,6 +106,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, tournaments }) => {
       {page === 'meta' && <MetaAnalysisTab tournamentIds={tournamentIds} route={Route} />}
       {page === 'matchups' && <MatchupsTab tournamentIds={tournamentIds} route={Route} />}
       {page === 'decks' && <AllDecksTab tournamentIds={tournamentIds} />}
+      {page === 'card-stats' && <CardStatsTab tournamentIds={tournamentIds} />}
     </div>
   );
 };
