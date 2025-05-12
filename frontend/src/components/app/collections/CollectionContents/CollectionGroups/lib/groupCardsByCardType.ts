@@ -5,6 +5,7 @@ import {
   CardGroups,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import { DeckCard } from '../../../../../../../../types/ZDeckCard.ts';
+import { cardTypeLabels } from '../../../../../../../../shared/types/cardTypes.ts';
 
 export const groupCardsByCardType = <T extends CollectionCard | DeckCard = CollectionCard>(
   cardList: CardList,
@@ -13,40 +14,40 @@ export const groupCardsByCardType = <T extends CollectionCard | DeckCard = Colle
   const groups: CardGroups<T> = {
     Leader: {
       id: 'Leader',
-      label: 'Leader',
+      label: cardTypeLabels['Leader'],
       cards: [],
       horizontal: true,
     },
     Base: {
       id: 'Base',
-      label: 'Base',
+      label: cardTypeLabels['Base'],
       cards: [],
       horizontal: true,
     },
 
     UnitGround: {
       id: 'UnitGround',
-      label: 'Unit - Ground',
+      label: cardTypeLabels['UnitGround'],
       cards: [],
     },
     UnitSpace: {
       id: 'UnitSpace',
-      label: 'Unit - Space',
+      label: cardTypeLabels['UnitSpace'],
       cards: [],
     },
     Event: {
       id: 'Event',
-      label: 'Event',
+      label: cardTypeLabels['Event'],
       cards: [],
     },
     Upgrade: {
       id: 'Upgrade',
-      label: 'Upgrade',
+      label: cardTypeLabels['Upgrade'],
       cards: [],
     },
     Unknown: {
       id: 'Unknown',
-      label: 'Unknown',
+      label: cardTypeLabels['Unknown'],
       cards: [],
     },
   };

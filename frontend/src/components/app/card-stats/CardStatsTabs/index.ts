@@ -1,0 +1,1 @@
+export { default, cardStatsTabsArray } from './CardStatsTabs';

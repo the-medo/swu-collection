@@ -21,10 +21,11 @@ const tableColumnProps: TournamentTableColumnsProps = {};
 
 interface MetaTabsProps {
   className?: string;
+  metaId: number;
   tournaments: TournamentData[];
 }
 
-const MetaTabs: React.FC<MetaTabsProps> = ({ className, tournaments }) => {
+const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) => {
   const { page } = useSearch({ from: Route.fullPath });
   const columns = useTournamentTableColumns(tableColumnProps);
 
@@ -106,7 +107,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, tournaments }) => {
       {page === 'meta' && <MetaAnalysisTab tournamentIds={tournamentIds} route={Route} />}
       {page === 'matchups' && <MatchupsTab tournamentIds={tournamentIds} route={Route} />}
       {page === 'decks' && <AllDecksTab tournamentIds={tournamentIds} />}
-      {page === 'card-stats' && <CardStatsTab tournamentIds={tournamentIds} />}
+      {page === 'card-stats' && <CardStatsTab metaId={metaId} route={Route} />}
     </div>
   );
 };

@@ -9,3 +9,6 @@ export type { CardStat, CardStatsResponse, CardStatsParams } from './useCardStat
 
 export { useComputeCardStats } from './useComputeCardStats.ts';
 export type { ComputeCardStatsParams, ComputeCardStatsResponse } from './useComputeCardStats.ts';
+
+export { useTopPlayedCards } from './useTopPlayedCards.ts';
+export type { TopPlayedCardStat, TopPlayedCardsParams, TopPlayedCardsResponse } from './useTopPlayedCards.ts';
