@@ -2,15 +2,13 @@ import * as React from 'react';
 import { useCardStats } from '@/api/card-stats/useCardStats.ts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useSearch } from '@tanstack/react-router';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+import { useSearch, Link, useNavigate } from '@tanstack/react-router';
+import { useCardList } from '@/api/lists/useCardList.ts';
+import { useMemo } from 'react';
+import CardStatsWithOptions from '@/components/app/card-stats/CardStatsWithOptions/CardStatsWithOptions.tsx';
+import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
+import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx';
+import { Route } from '@/routes/__root.tsx';
 
 interface LeaderBaseCardStatsProps {
   metaId?: number;
@@ -23,41 +21,31 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
   tournamentId,
   className,
 }) => {
-  const { csLeaderAndBaseId } = useSearch({ strict: false });
-  const [selectedLeaderBase, setSelectedLeaderBase] = React.useState<string | undefined>(
-    csLeaderAndBaseId,
-  );
-
-  // Parse the leader and base IDs from the combined string
-  const [selectedLeaderId, selectedBaseId] = React.useMemo(() => {
-    if (!selectedLeaderBase) return [undefined, undefined];
-    const [leaderId, baseId] = selectedLeaderBase.split('|');
-    return [leaderId, baseId];
-  }, [selectedLeaderBase]);
-
-  // This would be fetched from an API in a real implementation
-  const leaderBaseOptions = React.useMemo(
-    () => [
-      { id: 'leader1|base1', leaderName: 'Leader 1', baseName: 'Base 1' },
-      { id: 'leader1|base2', leaderName: 'Leader 1', baseName: 'Base 2' },
-      { id: 'leader2|base1', leaderName: 'Leader 2', baseName: 'Base 1' },
-      { id: 'leader2|base3', leaderName: 'Leader 2', baseName: 'Base 3' },
-      { id: 'leader3|base2', leaderName: 'Leader 3', baseName: 'Base 2' },
-    ],
-    [],
-  );
+  const { csLeaderId, csBaseId } = useSearch({ strict: false });
+  const navigate = useNavigate({ from: Route.fullPath });
 
   // Fetch card statistics filtered by leader and base
   const { data, isLoading, error } = useCardStats({
     metaId,
     tournamentId,
-    leaderCardId: selectedLeaderId,
-    baseCardId: selectedBaseId,
+    leaderCardId: csLeaderId,
+    baseCardId: csBaseId,
   });
 
-  const handleLeaderBaseChange = (value: string) => {
-    setSelectedLeaderBase(value);
-  };
+  // Fetch card list data for additional card details
+  const { data: cardListData } = useCardList();
+
+  // Combine card stats with card details
+  const cardStatData = useMemo(() => {
+    if (!cardListData || !data) return [];
+    return data?.data.map(d => {
+      const card = cardListData?.cards[d.cardId];
+      return {
+        card,
+        cardStat: d,
+      };
+    });
+  }, [data, cardListData]);
 
   if (isLoading) {
     return (
@@ -97,64 +85,74 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
 
   return (
     <div className={cn('space-y-4', className)}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Cards by Leader/Base</CardTitle>
-          <CardDescription>
-            Statistics for cards used with specific leader and base combinations in{' '}
-            {metaId ? 'this meta' : 'this tournament'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="leader-base-select">Select Leader/Base Combination</Label>
-              <Select value={selectedLeaderBase} onValueChange={handleLeaderBaseChange}>
-                <SelectTrigger id="leader-base-select" className="w-full">
-                  <SelectValue placeholder="Select a leader/base combination" />
-                </SelectTrigger>
-                <SelectContent>
-                  {leaderBaseOptions.map(option => (
-                    <SelectItem key={option.id} value={option.id}>
-                      {option.leaderName} / {option.baseName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {selectedLeaderBase ? (
-              data?.data && data.data.length > 0 ? (
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">
-                    Cards for{' '}
-                    {leaderBaseOptions.find(o => o.id === selectedLeaderBase)?.leaderName ||
-                      selectedLeaderId}{' '}
-                    /
-                    {leaderBaseOptions.find(o => o.id === selectedLeaderBase)?.baseName ||
-                      selectedBaseId}
-                  </h3>
-                  <pre className="text-xs overflow-auto max-h-96">
-                    {JSON.stringify(data.data, null, 2)}
-                  </pre>
-                </div>
-              ) : (
-                <div className="h-40 flex items-center justify-center">
-                  <p className="text-muted-foreground">
-                    No card statistics available for this leader/base combination
-                  </p>
-                </div>
-              )
-            ) : (
-              <div className="h-40 flex items-center justify-center">
-                <p className="text-muted-foreground">
-                  Please select a leader/base combination to view card statistics
-                </p>
-              </div>
+      <div className="flex flex-row gap-8 w-full items-center justify-center">
+        <div className="flex flex-col gap-2">
+          <LeaderSelector
+            trigger={null}
+            leaderCardId={csLeaderId}
+            onLeaderSelected={leaderId => {
+              navigate({
+                search: prev => ({
+                  ...prev,
+                  csLeaderId: leaderId,
+                }),
+              });
+            }}
+            size="w300"
+          />
+          <Link
+            search={prev => ({ ...prev, csLeaderId: undefined })}
+            className={cn(
+              'text-sm text-muted-foreground hover:text-foreground',
+              !csLeaderId && 'hidden',
             )}
+          >
+            Clear leader
+          </Link>
+        </div>
+        <div className="flex flex-col gap-2">
+          <BaseSelector
+            trigger={null}
+            baseCardId={csBaseId}
+            onBaseSelected={baseId => {
+              navigate({
+                search: prev => ({
+                  ...prev,
+                  csBaseId: baseId,
+                }),
+              });
+            }}
+            size="w300"
+          />
+          <Link
+            search={prev => ({ ...prev, csBaseId: undefined })}
+            className={cn(
+              'text-sm text-muted-foreground hover:text-foreground',
+              !csLeaderId && 'hidden',
+            )}
+          >
+            Clear base
+          </Link>
+        </div>
+      </div>
+      {/* Card stats with options */}
+      {csLeaderId && csBaseId ? (
+        cardStatData.length > 0 ? (
+          <CardStatsWithOptions data={cardStatData} />
+        ) : (
+          <div className="h-40 flex items-center justify-center">
+            <p className="text-muted-foreground">
+              No card statistics available for this leader/base combination
+            </p>
           </div>
-        </CardContent>
-      </Card>
+        )
+      ) : (
+        <div className="h-40 flex items-center justify-center">
+          <p className="text-muted-foreground">
+            Please select both a leader and a base to view card statistics
+          </p>
+        </div>
+      )}
     </div>
   );
 };
