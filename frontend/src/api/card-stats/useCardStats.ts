@@ -22,6 +22,7 @@ export interface CardStatsParams {
   tournamentId?: string;
   leaderCardId?: string;
   baseCardId?: string;
+  leaderAndBase?: boolean;
 }
 
 /**
@@ -42,13 +43,15 @@ export interface CardStatsResponse {
  * @returns Query result with card statistics data
  */
 export const useCardStats = (params: CardStatsParams) => {
-  const { metaId, tournamentId, leaderCardId, baseCardId } = params;
+  const { metaId, tournamentId, leaderCardId, baseCardId, leaderAndBase } = params;
 
   // Either metaId or tournamentId must be provided
   const isValidQuery = metaId !== undefined || tournamentId !== undefined;
 
   // If baseCardId is provided, leaderCardId must also be provided
-  const isValidParams = baseCardId === undefined || leaderCardId !== undefined;
+  const isValidParams =
+    (leaderAndBase && leaderCardId && baseCardId) ||
+    (!leaderAndBase && (baseCardId === undefined || leaderCardId !== undefined));
 
   return useQuery<CardStatsResponse, ErrorWithStatus>({
     queryKey: ['card-stats', metaId, tournamentId, leaderCardId, baseCardId],

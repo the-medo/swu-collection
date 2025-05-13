@@ -28,7 +28,8 @@ const CardStatsTabs: React.FC<CardStatsTabsProps> = ({ className, metaId, tourna
         {cardStatsTabsArray.map(tab => (
           <Link
             key={tab}
-            search={prev => ({ ...prev, csPage: tab })}
+            to="."
+            search={prev => ({ ...prev, csPage: tab, csLeaderId: undefined, csBaseId: undefined })}
             className={cn(
               'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
               csPage === tab

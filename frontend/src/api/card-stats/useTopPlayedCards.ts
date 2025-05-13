@@ -19,7 +19,7 @@ export interface TopPlayedCardsParams {
   metaId?: number;
   tournamentId?: string;
   leaderIds?: string[];
-  leaderBasePairs?: Array<{ leaderId: string; baseId: string }>;
+  leaderBasePairs?: string[];
   limit?: number;
 }
 
@@ -61,9 +61,7 @@ export const useTopPlayedCards = (params: TopPlayedCardsParams) => {
           }
 
           if (leaderBasePairs && leaderBasePairs.length > 0) {
-            queryParams.leader_base_pairs = leaderBasePairs
-              .map(pair => `${pair.leaderId}:${pair.baseId}`)
-              .join(',');
+            queryParams.leader_base_pairs = leaderBasePairs.join(',');
           }
 
           if (limit !== undefined) {

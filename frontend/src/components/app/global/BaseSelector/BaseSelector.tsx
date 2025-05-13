@@ -19,6 +19,7 @@ import {
 import { Input } from '@/components/ui/input.tsx';
 import { Switch } from '@/components/ui/switch.tsx';
 import { cn } from '@/lib/utils.ts';
+import { basicBases } from '../../../../../../shared/lib/basicBases.ts';
 
 type BaseSelectorProps = Pick<DialogProps, 'trigger'> & {
   baseCardId?: string;
@@ -75,16 +76,10 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
 
   const oneBasicBaseOfEach = useMemo(() => {
     if (allBasicBases || search !== '') return [];
-    const sorBasicBases: Record<string, true | undefined> = {
-      'capital-city': true, // vigilance
-      'command-center': true, // command
-      'catacombs-of-cadera': true, // aggression
-      'administrator-s-tower': true, // cunning
-    };
 
     return Object.values(cardList?.cardsByCardType['Base'] ?? {}).filter(
       (card: CardDataWithVariants<CardListVariants> | undefined) => {
-        return sorBasicBases[card?.cardId ?? ''];
+        return basicBases[card?.cardId ?? ''];
       },
     );
   }, [search, allBasicBases]);

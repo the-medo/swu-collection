@@ -164,6 +164,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({ metaId, tournamentId,
           size="w300"
         />
         <Link
+          to="."
           search={prev => ({ ...prev, csLeaderId: undefined })}
           className={cn(
             'text-sm text-muted-foreground hover:text-foreground',
@@ -190,20 +191,23 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({ metaId, tournamentId,
               {topLeadersWithCards.map(({ leaderId, leaderCard, topCards, deckCount }) => (
                 <div key={leaderId} className="space-y-2">
                   <div className="flex items-center gap-4 w-full">
-                    <div className="flex flex-col gap-2">
-                      <Link
-                        search={prev => ({ ...prev, csLeaderId: leaderId })}
-                        className="hover:opacity-80"
-                      >
-                        <CardImage
-                          card={leaderCard}
-                          cardVariantId={selectDefaultVariant(leaderCard)}
-                          size="w200"
-                          forceHorizontal={true}
-                        />
-                      </Link>
-                      <span className="text-sm">Deck count: {deckCount}</span>
-                    </div>
+                    {leaderCard && (
+                      <div className="flex flex-col gap-2">
+                        <Link
+                          to="."
+                          search={prev => ({ ...prev, csLeaderId: leaderId })}
+                          className="hover:opacity-80"
+                        >
+                          <CardImage
+                            card={leaderCard}
+                            cardVariantId={selectDefaultVariant(leaderCard)}
+                            size="w200"
+                            forceHorizontal={true}
+                          />
+                        </Link>
+                        <span className="text-sm">Deck count: {deckCount}</span>
+                      </div>
+                    )}
                     {topCards.length > 0 ? (
                       <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
                         {topCards.map((item, index) => (
