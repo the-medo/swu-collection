@@ -107,7 +107,9 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) =
       {page === 'meta' && <MetaAnalysisTab tournamentIds={tournamentIds} route={Route} />}
       {page === 'matchups' && <MatchupsTab tournamentIds={tournamentIds} route={Route} />}
       {page === 'decks' && <AllDecksTab tournamentIds={tournamentIds} />}
-      {page === 'card-stats' && <CardStatsTab metaId={metaId} route={Route} />}
+      {page === 'card-stats' && (
+        <CardStatsTab tournamentIds={tournamentIds} metaId={metaId} route={Route} />
+      )}
     </div>
   );
 };

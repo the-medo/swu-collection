@@ -28,7 +28,7 @@ const zTopPlayedCardsQueryParams = z
       .transform(val => {
         if (!val) return undefined;
         return val.split(',').map(pair => {
-          const [leaderId, baseId] = pair.split(':');
+          const [leaderId, baseId] = pair.split('|');
           return { leaderId, baseId };
         });
       }),

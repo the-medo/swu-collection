@@ -11,7 +11,7 @@ function TournamentCardStatsPage() {
 
   return (
     <TournamentDetail tournamentId={tournamentId} activeTab="card-stats">
-      <CardStatsTab tournamentId={tournamentId} route={Route} />
+      <CardStatsTab tournamentIds={[tournamentId]} route={Route} />
     </TournamentDetail>
   );
 }
