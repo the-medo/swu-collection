@@ -19,6 +19,7 @@ import type {
 } from './types.ts';
 import { isBasicBase } from '../../../shared/lib/isBasicBase.ts';
 import { cardList } from '../../db/lists.ts';
+import { batchArray } from '../utils/batch.ts';
 
 /**
  * Fetches all data needed for tournament statistics computation
@@ -201,6 +202,7 @@ async function saveTournamentStatistics(
   tournamentId: string,
 ) {
   const { cardStats, cardStatsLeader, cardStatsLeaderBase } = statistics;
+  const BATCH_SIZE = 10000; // Adjust this value based on your database's capabilities
 
   // Begin transaction
   await db.transaction(async tx => {
@@ -213,21 +215,32 @@ async function saveTournamentStatistics(
       .delete(cardStatTournamentLeaderBase)
       .where(eq(cardStatTournamentLeaderBase.tournamentId, tournamentId));
 
-    // Insert new data
+    // Insert new data in batches
     if (cardStats.length > 0) {
-      await tx.insert(cardStatTournament).values(cardStats as CardStatTournamentInsert[]);
+      const cardStatsBatches = batchArray(cardStats as CardStatTournamentInsert[], BATCH_SIZE);
+      for (const batch of cardStatsBatches) {
+        await tx.insert(cardStatTournament).values(batch);
+      }
     }
 
     if (cardStatsLeader.length > 0) {
-      await tx
-        .insert(cardStatTournamentLeader)
-        .values(cardStatsLeader as CardStatTournamentLeaderInsert[]);
+      const cardStatsLeaderBatches = batchArray(
+        cardStatsLeader as CardStatTournamentLeaderInsert[],
+        BATCH_SIZE
+      );
+      for (const batch of cardStatsLeaderBatches) {
+        await tx.insert(cardStatTournamentLeader).values(batch);
+      }
     }
 
     if (cardStatsLeaderBase.length > 0) {
-      await tx
-        .insert(cardStatTournamentLeaderBase)
-        .values(cardStatsLeaderBase as CardStatTournamentLeaderBaseInsert[]);
+      const cardStatsLeaderBaseBatches = batchArray(
+        cardStatsLeaderBase as CardStatTournamentLeaderBaseInsert[],
+        BATCH_SIZE
+      );
+      for (const batch of cardStatsLeaderBaseBatches) {
+        await tx.insert(cardStatTournamentLeaderBase).values(batch);
+      }
     }
   });
 }

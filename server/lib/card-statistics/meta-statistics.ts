@@ -10,6 +10,7 @@ import {
 import { tournament } from '../../db/schema/tournament.ts';
 import { eq, sql } from 'drizzle-orm';
 import type { CardStat } from './types.ts';
+import { batchArray } from '../utils/batch.ts';
 
 /**
  * Interface for meta card statistics data
@@ -204,6 +205,7 @@ async function computeMetaStatistics(
  */
 async function saveMetaStatistics(statistics: MetaStatisticsResult, metaId: number) {
   const { cardStats, cardStatsLeader, cardStatsLeaderBase } = statistics;
+  const BATCH_SIZE = 10000; // Adjust this value based on your database's capabilities
 
   // Begin transaction
   await db.transaction(async tx => {
@@ -213,17 +215,24 @@ async function saveMetaStatistics(statistics: MetaStatisticsResult, metaId: numb
     await tx.delete(cardStatMetaLeaderBase).where(eq(cardStatMetaLeaderBase.metaId, metaId));
 
     if (cardStats.length > 0) {
-      // Insert new data
-      if (cardStats.length > 0) {
-        await tx.insert(cardStatMeta).values(cardStats);
+      // Insert new data in batches
+      const cardStatsBatches = batchArray(cardStats, BATCH_SIZE);
+      for (const batch of cardStatsBatches) {
+        await tx.insert(cardStatMeta).values(batch);
       }
+    }
 
-      if (cardStatsLeader.length > 0) {
-        await tx.insert(cardStatMetaLeader).values(cardStatsLeader);
+    if (cardStatsLeader.length > 0) {
+      const cardStatsLeaderBatches = batchArray(cardStatsLeader, BATCH_SIZE);
+      for (const batch of cardStatsLeaderBatches) {
+        await tx.insert(cardStatMetaLeader).values(batch);
       }
+    }
 
-      if (cardStatsLeaderBase.length > 0) {
-        await tx.insert(cardStatMetaLeaderBase).values(cardStatsLeaderBase);
+    if (cardStatsLeaderBase.length > 0) {
+      const cardStatsLeaderBaseBatches = batchArray(cardStatsLeaderBase, BATCH_SIZE);
+      for (const batch of cardStatsLeaderBaseBatches) {
+        await tx.insert(cardStatMetaLeaderBase).values(batch);
       }
     }
   });
