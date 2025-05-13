@@ -33,6 +33,14 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
 
   if (!key || !metaInfo) return null;
 
+  let csLeaderId = key;
+  let csBaseId = undefined;
+  let csPage = 'leader';
+  if (metaInfo === 'leadersAndBase') {
+    [csLeaderId, csBaseId] = key.split('|');
+    csPage = 'leader-base';
+  }
+
   return (
     <Card className="fixed bottom-4 right-4 w-[300px] border">
       <CardHeader className="p-4">
@@ -54,6 +62,7 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
                 }),
               });
             } else {
+              // @ts-ignore
               navigate({
                 to: '../decks',
                 search: prev => ({ ...prev, maDeckKey: key, maDeckKeyType: metaInfo }),
@@ -62,8 +71,34 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
           }}
           className="btn btn-primary"
         >
-          Display decks
+          Show decks
         </Button>
+        {(metaInfo === 'leaders' || metaInfo === 'leadersAndBase') && (
+          <Button
+            onClick={() => {
+              if (route === MetaRoute) {
+                navigate({
+                  search: prev => ({
+                    ...prev,
+                    page: 'card-stats',
+                    csPage,
+                    csLeaderId,
+                    csBaseId,
+                  }),
+                });
+              } else {
+                // @ts-ignore
+                navigate({
+                  to: '../card-stats',
+                  search: prev => ({ ...prev, csLeaderId, csBaseId, csPage }),
+                });
+              }
+            }}
+            className="btn btn-primary"
+          >
+            Show card statistics
+          </Button>
+        )}
       </CardHeader>
     </Card>
   );

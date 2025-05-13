@@ -193,7 +193,7 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
 
   return (
     <div className={cn('space-y-4', className)}>
-      <div className="flex flex-row gap-8 w-full items-center justify-center">
+      <div className="flex max-sm:flex-col gap-8 w-full items-center justify-center">
         <div className="flex flex-col gap-2">
           <LeaderSelector
             trigger={null}

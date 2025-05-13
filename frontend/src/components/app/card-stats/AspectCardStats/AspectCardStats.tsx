@@ -125,7 +125,7 @@ const AspectCardStats: React.FC<AspectCardStatsProps> = ({ metaId, tournamentId,
   return (
     <div className={cn('space-y-4', className)}>
       {/* Aspect selection tabs */}
-      <div className="grid grid-cols-8 mb-2 rounded-lg bg-muted p-1">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 mb-2 rounded-lg bg-muted p-1">
         {aspectTabOptions.map(tab => (
           <Link
             key={tab}
@@ -153,10 +153,13 @@ const AspectCardStats: React.FC<AspectCardStatsProps> = ({ metaId, tournamentId,
       {selectedAspect === 'overview' ? (
         <div>
           {data?.data && data.data.length > 0 ? (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {Object.entries(cardsByAspect).map(([aspect, cards]) => (
-                <div key={aspect} className="space-y-2">
-                  <div className="flex items-center gap-4 w-full">
+                <div
+                  key={aspect}
+                  className="space-y-2 max-2xl:border-b max-2xl:border-muted-foreground max-2xl:pb-4"
+                >
+                  <div className="flex sm:items-center gap-4 w-full">
                     <AspectIcon aspect={aspect} />
                     {cards.length > 0 ? (
                       <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">

@@ -38,9 +38,9 @@ const CardStatsTabs: React.FC<CardStatsTabsProps> = ({ className, metaId, tourna
             )}
           >
             {tab === 'all' && 'All Cards'}
-            {tab === 'aspect' && 'By Aspect'}
-            {tab === 'leader' && 'By Leader'}
-            {tab === 'leader-base' && 'By Leader/Base'}
+            {tab === 'aspect' && 'Aspect'}
+            {tab === 'leader' && 'Leader'}
+            {tab === 'leader-base' && 'Leader/Base'}
           </Link>
         ))}
       </div>

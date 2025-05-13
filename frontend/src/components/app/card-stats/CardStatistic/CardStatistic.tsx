@@ -38,9 +38,9 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
         size={variant === 'image' ? 'w200' : 'w75'}
       />
 
-      <div className="flex flex-col flex-1 gap-1 text-sm text-gray-500">
+      <div className="flex flex-col flex-1 gap-1 text-sm text-muted-foreground">
         <div className="flex flex-col flex-1">
-          <span className="text-sm font-bold text-gray-900">
+          <span className="text-sm font-bold text-muted-foreground">
             {preTitle}
             {card.title}
           </span>
