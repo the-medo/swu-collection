@@ -7,6 +7,7 @@ import { and, eq } from 'drizzle-orm';
 import { tournament as tournamentTable } from '../../../../db/schema/tournament.ts';
 import { db } from '../../../../db';
 import { runTournamentImport } from '../../../../lib/imports/tournamentImportWorkflow.ts';
+import { computeAndSaveTournamentStatistics, computeAndSaveMetaStatistics } from '../../../../lib/card-statistics';
 
 export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -56,10 +57,19 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
     await db.update(tournamentTable).set({ meleeId }).where(and(condIsOwner, condTournamentId));
 
     runTournamentImport(paramTournamentId).then(async () => {
+      // Update tournament to set imported flag to true
       await db
         .update(tournamentTable)
         .set({ imported: true })
         .where(and(condIsOwner, condTournamentId));
+
+      // Compute tournament card statistics
+      await computeAndSaveTournamentStatistics(paramTournamentId);
+
+      // If tournament has a meta, compute meta card statistics
+      if (tournament.meta) {
+        await computeAndSaveMetaStatistics(tournament.meta);
+      }
     });
 
     // Mock response - in a real implementation, this would fetch data from melee.gg

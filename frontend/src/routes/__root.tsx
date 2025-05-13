@@ -11,6 +11,8 @@ import { SwuAspect } from '../../../types/enums.ts';
 import CookieConsent from '@/components/app/pages/CookieConsent.tsx';
 import Footer from '@/components/app/pages/Footer.tsx';
 import { metaInfoArray } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
+import { cardStatsTabsArray } from '@/components/app/card-stats/CardStatsTabs/CardStatsTabs.tsx';
+import { aspectTabOptions } from '@/components/app/card-stats/AspectCardStats/AspectCardStats.tsx';
 
 const globalSearchParams = z.object({
   // Card detail dialog
@@ -48,6 +50,18 @@ const globalSearchParams = z.object({
   maDeckId: z.string().optional(),
   maDeckKey: z.string().optional(),
   maDeckKeyType: z.enum([...metaInfoArray]).optional(),
+
+  // Card statistics
+  csPage: z.enum([...cardStatsTabsArray]).optional(),
+  csLeaderId: z.string().optional(),
+  csBaseId: z.string().optional(),
+  csAspect: z.enum([...aspectTabOptions]).optional(),
+
+  // Card statistics filters and sorters
+  csSortBy: z.enum(['md', 'sb', 'total', 'avgMd', 'avgTotal', 'deckCount', 'winRate']).optional(),
+  csGroupBy: z.enum(['none', 'type', 'cost']).optional(),
+  csMinDeckCount: z.coerce.number().int().nonnegative().optional(),
+  csCardSearch: z.string().optional(),
 });
 export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 

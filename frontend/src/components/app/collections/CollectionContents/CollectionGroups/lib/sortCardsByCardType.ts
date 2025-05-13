@@ -4,23 +4,14 @@ import {
   getCollectionCardSorter,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import { CollectionSortBy } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
-
-export const cardTypeSortValues: Record<string, number> = {
-  Leader: 0,
-  Base: 10,
-  UnitGround: 20,
-  UnitSpace: 30,
-  Event: 40,
-  Upgrade: 50,
-  Unknown: 60,
-};
+import { CardType, cardTypeSortValues } from '../../../../../../../../shared/types/cardTypes.ts';
 
 export const sortCardsByCardType: CollectionCardSorter = (
   cardList: CardList,
   sorters: CollectionSortBy[],
 ) => {
   const getCardTypeSortValue = (cardId: string) => {
-    const t = cardList[cardId]?.type;
+    const t = cardList[cardId]?.type as CardType | undefined;
     if (t === 'Unit') {
       return cardList[cardId]?.arenas[0] === 'Space'
         ? cardTypeSortValues.UnitSpace

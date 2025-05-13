@@ -17,7 +17,7 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
 }) => {
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-4 mb-2 rounded-lg bg-muted p-1">
+      <div className="grid grid-cols-3 md:grid-cols-5 mb-2 rounded-lg bg-muted p-1">
         <Link
           to={`/tournaments/$tournamentId/details`}
           params={{ tournamentId }}
@@ -65,6 +65,18 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
           )}
         >
           All Decks
+        </Link>
+        <Link
+          to={`/tournaments/$tournamentId/card-stats`}
+          params={{ tournamentId }}
+          className={cn(
+            'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
+            activeTab === 'card-stats'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
+          )}
+        >
+          Card Statistics
         </Link>
       </div>
       {children}

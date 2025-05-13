@@ -5,7 +5,7 @@ import MetaPartSelector, { MetaPart } from './MetaPartSelector';
 import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
 import ViewModeSelector, { ViewMode } from './ViewModeSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { isBasicBase } from '@/lib/cards/isBasicBase.ts';
+import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { useCallback, useMemo } from 'react';
 import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';

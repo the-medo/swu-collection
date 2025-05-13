@@ -1,5 +1,3 @@
-import * as React from 'react';
-import { useMemo } from 'react';
 import TournamentMatchups from '@/components/app/tournaments/TournamentMatchups/TournamentMatchups.tsx';
 import {
   useTournamentMetaActions,
@@ -9,6 +7,7 @@ import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/To
 import TournamentDeckKeyFloater, {
   TournamentDeckKeyFloaterRoutes,
 } from '@/components/app/tournaments/TournamentDecks/TournamentDeckKeyFloater.tsx';
+import { useEffect } from 'react';
 
 interface MatchupsTabProps {
   tournamentIds: string[];
@@ -22,7 +21,7 @@ const MatchupsTab: React.FC<MatchupsTabProps> = ({ tournamentIds, route }) => {
   const { decks, tournaments, matches } = useTournamentMetaStore();
   const { setTournamentIds } = useTournamentMetaActions();
 
-  React.useEffect(() => {
+  useEffect(() => {
     setTournamentIds(tournamentIds);
   }, [tournamentIds, setTournamentIds]);
 

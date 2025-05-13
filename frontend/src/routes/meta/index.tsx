@@ -20,7 +20,7 @@ const searchParams = z.object({
     .enum([...tournamentTypes])
     .optional()
     .default(DEFAULT_MIN_TOURNAMENT_TYPE),
-  page: z.enum(['tournaments', 'meta', 'matchups', 'decks']).default('meta'),
+  page: z.enum(['tournaments', 'meta', 'matchups', 'decks', 'card-stats']).default('meta'),
 });
 
 export const Route = createFileRoute('/meta/')({

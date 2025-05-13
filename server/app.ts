@@ -11,6 +11,7 @@ import { userRoute } from './routes/user.ts';
 import { tournamentRoute } from './routes/tournament.ts';
 import { entitiesRoute } from './routes/entity.ts';
 import { metaRoute } from './routes/meta.ts';
+import { cardStatsRoute } from './routes/card-stats.ts';
 
 const app = new Hono<AuthExtension>();
 
@@ -58,7 +59,8 @@ const apiRoutes = app
   .route('/user', userRoute)
   .route('/tournament', tournamentRoute)
   .route('/entities', entitiesRoute)
-  .route('/meta', metaRoute);
+  .route('/meta', metaRoute)
+  .route('/card-stats', cardStatsRoute);
 
 app.get('*', serveStatic({ root: './frontend/dist' }));
 app.get('*', serveStatic({ path: './frontend/dist/index.html' }));

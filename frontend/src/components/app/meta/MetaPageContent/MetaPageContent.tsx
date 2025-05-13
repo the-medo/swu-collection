@@ -3,12 +3,6 @@ import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { useMemo } from 'react';
 import { tournamentTypesInfo } from '../../../../../../types/Tournament.ts';
 import * as React from 'react';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion.tsx';
 import MetaTabs from '@/components/app/meta/MetaTabs/MetaTabs.tsx';
 
 interface MetaPageContentProps {
@@ -39,7 +33,7 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
   }, [data, minTournamentType]);
 
   if (isFetching) return <Skeleton className="h-full w-full rounded-md" />;
-  return <MetaTabs tournaments={tournamentsFromMinType} />;
+  return <MetaTabs tournaments={tournamentsFromMinType} metaId={metaId} />;
 };
 
 export default MetaPageContent;
