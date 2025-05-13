@@ -38,13 +38,21 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
         size={variant === 'image' ? 'w200' : 'w75'}
       />
 
-      <div className="flex flex-col flex-1 gap-1 text-sm text-muted-foreground">
-        <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 gap-1 text-sm text-muted-foreground overflow-hidden">
+        <div
+          className={cn('border-b truncate ellipsis overflow-hidden whitespace-nowrap', {
+            'flex flex-col gap-1': variant === 'card-horizontal',
+          })}
+        >
           <span className="text-sm font-bold text-muted-foreground">
             {preTitle}
             {card.title}
-          </span>
-          <span className="text-xs text-gray-700">{card.subtitle ?? '-'}</span>
+          </span>{' '}
+          {card.subtitle ? (
+            <span className="text-xs text-muted-foreground italic"> {card.subtitle}</span>
+          ) : variant === 'card-horizontal' ? (
+            '-'
+          ) : null}
         </div>
         <div className="flex justify-between">
           <span>MD (+SB): </span>
