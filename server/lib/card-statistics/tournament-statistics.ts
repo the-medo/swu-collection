@@ -202,7 +202,7 @@ async function saveTournamentStatistics(
   tournamentId: string,
 ) {
   const { cardStats, cardStatsLeader, cardStatsLeaderBase } = statistics;
-  const BATCH_SIZE = 10000; // Adjust this value based on your database's capabilities
+  const BATCH_SIZE = 5000; // Adjust this value based on your database's capabilities
 
   // Begin transaction
   await db.transaction(async tx => {
@@ -226,7 +226,7 @@ async function saveTournamentStatistics(
     if (cardStatsLeader.length > 0) {
       const cardStatsLeaderBatches = batchArray(
         cardStatsLeader as CardStatTournamentLeaderInsert[],
-        BATCH_SIZE
+        BATCH_SIZE,
       );
       for (const batch of cardStatsLeaderBatches) {
         await tx.insert(cardStatTournamentLeader).values(batch);
@@ -236,7 +236,7 @@ async function saveTournamentStatistics(
     if (cardStatsLeaderBase.length > 0) {
       const cardStatsLeaderBaseBatches = batchArray(
         cardStatsLeaderBase as CardStatTournamentLeaderBaseInsert[],
-        BATCH_SIZE
+        BATCH_SIZE,
       );
       for (const batch of cardStatsLeaderBaseBatches) {
         await tx.insert(cardStatTournamentLeaderBase).values(batch);

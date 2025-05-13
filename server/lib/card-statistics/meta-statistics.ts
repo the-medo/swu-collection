@@ -205,7 +205,7 @@ async function computeMetaStatistics(
  */
 async function saveMetaStatistics(statistics: MetaStatisticsResult, metaId: number) {
   const { cardStats, cardStatsLeader, cardStatsLeaderBase } = statistics;
-  const BATCH_SIZE = 10000; // Adjust this value based on your database's capabilities
+  const BATCH_SIZE = 5000; // Adjust this value based on your database's capabilities
 
   // Begin transaction
   await db.transaction(async tx => {
