@@ -72,6 +72,8 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
       const allKeywords = new Set<string>();
       const allVariants = new Set<string>();
 
+      const test: any = {};
+
       cardIds.forEach(cid => {
         const card = cardListData[cid];
         if (!card) return;
@@ -142,9 +144,14 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
               variant: v,
               cardId: cid,
             };
+          } else {
+            if (!test[v.set]) test[v.set] = {};
+            test[v.set]![v.variantName] = card.name;
           }
         });
+        // console.log({ set: v.set, name: v.variantName, card });
       });
+      console.log({ test });
 
       return {
         cards: cardListData,
