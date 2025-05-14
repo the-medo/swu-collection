@@ -1,10 +1,10 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
+import { useCollectionImport } from '@/api/collections/useCollectionImport.ts';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -19,7 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, FileUp } from 'lucide-react';
+import { AlertCircle, FileUp, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { setInfo } from '../../../../../../../lib/swu-resources/set-info.ts';
 import { SwuSet } from '../../../../../../../types/enums.ts';
@@ -42,7 +42,7 @@ interface MatchedCard extends ImportedCard {
   variantName: string;
 }
 
-const CollectionInputImport: React.FC<CollectionInputImportProps> = () => {
+const CollectionInputImport: React.FC<CollectionInputImportProps> = ({ collectionId }) => {
   const { data: cardListData } = useCardList();
   const { toast } = useToast();
   const [csvContent, setCsvContent] = useState<string>('');
@@ -50,9 +50,42 @@ const CollectionInputImport: React.FC<CollectionInputImportProps> = () => {
   const [unmatchedCards, setUnmatchedCards] = useState<ImportedCard[]>([]);
   const [showMatched, setShowMatched] = useState<boolean>(false);
   const [showUnmatched, setShowUnmatched] = useState<boolean>(true);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const resultsRef = useRef<HTMLHeadingElement>(null);
+
+  const importMutation = useCollectionImport(collectionId);
 
   const handleCsvChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCsvContent(e.target.value);
+    const newContent = e.target.value;
+    setCsvContent(newContent);
+
+    // Automatically process CSV when content is pasted
+    if (newContent.trim() && cardListData) {
+      processCSV(newContent);
+    }
+  };
+
+  const handleImport = () => {
+    if (!matchedCards.length || !collectionId) return;
+
+    const importData = {
+      cards: matchedCards.map(card => ({
+        cardId: card.cardId,
+        variantId: card.variantId,
+        count: card.count,
+        isFoil: card.isFoil,
+      })),
+    };
+
+    importMutation.mutate(importData, {
+      onSuccess: () => {
+        // Reset the form after successful import
+        setCsvContent('');
+        setMatchedCards([]);
+        setUnmatchedCards([]);
+        setDialogOpen(false);
+      },
+    });
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +100,11 @@ const CollectionInputImport: React.FC<CollectionInputImportProps> = () => {
         title: 'File loaded',
         description: `${file.name} has been loaded successfully.`,
       });
+
+      // Automatically process CSV when file is uploaded
+      if (content.trim() && cardListData) {
+        processCSV(content);
+      }
     };
     reader.onerror = () => {
       toast({
@@ -84,100 +122,110 @@ const CollectionInputImport: React.FC<CollectionInputImportProps> = () => {
       .join('\n');
   };
 
-  const processCSV = useCallback(() => {
-    if (!cardListData) return;
-    const lines = csvContent.trim().split('\n');
+  const processCSV = useCallback(
+    (content?: string) => {
+      if (!cardListData) return;
+      const textToProcess = content !== undefined ? content : csvContent;
+      const lines = textToProcess.trim().split('\n');
 
-    // Check if the first line is a header and skip it if it is
-    let startIndex = 0;
-    if (
-      lines[0].toLowerCase().includes('set') &&
-      lines[0].toLowerCase().includes('cardnumber') &&
-      lines[0].toLowerCase().includes('count') &&
-      lines[0].toLowerCase().includes('isfoil')
-    ) {
-      startIndex = 1;
-    }
-
-    const importedCards: ImportedCard[] = [];
-
-    for (let i = startIndex; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
-
-      const parts = line.split(',');
-      if (parts.length < 4) continue;
-
-      importedCards.push({
-        set: parts[0].trim(),
-        cardNumber: parseInt(parts[1].trim(), 10),
-        count: parseInt(parts[2].trim(), 10) || 1,
-        isFoil: parts[3].trim().toLowerCase() === 'true',
-      });
-    }
-
-    const matched: MatchedCard[] = [];
-    const unmatched: ImportedCard[] = [];
-
-    const foilVariantNames: Record<string, string | undefined> = {
-      Standard: 'Standard Foil',
-      Hyperspace: 'Hyperspace Foil',
-      'Standard Prestige': 'Foil Prestige',
-    };
-
-    importedCards.forEach(card => {
-      const set = card.set.toLowerCase() as SwuSet;
-
-      if (!(set in cardListData.cardsByCardNo)) {
-        unmatched.push(card);
-        return;
+      // Check if the first line is a header and skip it if it is
+      let startIndex = 0;
+      if (
+        lines.length > 0 &&
+        lines[0].toLowerCase().includes('set') &&
+        lines[0].toLowerCase().includes('cardnumber') &&
+        lines[0].toLowerCase().includes('count') &&
+        lines[0].toLowerCase().includes('isfoil')
+      ) {
+        startIndex = 1;
       }
 
-      const c = cardListData.cardsByCardNo[set]?.[card.cardNumber];
-      console.log({ c });
+      const importedCards: ImportedCard[] = [];
 
-      const cardData = c ? cardListData.cards[c.cardId] : undefined;
+      for (let i = startIndex; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
 
-      if (!c || !cardData) {
-        unmatched.push(card);
-        return;
+        const parts = line.split(',');
+        if (parts.length < 4) continue;
+
+        importedCards.push({
+          set: parts[0].trim(),
+          cardNumber: parseInt(parts[1].trim(), 10),
+          count: parseInt(parts[2].trim(), 10) || 1,
+          isFoil: parts[3].trim().toLowerCase() === 'true',
+        });
       }
 
-      const match: MatchedCard = {
-        ...card,
-        cardId: c.cardId,
-        cardName: cardData.name,
-        variantId: c.variant.variantId,
-        variantName: c.variant.variantName,
+      const matched: MatchedCard[] = [];
+      const unmatched: ImportedCard[] = [];
+
+      const foilVariantNames: Record<string, string | undefined> = {
+        Standard: 'Standard Foil',
+        Hyperspace: 'Hyperspace Foil',
+        'Standard Prestige': 'Foil Prestige',
       };
 
-      /**
-       * special case for numbering of sets for JTL+
-       * - foils, HS and HSF have all their own numbers
-       * - swudb exports standard foils and HSF with the same number as the nonfoil version of the card
-       */
-      if (setInfo[set]?.sortValue >= setInfo[SwuSet.JTL].sortValue) {
-        if (card.isFoil) {
-          const newVariantName = foilVariantNames[c.variant.variantName]!;
-          if (newVariantName !== undefined) {
-            const newVariantId = Object.keys(cardData.variants).find(v => {
-              return cardData.variants[v]?.variantName === newVariantName;
-            });
-            if (newVariantId) {
-              match.variantId = newVariantId;
-              match.variantName = cardData.variants[newVariantId]!.variantName;
-              match.cardNumber = cardData.variants[newVariantId]!.cardNo;
+      importedCards.forEach(card => {
+        const set = card.set.toLowerCase() as SwuSet;
+
+        if (!(set in cardListData.cardsByCardNo)) {
+          unmatched.push(card);
+          return;
+        }
+
+        const c = cardListData.cardsByCardNo[set]?.[card.cardNumber];
+        console.log({ c });
+
+        const cardData = c ? cardListData.cards[c.cardId] : undefined;
+
+        if (!c || !cardData) {
+          unmatched.push(card);
+          return;
+        }
+
+        const match: MatchedCard = {
+          ...card,
+          cardId: c.cardId,
+          cardName: cardData.name,
+          variantId: c.variant.variantId,
+          variantName: c.variant.variantName,
+        };
+
+        /**
+         * special case for numbering of sets for JTL+
+         * - foils, HS and HSF have all their own numbers
+         * - swudb exports standard foils and HSF with the same number as the nonfoil version of the card
+         */
+        if (setInfo[set]?.sortValue >= setInfo[SwuSet.JTL].sortValue) {
+          if (card.isFoil) {
+            const newVariantName = foilVariantNames[c.variant.variantName]!;
+            if (newVariantName !== undefined) {
+              const newVariantId = Object.keys(cardData.variants).find(v => {
+                return cardData.variants[v]?.variantName === newVariantName;
+              });
+              if (newVariantId) {
+                match.variantId = newVariantId;
+                match.variantName = cardData.variants[newVariantId]!.variantName;
+                match.cardNumber = cardData.variants[newVariantId]!.cardNo;
+              }
             }
           }
         }
-      }
 
-      matched.push(match);
-    });
+        matched.push(match);
+      });
 
-    setMatchedCards(matched);
-    setUnmatchedCards(unmatched);
-  }, [cardListData, csvContent]);
+      setMatchedCards(matched);
+      setUnmatchedCards(unmatched);
+
+      // Scroll to the results section
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    },
+    [cardListData],
+  );
 
   return (
     <div>
@@ -190,7 +238,7 @@ const CollectionInputImport: React.FC<CollectionInputImportProps> = () => {
         </AlertDescription>
       </Alert>
 
-      <Dialog>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button>Import from SWUDB</Button>
         </DialogTrigger>
@@ -231,12 +279,14 @@ const CollectionInputImport: React.FC<CollectionInputImportProps> = () => {
                   <FileUp className="h-4 w-4 mr-2" />
                   Upload CSV file
                 </Button>
-                <Button onClick={processCSV}>Process CSV data</Button>
+                <Button variant="secondary" onClick={() => processCSV()}>
+                  Reprocess CSV data
+                </Button>
               </div>
             </div>
           </div>
 
-          <h4>3. "Process CSV" and check the results - data is not imported yet</h4>
+          <h4 ref={resultsRef}>3. Check the results below - data is not imported yet</h4>
 
           {unmatchedCards.length > 0 && (
             <div className="p-2 bg-red-200 dark:bg-red-700">
@@ -248,7 +298,7 @@ const CollectionInputImport: React.FC<CollectionInputImportProps> = () => {
               </div>
               {showUnmatched && (
                 <>
-                  <div className="max-h-[300px] overflow-auto">
+                  <div className="max-h-[200px] overflow-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -274,11 +324,7 @@ const CollectionInputImport: React.FC<CollectionInputImportProps> = () => {
                     <p className="text-sm text-muted-foreground mb-2">
                       These rows were not matched:
                     </p>
-                    <Textarea
-                      readOnly
-                      value={formatUnmatchedCardsToCSV()}
-                      className="min-h-[100px]"
-                    />
+                    <Textarea readOnly value={formatUnmatchedCardsToCSV()} rows={3} />
                   </div>
                 </>
               )}
@@ -325,7 +371,19 @@ const CollectionInputImport: React.FC<CollectionInputImportProps> = () => {
           )}
 
           <h4>4. Import</h4>
-          <DialogFooter>Finish import</DialogFooter>
+          <Button
+            onClick={handleImport}
+            disabled={!matchedCards.length || importMutation.isPending || !collectionId}
+          >
+            {importMutation.isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Importing...
+              </>
+            ) : (
+              'Finalize Import'
+            )}
+          </Button>
         </DialogContent>
       </Dialog>
     </div>
