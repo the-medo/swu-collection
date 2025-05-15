@@ -13,6 +13,8 @@ import DeckLayoutSelector from '@/components/app/decks/DeckContents/DeckLayoutSe
 import GroupBySelector from '@/components/app/decks/DeckContents/GroupBySelector/GroupBySelector.tsx';
 import DeckBoardCardCounts from '@/components/app/decks/DeckContents/DeckBoardCardCounts/DeckBoardCardCounts.tsx';
 import DeckMatches from '@/components/app/decks/DeckContents/DeckMatches/DeckMatches.tsx';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
+import DeckStats from '@/components/app/decks/DeckContents/DeckStats/DeckStats.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -88,7 +90,19 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId }) => {
             <GroupBySelector />
           </div>
         </div>
-        <DeckCards deckId={deckId} />
+
+        <Tabs defaultValue="decklist" className="w-full">
+          <TabsList>
+            <TabsTrigger value="decklist">Decklist</TabsTrigger>
+            <TabsTrigger value="stats">Stats</TabsTrigger>
+          </TabsList>
+          <TabsContent value="decklist">
+            <DeckCards deckId={deckId} />
+          </TabsContent>
+          <TabsContent value="stats">
+            <DeckStats deckId={deckId} />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
