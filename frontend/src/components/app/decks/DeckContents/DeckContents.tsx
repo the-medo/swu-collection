@@ -10,6 +10,7 @@ import { useCallback } from 'react';
 import { toast } from '@/hooks/use-toast.ts';
 import DeckActions from '@/components/app/decks/DeckActions/DeckActions.tsx';
 import DeckLayoutSelector from '@/components/app/decks/DeckContents/DeckLayoutSelector/DeckLayoutSelector.tsx';
+import GroupBySelector from '@/components/app/decks/DeckContents/GroupBySelector/GroupBySelector.tsx';
 import DeckBoardCardCounts from '@/components/app/decks/DeckContents/DeckBoardCardCounts/DeckBoardCardCounts.tsx';
 import DeckMatches from '@/components/app/decks/DeckContents/DeckMatches/DeckMatches.tsx';
 
@@ -84,6 +85,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId }) => {
           <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
             <DeckBoardCardCounts deckId={deckId} />
             <DeckLayoutSelector />
+            <GroupBySelector />
           </div>
         </div>
         <DeckCards deckId={deckId} />

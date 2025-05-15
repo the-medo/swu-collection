@@ -1,5 +1,5 @@
 import { CardLanguage, CardCondition, SwuAspect, CollectionType } from './enums.ts';
-import { DeckLayout } from '../frontend/src/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { DeckLayout, DeckGroupBy } from '../frontend/src/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 
 export const getLanguageFlagUrl = (language: CardLanguage) =>
   `https://images.swubase.com/flags/languages/${language}.png`;
@@ -129,6 +129,20 @@ export const deckLayoutObj: Record<DeckLayout, { title: string }> = {
 };
 
 export const deckLayoutArray = Object.values(DeckLayout);
+
+export const deckGroupByObj: Record<DeckGroupBy, { title: string }> = {
+  [DeckGroupBy.CARD_TYPE]: {
+    title: 'Card Type',
+  },
+  [DeckGroupBy.COST]: {
+    title: 'Cost',
+  },
+  [DeckGroupBy.ASPECT]: {
+    title: 'Aspect',
+  },
+};
+
+export const deckGroupByArray = Object.values(DeckGroupBy);
 
 export const collectionTypeTitle: Record<CollectionType, string> = {
   [CollectionType.COLLECTION]: 'Collection',
