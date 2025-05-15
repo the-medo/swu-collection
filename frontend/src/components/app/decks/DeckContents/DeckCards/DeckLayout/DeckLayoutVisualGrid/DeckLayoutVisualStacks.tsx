@@ -2,7 +2,6 @@ import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCard
 import * as React from 'react';
 import DeckCardVisualItem from './DeckCardVisualItem.tsx';
 import { DeckLayout } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
-import { cn } from '@/lib/utils.ts';
 
 export type DeckLayoutVisualStacksVariant = 'normal' | 'split';
 
@@ -74,19 +73,23 @@ const DeckLayoutVisualStacks: React.FC<DeckLayoutVisualStacksProps> = ({
               </span>
             </span>
           </div>
-          <ul className="flex flex-col">
-            <div className="pr-4 mb-6 pt-[240px] relative">
-              {cardsByBoard[2].map(card => (
-                <DeckCardVisualItem
-                  key={card.cardId}
-                  deckLayout={deckLayout}
-                  deckId={deckId}
-                  deckCard={card}
-                  card={usedCards[card.cardId]}
-                  cardInBoards={usedCardsInBoards[card.cardId]}
-                />
-              ))}
-            </div>
+          <ul className="flex flex-col pt-[240px]">
+            {cardsByBoard[2].map(card =>
+              (variant === 'normal' ? [1] : Array.from({ length: card.quantity })).map((_, i) => {
+                return (
+                  <DeckCardVisualItem
+                    key={`${card.cardId}-${i}`}
+                    deckLayout={deckLayout}
+                    deckId={deckId}
+                    deckCard={card}
+                    card={usedCards[card.cardId]}
+                    cardInBoards={usedCardsInBoards[card.cardId]}
+                    displayDropdown={i === 0}
+                    displayQuantity={i === 0}
+                  />
+                );
+              }),
+            )}
           </ul>
         </div>
       )}
@@ -105,19 +108,23 @@ const DeckLayoutVisualStacks: React.FC<DeckLayoutVisualStacksProps> = ({
               </span>
             </span>
           </div>
-          <ul className="flex flex-col">
-            <div className={cn('pr-4 mb-6 pt-[240px] relative')}>
-              {cardsByBoard[3].map(card => (
-                <DeckCardVisualItem
-                  key={card.cardId}
-                  deckLayout={deckLayout}
-                  deckId={deckId}
-                  deckCard={card}
-                  card={usedCards[card.cardId]}
-                  cardInBoards={usedCardsInBoards[card.cardId]}
-                />
-              ))}
-            </div>
+          <ul className="flex flex-col pt-[240px]">
+            {cardsByBoard[3].map(card =>
+              (variant === 'normal' ? [1] : Array.from({ length: card.quantity })).map((_, i) => {
+                return (
+                  <DeckCardVisualItem
+                    key={`${card.cardId}-${i}`}
+                    deckLayout={deckLayout}
+                    deckId={deckId}
+                    deckCard={card}
+                    card={usedCards[card.cardId]}
+                    cardInBoards={usedCardsInBoards[card.cardId]}
+                    displayDropdown={i === 0}
+                    displayQuantity={i === 0}
+                  />
+                );
+              }),
+            )}
           </ul>
         </div>
       )}
