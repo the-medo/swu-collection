@@ -13,6 +13,8 @@ export enum DeckGroupBy {
   CARD_TYPE = 'card-type',
   COST = 'cost',
   ASPECT = 'aspect',
+  TRAIT = 'trait',
+  KEYWORDS = 'keywords',
 }
 
 const getDefaultDeckLayout = () => {
