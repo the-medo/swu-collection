@@ -30,7 +30,7 @@ const GroupBySelector: React.FC<GroupBySelectorProps> = ({}) => {
       <DropdownMenuTrigger asChild>
         <div className="flex gap-2 items-center">
           <span className="text-sm font-semibold">Group by:</span>
-          <Button variant="outline" className="text-xs w-[200px] justify-between">
+          <Button variant="outline" className="text-xs w-[150px] justify-between">
             {groupBy !== undefined ? deckGroupByObj[groupBy]?.title : 'Card Type'}
             <Layers className="h-4 w-4 ml-2" />
           </Button>

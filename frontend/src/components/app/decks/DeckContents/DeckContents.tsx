@@ -81,29 +81,31 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId }) => {
         <DeckActions deckId={deckId} />
         <DeckMatches deckId={deckId} setDeckId={setDeckId} />
       </div>
-      <div className="flex flex-col gap-2 w-full">
-        <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">
-          {owned && <DeckInputCommand deckId={deckId} />}
-          <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
-            <DeckBoardCardCounts deckId={deckId} />
-            <DeckLayoutSelector />
-            <GroupBySelector />
+      <Tabs defaultValue="decklist" className="w-full">
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">
+            {owned && <DeckInputCommand deckId={deckId} />}
+            <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
+              <DeckBoardCardCounts deckId={deckId} />
+              <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
+                <DeckLayoutSelector />
+                <GroupBySelector />
+              </div>
+              <TabsList>
+                <TabsTrigger value="decklist">Decklist</TabsTrigger>
+                <TabsTrigger value="stats">Math</TabsTrigger>
+              </TabsList>
+            </div>
           </div>
-        </div>
 
-        <Tabs defaultValue="decklist" className="w-full">
-          <TabsList>
-            <TabsTrigger value="decklist">Decklist</TabsTrigger>
-            <TabsTrigger value="stats">Stats</TabsTrigger>
-          </TabsList>
           <TabsContent value="decklist">
             <DeckCards deckId={deckId} />
           </TabsContent>
           <TabsContent value="stats">
             <DeckStats deckId={deckId} />
           </TabsContent>
-        </Tabs>
-      </div>
+        </div>
+      </Tabs>
     </div>
   );
 };

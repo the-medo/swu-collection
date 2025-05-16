@@ -80,7 +80,7 @@ const DeckCostChart: React.FC<DeckCostChartProps> = ({ deckCardsForLayout }) => 
             content={
               <ChartTooltipContent
                 formatter={(value, name) => {
-                  return [value, name === 'count' ? 'Cards' : 'Cost'];
+                  return [value, name === 'count' ? ' Cards' : ' Cost'];
                 }}
               />
             }
