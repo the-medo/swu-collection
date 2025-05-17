@@ -38,7 +38,6 @@ export const usePutDeckCard = (deckId: string | undefined) => {
         const { data: existingCards } = oldData;
 
         const cardIndex = existingCards.findIndex((card: DeckCard) => {
-          console.log({ card, id });
           return card.cardId === id.cardId && card.board === id.board;
         });
 

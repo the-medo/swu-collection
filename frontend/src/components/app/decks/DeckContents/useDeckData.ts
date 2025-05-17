@@ -9,6 +9,11 @@ import {
 } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { DeckCard } from '../../../../../../types/ZDeckCard.ts';
+import { DeckGroupBy, useDeckLayoutStore } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { groupCardsByCost } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByCost.ts';
+import { groupCardsByAspect } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByAspect.ts';
+import { groupCardsByTrait } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByTrait.ts';
+import { groupCardsByKeywords } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByKeywords.ts';
 
 /**
  * Hook to get all deck data including leader, base, cards, and user info
@@ -31,6 +36,9 @@ export function useDeckData(deckId: string) {
       format: deckInfo?.deck.format || 1,
     };
   }, [deckInfo, cardList]);
+
+  // Get the current groupBy value from the store
+  const { groupBy } = useDeckLayoutStore();
 
   // Process deck data for display
   const deckCardsForLayout = useMemo((): DeckCardsForLayout => {
@@ -64,9 +72,28 @@ export function useDeckData(deckId: string) {
       );
     }
 
-    const mainboardGroups = cardList
-      ? groupCardsByCardType(cardList?.cards, cardsByBoard[1])
-      : undefined;
+    // Group cards based on the selected grouping option
+    let mainboardGroups;
+    if (cardList) {
+      switch (groupBy) {
+        case DeckGroupBy.COST:
+          mainboardGroups = groupCardsByCost(cardList.cards, cardsByBoard[1]);
+          break;
+        case DeckGroupBy.ASPECT:
+          mainboardGroups = groupCardsByAspect(cardList.cards, cardsByBoard[1]);
+          break;
+        case DeckGroupBy.TRAIT:
+          mainboardGroups = groupCardsByTrait(cardList.cards, cardsByBoard[1]);
+          break;
+        case DeckGroupBy.KEYWORDS:
+          mainboardGroups = groupCardsByKeywords(cardList.cards, cardsByBoard[1]);
+          break;
+        case DeckGroupBy.CARD_TYPE:
+        default:
+          mainboardGroups = groupCardsByCardType(cardList.cards, cardsByBoard[1]);
+          break;
+      }
+    }
 
     return {
       mainboardGroups,
@@ -74,7 +101,7 @@ export function useDeckData(deckId: string) {
       usedCards,
       usedCardsInBoards,
     };
-  }, [cardList, deckCards]);
+  }, [cardList, deckCards, groupBy]);
 
   return {
     deckCardsForLayout,

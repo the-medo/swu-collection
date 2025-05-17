@@ -10,8 +10,11 @@ import { useCallback } from 'react';
 import { toast } from '@/hooks/use-toast.ts';
 import DeckActions from '@/components/app/decks/DeckActions/DeckActions.tsx';
 import DeckLayoutSelector from '@/components/app/decks/DeckContents/DeckLayoutSelector/DeckLayoutSelector.tsx';
+import GroupBySelector from '@/components/app/decks/DeckContents/GroupBySelector/GroupBySelector.tsx';
 import DeckBoardCardCounts from '@/components/app/decks/DeckContents/DeckBoardCardCounts/DeckBoardCardCounts.tsx';
 import DeckMatches from '@/components/app/decks/DeckContents/DeckMatches/DeckMatches.tsx';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
+import DeckStats from '@/components/app/decks/DeckContents/DeckStats/DeckStats.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -78,16 +81,33 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId }) => {
         <DeckActions deckId={deckId} />
         <DeckMatches deckId={deckId} setDeckId={setDeckId} />
       </div>
-      <div className="flex flex-col gap-2 w-full">
-        <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">
-          {owned && <DeckInputCommand deckId={deckId} />}
-          <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
-            <DeckBoardCardCounts deckId={deckId} />
-            <DeckLayoutSelector />
+      <Tabs defaultValue="decklist" className="w-full">
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">
+            {owned && <DeckInputCommand deckId={deckId} />}
+            <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
+              <TabsList>
+                <TabsTrigger value="decklist">Decklist</TabsTrigger>
+                <TabsTrigger value="charts">Charts</TabsTrigger>
+              </TabsList>
+              <DeckBoardCardCounts deckId={deckId} />
+              <TabsContent value="decklist">
+                <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
+                  <DeckLayoutSelector />
+                  <GroupBySelector />
+                </div>
+              </TabsContent>
+            </div>
           </div>
+
+          <TabsContent value="decklist">
+            <DeckCards deckId={deckId} />
+          </TabsContent>
+          <TabsContent value="charts">
+            <DeckStats deckId={deckId} />
+          </TabsContent>
         </div>
-        <DeckCards deckId={deckId} />
-      </div>
+      </Tabs>
     </div>
   );
 };

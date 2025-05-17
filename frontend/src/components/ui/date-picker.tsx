@@ -25,8 +25,6 @@ export function DatePicker({
   // Convert ISO string to Date for the calendar
   const dateValue = date ? new Date(date) : undefined;
 
-  console.log({ date, dateValue });
-
   // Handle the date change by converting Date back to ISO string
   const handleDateChange = (newDate: Date | undefined) => {
     if (newDate) {

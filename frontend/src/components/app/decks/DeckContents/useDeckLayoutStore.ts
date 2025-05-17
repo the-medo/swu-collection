@@ -9,6 +9,14 @@ export enum DeckLayout {
   VISUAL_STACKS_SPLIT = 'visual-stacks-split',
 }
 
+export enum DeckGroupBy {
+  CARD_TYPE = 'card-type',
+  COST = 'cost',
+  ASPECT = 'aspect',
+  TRAIT = 'trait',
+  KEYWORDS = 'keywords',
+}
+
 const getDefaultDeckLayout = () => {
   const layout = localStorage.getItem('deckLayout');
   if (layout) {
@@ -17,6 +25,16 @@ const getDefaultDeckLayout = () => {
     }
   }
   return DeckLayout.TEXT;
+};
+
+const getDefaultDeckGroupBy = () => {
+  const groupBy = localStorage.getItem('deckGroupBy');
+  if (groupBy) {
+    if (Object.values(DeckGroupBy).includes(groupBy as DeckGroupBy)) {
+      return groupBy as DeckGroupBy;
+    }
+  }
+  return DeckGroupBy.CARD_TYPE;
 };
 
 interface DeckLayoutStore {
@@ -29,11 +47,13 @@ interface DeckLayoutStore {
     | undefined
   >;
   layout: DeckLayout;
+  groupBy: DeckGroupBy;
 }
 
 const defaultState: DeckLayoutStore = {
   deckInfo: {},
   layout: getDefaultDeckLayout(),
+  groupBy: getDefaultDeckGroupBy(),
 };
 
 const store = new Store<DeckLayoutStore>(defaultState);
@@ -52,10 +72,16 @@ const setLayout = (layout: DeckLayout) => {
   store.setState(state => ({ ...state, layout }));
 };
 
+const setGroupBy = (groupBy: DeckGroupBy) => {
+  localStorage.setItem('deckGroupBy', groupBy);
+  store.setState(state => ({ ...state, groupBy }));
+};
+
 export function useDeckLayoutStore() {
   const layout = useStore(store, state => state.layout);
+  const groupBy = useStore(store, state => state.groupBy);
 
-  return { layout };
+  return { layout, groupBy };
 }
 
 export function useDeckInfo(deckId: string) {
@@ -70,6 +96,7 @@ export function useDeckInfo(deckId: string) {
 export function useDeckLayoutStoreActions() {
   return {
     setLayout,
+    setGroupBy,
     setDeckInfo: setDeckInfo,
   };
 }

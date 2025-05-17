@@ -56,7 +56,6 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
 
   // Process matches to create bracket structure
   const bracketData = useMemo(() => {
-    console.log({ matchesData, topDecks });
     if (!matchesData?.data || !topDecks.length) return null;
 
     // Get the final round matches
