@@ -7,6 +7,7 @@ import { useTheme } from '@/components/theme-provider.tsx';
 
 interface DeckAspectChartProps {
   deckCardsForLayout: DeckCardsForLayout;
+  onAspectClick?: (aspect: string) => void;
 }
 
 // Define aspect colors - same as in usePieChartColors.tsx
@@ -19,10 +20,17 @@ const aspectColors: Record<SwuAspect, string> = {
   [SwuAspect.VILLAINY]: '#040004', // c50 m80 y0 k100
 };
 
-const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout }) => {
+const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout, onAspectClick }) => {
   const { data: cardListData } = useCardList();
   const { theme } = useTheme();
   const { cardsByBoard } = deckCardsForLayout;
+
+  // Handler for pie section click events
+  const handlePieClick = (data: any) => {
+    if (onAspectClick) {
+      onAspectClick(data.id);
+    }
+  };
 
   // Only include mainboard cards (board 1)
   const mainboardCards = cardsByBoard[1];
@@ -48,7 +56,7 @@ const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout })
       if (cardData.aspects && cardData.aspects.length > 0) {
         // Check if the card has any aspects other than Heroism and Villainy
         const mainAspects = cardData.aspects.filter(
-          aspect => aspect !== SwuAspect.HEROISM && aspect !== SwuAspect.VILLAINY
+          aspect => aspect !== SwuAspect.HEROISM && aspect !== SwuAspect.VILLAINY,
         );
 
         if (mainAspects.length > 0) {
@@ -83,10 +91,10 @@ const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout })
   }
 
   return (
-    <div className="w-full" style={{ height: '350px' }}>
+    <div className="w-full" style={{ height: '350px', width: '350px' }}>
       <ResponsivePie
         data={aspectDistribution}
-        margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+        margin={{ top: 20, right: 20, bottom: 40, left: 20 }}
         innerRadius={0.5}
         padAngle={0.7}
         cornerRadius={3}
@@ -94,19 +102,20 @@ const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout })
         colors={{ datum: 'data.color' }}
         borderWidth={1}
         borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
-        arcLinkLabelsSkipAngle={10}
-        arcLinkLabelsTextColor={theme === 'dark' ? '#ffffff' : '#333333'}
-        arcLinkLabelsThickness={2}
-        arcLinkLabelsColor={{ from: 'color' }}
+        arcLinkLabel={''}
+        arcLinkLabelsThickness={0}
         arcLabelsSkipAngle={10}
         arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+        onClick={handlePieClick}
+        isInteractive={true}
+        animate={true}
         legends={[
           {
             anchor: 'bottom',
             direction: 'row',
             justify: false,
             translateX: 0,
-            translateY: 56,
+            translateY: 36,
             itemsSpacing: 0,
             itemWidth: 100,
             itemHeight: 18,
@@ -115,7 +124,7 @@ const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout })
             itemOpacity: 1,
             symbolSize: 18,
             symbolShape: 'circle',
-          }
+          },
         ]}
       />
     </div>

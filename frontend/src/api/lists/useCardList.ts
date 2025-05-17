@@ -149,9 +149,7 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
             test[v.set]![v.variantName] = card.name;
           }
         });
-        // console.log({ set: v.set, name: v.variantName, card });
       });
-      console.log({ test });
 
       return {
         cards: cardListData,

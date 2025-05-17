@@ -7,12 +7,14 @@ interface DeckLayoutTextProps {
   variant: DeckCardRowVariant;
   deckId: string;
   deckCardsForLayout: DeckCardsForLayout;
+  showSideboard?: boolean;
 }
 
 const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
   variant,
   deckId,
   deckCardsForLayout: { mainboardGroups, cardsByBoard, usedCardsInBoards, usedCards },
+  showSideboard = true,
 }) => {
   const columnClasses =
     '@container columns-1 @[700px]:columns-2 @[1050px]:columns-3 gap-4 space-y-4';
@@ -45,24 +47,26 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
             </div>
           );
         })}
-        <div className="flex flex-col gap-1 w-[350px] p-1 bg-accent break-inside-avoid">
-          <span className="font-medium">
-            Sideboard ({cardsByBoard[2].reduce((p, c) => p + c.quantity, 0)})
-          </span>
-          {cardsByBoard[2].length === 0 && <span className="text-sm">No cards in sideboard</span>}
-          {cardsByBoard[2].map(c => {
-            return (
-              <DeckCardTextRow
-                key={c.cardId}
-                variant={variant}
-                deckId={deckId}
-                deckCard={c}
-                card={usedCards[c.cardId]}
-                cardInBoards={usedCardsInBoards[c.cardId]}
-              />
-            );
-          })}
-        </div>
+        {showSideboard && (
+          <div className="flex flex-col gap-1 w-[350px] p-1 bg-accent break-inside-avoid">
+            <span className="font-medium">
+              Sideboard ({cardsByBoard[2].reduce((p, c) => p + c.quantity, 0)})
+            </span>
+            {cardsByBoard[2].length === 0 && <span className="text-sm">No cards in sideboard</span>}
+            {cardsByBoard[2].map(c => {
+              return (
+                <DeckCardTextRow
+                  key={c.cardId}
+                  variant={variant}
+                  deckId={deckId}
+                  deckCard={c}
+                  card={usedCards[c.cardId]}
+                  cardInBoards={usedCardsInBoards[c.cardId]}
+                />
+              );
+            })}
+          </div>
+        )}
       </article>
       {cardsByBoard[3].length > 0 && (
         <div className="flex flex-col mt-8 gap-1 w-full">

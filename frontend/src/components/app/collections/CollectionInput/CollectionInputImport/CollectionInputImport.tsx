@@ -175,7 +175,6 @@ const CollectionInputImport: React.FC<CollectionInputImportProps> = ({ collectio
         }
 
         const c = cardListData.cardsByCardNo[set]?.[card.cardNumber];
-        console.log({ c });
 
         const cardData = c ? cardListData.cards[c.cardId] : undefined;
 

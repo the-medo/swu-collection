@@ -86,22 +86,24 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId }) => {
           <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">
             {owned && <DeckInputCommand deckId={deckId} />}
             <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
-              <DeckBoardCardCounts deckId={deckId} />
-              <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
-                <DeckLayoutSelector />
-                <GroupBySelector />
-              </div>
               <TabsList>
                 <TabsTrigger value="decklist">Decklist</TabsTrigger>
-                <TabsTrigger value="stats">Math</TabsTrigger>
+                <TabsTrigger value="charts">Charts</TabsTrigger>
               </TabsList>
+              <DeckBoardCardCounts deckId={deckId} />
+              <TabsContent value="decklist">
+                <div className="flex flex-wrap gap-4 items-center max-lg:justify-center">
+                  <DeckLayoutSelector />
+                  <GroupBySelector />
+                </div>
+              </TabsContent>
             </div>
           </div>
 
           <TabsContent value="decklist">
             <DeckCards deckId={deckId} />
           </TabsContent>
-          <TabsContent value="stats">
+          <TabsContent value="charts">
             <DeckStats deckId={deckId} />
           </TabsContent>
         </div>
