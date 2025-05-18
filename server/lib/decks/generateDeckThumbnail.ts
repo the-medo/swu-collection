@@ -24,10 +24,17 @@ const s3Client = new S3Client({
 });
 
 // Default logo URL
-const DEFAULT_LOGO_URL = 'https://images.swubase.com/discord-logo.png';
+const DEFAULT_LOGO_URL = 'https://images.swubase.com/logo-light.svg';
 // Logo size (approximate width in pixels)
-const LOGO_SIZE = 55;
-const IMAGE_SIZE = 419;
+const LOGO_SIZE = 100;
+// Image dimensions
+const IMAGE_WIDTH = 1200;
+const IMAGE_HEIGHT = 630;
+// Card image size (default size of horizontal images)
+const CARD_WIDTH = 419;
+const CARD_HEIGHT = 300;
+// Background image URL
+const BACKGROUND_IMAGE_URL = 'https://images.swubase.com/decks/deck-thumbnail-bg.png';
 
 /**
  * Safely fetches an image from a URL and returns it as a buffer
@@ -52,8 +59,8 @@ async function safelyFetchImage(
     if (fallbackColor) {
       return await sharp({
         create: {
-          width: 300,
-          height: IMAGE_SIZE,
+          width: CARD_WIDTH,
+          height: CARD_HEIGHT,
           channels: 4,
           background: fallbackColor,
         },
@@ -113,7 +120,7 @@ export async function generateDeckThumbnail(
     );
   }
 
-  const leaderBackImageUrl = `https://images.swubase.com/cards/${leaderVariant.image.back}`;
+  const leaderImageUrl = `https://images.swubase.com/cards/${leaderVariant.image.front}`;
   const baseImageUrl = `https://images.swubase.com/cards/${baseVariant.image.front}`;
 
   const backgroundColor = options?.backgroundColor || { r: 37, g: 37, b: 37, alpha: 1 }; // #252525
@@ -143,18 +150,19 @@ export async function generateDeckThumbnail(
   }
 
   try {
-    // Create a 419x419px image with dark grey background
-    const image = sharp({
-      create: {
-        width: IMAGE_SIZE,
-        height: IMAGE_SIZE,
-        channels: 4,
-        background: backgroundColor,
-      },
+    // Download the background image with fallback
+    const backgroundBuffer = await safelyFetchImage(BACKGROUND_IMAGE_URL, {
+      r: 37,
+      g: 37,
+      b: 37,
+      alpha: 1, // Dark grey fallback
     });
 
-    // Download the leader card back image with fallback
-    const leaderBackImageBuffer = await safelyFetchImage(leaderBackImageUrl, {
+    // Create a base image from the background
+    const image = sharp(backgroundBuffer).resize(IMAGE_WIDTH, IMAGE_HEIGHT);
+
+    // Download the leader card front image with fallback
+    const leaderImageBuffer = await safelyFetchImage(leaderImageUrl, {
       r: 30,
       g: 30,
       b: 30,
@@ -169,34 +177,39 @@ export async function generateDeckThumbnail(
     try {
       logoBuffer = await safelyFetchImage(logoUrl);
 
-      // Resize logo if it's too large
-      const logoMetadata = await sharp(logoBuffer).metadata();
-      if (logoMetadata.width && logoMetadata.width > LOGO_SIZE * 2) {
-        logoBuffer = await sharp(logoBuffer).resize(LOGO_SIZE, null, { fit: 'contain' }).toBuffer();
-      }
+      // Resize logo if needed with better SVG handling
+      logoBuffer = await sharp(logoBuffer, {
+        density: 300, // Higher density for better SVG rendering
+      })
+        .resize(LOGO_SIZE, LOGO_SIZE, {
+          fit: 'contain',
+          background: { r: 0, g: 0, b: 0, alpha: 0 }, // Transparent background
+        })
+        .toBuffer();
     } catch (error) {
       console.warn('Could not load logo, continuing without it:', error);
       // Continue without the logo
     }
 
-    // Resize the base card to 300px width
-    const resizedBaseImage = await sharp(baseImageBuffer)
-      .resize(300, null, { fit: 'contain' })
-      .toBuffer();
+    // Define spacing between and around cards
+    const SPACING = Math.floor((IMAGE_WIDTH - CARD_WIDTH * 2) / 3); // Equal spacing everywhere
+
+    const startX = SPACING; // This ensures equal spacing on left and right
+    const centerY = Math.floor((IMAGE_HEIGHT - CARD_HEIGHT) / 2); // This ensures equal spacing on top and bottom
 
     // Prepare composite array
     const compositeArray: OverlayOptions[] = [
-      // Leader card in the middle (300x419)
+      // Leader card on the left
       {
-        input: leaderBackImageBuffer,
-        gravity: 'center',
+        input: leaderImageBuffer,
+        top: centerY,
+        left: startX,
       },
-      // Base card at the bottom middle (overlapping the bottom half of the leader card)
+      // Base card on the right (with spacing between)
       {
-        input: resizedBaseImage,
-        gravity: 'south',
-        top: 209, // Position at the bottom half of the image (419/2)
-        left: Math.floor((IMAGE_SIZE - 300) / 2) + 1, // Center horizontally
+        input: baseImageBuffer,
+        top: centerY,
+        left: startX + CARD_WIDTH + SPACING, // Add spacing between cards
       },
     ];
 
@@ -204,9 +217,8 @@ export async function generateDeckThumbnail(
     if (logoBuffer) {
       compositeArray.push({
         input: logoBuffer,
-        gravity: 'southeast',
-        top: IMAGE_SIZE - LOGO_SIZE,
-        left: IMAGE_SIZE - LOGO_SIZE,
+        top: IMAGE_HEIGHT - LOGO_SIZE - 5,
+        left: IMAGE_WIDTH - LOGO_SIZE - 5,
       });
     }
 
