@@ -2,6 +2,7 @@ import { db } from '../../db';
 import { tournament } from '../../db/schema/tournament';
 import { deck } from '../../db/schema/deck';
 import { eq } from 'drizzle-orm';
+import { cardList } from '../../db/lists.ts';
 
 export async function getTournamentMetaTags(tournamentId: string) {
   try {
@@ -30,14 +31,17 @@ export async function getDeckMetaTags(deckId: string) {
   try {
     const deckData = (await db.select().from(deck).where(eq(deck.id, deckId)))[0];
 
-    if (!deckData) {
+    if (!deckData || !deckData.leaderCardId1 || !deckData.baseCardId || !deckData.public) {
       return null;
     }
 
+    const leaderCard = cardList[deckData.leaderCardId1];
+    const baseCard = cardList[deckData.baseCardId];
+
     return {
       'og:title': `${deckData.name} - SWU Base Deck`,
-      'og:description': deckData.description || 'View deck details, cards, and statistics',
-      'og:image': 'https://images.swubase.com/deck-default.png',
+      'og:description': `${leaderCard?.name} [${baseCard?.name}] - ${deckData.description || 'View deck details, cards, and statistics'}`,
+      'og:image': `https://images.swubase.com/decks/${deckData.leaderCardId1}_${deckData.baseCardId}.webp`,
       'og:url': `https://swubase.com/decks/${deckId}`,
       'og:type': 'website',
     };

@@ -1,6 +1,8 @@
 import * as path from 'path';
-import sharp from 'sharp';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import sharp, { type OverlayOptions } from 'sharp';
+import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import { cardList } from '../../db/lists.ts';
+import { selectDefaultVariant } from '../cards/selectDefaultVariant.ts';
 
 // R2 bucket configuration
 const bucketName = 'swu-images';
@@ -22,6 +24,7 @@ const s3Client = new S3Client({
 const DEFAULT_LOGO_URL = 'https://images.swubase.com/discord-logo.png';
 // Logo size (approximate width in pixels)
 const LOGO_SIZE = 55;
+const IMAGE_SIZE = 419;
 
 /**
  * Safely fetches an image from a URL and returns it as a buffer
@@ -47,7 +50,7 @@ async function safelyFetchImage(
       return await sharp({
         create: {
           width: 300,
-          height: 419,
+          height: IMAGE_SIZE,
           channels: 4,
           background: fallbackColor,
         },
@@ -62,34 +65,86 @@ async function safelyFetchImage(
  * Generates a thumbnail image for a deck and uploads it to R2 bucket
  * @param leaderId - The ID of the leader card
  * @param baseId - The ID of the base card
- * @param leaderBackImageUrl - URL to the back side of the leader card image
- * @param baseImageUrl - URL to the base card image
  * @param options - Optional parameters
+ * @param options.logoUrl - Custom logo URL (defaults to SWUBase logo)
+ * @param options.backgroundColor - Custom background color (defaults to dark grey)
+ * @param options.forceUpload - Force upload even if the image already exists (defaults to false)
  * @returns The URL of the generated thumbnail
  */
 export async function generateDeckThumbnail(
   leaderId: string,
   baseId: string,
-  leaderBackImageUrl: string,
-  baseImageUrl: string,
   options?: {
     logoUrl?: string;
     backgroundColor?: { r: number; g: number; b: number; alpha: number };
+    forceUpload?: boolean;
   },
 ): Promise<string> {
   if (!leaderId || !baseId) {
     throw new Error('Leader ID and Base ID are required');
   }
 
+  // Get the leader and base cards from cardList
+  const leaderCard = cardList[leaderId];
+  const baseCard = cardList[baseId];
+
+  if (!leaderCard || !baseCard) {
+    throw new Error(`Leader card or base card not found in card list: ${leaderId}, ${baseId}`);
+  }
+
+  // Get the default variant for each card
+  const leaderVariantId = selectDefaultVariant(leaderCard);
+  const baseVariantId = selectDefaultVariant(baseCard);
+
+  if (!leaderVariantId || !baseVariantId) {
+    throw new Error(`No variant found for leader or base card: ${leaderId}, ${baseId}`);
+  }
+
+  // Get the image URLs from the variants
+  const leaderVariant = leaderCard.variants[leaderVariantId];
+  const baseVariant = baseCard.variants[baseVariantId];
+
+  if (!leaderVariant || !baseVariant) {
+    throw new Error(
+      `Variant not found for leader or base card: ${leaderVariantId}, ${baseVariantId}`,
+    );
+  }
+
+  const leaderBackImageUrl = `https://images.swubase.com/cards/${leaderVariant.image.back}`;
+  const baseImageUrl = `https://images.swubase.com/cards/${baseVariant.image.front}`;
+
   const backgroundColor = options?.backgroundColor || { r: 37, g: 37, b: 37, alpha: 1 }; // #252525
   const logoUrl = options?.logoUrl || DEFAULT_LOGO_URL;
+  const forceUpload = options?.forceUpload || false;
+
+  // Generate the key for the image in the R2 bucket
+  const key = `decks/${leaderId}_${baseId}.webp`;
+
+  // Check if the image already exists in the bucket
+  if (!forceUpload) {
+    try {
+      const headCommand = new HeadObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      });
+
+      const headResponse = await s3Client.send(headCommand);
+
+      // If we get here, the object exists
+      console.log(`Deck thumbnail already exists: ${key}, skipping generation`);
+      return `https://images.swubase.com/${key}`;
+    } catch (error) {
+      // Object doesn't exist or there was an error checking, proceed with generation
+      console.log(`Deck thumbnail doesn't exist or error checking: ${key}, generating...`);
+    }
+  }
 
   try {
     // Create a 419x419px image with dark grey background
     const image = sharp({
       create: {
-        width: 419,
-        height: 419,
+        width: IMAGE_SIZE,
+        height: IMAGE_SIZE,
         channels: 4,
         background: backgroundColor,
       },
@@ -127,7 +182,7 @@ export async function generateDeckThumbnail(
       .toBuffer();
 
     // Prepare composite array
-    const compositeArray = [
+    const compositeArray: OverlayOptions[] = [
       // Leader card in the middle (300x419)
       {
         input: leaderBackImageBuffer,
@@ -138,7 +193,7 @@ export async function generateDeckThumbnail(
         input: resizedBaseImage,
         gravity: 'south',
         top: 209, // Position at the bottom half of the image (419/2)
-        left: Math.floor((419 - 300) / 2) + 1, // Center horizontally
+        left: Math.floor((IMAGE_SIZE - 300) / 2) + 1, // Center horizontally
       },
     ];
 
@@ -147,8 +202,8 @@ export async function generateDeckThumbnail(
       compositeArray.push({
         input: logoBuffer,
         gravity: 'southeast',
-        bottom: 5, // Offset from bottom
-        right: 5, // Offset from right
+        top: IMAGE_SIZE - LOGO_SIZE,
+        left: IMAGE_SIZE - LOGO_SIZE,
       });
     }
 
@@ -156,7 +211,6 @@ export async function generateDeckThumbnail(
     const result = await image.composite(compositeArray).webp({ quality: 80 }).toBuffer();
 
     // Upload to R2 bucket
-    const key = `decks/${leaderId}_${baseId}.webp`;
     const command = new PutObjectCommand({
       Bucket: bucketName,
       Key: key,
