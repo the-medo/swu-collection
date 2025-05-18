@@ -10,6 +10,7 @@ export const zGenerateThumbnailsParams = z.object({
     },
     z.boolean().optional().default(false)
   ),
+  tournament_id: z.string().uuid().optional(),
 });
 
 export type ZGenerateThumbnailsParams = z.infer<typeof zGenerateThumbnailsParams>;

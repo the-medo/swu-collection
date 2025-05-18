@@ -1,8 +1,11 @@
-import * as path from 'path';
 import sharp, { type OverlayOptions } from 'sharp';
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { cardList } from '../../db/lists.ts';
 import { selectDefaultVariant } from '../cards/selectDefaultVariant.ts';
+import { and, eq, isNotNull } from 'drizzle-orm';
+import { db } from '../../db';
+import { deck } from '../../db/schema/deck.ts';
+import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
 
 // R2 bucket configuration
 const bucketName = 'swu-images';
@@ -227,4 +230,83 @@ export async function generateDeckThumbnail(
     console.error('Error generating deck thumbnail:', error);
     throw error;
   }
+}
+
+/**
+ * Generates thumbnails for all unique leader/base combinations in decks
+ * @param options - Optional parameters
+ * @param options.tournament_id - If provided, only generate thumbnails for decks from this tournament
+ * @param options.force - Force regeneration of thumbnails even if they already exist (defaults to false)
+ * @returns Object containing results and errors
+ */
+export async function generateDeckThumbnails(options?: {
+  tournament_id?: string;
+  force?: boolean;
+}): Promise<{
+  results: { leaderBaseKey: string; thumbnailUrl: string }[];
+  errors: { leaderBaseKey: string; error: string }[];
+}> {
+  const force = options?.force || false;
+  const tournament_id = options?.tournament_id;
+
+  let uniqueCombinations;
+
+  if (tournament_id) {
+    // If tournament_id is provided, fetch decks from the specific tournament
+    console.log(`Fetching decks for tournament: ${tournament_id}`);
+    uniqueCombinations = await db
+      .select({
+        leaderId: deck.leaderCardId1,
+        baseId: deck.baseCardId,
+      })
+      .from(deck)
+      .innerJoin(tournamentDeck, eq(deck.id, tournamentDeck.deckId))
+      .where(
+        and(
+          eq(isNotNull(deck.leaderCardId1), true),
+          eq(isNotNull(deck.baseCardId), true),
+          eq(tournamentDeck.tournamentId, tournament_id),
+        ),
+      )
+      .groupBy(deck.leaderCardId1, deck.baseCardId);
+  } else {
+    // If no tournament_id, fetch all decks
+    console.log('Fetching all decks');
+    uniqueCombinations = await db
+      .select({
+        leaderId: deck.leaderCardId1,
+        baseId: deck.baseCardId,
+      })
+      .from(deck)
+      .where(and(eq(isNotNull(deck.leaderCardId1), true), eq(isNotNull(deck.baseCardId), true)))
+      .groupBy(deck.leaderCardId1, deck.baseCardId);
+  }
+
+  // Generate thumbnails for each unique leader/base combination
+  const results = [];
+  const errors = [];
+
+  for (const deckItem of uniqueCombinations) {
+    if (!deckItem.leaderId || !deckItem.baseId) continue;
+    const key = `${deckItem.leaderId}_${deckItem.baseId}`;
+    try {
+      // Generate thumbnail
+      const thumbnailUrl = await generateDeckThumbnail(deckItem.leaderId, deckItem.baseId, {
+        forceUpload: force,
+      });
+
+      results.push({
+        leaderBaseKey: key,
+        thumbnailUrl,
+      });
+    } catch (error) {
+      console.error(`Error generating thumbnail for leader/base combination ${key}:`, error);
+      errors.push({
+        leaderBaseKey: key,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  return { results, errors };
 }

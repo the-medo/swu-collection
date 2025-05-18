@@ -8,18 +8,21 @@ export interface DeckThumbnailsResult {
   errors: number;
   thumbnails: { leaderBaseKey: string; thumbnailUrl: string }[];
   errorDetails: { leaderBaseKey: string; error: string }[];
+  tournamentId?: string;
 }
 
 /**
- * Hook to generate thumbnails for all decks.
+ * Hook to generate thumbnails for decks.
+ * If tournament_id is provided, only generates thumbnails for decks from that tournament.
+ * Otherwise, generates thumbnails for all decks.
  * This is an admin-only operation.
  */
 export const useGenerateDeckThumbnails = () => {
-  return useMutation<DeckThumbnailsResult, Error, { force?: boolean }>({
+  return useMutation<DeckThumbnailsResult, Error, { force?: boolean, tournament_id?: string }>({
     mutationFn: async (payload: ZGenerateThumbnailsParams) => {
-      const { force } = payload;
+      const { force, tournament_id } = payload;
       const response = await api.deck.thumbnails.$post({
-        query: { force },
+        query: { force, tournament_id },
       });
 
       if (!response.ok) {

@@ -8,6 +8,7 @@ import { tournament as tournamentTable } from '../../../../db/schema/tournament.
 import { db } from '../../../../db';
 import { runTournamentImport } from '../../../../lib/imports/tournamentImportWorkflow.ts';
 import { computeAndSaveTournamentStatistics, computeAndSaveMetaStatistics } from '../../../../lib/card-statistics';
+import { generateDeckThumbnails } from '../../../../lib/decks/generateDeckThumbnail.ts';
 
 export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -70,6 +71,14 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
       if (tournament.meta) {
         await computeAndSaveMetaStatistics(tournament.meta);
       }
+
+      // Generate thumbnails for all unique leader/base combinations in the tournament
+      console.log(`Generating thumbnails for tournament: ${paramTournamentId}`);
+      const { results, errors } = await generateDeckThumbnails({
+        tournament_id: paramTournamentId,
+        force: false, // Don't force regeneration of existing thumbnails
+      });
+      console.log(`Generated ${results.length} thumbnails for tournament: ${paramTournamentId}. ${errors.length} errors.`);
     });
 
     // Mock response - in a real implementation, this would fetch data from melee.gg

@@ -1,10 +1,7 @@
 import { Hono } from 'hono';
 import { auth, type AuthExtension } from '../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
-import { deck } from '../../../db/schema/deck.ts';
-import { generateDeckThumbnail } from '../../../lib/decks/generateDeckThumbnail.ts';
-import { and, eq, isNotNull } from 'drizzle-orm';
-import { db } from '../../../db';
+import { generateDeckThumbnails } from '../../../lib/decks/generateDeckThumbnail.ts';
 import { zGenerateThumbnailsParams } from '../../../../types/ZGenerateThumbnailsParams.ts';
 
 export const decksThumbnailsPostRoute = new Hono<AuthExtension>().post(
@@ -33,55 +30,31 @@ export const decksThumbnailsPostRoute = new Hono<AuthExtension>().post(
       );
     }
 
-    const { force } = c.req.valid('query');
+    const { force, tournament_id } = c.req.valid('query');
 
     console.log('Force parameter:', force, 'Type:', typeof force, force ? 'Forced!' : 'Not forced.');
+    console.log('Tournament ID:', tournament_id);
 
     try {
-      // Fetch all decks that have both a leader card and a base card, grouped by leader and base combinations
-      const uniqueCombinations = await db
-        .select({
-          leaderId: deck.leaderCardId1,
-          baseId: deck.baseCardId,
-        })
-        .from(deck)
-        .where(and(eq(isNotNull(deck.leaderCardId1), true), eq(isNotNull(deck.baseCardId), true)))
-        .groupBy(deck.leaderCardId1, deck.baseCardId);
+      // Generate thumbnails for all unique leader/base combinations
+      const { results, errors } = await generateDeckThumbnails({
+        tournament_id,
+        force,
+      });
 
-      // Generate thumbnails for each unique leader/base combination
-      const results = [];
-      const errors = [];
-
-      for (const deckItem of uniqueCombinations) {
-        if (!deckItem.leaderId || !deckItem.baseId) continue;
-        const key = `${deckItem.leaderId}_${deckItem.baseId}`;
-        try {
-          // Generate thumbnail
-          const thumbnailUrl = await generateDeckThumbnail(deckItem.leaderId, deckItem.baseId, {
-            forceUpload: force,
-          });
-
-          results.push({
-            leaderBaseKey: key,
-            thumbnailUrl,
-          });
-        } catch (error) {
-          console.error(`Error generating thumbnail for leader/base combination ${key}:`, error);
-          errors.push({
-            leaderBaseKey: key,
-            error: error instanceof Error ? error.message : String(error),
-          });
-        }
-      }
+      const sourceMessage = tournament_id 
+        ? `from tournament ${tournament_id}` 
+        : `from all decks`;
 
       return c.json(
         {
-          message: `Generated thumbnails for ${results.length} unique leader/base combinations. ${errors.length} errors.`,
+          message: `Generated thumbnails for ${results.length} unique leader/base combinations ${sourceMessage}. ${errors.length} errors.`,
           data: {
             success: results.length,
             errors: errors.length,
             thumbnails: results,
             errorDetails: errors,
+            tournamentId: tournament_id || undefined,
           },
         },
         200,
