@@ -101,7 +101,6 @@ try {
 app.get('*', async (c, next) => {
   const url = new URL(c.req.url);
   const pathname = url.pathname;
-  console.log({ pathname });
 
   // Skip for API routes and static assets
   if (pathname.startsWith('/api') || pathname.includes('.')) {
@@ -113,12 +112,10 @@ app.get('*', async (c, next) => {
 
   // If no meta tags were found, continue to the next middleware
   if (!metaTags) {
-    console.log('Skipping');
     return next();
   }
 
   // Inject meta tags into the HTML
-  console.log({ metaTags });
   const modifiedHtml = await injectMetaTags(indexHtml, metaTags);
 
   // Return the modified HTML
