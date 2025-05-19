@@ -16,6 +16,7 @@ import {
   useTournamentTableColumns,
 } from '@/components/app/tournaments/TournamentList/useTournamentTableColumns.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
+import { Helmet } from 'react-helmet-async';
 
 const tableColumnProps: TournamentTableColumnsProps = {};
 
@@ -28,7 +29,6 @@ interface MetaTabsProps {
 const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) => {
   const { page } = useSearch({ from: Route.fullPath });
   const columns = useTournamentTableColumns(tableColumnProps);
-
   const tournamentIds = useMemo(() => tournaments.map(t => t.tournament.id), [tournaments]);
 
   return (
@@ -100,6 +100,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) =
       </div>
       {page === 'tournaments' && (
         <>
+          <Helmet title="Tournaments" />
           <h4>Analyzed tournaments</h4>
           <DataTable columns={columns} data={tournaments} />
         </>

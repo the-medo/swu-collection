@@ -15,6 +15,7 @@ import CollectionStats from '@/components/app/collections/CollectionStats/Collec
 import CollectionActions from '@/components/app/collections/CollectionActions/CollectionActions.tsx';
 import { collectionTypeTitle } from '../../../../../../types/iterableEnumInfo.ts';
 import { CollectionType } from '../../../../../../types/enums.ts';
+import { Helmet } from 'react-helmet-async';
 
 const routeApi = getRouteApi('/collections/$collectionId/');
 
@@ -44,15 +45,19 @@ const CollectionDetail: React.FC = () => {
 
   if (error?.status === 404) {
     return (
-      <Error404
-        title={`${cardListString} not found`}
-        description={`The ${cardListString} you are looking for does not exist. It is possible that it was deleted or it is not public.`}
-      />
+      <>
+        <Helmet title={`${cardListString} not found | SWUBase`} />
+        <Error404
+          title={`${cardListString} not found`}
+          description={`The ${cardListString} you are looking for does not exist. It is possible that it was deleted or it is not public.`}
+        />
+      </>
     );
   }
 
   return (
     <>
+      <Helmet title={data?.collection.title ? `${data.collection.title} | ${cardListString} | SWUBase` : `Loading ${cardListString} | SWUBase`} />
       <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
         <LoadingTitle
           mainTitle={data?.collection.title}

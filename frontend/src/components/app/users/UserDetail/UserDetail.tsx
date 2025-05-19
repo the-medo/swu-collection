@@ -12,6 +12,7 @@ import UserCollections from '@/components/app/collections/UserCollections/UserCo
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { CollectionType } from '../../../../../../types/enums.ts';
+import { Helmet } from 'react-helmet-async';
 
 const routeApi = getRouteApi('/users/$userId/');
 
@@ -46,43 +47,46 @@ const UserDetail: React.FC = () => {
   if (!user) return <Error404 title={'User not found'} />;
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-4 w-full">
-        <Avatar className="h-40 w-40 min-h-40 min-w-40 rounded-lg">
-          <AvatarImage src={user?.image ?? undefined} alt={user?.name} />
-          <AvatarFallback className="rounded-lg">{user?.name?.[0]}</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col gap-2">
-          <h2>{user?.displayName}</h2>
-          <div className="flex flex-wrap gap-2 items-center">
-            {country && (
-              <>
-                <img src={country?.flag} alt={country?.code} className="w-6" />
-                {country?.name}
-              </>
-            )}
-            {state && <span className="text-sm">({state})</span>}
+    <>
+      <Helmet title={`${user?.displayName} | SWUBase`} />
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-4 w-full">
+          <Avatar className="h-40 w-40 min-h-40 min-w-40 rounded-lg">
+            <AvatarImage src={user?.image ?? undefined} alt={user?.name} />
+            <AvatarFallback className="rounded-lg">{user?.name?.[0]}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col gap-2">
+            <h2>{user?.displayName}</h2>
+            <div className="flex flex-wrap gap-2 items-center">
+              {country && (
+                <>
+                  <img src={country?.flag} alt={country?.code} className="w-6" />
+                  {country?.name}
+                </>
+              )}
+              {state && <span className="text-sm">({state})</span>}
+            </div>
+            {createdAt && <span className="text-sm">Member from: {formatDate(createdAt)}</span>}
           </div>
-          {createdAt && <span className="text-sm">Member from: {formatDate(createdAt)}</span>}
         </div>
+        <Tabs defaultValue="decks" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="decks">Decks</TabsTrigger>
+            <TabsTrigger value="collections">Collections</TabsTrigger>
+            <TabsTrigger value="wantlists">Wantlists</TabsTrigger>
+          </TabsList>
+          <TabsContent value="decks">
+            <UserDecks userId={userId} />
+          </TabsContent>
+          <TabsContent value="collections">
+            <UserCollections userId={userId} collectionType={CollectionType.COLLECTION} />
+          </TabsContent>
+          <TabsContent value="wantlists">
+            <UserCollections userId={userId} collectionType={CollectionType.WANTLIST} />
+          </TabsContent>
+        </Tabs>
       </div>
-      <Tabs defaultValue="decks" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="decks">Decks</TabsTrigger>
-          <TabsTrigger value="collections">Collections</TabsTrigger>
-          <TabsTrigger value="wantlists">Wantlists</TabsTrigger>
-        </TabsList>
-        <TabsContent value="decks">
-          <UserDecks userId={userId} />
-        </TabsContent>
-        <TabsContent value="collections">
-          <UserCollections userId={userId} collectionType={CollectionType.COLLECTION} />
-        </TabsContent>
-        <TabsContent value="wantlists">
-          <UserCollections userId={userId} collectionType={CollectionType.WANTLIST} />
-        </TabsContent>
-      </Tabs>
-    </div>
+    </>
   );
 };
 

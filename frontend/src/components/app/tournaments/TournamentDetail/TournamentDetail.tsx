@@ -13,6 +13,8 @@ import NoTournamentData from '@/components/app/tournaments/components/NoTourname
 import { useComputeCardStats } from '@/api/card-stats/useComputeCardStats.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Helmet } from 'react-helmet-async';
+import { useMemo } from 'react';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -32,10 +34,13 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   // Handle 404 error
   if (error?.status === 404) {
     return (
-      <Error404
-        title="Tournament not found"
-        description="The tournament you are looking for does not exist or has been deleted."
-      />
+      <>
+        <Helmet title="Tournament not found | SWUBase" />
+        <Error404
+          title="Tournament not found"
+          description="The tournament you are looking for does not exist or has been deleted."
+        />
+      </>
     );
   }
 
@@ -62,90 +67,121 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   const loading = isFetching;
   const tournament = data?.tournament;
 
+  // Generate title based on active tab
+  const pageTitle = useMemo(() => {
+    if (!tournament?.name) return 'Loading Tournament | SWUBase';
+
+    let tabTitle = '';
+    switch (activeTab) {
+      case 'details':
+        tabTitle = 'Details';
+        break;
+      case 'decks':
+        tabTitle = 'Decks';
+        break;
+      case 'matchups':
+        tabTitle = 'Matchups';
+        break;
+      case 'card-stats':
+        tabTitle = 'Card Stats';
+        break;
+      case 'meta':
+        tabTitle = 'Meta Analysis';
+        break;
+      default:
+        tabTitle = '';
+    }
+
+    return tabTitle ? `${tournament.name} - ${tabTitle} | SWUBase` : `${tournament.name} | SWUBase`;
+  }, [activeTab, tournament?.name]);
+
   return (
-    <div className="space-y-2">
-      {/* Tournament header */}
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-        <LoadingTitle mainTitle={tournament?.name} loading={loading} />
+    <>
+      <Helmet titleTemplate={`%s - ${pageTitle}`} />
+      <div className="space-y-2">
+        {/* Tournament header */}
+        <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+          <LoadingTitle mainTitle={tournament?.name} loading={loading} />
 
-        {!loading && tournament && (
-          <div className="flex flex-wrap gap-2">
-            {canUpdate && (
-              <EditTournamentDialog
-                trigger={
-                  <Button size="sm">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit
-                  </Button>
-                }
-                tournament={tournament}
-              />
-            )}
-
-            {tournament.meleeId && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  window.open(`https://melee.gg/Tournament/View/${tournament.meleeId}`, '_blank')
-                }
-              >
-                <Trophy className="h-4 w-4 mr-2" />
-                View on Melee.gg
-              </Button>
-            )}
-            {canUpdate && (
-              <ImportMeleeTournamentDialog
-                trigger={
-                  <Button size="sm" variant="outline">
-                    <Database className="h-4 w-4 mr-2" />
-                    Import from Melee.gg
-                  </Button>
-                }
-                tournamentId={tournamentId}
-                meleeId={tournament.meleeId}
-              />
-            )}
-
-            {canDelete && (
-              <DeleteTournamentDialog
-                trigger={
-                  <Button size="sm" variant="destructive">
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
-                  </Button>
-                }
-                tournament={tournament}
-              />
-            )}
-
-            {canComputeStats && tournament.imported && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleComputeStats}
-                      disabled={computeCardStats.isPending}
-                    >
-                      <ChartColumn className="h-4 w-4" />
-                      {computeCardStats.isPending ? 'Computing...' : 'Recompute Card Stats'}
+          {!loading && tournament && (
+            <div className="flex flex-wrap gap-2">
+              {canUpdate && (
+                <EditTournamentDialog
+                  trigger={
+                    <Button size="sm">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Recompute card statistics for this tournament</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-          </div>
-        )}
+                  }
+                  tournament={tournament}
+                />
+              )}
+
+              {tournament.meleeId && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    window.open(`https://melee.gg/Tournament/View/${tournament.meleeId}`, '_blank')
+                  }
+                >
+                  <Trophy className="h-4 w-4 mr-2" />
+                  View on Melee.gg
+                </Button>
+              )}
+              {canUpdate && (
+                <ImportMeleeTournamentDialog
+                  trigger={
+                    <Button size="sm" variant="outline">
+                      <Database className="h-4 w-4 mr-2" />
+                      Import from Melee.gg
+                    </Button>
+                  }
+                  tournamentId={tournamentId}
+                  meleeId={tournament.meleeId}
+                />
+              )}
+
+              {canDelete && (
+                <DeleteTournamentDialog
+                  trigger={
+                    <Button size="sm" variant="destructive">
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  }
+                  tournament={tournament}
+                />
+              )}
+
+              {canComputeStats && tournament.imported && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleComputeStats}
+                        disabled={computeCardStats.isPending}
+                      >
+                        <ChartColumn className="h-4 w-4" />
+                        {computeCardStats.isPending ? 'Computing...' : 'Recompute Card Stats'}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Recompute card statistics for this tournament</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </div>
+          )}
+        </div>
+        <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} />
+        {activeTab === 'details' || tournament?.imported ? children : null}
+        <NoTournamentData tournamentId={tournamentId} />
       </div>
-      <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} />
-      {activeTab === 'details' || tournament?.imported ? children : null}
-      <NoTournamentData tournamentId={tournamentId} />
-    </div>
+    </>
   );
 };
 

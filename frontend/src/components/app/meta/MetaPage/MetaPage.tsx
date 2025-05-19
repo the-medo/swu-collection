@@ -10,6 +10,7 @@ import { DEFAULT_MIN_TOURNAMENT_TYPE, Route } from '@/routes/meta';
 import MetaPageContent from '@/components/app/meta/MetaPageContent/MetaPageContent.tsx';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
+import { Helmet } from 'react-helmet-async';
 
 function MetaPage() {
   const navigate = useNavigate({ from: Route.fullPath });
@@ -49,18 +50,20 @@ function MetaPage() {
       .sort((a, b) => (a.meta.date < b.meta.date ? 1 : -1))[0];
   }, [data, formatId]);
 
-  const selectedMetaId = useMemo(() => {
+  const selectedMeta = useMemo(() => {
     if (!data) return undefined;
 
     if (metaId) {
       const metaInFormat = data?.data.find(m => m.format.id === formatId && m.meta.id === metaId);
       if (metaInFormat) {
-        return metaId;
+        return metaInFormat;
       }
     }
 
-    return data.data.length > 0 ? currentMeta?.meta.id : undefined;
+    return data.data.length > 0 ? currentMeta : undefined;
   }, [data, formatId, metaId, currentMeta]);
+
+  const selectedMetaId = selectedMeta ? selectedMeta.meta.id : undefined;
 
   if (isLoading) {
     return (
@@ -80,53 +83,57 @@ function MetaPage() {
   }
 
   return (
-    <div className="p-2">
-      <div className="flex flex-row flex-wrap gap-4 items-center justify-between mb-4">
-        <h3 className="mb-0">Meta</h3>
-        <div className="flex flex-row flex-1 gap-2 items-center min-w-[200px]">
-          <span className="text-gray-600">Format</span>
-          <FormatSelect
-            value={formatId}
-            onChange={setFormat}
-            allowEmpty={false}
-            showInfoTooltip={false}
-            className="w-full"
-          />
-        </div>
+    <>
+      <Helmet titleTemplate={`%s - ${selectedMeta?.meta?.name}`} defaultTitle={`Meta - SWU Base`} />
 
-        <div className="flex flex-1 min-w-[350px]">
-          {selectedMetaId && (
-            <MetaSelector
-              formatId={formatId}
-              value={selectedMetaId}
-              onChange={setMeta}
+      <div className="p-2">
+        <div className="flex flex-row flex-wrap gap-4 items-center justify-between mb-4">
+          <h3 className="mb-0">Meta</h3>
+          <div className="flex flex-row flex-1 gap-2 items-center min-w-[200px]">
+            <span className="text-gray-600">Format</span>
+            <FormatSelect
+              value={formatId}
+              onChange={setFormat}
+              allowEmpty={false}
+              showInfoTooltip={false}
+              className="w-full"
+            />
+          </div>
+
+          <div className="flex flex-1 min-w-[350px]">
+            {selectedMetaId && (
+              <MetaSelector
+                formatId={formatId}
+                value={selectedMetaId}
+                onChange={setMeta}
+                emptyOption={false}
+              />
+            )}
+          </div>
+          <div className="flex flex-1 min-w-[200px]">
+            <TournamentTypeSelect
+              value={minTournamentType}
+              onChange={setMinTournamentType}
+              showFullName={true}
               emptyOption={false}
             />
-          )}
+          </div>
         </div>
-        <div className="flex flex-1 min-w-[200px]">
-          <TournamentTypeSelect
-            value={minTournamentType}
-            onChange={setMinTournamentType}
-            showFullName={true}
-            emptyOption={false}
+        {selectedMetaId ? (
+          <MetaPageContent
+            formatId={formatId}
+            metaId={selectedMetaId}
+            minTournamentType={minTournamentType}
           />
-        </div>
+        ) : (
+          <Alert variant="warning">
+            <AlertCircle className="h-4 w-4 text-yellow-500 stroke-yellow-500" />
+            <AlertTitle className="text-sm">Meta not selected</AlertTitle>
+            <AlertDescription className="pt-4">Please select Meta to continue</AlertDescription>
+          </Alert>
+        )}
       </div>
-      {selectedMetaId ? (
-        <MetaPageContent
-          formatId={formatId}
-          metaId={selectedMetaId}
-          minTournamentType={minTournamentType}
-        />
-      ) : (
-        <Alert variant="warning">
-          <AlertCircle className="h-4 w-4 text-yellow-500 stroke-yellow-500" />
-          <AlertTitle className="text-sm">Meta not selected</AlertTitle>
-          <AlertDescription className="pt-4">Please select Meta to continue</AlertDescription>
-        </Alert>
-      )}
-    </div>
+    </>
   );
 }
 

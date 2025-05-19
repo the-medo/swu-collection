@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { Helmet } from 'react-helmet-async';
 
 export const Route = createFileRoute('/tools/')({
   component: ToolsLayout,
@@ -6,15 +7,18 @@ export const Route = createFileRoute('/tools/')({
 
 function ToolsLayout() {
   return (
-    <div className="container mx-auto p-2">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <ToolCard
-          title="Deck Format Converter"
-          description="Transform decklists from melee.gg or text format into JSON"
-          path="/tools/deck-format-converter"
-        />
+    <>
+      <Helmet title="SWU Tools | SWUBase" />
+      <div className="container mx-auto p-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <ToolCard
+            title="Deck Format Converter"
+            description="Transform decklists from melee.gg or text format into JSON"
+            path="/tools/deck-format-converter"
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

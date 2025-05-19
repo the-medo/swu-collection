@@ -10,6 +10,7 @@ import DeleteDeckDialog from '../../dialogs/DeleteDeckDialog';
 import DeckContents from '../DeckContents/DeckContents';
 import { useDeckLayoutStoreActions } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 
 const routeApi = getRouteApi('/decks/$deckId/');
 
@@ -31,15 +32,19 @@ const DeckDetail: React.FC = () => {
 
   if (error?.status === 404) {
     return (
-      <Error404
-        title={`Deck not found`}
-        description={`The deck you are looking for does not exist. It is possible that it was deleted or it is not public.`}
-      />
+      <>
+        <Helmet title="Deck not found | SWUBase" />
+        <Error404
+          title={`Deck not found`}
+          description={`The deck you are looking for does not exist. It is possible that it was deleted or it is not public.`}
+        />
+      </>
     );
   }
 
   return (
     <>
+      <Helmet title={`${data?.deck.name || 'Loading deck'} | SWUBase`} />
       <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
         <LoadingTitle
           mainTitle={data?.deck.name}

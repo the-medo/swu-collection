@@ -8,6 +8,8 @@ import TournamentDeckKeyFloater, {
   TournamentDeckKeyFloaterRoutes,
 } from '@/components/app/tournaments/TournamentDecks/TournamentDeckKeyFloater.tsx';
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
+import * as React from 'react';
 
 interface MatchupsTabProps {
   tournamentIds: string[];
@@ -26,13 +28,16 @@ const MatchupsTab: React.FC<MatchupsTabProps> = ({ tournamentIds, route }) => {
   }, [tournamentIds, setTournamentIds]);
 
   return (
-    <div className="space-y-2 px-2">
-      {tournamentIds.map(tid => (
-        <TournamentDataLoader tournamentId={tid} key={tid} />
-      ))}
-      <TournamentMatchups decks={decks} tournaments={tournaments} matches={matches} />
-      <TournamentDeckKeyFloater route={route} />
-    </div>
+    <>
+      <Helmet title="Matchups" />
+      <div className="space-y-2 px-2">
+        {tournamentIds.map(tid => (
+          <TournamentDataLoader tournamentId={tid} key={tid} />
+        ))}
+        <TournamentMatchups decks={decks} tournaments={tournaments} matches={matches} />
+        <TournamentDeckKeyFloater route={route} />
+      </div>
+    </>
   );
 };
 
