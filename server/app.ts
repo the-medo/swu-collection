@@ -109,7 +109,7 @@ app.get('*', async (c, next) => {
   }
 
   // Try to match the route and fetch meta tags
-  const metaTags = await matchRouteAndFetchMetaTags(pathname);
+  const metaTags = await matchRouteAndFetchMetaTags(pathname, url.searchParams);
 
   // If no meta tags were found, continue to the next middleware
   if (!metaTags) {
