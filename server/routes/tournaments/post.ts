@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { zTournamentCreateRequest } from '../../../types/ZTournament.ts';
 import { db } from '../../db';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
+import { generateTournamentThumbnail } from '../../lib/tournaments/generateTournamentThumbnail.ts';
 
 export const tournamentPostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -43,6 +44,21 @@ export const tournamentPostRoute = new Hono<AuthExtension>().post(
         meleeId: data.meleeId || null,
       })
       .returning();
+
+    // Generate tournament thumbnail
+    try {
+      await generateTournamentThumbnail({
+        id: newTournament[0].id,
+        type: newTournament[0].type,
+        name: newTournament[0].name,
+        date: newTournament[0].date,
+        attendance: newTournament[0].attendance,
+        countryCode: newTournament[0].location
+      });
+    } catch (error) {
+      console.error('Error generating tournament thumbnail:', error);
+      // Don't fail the request if thumbnail generation fails
+    }
 
     return c.json({ data: newTournament[0] }, 201);
   },

@@ -77,7 +77,7 @@ export async function generateTournamentThumbnail(
     type: string;
     name: string;
     date: Date;
-    countryCode: string;
+    countryCode?: string;
     attendance?: number;
   },
   options?: {
@@ -150,7 +150,7 @@ export async function generateTournamentThumbnail(
       <svg width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
         <text x="50%" y="300" font-family="Arial" font-weight="bold" fill="white" text-anchor="middle">
           <tspan font-size="40" x="50%" dy="0">${namePart1}</tspan>
-          <tspan font-size="32" x="50%" dy="1.2em">${namePart2 ?? ' '}</tspan>
+          <tspan font-size="32" x="50%" dy="36px">${namePart2.length === 0 ? ' ' : (namePart2 ?? ' ')}</tspan>
           <tspan font-size="28" x="50%" dy="123px">${tournamentData?.attendance ? `${tournamentData.attendance} players` : ' '}</tspan>
           <tspan font-size="28" x="50%" dy="40px">${formattedDate}</tspan>
         </text>
@@ -161,7 +161,7 @@ export async function generateTournamentThumbnail(
       input: nameTextSvg,
     });
 
-    // Add country flag if available
+    /*// Add country flag if available
     // Extract country code from location or continent
     // This is a simplification - in a real implementation, you might need more sophisticated logic
     // to determine the country code from the location or continent
@@ -198,7 +198,7 @@ export async function generateTournamentThumbnail(
           );
         }
       }
-    }
+    }*/
 
     // Add SWUBase logo to bottom right corner
     try {
@@ -274,6 +274,7 @@ export async function generateTournamentThumbnails(options?: {
         name: tournament.name,
         date: tournament.date,
         countryCode: tournament.location,
+        attendance: tournament.attendance,
       })
       .from(tournament)
       .where(eq(tournament.id, tournament_id));
@@ -287,6 +288,7 @@ export async function generateTournamentThumbnails(options?: {
         name: tournament.name,
         date: tournament.date,
         countryCode: tournament.location,
+        attendance: tournament.attendance,
       })
       .from(tournament);
   }

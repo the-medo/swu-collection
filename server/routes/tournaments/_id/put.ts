@@ -7,6 +7,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { tournament as tournamentTable } from '../../../db/schema/tournament.ts';
 import { db } from '../../../db';
 import { computeAndSaveMetaStatistics } from '../../../lib/card-statistics';
+import { generateTournamentThumbnail } from '../../../lib/tournaments/generateTournamentThumbnail.ts';
 
 export const tournamentIdPutRoute = new Hono<AuthExtension>().put(
   '/',
@@ -30,13 +31,20 @@ export const tournamentIdPutRoute = new Hono<AuthExtension>().put(
         {
           message: "Tournament doesn't exist or you don't have permission to update it",
         },
-        404
+        404,
       );
     }
 
     // Check if meta field is being updated and tournament is imported
     const isMetaUpdated = data.meta !== undefined && data.meta !== currentTournament.meta;
     const isImported = currentTournament.imported;
+
+    // Check if any fields that require thumbnail regeneration are updated
+    const isThumbnailUpdateNeeded =
+      (data.attendance !== undefined && data.attendance !== currentTournament.attendance) ||
+      (data.name !== undefined && data.name !== currentTournament.name) ||
+      (data.date !== undefined && new Date(data.date) !== currentTournament.date) ||
+      (data.type !== undefined && data.type !== currentTournament.type);
 
     // Convert string date to a Date object if needed
     const dateValue = data.date
@@ -85,6 +93,23 @@ export const tournamentIdPutRoute = new Hono<AuthExtension>().put(
       } catch (error) {
         console.error('Error computing card statistics after meta update:', error);
         // We don't want to fail the request if statistics computation fails
+      }
+    }
+
+    // Generate tournament thumbnail if needed fields were updated
+    if (isThumbnailUpdateNeeded) {
+      try {
+        await generateTournamentThumbnail({
+          id: updatedTournament.id,
+          type: updatedTournament.type,
+          name: updatedTournament.name,
+          date: updatedTournament.date,
+          attendance: updatedTournament.attendance,
+          countryCode: updatedTournament.location,
+        });
+      } catch (error) {
+        console.error('Error generating tournament thumbnail:', error);
+        // Don't fail the request if thumbnail generation fails
       }
     }
 
