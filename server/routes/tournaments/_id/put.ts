@@ -8,6 +8,7 @@ import { tournament as tournamentTable } from '../../../db/schema/tournament.ts'
 import { db } from '../../../db';
 import { computeAndSaveMetaStatistics } from '../../../lib/card-statistics';
 import { generateTournamentThumbnail } from '../../../lib/tournaments/generateTournamentThumbnail.ts';
+import { runInBackground } from '../../../lib/utils/backgroundProcess.ts';
 
 export const tournamentIdPutRoute = new Hono<AuthExtension>().put(
   '/',
@@ -96,21 +97,23 @@ export const tournamentIdPutRoute = new Hono<AuthExtension>().put(
       }
     }
 
-    // Generate tournament thumbnail if needed fields were updated
+    // Generate tournament thumbnail in the background if needed fields were updated
     if (isThumbnailUpdateNeeded) {
-      try {
-        await generateTournamentThumbnail({
+      runInBackground(
+        generateTournamentThumbnail,
+        {
           id: updatedTournament.id,
           type: updatedTournament.type,
           name: updatedTournament.name,
           date: updatedTournament.date,
           attendance: updatedTournament.attendance,
           countryCode: updatedTournament.location,
-        });
-      } catch (error) {
-        console.error('Error generating tournament thumbnail:', error);
-        // Don't fail the request if thumbnail generation fails
-      }
+        },
+        {
+          forceUpload: true,
+        },
+      );
+      console.log('Tournament thumbnail generation started in background');
     }
 
     return c.json({ data: updatedTournament });

@@ -8,6 +8,7 @@ import { deck as deckTable } from '../../../db/schema/deck.ts';
 import { db } from '../../../db';
 import { updateDeckInformation } from '../../../lib/decks/updateDeckInformation.ts';
 import { generateDeckThumbnail } from '../../../lib/decks/generateDeckThumbnail.ts';
+import { runInBackground } from '../../../lib/utils/backgroundProcess.ts';
 
 export const deckIdPutRoute = new Hono<AuthExtension>().put(
   '/',
@@ -52,14 +53,10 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
 
     await updateDeckInformation(paramDeckId);
 
-    // Generate deck thumbnail if leader or base card has changed
+    // Generate deck thumbnail in the background if leader or base card has changed
     if ((isLeaderUpdated || isBaseUpdated) && updatedDeck.leaderCardId1 && updatedDeck.baseCardId) {
-      try {
-        await generateDeckThumbnail(updatedDeck.leaderCardId1, updatedDeck.baseCardId);
-      } catch (error) {
-        console.error('Error generating deck thumbnail:', error);
-        // Don't fail the request if thumbnail generation fails
-      }
+      runInBackground(generateDeckThumbnail, updatedDeck.leaderCardId1, updatedDeck.baseCardId);
+      console.log('Deck thumbnail generation started in background');
     }
 
     return c.json({ data: updatedDeck });
