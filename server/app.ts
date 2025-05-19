@@ -12,6 +12,7 @@ import { tournamentRoute } from './routes/tournament.ts';
 import { entitiesRoute } from './routes/entity.ts';
 import { metaRoute } from './routes/meta.ts';
 import { cardStatsRoute } from './routes/card-stats.ts';
+import { setRoute } from './routes/set.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
 import fs from 'fs';
@@ -64,7 +65,8 @@ const apiRoutes = app
   .route('/tournament', tournamentRoute)
   .route('/entities', entitiesRoute)
   .route('/meta', metaRoute)
-  .route('/card-stats', cardStatsRoute);
+  .route('/card-stats', cardStatsRoute)
+  .route('/set', setRoute);
 
 // Read the index.html template once at startup
 let indexHtml: string;

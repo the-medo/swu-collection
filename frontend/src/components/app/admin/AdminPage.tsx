@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useRole } from '@/hooks/useRole';
 import { Navigate } from '@tanstack/react-router';
 import { MetaTable } from './MetaTable';
+import { SetsPage } from './SetsPage';
 import { ThumbnailsPage } from '@/components/app/admin/ThumbnailsPage.tsx';
 
 export function AdminPage() {
@@ -19,13 +20,21 @@ export function AdminPage() {
       <Tabs defaultValue="metas" className="w-full">
         <TabsList>
           <TabsTrigger value="metas">Metas</TabsTrigger>
-          <TabsTrigger value="deck-thumbnails">Deck thumbnails</TabsTrigger>
+          <TabsTrigger value="sets">Sets</TabsTrigger>
+          <TabsTrigger value="deck-thumbnails">SSR Thumbnails</TabsTrigger>
         </TabsList>
 
         <TabsContent value="metas">
           <Card>
             <CardContent className="p-4">
               <MetaTable />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="sets">
+          <Card>
+            <CardContent className="p-4">
+              <SetsPage />
             </CardContent>
           </Card>
         </TabsContent>
