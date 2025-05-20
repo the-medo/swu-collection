@@ -4,6 +4,7 @@ import { TournamentDeckKeyFloaterRoutes } from '@/components/app/tournaments/Tou
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import { useEffect } from 'react';
 import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentDataLoader.tsx';
+import { Helmet } from 'react-helmet-async';
 
 interface CardStatsTabProps {
   tournamentIds: string[];
@@ -22,6 +23,7 @@ const CardStatsTab: React.FC<CardStatsTabProps> = ({ tournamentIds, metaId }) =>
 
   return (
     <>
+      <Helmet title="Card Stats" />
       {tournamentIds.map(tid => (
         <TournamentDataLoader tournamentId={tid} key={tid} />
       ))}

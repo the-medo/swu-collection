@@ -1,9 +1,9 @@
 import * as React from 'react';
 import TournamentMeta from '@/components/app/tournaments/TournamentMeta/TournamentMeta.tsx';
-import { useMemo } from 'react';
 import TournamentDeckKeyFloater, {
   TournamentDeckKeyFloaterRoutes,
 } from '@/components/app/tournaments/TournamentDecks/TournamentDeckKeyFloater.tsx';
+import { Helmet } from 'react-helmet-async';
 
 interface MetaAnalysisTabProps {
   tournamentIds: string[];
@@ -15,10 +15,13 @@ interface MetaAnalysisTabProps {
 
 const MetaAnalysisTab: React.FC<MetaAnalysisTabProps> = ({ tournamentIds, route }) => {
   return (
-    <div className="space-y-2">
-      <TournamentMeta tournamentIds={tournamentIds} />
-      <TournamentDeckKeyFloater route={route} />
-    </div>
+    <>
+      <Helmet title="Meta Analysis" />
+      <div className="space-y-2">
+        <TournamentMeta tournamentIds={tournamentIds} />
+        <TournamentDeckKeyFloater route={route} />
+      </div>
+    </>
   );
 };
 

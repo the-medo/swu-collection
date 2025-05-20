@@ -6,6 +6,7 @@ const statement = {
   tournament: ['create', 'update', 'delete', 'import'],
   meta: ['create', 'update', 'delete'],
   statistics: ['compute'],
+  admin: ['access'],
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -23,5 +24,6 @@ export const admin = ac.newRole({
   tournament: ['create', 'update', 'delete', 'import'],
   meta: ['create', 'update', 'delete'],
   statistics: ['compute'],
+  admin: ['access'],
   ...adminAc.statements,
 });

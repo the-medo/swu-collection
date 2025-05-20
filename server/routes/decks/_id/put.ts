@@ -7,6 +7,8 @@ import { and, eq, sql } from 'drizzle-orm';
 import { deck as deckTable } from '../../../db/schema/deck.ts';
 import { db } from '../../../db';
 import { updateDeckInformation } from '../../../lib/decks/updateDeckInformation.ts';
+import { generateDeckThumbnail } from '../../../lib/decks/generateDeckThumbnail.ts';
+import { runInBackground } from '../../../lib/utils/backgroundProcess.ts';
 
 export const deckIdPutRoute = new Hono<AuthExtension>().put(
   '/',
@@ -20,6 +22,24 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
     const isOwner = eq(deckTable.userId, user.id);
     const deckId = eq(deckTable.id, paramDeckId);
 
+    // Get the current deck data to check if leader or base card has changed
+    const currentDeck = (
+      await db.select().from(deckTable).where(and(isOwner, deckId))
+    )[0];
+
+    if (!currentDeck) {
+      return c.json(
+        {
+          message: "Deck doesn't exist or you don't have permission to update it",
+        },
+        404
+      );
+    }
+
+    // Check if leader or base card is being updated
+    const isLeaderUpdated = data.leaderCardId1 !== undefined && data.leaderCardId1 !== currentDeck.leaderCardId1;
+    const isBaseUpdated = data.baseCardId !== undefined && data.baseCardId !== currentDeck.baseCardId;
+
     const updatedDeck = (
       await db
         .update(deckTable)
@@ -32,6 +52,12 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
     )[0];
 
     await updateDeckInformation(paramDeckId);
+
+    // Generate deck thumbnail in the background if leader or base card has changed
+    if ((isLeaderUpdated || isBaseUpdated) && updatedDeck.leaderCardId1 && updatedDeck.baseCardId) {
+      runInBackground(generateDeckThumbnail, updatedDeck.leaderCardId1, updatedDeck.baseCardId);
+      console.log('Deck thumbnail generation started in background');
+    }
 
     return c.json({ data: updatedDeck });
   },

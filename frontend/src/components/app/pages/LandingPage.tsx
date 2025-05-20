@@ -8,6 +8,7 @@ import LogoDarkTheme from '../../../assets/logo-dark-theme.svg';
 import { useTheme } from '@/components/theme-provider';
 import { useUser } from '@/hooks/useUser';
 import { Button } from '@/components/ui/button';
+import { Helmet } from 'react-helmet-async';
 
 interface FeatureCardProps {
   title: string;
@@ -79,70 +80,73 @@ const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-6xl mx-auto px-4 py-10">
-      {/* Logo */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-xs mx-auto mb-8 flex justify-center"
-      >
-        <img
-          src={theme === 'light' ? LogoLightTheme : LogoDarkTheme}
-          alt="SWU Base Logo"
-          className="w-full max-w-md"
-        />
-      </motion.div>
-
-      {/* Tagline */}
-      <motion.h2
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="text-2xl md:text-3xl text-center font-medium mb-8 text-foreground/80"
-      >
-        Your Ultimate Star Wars: Unlimited Companion
-      </motion.h2>
-
-      {/* Search Bar */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className="w-full max-w-2xl mx-auto mb-12"
-      >
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-primary/20 rounded-lg blur-md"></div>
-          <div className="relative bg-card border rounded-lg p-2">
-            <CardSearchCommand id="card-search-homepage" />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* CTA for non-logged in users */}
-      {!user && (
+    <>
+      <Helmet title="SWUBase | Star Wars: Unlimited Meta Analysis & Deckbuilding" />
+      <div className="flex flex-col items-center justify-center w-full max-w-6xl mx-auto px-4 py-10">
+        {/* Logo */}
         <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-xs mx-auto mb-8 flex justify-center"
+        >
+          <img
+            src={theme === 'light' ? LogoLightTheme : LogoDarkTheme}
+            alt="SWU Base Logo"
+            className="w-full max-w-md"
+          />
+        </motion.div>
+
+        {/* Tagline */}
+        <motion.h2
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="w-full max-w-md mx-auto mb-12 text-center"
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-2xl md:text-3xl text-center font-medium mb-8 text-foreground/80"
         >
-          <p className="mb-4 text-muted-foreground">
-            Sign in to build decks, track collections, and more!
-          </p>
-          <Button size="lg" asChild>
-            Get Started
-          </Button>
-        </motion.div>
-      )}
+          Your Ultimate Star Wars: Unlimited Companion
+        </motion.h2>
 
-      {/* Feature Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-full mt-4">
-        {features.map((feature, index) => (
-          <FeatureCard key={index} {...feature} />
-        ))}
+        {/* Search Bar */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="w-full max-w-2xl mx-auto mb-12"
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-primary/20 rounded-lg blur-md"></div>
+            <div className="relative bg-card border rounded-lg p-2">
+              <CardSearchCommand id="card-search-homepage" />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* CTA for non-logged in users */}
+        {!user && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="w-full max-w-md mx-auto mb-12 text-center"
+          >
+            <p className="mb-4 text-muted-foreground">
+              Sign in to build decks, track collections, and more!
+            </p>
+            <Button size="lg" asChild>
+              Get Started
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-full mt-4">
+          {features.map((feature, index) => (
+            <FeatureCard key={index} {...feature} />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

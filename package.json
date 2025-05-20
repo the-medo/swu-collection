@@ -11,15 +11,14 @@
     "db-docker": "docker run -d --name swubase-postgres -e POSTGRES_PASSWORD=password -p 5442:5432 postgres:16-alpine"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.735.0",
     "@better-auth/cli": "^1.2.5",
     "@types/bun": "latest",
     "drizzle-kit": "^0.30.1",
     "prettier": "^3.4.2",
-    "sharp": "^0.33.5",
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.735.0",
     "@hono/zod-validator": "^0.4.2",
     "@tanstack/react-form": "^0.41.0",
     "better-auth": "^1.2.5",
@@ -27,6 +26,7 @@
     "hono": "^4.6.16",
     "linkedom": "^0.18.9",
     "postgres": "^3.4.5",
-    "zod": "^3.24.1"
+    "zod": "^3.24.1",
+    "sharp": "^0.33.5"
   }
 }

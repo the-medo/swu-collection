@@ -12,6 +12,11 @@ import { tournamentRoute } from './routes/tournament.ts';
 import { entitiesRoute } from './routes/entity.ts';
 import { metaRoute } from './routes/meta.ts';
 import { cardStatsRoute } from './routes/card-stats.ts';
+import { setRoute } from './routes/set.ts';
+import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
+import { injectMetaTags } from './lib/utils/htmlTemplate';
+import fs from 'fs';
+import path from 'path';
 
 const app = new Hono<AuthExtension>();
 
@@ -60,10 +65,98 @@ const apiRoutes = app
   .route('/tournament', tournamentRoute)
   .route('/entities', entitiesRoute)
   .route('/meta', metaRoute)
-  .route('/card-stats', cardStatsRoute);
+  .route('/card-stats', cardStatsRoute)
+  .route('/set', setRoute);
 
-app.get('*', serveStatic({ root: './frontend/dist' }));
-app.get('*', serveStatic({ path: './frontend/dist/index.html' }));
+// Read the index.html template once at startup
+let indexHtml: string;
+try {
+  // Try to read from the production build directory first
+  const indexHtmlPath = path.join(process.cwd(), 'frontend', 'dist', 'index.html');
+  indexHtml = fs.readFileSync(indexHtmlPath, 'utf-8');
+} catch (error) {
+  // If the file doesn't exist (in development), use the source index.html
+  try {
+    const devIndexHtmlPath = path.join(process.cwd(), 'frontend', 'index.html');
+    indexHtml = fs.readFileSync(devIndexHtmlPath, 'utf-8');
+    console.log('Using development index.html for SSR');
+  } catch (fallbackError) {
+    console.error('Could not find index.html in either dist or frontend directory', fallbackError);
+    // Provide a minimal fallback HTML template
+    indexHtml = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SWU Base</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>`;
+  }
+}
+
+// Add SSR middleware for meta tags
+app.get('*', async (c, next) => {
+  const url = new URL(c.req.url);
+  const pathname = url.pathname;
+
+  // Skip for API routes and static assets
+  if (pathname.startsWith('/api') || pathname.includes('.')) {
+    return next();
+  }
+
+  // Try to match the route and fetch meta tags
+  const metaTags = await matchRouteAndFetchMetaTags(pathname, url.searchParams);
+
+  // If no meta tags were found, continue to the next middleware
+  if (!metaTags) {
+    return next();
+  }
+
+  // Inject meta tags into the HTML
+  const modifiedHtml = await injectMetaTags(indexHtml, metaTags);
+
+  // Return the modified HTML
+  return c.html(modifiedHtml);
+});
+
+// Try to serve static files from dist directory first (production)
+app.get('*', async (c, next) => {
+  try {
+    return await serveStatic({ root: './frontend/dist' })(c);
+  } catch (error) {
+    // If file not found in dist, continue to next middleware
+    return next();
+  }
+});
+
+// In development, try to serve from the frontend source directory
+app.get('*', async (c, next) => {
+  // Skip for API routes
+  const url = new URL(c.req.url);
+  const pathname = url.pathname;
+
+  if (pathname.startsWith('/api')) {
+    return next();
+  }
+
+  // Only try to serve files with extensions (not routes)
+  if (pathname.includes('.')) {
+    try {
+      return await serveStatic({ root: './frontend' })(c);
+    } catch (error) {
+      // If file not found, continue to next middleware
+      return next();
+    }
+  }
+
+  return next();
+});
+
+// Fallback to serving index.html for all other routes
+app.get('*', c => c.html(indexHtml));
 
 export default app;
 export type ApiRoutes = typeof apiRoutes;
