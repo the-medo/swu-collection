@@ -36,8 +36,9 @@ RUN find . -mindepth 1 ! -regex '^./dist\(/.*\)?' -delete
 FROM base
 
 # Install fonts - for generating thumbnail images
-RUN apt-get install --no-install-recommends -y fonts-liberation fontconfig && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install --no-install-recommends -y \
+  fonts-liberation fontconfig \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy built application
 COPY --from=build /app /app
