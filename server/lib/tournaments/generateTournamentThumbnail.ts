@@ -148,7 +148,7 @@ export async function generateTournamentThumbnail(
     // Add tournament name in big font with line break support
     const nameTextSvg = Buffer.from(`
       <svg width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
-        <text x="50%" y="300" font-family="sans-serif" font-weight="bold" fill="white" text-anchor="middle">
+        <text x="50%" y="300" font-family="Liberation Sans, Arial" font-weight="bold" fill="white" text-anchor="middle">
           <tspan font-size="40" x="50%" dy="0">${namePart1}</tspan>
           <tspan font-size="32" x="50%" dy="36px">${namePart2.length === 0 ? ' ' : (namePart2 ?? ' ')}</tspan>
           <tspan font-size="28" x="50%" dy="123px">${tournamentData?.attendance ? `${tournamentData.attendance} players` : ' '}</tspan>
