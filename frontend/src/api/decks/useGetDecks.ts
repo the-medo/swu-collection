@@ -9,6 +9,7 @@ export type GetDecksRequest = Partial<DeckQueryParams>;
 export const useGetDecks = (props: GetDecksRequest) => {
   const {
     userId,
+    favorite,
     format,
     leaders,
     base,
@@ -23,6 +24,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
     'decks',
     {
       userId,
+      favorite,
       format,
       leaders,
       base,
@@ -42,6 +44,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
       const response = await api.deck.$get({
         query: {
           userId,
+          favorite,
           format: format?.toString(),
           leaders: leadersParam,
           base,

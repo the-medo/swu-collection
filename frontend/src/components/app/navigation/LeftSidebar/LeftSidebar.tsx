@@ -10,6 +10,7 @@ import {
   Scale,
   ScrollText,
   Search,
+  Star,
   TrophyIcon,
 } from 'lucide-react';
 
@@ -83,6 +84,20 @@ const groups = [
         title: 'Decks',
         url: '/decks/public',
         icon: Book,
+        menuAction: (
+          <Link
+            to="/decks/favorite"
+            onClick={() => {
+              if (typeof setOpenMobile === 'function') {
+                setOpenMobile(false);
+              }
+            }}
+          >
+            <SidebarMenuAction title="Favorite Decks">
+              <Star /> <span className="sr-only">Favorite Decks</span>
+            </SidebarMenuAction>
+          </Link>
+        ),
       },
     ],
   },
