@@ -5,21 +5,25 @@ import { Button } from '@/components/ui/button.tsx';
 import { publicRenderer } from '@/lib/table/publicRenderer.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { useGetDeck } from '@/api/decks/useGetDeck';
+import { usePostDeckFavorite } from '@/api/decks/usePostDeckFavorite';
 import EditDeckDialog from '../../dialogs/EditDeckDialog';
 import DeleteDeckDialog from '../../dialogs/DeleteDeckDialog';
 import DeckContents from '../DeckContents/DeckContents';
 import { useDeckLayoutStoreActions } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Star } from 'lucide-react';
 
 const routeApi = getRouteApi('/decks/$deckId/');
 
 const DeckDetail: React.FC = () => {
   const user = useUser();
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const { deckId } = routeApi.useParams();
   const { data, isFetching, error } = useGetDeck(deckId);
   const { setDeckInfo } = useDeckLayoutStoreActions();
+  const favoriteDecMutation = usePostDeckFavorite(deckId);
 
   const deckUserId = data?.user?.id ?? '';
   const loading = isFetching;
@@ -29,6 +33,13 @@ const DeckDetail: React.FC = () => {
   useEffect(() => {
     setDeckInfo(deckId, format, owned);
   }, [deckId, format, owned]);
+
+  const handleFavoriteClick = () => {
+    if (!user) return; // User must be logged in to favorite
+
+    setIsFavorite(prev => !prev); // Optimistically update UI
+    favoriteDecMutation.mutate({ isFavorite: !isFavorite });
+  };
 
   if (error?.status === 404) {
     return (
@@ -58,14 +69,26 @@ const DeckDetail: React.FC = () => {
           }
           loading={loading}
         />
-        {owned && data?.deck && (
+        {user && (
           <div className="flex flex-row gap-4 items-center">
-            {publicRenderer(data?.deck.public)}
-            <EditDeckDialog deck={data?.deck} trigger={<Button>Edit deck</Button>} />
-            <DeleteDeckDialog
-              deck={data?.deck}
-              trigger={<Button variant="destructive">Delete deck</Button>}
-            />
+            {owned && data?.deck && (
+              <>
+                {publicRenderer(data?.deck.public)}
+                <EditDeckDialog deck={data?.deck} trigger={<Button>Edit deck</Button>} />
+                <DeleteDeckDialog
+                  deck={data?.deck}
+                  trigger={<Button variant="destructive">Delete deck</Button>}
+                />
+              </>
+            )}
+            <Button
+              variant={isFavorite ? "default" : "outline"}
+              size="icon"
+              onClick={handleFavoriteClick}
+              title={isFavorite ? "Unfavorite this deck" : "Favorite this deck"}
+            >
+              <Star className={isFavorite ? "fill-current" : ""} />
+            </Button>
           </div>
         )}
       </div>
