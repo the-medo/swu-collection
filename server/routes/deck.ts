@@ -16,6 +16,7 @@ import { deckIdDuplicatePostRoute } from './decks/_id/duplicate/post.ts';
 import { decksImportSwudbPostRoute } from './decks/import-swudb/post.ts';
 import { deckIdTournamentGetRoute } from './decks/_id/tournament/get.ts';
 import { decksThumbnailsPostRoute } from './decks/thumbnails/post.ts';
+import { deckIdFavoritePostRoute } from './decks/_id/favorite/post.ts';
 
 export const selectDeck = getTableColumns(deckTable);
 export const selectDeckInformation = getTableColumns(deckInformationTable);
@@ -32,5 +33,6 @@ export const deckRoute = new Hono<AuthExtension>()
   .route('/:id/card', deckIdCardDeleteRoute)
   .route('/:id/duplicate', deckIdDuplicatePostRoute)
   .route('/:id/tournament', deckIdTournamentGetRoute)
+  .route('/:id/favorite', deckIdFavoritePostRoute)
   .route('/import-swudb', decksImportSwudbPostRoute)
   .route('/thumbnails', decksThumbnailsPostRoute);
