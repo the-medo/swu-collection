@@ -163,8 +163,9 @@ export function useDeckFilterStore(sortable?: boolean) {
 
   // Convert to API request format
   const toRequestParams = useCallback(
-    (userId?: string): GetDecksRequest => ({
+    (userId?: string, favorite?: boolean): GetDecksRequest => ({
       userId,
+      favorite,
       leaders: leaders.length > 0 ? leaders : undefined,
       base,
       aspects: aspects.length > 0 ? aspects : undefined,

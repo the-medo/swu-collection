@@ -58,14 +58,18 @@ const DeckDetail: React.FC = () => {
           }
           loading={loading}
         />
-        {owned && data?.deck && (
+        {user && (
           <div className="flex flex-row gap-4 items-center">
-            {publicRenderer(data?.deck.public)}
-            <EditDeckDialog deck={data?.deck} trigger={<Button>Edit deck</Button>} />
-            <DeleteDeckDialog
-              deck={data?.deck}
-              trigger={<Button variant="destructive">Delete deck</Button>}
-            />
+            {owned && data?.deck && (
+              <>
+                {publicRenderer(data?.deck.public)}
+                <EditDeckDialog deck={data?.deck} trigger={<Button>Edit deck</Button>} />
+                <DeleteDeckDialog
+                  deck={data?.deck}
+                  trigger={<Button variant="destructive">Delete deck</Button>}
+                />
+              </>
+            )}
           </div>
         )}
       </div>

@@ -6,6 +6,7 @@ import { deck as deckTable } from '../../db/schema/deck.ts';
 import { db } from '../../db';
 import { user as userTable } from '../../db/schema/auth-schema.ts';
 import { deckInformation as deckInformationTable } from '../../db/schema/deck_information.ts';
+import { userDeckFavorite as usedDeckFavoriteTable } from '../../db/schema/user_deck_favorite.ts';
 import { withPagination } from '../../lib/withPagination.ts';
 import { zPaginationParams } from '../../../types/ZPaginationParams.ts';
 import { z } from 'zod';
@@ -16,6 +17,15 @@ import { selectDeck, selectDeckInformation } from '../deck.ts';
 
 export const zDeckQueryParams = zPaginationParams.extend({
   userId: z.string().optional(),
+  favorite: z.preprocess(
+    // Convert string "false" to boolean false
+    val => {
+      if (val === 'false') return false;
+      if (val === 'true') return true;
+      return val;
+    },
+    z.boolean().optional().default(false),
+  ),
   format: z.coerce.number().int().positive().optional(),
   leaders: z
     .string()
@@ -47,6 +57,7 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     const user = c.get('user');
     const {
       userId,
+      favorite,
       format,
       leaders: leaderIds,
       base,
@@ -108,6 +119,17 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
 
     // Add join to deck_information
     query = query.innerJoin(deckInformationTable, eq(deckTable.id, deckInformationTable.deckId));
+
+    if (favorite && user?.id) {
+      console.log('Adding join to user_deck_favorite table with user ID: ', user.id);
+      query = query.innerJoin(
+        usedDeckFavoriteTable,
+        and(
+          eq(deckTable.id, usedDeckFavoriteTable.deckId),
+          eq(usedDeckFavoriteTable.userId, user.id),
+        ),
+      );
+    }
 
     if (baseAspect || aspectList) {
       // Base aspect filter

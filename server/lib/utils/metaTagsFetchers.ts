@@ -41,6 +41,36 @@ export async function getTournamentMetaTags(tournamentId: string) {
 
 export async function getDeckMetaTags(deckId: string) {
   try {
+    // Special case for /decks/public and /decks/your routes
+    if (deckId === 'public') {
+      return {
+        robots: 'index, follow',
+        keywords: 'swubase, swu, star wars, tcg, public decks, community decks',
+        description:
+          'Browse public Star Wars: Unlimited decks shared by the community. Find inspiration for your next deck build.',
+        'og:title': 'Public Decks | SWUBase',
+        'og:description':
+          'Browse public Star Wars: Unlimited decks shared by the community. Find inspiration for your next deck build.',
+        'og:image': 'https://images.swubase.com/thumbnails/base-thumbnail.webp',
+        'og:url': 'https://swubase.com/decks/public',
+        'og:type': 'website',
+      };
+    } else if (deckId === 'your') {
+      return {
+        robots: 'noindex, nofollow', // Private content shouldn't be indexed
+        keywords: 'swubase, swu, star wars, tcg, my decks, personal decks',
+        description:
+          'Manage your personal Star Wars: Unlimited decks. Create, edit, and organize your deck collection.',
+        'og:title': 'Your Decks | SWUBase',
+        'og:description':
+          'Manage your personal Star Wars: Unlimited decks. Create, edit, and organize your deck collection.',
+        'og:image': 'https://images.swubase.com/thumbnails/base-thumbnail.webp',
+        'og:url': 'https://swubase.com/decks/your',
+        'og:type': 'website',
+      };
+    }
+
+    // Regular deck handling for valid UUIDs
     const deckData = (await db.select().from(deck).where(eq(deck.id, deckId)))[0];
 
     if (!deckData || !deckData.leaderCardId1 || !deckData.baseCardId || !deckData.public) {
@@ -166,6 +196,35 @@ export async function getCardDetailMetaTags(cardId: string) {
 
 export async function getCollectionMetaTags(collectionId: string) {
   try {
+    // Special case for /collections/public and /collections/your routes
+    if (collectionId === 'public') {
+      return {
+        robots: 'index, follow',
+        keywords: 'swubase, swu, star wars, tcg, public collections, community collections',
+        description: 'Browse public Star Wars: Unlimited card collections shared by the community.',
+        'og:title': 'Public Collections | SWUBase',
+        'og:description':
+          'Browse public Star Wars: Unlimited card collections shared by the community.',
+        'og:image': 'https://images.swubase.com/thumbnails/collection.webp',
+        'og:url': 'https://swubase.com/collections/public',
+        'og:type': 'website',
+      };
+    } else if (collectionId === 'your') {
+      return {
+        robots: 'noindex, nofollow', // Private content shouldn't be indexed
+        keywords: 'swubase, swu, star wars, tcg, my collections, personal collections',
+        description:
+          'Manage your personal Star Wars: Unlimited card collections. Track your cards and wantlists.',
+        'og:title': 'Your Collections | SWUBase',
+        'og:description':
+          'Manage your personal Star Wars: Unlimited card collections. Track your cards and wantlists.',
+        'og:image': 'https://images.swubase.com/thumbnails/collection.webp',
+        'og:url': 'https://swubase.com/collections/your',
+        'og:type': 'website',
+      };
+    }
+
+    // Regular collection handling for valid UUIDs
     // Get collection data and user data
     const collectionData = (
       await db

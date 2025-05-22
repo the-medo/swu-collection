@@ -56,7 +56,12 @@ export const zDeckImportSwudbRequest = z.object({
   swudbDeckId: z.string(),
 });
 
+export const zDeckFavoriteRequest = z.object({
+  isFavorite: z.boolean(),
+});
+
 export type ZDeck = z.infer<typeof zDeckSchema>;
 export type ZDeckCreateRequest = z.infer<typeof zDeckCreateRequest>;
 export type ZDeckUpdateRequest = z.infer<typeof zDeckUpdateRequest>;
 export type ZDeckImportSwudbRequest = z.infer<typeof zDeckImportSwudbRequest>;
+export type ZDeckFavoriteRequest = z.infer<typeof zDeckFavoriteRequest>;
