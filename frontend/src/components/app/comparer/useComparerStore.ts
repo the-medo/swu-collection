@@ -1,11 +1,70 @@
 import { Store, useStore } from '@tanstack/react-store';
 import { CollectionType } from '../../../../../types/enums.ts';
+import { useEffect } from 'react';
 
 export enum ComparerMode {
   INTERSECTION = 'intersection',
   DIFFERENCE = 'difference',
   UNION = 'union',
 }
+
+// Local storage key for comparer state
+const COMPARER_STORAGE_KEY = 'swu-comparer-state';
+// URL parameter key for comparer state
+const COMPARER_URL_PARAM = 'state';
+
+// Utility functions for URL encoding/decoding
+export const encodeStateToUrl = (state: ComparerStore): string => {
+  try {
+    // Create a minimal version of the state with only necessary data
+    const minimalState = {
+      m: state.mode,
+      i: state.mainId,
+      e: state.entries.map(entry => ({
+        i: entry.id,
+        t: entry.dataType,
+        c: entry.collectionType,
+        a: entry.additionalData ? { t: entry.additionalData.title } : undefined,
+      })),
+    };
+
+    // Convert to JSON and encode as base64
+    const jsonString = JSON.stringify(minimalState);
+    return btoa(encodeURIComponent(jsonString));
+  } catch (error) {
+    console.error('Failed to encode comparer state to URL:', error);
+    return '';
+  }
+};
+
+export const decodeStateFromUrl = (encodedState: string): ComparerStore | null => {
+  try {
+    // Decode base64 and parse JSON
+    const jsonString = decodeURIComponent(atob(encodedState));
+    const minimalState = JSON.parse(jsonString);
+
+    // Validate the minimal state structure
+    if (!minimalState || !Array.isArray(minimalState.e)) {
+      console.error('Invalid comparer state format in URL');
+      return null;
+    }
+
+    // Convert back to full state
+    return {
+      mode: minimalState.m,
+      mainId: minimalState.i,
+      entries: minimalState.e.map((e: any) => ({
+        id: e.i,
+        dataType: e.t,
+        collectionType: e.c,
+        additionalData: e.a ? { title: e.a.t } : undefined,
+      })),
+    };
+  } catch (error) {
+    console.error('Failed to decode comparer state from URL:', error);
+    return null;
+  }
+};
 
 export type ComparerEntryAdditionalData = {
   title?: string;
@@ -32,15 +91,47 @@ const defaultState: ComparerStore = {
   entries: [],
 };
 
-const store = new Store<ComparerStore>(defaultState);
+// Save state to localStorage
+const saveToLocalStorage = (state: ComparerStore) => {
+  try {
+    localStorage.setItem(COMPARER_STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error('Failed to save comparer state to localStorage:', error);
+  }
+};
 
-const setMode = (mode: ComparerMode) => store.setState(state => ({ ...state, mode }));
+// Load state from localStorage
+const loadFromLocalStorage = (): ComparerStore | null => {
+  try {
+    const savedState = localStorage.getItem(COMPARER_STORAGE_KEY);
+    if (savedState) {
+      return JSON.parse(savedState);
+    }
+  } catch (error) {
+    console.error('Failed to load comparer state from localStorage:', error);
+  }
+  return null;
+};
+
+// Initialize store with saved state or default state
+const initialState = loadFromLocalStorage() || defaultState;
+const store = new Store<ComparerStore>(initialState);
+
+const setMode = (mode: ComparerMode) => 
+  store.setState(state => {
+    const newState = { ...state, mode };
+    saveToLocalStorage(newState);
+    return newState;
+  });
+
 const setMainId = (mainId: string | undefined) =>
   store.setState(state => {
     if (mainId && !state.entries.some(entry => entry.id === mainId)) {
       return state;
     }
-    return { ...state, mainId };
+    const newState = { ...state, mainId };
+    saveToLocalStorage(newState);
+    return newState;
   });
 
 const addComparerEntry = (entry: ComparerEntry) =>
@@ -52,11 +143,13 @@ const addComparerEntry = (entry: ComparerEntry) =>
     const newEntries = [...state.entries, entry];
     const newMainId = state.entries.length === 0 && !state.mainId ? entry.id : state.mainId;
 
-    return {
+    const newState = {
       ...state,
       entries: newEntries,
       mainId: newMainId,
     };
+    saveToLocalStorage(newState);
+    return newState;
   });
 
 const removeComparerEntry = (id: string) =>
@@ -65,19 +158,25 @@ const removeComparerEntry = (id: string) =>
     const newMainId =
       id === state.mainId ? (newEntries.length > 0 ? newEntries[0].id : undefined) : state.mainId;
 
-    return {
+    const newState = {
       ...state,
       entries: newEntries,
       mainId: newMainId,
     };
+    saveToLocalStorage(newState);
+    return newState;
   });
 
 const clearComparerEntries = () =>
-  store.setState(state => ({
-    ...state,
-    entries: [],
-    mainId: undefined,
-  }));
+  store.setState(state => {
+    const newState = {
+      ...state,
+      entries: [],
+      mainId: undefined,
+    };
+    saveToLocalStorage(newState);
+    return newState;
+  });
 
 export function useComparerStore() {
   const mode = useStore(store, state => state.mode);

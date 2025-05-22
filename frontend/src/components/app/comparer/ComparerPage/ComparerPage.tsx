@@ -1,5 +1,9 @@
 import * as React from 'react';
-import { useComparerStore } from '@/components/app/comparer/useComparerStore';
+import {
+  useComparerStore,
+  encodeStateToUrl,
+  decodeStateFromUrl,
+} from '@/components/app/comparer/useComparerStore';
 import {
   Scale,
   BookOpenCheck,
@@ -11,15 +15,16 @@ import {
 } from 'lucide-react';
 import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore';
 import { CollectionType } from '../../../../../../types/enums';
 import { CollectionCard } from '../../../../../../types/CollectionCard';
 import CollectionLayoutTableSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmall.tsx';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import ComparerInstructions from '@/components/app/comparer/ComparerPage/ComparerInstructions.tsx';
+import { Route } from '@/routes/comparer';
 
 // Render item type badge
 const renderItemTypeBadge = (entry: ReturnType<typeof useComparerStore>['entries'][number]) => {
@@ -121,8 +126,62 @@ const ComparerResult: React.FC<{
 };
 
 const ComparerPage: React.FC = () => {
-  const { entries, mainId } = useComparerStore();
-  const { setMainId, removeComparerEntry } = useComparerStoreActions();
+  const { entries, mainId, mode } = useComparerStore();
+  const { setMainId, removeComparerEntry, addComparerEntry, setMode, clearComparerEntries } =
+    useComparerStoreActions();
+  const navigate = useNavigate();
+  const search = useSearch({ from: Route.fullPath });
+
+  // Update URL when comparer state changes
+  useEffect(() => {
+    if (entries.length > 0) {
+      const encodedState = encodeStateToUrl({ entries, mainId, mode });
+      navigate(
+        {
+          search: prev => ({ ...prev, state: encodedState }),
+        },
+        { replace: true },
+      );
+    } else {
+      // Remove state parameter if comparer is empty
+      navigate(
+        {
+          search: prev => {
+            const { state, ...rest } = prev;
+            return rest;
+          },
+        },
+        { replace: true },
+      );
+    }
+  }, [entries, mainId, mode, navigate]);
+
+  // Load state from URL on initial load
+  useEffect(() => {
+    const stateParam = search.state;
+    if (stateParam && typeof stateParam === 'string') {
+      const decodedState = decodeStateFromUrl(stateParam);
+      if (decodedState && decodedState.entries.length > 0) {
+        // Clear current state first to avoid duplicates
+        clearComparerEntries();
+
+        // Set mode first
+        if (decodedState.mode) {
+          setMode(decodedState.mode);
+        }
+
+        // Add all entries
+        decodedState.entries.forEach(entry => {
+          addComparerEntry(entry);
+        });
+
+        // Set main ID last
+        if (decodedState.mainId) {
+          setMainId(decodedState.mainId);
+        }
+      }
+    }
+  }, [search.state, setMode, addComparerEntry, setMainId, clearComparerEntries]);
 
   // Get all entries
   const allEntries = entries;
@@ -241,7 +300,8 @@ const ComparerPage: React.FC = () => {
         <Alert>
           <AlertTitle>Deck comparison not supported</AlertTitle>
           <AlertDescription>
-            Currently, only collections can be used as the main item for comparison. Please select a collection as the main item.
+            Currently, only collections can be used as the main item for comparison. Please select a
+            collection as the main item.
           </AlertDescription>
         </Alert>
       ) : otherEntries.length > 0 ? (
