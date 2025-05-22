@@ -21,9 +21,20 @@ import CollectionLayoutTableSmall from '@/components/app/collections/CollectionC
 import { useMemo } from 'react';
 import ComparerInstructions from '@/components/app/comparer/ComparerPage/ComparerInstructions.tsx';
 
-// Render collection type badge
-const renderCollectionTypeBadge = (type?: CollectionType) => {
-  switch (type) {
+// Render item type badge
+const renderItemTypeBadge = (entry: ReturnType<typeof useComparerStore>['entries'][number]) => {
+  // If it's a deck, return a deck badge
+  if (entry.dataType === 'deck') {
+    return (
+      <Badge className="bg-green-200">
+        <NotebookTabs className="mr-1 h-3 w-3" />
+        Deck
+      </Badge>
+    );
+  }
+
+  // Otherwise, render collection type badge
+  switch (entry.collectionType) {
     case CollectionType.COLLECTION:
       return (
         <Badge className="bg-blue-200">
@@ -95,7 +106,7 @@ const ComparerResult: React.FC<{
     <div className="p-4">
       <h3 className="flex gap-4 text-lg font-semibold mb-4">
         Comparison with {entry.additionalData?.title ?? '- Unknown -'}
-        {renderCollectionTypeBadge(entry.collectionType)}
+        {renderItemTypeBadge(entry)}
       </h3>
 
       <div className="mb-2">
@@ -113,17 +124,23 @@ const ComparerPage: React.FC = () => {
   const { entries, mainId } = useComparerStore();
   const { setMainId, removeComparerEntry } = useComparerStoreActions();
 
-  // Filter to only collections
+  // Get all entries
+  const allEntries = entries;
+
+  // Filter to only collections (for comparison logic)
   const collectionsEntries = entries.filter(entry => entry.dataType === 'collection');
 
-  // Get the main entry
-  const mainEntry = collectionsEntries.find(entry => entry.id === mainId);
+  // Get the main entry from all entries
+  const mainEntry = allEntries.find(entry => entry.id === mainId);
+
+  // Get the main collection entry (for comparison logic)
+  const mainCollectionEntry = collectionsEntries.find(entry => entry.id === mainId);
 
   // Get other entries (to compare against main)
   const otherEntries = collectionsEntries.filter(entry => entry.id !== mainId);
 
-  // Fetch collection data for main entry
-  const { data: mainCollection } = useGetCollectionCards(mainEntry?.id);
+  // Fetch collection data for main entry (only if it's a collection)
+  const { data: mainCollection } = useGetCollectionCards(mainCollectionEntry?.id);
 
   // Create main cards map for comparison
   const mainCardsMap = useMemo(() => {
@@ -143,14 +160,14 @@ const ComparerPage: React.FC = () => {
     return map;
   }, [mainCollection]);
 
-  if (collectionsEntries.length === 0) {
+  if (allEntries.length === 0) {
     return (
       <div className="flex max-lg:flex-col gap-2 p-2">
         <Alert className="">
           <Scale className="h-4 w-4" />
-          <AlertTitle>No collections in comparer</AlertTitle>
+          <AlertTitle>No items in comparer</AlertTitle>
           <AlertDescription>
-            Add collections to the comparer from collection pages to start comparing them.
+            Add collections or decks to the comparer from their pages to start comparing them.
           </AlertDescription>
         </Alert>
         <ComparerInstructions />
@@ -163,8 +180,8 @@ const ComparerPage: React.FC = () => {
       <div className="p-6">
         <Alert className="max-w-3xl mx-auto">
           <Scale className="h-4 w-4" />
-          <AlertTitle>No main collection selected</AlertTitle>
-          <AlertDescription>Please select a main collection to compare against.</AlertDescription>
+          <AlertTitle>No main item selected</AlertTitle>
+          <AlertDescription>Please select a main item to compare against.</AlertDescription>
         </Alert>
       </div>
     );
@@ -173,10 +190,10 @@ const ComparerPage: React.FC = () => {
   return (
     <>
       <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-2">Collections in Comparer</h3>
+        <h3 className="text-lg font-semibold mb-2">Items in Comparer</h3>
         <div className="flex flex-wrap gap-2">
           <div className="flex flex-grow flex-col gap-2">
-            {collectionsEntries.map(entry => (
+            {allEntries.map(entry => (
               <div
                 key={entry.id}
                 className={`flex max-lg:flex-col gap-2 items-center justify-between border rounded-md p-2 ${entry.id === mainId ? 'border-primary bg-primary/10' : 'border-muted'}`}
@@ -187,7 +204,7 @@ const ComparerPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="ml-4 flex gap-2">
-                  {renderCollectionTypeBadge(entry.collectionType)}
+                  {renderItemTypeBadge(entry)}
                   {entry.id === mainId && (
                     <Badge variant="default">
                       Main <Crown size={16} className="ml-2" />
@@ -220,7 +237,14 @@ const ComparerPage: React.FC = () => {
         </div>
       </div>
 
-      {otherEntries.length > 0 ? (
+      {mainEntry?.dataType === 'deck' ? (
+        <Alert>
+          <AlertTitle>Deck comparison not supported</AlertTitle>
+          <AlertDescription>
+            Currently, only collections can be used as the main item for comparison. Please select a collection as the main item.
+          </AlertDescription>
+        </Alert>
+      ) : otherEntries.length > 0 ? (
         <div className="space-y-4">
           {otherEntries.map(entry => (
             <ComparerResult key={entry.id} mainCardsMap={mainCardsMap} entry={entry} />
@@ -230,7 +254,7 @@ const ComparerPage: React.FC = () => {
         <Alert>
           <AlertTitle>No comparisons available</AlertTitle>
           <AlertDescription>
-            Add more collections to the comparer to see comparisons.
+            Add more collections or decks to the comparer to see comparisons.
           </AlertDescription>
         </Alert>
       )}

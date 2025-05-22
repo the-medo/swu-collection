@@ -19,7 +19,7 @@ const ComparerInstructions: React.FC = () => {
           <div>
             <p className="font-medium">Add entires</p>
             <p className="text-muted-foreground">
-              Add collections, wantlists or card lists to compare by clicking the "Add to comparer"
+              Add collections, decks, wantlists or card lists to compare by clicking the "Add to comparer"
               button on their detail page.
             </p>
           </div>
