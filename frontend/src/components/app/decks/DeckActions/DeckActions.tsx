@@ -8,7 +8,7 @@ import {
   FileJson,
   FileText,
   LinkIcon,
-  ScrollText,
+  Loader2,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
@@ -31,22 +31,51 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import DeckImageButton from '@/components/app/decks/DeckContents/DeckImage/DeckImageButton.tsx';
+import { usePostDeckFavorite } from '@/api/decks/usePostDeckFavorite';
+import { Star } from 'lucide-react';
+import { useUser } from '@/hooks/useUser';
 
 interface DeckActionsProps {
   deckId: string;
 }
 
 const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
+  const user = useUser();
   const { toast } = useToast();
   const { data: deckData } = useGetDeck(deckId);
   const { data: deckCardsData } = useGetDeckCards(deckId);
   const { data: cardListData } = useCardList();
   const duplicateMutation = useDuplicateDeck();
   const navigate = useNavigate();
+  const favoriteDeckMutation = usePostDeckFavorite(deckId);
 
   const deckLink = `${window.location.origin}/decks/${deckId}`;
 
+  const isFavorite = !!deckData?.isFavorite;
+
+  const handleFavoriteClick = () => {
+    if (!user) {
+      toast({
+        variant: 'warning',
+        title: 'Unable to favorite a deck',
+        description: 'Please sign in to do this action.',
+      });
+      return; // User must be logged in to favorite
+    }
+
+    favoriteDeckMutation.mutate({ isFavorite: !isFavorite });
+  };
+
   const handleDuplicate = async () => {
+    if (!user) {
+      toast({
+        variant: 'warning',
+        title: 'Unable to duplicate a deck',
+        description: 'Please sign in to do this action.',
+      });
+      return; // User must be logged in to favorite
+    }
+
     try {
       const result = await duplicateMutation.mutateAsync(deckId);
       void navigate({ to: `/decks/${result.data.id}` });
@@ -155,6 +184,19 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
   return (
     <Card className="border-0 shadow-none">
       <CardContent className="flex gap-2 items-center p-2 flex-wrap">
+        <Button
+          variant={isFavorite ? 'default' : 'outline'}
+          size="iconMedium"
+          onClick={handleFavoriteClick}
+          title={isFavorite ? 'Unfavorite this deck' : 'Favorite this deck'}
+          disabled={favoriteDeckMutation.isPending}
+        >
+          {favoriteDeckMutation.isPending ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            <Star className={isFavorite ? 'fill-current' : ''} />
+          )}
+        </Button>
         <Button
           size="xs"
           className={cn({

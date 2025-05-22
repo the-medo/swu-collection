@@ -22,9 +22,9 @@ export const useGetDecks = (props: GetDecksRequest) => {
   // Create a stable query key based on all filter parameters
   const qk = [
     'decks',
+    favorite ? 'favorite' : 'all',
     {
       userId,
-      favorite,
       format,
       leaders,
       base,
@@ -44,7 +44,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
       const response = await api.deck.$get({
         query: {
           userId,
-          favorite,
+          favorite: favorite ? 'true' : undefined,
           format: format?.toString(),
           leaders: leadersParam,
           base,

@@ -3,6 +3,8 @@ import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { ZDeckFavoriteRequest } from '../../../../types/ZDeck.ts';
+import { InferResponseType } from 'hono';
+import { formatISO } from 'date-fns';
 
 /**
  * Hook to favorite or unfavorite a deck.
@@ -30,13 +32,20 @@ export const usePostDeckFavorite = (deckId: string | undefined) => {
         throw new Error(response.statusText);
       }
 
-      const data = await response.json();
-      return data;
+      return await response.json();
     },
     onSuccess: (_, variables) => {
       // Invalidate relevant queries to refetch data
-      queryClient.invalidateQueries({ queryKey: ['decks'] });
-      
+      queryClient.invalidateQueries({ queryKey: ['decks', 'favorite'] });
+
+      const $getDeck = api.deck[':id'].$get;
+      type ResType = InferResponseType<typeof $getDeck>;
+
+      queryClient.setQueryData(['deck', deckId], (oldData: ResType) => ({
+        ...oldData,
+        isFavorite: variables.isFavorite ? formatISO(new Date()) : null,
+      }));
+
       // Show success message
       const action = variables.isFavorite ? 'favorited' : 'unfavorited';
       toast({

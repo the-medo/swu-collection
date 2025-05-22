@@ -17,4 +17,5 @@ export interface Deck {
 export interface DeckData {
   deck: Deck;
   user: User;
+  isFavorite: string | null;
 }
