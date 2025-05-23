@@ -21,7 +21,6 @@ export const deckIdGetRoute = new Hono<AuthExtension>().get('/', async c => {
     .select({
       user: selectUser,
       deck: selectDeck,
-
       isFavorite: user ? userDeckFavorite.createdAt : sql.raw('NULL'),
     })
     .from(deckTable)
