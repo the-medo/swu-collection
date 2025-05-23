@@ -37,4 +37,4 @@ export const deckRoute = new Hono<AuthExtension>()
   .route('/:id/favorite', deckIdFavoritePostRoute)
   .route('/import-swudb', decksImportSwudbPostRoute)
   .route('/thumbnails', decksThumbnailsPostRoute)
-  .route('/bulk', decksBulkGetRoute);
+  .route('/bulk/data', decksBulkGetRoute);

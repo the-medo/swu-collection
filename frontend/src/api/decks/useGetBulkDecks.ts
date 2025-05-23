@@ -1,26 +1,32 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { DeckData } from '../../../../types/Deck.ts';
-import { DeckCard } from '../../../../types/ZDeckCard.ts';
-
-export interface DecksBulkResponse {
-  decks: Record<string, DeckData>;
-  cards: Record<string, DeckCard[]>;
-}
 
 export const useGetBulkDecks = (deckIds: string[] | undefined) => {
   const queryClient = useQueryClient();
 
-  return useQuery<DecksBulkResponse>({
+  return useQuery<boolean>({
     queryKey: ['decks-bulk', deckIds ? deckIds.join(',') : null],
     queryFn: async () => {
       if (!deckIds || deckIds.length === 0) {
-        return { decks: {}, cards: {} };
+        return false;
       }
 
-      const response = await api.deck.bulk.$get({
+      // Filter out deck IDs that already have both deck data and deck cards in cache
+      const idsToFetch = deckIds.filter(deckId => {
+        const deckData = queryClient.getQueryData(['deck', deckId]);
+        const deckCards = queryClient.getQueryData(['deck-content', deckId]);
+        // Only include IDs where either deck data or deck cards are missing from cache
+        return !deckData || !deckCards;
+      });
+
+      // If all decks are already in cache, return early
+      if (idsToFetch.length === 0) {
+        return true;
+      }
+
+      const response = await api.deck.bulk.data.$get({
         query: {
-          ids: deckIds.join(','),
+          ids: idsToFetch.join(','),
         },
       });
 
@@ -42,9 +48,9 @@ export const useGetBulkDecks = (deckIds: string[] | undefined) => {
         queryClient.setQueryData(['deck-content', deckId], { data: cards });
       });
 
-      return data;
+      return true;
     },
     enabled: deckIds !== undefined && deckIds.length > 0,
-    staleTime: Infinity,
+    staleTime: 60 * 1000, // 1min
   });
 };
