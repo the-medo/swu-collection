@@ -4,7 +4,7 @@ import {
   encodeStateToUrl,
   decodeStateFromUrl,
 } from '@/components/app/comparer/useComparerStore';
-import { Scale, SquareArrowOutUpRight, X, Crown } from 'lucide-react';
+import { Scale, SquareArrowOutUpRight, X, Crown, Info } from 'lucide-react';
 import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards';
 import { useGetBulkDecks } from '@/api/decks/useGetBulkDecks';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -18,6 +18,13 @@ import ItemTypeBadge from './ItemTypeBadge';
 import ComparerResult from './ComparerResult';
 import DeckComparerResult from './DeckComparerResult';
 import { Badge } from '@/components/ui/badge.tsx';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion.tsx';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
 
 const ComparerPage: React.FC = () => {
   const { entries, mainId, mode } = useComparerStore();
@@ -151,52 +158,77 @@ const ComparerPage: React.FC = () => {
 
   return (
     <>
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-2">Items in Comparer</h3>
-        <div className="flex flex-wrap gap-2">
-          <div className="flex flex-grow flex-col gap-2">
-            {allEntries.map(entry => (
-              <div
-                key={entry.id}
-                className={`flex max-lg:flex-col gap-2 items-center justify-between border rounded-md p-2 ${entry.id === mainId ? 'border-primary bg-primary/10' : 'border-muted'}`}
-              >
-                <div className="flex gap-2 items-center">
-                  <span className="font-medium">
-                    {entry.additionalData?.title ?? '- Unknown -'}
-                  </span>
-                </div>
-                <div className="ml-4 flex gap-2">
-                  <ItemTypeBadge entry={entry} />
-                  {entry.id === mainId && (
-                    <Badge variant="default">
-                      Main <Crown size={16} className="ml-2" />
-                    </Badge>
-                  )}
-                  {entry.id !== mainId && (
-                    <Button size="iconSmall" variant="outline" onClick={() => setMainId(entry.id)}>
-                      <Crown />
-                    </Button>
-                  )}
-
-                  <Button size="iconSmall" variant="outline" asChild>
-                    <Link to={'/collections/' + entry.id}>
-                      <SquareArrowOutUpRight />
-                    </Link>
-                  </Button>
-
-                  <Button
-                    size="iconSmall"
-                    variant="destructive"
-                    onClick={() => removeComparerEntry(entry.id)}
-                  >
-                    <X />
-                  </Button>
-                </div>
+      <div className="flex items-start gap-4">
+        <Accordion type="single" collapsible defaultValue="" className="w-full">
+          <AccordionItem value="items" className="border rounded-md">
+            <AccordionTrigger className="px-4 py-2 hover:no-underline">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold">
+                  Items in Comparer
+                  {collectionsEntries.length > 0 && ` (Collections: ${collectionsEntries.length}`}
+                  {deckEntries.length > 0 &&
+                    `${collectionsEntries.length > 0 ? ',' : ' ('} Decks: ${deckEntries.length}`}
+                  {(collectionsEntries.length > 0 || deckEntries.length > 0) && ')'}
+                </span>
               </div>
-            ))}
-          </div>
-          <ComparerInstructions />
-        </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-grow flex-col gap-2 p-4">
+                {allEntries.map(entry => (
+                  <div
+                    key={entry.id}
+                    className={`flex max-lg:flex-col gap-2 items-center justify-between border rounded-md p-2 ${entry.id === mainId ? 'border-primary bg-primary/10' : 'border-muted'}`}
+                  >
+                    <div className="flex gap-2 items-center">
+                      <span className="font-medium">
+                        {entry.additionalData?.title ?? '- Unknown -'}
+                      </span>
+                    </div>
+                    <div className="ml-4 flex gap-2">
+                      <ItemTypeBadge entry={entry} />
+                      {entry.id === mainId && (
+                        <Badge variant="default">
+                          Main <Crown size={16} className="ml-2" />
+                        </Badge>
+                      )}
+                      {entry.id !== mainId && (
+                        <Button
+                          size="iconSmall"
+                          variant="outline"
+                          onClick={() => setMainId(entry.id)}
+                        >
+                          <Crown />
+                        </Button>
+                      )}
+
+                      <Button size="iconSmall" variant="outline" asChild>
+                        <Link to={'/collections/' + entry.id}>
+                          <SquareArrowOutUpRight />
+                        </Link>
+                      </Button>
+
+                      <Button
+                        size="iconSmall"
+                        variant="destructive"
+                        onClick={() => removeComparerEntry(entry.id)}
+                      >
+                        <X />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+        <Popover>
+          <PopoverTrigger>
+            <Info className="h-5 w-5 text-muted-foreground hover:text-primary cursor-pointer" />
+          </PopoverTrigger>
+          <PopoverContent className="w-[400px]">
+            <ComparerInstructions />
+          </PopoverContent>
+        </Popover>
       </div>
 
       {mainEntry?.dataType === 'deck' ? (

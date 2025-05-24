@@ -8,6 +8,7 @@ import CostIcon from '@/components/app/global/icons/CostIcon';
 import AspectIcon from '@/components/app/global/icons/AspectIcon';
 import { groupCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCardType';
 import { CardComparisonData } from './types';
+import DeckColumnMenu from './DeckColumnMenu';
 
 interface DeckComparerResultProps {
   mainDeckId: string;
@@ -118,18 +119,6 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
     };
   }, [cardComparisons, cardListData, mainDeckId]);
 
-  // Count cards that are in main deck but not in other decks
-  const uniqueToMainDeck = cardComparisons.filter(
-    card =>
-      card.mainDeckQuantity > 0 && Object.values(card.otherDecksQuantities).every(qty => qty === 0),
-  ).length;
-
-  // Count cards that are in other decks but not in main deck
-  const notInMainDeck = cardComparisons.filter(
-    card =>
-      card.mainDeckQuantity === 0 && Object.values(card.otherDecksQuantities).some(qty => qty > 0),
-  ).length;
-
   // Render quantity difference with color
   const renderQuantityDifference = (mainQty: number, otherQty: number) => {
     const diff = otherQty - mainQty;
@@ -159,7 +148,7 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
     if (!card) return cardId;
 
     return (
-      <div className="flex items-center justify-between gap-2 max-w-[250px]">
+      <div className="flex items-center justify-between gap-2 max-w-[172px] md:max-w-[242px] overflow-hidden">
         <span className="truncate">{card.name}</span>
         <div className="flex gap-0 ml-1">
           {card.cost !== null ? <CostIcon cost={card.cost} size="xSmall" /> : null}
@@ -175,19 +164,40 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
   const renderCardsByType = (groupName: string, cards: CardComparisonData[]) => {
     if (!cards.length) return null;
 
+    // Calculate total cards for each deck
+    const mainDeckTotal = cards.reduce((sum, card) => sum + card.mainDeckQuantity, 0);
+    const otherDeckTotals: Record<string, number> = {};
+
+    otherDeckEntries.forEach(entry => {
+      otherDeckTotals[entry.id] = cards.reduce(
+        (sum, card) => sum + (card.otherDecksQuantities[entry.id] || 0),
+        0,
+      );
+    });
+
     return (
       <React.Fragment key={groupName}>
-        <tr className="bg-accent">
-          <td colSpan={2 + otherDeckEntries.length + 1} className="p-2 font-medium pt-8">
-            {groupName} ({cards.reduce((sum, card) => sum + card.mainDeckQuantity, 0)})
+        <tr className="border-t bg-accent">
+          <td className="p-1 font-medium pt-8 sticky left-0 z-10 bg-accent">{groupName}</td>
+          <td className="text-center text-lg bg-accent font-semibold pt-8 sticky min-w-[55px] left-[180px] md:left-[250px] z-10">
+            <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
+            {mainDeckTotal}
           </td>
+          {otherDeckEntries.map(entry => (
+            <td key={entry.id} className="p-1 text-center w-20 font-semibold pt-8">
+              {renderQuantityDifference(mainDeckTotal, otherDeckTotals[entry.id])}
+            </td>
+          ))}
         </tr>
         {cards.map(card => (
           <tr key={card.cardId} className="border-t">
-            <td className="p-1">{renderCardName(card.cardId)}</td>
-            <td className="text-center text-lg bg-accent font-semibold">{card.mainDeckQuantity}</td>
+            <td className="p-1 sticky left-0 z-10 bg-background">{renderCardName(card.cardId)}</td>
+            <td className="text-center text-lg bg-accent font-semibold sticky left-[180px] md:left-[250px] z-10">
+              <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
+              {card.mainDeckQuantity}
+            </td>
             {otherDeckEntries.map(entry => (
-              <td key={entry.id} className="p-1 text-center w-20">
+              <td key={entry.id} className="p-1 text-center min-w-[55px]">
                 {renderQuantityDifference(
                   card.mainDeckQuantity,
                   card.otherDecksQuantities[entry.id] || 0,
@@ -200,75 +210,80 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
     );
   };
 
-  return (
-    <div className="p-4 border rounded-md">
-      <h3 className="text-lg font-semibold mb-4">Deck Comparison</h3>
+  const renderSectionTitleRow = (sectionRowTitle: string) => {
+    return (
+      <tr className="sticky top-[140px] z-50 bg-background">
+        <td className="font-semibold bg-background text-lg sticky left-0 top-[140px] z-50 p-0">
+          <div className="h-full w-full flex items-center justify-center bg-primary/20 p-2">
+            {sectionRowTitle}
+          </div>
+          <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
+        </td>
+        <td className="text-center sticky bg-background left-[180px] md:left-[250px] z-50 p-0">
+          <div className="h-full w-full flex items-center justify-center bg-primary/20 p-2">
+            <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
+            <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
+            <DeckColumnMenu deckId={mainDeckId} isMainDeck={true} />
+          </div>
+        </td>
 
-      {/* Main Deck */}
-      <div className="overflow-x-auto mb-8">
-        <h4 className="text-md font-semibold mb-2">Main Deck</h4>
-        <table className="border-collapse">
-          <thead className="h-[200px]">
-            <tr className="bg-gray-100">
-              <th className="p-2 text-left w-20">Card</th>
-              <th className="p-2 text-center w-16 relative">
-                <div className="absolute -rotate-45 origin-left whitespace-nowrap transform translate-x-4 translate-y-[80px]">
+        {otherDeckEntries.map(entry => (
+          <td key={entry.id} className="text-center bg-primary/20">
+            <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
+            <DeckColumnMenu deckId={entry.id} isMainDeck={false} />
+          </td>
+        ))}
+      </tr>
+    );
+  };
+
+  return (
+    <div className="overflow-auto max-h-[80vh]">
+      <table className="border-collapse relative">
+        <thead className="h-[140px] sticky top-0 z-30 bg-background">
+          <tr className="">
+            <th className="p-2 text-left w-20 sticky left-0 z-30 bg-background"></th>
+            <th className="p-2 text-center w-16 relative sticky  left-[180px] md:left-[250px] z-10 bg-background">
+              <div className="flex items-center">
+                <div className="absolute border-b -rotate-[20deg] bg-accent origin-left whitespace-nowrap transform -translate-x-[60px] -translate-y-[65px] truncate w-[500px] h-[300px] pt-[275px] pl-[20px]">
                   {mainDeckData?.deck?.name || 'Main Deck'}
                 </div>
-              </th>
-              {otherDeckEntries.map(entry => (
-                <th key={entry.id} className="p-2 text-center w-16 relative">
-                  <div className="absolute -rotate-45 origin-left whitespace-nowrap transform translate-x-4 translate-y-[80px]">
+              </div>
+            </th>
+            {otherDeckEntries.map(entry => (
+              <th key={entry.id} className="p-2 text-center w-16 relative">
+                <div className="flex items-center">
+                  <div className="absolute -rotate-[20deg] origin-left whitespace-nowrap transform translate-x-4 translate-y-[60px] truncate w-[300px]">
                     {entry.additionalData?.title || 'Other Deck'}
                   </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {groupedCards?.mainDeck.sortedIds?.map(groupName => {
-              const group = groupedCards.mainDeck.groups[groupName];
-              if (!group || !group.cards.length) return null;
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {renderSectionTitleRow('Main Deck')}
+          {groupedCards?.mainDeck.sortedIds?.map(groupName => {
+            const group = groupedCards.mainDeck.groups[groupName];
+            if (!group || !group.cards.length) return null;
 
-              // Find the corresponding card comparison data for each card in the group
-              const cardsInGroup = group.cards
-                .map(card => {
-                  return cardComparisons.find(c => c.cardId === card.cardId && c.board === 1);
-                })
-                .filter(Boolean) as CardComparisonData[];
+            // Find the corresponding card comparison data for each card in the group
+            const cardsInGroup = group.cards
+              .map(card => {
+                return cardComparisons.find(c => c.cardId === card.cardId && c.board === 1);
+              })
+              .filter(Boolean) as CardComparisonData[];
 
-              return renderCardsByType(group.label, cardsInGroup);
-            })}
-          </tbody>
-        </table>
-      </div>
+            return renderCardsByType(group.label, cardsInGroup);
+          })}
 
-      {/* Sideboard */}
-      {groupedCards?.sideboard.sortedIds?.some(groupName => {
-        const group = groupedCards.sideboard.groups[groupName];
-        return group && group.cards.length > 0;
-      }) && (
-        <div className="overflow-x-auto">
-          <h4 className="text-md font-semibold mb-2">Sideboard</h4>
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="p-2 text-left">Card</th>
-                <th className="p-2 text-center w-16 relative">
-                  <div className="absolute -rotate-45 origin-left whitespace-nowrap transform translate-x-4 -translate-y-2">
-                    {mainDeckData?.deck?.name || 'Main Deck'}
-                  </div>
-                </th>
-                {otherDeckEntries.map(entry => (
-                  <th key={entry.id} className="p-2 text-center w-16 relative">
-                    <div className="absolute -rotate-45 origin-left whitespace-nowrap transform translate-x-4 -translate-y-2">
-                      {entry.additionalData?.title || 'Other Deck'}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
+          {/* Sideboard Section */}
+          {groupedCards?.sideboard.sortedIds?.some(groupName => {
+            const group = groupedCards.sideboard.groups[groupName];
+            return group && group.cards.length > 0;
+          }) && (
+            <>
+              {renderSectionTitleRow('Sideboard')}
               {groupedCards?.sideboard.sortedIds?.map(groupName => {
                 const group = groupedCards.sideboard.groups[groupName];
                 if (!group || !group.cards.length) return null;
@@ -282,10 +297,10 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
 
                 return renderCardsByType(group.label, cardsInGroup);
               })}
-            </tbody>
-          </table>
-        </div>
-      )}
+            </>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
