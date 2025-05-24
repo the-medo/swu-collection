@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useComparerStore } from '@/components/app/comparer/useComparerStore';
 import { queryClient } from '@/queryClient.ts';
 import { DeckCard } from '../../../../../../types/ZDeckCard';
@@ -9,6 +9,7 @@ import AspectIcon from '@/components/app/global/icons/AspectIcon';
 import { groupCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCardType';
 import { CardComparisonData } from './types';
 import DeckColumnMenu from './DeckColumnMenu';
+import { cn } from '@/lib/utils';
 
 interface DeckComparerResultProps {
   mainDeckId: string;
@@ -22,6 +23,10 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
   mainDeckId,
   otherDeckEntries,
 }) => {
+  // State for tracking hovered row and column
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
+  const [hoveredColumn, setHoveredColumn] = useState<number | null>(null);
+
   // Get main deck data and cards from cache
   const mainDeckData = queryClient.getQueryData<any>(['deck', mainDeckId]);
   const mainDeckCards = queryClient.getQueryData<{ data: DeckCard[] }>([
@@ -233,38 +238,93 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
 
     return (
       <React.Fragment key={groupName}>
-        <tr className="border-t bg-accent">
-          <td className="p-1 font-medium pt-8 sticky left-0 z-10 bg-accent">{groupName}</td>
-          <td className="text-center text-lg bg-accent font-semibold pt-8 sticky min-w-[55px] left-[180px] md:left-[250px] z-10">
+        <tr
+          className="border-t bg-accent"
+          onMouseEnter={() => setHoveredRow(`group-${groupName}`)}
+          onMouseLeave={() => setHoveredRow(null)}
+        >
+          <td
+            className="p-1 font-medium pt-8 sticky left-0 z-10 bg-accent"
+            onMouseEnter={() => setHoveredColumn(-1)}
+            onMouseLeave={() => setHoveredColumn(null)}
+          >
+            {groupName}
+          </td>
+          <td
+            className="text-center text-lg bg-accent font-semibold pt-8 sticky min-w-[55px] left-[180px] md:left-[250px] z-10"
+            onMouseEnter={() => setHoveredColumn(0)}
+            onMouseLeave={() => setHoveredColumn(null)}
+          >
             <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
             {mainDeckTotal}
           </td>
-          {otherDeckEntries.map(entry => (
-            <td key={entry.id} className="p-1 text-center w-20 font-semibold pt-8">
+          {otherDeckEntries.map((entry, index) => (
+            <td
+              key={entry.id}
+              className={cn('p-1 text-center w-20 font-semibold pt-8', {
+                'bg-accent': hoveredRow === `group-${groupName}` || hoveredColumn === index + 1,
+              })}
+              onMouseEnter={() => setHoveredColumn(index + 1)}
+              onMouseLeave={() => setHoveredColumn(null)}
+            >
               {renderQuantityDifference(mainDeckTotal, otherDeckTotals[entry.id])}
             </td>
           ))}
-          <td className="p-1 text-center w-20 font-semibold pt-8 bg-accent relative">
+          <td
+            className="p-1 text-center w-20 font-semibold pt-8 bg-accent relative"
+            onMouseEnter={() => setHoveredColumn(otherDeckEntries.length + 1)}
+            onMouseLeave={() => setHoveredColumn(null)}
+          >
             <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-border"> </div>
             {totalAvgDisplay}
           </td>
         </tr>
         {cards.map(card => (
-          <tr key={card.cardId} className="border-t">
-            <td className="p-1 sticky left-0 z-10 bg-background">{renderCardName(card.cardId)}</td>
-            <td className="text-center text-lg bg-accent font-semibold sticky left-[180px] md:left-[250px] z-10">
+          <tr
+            key={card.cardId}
+            className={cn('border-t', {
+              'bg-accent': hoveredRow === card.cardId,
+            })}
+            onMouseEnter={() => setHoveredRow(card.cardId)}
+            onMouseLeave={() => setHoveredRow(null)}
+          >
+            <td
+              className={cn('p-1 sticky left-0 z-10 bg-background', {
+                'bg-accent': hoveredRow === card.cardId,
+              })}
+              onMouseEnter={() => setHoveredColumn(-1)}
+              onMouseLeave={() => setHoveredColumn(null)}
+            >
+              {renderCardName(card.cardId)}
+            </td>
+            <td
+              className="text-center text-lg bg-accent font-semibold sticky left-[180px] md:left-[250px] z-10"
+              onMouseEnter={() => setHoveredColumn(0)}
+              onMouseLeave={() => setHoveredColumn(null)}
+            >
               <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
               {card.mainDeckQuantity}
             </td>
-            {otherDeckEntries.map(entry => (
-              <td key={entry.id} className="p-1 text-center min-w-[55px]">
+            {otherDeckEntries.map((entry, index) => (
+              <td
+                key={entry.id}
+                className={cn('p-1 text-center min-w-[55px]', {
+                  'bg-accent': hoveredRow === card.cardId || hoveredColumn === index + 1,
+                })}
+                onMouseEnter={() => setHoveredColumn(index + 1)}
+                onMouseLeave={() => setHoveredColumn(null)}
+              >
                 {renderQuantityDifference(
                   card.mainDeckQuantity,
                   card.otherDecksQuantities[entry.id] || 0,
                 )}
               </td>
             ))}
-            <td className="p-1 text-center min-w-[55px] bg-accent relative">
+            <td
+              className="p-1 text-center min-w-[55px] bg-accent relative"
+              onMouseEnter={() => setHoveredColumn(otherDeckEntries.length + 1)}
+              onMouseLeave={() => setHoveredColumn(null)}
+            >
               <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-border"> </div>
               {calculateAndRenderAverage(card)}
             </td>
@@ -277,13 +337,21 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
   const renderSectionTitleRow = (sectionRowTitle: string) => {
     return (
       <tr className="sticky top-[140px] z-50 bg-background">
-        <td className="font-semibold bg-background text-lg sticky left-0 top-[140px] z-50 p-0">
-          <div className="h-full w-full flex items-center justify-center bg-primary/20 p-2">
+        <td
+          className="font-semibold text-lg sticky left-0 top-[140px] z-50 p-0 bg-background"
+          onMouseEnter={() => setHoveredColumn(-1)}
+          onMouseLeave={() => setHoveredColumn(null)}
+        >
+          <div className={cn('h-full w-full flex items-center justify-center bg-primary/20 p-2')}>
             {sectionRowTitle}
           </div>
           <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
         </td>
-        <td className="text-center sticky bg-background left-[180px] md:left-[250px] z-50 p-0">
+        <td
+          className="text-center sticky left-[180px] md:left-[250px] z-50 p-0 bg-background"
+          onMouseEnter={() => setHoveredColumn(0)}
+          onMouseLeave={() => setHoveredColumn(null)}
+        >
           <div className="h-full w-full flex items-center justify-center bg-primary/20 p-2">
             <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
             <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
@@ -291,14 +359,25 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
           </div>
         </td>
 
-        {otherDeckEntries.map(entry => (
-          <td key={entry.id} className="text-center bg-primary/20 relative">
+        {otherDeckEntries.map((entry, index) => (
+          <td
+            key={entry.id}
+            className={cn('text-center bg-primary/20 relative', {
+              'bg-accent': hoveredColumn === index + 1,
+            })}
+            onMouseEnter={() => setHoveredColumn(index + 1)}
+            onMouseLeave={() => setHoveredColumn(null)}
+          >
             <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
             <DeckColumnMenu deckId={entry.id} isMainDeck={false} />
           </td>
         ))}
 
-        <td className="text-center bg-accent min-w-[100px] relative">
+        <td
+          className="text-center bg-accent min-w-[100px] relative"
+          onMouseEnter={() => setHoveredColumn(otherDeckEntries.length + 1)}
+          onMouseLeave={() => setHoveredColumn(null)}
+        >
           <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-border"> </div>
           <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
           <div className="h-full w-full flex items-center justify-center p-2">Avg.</div>
@@ -312,24 +391,52 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
       <table className="border-collapse relative">
         <thead className="h-[140px] sticky top-0 z-30 bg-background">
           <tr className="">
-            <th className="p-2 text-left w-20 sticky left-0 z-30 bg-background"></th>
-            <th className="p-2 text-center w-16 relative sticky  left-[180px] md:left-[250px] z-10 bg-background">
+            <th
+              className="p-2 text-left w-20 sticky left-0 z-30 bg-background"
+              onMouseEnter={() => setHoveredColumn(-1)}
+              onMouseLeave={() => setHoveredColumn(null)}
+            ></th>
+            <th
+              className="p-2 text-center w-16 relative sticky left-[180px] md:left-[250px] z-10 bg-background"
+              onMouseEnter={() => setHoveredColumn(0)}
+              onMouseLeave={() => setHoveredColumn(null)}
+            >
               <div className="flex items-center">
-                <div className="absolute border-b -rotate-[20deg] bg-accent origin-left whitespace-nowrap transform -translate-x-[60px] -translate-y-[65px] truncate w-[500px] h-[300px] pt-[275px] pl-[20px]">
-                  {mainDeckData?.deck?.name || 'Main Deck'}
+                <div
+                  className={cn(
+                    'absolute border-b -rotate-[20deg] bg-accent origin-left whitespace-nowrap transform -translate-x-[60px] -translate-y-[65px] truncate w-[500px] h-[300px] pt-[275px] pl-[20px]',
+                  )}
+                >
+                  {mainDeckData?.deck?.name || ''}
                 </div>
               </div>
             </th>
-            {otherDeckEntries.map(entry => (
-              <th key={entry.id} className="p-2 text-center w-16 relative">
+            {otherDeckEntries.map((entry, index) => (
+              <th
+                key={entry.id}
+                className="p-2 text-center w-16 relative"
+                onMouseEnter={() => setHoveredColumn(index + 1)}
+                onMouseLeave={() => setHoveredColumn(null)}
+              >
                 <div className="flex items-center">
-                  <div className="absolute -rotate-[20deg] origin-left whitespace-nowrap transform translate-x-4 translate-y-[60px] truncate w-[300px]">
+                  <div
+                    className={cn(
+                      'absolute -rotate-[20deg] origin-left whitespace-nowrap transform translate-x-4 translate-y-[60px] truncate w-[300px]',
+                      {
+                        'bg-primary/20': hoveredColumn === index + 1,
+                      },
+                    )}
+                  >
                     {entry.additionalData?.title || 'Other Deck'}
                   </div>
                 </div>
               </th>
             ))}
-            <th className="bg-background"></th>
+            <th
+              className="bg-background"
+              onMouseEnter={() => setHoveredColumn(otherDeckEntries.length + 1)}
+              onMouseLeave={() => setHoveredColumn(null)}
+            ></th>
           </tr>
         </thead>
         <tbody>
