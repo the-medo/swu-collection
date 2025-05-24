@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  DiffDisplayMode,
   useComparerStore,
   useComparerStoreActions,
 } from '@/components/app/comparer/useComparerStore.ts';
@@ -12,7 +13,7 @@ const DeckComparerSettings: React.FC = () => {
   const { settings } = useComparerStore();
   const { updateSettings } = useComparerStoreActions();
 
-  const handleDiffDisplayModeChange = diffDisplayMode => {
+  const handleDiffDisplayModeChange = (diffDisplayMode: DiffDisplayMode | undefined) => {
     updateSettings({ diffDisplayMode });
   };
 

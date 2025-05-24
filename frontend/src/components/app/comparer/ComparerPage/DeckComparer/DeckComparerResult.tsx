@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { useMemo, useState } from 'react';
-import { useComparerStore, DiffDisplayMode } from '@/components/app/comparer/useComparerStore.ts';
+import { useComparerStore } from '@/components/app/comparer/useComparerStore.ts';
 import { queryClient } from '@/queryClient.ts';
 import { DeckCard } from '../../../../../../../types/ZDeckCard.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
-import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import { groupCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCardType.ts';
 import { CardComparisonData } from '../types.ts';
-import DeckColumnMenu from './DeckColumnMenu.tsx';
 import { cn } from '@/lib/utils.ts';
-import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
+import SectionTitleRow from './ViewRowCard/SectionTitleRow.tsx';
+import CardTypeGroup from './ViewRowCard/CardTypeGroup.tsx';
 
 interface DeckComparerResultProps {
   mainDeckId: string;
@@ -128,289 +126,7 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
     };
   }, [cardComparisons, cardListData, mainDeckId]);
 
-  // Render quantity difference with color
-  const renderQuantityDifference = (mainQty: number, otherQty: number) => {
-    const diff = otherQty - mainQty;
-    const diffDisplayMode = settings.diffDisplayMode;
 
-    // If there's no difference, just show the quantity
-    if (diff === 0) {
-      return <span>{otherQty}</span>;
-    }
-
-    // Determine text color based on diff
-    const textColorClass = diff > 0 ? 'text-green-600' : 'text-red-600';
-
-    // Format the diff with a + sign if positive
-    const formattedDiff = diff > 0 ? `+${diff}` : `${diff}`;
-
-    // Render based on display mode
-    if (diffDisplayMode === DiffDisplayMode.COUNT_ONLY) {
-      return <span className={textColorClass + ' font-medium'}>{otherQty}</span>;
-    } else if (diffDisplayMode === DiffDisplayMode.DIFF_ONLY) {
-      return <span className={textColorClass + ' font-medium'}>{formattedDiff}</span>;
-    } else {
-      // Default: COUNT_AND_DIFF
-      return (
-        <span className={textColorClass + ' font-medium'}>
-          {otherQty} <span className="text-xs">({formattedDiff})</span>
-        </span>
-      );
-    }
-  };
-
-  // Calculate and render average quantity
-  const calculateAndRenderAverage = (card: CardComparisonData) => {
-    const quantities = [card.mainDeckQuantity];
-
-    // Add quantities from other decks
-    otherDeckEntries.forEach(entry => {
-      quantities.push(card.otherDecksQuantities[entry.id] || 0);
-    });
-
-    // Calculate average
-    const sum = quantities.reduce((acc, qty) => acc + qty, 0);
-    const avg = sum / quantities.length;
-
-    // Format to one decimal place if not a whole number
-    const formattedAvg = Number.isInteger(avg) ? avg : avg.toFixed(1);
-
-    // Render with the same diff formatter
-    const diff = avg - card.mainDeckQuantity;
-    const diffDisplayMode = settings.diffDisplayMode;
-
-    // If there's no significant difference, just show the average
-    if (Math.abs(diff) < 0.01) {
-      return <span>{formattedAvg}</span>;
-    }
-
-    // Determine text color based on diff
-    const textColorClass = diff > 0 ? 'text-green-600' : 'text-red-600';
-
-    // Format the diff with a + sign if positive
-    const formattedDiff = diff > 0 ? `+${diff.toFixed(1)}` : `${diff.toFixed(1)}`;
-
-    // Render based on display mode
-    if (diffDisplayMode === DiffDisplayMode.COUNT_ONLY) {
-      return <span className={textColorClass + ' font-medium'}>{formattedAvg}</span>;
-    } else if (diffDisplayMode === DiffDisplayMode.DIFF_ONLY) {
-      return <span className={textColorClass + ' font-medium'}>{formattedDiff}</span>;
-    } else {
-      // Default: COUNT_AND_DIFF
-      return (
-        <span className={textColorClass + ' font-medium'}>
-          {formattedAvg} <span className="text-xs">({formattedDiff})</span>
-        </span>
-      );
-    }
-  };
-
-  // Render card name with cost
-  const renderCardName = (cardId: string) => {
-    if (!cardListData) return cardId;
-
-    const card = cardListData.cards[cardId];
-    if (!card) return cardId;
-
-    const cardContent = (
-      <div className="flex items-center justify-between gap-2 max-w-[172px] md:max-w-[242px] overflow-hidden">
-        <span className="truncate">{card.name}</span>
-        <div className="flex gap-0 ml-1">
-          {card.cost !== null ? <CostIcon cost={card.cost} size="xSmall" /> : null}
-          {card.aspects?.map((aspect, i) => (
-            <AspectIcon key={`${aspect}${i}`} aspect={aspect} size="xSmall" />
-          ))}
-        </div>
-      </div>
-    );
-
-    return <DeckCardHoverImage card={card}>{cardContent}</DeckCardHoverImage>;
-  };
-
-  // Render a section of cards by type
-  const renderCardsByType = (groupName: string, cards: CardComparisonData[]) => {
-    if (!cards.length) return null;
-
-    // Calculate total cards for each deck
-    const mainDeckTotal = cards.reduce((sum, card) => sum + card.mainDeckQuantity, 0);
-    const otherDeckTotals: Record<string, number> = {};
-
-    otherDeckEntries.forEach(entry => {
-      otherDeckTotals[entry.id] = cards.reduce(
-        (sum, card) => sum + (card.otherDecksQuantities[entry.id] || 0),
-        0,
-      );
-    });
-
-    // Calculate average total for the group
-    const allTotals = [mainDeckTotal, ...Object.values(otherDeckTotals)];
-    const avgTotal = allTotals.reduce((sum, total) => sum + total, 0) / allTotals.length;
-    const formattedAvgTotal = Number.isInteger(avgTotal) ? avgTotal : avgTotal.toFixed(1);
-
-    // Calculate diff for the group total average
-    const totalDiff = avgTotal - mainDeckTotal;
-    const totalAvgDisplay =
-      Math.abs(totalDiff) < 0.01 ? (
-        <span>{formattedAvgTotal}</span>
-      ) : totalDiff > 0 ? (
-        <span className="text-green-600 font-medium">
-          {formattedAvgTotal} <span className="text-xs">(+{totalDiff.toFixed(1)})</span>
-        </span>
-      ) : (
-        <span className="text-red-600 font-medium">
-          {formattedAvgTotal} <span className="text-xs">({totalDiff.toFixed(1)})</span>
-        </span>
-      );
-
-    return (
-      <React.Fragment key={groupName}>
-        <tr
-          className="border-t bg-accent"
-          onMouseEnter={() => setHoveredRow(`group-${groupName}`)}
-          onMouseLeave={() => setHoveredRow(null)}
-        >
-          <td
-            className="p-1 font-medium pt-8 sticky left-0 z-10 bg-accent"
-            onMouseEnter={() => setHoveredColumn(-1)}
-            onMouseLeave={() => setHoveredColumn(null)}
-          >
-            {groupName}
-          </td>
-          <td
-            className="text-center text-lg bg-accent font-semibold pt-8 sticky min-w-[55px] left-[180px] md:left-[250px] z-10"
-            onMouseEnter={() => setHoveredColumn(0)}
-            onMouseLeave={() => setHoveredColumn(null)}
-          >
-            <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
-            {mainDeckTotal}
-          </td>
-          {otherDeckEntries.map((entry, index) => (
-            <td
-              key={entry.id}
-              className={cn('p-1 text-center w-20 font-semibold pt-8', {
-                'bg-accent': hoveredRow === `group-${groupName}` || hoveredColumn === index + 1,
-              })}
-              onMouseEnter={() => setHoveredColumn(index + 1)}
-              onMouseLeave={() => setHoveredColumn(null)}
-            >
-              {renderQuantityDifference(mainDeckTotal, otherDeckTotals[entry.id])}
-            </td>
-          ))}
-          <td
-            className="p-1 text-center w-20 font-semibold pt-8 bg-accent relative"
-            onMouseEnter={() => setHoveredColumn(otherDeckEntries.length + 1)}
-            onMouseLeave={() => setHoveredColumn(null)}
-          >
-            <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-border"> </div>
-            {totalAvgDisplay}
-          </td>
-        </tr>
-        {cards.map(card => (
-          <tr
-            key={card.cardId}
-            className={cn('border-t', {
-              'bg-accent': hoveredRow === card.cardId,
-            })}
-            onMouseEnter={() => setHoveredRow(card.cardId)}
-            onMouseLeave={() => setHoveredRow(null)}
-          >
-            <td
-              className={cn('p-1 sticky left-0 z-10 bg-background', {
-                'bg-accent': hoveredRow === card.cardId,
-              })}
-              onMouseEnter={() => setHoveredColumn(-1)}
-              onMouseLeave={() => setHoveredColumn(null)}
-            >
-              {renderCardName(card.cardId)}
-            </td>
-            <td
-              className="text-center text-lg bg-accent font-semibold sticky left-[180px] md:left-[250px] z-10"
-              onMouseEnter={() => setHoveredColumn(0)}
-              onMouseLeave={() => setHoveredColumn(null)}
-            >
-              <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
-              {card.mainDeckQuantity}
-            </td>
-            {otherDeckEntries.map((entry, index) => (
-              <td
-                key={entry.id}
-                className={cn('p-1 text-center min-w-[55px]', {
-                  'bg-accent': hoveredRow === card.cardId || hoveredColumn === index + 1,
-                })}
-                onMouseEnter={() => setHoveredColumn(index + 1)}
-                onMouseLeave={() => setHoveredColumn(null)}
-              >
-                {renderQuantityDifference(
-                  card.mainDeckQuantity,
-                  card.otherDecksQuantities[entry.id] || 0,
-                )}
-              </td>
-            ))}
-            <td
-              className="p-1 text-center min-w-[55px] bg-accent relative"
-              onMouseEnter={() => setHoveredColumn(otherDeckEntries.length + 1)}
-              onMouseLeave={() => setHoveredColumn(null)}
-            >
-              <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-border"> </div>
-              {calculateAndRenderAverage(card)}
-            </td>
-          </tr>
-        ))}
-      </React.Fragment>
-    );
-  };
-
-  const renderSectionTitleRow = (sectionRowTitle: string) => {
-    return (
-      <tr className="sticky top-[140px] z-50 bg-background">
-        <td
-          className="font-semibold text-lg sticky left-0 top-[140px] z-50 p-0 bg-background"
-          onMouseEnter={() => setHoveredColumn(-1)}
-          onMouseLeave={() => setHoveredColumn(null)}
-        >
-          <div className={cn('h-full w-full flex items-center justify-center bg-primary/20 p-2')}>
-            {sectionRowTitle}
-          </div>
-          <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
-        </td>
-        <td
-          className="text-center sticky left-[180px] md:left-[250px] z-50 p-0 bg-background"
-          onMouseEnter={() => setHoveredColumn(0)}
-          onMouseLeave={() => setHoveredColumn(null)}
-        >
-          <div className="h-full w-full flex items-center justify-center bg-primary/20 p-2">
-            <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
-            <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
-            <DeckColumnMenu deckId={mainDeckId} isMainDeck={true} />
-          </div>
-        </td>
-
-        {otherDeckEntries.map((entry, index) => (
-          <td
-            key={entry.id}
-            className={cn('text-center bg-primary/20 relative', {
-              'bg-accent': hoveredColumn === index + 1,
-            })}
-            onMouseEnter={() => setHoveredColumn(index + 1)}
-            onMouseLeave={() => setHoveredColumn(null)}
-          >
-            <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
-            <DeckColumnMenu deckId={entry.id} isMainDeck={false} />
-          </td>
-        ))}
-
-        <td
-          className="text-center bg-accent min-w-[100px] relative"
-          onMouseEnter={() => setHoveredColumn(otherDeckEntries.length + 1)}
-          onMouseLeave={() => setHoveredColumn(null)}
-        >
-          <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-border"> </div>
-          <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
-          <div className="h-full w-full flex items-center justify-center p-2">Avg.</div>
-        </td>
-      </tr>
-    );
-  };
 
   return (
     <div className="overflow-auto max-h-[80vh]">
@@ -466,7 +182,14 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
           </tr>
         </thead>
         <tbody>
-          {renderSectionTitleRow('Main Deck')}
+          <SectionTitleRow
+            title="Main Deck"
+            mainDeckId={mainDeckId}
+            otherDeckEntries={otherDeckEntries}
+            hoveredColumn={hoveredColumn}
+            setHoveredColumn={setHoveredColumn}
+          />
+
           {groupedCards?.mainDeck.sortedIds?.map(groupName => {
             const group = groupedCards.mainDeck.groups[groupName];
             if (!group || !group.cards.length) return null;
@@ -490,7 +213,21 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
               return costA - costB;
             });
 
-            return renderCardsByType(group.label, cardsInGroup);
+            return (
+              <CardTypeGroup
+                key={groupName}
+                groupName={group.label}
+                cards={cardsInGroup}
+                cardListData={cardListData}
+                mainDeckId={mainDeckId}
+                otherDeckEntries={otherDeckEntries}
+                diffDisplayMode={settings.diffDisplayMode}
+                hoveredRow={hoveredRow}
+                setHoveredRow={setHoveredRow}
+                hoveredColumn={hoveredColumn}
+                setHoveredColumn={setHoveredColumn}
+              />
+            );
           })}
 
           {/* Sideboard Section */}
@@ -499,7 +236,14 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
             return group && group.cards.length > 0;
           }) && (
             <>
-              {renderSectionTitleRow('Sideboard')}
+              <SectionTitleRow
+                title="Sideboard"
+                mainDeckId={mainDeckId}
+                otherDeckEntries={otherDeckEntries}
+                hoveredColumn={hoveredColumn}
+                setHoveredColumn={setHoveredColumn}
+              />
+
               {groupedCards?.sideboard.sortedIds?.map(groupName => {
                 const group = groupedCards.sideboard.groups[groupName];
                 if (!group || !group.cards.length) return null;
@@ -523,7 +267,21 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
                   return costA - costB;
                 });
 
-                return renderCardsByType(group.label, cardsInGroup);
+                return (
+                  <CardTypeGroup
+                    key={groupName}
+                    groupName={group.label}
+                    cards={cardsInGroup}
+                    cardListData={cardListData}
+                    mainDeckId={mainDeckId}
+                    otherDeckEntries={otherDeckEntries}
+                    diffDisplayMode={settings.diffDisplayMode}
+                    hoveredRow={hoveredRow}
+                    setHoveredRow={setHoveredRow}
+                    hoveredColumn={hoveredColumn}
+                    setHoveredColumn={setHoveredColumn}
+                  />
+                );
               })}
             </>
           )}

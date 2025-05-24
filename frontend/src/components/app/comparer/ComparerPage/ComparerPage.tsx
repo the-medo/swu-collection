@@ -37,14 +37,16 @@ const ComparerPage: React.FC = () => {
   // Update URL when comparer state changes
   useEffect(() => {
     if (entries.length > 0) {
-      const encodedState = encodeStateToUrl({ entries, mainId, mode });
+      const encodedState = encodeStateToUrl({ entries, mainId, mode, settings: {} });
       navigate({
+        // @ts-ignore
         search: prev => ({ ...prev, state: encodedState }),
         replace: true,
       });
     } else {
       // Remove state parameter if comparer is empty
       navigate({
+        // @ts-ignore
         search: prev => {
           const { state, ...rest } = prev;
           return rest;
@@ -93,9 +95,6 @@ const ComparerPage: React.FC = () => {
 
   // Get the main collection entry (for comparison logic)
   const mainCollectionEntry = collectionsEntries.find(entry => entry.id === mainId);
-
-  // Get the main deck entry (for comparison logic)
-  const mainDeckEntry = deckEntries.find(entry => entry.id === mainId);
 
   // Get other entries (to compare against main)
   const otherCollectionEntries = collectionsEntries.filter(entry => entry.id !== mainId);

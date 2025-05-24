@@ -1,6 +1,5 @@
 import { Store, useStore } from '@tanstack/react-store';
 import { CollectionType } from '../../../../../types/enums.ts';
-import { useEffect } from 'react';
 
 export enum ComparerMode {
   INTERSECTION = 'intersection',
@@ -16,8 +15,6 @@ export enum DiffDisplayMode {
 
 // Local storage key for comparer state
 const COMPARER_STORAGE_KEY = 'swu-comparer-state';
-// URL parameter key for comparer state
-const COMPARER_URL_PARAM = 'state';
 
 // Utility functions for URL encoding/decoding
 export const encodeStateToUrl = (state: ComparerStore): string => {
@@ -65,6 +62,7 @@ export const decodeStateFromUrl = (encodedState: string): ComparerStore | null =
         collectionType: e.c,
         additionalData: e.a ? { title: e.a.t } : undefined,
       })),
+      settings: {},
     };
   } catch (error) {
     console.error('Failed to decode comparer state from URL:', error);
@@ -87,7 +85,7 @@ export type ComparerEntry = {
 };
 
 interface ComparerSettings {
-  diffDisplayMode: DiffDisplayMode;
+  diffDisplayMode?: DiffDisplayMode;
 }
 
 interface ComparerStore {
