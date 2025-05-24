@@ -140,6 +140,42 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
     }
   };
 
+  // Calculate and render average quantity
+  const calculateAndRenderAverage = (card: CardComparisonData) => {
+    const quantities = [card.mainDeckQuantity];
+
+    // Add quantities from other decks
+    otherDeckEntries.forEach(entry => {
+      quantities.push(card.otherDecksQuantities[entry.id] || 0);
+    });
+
+    // Calculate average
+    const sum = quantities.reduce((acc, qty) => acc + qty, 0);
+    const avg = sum / quantities.length;
+
+    // Format to one decimal place if not a whole number
+    const formattedAvg = Number.isInteger(avg) ? avg : avg.toFixed(1);
+
+    // Render with the same diff formatter
+    const diff = avg - card.mainDeckQuantity;
+
+    if (Math.abs(diff) < 0.01) {
+      return <span>{formattedAvg}</span>;
+    } else if (diff > 0) {
+      return (
+        <span className="text-green-600 font-medium">
+          {formattedAvg} <span className="text-xs">(+{diff.toFixed(1)})</span>
+        </span>
+      );
+    } else {
+      return (
+        <span className="text-red-600 font-medium">
+          {formattedAvg} <span className="text-xs">({diff.toFixed(1)})</span>
+        </span>
+      );
+    }
+  };
+
   // Render card name with cost
   const renderCardName = (cardId: string) => {
     if (!cardListData) return cardId;
@@ -175,6 +211,26 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
       );
     });
 
+    // Calculate average total for the group
+    const allTotals = [mainDeckTotal, ...Object.values(otherDeckTotals)];
+    const avgTotal = allTotals.reduce((sum, total) => sum + total, 0) / allTotals.length;
+    const formattedAvgTotal = Number.isInteger(avgTotal) ? avgTotal : avgTotal.toFixed(1);
+
+    // Calculate diff for the group total average
+    const totalDiff = avgTotal - mainDeckTotal;
+    const totalAvgDisplay =
+      Math.abs(totalDiff) < 0.01 ? (
+        <span>{formattedAvgTotal}</span>
+      ) : totalDiff > 0 ? (
+        <span className="text-green-600 font-medium">
+          {formattedAvgTotal} <span className="text-xs">(+{totalDiff.toFixed(1)})</span>
+        </span>
+      ) : (
+        <span className="text-red-600 font-medium">
+          {formattedAvgTotal} <span className="text-xs">({totalDiff.toFixed(1)})</span>
+        </span>
+      );
+
     return (
       <React.Fragment key={groupName}>
         <tr className="border-t bg-accent">
@@ -188,6 +244,10 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
               {renderQuantityDifference(mainDeckTotal, otherDeckTotals[entry.id])}
             </td>
           ))}
+          <td className="p-1 text-center w-20 font-semibold pt-8 bg-accent relative">
+            <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-border"> </div>
+            {totalAvgDisplay}
+          </td>
         </tr>
         {cards.map(card => (
           <tr key={card.cardId} className="border-t">
@@ -204,6 +264,10 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
                 )}
               </td>
             ))}
+            <td className="p-1 text-center min-w-[55px] bg-accent relative">
+              <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-border"> </div>
+              {calculateAndRenderAverage(card)}
+            </td>
           </tr>
         ))}
       </React.Fragment>
@@ -228,11 +292,17 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
         </td>
 
         {otherDeckEntries.map(entry => (
-          <td key={entry.id} className="text-center bg-primary/20">
+          <td key={entry.id} className="text-center bg-primary/20 relative">
             <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
             <DeckColumnMenu deckId={entry.id} isMainDeck={false} />
           </td>
         ))}
+
+        <td className="text-center bg-accent min-w-[100px] relative">
+          <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-border"> </div>
+          <div className="absolute right-0 left-0 bottom-0 h-[2px] bg-border"></div>
+          <div className="h-full w-full flex items-center justify-center p-2">Avg.</div>
+        </td>
       </tr>
     );
   };
@@ -259,6 +329,7 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
                 </div>
               </th>
             ))}
+            <th className="bg-background"></th>
           </tr>
         </thead>
         <tbody>
