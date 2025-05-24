@@ -18,6 +18,11 @@ interface CardTypeGroupProps {
   setHoveredRow: (row: string | null) => void;
   hoveredColumn: number | null;
   setHoveredColumn: (column: number | null) => void;
+  preComputedTotals?: {
+    mainDeckTotal: number;
+    otherDeckTotals: Record<string, number>;
+    allTotals: number[];
+  };
 }
 
 /**
@@ -33,14 +38,17 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
   setHoveredRow,
   hoveredColumn,
   setHoveredColumn,
+  preComputedTotals,
 }) => {
   if (!cards.length) return null;
 
-  // Calculate totals for each deck
-  const { mainDeckTotal, otherDeckTotals, allTotals } = calculateGroupTotals(
-    cards,
-    otherDeckEntries.map(entry => entry.id),
-  );
+  // Use pre-computed totals if available, otherwise calculate them
+  const { mainDeckTotal, otherDeckTotals, allTotals } =
+    preComputedTotals ||
+    calculateGroupTotals(
+      cards,
+      otherDeckEntries.map(entry => entry.id),
+    );
 
   // Get other deck IDs for easier access
   const otherDeckIds = otherDeckEntries.map(entry => entry.id);

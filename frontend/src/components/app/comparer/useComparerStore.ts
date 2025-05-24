@@ -14,6 +14,11 @@ export enum DiffDisplayMode {
   DIFF_ONLY = 'diff_only',
 }
 
+export enum ViewMode {
+  ROW_CARD = 'row_card',
+  ROW_DECK = 'row_deck',
+}
+
 // Local storage key for comparer state
 const COMPARER_STORAGE_KEY = 'swu-comparer-state';
 
@@ -88,6 +93,7 @@ export type ComparerEntry = {
 interface ComparerSettings {
   diffDisplayMode?: DiffDisplayMode;
   groupBy?: DeckGroupBy;
+  viewMode?: ViewMode;
 }
 
 interface ComparerStore {
@@ -100,6 +106,7 @@ interface ComparerStore {
 const defaultSettings: ComparerSettings = {
   diffDisplayMode: DiffDisplayMode.COUNT_AND_DIFF,
   groupBy: DeckGroupBy.CARD_TYPE,
+  viewMode: ViewMode.ROW_CARD,
 };
 
 const defaultState: ComparerStore = {

@@ -26,6 +26,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion.tsx';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
+import ComparerEntryLoader from './ComparerEntryLoader/ComparerEntryLoader.tsx';
 
 const ComparerPage: React.FC = () => {
   const { entries, mainId, mode } = useComparerStore();
@@ -179,6 +180,7 @@ const ComparerPage: React.FC = () => {
                     key={entry.id}
                     className={`flex max-lg:flex-col gap-2 items-center justify-between border rounded-md p-2 ${entry.id === mainId ? 'border-primary bg-primary/10' : 'border-muted'}`}
                   >
+                    <ComparerEntryLoader entry={entry} />
                     <div className="flex gap-2 items-center">
                       <span className="font-medium">
                         {entry.additionalData?.title ?? '- Unknown -'}
@@ -233,7 +235,6 @@ const ComparerPage: React.FC = () => {
 
       {/* Show settings when we have a deck as main entry */}
       {mainEntry?.dataType === 'deck' && <DeckComparerSettings />}
-
       {mainEntry?.dataType === 'deck' ? (
         isLoadingDecks ? (
           <div className="p-4 border rounded-md">

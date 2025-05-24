@@ -11,6 +11,13 @@ export const useGetBulkDecks = (deckIds: string[] | undefined) => {
         return false;
       }
 
+      queryClient.setQueryDefaults(['deck'], {
+        staleTime: Infinity,
+      });
+      queryClient.setQueryDefaults(['deck-content'], {
+        staleTime: Infinity,
+      });
+
       // Filter out deck IDs that already have both deck data and deck cards in cache
       const idsToFetch = deckIds.filter(deckId => {
         const deckData = queryClient.getQueryData(['deck', deckId]);
@@ -51,6 +58,6 @@ export const useGetBulkDecks = (deckIds: string[] | undefined) => {
       return true;
     },
     enabled: deckIds !== undefined && deckIds.length > 0,
-    staleTime: 60 * 1000, // 1min
+    staleTime: 1000, // 1min
   });
 };

@@ -4,14 +4,17 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
 import { Label } from '@/components/ui/label.tsx';
 
 interface DiffDisplaySelectorProps {
-  value: DiffDisplayMode;
+  value?: DiffDisplayMode;
   onChange: (value: DiffDisplayMode) => void;
 }
 
 /**
  * Component for selecting how differences should be displayed in the deck comparer
  */
-const DiffDisplaySelector: React.FC<DiffDisplaySelectorProps> = ({ value, onChange }) => {
+const DiffDisplaySelector: React.FC<DiffDisplaySelectorProps> = ({
+  value = DiffDisplayMode.COUNT_AND_DIFF,
+  onChange,
+}) => {
   const handleValueChange = (newValue: string) => {
     if (newValue) {
       onChange(newValue as DiffDisplayMode);

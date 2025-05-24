@@ -1,11 +1,13 @@
 import * as React from 'react';
 import {
   DiffDisplayMode,
+  ViewMode,
   useComparerStore,
   useComparerStoreActions,
 } from '@/components/app/comparer/useComparerStore.ts';
 import { DeckGroupBy } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import DiffDisplaySelector from './DiffDisplaySelector.tsx';
+import ViewModeSelector from './ViewModeSelector.tsx';
 import GroupBySelector from '@/components/app/decks/DeckContents/GroupBySelector/GroupBySelector.tsx';
 
 /**
@@ -23,6 +25,10 @@ const DeckComparerSettings: React.FC = () => {
     updateSettings({ groupBy });
   };
 
+  const handleViewModeChange = (viewMode: ViewMode) => {
+    updateSettings({ viewMode });
+  };
+
   return (
     <div className="flex gap-4 items-center p-2">
       <DiffDisplaySelector
@@ -32,6 +38,10 @@ const DeckComparerSettings: React.FC = () => {
       <GroupBySelector 
         value={settings.groupBy}
         onChange={handleGroupByChange}
+      />
+      <ViewModeSelector
+        value={settings.viewMode}
+        onChange={handleViewModeChange}
       />
     </div>
   );
