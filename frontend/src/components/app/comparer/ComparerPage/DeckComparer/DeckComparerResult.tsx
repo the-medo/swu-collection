@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { useMemo, useState } from 'react';
-import { useComparerStore } from '@/components/app/comparer/useComparerStore';
+import { useComparerStore, DiffDisplayMode } from '@/components/app/comparer/useComparerStore.ts';
 import { queryClient } from '@/queryClient.ts';
-import { DeckCard } from '../../../../../../types/ZDeckCard';
-import { useCardList } from '@/api/lists/useCardList';
-import CostIcon from '@/components/app/global/icons/CostIcon';
-import AspectIcon from '@/components/app/global/icons/AspectIcon';
-import { groupCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCardType';
-import { CardComparisonData } from './types';
-import DeckColumnMenu from './DeckColumnMenu';
-import { cn } from '@/lib/utils';
+import { DeckCard } from '../../../../../../../types/ZDeckCard.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
+import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
+import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
+import { groupCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCardType.ts';
+import { CardComparisonData } from '../types.ts';
+import DeckColumnMenu from './DeckColumnMenu.tsx';
+import { cn } from '@/lib/utils.ts';
+import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
 
 interface DeckComparerResultProps {
   mainDeckId: string;
@@ -26,6 +27,9 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
   // State for tracking hovered row and column
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [hoveredColumn, setHoveredColumn] = useState<number | null>(null);
+
+  // Get settings from the comparer store
+  const { settings } = useComparerStore();
 
   // Get main deck data and cards from cache
   const mainDeckData = queryClient.getQueryData<any>(['deck', mainDeckId]);
@@ -127,19 +131,29 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
   // Render quantity difference with color
   const renderQuantityDifference = (mainQty: number, otherQty: number) => {
     const diff = otherQty - mainQty;
+    const diffDisplayMode = settings.diffDisplayMode;
 
+    // If there's no difference, just show the quantity
     if (diff === 0) {
       return <span>{otherQty}</span>;
-    } else if (diff > 0) {
-      return (
-        <span className="text-green-600 font-medium">
-          {otherQty} <span className="text-xs">(+{diff})</span>
-        </span>
-      );
+    }
+
+    // Determine text color based on diff
+    const textColorClass = diff > 0 ? 'text-green-600' : 'text-red-600';
+
+    // Format the diff with a + sign if positive
+    const formattedDiff = diff > 0 ? `+${diff}` : `${diff}`;
+
+    // Render based on display mode
+    if (diffDisplayMode === DiffDisplayMode.COUNT_ONLY) {
+      return <span className={textColorClass + ' font-medium'}>{otherQty}</span>;
+    } else if (diffDisplayMode === DiffDisplayMode.DIFF_ONLY) {
+      return <span className={textColorClass + ' font-medium'}>{formattedDiff}</span>;
     } else {
+      // Default: COUNT_AND_DIFF
       return (
-        <span className="text-red-600 font-medium">
-          {otherQty} <span className="text-xs">({diff})</span>
+        <span className={textColorClass + ' font-medium'}>
+          {otherQty} <span className="text-xs">({formattedDiff})</span>
         </span>
       );
     }
@@ -163,19 +177,29 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
 
     // Render with the same diff formatter
     const diff = avg - card.mainDeckQuantity;
+    const diffDisplayMode = settings.diffDisplayMode;
 
+    // If there's no significant difference, just show the average
     if (Math.abs(diff) < 0.01) {
       return <span>{formattedAvg}</span>;
-    } else if (diff > 0) {
-      return (
-        <span className="text-green-600 font-medium">
-          {formattedAvg} <span className="text-xs">(+{diff.toFixed(1)})</span>
-        </span>
-      );
+    }
+
+    // Determine text color based on diff
+    const textColorClass = diff > 0 ? 'text-green-600' : 'text-red-600';
+
+    // Format the diff with a + sign if positive
+    const formattedDiff = diff > 0 ? `+${diff.toFixed(1)}` : `${diff.toFixed(1)}`;
+
+    // Render based on display mode
+    if (diffDisplayMode === DiffDisplayMode.COUNT_ONLY) {
+      return <span className={textColorClass + ' font-medium'}>{formattedAvg}</span>;
+    } else if (diffDisplayMode === DiffDisplayMode.DIFF_ONLY) {
+      return <span className={textColorClass + ' font-medium'}>{formattedDiff}</span>;
     } else {
+      // Default: COUNT_AND_DIFF
       return (
-        <span className="text-red-600 font-medium">
-          {formattedAvg} <span className="text-xs">({diff.toFixed(1)})</span>
+        <span className={textColorClass + ' font-medium'}>
+          {formattedAvg} <span className="text-xs">({formattedDiff})</span>
         </span>
       );
     }
@@ -188,7 +212,7 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
     const card = cardListData.cards[cardId];
     if (!card) return cardId;
 
-    return (
+    const cardContent = (
       <div className="flex items-center justify-between gap-2 max-w-[172px] md:max-w-[242px] overflow-hidden">
         <span className="truncate">{card.name}</span>
         <div className="flex gap-0 ml-1">
@@ -199,6 +223,8 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
         </div>
       </div>
     );
+
+    return <DeckCardHoverImage card={card}>{cardContent}</DeckCardHoverImage>;
   };
 
   // Render a section of cards by type
@@ -452,6 +478,18 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
               })
               .filter(Boolean) as CardComparisonData[];
 
+            // Sort cards: first by presence in main deck (cards in main deck first), then by cost
+            cardsInGroup.sort((a, b) => {
+              // First sort by presence in main deck (cards in main deck first)
+              if (a.mainDeckQuantity > 0 && b.mainDeckQuantity === 0) return -1;
+              if (a.mainDeckQuantity === 0 && b.mainDeckQuantity > 0) return 1;
+
+              // Then sort by cost
+              const costA = cardListData?.cards[a.cardId]?.cost ?? 0;
+              const costB = cardListData?.cards[b.cardId]?.cost ?? 0;
+              return costA - costB;
+            });
+
             return renderCardsByType(group.label, cardsInGroup);
           })}
 
@@ -472,6 +510,18 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
                     return cardComparisons.find(c => c.cardId === card.cardId && c.board === 2);
                   })
                   .filter(Boolean) as CardComparisonData[];
+
+                // Sort cards: first by presence in main deck (cards in main deck first), then by cost
+                cardsInGroup.sort((a, b) => {
+                  // First sort by presence in main deck (cards in main deck first)
+                  if (a.mainDeckQuantity > 0 && b.mainDeckQuantity === 0) return -1;
+                  if (a.mainDeckQuantity === 0 && b.mainDeckQuantity > 0) return 1;
+
+                  // Then sort by cost
+                  const costA = cardListData?.cards[a.cardId]?.cost ?? 0;
+                  const costB = cardListData?.cards[b.cardId]?.cost ?? 0;
+                  return costA - costB;
+                });
 
                 return renderCardsByType(group.label, cardsInGroup);
               })}

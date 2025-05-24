@@ -8,6 +8,12 @@ export enum ComparerMode {
   UNION = 'union',
 }
 
+export enum DiffDisplayMode {
+  COUNT_AND_DIFF = 'count_and_diff',
+  COUNT_ONLY = 'count_only',
+  DIFF_ONLY = 'diff_only',
+}
+
 // Local storage key for comparer state
 const COMPARER_STORAGE_KEY = 'swu-comparer-state';
 // URL parameter key for comparer state
@@ -80,15 +86,25 @@ export type ComparerEntry = {
   additionalData?: ComparerEntryAdditionalData;
 };
 
+interface ComparerSettings {
+  diffDisplayMode: DiffDisplayMode;
+}
+
 interface ComparerStore {
   mode: ComparerMode;
   mainId?: string;
   entries: ComparerEntry[];
+  settings: ComparerSettings;
 }
+
+const defaultSettings: ComparerSettings = {
+  diffDisplayMode: DiffDisplayMode.COUNT_AND_DIFF,
+};
 
 const defaultState: ComparerStore = {
   mode: ComparerMode.INTERSECTION,
   entries: [],
+  settings: defaultSettings,
 };
 
 // Save state to localStorage
@@ -114,10 +130,10 @@ const loadFromLocalStorage = (): ComparerStore | null => {
 };
 
 // Initialize store with saved state or default state
-const initialState = loadFromLocalStorage() || defaultState;
+const initialState = { ...defaultState, ...loadFromLocalStorage() };
 const store = new Store<ComparerStore>(initialState);
 
-const setMode = (mode: ComparerMode) => 
+const setMode = (mode: ComparerMode) =>
   store.setState(state => {
     const newState = { ...state, mode };
     saveToLocalStorage(newState);
@@ -178,15 +194,31 @@ const clearComparerEntries = () =>
     return newState;
   });
 
+const updateSettings = (settings: Partial<ComparerSettings>) =>
+  store.setState(state => {
+    const newSettings = {
+      ...state.settings,
+      ...settings,
+    };
+    const newState = {
+      ...state,
+      settings: newSettings,
+    };
+    saveToLocalStorage(newState);
+    return newState;
+  });
+
 export function useComparerStore() {
   const mode = useStore(store, state => state.mode);
   const mainId = useStore(store, state => state.mainId);
   const entries = useStore(store, state => state.entries);
+  const settings = useStore(store, state => state.settings);
 
   return {
     mode,
     mainId,
     entries,
+    settings,
   };
 }
 
@@ -197,5 +229,6 @@ export function useComparerStoreActions() {
     addComparerEntry,
     removeComparerEntry,
     clearComparerEntries,
+    updateSettings,
   };
 }

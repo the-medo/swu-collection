@@ -16,7 +16,8 @@ import { useEffect, useMemo } from 'react';
 import ComparerInstructions from '@/components/app/comparer/ComparerPage/ComparerInstructions.tsx';
 import ItemTypeBadge from './ItemTypeBadge';
 import ComparerResult from './ComparerResult';
-import DeckComparerResult from './DeckComparerResult';
+import DeckComparerResult from './DeckComparer/DeckComparerResult.tsx';
+import DeckComparerSettings from './DeckComparer/DeckComparerSettings.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import {
   Accordion,
@@ -230,6 +231,9 @@ const ComparerPage: React.FC = () => {
           </PopoverContent>
         </Popover>
       </div>
+
+      {/* Show settings when we have a deck as main entry */}
+      {mainEntry?.dataType === 'deck' && <DeckComparerSettings />}
 
       {mainEntry?.dataType === 'deck' ? (
         isLoadingDecks ? (

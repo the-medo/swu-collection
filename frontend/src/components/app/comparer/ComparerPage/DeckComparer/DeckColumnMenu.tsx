@@ -5,8 +5,8 @@ import { MoreHorizontal, Crown, X, ExternalLink } from 'lucide-react';
 import { queryClient } from '@/queryClient.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore';
-import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore.ts';
+import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 
 interface DeckColumnMenuProps {
   deckId: string;
