@@ -4,7 +4,9 @@ import {
   useComparerStore,
   useComparerStoreActions,
 } from '@/components/app/comparer/useComparerStore.ts';
+import { DeckGroupBy } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import DiffDisplaySelector from './DiffDisplaySelector.tsx';
+import GroupBySelector from '@/components/app/decks/DeckContents/GroupBySelector/GroupBySelector.tsx';
 
 /**
  * Component for managing deck comparer settings
@@ -17,11 +19,19 @@ const DeckComparerSettings: React.FC = () => {
     updateSettings({ diffDisplayMode });
   };
 
+  const handleGroupByChange = (groupBy: DeckGroupBy) => {
+    updateSettings({ groupBy });
+  };
+
   return (
-    <div className="flex gap-2 items-center p-2">
+    <div className="flex gap-4 items-center p-2">
       <DiffDisplaySelector
         value={settings.diffDisplayMode}
         onChange={handleDiffDisplayModeChange}
+      />
+      <GroupBySelector 
+        value={settings.groupBy}
+        onChange={handleGroupByChange}
       />
     </div>
   );

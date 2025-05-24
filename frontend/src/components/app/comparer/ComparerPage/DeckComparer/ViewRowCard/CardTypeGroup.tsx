@@ -13,7 +13,7 @@ interface CardTypeGroupProps {
   cardListData: any;
   mainDeckId: string;
   otherDeckEntries: { id: string }[];
-  diffDisplayMode: DiffDisplayMode;
+  diffDisplayMode?: DiffDisplayMode;
   hoveredRow: string | null;
   setHoveredRow: (row: string | null) => void;
   hoveredColumn: number | null;
@@ -28,7 +28,7 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
   cards,
   cardListData,
   otherDeckEntries,
-  diffDisplayMode,
+  diffDisplayMode = DiffDisplayMode.COUNT_AND_DIFF,
   hoveredRow,
   setHoveredRow,
   hoveredColumn,

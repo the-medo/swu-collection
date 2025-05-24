@@ -5,6 +5,11 @@ import { queryClient } from '@/queryClient.ts';
 import { DeckCard } from '../../../../../../../types/ZDeckCard.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { groupCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCardType.ts';
+import { groupCardsByCost } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByCost.ts';
+import { groupCardsByAspect } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByAspect.ts';
+import { groupCardsByTrait } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByTrait.ts';
+import { groupCardsByKeywords } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByKeywords.ts';
+import { DeckGroupBy } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { CardComparisonData } from '../types.ts';
 import { cn } from '@/lib/utils.ts';
 import SectionTitleRow from './ViewRowCard/SectionTitleRow.tsx';
@@ -42,12 +47,24 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
   // Create a map of all cards across all decks
   const cardComparisonMap = useMemo(() => {
     const comparisonMap = new Map<string, CardComparisonData>();
+    // Track cards by board for the main deck
+    const mainDeckCardsByBoard: Record<string, Record<number, number>> = {};
 
     // Process main deck cards
     if (mainDeckCards?.data && cardListData) {
+      // First pass: collect quantities by board
+      mainDeckCards.data.forEach(card => {
+        if (!mainDeckCardsByBoard[card.cardId]) {
+          mainDeckCardsByBoard[card.cardId] = {};
+        }
+        mainDeckCardsByBoard[card.cardId][card.board] = card.quantity;
+      });
+
+      // Second pass: create entries in the map
       mainDeckCards.data.forEach(card => {
         const cardData = cardListData.cards[card.cardId];
-        comparisonMap.set(card.cardId, {
+        const mapKey = `${card.cardId}-${card.board}`;
+        comparisonMap.set(mapKey, {
           cardId: card.cardId,
           mainDeckQuantity: card.quantity,
           otherDecksQuantities: {},
@@ -64,15 +81,17 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
 
       if (deckCards?.data && cardListData) {
         deckCards.data.forEach(card => {
-          const existingCard = comparisonMap.get(card.cardId);
+          const mapKey = `${card.cardId}-${card.board}`;
+          const existingCard = comparisonMap.get(mapKey);
           const cardData = cardListData.cards[card.cardId];
 
           if (existingCard) {
-            // Card exists in main deck, update other deck quantity
+            // Card exists in main deck with the same board, update other deck quantity
             existingCard.otherDecksQuantities[deckId] = card.quantity;
           } else {
-            // Card doesn't exist in main deck, add it
-            comparisonMap.set(card.cardId, {
+            // If the card exists in main deck but in a different board, we still want to add it
+            // as a separate entry for the other deck
+            comparisonMap.set(mapKey, {
               cardId: card.cardId,
               mainDeckQuantity: 0,
               otherDecksQuantities: { [deckId]: card.quantity },
@@ -117,16 +136,39 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
         note: '',
       }));
 
-    const mainDeckGroups = groupCardsByCardType(cardListData.cards, mainDeckCards);
-    const sideboardGroups = groupCardsByCardType(cardListData.cards, sideboardCards);
+    // Select grouping function based on settings
+    let mainDeckGroups;
+    let sideboardGroups;
+
+    switch (settings.groupBy) {
+      case DeckGroupBy.COST:
+        mainDeckGroups = groupCardsByCost(cardListData.cards, mainDeckCards);
+        sideboardGroups = groupCardsByCost(cardListData.cards, sideboardCards);
+        break;
+      case DeckGroupBy.ASPECT:
+        mainDeckGroups = groupCardsByAspect(cardListData.cards, mainDeckCards);
+        sideboardGroups = groupCardsByAspect(cardListData.cards, sideboardCards);
+        break;
+      case DeckGroupBy.TRAIT:
+        mainDeckGroups = groupCardsByTrait(cardListData.cards, mainDeckCards);
+        sideboardGroups = groupCardsByTrait(cardListData.cards, sideboardCards);
+        break;
+      case DeckGroupBy.KEYWORDS:
+        mainDeckGroups = groupCardsByKeywords(cardListData.cards, mainDeckCards);
+        sideboardGroups = groupCardsByKeywords(cardListData.cards, sideboardCards);
+        break;
+      case DeckGroupBy.CARD_TYPE:
+      default:
+        mainDeckGroups = groupCardsByCardType(cardListData.cards, mainDeckCards);
+        sideboardGroups = groupCardsByCardType(cardListData.cards, sideboardCards);
+        break;
+    }
 
     return {
       mainDeck: mainDeckGroups,
       sideboard: sideboardGroups,
     };
-  }, [cardComparisons, cardListData, mainDeckId]);
-
-
+  }, [cardComparisons, cardListData, mainDeckId, settings.groupBy]);
 
   return (
     <div className="overflow-auto max-h-[80vh]">

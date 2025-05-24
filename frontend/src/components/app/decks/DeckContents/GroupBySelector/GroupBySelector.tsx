@@ -15,15 +15,27 @@ import {
 import { deckGroupByArray, deckGroupByObj } from '../../../../../../../types/iterableEnumInfo.ts';
 import React, { useCallback } from 'react';
 
-interface GroupBySelectorProps {}
+interface GroupBySelectorProps {
+  value?: DeckGroupBy;
+  onChange?: (value: DeckGroupBy) => void;
+}
 
-const GroupBySelector: React.FC<GroupBySelectorProps> = ({}) => {
-  const { groupBy } = useDeckLayoutStore();
+const GroupBySelector: React.FC<GroupBySelectorProps> = ({ value, onChange }) => {
+  const { groupBy: storeGroupBy } = useDeckLayoutStore();
   const { setGroupBy } = useDeckLayoutStoreActions();
 
+  // Use provided value if available, otherwise use the store value
+  const groupBy = value !== undefined ? value : storeGroupBy;
+
   const onValueChange = useCallback((v: string) => {
-    setGroupBy(v as DeckGroupBy);
-  }, []);
+    const newValue = v as DeckGroupBy;
+    // Use provided onChange if available, otherwise use the store action
+    if (onChange) {
+      onChange(newValue);
+    } else {
+      setGroupBy(newValue);
+    }
+  }, [onChange]);
 
   return (
     <DropdownMenu modal={false}>

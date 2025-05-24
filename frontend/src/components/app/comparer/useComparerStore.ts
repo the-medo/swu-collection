@@ -1,5 +1,6 @@
 import { Store, useStore } from '@tanstack/react-store';
 import { CollectionType } from '../../../../../types/enums.ts';
+import { DeckGroupBy } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 
 export enum ComparerMode {
   INTERSECTION = 'intersection',
@@ -86,6 +87,7 @@ export type ComparerEntry = {
 
 interface ComparerSettings {
   diffDisplayMode?: DiffDisplayMode;
+  groupBy?: DeckGroupBy;
 }
 
 interface ComparerStore {
@@ -97,6 +99,7 @@ interface ComparerStore {
 
 const defaultSettings: ComparerSettings = {
   diffDisplayMode: DiffDisplayMode.COUNT_AND_DIFF,
+  groupBy: DeckGroupBy.CARD_TYPE,
 };
 
 const defaultState: ComparerStore = {
