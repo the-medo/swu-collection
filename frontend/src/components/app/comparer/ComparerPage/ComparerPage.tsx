@@ -158,7 +158,7 @@ const ComparerPage: React.FC = () => {
   }
 
   return (
-    <>
+    <div className="w-full flex flex-col gap-2">
       <div className="flex items-start gap-4">
         <Accordion type="single" collapsible defaultValue="" className="w-full">
           <AccordionItem value="items" className="border rounded-md">
@@ -268,7 +268,7 @@ const ComparerPage: React.FC = () => {
           </AlertDescription>
         </Alert>
       )}
-    </>
+    </div>
   );
 };
 

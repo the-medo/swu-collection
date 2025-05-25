@@ -1,7 +1,19 @@
 import * as React from 'react';
+import { useCallback } from 'react';
 import { DiffDisplayMode } from '@/components/app/comparer/useComparerStore.ts';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
-import { Label } from '@/components/ui/label.tsx';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button.tsx';
+import { BarChart2 } from 'lucide-react';
+import {
+  diffDisplayModeArray,
+  diffDisplayModeObj,
+} from '../../../../../../../types/iterableEnumInfo.ts';
 
 interface DiffDisplaySelectorProps {
   value?: DiffDisplayMode;
@@ -15,33 +27,33 @@ const DiffDisplaySelector: React.FC<DiffDisplaySelectorProps> = ({
   value = DiffDisplayMode.COUNT_AND_DIFF,
   onChange,
 }) => {
-  const handleValueChange = (newValue: string) => {
-    if (newValue) {
-      onChange(newValue as DiffDisplayMode);
-    }
-  };
+  const onValueChange = useCallback(
+    (v: string) => {
+      const newValue = v as DiffDisplayMode;
+      onChange(newValue);
+    },
+    [onChange],
+  );
 
   return (
-    <div className="flex gap-2 items-center">
-      <Label htmlFor="diff-display-mode">Difference Display Mode:</Label>
-      <ToggleGroup
-        id="diff-display-mode"
-        type="single"
-        value={value}
-        onValueChange={handleValueChange}
-        className="justify-start"
-      >
-        <ToggleGroupItem value={DiffDisplayMode.COUNT_AND_DIFF} aria-label="Count and Difference">
-          Count + Diff
-        </ToggleGroupItem>
-        <ToggleGroupItem value={DiffDisplayMode.COUNT_ONLY} aria-label="Count Only">
-          Count Only
-        </ToggleGroupItem>
-        <ToggleGroupItem value={DiffDisplayMode.DIFF_ONLY} aria-label="Difference Only">
-          Diff Only
-        </ToggleGroupItem>
-      </ToggleGroup>
-    </div>
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="text-xs w-[240px] justify-between">
+          <span className="text-[1.2em] font-semibold">Diff mode:</span>{' '}
+          {diffDisplayModeObj[value]?.title}
+          <BarChart2 className="h-4 w-4 ml-2" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuRadioGroup value={value} onValueChange={onValueChange}>
+          {diffDisplayModeArray.map(mode => (
+            <DropdownMenuRadioItem key={mode} value={mode}>
+              {diffDisplayModeObj[mode].title}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

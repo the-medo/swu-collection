@@ -158,3 +158,36 @@ export const collectionTypeTitle: Record<CollectionType, string> = {
   [CollectionType.WANTLIST]: 'Wantlist',
   [CollectionType.OTHER]: 'Card list',
 };
+
+// Import DiffDisplayMode and ViewMode from comparer store
+import { 
+  DiffDisplayMode,
+  ViewMode,
+} from '../frontend/src/components/app/comparer/useComparerStore.ts';
+
+// Define objects and arrays for DiffDisplayMode
+export const diffDisplayModeObj: Record<DiffDisplayMode, { title: string }> = {
+  [DiffDisplayMode.COUNT_AND_DIFF]: {
+    title: 'Count + Diff',
+  },
+  [DiffDisplayMode.COUNT_ONLY]: {
+    title: 'Count Only',
+  },
+  [DiffDisplayMode.DIFF_ONLY]: {
+    title: 'Diff Only',
+  },
+};
+
+export const diffDisplayModeArray = Object.values(DiffDisplayMode);
+
+// Define objects and arrays for ViewMode
+export const viewModeObj: Record<ViewMode, { title: string }> = {
+  [ViewMode.ROW_CARD]: {
+    title: 'Cards in Rows',
+  },
+  [ViewMode.ROW_DECK]: {
+    title: 'Decks in Rows',
+  },
+};
+
+export const viewModeArray = Object.values(ViewMode);

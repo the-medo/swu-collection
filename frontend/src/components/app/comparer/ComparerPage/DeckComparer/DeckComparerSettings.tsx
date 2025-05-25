@@ -30,18 +30,12 @@ const DeckComparerSettings: React.FC = () => {
   };
 
   return (
-    <div className="flex gap-4 items-center p-2">
+    <div className="flex gap-4 items-center">
+      <GroupBySelector value={settings.groupBy} onChange={handleGroupByChange} />
+      <ViewModeSelector value={settings.viewMode} onChange={handleViewModeChange} />
       <DiffDisplaySelector
         value={settings.diffDisplayMode}
         onChange={handleDiffDisplayModeChange}
-      />
-      <GroupBySelector 
-        value={settings.groupBy}
-        onChange={handleGroupByChange}
-      />
-      <ViewModeSelector
-        value={settings.viewMode}
-        onChange={handleViewModeChange}
       />
     </div>
   );

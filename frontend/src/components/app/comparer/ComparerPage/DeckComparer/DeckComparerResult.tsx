@@ -25,6 +25,7 @@ import { selectDefaultVariant } from '../../../../../../../server/lib/cards/sele
 import DeckColumnMenu from '@/components/app/comparer/ComparerPage/DeckComparer/DeckColumnMenu.tsx';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
+import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
 
 interface DeckComparerResultProps {
   mainDeckId: string;
@@ -389,14 +390,20 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
                           onMouseEnter={() => setHoveredColumn(columnIndex)}
                           onMouseLeave={() => setHoveredColumn(null)}
                         >
-                          <div className="flex flex-col items-center">
-                            <CardImage
-                              card={cardData}
-                              cardVariantId={cardData ? selectDefaultVariant(cardData) : undefined}
-                              size="w75"
-                            />
-                            <span className="text-xs truncate max-w-[75px]">{cardData?.name}</span>
-                          </div>
+                          <DeckCardHoverImage card={cardData}>
+                            <div className="flex flex-col items-center">
+                              <CardImage
+                                card={cardData}
+                                cardVariantId={
+                                  cardData ? selectDefaultVariant(cardData) : undefined
+                                }
+                                size="w75"
+                              />
+                              <span className="text-xs truncate max-w-[75px]">
+                                {cardData?.name}
+                              </span>
+                            </div>
+                          </DeckCardHoverImage>
                         </th>
                       );
                     })}

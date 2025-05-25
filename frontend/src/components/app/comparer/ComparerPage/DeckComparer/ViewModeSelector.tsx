@@ -1,7 +1,16 @@
 import * as React from 'react';
+import { useCallback } from 'react';
 import { ViewMode } from '@/components/app/comparer/useComparerStore.ts';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button.tsx';
-import { cn } from '@/lib/utils.ts';
+import { LayoutGrid } from 'lucide-react';
+import { viewModeArray, viewModeObj } from '../../../../../../../types/iterableEnumInfo.ts';
 
 interface ViewModeSelectorProps {
   value: ViewMode | undefined;
@@ -11,33 +20,36 @@ interface ViewModeSelectorProps {
 /**
  * Component for selecting the view mode (cards in rows or decks in rows)
  */
-const ViewModeSelector: React.FC<ViewModeSelectorProps> = ({ value, onChange }) => {
+const ViewModeSelector: React.FC<ViewModeSelectorProps> = ({
+  value = ViewMode.ROW_CARD,
+  onChange,
+}) => {
+  const onValueChange = useCallback(
+    (v: string) => {
+      const newValue = v as ViewMode;
+      onChange(newValue);
+    },
+    [onChange],
+  );
+
   return (
-    <div className="flex flex-col">
-      <span className="text-sm mb-1">View Mode</span>
-      <div className="flex gap-1">
-        <Button
-          variant="outline"
-          size="sm"
-          className={cn('px-2 py-1 h-auto', {
-            'bg-primary text-primary-foreground': value === ViewMode.ROW_CARD,
-          })}
-          onClick={() => onChange(ViewMode.ROW_CARD)}
-        >
-          Cards in Rows
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="text-xs w-[250px] justify-between">
+          <span className="text-[1.2em] font-semibold">View mode:</span> {viewModeObj[value]?.title}
+          <LayoutGrid className="h-4 w-4 ml-2" />
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className={cn('px-2 py-1 h-auto', {
-            'bg-primary text-primary-foreground': value === ViewMode.ROW_DECK,
-          })}
-          onClick={() => onChange(ViewMode.ROW_DECK)}
-        >
-          Decks in Rows
-        </Button>
-      </div>
-    </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuRadioGroup value={value} onValueChange={onValueChange}>
+          {viewModeArray.map(mode => (
+            <DropdownMenuRadioItem key={mode} value={mode}>
+              {viewModeObj[mode].title}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
