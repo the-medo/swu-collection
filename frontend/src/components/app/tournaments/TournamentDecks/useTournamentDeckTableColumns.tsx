@@ -5,8 +5,12 @@ import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.t
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { getDeckKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useIsMobile } from '@/hooks/use-mobile.tsx';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
+import { cn } from '@/lib/utils.ts';
 
-export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDeckResponse>[] {
+export function useTournamentDeckTableColumns(
+  showSelectionCheckbox?: boolean,
+): ExtendedColumnDef<TournamentDeckResponse>[] {
   const labelRenderer = useLabel();
   const { data: cardListData } = useCardList();
   const isMobile = useIsMobile();
@@ -14,13 +18,45 @@ export function useTournamentDeckTableColumns(): ExtendedColumnDef<TournamentDec
   return useMemo(() => {
     const definitions: ExtendedColumnDef<TournamentDeckResponse>[] = [];
 
-    // Placement column
+    // Placement column or Checkbox column
     definitions.push({
       id: 'placement',
       header: '#',
-      size: 16,
-      cell: ({ row }) => {
+      size: 8,
+      cell: ({ row, table }) => {
         const placement = row.original.tournamentDeck.placement;
+
+        if (showSelectionCheckbox) {
+          // Show checkbox on hover when no rows are selected
+          return (
+            <div className="flex gap-1 items-center justify-between font-bold">
+              <div
+                className={cn('placement-number', {
+                  'group-hover:hidden': !isMobile && !table.getIsSomeRowsSelected(),
+                  hidden: !isMobile && table.getIsSomeRowsSelected(),
+                })}
+              >
+                {placement !== null ? `#${placement}` : 'N/A'}
+              </div>
+              <div
+                className={cn('justify-center items-center h-[16px]', {
+                  'group-hover:flex hidden': !isMobile && !table.getIsSomeRowsSelected(),
+                })}
+              >
+                <Checkbox
+                  checked={row.getIsSelected()}
+                  onCheckedChange={checked => {
+                    row.toggleSelected(!!checked);
+                  }}
+                  onClick={e => e.stopPropagation()}
+                  aria-label="Select row"
+                  className="data-[state=checked]:bg-primary"
+                />
+              </div>
+            </div>
+          );
+        }
+
         return (
           <div className="text-center font-bold">
             {placement !== null ? `#${placement}` : 'N/A'}

@@ -162,14 +162,14 @@ const ComparerPage: React.FC = () => {
       <div className="flex items-start gap-4">
         <Accordion type="single" collapsible defaultValue="" className="w-full">
           <AccordionItem value="items" className="border rounded-md">
-            <AccordionTrigger className="px-4 py-2 hover:no-underline">
+            <AccordionTrigger className="px-4 pt-2 pb-0 hover:no-underline">
               <div className="flex items-center gap-2">
                 <span className="font-semibold">
                   Items in Comparer
-                  {collectionsEntries.length > 0 && ` (Collections: ${collectionsEntries.length}`}
+                  {collectionsEntries.length > 0 && ` ( Collections: ${collectionsEntries.length}`}
                   {deckEntries.length > 0 &&
                     `${collectionsEntries.length > 0 ? ',' : ' ('} Decks: ${deckEntries.length}`}
-                  {(collectionsEntries.length > 0 || deckEntries.length > 0) && ')'}
+                  {(collectionsEntries.length > 0 || deckEntries.length > 0) && ' )'}
                 </span>
               </div>
             </AccordionTrigger>

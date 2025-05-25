@@ -1,6 +1,13 @@
 'use client';
 
-import { ColumnDef, flexRender, getCoreRowModel, Row, useReactTable } from '@tanstack/react-table';
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  Row,
+  useReactTable,
+  RowSelectionState,
+} from '@tanstack/react-table';
 
 import {
   Table,
@@ -13,7 +20,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cn } from '@/lib/utils.ts';
 import { Card, CardContent } from '@/components/ui/card.tsx';
-import { RowData } from '@tanstack/table-core';
+import { RowData, TableOptions } from '@tanstack/table-core';
 import { Loader2 } from 'lucide-react';
 import { RefObject } from 'react';
 
@@ -41,6 +48,9 @@ interface DataTableProps<TData, TValue> {
   view?: DataTableViewMode;
   infiniteScrollObserver?: RefObject<HTMLDivElement>;
   infiniteScrollLoading?: boolean;
+  enableRowSelection?: boolean;
+  rowSelection?: RowSelectionState;
+  onRowSelectionChange?: TableOptions<TData>['onRowSelectionChange']; //(newSelection: RowSelectionState) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -57,6 +67,9 @@ export function DataTable<TData, TValue>({
   view = 'table',
   infiniteScrollObserver,
   infiniteScrollLoading,
+  enableRowSelection = false,
+  rowSelection = {},
+  onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     // @ts-ignore
@@ -64,6 +77,11 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     defaultColumn,
+    enableRowSelection,
+    state: {
+      rowSelection,
+    },
+    onRowSelectionChange: onRowSelectionChange,
   });
 
   if (view === 'box') {
@@ -119,7 +137,7 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div className="rounded-md border w-full">
+    <div className="rounded-md border w-full relative">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map(headerGroup => (
@@ -150,7 +168,8 @@ export function DataTable<TData, TValue>({
                 data-state={
                   isRowHighlighted?.(row) ? 'highlighted' : row.getIsSelected() && 'selected'
                 }
-                className={cn({
+                data-selection-enabled={enableRowSelection ? 'true' : 'false'}
+                className={cn('group', {
                   'cursor-pointer': !!onRowClick,
                 })}
               >
