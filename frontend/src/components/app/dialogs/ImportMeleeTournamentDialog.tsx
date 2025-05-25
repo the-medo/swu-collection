@@ -27,12 +27,19 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
   const form = useForm({
     defaultValues: {
       meleeId: meleeId || '',
+      forcedRoundId: '',
       isFix: false,
+      markAsImported: true,
     },
     onSubmit: async ({ value }) => {
       if (value.meleeId) {
         importMeleeMutation.mutate(
-          { meleeId: value.meleeId, isFix: value.isFix },
+          {
+            meleeId: value.meleeId,
+            isFix: value.isFix,
+            forcedRoundId: value.forcedRoundId,
+            markAsImported: value.markAsImported,
+          },
           {
             onSuccess: () => {
               setOpen(false);
@@ -90,6 +97,45 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
           />
 
           <form.Field
+            name="markAsImported"
+            children={field => (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={field.name}
+                    checked={field.state.value}
+                    onBlur={field.handleBlur}
+                    onCheckedChange={e => field.handleChange(!!e)}
+                  />
+                  <Label htmlFor={field.name}>Mark as imported</Label>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Do not mark as imported in case of manual changes later
+                </p>
+              </div>
+            )}
+          />
+
+          <hr />
+
+          <form.Field
+            name="forcedRoundId"
+            children={field => (
+              <div className="space-y-2">
+                <Label htmlFor={field.name}>Forced round ID</Label>
+                <Input
+                  id={field.name}
+                  placeholder="For last available standings"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={e => field.handleChange(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+          />
+
+          <form.Field
             name="isFix"
             children={field => (
               <div className="space-y-2">
@@ -103,7 +149,8 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
                   <Label htmlFor={field.name}>Fix Mode</Label>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Enable this option to update or correct existing tournament data instead of performing a full import.
+                  Enable this option to update or correct existing tournament data instead of
+                  performing a full import.
                 </p>
               </div>
             )}

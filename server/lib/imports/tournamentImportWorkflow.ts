@@ -18,15 +18,25 @@ import { parseTextToSwubase } from '../decks/deckConverterService.tsx';
 import { cardList } from '../../db/lists.ts';
 import { updateDeckInformation } from '../decks/updateDeckInformation.ts';
 
-export async function runTournamentImport(tournamentId: string) {
+export async function runTournamentImport(
+  tournamentId: string,
+  forcedRoundId: string | undefined = '',
+) {
   const t = (await db.select().from(tournament).where(eq(tournament.id, tournamentId)))[0];
 
   const meleeTournamentId = t.meleeId;
   console.log('Melee tournament id: ', meleeTournamentId);
   if (!meleeTournamentId) throw new Error('Melee tournament ID is empty');
 
-  const roundId = await fetchTournamentView(meleeTournamentId);
-  console.log('Round id: ', roundId);
+  let roundId: number | undefined;
+
+  if (forcedRoundId && forcedRoundId !== '') {
+    roundId = parseInt(forcedRoundId);
+  } else {
+    roundId = await fetchTournamentView(meleeTournamentId);
+    console.log('Round id: ', roundId);
+  }
+
   if (!roundId) throw new Error('Round ID is empty');
 
   const roundStandings = await fetchRoundStandings(roundId);

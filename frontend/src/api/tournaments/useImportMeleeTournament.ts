@@ -4,6 +4,8 @@ import { toast } from '@/hooks/use-toast.ts';
 
 export interface ImportMeleeRequest {
   meleeId: string;
+  forcedRoundId?: string;
+  markAsImported?: boolean;
 }
 
 export const useImportMeleeTournament = (tournamentId: string) => {

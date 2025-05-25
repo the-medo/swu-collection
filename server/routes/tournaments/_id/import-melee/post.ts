@@ -7,7 +7,10 @@ import { and, eq } from 'drizzle-orm';
 import { tournament as tournamentTable } from '../../../../db/schema/tournament.ts';
 import { db } from '../../../../db';
 import { runTournamentImport } from '../../../../lib/imports/tournamentImportWorkflow.ts';
-import { computeAndSaveTournamentStatistics, computeAndSaveMetaStatistics } from '../../../../lib/card-statistics';
+import {
+  computeAndSaveTournamentStatistics,
+  computeAndSaveMetaStatistics,
+} from '../../../../lib/card-statistics';
 import { generateDeckThumbnails } from '../../../../lib/decks/generateDeckThumbnail.ts';
 
 export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
@@ -15,7 +18,7 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
   zValidator('json', zTournamentImportMeleeRequest),
   async c => {
     const paramTournamentId = z.string().uuid().parse(c.req.param('id'));
-    const { meleeId } = c.req.valid('json');
+    const { meleeId, forcedRoundId, markAsImported } = c.req.valid('json');
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
@@ -57,19 +60,21 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
     // Update the tournament with the meleeId
     await db.update(tournamentTable).set({ meleeId }).where(and(condIsOwner, condTournamentId));
 
-    runTournamentImport(paramTournamentId).then(async () => {
-      // Update tournament to set imported flag to true
-      await db
-        .update(tournamentTable)
-        .set({ imported: true })
-        .where(and(condIsOwner, condTournamentId));
+    runTournamentImport(paramTournamentId, forcedRoundId).then(async () => {
+      if (markAsImported) {
+        // Update tournament to set imported flag to true
+        await db
+          .update(tournamentTable)
+          .set({ imported: true })
+          .where(and(condIsOwner, condTournamentId));
 
-      // Compute tournament card statistics
-      await computeAndSaveTournamentStatistics(paramTournamentId);
+        // Compute tournament card statistics
+        await computeAndSaveTournamentStatistics(paramTournamentId);
 
-      // If tournament has a meta, compute meta card statistics
-      if (tournament.meta) {
-        await computeAndSaveMetaStatistics(tournament.meta);
+        // If tournament has a meta, compute meta card statistics
+        if (tournament.meta) {
+          await computeAndSaveMetaStatistics(tournament.meta);
+        }
       }
 
       // Generate thumbnails for all unique leader/base combinations in the tournament
@@ -78,7 +83,9 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
         tournament_id: paramTournamentId,
         force: false, // Don't force regeneration of existing thumbnails
       });
-      console.log(`Generated ${results.length} thumbnails for tournament: ${paramTournamentId}. ${errors.length} errors.`);
+      console.log(
+        `Generated ${results.length} thumbnails for tournament: ${paramTournamentId}. ${errors.length} errors.`,
+      );
     });
 
     // Mock response - in a real implementation, this would fetch data from melee.gg
