@@ -34,6 +34,9 @@ import DeckImageButton from '@/components/app/decks/DeckContents/DeckImage/DeckI
 import { usePostDeckFavorite } from '@/api/decks/usePostDeckFavorite';
 import { Star } from 'lucide-react';
 import { useUser } from '@/hooks/useUser';
+import AddToComparerButton from '@/components/app/comparer/SidebarComparer/AddToComparerButton.tsx';
+import { ComparerEntryAdditionalData } from '@/components/app/comparer/useComparerStore.ts';
+import { useMemo } from 'react';
 
 interface DeckActionsProps {
   deckId: string;
@@ -52,6 +55,13 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
   const deckLink = `${window.location.origin}/decks/${deckId}`;
 
   const isFavorite = !!deckData?.isFavorite;
+
+  const additionalData: ComparerEntryAdditionalData = useMemo(
+    () => ({
+      title: deckData?.deck.name,
+    }),
+    [deckData?.deck],
+  );
 
   const handleFavoriteClick = () => {
     if (!user) {
@@ -251,10 +261,12 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
         </DropdownMenu>
         <DeckImageButton deckId={deckId} />
 
-        {/*<Button size="xs" disabled onClick={() => {}}>
-          <ScrollText className="h-4 w-4 mr-2" />
-          Compare with other deck
-        </Button>*/}
+        <AddToComparerButton
+          id={deckId}
+          dataType="deck"
+          additionalData={additionalData}
+          size="xs"
+        />
       </CardContent>
     </Card>
   );

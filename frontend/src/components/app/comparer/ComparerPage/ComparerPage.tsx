@@ -1,129 +1,116 @@
 import * as React from 'react';
-import { useComparerStore } from '@/components/app/comparer/useComparerStore';
 import {
-  Scale,
-  BookOpenCheck,
-  ScrollText,
-  NotebookTabs,
-  SquareArrowOutUpRight,
-  X,
-  Crown,
-} from 'lucide-react';
+  useComparerStore,
+  encodeStateToUrl,
+  decodeStateFromUrl,
+} from '@/components/app/comparer/useComparerStore';
+import { Scale, SquareArrowOutUpRight, X, Crown, Info } from 'lucide-react';
 import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards';
+import { useGetBulkDecks } from '@/api/decks/useGetBulkDecks';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Link } from '@tanstack/react-router';
-import { Badge } from '@/components/ui/badge';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore';
-import { CollectionType } from '../../../../../../types/enums';
 import { CollectionCard } from '../../../../../../types/CollectionCard';
-import CollectionLayoutTableSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmall.tsx';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import ComparerInstructions from '@/components/app/comparer/ComparerPage/ComparerInstructions.tsx';
-
-// Render collection type badge
-const renderCollectionTypeBadge = (type?: CollectionType) => {
-  switch (type) {
-    case CollectionType.COLLECTION:
-      return (
-        <Badge className="bg-blue-200">
-          <BookOpenCheck className="mr-1 h-3 w-3" />
-          Collection
-        </Badge>
-      );
-    case CollectionType.WANTLIST:
-      return (
-        <Badge className="bg-amber-200">
-          <ScrollText className="mr-1 h-3 w-3" />
-          Wantlist
-        </Badge>
-      );
-    case CollectionType.OTHER:
-      return (
-        <Badge className="bg-gray-200">
-          <NotebookTabs className="mr-1 h-3 w-3" />
-          Other
-        </Badge>
-      );
-    default:
-      return (
-        <Badge className="bg-blue-200">
-          <BookOpenCheck className="mr-1 h-3 w-3" />
-          Collection
-        </Badge>
-      );
-  }
-};
-
-// Extract comparison logic to separate component
-const ComparerResult: React.FC<{
-  mainCardsMap: Map<string, CollectionCard>;
-  entry: ReturnType<typeof useComparerStore>['entries'][number];
-}> = ({ mainCardsMap, entry }) => {
-  const { data: otherCollection } = useGetCollectionCards(entry.id);
-
-  // Calculate intersection
-  const intersectionCards = useMemo(() => {
-    const result: CollectionCard[] = [];
-
-    if (otherCollection?.data && mainCardsMap.size > 0) {
-      // Generate a unique key for each card
-      const getCardKey = (card: CollectionCard) =>
-        `${card.cardId}|${card.variantId}|${card.foil}|${card.condition}|${card.language}`;
-
-      // Find intersections
-      otherCollection.data.forEach(otherCard => {
-        const key = getCardKey(otherCard);
-        const mainCard = mainCardsMap.get(key);
-
-        if (mainCard) {
-          // Card exists in both collections - take the lesser amount
-          const intersectionCard: CollectionCard = {
-            ...mainCard,
-            amount: Math.min(mainCard.amount, otherCard.amount),
-          };
-
-          result.push(intersectionCard);
-        }
-      });
-    }
-
-    return result;
-  }, [otherCollection, mainCardsMap]);
-
-  return (
-    <div className="p-4">
-      <h3 className="flex gap-4 text-lg font-semibold mb-4">
-        Comparison with {entry.additionalData?.title ?? '- Unknown -'}
-        {renderCollectionTypeBadge(entry.collectionType)}
-      </h3>
-
-      <div className="mb-2">
-        <span className="text-sm font-medium">{intersectionCards.length} cards in common</span>
-      </div>
-
-      {intersectionCards.length ? (
-        <CollectionLayoutTableSmall collectionId={entry.id} cards={intersectionCards} />
-      ) : null}
-    </div>
-  );
-};
+import ItemTypeBadge from './ItemTypeBadge';
+import ComparerResult from './ComparerResult';
+import DeckComparerResult from './DeckComparer/DeckComparerResult.tsx';
+import DeckComparerSettings from './DeckComparer/DeckComparerSettings.tsx';
+import { Badge } from '@/components/ui/badge.tsx';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion.tsx';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
+import ComparerEntryLoader from './ComparerEntryLoader/ComparerEntryLoader.tsx';
 
 const ComparerPage: React.FC = () => {
-  const { entries, mainId } = useComparerStore();
-  const { setMainId, removeComparerEntry } = useComparerStoreActions();
+  const { entries, mainId, mode } = useComparerStore();
+  const { setMainId, removeComparerEntry, addComparerEntry, setMode, clearComparerEntries } =
+    useComparerStoreActions();
+  const navigate = useNavigate();
+  const search = useSearch({ strict: false });
 
-  // Filter to only collections
+  // Update URL when comparer state changes
+  useEffect(() => {
+    if (entries.length > 0) {
+      const encodedState = encodeStateToUrl({ entries, mainId, mode, settings: {} });
+      navigate({
+        // @ts-ignore
+        search: prev => ({ ...prev, state: encodedState }),
+        replace: true,
+      });
+    } else {
+      // Remove state parameter if comparer is empty
+      navigate({
+        // @ts-ignore
+        search: prev => {
+          const { state, ...rest } = prev;
+          return rest;
+        },
+        replace: true,
+      });
+    }
+  }, [entries, mainId, mode, navigate]);
+
+  // Load state from URL on initial load
+  useEffect(() => {
+    const stateParam = search.state;
+    if (stateParam && typeof stateParam === 'string') {
+      const decodedState = decodeStateFromUrl(stateParam);
+      if (decodedState && decodedState.entries.length > 0) {
+        // Clear current state first to avoid duplicates
+        clearComparerEntries();
+
+        // Set mode first
+        if (decodedState.mode) {
+          setMode(decodedState.mode);
+        }
+
+        // Add all entries
+        decodedState.entries.forEach(entry => {
+          addComparerEntry(entry);
+        });
+
+        // Set main ID last
+        if (decodedState.mainId) {
+          setMainId(decodedState.mainId);
+        }
+      }
+    }
+  }, [search.state, setMode, addComparerEntry, setMainId, clearComparerEntries]);
+
+  // Get all entries
+  const allEntries = entries;
+
+  // Filter entries by type
   const collectionsEntries = entries.filter(entry => entry.dataType === 'collection');
+  const deckEntries = entries.filter(entry => entry.dataType === 'deck');
 
-  // Get the main entry
-  const mainEntry = collectionsEntries.find(entry => entry.id === mainId);
+  // Get the main entry from all entries
+  const mainEntry = allEntries.find(entry => entry.id === mainId);
+
+  // Get the main collection entry (for comparison logic)
+  const mainCollectionEntry = collectionsEntries.find(entry => entry.id === mainId);
 
   // Get other entries (to compare against main)
-  const otherEntries = collectionsEntries.filter(entry => entry.id !== mainId);
+  const otherCollectionEntries = collectionsEntries.filter(entry => entry.id !== mainId);
 
-  // Fetch collection data for main entry
-  const { data: mainCollection } = useGetCollectionCards(mainEntry?.id);
+  // Get other deck entries (to compare against main deck)
+  const otherDeckEntries = deckEntries.filter(entry => entry.id !== mainId);
+
+  // Extract all deck IDs for bulk fetching
+  const deckIds = deckEntries.map(entry => entry.id);
+
+  // Fetch collection data for main entry (only if it's a collection)
+  const { data: mainCollection } = useGetCollectionCards(mainCollectionEntry?.id);
+
+  // Fetch bulk deck data
+  const { isLoading: isLoadingDecks } = useGetBulkDecks(deckIds.length > 0 ? deckIds : undefined);
 
   // Create main cards map for comparison
   const mainCardsMap = useMemo(() => {
@@ -143,14 +130,14 @@ const ComparerPage: React.FC = () => {
     return map;
   }, [mainCollection]);
 
-  if (collectionsEntries.length === 0) {
+  if (allEntries.length === 0) {
     return (
       <div className="flex max-lg:flex-col gap-2 p-2">
         <Alert className="">
           <Scale className="h-4 w-4" />
-          <AlertTitle>No collections in comparer</AlertTitle>
+          <AlertTitle>No items in comparer</AlertTitle>
           <AlertDescription>
-            Add collections to the comparer from collection pages to start comparing them.
+            Add collections or decks to the comparer from their pages to start comparing them.
           </AlertDescription>
         </Alert>
         <ComparerInstructions />
@@ -163,66 +150,120 @@ const ComparerPage: React.FC = () => {
       <div className="p-6">
         <Alert className="max-w-3xl mx-auto">
           <Scale className="h-4 w-4" />
-          <AlertTitle>No main collection selected</AlertTitle>
-          <AlertDescription>Please select a main collection to compare against.</AlertDescription>
+          <AlertTitle>No main item selected</AlertTitle>
+          <AlertDescription>Please select a main item to compare against.</AlertDescription>
         </Alert>
       </div>
     );
   }
 
+  const hasMultipleEntryTypes = collectionsEntries.length > 0 && deckEntries.length > 0;
+
   return (
-    <>
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-2">Collections in Comparer</h3>
-        <div className="flex flex-wrap gap-2">
-          <div className="flex flex-grow flex-col gap-2">
-            {collectionsEntries.map(entry => (
-              <div
-                key={entry.id}
-                className={`flex max-lg:flex-col gap-2 items-center justify-between border rounded-md p-2 ${entry.id === mainId ? 'border-primary bg-primary/10' : 'border-muted'}`}
-              >
-                <div className="flex gap-2 items-center">
-                  <span className="font-medium">
-                    {entry.additionalData?.title ?? '- Unknown -'}
+    <div className="w-full flex flex-col gap-2">
+      <div className="flex items-start gap-4">
+        <Accordion type="single" collapsible defaultValue="" className="w-full">
+          <AccordionItem value="items" className="border rounded-md">
+            <AccordionTrigger className="px-4 pt-2 pb-0 hover:no-underline">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold">
+                  Items in Comparer
+                  {collectionsEntries.length > 0 && ` ( Collections: ${collectionsEntries.length}`}
+                  {deckEntries.length > 0 &&
+                    `${collectionsEntries.length > 0 ? ',' : ' ('} Decks: ${deckEntries.length}`}
+                  {(collectionsEntries.length > 0 || deckEntries.length > 0) && ' )'}
+                </span>
+                {hasMultipleEntryTypes && (
+                  <span className="text-red-500 text-sm font-medium">
+                    Comparing decks with collections/wantlists is not supported yet.
                   </span>
-                </div>
-                <div className="ml-4 flex gap-2">
-                  {renderCollectionTypeBadge(entry.collectionType)}
-                  {entry.id === mainId && (
-                    <Badge variant="default">
-                      Main <Crown size={16} className="ml-2" />
-                    </Badge>
-                  )}
-                  {entry.id !== mainId && (
-                    <Button size="iconSmall" variant="outline" onClick={() => setMainId(entry.id)}>
-                      <Crown />
-                    </Button>
-                  )}
-
-                  <Button size="iconSmall" variant="outline" asChild>
-                    <Link to={'/collections/' + entry.id}>
-                      <SquareArrowOutUpRight />
-                    </Link>
-                  </Button>
-
-                  <Button
-                    size="iconSmall"
-                    variant="destructive"
-                    onClick={() => removeComparerEntry(entry.id)}
-                  >
-                    <X />
-                  </Button>
-                </div>
+                )}
               </div>
-            ))}
-          </div>
-          <ComparerInstructions />
-        </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-grow flex-col gap-2 p-4">
+                {allEntries.map(entry => (
+                  <div
+                    key={entry.id}
+                    className={`flex max-lg:flex-col gap-2 items-center justify-between border rounded-md p-2 ${entry.id === mainId ? 'border-primary bg-primary/10' : 'border-muted'}`}
+                  >
+                    <ComparerEntryLoader entry={entry} />
+                    <div className="flex gap-2 items-center">
+                      <span className="font-medium">
+                        {entry.additionalData?.title ?? '- Unknown -'}
+                      </span>
+                    </div>
+                    <div className="ml-4 flex gap-2">
+                      <ItemTypeBadge entry={entry} />
+                      {entry.id === mainId && (
+                        <Badge variant="default">
+                          Main <Crown size={16} className="ml-2" />
+                        </Badge>
+                      )}
+                      {entry.id !== mainId && (
+                        <Button
+                          size="iconSmall"
+                          variant="outline"
+                          onClick={() => setMainId(entry.id)}
+                        >
+                          <Crown />
+                        </Button>
+                      )}
+
+                      <Button size="iconSmall" variant="outline" asChild>
+                        <Link to={'/collections/' + entry.id}>
+                          <SquareArrowOutUpRight />
+                        </Link>
+                      </Button>
+
+                      <Button
+                        size="iconSmall"
+                        variant="destructive"
+                        onClick={() => removeComparerEntry(entry.id)}
+                      >
+                        <X />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+        <Popover>
+          <PopoverTrigger>
+            <Info className="h-5 w-5 text-muted-foreground hover:text-primary cursor-pointer" />
+          </PopoverTrigger>
+          <PopoverContent className="w-[400px]">
+            <ComparerInstructions />
+          </PopoverContent>
+        </Popover>
       </div>
 
-      {otherEntries.length > 0 ? (
+      {/* Show settings when we have a deck as main entry */}
+      {mainEntry?.dataType === 'deck' && <DeckComparerSettings />}
+      {mainEntry?.dataType === 'deck' ? (
+        isLoadingDecks ? (
+          <div className="p-4 border rounded-md">
+            <h3 className="text-lg font-semibold mb-4">Deck Contents</h3>
+            <p>Loading deck data...</p>
+          </div>
+        ) : otherDeckEntries.length > 0 ? (
+          <DeckComparerResult mainDeckId={mainEntry.id} otherDeckEntries={otherDeckEntries} />
+        ) : (
+          <div className="p-4 border rounded-md">
+            <h3 className="text-lg font-semibold mb-4">Deck Contents</h3>
+            <Alert>
+              <AlertTitle>No deck comparisons available</AlertTitle>
+              <AlertDescription>
+                Add more decks to the comparer to see comparisons.
+              </AlertDescription>
+            </Alert>
+          </div>
+        )
+      ) : otherCollectionEntries.length > 0 ? (
         <div className="space-y-4">
-          {otherEntries.map(entry => (
+          {otherCollectionEntries.map(entry => (
             <ComparerResult key={entry.id} mainCardsMap={mainCardsMap} entry={entry} />
           ))}
         </div>
@@ -230,11 +271,11 @@ const ComparerPage: React.FC = () => {
         <Alert>
           <AlertTitle>No comparisons available</AlertTitle>
           <AlertDescription>
-            Add more collections to the comparer to see comparisons.
+            Add more collections or decks to the comparer to see comparisons.
           </AlertDescription>
         </Alert>
       )}
-    </>
+    </div>
   );
 };
 

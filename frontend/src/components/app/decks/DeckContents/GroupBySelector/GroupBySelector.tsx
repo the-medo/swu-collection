@@ -15,26 +15,39 @@ import {
 import { deckGroupByArray, deckGroupByObj } from '../../../../../../../types/iterableEnumInfo.ts';
 import React, { useCallback } from 'react';
 
-interface GroupBySelectorProps {}
+interface GroupBySelectorProps {
+  value?: DeckGroupBy;
+  onChange?: (value: DeckGroupBy) => void;
+}
 
-const GroupBySelector: React.FC<GroupBySelectorProps> = ({}) => {
-  const { groupBy } = useDeckLayoutStore();
+const GroupBySelector: React.FC<GroupBySelectorProps> = ({ value, onChange }) => {
+  const { groupBy: storeGroupBy } = useDeckLayoutStore();
   const { setGroupBy } = useDeckLayoutStoreActions();
 
-  const onValueChange = useCallback((v: string) => {
-    setGroupBy(v as DeckGroupBy);
-  }, []);
+  // Use provided value if available, otherwise use the store value
+  const groupBy = value !== undefined ? value : storeGroupBy;
+
+  const onValueChange = useCallback(
+    (v: string) => {
+      const newValue = v as DeckGroupBy;
+      // Use provided onChange if available, otherwise use the store action
+      if (onChange) {
+        onChange(newValue);
+      } else {
+        setGroupBy(newValue);
+      }
+    },
+    [onChange],
+  );
 
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <div className="flex gap-2 items-center">
-          <span className="text-sm font-semibold">Group by:</span>
-          <Button variant="outline" className="text-xs w-[150px] justify-between">
-            {groupBy !== undefined ? deckGroupByObj[groupBy]?.title : 'Card Type'}
-            <Layers className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
+        <Button variant="outline" className="text-xs w-[200px] justify-between">
+          <span className="text-[1.2em] font-semibold">Group by:</span>{' '}
+          {groupBy !== undefined ? deckGroupByObj[groupBy]?.title : 'Card Type'}
+          <Layers className="h-4 w-4 ml-2" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuRadioGroup value={groupBy} onValueChange={onValueChange}>

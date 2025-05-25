@@ -121,7 +121,6 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     query = query.innerJoin(deckInformationTable, eq(deckTable.id, deckInformationTable.deckId));
 
     if (favorite && user?.id) {
-      console.log('Adding join to user_deck_favorite table with user ID: ', user.id);
       query = query.innerJoin(
         usedDeckFavoriteTable,
         and(
