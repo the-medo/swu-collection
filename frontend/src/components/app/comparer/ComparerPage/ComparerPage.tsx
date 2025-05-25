@@ -157,6 +157,8 @@ const ComparerPage: React.FC = () => {
     );
   }
 
+  const hasMultipleEntryTypes = collectionsEntries.length > 0 && deckEntries.length > 0;
+
   return (
     <div className="w-full flex flex-col gap-2">
       <div className="flex items-start gap-4">
@@ -171,6 +173,11 @@ const ComparerPage: React.FC = () => {
                     `${collectionsEntries.length > 0 ? ',' : ' ('} Decks: ${deckEntries.length}`}
                   {(collectionsEntries.length > 0 || deckEntries.length > 0) && ' )'}
                 </span>
+                {hasMultipleEntryTypes && (
+                  <span className="text-red-500 text-sm font-medium">
+                    Comparing decks with collections/wantlists is not supported yet.
+                  </span>
+                )}
               </div>
             </AccordionTrigger>
             <AccordionContent>
