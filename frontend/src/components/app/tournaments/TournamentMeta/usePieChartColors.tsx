@@ -11,7 +11,7 @@ const aspectColors: Record<SwuAspect, string> = {
   [SwuAspect.CUNNING]: '#fdb933', // c0 m30 y90 k0
   [SwuAspect.HEROISM]: '#c6c1a0', // c18 m14 y36 k6
   [SwuAspect.VILLAINY]: '#040004', // c50 m80 y0 k100
-}
+};
 
 const getGradientDef = (id: string, colors: any[]) => ({
   id,
@@ -23,59 +23,69 @@ const getGradientDef = (id: string, colors: any[]) => ({
 export const usePieChartColors = () => {
   const { data: cardListData } = useCardList();
 
-  return useCallback((value: string | undefined, metaInfo: MetaInfo,) => {
-    if (!value || !cardListData || value === 'Others') return getGradientDef(value ?? 'unknown', [{offset: 0, color: '#777777'}]);
-    const cardList = cardListData.cards;
+  return useCallback(
+    (value: string | undefined, metaInfo: MetaInfo) => {
+      if (!value || !cardListData || value === 'Others')
+        return getGradientDef(value ?? 'unknown', [{ offset: 0, color: '#777777' }]);
+      if (value === 'unknown')
+        return getGradientDef(value ?? 'unknown', [
+          { offset: 0, color: '#cccccc' },
+          { offset: 80, color: '#777777' },
+        ]);
+      const cardList = cardListData.cards;
 
-    let leaderCardId: string | undefined;
-    let baseCardId: string | undefined;
-    const aspects = new Set<SwuAspect>;
+      let leaderCardId: string | undefined;
+      let baseCardId: string | undefined;
+      const aspects = new Set<SwuAspect>();
 
-    switch (metaInfo) {
-      case 'leaders':
-        leaderCardId = value;
-        break;
-      case 'leadersAndBase': {
-        const split = value.split('|');
-        leaderCardId = split[0];
-        if (isAspect(split[1])) {
-          aspects.add(split[1] as SwuAspect);
-        } else {
-          baseCardId = split[1];
+      switch (metaInfo) {
+        case 'leaders':
+          leaderCardId = value;
+          break;
+        case 'leadersAndBase': {
+          const split = value.split('|');
+          leaderCardId = split[0];
+          if (isAspect(split[1])) {
+            aspects.add(split[1] as SwuAspect);
+          } else {
+            baseCardId = split[1];
+          }
+          break;
         }
-        break;
-      }
-      case 'bases':
-        if (isAspect(value)) {
+        case 'bases':
+          if (isAspect(value)) {
+            aspects.add(value as SwuAspect);
+          } else {
+            baseCardId = value;
+          }
+          break;
+        case 'aspects':
           aspects.add(value as SwuAspect);
-        } else {
-          baseCardId = value;
-        }
-        break;
-      case 'aspects':
-        aspects.add(value as SwuAspect);
-        break;
-      case 'aspectsBase':
-        aspects.add(value as SwuAspect);
-        break;
-      case 'aspectsDetailed':
-        value
-          .split('-')
-          .forEach(s => aspects.add(s as SwuAspect))
-        break;
-    }
+          break;
+        case 'aspectsBase':
+          aspects.add(value as SwuAspect);
+          break;
+        case 'aspectsDetailed':
+          value.split('-').forEach(s => aspects.add(s as SwuAspect));
+          break;
+      }
 
-    const baseCard = baseCardId ? cardList[baseCardId] : undefined;
-    const leaderCard = leaderCardId ? cardList[leaderCardId] : undefined;
+      const baseCard = baseCardId ? cardList[baseCardId] : undefined;
+      const leaderCard = leaderCardId ? cardList[leaderCardId] : undefined;
 
-    if (baseCard) baseCard.aspects.forEach(a => aspects.add(a));
-    if (leaderCard) leaderCard.aspects.forEach(a => aspects.add(a));
+      if (baseCard) baseCard.aspects.forEach(a => aspects.add(a));
+      if (leaderCard) leaderCard.aspects.forEach(a => aspects.add(a));
 
-    if (aspects.size >= 3) {
-      if (aspects.has(SwuAspect.HEROISM)) aspects.delete(SwuAspect.HEROISM);
-      if (aspects.has(SwuAspect.VILLAINY)) aspects.delete(SwuAspect.VILLAINY);
-    }
+      if (aspects.size >= 3) {
+        if (aspects.has(SwuAspect.HEROISM)) aspects.delete(SwuAspect.HEROISM);
+        if (aspects.has(SwuAspect.VILLAINY)) aspects.delete(SwuAspect.VILLAINY);
+      }
 
-    return getGradientDef(value ?? 'unknown', [...aspects].map((a, i) => ({offset: i * 80, color: aspectColors[a]})));
-  }, [cardListData])
-}
+      return getGradientDef(
+        value ?? 'unknown',
+        [...aspects].map((a, i) => ({ offset: i * 80, color: aspectColors[a] })),
+      );
+    },
+    [cardListData],
+  );
+};

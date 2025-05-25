@@ -76,6 +76,7 @@ export const getDeckKey = (
   cardListData: CardListResponse | undefined,
 ) => {
   if (!deck.deck || !cardListData) return '';
+  if (!deck.deck.leaderCardId1 || !deck.deck.baseCardId) return 'unknown';
 
   let key = '';
 

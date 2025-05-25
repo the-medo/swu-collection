@@ -24,6 +24,7 @@ export function useLabel() {
       if (!value) return value;
       if (!cardListData) return value;
       if (value === 'Others') return 'Others';
+      if (value === 'unknown') return 'Unknown';
       const cardList = cardListData.cards;
 
       let leaderCardId: string | undefined;

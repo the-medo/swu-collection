@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
-import { TournamentInfoMap } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import {
+  getDeckKey,
+  TournamentInfoMap,
+} from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import MetaPartSelector, { MetaPart } from './MetaPartSelector';
 import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
 import ViewModeSelector, { ViewMode } from './ViewModeSelector';
@@ -105,77 +108,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
       decksToAnalyze.forEach(deck => {
         if (!deck.deck) return;
 
-        let key = '';
-
-        switch (metaInfoType) {
-          case 'leaders':
-            // Use leader card IDs as key
-            key = [deck.deck.leaderCardId1, deck.deck.leaderCardId2]
-              .filter(Boolean)
-              .sort()
-              .join('-');
-            break;
-          case 'leadersAndBase':
-            // Use leader card IDs and base card ID as key
-            const leaderKey = [deck.deck.leaderCardId1, deck.deck.leaderCardId2]
-              .filter(Boolean)
-              .sort()
-              .join('-');
-            const baseKey = getBaseKey(deck.deck.baseCardId, deck.deckInformation?.baseAspect);
-            key = `${leaderKey}|${baseKey}`;
-            break;
-          case 'bases':
-            key = getBaseKey(deck.deck.baseCardId, deck.deckInformation?.baseAspect);
-            break;
-          case 'aspectsBase':
-            // Use base aspect as key
-            if (deck.deckInformation?.baseAspect) {
-              key = deck.deckInformation.baseAspect;
-            } else {
-              key = 'no-aspect';
-            }
-            break;
-          case 'aspects':
-          case 'aspectsDetailed':
-            // Create a key based on which aspects are used
-            const aspects: string[] = [];
-            if (deck.deckInformation?.aspectCommand)
-              Array.from({ length: deck.deckInformation?.aspectCommand }).forEach(() =>
-                aspects.push('Command'),
-              );
-            if (deck.deckInformation?.aspectVigilance)
-              Array.from({ length: deck.deckInformation?.aspectVigilance }).forEach(() =>
-                aspects.push('Vigilance'),
-              );
-            if (deck.deckInformation?.aspectAggression)
-              Array.from({ length: deck.deckInformation?.aspectAggression }).forEach(() =>
-                aspects.push('Aggression'),
-              );
-            if (deck.deckInformation?.aspectCunning)
-              Array.from({ length: deck.deckInformation?.aspectCunning }).forEach(() =>
-                aspects.push('Cunning'),
-              );
-            if (deck.deckInformation?.aspectHeroism)
-              Array.from({ length: deck.deckInformation?.aspectHeroism }).forEach(() =>
-                aspects.push('Heroism'),
-              );
-            if (deck.deckInformation?.aspectVillainy)
-              Array.from({ length: deck.deckInformation?.aspectVillainy }).forEach(() =>
-                aspects.push('Villainy'),
-              );
-            if (metaInfoType === 'aspects') {
-              aspects.forEach(a => {
-                countMap.set(a, (countMap.get(a) || 0) + 1);
-                // Also track wins and losses for each aspect
-                winsMap.set(a, (winsMap.get(a) || 0) + (deck.tournamentDeck.recordWin || 0));
-                lossesMap.set(a, (lossesMap.get(a) || 0) + (deck.tournamentDeck.recordLose || 0));
-              });
-            } else {
-              key = aspects.sort().join('-');
-            }
-
-            break;
-        }
+        let key = getDeckKey(deck, metaInfoType, cardListData);
 
         if (key) {
           countMap.set(key, (countMap.get(key) || 0) + 1);

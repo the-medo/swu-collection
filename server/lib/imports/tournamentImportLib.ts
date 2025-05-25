@@ -223,13 +223,27 @@ export async function fetchDecklistView(decklistId: string) {
   }
 }
 
+export type ParsedStanding = {
+  tournamentDeck: TournamentDeck;
+  decklistName: string;
+  exists: boolean;
+};
+export type ParseStandingsAdditionalInfo = {
+  /**
+   * sometimes melee has users with 0-0-0 matches very high up in the standings
+   * - in that case, we need to skip them and change placements of all players after them
+   */
+  skippedStandings: ParsedStanding[];
+};
+
 export const parseStandingsToTournamentDeck = (
   standing: any,
   tournament: Tournament,
   availableDecks: TournamentDeck[],
-): { tournamentDeck: TournamentDeck; decklistName: string; exists: boolean } => {
+  additionalInfo: ParseStandingsAdditionalInfo,
+): ParsedStanding | undefined => {
   const decklistInfo = standing.Decklists[0];
-  const placement = standing.Rank;
+  const placement = standing.Rank - additionalInfo.skippedStandings.length;
   const meleeDecklistGuid = decklistInfo?.DecklistId;
   const meleePlayerUsername = standing.Team.Players[0].DisplayName;
 
@@ -255,6 +269,10 @@ export const parseStandingsToTournamentDeck = (
 
   console.log(`Parsed ${result.exists ? 'existing' : 'new'} decklist: ${result.decklistName}`);
 
+  if (standing.MatchRecord === '0-0-0') {
+    additionalInfo.skippedStandings.push(result);
+    return undefined;
+  }
   return result;
 };
 

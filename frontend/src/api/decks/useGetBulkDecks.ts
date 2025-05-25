@@ -57,6 +57,6 @@ export const useGetBulkDecks = (deckIds: string[] | undefined) => {
       return true;
     },
     enabled: deckIds !== undefined && deckIds.length > 0,
-    staleTime: 1000, // 1min
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };

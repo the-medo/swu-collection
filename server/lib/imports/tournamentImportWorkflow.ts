@@ -6,6 +6,7 @@ import {
   fetchDeckMatchesWithMeleeDeckIds,
   fetchRoundStandings,
   fetchTournamentView,
+  type ParseStandingsAdditionalInfo,
   parseStandingsToTournamentDeck,
 } from './tournamentImportLib.ts';
 import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
@@ -36,9 +37,13 @@ export async function runTournamentImport(tournamentId: string) {
     .from(tournamentDeck)
     .where(eq(tournamentDeck.tournamentId, t.id));
 
-  const parsedStandings = roundStandings.map(s =>
-    parseStandingsToTournamentDeck(s, t, tournamentDecks),
-  );
+  let additionalInfo: ParseStandingsAdditionalInfo = {
+    skippedStandings: [],
+  };
+
+  const parsedStandings = roundStandings
+    .map(s => parseStandingsToTournamentDeck(s, t, tournamentDecks, additionalInfo))
+    .filter(x => !!x);
 
   const playerInfo: Record<
     string,
