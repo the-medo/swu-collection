@@ -90,7 +90,7 @@ export type ComparerEntry = {
   additionalData?: ComparerEntryAdditionalData;
 };
 
-interface ComparerSettings {
+export interface ComparerSettings {
   diffDisplayMode?: DiffDisplayMode;
   groupBy?: DeckGroupBy;
   viewMode?: ViewMode;
