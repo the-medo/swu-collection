@@ -17,6 +17,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarContext,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupAction,
@@ -45,9 +46,9 @@ import { cn } from '@/lib/utils.ts';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import SidebarComparer from '../../comparer/SidebarComparer/SidebarComparer.tsx';
 import { Route } from '@/routes/__root.tsx';
-import { Fragment, useCallback } from 'react';
+import { Fragment, useMemo } from 'react';
 
-const groups = [
+const getGroups = (setOpenMobile: (open: boolean) => void, state: SidebarContext['state']) => [
   {
     title: 'Analysis & Decks',
     actionLabel: 'Add Deck',
@@ -88,16 +89,21 @@ const groups = [
           <Link
             to="/decks/favorite"
             onClick={() => {
-              if (typeof setOpenMobile === 'function') {
-                setOpenMobile(false);
-              }
+              setOpenMobile(false);
             }}
           >
-            <SidebarMenuAction title="Favorite Decks">
-              <Star /> <span className="sr-only">Favorite Decks</span>
-            </SidebarMenuAction>
+            {state === 'expanded' ? (
+              <SidebarMenuAction title="Favorite Decks">
+                <Star /> <span className="sr-only">Favorite Decks</span>
+              </SidebarMenuAction>
+            ) : (
+              <>
+                <Star /> <span className="sr-only">Favorite Decks</span>
+              </>
+            )}
           </Link>
         ),
+        displayMenuActionWhenCollapsed: true,
       },
     ],
   },
@@ -174,7 +180,9 @@ export function LeftSidebar() {
   const user = useUser();
   const navigate = useNavigate({ from: Route.fullPath });
   const { theme } = useTheme();
-  const { open, isMobile, setOpenMobile } = useSidebar();
+  const { open, state, isMobile, setOpenMobile } = useSidebar();
+
+  const groups = useMemo(() => getGroups(setOpenMobile, state), [state]);
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
@@ -241,8 +249,15 @@ export function LeftSidebar() {
                               <span>{i.title}</span>
                             </Link>
                           </SidebarMenuButton>
-                          {'menuAction' in i ? i.menuAction : null}
+                          {'menuAction' in i && state !== 'collapsed' ? i.menuAction : null}
                         </SidebarMenuItem>
+                        {'menuAction' in i &&
+                          'displayMenuActionWhenCollapsed' in i &&
+                          state === 'collapsed' && (
+                            <SidebarMenuItem>
+                              <SidebarMenuButton asChild>{i.menuAction}</SidebarMenuButton>
+                            </SidebarMenuItem>
+                          )}
                         {'separator' in i && i.separator ? <SidebarSeparator /> : null}
                       </>
                     ) : null}
@@ -284,7 +299,7 @@ export function LeftSidebar() {
             <Scale className="w-4 h-4" /> <span className="sr-only">Open comparer</span>
           </SidebarGroupAction>
           <SidebarGroupContent>
-            <SidebarComparer />
+            <SidebarComparer setOpenMobile={setOpenMobile} />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

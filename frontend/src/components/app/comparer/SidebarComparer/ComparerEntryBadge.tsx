@@ -1,6 +1,6 @@
 import { ComparerEntry } from '@/components/app/comparer/useComparerStore.ts';
 import {
-  BookOpen,
+  Book,
   BookOpenCheck,
   ExternalLink,
   NotebookTabs,
@@ -35,7 +35,7 @@ const ComparerEntryBadge: React.FC<ComparerEntryBadgeProps> = ({
 }) => {
   const getIcon = () => {
     if (entry.dataType === 'deck') {
-      return <BookOpen size={16} />;
+      return <Book size={16} />;
     }
 
     switch (entry.collectionType) {
