@@ -83,6 +83,9 @@ function computeTournamentStatistics(
   // Create a map of deck ID to deck for easy lookup
   const deckMap = new Map(decks.map(d => [d.id, d]));
 
+  // we don't want to add 2 to deck count when the card is in one deck - both in maindeck and sideboard
+  const deckCardsAdded: Record<string, Record<string, boolean> | undefined> = {};
+
   // Process each deck card
   for (const card of deckCards) {
     const deckId = card.deckId;
@@ -93,9 +96,12 @@ function computeTournamentStatistics(
     if (!deckData.leaderCardId1 || !deckData.baseCardId) continue; // Skip if leader or base is null (invalid deck)
     if (card.board !== 1 && card.board !== 2) continue; // Skip if board is not 1 (maindeck) or 2 (sideboard)
 
+    if (!deckCardsAdded[deckId]) deckCardsAdded[deckId] = {};
+
     const cardId = card.cardId;
     const leaderCardId = deckData.leaderCardId1;
     let baseCardId = deckData.baseCardId;
+    const addToDeckCount = deckCardsAdded[deckId][cardId] ? 0 : 1;
 
     const baseCard = cardList[baseCardId];
     if (!baseCard) continue; // Skip if base card was not found for some reason
@@ -129,7 +135,7 @@ function computeTournamentStatistics(
 
     cardStats[cardId].countMd += countMd;
     cardStats[cardId].countSb += countSb;
-    cardStats[cardId].deckCount += 1;
+    cardStats[cardId].deckCount += addToDeckCount;
     cardStats[cardId].matchWin += matchWin * countTotal;
     cardStats[cardId].matchLose += matchLose * countTotal;
 
@@ -151,7 +157,7 @@ function computeTournamentStatistics(
     }
     cardStatsLeader[leaderCardId][cardId].countMd += countMd;
     cardStatsLeader[leaderCardId][cardId].countSb += countSb;
-    cardStatsLeader[leaderCardId][cardId].deckCount += 1;
+    cardStatsLeader[leaderCardId][cardId].deckCount += addToDeckCount;
     cardStatsLeader[leaderCardId][cardId].matchWin += matchWin * countTotal;
     cardStatsLeader[leaderCardId][cardId].matchLose += matchLose * countTotal;
 
@@ -177,9 +183,11 @@ function computeTournamentStatistics(
     }
     cardStatsLeaderBase[leaderCardId][baseCardId][cardId].countMd += countMd;
     cardStatsLeaderBase[leaderCardId][baseCardId][cardId].countSb += countSb;
-    cardStatsLeaderBase[leaderCardId][baseCardId][cardId].deckCount += 1;
+    cardStatsLeaderBase[leaderCardId][baseCardId][cardId].deckCount += addToDeckCount;
     cardStatsLeaderBase[leaderCardId][baseCardId][cardId].matchWin += matchWin * countTotal;
     cardStatsLeaderBase[leaderCardId][baseCardId][cardId].matchLose += matchLose * countTotal;
+
+    deckCardsAdded[deckId][cardId] = true;
   }
 
   // Convert record objects to arrays
