@@ -8,12 +8,14 @@ import { processCardStats } from './cardStatsUtils';
 import { Accordion } from '@/components/ui/accordion.tsx';
 import GroupAccordionItem from './GroupAccordionItem';
 import UngroupedCardStats from './UngroupedCardStats';
+import { CardStatsParams } from '@/api/card-stats';
 
 interface CardStatsWithOptionsProps {
   data: CardStatData[];
+  cardStatParams: CardStatsParams;
 }
 
-const CardStatsWithOptions: React.FC<CardStatsWithOptionsProps> = ({ data }) => {
+const CardStatsWithOptions: React.FC<CardStatsWithOptionsProps> = ({ data, cardStatParams }) => {
   // Get filter values from URL
   const search = useSearch({ strict: false });
   const sortBy = search.csSortBy || 'md';
@@ -31,7 +33,6 @@ const CardStatsWithOptions: React.FC<CardStatsWithOptionsProps> = ({ data }) => 
     });
   }, [data, minDeckCount, cardSearch, sortBy, groupBy]);
 
-
   return (
     <div className={cn('space-y-6')}>
       <CardStatsFilters />
@@ -40,7 +41,7 @@ const CardStatsWithOptions: React.FC<CardStatsWithOptionsProps> = ({ data }) => 
         <>
           {groupBy === 'none' ? (
             // Ungrouped display
-            <UngroupedCardStats data={filteredAndSortedData} />
+            <UngroupedCardStats data={filteredAndSortedData} cardStatParams={cardStatParams} />
           ) : (
             // Grouped display with accordions and load more buttons
             <div className="space-y-4">
@@ -56,6 +57,7 @@ const CardStatsWithOptions: React.FC<CardStatsWithOptionsProps> = ({ data }) => 
                     groupKey={groupKey}
                     items={items}
                     groupBy={groupBy}
+                    cardStatParams={cardStatParams}
                   />
                 ))}
               </Accordion>

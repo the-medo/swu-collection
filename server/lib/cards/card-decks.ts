@@ -6,9 +6,9 @@ import { type DeckCard, deckCard } from '../../db/schema/deck_card.ts';
 import { fetchTournamentIdsForMeta } from '../card-statistics/meta.ts';
 
 export type CardDeckData = {
-  tournament_deck: TournamentDeck;
+  tournamentDeck: TournamentDeck;
   deck: Deck;
-  deck_card: DeckCard;
+  deckCard: DeckCard;
 };
 
 type FetchCardDecksDataParams = {
@@ -53,9 +53,15 @@ export async function fetchCardDecksData(
   }
 
   return db
-    .select()
+    .select({
+      tournamentDeck,
+      deck,
+      deckCard,
+    })
     .from(tournamentDeck)
     .innerJoin(deck, eq(deck.id, tournamentDeck.deckId))
     .innerJoin(deckCard, and(eq(deckCard.deckId, deck.id), eq(deckCard.cardId, cardId)))
-    .where(and(...conditions));
+    .where(and(...conditions))
+    .orderBy(tournamentDeck.placement)
+    .limit(25);
 }

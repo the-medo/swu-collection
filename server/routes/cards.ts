@@ -20,34 +20,31 @@ const cardDecksQuerySchema = z.object({
 });
 
 export const cardsRoute = new Hono<AuthExtension>()
-.get('/:id/decks', zValidator('query', cardDecksQuerySchema), async c => {
-  const cardId = c.req.param('id');
-  const { tournamentId, metaId, leaderCardId, baseCardId } = c.req.valid('query');
+  .get('/:id/decks', zValidator('query', cardDecksQuerySchema), async c => {
+    const cardId = c.req.param('id');
+    const { tournamentId, metaId, leaderCardId, baseCardId } = c.req.valid('query');
 
-  // Ensure at least one of tournamentId or metaId is provided
-  if (!tournamentId && !metaId) {
-    return c.json({ error: 'Either tournamentId or metaId must be provided' }, 400);
-  }
+    // Ensure at least one of tournamentId or metaId is provided
+    if (!tournamentId && !metaId) {
+      return c.json({ error: 'Either tournamentId or metaId must be provided' }, 400);
+    }
 
-  try {
-    const decks = await fetchCardDecksData({
-      cardId,
-      tournamentId,
-      metaId,
-      leaderCardId,
-      baseCardId
-    });
+    try {
+      const data = await fetchCardDecksData({
+        cardId,
+        tournamentId,
+        metaId,
+        leaderCardId,
+        baseCardId,
+      });
 
-    return c.json({ decks });
-  } catch (error) {
-    console.error('Error fetching card decks:', error);
-    return c.json({ error: 'Failed to fetch card decks' }, 500);
-  }
-})
-.post(
-  '/',
-  zValidator('json', clientVersionSchema),
-  async c => {
+      return c.json({ data });
+    } catch (error) {
+      console.error('Error fetching card decks:', error);
+      return c.json({ error: 'Failed to fetch card decks' }, 500);
+    }
+  })
+  .post('/', zValidator('json', clientVersionSchema), async c => {
     const { lastUpdated } = c.req.valid('json');
 
     if (!lastUpdated) {
@@ -78,5 +75,4 @@ export const cardsRoute = new Hono<AuthExtension>()
         cards: undefined,
       });
     }
-  },
-);
+  });

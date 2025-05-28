@@ -7,16 +7,21 @@ import {
 } from '../../../../../../lib/swu-resources/types.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
+import { CardDecksDialog } from '../CardDecks';
+import Dialog from '../../global/Dialog.tsx';
+import { CardStatsParams } from '@/api/card-stats';
 
 interface CardStatisticProps {
   card?: CardDataWithVariants<CardListVariants>;
   cardStat: CardStat;
+  cardStatParams: CardStatsParams;
   variant?: 'image' | 'card-horizontal';
   preTitle?: string;
 }
 
 const CardStatistic: React.FC<CardStatisticProps> = ({
   cardStat,
+  cardStatParams,
   card,
   variant = 'image',
   preTitle,
@@ -69,7 +74,15 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
         </div>
         <div className="flex justify-between">
           <span>Deck count: </span>
-          <span className="text-md font-bold">{cardStat.deckCount}</span>
+          <CardDecksDialog
+            trigger={
+              <span className="text-md font-bold cursor-pointer hover:underline">
+                {cardStat.deckCount}
+              </span>
+            }
+            cardId={card.cardId}
+            {...cardStatParams}
+          />
         </div>
         <div className="flex justify-between">
           <span>Win rate: </span>

@@ -5,14 +5,21 @@ import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatist
 import { Button } from '@/components/ui/button';
 import { CardType, cardTypeLabels } from '../../../../../../shared/types/cardTypes.ts';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion.tsx';
+import { CardStatsParams } from '@/api/card-stats';
 
 interface GroupAccordionItemProps {
   groupKey: string;
   items: CardStatData[];
   groupBy: string;
+  cardStatParams: CardStatsParams;
 }
 
-const GroupAccordionItem: React.FC<GroupAccordionItemProps> = ({ groupKey, items, groupBy }) => {
+const GroupAccordionItem: React.FC<GroupAccordionItemProps> = ({
+  groupKey,
+  items,
+  groupBy,
+  cardStatParams,
+}) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [initialItemsToShow, setInitialItemsToShow] = useState(0);
   const [itemsPerLoad, setItemsPerLoad] = useState(0);
@@ -98,7 +105,12 @@ const GroupAccordionItem: React.FC<GroupAccordionItemProps> = ({ groupKey, items
         <div className="flex flex-col gap-4" ref={contentRef}>
           <div className="flex gap-2 flex-wrap pt-2">
             {visibleItems.map(csd => (
-              <CardStatistic key={csd.cardStat.cardId} card={csd.card} cardStat={csd.cardStat} />
+              <CardStatistic
+                key={csd.cardStat.cardId}
+                card={csd.card}
+                cardStat={csd.cardStat}
+                cardStatParams={cardStatParams}
+              />
             ))}
           </div>
 

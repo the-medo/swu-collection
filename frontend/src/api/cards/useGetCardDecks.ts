@@ -18,7 +18,7 @@ export interface CardDecksParams {
  * Response from the card decks API
  */
 export interface CardDecksResponse {
-  decks: CardDeckData[];
+  data: CardDeckData[];
 }
 
 /**
