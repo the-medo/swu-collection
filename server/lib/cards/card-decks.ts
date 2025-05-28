@@ -1,9 +1,15 @@
 import { db } from '../../db';
 import { and, eq, sql } from 'drizzle-orm';
-import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
-import { deck } from '../../db/schema/deck.ts';
-import { deckCard } from '../../db/schema/deck_card.ts';
+import { type TournamentDeck, tournamentDeck } from '../../db/schema/tournament_deck.ts';
+import { type Deck, deck } from '../../db/schema/deck.ts';
+import { type DeckCard, deckCard } from '../../db/schema/deck_card.ts';
 import { fetchTournamentIdsForMeta } from '../card-statistics/meta.ts';
+
+export type CardDeckData = {
+  tournament_deck: TournamentDeck;
+  deck: Deck;
+  deck_card: DeckCard;
+};
 
 type FetchCardDecksDataParams = {
   cardId: string;
@@ -25,7 +31,9 @@ type FetchCardDecksDataParams = {
  * @returns An array of objects containing tournament deck, deck, and deck card data
  * @throws Error if neither metaId nor tournamentId is provided
  */
-export async function fetchCardDecksData(params: FetchCardDecksDataParams) {
+export async function fetchCardDecksData(
+  params: FetchCardDecksDataParams,
+): Promise<CardDeckData[]> {
   if (!params.metaId && !params.tournamentId) {
     throw new Error('Either metaId or tournamentId must be provided');
   }

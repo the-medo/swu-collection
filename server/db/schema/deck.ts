@@ -11,6 +11,7 @@ import {
 import { user } from './auth-schema.ts';
 import { format } from './format.ts';
 import type { InferSelectModel } from 'drizzle-orm';
+import type { InferResponseType } from 'hono';
 
 export const deck = pgTable(
   'deck',
@@ -46,3 +47,4 @@ export const deck = pgTable(
 );
 
 export type Deck = InferSelectModel<typeof deck>;
+//export type Deck = InferResponseType<typeof deck>;
