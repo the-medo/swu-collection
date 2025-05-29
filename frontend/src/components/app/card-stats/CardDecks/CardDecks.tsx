@@ -2,10 +2,12 @@ import * as React from 'react';
 import { useGetCardDecks } from '@/api/cards';
 import { CardStatsParams } from '@/api/card-stats';
 import TournamentDeckTable from '@/components/app/tournaments/TournamentDecks/TournamentDeckTable.tsx';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 import { DeckCard } from '../../../../../../server/db/schema/deck_card.ts';
 import { Alert } from '@/components/ui/alert.tsx';
+import { useNavigate } from '@tanstack/react-router';
+import { Route } from '@/routes/__root.tsx';
 
 type CardDecksProps = {
   cardId: string;
@@ -25,7 +27,8 @@ const CardDecks: React.FC<CardDecksProps> = ({
   leaderCardId,
   baseCardId,
 }) => {
-  // Use the hook to fetch card decks
+  const navigate = useNavigate({ from: Route.fullPath });
+
   const { data, isLoading, error } = useGetCardDecks({
     cardId,
     metaId,
@@ -57,6 +60,17 @@ const CardDecks: React.FC<CardDecksProps> = ({
       .filter(d => d !== undefined)
       .sort((a, b) => (a.tournamentDeck.placement ?? 0) - (b.tournamentDeck.placement ?? 0));
   }, [data?.data]);
+
+  useEffect(() => {
+    if (deckTableData.length > 0) {
+      void navigate({
+        search: prev => ({
+          ...prev,
+          maDeckId: !prev.maDeckId ? deckTableData[0].deck?.id : prev.maDeckId,
+        }),
+      });
+    }
+  }, [deckTableData]);
 
   return (
     <div className="p-0">

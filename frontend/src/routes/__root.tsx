@@ -17,6 +17,7 @@ import { aspectTabOptions } from '@/components/app/card-stats/AspectCardStats/As
 const globalSearchParams = z.object({
   // Card detail dialog
   modalCardId: z.string().optional(),
+  modalCardDecksId: z.string().optional(),
 
   // Deck filter params
   deckLeaders: z.array(z.string()).optional(),
