@@ -4,10 +4,12 @@ import { type TournamentDeck, tournamentDeck } from '../../db/schema/tournament_
 import { type Deck, deck } from '../../db/schema/deck.ts';
 import { type DeckCard, deckCard } from '../../db/schema/deck_card.ts';
 import { fetchTournamentIdsForMeta } from '../card-statistics/meta.ts';
+import { deckInformation, type DeckInformation } from '../../db/schema/deck_information.ts';
 
 export type CardDeckData = {
   tournamentDeck: TournamentDeck;
   deck: Deck;
+  deckInformation: DeckInformation;
   deckCard: DeckCard;
 };
 
@@ -56,10 +58,12 @@ export async function fetchCardDecksData(
     .select({
       tournamentDeck,
       deck,
+      deckInformation,
       deckCard,
     })
     .from(tournamentDeck)
     .innerJoin(deck, eq(deck.id, tournamentDeck.deckId))
+    .innerJoin(deckInformation, eq(deck.id, deckInformation.deckId))
     .innerJoin(deckCard, and(eq(deckCard.deckId, deck.id), eq(deckCard.cardId, cardId)))
     .where(and(...conditions))
     .orderBy(tournamentDeck.placement)

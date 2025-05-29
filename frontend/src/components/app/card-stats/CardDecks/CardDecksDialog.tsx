@@ -6,13 +6,14 @@ import CardDecks from '@/components/app/card-stats/CardDecks/CardDecks.tsx';
 type CardDecksDialogProps = {
   trigger: React.ReactNode;
   cardId: string;
+  cardName: string;
 } & CardStatsParams;
 
-const CardDecksDialog: React.FC<CardDecksDialogProps> = ({ trigger, ...props }) => {
+const CardDecksDialog: React.FC<CardDecksDialogProps> = ({ trigger, cardName, ...props }) => {
   return (
     <Dialog
       trigger={trigger}
-      header="Decks containing this card"
+      header={`Decks containing "${cardName}"`}
       size="large"
       contentClassName={`w-[100vw] h-[100vh] md:max-w-[90%] min-h-[90%]`}
       // contentClassName="min-h-[300px]"

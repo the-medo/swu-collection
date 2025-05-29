@@ -8,7 +8,6 @@ import {
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
 import { CardDecksDialog } from '../CardDecks';
-import Dialog from '../../global/Dialog.tsx';
 import { CardStatsParams } from '@/api/card-stats';
 
 interface CardStatisticProps {
@@ -72,18 +71,19 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
             {((cardStat.countMd + cardStat.countSb) / cardStat.deckCount).toFixed(2)})
           </span>
         </div>
-        <div className="flex justify-between">
-          <span>Deck count: </span>
-          <CardDecksDialog
-            trigger={
-              <span className="text-md font-bold cursor-pointer hover:underline">
-                {cardStat.deckCount}
-              </span>
-            }
-            cardId={card.cardId}
-            {...cardStatParams}
-          />
-        </div>
+
+        <CardDecksDialog
+          trigger={
+            <div className="flex justify-between cursor-pointer underline decoration-dotted hover:decoration-solid">
+              <span className="decoration-dashed">Deck count: </span>
+              <span className="text-md font-bold">{cardStat.deckCount}</span>
+            </div>
+          }
+          cardId={card.cardId}
+          cardName={card.name}
+          {...cardStatParams}
+        />
+
         <div className="flex justify-between">
           <span>Win rate: </span>
           <span className="text-md font-bold">

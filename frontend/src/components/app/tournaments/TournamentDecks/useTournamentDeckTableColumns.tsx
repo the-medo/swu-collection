@@ -7,16 +7,18 @@ import { getDeckKey } from '@/components/app/tournaments/TournamentMeta/tourname
 import { useIsMobile } from '@/hooks/use-mobile.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { cn } from '@/lib/utils.ts';
+import { DeckCardsInfo } from '@/components/app/card-stats/CardDecks/CardDecks.tsx';
 
 export function useTournamentDeckTableColumns(
   showSelectionCheckbox?: boolean,
-): ExtendedColumnDef<TournamentDeckResponse>[] {
+  showAdditionalDeckCardInfo?: boolean,
+): ExtendedColumnDef<TournamentDeckResponse & DeckCardsInfo>[] {
   const labelRenderer = useLabel();
   const { data: cardListData } = useCardList();
   const isMobile = useIsMobile();
 
   return useMemo(() => {
-    const definitions: ExtendedColumnDef<TournamentDeckResponse>[] = [];
+    const definitions: ExtendedColumnDef<TournamentDeckResponse & DeckCardsInfo>[] = [];
 
     // Placement column or Checkbox column
     definitions.push({
@@ -102,7 +104,7 @@ export function useTournamentDeckTableColumns(
     definitions.push({
       id: 'player',
       header: 'Player',
-      size: 20,
+      size: 24,
       cell: ({ row }) => {
         const username = row.original.tournamentDeck.meleePlayerUsername;
         if (!username) return 'N/A';
@@ -110,6 +112,30 @@ export function useTournamentDeckTableColumns(
         return <div className="text-[10px]">{username}</div>;
       },
     });
+
+    if (showAdditionalDeckCardInfo) {
+      // Maindeck count column
+      definitions.push({
+        id: 'mainDeck',
+        header: 'MD',
+        size: 8,
+        cell: ({ row }) => {
+          const dc = row.original.deckCards?.find(d => d.board === 1);
+          return <div className="text-center text-xs">{!dc ? 0 : dc.quantity}</div>;
+        },
+      });
+
+      // Sideboard count column
+      definitions.push({
+        id: 'sideBoard',
+        header: 'SB',
+        size: 8,
+        cell: ({ row }) => {
+          const dc = row.original.deckCards?.find(d => d.board === 2);
+          return <div className="text-center text-xs">{!dc ? 0 : dc.quantity}</div>;
+        },
+      });
+    }
 
     return definitions;
   }, [labelRenderer, cardListData, isMobile]);
