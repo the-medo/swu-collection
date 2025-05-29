@@ -299,7 +299,11 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
                               key={item.card?.cardId}
                               card={item.card}
                               cardStat={item.cardStat}
-                              cardStatParams={cardStatParams}
+                              cardStatParams={{
+                                ...cardStatParams,
+                                leaderCardId: leaderId,
+                                baseCardId: baseId,
+                              }}
                               variant="card-horizontal"
                               preTitle={`#${index + 1} `}
                             />

@@ -1,7 +1,7 @@
 import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import * as React from 'react';
 import DeckCardVisualItem from './DeckCardVisualItem.tsx';
-import { DeckLayout } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { DeckLayout } from '../../../../../../../../../types/enums.ts';
 
 export type DeckLayoutVisualStacksVariant = 'normal' | 'split';
 

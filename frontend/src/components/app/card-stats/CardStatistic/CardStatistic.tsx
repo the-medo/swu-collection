@@ -71,7 +71,6 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
             {((cardStat.countMd + cardStat.countSb) / cardStat.deckCount).toFixed(2)})
           </span>
         </div>
-
         <CardDecksDialog
           trigger={
             <div className="flex justify-between cursor-pointer underline decoration-dotted hover:decoration-solid">

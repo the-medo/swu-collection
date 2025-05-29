@@ -8,12 +8,12 @@ import {
 import { Button } from '@/components/ui/button.tsx';
 import { Layers } from 'lucide-react';
 import {
-  DeckGroupBy,
   useDeckLayoutStore,
   useDeckLayoutStoreActions,
 } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { deckGroupByArray, deckGroupByObj } from '../../../../../../../types/iterableEnumInfo.ts';
 import React, { useCallback } from 'react';
+import { DeckGroupBy } from '../../../../../../../types/enums.ts';
 
 interface GroupBySelectorProps {
   value?: DeckGroupBy;

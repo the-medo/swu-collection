@@ -220,7 +220,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({ metaId, tournamentId,
                             key={item.card?.cardId}
                             card={item.card}
                             cardStat={item.cardStat}
-                            cardStatParams={cardStatParams}
+                            cardStatParams={{ ...cardStatParams, leaderCardId: leaderId }}
                             variant="card-horizontal"
                             preTitle={`#${index + 1} `}
                           />

@@ -1,11 +1,9 @@
 import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
-import {
-  DeckLayout as DeckLayoutEnum,
-  useDeckLayoutStore,
-} from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { useDeckLayoutStore } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import DeckLayoutText from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutText/DeckLayoutText.tsx';
 import DeckLayoutVisualGrid from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutVisualGrid/DeckLayoutVisualGrid.tsx';
 import DeckLayoutVisualStacks from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutVisualGrid/DeckLayoutVisualStacks.tsx';
+import { DeckLayout as DeckLayoutEnum } from '../../../../../../../../types/enums.ts';
 
 interface DeckLayoutProps {
   deckId: string;

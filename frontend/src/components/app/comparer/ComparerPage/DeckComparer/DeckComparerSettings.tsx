@@ -5,10 +5,10 @@ import {
   useComparerStore,
   useComparerStoreActions,
 } from '@/components/app/comparer/useComparerStore.ts';
-import { DeckGroupBy } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import DiffDisplaySelector from './DiffDisplaySelector.tsx';
 import ViewModeSelector from './ViewModeSelector.tsx';
 import GroupBySelector from '@/components/app/decks/DeckContents/GroupBySelector/GroupBySelector.tsx';
+import { DeckGroupBy } from '../../../../../../../types/enums.ts';
 
 /**
  * Component for managing deck comparer settings

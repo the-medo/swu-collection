@@ -9,7 +9,6 @@ import { groupCardsByCost } from '@/components/app/decks/DeckContents/DeckCards/
 import { groupCardsByAspect } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByAspect.ts';
 import { groupCardsByTrait } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByTrait.ts';
 import { groupCardsByKeywords } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByKeywords.ts';
-import { DeckGroupBy } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { CardComparisonData } from '../types.ts';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
@@ -20,6 +19,7 @@ import {
   DeckComparerDeck,
   DeckComparerTotalsMap,
 } from '@/components/app/comparer/ComparerPage/DeckComparer/types.ts';
+import { DeckGroupBy } from '../../../../../../../types/enums.ts';
 
 interface DeckComparerResultProps {
   mainDeckId: string;

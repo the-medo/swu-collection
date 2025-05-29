@@ -18,7 +18,9 @@ const CardDecksDialog: React.FC<CardDecksDialogProps> = ({
   cardName,
   ...props
 }) => {
-  const { modalCardDecksId } = useSearch({ strict: false });
+  const { modalCardDecksId, modalCardDecksLeaderCardId, modalCardDecksBaseCardId } = useSearch({
+    strict: false,
+  });
   const navigate = useNavigate({ from: Route.fullPath });
 
   const onOpenChange = useCallback(
@@ -27,6 +29,8 @@ const CardDecksDialog: React.FC<CardDecksDialogProps> = ({
         search: prev => ({
           ...prev,
           modalCardDecksId: open ? cardId : undefined,
+          modalCardDecksLeaderCardId: open ? props.leaderCardId : undefined,
+          modalCardDecksBaseCardId: open ? props.baseCardId : undefined,
           maDeckId: open ? prev.maDeckId : undefined,
         }),
       });
@@ -34,15 +38,19 @@ const CardDecksDialog: React.FC<CardDecksDialogProps> = ({
     [cardId],
   );
 
+  const open =
+    modalCardDecksId === cardId &&
+    modalCardDecksLeaderCardId === props.leaderCardId &&
+    modalCardDecksBaseCardId === props.baseCardId;
+
   return (
     <Dialog
       trigger={trigger}
       header={`Decks containing "${cardName}"`}
       size="large"
       onOpenChange={onOpenChange}
-      open={modalCardDecksId === cardId}
+      open={open}
       contentClassName={`w-[100vw] h-[100vh] md:max-w-[90%] min-h-[90%]`}
-      // contentClassName="min-h-[300px]"
     >
       <CardDecks cardId={cardId} {...props} />
     </Dialog>

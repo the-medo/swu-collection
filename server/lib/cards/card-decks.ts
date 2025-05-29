@@ -1,10 +1,14 @@
 import { db } from '../../db';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, or, SQL, sql } from 'drizzle-orm';
 import { type TournamentDeck, tournamentDeck } from '../../db/schema/tournament_deck.ts';
 import { type Deck, deck } from '../../db/schema/deck.ts';
 import { type DeckCard, deckCard } from '../../db/schema/deck_card.ts';
 import { fetchTournamentIdsForMeta } from '../card-statistics/meta.ts';
 import { deckInformation, type DeckInformation } from '../../db/schema/deck_information.ts';
+import { aspectArray } from '../../../types/iterableEnumInfo.ts';
+import type { SwuAspect } from '../../../types/enums.ts';
+import { cardList } from '../../db/lists.ts';
+import { isBasicBase } from '../../../shared/lib/isBasicBase.ts';
 
 export type CardDeckData = {
   tournamentDeck: TournamentDeck;
@@ -44,14 +48,28 @@ export async function fetchCardDecksData(
   const tournamentIds = tournamentId ? [tournamentId] : await fetchTournamentIdsForMeta(metaId!);
 
   // Get tournament decks
-  let conditions = [sql`${tournamentDeck.tournamentId} IN ${tournamentIds}`];
+  let conditions: SQL<unknown>[] = [sql`${tournamentDeck.tournamentId} IN ${tournamentIds}`];
 
   if (leaderCardId) {
     conditions.push(eq(deck.leaderCardId1, leaderCardId));
   }
 
   if (baseCardId) {
-    conditions.push(eq(deck.baseCardId, baseCardId));
+    if (aspectArray.includes(baseCardId as SwuAspect)) {
+      let basicBaseCardIds: string[] = [];
+      Object.entries(cardList).forEach(([cardId, card]) => {
+        if (
+          card?.type === 'Base' &&
+          card.aspects.includes(baseCardId as SwuAspect) &&
+          isBasicBase(card)
+        ) {
+          basicBaseCardIds.push(cardId);
+        }
+      });
+      conditions.push(sql`${deck.baseCardId} IN ${basicBaseCardIds}`);
+    } else {
+      conditions.push(eq(deck.baseCardId, baseCardId));
+    }
   }
 
   return db

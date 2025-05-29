@@ -1,21 +1,5 @@
 import { Store, useStore } from '@tanstack/react-store';
-
-export enum DeckLayout {
-  TEXT = 'text',
-  TEXT_CONDENSED = 'text-condensed',
-  VISUAL_GRID = 'visual-grid',
-  VISUAL_GRID_OVERLAP = 'visual-grid-overlap',
-  VISUAL_STACKS = 'visual-stacks',
-  VISUAL_STACKS_SPLIT = 'visual-stacks-split',
-}
-
-export enum DeckGroupBy {
-  CARD_TYPE = 'card-type',
-  COST = 'cost',
-  ASPECT = 'aspect',
-  TRAIT = 'trait',
-  KEYWORDS = 'keywords',
-}
+import { DeckGroupBy, DeckLayout } from '../../../../../../types/enums.ts';
 
 const getDefaultDeckLayout = () => {
   const layout = localStorage.getItem('deckLayout');

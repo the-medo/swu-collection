@@ -36,7 +36,6 @@ const CardStatsWithOptions: React.FC<CardStatsWithOptionsProps> = ({ data, cardS
   return (
     <div className={cn('space-y-6')}>
       <CardStatsFilters />
-
       {filteredAndSortedData.length > 0 ? (
         <>
           {groupBy === 'none' ? (

@@ -8,12 +8,12 @@ import {
 import { Button } from '@/components/ui/button.tsx';
 import { Eye } from 'lucide-react';
 import {
-  DeckLayout,
   useDeckLayoutStore,
   useDeckLayoutStoreActions,
 } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { deckLayoutArray, deckLayoutObj } from '../../../../../../../types/iterableEnumInfo.ts';
 import React, { useCallback } from 'react';
+import { DeckLayout } from '../../../../../../../types/enums.ts';
 
 interface DeckLayoutSelectorProps {}
 
