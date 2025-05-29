@@ -26,15 +26,13 @@ const DeckLayoutSelector: React.FC<DeckLayoutSelectorProps> = ({}) => {
   }, []);
 
   return (
-    <DropdownMenu modal={false}>
+    <DropdownMenu modal={true}>
       <DropdownMenuTrigger asChild>
-        <div className="flex gap-2 items-center">
-          <span className="text-sm font-semibold">View:</span>
-          <Button variant="outline" className=" text-xs w-[150px] justify-between">
-            {layout !== undefined ? deckLayoutObj[layout]?.title : 'Unknown layout'}
-            <Eye className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
+        <Button variant="outline" className=" text-xs w-[200px] justify-between">
+          <span className="text-[1.2em] font-semibold">View:</span>
+          {layout !== undefined ? deckLayoutObj[layout]?.title : 'Unknown layout'}
+          <Eye className="h-4 w-4 ml-2" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuRadioGroup value={layout} onValueChange={onValueChange}>

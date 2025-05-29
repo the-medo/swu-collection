@@ -23,9 +23,10 @@ import { cn } from '@/lib/utils.ts';
 
 interface TournamentDeckTableProps {
   decks: (TournamentDeckResponse & DeckCardsInfo)[];
+  tableHead?: React.ReactNode;
 }
 
-const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
+const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks, tableHead }) => {
   const { leaders, base, aspects } = useDeckFilterStore(false);
   const { data: cardListData } = useCardList();
   const isMobile = useIsMobile();
@@ -236,6 +237,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
               className="overflow-auto border h-full rounded-md relative"
               id="tournament-deck-table"
             >
+              {tableHead}
               <DataTable
                 columns={columns}
                 data={visibleDecks}

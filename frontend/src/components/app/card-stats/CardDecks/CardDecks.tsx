@@ -5,6 +5,7 @@ import TournamentDeckTable from '@/components/app/tournaments/TournamentDecks/To
 import { useMemo } from 'react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 import { DeckCard } from '../../../../../../server/db/schema/deck_card.ts';
+import { Alert } from '@/components/ui/alert.tsx';
 
 type CardDecksProps = {
   cardId: string;
@@ -58,10 +59,19 @@ const CardDecks: React.FC<CardDecksProps> = ({
   }, [data?.data]);
 
   return (
-    <div className="p-4">
+    <div className="p-0">
       {isLoading && <p>Loading decks...</p>}
       {error && <p className="text-red-500">Error loading decks: {error.message}</p>}
-      {data && <TournamentDeckTable decks={deckTableData} />}
+      {data && (
+        <TournamentDeckTable
+          decks={deckTableData}
+          tableHead={
+            <Alert variant="info" size="xs" className="w-auto">
+              Only maximum of 25 decks is shown.
+            </Alert>
+          }
+        />
+      )}
     </div>
   );
 };

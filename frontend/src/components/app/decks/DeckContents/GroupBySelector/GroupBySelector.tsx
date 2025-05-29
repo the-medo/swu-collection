@@ -41,7 +41,7 @@ const GroupBySelector: React.FC<GroupBySelectorProps> = ({ value, onChange }) =>
   );
 
   return (
-    <DropdownMenu modal={false}>
+    <DropdownMenu modal={true}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="text-xs w-[200px] justify-between">
           <span className="text-[1.2em] font-semibold">Group by:</span>{' '}
