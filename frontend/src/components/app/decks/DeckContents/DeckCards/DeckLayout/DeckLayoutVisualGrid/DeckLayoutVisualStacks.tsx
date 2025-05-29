@@ -9,12 +9,14 @@ interface DeckLayoutVisualStacksProps {
   variant: DeckLayoutVisualStacksVariant;
   deckId: string;
   deckCardsForLayout: DeckCardsForLayout;
+  highlightedCardId?: string;
 }
 
 const DeckLayoutVisualStacks: React.FC<DeckLayoutVisualStacksProps> = ({
   variant,
   deckId,
   deckCardsForLayout: { mainboardGroups, cardsByBoard, usedCardsInBoards, usedCards },
+  highlightedCardId,
 }) => {
   const deckLayout =
     variant === 'normal' ? DeckLayout.VISUAL_STACKS : DeckLayout.VISUAL_STACKS_SPLIT;
@@ -50,6 +52,7 @@ const DeckLayoutVisualStacks: React.FC<DeckLayoutVisualStacksProps> = ({
                       cardInBoards={usedCardsInBoards[card.cardId]}
                       displayDropdown={i === 0}
                       displayQuantity={i === 0}
+                      isHighlighted={highlightedCardId === card.cardId}
                     />
                   );
                 }),
@@ -86,6 +89,7 @@ const DeckLayoutVisualStacks: React.FC<DeckLayoutVisualStacksProps> = ({
                     cardInBoards={usedCardsInBoards[card.cardId]}
                     displayDropdown={i === 0}
                     displayQuantity={i === 0}
+                    isHighlighted={highlightedCardId === card.cardId}
                   />
                 );
               }),
@@ -121,6 +125,7 @@ const DeckLayoutVisualStacks: React.FC<DeckLayoutVisualStacksProps> = ({
                     cardInBoards={usedCardsInBoards[card.cardId]}
                     displayDropdown={i === 0}
                     displayQuantity={i === 0}
+                    isHighlighted={highlightedCardId === card.cardId}
                   />
                 );
               }),

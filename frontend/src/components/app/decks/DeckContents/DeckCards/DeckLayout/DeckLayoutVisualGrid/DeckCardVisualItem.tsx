@@ -24,6 +24,7 @@ interface DeckCardVisualItemProps {
   cardInBoards: DeckCardInBoards;
   displayQuantity?: boolean;
   displayDropdown?: boolean;
+  isHighlighted?: boolean;
 }
 
 const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
@@ -34,6 +35,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
   cardInBoards,
   displayQuantity = true,
   displayDropdown = true,
+  isHighlighted,
 }) => {
   const navigate = useNavigate({ from: Route.fullPath });
   const { owned } = useDeckInfo(deckId);
@@ -74,6 +76,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
           '-mt-[240px]':
             deckLayout === DeckLayout.VISUAL_STACKS ||
             deckLayout === DeckLayout.VISUAL_STACKS_SPLIT,
+          'ring-4 ring-primary ring-opacity-70': isHighlighted,
         },
       )}
       data-card-id={deckCard.cardId}

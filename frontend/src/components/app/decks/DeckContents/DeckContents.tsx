@@ -19,9 +19,10 @@ import DeckStats from '@/components/app/decks/DeckContents/DeckStats/DeckStats.t
 interface DeckContentsProps {
   deckId: string;
   setDeckId?: (id: string) => void;
+  highlightedCardId?: string;
 }
 
-const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId }) => {
+const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId, highlightedCardId }) => {
   const { data } = useGetDeck(deckId);
   const { format, owned } = useDeckInfo(deckId);
   const putDeckMutation = usePutDeck(deckId);
@@ -101,7 +102,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId }) => {
           </div>
 
           <TabsContent value="decklist">
-            <DeckCards deckId={deckId} />
+            <DeckCards deckId={deckId} highlightedCardId={highlightedCardId} />
           </TabsContent>
           <TabsContent value="charts">
             <DeckStats deckId={deckId} />

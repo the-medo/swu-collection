@@ -28,6 +28,7 @@ export interface DeckCardTextRowProps {
   deckCard: DeckCard;
   card: CardDataWithVariants<CardListVariants> | undefined;
   cardInBoards: DeckCardInBoards;
+  isHighlighted?: boolean;
 }
 
 const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
@@ -36,6 +37,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   deckCard,
   card,
   cardInBoards,
+  isHighlighted,
 }) => {
   const navigate = useNavigate({ from: Route.fullPath });
   const { isMobile } = useSidebar();
@@ -72,6 +74,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
         className={cn('flex gap-2 w-[350px] items-center', {
           'py-1 border-t-[1px]': variant === 'normal',
           'py-0': variant === 'compact',
+          'bg-primary/10 border border-primary rounded-sm': isHighlighted,
         })}
       >
         <div>

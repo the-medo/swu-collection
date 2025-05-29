@@ -24,9 +24,10 @@ import { cn } from '@/lib/utils.ts';
 interface TournamentDeckTableProps {
   decks: (TournamentDeckResponse & DeckCardsInfo)[];
   tableHead?: React.ReactNode;
+  highlightedCardId?: string;
 }
 
-const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks, tableHead }) => {
+const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks, tableHead, highlightedCardId }) => {
   const { leaders, base, aspects } = useDeckFilterStore(false);
   const { data: cardListData } = useCardList();
   const isMobile = useIsMobile();
@@ -253,7 +254,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks, tableH
             </div>
             {floatingComponent}
           </div>
-          <TournamentDeckDetail />
+          <TournamentDeckDetail highlightedCardId={highlightedCardId} />
         </>
       ) : (
         <div className="bg-muted p-8 rounded-md text-center">

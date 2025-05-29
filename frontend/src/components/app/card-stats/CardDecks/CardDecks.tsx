@@ -70,6 +70,7 @@ const CardDecks: React.FC<CardDecksProps> = ({
               Only maximum of 25 decks is shown.
             </Alert>
           }
+          highlightedCardId={cardId}
         />
       )}
     </div>

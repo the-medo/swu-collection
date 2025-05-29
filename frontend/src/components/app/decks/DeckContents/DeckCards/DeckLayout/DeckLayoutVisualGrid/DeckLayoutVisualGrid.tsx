@@ -10,12 +10,14 @@ interface DeckLayoutVisualGridProps {
   variant: DeckLayoutVisualGridVariant;
   deckId: string;
   deckCardsForLayout: DeckCardsForLayout;
+  highlightedCardId?: string;
 }
 
 const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
   variant,
   deckId,
   deckCardsForLayout: { mainboardGroups, cardsByBoard, usedCardsInBoards, usedCards },
+  highlightedCardId,
 }) => {
   const deckLayout =
     variant === 'overlap' ? DeckLayout.VISUAL_GRID_OVERLAP : DeckLayout.VISUAL_GRID;
@@ -52,6 +54,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
                     deckCard={card}
                     card={usedCards[card.cardId]}
                     cardInBoards={usedCardsInBoards[card.cardId]}
+                    isHighlighted={highlightedCardId === card.cardId}
                   />
                 ))}
               </div>
@@ -88,6 +91,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
                   deckCard={card}
                   card={usedCards[card.cardId]}
                   cardInBoards={usedCardsInBoards[card.cardId]}
+                  isHighlighted={highlightedCardId === card.cardId}
                 />
               ))}
             </div>
@@ -123,6 +127,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
                   deckCard={card}
                   card={usedCards[card.cardId]}
                   cardInBoards={usedCardsInBoards[card.cardId]}
+                  isHighlighted={highlightedCardId === card.cardId}
                 />
               ))}
             </div>

@@ -10,19 +10,34 @@ import DeckLayoutVisualStacks from '@/components/app/decks/DeckContents/DeckCard
 interface DeckLayoutProps {
   deckId: string;
   deckCardsForLayout: DeckCardsForLayout;
+  highlightedCardId?: string;
 }
 
-const DeckLayout: React.FC<DeckLayoutProps> = ({ deckId, deckCardsForLayout }) => {
+const DeckLayout: React.FC<DeckLayoutProps> = ({
+  deckId,
+  deckCardsForLayout,
+  highlightedCardId,
+}) => {
   const { layout } = useDeckLayoutStore();
 
   switch (layout) {
     case DeckLayoutEnum.TEXT:
       return (
-        <DeckLayoutText variant="normal" deckId={deckId} deckCardsForLayout={deckCardsForLayout} />
+        <DeckLayoutText
+          variant="normal"
+          deckId={deckId}
+          deckCardsForLayout={deckCardsForLayout}
+          highlightedCardId={highlightedCardId}
+        />
       );
     case DeckLayoutEnum.TEXT_CONDENSED:
       return (
-        <DeckLayoutText variant="compact" deckId={deckId} deckCardsForLayout={deckCardsForLayout} />
+        <DeckLayoutText
+          variant="compact"
+          deckId={deckId}
+          deckCardsForLayout={deckCardsForLayout}
+          highlightedCardId={highlightedCardId}
+        />
       );
     case DeckLayoutEnum.VISUAL_GRID_OVERLAP:
       return (
@@ -30,6 +45,7 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({ deckId, deckCardsForLayout }) =
           variant="overlap"
           deckId={deckId}
           deckCardsForLayout={deckCardsForLayout}
+          highlightedCardId={highlightedCardId}
         />
       );
     case DeckLayoutEnum.VISUAL_GRID:
@@ -38,6 +54,7 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({ deckId, deckCardsForLayout }) =
           variant="no-overlap"
           deckId={deckId}
           deckCardsForLayout={deckCardsForLayout}
+          highlightedCardId={highlightedCardId}
         />
       );
     case DeckLayoutEnum.VISUAL_STACKS:
@@ -46,6 +63,7 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({ deckId, deckCardsForLayout }) =
           variant="normal"
           deckId={deckId}
           deckCardsForLayout={deckCardsForLayout}
+          highlightedCardId={highlightedCardId}
         />
       );
     case DeckLayoutEnum.VISUAL_STACKS_SPLIT:
@@ -54,6 +72,7 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({ deckId, deckCardsForLayout }) =
           variant="split"
           deckId={deckId}
           deckCardsForLayout={deckCardsForLayout}
+          highlightedCardId={highlightedCardId}
         />
       );
     default:
