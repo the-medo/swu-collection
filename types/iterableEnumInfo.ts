@@ -1,8 +1,11 @@
-import { CardLanguage, CardCondition, SwuAspect, CollectionType } from './enums.ts';
 import {
-  DeckLayout,
+  CardLanguage,
+  CardCondition,
+  SwuAspect,
+  CollectionType,
   DeckGroupBy,
-} from '../frontend/src/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+  DeckLayout,
+} from './enums.ts';
 
 export const getLanguageFlagUrl = (language: CardLanguage) =>
   `https://images.swubase.com/flags/languages/${language}.png`;
@@ -160,7 +163,7 @@ export const collectionTypeTitle: Record<CollectionType, string> = {
 };
 
 // Import DiffDisplayMode and ViewMode from comparer store
-import { 
+import {
   DiffDisplayMode,
   ViewMode,
 } from '../frontend/src/components/app/comparer/useComparerStore.ts';

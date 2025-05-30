@@ -8,6 +8,7 @@ interface DeckLayoutTextProps {
   deckId: string;
   deckCardsForLayout: DeckCardsForLayout;
   showSideboard?: boolean;
+  highlightedCardId?: string;
 }
 
 const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
@@ -15,6 +16,7 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
   deckId,
   deckCardsForLayout: { mainboardGroups, cardsByBoard, usedCardsInBoards, usedCards },
   showSideboard = true,
+  highlightedCardId,
 }) => {
   const columnClasses =
     '@container columns-1 @[700px]:columns-2 @[1050px]:columns-3 gap-4 space-y-4';
@@ -41,6 +43,7 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                     deckCard={c}
                     card={usedCards[c.cardId]}
                     cardInBoards={usedCardsInBoards[c.cardId]}
+                    isHighlighted={highlightedCardId === c.cardId}
                   />
                 );
               })}
@@ -62,6 +65,7 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                   deckCard={c}
                   card={usedCards[c.cardId]}
                   cardInBoards={usedCardsInBoards[c.cardId]}
+                  isHighlighted={highlightedCardId === c.cardId}
                 />
               );
             })}
@@ -83,6 +87,7 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                   deckCard={c}
                   card={usedCards[c.cardId]}
                   cardInBoards={usedCardsInBoards[c.cardId]}
+                  isHighlighted={highlightedCardId === c.cardId}
                 />
               );
             })}

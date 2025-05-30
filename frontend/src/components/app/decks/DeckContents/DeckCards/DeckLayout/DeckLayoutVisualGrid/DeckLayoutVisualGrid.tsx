@@ -1,8 +1,8 @@
 import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import * as React from 'react';
 import DeckCardVisualItem from './DeckCardVisualItem.tsx';
-import { DeckLayout } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { cn } from '@/lib/utils.ts';
+import { DeckLayout } from '../../../../../../../../../types/enums.ts';
 
 export type DeckLayoutVisualGridVariant = 'overlap' | 'no-overlap';
 
@@ -10,12 +10,14 @@ interface DeckLayoutVisualGridProps {
   variant: DeckLayoutVisualGridVariant;
   deckId: string;
   deckCardsForLayout: DeckCardsForLayout;
+  highlightedCardId?: string;
 }
 
 const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
   variant,
   deckId,
   deckCardsForLayout: { mainboardGroups, cardsByBoard, usedCardsInBoards, usedCards },
+  highlightedCardId,
 }) => {
   const deckLayout =
     variant === 'overlap' ? DeckLayout.VISUAL_GRID_OVERLAP : DeckLayout.VISUAL_GRID;
@@ -52,6 +54,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
                     deckCard={card}
                     card={usedCards[card.cardId]}
                     cardInBoards={usedCardsInBoards[card.cardId]}
+                    isHighlighted={highlightedCardId === card.cardId}
                   />
                 ))}
               </div>
@@ -88,6 +91,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
                   deckCard={card}
                   card={usedCards[card.cardId]}
                   cardInBoards={usedCardsInBoards[card.cardId]}
+                  isHighlighted={highlightedCardId === card.cardId}
                 />
               ))}
             </div>
@@ -123,6 +127,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
                   deckCard={card}
                   card={usedCards[card.cardId]}
                   cardInBoards={usedCardsInBoards[card.cardId]}
+                  isHighlighted={highlightedCardId === card.cardId}
                 />
               ))}
             </div>

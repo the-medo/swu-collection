@@ -1,6 +1,5 @@
 import { Store, useStore } from '@tanstack/react-store';
-import { CollectionType } from '../../../../../types/enums.ts';
-import { DeckGroupBy } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { CollectionType, DeckGroupBy } from '../../../../../types/enums.ts';
 
 export enum ComparerMode {
   INTERSECTION = 'intersection',

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCardStats } from '@/api/card-stats/useCardStats.ts';
+import { CardStatsParams, useCardStats } from '@/api/card-stats/useCardStats.ts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { SwuAspect } from '../../../../../../types/enums.ts';
@@ -8,6 +8,7 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import CardStatsWithOptions from '@/components/app/card-stats/CardStatsWithOptions/CardStatsWithOptions.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatistic.tsx';
+import { useMemo } from 'react';
 
 interface AspectCardStatsProps {
   metaId?: number;
@@ -25,11 +26,16 @@ const AspectCardStats: React.FC<AspectCardStatsProps> = ({ metaId, tournamentId,
     ? (csAspect as AspectTabOption)
     : 'overview';
 
+  const cardStatParams: CardStatsParams = useMemo(
+    () => ({
+      metaId,
+      tournamentId,
+    }),
+    [metaId, tournamentId],
+  );
+
   // Fetch card statistics
-  const { data, isLoading, error } = useCardStats({
-    metaId,
-    tournamentId,
-  });
+  const { data, isLoading, error } = useCardStats(cardStatParams);
 
   // Fetch card list data for additional card details
   const { data: cardListData } = useCardList();
@@ -168,6 +174,7 @@ const AspectCardStats: React.FC<AspectCardStatsProps> = ({ metaId, tournamentId,
                             key={item.card.id}
                             card={item.card}
                             cardStat={item.cardStat}
+                            cardStatParams={cardStatParams}
                             variant="card-horizontal"
                             preTitle={`#${index + 1} `}
                           />
@@ -188,7 +195,7 @@ const AspectCardStats: React.FC<AspectCardStatsProps> = ({ metaId, tournamentId,
         </div>
       ) : (
         // Aspect-specific view - show all cards for the selected aspect
-        <CardStatsWithOptions data={cardsForAspect} />
+        <CardStatsWithOptions data={cardsForAspect} cardStatParams={cardStatParams} />
       )}
     </div>
   );

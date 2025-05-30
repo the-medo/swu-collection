@@ -30,6 +30,8 @@ const AllCardStats: React.FC<AllCardStatsProps> = ({ metaId, tournamentId, class
     });
   }, [data, cardListData]);
 
+  const cardStatParams = useMemo(() => ({ metaId, tournamentId }), [metaId, tournamentId]);
+
   if (isLoading) {
     return (
       <div className={cn('space-y-4', className)}>
@@ -66,7 +68,7 @@ const AllCardStats: React.FC<AllCardStatsProps> = ({ metaId, tournamentId, class
     );
   }
 
-  return <CardStatsWithOptions data={cardStatData} />;
+  return <CardStatsWithOptions data={cardStatData} cardStatParams={cardStatParams} />;
 };
 
 export default AllCardStats;

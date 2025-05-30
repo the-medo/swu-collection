@@ -25,12 +25,17 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({ metaId, tournamentId,
   const { csLeaderId } = useSearch({ strict: false });
   const navigate = useNavigate({ from: Route.fullPath });
 
+  const cardStatParams = useMemo(
+    () => ({
+      metaId,
+      tournamentId,
+      leaderCardId: csLeaderId,
+    }),
+    [metaId, tournamentId, csLeaderId],
+  );
+
   // Fetch card statistics filtered by leader (when a leader is selected)
-  const { data, isLoading, error } = useCardStats({
-    metaId,
-    tournamentId,
-    leaderCardId: csLeaderId,
-  });
+  const { data, isLoading, error } = useCardStats(cardStatParams);
 
   const leaderIdsAndCounts = useMemo(() => {
     const countMap = new Map<string, number>();
@@ -178,7 +183,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({ metaId, tournamentId,
       {/* Card stats with options */}
       {csLeaderId ? (
         cardStatData.length > 0 ? (
-          <CardStatsWithOptions data={cardStatData} />
+          <CardStatsWithOptions data={cardStatData} cardStatParams={cardStatParams} />
         ) : (
           <div className="h-40 flex items-center justify-center">
             <p className="text-muted-foreground">No card statistics available for this leader</p>
@@ -215,6 +220,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({ metaId, tournamentId,
                             key={item.card?.cardId}
                             card={item.card}
                             cardStat={item.cardStat}
+                            cardStatParams={{ ...cardStatParams, leaderCardId: leaderId }}
                             variant="card-horizontal"
                             preTitle={`#${index + 1} `}
                           />

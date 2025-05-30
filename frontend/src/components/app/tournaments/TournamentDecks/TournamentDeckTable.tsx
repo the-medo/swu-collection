@@ -18,12 +18,16 @@ import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Scale } from 'lucide-react';
 import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore.ts';
+import { DeckCardsInfo } from '@/components/app/card-stats/CardDecks/CardDecks.tsx';
+import { cn } from '@/lib/utils.ts';
 
 interface TournamentDeckTableProps {
-  decks: TournamentDeckResponse[];
+  decks: (TournamentDeckResponse & DeckCardsInfo)[];
+  tableHead?: React.ReactNode;
+  highlightedCardId?: string;
 }
 
-const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
+const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks, tableHead, highlightedCardId }) => {
   const { leaders, base, aspects } = useDeckFilterStore(false);
   const { data: cardListData } = useCardList();
   const isMobile = useIsMobile();
@@ -96,7 +100,8 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
 
   // Count selected decks
   const selectedDecksCount = Object.keys(rowSelection).length;
-  const columns = useTournamentDeckTableColumns(true);
+  const showMdAndSbColumns = sortedDecks.length > 0 && 'deckCards' in sortedDecks[0];
+  const columns = useTournamentDeckTableColumns(true, showMdAndSbColumns);
 
   const onRowClick = useCallback((row: Row<TournamentDeckResponse>) => {
     navigate({
@@ -221,11 +226,19 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
     <div className="flex flex-col lg:flex-row gap-2 relative">
       {visibleDecks.length > 0 ? (
         <>
-          <div className="w-full lg:w-[40%] xl:w-[30%] max-w-[400px] h-[300px] lg:h-[calc(100vh-200px)] relative">
+          <div
+            className={cn(
+              'w-full lg:w-[40%] xl:w-[30%] max-w-[400px] h-[300px] lg:h-[calc(100vh-200px)] relative',
+              {
+                'max-w-[500px]': showMdAndSbColumns,
+              },
+            )}
+          >
             <div
               className="overflow-auto border h-full rounded-md relative"
               id="tournament-deck-table"
             >
+              {tableHead}
               <DataTable
                 columns={columns}
                 data={visibleDecks}
@@ -241,7 +254,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks }) => {
             </div>
             {floatingComponent}
           </div>
-          <TournamentDeckDetail />
+          <TournamentDeckDetail highlightedCardId={highlightedCardId} />
         </>
       ) : (
         <div className="bg-muted p-8 rounded-md text-center">

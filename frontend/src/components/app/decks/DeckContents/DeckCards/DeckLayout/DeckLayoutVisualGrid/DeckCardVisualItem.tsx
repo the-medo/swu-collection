@@ -5,7 +5,7 @@ import type {
 } from '../../../../../../../../../lib/swu-resources/types.ts';
 import * as React from 'react';
 import { useCallback } from 'react';
-import { DeckLayout, useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { usePutDeckCard } from '@/api/decks/usePutDeckCard.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useNavigate } from '@tanstack/react-router';
@@ -15,6 +15,7 @@ import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '../../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
+import { DeckLayout } from '../../../../../../../../../types/enums.ts';
 
 interface DeckCardVisualItemProps {
   deckId: string;
@@ -24,6 +25,7 @@ interface DeckCardVisualItemProps {
   cardInBoards: DeckCardInBoards;
   displayQuantity?: boolean;
   displayDropdown?: boolean;
+  isHighlighted?: boolean;
 }
 
 const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
@@ -34,6 +36,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
   cardInBoards,
   displayQuantity = true,
   displayDropdown = true,
+  isHighlighted,
 }) => {
   const navigate = useNavigate({ from: Route.fullPath });
   const { owned } = useDeckInfo(deckId);
@@ -74,6 +77,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
           '-mt-[240px]':
             deckLayout === DeckLayout.VISUAL_STACKS ||
             deckLayout === DeckLayout.VISUAL_STACKS_SPLIT,
+          'ring-4 ring-primary ring-opacity-70': isHighlighted,
         },
       )}
       data-card-id={deckCard.cardId}

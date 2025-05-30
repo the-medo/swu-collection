@@ -4,12 +4,14 @@ import { CardStatData } from '@/components/app/card-stats/types.ts';
 import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatistic.tsx';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import { getVisibleUngroupedData } from './cardStatsUtils';
+import { CardStatsParams } from '@/api/card-stats';
 
 interface UngroupedCardStatsProps {
   data: CardStatData[];
+  cardStatParams: CardStatsParams;
 }
 
-const UngroupedCardStats: React.FC<UngroupedCardStatsProps> = ({ data }) => {
+const UngroupedCardStats: React.FC<UngroupedCardStatsProps> = ({ data, cardStatParams }) => {
   // Setup infinite scroll
   const { itemsToShow, observerTarget } = useInfiniteScroll({
     totalItems: data.length,
@@ -31,6 +33,7 @@ const UngroupedCardStats: React.FC<UngroupedCardStatsProps> = ({ data }) => {
             key={csd.cardStat.cardId}
             card={csd.card}
             cardStat={csd.cardStat}
+            cardStatParams={cardStatParams}
           />
         ))}
       </div>

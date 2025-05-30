@@ -36,14 +36,19 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
   const navigate = useNavigate({ from: Route.fullPath });
   const { data: cardListData } = useCardList();
 
+  const cardStatParams = useMemo(
+    () => ({
+      metaId,
+      tournamentId,
+      leaderCardId: csLeaderId,
+      baseCardId: csBaseId,
+      leaderAndBase: true,
+    }),
+    [metaId, tournamentId, csLeaderId, csBaseId],
+  );
+
   // Fetch card statistics filtered by leader (when a leader is selected)
-  const { data, isLoading, error } = useCardStats({
-    metaId,
-    tournamentId,
-    leaderCardId: csLeaderId,
-    baseCardId: csBaseId,
-    leaderAndBase: true,
-  });
+  const { data, isLoading, error } = useCardStats(cardStatParams);
 
   const leaderBasePairsAndCounts = useMemo(() => {
     const countMap = new Map<string, number>();
@@ -242,7 +247,7 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
       {/* Card stats with options */}
       {csLeaderId && csBaseId ? (
         cardStatData.length > 0 ? (
-          <CardStatsWithOptions data={cardStatData} />
+          <CardStatsWithOptions data={cardStatData} cardStatParams={cardStatParams} />
         ) : (
           <div className="h-40 flex items-center justify-center">
             <p className="text-muted-foreground">No card statistics available for this leader</p>
@@ -294,6 +299,11 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
                               key={item.card?.cardId}
                               card={item.card}
                               cardStat={item.cardStat}
+                              cardStatParams={{
+                                ...cardStatParams,
+                                leaderCardId: leaderId,
+                                baseCardId: baseId,
+                              }}
                               variant="card-horizontal"
                               preTitle={`#${index + 1} `}
                             />

@@ -8,12 +8,12 @@ import {
 import { Button } from '@/components/ui/button.tsx';
 import { Layers } from 'lucide-react';
 import {
-  DeckGroupBy,
   useDeckLayoutStore,
   useDeckLayoutStoreActions,
 } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { deckGroupByArray, deckGroupByObj } from '../../../../../../../types/iterableEnumInfo.ts';
 import React, { useCallback } from 'react';
+import { DeckGroupBy } from '../../../../../../../types/enums.ts';
 
 interface GroupBySelectorProps {
   value?: DeckGroupBy;
@@ -41,7 +41,7 @@ const GroupBySelector: React.FC<GroupBySelectorProps> = ({ value, onChange }) =>
   );
 
   return (
-    <DropdownMenu modal={false}>
+    <DropdownMenu modal={true}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="text-xs w-[200px] justify-between">
           <span className="text-[1.2em] font-semibold">Group by:</span>{' '}
