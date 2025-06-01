@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils.ts';
-import { DiffDisplayMode } from '@/components/app/comparer/useComparerStore.ts';
 import { CardComparisonData } from '../../types.ts';
 import DeckColumnMenu from '@/components/app/comparer/ComparerPage/DeckComparer/DeckColumnMenu.tsx';
 import { DeckComparerCardGroup, DeckComparerDeck, DeckComparerTotalsMap } from '../types.ts';
+import { DiffDisplayMode } from '../../../../../../../../types/enums.ts';
 
 interface ViewRowDeckRowProps {
   deck: DeckComparerDeck;

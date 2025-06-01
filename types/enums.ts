@@ -67,3 +67,14 @@ export enum DeckGroupBy {
   TRAIT = 'trait',
   KEYWORDS = 'keywords',
 }
+
+export enum DiffDisplayMode {
+  COUNT_AND_DIFF = 'count_and_diff',
+  COUNT_ONLY = 'count_only',
+  DIFF_ONLY = 'diff_only',
+}
+
+export enum ViewMode {
+  ROW_CARD = 'row_card',
+  ROW_DECK = 'row_deck',
+}

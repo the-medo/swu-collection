@@ -1,21 +1,15 @@
 import { db } from '../../db';
-import { and, eq, or, SQL, sql } from 'drizzle-orm';
-import { type TournamentDeck, tournamentDeck } from '../../db/schema/tournament_deck.ts';
-import { type Deck, deck } from '../../db/schema/deck.ts';
-import { type DeckCard, deckCard } from '../../db/schema/deck_card.ts';
+import { and, eq, SQL, sql } from 'drizzle-orm';
+import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
+import { deck } from '../../db/schema/deck.ts';
+import { deckCard } from '../../db/schema/deck_card.ts';
 import { fetchTournamentIdsForMeta } from '../card-statistics/meta.ts';
-import { deckInformation, type DeckInformation } from '../../db/schema/deck_information.ts';
+import { deckInformation } from '../../db/schema/deck_information.ts';
 import { aspectArray } from '../../../types/iterableEnumInfo.ts';
 import type { SwuAspect } from '../../../types/enums.ts';
 import { cardList } from '../../db/lists.ts';
 import { isBasicBase } from '../../../shared/lib/isBasicBase.ts';
-
-export type CardDeckData = {
-  tournamentDeck: TournamentDeck;
-  deck: Deck;
-  deckInformation: DeckInformation;
-  deckCard: DeckCard;
-};
+import type { CardDeckData } from '../../../types/CardDeckData.ts';
 
 type FetchCardDecksDataParams = {
   cardId: string;

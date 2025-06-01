@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils.ts';
-import { DiffDisplayMode } from '@/components/app/comparer/useComparerStore.ts';
 import { formatDifference, getDiffColorClass } from './lib.ts';
+import { DiffDisplayMode } from '../../../../../../../../types/enums.ts';
 
 interface QuantityDifferenceCellProps {
   mainQty: number;

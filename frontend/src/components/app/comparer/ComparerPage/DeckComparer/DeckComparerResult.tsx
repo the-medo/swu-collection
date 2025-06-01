@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { useComparerStore, ViewMode } from '@/components/app/comparer/useComparerStore.ts';
+import { useComparerStore } from '@/components/app/comparer/useComparerStore.ts';
 import { queryClient } from '@/queryClient.ts';
 import { DeckCard } from '../../../../../../../types/ZDeckCard.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -19,7 +19,7 @@ import {
   DeckComparerDeck,
   DeckComparerTotalsMap,
 } from '@/components/app/comparer/ComparerPage/DeckComparer/types.ts';
-import { DeckGroupBy } from '../../../../../../../types/enums.ts';
+import { DeckGroupBy, ViewMode } from '../../../../../../../types/enums.ts';
 
 interface DeckComparerResultProps {
   mainDeckId: string;

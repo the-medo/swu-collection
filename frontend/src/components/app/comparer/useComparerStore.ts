@@ -1,21 +1,15 @@
 import { Store, useStore } from '@tanstack/react-store';
-import { CollectionType, DeckGroupBy } from '../../../../../types/enums.ts';
+import {
+  CollectionType,
+  DeckGroupBy,
+  DiffDisplayMode,
+  ViewMode,
+} from '../../../../../types/enums.ts';
 
 export enum ComparerMode {
   INTERSECTION = 'intersection',
   DIFFERENCE = 'difference',
   UNION = 'union',
-}
-
-export enum DiffDisplayMode {
-  COUNT_AND_DIFF = 'count_and_diff',
-  COUNT_ONLY = 'count_only',
-  DIFF_ONLY = 'diff_only',
-}
-
-export enum ViewMode {
-  ROW_CARD = 'row_card',
-  ROW_DECK = 'row_deck',
 }
 
 // Local storage key for comparer state

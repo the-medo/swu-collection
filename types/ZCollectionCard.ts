@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CardCondition, CardLanguage, SwuRarity, SwuSet } from './enums.ts';
+import { CardLanguage, SwuRarity, SwuSet } from './enums.ts';
 
 export const zCollectionCardSchema = z.object({
   collectionId: z.string().uuid(),

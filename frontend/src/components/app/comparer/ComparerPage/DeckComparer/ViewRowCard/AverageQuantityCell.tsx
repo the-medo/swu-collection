@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { DiffDisplayMode } from '@/components/app/comparer/useComparerStore.ts';
 import { CardComparisonData } from '../../types.ts';
 import { calculateAverage, formatDifference, getDiffColorClass, getCardQuantities } from './lib.ts';
+import { DiffDisplayMode } from '../../../../../../../../types/enums.ts';
 
 interface AverageQuantityCellProps {
   card: CardComparisonData;

@@ -1,14 +1,12 @@
 import * as React from 'react';
 import {
-  DiffDisplayMode,
-  ViewMode,
   useComparerStore,
   useComparerStoreActions,
 } from '@/components/app/comparer/useComparerStore.ts';
 import DiffDisplaySelector from './DiffDisplaySelector.tsx';
 import ViewModeSelector from './ViewModeSelector.tsx';
 import GroupBySelector from '@/components/app/decks/DeckContents/GroupBySelector/GroupBySelector.tsx';
-import { DeckGroupBy } from '../../../../../../../types/enums.ts';
+import { DeckGroupBy, DiffDisplayMode, ViewMode } from '../../../../../../../types/enums.ts';
 
 /**
  * Component for managing deck comparer settings

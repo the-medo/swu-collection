@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useCallback } from 'react';
-import { DiffDisplayMode } from '@/components/app/comparer/useComparerStore.ts';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +13,7 @@ import {
   diffDisplayModeArray,
   diffDisplayModeObj,
 } from '../../../../../../../types/iterableEnumInfo.ts';
+import { DiffDisplayMode } from '../../../../../../../types/enums.ts';
 
 interface DiffDisplaySelectorProps {
   value?: DiffDisplayMode;

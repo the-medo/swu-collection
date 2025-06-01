@@ -1,7 +1,7 @@
-import { useUser } from '../frontend/src/hooks/useUser.ts';
+import type { User as BetterAuthUser } from 'better-auth';
 
 export type User = Omit<
-  NonNullable<ReturnType<typeof useUser>>,
+  BetterAuthUser,
   'email' | 'emailVerified' | 'updatedAt' | 'createdAt' | 'country' | 'currency'
 > & {
   updatedAt: string;

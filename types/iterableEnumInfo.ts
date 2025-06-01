@@ -5,6 +5,8 @@ import {
   CollectionType,
   DeckGroupBy,
   DeckLayout,
+  ViewMode,
+  DiffDisplayMode,
 } from './enums.ts';
 
 export const getLanguageFlagUrl = (language: CardLanguage) =>
@@ -161,12 +163,6 @@ export const collectionTypeTitle: Record<CollectionType, string> = {
   [CollectionType.WANTLIST]: 'Wantlist',
   [CollectionType.OTHER]: 'Card list',
 };
-
-// Import DiffDisplayMode and ViewMode from comparer store
-import {
-  DiffDisplayMode,
-  ViewMode,
-} from '../frontend/src/components/app/comparer/useComparerStore.ts';
 
 // Define objects and arrays for DiffDisplayMode
 export const diffDisplayModeObj: Record<DiffDisplayMode, { title: string }> = {

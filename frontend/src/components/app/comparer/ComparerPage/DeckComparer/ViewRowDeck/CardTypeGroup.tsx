@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils.ts';
 import { CardComparisonData } from '../../types.ts';
-import { DiffDisplayMode } from '@/components/app/comparer/useComparerStore.ts';
 import { calculateGroupTotals, calculateAndRenderGroupAverage } from './lib.ts';
 import DeckNameCell from './DeckNameCell.tsx';
 import CardQuantityCell from './CardQuantityCell.tsx';
+import { DiffDisplayMode } from '../../../../../../../../types/enums.ts';
 
 interface CardTypeGroupProps {
   groupName: string;
@@ -75,7 +75,7 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
           const cardData = cardListData?.cards[cardId];
           const cardsWithThisId = cards.filter(c => c.cardId === cardId);
           const totalQty = cardsWithThisId.reduce((sum, c) => sum + c.mainDeckQuantity, 0);
-          
+
           return (
             <CardQuantityCell
               key={cardId}
@@ -137,7 +137,7 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
           const cardData = cardListData?.cards[cardId];
           const cardsWithThisId = cards.filter(c => c.cardId === cardId);
           const mainQty = cardsWithThisId.reduce((sum, c) => sum + c.mainDeckQuantity, 0);
-          
+
           return (
             <CardQuantityCell
               key={cardId}
@@ -167,7 +167,7 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
       {otherDeckEntries.map((entry, entryIndex) => {
         const deckId = entry.id;
         const deckName = entry.additionalData?.title || 'Other Deck';
-        
+
         return (
           <tr
             key={deckId}
@@ -192,9 +192,9 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
               const mainQty = cardsWithThisId.reduce((sum, c) => sum + c.mainDeckQuantity, 0);
               const otherQty = cardsWithThisId.reduce(
                 (sum, c) => sum + (c.otherDecksQuantities[deckId] || 0),
-                0
+                0,
               );
-              
+
               return (
                 <CardQuantityCell
                   key={cardId}

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useCallback } from 'react';
-import { ViewMode } from '@/components/app/comparer/useComparerStore.ts';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button.tsx';
 import { LayoutGrid } from 'lucide-react';
 import { viewModeArray, viewModeObj } from '../../../../../../../types/iterableEnumInfo.ts';
+import { ViewMode } from '../../../../../../../types/enums.ts';
 
 interface ViewModeSelectorProps {
   value: ViewMode | undefined;

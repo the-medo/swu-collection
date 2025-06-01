@@ -1,7 +1,7 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
-import type { CardDeckData } from '../../../../server/lib/cards/card-decks.ts';
+import type { CardDeckData } from '../../../../types/CardDeckData.ts';
 
 /**
  * Parameters for the useGetCardDecks hook
