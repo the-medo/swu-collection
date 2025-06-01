@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { formatData } from './Format.ts';
-import { SwuSet } from './enums.ts';
+import { BracketInfo, SwuSet } from './enums.ts';
 
 export const TournamentSortField = {
   DATE: 'tournament.date',
@@ -57,6 +57,10 @@ export const zTournamentSchema = z.object({
   date: z.string(),
   createdAt: z.string().datetime().optional(),
   updatedAt: z.string().datetime().optional(),
+  bracketInfo: z
+    .enum(Object.values(BracketInfo) as [string, ...string[]])
+    .default('top8')
+    .optional(),
 });
 
 export const zTournamentCreateRequest = zTournamentSchema.omit({

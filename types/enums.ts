@@ -78,3 +78,10 @@ export enum ViewMode {
   ROW_CARD = 'row_card',
   ROW_DECK = 'row_deck',
 }
+
+export enum BracketInfo {
+  NONE = 'none',
+  TOP16 = 'top16',
+  TOP8 = 'top8',
+  TOP4 = 'top4',
+}
