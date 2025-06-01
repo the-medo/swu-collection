@@ -43,6 +43,7 @@ export const tournament = pgTable(
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     imported: boolean('imported').notNull().default(false),
+    bracketInfo: varchar('bracket_info', { length: 50 }).default('top8'),
   },
   table => {
     return {
