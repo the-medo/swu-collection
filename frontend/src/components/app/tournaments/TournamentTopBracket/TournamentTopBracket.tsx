@@ -1,28 +1,35 @@
 import React, { useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ExternalLink, Trophy, X } from 'lucide-react';
 import {
   TournamentDeckResponse,
   useGetTournamentDecks,
 } from '@/api/tournaments/useGetTournamentDecks';
 import { useGetTournamentMatches } from '@/api/tournaments/useGetTournamentMatches';
 import { useCardList } from '@/api/lists/useCardList';
-import { cn } from '@/lib/utils';
-import CardImage from '@/components/app/global/CardImage';
-import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant';
-import { extractDeckNameFromBrackets } from '../lib/extractDeckNameFromBrackets';
-import { Button } from '@/components/ui/button.tsx';
-import { Link } from '@tanstack/react-router';
-import DeckContents from '@/components/app/decks/DeckContents/DeckContents.tsx';
 import { MatchData } from '@/components/app/tournaments/lib/tournamentLib.ts';
+import { BracketInfo } from '../../../../../../types/enums.ts';
+import BracketRounds from './components/BracketRounds';
+import TournamentPlacements from './components/TournamentPlacements';
+import DeckViewer from './components/DeckViewer';
+
+// Map BracketInfo enum values to their corresponding numeric values
+const bracketInfoToNumber: Record<BracketInfo, number> = {
+  [BracketInfo.NONE]: 8,
+  [BracketInfo.TOP4]: 4,
+  [BracketInfo.TOP8]: 8,
+  [BracketInfo.TOP16]: 16,
+};
 
 interface TournamentTopBracketProps {
   tournamentId: string;
-  top?: 4 | 8;
+  top?: BracketInfo;
   className?: string;
 }
 
-const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentId, top = 8 }) => {
+const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
+  tournamentId,
+  top = BracketInfo.TOP8,
+}) => {
   const { data: decksData, isLoading: isLoadingDecks } = useGetTournamentDecks(tournamentId);
   const { data: matchesData, isLoading: isLoadingMatches } = useGetTournamentMatches(tournamentId);
   const { data: cardListData } = useCardList();
@@ -46,9 +53,12 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
   const topDecks = useMemo(() => {
     if (!decksData || !('data' in decksData)) return [];
 
-    // Sort by placement
     const sortedDecks: TournamentDeckResponse[] = [...decksData.data]
-      .filter(d => d.tournamentDeck.placement !== null && d.tournamentDeck.placement <= top)
+      .filter(
+        d =>
+          d.tournamentDeck.placement !== null &&
+          d.tournamentDeck.placement <= bracketInfoToNumber[top],
+      )
       .sort((a, b) => (a.tournamentDeck.placement || 99) - (b.tournamentDeck.placement || 99));
 
     return sortedDecks;
@@ -73,7 +83,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     });
 
     // We need to identify the final rounds
-    const requiredRounds = Math.log2(top);
+    const requiredRounds = Math.log2(bracketInfoToNumber[top]);
     let finalRounds = roundNumbers.slice(0, requiredRounds);
 
     // If we don't have enough rounds in the data, we might need padding
@@ -271,8 +281,8 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
       });
     }
 
-    // 5th-8th places if top 8
-    if (top >= 8) {
+    // 5th-8th places if top 8 or top 16
+    if (top === BracketInfo.TOP8 || top === BracketInfo.TOP16) {
       const fifthToEighthDecks = topDecks.filter(
         d => (d.tournamentDeck.placement ?? 0) >= 5 && (d.tournamentDeck.placement ?? 0) <= 8,
       );
@@ -287,182 +297,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     return result;
   }, [topDecks, top]);
 
-  // Render a player entry in the bracket
-  const renderPlayer = (
-    deck: TournamentDeckResponse,
-    isWinner = false,
-    showScore = false,
-    gameWins = 0,
-  ) => {
-    if (!deck)
-      return (
-        <div className="h-16 rounded-md bg-muted/30 flex items-center justify-center text-muted-foreground px-4">
-          TBD
-        </div>
-      );
-
-    const username = deck.tournamentDeck.meleePlayerUsername || 'Unknown';
-    const isHighlighted = highlightedPlayer === username;
-
-    // Get leader and base card info
-    const leaderCard = deck.deck?.leaderCardId1
-      ? cardListData?.cards[deck.deck.leaderCardId1]
-      : undefined;
-    const baseCard = deck.deck?.baseCardId ? cardListData?.cards[deck.deck.baseCardId] : undefined;
-
-    return (
-      <div
-        className={cn(
-          'flex p-2 border rounded-md gap-2 transition-colors duration-200 min-w-72',
-          isWinner ? 'border-primary bg-primary/5' : 'border-muted-foreground/20',
-          isHighlighted ? 'bg-amber-500/20 border-amber-500' : '',
-        )}
-        onMouseEnter={() => setHighlightedPlayer(username)}
-        onMouseLeave={() => setHighlightedPlayer(null)}
-        onClick={() => setSelectedDeckId(deck.tournamentDeck.deckId)}
-      >
-        <div className="flex gap-1 flex-shrink-0">
-          {leaderCard && (
-            <CardImage
-              card={leaderCard}
-              cardVariantId={leaderCard ? selectDefaultVariant(leaderCard) : undefined}
-              forceHorizontal={true}
-              size="w50"
-              backSideButton={false}
-            />
-          )}
-          {baseCard && (
-            <div className="-ml-2">
-              <CardImage
-                card={baseCard}
-                cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}
-                forceHorizontal={true}
-                size="w50"
-                backSideButton={false}
-              />
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col justify-center overflow-hidden">
-          <div
-            className={cn(
-              'font-medium whitespace-nowrap text-sm overflow-hidden text-ellipsis  max-w-32',
-              isHighlighted ? 'text-amber-700 dark:text-amber-300' : '',
-            )}
-          >
-            {username}
-          </div>
-          {deck.deck && deck.deck.name && (
-            <div className="text-xs text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-32">
-              {extractDeckNameFromBrackets(deck.deck.name)}
-            </div>
-          )}
-        </div>
-        {showScore && (
-          <div
-            className={cn(
-              'ml-auto px-2 py-1 flex items-center justify-center rounded-md text-lg font-bold flex-shrink-0 min-w-8 self-stretch flex items-center justify-center',
-              isWinner
-                ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-                : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
-            )}
-          >
-            {gameWins}
-          </div>
-        )}
-        {isWinner && deck.tournamentDeck.placement === 1 && !showScore && (
-          <Trophy className="h-4 w-4 text-amber-500 ml-auto flex-shrink-0" />
-        )}
-      </div>
-    );
-  };
-
-  // Render tournament standings/placements column
-  const renderPlacements = () => {
-    return (
-      <div className="min-w-72 space-y-4 mr-6">
-        <h3 className="text-lg font-bold">Final Standings</h3>
-        {placements.map((placementGroup, index) => (
-          <div key={index} className="space-y-2">
-            <h4 className="text-sm font-semibold text-muted-foreground">
-              {placementGroup.placement}
-            </h4>
-            {placementGroup.decks.map(deck => {
-              const username = deck.tournamentDeck.meleePlayerUsername || 'Unknown';
-              const isHighlighted =
-                highlightedPlayer === username || selectedDeckId === deck.tournamentDeck.deckId;
-
-              // Get leader and base card info
-              const leaderCard = deck.deck?.leaderCardId1
-                ? cardListData?.cards[deck.deck.leaderCardId1]
-                : undefined;
-              const baseCard = deck.deck?.baseCardId
-                ? cardListData?.cards[deck.deck.baseCardId]
-                : undefined;
-
-              return (
-                <div
-                  key={deck.tournamentDeck.deckId}
-                  className={cn(
-                    'p-2 rounded-md transition-colors border flex gap-2 items-center cursor-pointer',
-                    isHighlighted
-                      ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500'
-                      : 'hover:bg-muted/50 border-transparent',
-                  )}
-                  onMouseEnter={() => setHighlightedPlayer(username)}
-                  onMouseLeave={() => setHighlightedPlayer(null)}
-                  onClick={() => setSelectedDeckId(deck.tournamentDeck.deckId)}
-                >
-                  <div className="flex gap-1 flex-shrink-0">
-                    {leaderCard && (
-                      <CardImage
-                        card={leaderCard}
-                        cardVariantId={leaderCard ? selectDefaultVariant(leaderCard) : undefined}
-                        forceHorizontal={true}
-                        size="w50"
-                        backSideButton={false}
-                      />
-                    )}
-                    {baseCard && (
-                      <div className="-ml-2">
-                        <CardImage
-                          card={baseCard}
-                          cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}
-                          forceHorizontal={true}
-                          size="w50"
-                          backSideButton={false}
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col justify-center overflow-hidden">
-                    <div className="font-medium">
-                      {username}
-                      {deck.tournamentDeck.placement === 1 && (
-                        <Trophy className="h-4 w-4 text-amber-500 inline ml-2" />
-                      )}
-                    </div>
-                    {deck.deck && deck.deck.name && (
-                      <div className="text-xs text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-32">
-                        {extractDeckNameFromBrackets(deck.deck.name)}
-                      </div>
-                    )}
-                  </div>
-                  {deck.deck && deck.deck.id && (
-                    <Button size="iconSmall" variant="outline" title="Open deck in new tab">
-                      <Link to={'/decks/$deckId'} params={{ deckId: deck.deck.id }} target="_blank">
-                        <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                      </Link>
-                    </Button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    );
-  };
+  // These functions have been moved to separate components
 
   if (isLoadingDecks || isLoadingMatches) {
     return (
@@ -480,72 +315,30 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({ tournamentI
     <div className="bg-card rounded-md border shadow-sm p-3">
       <div className="flex flex-col lg:flex-row gap-4">
         {selectedDeckId ? (
-          <div className="flex-1 mt-8 lg:mt-0 relative">
-            <Button
-              variant="outline"
-              size="iconSmall"
-              className="absolute top-2 right-2"
-              onClick={() => setSelectedDeckId(undefined)}
-            >
-              <X />
-            </Button>
-            <DeckContents deckId={selectedDeckId} setDeckId={setSelectedDeckId} />
-          </div>
+          <DeckViewer selectedDeckId={selectedDeckId} setSelectedDeckId={setSelectedDeckId} />
+        ) : top === BracketInfo.NONE ? (
+          // For "none" bracket type, don't show the bracket rounds
+          <div className="flex-1"></div>
         ) : (
-          <div className="flex-1 overflow-x-auto mt-8 lg:mt-0">
-            <div className="flex min-w-max gap-4">
-              {bracketData &&
-                bracketData.map((round, roundIndex) => (
-                  <div key={roundIndex} className="flex flex-col w-72">
-                    <h4 className="text-center font-medium mb-4 text-muted-foreground">
-                      {roundIndex === 0 && top === 8
-                        ? 'Quarterfinals'
-                        : roundIndex === 0 && top === 4
-                          ? 'Semifinals'
-                          : roundIndex === 1 && top === 8
-                            ? 'Semifinals'
-                            : roundIndex === bracketData.length - 1
-                              ? 'Finals'
-                              : `Round ${rounds[roundIndex]}`}
-                    </h4>
-
-                    <div className="flex flex-col">
-                      {round.map((match, matchIndex) => {
-                        const matchHeight = 2 ** roundIndex * 150; // Progressively increase the height
-
-                        return (
-                          <div
-                            key={matchIndex}
-                            className="flex flex-col relative"
-                            style={{ height: matchHeight }}
-                          >
-                            <div className="flex items-center h-full">
-                              <div className="flex flex-col gap-1 absolute top-1/2 -translate-y-1/2 transform">
-                                {renderPlayer(
-                                  match.player1,
-                                  match.winner === match.player1,
-                                  true,
-                                  match.gameWins,
-                                )}
-                                <div className="h-px bg-muted-foreground/30 mx-2"></div>
-                                {renderPlayer(
-                                  match.player2,
-                                  match.winner === match.player2,
-                                  true,
-                                  match.gameLosses,
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
+          <BracketRounds
+            bracketData={bracketData}
+            rounds={rounds}
+            top={top}
+            highlightedPlayer={highlightedPlayer}
+            setHighlightedPlayer={setHighlightedPlayer}
+            setSelectedDeckId={setSelectedDeckId}
+            cardListData={cardListData}
+          />
         )}
-        {renderPlacements()}
+        <TournamentPlacements
+          topDecks={topDecks}
+          top={top}
+          highlightedPlayer={highlightedPlayer}
+          setHighlightedPlayer={setHighlightedPlayer}
+          selectedDeckId={selectedDeckId}
+          setSelectedDeckId={setSelectedDeckId}
+          cardListData={cardListData}
+        />
       </div>
     </div>
   );

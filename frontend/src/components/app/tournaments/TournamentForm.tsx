@@ -11,6 +11,7 @@ import {
 } from '../../../../../types/ZTournament.ts';
 import TournamentTypeSelect from '@/components/app/tournaments/components/TournamentTypeSelect.tsx';
 import ContinentSelect from '@/components/app/tournaments/components/ContinentSelect.tsx';
+import BracketInfoSelect from '@/components/app/tournaments/components/BracketInfoSelect.tsx';
 import { DatePicker } from '@/components/ui/date-picker.tsx';
 import { format } from 'date-fns';
 import CountrySelector from '@/components/app/global/CountrySelector.tsx';
@@ -38,6 +39,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
       dayTwoPlayerCount: initialData?.dayTwoPlayerCount || 0,
       date: initialData?.date ?? format(new Date(), 'yyyy-MM-dd'),
       meta: initialData?.meta || null,
+      bracketInfo: initialData?.bracketInfo || 'none',
     },
     onSubmit: async ({ value }) => {
       onSubmit(value);
@@ -230,6 +232,21 @@ const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, 
                     formatId={formatValue}
                   />
                 )}
+              />
+            </div>
+          )}
+        />
+
+        {/* Bracket Info */}
+        <form.Field
+          name="bracketInfo"
+          children={field => (
+            <div className="space-y-2">
+              <Label htmlFor={field.name}>Bracket Information</Label>
+              <BracketInfoSelect
+                value={field.state.value}
+                onChange={value => field.handleChange(value || 'none')}
+                emptyOption={false}
               />
             </div>
           )}
