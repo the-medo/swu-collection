@@ -9,6 +9,7 @@ import { cardsRoute } from './routes/cards.ts';
 import { worldRoute } from './routes/world.ts';
 import { userRoute } from './routes/user.ts';
 import { tournamentRoute } from './routes/tournament.ts';
+import { tournamentGroupsRoute } from './routes/tournament-groups.ts';
 import { entitiesRoute } from './routes/entity.ts';
 import { metaRoute } from './routes/meta.ts';
 import { cardStatsRoute } from './routes/card-stats.ts';
@@ -63,6 +64,7 @@ const apiRoutes = app
   .route('/cards', cardsRoute)
   .route('/user', userRoute)
   .route('/tournament', tournamentRoute)
+  .route('/tournament-groups', tournamentGroupsRoute)
   .route('/entities', entitiesRoute)
   .route('/meta', metaRoute)
   .route('/card-stats', cardStatsRoute)

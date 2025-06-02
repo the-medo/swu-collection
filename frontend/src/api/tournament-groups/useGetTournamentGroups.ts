@@ -1,54 +1,30 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { TournamentData } from '../../../../types/Tournament.ts';
+import { TournamentGroupsResponse } from '../../../../types/TournamentGroup.ts';
 
 const PAGE_SIZE = 20;
 
-export type GetTournamentsRequest = {
-  type?: string;
-  season?: number;
-  set?: string;
-  format?: number;
-  continent?: string;
-  date?: Date;
+export type GetTournamentGroupsRequest = {
   meta?: number;
-  sort?: string;
+  visible?: boolean;
+  sort?: 'name' | 'position' | 'created_at';
   order?: 'asc' | 'desc';
 };
 
-export interface TournamentsResponse {
-  data: TournamentData[];
-  pagination: {
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
-}
-
-export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
+export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) => {
   const {
-    type,
-    season,
-    set,
-    format,
-    continent,
-    date,
     meta,
-    sort = 'tournament.date',
-    order = 'desc',
+    visible,
+    sort = 'position',
+    order = 'asc',
   } = props;
 
   // Create a stable query key based on all filter parameters
   const qk = [
-    'tournaments',
+    'tournament-groups',
     {
-      type,
-      season,
-      set,
-      format,
-      continent,
-      date: date?.toISOString(),
       meta,
+      visible,
       sort,
       order,
     },
@@ -57,15 +33,10 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
   return useInfiniteQuery({
     queryKey: qk,
     queryFn: async ({ pageParam }) => {
-      const response = await api.tournament.$get({
+      const response = await api['tournament-groups'].$get({
         query: {
-          type,
-          season: season?.toString(),
-          set,
-          format: format?.toString(),
-          continent,
-          minDate: date?.toISOString(),
           meta: meta?.toString(),
+          visible: visible?.toString(),
           sort,
           order,
           limit: PAGE_SIZE.toString(),
@@ -74,10 +45,10 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
       });
 
       if (!response.ok) {
-        throw new Error('Something went wrong');
+        throw new Error('Failed to fetch tournament groups');
       }
 
-      return await response.json();
+      return await response.json() as TournamentGroupsResponse;
     },
     initialPageParam: 0,
     getNextPageParam: lastPage => {
