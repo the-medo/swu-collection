@@ -16,6 +16,7 @@ import { tournamentMatch } from './tournament_match.ts';
 import { format } from './format.ts';
 import { user } from './auth-schema.ts';
 import { meta } from './meta.ts';
+import { tournamentGroupTournament } from './tournament_group_tournament.ts';
 
 // Tournament Schema
 export const tournament = pgTable(
@@ -61,6 +62,7 @@ export const tournamentRelations = relations(tournament, ({ one, many }) => ({
   }),
   decks: many(tournamentDeck),
   matches: many(tournamentMatch),
+  tournamentGroups: many(tournamentGroupTournament),
 }));
 
 export type Tournament = InferSelectModel<typeof tournament>;
