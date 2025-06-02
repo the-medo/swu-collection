@@ -19,6 +19,10 @@ import {
   tournamentTypesInfo,
 } from '../../../../../../types/Tournament.ts';
 import { formatDataById } from '../../../../../../types/Format.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
+import CardImage from '@/components/app/global/CardImage.tsx';
+import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { cn } from '@/lib/utils.ts';
 
 export interface TournamentTableColumnsProps {
   view?: DataTableViewMode;
@@ -32,12 +36,35 @@ export function useTournamentTableColumns({
   onDelete,
 }: TournamentTableColumnsProps): ExtendedColumnDef<TournamentData>[] {
   const hasPermission = usePermissions();
+  const { data: cardList } = useCardList();
 
   const canUpdate = hasPermission('tournament', 'update');
   const canDelete = hasPermission('tournament', 'delete');
 
   return useMemo(() => {
     const definitions: ExtendedColumnDef<TournamentData>[] = [];
+
+    // Thumbnail column
+    definitions.push({
+      id: 'thumbnail',
+      header: '',
+      size: 16,
+      displayBoxHeader: false,
+      cell: ({ row }) => {
+        const tournamentId = row.original.tournament.id as string;
+        const thumbnailUrl = `https://images.swubase.com/tournament/${tournamentId}.webp`;
+
+        return (
+          <div className="flex items-center justify-center">
+            <img
+              src={thumbnailUrl}
+              alt="Tournament thumbnail"
+              className="w-16 h-8 object-cover rounded"
+            />
+          </div>
+        );
+      },
+    });
 
     // Name column
     definitions.push({
@@ -58,6 +85,63 @@ export function useTournamentTableColumns({
               {name}
             </Button>
           </Link>
+        );
+      },
+    });
+
+    // Winning Deck column
+    definitions.push({
+      id: 'winningDeck',
+      header: 'Winning Deck',
+      size: 24,
+      displayBoxHeader: false,
+      cell: ({ row }) => {
+        const winningDeck = row.original.decks?.find(d => d.tournamentDeck.placement === 1);
+
+        if (!winningDeck || !cardList) return <div>No winning deck</div>;
+
+        console.log({ winningDeck });
+
+        const leader1 = winningDeck.deck.leader_card_id_1
+          ? cardList.cards[winningDeck.deck.leader_card_id_1]
+          : undefined;
+        const leader2 = winningDeck.deck.leader_card_id_2
+          ? cardList.cards[winningDeck.deck.leader_card_id_2]
+          : undefined;
+        const base = winningDeck.deck.base_card_id
+          ? cardList.cards[winningDeck.deck.base_card_id]
+          : undefined;
+
+        return (
+          <div className="flex gap-1">
+            <CardImage
+              card={leader1}
+              cardVariantId={leader1 ? selectDefaultVariant(leader1) : undefined}
+              forceHorizontal={true}
+              size="w50"
+              backSideButton={false}
+            />
+            {leader2 && (
+              <div className="-ml-7">
+                <CardImage
+                  card={leader2}
+                  cardVariantId={leader2 ? selectDefaultVariant(leader2) : undefined}
+                  forceHorizontal={true}
+                  size="w50"
+                  backSideButton={false}
+                />
+              </div>
+            )}
+            <div className={cn({ '-ml-6': !!leader2 })}>
+              <CardImage
+                card={base}
+                cardVariantId={base ? selectDefaultVariant(base) : undefined}
+                forceHorizontal={true}
+                size="w50"
+                backSideButton={false}
+              />
+            </div>
+          </div>
         );
       },
     });
@@ -185,5 +269,5 @@ export function useTournamentTableColumns({
     });
 
     return definitions;
-  }, [canUpdate, canDelete, onEdit, onDelete]);
+  }, [canUpdate, canDelete, onEdit, onDelete, cardList]);
 }
