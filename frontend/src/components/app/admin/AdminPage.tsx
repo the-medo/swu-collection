@@ -5,6 +5,7 @@ import { Navigate } from '@tanstack/react-router';
 import { MetaTable } from './MetaTable';
 import { SetsPage } from './SetsPage';
 import { ThumbnailsPage } from '@/components/app/admin/ThumbnailsPage.tsx';
+import { TournamentGroupsPage } from '@/components/app/admin/TournamentGroupsPage';
 import { Helmet } from 'react-helmet-async';
 
 export function AdminPage() {
@@ -24,6 +25,7 @@ export function AdminPage() {
           <TabsList>
             <TabsTrigger value="metas">Metas</TabsTrigger>
             <TabsTrigger value="sets">Sets</TabsTrigger>
+            <TabsTrigger value="tournament-groups">Tournament Groups</TabsTrigger>
             <TabsTrigger value="deck-thumbnails">SSR Thumbnails</TabsTrigger>
           </TabsList>
 
@@ -38,6 +40,13 @@ export function AdminPage() {
             <Card>
               <CardContent className="p-4">
                 <SetsPage />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="tournament-groups">
+            <Card>
+              <CardContent className="p-4">
+                <TournamentGroupsPage />
               </CardContent>
             </Card>
           </TabsContent>

@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from '@/components/ui/select.tsx';
 import * as React from 'react';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { MetaQueryParams, useGetMetas } from '@/api/meta/useGetMetas.ts';
 
 export type MetaSelectorProps = {
@@ -45,12 +45,6 @@ const MetaSelector: React.FC<MetaSelectorProps> = ({
     [metasResponse, formatId],
   );
 
-  const [selectedMeta, setSelectedMeta] = React.useState<number | 'empty'>(value ?? 'empty');
-
-  useEffect(() => {
-    setSelectedMeta(value ?? 'empty');
-  }, [value]);
-
   const onChangeHandler = useCallback(
     (v: string) => {
       const metaId = v === 'empty' ? 'empty' : parseInt(v);
@@ -60,11 +54,9 @@ const MetaSelector: React.FC<MetaSelectorProps> = ({
       }
 
       if (metaId === 'empty' && emptyOption) {
-        setSelectedMeta('empty');
         onChange(null);
       } else if (metaId !== 'empty') {
         onChange(metaId);
-        setSelectedMeta(metaId);
       }
     },
     [onChange, emptyOption],
@@ -72,7 +64,7 @@ const MetaSelector: React.FC<MetaSelectorProps> = ({
 
   return (
     <Select
-      value={selectedMeta === 'empty' ? 'empty' : selectedMeta.toString()}
+      value={value === null ? 'empty' : value.toString()}
       onValueChange={onChangeHandler}
       disabled={isLoading}
     >
