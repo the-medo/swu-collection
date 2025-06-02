@@ -5,6 +5,7 @@ import { formatDate } from '@/lib/locale.ts';
 import { formatDataById } from '../../../../../../types/Format.ts';
 import TournamentTopBracket from '../TournamentTopBracket/TournamentTopBracket.tsx';
 import { Helmet } from 'react-helmet-async';
+import { BracketInfo } from '../../../../../../types/enums.ts';
 
 interface DetailAndBracketTabProps {
   tournamentId: string;
@@ -128,7 +129,10 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({ tournamentId 
             </div>
 
             {/* Tournament Bracket */}
-            <TournamentTopBracket tournamentId={tournamentId} top={8} />
+            <TournamentTopBracket
+              tournamentId={tournamentId}
+              top={(tournament.bracketInfo ?? BracketInfo.NONE) as BracketInfo}
+            />
           </div>
         )}
       </div>
