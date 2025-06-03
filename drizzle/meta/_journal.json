@@ -127,6 +127,13 @@
       "when": 1748888962760,
       "tag": "0017_happy_sunfire",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1748888962761,
+      "tag": "0018_snakes_and_camels",
+      "breakpoints": true
     }
   ]
 }
