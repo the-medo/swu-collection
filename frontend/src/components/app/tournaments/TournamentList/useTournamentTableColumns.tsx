@@ -102,14 +102,14 @@ export function useTournamentTableColumns({
 
         console.log({ winningDeck });
 
-        const leader1 = winningDeck.deck.leader_card_id_1
-          ? cardList.cards[winningDeck.deck.leader_card_id_1]
+        const leader1 = winningDeck.deck.leaderCardId1
+          ? cardList.cards[winningDeck.deck.leaderCardId1]
           : undefined;
-        const leader2 = winningDeck.deck.leader_card_id_2
-          ? cardList.cards[winningDeck.deck.leader_card_id_2]
+        const leader2 = winningDeck.deck.leaderCardId2
+          ? cardList.cards[winningDeck.deck.leaderCardId2]
           : undefined;
-        const base = winningDeck.deck.base_card_id
-          ? cardList.cards[winningDeck.deck.base_card_id]
+        const base = winningDeck.deck.baseCardId
+          ? cardList.cards[winningDeck.deck.baseCardId]
           : undefined;
 
         return (

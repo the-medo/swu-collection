@@ -9,6 +9,8 @@ import { tournamentGroupTournament as tournamentGroupTournamentTable } from '../
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import { meta as metaTable } from '../../db/schema/meta.ts';
 import { withPagination } from '../../lib/withPagination.ts';
+import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
+import { deck } from '../../db/schema/deck.ts';
 
 // Define query parameters schema
 const zTournamentGroupQueryParams = z.object({
@@ -49,12 +51,16 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
             (
               SELECT jsonb_agg(
                 jsonb_build_object(
-                  'tournament', to_jsonb(t.*),
+                  'tournament', jsonb_snake_to_camel(to_jsonb(t.*)),
+                  'tournamentDeck', jsonb_snake_to_camel(to_jsonb(td.*)),
+                  'deck', jsonb_snake_to_camel(to_jsonb(d.*)),
                   'position', tgt.position
                 ) ORDER BY tgt.position ASC
               )
               FROM ${tournamentGroupTournamentTable} tgt
               LEFT JOIN ${tournamentTable} t ON tgt.tournament_id = t.id
+              LEFT JOIN ${tournamentDeck} td ON td.tournament_id = t.id AND td.placement = 1
+              LEFT JOIN ${deck} d ON td.deck_id = d.id
               WHERE tgt.group_id = ${tournamentGroupTable.id}
             ),
             '[]'::jsonb

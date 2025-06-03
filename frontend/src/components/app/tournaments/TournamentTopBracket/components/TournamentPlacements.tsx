@@ -1,13 +1,11 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button.tsx';
 import { Link } from '@tanstack/react-router';
-import { ExternalLink, Trophy } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks';
-import CardImage from '@/components/app/global/CardImage';
-import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant';
 import { extractDeckNameFromBrackets } from '../../lib/extractDeckNameFromBrackets';
 import { BracketInfo } from '../../../../../../../types/enums.ts';
+import DeckPlacement from '@/components/app/tournaments/components/DeckPlacement.tsx';
 
 interface PlacementGroup {
   placement: string;
@@ -132,63 +130,23 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
               : undefined;
 
             return (
-              <div
-                key={deck.tournamentDeck.deckId}
-                className={cn(
-                  'p-2 rounded-md transition-colors border flex gap-2 items-center cursor-pointer',
-                  isHighlighted
-                    ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500'
-                    : 'hover:bg-muted/50 border-transparent',
-                )}
-                onMouseEnter={() => setHighlightedPlayer(username)}
-                onMouseLeave={() => setHighlightedPlayer(null)}
-                onClick={() => setSelectedDeckId(deck.tournamentDeck.deckId)}
-              >
-                <div className="flex gap-1 flex-shrink-0">
-                  {leaderCard && (
-                    <CardImage
-                      card={leaderCard}
-                      cardVariantId={leaderCard ? selectDefaultVariant(leaderCard) : undefined}
-                      forceHorizontal={true}
-                      size="w50"
-                      backSideButton={false}
-                    />
-                  )}
-                  {baseCard && (
-                    <div className="-ml-2">
-                      <CardImage
-                        card={baseCard}
-                        cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}
-                        forceHorizontal={true}
-                        size="w50"
-                        backSideButton={false}
-                      />
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-col justify-center overflow-hidden">
-                  <div className="font-medium">
-                    {top === BracketInfo.NONE && deck.tournamentDeck.placement 
-                      ? `#${deck.tournamentDeck.placement} ${username}`
-                      : username
-                    }
-                    {deck.tournamentDeck.placement === 1 && (
-                      <Trophy className="h-4 w-4 text-amber-500 inline ml-2" />
-                    )}
-                  </div>
-                  {deck.deck && deck.deck.name && (
-                    <div className="text-xs text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-32">
-                      {extractDeckNameFromBrackets(deck.deck.name)}
-                    </div>
-                  )}
-                </div>
-                {deck.deck && deck.deck.id && (
-                  <Button size="iconSmall" variant="outline" title="Open deck in new tab">
-                    <Link to={'/decks/$deckId'} params={{ deckId: deck.deck.id }} target="_blank">
-                      <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                    </Link>
-                  </Button>
-                )}
+              <div key={deck.tournamentDeck.deckId}>
+                <DeckPlacement
+                  leaderCard1={leaderCard}
+                  baseCard={baseCard}
+                  username={username}
+                  deckName={
+                    deck.deck?.name ? extractDeckNameFromBrackets(deck.deck.name) : undefined
+                  }
+                  placement={deck.tournamentDeck.placement ?? undefined}
+                  showPlacement={top === BracketInfo.NONE}
+                  isHighlighted={isHighlighted}
+                  onClick={() => setSelectedDeckId(deck.tournamentDeck.deckId)}
+                  onMouseEnter={() => setHighlightedPlayer(username)}
+                  onMouseLeave={() => setHighlightedPlayer(null)}
+                  deckId={deck.deck?.id}
+                  showDeckLink={!!deck.deck?.id}
+                />
               </div>
             );
           })}

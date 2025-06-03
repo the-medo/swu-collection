@@ -116,8 +116,8 @@ export const tournamentGetRoute = new Hono<AuthExtension>().get(
             (
               SELECT jsonb_agg(
                 jsonb_build_object(
-                  'tournamentDeck', to_jsonb(td.*),
-                  'deck', to_jsonb(d.*)
+                  'tournamentDeck', jsonb_snake_to_camel(to_jsonb(td.*)),
+                  'deck', jsonb_snake_to_camel(to_jsonb(d.*))
                 )
               )
               FROM ${tournamentDeckTable} td
