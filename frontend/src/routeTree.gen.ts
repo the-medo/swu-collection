@@ -36,6 +36,9 @@ import { Route as CardsSearchImport } from './routes/cards/search'
 import { Route as AuthenticatedSettingsImport } from './routes/_authenticated.settings'
 import { Route as WantlistsWantlistIdIndexImport } from './routes/wantlists/$wantlistId/index'
 import { Route as UsersUserIdIndexImport } from './routes/users/$userId/index'
+import { Route as TournamentsPlanetaryQualifiersIndexImport } from './routes/tournaments/planetary-qualifiers/index'
+import { Route as TournamentsFeaturedIndexImport } from './routes/tournaments/featured/index'
+import { Route as TournamentsAllIndexImport } from './routes/tournaments/all/index'
 import { Route as TournamentsTournamentIdIndexImport } from './routes/tournaments/$tournamentId/index'
 import { Route as ToolsDeckFormatConverterIndexImport } from './routes/tools/deck-format-converter/index'
 import { Route as ListsCardListIdIndexImport } from './routes/lists/$cardListId/index'
@@ -197,6 +200,25 @@ const WantlistsWantlistIdIndexRoute = WantlistsWantlistIdIndexImport.update({
 const UsersUserIdIndexRoute = UsersUserIdIndexImport.update({
   id: '/users/$userId/',
   path: '/users/$userId/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TournamentsPlanetaryQualifiersIndexRoute =
+  TournamentsPlanetaryQualifiersIndexImport.update({
+    id: '/tournaments/planetary-qualifiers/',
+    path: '/tournaments/planetary-qualifiers/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const TournamentsFeaturedIndexRoute = TournamentsFeaturedIndexImport.update({
+  id: '/tournaments/featured/',
+  path: '/tournaments/featured/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TournamentsAllIndexRoute = TournamentsAllIndexImport.update({
+  id: '/tournaments/all/',
+  path: '/tournaments/all/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -529,6 +551,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TournamentsTournamentIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/tournaments/all/': {
+      id: '/tournaments/all/'
+      path: '/tournaments/all'
+      fullPath: '/tournaments/all'
+      preLoaderRoute: typeof TournamentsAllIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/tournaments/featured/': {
+      id: '/tournaments/featured/'
+      path: '/tournaments/featured'
+      fullPath: '/tournaments/featured'
+      preLoaderRoute: typeof TournamentsFeaturedIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/tournaments/planetary-qualifiers/': {
+      id: '/tournaments/planetary-qualifiers/'
+      path: '/tournaments/planetary-qualifiers'
+      fullPath: '/tournaments/planetary-qualifiers'
+      preLoaderRoute: typeof TournamentsPlanetaryQualifiersIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/users/$userId/': {
       id: '/users/$userId/'
       path: '/users/$userId'
@@ -596,6 +639,9 @@ export interface FileRoutesByFullPath {
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
+  '/tournaments/all': typeof TournamentsAllIndexRoute
+  '/tournaments/featured': typeof TournamentsFeaturedIndexRoute
+  '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
@@ -636,6 +682,9 @@ export interface FileRoutesByTo {
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
+  '/tournaments/all': typeof TournamentsAllIndexRoute
+  '/tournaments/featured': typeof TournamentsFeaturedIndexRoute
+  '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
@@ -677,6 +726,9 @@ export interface FileRoutesById {
   '/lists/$cardListId/': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter/': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId/': typeof TournamentsTournamentIdIndexRoute
+  '/tournaments/all/': typeof TournamentsAllIndexRoute
+  '/tournaments/featured/': typeof TournamentsFeaturedIndexRoute
+  '/tournaments/planetary-qualifiers/': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
 }
@@ -719,6 +771,9 @@ export interface FileRouteTypes {
     | '/lists/$cardListId'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
+    | '/tournaments/all'
+    | '/tournaments/featured'
+    | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
   fileRoutesByTo: FileRoutesByTo
@@ -758,6 +813,9 @@ export interface FileRouteTypes {
     | '/lists/$cardListId'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
+    | '/tournaments/all'
+    | '/tournaments/featured'
+    | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
   id:
@@ -797,6 +855,9 @@ export interface FileRouteTypes {
     | '/lists/$cardListId/'
     | '/tools/deck-format-converter/'
     | '/tournaments/$tournamentId/'
+    | '/tournaments/all/'
+    | '/tournaments/featured/'
+    | '/tournaments/planetary-qualifiers/'
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
   fileRoutesById: FileRoutesById
@@ -837,6 +898,9 @@ export interface RootRouteChildren {
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
   ToolsDeckFormatConverterIndexRoute: typeof ToolsDeckFormatConverterIndexRoute
   TournamentsTournamentIdIndexRoute: typeof TournamentsTournamentIdIndexRoute
+  TournamentsAllIndexRoute: typeof TournamentsAllIndexRoute
+  TournamentsFeaturedIndexRoute: typeof TournamentsFeaturedIndexRoute
+  TournamentsPlanetaryQualifiersIndexRoute: typeof TournamentsPlanetaryQualifiersIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
 }
@@ -876,6 +940,10 @@ const rootRouteChildren: RootRouteChildren = {
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
   ToolsDeckFormatConverterIndexRoute: ToolsDeckFormatConverterIndexRoute,
   TournamentsTournamentIdIndexRoute: TournamentsTournamentIdIndexRoute,
+  TournamentsAllIndexRoute: TournamentsAllIndexRoute,
+  TournamentsFeaturedIndexRoute: TournamentsFeaturedIndexRoute,
+  TournamentsPlanetaryQualifiersIndexRoute:
+    TournamentsPlanetaryQualifiersIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
 }
@@ -924,6 +992,9 @@ export const routeTree = rootRoute
         "/lists/$cardListId/",
         "/tools/deck-format-converter/",
         "/tournaments/$tournamentId/",
+        "/tournaments/all/",
+        "/tournaments/featured/",
+        "/tournaments/planetary-qualifiers/",
         "/users/$userId/",
         "/wantlists/$wantlistId/"
       ]
@@ -1036,6 +1107,15 @@ export const routeTree = rootRoute
     },
     "/tournaments/$tournamentId/": {
       "filePath": "tournaments/$tournamentId/index.tsx"
+    },
+    "/tournaments/all/": {
+      "filePath": "tournaments/all/index.tsx"
+    },
+    "/tournaments/featured/": {
+      "filePath": "tournaments/featured/index.tsx"
+    },
+    "/tournaments/planetary-qualifiers/": {
+      "filePath": "tournaments/planetary-qualifiers/index.tsx"
     },
     "/users/$userId/": {
       "filePath": "users/$userId/index.tsx"
