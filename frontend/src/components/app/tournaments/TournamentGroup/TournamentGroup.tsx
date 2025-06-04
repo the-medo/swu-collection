@@ -8,7 +8,7 @@ interface TournamentGroupProps {
 
 const TournamentGroup: React.FC<TournamentGroupProps> = ({ group }) => {
   return (
-    <div className="mb-8 bg-accent p-4 rounded-md">
+    <div className="bg-accent p-4 rounded-md mb-4">
       <h3 className="text-xl font-semibold mb-2">{group.group.name}</h3>
       {group.group.description && <p className="text-gray-600 mb-4">{group.group.description}</p>}
 

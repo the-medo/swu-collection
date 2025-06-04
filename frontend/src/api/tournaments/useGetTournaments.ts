@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { TournamentData } from '../../../../types/Tournament.ts';
+import { useMemo } from 'react';
 
 const PAGE_SIZE = 20;
 
@@ -10,7 +11,7 @@ export type GetTournamentsRequest = {
   set?: string;
   format?: number;
   continent?: string;
-  date?: Date;
+  date?: Date | string;
   meta?: number;
   sort?: string;
   order?: 'asc' | 'desc';
@@ -25,7 +26,7 @@ export interface TournamentsResponse {
   };
 }
 
-export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
+export const useGetTournaments = (props: GetTournamentsRequest) => {
   const {
     type,
     season,
@@ -39,20 +40,23 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
   } = props;
 
   // Create a stable query key based on all filter parameters
-  const qk = [
-    'tournaments',
-    {
-      type,
-      season,
-      set,
-      format,
-      continent,
-      date: date?.toISOString(),
-      meta,
-      sort,
-      order,
-    },
-  ];
+  const qk = useMemo(
+    () => [
+      'tournaments',
+      {
+        type,
+        season,
+        set,
+        format,
+        continent,
+        date: date instanceof Date ? date.toISOString() : date,
+        meta,
+        sort,
+        order,
+      },
+    ],
+    [type, season, set, format, continent, date, meta, sort, order],
+  );
 
   return useInfiniteQuery({
     queryKey: qk,
@@ -64,7 +68,7 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
           set,
           format: format?.toString(),
           continent,
-          minDate: date?.toISOString(),
+          minDate: date instanceof Date ? date.toISOString() : date,
           meta: meta?.toString(),
           sort,
           order,

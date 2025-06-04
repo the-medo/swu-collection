@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { RefreshCcw, SlidersHorizontal } from 'lucide-react';
 import {
@@ -11,33 +10,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import SetSelect from '@/components/app/global/SetSelect.tsx';
-import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion.tsx';
-import { SwuSet } from '../../../../../../types/enums.ts';
 import TournamentTypeSelect from '@/components/app/tournaments/components/TournamentTypeSelect.tsx';
 import ContinentSelect from '../components/ContinentSelect.tsx';
 import { DatePicker } from '@/components/ui/date-picker.tsx';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { Route } from '@/routes/__root.tsx';
 
-interface TournamentFiltersProps {
-  onApplyFilters: (filters: TournamentFilterValues) => void;
-  defaultValues?: Partial<TournamentFilterValues>;
-}
+interface TournamentFiltersProps {}
 
 export interface TournamentFilterValues {
-  type?: string;
-  season?: number;
-  set?: SwuSet;
-  format?: number;
-  continent?: string;
-  date?: string;
-  sort?: string;
-  order?: 'asc' | 'desc';
+  tfType?: string;
+  tfContinent?: string;
+  tfDateFrom?: string;
+  tfSort?: string;
+  tfOrder?: 'asc' | 'desc';
 }
 
 const sortOptions = [
@@ -47,37 +39,43 @@ const sortOptions = [
   { value: 'tournament_type.major', label: 'Importance' },
 ];
 
-const TournamentFilters: React.FC<TournamentFiltersProps> = ({
-  onApplyFilters,
-  defaultValues = {},
-}) => {
-  const [filters, setFilters] = useState<TournamentFilterValues>(defaultValues);
-  const [activeFilters, setActiveFilters] = useState<number>(0);
-
-  // Update active filters count
-  useEffect(() => {
-    const count = Object.values(filters).filter(v => v !== undefined && v !== '').length;
-    setActiveFilters(count);
-  }, [filters]);
+const TournamentFilters: React.FC<TournamentFiltersProps> = ({}) => {
+  const { tfType, tfContinent, tfDateFrom, tfSort, tfOrder } = useSearch({ strict: false });
+  const navigate = useNavigate({ from: Route.fullPath });
 
   // Handle filter changes
-  const handleFilterChange = (name: keyof TournamentFilterValues, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Apply filters
-  const applyFilters = () => {
-    setTimeout(() => onApplyFilters(filters), 50);
-  };
+  const handleFilterChange = useCallback((name: keyof TournamentFilterValues, value: any) => {
+    navigate({
+      search: prev => ({
+        ...prev,
+        [name]: value,
+      }),
+    });
+  }, []);
 
   // Reset filters
-  const resetFilters = () => {
-    setFilters({});
-    setTimeout(() => onApplyFilters({}), 50);
-  };
+  const resetFilters = useCallback(() => {
+    navigate({
+      search: prev => ({
+        ...prev,
+        tfType: undefined,
+        tfContinent: undefined,
+        tfDateFrom: undefined,
+        tfSort: undefined,
+        tfOrder: undefined,
+      }),
+    });
+  }, []);
+
+  const activeFilters = useMemo(() => {
+    let filterCount = 0;
+    if (tfType) filterCount++;
+    if (tfContinent) filterCount++;
+    if (tfDateFrom) filterCount++;
+    if (tfSort) filterCount++;
+    if (tfOrder) filterCount++;
+    return filterCount;
+  }, [tfType, tfContinent, tfDateFrom, tfSort, tfOrder]);
 
   return (
     <Accordion
@@ -104,8 +102,8 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({
             <div className="space-y-2">
               <Label htmlFor="type">Tournament Type</Label>
               <TournamentTypeSelect
-                value={filters.type || ''}
-                onChange={value => handleFilterChange('type', value)}
+                value={tfType || ''}
+                onChange={value => handleFilterChange('tfType', value)}
                 showFullName={true}
                 emptyOption={true}
               />
@@ -113,59 +111,20 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({
 
             {/* Date */}
             <div className="space-y-2">
-              <Label htmlFor="date">Date</Label>
+              <Label htmlFor="tfDateFrom">Date from</Label>
               <DatePicker
-                date={filters.date}
-                onDateChange={date => handleFilterChange('date', date)}
+                date={tfDateFrom}
+                onDateChange={date => handleFilterChange('tfDateFrom', date)}
                 placeholder="Filter by date"
-              />
-            </div>
-
-            {/* Format */}
-            <div className="space-y-2">
-              <Label htmlFor="format">Format</Label>
-              <FormatSelect
-                value={filters.format || null}
-                onChange={value => handleFilterChange('format', value)}
-                allowEmpty={true}
-              />
-            </div>
-
-            {/* Set */}
-            <div className="space-y-2">
-              <Label htmlFor="set">Set</Label>
-              <SetSelect
-                value={filters.set || null}
-                emptyOption={true}
-                onChange={value => handleFilterChange('set', value)}
-                showFullName
-              />
-            </div>
-
-            {/* Season */}
-            <div className="space-y-2">
-              <Label htmlFor="season">Season</Label>
-              <Input
-                id="season"
-                type="number"
-                placeholder="Season number"
-                value={filters.season || ''}
-                onChange={e =>
-                  handleFilterChange(
-                    'season',
-                    e.target.value ? parseInt(e.target.value) : undefined,
-                  )
-                }
-                min={1}
               />
             </div>
 
             {/* Continent */}
             <div className="space-y-2">
-              <Label htmlFor="continent">Continent</Label>
+              <Label htmlFor="tfContinent">Continent</Label>
               <ContinentSelect
-                value={filters.continent}
-                onChange={value => handleFilterChange('continent', value)}
+                value={tfContinent}
+                onChange={value => handleFilterChange('tfContinent', value)}
                 emptyOption={true}
                 placeholder="All continents"
               />
@@ -176,8 +135,8 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({
               <Label htmlFor="sort">Sort By</Label>
               <div className="flex gap-2">
                 <Select
-                  value={filters.sort || 'tournament.date'}
-                  onValueChange={value => handleFilterChange('sort', value)}
+                  value={tfSort || 'tournament.date'}
+                  onValueChange={value => handleFilterChange('tfSort', value)}
                 >
                   <SelectTrigger id="sort" className="w-full">
                     <SelectValue placeholder="Sort by" />
@@ -193,11 +152,9 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() =>
-                    handleFilterChange('order', filters.order === 'asc' ? 'desc' : 'asc')
-                  }
+                  onClick={() => handleFilterChange('tfOrder', tfOrder === 'asc' ? 'desc' : 'asc')}
                 >
-                  {filters.order === 'asc' ? '↑' : '↓'}
+                  {tfOrder === 'asc' ? '↑' : '↓'}
                 </Button>
               </div>
             </div>
@@ -212,7 +169,6 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({
             >
               <RefreshCcw className="h-4 w-4 mr-2" /> Reset
             </Button>
-            <Button onClick={applyFilters}>Apply Filters</Button>
           </div>
         </AccordionContent>
       </AccordionItem>

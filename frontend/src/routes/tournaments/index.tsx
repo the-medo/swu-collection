@@ -3,7 +3,6 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 export const Route = createFileRoute('/tournaments/')({
   component: TournamentsPage,
   beforeLoad: () => {
-    // Redirect to the featured page
     throw redirect({ to: '/tournaments/featured' });
   },
 });
