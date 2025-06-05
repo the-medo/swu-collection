@@ -19,7 +19,7 @@ export const tournamentGroupIdTournamentsPutRoute = new Hono<AuthExtension>().pu
   zValidator('json', zTournamentGroupTournamentUpdateRequest),
   async c => {
     const user = c.get('user');
-    const groupId = c.req.param('id');
+    const groupId = z.string().uuid().parse(c.req.param('id'));
     const { tournamentId, position } = c.req.valid('json');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
@@ -86,7 +86,10 @@ export const tournamentGroupIdTournamentsPutRoute = new Hono<AuthExtension>().pu
         position: tournamentGroupTournamentTable.position,
       })
       .from(tournamentGroupTournamentTable)
-      .innerJoin(tournamentTable, eq(tournamentGroupTournamentTable.tournamentId, tournamentTable.id))
+      .innerJoin(
+        tournamentTable,
+        eq(tournamentGroupTournamentTable.tournamentId, tournamentTable.id),
+      )
       .where(
         and(
           eq(tournamentGroupTournamentTable.groupId, groupId),

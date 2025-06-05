@@ -7,6 +7,7 @@ import { db } from '../../../../db';
 import { tournamentGroup as tournamentGroupTable } from '../../../../db/schema/tournament_group.ts';
 import { tournamentGroupTournament as tournamentGroupTournamentTable } from '../../../../db/schema/tournament_group_tournament.ts';
 import { tournament as tournamentTable } from '../../../../db/schema/tournament.ts';
+import { updateTournamentGroupStatistics } from '../../../../lib/card-statistics/update-tournament-group-statistics.ts';
 
 // Define request body schema
 const zTournamentGroupTournamentCreateRequest = z.object({
@@ -19,7 +20,7 @@ export const tournamentGroupIdTournamentsPostRoute = new Hono<AuthExtension>().p
   zValidator('json', zTournamentGroupTournamentCreateRequest),
   async c => {
     const user = c.get('user');
-    const groupId = c.req.param('id');
+    const groupId = z.string().uuid().parse(c.req.param('id'));
     const { tournamentId, position = 0 } = c.req.valid('json');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
@@ -90,13 +91,24 @@ export const tournamentGroupIdTournamentsPostRoute = new Hono<AuthExtension>().p
         position: tournamentGroupTournamentTable.position,
       })
       .from(tournamentGroupTournamentTable)
-      .innerJoin(tournamentTable, eq(tournamentGroupTournamentTable.tournamentId, tournamentTable.id))
+      .innerJoin(
+        tournamentTable,
+        eq(tournamentGroupTournamentTable.tournamentId, tournamentTable.id),
+      )
       .where(
         and(
           eq(tournamentGroupTournamentTable.groupId, groupId),
           eq(tournamentGroupTournamentTable.tournamentId, tournamentId),
         ),
       );
+
+    // Update tournament group statistics
+    try {
+      await updateTournamentGroupStatistics(groupId);
+    } catch (error) {
+      console.error('Error updating tournament group statistics:', error);
+      // Continue with the response even if statistics update fails
+    }
 
     return c.json({ data: result[0] }, 201);
   },

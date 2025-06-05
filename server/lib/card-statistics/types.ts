@@ -3,6 +3,11 @@ import type {
   CardStatTournamentLeader,
   CardStatTournamentLeaderBase,
 } from '../../db/schema/card_stats_schema.ts';
+import type {
+  CardStatTournamentGroup,
+  CardStatTournamentGroupLeader,
+  CardStatTournamentGroupLeaderBase,
+} from '../../db/schema/card_stats_tournament_group_schema.ts';
 
 /**
  * Interface for card statistics data
@@ -47,8 +52,41 @@ export interface TournamentStatisticsResult {
 }
 
 /**
+ * Interface for tournament group card statistics data
+ */
+export interface TournamentGroupCardStat extends CardStat {
+  tournamentGroupId: string;
+}
+
+/**
+ * Interface for tournament group card statistics with leader data
+ */
+export interface TournamentGroupCardStatLeader extends TournamentGroupCardStat {
+  leaderCardId: string;
+}
+
+/**
+ * Interface for tournament group card statistics with leader and base data
+ */
+export interface TournamentGroupCardStatLeaderBase extends TournamentGroupCardStatLeader {
+  baseCardId: string;
+}
+
+/**
+ * Interface for tournament group statistics computation result
+ */
+export interface TournamentGroupStatisticsResult {
+  cardStats: TournamentGroupCardStat[];
+  cardStatsLeader: TournamentGroupCardStatLeader[];
+  cardStatsLeaderBase: TournamentGroupCardStatLeaderBase[];
+}
+
+/**
  * Type for database insert operations
  */
 export type CardStatTournamentInsert = Omit<CardStatTournament, 'id'>;
 export type CardStatTournamentLeaderInsert = Omit<CardStatTournamentLeader, 'id'>;
 export type CardStatTournamentLeaderBaseInsert = Omit<CardStatTournamentLeaderBase, 'id'>;
+export type CardStatTournamentGroupInsert = Omit<CardStatTournamentGroup, 'id'>;
+export type CardStatTournamentGroupLeaderInsert = Omit<CardStatTournamentGroupLeader, 'id'>;
+export type CardStatTournamentGroupLeaderBaseInsert = Omit<CardStatTournamentGroupLeaderBase, 'id'>;

@@ -5,9 +5,10 @@ import { db } from '../../../../db';
 import { tournamentGroup as tournamentGroupTable } from '../../../../db/schema/tournament_group.ts';
 import { tournamentGroupTournament as tournamentGroupTournamentTable } from '../../../../db/schema/tournament_group_tournament.ts';
 import { tournament as tournamentTable } from '../../../../db/schema/tournament.ts';
+import { z } from 'zod';
 
 export const tournamentGroupIdTournamentsGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const groupId = c.req.param('id');
+  const groupId = z.string().uuid().parse(c.req.param('id'));
 
   // Check if the tournament group exists
   const existingGroup = await db
