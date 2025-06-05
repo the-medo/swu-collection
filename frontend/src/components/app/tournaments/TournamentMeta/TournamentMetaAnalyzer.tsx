@@ -27,6 +27,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   const search = useSearch({ strict: false });
   const navigate = useNavigate({ from: Route.fullPath });
 
+
   // Use URL parameters with fallbacks to default values
   const metaPart = (search.maMetaPart as MetaPart) || 'all';
   const metaInfo = (search.maMetaInfo as MetaInfo) || 'leaders';
