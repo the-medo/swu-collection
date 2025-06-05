@@ -11,7 +11,7 @@ interface TournamentsDataLoaderProps {
 
 const TournamentsDataLoader: React.FC<TournamentsDataLoaderProps> = ({ tournaments }) => {
   const { data, isLoading } = useGetBulkTournaments(tournaments);
-  const { setTournamentData } = useTournamentMetaActions();
+  const { setTournamentData, setTournamentIds } = useTournamentMetaActions();
 
   useEffect(() => {
     if (!isLoading && data && tournaments) {
@@ -45,6 +45,10 @@ const TournamentsDataLoader: React.FC<TournamentsDataLoaderProps> = ({ tournamen
       }
     }
   }, [isLoading, data, tournaments, setTournamentData]);
+
+  useEffect(() => {
+    setTournamentIds(tournaments.map(t => t.tournament.id) ?? []);
+  }, [tournaments]);
 
   return null;
 };

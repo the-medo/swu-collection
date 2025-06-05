@@ -31,7 +31,7 @@ export interface TournamentType {
 export interface TournamentData {
   tournament: TournamentStringDate;
   tournamentType: TournamentType;
-  user: User;
+  user?: User;
   meta: Meta;
 }
 

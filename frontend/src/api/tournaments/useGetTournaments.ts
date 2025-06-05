@@ -26,7 +26,7 @@ export interface TournamentsResponse {
   };
 }
 
-export const useGetTournaments = (props: GetTournamentsRequest) => {
+export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) => {
   const {
     type,
     season,
@@ -93,5 +93,6 @@ export const useGetTournaments = (props: GetTournamentsRequest) => {
       return lastPage.pagination.offset + lastPage.pagination.limit;
     },
     staleTime: Infinity,
+    enabled: !!props,
   });
 };

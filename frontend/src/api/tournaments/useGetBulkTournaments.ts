@@ -81,7 +81,7 @@ export const useGetBulkTournaments = (tournaments: TournamentData[] | undefined)
       }
 
       // Fetch data for tournaments that need updating
-      const response = await api.tournament.bulk.$get({
+      const response = await api.tournament.bulk.data.$get({
         query: {
           ids: idsToFetch.join(','),
         },

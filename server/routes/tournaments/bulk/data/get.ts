@@ -1,12 +1,12 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../auth/auth.ts';
+import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
 import { eq, inArray } from 'drizzle-orm';
-import { db } from '../../db';
-import { tournamentMatch as tournamentMatchTable } from '../../db/schema/tournament_match.ts';
-import { tournamentDeck as tournamentDeckTable } from '../../db/schema/tournament_deck.ts';
-import { deck as deckTable } from '../../db/schema/deck.ts';
-import { deckInformation as deckInformationTable } from '../../db/schema/deck_information.ts';
+import { db } from '../../../../db';
+import { tournamentMatch as tournamentMatchTable } from '../../../../db/schema/tournament_match.ts';
+import { tournamentDeck as tournamentDeckTable } from '../../../../db/schema/tournament_deck.ts';
+import { deck as deckTable } from '../../../../db/schema/deck.ts';
+import { deckInformation as deckInformationTable } from '../../../../db/schema/deck_information.ts';
 import { zValidator } from '@hono/zod-validator';
 
 export interface TournamentsBulkResponse {

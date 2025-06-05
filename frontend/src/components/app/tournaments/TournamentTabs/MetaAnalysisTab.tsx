@@ -6,19 +6,18 @@ import TournamentDeckKeyFloater, {
 import { Helmet } from 'react-helmet-async';
 
 interface MetaAnalysisTabProps {
-  tournamentIds: string[];
   /**
    * Used for redirect in TournamentDeckKeyFloater
    */
   route: TournamentDeckKeyFloaterRoutes;
 }
 
-const MetaAnalysisTab: React.FC<MetaAnalysisTabProps> = ({ tournamentIds, route }) => {
+const MetaAnalysisTab: React.FC<MetaAnalysisTabProps> = ({ route }) => {
   return (
     <>
       <Helmet title="Meta Analysis" />
       <div className="space-y-2">
-        <TournamentMeta tournamentIds={tournamentIds} />
+        <TournamentMeta />
         <TournamentDeckKeyFloater route={route} />
       </div>
     </>

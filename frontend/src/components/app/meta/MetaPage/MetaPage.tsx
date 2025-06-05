@@ -25,6 +25,15 @@ function MetaPage() {
     (maTournamentGroupId as string) || '',
   );
 
+  const tournaments = useMemo(() => {
+    if (!tournamentGroup || !maTournamentGroupId) return undefined;
+    return tournamentGroup.data?.tournaments.map(t => ({
+      tournament: t.tournament,
+      tournamentType: t.tournamentType,
+      meta: tournamentGroup.data?.meta,
+    }));
+  }, [tournamentGroup, maTournamentGroupId]);
+
   const setFormat = useCallback(
     (v: number | null) => {
       navigate({
@@ -138,6 +147,7 @@ function MetaPage() {
             formatId={formatId}
             metaId={selectedMetaId}
             minTournamentType={minTournamentType}
+            tournaments={tournaments}
           />
         ) : (
           <Alert variant="warning">

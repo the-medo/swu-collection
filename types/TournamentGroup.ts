@@ -2,6 +2,7 @@ import type { Tournament } from '../server/db/schema/tournament.ts';
 import type { Meta } from '../server/db/schema/meta.ts';
 import type { TournamentDeck } from '../server/db/schema/tournament_deck.ts';
 import type { Deck } from '../server/db/schema/deck.ts';
+import type { TournamentType } from './Tournament.ts';
 
 export interface TournamentGroup {
   id: string;
@@ -21,6 +22,7 @@ export interface TournamentGroupWithMeta {
 export interface TournamentGroupTournament {
   tournament: Tournament;
   tournamentDeck: TournamentDeck;
+  tournamentType: TournamentType;
   deck: Deck;
   position: number;
 }

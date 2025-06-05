@@ -15,6 +15,7 @@ import { toast } from '@/hooks/use-toast.ts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
 import { useMemo } from 'react';
+import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentDataLoader.tsx';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -177,6 +178,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
             </div>
           )}
         </div>
+        <TournamentDataLoader tournamentId={tournamentId} />
         <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} />
         {activeTab === 'details' || tournament?.imported ? children : null}
         <NoTournamentData tournamentId={tournamentId} />

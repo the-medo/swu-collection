@@ -1,29 +1,14 @@
 import * as React from 'react';
-import { useEffect } from 'react';
-import {
-  useTournamentMetaActions,
-  useTournamentMetaStore,
-} from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
-import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentDataLoader.tsx';
+import { useTournamentMetaStore } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import TournamentMetaAnalyzer from '@/components/app/tournaments/TournamentMeta/TournamentMetaAnalyzer.tsx';
 
-interface TournamentMetaProps {
-  tournamentIds: string[];
-}
+interface TournamentMetaProps {}
 
-const TournamentMeta: React.FC<TournamentMetaProps> = ({ tournamentIds }) => {
+const TournamentMeta: React.FC<TournamentMetaProps> = () => {
   const { decks, tournaments } = useTournamentMetaStore();
-  const { setTournamentIds } = useTournamentMetaActions();
-
-  useEffect(() => {
-    setTournamentIds(tournamentIds);
-  }, [tournamentIds]);
 
   return (
     <>
-      {tournamentIds.map(tid => (
-        <TournamentDataLoader tournamentId={tid} key={tid} />
-      ))}
       <TournamentMetaAnalyzer decks={decks} tournaments={tournaments} />
     </>
   );
