@@ -20,7 +20,7 @@ export const tournamentGroupIdPutRoute = new Hono<AuthExtension>().put(
   zValidator('json', zTournamentGroupUpdateRequest),
   async c => {
     const user = c.get('user');
-    const id = c.req.param('id');
+    const id = z.string().uuid().parse(c.req.param('id'));
     const data = c.req.valid('json');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 

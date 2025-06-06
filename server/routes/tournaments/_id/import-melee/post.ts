@@ -11,6 +11,7 @@ import {
   computeAndSaveTournamentStatistics,
   computeAndSaveMetaStatistics,
 } from '../../../../lib/card-statistics';
+import { updateTournamentGroupsStatisticsForTournament } from '../../../../lib/card-statistics/update-tournament-group-statistics.ts';
 import { generateDeckThumbnails } from '../../../../lib/decks/generateDeckThumbnail.ts';
 
 export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
@@ -74,6 +75,14 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
         // If tournament has a meta, compute meta card statistics
         if (tournament.meta) {
           await computeAndSaveMetaStatistics(tournament.meta);
+        }
+
+        // Update tournament group statistics for all groups that contain this tournament
+        try {
+          await updateTournamentGroupsStatisticsForTournament(paramTournamentId);
+        } catch (error) {
+          console.error('Error updating tournament group statistics:', error);
+          // Continue with the response even if statistics update fails
         }
       }
 

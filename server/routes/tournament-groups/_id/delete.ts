@@ -3,10 +3,11 @@ import { auth, type AuthExtension } from '../../../auth/auth.ts';
 import { eq } from 'drizzle-orm';
 import { db } from '../../../db';
 import { tournamentGroup as tournamentGroupTable } from '../../../db/schema/tournament_group.ts';
+import { z } from 'zod';
 
 export const tournamentGroupIdDeleteRoute = new Hono<AuthExtension>().delete('/', async c => {
   const user = c.get('user');
-  const id = c.req.param('id');
+  const id = z.string().uuid().parse(c.req.param('id'));
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
   const hasPermission = await auth.api.userHasPermission({

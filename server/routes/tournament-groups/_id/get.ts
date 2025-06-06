@@ -9,9 +9,10 @@ import { tournamentType as tournamentTypeTable } from '../../../db/schema/tourna
 import { meta as metaTable } from '../../../db/schema/meta.ts';
 import { tournamentDeck } from '../../../db/schema/tournament_deck.ts';
 import { deck } from '../../../db/schema/deck.ts';
+import { z } from 'zod';
 
 export const tournamentGroupIdGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const id = c.req.param('id');
+  const id = z.string().uuid().parse(c.req.param('id'));
 
   // Get the tournament group with its tournaments
   const result = await db
