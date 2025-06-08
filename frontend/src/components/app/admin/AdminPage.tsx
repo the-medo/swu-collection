@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { useRole } from '@/hooks/useRole';
-import { Navigate } from '@tanstack/react-router';
+import { Navigate, useNavigate, useSearch } from '@tanstack/react-router';
 import { MetaTable } from './MetaTable';
 import { SetsPage } from './SetsPage';
 import { ThumbnailsPage } from '@/components/app/admin/ThumbnailsPage.tsx';
@@ -12,17 +12,28 @@ import { Helmet } from 'react-helmet-async';
 export function AdminPage() {
   const hasRole = useRole();
   const isAdmin = hasRole('admin');
+  const { page } = useSearch({ from: '/_authenticated/admin' });
+  const navigate = useNavigate({ from: '/_authenticated/admin' });
 
   // Redirect if not an admin
   if (!isAdmin) {
     return <Navigate to="/" />;
   }
 
+  const handleTabChange = (value: string) => {
+    navigate({
+      search: prev => ({
+        ...prev,
+        page: value,
+      }),
+    });
+  };
+
   return (
     <>
       <Helmet title="Admin dashboard | SWUBase" />
       <div className="container mx-auto">
-        <Tabs defaultValue="metas" className="w-full">
+        <Tabs value={page} onValueChange={handleTabChange} className="w-full">
           <TabsList>
             <TabsTrigger value="metas">Metas</TabsTrigger>
             <TabsTrigger value="sets">Sets</TabsTrigger>

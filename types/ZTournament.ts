@@ -39,7 +39,7 @@ export const zTournamentSchema = z.object({
   location: z.string().min(1).max(255),
   continent: z.string().min(1).max(100),
   name: z.string().min(1).max(255),
-  attendance: z.number().int().positive(),
+  attendance: z.number().int().min(0),
   meleeId: z.string().max(255).nullable().optional(),
   format: z
     .number()

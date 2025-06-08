@@ -13,7 +13,6 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as TermsImport } from './routes/terms'
 import { Route as PrivacyImport } from './routes/privacy'
-import { Route as AdminImport } from './routes/admin'
 import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
@@ -34,6 +33,7 @@ import { Route as CollectionsYourImport } from './routes/collections/your'
 import { Route as CollectionsPublicImport } from './routes/collections/public'
 import { Route as CardsSearchImport } from './routes/cards/search'
 import { Route as AuthenticatedSettingsImport } from './routes/_authenticated.settings'
+import { Route as AuthenticatedAdminImport } from './routes/_authenticated.admin'
 import { Route as WantlistsWantlistIdIndexImport } from './routes/wantlists/$wantlistId/index'
 import { Route as UsersUserIdIndexImport } from './routes/users/$userId/index'
 import { Route as TournamentsPlanetaryQualifiersIndexImport } from './routes/tournaments/planetary-qualifiers/index'
@@ -63,12 +63,6 @@ const TermsRoute = TermsImport.update({
 const PrivacyRoute = PrivacyImport.update({
   id: '/privacy',
   path: '/privacy',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AdminRoute = AdminImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -188,6 +182,12 @@ const CardsSearchRoute = CardsSearchImport.update({
 const AuthenticatedSettingsRoute = AuthenticatedSettingsImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
+const AuthenticatedAdminRoute = AuthenticatedAdminImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
@@ -327,13 +327,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminImport
-      parentRoute: typeof rootRoute
-    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -347,6 +340,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/terms'
       preLoaderRoute: typeof TermsImport
       parentRoute: typeof rootRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminImport
+      parentRoute: typeof AuthenticatedImport
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -592,10 +592,12 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }
 
@@ -607,9 +609,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -650,9 +652,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -694,9 +696,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -739,9 +741,9 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
-    | '/admin'
     | '/privacy'
     | '/terms'
+    | '/admin'
     | '/settings'
     | '/cards/search'
     | '/collections/public'
@@ -781,9 +783,9 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
-    | '/admin'
     | '/privacy'
     | '/terms'
+    | '/admin'
     | '/settings'
     | '/cards/search'
     | '/collections/public'
@@ -823,9 +825,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
-    | '/admin'
     | '/privacy'
     | '/terms'
+    | '/_authenticated/admin'
     | '/_authenticated/settings'
     | '/cards/search'
     | '/collections/public'
@@ -867,7 +869,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   CardsSearchRoute: typeof CardsSearchRoute
@@ -909,7 +910,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   CardsSearchRoute: CardsSearchRoute,
@@ -961,7 +961,6 @@ export const routeTree = rootRoute
         "/",
         "/_authenticated",
         "/about",
-        "/admin",
         "/privacy",
         "/terms",
         "/cards/search",
@@ -1005,20 +1004,22 @@ export const routeTree = rootRoute
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
+        "/_authenticated/admin",
         "/_authenticated/settings"
       ]
     },
     "/about": {
       "filePath": "about.tsx"
     },
-    "/admin": {
-      "filePath": "admin.tsx"
-    },
     "/privacy": {
       "filePath": "privacy.tsx"
     },
     "/terms": {
       "filePath": "terms.tsx"
+    },
+    "/_authenticated/admin": {
+      "filePath": "_authenticated.admin.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/settings": {
       "filePath": "_authenticated.settings.tsx",
