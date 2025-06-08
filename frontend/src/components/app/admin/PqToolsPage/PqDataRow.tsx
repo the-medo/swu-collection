@@ -6,7 +6,7 @@ import { DatePicker } from '@/components/ui/date-picker.tsx';
 import ContinentSelect from '@/components/app/tournaments/components/ContinentSelect.tsx';
 
 // Component for editing a single PQ tournament entry
-export function PqDataRow({ data, index, onSave }: PqDataRowProps) {
+export function PqDataRow({ data, index, onSave, onRemove }: PqDataRowProps) {
   const [formData, setFormData] = useState<PqTournament>(data);
   const [isDirty, setIsDirty] = useState(false);
 
@@ -29,6 +29,11 @@ export function PqDataRow({ data, index, onSave }: PqDataRowProps) {
   const handleSave = () => {
     onSave(index, formData);
     setIsDirty(false);
+  };
+
+  // Handle remove button click
+  const handleRemove = () => {
+    onRemove(index);
   };
 
   return (
@@ -54,9 +59,12 @@ export function PqDataRow({ data, index, onSave }: PqDataRowProps) {
       <div className="flex-1 min-w-[200px]">
         <Input value={formData.link || ''} onChange={e => handleChange('link', e.target.value)} />
       </div>
-      <div className="flex items-end">
+      <div className="flex items-end gap-2">
         <Button onClick={handleSave} disabled={!isDirty} size="sm">
           Save
+        </Button>
+        <Button onClick={handleRemove} variant="destructive" size="sm">
+          Remove
         </Button>
       </div>
     </div>

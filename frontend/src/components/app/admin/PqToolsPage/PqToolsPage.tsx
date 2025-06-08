@@ -56,6 +56,18 @@ export function PqToolsPage() {
     setSavedData(newData);
   };
 
+  // Handle removing a tournament entry
+  const handleRemoveTournament = (index: number) => {
+    if (!savedData) return;
+
+    // Create a new array without the removed data
+    const newData = savedData.filter((_, i) => i !== index);
+
+    // Save to local storage
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newData));
+    setSavedData(newData);
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">PQ Tools</h2>
@@ -66,7 +78,7 @@ export function PqToolsPage() {
         {savedData && (
           <>
             <JsonDataView data={savedData} onClear={clearSavedData} />
-            <EditableDataView data={savedData} onSave={handleSaveTournament} />
+            <EditableDataView data={savedData} onSave={handleSaveTournament} onRemove={handleRemoveTournament} />
           </>
         )}
       </Accordion>

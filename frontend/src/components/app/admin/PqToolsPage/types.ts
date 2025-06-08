@@ -12,6 +12,7 @@ export interface PqDataRowProps {
   data: PqTournament;
   index: number;
   onSave: (index: number, data: PqTournament) => void;
+  onRemove: (index: number) => void;
 }
 
 // Local storage key for PQ data
