@@ -3,8 +3,15 @@ import { defaultStatements, adminAc } from 'better-auth/plugins/admin/access';
 
 const statement = {
   ...defaultStatements,
-  tournament: ['create', 'update', 'delete', 'import'],
-  tournamentGroup: ['create', 'update', 'delete', 'assignTournament', 'removeTournament', 'updateTournamentPosition'],
+  tournament: ['create', 'update', 'delete', 'import', 'pq-parse'],
+  tournamentGroup: [
+    'create',
+    'update',
+    'delete',
+    'assignTournament',
+    'removeTournament',
+    'updateTournamentPosition',
+  ],
   meta: ['create', 'update', 'delete'],
   statistics: ['compute'],
   admin: ['access'],
@@ -22,8 +29,15 @@ export const organizer = ac.newRole({
 });
 
 export const admin = ac.newRole({
-  tournament: ['create', 'update', 'delete', 'import'],
-  tournamentGroup: ['create', 'update', 'delete', 'assignTournament', 'removeTournament', 'updateTournamentPosition'],
+  tournament: ['create', 'update', 'delete', 'import', 'pq-parse'],
+  tournamentGroup: [
+    'create',
+    'update',
+    'delete',
+    'assignTournament',
+    'removeTournament',
+    'updateTournamentPosition',
+  ],
   meta: ['create', 'update', 'delete'],
   statistics: ['compute'],
   admin: ['access'],
