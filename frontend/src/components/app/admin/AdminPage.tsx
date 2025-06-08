@@ -6,6 +6,7 @@ import { MetaTable } from './MetaTable';
 import { SetsPage } from './SetsPage';
 import { ThumbnailsPage } from '@/components/app/admin/ThumbnailsPage.tsx';
 import { TournamentGroupsPage } from '@/components/app/admin/TournamentGroupsPage';
+import { PqToolsPage } from '@/components/app/admin/PqToolsPage/PqToolsPage.tsx';
 import { Helmet } from 'react-helmet-async';
 
 export function AdminPage() {
@@ -27,6 +28,7 @@ export function AdminPage() {
             <TabsTrigger value="sets">Sets</TabsTrigger>
             <TabsTrigger value="tournament-groups">Tournament Groups</TabsTrigger>
             <TabsTrigger value="deck-thumbnails">SSR Thumbnails</TabsTrigger>
+            <TabsTrigger value="pq-tools">PQ Tools</TabsTrigger>
           </TabsList>
 
           <TabsContent value="metas">
@@ -54,6 +56,13 @@ export function AdminPage() {
             <Card>
               <CardContent className="p-4">
                 <ThumbnailsPage />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="pq-tools">
+            <Card>
+              <CardContent className="p-4">
+                <PqToolsPage />
               </CardContent>
             </Card>
           </TabsContent>
