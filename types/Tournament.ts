@@ -1,5 +1,7 @@
 import type { User } from './User.ts';
 import type { Meta } from '../server/db/schema/meta.ts';
+import type { TournamentDeck } from '../server/db/schema/tournament_deck.ts';
+import type { Deck } from '../server/db/schema/deck.ts';
 
 export interface TournamentStringDate {
   id: string;
@@ -28,11 +30,17 @@ export interface TournamentType {
   major: number;
 }
 
+export interface TournamentDataDeckInfo {
+  tournamentDeck: TournamentDeck;
+  deck: Deck;
+}
+
 export interface TournamentData {
   tournament: TournamentStringDate;
   tournamentType: TournamentType;
   user?: User;
   meta: Meta;
+  decks?: TournamentDataDeckInfo[];
 }
 
 export const tournamentTypes: [string, ...string[]] = [

@@ -8,6 +8,7 @@ import { Sun, Moon } from 'lucide-react';
 import { useSession } from '@/lib/auth-client.ts';
 import { useTheme } from '@/components/theme-provider.tsx';
 import { useCallback } from 'react';
+import { DISCORD_LINK, GITHUB_LINK } from '../../../../../../shared/consts/constants.ts';
 
 const SocialLinks: React.FC = () => {
   const { open } = useSidebar();
@@ -78,7 +79,7 @@ const SocialLinks: React.FC = () => {
                   asChild
                 >
                   <a
-                    href="https://discord.gg/W3XhDSb4jz"
+                    href={DISCORD_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Join our Discord"
@@ -109,7 +110,7 @@ const SocialLinks: React.FC = () => {
                   asChild
                 >
                   <a
-                    href="https://github.com/the-medo/swu-collection"
+                    href={GITHUB_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="View on GitHub"

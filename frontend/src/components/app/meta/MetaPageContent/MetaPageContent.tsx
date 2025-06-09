@@ -26,8 +26,6 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
     !tournaments,
   );
 
-  console.log({ tournaments });
-
   const tournamentsData = useMemo(() => {
     if (tournaments) return tournaments;
     if (!data) return [];

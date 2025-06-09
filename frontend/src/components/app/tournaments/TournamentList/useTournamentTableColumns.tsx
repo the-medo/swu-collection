@@ -23,6 +23,7 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
+import UpcomingBadge from '../components/UpcomingBadge';
 
 export interface TournamentTableColumnsProps {
   view?: DataTableViewMode;
@@ -92,15 +93,38 @@ export function useTournamentTableColumns({
     // Winning Deck column
     definitions.push({
       id: 'winningDeck',
-      header: 'Winning Deck',
-      size: 24,
+      header: ' ',
+      size: 32,
       displayBoxHeader: false,
       cell: ({ row }) => {
+        const tournament = row.original.tournament;
         const winningDeck = row.original.decks?.find(d => d.tournamentDeck.placement === 1);
 
-        if (!winningDeck || !cardList) return <div>No winning deck</div>;
+        // Check if tournament is in the future
+        const tournamentDate = new Date(tournament.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
 
-        console.log({ winningDeck });
+        if (tournamentDate > today) {
+          return <UpcomingBadge date={tournament.date} />;
+        }
+
+        // Tournament is in the past or current day
+        if (!tournament.imported) {
+          return (
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              Not imported
+            </div>
+          );
+        }
+
+        if (!winningDeck || !cardList) {
+          return (
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              No data
+            </div>
+          );
+        }
 
         const leader1 = winningDeck.deck.leaderCardId1
           ? cardList.cards[winningDeck.deck.leaderCardId1]

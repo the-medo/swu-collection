@@ -7,6 +7,8 @@ import { Users } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import DeckPlacement from '../components/DeckPlacement';
+import UpcomingBadge from '../components/UpcomingBadge';
+import { isFuture } from 'date-fns';
 
 interface TournamentGroupTournamentProps {
   tournamentItem: TournamentGroupTournamentType;
@@ -15,7 +17,7 @@ interface TournamentGroupTournamentProps {
 const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
   tournamentItem,
 }) => {
-  const { tournament, deck, tournamentDeck } = tournamentItem;
+  const { tournament, deck } = tournamentItem;
   const { data: countryData } = useCountryList();
   const { data: cardList } = useCardList();
 
@@ -31,18 +33,30 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
   const leader2 = deck.leaderCardId2 && cardList ? cardList.cards[deck.leaderCardId2] : undefined;
   const base = deck.baseCardId && cardList ? cardList.cards[deck.baseCardId] : undefined;
 
+  // Check if tournament is in the future
+  const isUpcoming = isFuture(tournament.date);
+
   return (
-    <Link to={`/tournaments/${tournament.id}`} className="block h-full">
+    <Link
+      to={`/tournaments/$tournamentId`}
+      params={{ tournamentId: tournament.id }}
+      className="block h-full"
+    >
       <Card className="overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <div className="relative overflow-hidden">
           <img
             src={thumbnailUrl}
             alt={tournament.name}
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+            className={`w-full h-full object-cover transition-transform duration-300 hover:scale-110 ${isUpcoming ? 'grayscale' : ''}`}
             onError={e => {
               // Fallback if image fails to load
               e.currentTarget.src = 'https://placehold.co/600x400?text=No+Image';
             }}
+          />
+
+          <UpcomingBadge
+            date={tournament.date as unknown as string}
+            className="absolute top-2 right-2"
           />
 
           {/* Winning Deck - positioned at the bottom of the image */}
@@ -60,7 +74,6 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
         </div>
         <CardContent className="p-4 flex-1 flex flex-col">
           <h4 className="font-semibold text-lg mb-2 line-clamp-2">{tournament.name}</h4>
-
           <div className="mt-auto flex flex-row justify-between items-center text-sm text-gray-600">
             <div className="flex items-center gap-1">
               <Users size={16} />
