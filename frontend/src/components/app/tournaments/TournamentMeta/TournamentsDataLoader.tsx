@@ -20,23 +20,23 @@ const TournamentsDataLoader: React.FC<TournamentsDataLoaderProps> = ({ tournamen
         const tournamentId = tournamentData.tournament.id;
 
         // Skip tournaments without necessary data
-        if (!tournamentId || !tournamentData.tournament.imported) {
-          continue;
-        }
+        // if (!tournamentId || !tournamentData.tournament.imported) {
+        //   continue;
+        // }
 
         // Get matches and decks for this tournament
         const matches = data.matches?.[tournamentId];
         const decks = data.decks?.[tournamentId];
 
         // Skip if either matches or decks are missing
-        if (!matches || !decks) {
-          continue;
-        }
+        // if (!matches || !decks) {
+        //   continue;
+        // }
 
         // Create the tournament analyzer data
         const analyzerData: TournamentAnalyzerData = {
-          decks: decks,
-          matches: matches,
+          decks: decks ?? [],
+          matches: matches ?? [],
           info: { [tournamentId]: tournamentData },
         };
 

@@ -14,6 +14,7 @@ const TournamentsFeatured: React.FC<TournamentsFeaturedProps> = ({}) => {
   const params = useMemo(
     () => ({
       meta: metaId,
+      visible: true,
     }),
     [metaId],
   );
