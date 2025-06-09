@@ -14,6 +14,7 @@ export type GetTournamentsRequest = {
   continent?: string;
   date?: Date | string;
   meta?: number;
+  limit?: number;
   sort?: string;
   order?: 'asc' | 'desc';
 };
@@ -37,6 +38,7 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
     continent,
     date,
     meta,
+    limit,
     sort = 'tournament.date',
     order = 'desc',
   } = props;
@@ -76,7 +78,7 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
           meta: meta?.toString(),
           sort,
           order,
-          limit: PAGE_SIZE.toString(),
+          limit: limit ?? PAGE_SIZE.toString(),
           offset: pageParam.toString(),
         },
       });
