@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Accordion } from '@/components/ui/accordion.tsx';
-import { PqTournament, LOCAL_STORAGE_KEY } from './types';
-import { ParserForm } from './ParserForm';
-import { JsonDataView } from './JsonDataView';
-import { EditableDataView } from './EditableDataView';
+import { PQTournament, LOCAL_STORAGE_KEY } from './types';
+import { PQParserForm } from './PQParserForm.tsx';
+import { PQJsonDataView } from './PQJsonDataView.tsx';
+import { PQEditableDataView } from './PQEditableDataView.tsx';
 
-export function PqToolsPage() {
-  const [savedData, setSavedData] = useState<PqTournament[] | null>(null);
+export function PQToolsPage() {
+  const [savedData, setSavedData] = useState<PQTournament[] | null>(null);
 
   // Load data from local storage on component mount
   useEffect(() => {
@@ -44,7 +44,7 @@ export function PqToolsPage() {
   };
 
   // Handle saving changes to a specific tournament entry
-  const handleSaveTournament = (index: number, updatedData: PqTournament) => {
+  const handleSaveTournament = (index: number, updatedData: PQTournament) => {
     if (!savedData) return;
 
     // Create a new array with the updated data
@@ -70,18 +70,24 @@ export function PqToolsPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">PQ Tools</h2>
+      <h2 className="text-2xl font-bold">PQ Parsing Tools</h2>
 
       <Accordion type="single" collapsible className="w-full">
-        <ParserForm onDataParsed={handleDataParsed} />
+        <PQParserForm onDataParsed={handleDataParsed} />
 
         {savedData && (
           <>
-            <JsonDataView data={savedData} onClear={clearSavedData} />
-            <EditableDataView data={savedData} onSave={handleSaveTournament} onRemove={handleRemoveTournament} />
+            <PQJsonDataView data={savedData} onClear={clearSavedData} />
+            <PQEditableDataView
+              data={savedData}
+              onSave={handleSaveTournament}
+              onRemove={handleRemoveTournament}
+            />
           </>
         )}
       </Accordion>
+      <h2 className="text-2xl font-bold">PQ Week Tools</h2>
+      <h3 className="text-lg font-medium">Coming soon...</h3>
     </div>
   );
 }

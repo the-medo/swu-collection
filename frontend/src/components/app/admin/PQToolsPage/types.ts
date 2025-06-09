@@ -1,5 +1,5 @@
 // Define the structure of a PQ tournament entry
-export interface PqTournament {
+export interface PQTournament {
   location: string; // Country code (e.g., "US", "FR")
   continent: string; // Continent name (e.g., "North America", "Europe")
   name: string; // Tournament name in the format "PQ - City - State, CountryCode" or "PQ - City, CountryCode"
@@ -8,10 +8,10 @@ export interface PqTournament {
 }
 
 // Props for the PqDataRow component
-export interface PqDataRowProps {
-  data: PqTournament;
+export interface PQDataRowProps {
+  data: PQTournament;
   index: number;
-  onSave: (index: number, data: PqTournament) => void;
+  onSave: (index: number, data: PQTournament) => void;
   onRemove: (index: number) => void;
 }
 

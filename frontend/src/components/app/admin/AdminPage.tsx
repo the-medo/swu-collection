@@ -6,7 +6,7 @@ import { MetaTable } from './MetaTable';
 import { SetsPage } from './SetsPage';
 import { ThumbnailsPage } from '@/components/app/admin/ThumbnailsPage.tsx';
 import { TournamentGroupsPage } from '@/components/app/admin/TournamentGroupsPage';
-import { PqToolsPage } from '@/components/app/admin/PqToolsPage/PqToolsPage.tsx';
+import { PQToolsPage } from '@/components/app/admin/PQToolsPage/PQToolsPage.tsx';
 import { Helmet } from 'react-helmet-async';
 
 export function AdminPage() {
@@ -73,7 +73,7 @@ export function AdminPage() {
           <TabsContent value="pq-tools">
             <Card>
               <CardContent className="p-4">
-                <PqToolsPage />
+                <PQToolsPage />
               </CardContent>
             </Card>
           </TabsContent>

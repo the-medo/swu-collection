@@ -1,15 +1,15 @@
 import { AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion.tsx';
-import { PqTournament } from './types';
-import { PqDataRow } from './PqDataRow';
+import { PQTournament } from './types';
+import { PQDataRow } from './PQDataRow.tsx';
 import { TournamentCreator } from './TournamentCreator';
 
-interface EditableDataViewProps {
-  data: PqTournament[];
-  onSave: (index: number, data: PqTournament) => void;
+interface PQEditableDataViewProps {
+  data: PQTournament[];
+  onSave: (index: number, data: PQTournament) => void;
   onRemove: (index: number) => void;
 }
 
-export function EditableDataView({ data, onSave, onRemove }: EditableDataViewProps) {
+export function PQEditableDataView({ data, onSave, onRemove }: PQEditableDataViewProps) {
   return (
     <AccordionItem value="editable-data">
       <AccordionTrigger>Parsed PQ Data (Editable Form)</AccordionTrigger>
@@ -24,7 +24,13 @@ export function EditableDataView({ data, onSave, onRemove }: EditableDataViewPro
             <div className="space-y-2">
               {Array.isArray(data) ? (
                 data.map((tournament, index) => (
-                  <PqDataRow key={index} data={tournament} index={index} onSave={onSave} onRemove={onRemove} />
+                  <PQDataRow
+                    key={index}
+                    data={tournament}
+                    index={index}
+                    onSave={onSave}
+                    onRemove={onRemove}
+                  />
                 ))
               ) : (
                 <p>No valid data to display</p>

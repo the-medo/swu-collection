@@ -5,10 +5,10 @@ import { toast } from '@/hooks/use-toast.ts';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector.tsx';
 import { usePostTournament } from '@/api/tournaments/usePostTournament.ts';
-import { PqTournament } from './types';
+import { PQTournament } from './types';
 
 interface TournamentCreatorProps {
-  data: PqTournament[];
+  data: PQTournament[];
 }
 
 export function TournamentCreator({ data }: TournamentCreatorProps) {

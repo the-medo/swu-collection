@@ -4,13 +4,13 @@ import { Textarea } from '@/components/ui/textarea.tsx';
 import { AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion.tsx';
 import { toast } from '@/hooks/use-toast.ts';
 import { useParsePqTournaments } from '@/api/tournaments/useParsePqTournaments.ts';
-import { PqTournament, LOCAL_STORAGE_KEY } from './types';
+import { PQTournament, LOCAL_STORAGE_KEY } from './types';
 
-interface ParserFormProps {
-  onDataParsed: (data: PqTournament[]) => void;
+interface PQParserFormProps {
+  onDataParsed: (data: PQTournament[]) => void;
 }
 
-export function ParserForm({ onDataParsed }: ParserFormProps) {
+export function PQParserForm({ onDataParsed }: PQParserFormProps) {
   const [inputData, setInputData] = useState('');
   const [parsedData, setParsedData] = useState<string>('');
   const [hasParsedData, setHasParsedData] = useState(false);
