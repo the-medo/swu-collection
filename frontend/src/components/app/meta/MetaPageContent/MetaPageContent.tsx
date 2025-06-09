@@ -1,7 +1,11 @@
 import { useGetTournaments } from '@/api/tournaments/useGetTournaments.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { useMemo } from 'react';
-import { TournamentData, tournamentTypesInfo } from '../../../../../../types/Tournament.ts';
+import {
+  TournamentData,
+  type TournamentTypeKey,
+  tournamentTypesInfo,
+} from '../../../../../../types/Tournament.ts';
 import * as React from 'react';
 import MetaTabs from '@/components/app/meta/MetaTabs/MetaTabs.tsx';
 
@@ -22,6 +26,7 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
     {
       format: formatId,
       meta: metaId,
+      minType: tournamentTypesInfo[minTournamentType as TournamentTypeKey].sortValue,
     },
     !tournaments,
   );
@@ -29,14 +34,8 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
   const tournamentsData = useMemo(() => {
     if (tournaments) return tournaments;
     if (!data) return [];
-    return data.pages
-      .flatMap(page => page.data || [])
-      .filter(
-        t =>
-          tournamentTypesInfo[t.tournamentType.id].sortValue >=
-          tournamentTypesInfo[minTournamentType].sortValue,
-      );
-  }, [data, minTournamentType, tournaments]);
+    return data.pages.flatMap(page => page.data || []);
+  }, [data, tournaments]);
 
   if (isFetching) return <Skeleton className="h-full w-full rounded-md" />;
   return <MetaTabs tournaments={tournamentsData} metaId={metaId} />;

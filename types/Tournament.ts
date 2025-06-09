@@ -64,3 +64,5 @@ export const tournamentTypesInfo = {
   rq: { name: 'Regional Qualifier', sortValue: 400, major: 1 },
   gc: { name: 'Galactic Championship', sortValue: 500, major: 1 },
 };
+
+export type TournamentTypeKey = keyof typeof tournamentTypesInfo;

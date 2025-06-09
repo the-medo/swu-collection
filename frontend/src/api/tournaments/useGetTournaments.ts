@@ -7,6 +7,7 @@ const PAGE_SIZE = 20;
 
 export type GetTournamentsRequest = {
   type?: string;
+  minType?: number;
   season?: number;
   set?: string;
   format?: number;
@@ -29,6 +30,7 @@ export interface TournamentsResponse {
 export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) => {
   const {
     type,
+    minType,
     season,
     set,
     format,
@@ -45,6 +47,7 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
       'tournaments',
       {
         type,
+        minType,
         season,
         set,
         format,
@@ -55,7 +58,7 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
         order,
       },
     ],
-    [type, season, set, format, continent, date, meta, sort, order],
+    [type, minType, season, set, format, continent, date, meta, sort, order],
   );
 
   return useInfiniteQuery({
@@ -64,6 +67,7 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
       const response = await api.tournament.$get({
         query: {
           type,
+          minType: minType?.toString(),
           season: season?.toString(),
           set,
           format: format?.toString(),
