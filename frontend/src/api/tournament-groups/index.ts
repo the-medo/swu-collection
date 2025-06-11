@@ -10,3 +10,4 @@ export * from './useDeleteTournamentGroup';
 export * from './usePostTournamentGroupTournament';
 export * from './useDeleteTournamentGroupTournament';
 export * from './usePutTournamentGroupTournament';
+export * from './usePostTournamentGroupRecompute';

@@ -12,6 +12,8 @@ import { meta as metaTable } from '../../db/schema/meta.ts';
 import { withPagination } from '../../lib/withPagination.ts';
 import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
 import { deck } from '../../db/schema/deck.ts';
+import { tournamentGroupStats } from '../../db/schema/tournament_group_stats.ts';
+import { tournamentGroupLeaderBase } from '../../db/schema/tournament_group_leader_base.ts';
 
 // Define query parameters schema
 const zTournamentGroupQueryParams = z.object({
@@ -20,7 +22,12 @@ const zTournamentGroupQueryParams = z.object({
     if (val === 'false') return false;
     if (val === 'true') return true;
     return val;
-  }, z.boolean().optional().default(true)),
+  }, z.boolean().optional()),
+  includeStats: z.preprocess(val => {
+    if (val === 'false') return false;
+    if (val === 'true') return true;
+    return val;
+  }, z.boolean().optional().default(false)),
   limit: z.coerce.number().optional().default(100),
   offset: z.coerce.number().optional().default(0),
   sort: z.enum(['name', 'position', 'created_at']).optional().default('position'),
@@ -31,7 +38,7 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
   '/',
   zValidator('query', zTournamentGroupQueryParams),
   async c => {
-    const { meta, visible, limit, offset, sort, order } = c.req.valid('query');
+    const { meta, visible, includeStats, limit, offset, sort, order } = c.req.valid('query');
 
     const filters = [];
 
@@ -45,13 +52,14 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
       filters.push(eq(tournamentGroupTable.visible, visible));
     }
 
-    // Build the query with all filters
-    let query = db
-      .select({
-        group: tournamentGroupTable,
-        meta: metaTable,
-        // Use a subquery with json_agg to aggregate tournaments into an array
-        tournaments: sql`
+    // Define the extra fields to select if includeStats is true
+    const extraSelections = includeStats ? {} : {};
+
+    // Create the complete select object with all fields
+    const completeSelect = {
+      group: tournamentGroupTable,
+      meta: metaTable,
+      tournaments: sql`
           COALESCE(
             (
               SELECT jsonb_agg(
@@ -73,14 +81,44 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
             '[]'::jsonb
           )
         `,
-      })
+
+      stats: includeStats
+        ? sql`
+          COALESCE(
+            (
+              SELECT jsonb_agg(jsonb_snake_to_camel(to_jsonb(tgs.*)))
+              FROM ${tournamentGroupTable} tg
+              LEFT JOIN ${tournamentGroupStats} tgs ON tgs.tournament_group_id = tg.id
+              WHERE tg.id = ${tournamentGroupTable.id}
+            ),
+            '{}'::jsonb
+          )
+        `
+        : sql.raw('NULL'),
+      leader_base: includeStats
+        ? sql`
+          COALESCE(
+            (
+              SELECT jsonb_agg(jsonb_snake_to_camel(to_jsonb(tglb.*)))
+              FROM ${tournamentGroupTable} tg
+              LEFT JOIN ${tournamentGroupLeaderBase} tglb ON tglb.tournament_group_id = tg.id
+              WHERE tg.id = ${tournamentGroupTable.id}
+            ),
+            '[]'::jsonb
+      )
+    `
+        : sql.raw('NULL'),
+    };
+
+    // Build the query with all filters
+    let query = db
+      .select(completeSelect)
       .from(tournamentGroupTable)
       .leftJoin(metaTable, eq(tournamentGroupTable.metaId, metaTable.id))
       .$dynamic();
 
     // Apply all filters
     if (filters.length > 0) {
-      console.log({ filters });
       query = query.where(and(...filters));
     }
 

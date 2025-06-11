@@ -7,17 +7,13 @@ const PAGE_SIZE = 20;
 export type GetTournamentGroupsRequest = {
   meta?: number;
   visible?: boolean;
+  includeStats?: boolean;
   sort?: 'name' | 'position' | 'created_at';
   order?: 'asc' | 'desc';
 };
 
 export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) => {
-  const {
-    meta,
-    visible,
-    sort = 'position',
-    order = 'asc',
-  } = props;
+  const { meta, visible, includeStats, sort = 'position', order = 'asc' } = props;
 
   // Create a stable query key based on all filter parameters
   const qk = [
@@ -25,6 +21,7 @@ export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) =
     {
       meta,
       visible,
+      includeStats,
       sort,
       order,
     },
@@ -37,6 +34,7 @@ export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) =
         query: {
           meta: meta?.toString(),
           visible: visible?.toString(),
+          includeStats: includeStats?.toString(),
           sort,
           order,
           limit: PAGE_SIZE.toString(),
@@ -48,7 +46,7 @@ export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) =
         throw new Error('Failed to fetch tournament groups');
       }
 
-      return await response.json() as TournamentGroupsResponse;
+      return (await response.json()) as TournamentGroupsResponse;
     },
     initialPageParam: 0,
     getNextPageParam: lastPage => {

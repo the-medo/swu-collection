@@ -1,7 +1,7 @@
 import * as React from 'react';
 import TournamentPageHeader from '@/components/app/tournaments/TournamentPageHeader';
 import TournamentNavigation from '@/components/app/tournaments/TournamentNavigation/TournamentNavigation.tsx';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { Link, useSearch } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { useGetTournamentGroups } from '@/api/tournament-groups';
 import {
@@ -12,6 +12,7 @@ import {
 import { ChevronDown, Check, X, Users } from 'lucide-react';
 import { isFuture } from 'date-fns';
 import PQPageNavigation from './PQPageNavigation';
+import PQStatistics from './PQStatistics';
 import RecentBadge from '../../components/RecentBadge';
 import UpcomingBadge from '../../components/UpcomingBadge';
 import Flag from '@/components/app/global/Flag';
@@ -25,6 +26,7 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
     () => ({
       meta: metaId,
       visible: false,
+      includeStats: true,
     }),
     [metaId],
   );
@@ -94,6 +96,7 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
     <>
       <TournamentNavigation />
       <TournamentPageHeader title="Planetary Qualifiers" />
+      {metaId && pqWeekGroups.length > 0 && <PQStatistics tournamentGroups={pqWeekGroups} />}
       <PQPageNavigation />
 
       {isLoading && (
@@ -149,7 +152,7 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
 
                   <Collapsible className="mt-2">
                     <CollapsibleTrigger className="flex items-center text-left w-full">
-                      <h4 className="text-md font-medium">Tournaments ({tournamentCount})</h4>
+                      <h6 className="text-md font-medium">Tournaments ({tournamentCount})</h6>
                       <ChevronDown className="h-4 w-4 ml-2 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                     </CollapsibleTrigger>
 
@@ -201,7 +204,16 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
                                     <td className="p-1 w-6">
                                       <Flag countryCode={countryCode} />
                                     </td>
-                                    <td className="py-2">{displayName}</td>
+                                    <td className="py-2">
+                                      <Link
+                                        to="/tournaments/$tournamentId"
+                                        params={{
+                                          tournamentId: tournamentItem.tournament.id,
+                                        }}
+                                      >
+                                        {displayName}
+                                      </Link>
+                                    </td>
                                     <td className="py-2 w-12 text-right">
                                       <div className="flex items-center justify-end gap-1">
                                         <Users className="h-3 w-3 text-muted-foreground" />

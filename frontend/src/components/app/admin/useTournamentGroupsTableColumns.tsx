@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, Eye } from 'lucide-react';
+import { Edit, Trash2, Eye, RefreshCw } from 'lucide-react';
 import { TournamentGroupWithMeta } from '../../../../types/TournamentGroup';
 import { Badge } from '@/components/ui/badge';
 
@@ -8,12 +8,14 @@ interface UseTournamentGroupsTableColumnsProps {
   onEdit: (group: TournamentGroupWithMeta) => void;
   onDelete: (group: TournamentGroupWithMeta) => void;
   onManageTournaments: (group: TournamentGroupWithMeta) => void;
+  onRecompute: (group: TournamentGroupWithMeta) => void;
 }
 
 export function useTournamentGroupsTableColumns({
   onEdit,
   onDelete,
   onManageTournaments,
+  onRecompute,
 }: UseTournamentGroupsTableColumnsProps) {
   const columns: ColumnDef<TournamentGroupWithMeta>[] = [
     {
@@ -71,6 +73,14 @@ export function useTournamentGroupsTableColumns({
               title="Manage Tournaments"
             >
               <Eye className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onRecompute(row.original)}
+              title="Recompute Statistics"
+            >
+              <RefreshCw className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"

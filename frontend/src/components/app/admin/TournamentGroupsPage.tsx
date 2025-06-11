@@ -15,7 +15,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/use-toast.ts';
 import { useTournamentGroupsTableColumns } from './useTournamentGroupsTableColumns';
-import { useGetTournamentGroups, useDeleteTournamentGroup } from '@/api/tournament-groups';
+import {
+  useGetTournamentGroups,
+  useDeleteTournamentGroup,
+  usePostTournamentGroupRecompute,
+} from '@/api/tournament-groups';
 import { TournamentGroupForm } from './TournamentGroupForm';
 import { TournamentGroupDetail } from './TournamentGroupDetail';
 import { TournamentGroupWithMeta } from '../../../../../types/TournamentGroup.ts';
@@ -41,6 +45,7 @@ export function TournamentGroupsPage() {
   const { data } = useGetTournamentGroups(params);
 
   const deleteTournamentGroup = useDeleteTournamentGroup();
+  const recomputeTournamentGroup = usePostTournamentGroupRecompute();
 
   const handleEdit = (group: TournamentGroupWithMeta) => {
     setSelectedGroup(group);
@@ -55,6 +60,22 @@ export function TournamentGroupsPage() {
   const handleManageTournaments = (group: TournamentGroupWithMeta) => {
     setSelectedGroup(group);
     setDetailDialogOpen(true);
+  };
+
+  const handleRecompute = async (group: TournamentGroupWithMeta) => {
+    try {
+      await recomputeTournamentGroup.mutateAsync(group.group.id);
+      toast({
+        title: 'Statistics recomputed',
+        description: `Statistics for "${group.group.name}" have been recomputed.`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to recompute statistics. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const confirmDelete = async () => {
@@ -82,6 +103,7 @@ export function TournamentGroupsPage() {
     onEdit: handleEdit,
     onDelete: handleDelete,
     onManageTournaments: handleManageTournaments,
+    onRecompute: handleRecompute,
   });
 
   const groups = useMemo(() => data?.pages.map(p => p.data).flat() ?? [], [data]);
