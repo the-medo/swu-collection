@@ -16,7 +16,11 @@ import { deck } from '../../db/schema/deck.ts';
 // Define query parameters schema
 const zTournamentGroupQueryParams = z.object({
   meta: z.coerce.number().optional(),
-  visible: z.coerce.boolean().optional(),
+  visible: z.preprocess(val => {
+    if (val === 'false') return false;
+    if (val === 'true') return true;
+    return val;
+  }, z.boolean().optional().default(true)),
   limit: z.coerce.number().optional().default(100),
   offset: z.coerce.number().optional().default(0),
   sort: z.enum(['name', 'position', 'created_at']).optional().default('position'),
@@ -76,6 +80,7 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
 
     // Apply all filters
     if (filters.length > 0) {
+      console.log({ filters });
       query = query.where(and(...filters));
     }
 

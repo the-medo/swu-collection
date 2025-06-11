@@ -1,9 +1,16 @@
 import TournamentsPlanetaryQualifiers from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/TournamentsPlanetaryQualifiers';
 import { createFileRoute } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
+import { z } from 'zod';
+import { zodValidator } from '@tanstack/zod-adapter';
+
+const searchParams = z.object({
+  page: z.enum(['tournaments', 'winners', 'top8']).default('winners'),
+});
 
 export const Route = createFileRoute('/tournaments/planetary-qualifiers/')({
   component: TournamentsPlanetaryQualifiersPage,
+  validateSearch: zodValidator(searchParams),
 });
 
 function TournamentsPlanetaryQualifiersPage() {
