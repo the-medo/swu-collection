@@ -2,7 +2,7 @@ import * as React from 'react';
 import TournamentPageHeader from '@/components/app/tournaments/TournamentPageHeader';
 import TournamentNavigation from '@/components/app/tournaments/TournamentNavigation/TournamentNavigation.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useGetTournamentGroups } from '@/api/tournament-groups';
 import {
   Collapsible,
@@ -10,20 +10,17 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible.tsx';
 import { ChevronDown, Check, X, Users } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useCountryList } from '@/api/lists/useCountryList.ts';
-import { CountryCode } from '../../../../../server/db/lists.ts';
 import { isFuture } from 'date-fns';
 import PQPageNavigation from './PQPageNavigation';
 import RecentBadge from '../../components/RecentBadge';
 import UpcomingBadge from '../../components/UpcomingBadge';
+import Flag from '@/components/app/global/Flag';
+import { CountryCode } from '../../../../../../../server/db/lists.ts';
 
 interface TournamentsPlanetaryQualifiersProps {}
 
 const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersProps> = ({}) => {
   const { metaId, page = 'tournaments' } = useSearch({ strict: false });
-  const navigate = useNavigate();
-
   const params = useMemo(
     () => ({
       meta: metaId,
@@ -32,7 +29,6 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
     [metaId],
   );
 
-  // Fetch tournament groups data
   const { data: tournamentGroupsData, isLoading } = useGetTournamentGroups(params);
 
   // Filter and sort PQ Week tournament groups
@@ -94,15 +90,10 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
     });
   };
 
-  // Get country data
-  const { data: countryData } = useCountryList();
-
   return (
     <>
       <TournamentNavigation />
       <TournamentPageHeader title="Planetary Qualifiers" />
-
-      {/* Page selector */}
       <PQPageNavigation />
 
       {isLoading && (
@@ -166,32 +157,18 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
                       <table className="w-full text-sm">
                         <tbody>
                           {(() => {
-                            // Sort tournaments by continent
-                            const sortedTournaments = [...group.tournaments].sort((a, b) => {
-                              const continentA = a.tournament.continent;
-                              const continentB = b.tournament.continent;
-                              return continentA.localeCompare(continentB);
-                            });
-
                             // Track the current continent to detect changes
                             let currentContinent = '';
 
-                            return sortedTournaments.map((tournamentItem, idx) => {
+                            return group.tournaments.map((tournamentItem, idx) => {
                               // Remove "PQ - " prefix from tournament name
                               const displayName = tournamentItem.tournament.name.replace(
                                 /^PQ - /,
                                 '',
                               );
 
-                              // Remove country code from tournament name (if it exists)
-                              const nameWithoutCountryCode = displayName.replace(/^\[\w+\]\s*/, '');
+                              const countryCode = tournamentItem.tournament.location as CountryCode;
 
-                              // Get country data
-                              const countryCode = tournamentItem.tournament
-                                .continent as CountryCode;
-                              const country = countryData?.countries[countryCode];
-
-                              // Determine status icon
                               const tournamentDate = new Date(tournamentItem.tournament.date);
                               const isFutureDate = isFuture(tournamentDate);
 
@@ -205,9 +182,10 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
                               }
 
                               // Check if continent has changed
-                              const isNewContinent = currentContinent !== countryCode;
+                              const isNewContinent =
+                                currentContinent !== tournamentItem.tournament.continent;
                               if (isNewContinent) {
-                                currentContinent = countryCode;
+                                currentContinent = tournamentItem.tournament.continent;
                               }
 
                               return (
@@ -215,21 +193,15 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
                                   {isNewContinent && (
                                     <tr className="bg-muted/50">
                                       <td colSpan={4} className="py-1 px-2 font-medium">
-                                        {country?.name || countryCode}
+                                        {currentContinent}
                                       </td>
                                     </tr>
                                   )}
                                   <tr className="border-b border-gray-100 dark:border-gray-800">
-                                    <td className="py-2 w-8">
-                                      {country && (
-                                        <img
-                                          src={country.flag}
-                                          alt={country.code}
-                                          className="w-5 h-5"
-                                        />
-                                      )}
+                                    <td className="p-1 w-6">
+                                      <Flag countryCode={countryCode} />
                                     </td>
-                                    <td className="py-2">{nameWithoutCountryCode}</td>
+                                    <td className="py-2">{displayName}</td>
                                     <td className="py-2 w-12 text-right">
                                       <div className="flex items-center justify-end gap-1">
                                         <Users className="h-3 w-3 text-muted-foreground" />
