@@ -7,6 +7,7 @@ import WeekSelector from './WeekSelector.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import PQPageNavigation from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/PQPageNavigation.tsx';
+import { useMemo } from 'react';
 
 interface PQStatisticsProps {
   tournamentGroups: TournamentGroupWithMeta[];
@@ -14,19 +15,13 @@ interface PQStatisticsProps {
 
 const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups }) => {
   // Calculate statistics
-  const statistics = React.useMemo(() => {
-    // Flatten all tournaments from all groups
+  const statistics = useMemo(() => {
     const allTournaments = tournamentGroups.flatMap(group =>
       group.tournaments.map(t => t.tournament),
     );
 
-    // Total number of tournaments
     const totalTournaments = allTournaments.length;
-
-    // Number of imported tournaments
     const importedTournaments = allTournaments.filter(t => t.imported).length;
-
-    // Number of upcoming tournaments
     const upcomingTournaments = allTournaments.filter(t => isFuture(new Date(t.date))).length;
 
     return {
@@ -37,7 +32,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups }) => {
   }, [tournamentGroups]);
 
   // Process tournament groups for the select component
-  const processedTournamentGroups = React.useMemo(() => {
+  const processedTournamentGroups = useMemo(() => {
     // Find the most recent tournament date that is not in the future
     let mostRecentDate = new Date(0); // Initialize with earliest possible date
     let mostRecentGroupIndex = -1;
@@ -176,36 +171,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups }) => {
                     return <p>No information available for the selected week.</p>;
                   }
 
-                  return (
-                    <>
-                      <h4 className="text-lg font-semibold mb-2">
-                        Week {selectedGroup.weekNumber} Details
-                      </h4>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {selectedGroup.description}
-                      </p>
-
-                      <div className="grid grid-cols-2 gap-2 mt-4">
-                        <div className="p-2 bg-muted/30 rounded">
-                          <p className="text-sm font-medium">Tournaments</p>
-                          <p className="text-xl">{selectedGroup.tournaments.length}</p>
-                        </div>
-                        <div className="p-2 bg-muted/30 rounded">
-                          <p className="text-sm font-medium">Status</p>
-                          <p className="text-xl">
-                            {selectedGroup.isUpcoming ? 'Upcoming' : 'Completed'}
-                          </p>
-                        </div>
-                      </div>
-
-                      {selectedGroup.meta && (
-                        <div className="mt-4">
-                          <p className="text-sm font-medium">Meta</p>
-                          <p>{selectedGroup.meta.name}</p>
-                        </div>
-                      )}
-                    </>
-                  );
+                  return <>{/* add leader-base stats here from selectedGroup.leaderBase */}</>;
                 })()}
               </div>
             )}

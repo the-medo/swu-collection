@@ -86,7 +86,7 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
         ? sql`
           COALESCE(
             (
-              SELECT jsonb_agg(jsonb_snake_to_camel(to_jsonb(tgs.*)))
+              SELECT jsonb_snake_to_camel(to_jsonb(tgs.*))
               FROM ${tournamentGroupTable} tg
               LEFT JOIN ${tournamentGroupStats} tgs ON tgs.tournament_group_id = tg.id
               WHERE tg.id = ${tournamentGroupTable.id}
@@ -95,7 +95,7 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
           )
         `
         : sql.raw('NULL'),
-      leader_base: includeStats
+      leaderBase: includeStats
         ? sql`
           COALESCE(
             (

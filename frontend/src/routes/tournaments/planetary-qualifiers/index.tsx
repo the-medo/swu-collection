@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { zodValidator } from '@tanstack/zod-adapter';
 
 const searchParams = z.object({
-  page: z.enum(['tournaments', 'winners', 'top8']).default('winners'),
+  page: z.enum(['tournaments', 'winners', 'top8', 'total']).default('winners'),
   weekId: z.string().optional(),
 });
 

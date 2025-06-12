@@ -11,15 +11,15 @@ const PQPageNavigation: React.FC<PQPageNavigationProps> = () => {
     <div className="grid grid-cols-3 mb-2 rounded-lg bg-muted p-1">
       <Link
         to="/tournaments/planetary-qualifiers"
-        search={prev => ({ ...prev, page: 'tournaments' })}
+        search={prev => ({ ...prev, page: 'winners' })}
         className={cn(
           'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-          page === 'tournaments'
+          page === 'winners'
             ? 'bg-background text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground',
         )}
       >
-        Tournaments
+        Winners
       </Link>
       <Link
         to="/tournaments/planetary-qualifiers"
@@ -35,15 +35,15 @@ const PQPageNavigation: React.FC<PQPageNavigationProps> = () => {
       </Link>
       <Link
         to="/tournaments/planetary-qualifiers"
-        search={prev => ({ ...prev, page: 'winners' })}
+        search={prev => ({ ...prev, page: 'total' })}
         className={cn(
           'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-          page === 'winners'
+          page === 'total'
             ? 'bg-background text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground',
         )}
       >
-        Winners
+        Total
       </Link>
     </div>
   );
