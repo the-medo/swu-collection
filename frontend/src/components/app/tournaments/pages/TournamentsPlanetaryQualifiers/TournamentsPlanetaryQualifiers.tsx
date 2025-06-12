@@ -1,22 +1,11 @@
 import * as React from 'react';
 import TournamentPageHeader from '@/components/app/tournaments/TournamentPageHeader';
 import TournamentNavigation from '@/components/app/tournaments/TournamentNavigation/TournamentNavigation.tsx';
-import { Link, useSearch } from '@tanstack/react-router';
+import { useSearch } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { useGetTournamentGroups } from '@/api/tournament-groups';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible.tsx';
-import { ChevronDown, Check, X, Users } from 'lucide-react';
-import { isFuture } from 'date-fns';
-import PQPageNavigation from './PQPageNavigation';
 import PQStatistics from './PQStatistics';
-import RecentBadge from '../../components/RecentBadge';
-import UpcomingBadge from '../../components/UpcomingBadge';
-import Flag from '@/components/app/global/Flag';
-import { CountryCode } from '../../../../../../../server/db/lists.ts';
+import WeekColumns from './WeekColumns.tsx';
 
 interface TournamentsPlanetaryQualifiersProps {}
 
@@ -84,20 +73,11 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
     return mostRecentIndex;
   }, [pqWeekGroups]);
 
-  // Determine if a week is upcoming (has tournaments with dates in the future)
-  const isUpcomingWeek = (group: any) => {
-    return group.tournaments.some(tournament => {
-      const tournamentDate = new Date(tournament.tournament.date);
-      return tournamentDate > currentDate;
-    });
-  };
-
   return (
     <>
       <TournamentNavigation />
       <TournamentPageHeader title="Planetary Qualifiers" />
       {metaId && pqWeekGroups.length > 0 && <PQStatistics tournamentGroups={pqWeekGroups} />}
-      <PQPageNavigation />
 
       {isLoading && (
         <div className="p-8 text-center">
@@ -117,123 +97,7 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
 
       {metaId && pqWeekGroups.length > 0 && (
         <div className="p-2">
-          <div className="flex flex-row gap-2 overflow-x-auto pb-2">
-            {pqWeekGroups.map((group, index) => {
-              // Determine background color based on week status
-              let bgColor = '';
-              if (index === mostRecentWeekIndex) {
-                bgColor = 'bg-green-100/50 dark:bg-green-900/30 text-foreground'; // Most recent week (green)
-              } else if (isUpcomingWeek(group)) {
-                bgColor = 'bg-blue-100/50 dark:bg-blue-900/30 text-foreground'; // Upcoming week (blue)
-              }
-
-              // Count tournaments in this group
-              const tournamentCount = group.tournaments.length;
-
-              return (
-                <div
-                  key={group.group.id}
-                  className={`min-w-[250px] border rounded-md p-2 ${bgColor}`}
-                >
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-xl font-bold mb-2">
-                      Week {group.group.name.match(/^PQ Week (\d+)$/)?.[1]}
-                    </h3>
-                    {index === mostRecentWeekIndex && <RecentBadge />}
-                    {isUpcomingWeek(group) && (
-                      <UpcomingBadge date={group.tournaments[0]?.tournament.date} />
-                    )}
-                  </div>
-                  {group.group.description && (
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      {group.group.description}
-                    </p>
-                  )}
-
-                  <Collapsible className="mt-2">
-                    <CollapsibleTrigger className="flex items-center text-left w-full">
-                      <h6 className="text-md font-medium">Tournaments ({tournamentCount})</h6>
-                      <ChevronDown className="h-4 w-4 ml-2 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                    </CollapsibleTrigger>
-
-                    <CollapsibleContent className="mt-2">
-                      <table className="w-full text-sm">
-                        <tbody>
-                          {(() => {
-                            // Track the current continent to detect changes
-                            let currentContinent = '';
-
-                            return group.tournaments.map((tournamentItem, idx) => {
-                              // Remove "PQ - " prefix from tournament name
-                              const displayName = tournamentItem.tournament.name.replace(
-                                /^PQ - /,
-                                '',
-                              );
-
-                              const countryCode = tournamentItem.tournament.location as CountryCode;
-
-                              const tournamentDate = new Date(tournamentItem.tournament.date);
-                              const isFutureDate = isFuture(tournamentDate);
-
-                              let statusIcon = null;
-                              if (!isFutureDate) {
-                                if (tournamentItem.tournament.imported) {
-                                  statusIcon = <Check className="h-4 w-4 text-green-500" />;
-                                } else {
-                                  statusIcon = <X className="h-4 w-4 text-red-500" />;
-                                }
-                              }
-
-                              // Check if continent has changed
-                              const isNewContinent =
-                                currentContinent !== tournamentItem.tournament.continent;
-                              if (isNewContinent) {
-                                currentContinent = tournamentItem.tournament.continent;
-                              }
-
-                              return (
-                                <React.Fragment key={tournamentItem.tournament.id}>
-                                  {isNewContinent && (
-                                    <tr className="bg-muted/50">
-                                      <td colSpan={4} className="py-1 px-2 font-medium">
-                                        {currentContinent}
-                                      </td>
-                                    </tr>
-                                  )}
-                                  <tr className="border-b border-gray-100 dark:border-gray-800">
-                                    <td className="p-1 w-6">
-                                      <Flag countryCode={countryCode} />
-                                    </td>
-                                    <td className="py-2">
-                                      <Link
-                                        to="/tournaments/$tournamentId"
-                                        params={{
-                                          tournamentId: tournamentItem.tournament.id,
-                                        }}
-                                      >
-                                        {displayName}
-                                      </Link>
-                                    </td>
-                                    <td className="py-2 w-12 text-right">
-                                      <div className="flex items-center justify-end gap-1">
-                                        <Users className="h-3 w-3 text-muted-foreground" />
-                                        <span>{tournamentItem.tournament.attendance}</span>
-                                      </div>
-                                    </td>
-                                    <td className="py-2 w-8 text-right">{statusIcon}</td>
-                                  </tr>
-                                </React.Fragment>
-                              );
-                            });
-                          })()}
-                        </tbody>
-                      </table>
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-              );
-            })}
-          </div>
+          <WeekColumns pqWeekGroups={pqWeekGroups} mostRecentWeekIndex={mostRecentWeekIndex} />
 
           {/* Page-specific content */}
           {page === 'top8' && (

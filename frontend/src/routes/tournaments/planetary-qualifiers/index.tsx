@@ -6,6 +6,7 @@ import { zodValidator } from '@tanstack/zod-adapter';
 
 const searchParams = z.object({
   page: z.enum(['tournaments', 'winners', 'top8']).default('winners'),
+  weekId: z.string().optional(),
 });
 
 export const Route = createFileRoute('/tournaments/planetary-qualifiers/')({
