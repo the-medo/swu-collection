@@ -8,7 +8,9 @@ import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import PQPageNavigation from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/PQPageNavigation.tsx';
 import { useMemo, useState } from 'react';
-import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
+import MetaInfoSelector, {
+  MetaInfo,
+} from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import PQStatPieChart from './PQStatPieChart.tsx';
 import PQStatChart from './PQStatChart.tsx';
 
@@ -166,6 +168,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups }) => {
               </div>
               <PQPageNavigation />
             </div>
+            <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
 
             {/* Display information about the selected week */}
             {selectedGroupId && (
@@ -182,48 +185,22 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups }) => {
                   return (
                     <>
                       {selectedGroup.leaderBase && selectedGroup.leaderBase.length > 0 ? (
-                        <div className="space-y-8">
-                          {/* Meta Info Selector */}
-                          <div className="flex justify-between items-center">
-                            <div className="flex gap-2 items-center">
-                              <span className="text-sm font-medium">Group by:</span>
-                              <select
-                                value={metaInfo}
-                                onChange={(e) => setMetaInfo(e.target.value as MetaInfo)}
-                                className="p-2 border rounded-md bg-background"
-                              >
-                                <option value="leaders">Leaders</option>
-                                <option value="leadersAndBase">Leaders & Bases</option>
-                                <option value="bases">Bases</option>
-                              </select>
-                            </div>
-                          </div>
-
-                          {/* Charts Row */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Pie Chart */}
-                            <div>
-                              <h3 className="text-lg font-semibold mb-4">Distribution</h3>
-                              <PQStatPieChart 
-                                metaInfo={metaInfo}
-                                data={selectedGroup.leaderBase}
-                                top={chartTop}
-                              />
-                            </div>
-
-                            {/* Bar Chart */}
-                            <div>
-                              <h3 className="text-lg font-semibold mb-4">Detailed Breakdown</h3>
-                              <PQStatChart 
-                                metaInfo={metaInfo}
-                                data={selectedGroup.leaderBase}
-                                top={chartTop}
-                              />
-                            </div>
-                          </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <PQStatPieChart
+                            metaInfo={metaInfo}
+                            data={selectedGroup.leaderBase}
+                            top={chartTop}
+                          />
+                          <PQStatChart
+                            metaInfo={metaInfo}
+                            data={selectedGroup.leaderBase}
+                            top={chartTop}
+                          />
                         </div>
                       ) : (
-                        <p className="text-muted-foreground">No statistics available for this tournament group.</p>
+                        <p className="text-muted-foreground">
+                          No statistics available for this tournament group.
+                        </p>
                       )}
                     </>
                   );

@@ -3,12 +3,12 @@ import { useCallback, useMemo, useState } from 'react';
 import { ResponsivePie } from '@nivo/pie';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
-import TournamentMetaTooltip from '@/components/app/tournaments/TournamentMeta/TournamentMetaTooltip';
-import { AnalysisDataItem } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import { usePieChartColors } from '@/components/app/tournaments/TournamentMeta/usePieChartColors.tsx';
 import { useTheme } from '@/components/theme-provider.tsx';
 import { TournamentGroupLeaderBase } from '../../../../../../../server/db/schema/tournament_group_leader_base';
+import { useCardList } from '@/api/lists/useCardList.ts';
 
 interface PQStatPieChartProps {
   metaInfo: MetaInfo;
@@ -47,36 +47,14 @@ const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) 
   const pieChartColorDefinitions = usePieChartColors();
   const { setTournamentDeckKey } = useTournamentMetaActions();
   const [hoveredItem, setHoveredItem] = useState<any>(null);
-
-  // Generate key based on metaInfo
-  const getKey = useCallback(
-    (item: TournamentGroupLeaderBase): string => {
-      switch (metaInfo) {
-        case 'leaders':
-          return item.leaderCardId;
-        case 'leadersAndBase':
-          return `${item.leaderCardId}|${item.baseCardId}`;
-        case 'bases':
-          return item.baseCardId;
-        // For aspects, we would need additional data that's not available in TournamentGroupLeaderBase
-        // Fallback to using the base card ID for these cases
-        case 'aspects':
-        case 'aspectsBase':
-        case 'aspectsDetailed':
-          return item.baseCardId;
-        default:
-          return `${item.leaderCardId}|${item.baseCardId}`;
-      }
-    },
-    [metaInfo],
-  );
+  const { data: cardListData } = useCardList();
 
   // Group and sum data based on the key
   const groupedData = useMemo(() => {
     const grouped: Record<string, number> = {};
 
     data.forEach(item => {
-      const key = getKey(item);
+      const key = getDeckKey2(item.leaderCardId, item.baseCardId, metaInfo, cardListData);
       if (!grouped[key]) {
         grouped[key] = 0;
       }
@@ -95,7 +73,7 @@ const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) 
       .map(([key, count]) => ({ key, count }))
       .filter(item => item.count > 0) // Filter out items with zero count
       .sort((a, b) => b.count - a.count);
-  }, [data, getKey, top]);
+  }, [metaInfo, data, top, cardListData]);
 
   // Map all items for visualization
   const chartData = useMemo(() => {
@@ -205,9 +183,7 @@ const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) 
               <div className="flex items-center gap-2">
                 {labelRenderer(datum.id as string, metaInfo as MetaInfo, 'compact')}
                 <span className="font-bold">{datum.value}</span>
-                <span className="text-xs">
-                  ({((datum.value / totalCount) * 100).toFixed(1)}%)
-                </span>
+                <span className="text-xs">({((datum.value / totalCount) * 100).toFixed(1)}%)</span>
               </div>
             </div>
           )}

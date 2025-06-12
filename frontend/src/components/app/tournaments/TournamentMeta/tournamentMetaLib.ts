@@ -70,6 +70,17 @@ export const getDeckLeadersAndBaseKey = (
   return `${leaderKey}|${baseKeyValue}`;
 };
 
+export const getDeckLeadersAndBaseKey2 = (
+  leaderCardId: string | undefined,
+  baseCardId: string | undefined,
+  cardListData: CardListResponse | undefined,
+) => {
+  if (!cardListData) return '';
+  const leaderKey = leaderCardId;
+  const baseKeyValue = getBaseKey(baseCardId, undefined, cardListData);
+  return `${leaderKey}|${baseKeyValue}`;
+};
+
 export const getDeckKey = (
   deck: TournamentDeckResponse,
   metaInfo: MetaInfo,
@@ -127,6 +138,61 @@ export const getDeckKey = (
         Array.from({ length: deck.deckInformation?.aspectVillainy }).forEach(() =>
           aspects.push('Villainy'),
         );
+      if (metaInfo === 'aspects') {
+        // For 'aspects', we'll just use the first aspect as the key
+        key = aspects[0] || 'no-aspect';
+      } else {
+        key = aspects.sort().join('-') || 'no-aspect';
+      }
+      break;
+  }
+
+  return key;
+};
+
+export const getDeckKey2 = (
+  leaderCardId: string | undefined,
+  baseCardId: string | undefined,
+  metaInfo: MetaInfo,
+  cardListData: CardListResponse | undefined,
+) => {
+  if (!cardListData) return '';
+  if (!leaderCardId || !baseCardId) {
+    console.log({ leaderCardId, baseCardId });
+    return 'unknown';
+  }
+
+  const leaderCard = leaderCardId ? cardListData?.cards[leaderCardId] : undefined;
+  const baseCard = baseCardId ? cardListData?.cards[baseCardId] : undefined;
+
+  let key = '';
+
+  switch (metaInfo) {
+    case 'leaders':
+      // Use leader card IDs as key
+      key = leaderCardId;
+      break;
+    case 'leadersAndBase':
+      key = getDeckLeadersAndBaseKey2(leaderCardId, baseCardId, cardListData);
+      break;
+    case 'bases':
+      key = getBaseKey(baseCardId, undefined, cardListData);
+      break;
+    case 'aspectsBase':
+      // Use base aspect as key
+      if (baseCard) {
+        key = baseCard?.aspects[0] || 'no-aspect';
+      } else {
+        key = 'no-aspect';
+      }
+      break;
+    case 'aspects':
+    case 'aspectsDetailed':
+      // Create a key based on which aspects are used
+      const aspects: string[] = [];
+      leaderCard?.aspects.forEach(a => aspects.push(a));
+      baseCard?.aspects.forEach(a => aspects.push(a));
+
       if (metaInfo === 'aspects') {
         // For 'aspects', we'll just use the first aspect as the key
         key = aspects[0] || 'no-aspect';

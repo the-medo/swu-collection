@@ -11,10 +11,78 @@ import { useCallback, useMemo, useState } from 'react';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { Props } from 'recharts/types/component/Label';
-import { labelWidthBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import {
+  getDeckKey2,
+  labelWidthBasedOnMetaInfo,
+} from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import { TournamentGroupLeaderBase } from '../../../../../../../server/db/schema/tournament_group_leader_base';
 import { Button } from '@/components/ui/button';
+import { useCardList } from '@/api/lists/useCardList.ts';
+
+// Custom tooltip table component
+interface PQStatTooltipProps {
+  name: string;
+  metaInfo: MetaInfo;
+  labelRenderer: ReturnType<typeof useLabel>;
+  keyData: {
+    winner: number;
+    top8: number;
+    total: number;
+  };
+}
+
+const PQStatTooltip: React.FC<PQStatTooltipProps> = ({
+  name,
+  metaInfo,
+  labelRenderer,
+  keyData,
+}) => {
+  // Calculate conversion rates
+  const winnerToTotalRate =
+    keyData.total > 0 ? ((keyData.winner / keyData.total) * 100).toFixed(1) + '%' : '0.0%';
+
+  const top8ToTotalRate =
+    keyData.total > 0 ? ((keyData.top8 / keyData.total) * 100).toFixed(1) + '%' : '0.0%';
+
+  return (
+    <div className="space-y-4 flex flex-col items-center text-center">
+      <div className="flex justify-center">{labelRenderer(name, metaInfo, 'text')}</div>
+
+      <div className="text-xs space-y-1 mt-2">
+        <table>
+          <thead>
+            <tr className="bg-accent font-bold">
+              <td></td>
+              <td className="px-2 py-1">Count</td>
+              <td className="px-2 py-1 flex flex-col gap-0 items-center">
+                <span>Conversion rate</span>
+                <span className="text-[10px]">(from {keyData.total} decks)</span>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th className="text-left px-2 bg-accent">Total</th>
+              <td className="text-right">{keyData.total}</td>
+              <td className="i text-xs text-right">-</td>
+            </tr>
+            <tr>
+              <th className="text-left px-2 bg-accent">Top 8</th>
+              <td className="text-right">{keyData.top8}</td>
+              <td className="i text-xs text-right">{top8ToTotalRate}</td>
+            </tr>
+            <tr>
+              <th className="text-left px-2 bg-accent">Winners</th>
+              <td className="text-right">{keyData.winner}</td>
+              <td className="i text-xs text-right">{winnerToTotalRate}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
 interface PQStatChartProps {
   metaInfo: MetaInfo;
@@ -71,36 +139,14 @@ const PQStatChart: React.FC<PQStatChartProps> = ({ metaInfo, data, top }) => {
   const labelRenderer = useLabel();
   const { setTournamentDeckKey } = useTournamentMetaActions();
   const [showAll, setShowAll] = useState(false);
-
-  // Generate key based on metaInfo
-  const getKey = useCallback(
-    (item: TournamentGroupLeaderBase): string => {
-      switch (metaInfo) {
-        case 'leaders':
-          return item.leaderCardId;
-        case 'leadersAndBase':
-          return `${item.leaderCardId}|${item.baseCardId}`;
-        case 'bases':
-          return item.baseCardId;
-        // For aspects, we would need additional data that's not available in TournamentGroupLeaderBase
-        // Fallback to using the base card ID for these cases
-        case 'aspects':
-        case 'aspectsBase':
-        case 'aspectsDetailed':
-          return item.baseCardId;
-        default:
-          return `${item.leaderCardId}|${item.baseCardId}`;
-      }
-    },
-    [metaInfo],
-  );
+  const { data: cardListData } = useCardList();
 
   // Group and sum data based on the key
   const groupedData = useMemo(() => {
     const grouped: Record<string, number> = {};
 
     data.forEach(item => {
-      const key = getKey(item);
+      const key = getDeckKey2(item.leaderCardId, item.baseCardId, metaInfo, cardListData);
       if (!grouped[key]) {
         grouped[key] = 0;
       }
@@ -119,28 +165,42 @@ const PQStatChart: React.FC<PQStatChartProps> = ({ metaInfo, data, top }) => {
       .map(([key, count]) => ({ key, count }))
       .filter(item => item.count > 0) // Filter out items with zero count
       .sort((a, b) => b.count - a.count);
-  }, [data, getKey, top]);
+  }, [data, metaInfo, top, cardListData]);
 
   // Map all items for visualization
   const chartData = useMemo(() => {
     // If showAll is false, only show top 20 items
     const visibleData = showAll ? groupedData : groupedData.slice(0, 20);
 
-    return visibleData.map(item => ({
-      name: item.key || 'Unknown',
-      value: item.count,
-    }));
-  }, [groupedData, showAll]);
+    return visibleData.map(vd => {
+      // Calculate counts for this key
+      const keyData = {
+        winner: 0,
+        top8: 0,
+        total: 0,
+      };
+
+      // Sum up the counts for this key
+      data.forEach(item => {
+        if (getDeckKey2(item.leaderCardId, item.baseCardId, metaInfo, cardListData) === vd.key) {
+          keyData.winner += item.winner;
+          keyData.top8 += item.top8;
+          keyData.total += item.total;
+        }
+      });
+
+      return {
+        name: vd.key || 'Unknown',
+        value: vd.count,
+        keyData,
+      };
+    });
+  }, [groupedData, showAll, data]);
 
   const chartContainerStyle = useMemo(
     () => ({ width: '100%', height: Math.max(400, chartData.length * (BAR_THICKNESS + 2)) }),
     [chartData],
   );
-
-  // Calculate total count for percentage calculations
-  const totalCount = useMemo(() => {
-    return groupedData.reduce((sum, item) => sum + item.count, 0);
-  }, [groupedData]);
 
   const onBarClick = useCallback(
     (p: { name: string }) => {
@@ -177,17 +237,17 @@ const PQStatChart: React.FC<PQStatChartProps> = ({ metaInfo, data, top }) => {
             content={
               <ChartTooltipContent
                 hideLabel={true}
-                formatter={(value, _name, props) => {
+                formatter={(_value, _name, props) => {
                   const payload = props.payload;
+                  const keyData = payload.keyData;
 
                   return (
-                    <div className="flex items-center gap-2">
-                      {labelRenderer(payload.name, metaInfo, 'text')}
-                      <span className="font-bold">{value as number}</span>
-                      <span className="text-xs">
-                        ({(((value as number) / totalCount) * 100).toFixed(1)}%)
-                      </span>
-                    </div>
+                    <PQStatTooltip
+                      name={payload.name}
+                      metaInfo={metaInfo}
+                      labelRenderer={labelRenderer}
+                      keyData={keyData}
+                    />
                   );
                 }}
               />
