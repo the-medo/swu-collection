@@ -12,7 +12,7 @@ import MetaInfoSelector, {
 import PQStatPieChart from './PQStatPieChart.tsx';
 import PQStatChart from './PQStatChart.tsx';
 import TopTournaments from './TopTournaments.tsx';
-import UnusualChampions from './UnusualChampions.tsx';
+import UnusualChampions from './UnusualChampions/UnusualChampions.tsx';
 import { useStatistics } from './hooks/useStatistics.ts';
 import { useProcessedTournamentGroups } from './hooks/useProcessedTournamentGroups.ts';
 
