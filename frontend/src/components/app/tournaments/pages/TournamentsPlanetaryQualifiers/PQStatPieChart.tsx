@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { ResponsivePie } from '@nivo/pie';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
@@ -46,7 +46,6 @@ const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) 
   const { theme } = useTheme();
   const pieChartColorDefinitions = usePieChartColors();
   const { setTournamentDeckKey } = useTournamentMetaActions();
-  const [hoveredItem, setHoveredItem] = useState<any>(null);
   const { data: cardListData } = useCardList();
 
   // Group and sum data based on the key
@@ -124,19 +123,6 @@ const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) 
     [metaInfo, setTournamentDeckKey],
   );
 
-  const handleMouseEnter = useCallback(
-    (node: any) => {
-      const matchingItem = chartData.find(item => item.id === node.id);
-      if (matchingItem) {
-        setHoveredItem({
-          name: matchingItem.id,
-          value: matchingItem.value,
-        });
-      }
-    },
-    [chartData],
-  );
-
   const chartDefs = chartData.map(i => pieChartColorDefinitions(i.id, metaInfo));
   const fill = chartData.map(item => ({
     match: { id: item.id },
@@ -177,7 +163,6 @@ const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) 
           defs={chartDefs}
           fill={fill}
           onClick={handlePieClick}
-          onMouseEnter={handleMouseEnter}
           tooltip={({ datum }) => (
             <div className="bg-card p-2 rounded-md shadow-md border">
               <div className="flex items-center gap-2">
@@ -189,19 +174,6 @@ const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) 
           )}
         />
       </div>
-
-      {/* Display tooltip data under the chart */}
-      {hoveredItem && (
-        <div className="mt-4 p-4 border rounded-lg bg-card">
-          <div className="flex items-center gap-2">
-            {labelRenderer(hoveredItem.name, metaInfo, 'text')}
-            <span className="font-bold">{hoveredItem.value}</span>
-            <span className="text-xs">
-              ({((hoveredItem.value / totalCount) * 100).toFixed(1)}%)
-            </span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import * as React from 'react';
 import TournamentPageHeader from '@/components/app/tournaments/TournamentPageHeader';
 import TournamentNavigation from '@/components/app/tournaments/TournamentNavigation/TournamentNavigation.tsx';
 import { useSearch } from '@tanstack/react-router';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useGetTournamentGroups } from '@/api/tournament-groups';
 import PQStatistics from './PQStatistics';
 import WeekColumns from './WeekColumns.tsx';
@@ -10,7 +10,9 @@ import WeekColumns from './WeekColumns.tsx';
 interface TournamentsPlanetaryQualifiersProps {}
 
 const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersProps> = ({}) => {
-  const { metaId, page = 'tournaments' } = useSearch({ strict: false });
+  const { metaId } = useSearch({ strict: false });
+  const [openAllCollapsibles, setOpenAllCollapsibles] = useState(false);
+
   const params = useMemo(
     () => ({
       meta: metaId,
@@ -77,7 +79,12 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
     <>
       <TournamentNavigation />
       <TournamentPageHeader title="Planetary Qualifiers" />
-      {metaId && pqWeekGroups.length > 0 && <PQStatistics tournamentGroups={pqWeekGroups} />}
+      {metaId && pqWeekGroups.length > 0 && (
+        <PQStatistics
+          tournamentGroups={pqWeekGroups}
+          onOpenAllTournaments={() => setOpenAllCollapsibles(p => !p)}
+        />
+      )}
 
       {isLoading && (
         <div className="p-8 text-center">
@@ -96,27 +103,11 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
       )}
 
       {metaId && pqWeekGroups.length > 0 && (
-        <div className="p-2">
-          <WeekColumns pqWeekGroups={pqWeekGroups} mostRecentWeekIndex={mostRecentWeekIndex} />
-
-          {/* Page-specific content */}
-          {page === 'top8' && (
-            <div className="mt-4">
-              <p className="text-center text-muted-foreground">
-                Top 8 content will be displayed here.
-              </p>
-            </div>
-          )}
-
-          {/* Winners page */}
-          {page === 'winners' && (
-            <div className="mt-4">
-              <p className="text-center text-muted-foreground">
-                Winners content will be displayed here.
-              </p>
-            </div>
-          )}
-        </div>
+        <WeekColumns
+          pqWeekGroups={pqWeekGroups}
+          mostRecentWeekIndex={mostRecentWeekIndex}
+          openAllCollapsibles={openAllCollapsibles}
+        />
       )}
     </>
   );

@@ -30,19 +30,19 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
 }) => {
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full p-4 h-12 hover:bg-accent">
         <SelectValue placeholder="Select a tournament week" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="p-4">
         {processedTournamentGroups.map(group => (
           <SelectItem key={group.group.id} value={group.group.id} disabled={group.isUpcoming}>
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center">
-                <span className="font-medium">Week {group.weekNumber}</span>
-                <p className="text-xs text-muted-foreground ml-2">{group.description}</p>
+                <span className="font-medium text-xl">Week {group.weekNumber}</span>
+                <p className="text-md text-muted-foreground ml-4">{group.description}</p>
               </div>
               {(group.isMostRecent || group.isUpcoming) && (
-                <Badge variant={group.isMostRecent ? 'default' : 'outline'} className="ml-2">
+                <Badge variant={group.isMostRecent ? 'default' : 'outline'} className="ml-4">
                   {group.isMostRecent ? 'Most Recent' : 'Upcoming'}
                 </Badge>
               )}

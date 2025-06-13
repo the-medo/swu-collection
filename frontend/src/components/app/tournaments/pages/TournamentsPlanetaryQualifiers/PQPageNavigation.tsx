@@ -1,51 +1,37 @@
 import * as React from 'react';
-import { Link, useSearch } from '@tanstack/react-router';
-import { cn } from '@/lib/utils';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
+import { useCallback } from 'react';
+import { Route } from '@/routes/tournaments/planetary-qualifiers';
 
 interface PQPageNavigationProps {}
 
 const PQPageNavigation: React.FC<PQPageNavigationProps> = () => {
-  const { page } = useSearch({ strict: false });
+  const { page = 'winners' } = useSearch({ strict: false });
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  const onValueChange = useCallback(
+    (value: 'top8' | 'total' | 'tournaments' | 'winners') => {
+      if (value) {
+        navigate({
+          search: prev => ({ ...prev, page: value }),
+        });
+      }
+    },
+    [navigate],
+  );
 
   return (
-    <div className="grid grid-cols-3 mb-2 rounded-lg bg-muted p-1">
-      <Link
-        to="/tournaments/planetary-qualifiers"
-        search={prev => ({ ...prev, page: 'winners' })}
-        className={cn(
-          'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-          page === 'winners'
-            ? 'bg-background text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground',
-        )}
-      >
-        Winners
-      </Link>
-      <Link
-        to="/tournaments/planetary-qualifiers"
-        search={prev => ({ ...prev, page: 'top8' })}
-        className={cn(
-          'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-          page === 'top8'
-            ? 'bg-background text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground',
-        )}
-      >
-        Top 8
-      </Link>
-      <Link
-        to="/tournaments/planetary-qualifiers"
-        search={prev => ({ ...prev, page: 'total' })}
-        className={cn(
-          'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-          page === 'total'
-            ? 'bg-background text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground',
-        )}
-      >
-        Total
-      </Link>
-    </div>
+    <ToggleGroup
+      type="single"
+      value={page}
+      onValueChange={onValueChange}
+      className="justify-start gap-2"
+    >
+      <ToggleGroupItem value="winners">Winners</ToggleGroupItem>
+      <ToggleGroupItem value="top8">Top 8</ToggleGroupItem>
+      <ToggleGroupItem value="total">Total</ToggleGroupItem>
+    </ToggleGroup>
   );
 };
 
