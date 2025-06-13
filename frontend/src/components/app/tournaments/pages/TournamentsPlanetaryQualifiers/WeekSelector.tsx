@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select.tsx';
 import { TournamentGroupWithMeta } from '../../../../../../../types/TournamentGroup.ts';
+import { cn } from '@/lib/utils.ts';
 
 // Define the props for the processed tournament group items
 interface ProcessedTournamentGroup extends TournamentGroupWithMeta {
@@ -23,6 +24,9 @@ interface WeekSelectorProps {
   processedTournamentGroups: ProcessedTournamentGroup[];
 }
 
+// Special value for "All weeks" option
+export const ALL_WEEKS_VALUE = 'all';
+
 const WeekSelector: React.FC<WeekSelectorProps> = ({
   value,
   onValueChange,
@@ -30,10 +34,29 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
 }) => {
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-full p-4 h-12 hover:bg-accent">
+      <SelectTrigger
+        className={cn('w-full p-4 h-12', {
+          'bg-primary/20 hover:bg-accent': value === ALL_WEEKS_VALUE,
+          'bg-accent hover:bg-primary/20': value !== ALL_WEEKS_VALUE,
+        })}
+      >
         <SelectValue placeholder="Select a tournament week" />
       </SelectTrigger>
       <SelectContent className="p-4">
+        {/* All weeks option */}
+        <SelectItem key={ALL_WEEKS_VALUE} value={ALL_WEEKS_VALUE} className="">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center">
+              <span className="font-medium text-xl">All weeks</span>
+              <p className="text-md text-muted-foreground ml-4">Combined data from all weeks</p>
+            </div>
+            <Badge variant="secondary" className="ml-4 bg-primary/20">
+              Combined
+            </Badge>
+          </div>
+        </SelectItem>
+
+        {/* Individual weeks */}
         {processedTournamentGroups.map(group => (
           <SelectItem key={group.group.id} value={group.group.id} disabled={group.isUpcoming}>
             <div className="flex items-center justify-between w-full">

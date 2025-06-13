@@ -1,11 +1,5 @@
 import * as React from 'react';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from '@/components/ui/chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from 'recharts';
 import { useCallback, useMemo, useState } from 'react';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
@@ -73,7 +67,7 @@ const PQStatTooltip: React.FC<PQStatTooltipProps> = ({
               <td className="i text-xs text-right">{top8ToTotalRate}</td>
             </tr>
             <tr>
-              <th className="text-left px-2 bg-accent">Winners</th>
+              <th className="text-left px-2 bg-accent">Champions</th>
               <td className="text-right">{keyData.winner}</td>
               <td className="i text-xs text-right">{winnerToTotalRate}</td>
             </tr>
@@ -87,7 +81,7 @@ const PQStatTooltip: React.FC<PQStatTooltipProps> = ({
 interface PQStatChartProps {
   metaInfo: MetaInfo;
   data: TournamentGroupLeaderBase[];
-  top: 'winners' | 'top8' | 'total';
+  top: 'champions' | 'top8' | 'total';
 }
 
 const chartConfig = {
@@ -152,7 +146,7 @@ const PQStatChart: React.FC<PQStatChartProps> = ({ metaInfo, data, top }) => {
       }
 
       // Use the appropriate count based on the 'top' prop
-      if (top === 'winners') {
+      if (top === 'champions') {
         grouped[key] += item.winner;
       } else if (top === 'top8') {
         grouped[key] += item.top8;
@@ -275,9 +269,6 @@ const PQStatChart: React.FC<PQStatChartProps> = ({ metaInfo, data, top }) => {
             />
             <LabelList dataKey="value" position="insideRight" style={{ fontWeight: 'bold' }} />
           </Bar>
-          <ChartLegend>
-            <ChartLegendContent />
-          </ChartLegend>
         </BarChart>
       </ChartContainer>
 

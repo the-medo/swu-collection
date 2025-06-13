@@ -13,7 +13,7 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 interface PQStatPieChartProps {
   metaInfo: MetaInfo;
   data: TournamentGroupLeaderBase[];
-  top: 'winners' | 'top8' | 'total';
+  top: 'champions' | 'top8' | 'total';
 }
 
 // Define colors for the pie chart segments using shades of primary/secondary colors
@@ -59,7 +59,7 @@ const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) 
       }
 
       // Use the appropriate count based on the 'top' prop
-      if (top === 'winners') {
+      if (top === 'champions') {
         grouped[key] += item.winner;
       } else if (top === 'top8') {
         grouped[key] += item.top8;

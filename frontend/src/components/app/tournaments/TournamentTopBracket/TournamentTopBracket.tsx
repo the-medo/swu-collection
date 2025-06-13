@@ -129,13 +129,13 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
           .filter(m => m.round === roundNumber)
           .filter(m => !m.isBye);
 
-        // Find winners from this round to maintain bracket continuity
-        const winners = new Set();
+        // Find champions from this round to maintain bracket continuity
+        const champions = new Set();
         roundMatches.forEach(match => {
           if (match.result === 3) {
-            winners.add(match.p1Username);
+            champions.add(match.p1Username);
           } else if (match.result === 0) {
-            winners.add(match.p2Username);
+            champions.add(match.p2Username);
           }
         });
 
