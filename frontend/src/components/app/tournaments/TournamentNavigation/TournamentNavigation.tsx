@@ -15,7 +15,11 @@ const TournamentNavigation: React.FC<TournamentNavigationProps> = ({ className }
 
   const navItems = [
     { name: 'Featured', path: '/tournaments/featured' },
-    { name: 'Planetary Qualifiers', path: '/tournaments/planetary-qualifiers' },
+    {
+      name: 'Planetary Qualifiers',
+      path: '/tournaments/planetary-qualifiers',
+      search: { weekId: 'all' },
+    },
     { name: 'All Tournaments', path: '/tournaments/all' },
   ];
 
@@ -25,7 +29,7 @@ const TournamentNavigation: React.FC<TournamentNavigationProps> = ({ className }
         <Link
           key={item.path}
           to={item.path}
-          search={prev => ({ metaId: prev.metaId, formatId: prev.formatId })}
+          search={prev => ({ ...item.search, metaId: prev.metaId, formatId: prev.formatId })}
           className={cn(
             'relative min-w-[250px] w-1/4 h-[60px] flex grow items-center justify-center rounded-md font-medium transition-all text-xl',
             {

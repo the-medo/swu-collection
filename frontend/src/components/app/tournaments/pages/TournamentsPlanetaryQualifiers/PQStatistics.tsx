@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { TournamentGroupWithMeta } from '../../../../../../../types/TournamentGroup';
-import { Calendar, CheckCircle } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle } from 'lucide-react';
 import WeekSelector, { ALL_WEEKS_VALUE } from './WeekSelector.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import PQPageNavigation from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/PQPageNavigation.tsx';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import MetaInfoSelector, {
   MetaInfo,
 } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
@@ -15,6 +15,9 @@ import TopTournaments from './TopTournaments.tsx';
 import UnusualChampions from './UnusualChampions/UnusualChampions.tsx';
 import { useStatistics } from './hooks/useStatistics.ts';
 import { useProcessedTournamentGroups } from './hooks/useProcessedTournamentGroups.ts';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
+import { TournamentGroupLeaderBase } from '../../../../../../../server/db/schema/tournament_group_leader_base.ts';
+import DiscordPing from '@/components/app/global/DiscordPing.tsx';
 
 interface PQStatisticsProps {
   tournamentGroups: TournamentGroupWithMeta[];
@@ -33,18 +36,16 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
   const chartTop = (page === 'tournaments' ? 'total' : page) as 'champions' | 'top8' | 'total';
 
   // Find the most recent group ID for default selection
-  const mostRecentGroupId = React.useMemo(() => {
+  const mostRecentGroupId = useMemo(() => {
     const mostRecentGroup = processedTournamentGroups.find(group => group.isMostRecent);
     return mostRecentGroup?.group.id || null;
   }, [processedTournamentGroups]);
 
-  // Use the weekId from the URL or default to the most recent group
   const selectedGroupId = weekId || mostRecentGroupId;
+  const isMostRecent = selectedGroupId === mostRecentGroupId;
 
   // Handle week selection
   const handleWeekSelect = (tournamentGroupId: string) => {
-    console.log(`Selected tournament group: ${tournamentGroupId}`);
-    // Update the URL with the selected tournament group ID
     navigate({
       search: prev => ({
         ...prev,
@@ -52,6 +53,27 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
       }),
     });
   };
+
+  const data: TournamentGroupLeaderBase[] | null = useMemo(() => {
+    if (selectedGroupId === ALL_WEEKS_VALUE) {
+      // Combine leaderBase data from all tournament groups
+      return processedTournamentGroups.reduce((acc, group) => {
+        if (group.leaderBase && group.leaderBase.length > 0 && !group.isUpcoming) {
+          return [...acc, ...group.leaderBase];
+        }
+        return acc;
+      }, [] as TournamentGroupLeaderBase[]);
+    }
+
+    // Handle individual week selection
+    const selectedGroup = processedTournamentGroups.find(
+      group => group.group.id === selectedGroupId,
+    );
+
+    return selectedGroup?.leaderBase || null;
+  }, [selectedGroupId, processedTournamentGroups]);
+
+  const hasData = data && data.length > 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -69,77 +91,41 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
 
         {/* Display information about the selected week */}
         {selectedGroupId && (
-          <div>
-            {(() => {
-              // Handle "All weeks" selection
-              if (selectedGroupId === ALL_WEEKS_VALUE) {
-                // Combine leaderBase data from all tournament groups
-                const combinedLeaderBase = processedTournamentGroups.reduce((acc, group) => {
-                  if (group.leaderBase && group.leaderBase.length > 0 && !group.isUpcoming) {
-                    return [...acc, ...group.leaderBase];
-                  }
-                  return acc;
-                }, []);
-
-                if (combinedLeaderBase.length === 0) {
-                  return (
-                    <p className="text-muted-foreground">
-                      No statistics available across all weeks.
-                    </p>
-                  );
-                }
-
-                return (
-                  <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <PQStatPieChart
-                        metaInfo={metaInfo}
-                        data={combinedLeaderBase}
-                        top={chartTop}
-                      />
-                      <PQStatChart metaInfo={metaInfo} data={combinedLeaderBase} top={chartTop} />
-                    </div>
-                  </>
-                );
-              }
-
-              // Handle individual week selection
-              const selectedGroup = processedTournamentGroups.find(
-                group => group.group.id === selectedGroupId,
-              );
-
-              if (!selectedGroup) {
-                return (
-                  <p className="text-muted-foreground">
-                    No information available for the selected week.
-                  </p>
-                );
-              }
-
-              return (
-                <>
-                  {selectedGroup.leaderBase && selectedGroup.leaderBase.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <PQStatPieChart
-                        metaInfo={metaInfo}
-                        data={selectedGroup.leaderBase}
-                        top={chartTop}
-                      />
-                      <PQStatChart
-                        metaInfo={metaInfo}
-                        data={selectedGroup.leaderBase}
-                        top={chartTop}
-                      />
-                    </div>
+          <>
+            {hasData ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <PQStatPieChart metaInfo={metaInfo} data={data} top={chartTop} />
+                <PQStatChart metaInfo={metaInfo} data={data} top={chartTop} />
+              </div>
+            ) : (
+              <Alert variant="info" className="mt-6 mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>No data</AlertTitle>
+                <AlertDescription>
+                  {selectedGroupId === ALL_WEEKS_VALUE ? (
+                    <>
+                      <p>No statistics available across all weeks.</p>
+                      <p>
+                        Planetary Qualifiers probably haven't started yet, but you can still select
+                        and view PQs from older sets.
+                      </p>
+                    </>
                   ) : (
-                    <p className="text-muted-foreground">
-                      No statistics available for this tournament group.
-                    </p>
+                    <>
+                      <p>No information available for the selected week.</p>
+                      {isMostRecent && (
+                        <p>
+                          Because it's the most recent week, it is probably too early to analyze the
+                          data.
+                        </p>
+                      )}
+                    </>
                   )}
-                </>
-              );
-            })()}
-          </div>
+                  <DiscordPing />
+                </AlertDescription>
+              </Alert>
+            )}
+          </>
         )}
       </div>
 
@@ -169,7 +155,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
         </div>
 
         {/* Unusual Champions Section */}
-        <UnusualChampions tournamentGroups={tournamentGroups} />
+        <UnusualChampions tournamentGroups={tournamentGroups} handleWeekSelect={handleWeekSelect} />
 
         {/* Top 5 Biggest Tournaments Table */}
         <TopTournaments
