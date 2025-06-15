@@ -17,6 +17,7 @@ interface UnusualChampionTooltipProps {
   totalAttendance: number;
   label: ReturnType<typeof useLabel>;
   tournamentGroups: TournamentGroupWithMeta[];
+  handleWeekSelect: (groupId: string) => void;
 }
 
 const UnusualChampionTooltip: React.FC<UnusualChampionTooltipProps> = ({
@@ -24,6 +25,7 @@ const UnusualChampionTooltip: React.FC<UnusualChampionTooltipProps> = ({
   totalAttendance,
   label,
   tournamentGroups,
+  handleWeekSelect,
 }) => {
   const percentOfTotal = ((champion.total / totalAttendance) * 100).toFixed(2);
 
@@ -104,7 +106,14 @@ const UnusualChampionTooltip: React.FC<UnusualChampionTooltipProps> = ({
                       key={item.tournament.id}
                       className="border-b border-gray-100 dark:border-gray-800"
                     >
-                      <td className="py-1 px-2">Week {item.weekNumber}</td>
+                      <td className="py-1 px-2">
+                        <span
+                          className="underline cursor-pointer"
+                          onClick={() => handleWeekSelect(item.groupId)}
+                        >
+                          Week {item.weekNumber}
+                        </span>
+                      </td>
                       <td className="py-1">
                         <div className="flex items-center">
                           <Flag countryCode={countryCode} className="mr-2" />

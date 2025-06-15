@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { useGetTournamentGroups } from '@/api/tournament-groups';
 import PQStatistics from './PQStatistics';
 import WeekColumns from './WeekColumns.tsx';
+import { Loader2 } from 'lucide-react';
 
 interface TournamentsPlanetaryQualifiersProps {}
 
@@ -79,35 +80,39 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
     <>
       <TournamentNavigation />
       <TournamentPageHeader title="Planetary Qualifiers" />
-      {metaId && pqWeekGroups.length > 0 && (
-        <PQStatistics
-          tournamentGroups={pqWeekGroups}
-          onOpenAllTournaments={() => setOpenAllCollapsibles(p => !p)}
-        />
-      )}
 
-      {isLoading && (
-        <div className="p-8 text-center">
-          <p>Loading tournament groups...</p>
+      {isLoading ? (
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2">Loading...</span>
         </div>
-      )}
+      ) : (
+        <>
+          {metaId && pqWeekGroups.length > 0 && (
+            <PQStatistics
+              tournamentGroups={pqWeekGroups}
+              onOpenAllTournaments={() => setOpenAllCollapsibles(p => !p)}
+            />
+          )}
 
-      {!isLoading && (!metaId || !pqWeekGroups.length) && (
-        <div className="p-8 text-center text-gray-500">
-          <p>
-            {metaId
-              ? 'No Planetary Qualifiers tournament groups found.'
-              : 'Please select a meta to view Planetary Qualifiers.'}
-          </p>
-        </div>
-      )}
+          {(!metaId || !pqWeekGroups.length) && (
+            <div className="p-8 text-center text-gray-500">
+              <p>
+                {metaId
+                  ? 'No Planetary Qualifiers data found.'
+                  : 'Please select a meta to view Planetary Qualifiers.'}
+              </p>
+            </div>
+          )}
 
-      {metaId && pqWeekGroups.length > 0 && (
-        <WeekColumns
-          pqWeekGroups={pqWeekGroups}
-          mostRecentWeekIndex={mostRecentWeekIndex}
-          openAllCollapsibles={openAllCollapsibles}
-        />
+          {metaId && pqWeekGroups.length > 0 && (
+            <WeekColumns
+              pqWeekGroups={pqWeekGroups}
+              mostRecentWeekIndex={mostRecentWeekIndex}
+              openAllCollapsibles={openAllCollapsibles}
+            />
+          )}
+        </>
       )}
     </>
   );

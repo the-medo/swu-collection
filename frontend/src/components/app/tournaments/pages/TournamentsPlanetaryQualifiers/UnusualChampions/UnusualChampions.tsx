@@ -15,9 +15,13 @@ import UnusualChampionTooltip from './UnusualChampionTooltip.tsx';
 
 interface UnusualChampionsProps {
   tournamentGroups: TournamentGroupWithMeta[];
+  handleWeekSelect: (groupId: string) => void;
 }
 
-const UnusualChampions: React.FC<UnusualChampionsProps> = ({ tournamentGroups }) => {
+const UnusualChampions: React.FC<UnusualChampionsProps> = ({
+  tournamentGroups,
+  handleWeekSelect,
+}) => {
   const { data: cardListData } = useCardList();
   const label = useLabel();
 
@@ -91,6 +95,7 @@ const UnusualChampions: React.FC<UnusualChampionsProps> = ({ tournamentGroups })
                     totalAttendance={totalAttendance}
                     label={label}
                     tournamentGroups={tournamentGroups}
+                    handleWeekSelect={handleWeekSelect}
                   />
                 </TooltipContent>
               </Tooltip>

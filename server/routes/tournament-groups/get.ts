@@ -101,7 +101,7 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
             (
               SELECT jsonb_agg(jsonb_snake_to_camel(to_jsonb(tglb.*)))
               FROM ${tournamentGroupTable} tg
-              LEFT JOIN ${tournamentGroupLeaderBase} tglb ON tglb.tournament_group_id = tg.id
+              JOIN ${tournamentGroupLeaderBase} tglb ON tglb.tournament_group_id = tg.id
               WHERE tg.id = ${tournamentGroupTable.id}
             ),
             '[]'::jsonb
