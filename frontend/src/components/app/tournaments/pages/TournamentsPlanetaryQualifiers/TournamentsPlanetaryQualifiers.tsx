@@ -81,7 +81,7 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
     <>
       <TournamentNavigation />
       <TournamentPageHeader title="Planetary Qualifiers" />
-      <Alert variant="info" className="mt-6 mb-4">
+      <Alert variant="info" className="mt-2 mb-2">
         <AlertDescription>
           This is brand new section of the page, it will take some time to import all PQs. I'll
           remove this message when it is done.

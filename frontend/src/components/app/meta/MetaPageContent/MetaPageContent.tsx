@@ -8,6 +8,7 @@ import {
 } from '../../../../../../types/Tournament.ts';
 import * as React from 'react';
 import MetaTabs from '@/components/app/meta/MetaTabs/MetaTabs.tsx';
+import { format } from 'date-fns';
 
 interface MetaPageContentProps {
   formatId: number;
@@ -15,6 +16,8 @@ interface MetaPageContentProps {
   minTournamentType: string;
   tournaments?: TournamentData[];
 }
+
+const todayDate = format(new Date(), 'yyyy-MM-dd');
 
 const MetaPageContent: React.FC<MetaPageContentProps> = ({
   formatId,
@@ -27,6 +30,8 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
       format: formatId,
       meta: metaId,
       minType: tournamentTypesInfo[minTournamentType as TournamentTypeKey].sortValue,
+      maxDate: todayDate,
+      limit: 250,
     },
     !tournaments,
   );

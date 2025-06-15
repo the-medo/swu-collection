@@ -3,8 +3,14 @@ import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '../../../../db';
-import { tournamentMatch as tournamentMatchTable } from '../../../../db/schema/tournament_match.ts';
-import { tournamentDeck as tournamentDeckTable } from '../../../../db/schema/tournament_deck.ts';
+import {
+  type TournamentMatch,
+  tournamentMatch as tournamentMatchTable,
+} from '../../../../db/schema/tournament_match.ts';
+import {
+  type TournamentDeck,
+  tournamentDeck as tournamentDeckTable,
+} from '../../../../db/schema/tournament_deck.ts';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckInformation as deckInformationTable } from '../../../../db/schema/deck_information.ts';
 import { zValidator } from '@hono/zod-validator';
@@ -14,22 +20,18 @@ export interface TournamentsBulkResponse {
   decks: Record<string, any[]>; // Tournament decks grouped by tournament ID
 }
 
-// Define query parameters schema
-const zBulkTournamentsQueryParams = z.object({
-  ids: z
-    .string()
-    .transform(val => val.split(','))
-    .pipe(z.array(z.string().uuid())) // Validate each ID as a UUID after splitting
-    .refine(ids => ids.length > 0, {
-      message: 'At least one tournament ID must be provided',
-    }),
+// Define request body schema
+const zBulkTournamentsBody = z.object({
+  ids: z.array(z.string().uuid()).refine(ids => ids.length > 0, {
+    message: 'At least one tournament ID must be provided',
+  }),
 });
 
-export const tournamentsBulkGetRoute = new Hono<AuthExtension>().get(
+export const tournamentsBulkPostRoute = new Hono<AuthExtension>().post(
   '/',
-  zValidator('query', zBulkTournamentsQueryParams),
+  zValidator('json', zBulkTournamentsBody),
   async c => {
-    const { ids } = c.req.valid('query');
+    const { ids } = await c.req.valid('json');
 
     // Query 1: Get all matches for the requested tournaments
     const tournamentMatches = await db
@@ -60,7 +62,7 @@ export const tournamentsBulkGetRoute = new Hono<AuthExtension>().get(
           acc[match.tournamentId].push(match);
           return acc;
         },
-        {} as Record<string, any[]>,
+        {} as Record<string, TournamentMatch[]>,
       ),
       decks: tournamentDecks.reduce(
         (acc, deck) => {

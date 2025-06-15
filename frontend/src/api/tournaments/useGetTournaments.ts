@@ -13,6 +13,7 @@ export type GetTournamentsRequest = {
   format?: number;
   continent?: string;
   date?: Date | string;
+  maxDate?: Date | string;
   meta?: number;
   limit?: number;
   sort?: string;
@@ -37,6 +38,7 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
     format,
     continent,
     date,
+    maxDate,
     meta,
     limit,
     sort = 'tournament.date',
@@ -55,12 +57,13 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
         format,
         continent,
         date: date instanceof Date ? date.toISOString() : date,
+        maxDate: maxDate instanceof Date ? maxDate.toISOString() : maxDate,
         meta,
         sort,
         order,
       },
     ],
-    [type, minType, season, set, format, continent, date, meta, sort, order],
+    [type, minType, season, set, format, continent, date, maxDate, meta, sort, order],
   );
 
   return useInfiniteQuery({
@@ -75,6 +78,7 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
           format: format?.toString(),
           continent,
           minDate: date instanceof Date ? date.toISOString() : date,
+          maxDate: maxDate instanceof Date ? maxDate.toISOString() : maxDate,
           meta: meta?.toString(),
           sort,
           order,

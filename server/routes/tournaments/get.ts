@@ -123,7 +123,7 @@ export const tournamentGetRoute = new Hono<AuthExtension>().get(
               FROM ${tournamentDeckTable} td
               LEFT JOIN ${deckTable} d ON td.deck_id = d.id
               WHERE td.tournament_id = ${tournamentTable.id}
-              AND td.placement <= 3
+              AND td.placement <= 1
             ),
             '[]'::jsonb
           )
