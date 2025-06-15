@@ -7,5 +7,5 @@ export const getBaseKey = (
   cardListData: any,
 ): string => {
   const baseCard = baseCardId ? cardListData?.cards[baseCardId] : undefined;
-  return (isBasicBase(baseCard) ? baseAspect : baseCardId) ?? '';
+  return (isBasicBase(baseCard) ? (baseAspect ?? baseCard.aspects[0]) : baseCardId) ?? '';
 };

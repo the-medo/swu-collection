@@ -12,6 +12,52 @@ import { user } from '../../db/schema/auth-schema.ts';
 
 export async function getTournamentMetaTags(tournamentId: string) {
   try {
+    // Special case for /tournaments/featured, /tournaments/planetary-qualifiers, and /tournaments/all routes
+    if (tournamentId === 'featured') {
+      return {
+        robots: 'index, follow',
+        keywords:
+          'swubase, swu, star wars, tcg, tournaments, competetive, featured tournaments, top tournaments, competitive play',
+        description:
+          'Browse featured Star Wars: Unlimited tournaments. View metagame analysis and top performing decks.',
+        'og:title': 'Featured Tournaments | SWUBase',
+        'og:description':
+          'Browse featured Star Wars: Unlimited tournaments. View tournament groups, metagame analysis, and top performing decks.',
+        'og:image': 'https://images.swubase.com/thumbnails/base-thumbnail.webp',
+        'og:url': 'https://swubase.com/tournaments/featured',
+        'og:type': 'website',
+      };
+    } else if (tournamentId === 'planetary-qualifiers') {
+      return {
+        robots: 'index, follow',
+        keywords:
+          'swubase, swu, star wars, tcg, tournaments, competetive, planetary qualifiers, official tournaments, competitive play',
+        description:
+          'Star Wars: Unlimited Planetary Qualifiers. View official tournament information, results, and qualifying decks.',
+        'og:title': 'Planetary Qualifiers | SWUBase',
+        'og:description':
+          'Star Wars: Unlimited Planetary Qualifiers. View official tournament information, results, and qualifying decks.',
+        'og:image': 'https://images.swubase.com/thumbnails/base-thumbnail.webp',
+        'og:url': 'https://swubase.com/tournaments/planetary-qualifiers',
+        'og:type': 'website',
+      };
+    } else if (tournamentId === 'all') {
+      return {
+        robots: 'index, follow',
+        keywords:
+          'swubase, swu, star wars, tcg, all tournaments, tournament database, tournament search',
+        description:
+          'Browse all Star Wars: Unlimited tournaments. Search, filter, and find tournaments by format, date, location, and more.',
+        'og:title': 'All Tournaments | SWUBase',
+        'og:description':
+          'Browse all Star Wars: Unlimited tournaments. Search, filter, and find tournaments by format, date, location, and more.',
+        'og:image': 'https://images.swubase.com/thumbnails/base-thumbnail.webp',
+        'og:url': 'https://swubase.com/tournaments/all',
+        'og:type': 'website',
+      };
+    }
+
+    // Regular tournament handling for valid UUIDs
     const tournamentData = (
       await db.select().from(tournament).where(eq(tournament.id, tournamentId))
     )[0];

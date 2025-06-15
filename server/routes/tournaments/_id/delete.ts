@@ -6,6 +6,10 @@ import { tournament as tournamentTable } from '../../../db/schema/tournament.ts'
 import { db } from '../../../db';
 import { tournamentDeck as tournamentDeckTable } from '../../../db/schema/tournament_deck.ts';
 import { tournamentMatch as tournamentMatchTable } from '../../../db/schema/tournament_match.ts';
+import { tournamentGroupTournament } from '../../../db/schema/tournament_group_tournament.ts';
+import {
+  updateTournamentGroupStatistics,
+} from '../../../lib/card-statistics/update-tournament-group-statistics.ts';
 
 export const tournamentIdDeleteRoute = new Hono<AuthExtension>().delete('/', async c => {
   const paramTournamentId = z.string().uuid().parse(c.req.param('id'));
@@ -27,6 +31,12 @@ export const tournamentIdDeleteRoute = new Hono<AuthExtension>().delete('/', asy
     );
   }
 
+  // Get the list of groups that contain this tournament before deleting it
+  const groups = await db
+    .select({ groupId: tournamentGroupTournament.groupId })
+    .from(tournamentGroupTournament)
+    .where(eq(tournamentGroupTournament.tournamentId, paramTournamentId));
+
   // Delete related tournament matches
   await db
     .delete(tournamentMatchTable)
@@ -41,6 +51,16 @@ export const tournamentIdDeleteRoute = new Hono<AuthExtension>().delete('/', asy
   const deletedTournament = (
     await db.delete(tournamentTable).where(and(isOwner, tournamentId)).returning()
   )[0];
+
+  // Update statistics for each affected group after the tournament is deleted
+  try {
+    for (const group of groups) {
+      await updateTournamentGroupStatistics(group.groupId);
+    }
+  } catch (error) {
+    console.error('Error updating tournament group statistics:', error);
+    // Continue with the response even if statistics update fails
+  }
 
   return c.json({ data: deletedTournament });
 });

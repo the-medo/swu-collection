@@ -19,6 +19,11 @@ import {
   tournamentTypesInfo,
 } from '../../../../../../types/Tournament.ts';
 import { formatDataById } from '../../../../../../types/Format.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
+import CardImage from '@/components/app/global/CardImage.tsx';
+import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { cn } from '@/lib/utils.ts';
+import UpcomingBadge from '../components/UpcomingBadge';
 
 export interface TournamentTableColumnsProps {
   view?: DataTableViewMode;
@@ -32,12 +37,35 @@ export function useTournamentTableColumns({
   onDelete,
 }: TournamentTableColumnsProps): ExtendedColumnDef<TournamentData>[] {
   const hasPermission = usePermissions();
+  const { data: cardList } = useCardList();
 
   const canUpdate = hasPermission('tournament', 'update');
   const canDelete = hasPermission('tournament', 'delete');
 
   return useMemo(() => {
     const definitions: ExtendedColumnDef<TournamentData>[] = [];
+
+    // Thumbnail column
+    definitions.push({
+      id: 'thumbnail',
+      header: '',
+      size: 16,
+      displayBoxHeader: false,
+      cell: ({ row }) => {
+        const tournamentId = row.original.tournament.id as string;
+        const thumbnailUrl = `https://images.swubase.com/tournament/${tournamentId}.webp`;
+
+        return (
+          <div className="flex items-center justify-center">
+            <img
+              src={thumbnailUrl}
+              alt="Tournament thumbnail"
+              className="w-16 h-8 object-cover rounded"
+            />
+          </div>
+        );
+      },
+    });
 
     // Name column
     definitions.push({
@@ -58,6 +86,86 @@ export function useTournamentTableColumns({
               {name}
             </Button>
           </Link>
+        );
+      },
+    });
+
+    // Winning Deck column
+    definitions.push({
+      id: 'winningDeck',
+      header: ' ',
+      size: 32,
+      displayBoxHeader: false,
+      cell: ({ row }) => {
+        const tournament = row.original.tournament;
+        const winningDeck = row.original.decks?.find(d => d.tournamentDeck.placement === 1);
+
+        // Check if tournament is in the future
+        const tournamentDate = new Date(tournament.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+
+        if (tournamentDate > today) {
+          return <UpcomingBadge date={tournament.date} />;
+        }
+
+        // Tournament is in the past or current day
+        if (!tournament.imported) {
+          return (
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              Not imported
+            </div>
+          );
+        }
+
+        if (!winningDeck || !cardList) {
+          return (
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              No data
+            </div>
+          );
+        }
+
+        const leader1 = winningDeck.deck.leaderCardId1
+          ? cardList.cards[winningDeck.deck.leaderCardId1]
+          : undefined;
+        const leader2 = winningDeck.deck.leaderCardId2
+          ? cardList.cards[winningDeck.deck.leaderCardId2]
+          : undefined;
+        const base = winningDeck.deck.baseCardId
+          ? cardList.cards[winningDeck.deck.baseCardId]
+          : undefined;
+
+        return (
+          <div className="flex gap-1">
+            <CardImage
+              card={leader1}
+              cardVariantId={leader1 ? selectDefaultVariant(leader1) : undefined}
+              forceHorizontal={true}
+              size="w50"
+              backSideButton={false}
+            />
+            {leader2 && (
+              <div className="-ml-7">
+                <CardImage
+                  card={leader2}
+                  cardVariantId={leader2 ? selectDefaultVariant(leader2) : undefined}
+                  forceHorizontal={true}
+                  size="w50"
+                  backSideButton={false}
+                />
+              </div>
+            )}
+            <div className={cn({ '-ml-6': !!leader2 })}>
+              <CardImage
+                card={base}
+                cardVariantId={base ? selectDefaultVariant(base) : undefined}
+                forceHorizontal={true}
+                size="w50"
+                backSideButton={false}
+              />
+            </div>
+          </div>
         );
       },
     });
@@ -185,5 +293,5 @@ export function useTournamentTableColumns({
     });
 
     return definitions;
-  }, [canUpdate, canDelete, onEdit, onDelete]);
+  }, [canUpdate, canDelete, onEdit, onDelete, cardList]);
 }

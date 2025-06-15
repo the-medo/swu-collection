@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { useTournamentTableColumns } from './useTournamentTableColumns.tsx';
-import { useGetTournaments } from '@/api/tournaments/useGetTournaments.ts';
+import { GetTournamentsRequest, useGetTournaments } from '@/api/tournaments/useGetTournaments.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Loader2 } from 'lucide-react';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
@@ -10,32 +10,17 @@ import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDia
 import { TournamentStringDate } from '../../../../../../types/Tournament.ts';
 
 interface TournamentListProps {
-  filters?: {
-    type?: string;
-    season?: number;
-    set?: string;
-    format?: number;
-    continent?: string;
-  };
-  sort?: string;
-  order?: 'asc' | 'desc';
+  params: GetTournamentsRequest;
 }
 
-const TournamentList: React.FC<TournamentListProps> = ({
-  filters = {},
-  sort = 'tournament.date',
-  order = 'desc',
-}) => {
+const TournamentList: React.FC<TournamentListProps> = ({ params }) => {
   // State for dialogs
   const [tournamentToEdit, setTournamentToEdit] = useState<TournamentStringDate | null>(null);
   const [tournamentToDelete, setTournamentToDelete] = useState<TournamentStringDate | null>(null);
 
   // Fetch tournaments data
-  const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } = useGetTournaments({
-    ...filters,
-    sort,
-    order,
-  });
+  const { data, hasNextPage, isFetching, fetchNextPage, isFetchingNextPage } =
+    useGetTournaments(params);
 
   // Prepare table columns
   const columns = useTournamentTableColumns({
@@ -44,7 +29,7 @@ const TournamentList: React.FC<TournamentListProps> = ({
   });
 
   // Flatten data from all pages
-  const tournaments = React.useMemo(() => {
+  const tournaments = useMemo(() => {
     if (!data) return [];
     return data.pages.flatMap(page => page.data || []);
   }, [data]);

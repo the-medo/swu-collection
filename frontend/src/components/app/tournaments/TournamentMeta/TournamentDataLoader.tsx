@@ -15,7 +15,7 @@ const TournamentDataLoader: React.FC<TournamentDataLoaderProps> = ({ tournamentI
   const { data: matchesData, isLoading: isLoadingMatches } = useGetTournamentMatches(tournamentId);
   const { data: tournamentData, isLoading: isLoadingTournament } = useGetTournament(tournamentId);
 
-  const { setTournamentData } = useTournamentMetaActions();
+  const { setTournamentData, setTournamentIds } = useTournamentMetaActions();
 
   useEffect(() => {
     if (
@@ -42,6 +42,10 @@ const TournamentDataLoader: React.FC<TournamentDataLoaderProps> = ({ tournamentI
     matchesData,
     tournamentData,
   ]);
+
+  useEffect(() => {
+    setTournamentIds([tournamentId]);
+  }, [tournamentId]);
 
   return null;
 };

@@ -53,6 +53,8 @@ interface DataTableProps<TData, TValue> {
   onRowSelectionChange?: TableOptions<TData>['onRowSelectionChange']; //(newSelection: RowSelectionState) => void;
 }
 
+const emptyData = [{}, {}, {}];
+
 export function DataTable<TData, TValue>({
   columns,
   data,
@@ -73,7 +75,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     // @ts-ignore
-    data: loading ? [{}, {}, {}] : data,
+    data: loading ? emptyData : data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     defaultColumn,

@@ -15,6 +15,10 @@ import { cardStatsTabsArray } from '@/components/app/card-stats/CardStatsTabs/Ca
 import { aspectTabOptions } from '@/components/app/card-stats/AspectCardStats/AspectCardStats.tsx';
 
 const globalSearchParams = z.object({
+  // global filters
+  formatId: z.number().int().positive().optional(),
+  metaId: z.number().int().positive().optional(),
+
   // Card detail dialog
   modalCardId: z.string().optional(),
   modalCardDecksId: z.string().optional(),
@@ -42,6 +46,7 @@ const globalSearchParams = z.object({
   maMetaPart: z.enum(['all', 'top8', 'day2', 'top64']).optional(),
   maMetaInfo: z.enum([...metaInfoArray]).optional(),
   maViewMode: z.enum(['chart', 'table']).optional(),
+  maTournamentGroupId: z.string().optional(),
 
   // Matchup analysis params
   maMatchFilter: z.enum(['all', 'day2', 'custom']).optional(),
@@ -65,6 +70,13 @@ const globalSearchParams = z.object({
   csGroupBy: z.enum(['none', 'type', 'cost']).optional(),
   csMinDeckCount: z.coerce.number().int().nonnegative().optional(),
   csCardSearch: z.string().optional(),
+
+  // Tournament filters
+  tfType: z.string().optional(),
+  tfContinent: z.string().optional(),
+  tfDateFrom: z.string().optional(),
+  tfSort: z.string().optional(),
+  tfOrder: z.enum(['asc', 'desc']).optional(),
 });
 export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 

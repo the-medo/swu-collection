@@ -1,33 +1,18 @@
 import * as React from 'react';
-import { useEffect } from 'react';
-import {
-  useTournamentMetaActions,
-  useTournamentMetaStore,
-} from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
-import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentDataLoader.tsx';
+import { useTournamentMetaStore } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import TournamentDeckFilters from '../TournamentDecks/TournamentDeckFilters.tsx';
 import TournamentDeckTable from '../TournamentDecks/TournamentDeckTable.tsx';
 import { Helmet } from 'react-helmet-async';
 
-interface AllDecksTabProps {
-  tournamentIds: string[];
-}
+interface AllDecksTabProps {}
 
-const AllDecksTab: React.FC<AllDecksTabProps> = ({ tournamentIds }) => {
+const AllDecksTab: React.FC<AllDecksTabProps> = () => {
   const { decks, isLoaded } = useTournamentMetaStore();
-  const { setTournamentIds } = useTournamentMetaActions();
-
-  useEffect(() => {
-    setTournamentIds(tournamentIds);
-  }, [tournamentIds]);
 
   return (
     <>
       <Helmet title="Decks" />
       <div className="space-y-2">
-        {tournamentIds.map(tid => (
-          <TournamentDataLoader tournamentId={tid} key={tid} />
-        ))}
         {isLoaded ? (
           <>
             <TournamentDeckFilters />

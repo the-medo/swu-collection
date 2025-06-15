@@ -11,11 +11,28 @@ import MetaPageContent from '@/components/app/meta/MetaPageContent/MetaPageConte
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 import { Helmet } from 'react-helmet-async';
+import { useGetTournamentGroup } from '@/api/tournament-groups';
 
 function MetaPage() {
   const navigate = useNavigate({ from: Route.fullPath });
-  const { metaId, formatId, minTournamentType } = useSearch({ from: Route.fullPath });
+  const { metaId, formatId, minTournamentType, maTournamentGroupId } = useSearch({
+    from: Route.fullPath,
+  });
   const { data, isLoading } = useGetMetas();
+
+  // Fetch tournament group information if ID is present
+  const { data: tournamentGroup, isLoading: isLoadingTournamentGroup } = useGetTournamentGroup(
+    (maTournamentGroupId as string) || '',
+  );
+
+  const tournaments = useMemo(() => {
+    if (!tournamentGroup || !maTournamentGroupId) return undefined;
+    return tournamentGroup.data?.tournaments.map(t => ({
+      tournament: t.tournament,
+      tournamentType: t.tournamentType,
+      meta: tournamentGroup.data?.meta,
+    }));
+  }, [tournamentGroup, maTournamentGroupId]);
 
   const setFormat = useCallback(
     (v: number | null) => {
@@ -65,7 +82,7 @@ function MetaPage() {
 
   const selectedMetaId = selectedMeta ? selectedMeta.meta.id : undefined;
 
-  if (isLoading) {
+  if (isLoading || isLoadingTournamentGroup) {
     return (
       <div className="p-2 h-full">
         <div className="flex flex-row gap-4 items-center justify-between mb-4">
@@ -88,42 +105,49 @@ function MetaPage() {
 
       <div className="p-2">
         <div className="flex flex-row flex-wrap gap-4 items-center justify-between mb-4">
-          <h3 className="mb-0">Meta</h3>
-          <div className="flex flex-row flex-1 gap-2 items-center min-w-[200px]">
-            <span className="text-gray-600">Format</span>
-            <FormatSelect
-              value={formatId}
-              onChange={setFormat}
-              allowEmpty={false}
-              showInfoTooltip={false}
-              className="w-full"
-            />
-          </div>
+          {tournamentGroup && tournamentGroup.data?.group ? (
+            <h3 className="mb-0">Meta - {tournamentGroup.data?.group.name}</h3>
+          ) : (
+            <>
+              <h3 className="mb-0">Meta</h3>
+              <div className="flex flex-row flex-1 gap-2 items-center min-w-[200px]">
+                <span className="text-gray-600">Format</span>
+                <FormatSelect
+                  value={formatId}
+                  onChange={setFormat}
+                  allowEmpty={false}
+                  showInfoTooltip={false}
+                  className="w-full"
+                />
+              </div>
 
-          <div className="flex flex-1 min-w-[350px]">
-            {selectedMetaId && (
-              <MetaSelector
-                formatId={formatId}
-                value={selectedMetaId}
-                onChange={setMeta}
-                emptyOption={false}
-              />
-            )}
-          </div>
-          <div className="flex flex-1 min-w-[200px]">
-            <TournamentTypeSelect
-              value={minTournamentType}
-              onChange={setMinTournamentType}
-              showFullName={true}
-              emptyOption={false}
-            />
-          </div>
+              <div className="flex flex-1 min-w-[350px]">
+                {selectedMetaId && (
+                  <MetaSelector
+                    formatId={formatId}
+                    value={selectedMetaId}
+                    onChange={setMeta}
+                    emptyOption={false}
+                  />
+                )}
+              </div>
+              <div className="flex flex-1 min-w-[200px]">
+                <TournamentTypeSelect
+                  value={minTournamentType}
+                  onChange={setMinTournamentType}
+                  showFullName={true}
+                  emptyOption={false}
+                />
+              </div>
+            </>
+          )}
         </div>
         {selectedMetaId ? (
           <MetaPageContent
             formatId={formatId}
             metaId={selectedMetaId}
             minTournamentType={minTournamentType}
+            tournaments={tournaments}
           />
         ) : (
           <Alert variant="warning">

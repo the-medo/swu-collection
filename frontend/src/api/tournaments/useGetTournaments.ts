@@ -1,58 +1,60 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { TournamentData } from '../../../../types/Tournament.ts';
+import { useMemo } from 'react';
 
 const PAGE_SIZE = 20;
 
 export type GetTournamentsRequest = {
   type?: string;
+  minType?: number;
   season?: number;
   set?: string;
   format?: number;
   continent?: string;
-  date?: Date;
+  date?: Date | string;
+  maxDate?: Date | string;
   meta?: number;
+  limit?: number;
   sort?: string;
   order?: 'asc' | 'desc';
 };
 
-export interface TournamentsResponse {
-  data: TournamentData[];
-  pagination: {
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
-}
-
-export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
+export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) => {
   const {
     type,
+    minType,
     season,
     set,
     format,
     continent,
     date,
+    maxDate,
     meta,
+    limit,
     sort = 'tournament.date',
     order = 'desc',
   } = props;
 
   // Create a stable query key based on all filter parameters
-  const qk = [
-    'tournaments',
-    {
-      type,
-      season,
-      set,
-      format,
-      continent,
-      date: date?.toISOString(),
-      meta,
-      sort,
-      order,
-    },
-  ];
+  const qk = useMemo(
+    () => [
+      'tournaments',
+      {
+        type,
+        minType,
+        season,
+        set,
+        format,
+        continent,
+        date: date instanceof Date ? date.toISOString() : date,
+        maxDate: maxDate instanceof Date ? maxDate.toISOString() : maxDate,
+        meta,
+        sort,
+        order,
+      },
+    ],
+    [type, minType, season, set, format, continent, date, maxDate, meta, sort, order],
+  );
 
   return useInfiniteQuery({
     queryKey: qk,
@@ -60,15 +62,17 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
       const response = await api.tournament.$get({
         query: {
           type,
+          minType: minType?.toString(),
           season: season?.toString(),
           set,
           format: format?.toString(),
           continent,
-          minDate: date?.toISOString(),
-          meta,
+          minDate: date instanceof Date ? date.toISOString() : date,
+          maxDate: maxDate instanceof Date ? maxDate.toISOString() : maxDate,
+          meta: meta?.toString(),
           sort,
           order,
-          limit: PAGE_SIZE.toString(),
+          limit: limit ?? PAGE_SIZE.toString(),
           offset: pageParam.toString(),
         },
       });
@@ -89,5 +93,6 @@ export const useGetTournaments = (props: GetTournamentsRequest = {}) => {
       return lastPage.pagination.offset + lastPage.pagination.limit;
     },
     staleTime: Infinity,
+    enabled: !!props,
   });
 };

@@ -1,16 +1,23 @@
 import { Hono } from 'hono';
 import type { AuthExtension } from '../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
-import { and, eq, gte, lte, or, sql } from 'drizzle-orm';
+import { and, eq, gte, lte, or, sql, lte as ltEqual } from 'drizzle-orm';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import { tournamentType as tournamentTypeTable } from '../../db/schema/tournament_type.ts';
 import { meta as metaTable } from '../../db/schema/meta.ts';
+import { tournamentDeck as tournamentDeckTable } from '../../db/schema/tournament_deck.ts';
+import { deck as deckTable } from '../../db/schema/deck.ts';
 import { db } from '../../db';
 import { withPagination } from '../../lib/withPagination.ts';
 import { zTournamentQueryParams } from '../../../types/ZTournamentParams.ts';
 import { selectTournament, selectTournamentType, selectMeta } from '../tournament.ts';
+import { selectDeck } from '../deck.ts';
 import { user as userTable } from '../../db/schema/auth-schema.ts';
 import { selectUser } from '../user.ts';
+import { getTableColumns } from 'drizzle-orm';
+
+// Create a select function for tournament deck
+const selectTournamentDeck = getTableColumns(tournamentDeckTable);
 
 export const tournamentGetRoute = new Hono<AuthExtension>().get(
   '/',
@@ -96,13 +103,31 @@ export const tournamentGetRoute = new Hono<AuthExtension>().get(
       filters.push(lte(tournamentTable.date, new Date(maxDate)));
     }
 
-    // Build the query with all filters
+    // Build the query with all filters and use PostgreSQL's json_agg to group decks by tournament
     let query = db
       .select({
         tournament: selectTournament,
         tournamentType: selectTournamentType,
         user: selectUser,
         meta: selectMeta,
+        // Use a subquery with json_agg to aggregate decks into an array
+        decks: sql`
+          COALESCE(
+            (
+              SELECT jsonb_agg(
+                jsonb_build_object(
+                  'tournamentDeck', jsonb_snake_to_camel(to_jsonb(td.*)),
+                  'deck', jsonb_snake_to_camel(to_jsonb(d.*))
+                )
+              )
+              FROM ${tournamentDeckTable} td
+              LEFT JOIN ${deckTable} d ON td.deck_id = d.id
+              WHERE td.tournament_id = ${tournamentTable.id}
+              AND td.placement <= 1
+            ),
+            '[]'::jsonb
+          )
+        `,
       })
       .from(tournamentTable)
       .innerJoin(tournamentTypeTable, eq(tournamentTable.type, tournamentTypeTable.id))

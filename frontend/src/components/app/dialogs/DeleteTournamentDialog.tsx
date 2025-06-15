@@ -83,16 +83,22 @@ const DeleteTournamentDialog: React.FC<DeleteTournamentDialogProps> = ({
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              variant="destructive"
-              disabled={
-                deleteTournamentMutation.isPending ||
-                form.state.values.confirmationText !== 'DELETE'
-              }
+            <form.Subscribe
+              selector={state => ({
+                confirmationText: state.values.confirmationText,
+                isPending: deleteTournamentMutation.isPending,
+              })}
             >
-              {deleteTournamentMutation.isPending ? 'Deleting...' : 'Delete Tournament'}
-            </Button>
+              {({ confirmationText, isPending }) => (
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  disabled={isPending || confirmationText !== 'DELETE'}
+                >
+                  {isPending ? 'Deleting...' : 'Delete Tournament'}
+                </Button>
+              )}
+            </form.Subscribe>
           </div>
         </form>
       </div>

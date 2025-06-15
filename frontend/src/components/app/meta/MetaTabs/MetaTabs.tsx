@@ -17,6 +17,7 @@ import {
 } from '@/components/app/tournaments/TournamentList/useTournamentTableColumns.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Helmet } from 'react-helmet-async';
+import TournamentsDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentsDataLoader.tsx';
 
 const tableColumnProps: TournamentTableColumnsProps = {};
 
@@ -105,11 +106,16 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) =
           <DataTable columns={columns} data={tournaments} />
         </>
       )}
-      {page === 'meta' && <MetaAnalysisTab tournamentIds={tournamentIds} route={Route} />}
-      {page === 'matchups' && <MatchupsTab tournamentIds={tournamentIds} route={Route} />}
-      {page === 'decks' && <AllDecksTab tournamentIds={tournamentIds} />}
+      <TournamentsDataLoader tournaments={tournaments} />
+      {page === 'meta' && <MetaAnalysisTab route={Route} />}
+      {page === 'matchups' && <MatchupsTab route={Route} />}
+      {page === 'decks' && <AllDecksTab />}
       {page === 'card-stats' && (
-        <CardStatsTab tournamentIds={tournamentIds} metaId={metaId} route={Route} />
+        <CardStatsTab
+          tournamentId={metaId ? undefined : tournamentIds[0]}
+          metaId={metaId}
+          route={Route}
+        />
       )}
     </div>
   );

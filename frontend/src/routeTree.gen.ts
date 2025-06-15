@@ -13,7 +13,6 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as TermsImport } from './routes/terms'
 import { Route as PrivacyImport } from './routes/privacy'
-import { Route as AdminImport } from './routes/admin'
 import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
@@ -34,8 +33,12 @@ import { Route as CollectionsYourImport } from './routes/collections/your'
 import { Route as CollectionsPublicImport } from './routes/collections/public'
 import { Route as CardsSearchImport } from './routes/cards/search'
 import { Route as AuthenticatedSettingsImport } from './routes/_authenticated.settings'
+import { Route as AuthenticatedAdminImport } from './routes/_authenticated.admin'
 import { Route as WantlistsWantlistIdIndexImport } from './routes/wantlists/$wantlistId/index'
 import { Route as UsersUserIdIndexImport } from './routes/users/$userId/index'
+import { Route as TournamentsPlanetaryQualifiersIndexImport } from './routes/tournaments/planetary-qualifiers/index'
+import { Route as TournamentsFeaturedIndexImport } from './routes/tournaments/featured/index'
+import { Route as TournamentsAllIndexImport } from './routes/tournaments/all/index'
 import { Route as TournamentsTournamentIdIndexImport } from './routes/tournaments/$tournamentId/index'
 import { Route as ToolsDeckFormatConverterIndexImport } from './routes/tools/deck-format-converter/index'
 import { Route as ListsCardListIdIndexImport } from './routes/lists/$cardListId/index'
@@ -60,12 +63,6 @@ const TermsRoute = TermsImport.update({
 const PrivacyRoute = PrivacyImport.update({
   id: '/privacy',
   path: '/privacy',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AdminRoute = AdminImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -188,6 +185,12 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsImport.update({
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
+const AuthenticatedAdminRoute = AuthenticatedAdminImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
 const WantlistsWantlistIdIndexRoute = WantlistsWantlistIdIndexImport.update({
   id: '/wantlists/$wantlistId/',
   path: '/wantlists/$wantlistId/',
@@ -197,6 +200,25 @@ const WantlistsWantlistIdIndexRoute = WantlistsWantlistIdIndexImport.update({
 const UsersUserIdIndexRoute = UsersUserIdIndexImport.update({
   id: '/users/$userId/',
   path: '/users/$userId/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TournamentsPlanetaryQualifiersIndexRoute =
+  TournamentsPlanetaryQualifiersIndexImport.update({
+    id: '/tournaments/planetary-qualifiers/',
+    path: '/tournaments/planetary-qualifiers/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const TournamentsFeaturedIndexRoute = TournamentsFeaturedIndexImport.update({
+  id: '/tournaments/featured/',
+  path: '/tournaments/featured/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TournamentsAllIndexRoute = TournamentsAllIndexImport.update({
+  id: '/tournaments/all/',
+  path: '/tournaments/all/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -305,13 +327,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminImport
-      parentRoute: typeof rootRoute
-    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -325,6 +340,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/terms'
       preLoaderRoute: typeof TermsImport
       parentRoute: typeof rootRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminImport
+      parentRoute: typeof AuthenticatedImport
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -529,6 +551,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TournamentsTournamentIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/tournaments/all/': {
+      id: '/tournaments/all/'
+      path: '/tournaments/all'
+      fullPath: '/tournaments/all'
+      preLoaderRoute: typeof TournamentsAllIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/tournaments/featured/': {
+      id: '/tournaments/featured/'
+      path: '/tournaments/featured'
+      fullPath: '/tournaments/featured'
+      preLoaderRoute: typeof TournamentsFeaturedIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/tournaments/planetary-qualifiers/': {
+      id: '/tournaments/planetary-qualifiers/'
+      path: '/tournaments/planetary-qualifiers'
+      fullPath: '/tournaments/planetary-qualifiers'
+      preLoaderRoute: typeof TournamentsPlanetaryQualifiersIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/users/$userId/': {
       id: '/users/$userId/'
       path: '/users/$userId'
@@ -549,10 +592,12 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }
 
@@ -564,9 +609,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -596,6 +641,9 @@ export interface FileRoutesByFullPath {
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
+  '/tournaments/all': typeof TournamentsAllIndexRoute
+  '/tournaments/featured': typeof TournamentsFeaturedIndexRoute
+  '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
@@ -604,9 +652,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -636,6 +684,9 @@ export interface FileRoutesByTo {
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
+  '/tournaments/all': typeof TournamentsAllIndexRoute
+  '/tournaments/featured': typeof TournamentsFeaturedIndexRoute
+  '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
@@ -645,9 +696,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -677,6 +728,9 @@ export interface FileRoutesById {
   '/lists/$cardListId/': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter/': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId/': typeof TournamentsTournamentIdIndexRoute
+  '/tournaments/all/': typeof TournamentsAllIndexRoute
+  '/tournaments/featured/': typeof TournamentsFeaturedIndexRoute
+  '/tournaments/planetary-qualifiers/': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
 }
@@ -687,9 +741,9 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
-    | '/admin'
     | '/privacy'
     | '/terms'
+    | '/admin'
     | '/settings'
     | '/cards/search'
     | '/collections/public'
@@ -719,6 +773,9 @@ export interface FileRouteTypes {
     | '/lists/$cardListId'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
+    | '/tournaments/all'
+    | '/tournaments/featured'
+    | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
   fileRoutesByTo: FileRoutesByTo
@@ -726,9 +783,9 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
-    | '/admin'
     | '/privacy'
     | '/terms'
+    | '/admin'
     | '/settings'
     | '/cards/search'
     | '/collections/public'
@@ -758,6 +815,9 @@ export interface FileRouteTypes {
     | '/lists/$cardListId'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
+    | '/tournaments/all'
+    | '/tournaments/featured'
+    | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
   id:
@@ -765,9 +825,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
-    | '/admin'
     | '/privacy'
     | '/terms'
+    | '/_authenticated/admin'
     | '/_authenticated/settings'
     | '/cards/search'
     | '/collections/public'
@@ -797,6 +857,9 @@ export interface FileRouteTypes {
     | '/lists/$cardListId/'
     | '/tools/deck-format-converter/'
     | '/tournaments/$tournamentId/'
+    | '/tournaments/all/'
+    | '/tournaments/featured/'
+    | '/tournaments/planetary-qualifiers/'
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
   fileRoutesById: FileRoutesById
@@ -806,7 +869,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   CardsSearchRoute: typeof CardsSearchRoute
@@ -837,6 +899,9 @@ export interface RootRouteChildren {
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
   ToolsDeckFormatConverterIndexRoute: typeof ToolsDeckFormatConverterIndexRoute
   TournamentsTournamentIdIndexRoute: typeof TournamentsTournamentIdIndexRoute
+  TournamentsAllIndexRoute: typeof TournamentsAllIndexRoute
+  TournamentsFeaturedIndexRoute: typeof TournamentsFeaturedIndexRoute
+  TournamentsPlanetaryQualifiersIndexRoute: typeof TournamentsPlanetaryQualifiersIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
 }
@@ -845,7 +910,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   CardsSearchRoute: CardsSearchRoute,
@@ -876,6 +940,10 @@ const rootRouteChildren: RootRouteChildren = {
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
   ToolsDeckFormatConverterIndexRoute: ToolsDeckFormatConverterIndexRoute,
   TournamentsTournamentIdIndexRoute: TournamentsTournamentIdIndexRoute,
+  TournamentsAllIndexRoute: TournamentsAllIndexRoute,
+  TournamentsFeaturedIndexRoute: TournamentsFeaturedIndexRoute,
+  TournamentsPlanetaryQualifiersIndexRoute:
+    TournamentsPlanetaryQualifiersIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
 }
@@ -893,7 +961,6 @@ export const routeTree = rootRoute
         "/",
         "/_authenticated",
         "/about",
-        "/admin",
         "/privacy",
         "/terms",
         "/cards/search",
@@ -924,6 +991,9 @@ export const routeTree = rootRoute
         "/lists/$cardListId/",
         "/tools/deck-format-converter/",
         "/tournaments/$tournamentId/",
+        "/tournaments/all/",
+        "/tournaments/featured/",
+        "/tournaments/planetary-qualifiers/",
         "/users/$userId/",
         "/wantlists/$wantlistId/"
       ]
@@ -934,20 +1004,22 @@ export const routeTree = rootRoute
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
+        "/_authenticated/admin",
         "/_authenticated/settings"
       ]
     },
     "/about": {
       "filePath": "about.tsx"
     },
-    "/admin": {
-      "filePath": "admin.tsx"
-    },
     "/privacy": {
       "filePath": "privacy.tsx"
     },
     "/terms": {
       "filePath": "terms.tsx"
+    },
+    "/_authenticated/admin": {
+      "filePath": "_authenticated.admin.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/settings": {
       "filePath": "_authenticated.settings.tsx",
@@ -1036,6 +1108,15 @@ export const routeTree = rootRoute
     },
     "/tournaments/$tournamentId/": {
       "filePath": "tournaments/$tournamentId/index.tsx"
+    },
+    "/tournaments/all/": {
+      "filePath": "tournaments/all/index.tsx"
+    },
+    "/tournaments/featured/": {
+      "filePath": "tournaments/featured/index.tsx"
+    },
+    "/tournaments/planetary-qualifiers/": {
+      "filePath": "tournaments/planetary-qualifiers/index.tsx"
     },
     "/users/$userId/": {
       "filePath": "users/$userId/index.tsx"

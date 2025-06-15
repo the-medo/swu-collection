@@ -174,8 +174,12 @@ export async function runTournamentImport(
           .where(eq(deckTable.id, d.tournamentDeck.deckId));
         await updateDeckInformation(d.tournamentDeck.deckId);
 
-        console.log(`Inserting deck cards: ${cards.deckCards.length} rows`);
-        await db.insert(deckCardTable).values(cards.deckCards);
+        try {
+          console.log(`Inserting deck cards: ${cards.deckCards.length} rows`);
+          await db.insert(deckCardTable).values(cards.deckCards);
+        } catch (error) {
+          console.warn('Error inserting deck cards:', error);
+        }
       }
 
       playerInfo[d.tournamentDeck.meleePlayerUsername].matches =

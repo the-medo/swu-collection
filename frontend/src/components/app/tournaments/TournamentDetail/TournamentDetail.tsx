@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
 import { Button } from '@/components/ui/button';
-import { Database, Edit, Trash2, Trophy, ChartColumn } from 'lucide-react';
+import { Database, Edit, Trash2, Trophy, ChartColumn, Check } from 'lucide-react';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
 import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTournamentDialog.tsx';
@@ -15,6 +15,8 @@ import { toast } from '@/hooks/use-toast.ts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
 import { useMemo } from 'react';
+import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentDataLoader.tsx';
+import { usePutTournament } from '@/api/tournaments/usePutTournament.ts';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -59,6 +61,28 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
       toast({
         title: 'Error',
         description: 'Failed to compute tournament card statistics.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const toggleImportedMutation = usePutTournament(tournamentId);
+
+  const handleToggleImported = async () => {
+    try {
+      await toggleImportedMutation.mutateAsync({
+        imported: !tournament?.imported,
+      });
+      toast({
+        title: tournament?.imported
+          ? 'Tournament marked as not imported'
+          : 'Tournament marked as imported',
+        description: `Tournament "${tournament?.name}" has been ${tournament?.imported ? 'unmarked' : 'marked'} as imported.`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update tournament imported status.',
         variant: 'destructive',
       });
     }
@@ -174,9 +198,32 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
                   </Tooltip>
                 </TooltipProvider>
               )}
+
+              {canUpdate && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleToggleImported}
+                        disabled={toggleImportedMutation.isPending}
+                      >
+                        <Check
+                          className={`h-4 w-4 ${tournament.imported ? 'text-green-500' : ''}`}
+                        />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{tournament.imported ? 'Mark as not imported' : 'Mark as imported'}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
           )}
         </div>
+        <TournamentDataLoader tournamentId={tournamentId} />
         <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} />
         {activeTab === 'details' || tournament?.imported ? children : null}
         <NoTournamentData tournamentId={tournamentId} />

@@ -7,6 +7,11 @@ import { and, eq } from 'drizzle-orm';
 import { tournament as tournamentTable } from '../../../../db/schema/tournament.ts';
 import { db } from '../../../../db';
 import { runTournamentFix } from '../../../../lib/imports/tournamentFix.ts';
+import {
+  computeAndSaveTournamentStatistics,
+  computeAndSaveMetaStatistics,
+} from '../../../../lib/card-statistics';
+import { updateTournamentGroupsStatisticsForTournament } from '../../../../lib/card-statistics/update-tournament-group-statistics.ts';
 
 export const tournamentIdImportMeleePatchRoute = new Hono<AuthExtension>().patch(
   '/',
@@ -56,6 +61,32 @@ export const tournamentIdImportMeleePatchRoute = new Hono<AuthExtension>().patch
     await db.update(tournamentTable).set({ meleeId }).where(and(condIsOwner, condTournamentId));
 
     await runTournamentFix(paramTournamentId);
+
+    // Compute tournament card statistics
+    try {
+      await computeAndSaveTournamentStatistics(paramTournamentId);
+    } catch (error) {
+      console.error('Error computing tournament statistics:', error);
+      // Continue with the response even if statistics update fails
+    }
+
+    // If tournament has a meta, compute meta card statistics
+    if (tournament.meta) {
+      try {
+        await computeAndSaveMetaStatistics(tournament.meta);
+      } catch (error) {
+        console.error('Error computing meta statistics:', error);
+        // Continue with the response even if statistics update fails
+      }
+    }
+
+    // Update tournament group statistics for all groups that contain this tournament
+    try {
+      await updateTournamentGroupsStatisticsForTournament(paramTournamentId);
+    } catch (error) {
+      console.error('Error updating tournament group statistics:', error);
+      // Continue with the response even if statistics update fails
+    }
 
     // Mock response - in a real implementation, this would fetch data from melee.gg
     // and process it to insert decks and matches
