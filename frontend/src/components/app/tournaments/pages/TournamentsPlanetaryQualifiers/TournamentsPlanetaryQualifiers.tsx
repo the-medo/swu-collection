@@ -7,6 +7,7 @@ import { useGetTournamentGroups } from '@/api/tournament-groups';
 import PQStatistics from './PQStatistics';
 import WeekColumns from './WeekColumns.tsx';
 import { Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert.tsx';
 
 interface TournamentsPlanetaryQualifiersProps {}
 
@@ -80,7 +81,12 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
     <>
       <TournamentNavigation />
       <TournamentPageHeader title="Planetary Qualifiers" />
-
+      <Alert variant="info" className="mt-6 mb-4">
+        <AlertDescription>
+          This is brand new section of the page, it will take some time to import all PQs. I'll
+          remove this message when it is done.
+        </AlertDescription>
+      </Alert>
       {isLoading ? (
         <div className="flex items-center justify-center h-96">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
