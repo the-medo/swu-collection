@@ -7,17 +7,15 @@ import {
   type TournamentMatch,
   tournamentMatch as tournamentMatchTable,
 } from '../../../../db/schema/tournament_match.ts';
-import {
-  type TournamentDeck,
-  tournamentDeck as tournamentDeckTable,
-} from '../../../../db/schema/tournament_deck.ts';
+import { tournamentDeck as tournamentDeckTable } from '../../../../db/schema/tournament_deck.ts';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckInformation as deckInformationTable } from '../../../../db/schema/deck_information.ts';
 import { zValidator } from '@hono/zod-validator';
+import { type TournamentDeckResponse } from '../../../../../frontend/src/api/tournaments/useGetTournamentDecks.ts';
 
 export interface TournamentsBulkResponse {
-  matches: Record<string, any[]>; // Tournament matches grouped by tournament ID
-  decks: Record<string, any[]>; // Tournament decks grouped by tournament ID
+  matches: Record<string, TournamentMatch[]>; // Tournament matches grouped by tournament ID
+  decks: Record<string, TournamentDeckResponse[]>; // Tournament deck info grouped by tournament ID
 }
 
 // Define request body schema
@@ -73,7 +71,7 @@ export const tournamentsBulkPostRoute = new Hono<AuthExtension>().post(
           acc[tournamentId].push(deck);
           return acc;
         },
-        {} as Record<string, any[]>,
+        {} as Record<string, TournamentDeckResponse[]>,
       ),
     };
 

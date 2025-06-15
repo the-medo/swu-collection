@@ -1,6 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { TournamentData } from '../../../../types/Tournament.ts';
 import { useMemo } from 'react';
 
 const PAGE_SIZE = 20;
@@ -19,15 +18,6 @@ export type GetTournamentsRequest = {
   sort?: string;
   order?: 'asc' | 'desc';
 };
-
-export interface TournamentsResponse {
-  data: TournamentData[];
-  pagination: {
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
-}
 
 export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) => {
   const {
