@@ -148,6 +148,7 @@ function MetaPage() {
             metaId={selectedMetaId}
             minTournamentType={minTournamentType}
             tournaments={tournaments}
+            tournamentGroupId={maTournamentGroupId as string}
           />
         ) : (
           <Alert variant="warning">

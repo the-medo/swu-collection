@@ -20,6 +20,7 @@ export interface CardStat {
 export interface CardStatsParams {
   metaId?: number;
   tournamentId?: string;
+  tournamentGroupId?: string;
   leaderCardId?: string;
   baseCardId?: string;
   leaderAndBase?: boolean;
@@ -43,10 +44,10 @@ export interface CardStatsResponse {
  * @returns Query result with card statistics data
  */
 export const useCardStats = (params: CardStatsParams) => {
-  const { metaId, tournamentId, leaderCardId, baseCardId, leaderAndBase } = params;
+  const { metaId, tournamentId, tournamentGroupId, leaderCardId, baseCardId, leaderAndBase } = params;
 
-  // Either metaId or tournamentId must be provided
-  const isValidQuery = metaId !== undefined || tournamentId !== undefined;
+  // Either metaId, tournamentId, or tournamentGroupId must be provided
+  const isValidQuery = metaId !== undefined || tournamentId !== undefined || tournamentGroupId !== undefined;
 
   // If baseCardId is provided, leaderCardId must also be provided
   const isValidParams =
@@ -54,7 +55,7 @@ export const useCardStats = (params: CardStatsParams) => {
     (!leaderAndBase && (baseCardId === undefined || leaderCardId !== undefined));
 
   return useQuery<CardStatsResponse, ErrorWithStatus>({
-    queryKey: ['card-stats', metaId, tournamentId, leaderCardId, baseCardId],
+    queryKey: ['card-stats', metaId, tournamentId, tournamentGroupId, leaderCardId, baseCardId],
     queryFn:
       isValidQuery && isValidParams
         ? async () => {
@@ -67,6 +68,10 @@ export const useCardStats = (params: CardStatsParams) => {
 
             if (tournamentId !== undefined) {
               queryParams.tournament_id = tournamentId;
+            }
+
+            if (tournamentGroupId !== undefined) {
+              queryParams.tournament_group_id = tournamentGroupId;
             }
 
             if (leaderCardId !== undefined) {

@@ -25,9 +25,10 @@ interface MetaTabsProps {
   className?: string;
   metaId: number;
   tournaments: TournamentData[];
+  tournamentGroupId?: string;
 }
 
-const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) => {
+const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments, tournamentGroupId }) => {
   const { page } = useSearch({ from: Route.fullPath });
   const columns = useTournamentTableColumns(tableColumnProps);
   const tournamentIds = useMemo(() => tournaments.map(t => t.tournament.id), [tournaments]);
@@ -114,6 +115,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) =
         <CardStatsTab
           tournamentId={metaId ? undefined : tournamentIds[0]}
           metaId={metaId}
+          tournamentGroupId={tournamentGroupId}
           route={Route}
         />
       )}

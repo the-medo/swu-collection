@@ -13,13 +13,14 @@ import { useMemo } from 'react';
 interface AspectCardStatsProps {
   metaId?: number;
   tournamentId?: string;
+  tournamentGroupId?: string;
   className?: string;
 }
 
 export const aspectTabOptions = ['overview', ...Object.values(SwuAspect), 'no-aspect'] as const;
 type AspectTabOption = (typeof aspectTabOptions)[number];
 
-const AspectCardStats: React.FC<AspectCardStatsProps> = ({ metaId, tournamentId, className }) => {
+const AspectCardStats: React.FC<AspectCardStatsProps> = ({ metaId, tournamentId, tournamentGroupId, className }) => {
   // Get the selected aspect from search params
   const { csAspect = 'overview' } = useSearch({ strict: false });
   const selectedAspect = aspectTabOptions.includes(csAspect as AspectTabOption)
@@ -30,8 +31,9 @@ const AspectCardStats: React.FC<AspectCardStatsProps> = ({ metaId, tournamentId,
     () => ({
       metaId,
       tournamentId,
+      tournamentGroupId,
     }),
-    [metaId, tournamentId],
+    [metaId, tournamentId, tournamentGroupId],
   );
 
   // Fetch card statistics

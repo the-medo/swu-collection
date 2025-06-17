@@ -12,6 +12,11 @@ import {
   cardStatTournamentLeader,
   cardStatTournamentLeaderBase,
 } from '../../db/schema/card_stats_schema.ts';
+import {
+  cardStatTournamentGroup,
+  cardStatTournamentGroupLeader,
+  cardStatTournamentGroupLeaderBase,
+} from '../../db/schema/card_stats_tournament_group_schema.ts';
 import { isBasicBase } from '../../../shared/lib/isBasicBase.ts';
 import type { CardStatExtended } from '../../../frontend/src/api/card-stats/useCardStats.ts';
 
@@ -20,17 +25,22 @@ const zCardStatsQueryParams = z
   .object({
     meta_id: z.coerce.number().int().optional(),
     tournament_id: z.string().uuid().optional(),
+    tournament_group_id: z.string().uuid().optional(),
     leader_card_id: z.string().optional(),
     base_card_id: z.string().optional(),
   })
   .refine(
     data => {
-      // Either meta_id or tournament_id must be provided
-      return data.meta_id !== undefined || data.tournament_id !== undefined;
+      // Either meta_id, tournament_id, or tournament_group_id must be provided
+      return (
+        data.meta_id !== undefined ||
+        data.tournament_id !== undefined ||
+        data.tournament_group_id !== undefined
+      );
     },
     {
-      message: 'Either meta_id or tournament_id must be provided',
-      path: ['meta_id', 'tournament_id'],
+      message: 'Either meta_id, tournament_id, or tournament_group_id must be provided',
+      path: ['meta_id', 'tournament_id', 'tournament_group_id'],
     },
   )
   .refine(
@@ -48,12 +58,47 @@ export const cardStatsGetRoute = new Hono<AuthExtension>().get(
   '/',
   zValidator('query', zCardStatsQueryParams),
   async c => {
-    const { meta_id, tournament_id, leader_card_id, base_card_id } = c.req.valid('query');
+    const { meta_id, tournament_id, tournament_group_id, leader_card_id, base_card_id } =
+      c.req.valid('query');
 
     // Determine which tables to query based on the parameters
     let cardStats: CardStatExtended[] = [];
 
-    if (meta_id !== undefined) {
+    console.log({ meta_id, tournament_id, tournament_group_id, leader_card_id, base_card_id });
+
+    if (tournament_group_id !== undefined) {
+      // Tournament group statistics
+      if (leader_card_id && base_card_id) {
+        // Filter by leader and base
+        cardStats = await db
+          .select()
+          .from(cardStatTournamentGroupLeaderBase)
+          .where(
+            and(
+              eq(cardStatTournamentGroupLeaderBase.tournamentGroupId, tournament_group_id),
+              eq(cardStatTournamentGroupLeaderBase.leaderCardId, leader_card_id),
+              eq(cardStatTournamentGroupLeaderBase.baseCardId, base_card_id),
+            ),
+          );
+      } else if (leader_card_id) {
+        // Filter by leader only
+        cardStats = await db
+          .select()
+          .from(cardStatTournamentGroupLeader)
+          .where(
+            and(
+              eq(cardStatTournamentGroupLeader.tournamentGroupId, tournament_group_id),
+              eq(cardStatTournamentGroupLeader.leaderCardId, leader_card_id),
+            ),
+          );
+      } else {
+        // No filters, get all tournament group stats
+        cardStats = await db
+          .select()
+          .from(cardStatTournamentGroup)
+          .where(eq(cardStatTournamentGroup.tournamentGroupId, tournament_group_id));
+      }
+    } else if (meta_id !== undefined) {
       // Meta statistics
       if (leader_card_id && base_card_id) {
         // Filter by leader and base
