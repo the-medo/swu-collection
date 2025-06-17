@@ -24,6 +24,7 @@ const CardDecks: React.FC<CardDecksProps> = ({
   cardId,
   metaId,
   tournamentId,
+  tournamentGroupId,
   leaderCardId,
   baseCardId,
 }) => {
@@ -33,6 +34,7 @@ const CardDecks: React.FC<CardDecksProps> = ({
     cardId,
     metaId,
     tournamentId,
+    tournamentGroupId,
     leaderCardId,
     baseCardId,
   });

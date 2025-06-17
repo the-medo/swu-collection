@@ -9,6 +9,7 @@ import type { CardDeckData } from '../../../../types/CardDeckData.ts';
 export interface CardDecksParams {
   cardId: string;
   tournamentId?: string;
+  tournamentGroupId?: string;
   metaId?: number;
   leaderCardId?: string;
   baseCardId?: string;
@@ -27,10 +28,12 @@ export interface CardDecksResponse {
  * @returns Query result with card decks data
  */
 export const useGetCardDecks = (params: CardDecksParams) => {
-  const { cardId, tournamentId, metaId, leaderCardId, baseCardId } = params;
+  const { cardId, tournamentId, tournamentGroupId, metaId, leaderCardId, baseCardId } = params;
 
   // Either metaId or tournamentId must be provided
-  const isValidQuery = cardId !== undefined && (metaId !== undefined || tournamentId !== undefined);
+  const isValidQuery =
+    cardId !== undefined &&
+    (metaId !== undefined || tournamentId !== undefined || tournamentGroupId !== undefined);
 
   return useQuery<CardDecksResponse, ErrorWithStatus>({
     queryKey: ['card-decks', cardId, metaId, tournamentId, leaderCardId, baseCardId],
@@ -42,6 +45,7 @@ export const useGetCardDecks = (params: CardDecksParams) => {
             query: {
               metaId: metaId?.toString(),
               tournamentId,
+              tournamentGroupId,
               leaderCardId,
               baseCardId,
             },
