@@ -111,7 +111,7 @@ function MetaPage() {
             <>
               <h3 className="mb-0">Meta</h3>
               <div className="flex flex-row flex-1 gap-2 items-center min-w-[200px]">
-                <span className="text-gray-600">Format</span>
+                <span className="text-gray-600">Format:</span>
                 <FormatSelect
                   value={formatId}
                   onChange={setFormat}
@@ -131,7 +131,8 @@ function MetaPage() {
                   />
                 )}
               </div>
-              <div className="flex flex-1 min-w-[200px]">
+              <div className="flex flex-1 gap-2 items-center min-w-[200px]">
+                <div className="flex flex-1 text-nowrap text-gray-600">Min. type:</div>
                 <TournamentTypeSelect
                   value={minTournamentType}
                   onChange={setMinTournamentType}
