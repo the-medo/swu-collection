@@ -2,6 +2,7 @@ import * as React from 'react';
 import { TournamentGroupWithMeta } from '../../../../../../../types/TournamentGroup';
 import { AlertCircle, Calendar, CheckCircle, PieChart } from 'lucide-react';
 import WeekSelector, { ALL_WEEKS_VALUE } from './WeekSelector.tsx';
+import WeekChangeButtons from './WeekChangeButtons.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import PQPageNavigation from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/PQPageNavigation.tsx';
@@ -86,11 +87,18 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
       {/* Tournament Information Section */}
       <div className="md:col-span-8 lg:col-span-9 space-y-2">
-        <div className="flex items-center justify-between gap-2">
-          <WeekSelector
-            value={selectedGroupId || undefined}
-            onValueChange={handleWeekSelect}
+        <div className="flex items-center gap-2">
+          <div className="flex grow items-center gap-2">
+            <WeekSelector
+              value={selectedGroupId || undefined}
+              onValueChange={handleWeekSelect}
+              processedTournamentGroups={processedTournamentGroups}
+            />
+          </div>
+          <WeekChangeButtons
+            selectedGroupId={selectedGroupId}
             processedTournamentGroups={processedTournamentGroups}
+            onWeekChange={handleWeekSelect}
           />
           {selectedGroupId && (
             <TooltipProvider>
