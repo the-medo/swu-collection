@@ -18,6 +18,7 @@ export interface TopPlayedCardStat extends CardStat {
 export interface TopPlayedCardsParams {
   metaId?: number;
   tournamentId?: string;
+  tournamentGroupId?: string;
   leaderIds?: string[];
   leaderBasePairs?: string[];
   limit?: number;
@@ -36,10 +37,11 @@ export interface TopPlayedCardsResponse {
  * @returns Query result with top played cards data grouped by leader or leader/base combination
  */
 export const useTopPlayedCards = (params: TopPlayedCardsParams) => {
-  const { metaId, tournamentId, leaderIds, leaderBasePairs, limit } = params;
+  const { metaId, tournamentId, tournamentGroupId, leaderIds, leaderBasePairs, limit } = params;
 
   // Either metaId or tournamentId must be provided
-  const isValidQuery = metaId !== undefined || tournamentId !== undefined;
+  const isValidQuery =
+    metaId !== undefined || tournamentId !== undefined || tournamentGroupId !== undefined;
 
   return useQuery<TopPlayedCardsResponse, ErrorWithStatus>({
     queryKey: ['card-stats', 'top-played', metaId, tournamentId, leaderIds, leaderBasePairs, limit],
@@ -54,6 +56,10 @@ export const useTopPlayedCards = (params: TopPlayedCardsParams) => {
 
           if (tournamentId !== undefined) {
             queryParams.tournament_id = tournamentId;
+          }
+
+          if (tournamentGroupId !== undefined) {
+            queryParams.tournament_group_id = tournamentGroupId;
           }
 
           if (leaderIds && leaderIds.length > 0) {

@@ -15,6 +15,7 @@ interface MetaPageContentProps {
   metaId: number;
   minTournamentType: string;
   tournaments?: TournamentData[];
+  tournamentGroupId?: string;
 }
 
 const todayDate = format(new Date(), 'yyyy-MM-dd');
@@ -24,6 +25,7 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
   metaId,
   minTournamentType,
   tournaments,
+  tournamentGroupId,
 }) => {
   const { data, isFetching } = useGetTournaments(
     {
@@ -43,7 +45,7 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
   }, [data, tournaments]);
 
   if (isFetching) return <Skeleton className="h-full w-full rounded-md" />;
-  return <MetaTabs tournaments={tournamentsData} metaId={metaId} />;
+  return <MetaTabs tournaments={tournamentsData} metaId={metaId} tournamentGroupId={tournamentGroupId} />;
 };
 
 export default MetaPageContent;

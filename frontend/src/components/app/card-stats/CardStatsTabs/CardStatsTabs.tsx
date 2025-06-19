@@ -17,9 +17,10 @@ interface CardStatsTabsProps {
   className?: string;
   metaId?: number;
   tournamentId?: string;
+  tournamentGroupId?: string;
 }
 
-const CardStatsTabs: React.FC<CardStatsTabsProps> = ({ className, metaId, tournamentId }) => {
+const CardStatsTabs: React.FC<CardStatsTabsProps> = ({ className, metaId, tournamentId, tournamentGroupId }) => {
   const { csPage = 'all' } = useSearch({ strict: false });
 
   return (
@@ -46,11 +47,11 @@ const CardStatsTabs: React.FC<CardStatsTabsProps> = ({ className, metaId, tourna
       </div>
 
       {/* Render the appropriate component based on the selected tab */}
-      {csPage === 'all' && <AllCardStats metaId={metaId} tournamentId={tournamentId} />}
-      {csPage === 'aspect' && <AspectCardStats metaId={metaId} tournamentId={tournamentId} />}
-      {csPage === 'leader' && <LeaderCardStats metaId={metaId} tournamentId={tournamentId} />}
+      {csPage === 'all' && <AllCardStats metaId={metaId} tournamentId={tournamentId} tournamentGroupId={tournamentGroupId} />}
+      {csPage === 'aspect' && <AspectCardStats metaId={metaId} tournamentId={tournamentId} tournamentGroupId={tournamentGroupId} />}
+      {csPage === 'leader' && <LeaderCardStats metaId={metaId} tournamentId={tournamentId} tournamentGroupId={tournamentGroupId} />}
       {csPage === 'leader-base' && (
-        <LeaderBaseCardStats metaId={metaId} tournamentId={tournamentId} />
+        <LeaderBaseCardStats metaId={metaId} tournamentId={tournamentId} tournamentGroupId={tournamentGroupId} />
       )}
     </div>
   );

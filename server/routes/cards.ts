@@ -14,6 +14,7 @@ const clientVersionSchema = z.object({
 
 const cardDecksQuerySchema = z.object({
   tournamentId: z.string().optional(),
+  tournamentGroupId: z.string().optional(),
   metaId: z.coerce.number().optional(),
   leaderCardId: z.string().optional(),
   baseCardId: z.string().optional(),
@@ -22,7 +23,8 @@ const cardDecksQuerySchema = z.object({
 export const cardsRoute = new Hono<AuthExtension>()
   .get('/:id/decks', zValidator('query', cardDecksQuerySchema), async c => {
     const cardId = c.req.param('id');
-    const { tournamentId, metaId, leaderCardId, baseCardId } = c.req.valid('query');
+    const { tournamentId, tournamentGroupId, metaId, leaderCardId, baseCardId } =
+      c.req.valid('query');
 
     // Ensure at least one of tournamentId or metaId is provided
     if (!tournamentId && !metaId) {
@@ -33,6 +35,7 @@ export const cardsRoute = new Hono<AuthExtension>()
       const data = await fetchCardDecksData({
         cardId,
         tournamentId,
+        tournamentGroupId,
         metaId,
         leaderCardId,
         baseCardId,

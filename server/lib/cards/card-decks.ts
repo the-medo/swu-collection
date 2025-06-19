@@ -10,10 +10,12 @@ import type { SwuAspect } from '../../../types/enums.ts';
 import { cardList } from '../../db/lists.ts';
 import { isBasicBase } from '../../../shared/lib/isBasicBase.ts';
 import type { CardDeckData } from '../../../types/CardDeckData.ts';
+import { fetchTournamentIdsForGroup } from '../tournament-group/fetch-tournament-ids-for-group.ts';
 
 type FetchCardDecksDataParams = {
   cardId: string;
   tournamentId?: string;
+  tournamentGroupId?: string;
   metaId?: number;
   leaderCardId?: string;
   baseCardId?: string;
@@ -37,9 +39,17 @@ export async function fetchCardDecksData(
   if (!params.metaId && !params.tournamentId) {
     throw new Error('Either metaId or tournamentId must be provided');
   }
-  const { cardId, metaId, tournamentId, leaderCardId, baseCardId } = params;
+  const { cardId, metaId, tournamentId, tournamentGroupId, leaderCardId, baseCardId } = params;
 
-  const tournamentIds = tournamentId ? [tournamentId] : await fetchTournamentIdsForMeta(metaId!);
+  let tournamentIds: string[] = [];
+
+  if (tournamentGroupId) {
+    tournamentIds = await fetchTournamentIdsForGroup(tournamentGroupId);
+  } else if (metaId) {
+    tournamentIds = await fetchTournamentIdsForMeta(metaId);
+  } else if (tournamentId) {
+    tournamentIds = [tournamentId];
+  }
 
   // Get tournament decks
   let conditions: SQL<unknown>[] = [sql`${tournamentDeck.tournamentId} IN ${tournamentIds}`];

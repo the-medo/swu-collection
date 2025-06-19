@@ -17,10 +17,16 @@ import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectD
 interface LeaderCardStatsProps {
   metaId?: number;
   tournamentId?: string;
+  tournamentGroupId?: string;
   className?: string;
 }
 
-const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({ metaId, tournamentId, className }) => {
+const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
+  metaId,
+  tournamentId,
+  tournamentGroupId,
+  className,
+}) => {
   const { decks } = useTournamentMetaStore();
   const { csLeaderId } = useSearch({ strict: false });
   const navigate = useNavigate({ from: Route.fullPath });
@@ -29,9 +35,10 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({ metaId, tournamentId,
     () => ({
       metaId,
       tournamentId,
+      tournamentGroupId,
       leaderCardId: csLeaderId,
     }),
-    [metaId, tournamentId, csLeaderId],
+    [metaId, tournamentId, tournamentGroupId, csLeaderId],
   );
 
   // Fetch card statistics filtered by leader (when a leader is selected)
@@ -69,6 +76,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({ metaId, tournamentId,
   } = useTopPlayedCards({
     metaId,
     tournamentId,
+    tournamentGroupId,
     limit: 5, // Top 5 cards per leader
     leaderIds,
   });

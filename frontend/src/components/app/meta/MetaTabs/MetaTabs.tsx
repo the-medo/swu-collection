@@ -18,6 +18,8 @@ import {
 import { Badge } from '@/components/ui/badge.tsx';
 import { Helmet } from 'react-helmet-async';
 import TournamentsDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentsDataLoader.tsx';
+import { CircleAlert } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 
 const tableColumnProps: TournamentTableColumnsProps = {};
 
@@ -25,12 +27,39 @@ interface MetaTabsProps {
   className?: string;
   metaId: number;
   tournaments: TournamentData[];
+  tournamentGroupId?: string;
 }
 
-const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) => {
+const MetaTabs: React.FC<MetaTabsProps> = ({
+  className,
+  metaId,
+  tournaments,
+  tournamentGroupId,
+}) => {
   const { page } = useSearch({ from: Route.fullPath });
   const columns = useTournamentTableColumns(tableColumnProps);
   const tournamentIds = useMemo(() => tournaments.map(t => t.tournament.id), [tournaments]);
+
+  const displayCardStatisticsWarning = tournamentGroupId === undefined;
+
+  const cardStatLink = useMemo(
+    () => (
+      <Link
+        to={Route.fullPath}
+        search={prev => ({ ...prev, page: 'card-stats' })}
+        className={cn(
+          'flex gap-2 items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
+          page === 'card-stats'
+            ? 'bg-background text-foreground shadow-sm'
+            : 'text-muted-foreground hover:text-foreground',
+        )}
+      >
+        Card Statistics
+        {displayCardStatisticsWarning && <CircleAlert className="size-4" />}
+      </Link>
+    ),
+    [page, displayCardStatisticsWarning],
+  );
 
   return (
     <div className={cn('w-full', className)}>
@@ -86,18 +115,17 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) =
         >
           All Decks
         </Link>
-        <Link
-          to={Route.fullPath}
-          search={prev => ({ ...prev, page: 'card-stats' })}
-          className={cn(
-            'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-            page === 'card-stats'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground',
-          )}
-        >
-          Card Statistics
-        </Link>
+        {displayCardStatisticsWarning ? (
+          <Tooltip>
+            <TooltipTrigger asChild>{cardStatLink}</TooltipTrigger>
+            <TooltipContent className="max-w-[350px]">
+              These statistics are for the whole meta (from all tournaments, ignoring selected
+              "minimal tournament type" above)
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          cardStatLink
+        )}
       </div>
       {page === 'tournaments' && (
         <>
@@ -114,6 +142,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({ className, metaId, tournaments }) =
         <CardStatsTab
           tournamentId={metaId ? undefined : tournamentIds[0]}
           metaId={metaId}
+          tournamentGroupId={tournamentGroupId}
           route={Route}
         />
       )}

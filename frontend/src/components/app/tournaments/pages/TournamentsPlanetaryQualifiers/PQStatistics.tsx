@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { TournamentGroupWithMeta } from '../../../../../../../types/TournamentGroup';
-import { AlertCircle, Calendar, CheckCircle } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle, PieChart } from 'lucide-react';
 import WeekSelector, { ALL_WEEKS_VALUE } from './WeekSelector.tsx';
+import WeekChangeButtons from './WeekChangeButtons.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import PQPageNavigation from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/PQPageNavigation.tsx';
@@ -18,6 +19,13 @@ import { useProcessedTournamentGroups } from './hooks/useProcessedTournamentGrou
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 import { TournamentGroupLeaderBase } from '../../../../../../../server/db/schema/tournament_group_leader_base.ts';
 import DiscordPing from '@/components/app/global/DiscordPing.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip.tsx';
 
 interface PQStatisticsProps {
   tournamentGroups: TournamentGroupWithMeta[];
@@ -79,11 +87,50 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
       {/* Tournament Information Section */}
       <div className="md:col-span-8 lg:col-span-9 space-y-2">
-        <WeekSelector
-          value={selectedGroupId || undefined}
-          onValueChange={handleWeekSelect}
-          processedTournamentGroups={processedTournamentGroups}
-        />
+        <div className="flex items-center gap-2">
+          <div className="flex grow items-center gap-2">
+            <WeekSelector
+              value={selectedGroupId || undefined}
+              onValueChange={handleWeekSelect}
+              processedTournamentGroups={processedTournamentGroups}
+            />
+          </div>
+          <WeekChangeButtons
+            selectedGroupId={selectedGroupId}
+            processedTournamentGroups={processedTournamentGroups}
+            onWeekChange={handleWeekSelect}
+          />
+          {selectedGroupId && (
+            <TooltipProvider>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 h-12"
+                      disabled={selectedGroupId === ALL_WEEKS_VALUE}
+                      onClick={() => {
+                        navigate({
+                          to: '/meta',
+                          search: { maTournamentGroupId: selectedGroupId },
+                        });
+                      }}
+                    >
+                      <PieChart className="h-4 w-4" />
+                      Full meta analysis
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {selectedGroupId === ALL_WEEKS_VALUE
+                    ? 'Viewing full meta analysis is possible only for single weeks right now'
+                    : 'Display full meta analysis, matchups, decks and card statistics'}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <PQPageNavigation />
           <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />

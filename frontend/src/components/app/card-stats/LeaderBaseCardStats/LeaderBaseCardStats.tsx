@@ -23,12 +23,14 @@ import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 interface LeaderBaseCardStatsProps {
   metaId?: number;
   tournamentId?: string;
+  tournamentGroupId?: string;
   className?: string;
 }
 
 const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
   metaId,
   tournamentId,
+  tournamentGroupId,
   className,
 }) => {
   const { decks } = useTournamentMetaStore();
@@ -40,11 +42,12 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
     () => ({
       metaId,
       tournamentId,
+      tournamentGroupId,
       leaderCardId: csLeaderId,
       baseCardId: csBaseId,
       leaderAndBase: true,
     }),
-    [metaId, tournamentId, csLeaderId, csBaseId],
+    [metaId, tournamentId, tournamentGroupId, csLeaderId, csBaseId],
   );
 
   // Fetch card statistics filtered by leader (when a leader is selected)
@@ -88,6 +91,7 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
   } = useTopPlayedCards({
     metaId,
     tournamentId,
+    tournamentGroupId,
     limit: 5, // Top 5 cards per leader
     leaderBasePairs,
   });

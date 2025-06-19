@@ -9,13 +9,15 @@ import CardStatsWithOptions from '@/components/app/card-stats/CardStatsWithOptio
 interface AllCardStatsProps {
   metaId?: number;
   tournamentId?: string;
+  tournamentGroupId?: string;
   className?: string;
 }
 
-const AllCardStats: React.FC<AllCardStatsProps> = ({ metaId, tournamentId, className }) => {
+const AllCardStats: React.FC<AllCardStatsProps> = ({ metaId, tournamentId, tournamentGroupId, className }) => {
   const { data, isLoading, error } = useCardStats({
     metaId,
     tournamentId,
+    tournamentGroupId,
   });
   const { data: cardListData } = useCardList();
 
@@ -30,7 +32,7 @@ const AllCardStats: React.FC<AllCardStatsProps> = ({ metaId, tournamentId, class
     });
   }, [data, cardListData]);
 
-  const cardStatParams = useMemo(() => ({ metaId, tournamentId }), [metaId, tournamentId]);
+  const cardStatParams = useMemo(() => ({ metaId, tournamentId, tournamentGroupId }), [metaId, tournamentId, tournamentGroupId]);
 
   if (isLoading) {
     return (
