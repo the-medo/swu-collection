@@ -34,7 +34,8 @@ const expansionsToProcess = params.expansions
       // setInfo.sor?.expansionId,
       // setInfo.shd?.expansionId,
       // setInfo.twi?.expansionId,
-      setInfo.jtl?.expansionId,
+      // setInfo.jtl?.expansionId,
+      setInfo.lof?.expansionId,
     ];
 
 async function main() {
