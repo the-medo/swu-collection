@@ -40,7 +40,7 @@ const MetaInfoSelector: React.FC<MetaInfoSelectorProps> = ({ value, onChange }) 
       type="single"
       value={value}
       onValueChange={onValueChange}
-      className="justify-start gap-2"
+      className="justify-start gap-2 flex-wrap"
     >
       <ToggleGroupItem value="leaders">Leaders</ToggleGroupItem>
       <ToggleGroupItem value="leadersAndBase">Leaders & Bases</ToggleGroupItem>

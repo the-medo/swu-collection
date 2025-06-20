@@ -211,7 +211,7 @@ const PQStatChart: React.FC<PQStatChartProps> = ({ metaInfo, data, top }) => {
   }
 
   return (
-    <div className="w-full">
+    <div className="min-w-[330px]">
       <ChartContainer config={chartConfig} className="w-full" style={chartContainerStyle}>
         <BarChart
           layout="vertical"
