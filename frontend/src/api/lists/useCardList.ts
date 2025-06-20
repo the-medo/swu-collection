@@ -117,6 +117,8 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
         if (!cardsByCardType[type]) cardsByCardType[type] = {};
         cardsByCardType[type][cid] = card;
 
+        if (card.type.includes('Token')) return;
+
         const validCardVariants: Record<string, true | undefined> = {
           Standard: true,
           'Standard Foil': true,
