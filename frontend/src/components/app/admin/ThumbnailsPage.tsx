@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -14,14 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { useGenerateDeckThumbnails } from '@/api/decks/useGenerateDeckThumbnails';
 import { useGenerateTournamentThumbnails } from '@/api/tournaments/useGenerateTournamentThumbnails';
-import { useGetTournaments } from '@/api/tournaments/useGetTournaments';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
 export function ThumbnailsPage() {
   // Deck thumbnails state
@@ -32,7 +25,8 @@ export function ThumbnailsPage() {
   // Tournament thumbnails state
   const [forceTournamentRegeneration, setForceTournamentRegeneration] = useState(false);
   const [tournamentError, setTournamentError] = useState<string | null>(null);
-  const [selectedTournamentIdForTournament, setSelectedTournamentIdForTournament] = useState<string>('');
+  const [selectedTournamentIdForTournament, setSelectedTournamentIdForTournament] =
+    useState<string>('');
 
   // Deck thumbnails mutation
   const {
@@ -50,9 +44,6 @@ export function ThumbnailsPage() {
     error: tournamentMutationError,
   } = useGenerateTournamentThumbnails();
 
-  // Fetch tournaments
-  const { data, isLoading: isLoadingTournaments, error: tournamentsError } = useGetTournaments();
-
   // Update error state when mutation error changes
   useEffect(() => {
     if (mutationError) {
@@ -65,16 +56,15 @@ export function ThumbnailsPage() {
   // Update tournament error state when tournament mutation error changes
   useEffect(() => {
     if (tournamentMutationError) {
-      setTournamentError('message' in tournamentMutationError ? tournamentMutationError.message : 'An unknown error occurred');
+      setTournamentError(
+        'message' in tournamentMutationError
+          ? tournamentMutationError.message
+          : 'An unknown error occurred',
+      );
     } else {
       setTournamentError(null);
     }
   }, [tournamentMutationError]);
-
-  const tournaments = useMemo(() => {
-    if (!data) return [];
-    return data.pages.flatMap(page => page.data || []);
-  }, [data]);
 
   const handleGenerateThumbnails = () => {
     setError(null);
@@ -92,12 +82,12 @@ export function ThumbnailsPage() {
     });
   };
 
-  const onChangeSelectedTournamentId = (value: string) => {
-    setSelectedTournamentId(value === 'empty' ? '' : value);
+  const onChangeSelectedTournamentId = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedTournamentId(e.target.value);
   };
 
-  const onChangeSelectedTournamentIdForTournament = (value: string) => {
-    setSelectedTournamentIdForTournament(value === 'empty' ? '' : value);
+  const onChangeSelectedTournamentIdForTournament = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedTournamentIdForTournament(e.target.value);
   };
 
   return (
@@ -116,31 +106,14 @@ export function ThumbnailsPage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="tournament">Tournament (optional)</Label>
-              <Select
+              <Input
+                id="tournament"
                 value={selectedTournamentId}
-                onValueChange={onChangeSelectedTournamentId}
+                onChange={onChangeSelectedTournamentId}
                 disabled={isLoading}
-              >
-                <SelectTrigger id="tournament" className="w-full">
-                  <SelectValue placeholder="All decks (no specific tournament)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="empty">All decks (no specific tournament)</SelectItem>
-                  {tournaments.map(({ tournament }) => (
-                    <SelectItem key={tournament.id} value={tournament.id}>
-                      {tournament.name} ({new Date(tournament.date).toLocaleDateString()})
-                    </SelectItem>
-                  ))}
-                  {isLoadingTournaments && (
-                    <SelectItem value="loading" disabled>
-                      Loading tournaments...
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-              {tournamentsError && (
-                <p className="text-sm text-destructive">Error loading tournaments</p>
-              )}
+                placeholder="Enter tournament ID (leave empty for all decks)"
+                className="w-full"
+              />
             </div>
 
             <div className="flex items-center space-x-2">
@@ -184,8 +157,10 @@ export function ThumbnailsPage() {
                 <AlertTitle>Generation Complete</AlertTitle>
                 <AlertDescription>
                   Successfully generated {result.success} thumbnails
-                  {result.tournamentId ? ` for tournament ${result.tournamentId}` : ' for all decks'}.
-                  {result.errors > 0 && ` Failed to generate ${result.errors} thumbnails.`}
+                  {result.tournamentId
+                    ? ` for tournament ${result.tournamentId}`
+                    : ' for all decks'}
+                  .{result.errors > 0 && ` Failed to generate ${result.errors} thumbnails.`}
                 </AlertDescription>
               </Alert>
 
@@ -223,39 +198,23 @@ export function ThumbnailsPage() {
         <CardHeader>
           <CardTitle>Tournament Thumbnails</CardTitle>
           <CardDescription>
-            Generate thumbnails for tournaments. You can generate thumbnails for all tournaments or select a
-            specific tournament. This process may take some time depending on the number of tournaments.
+            Generate thumbnails for tournaments. You can generate thumbnails for all tournaments or
+            select a specific tournament. This process may take some time depending on the number of
+            tournaments.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="tournament-for-tournament">Tournament (optional)</Label>
-              <Select
+              <Input
+                id="tournament-for-tournament"
                 value={selectedTournamentIdForTournament}
-                onValueChange={onChangeSelectedTournamentIdForTournament}
+                onChange={onChangeSelectedTournamentIdForTournament}
                 disabled={isTournamentLoading}
-              >
-                <SelectTrigger id="tournament-for-tournament" className="w-full">
-                  <SelectValue placeholder="All tournaments" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="empty">All tournaments</SelectItem>
-                  {tournaments.map(({ tournament }) => (
-                    <SelectItem key={tournament.id} value={tournament.id}>
-                      {tournament.name} ({new Date(tournament.date).toLocaleDateString()})
-                    </SelectItem>
-                  ))}
-                  {isLoadingTournaments && (
-                    <SelectItem value="loading" disabled>
-                      Loading tournaments...
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-              {tournamentsError && (
-                <p className="text-sm text-destructive">Error loading tournaments</p>
-              )}
+                placeholder="Enter tournament ID (leave empty for all tournaments)"
+                className="w-full"
+              />
             </div>
 
             <div className="flex items-center space-x-2">
@@ -299,8 +258,12 @@ export function ThumbnailsPage() {
                 <AlertTitle>Generation Complete</AlertTitle>
                 <AlertDescription>
                   Successfully generated {tournamentResult.success} thumbnails
-                  {tournamentResult.tournamentId ? ` for tournament ${tournamentResult.tournamentId}` : ' for all tournaments'}.
-                  {tournamentResult.errors > 0 && ` Failed to generate ${tournamentResult.errors} thumbnails.`}
+                  {tournamentResult.tournamentId
+                    ? ` for tournament ${tournamentResult.tournamentId}`
+                    : ' for all tournaments'}
+                  .
+                  {tournamentResult.errors > 0 &&
+                    ` Failed to generate ${tournamentResult.errors} thumbnails.`}
                 </AlertDescription>
               </Alert>
 

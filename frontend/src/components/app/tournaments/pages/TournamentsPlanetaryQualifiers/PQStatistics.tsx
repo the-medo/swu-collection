@@ -26,6 +26,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip.tsx';
+import { cn } from '@/lib/utils.ts';
 
 interface PQStatisticsProps {
   tournamentGroups: TournamentGroupWithMeta[];
@@ -84,10 +85,10 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
   const hasData = data && data.length > 0;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
       {/* Tournament Information Section */}
-      <div className="md:col-span-8 lg:col-span-9 space-y-2">
-        <div className="flex items-center gap-2">
+      <div className="lg:col-span-8 xl:col-span-9 space-y-2">
+        <div className={cn('flex items-center gap-2 flex-wrap')}>
           <div className="flex grow items-center gap-2">
             <WeekSelector
               value={selectedGroupId || undefined}
@@ -95,41 +96,43 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
               processedTournamentGroups={processedTournamentGroups}
             />
           </div>
-          <WeekChangeButtons
-            selectedGroupId={selectedGroupId}
-            processedTournamentGroups={processedTournamentGroups}
-            onWeekChange={handleWeekSelect}
-          />
-          {selectedGroupId && (
-            <TooltipProvider>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-2 h-12"
-                      disabled={selectedGroupId === ALL_WEEKS_VALUE}
-                      onClick={() => {
-                        navigate({
-                          to: '/meta',
-                          search: { maTournamentGroupId: selectedGroupId },
-                        });
-                      }}
-                    >
-                      <PieChart className="h-4 w-4" />
-                      Full meta analysis
-                    </Button>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {selectedGroupId === ALL_WEEKS_VALUE
-                    ? 'Viewing full meta analysis is possible only for single weeks right now'
-                    : 'Display full meta analysis, matchups, decks and card statistics'}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+          <div className="flex grow items-center gap-2">
+            <WeekChangeButtons
+              selectedGroupId={selectedGroupId}
+              processedTournamentGroups={processedTournamentGroups}
+              onWeekChange={handleWeekSelect}
+            />
+            {selectedGroupId && (
+              <TooltipProvider>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 h-12"
+                        disabled={selectedGroupId === ALL_WEEKS_VALUE}
+                        onClick={() => {
+                          navigate({
+                            to: '/meta',
+                            search: { maTournamentGroupId: selectedGroupId },
+                          });
+                        }}
+                      >
+                        <PieChart className="h-4 w-4" />
+                        Full meta analysis
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {selectedGroupId === ALL_WEEKS_VALUE
+                      ? 'Viewing full meta analysis is possible only for single weeks right now'
+                      : 'Display full meta analysis, matchups, decks and card statistics'}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
         </div>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <PQPageNavigation />
@@ -140,7 +143,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
         {selectedGroupId && (
           <>
             {hasData ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <PQStatPieChart metaInfo={metaInfo} data={data} top={chartTop} />
                 <PQStatChart metaInfo={metaInfo} data={data} top={chartTop} />
               </div>
@@ -176,11 +179,11 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
         )}
       </div>
 
-      <div className="flex flex-col gap-4 md:col-span-4 lg:col-span-3 border rounded-md pb-4 mb-4">
+      <div className="flex flex-col gap-4 lg:col-span-4 xl:col-span-3 border rounded-md pb-4 mb-4">
         {/* Imported Tournaments Card */}
-        <div className="flex items-center justify-between border-b p-4">
+        <div className="flex items-center justify-between flex-wrap border-b p-4">
           <div className="flex items-center gap-4">
-            <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-full mr-4">
+            <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-full">
               <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             <div>
@@ -191,7 +194,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full mr-4">
+            <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full">
               <Calendar className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>

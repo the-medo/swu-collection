@@ -21,6 +21,7 @@ export enum SwuSet {
   TWI = 'twi',
   SHD = 'shd',
   JTL = 'jtl',
+  LOF = 'lof',
 }
 
 export enum SwuAspect {

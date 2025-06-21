@@ -77,6 +77,7 @@ const globalSearchParams = z.object({
   tfDateFrom: z.string().optional(),
   tfSort: z.string().optional(),
   tfOrder: z.enum(['asc', 'desc']).optional(),
+  tfShowFuture: z.boolean().optional(),
 });
 export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 

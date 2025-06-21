@@ -56,7 +56,7 @@ const TopTournaments: React.FC<TopTournamentsProps> = ({
             <tr className="bg-muted/50">
               <th className="py-1 px-2 text-left">Week</th>
               <th className="py-1 px-2 text-left">Tournament</th>
-              <th className="py-1 px-2 text-right">Attendance</th>
+              <th className="py-1 px-2 text-right"></th>
             </tr>
           </thead>
           <tbody>
@@ -70,7 +70,7 @@ const TopTournaments: React.FC<TopTournamentsProps> = ({
                   <Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
                       <tr className="border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-muted/50">
-                        <td className="py-2 px-2">
+                        <td className="py-2 px-2 min-w-[80px]">
                           <span
                             className="underline cursor-pointer"
                             onClick={() => handleWeekSelect(tournament.groupId)}

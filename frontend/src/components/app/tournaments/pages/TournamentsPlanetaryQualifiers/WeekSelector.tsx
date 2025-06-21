@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/select.tsx';
 import { TournamentGroupWithMeta } from '../../../../../../../types/TournamentGroup.ts';
 import { cn } from '@/lib/utils.ts';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 // Define the props for the processed tournament group items
 interface ProcessedTournamentGroup extends TournamentGroupWithMeta {
@@ -32,6 +33,8 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
   onValueChange,
   processedTournamentGroups,
 }) => {
+  const { isMobile } = useSidebar();
+
   return (
     <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger
@@ -50,9 +53,11 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
               <span className="font-medium text-xl">All weeks</span>
               <p className="text-md text-muted-foreground ml-4">Combined data from all weeks</p>
             </div>
-            <Badge variant="secondary" className="ml-4 bg-primary/20">
-              Combined
-            </Badge>
+            {!isMobile && (
+              <Badge variant="secondary" className="ml-4 bg-primary/20">
+                Combined
+              </Badge>
+            )}
           </div>
         </SelectItem>
 

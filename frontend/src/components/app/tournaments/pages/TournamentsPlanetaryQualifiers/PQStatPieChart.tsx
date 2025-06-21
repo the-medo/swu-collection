@@ -134,7 +134,8 @@ const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) 
   }
 
   return (
-    <div className="w-full flex flex-col overflow-visible">
+    <div className="min-w-[330px]">
+      {/*<div className="flex flex-col overflow-visible min-w-[330px]">*/}
       <div
         className="mx-auto aspect-square max-h-[350px] w-full overflow-visible"
         style={{ height: '350px' }}
