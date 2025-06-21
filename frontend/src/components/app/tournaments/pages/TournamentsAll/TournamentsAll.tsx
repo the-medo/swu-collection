@@ -18,19 +18,27 @@ const TournamentsAll: React.FC<TournamentsAllProps> = ({}) => {
     tfDateFrom,
     tfSort,
     tfOrder,
+    tfShowFuture,
   } = useSearch({ strict: false });
 
   const fltrs: GetTournamentsRequest = useMemo(
-    () => ({
-      format: formatId,
-      meta: metaId,
-      type: tfType,
-      continent: tfContinent,
-      date: tfDateFrom,
-      sort: tfSort,
-      order: tfOrder,
-    }),
-    [formatId, metaId, tfType, tfContinent, tfDateFrom, tfSort, tfOrder],
+    () => {
+      // Get today's date for filtering
+      const today = new Date();
+
+      return {
+        format: formatId,
+        meta: metaId,
+        type: tfType,
+        continent: tfContinent,
+        date: tfDateFrom,
+        // When tfShowFuture is false, set maxDate to today to show only past tournaments
+        maxDate: tfShowFuture === true ? undefined : today,
+        sort: tfSort,
+        order: tfOrder,
+      };
+    },
+    [formatId, metaId, tfType, tfContinent, tfDateFrom, tfSort, tfOrder, tfShowFuture],
   );
 
   return (

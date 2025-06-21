@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { RefreshCcw, SlidersHorizontal } from 'lucide-react';
+import { Switch } from '@/components/ui/switch.tsx';
 import {
   Select,
   SelectContent,
@@ -30,17 +31,19 @@ export interface TournamentFilterValues {
   tfDateFrom?: string;
   tfSort?: string;
   tfOrder?: 'asc' | 'desc';
+  tfShowFuture?: boolean;
 }
 
 const sortOptions = [
   { value: 'tournament.date', label: 'Date' },
   { value: 'tournament.name', label: 'Name' },
   { value: 'tournament.attendance', label: 'Attendance' },
-  { value: 'tournament_type.major', label: 'Importance' },
 ];
 
 const TournamentFilters: React.FC<TournamentFiltersProps> = ({}) => {
-  const { tfType, tfContinent, tfDateFrom, tfSort, tfOrder } = useSearch({ strict: false });
+  const { tfType, tfContinent, tfDateFrom, tfSort, tfOrder, tfShowFuture } = useSearch({
+    strict: false,
+  });
   const navigate = useNavigate({ from: Route.fullPath });
 
   // Handle filter changes
@@ -63,6 +66,7 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({}) => {
         tfDateFrom: undefined,
         tfSort: undefined,
         tfOrder: undefined,
+        tfShowFuture: undefined,
       }),
     });
   }, []);
@@ -74,8 +78,9 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({}) => {
     if (tfDateFrom) filterCount++;
     if (tfSort) filterCount++;
     if (tfOrder) filterCount++;
+    if (tfShowFuture) filterCount++;
     return filterCount;
-  }, [tfType, tfContinent, tfDateFrom, tfSort, tfOrder]);
+  }, [tfType, tfContinent, tfDateFrom, tfSort, tfOrder, tfShowFuture]);
 
   return (
     <Accordion
@@ -86,14 +91,28 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({}) => {
     >
       <AccordionItem value="filters" className="border rounded-md">
         <AccordionTrigger className="px-4 pt-3 pb-1 hover:no-underline">
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal className="h-4 w-4" />
-            <span className="font-medium">Filters</span>
-            {activeFilters > 0 && (
-              <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium">
-                {activeFilters} active
-              </span>
-            )}
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="h-4 w-4" />
+              <span className="font-medium">Filters & Sort</span>
+              {activeFilters > 0 && (
+                <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium">
+                  {activeFilters} active
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+              <Label htmlFor="showFuture" className="mr-2">
+                Include future tournaments
+              </Label>
+              <Switch
+                id="showFuture"
+                checked={!!tfShowFuture}
+                onCheckedChange={checked =>
+                  handleFilterChange('tfShowFuture', checked || undefined)
+                }
+              />
+            </div>
           </div>
         </AccordionTrigger>
         <AccordionContent className="p-4">
