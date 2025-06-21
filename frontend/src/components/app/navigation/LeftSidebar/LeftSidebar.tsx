@@ -28,6 +28,9 @@ import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarRail,
   SidebarSeparator,
   useSidebar,
@@ -65,6 +68,12 @@ const getGroups = (setOpenMobile: (open: boolean) => void, state: SidebarContext
         url: '/tournaments',
         icon: TrophyIcon,
         separator: true,
+        items: [
+          {
+            title: 'Planetary Qualifiers',
+            url: '/tournaments/planetary-qualifiers',
+          },
+        ],
       },
       {
         title: 'Your decks',
@@ -251,6 +260,27 @@ export function LeftSidebar() {
                           </SidebarMenuButton>
                           {'menuAction' in i && state !== 'collapsed' ? i.menuAction : null}
                         </SidebarMenuItem>
+                        {'items' in i && i.items && i.items.length > 0 && (
+                          <SidebarMenuSub>
+                            {i.items.map(subItem => (
+                              <SidebarMenuSubItem key={subItem.title}>
+                                <SidebarMenuSubButton
+                                  asChild
+                                  size="md"
+                                >
+                                  <Link
+                                    to={subItem.url}
+                                    onClick={() => {
+                                      setOpenMobile(false);
+                                    }}
+                                  >
+                                    <span>{subItem.title}</span>
+                                  </Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        )}
                         {'menuAction' in i &&
                           'displayMenuActionWhenCollapsed' in i &&
                           state === 'collapsed' && (
