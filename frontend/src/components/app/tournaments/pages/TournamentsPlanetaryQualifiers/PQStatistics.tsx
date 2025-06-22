@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { TournamentGroupWithMeta } from '../../../../../../../types/TournamentGroup';
-import { AlertCircle, Calendar, CheckCircle, PieChart } from 'lucide-react';
-import WeekSelector, { ALL_WEEKS_VALUE } from './WeekSelector.tsx';
+import { AlertCircle, PieChart } from 'lucide-react';
+import WeekSelector, { ALL_WEEKS_VALUE, WEEK_TO_WEEK_VALUE } from './WeekSelector.tsx';
+import WeekToWeekData from './WeekToWeekData.tsx';
 import WeekChangeButtons from './WeekChangeButtons.tsx';
+import PQSideStats from './PQSideStats.tsx';
+import WeekToWeekSideStats from './WeekToWeekSideStats.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import PQPageNavigation from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/PQPageNavigation.tsx';
@@ -12,8 +15,6 @@ import MetaInfoSelector, {
 } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import PQStatPieChart from './PQStatPieChart.tsx';
 import PQStatChart from './PQStatChart.tsx';
-import TopTournaments from './TopTournaments.tsx';
-import UnusualChampions from './UnusualChampions/UnusualChampions.tsx';
 import { useStatistics } from './hooks/useStatistics.ts';
 import { useProcessedTournamentGroups } from './hooks/useProcessedTournamentGroups.ts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
@@ -142,7 +143,9 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
         {/* Display information about the selected week */}
         {selectedGroupId && (
           <>
-            {hasData ? (
+            {selectedGroupId === WEEK_TO_WEEK_VALUE ? (
+              <WeekToWeekData />
+            ) : hasData ? (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <PQStatPieChart metaInfo={metaInfo} data={data} top={chartTop} />
                 <PQStatChart metaInfo={metaInfo} data={data} top={chartTop} />
@@ -179,42 +182,17 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
         )}
       </div>
 
-      <div className="flex flex-col gap-4 lg:col-span-4 xl:col-span-3 border rounded-md pb-4 mb-4">
-        {/* Imported Tournaments Card */}
-        <div className="flex items-center justify-between flex-wrap border-b p-4">
-          <div className="flex items-center gap-4">
-            <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-full">
-              <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Imported PQs</p>
-              <h3 className="text-2xl font-bold">
-                {statistics.importedTournaments} / {statistics.totalTournaments}
-              </h3>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full">
-              <Calendar className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Upcoming</p>
-              <h3 className="text-2xl font-bold">{statistics.upcomingTournaments}</h3>
-            </div>
-          </div>
-        </div>
-
-        {/* Unusual Champions Section */}
-        <UnusualChampions tournamentGroups={tournamentGroups} handleWeekSelect={handleWeekSelect} />
-
-        {/* Top 5 Biggest Tournaments Table */}
-        <TopTournaments
+      {selectedGroupId === WEEK_TO_WEEK_VALUE ? (
+        <WeekToWeekSideStats />
+      ) : (
+        <PQSideStats
+          statistics={statistics}
           tournamentGroups={tournamentGroups}
           processedTournamentGroups={processedTournamentGroups}
           handleWeekSelect={handleWeekSelect}
           onOpenAllTournaments={onOpenAllTournaments}
         />
-      </div>
+      )}
     </div>
   );
 };

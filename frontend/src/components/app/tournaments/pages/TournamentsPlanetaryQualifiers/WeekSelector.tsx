@@ -25,8 +25,9 @@ interface WeekSelectorProps {
   processedTournamentGroups: ProcessedTournamentGroup[];
 }
 
-// Special value for "All weeks" option
+// Special values for options
 export const ALL_WEEKS_VALUE = 'all';
+export const WEEK_TO_WEEK_VALUE = 'wtw';
 
 const WeekSelector: React.FC<WeekSelectorProps> = ({
   value,
@@ -56,6 +57,21 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
             {!isMobile && (
               <Badge variant="secondary" className="ml-4 bg-primary/20">
                 Combined
+              </Badge>
+            )}
+          </div>
+        </SelectItem>
+
+        {/* Week-to-week option */}
+        <SelectItem key={WEEK_TO_WEEK_VALUE} value={WEEK_TO_WEEK_VALUE} className="">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center">
+              <span className="font-medium text-xl">Week-to-week</span>
+              <p className="text-md text-muted-foreground ml-4">Compare data across weeks</p>
+            </div>
+            {!isMobile && (
+              <Badge variant="secondary" className="ml-4 bg-primary/20">
+                Comparison
               </Badge>
             )}
           </div>

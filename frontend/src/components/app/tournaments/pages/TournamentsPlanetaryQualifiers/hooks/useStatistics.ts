@@ -2,10 +2,7 @@ import { useMemo } from 'react';
 import { TournamentGroupWithMeta } from '../../../../../../../../types/TournamentGroup';
 import { isFuture } from 'date-fns';
 
-/**
- * Interface for the statistics returned by the hook
- */
-interface TournamentStatistics {
+export interface TournamentStatistics {
   totalTournaments: number;
   importedTournaments: number;
   upcomingTournaments: number;
@@ -16,7 +13,9 @@ interface TournamentStatistics {
  * @param tournamentGroups - Array of tournament groups with metadata
  * @returns Object containing totalTournaments, importedTournaments, and upcomingTournaments
  */
-export const useStatistics = (tournamentGroups: TournamentGroupWithMeta[]): TournamentStatistics => {
+export const useStatistics = (
+  tournamentGroups: TournamentGroupWithMeta[],
+): TournamentStatistics => {
   return useMemo(() => {
     const allTournaments = tournamentGroups.flatMap(group =>
       group.tournaments.map(t => t.tournament),
