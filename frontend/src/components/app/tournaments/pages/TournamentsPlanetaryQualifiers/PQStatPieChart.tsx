@@ -9,11 +9,12 @@ import { usePieChartColors } from '@/components/app/tournaments/TournamentMeta/u
 import { useTheme } from '@/components/theme-provider.tsx';
 import { TournamentGroupLeaderBase } from '../../../../../../../server/db/schema/tournament_group_leader_base';
 import { useCardList } from '@/api/lists/useCardList.ts';
+import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
 
 interface PQStatPieChartProps {
   metaInfo: MetaInfo;
   data: TournamentGroupLeaderBase[];
-  top: 'champions' | 'top8' | 'total';
+  top: PQTop;
 }
 
 // Define colors for the pie chart segments using shades of primary/secondary colors
@@ -141,6 +142,7 @@ const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) 
         style={{ height: '350px' }}
       >
         <ResponsivePie
+          theme={{}}
           data={chartData}
           margin={{ top: 40, right: 100, bottom: 30, left: 100 }}
           innerRadius={0.5}

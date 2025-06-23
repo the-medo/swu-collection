@@ -28,6 +28,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip.tsx';
 import { cn } from '@/lib/utils.ts';
+import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
 
 interface PQStatisticsProps {
   tournamentGroups: TournamentGroupWithMeta[];
@@ -42,8 +43,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
 
   const { weekId, page = 'champions' } = useSearch({ strict: false });
   const navigate = useNavigate({ from: Route.fullPath });
-
-  const chartTop = (page === 'tournaments' ? 'total' : page) as 'champions' | 'top8' | 'total';
+  const chartTop = (page === 'tournaments' ? 'total' : page) as PQTop;
 
   // Find the most recent group ID for default selection
   const mostRecentGroupId = useMemo(() => {
@@ -144,7 +144,14 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
         {selectedGroupId && (
           <>
             {selectedGroupId === WEEK_TO_WEEK_VALUE ? (
-              <WeekToWeekData />
+              <WeekToWeekData
+                metaInfo={metaInfo}
+                top={chartTop}
+                statistics={statistics}
+                tournamentGroups={tournamentGroups}
+                processedTournamentGroups={processedTournamentGroups}
+                handleWeekSelect={handleWeekSelect}
+              />
             ) : hasData ? (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <PQStatPieChart metaInfo={metaInfo} data={data} top={chartTop} />
