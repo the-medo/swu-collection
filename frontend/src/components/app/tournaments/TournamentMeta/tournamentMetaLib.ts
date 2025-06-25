@@ -209,7 +209,7 @@ export const labelWidthBasedOnMetaInfo: Record<MetaInfo, number> = {
   ['leaders']: 180,
   ['leadersAndBase']: 220,
   ['bases']: 180,
-  ['aspects']: 50,
-  ['aspectsBase']: 50,
-  ['aspectsDetailed']: 100,
+  ['aspects']: 70,
+  ['aspectsBase']: 70,
+  ['aspectsDetailed']: 180,
 };

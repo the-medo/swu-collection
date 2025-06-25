@@ -4,14 +4,21 @@ import { TournamentGroupWithMeta } from '../../../../../../../../types/Tournamen
 import { ProcessedTournamentGroup } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/hooks/useProcessedTournamentGroups.ts';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
-import { ResponsiveAreaBump, ResponsiveBump } from '@nivo/bump';
-import { useMemo } from 'react';
-import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { ResponsiveAreaBump } from '@nivo/bump';
+import { useCallback, useMemo } from 'react';
+import {
+  getDeckKey2,
+  labelWidthBasedOnMetaInfo,
+} from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { usePieChartColors } from '@/components/app/tournaments/TournamentMeta/usePieChartColors.tsx';
 import { useTheme } from '@/components/theme-provider.tsx';
+import {
+  bottomAxisDefinition,
+  topAxisDefinition,
+} from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/weekToWeekLib.ts';
 
 interface WeekToWeekDataProps {
   metaInfo: MetaInfo;
@@ -139,6 +146,19 @@ const WeekToWeekData: React.FC<WeekToWeekDataProps> = ({
     }));
   }, [chartData]);
 
+  const labelCallback = useCallback(
+    (startOrEnd?: 'start' | 'end') => datum => {
+      const l = datum.data?.length;
+      if (
+        (startOrEnd === 'start' && datum.data[0]?.y === 0) ||
+        (startOrEnd === 'end' && datum.data[l - 1]?.y === 0)
+      )
+        return '';
+      return labelRenderer(datum.id as string, metaInfo, 'text') as string;
+    },
+    [metaInfo],
+  );
+
   if (chartData.length === 0) {
     return (
       <div className="flex items-center justify-center p-12 border rounded-md">
@@ -148,8 +168,6 @@ const WeekToWeekData: React.FC<WeekToWeekDataProps> = ({
       </div>
     );
   }
-
-  console.log({ chartData });
 
   return (
     <Card>
@@ -166,43 +184,41 @@ const WeekToWeekData: React.FC<WeekToWeekDataProps> = ({
         <div style={{ height: 500 }}>
           <ResponsiveAreaBump
             data={chartData}
-            margin={{ top: 40, right: 100, bottom: 40, left: 100 }}
+            margin={{
+              top: 40,
+              right: labelWidthBasedOnMetaInfo[metaInfo],
+              bottom: 40,
+              left: labelWidthBasedOnMetaInfo[metaInfo],
+            }}
             spacing={4}
             colors={['#3B3B3B']} // Use the same base color as PQStatPieChart
-            blendMode="multiply"
+            blendMode="normal"
             defs={chartDefs}
             fill={fill}
-            startLabel={datum => labelRenderer(datum.id as string, metaInfo, 'text') as string}
-            endLabel={datum => labelRenderer(datum.id as string, metaInfo, 'text') as string}
-            axisTop={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: 'Week',
-              legendPosition: 'middle',
-              legendOffset: -36,
-            }}
-            axisBottom={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: 'Week',
-              legendPosition: 'middle',
-              legendOffset: 32,
-            }}
-            tooltip={({ serie, index }) => (
-              <div className="bg-card p-2 rounded-md shadow-md border">
-                <div className="flex items-center gap-2">
-                  {labelRenderer(serie.id as string, metaInfo, 'compact')}
-                  <span className="font-bold">{JSON.stringify(serie)}</span>
-                  <span className="text-xs">Week {JSON.stringify(serie)}</span>
+            startLabel={labelCallback('start')}
+            startLabelTextColor={'hsl(var(--muted-foreground))'}
+            endLabelTextColor={'hsl(var(--muted-foreground))'}
+            endLabel={labelCallback('end')}
+            axisTop={topAxisDefinition}
+            axisBottom={bottomAxisDefinition}
+            tooltip={x => {
+              const { serie } = x;
+              // console.log({ x });
+              return (
+                <div className="bg-card p-2 rounded-md shadow-md border">
+                  <div className="flex items-center gap-2">
+                    {labelRenderer(serie.id as string, metaInfo, 'compact')}
+                    {/*<span className="font-bold">{JSON.stringify(serie)}</span>*/}
+                    <pre className="text-xs">{JSON.stringify(serie, null, 2)}</pre>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            }}
+            onMouseMove={(data, event) => {
+              // console.log('data.points', data.points, 'event X', event.nativeEvent.offsetX);
+            }}
             onClick={(data, event) => {
-              if (data.data.groupId) {
-                handleWeekSelect(data.data.groupId);
-              }
+              console.log('data.points', data.points, 'event X', event.nativeEvent.offsetX);
             }}
           />
         </div>
