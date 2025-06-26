@@ -118,6 +118,6 @@ export const useSideStatWeekOverviewTableColumns = (
         ),
       },
     ],
-    [showCounts, metaInfo, labelRenderer, labelRendererType],
+    [showCounts, metaInfo, labelRenderer, labelRendererType, sorting],
   );
 };

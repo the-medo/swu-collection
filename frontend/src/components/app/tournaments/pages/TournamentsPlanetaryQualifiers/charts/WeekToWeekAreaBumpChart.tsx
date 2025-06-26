@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { ResponsiveAreaBump } from '@nivo/bump';
+import {
+  AreaBumpAreaTooltip,
+  AreaBumpLabel,
+  AreaBumpMouseHandler,
+  ResponsiveAreaBump,
+} from '@nivo/bump';
 import { useCallback, useEffect, useMemo } from 'react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
@@ -9,9 +14,9 @@ import {
   useWeekToWeekStoreActions,
 } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekStore.ts';
 import {
-  bottomAxisDefinition,
+  bottomAxisDefinition as baseBottomAxisDefinition,
   getMetaPartObjectValue,
-  topAxisDefinition,
+  topAxisDefinition as baseTopAxisDefinition,
 } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/weekToWeekLib.ts';
 import { WeekToWeekData } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekData.ts';
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
@@ -28,12 +33,14 @@ interface WeekToWeekAreaBumpChartProps {
   data: WeekToWeekData;
   top: PQTop;
   metaInfo: MetaInfo;
+  viewType: 'count' | 'percentage';
 }
 
 const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
   data,
   top,
   metaInfo,
+  viewType,
 }) => {
   const pieChartColorDefinitions = useChartColorsAndGradients();
 
@@ -77,10 +84,19 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
     [metaInfo, labelRenderer],
   );
 
-  const startLabelCallback = useCallback(d => labelCallback('start')(d), [labelCallback]);
-  const endLabelCallback = useCallback(d => labelCallback('end')(d), [labelCallback]);
+  const startLabelCallback: AreaBumpLabel<AreaBumpData, Record<string, unknown>> = useCallback(
+    d => labelCallback('start')(d),
+    [labelCallback],
+  );
+  const endLabelCallback: AreaBumpLabel<AreaBumpData, Record<string, unknown>> = useCallback(
+    d => labelCallback('end')(d),
+    [labelCallback],
+  );
 
-  const handleChartMouseEvent = useCallback(
+  const handleChartMouseEvent: AreaBumpMouseHandler<
+    AreaBumpData,
+    Record<string, unknown>
+  > = useCallback(
     (data, event) => {
       const clickX = event.nativeEvent.offsetX;
       const adjustedX = clickX - labelWidth;
@@ -125,6 +141,22 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
     // Create a map to track deck keys that appear in the top X at least once
     const topDeckKeysMap: Record<string, boolean> = {};
 
+    // For percentage view, we need to track total counts per week
+    const weekTotals: Record<string, number> = {};
+
+    // First pass: collect all data and calculate totals for percentage view
+    if (viewType === 'percentage') {
+      sortedWeeks.forEach(weekId => {
+        let weekTotal = 0;
+        Object.keys(deckKeyToWeek).forEach(deckKey => {
+          const leaderBase = deckKeyToWeek[deckKey][weekId];
+          const y = getMetaPartObjectValue(leaderBase, top) || 0;
+          weekTotal += y;
+        });
+        weekTotals[weekId] = weekTotal;
+      });
+    }
+
     // Process each week
     sortedWeeks.forEach(weekId => {
       const group = weekMap[weekId];
@@ -135,7 +167,13 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
 
       Object.keys(deckKeyToWeek).forEach(deckKey => {
         const leaderBase = deckKeyToWeek[deckKey][weekId];
-        const y = getMetaPartObjectValue(leaderBase, top);
+        let y = getMetaPartObjectValue(leaderBase, top) || 0;
+
+        // Convert to percentage if needed
+        if (viewType === 'percentage' && weekTotals[weekId] > 0) {
+          y = (y / weekTotals[weekId]) * 100;
+        }
+
         weekData.push({ deckKey, y });
       });
 
@@ -154,12 +192,16 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
       // Add data points for each deck key
       allCombinations.forEach((value, deckKey) => {
         const leaderBase = deckKeyToWeek[deckKey][weekId];
+        let y = getMetaPartObjectValue(leaderBase, top) || 0;
 
-        const y = getMetaPartObjectValue(leaderBase, top);
+        // Convert to percentage if needed
+        if (viewType === 'percentage' && weekTotals[weekId] > 0) {
+          y = (y / weekTotals[weekId]) * 100;
+        }
 
         value.data.push({
           x: group.weekNumber,
-          y: y ?? 0,
+          y: y,
           groupId: weekId,
         });
       });
@@ -178,7 +220,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
     });
 
     return result;
-  }, [data, top]);
+  }, [data, top, viewType]);
 
   // Generate chart definitions using pieChartColorDefinitions
   const chartDefs = useMemo(() => {
@@ -193,9 +235,23 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
     }));
   }, [chartData]);
 
-  const tooltip = useCallback(
-    x => {
-      const { serie } = x;
+  // Create custom axis definitions based on viewType
+  const topAxisDefinition = useMemo(() => {
+    return {
+      ...baseTopAxisDefinition,
+      legend: viewType === 'percentage' ? 'Week (%)' : 'Week',
+    };
+  }, [viewType]);
+
+  const bottomAxisDefinition = useMemo(() => {
+    return {
+      ...baseBottomAxisDefinition,
+      legend: viewType === 'percentage' ? 'Week (%)' : 'Week',
+    };
+  }, [viewType]);
+
+  const tooltip: AreaBumpAreaTooltip<AreaBumpData, Record<string, unknown>> = useCallback(
+    ({ serie }) => {
       return (
         <div className="bg-card p-2 rounded-md shadow-md border">
           <div className="flex items-center gap-2">
@@ -205,7 +261,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
         </div>
       );
     },
-    [metaInfo],
+    [metaInfo, viewType],
   );
 
   if (chartData.length === 0) {

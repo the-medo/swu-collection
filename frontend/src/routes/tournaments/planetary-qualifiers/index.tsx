@@ -7,6 +7,7 @@ import { zodValidator } from '@tanstack/zod-adapter';
 const searchParams = z.object({
   page: z.enum(['tournaments', 'champions', 'top8', 'total']).default('champions'),
   pqSideStatView: z.enum(['week', 'deckKey']).default('week'),
+  pqWtwDataViewType: z.enum(['count', 'percentage']).default('count'),
   weekId: z.string().optional(),
 });
 

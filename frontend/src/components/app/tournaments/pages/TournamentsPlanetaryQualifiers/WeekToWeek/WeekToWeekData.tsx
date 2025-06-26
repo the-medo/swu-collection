@@ -7,6 +7,8 @@ import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQu
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import WeekToWeekAreaBumpChart from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/charts/WeekToWeekAreaBumpChart.tsx';
 import { useWeekToWeekData } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekData.ts';
+import DataViewTypeSelector from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/DataViewTypeSelector.tsx';
+import { useSearch } from '@tanstack/react-router';
 
 interface WeekToWeekDataProps {
   metaInfo: MetaInfo;
@@ -21,21 +23,30 @@ const WeekToWeekData: React.FC<WeekToWeekDataProps> = ({
   top,
   processedTournamentGroups,
 }) => {
+  const { pqWtwDataViewType = 'count' } = useSearch({ strict: false });
   const data = useWeekToWeekData(processedTournamentGroups, metaInfo);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          Week-to-Week {top === 'champions' ? 'Champions' : top === 'top8' ? 'Top 8' : 'Total'}{' '}
-          Trends
-        </CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle>
+            Week-to-Week {top === 'champions' ? 'Champions' : top === 'top8' ? 'Top 8' : 'Total'}{' '}
+            Trends
+          </CardTitle>
+          <DataViewTypeSelector />
+        </div>
         <CardDescription>
           Showing trends for top {metaInfo} combinations across weeks
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <WeekToWeekAreaBumpChart data={data} top={top} metaInfo={metaInfo} />
+        <WeekToWeekAreaBumpChart
+          data={data}
+          top={top}
+          metaInfo={metaInfo}
+          viewType={pqWtwDataViewType}
+        />
       </CardContent>
     </Card>
   );

@@ -32,15 +32,13 @@ const WeekToWeekSideStats: React.FC<WeekToWeekSideStatsProps> = ({
         <SideStatViewSelector />
       </div>
 
-      {pqSideStatView === 'week' ? (
-        <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center">
+        {pqSideStatView === 'week' ? (
           <SideStatWeekOverviewTable weekId={weekIdToCompare} data={data} metaInfo={metaInfo} />
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center">
+        ) : (
           <SideStatWeeklyShiftTable deckKey={deckKey} data={data} metaInfo={metaInfo} />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
