@@ -60,6 +60,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
 
       // Set fill-opacity based on whether the path is hovered
       path.setAttribute('fill-opacity', shouldBeFilled ? '1' : '0.15');
+      path.setAttribute('stroke-width', shouldBeFilled ? '1' : '0');
     });
   }, [hoveredRowKey]);
 
@@ -76,8 +77,8 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
     [metaInfo, labelRenderer],
   );
 
-  const startLabelCallback = useCallback(d => labelCallback('start')(d), []);
-  const endLabelCallback = useCallback(d => labelCallback('end')(d), []);
+  const startLabelCallback = useCallback(d => labelCallback('start')(d), [labelCallback]);
+  const endLabelCallback = useCallback(d => labelCallback('end')(d), [labelCallback]);
 
   const handleChartMouseEvent = useCallback(
     (data, event) => {
@@ -192,17 +193,20 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
     }));
   }, [chartData]);
 
-  const tooltip = useCallback(x => {
-    const { serie } = x;
-    return (
-      <div className="bg-card p-2 rounded-md shadow-md border">
-        <div className="flex items-center gap-2">
-          {labelRenderer(serie.id as string, metaInfo, 'compact')}
-          {/*<pre className="text-xs">{JSON.stringify(serie, null, 2)}</pre>*/}
+  const tooltip = useCallback(
+    x => {
+      const { serie } = x;
+      return (
+        <div className="bg-card p-2 rounded-md shadow-md border">
+          <div className="flex items-center gap-2">
+            {labelRenderer(serie.id as string, metaInfo, 'compact')}
+            {/*<pre className="text-xs">{JSON.stringify(serie, null, 2)}</pre>*/}
+          </div>
         </div>
-      </div>
-    );
-  }, []);
+      );
+    },
+    [metaInfo],
+  );
 
   if (chartData.length === 0) {
     return (

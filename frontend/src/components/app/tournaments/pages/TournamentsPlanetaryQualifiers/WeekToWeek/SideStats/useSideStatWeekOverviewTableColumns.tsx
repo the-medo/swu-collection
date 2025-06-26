@@ -50,13 +50,17 @@ export const useSideStatWeekOverviewTableColumns = (
     [sorting],
   );
 
+  const labelRendererType = ['leaders', 'leaderAndBase', 'bases'].includes(metaInfo)
+    ? 'image-small'
+    : 'compact';
+
   return useMemo(
     () => [
       {
         id: 'key',
         accessorKey: 'key',
         header: 'Label',
-        cell: ({ row }) => labelRenderer(row.original.key, metaInfo, 'compact'),
+        cell: ({ row }) => labelRenderer(row.original.key, metaInfo, labelRendererType),
       },
       {
         id: getColumnId('champion'),
@@ -71,7 +75,7 @@ export const useSideStatWeekOverviewTableColumns = (
           </Button>
         ),
         cell: ({ row }) => (
-          <div>
+          <div className="font-bold">
             {showCounts
               ? row.original.championCount
               : `${row.original.championPercentage.toFixed(1)}%`}
@@ -114,6 +118,6 @@ export const useSideStatWeekOverviewTableColumns = (
         ),
       },
     ],
-    [showCounts, labelRenderer],
+    [showCounts, labelRenderer, labelRendererType],
   );
 };
