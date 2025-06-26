@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { ResponsiveAreaBump } from '@nivo/bump';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { labelWidthBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
-import { useWeekToWeekStoreActions } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekStore.ts';
+import {
+  useWeekToWeekStore,
+  useWeekToWeekStoreActions,
+} from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekStore.ts';
 import {
   bottomAxisDefinition,
   getMetaPartObjectValue,
@@ -37,6 +40,28 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
   const labelRenderer = useLabel();
   const labelWidth = labelWidthBasedOnMetaInfo[metaInfo];
   const { setWeekIdToCompare, setDeckKey } = useWeekToWeekStoreActions();
+  const { hoveredRowKey } = useWeekToWeekStore();
+
+  // Effect to highlight the area in the chart based on hovered row
+  useEffect(() => {
+    // Find the chart container
+    const chartContainer = document.getElementById('pq-wtw-area-bump-chart');
+    if (!chartContainer) return;
+
+    // Find all SVG path elements with data-testid starting with "area."
+    const areaPaths = chartContainer.querySelectorAll('path[data-testid^="area."]');
+
+    areaPaths.forEach(path => {
+      const testId = path.getAttribute('data-testid');
+      if (!testId) return;
+
+      // Check if this path corresponds to the hovered row
+      const shouldBeFilled = hoveredRowKey === null || testId === `area.${hoveredRowKey}`;
+
+      // Set fill-opacity based on whether the path is hovered
+      path.setAttribute('fill-opacity', shouldBeFilled ? '1' : '0.15');
+    });
+  }, [hoveredRowKey]);
 
   const labelCallback = useCallback(
     (startOrEnd?: 'start' | 'end') => datum => {
@@ -50,6 +75,9 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
     },
     [metaInfo, labelRenderer],
   );
+
+  const startLabelCallback = useCallback(d => labelCallback('start')(d), []);
+  const endLabelCallback = useCallback(d => labelCallback('end')(d), []);
 
   const handleChartMouseEvent = useCallback(
     (data, event) => {
@@ -164,6 +192,18 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
     }));
   }, [chartData]);
 
+  const tooltip = useCallback(x => {
+    const { serie } = x;
+    return (
+      <div className="bg-card p-2 rounded-md shadow-md border">
+        <div className="flex items-center gap-2">
+          {labelRenderer(serie.id as string, metaInfo, 'compact')}
+          {/*<pre className="text-xs">{JSON.stringify(serie, null, 2)}</pre>*/}
+        </div>
+      </div>
+    );
+  }, []);
+
   if (chartData.length === 0) {
     return (
       <div className="flex items-center justify-center p-12 border rounded-md">
@@ -175,7 +215,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
   }
 
   return (
-    <div style={{ height: 500 }}>
+    <div style={{ height: 500 }} id="pq-wtw-area-bump-chart">
       <ResponsiveAreaBump<AreaBumpData>
         data={chartData}
         margin={{
@@ -189,23 +229,14 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
         blendMode="normal"
         defs={chartDefs}
         fill={fill}
-        startLabel={labelCallback('start')}
+        // activeSerieIds={['darth-vader--victor-squadron-leader']}
+        startLabel={startLabelCallback}
         startLabelTextColor={'hsl(var(--muted-foreground))'}
         endLabelTextColor={'hsl(var(--muted-foreground))'}
-        endLabel={labelCallback('end')}
+        endLabel={endLabelCallback}
         axisTop={topAxisDefinition}
         axisBottom={bottomAxisDefinition}
-        tooltip={x => {
-          const { serie } = x;
-          return (
-            <div className="bg-card p-2 rounded-md shadow-md border">
-              <div className="flex items-center gap-2">
-                {labelRenderer(serie.id as string, metaInfo, 'compact')}
-                {/*<pre className="text-xs">{JSON.stringify(serie, null, 2)}</pre>*/}
-              </div>
-            </div>
-          );
-        }}
+        tooltip={tooltip}
         onMouseMove={handleChartMouseEvent}
         onClick={handleChartMouseEvent}
       />
