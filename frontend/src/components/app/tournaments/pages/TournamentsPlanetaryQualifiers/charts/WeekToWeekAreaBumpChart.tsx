@@ -36,7 +36,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
 
   const labelRenderer = useLabel();
   const labelWidth = labelWidthBasedOnMetaInfo[metaInfo];
-  const { setWeekIdToCompare } = useWeekToWeekStoreActions();
+  const { setWeekIdToCompare, setDeckKey } = useWeekToWeekStoreActions();
 
   const labelCallback = useCallback(
     (startOrEnd?: 'start' | 'end') => datum => {
@@ -56,28 +56,22 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
       const clickX = event.nativeEvent.offsetX;
       const adjustedX = clickX - labelWidth;
 
-      // Find the closest point to the adjusted X coordinate
       if (data.points && data.points.length > 0) {
-        // Calculate distances from adjusted X to each point's X coordinate
-        const pointsWithDistance = data.points.map(point => ({
-          point,
-          distance: Math.abs(point.x - adjustedX),
-        }));
-
-        // Sort by distance (closest first)
-        pointsWithDistance.sort((a, b) => a.distance - b.distance);
-
-        // Get the closest point
-        const closestPoint = pointsWithDistance[0].point;
-
-        // Extract the groupId from the closest point
-        const groupId = closestPoint.data.groupId;
-
-        // Set the weekIdToCompare using the store action
-        if (groupId) {
-          setWeekIdToCompare(groupId);
+        let closestWeekId = undefined;
+        let closestWeekDistance = Infinity;
+        data.points.forEach(p => {
+          const distance = Math.abs(p.x - adjustedX);
+          if (distance < closestWeekDistance) {
+            closestWeekDistance = distance;
+            closestWeekId = p.data.groupId;
+          }
+        });
+        if (closestWeekId) {
+          setWeekIdToCompare(closestWeekId);
         }
       }
+
+      setDeckKey(data.id);
     },
     [labelWidth, setWeekIdToCompare],
   );
@@ -207,14 +201,12 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
             <div className="bg-card p-2 rounded-md shadow-md border">
               <div className="flex items-center gap-2">
                 {labelRenderer(serie.id as string, metaInfo, 'compact')}
-                <pre className="text-xs">{JSON.stringify(serie, null, 2)}</pre>
+                {/*<pre className="text-xs">{JSON.stringify(serie, null, 2)}</pre>*/}
               </div>
             </div>
           );
         }}
-        onMouseMove={(data, event) => {
-          // console.log('data.points', data.points, 'event X', event.nativeEvent.offsetX);
-        }}
+        onMouseMove={handleChartMouseEvent}
         onClick={handleChartMouseEvent}
       />
     </div>

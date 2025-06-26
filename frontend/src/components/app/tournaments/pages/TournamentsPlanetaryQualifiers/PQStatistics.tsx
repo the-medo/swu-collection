@@ -5,11 +5,11 @@ import WeekSelector, { ALL_WEEKS_VALUE, WEEK_TO_WEEK_VALUE } from './WeekSelecto
 import WeekToWeekData from './WeekToWeek/WeekToWeekData.tsx';
 import WeekChangeButtons from './WeekChangeButtons.tsx';
 import PQSideStats from './PQSideStats.tsx';
-import WeekToWeekSideStats from './WeekToWeek/WeekToWeekSideStats.tsx';
+import WeekToWeekSideStats from './WeekToWeek/SideStats/WeekToWeekSideStats.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import PQPageNavigation from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/PQPageNavigation.tsx';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import MetaInfoSelector, {
   MetaInfo,
 } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
@@ -36,7 +36,8 @@ interface PQStatisticsProps {
 }
 
 const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAllTournaments }) => {
-  const [metaInfo, setMetaInfo] = useState<MetaInfo>('leaders');
+  const search = useSearch({ strict: false });
+  const metaInfo = (search.maMetaInfo ?? 'leaders') as MetaInfo;
 
   const statistics = useStatistics(tournamentGroups);
   const processedTournamentGroups = useProcessedTournamentGroups(tournamentGroups);
@@ -60,6 +61,15 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
       search: prev => ({
         ...prev,
         weekId: tournamentGroupId,
+      }),
+    });
+  };
+
+  const handleMetaInfoChange = (mi: MetaInfo) => {
+    navigate({
+      search: prev => ({
+        ...prev,
+        maMetaInfo: mi,
       }),
     });
   };
@@ -137,7 +147,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
         </div>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <PQPageNavigation />
-          <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
+          <MetaInfoSelector value={metaInfo} onChange={handleMetaInfoChange} />
         </div>
 
         {/* Display information about the selected week */}
@@ -189,7 +199,14 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
       </div>
 
       {selectedGroupId === WEEK_TO_WEEK_VALUE ? (
-        <WeekToWeekSideStats />
+        <WeekToWeekSideStats
+          metaInfo={metaInfo}
+          top={chartTop}
+          statistics={statistics}
+          tournamentGroups={tournamentGroups}
+          processedTournamentGroups={processedTournamentGroups}
+          handleWeekSelect={handleWeekSelect}
+        />
       ) : (
         <PQSideStats
           statistics={statistics}
