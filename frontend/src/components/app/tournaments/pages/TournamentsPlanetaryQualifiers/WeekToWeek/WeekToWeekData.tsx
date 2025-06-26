@@ -5,9 +5,10 @@ import { ProcessedTournamentGroup } from '@/components/app/tournaments/pages/Tou
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import WeekToWeekAreaBumpChart from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/charts/WeekToWeekAreaBumpChart.tsx';
+import WeekToWeekAreaBumpChart from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/data-view/WeekToWeekAreaBumpChart.tsx';
 import { useWeekToWeekData } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekData.ts';
 import DataViewTypeSelector from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/DataViewTypeSelector.tsx';
+import WtwViewModeSelector from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/WtwViewModeSelector.tsx';
 import { useSearch } from '@tanstack/react-router';
 
 interface WeekToWeekDataProps {
@@ -23,7 +24,7 @@ const WeekToWeekData: React.FC<WeekToWeekDataProps> = ({
   top,
   processedTournamentGroups,
 }) => {
-  const { pqWtwDataViewType = 'count' } = useSearch({ strict: false });
+  const { pqWtwDataViewType = 'count', pqWtwViewMode = 'chart' } = useSearch({ strict: false });
   const data = useWeekToWeekData(processedTournamentGroups, metaInfo);
 
   return (
@@ -34,19 +35,29 @@ const WeekToWeekData: React.FC<WeekToWeekDataProps> = ({
             Week-to-Week {top === 'champions' ? 'Champions' : top === 'top8' ? 'Top 8' : 'Total'}{' '}
             Trends
           </CardTitle>
-          <DataViewTypeSelector />
+          <div className="flex gap-2">
+            <WtwViewModeSelector />
+            <div className="w-0 border-r"></div>
+            <DataViewTypeSelector />
+          </div>
         </div>
         <CardDescription>
           Showing trends for top {metaInfo} combinations across weeks
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <WeekToWeekAreaBumpChart
-          data={data}
-          top={top}
-          metaInfo={metaInfo}
-          viewType={pqWtwDataViewType}
-        />
+        {pqWtwViewMode === 'chart' ? (
+          <WeekToWeekAreaBumpChart
+            data={data}
+            top={top}
+            metaInfo={metaInfo}
+            viewType={pqWtwDataViewType}
+          />
+        ) : (
+          <div className="flex items-center justify-center p-12 border rounded-md">
+            <h2 className="text-2xl font-bold text-muted-foreground">Table view coming soon</h2>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
