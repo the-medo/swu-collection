@@ -4,21 +4,12 @@ import { TournamentGroupWithMeta } from '../../../../../../../../types/Tournamen
 import { ProcessedTournamentGroup } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/hooks/useProcessedTournamentGroups.ts';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
-import { ResponsiveAreaBump } from '@nivo/bump';
-import { useCallback, useMemo } from 'react';
-import {
-  getDeckKey2,
-  labelWidthBasedOnMetaInfo,
-} from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { useMemo } from 'react';
+import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { usePieChartColors } from '@/components/app/tournaments/TournamentMeta/usePieChartColors.tsx';
-import { useTheme } from '@/components/theme-provider.tsx';
-import {
-  bottomAxisDefinition,
-  topAxisDefinition,
-} from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/weekToWeekLib.ts';
+import WeekToWeekAreaBumpChart from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/charts/WeekToWeekAreaBumpChart.tsx';
 
 interface WeekToWeekDataProps {
   metaInfo: MetaInfo;
@@ -26,17 +17,6 @@ interface WeekToWeekDataProps {
   statistics: TournamentStatistics;
   tournamentGroups: TournamentGroupWithMeta[];
   processedTournamentGroups: ProcessedTournamentGroup[];
-  handleWeekSelect: (tournamentGroupId: string) => void;
-}
-
-// Define the data structure for the AreaBump chart
-interface AreaBumpData {
-  id: string;
-  data: {
-    x: number;
-    y: number;
-    groupId?: string; // Store the group ID for click handling
-  }[];
 }
 
 const WeekToWeekData: React.FC<WeekToWeekDataProps> = ({
@@ -45,11 +25,8 @@ const WeekToWeekData: React.FC<WeekToWeekDataProps> = ({
   statistics,
   tournamentGroups,
   processedTournamentGroups,
-  handleWeekSelect,
 }) => {
   const { data: cardListData } = useCardList();
-  const labelRenderer = useLabel();
-  const { theme } = useTheme();
   const pieChartColorDefinitions = usePieChartColors();
 
   // Transform the data for the AreaBump chart
@@ -146,19 +123,6 @@ const WeekToWeekData: React.FC<WeekToWeekDataProps> = ({
     }));
   }, [chartData]);
 
-  const labelCallback = useCallback(
-    (startOrEnd?: 'start' | 'end') => datum => {
-      const l = datum.data?.length;
-      if (
-        (startOrEnd === 'start' && datum.data[0]?.y === 0) ||
-        (startOrEnd === 'end' && datum.data[l - 1]?.y === 0)
-      )
-        return '';
-      return labelRenderer(datum.id as string, metaInfo, 'text') as string;
-    },
-    [metaInfo],
-  );
-
   if (chartData.length === 0) {
     return (
       <div className="flex items-center justify-center p-12 border rounded-md">
@@ -181,47 +145,12 @@ const WeekToWeekData: React.FC<WeekToWeekDataProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div style={{ height: 500 }}>
-          <ResponsiveAreaBump
-            data={chartData}
-            margin={{
-              top: 40,
-              right: labelWidthBasedOnMetaInfo[metaInfo],
-              bottom: 40,
-              left: labelWidthBasedOnMetaInfo[metaInfo],
-            }}
-            spacing={4}
-            colors={['#3B3B3B']} // Use the same base color as PQStatPieChart
-            blendMode="normal"
-            defs={chartDefs}
-            fill={fill}
-            startLabel={labelCallback('start')}
-            startLabelTextColor={'hsl(var(--muted-foreground))'}
-            endLabelTextColor={'hsl(var(--muted-foreground))'}
-            endLabel={labelCallback('end')}
-            axisTop={topAxisDefinition}
-            axisBottom={bottomAxisDefinition}
-            tooltip={x => {
-              const { serie } = x;
-              // console.log({ x });
-              return (
-                <div className="bg-card p-2 rounded-md shadow-md border">
-                  <div className="flex items-center gap-2">
-                    {labelRenderer(serie.id as string, metaInfo, 'compact')}
-                    {/*<span className="font-bold">{JSON.stringify(serie)}</span>*/}
-                    <pre className="text-xs">{JSON.stringify(serie, null, 2)}</pre>
-                  </div>
-                </div>
-              );
-            }}
-            onMouseMove={(data, event) => {
-              // console.log('data.points', data.points, 'event X', event.nativeEvent.offsetX);
-            }}
-            onClick={(data, event) => {
-              console.log('data.points', data.points, 'event X', event.nativeEvent.offsetX);
-            }}
-          />
-        </div>
+        <WeekToWeekAreaBumpChart
+          chartData={chartData}
+          metaInfo={metaInfo}
+          chartDefs={chartDefs}
+          fill={fill}
+        />
       </CardContent>
     </Card>
   );

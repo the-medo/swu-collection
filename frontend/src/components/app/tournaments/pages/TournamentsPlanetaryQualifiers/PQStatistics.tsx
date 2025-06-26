@@ -150,7 +150,6 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
                 statistics={statistics}
                 tournamentGroups={tournamentGroups}
                 processedTournamentGroups={processedTournamentGroups}
-                handleWeekSelect={handleWeekSelect}
               />
             ) : hasData ? (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
