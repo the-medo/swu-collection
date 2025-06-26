@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import {
   addToMetaPartObject,
   emptyMetaPartObject,
+  MetaPartObject,
   MetaShareSnapshot,
   SortedWeeks,
   WeekMap,
@@ -16,6 +17,7 @@ export interface WeekToWeekData {
   weekMap: WeekMap;
   weekToDeckKey: MetaShareSnapshot;
   deckKeyToWeek: MetaShareSnapshot;
+  weekTotals: Record<string, MetaPartObject>;
 }
 
 export function useWeekToWeekData(
@@ -38,6 +40,12 @@ export function useWeekToWeekData(
 
     const weekToDeckKey: MetaShareSnapshot = {};
     const deckKeyToWeek: MetaShareSnapshot = {};
+    const weekTotals: Record<string, MetaPartObject> = {};
+
+    // Initialize weekTotals with empty MetaPartObjects for each week
+    sortedWeeks.forEach(weekId => {
+      weekTotals[weekId] = { ...emptyMetaPartObject };
+    });
 
     sortedWeeks.forEach(weekId => {
       weekMap[weekId]?.leaderBase?.forEach(leaderBase => {
@@ -57,9 +65,10 @@ export function useWeekToWeekData(
         if (!deckKeyToWeek[key][weekId]) deckKeyToWeek[key][weekId] = { ...emptyMetaPartObject };
         addToMetaPartObject(weekToDeckKey[weekId][key], leaderBase);
         addToMetaPartObject(deckKeyToWeek[key][weekId], leaderBase);
+        addToMetaPartObject(weekTotals[weekId], leaderBase);
       });
     });
 
-    return { sortedWeeks, weekMap, weekToDeckKey, deckKeyToWeek };
+    return { sortedWeeks, weekMap, weekToDeckKey, deckKeyToWeek, weekTotals };
   }, [processedTournamentGroups, metaInfo, cardListData]);
 }
