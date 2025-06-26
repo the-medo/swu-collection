@@ -1,14 +1,18 @@
 import * as React from 'react';
 import { ResponsiveAreaBump } from '@nivo/bump';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { labelWidthBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useWeekToWeekStoreActions } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekStore.ts';
 import {
   bottomAxisDefinition,
+  getMetaPartObjectValue,
   topAxisDefinition,
 } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/weekToWeekLib.ts';
+import { WeekToWeekData } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekData.ts';
+import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
+import { useChartColorsAndGradients } from '@/components/app/tournaments/TournamentMeta/useChartColorsAndGradients.tsx';
 
 // Define the data structure for the AreaBump chart
 interface AreaBumpData {
@@ -17,28 +21,19 @@ interface AreaBumpData {
   groupId?: string; // Store the group ID for click handling
 }
 
-interface AreaBumpChartData {
-  id: string;
-  data: {
-    x: number;
-    y: number;
-    groupId?: string;
-  }[];
-}
-
 interface WeekToWeekAreaBumpChartProps {
-  chartData: AreaBumpChartData[];
+  data: WeekToWeekData;
+  top: PQTop;
   metaInfo: MetaInfo;
-  chartDefs: any[];
-  fill: any[];
 }
 
 const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
-  chartData,
+  data,
+  top,
   metaInfo,
-  chartDefs,
-  fill,
 }) => {
+  const pieChartColorDefinitions = useChartColorsAndGradients();
+
   const labelRenderer = useLabel();
   const labelWidth = labelWidthBasedOnMetaInfo[metaInfo];
   const { setWeekIdToCompare } = useWeekToWeekStoreActions();
@@ -86,6 +81,104 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
     },
     [labelWidth, setWeekIdToCompare],
   );
+
+  // Transform the data for the AreaBump chart
+  const chartData = useMemo(() => {
+    const { sortedWeeks, weekMap, deckKeyToWeek } = data;
+
+    // Define the constant X for top occurrences
+    const TOP_X = 6;
+
+    if (sortedWeeks.length === 0) return [];
+
+    const allCombinations = new Map<string, { id: string; data: any[] }>();
+    Object.keys(deckKeyToWeek).forEach(deckKey => {
+      allCombinations.set(deckKey, {
+        id: deckKey,
+        data: [],
+      });
+    });
+
+    // Create a map to track deck keys that appear in the top X at least once
+    const topDeckKeysMap: Record<string, boolean> = {};
+
+    // Process each week
+    sortedWeeks.forEach(weekId => {
+      const group = weekMap[weekId];
+      if (!group) return;
+
+      // Collect all deck keys and their y values for this week
+      const weekData: Array<{ deckKey: string; y: number }> = [];
+
+      Object.keys(deckKeyToWeek).forEach(deckKey => {
+        const leaderBase = deckKeyToWeek[deckKey][weekId];
+        const y = getMetaPartObjectValue(leaderBase, top);
+        weekData.push({ deckKey, y });
+      });
+
+      // Sort by y value in descending order and take the top X
+      weekData.sort((a, b) => b.y - a.y);
+      const topXDeckKeys = weekData
+        .slice(0, TOP_X)
+        .filter(item => item.y > 0) // Only include items with y > 0
+        .map(item => item.deckKey);
+
+      // Add these deck keys to the map
+      topXDeckKeys.forEach(deckKey => {
+        topDeckKeysMap[deckKey] = true;
+      });
+
+      // Add data points for each deck key
+      allCombinations.forEach((value, deckKey) => {
+        const leaderBase = deckKeyToWeek[deckKey][weekId];
+
+        const y = getMetaPartObjectValue(leaderBase, top);
+
+        value.data.push({
+          x: group.weekNumber,
+          y: y ?? 0,
+          groupId: weekId,
+        });
+      });
+    });
+
+    // Filter the combinations to only include those in the topDeckKeysMap
+    const result = Array.from(allCombinations.values()).filter(item => {
+      return topDeckKeysMap[item.id];
+    });
+
+    // Sort by total y values in descending order
+    result.sort((a, b) => {
+      const sumA = a.data.reduce((sum, point) => sum + point.y, 0);
+      const sumB = b.data.reduce((sum, point) => sum + point.y, 0);
+      return sumB - sumA;
+    });
+
+    return result;
+  }, [data, top]);
+
+  // Generate chart definitions using pieChartColorDefinitions
+  const chartDefs = useMemo(() => {
+    return chartData.map(item => pieChartColorDefinitions(item.id, metaInfo));
+  }, [chartData, metaInfo, pieChartColorDefinitions]);
+
+  // Create fill patterns for each item
+  const fill = useMemo(() => {
+    return chartData.map(item => ({
+      match: { id: item.id },
+      id: item.id,
+    }));
+  }, [chartData]);
+
+  if (chartData.length === 0) {
+    return (
+      <div className="flex items-center justify-center p-12 border rounded-md">
+        <h2 className="text-2xl font-bold text-muted-foreground">
+          No data available for week-to-week comparison
+        </h2>
+      </div>
+    );
+  }
 
   return (
     <div style={{ height: 500 }}>

@@ -5,7 +5,7 @@ import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.t
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
-import { usePieChartColors } from '@/components/app/tournaments/TournamentMeta/usePieChartColors.tsx';
+import { useChartColorsAndGradients } from '@/components/app/tournaments/TournamentMeta/useChartColorsAndGradients.tsx';
 import { useTheme } from '@/components/theme-provider.tsx';
 import { TournamentGroupLeaderBase } from '../../../../../../../server/db/schema/tournament_group_leader_base';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -45,7 +45,7 @@ const COLORS = [
 const PQStatPieChart: React.FC<PQStatPieChartProps> = ({ metaInfo, data, top }) => {
   const labelRenderer = useLabel();
   const { theme } = useTheme();
-  const pieChartColorDefinitions = usePieChartColors();
+  const pieChartColorDefinitions = useChartColorsAndGradients();
   const { setTournamentDeckKey } = useTournamentMetaActions();
   const { data: cardListData } = useCardList();
 
