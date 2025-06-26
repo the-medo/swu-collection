@@ -9,6 +9,17 @@ import {
   useSideStatWeekOverviewTableColumns,
 } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/SideStats/useSideStatWeekOverviewTableColumns.tsx';
 import { useWeekToWeekStoreActions } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekStore.ts';
+import { Row } from '@tanstack/react-table';
+
+interface WeekOverview {
+  key: string;
+  championCount: number;
+  championPercentage: number;
+  top8Count: number;
+  top8Percentage: number;
+  totalCount: number;
+  totalPercentage: number;
+}
 
 interface SideStatWeekOverviewTableProps {
   weekId: string | null;
@@ -29,9 +40,10 @@ const SideStatWeekOverviewTable: React.FC<SideStatWeekOverviewTableProps> = ({
 
   const { setHoveredRowKey } = useWeekToWeekStoreActions();
 
-  const handleRowMouseEnter = useCallback((row) => {
-    setHoveredRowKey(row.original.key);
-  }, [setHoveredRowKey]);
+  const handleRowMouseEnter = useCallback(
+    (row: Row<WeekOverview>) => setHoveredRowKey(row.original.key),
+    [setHoveredRowKey],
+  );
 
   const handleRowMouseLeave = useCallback(() => {
     // Don't clear the hoveredRowKey here to avoid flickering when moving between rows
@@ -43,7 +55,7 @@ const SideStatWeekOverviewTable: React.FC<SideStatWeekOverviewTableProps> = ({
 
   const columns = useSideStatWeekOverviewTableColumns(showCounts, sorting, setSorting, metaInfo);
 
-  const tableData = useMemo(() => {
+  const tableData: WeekOverview[] = useMemo(() => {
     if (!weekId || !data.weekToDeckKey[weekId]) return [];
 
     const weekData = data.weekToDeckKey[weekId];
@@ -90,15 +102,17 @@ const SideStatWeekOverviewTable: React.FC<SideStatWeekOverviewTableProps> = ({
   }, [tableData, sorting]);
 
   if (!weekId) {
-    return <p className="text-muted-foreground text-center">No week selected</p>;
+    return (
+      <p className="text-muted-foreground text-center">
+        Hover or click on a chart to display data.
+      </p>
+    );
   }
 
   const weekObject = data.weekMap[weekId];
 
   if (sortedData.length === 0) {
-    return (
-      <p className="text-muted-foreground text-center">No data available for the selected week</p>
-    );
+    return <p className="text-muted-foreground text-center">No data available for this week</p>;
   }
 
   return (
@@ -112,14 +126,15 @@ const SideStatWeekOverviewTable: React.FC<SideStatWeekOverviewTableProps> = ({
           <Switch checked={showCounts} onCheckedChange={setShowCounts} />
         </div>
       </div>
-      <DataTable 
-        columns={columns} 
-        data={sortedData} 
-        enableRowSelection={true}
-        onRowMouseEnter={handleRowMouseEnter}
-        onRowMouseLeave={handleRowMouseLeave}
-        onTableMouseLeave={handleTableMouseLeave}
-      />
+      <div className=" max-h-[65vh] overflow-y-auto">
+        <DataTable<WeekOverview, unknown>
+          columns={columns}
+          data={sortedData}
+          onRowMouseEnter={handleRowMouseEnter}
+          onRowMouseLeave={handleRowMouseLeave}
+          onTableMouseLeave={handleTableMouseLeave}
+        />
+      </div>
     </div>
   );
 };

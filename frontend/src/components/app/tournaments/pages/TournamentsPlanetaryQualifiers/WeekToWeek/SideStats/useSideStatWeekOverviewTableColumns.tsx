@@ -50,7 +50,7 @@ export const useSideStatWeekOverviewTableColumns = (
     [sorting],
   );
 
-  const labelRendererType = ['leaders', 'leaderAndBase', 'bases'].includes(metaInfo)
+  const labelRendererType = ['leaders', 'leadersAndBase', 'bases'].includes(metaInfo)
     ? 'image-small'
     : 'compact';
 
@@ -59,7 +59,7 @@ export const useSideStatWeekOverviewTableColumns = (
       {
         id: 'key',
         accessorKey: 'key',
-        header: 'Label',
+        header: '',
         cell: ({ row }) => labelRenderer(row.original.key, metaInfo, labelRendererType),
       },
       {
@@ -118,6 +118,6 @@ export const useSideStatWeekOverviewTableColumns = (
         ),
       },
     ],
-    [showCounts, labelRenderer, labelRendererType],
+    [showCounts, metaInfo, labelRenderer, labelRendererType],
   );
 };

@@ -8,6 +8,7 @@ import { useWeekToWeekStore } from '@/components/app/tournaments/pages/Tournamen
 import { useWeekToWeekData } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekData.ts';
 import SideStatViewSelector from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/SideStats/SideStatViewSelector.tsx';
 import SideStatWeekOverviewTable from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/SideStats/SideStatWeekOverviewTable.tsx';
+import SideStatWeeklyShiftTable from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/SideStats/SideStatWeeklyShiftTable.tsx';
 
 interface WeekToWeekSideStatsProps {
   metaInfo: MetaInfo;
@@ -20,18 +21,14 @@ interface WeekToWeekSideStatsProps {
 
 const WeekToWeekSideStats: React.FC<WeekToWeekSideStatsProps> = ({
   metaInfo,
-  top,
-  statistics,
-  tournamentGroups,
   processedTournamentGroups,
-  handleWeekSelect,
 }) => {
   const { weekIdToCompare, deckKey, pqSideStatView } = useWeekToWeekStore();
   const data = useWeekToWeekData(processedTournamentGroups, metaInfo);
 
   return (
-    <div className="flex flex-col gap-4 lg:col-span-4 xl:col-span-3 border rounded-md pb-4 mb-4">
-      <div className="p-4 border-b">
+    <div className="flex flex-col gap-2 lg:col-span-4 xl:col-span-3 border rounded-md pb-2 mb-2">
+      <div className="p-2 border-b">
         <SideStatViewSelector />
       </div>
 
@@ -40,16 +37,8 @@ const WeekToWeekSideStats: React.FC<WeekToWeekSideStatsProps> = ({
           <SideStatWeekOverviewTable weekId={weekIdToCompare} data={data} metaInfo={metaInfo} />
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center p-6">
-          <h3 className="text-lg font-medium mb-2">Deck weekly Meta shift</h3>
-          <p className="text-muted-foreground">
-            {deckKey ? `Selected deck: ${deckKey}` : 'No deck selected'}
-          </p>
-          <div className="mt-4 p-4 bg-muted/50 rounded-md w-full max-w-md">
-            <p className="text-sm text-center">
-              This view shows how a specific deck has performed across different weeks.
-            </p>
-          </div>
+        <div className="flex flex-col items-center justify-center">
+          <SideStatWeeklyShiftTable deckKey={deckKey} data={data} metaInfo={metaInfo} />
         </div>
       )}
     </div>
