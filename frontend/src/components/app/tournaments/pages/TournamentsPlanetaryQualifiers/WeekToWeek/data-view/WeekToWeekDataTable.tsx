@@ -27,9 +27,22 @@ const WeekToWeekDataTable: React.FC<WeekToWeekDataTableProps> = ({
   viewType,
 }) => {
   const [showCounts, setShowCounts] = useState(viewType === 'count');
-  const [sorting, setSorting] = useState<WeekToWeekDataTableSorting>({
-    id: 'deckKey',
-    desc: false,
+
+  // Set default sorting to the most recent week column
+  const [sorting, setSorting] = useState<WeekToWeekDataTableSorting>(() => {
+    // If there are weeks, sort by the most recent week
+    if (data.sortedWeeks.length > 0) {
+      const mostRecentWeekId = data.sortedWeeks[data.sortedWeeks.length - 1];
+      return {
+        id: `week_${mostRecentWeekId}`,
+        desc: true,
+      };
+    }
+    // Fallback to sorting by deck key
+    return {
+      id: 'deckKey',
+      desc: false,
+    };
   });
 
   const { setDeckKey, setWeekIdToCompare } = useWeekToWeekStoreActions();

@@ -117,8 +117,13 @@ export const useWeekToWeekDataTableColumns = (
       },
     ];
 
-    // Add columns for each week
-    data.sortedWeeks.forEach((weekId, index) => {
+    // Create a reversed copy of sortedWeeks for display purposes only
+    const reversedWeeks = [...data.sortedWeeks].reverse();
+
+    // Add columns for each week in reversed order
+    reversedWeeks.forEach((weekId, reversedIndex) => {
+      // Calculate the original index in sortedWeeks for change computation
+      const index = data.sortedWeeks.length - 1 - reversedIndex;
       const weekNumber = data.weekMap[weekId]?.weekNumber || index + 1;
       const weekColumnId = `week_${weekId}`;
       const weekChangeColumnId = `week_${weekId}_change`;

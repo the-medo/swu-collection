@@ -107,7 +107,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
               processedTournamentGroups={processedTournamentGroups}
             />
           </div>
-          <div className="flex grow items-center gap-2">
+          <div className="flex items-center gap-2">
             <WeekChangeButtons
               selectedGroupId={selectedGroupId}
               processedTournamentGroups={processedTournamentGroups}
