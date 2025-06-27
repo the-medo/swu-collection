@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { WeekToWeekData } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekData.ts';
@@ -32,12 +32,15 @@ const WeekToWeekDataTable: React.FC<WeekToWeekDataTableProps> = ({
     desc: false,
   });
 
-  const { setHoveredRowKey } = useWeekToWeekStoreActions();
+  const { setHoveredRowKey, setDeckKey, setWeekIdToCompare } = useWeekToWeekStoreActions();
 
   // Handle row hover events to highlight corresponding areas in the chart
   const handleRowMouseEnter = useCallback(
-    (row: Row<WeekToWeekTableRow>) => setHoveredRowKey(row.original.deckKey),
-    [setHoveredRowKey],
+    (row: Row<WeekToWeekTableRow>) => {
+      console.log(row.original.deckKey);
+      setDeckKey(row.original.deckKey);
+    },
+    [setDeckKey],
   );
 
   const handleRowMouseLeave = useCallback(() => {
@@ -45,8 +48,8 @@ const WeekToWeekDataTable: React.FC<WeekToWeekDataTableProps> = ({
   }, []);
 
   const handleTableMouseLeave = useCallback(() => {
-    setHoveredRowKey(null);
-  }, [setHoveredRowKey]);
+    setDeckKey(null);
+  }, [setDeckKey]);
 
   // Get column definitions
   const columns = useWeekToWeekDataTableColumns(
@@ -160,10 +163,23 @@ const WeekToWeekDataTable: React.FC<WeekToWeekDataTableProps> = ({
     });
   }, [tableData, sorting]);
 
-  // Update showCounts when viewType changes
-  React.useEffect(() => {
+  useEffect(() => {
     setShowCounts(viewType === 'count');
   }, [viewType]);
+
+  const onCellMouseEnter = useCallback(
+    data => {
+      // Extract week ID from data.id if it matches the pattern ..._week_${weekId}
+      if (data.id && data.id.includes('_week_')) {
+        const match = data.id.match(/\_week\_([0-9a-f\-]+)/);
+        if (match && match[1]) {
+          console.log(match[1]);
+          setWeekIdToCompare(match[1]);
+        }
+      }
+    },
+    [setWeekIdToCompare],
+  );
 
   if (sortedData.length === 0) {
     return (
@@ -183,6 +199,7 @@ const WeekToWeekDataTable: React.FC<WeekToWeekDataTableProps> = ({
         onRowMouseEnter={handleRowMouseEnter}
         onRowMouseLeave={handleRowMouseLeave}
         onTableMouseLeave={handleTableMouseLeave}
+        onCellMouseEnter={onCellMouseEnter}
       />
     </div>
   );

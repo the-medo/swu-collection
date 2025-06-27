@@ -46,6 +46,7 @@ interface DataTableProps<TData, TValue> {
   onRowClick?: (row: Row<TData>) => void;
   onRowMouseEnter?: (row: Row<TData>) => void;
   onRowMouseLeave?: (row: Row<TData>) => void;
+  onCellMouseEnter?: (cell: any, row: Row<TData>) => void;
   onTableMouseLeave?: () => void;
   isRowHighlighted?: (row: Row<TData>) => void;
   view?: DataTableViewMode;
@@ -70,6 +71,7 @@ export function DataTable<TData, TValue>({
   onRowClick,
   onRowMouseEnter,
   onRowMouseLeave,
+  onCellMouseEnter,
   onTableMouseLeave,
   isRowHighlighted,
   view = 'table',
@@ -186,6 +188,7 @@ export function DataTable<TData, TValue>({
                 {row.getVisibleCells().map(cell => (
                   <TableCell
                     key={cell.id}
+                    onMouseEnter={() => onCellMouseEnter?.(cell, row)}
                     className={cn({
                       [`w-${cell.column.getSize()} min-w-${cell.column.getSize()}`]:
                         cell.column.getSize() > 0,

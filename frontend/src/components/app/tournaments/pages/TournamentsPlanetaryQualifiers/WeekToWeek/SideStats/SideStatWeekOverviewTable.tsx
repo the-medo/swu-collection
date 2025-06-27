@@ -63,17 +63,16 @@ const SideStatWeekOverviewTable: React.FC<SideStatWeekOverviewTableProps> = ({
     const totalTop8 = Object.values(weekData).reduce((sum, item) => sum + item.top8, 0);
     const totalDecks = Object.values(weekData).reduce((sum, item) => sum + item.total, 0);
 
-    return Object.entries(weekData)
-      .map(([key, value]) => ({
-        key,
-        championCount: value.winner,
-        championPercentage: totalChampions > 0 ? (value.winner / totalChampions) * 100 : 0,
-        top8Count: value.top8,
-        top8Percentage: totalTop8 > 0 ? (value.top8 / totalTop8) * 100 : 0,
-        totalCount: value.total,
-        totalPercentage: totalDecks > 0 ? (value.total / totalDecks) * 100 : 0,
-      }))
-      .slice(0, 15);
+    return Object.entries(weekData).map(([key, value]) => ({
+      key,
+      championCount: value.winner,
+      championPercentage: totalChampions > 0 ? (value.winner / totalChampions) * 100 : 0,
+      top8Count: value.top8,
+      top8Percentage: totalTop8 > 0 ? (value.top8 / totalTop8) * 100 : 0,
+      totalCount: value.total,
+      totalPercentage: totalDecks > 0 ? (value.total / totalDecks) * 100 : 0,
+    }));
+    // .slice(0, 15);
   }, [weekId, data.weekToDeckKey]);
 
   const sortedData = useMemo(() => {

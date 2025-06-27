@@ -7,6 +7,7 @@ import { ArrowDown, ArrowUp } from 'lucide-react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { WeekToWeekData } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekData.ts';
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
+import { useWeekToWeekStoreActions } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekStore.ts';
 
 export type WeekToWeekDataTableSorting = { id: string; desc: boolean };
 
@@ -37,6 +38,7 @@ export const useWeekToWeekDataTableColumns = (
   top: PQTop,
 ): ColumnDef<WeekToWeekTableRow>[] => {
   const labelRenderer = useLabel();
+  const { setWeekIdToCompare, setDeckKey } = useWeekToWeekStoreActions();
 
   const handleSort = useCallback(
     (columnId: string) => {
@@ -46,6 +48,34 @@ export const useWeekToWeekDataTableColumns = (
       }));
     },
     [setSorting],
+  );
+
+  // Handle cell click to update the week and deck key in the store
+  const handleCellClick = useCallback(
+    (columnId: string, deckKey: string) => {
+      // Extract the week ID from the column ID
+      // Column IDs are in the format "week_${weekId}" or "week_${weekId}_change"
+      let weekId: string | null = null;
+
+      if (columnId.startsWith('week_')) {
+        // Extract the weekId part
+        const parts = columnId.split('_');
+        if (parts.length >= 2) {
+          // For "week_${weekId}", parts[1] is the weekId
+          // For "week_${weekId}_change", parts[1] is still the weekId
+          weekId = parts[1];
+        }
+      }
+
+      // Update the store if we have a valid week ID
+      if (weekId) {
+        setWeekIdToCompare(weekId);
+      }
+
+      // Always update the deck key
+      setDeckKey(deckKey);
+    },
+    [setWeekIdToCompare, setDeckKey],
   );
 
   const renderSortIcon = useCallback(
@@ -79,7 +109,11 @@ export const useWeekToWeekDataTableColumns = (
             {renderSortIcon('deckKey')}
           </Button>
         ),
-        cell: ({ row }) => labelRenderer(row.original.deckKey, metaInfo, labelRendererType),
+        cell: ({ row }) => (
+          <div className="cursor-pointer" onClick={() => setDeckKey(row.original.deckKey)}>
+            {labelRenderer(row.original.deckKey, metaInfo, labelRendererType)}
+          </div>
+        ),
       },
     ];
 
@@ -105,7 +139,10 @@ export const useWeekToWeekDataTableColumns = (
         cell: ({ row }) => {
           const value = row.original[weekColumnId] || 0;
           return (
-            <div className="font-medium text-right">
+            <div
+              className="font-medium text-right"
+              onClick={() => handleCellClick(weekColumnId, row.original.deckKey)}
+            >
               {showCounts ? value : `${value.toFixed(1)}%`}
             </div>
           );
@@ -127,7 +164,14 @@ export const useWeekToWeekDataTableColumns = (
           ),
           cell: ({ row }) => {
             const change = row.original[weekChangeColumnId] || 0;
-            return renderChange(change, !showCounts);
+            return (
+              <div
+                className="cursor-pointer hover:bg-muted/50 p-1 rounded w-full h-full text-xs"
+                onClick={() => handleCellClick(weekChangeColumnId, row.original.deckKey)}
+              >
+                {renderChange(change, !showCounts)}
+              </div>
+            );
           },
         });
       } else {
@@ -135,7 +179,14 @@ export const useWeekToWeekDataTableColumns = (
         columns.push({
           id: weekChangeColumnId,
           header: () => <span className="p-0 font-bold">Δ</span>,
-          cell: () => <span className="text-muted-foreground">-</span>,
+          cell: ({ row }) => (
+            <div
+              className="cursor-pointer hover:bg-muted/50 p-1 rounded"
+              onClick={() => handleCellClick(weekColumnId, row.original.deckKey)}
+            >
+              <span className="text-muted-foreground">-</span>
+            </div>
+          ),
         });
       }
     });

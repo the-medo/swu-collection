@@ -15,13 +15,12 @@ const defaultState: WeekToWeekStore = {
 
 const store = new Store<WeekToWeekStore>(defaultState);
 
-const setWeekIdToCompare = (weekIdToCompare: string | null) => 
+const setWeekIdToCompare = (weekIdToCompare: string | null) =>
   store.setState(state => ({ ...state, weekIdToCompare }));
 
-const setDeckKey = (deckKey: string | null) => 
-  store.setState(state => ({ ...state, deckKey }));
+const setDeckKey = (deckKey: string | null) => store.setState(state => ({ ...state, deckKey }));
 
-const setHoveredRowKey = (hoveredRowKey: string | null) => 
+const setHoveredRowKey = (hoveredRowKey: string | null) =>
   store.setState(state => ({ ...state, hoveredRowKey }));
 
 export function useWeekToWeekStore() {
@@ -33,9 +32,6 @@ export function useWeekToWeekStore() {
   // Sync the store with the URL parameter
   if (pqSideStatView === 'week' && deckKey) {
     store.setState(state => ({ ...state, deckKey: null }));
-  } else if (pqSideStatView === 'deckKey' && !deckKey) {
-    // Set a default deckKey if none is selected
-    store.setState(state => ({ ...state, deckKey: 'default' }));
   }
 
   return {
