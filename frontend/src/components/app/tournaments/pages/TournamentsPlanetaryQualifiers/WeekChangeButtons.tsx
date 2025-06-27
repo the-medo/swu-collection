@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip.tsx';
-import { ALL_WEEKS_VALUE } from './WeekSelector.tsx';
+import { ALL_WEEKS_VALUE, WEEK_TO_WEEK_VALUE } from './WeekSelector.tsx';
 
 // Define the props for the processed tournament group items (same as in WeekSelector)
 interface ProcessedTournamentGroup {
@@ -61,7 +61,10 @@ const WeekChangeButtons: React.FC<WeekChangeButtonsProps> = ({
     // Keep the tooltip open
     setLeftTooltipOpen(true);
 
-    if (selectedGroupId === ALL_WEEKS_VALUE) {
+    if (selectedGroupId === WEEK_TO_WEEK_VALUE) {
+      // If "wtw" is selected, go to "all weeks"
+      onWeekChange(ALL_WEEKS_VALUE);
+    } else if (selectedGroupId === ALL_WEEKS_VALUE) {
       // If "all" is selected, go to the most recent week
       if (mostRecentGroup) {
         onWeekChange(mostRecentGroup.group.id);
@@ -80,7 +83,12 @@ const WeekChangeButtons: React.FC<WeekChangeButtonsProps> = ({
     // Keep the tooltip open
     setRightTooltipOpen(true);
 
-    if (selectedGroupId === ALL_WEEKS_VALUE) {
+    if (selectedGroupId === WEEK_TO_WEEK_VALUE) {
+      // If "wtw" is selected, go to week 1
+      if (availableGroups.length > 0) {
+        onWeekChange(availableGroups[0].group.id);
+      }
+    } else if (selectedGroupId === ALL_WEEKS_VALUE) {
       // If "all" is selected, go to week 1
       if (availableGroups.length > 0) {
         onWeekChange(availableGroups[0].group.id);
@@ -96,7 +104,9 @@ const WeekChangeButtons: React.FC<WeekChangeButtonsProps> = ({
 
   // Determine tooltip text for left button
   const getLeftTooltip = () => {
-    if (selectedGroupId === ALL_WEEKS_VALUE) {
+    if (selectedGroupId === WEEK_TO_WEEK_VALUE) {
+      return 'Go to all weeks';
+    } else if (selectedGroupId === ALL_WEEKS_VALUE) {
       return 'Go to most recent week';
     } else if (currentGroupIndex === 0) {
       return 'Go to all weeks';
@@ -107,7 +117,9 @@ const WeekChangeButtons: React.FC<WeekChangeButtonsProps> = ({
 
   // Determine tooltip text for right button
   const getRightTooltip = () => {
-    if (selectedGroupId === ALL_WEEKS_VALUE) {
+    if (selectedGroupId === WEEK_TO_WEEK_VALUE) {
+      return 'Go to Week 1';
+    } else if (selectedGroupId === ALL_WEEKS_VALUE) {
       return 'Go to Week 1';
     } else if (mostRecentGroup && selectedGroupId === mostRecentGroup.group.id) {
       return 'Go to all weeks';
