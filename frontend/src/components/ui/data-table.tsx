@@ -44,6 +44,10 @@ interface DataTableProps<TData, TValue> {
     maxSize: number;
   };
   onRowClick?: (row: Row<TData>) => void;
+  onRowMouseEnter?: (row: Row<TData>) => void;
+  onRowMouseLeave?: (row: Row<TData>) => void;
+  onCellMouseEnter?: (cell: any, row: Row<TData>) => void;
+  onTableMouseLeave?: () => void;
   isRowHighlighted?: (row: Row<TData>) => void;
   view?: DataTableViewMode;
   infiniteScrollObserver?: RefObject<HTMLDivElement>;
@@ -65,6 +69,10 @@ export function DataTable<TData, TValue>({
     maxSize: Number.MAX_SAFE_INTEGER,
   },
   onRowClick,
+  onRowMouseEnter,
+  onRowMouseLeave,
+  onCellMouseEnter,
+  onTableMouseLeave,
   isRowHighlighted,
   view = 'table',
   infiniteScrollObserver,
@@ -140,7 +148,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="rounded-md border w-full relative">
-      <Table>
+      <Table onMouseLeave={onTableMouseLeave}>
         <TableHeader>
           {table.getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
@@ -167,6 +175,8 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 onClick={() => onRowClick?.(row)}
+                onMouseEnter={() => onRowMouseEnter?.(row)}
+                onMouseLeave={() => onRowMouseLeave?.(row)}
                 data-state={
                   isRowHighlighted?.(row) ? 'highlighted' : row.getIsSelected() && 'selected'
                 }
@@ -178,6 +188,7 @@ export function DataTable<TData, TValue>({
                 {row.getVisibleCells().map(cell => (
                   <TableCell
                     key={cell.id}
+                    onMouseEnter={() => onCellMouseEnter?.(cell, row)}
                     className={cn({
                       [`w-${cell.column.getSize()} min-w-${cell.column.getSize()}`]:
                         cell.column.getSize() > 0,

@@ -5,7 +5,7 @@ import { SwuAspect } from '../../../../../../types/enums.ts';
 import { aspectSortValues } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardAspects.ts';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import { IconVariantProps } from '@/components/app/global/icons/iconLib.ts';
-import CardImage from '@/components/app/global/CardImage.tsx';
+import CardImage, { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
 import { isAspect } from '@/lib/cards/isAspect.ts';
 import { getBaseShortcut } from '@/lib/cards/getBaseShortcut.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
@@ -18,7 +18,7 @@ export function useLabel() {
     (
       value: string | undefined,
       metaInfo: MetaInfo,
-      type: 'text' | 'compact' | 'image',
+      type: 'text' | 'compact' | 'image' | 'image-small',
       align: 'left' | 'right' = 'left',
     ) => {
       if (!value) return value;
@@ -106,12 +106,13 @@ export function useLabel() {
             </div>
           </div>
         );
-      } else if (type === 'image') {
+      } else if (type === 'image' || type === 'image-small') {
+        const size: CardImageVariantProps['size'] = type === 'image' ? 'w200' : 'w75';
         return (
           <div className="flex flex-row gap-2 items-center">
             {leaderCardId && (
               <CardImage
-                size="w200"
+                size={size}
                 forceHorizontal={true}
                 card={cardList[leaderCardId]}
                 cardVariantId={leaderCard ? selectDefaultVariant(leaderCard) : undefined}
@@ -120,7 +121,7 @@ export function useLabel() {
             )}
             {baseCardId && (
               <CardImage
-                size="w200"
+                size={size}
                 forceHorizontal={true}
                 card={cardList[baseCardId]}
                 cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}

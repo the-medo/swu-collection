@@ -2,9 +2,6 @@ import { useMemo } from 'react';
 import { TournamentGroupWithMeta } from '../../../../../../../../types/TournamentGroup';
 import { isFuture } from 'date-fns';
 
-/**
- * Interface for the processed tournament group
- */
 export interface ProcessedTournamentGroup extends TournamentGroupWithMeta {
   weekNumber: number;
   description: string;
@@ -18,7 +15,7 @@ export interface ProcessedTournamentGroup extends TournamentGroupWithMeta {
  * @returns Array of processed tournament groups with additional metadata
  */
 export const useProcessedTournamentGroups = (
-  tournamentGroups: TournamentGroupWithMeta[]
+  tournamentGroups: TournamentGroupWithMeta[],
 ): ProcessedTournamentGroup[] => {
   return useMemo(() => {
     // Find the most recent tournament date that is not in the future

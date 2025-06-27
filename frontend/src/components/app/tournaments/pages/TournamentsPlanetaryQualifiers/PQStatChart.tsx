@@ -13,6 +13,7 @@ import { useTournamentMetaActions } from '@/components/app/tournaments/Tournamen
 import { TournamentGroupLeaderBase } from '../../../../../../../server/db/schema/tournament_group_leader_base';
 import { Button } from '@/components/ui/button';
 import { useCardList } from '@/api/lists/useCardList.ts';
+import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
 
 // Custom tooltip table component
 interface PQStatTooltipProps {
@@ -81,7 +82,7 @@ const PQStatTooltip: React.FC<PQStatTooltipProps> = ({
 interface PQStatChartProps {
   metaInfo: MetaInfo;
   data: TournamentGroupLeaderBase[];
-  top: 'champions' | 'top8' | 'total';
+  top: PQTop;
 }
 
 const chartConfig = {

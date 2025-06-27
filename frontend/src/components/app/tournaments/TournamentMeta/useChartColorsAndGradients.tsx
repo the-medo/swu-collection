@@ -20,7 +20,7 @@ const getGradientDef = (id: string, colors: any[]) => ({
   colors,
 });
 
-export const usePieChartColors = () => {
+export const useChartColorsAndGradients = () => {
   const { data: cardListData } = useCardList();
 
   return useCallback(

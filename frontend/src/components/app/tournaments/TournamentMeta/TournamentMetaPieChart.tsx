@@ -9,7 +9,7 @@ import {
   getTotalDeckCountBasedOnMetaPart,
 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
-import { usePieChartColors } from '@/components/app/tournaments/TournamentMeta/usePieChartColors.tsx';
+import { useChartColorsAndGradients } from '@/components/app/tournaments/TournamentMeta/useChartColorsAndGradients.tsx';
 import { useTheme } from '@/components/theme-provider.tsx';
 
 interface TournamentMetaPieChartProps {
@@ -54,7 +54,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
 }) => {
   const labelRenderer = useLabel();
   const { theme } = useTheme();
-  const pieChartColorDefinitions = usePieChartColors();
+  const pieChartColorDefinitions = useChartColorsAndGradients();
   const { setTournamentDeckKey } = useTournamentMetaActions();
   const [hoveredItem, setHoveredItem] = useState<any>(null);
 
