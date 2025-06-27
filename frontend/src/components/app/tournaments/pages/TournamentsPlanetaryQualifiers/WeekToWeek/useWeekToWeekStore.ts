@@ -29,11 +29,6 @@ export function useWeekToWeekStore() {
   const hoveredRowKey = useStore(store, state => state.hoveredRowKey);
   const { pqSideStatView = 'week' } = useSearch({ strict: false });
 
-  // Sync the store with the URL parameter
-  if (pqSideStatView === 'week' && deckKey) {
-    store.setState(state => ({ ...state, deckKey: null }));
-  }
-
   return {
     weekIdToCompare,
     deckKey,

@@ -10,6 +10,7 @@ import {
 } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/SideStats/useSideStatWeekOverviewTableColumns.tsx';
 import { useWeekToWeekStoreActions } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekStore.ts';
 import { Row } from '@tanstack/react-table';
+import SideStatsNoDataMessage from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/SideStats/SideStatsNoDataMessage.tsx';
 
 interface WeekOverview {
   key: string;
@@ -101,11 +102,7 @@ const SideStatWeekOverviewTable: React.FC<SideStatWeekOverviewTableProps> = ({
   }, [tableData, sorting]);
 
   if (!weekId) {
-    return (
-      <p className="text-muted-foreground text-center">
-        Hover or click on a chart to display data.
-      </p>
-    );
+    return <SideStatsNoDataMessage />;
   }
 
   const weekObject = data.weekMap[weekId];

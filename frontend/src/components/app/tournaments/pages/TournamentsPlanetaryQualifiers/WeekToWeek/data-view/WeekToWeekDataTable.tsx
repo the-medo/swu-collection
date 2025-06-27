@@ -32,7 +32,7 @@ const WeekToWeekDataTable: React.FC<WeekToWeekDataTableProps> = ({
     desc: false,
   });
 
-  const { setHoveredRowKey, setDeckKey, setWeekIdToCompare } = useWeekToWeekStoreActions();
+  const { setDeckKey, setWeekIdToCompare } = useWeekToWeekStoreActions();
 
   // Handle row hover events to highlight corresponding areas in the chart
   const handleRowMouseEnter = useCallback(
@@ -42,14 +42,6 @@ const WeekToWeekDataTable: React.FC<WeekToWeekDataTableProps> = ({
     },
     [setDeckKey],
   );
-
-  const handleRowMouseLeave = useCallback(() => {
-    // Don't clear the hoveredRowKey here to avoid flickering when moving between rows
-  }, []);
-
-  const handleTableMouseLeave = useCallback(() => {
-    setDeckKey(null);
-  }, [setDeckKey]);
 
   // Get column definitions
   const columns = useWeekToWeekDataTableColumns(
@@ -197,8 +189,6 @@ const WeekToWeekDataTable: React.FC<WeekToWeekDataTableProps> = ({
         columns={columns}
         data={sortedData}
         onRowMouseEnter={handleRowMouseEnter}
-        onRowMouseLeave={handleRowMouseLeave}
-        onTableMouseLeave={handleTableMouseLeave}
         onCellMouseEnter={onCellMouseEnter}
       />
     </div>

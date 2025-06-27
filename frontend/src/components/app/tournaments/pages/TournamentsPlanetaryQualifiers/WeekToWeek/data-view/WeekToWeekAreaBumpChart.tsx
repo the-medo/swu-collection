@@ -297,7 +297,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
         axisTop={topAxisDefinition}
         axisBottom={bottomAxisDefinition}
         tooltip={tooltip}
-        onMouseMove={handleChartMouseEvent}
+        // onMouseMove={handleChartMouseEvent}
         onClick={handleChartMouseEvent}
       />
     </div>

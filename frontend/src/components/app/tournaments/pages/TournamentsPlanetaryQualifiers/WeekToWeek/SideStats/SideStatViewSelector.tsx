@@ -8,7 +8,7 @@ import { BarChart, LineChart } from 'lucide-react';
 interface SideStatViewSelectorProps {}
 
 const SideStatViewSelector: React.FC<SideStatViewSelectorProps> = () => {
-  const { pqSideStatView = 'week' } = useSearch({ strict: false });
+  const { pqSideStatView = 'deckKey' } = useSearch({ strict: false });
   const navigate = useNavigate({ from: Route.fullPath });
 
   const onValueChange = useCallback(
@@ -29,13 +29,13 @@ const SideStatViewSelector: React.FC<SideStatViewSelectorProps> = () => {
       onValueChange={onValueChange}
       className="justify-start gap-2"
     >
-      <ToggleGroupItem value="week">
-        <BarChart className="h-4 w-4 mr-2" />
-        Week overviews
-      </ToggleGroupItem>
       <ToggleGroupItem value="deckKey">
         <LineChart className="h-4 w-4 mr-2" />
         Weekly shift
+      </ToggleGroupItem>
+      <ToggleGroupItem value="week">
+        <BarChart className="h-4 w-4 mr-2" />
+        Week overviews
       </ToggleGroupItem>
     </ToggleGroup>
   );

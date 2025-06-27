@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch.tsx';
 import { useSideStatWeeklyShiftTableColumns } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/SideStats/useSideStatWeeklyShiftTableColumns.tsx';
 import { emptyMetaPartObject } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/weekToWeekLib.ts';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
+import SideStatsNoDataMessage from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/SideStats/SideStatsNoDataMessage.tsx';
 
 interface SideStatWeeklyShiftTableProps {
   deckKey: string | null;
@@ -123,11 +124,7 @@ const SideStatWeeklyShiftTable: React.FC<SideStatWeeklyShiftTableProps> = ({
   }, [deckKey, data.deckKeyToWeek, data.sortedWeeks, data.weekMap, data.weekToDeckKey]);
 
   if (!deckKey) {
-    return (
-      <p className="text-muted-foreground text-center">
-        Hover or click on a chart to display data.
-      </p>
-    );
+    return <SideStatsNoDataMessage />;
   }
 
   if (tableData.length === 0) {
@@ -140,7 +137,6 @@ const SideStatWeeklyShiftTable: React.FC<SideStatWeeklyShiftTableProps> = ({
     <div className="space-y-2 w-full">
       <div className="px-2 flex justify-between items-center gap-2">
         <span className="text-muted-foreground text-xl font-semibold">
-          {deckKey}
           {labelRenderer(deckKey, metaInfo, 'image-small')}
         </span>
         <div className="flex justify-end items-center gap-2">
