@@ -9,8 +9,10 @@ import { tournamentTypesInfo } from '../../../types/Tournament.ts';
 import { selectDefaultVariant } from '../cards/selectDefaultVariant.ts';
 import { CollectionType } from '../../../types/enums.ts';
 import { user } from '../../db/schema/auth-schema.ts';
+import { tournamentGroup } from '../../db/schema/tournament_group.ts';
 
-export async function getTournamentMetaTags(tournamentId: string) {
+export async function getTournamentMetaTags(tournamentId: string, extraParams?: Record<string, string>) {
+  const weekId = extraParams?.weekId;
   try {
     // Special case for /tournaments/featured, /tournaments/planetary-qualifiers, and /tournaments/all routes
     if (tournamentId === 'featured') {
@@ -23,11 +25,72 @@ export async function getTournamentMetaTags(tournamentId: string) {
         'og:title': 'Featured Tournaments | SWUBase',
         'og:description':
           'Browse featured Star Wars: Unlimited tournaments. View tournament groups, metagame analysis, and top performing decks.',
-        'og:image': 'https://images.swubase.com/thumbnails/base-thumbnail.webp',
+        'og:image': 'https://images.swubase.com/thumbnails/tournaments-featured.webp',
         'og:url': 'https://swubase.com/tournaments/featured',
         'og:type': 'website',
       };
     } else if (tournamentId === 'planetary-qualifiers') {
+      // Handle different weekId values for planetary-qualifiers
+      if (weekId === 'wtw') {
+        return {
+          robots: 'index, follow',
+          keywords:
+            'swubase, swu, star wars, tcg, tournaments, competetive, planetary qualifiers, week-to-week, meta shifts, competitive play',
+          description:
+            'Week-to-week Planetary Qualifiers meta shifts. Track how the Star Wars: Unlimited meta evolves across PQ weeks.',
+          'og:title': 'Week-to-week PQ meta shifts | SWU Base',
+          'og:description':
+            'Week-to-week Planetary Qualifiers meta shifts. Track how the Star Wars: Unlimited meta evolves across PQ weeks.',
+          'og:image': 'https://images.swubase.com/thumbnails/pq-meta-week-to-week.webp',
+          'og:url': 'https://swubase.com/tournaments/planetary-qualifiers?weekId=wtw',
+          'og:type': 'website',
+        };
+      } else if (weekId === 'all') {
+        return {
+          robots: 'index, follow',
+          keywords:
+            'swubase, swu, star wars, tcg, tournaments, competetive, planetary qualifiers, all weeks, competitive play',
+          description:
+            'All weeks of Star Wars: Unlimited Planetary Qualifiers. View comprehensive data across all PQ weeks.',
+          'og:title': 'All weeks - Planetary Qualifiers | SWU Base',
+          'og:description':
+            'All weeks of Star Wars: Unlimited Planetary Qualifiers. View comprehensive data across all PQ weeks.',
+          'og:image': 'https://images.swubase.com/thumbnails/pq-meta-all-weeks.webp',
+          'og:url': 'https://swubase.com/tournaments/planetary-qualifiers?weekId=all',
+          'og:type': 'website',
+        };
+      } else if (weekId) {
+        // weekId is a GUID, fetch tournament group data
+        try {
+          const tournamentGroupData = (
+            await db.select().from(tournamentGroup).where(eq(tournamentGroup.id, weekId))
+          )[0];
+
+          if (tournamentGroupData) {
+            // Parse week number from name (format: "PQ Week X")
+            const weekNumberMatch = tournamentGroupData.name.match(/Week\s+(\d+)/i);
+            const weekNumber = weekNumberMatch ? weekNumberMatch[1] : '';
+
+            return {
+              robots: 'index, follow',
+              keywords:
+                `swubase, swu, star wars, tcg, tournaments, competetive, planetary qualifiers, ${tournamentGroupData.name}, competitive play`,
+              description:
+                `${tournamentGroupData.name} - Star Wars: Unlimited Planetary Qualifiers. View tournament information, results, and qualifying decks.`,
+              'og:title': `${tournamentGroupData.name} | SWU Base`,
+              'og:description':
+                `${tournamentGroupData.name} - Star Wars: Unlimited Planetary Qualifiers. View tournament information, results, and qualifying decks.`,
+              'og:image': `https://images.swubase.com/thumbnails/pq-meta-week-${weekNumber}.webp`,
+              'og:url': `https://swubase.com/tournaments/planetary-qualifiers?weekId=${weekId}`,
+              'og:type': 'website',
+            };
+          }
+        } catch (error) {
+          console.error('Error fetching tournament group data:', error);
+        }
+      }
+
+      // Default case for planetary-qualifiers (no weekId or invalid weekId)
       return {
         robots: 'index, follow',
         keywords:
@@ -37,7 +100,7 @@ export async function getTournamentMetaTags(tournamentId: string) {
         'og:title': 'Planetary Qualifiers | SWUBase',
         'og:description':
           'Star Wars: Unlimited Planetary Qualifiers. View official tournament information, results, and qualifying decks.',
-        'og:image': 'https://images.swubase.com/thumbnails/base-thumbnail.webp',
+        'og:image': 'https://images.swubase.com/thumbnails/tournaments-planetary-qualifiers.webp',
         'og:url': 'https://swubase.com/tournaments/planetary-qualifiers',
         'og:type': 'website',
       };
@@ -51,7 +114,7 @@ export async function getTournamentMetaTags(tournamentId: string) {
         'og:title': 'All Tournaments | SWUBase',
         'og:description':
           'Browse all Star Wars: Unlimited tournaments. Search, filter, and find tournaments by format, date, location, and more.',
-        'og:image': 'https://images.swubase.com/thumbnails/base-thumbnail.webp',
+        'og:image': 'https://images.swubase.com/thumbnails/tournaments-all.webp',
         'og:url': 'https://swubase.com/tournaments/all',
         'og:type': 'website',
       };
@@ -143,9 +206,14 @@ export async function getDeckMetaTags(deckId: string) {
   }
 }
 
-export async function getMetaMetaTags(metaId?: string, page: string = 'meta') {
+export async function getMetaMetaTags(
+  metaId?: string,
+  page: string = 'meta',
+  tournamentGroupId: string | undefined = undefined,
+) {
   try {
     let metaData;
+    let tournamentGroupData;
 
     if (metaId) {
       // Fetch meta data for the given metaId
@@ -162,6 +230,12 @@ export async function getMetaMetaTags(metaId?: string, page: string = 'meta') {
       )[0];
     }
 
+    if (tournamentGroupId) {
+      tournamentGroupData = (
+        await db.select().from(tournamentGroup).where(eq(tournamentGroup.id, tournamentGroupId))
+      )[0];
+    }
+
     if (!metaData) {
       return null;
     }
@@ -173,7 +247,10 @@ export async function getMetaMetaTags(metaId?: string, page: string = 'meta') {
     // For tournaments page, use meta_meta.webp image
     const imagePage = validatedPage === 'tournaments' ? 'meta' : validatedPage;
 
-    const title = `Meta Analysis - ${metaData.name} | SWUBase`;
+    let title = `Meta Analysis - ${metaData.name} | SWUBase`;
+    if (tournamentGroupData) {
+      title = `${tournamentGroupData.name} - ${metaData.name} | SWUBase`;
+    }
     const description = `Star Wars: Unlimited ${metaData.name} meta analysis. View metagame, matchup statistics, decklists and most played cards.`;
 
     return {

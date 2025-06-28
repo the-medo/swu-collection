@@ -63,6 +63,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
     areaPaths.forEach(path => {
       const testId = path.getAttribute('data-testid');
       if (!testId) return;
+      path.setAttribute('cursor', 'pointer');
 
       // Check if this path corresponds to the hovered row
       const shouldBeFilled = hoveredRowKey === null || testId === `area.${hoveredRowKey}`;
@@ -71,7 +72,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
       path.setAttribute('fill-opacity', shouldBeFilled ? '1' : '0.15');
       path.setAttribute('stroke-width', shouldBeFilled ? '1' : '0');
     });
-  }, [hoveredRowKey]);
+  }, [hoveredRowKey, metaInfo, viewType]);
 
   const labelCallback = useCallback(
     (startOrEnd?: 'start' | 'end') => datum => {
@@ -277,7 +278,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
   }, [viewType]);
 
   const tooltip: AreaBumpAreaTooltip<AreaBumpData, Record<string, unknown>> = useCallback(
-    (chartData) => {
+    chartData => {
       const { serie } = chartData;
       const deckKey = serie.id as string;
 
