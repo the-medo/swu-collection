@@ -5,7 +5,7 @@ import {
   AreaBumpMouseHandler,
   ResponsiveAreaBump,
 } from '@nivo/bump';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { labelWidthBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
@@ -21,6 +21,7 @@ import {
 import { WeekToWeekData } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/WeekToWeek/useWeekToWeekData.ts';
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
 import { useChartColorsAndGradients } from '@/components/app/tournaments/TournamentMeta/useChartColorsAndGradients.tsx';
+import WeekToWeekAreaBumpTooltip from './WeekToWeekAreaBumpTooltip';
 
 // Define the data structure for the AreaBump chart
 interface AreaBumpData {
@@ -43,6 +44,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
   viewType,
 }) => {
   const pieChartColorDefinitions = useChartColorsAndGradients();
+  const [hoveredWeekId, setHoveredWeekId] = useState<string | null>(null);
 
   const labelRenderer = useLabel();
   const labelWidth = labelWidthBasedOnMetaInfo[metaInfo];
@@ -119,6 +121,30 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
       setDeckKey(data.id);
     },
     [labelWidth, setWeekIdToCompare],
+  );
+
+  const handleChartMouseMove: AreaBumpMouseHandler<
+    AreaBumpData,
+    Record<string, unknown>
+  > = useCallback(
+    (data, event) => {
+      const moveX = event.nativeEvent.offsetX;
+      const adjustedX = moveX - labelWidth;
+
+      if (data.points && data.points.length > 0) {
+        let closestWeekId = null;
+        let closestWeekDistance = Infinity;
+        data.points.forEach(p => {
+          const distance = Math.abs(p.x - adjustedX);
+          if (distance < closestWeekDistance) {
+            closestWeekDistance = distance;
+            closestWeekId = p.data.groupId;
+          }
+        });
+        setHoveredWeekId(closestWeekId);
+      }
+    },
+    [labelWidth],
   );
 
   // Transform the data for the AreaBump chart
@@ -251,17 +277,21 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
   }, [viewType]);
 
   const tooltip: AreaBumpAreaTooltip<AreaBumpData, Record<string, unknown>> = useCallback(
-    ({ serie }) => {
+    (chartData) => {
+      const { serie } = chartData;
+      const deckKey = serie.id as string;
+
       return (
-        <div className="bg-card p-2 rounded-md shadow-md border">
-          <div className="flex items-center gap-2">
-            {labelRenderer(serie.id as string, metaInfo, 'compact')}
-            {/*<pre className="text-xs">{JSON.stringify(serie, null, 2)}</pre>*/}
-          </div>
-        </div>
+        <WeekToWeekAreaBumpTooltip
+          deckKey={deckKey}
+          metaInfo={metaInfo}
+          hoveredWeekId={hoveredWeekId}
+          data={data}
+          labelRenderer={labelRenderer}
+        />
       );
     },
-    [metaInfo, viewType],
+    [metaInfo, hoveredWeekId, data, labelRenderer],
   );
 
   if (chartData.length === 0) {
@@ -297,7 +327,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
         axisTop={topAxisDefinition}
         axisBottom={bottomAxisDefinition}
         tooltip={tooltip}
-        // onMouseMove={handleChartMouseEvent}
+        onMouseMove={handleChartMouseMove}
         onClick={handleChartMouseEvent}
       />
     </div>
