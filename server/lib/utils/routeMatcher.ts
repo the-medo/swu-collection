@@ -1,7 +1,7 @@
-import { 
-  getTournamentMetaTags, 
-  getDeckMetaTags, 
-  getMetaMetaTags, 
+import {
+  getTournamentMetaTags,
+  getDeckMetaTags,
+  getMetaMetaTags,
   getCardDetailMetaTags,
   getCollectionMetaTags,
   getComparerMetaTags,
@@ -12,42 +12,50 @@ import {
   getAboutMetaTags,
   getPrivacyMetaTags,
   getTermsMetaTags,
-  getDefaultMetaTags
+  getDefaultMetaTags,
 } from './metaTagsFetchers';
 
-type MetaTagsFetcher = (id: string) => Promise<Record<string, string> | null>;
+type MetaTagsFetcher = (id: string, extraParams?: Record<string, string>) => Promise<Record<string, string> | null>;
 
 interface RoutePattern {
   pattern: RegExp;
   fetcher: MetaTagsFetcher;
   getParams: (matches: RegExpMatchArray) => string;
+  getExtraParams?: (searchParams: URLSearchParams) => Record<string, string>;
 }
 
 const routes: RoutePattern[] = [
   {
     pattern: /^\/tournaments\/([^\/]+)(?:\/.*)?$/,
     fetcher: getTournamentMetaTags,
-    getParams: (matches) => matches[1],
+    getParams: matches => matches[1],
+    getExtraParams: searchParams => {
+      const extraParams: Record<string, string> = {};
+      if (searchParams && searchParams.has('weekId')) {
+        extraParams.weekId = searchParams.get('weekId') || '';
+      }
+      return extraParams;
+    },
   },
   {
     pattern: /^\/decks\/([^\/]+)(?:\/.*)?$/,
     fetcher: getDeckMetaTags,
-    getParams: (matches) => matches[1],
+    getParams: matches => matches[1],
   },
   {
     pattern: /^\/cards\/detail\/([^\/]+)$/,
     fetcher: getCardDetailMetaTags,
-    getParams: (matches) => matches[1],
+    getParams: matches => matches[1],
   },
   {
     pattern: /^\/collections\/([^\/]+)(?:\/.*)?$/,
     fetcher: getCollectionMetaTags,
-    getParams: (matches) => matches[1],
+    getParams: matches => matches[1],
   },
   {
     pattern: /^\/users\/([^\/]+)(?:\/.*)?$/,
     fetcher: getUserProfileMetaTags,
-    getParams: (matches) => matches[1],
+    getParams: matches => matches[1],
   },
   // Static routes (no parameters)
   {
@@ -88,8 +96,8 @@ const routes: RoutePattern[] = [
 ];
 
 export async function matchRouteAndFetchMetaTags(
-  path: string, 
-  searchParams?: URLSearchParams
+  path: string,
+  searchParams?: URLSearchParams,
 ): Promise<Record<string, string> | null> {
   // Special case for tournament deck pages with maDeckId
   const tournamentDeckMatches = path.match(/^\/tournaments\/([^\/]+)\/decks\/?$/);
@@ -113,7 +121,8 @@ export async function matchRouteAndFetchMetaTags(
     // Otherwise, show meta meta tags
     const metaId = searchParams.get('metaId') || undefined;
     const page = searchParams.get('page') || 'meta';
-    return await getMetaMetaTags(metaId, page);
+    const tournamentGroupId = searchParams.get('maTournamentGroupId') || undefined;
+    return await getMetaMetaTags(metaId, page, tournamentGroupId);
   }
 
   // Regular route matching
@@ -121,7 +130,8 @@ export async function matchRouteAndFetchMetaTags(
     const matches = path.match(route.pattern);
     if (matches) {
       const param = route.getParams(matches);
-      return await route.fetcher(param);
+      const extraParams = route.getExtraParams ? route.getExtraParams(searchParams || new URLSearchParams()) : undefined;
+      return await route.fetcher(param, extraParams);
     }
   }
 
