@@ -4,10 +4,12 @@ import { and, eq, sql } from 'drizzle-orm';
 import {
   fetchDecklistView,
   fetchDeckMatchesWithMeleeDeckIds,
+  fetchPlayerDetails,
   fetchRoundStandings,
   fetchTournamentView,
   type ParseStandingsAdditionalInfo,
   parseStandingsToTournamentDeck,
+  type TIUserDecklistMap,
 } from './tournamentImportLib.ts';
 import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
 import { tournamentMatch, type TournamentMatchInsert } from '../../db/schema/tournament_match.ts';
@@ -22,6 +24,7 @@ export async function runTournamentImport(
   tournamentId: string,
   forcedRoundId: string | undefined = '',
 ) {
+  // let hoverForDecklists = decklistsOnHoverOnly;
   const t = (await db.select().from(tournament).where(eq(tournament.id, tournamentId)))[0];
 
   const meleeTournamentId = t.meleeId;
@@ -41,6 +44,35 @@ export async function runTournamentImport(
 
   const roundStandings = await fetchRoundStandings(roundId);
   console.log('Standing count: ', roundStandings.length);
+  const standingsWithDecklistInfo = roundStandings.filter(s => s.Decklists?.length > 0);
+
+  let userDecklistMap: TIUserDecklistMap = {};
+
+  if (standingsWithDecklistInfo.length === 0) {
+    console.log('No standings with decklist info, will try to do decklists on hover');
+
+    let i = 0;
+    let decklistFound = false;
+
+    for (const standing of roundStandings) {
+      i++;
+      if (i > 8 && !decklistFound) {
+        console.log('No decklist found after 8 standings, skipping decklist search');
+        break;
+      }
+
+      const meleeUserId = standing.Team.Players[0].ID;
+      if (meleeUserId) {
+        const playerData = await fetchPlayerDetails(meleeUserId);
+        if (playerData) {
+          decklistFound = true;
+          userDecklistMap[meleeUserId] = playerData?.decklists?.[0];
+        }
+      } else {
+        console.log(`No user ID found in standing, skipping`);
+      }
+    }
+  }
 
   let tournamentDecks = await db
     .select()
@@ -52,7 +84,9 @@ export async function runTournamentImport(
   };
 
   const parsedStandings = roundStandings
-    .map(s => parseStandingsToTournamentDeck(s, t, tournamentDecks, additionalInfo))
+    .map(s =>
+      parseStandingsToTournamentDeck(s, t, tournamentDecks, additionalInfo, userDecklistMap),
+    )
     .filter(x => !!x);
 
   const playerInfo: Record<
