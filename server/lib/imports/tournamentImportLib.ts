@@ -4,6 +4,17 @@ import { delay } from '../../../lib/swu-resources/lib/delay.ts';
 import type { TournamentMatchInsert } from '../../db/schema/tournament_match.ts';
 import type { Tournament } from '../../db/schema/tournament.ts';
 
+export type TIBasicDecklistInfo = {
+  id?: string;
+  name?: string;
+};
+
+export type TIPlayerDataWithDecklists = {
+  decklists: TIBasicDecklistInfo[];
+};
+
+export type TIUserDecklistMap = Record<number, TIBasicDecklistInfo | undefined>;
+
 const basicHeaders = {
   cookie: process.env.TOURNAMENT_COOKIE ?? '',
   'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
@@ -95,6 +106,29 @@ export async function fetchRoundStandings(roundId: number) {
     return data;
   } catch (error) {
     console.error('Error fetching round standings:', error);
+    throw error;
+  }
+}
+
+export async function fetchPlayerDetails(playerId: number): Promise<TIPlayerDataWithDecklists> {
+  try {
+    await delay(300);
+    const url = `https://melee.gg/Player/GetPlayerDetails?id=${playerId}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        ...basicHeaders,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch player details: ${response.status} ${response.statusText}`);
+    }
+    console.log('Fetched player details:', playerId);
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching tournament view:', error);
     throw error;
   }
 }
@@ -241,11 +275,25 @@ export const parseStandingsToTournamentDeck = (
   tournament: Tournament,
   availableDecks: TournamentDeck[],
   additionalInfo: ParseStandingsAdditionalInfo,
+  userDecklistMap: TIUserDecklistMap | undefined, // in case of decklist only on "hover", we fetched data beforehand
 ): ParsedStanding | undefined => {
-  const decklistInfo = standing.Decklists[0];
+  let decklistInfo = standing.Decklists[0];
+
   const placement = standing.Rank - additionalInfo.skippedStandings.length;
-  const meleeDecklistGuid = decklistInfo?.DecklistId;
   const meleePlayerUsername = standing.Team.Players[0].DisplayName;
+
+  if (!decklistInfo && userDecklistMap) {
+    const meleeUserId = standing.Team.Players[0].ID;
+    if (userDecklistMap[meleeUserId]) {
+      const dl = userDecklistMap[meleeUserId];
+      decklistInfo = { DecklistId: dl.id, DecklistName: dl.name };
+      console.log(`Found user decklist for ${meleePlayerUsername} in userDecklistMap`);
+    } else {
+      console.log(`No decklist info found for ${meleePlayerUsername} in userDecklistMap`);
+    }
+  }
+
+  const meleeDecklistGuid = decklistInfo?.DecklistId;
 
   const exists = availableDecks.find(d => d.meleeDecklistGuid === meleeDecklistGuid);
   const decklistName = `#${placement} ${tournament.name} - ${meleePlayerUsername} [${decklistInfo?.DecklistName}]`;
