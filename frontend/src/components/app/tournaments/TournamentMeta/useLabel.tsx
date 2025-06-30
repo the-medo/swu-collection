@@ -11,6 +11,8 @@ import { getBaseShortcut } from '@/lib/cards/getBaseShortcut.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
 
+export type DeckKeyLabelType = 'text' | 'compact' | 'image' | 'image-small';
+
 export function useLabel() {
   const { data: cardListData } = useCardList();
 
@@ -18,7 +20,7 @@ export function useLabel() {
     (
       value: string | undefined,
       metaInfo: MetaInfo,
-      type: 'text' | 'compact' | 'image' | 'image-small',
+      type: DeckKeyLabelType,
       align: 'left' | 'right' = 'left',
     ) => {
       if (!value) return value;
@@ -127,7 +129,7 @@ export function useLabel() {
                 cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}
               />
             )}
-            {!baseCardId && aspects.map(a => <AspectIcon aspect={a} />)}
+            {!baseCardId && aspects.map(a => <AspectIcon key={a} aspect={a} />)}
           </div>
         );
       }

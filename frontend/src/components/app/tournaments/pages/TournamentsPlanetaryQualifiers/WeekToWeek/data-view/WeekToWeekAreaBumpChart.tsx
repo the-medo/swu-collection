@@ -286,13 +286,14 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
         <WeekToWeekAreaBumpTooltip
           deckKey={deckKey}
           metaInfo={metaInfo}
+          top={top}
           hoveredWeekId={hoveredWeekId}
           data={data}
           labelRenderer={labelRenderer}
         />
       );
     },
-    [metaInfo, hoveredWeekId, data, labelRenderer],
+    [metaInfo, top, hoveredWeekId, data, labelRenderer],
   );
 
   if (chartData.length === 0) {
