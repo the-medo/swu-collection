@@ -5,11 +5,13 @@ import { useSearch } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import TournamentGroup from '@/components/app/tournaments/TournamentGroup/TournamentGroup.tsx';
 import { useGetTournamentGroups } from '@/api/tournament-groups';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 interface TournamentsFeaturedProps {}
 
 const TournamentsFeatured: React.FC<TournamentsFeaturedProps> = ({}) => {
   const { metaId } = useSearch({ strict: false });
+  const { isMobile } = useSidebar();
 
   const params = useMemo(
     () => ({
@@ -31,7 +33,7 @@ const TournamentsFeatured: React.FC<TournamentsFeaturedProps> = ({}) => {
           {tournamentGroupsData.pages.map((page, pageIndex) => (
             <React.Fragment key={`page-${pageIndex}`}>
               {page.data.map(group => (
-                <TournamentGroup key={group.group.id} group={group} />
+                <TournamentGroup key={group.group.id} group={group} isMobile={isMobile} />
               ))}
             </React.Fragment>
           ))}

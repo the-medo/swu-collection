@@ -3,23 +3,31 @@ import { TournamentGroupWithMeta } from '../../../../../../types/TournamentGroup
 import TournamentGroupTournament from './TournamentGroupTournament';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
+import { PieChart } from 'lucide-react';
+import { cn } from '@/lib/utils.ts';
 
 interface TournamentGroupProps {
   group: TournamentGroupWithMeta;
+  isMobile?: boolean;
 }
 
-const TournamentGroup: React.FC<TournamentGroupProps> = ({ group }) => {
+const TournamentGroup: React.FC<TournamentGroupProps> = ({ group, isMobile }) => {
   return (
     <div className="bg-accent p-4 rounded-md mb-4">
-      <div className="flex justify-between items-center mb-2">
+      <div
+        className={cn('flex justify-between items-center mb-2', {
+          'flex-col': isMobile,
+        })}
+      >
         <h3 className="text-xl font-semibold">{group.group.name}</h3>
-        <Button asChild size="sm">
+        <Button asChild variant="outline" size="sm" className="gap-2">
           <Link
             to="/meta"
             search={{ maTournamentGroupId: group.group.id, page: 'meta' }}
             className="ml-2"
           >
-            View Meta Analysis
+            <PieChart className="h-4 w-4" />
+            Full meta analysis
           </Link>
         </Button>
       </div>
