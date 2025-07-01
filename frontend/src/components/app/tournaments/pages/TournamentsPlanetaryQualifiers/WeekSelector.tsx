@@ -52,7 +52,9 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center">
               <span className="font-medium text-xl">All weeks</span>
-              <p className="text-md text-muted-foreground ml-4">Combined data from all weeks</p>
+              {!isMobile && (
+                <p className="text-md text-muted-foreground ml-4">Combined data from all weeks</p>
+              )}
             </div>
             {!isMobile && (
               <Badge variant="secondary" className="ml-4 bg-primary/20">
@@ -67,7 +69,9 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center">
               <span className="font-medium text-xl">Week-to-week</span>
-              <p className="text-md text-muted-foreground ml-4">Compare data across weeks</p>
+              {!isMobile && (
+                <p className="text-md text-muted-foreground ml-4">Compare data across weeks</p>
+              )}
             </div>
             {!isMobile && (
               <Badge variant="secondary" className="ml-4 bg-primary/20">

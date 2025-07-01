@@ -22,6 +22,8 @@ import { WeekToWeekData } from '@/components/app/tournaments/pages/TournamentsPl
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
 import { useChartColorsAndGradients } from '@/components/app/tournaments/TournamentMeta/useChartColorsAndGradients.tsx';
 import WeekToWeekAreaBumpTooltip from './WeekToWeekAreaBumpTooltip';
+import { useIsMobile } from '@/hooks/use-mobile.tsx';
+import { cn } from '@/lib/utils.ts';
 
 // Define the data structure for the AreaBump chart
 interface AreaBumpData {
@@ -47,7 +49,8 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
   const [hoveredWeekId, setHoveredWeekId] = useState<string | null>(null);
 
   const labelRenderer = useLabel();
-  const labelWidth = labelWidthBasedOnMetaInfo[metaInfo];
+  const isMobile = useIsMobile();
+  const labelWidth = isMobile ? 0 : labelWidthBasedOnMetaInfo[metaInfo];
   const { setWeekIdToCompare, setDeckKey } = useWeekToWeekStoreActions();
   const { hoveredRowKey } = useWeekToWeekStore();
 
@@ -286,13 +289,14 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
         <WeekToWeekAreaBumpTooltip
           deckKey={deckKey}
           metaInfo={metaInfo}
+          top={top}
           hoveredWeekId={hoveredWeekId}
           data={data}
           labelRenderer={labelRenderer}
         />
       );
     },
-    [metaInfo, hoveredWeekId, data, labelRenderer],
+    [metaInfo, top, hoveredWeekId, data, labelRenderer],
   );
 
   if (chartData.length === 0) {
@@ -306,7 +310,7 @@ const WeekToWeekAreaBumpChart: React.FC<WeekToWeekAreaBumpChartProps> = ({
   }
 
   return (
-    <div style={{ height: 500 }} id="pq-wtw-area-bump-chart">
+    <div className={cn('h-[500px] min-w-[700px]')} id="pq-wtw-area-bump-chart">
       <ResponsiveAreaBump<AreaBumpData>
         data={chartData}
         margin={{

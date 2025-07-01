@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/tooltip.tsx';
 import { cn } from '@/lib/utils.ts';
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
+import MobileCard from '@/components/ui/mobile-card';
 
 interface PQStatisticsProps {
   tournamentGroups: TournamentGroupWithMeta[];
@@ -146,8 +147,12 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
           </div>
         </div>
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <PQPageNavigation />
-          <MetaInfoSelector value={metaInfo} onChange={handleMetaInfoChange} />
+          <MobileCard>
+            <PQPageNavigation />
+          </MobileCard>
+          <MobileCard>
+            <MetaInfoSelector value={metaInfo} onChange={handleMetaInfoChange} />
+          </MobileCard>
         </div>
 
         {/* Display information about the selected week */}

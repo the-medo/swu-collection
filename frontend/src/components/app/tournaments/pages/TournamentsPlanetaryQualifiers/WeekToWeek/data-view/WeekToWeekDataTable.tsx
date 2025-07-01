@@ -50,7 +50,6 @@ const WeekToWeekDataTable: React.FC<WeekToWeekDataTableProps> = ({
   // Handle row hover events to highlight corresponding areas in the chart
   const handleRowMouseEnter = useCallback(
     (row: Row<WeekToWeekTableRow>) => {
-      console.log(row.original.deckKey);
       setDeckKey(row.original.deckKey);
     },
     [setDeckKey],
@@ -178,7 +177,6 @@ const WeekToWeekDataTable: React.FC<WeekToWeekDataTableProps> = ({
       if (data.id && data.id.includes('_week_')) {
         const match = data.id.match(/\_week\_([0-9a-f\-]+)/);
         if (match && match[1]) {
-          console.log(match[1]);
           setWeekIdToCompare(match[1]);
         }
       }
