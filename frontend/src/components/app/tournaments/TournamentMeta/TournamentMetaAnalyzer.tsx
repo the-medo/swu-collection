@@ -17,6 +17,7 @@ import { Alert } from '@/components/ui/alert.tsx';
 import { InfoIcon } from 'lucide-react';
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
+import MobileCard from '@/components/ui/mobile-card.tsx';
 
 interface TournamentMetaAnalyzerProps {
   decks: TournamentDeckResponse[];
@@ -26,7 +27,6 @@ interface TournamentMetaAnalyzerProps {
 const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, tournaments }) => {
   const search = useSearch({ strict: false });
   const navigate = useNavigate({ from: Route.fullPath });
-
 
   // Use URL parameters with fallbacks to default values
   const metaPart = (search.maMetaPart as MetaPart) || 'all';
@@ -195,10 +195,16 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-row gap-4 flex-wrap justify-between">
-        <ViewModeSelector value={viewMode} onChange={setViewMode} />
-        <MetaPartSelector value={metaPart} onChange={setMetaPart} />
-        <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
+      <div className="flex flex-row gap-2 flex-wrap justify-between">
+        <MobileCard>
+          <ViewModeSelector value={viewMode} onChange={setViewMode} />
+        </MobileCard>
+        <MobileCard>
+          <MetaPartSelector value={metaPart} onChange={setMetaPart} />
+        </MobileCard>
+        <MobileCard>
+          <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
+        </MobileCard>
       </div>
 
       <div className="flex items-center gap-4 flex-wrap justify-between">

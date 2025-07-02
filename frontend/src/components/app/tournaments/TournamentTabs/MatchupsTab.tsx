@@ -19,7 +19,7 @@ const MatchupsTab: React.FC<MatchupsTabProps> = ({ route }) => {
   return (
     <>
       <Helmet title="Matchups" />
-      <div className="space-y-2 px-2">
+      <div className="space-y-2">
         <TournamentMatchups decks={decks} tournaments={tournaments} matches={matches} />
         <TournamentDeckKeyFloater route={route} />
       </div>

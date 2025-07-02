@@ -13,6 +13,7 @@ import { TournamentInfoMap } from '@/components/app/tournaments/TournamentMeta/t
 import { TournamentMatch } from '../../../../../../server/db/schema/tournament_match.ts';
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
+import MobileCard from '@/components/ui/mobile-card.tsx';
 
 export interface TournamentMatchupsProps {
   decks: TournamentDeckResponse[];
@@ -78,17 +79,23 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-row gap-4 flex-wrap items-start justify-between">
-        <DisplayModeSelector value={displayMode} onChange={setDisplayMode} />
-        <MatchFilterSelector
-          value={matchFilter}
-          onChange={setMatchFilter}
-          minRound={minRound}
-          onMinRoundChange={setMinRound}
-          minPoints={minPoints}
-          onMinPointsChange={setMinPoints}
-        />
-        <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
+      <div className="flex flex-row gap-2 flex-wrap items-start justify-between">
+        <MobileCard>
+          <DisplayModeSelector value={displayMode} onChange={setDisplayMode} />
+        </MobileCard>
+        <MobileCard>
+          <MatchFilterSelector
+            value={matchFilter}
+            onChange={setMatchFilter}
+            minRound={minRound}
+            onMinRoundChange={setMinRound}
+            minPoints={minPoints}
+            onMinPointsChange={setMinPoints}
+          />
+        </MobileCard>
+        <MobileCard>
+          <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
+        </MobileCard>
       </div>
 
       {matchupData.keys.length > 0 ? (

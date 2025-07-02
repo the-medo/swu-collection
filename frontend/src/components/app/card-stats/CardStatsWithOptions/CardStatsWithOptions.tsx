@@ -9,6 +9,7 @@ import { Accordion } from '@/components/ui/accordion.tsx';
 import GroupAccordionItem from './GroupAccordionItem';
 import UngroupedCardStats from './UngroupedCardStats';
 import { CardStatsParams } from '@/api/card-stats';
+import MobileCard from '@/components/ui/mobile-card.tsx';
 
 interface CardStatsWithOptionsProps {
   data: CardStatData[];
@@ -35,7 +36,9 @@ const CardStatsWithOptions: React.FC<CardStatsWithOptionsProps> = ({ data, cardS
 
   return (
     <div className={cn('space-y-6')}>
-      <CardStatsFilters />
+      <MobileCard>
+        <CardStatsFilters />
+      </MobileCard>
       {filteredAndSortedData.length > 0 ? (
         <>
           {groupBy === 'none' ? (
