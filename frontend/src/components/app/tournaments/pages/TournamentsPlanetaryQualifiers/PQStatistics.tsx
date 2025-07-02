@@ -95,6 +95,8 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
   }, [selectedGroupId, processedTournamentGroups]);
 
   const hasData = data && data.length > 0;
+  const metaButtonDisabled =
+    selectedGroupId === ALL_WEEKS_VALUE || selectedGroupId === WEEK_TO_WEEK_VALUE;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -123,7 +125,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
                         variant="outline"
                         size="sm"
                         className="gap-2 h-12"
-                        disabled={selectedGroupId === ALL_WEEKS_VALUE}
+                        disabled={metaButtonDisabled}
                         onClick={() => {
                           navigate({
                             to: '/meta',
@@ -137,8 +139,8 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    {selectedGroupId === ALL_WEEKS_VALUE
-                      ? 'Viewing full meta analysis is possible only for single weeks right now'
+                    {metaButtonDisabled
+                      ? 'Viewing full meta analysis is possible only for single weeks'
                       : 'Display full meta analysis, matchups, decks and card statistics'}
                   </TooltipContent>
                 </Tooltip>
