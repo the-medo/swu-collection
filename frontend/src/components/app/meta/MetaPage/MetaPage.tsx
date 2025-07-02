@@ -1,19 +1,27 @@
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useGetMetas } from '@/api/meta';
 import { useCallback, useMemo } from 'react';
-import { formatData } from '../../../../../../types/Format.ts';
+import { formatData, formatDataById } from '../../../../../../types/Format.ts';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector.tsx';
 import TournamentTypeSelect from '@/components/app/tournaments/components/TournamentTypeSelect.tsx';
 import { DEFAULT_MIN_TOURNAMENT_TYPE, Route } from '@/routes/meta';
 import MetaPageContent from '@/components/app/meta/MetaPageContent/MetaPageContent.tsx';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, SlidersHorizontal } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 import { Helmet } from 'react-helmet-async';
 import { useGetTournamentGroup } from '@/api/tournament-groups';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion.tsx';
 
 function MetaPage() {
+  const { isMobile } = useSidebar();
   const navigate = useNavigate({ from: Route.fullPath });
   const { metaId, formatId, minTournamentType, maTournamentGroupId } = useSearch({
     from: Route.fullPath,
@@ -86,7 +94,7 @@ function MetaPage() {
     return (
       <div className="p-2 h-full">
         <div className="flex flex-row gap-4 items-center justify-between mb-4">
-          <h3>Meta</h3>
+          {!isMobile && <h3>Meta</h3>}
           <span className="text-gray-600">Format</span>
           <Skeleton className="h-12 w-full rounded-lg" />
           <Skeleton className="h-12 w-full rounded-lg" />
@@ -104,45 +112,102 @@ function MetaPage() {
       <Helmet titleTemplate={`%s - ${selectedMeta?.meta?.name}`} defaultTitle={`Meta - SWU Base`} />
 
       <div className="p-2">
-        <div className="flex flex-row flex-wrap gap-4 items-center justify-between mb-4">
-          {tournamentGroup && tournamentGroup.data?.group ? (
+        {tournamentGroup && tournamentGroup.data?.group ? (
+          <div className="flex flex-row flex-wrap gap-4 items-center justify-between mb-4">
             <h3 className="mb-0">Meta - {tournamentGroup.data?.group.name}</h3>
-          ) : (
-            <>
-              <h3 className="mb-0">Meta</h3>
-              <div className="flex flex-row flex-1 gap-2 items-center min-w-[200px]">
-                <span className="text-gray-600">Format:</span>
-                <FormatSelect
-                  value={formatId}
-                  onChange={setFormat}
-                  allowEmpty={false}
-                  showInfoTooltip={false}
-                  className="w-full"
-                />
-              </div>
-
-              <div className="flex flex-1 min-w-[350px]">
-                {selectedMetaId && (
-                  <MetaSelector
-                    formatId={formatId}
-                    value={selectedMetaId}
-                    onChange={setMeta}
-                    emptyOption={false}
-                  />
+          </div>
+        ) : isMobile ? (
+          // Mobile view with accordion
+          <Accordion type="single" collapsible defaultValue={undefined} className="w-full mb-2">
+            <AccordionItem value="header" className="border rounded-md">
+              <div className="flex flex-col items-start">
+                <AccordionTrigger className="px-4 pt-3 pb-1 hover:no-underline" right>
+                  <div className="flex items-center gap-2">
+                    <SlidersHorizontal className="h-4 w-4" />
+                    <span className="font-medium">Meta definition</span>
+                  </div>
+                </AccordionTrigger>
+                {selectedMeta && formatId && (
+                  <span className="text-xs text-muted-foreground p-2">
+                    {formatDataById[formatId]?.name} - {selectedMeta.meta.name} - Min. type:{' '}
+                    {minTournamentType}
+                  </span>
                 )}
               </div>
-              <div className="flex flex-1 gap-2 items-center min-w-[200px]">
-                <div className="flex flex-1 text-nowrap text-gray-600">Min. type:</div>
-                <TournamentTypeSelect
-                  value={minTournamentType}
-                  onChange={setMinTournamentType}
-                  showFullName={true}
+              <AccordionContent className="p-4">
+                <div className="flex flex-col gap-4">
+                  <div className="space-y-2">
+                    <span className="text-gray-600">Format</span>
+                    <FormatSelect
+                      value={formatId}
+                      onChange={setFormat}
+                      allowEmpty={false}
+                      showInfoTooltip={false}
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <span className="text-gray-600">Meta</span>
+                    {selectedMetaId && (
+                      <MetaSelector
+                        formatId={formatId}
+                        value={selectedMetaId}
+                        onChange={setMeta}
+                        emptyOption={false}
+                      />
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <span className="text-gray-600">Min. tournament type</span>
+                    <TournamentTypeSelect
+                      value={minTournamentType}
+                      onChange={setMinTournamentType}
+                      showFullName={true}
+                      emptyOption={false}
+                    />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        ) : (
+          // Desktop view (unchanged)
+          <div className="flex flex-row flex-wrap gap-4 items-center justify-between mb-4">
+            <h3 className="mb-0">Meta</h3>
+            <div className="flex flex-row flex-1 gap-2 items-center min-w-[200px]">
+              <span className="text-gray-600">Format:</span>
+              <FormatSelect
+                value={formatId}
+                onChange={setFormat}
+                allowEmpty={false}
+                showInfoTooltip={false}
+                className="w-full"
+              />
+            </div>
+
+            <div className="flex flex-1 min-w-[350px]">
+              {selectedMetaId && (
+                <MetaSelector
+                  formatId={formatId}
+                  value={selectedMetaId}
+                  onChange={setMeta}
                   emptyOption={false}
                 />
-              </div>
-            </>
-          )}
-        </div>
+              )}
+            </div>
+            <div className="flex flex-1 gap-2 items-center min-w-[200px]">
+              <div className="flex flex-1 text-nowrap text-gray-600">Min. type:</div>
+              <TournamentTypeSelect
+                value={minTournamentType}
+                onChange={setMinTournamentType}
+                showFullName={true}
+                emptyOption={false}
+              />
+            </div>
+          </div>
+        )}
         {selectedMetaId ? (
           <MetaPageContent
             formatId={formatId}

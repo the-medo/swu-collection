@@ -20,12 +20,17 @@ interface CardStatsTabsProps {
   tournamentGroupId?: string;
 }
 
-const CardStatsTabs: React.FC<CardStatsTabsProps> = ({ className, metaId, tournamentId, tournamentGroupId }) => {
+const CardStatsTabs: React.FC<CardStatsTabsProps> = ({
+  className,
+  metaId,
+  tournamentId,
+  tournamentGroupId,
+}) => {
   const { csPage = 'all' } = useSearch({ strict: false });
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-4 mb-2 rounded-lg bg-muted p-1">
+      <div className="grid grid-cols-2 sm:grid-cols-4 mb-2 rounded-lg bg-muted p-1">
         {cardStatsTabsArray.map(tab => (
           <Link
             key={tab}
@@ -47,11 +52,33 @@ const CardStatsTabs: React.FC<CardStatsTabsProps> = ({ className, metaId, tourna
       </div>
 
       {/* Render the appropriate component based on the selected tab */}
-      {csPage === 'all' && <AllCardStats metaId={metaId} tournamentId={tournamentId} tournamentGroupId={tournamentGroupId} />}
-      {csPage === 'aspect' && <AspectCardStats metaId={metaId} tournamentId={tournamentId} tournamentGroupId={tournamentGroupId} />}
-      {csPage === 'leader' && <LeaderCardStats metaId={metaId} tournamentId={tournamentId} tournamentGroupId={tournamentGroupId} />}
+      {csPage === 'all' && (
+        <AllCardStats
+          metaId={metaId}
+          tournamentId={tournamentId}
+          tournamentGroupId={tournamentGroupId}
+        />
+      )}
+      {csPage === 'aspect' && (
+        <AspectCardStats
+          metaId={metaId}
+          tournamentId={tournamentId}
+          tournamentGroupId={tournamentGroupId}
+        />
+      )}
+      {csPage === 'leader' && (
+        <LeaderCardStats
+          metaId={metaId}
+          tournamentId={tournamentId}
+          tournamentGroupId={tournamentGroupId}
+        />
+      )}
       {csPage === 'leader-base' && (
-        <LeaderBaseCardStats metaId={metaId} tournamentId={tournamentId} tournamentGroupId={tournamentGroupId} />
+        <LeaderBaseCardStats
+          metaId={metaId}
+          tournamentId={tournamentId}
+          tournamentGroupId={tournamentGroupId}
+        />
       )}
     </div>
   );
