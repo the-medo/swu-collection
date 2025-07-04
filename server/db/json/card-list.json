@@ -96313,6 +96313,50 @@
           "front": "kanan-jarrus--help-us-survive-4-legends-of-the-force-front.webp",
           "back": "kanan-jarrus--help-us-survive-4-legends-of-the-force-back.webp"
         }
+      },
+      "kanan-jarrus--help-us-survive-268-legends-of-the-force---hyperspace": {
+        "variantId": "kanan-jarrus--help-us-survive-268-legends-of-the-force---hyperspace",
+        "swuId": 37790,
+        "set": "lof",
+        "fullSetName": "Legends of the Force - Hyperspace",
+        "cardNo": 268,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Hyperspace",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "kanan-jarrus--help-us-survive-268-legends-of-the-force---hyperspace-front.webp",
+          "back": "kanan-jarrus--help-us-survive-268-legends-of-the-force---hyperspace-back.webp"
+        }
+      },
+      "kanan-jarrus--help-us-survive-1008-legends-of-the-force---showcase": {
+        "variantId": "kanan-jarrus--help-us-survive-1008-legends-of-the-force---showcase",
+        "swuId": 37880,
+        "set": "lof",
+        "fullSetName": "Legends of the Force - Showcase",
+        "cardNo": 1008,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "kanan-jarrus--help-us-survive-1008-legends-of-the-force---showcase-front.webp",
+          "back": "kanan-jarrus--help-us-survive-1008-legends-of-the-force---showcase-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -101947,6 +101991,63 @@
         },
         "image": {
           "front": "oggdo-bogdo--bogano-brute-63-legends-of-the-force-front.webp",
+          "back": null
+        }
+      },
+      "oggdo-bogdo--bogano-brute-327-legends-of-the-force---hyperspace": {
+        "variantId": "oggdo-bogdo--bogano-brute-327-legends-of-the-force---hyperspace",
+        "swuId": 33694,
+        "set": "lof",
+        "fullSetName": "Legends of the Force - Hyperspace",
+        "cardNo": 327,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Hyperspace",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "oggdo-bogdo--bogano-brute-327-legends-of-the-force---hyperspace-front.webp",
+          "back": null
+        }
+      },
+      "oggdo-bogdo--bogano-brute-565-legends-of-the-force---standard-foil": {
+        "variantId": "oggdo-bogdo--bogano-brute-565-legends-of-the-force---standard-foil",
+        "swuId": 34885,
+        "set": "lof",
+        "fullSetName": "Legends of the Force - Standard Foil",
+        "cardNo": 565,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard Foil",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "oggdo-bogdo--bogano-brute-565-legends-of-the-force---standard-foil-front.webp",
+          "back": null
+        }
+      },
+      "oggdo-bogdo--bogano-brute-803-legends-of-the-force---hyperspace-foil": {
+        "variantId": "oggdo-bogdo--bogano-brute-803-legends-of-the-force---hyperspace-foil",
+        "swuId": 36075,
+        "set": "lof",
+        "fullSetName": "Legends of the Force - Hyperspace Foil",
+        "cardNo": 803,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Hyperspace Foil",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "oggdo-bogdo--bogano-brute-803-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
       }
@@ -110682,6 +110783,50 @@
         "image": {
           "front": "third-sister--seething-with-ambition-10-legends-of-the-force-front.webp",
           "back": "third-sister--seething-with-ambition-10-legends-of-the-force-back.webp"
+        }
+      },
+      "third-sister--seething-with-ambition-274-legends-of-the-force---hyperspace": {
+        "variantId": "third-sister--seething-with-ambition-274-legends-of-the-force---hyperspace",
+        "swuId": 37820,
+        "set": "lof",
+        "fullSetName": "Legends of the Force - Hyperspace",
+        "cardNo": 274,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Hyperspace",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "third-sister--seething-with-ambition-274-legends-of-the-force---hyperspace-front.webp",
+          "back": "third-sister--seething-with-ambition-274-legends-of-the-force---hyperspace-back.webp"
+        }
+      },
+      "third-sister--seething-with-ambition-1014-legends-of-the-force---showcase": {
+        "variantId": "third-sister--seething-with-ambition-1014-legends-of-the-force---showcase",
+        "swuId": 37910,
+        "set": "lof",
+        "fullSetName": "Legends of the Force - Showcase",
+        "cardNo": 1014,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "third-sister--seething-with-ambition-1014-legends-of-the-force---showcase-front.webp",
+          "back": "third-sister--seething-with-ambition-1014-legends-of-the-force---showcase-back.webp"
         }
       }
     },
