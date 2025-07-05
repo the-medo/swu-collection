@@ -148,6 +148,13 @@
       "when": 1749679592296,
       "tag": "0020_smiling_lake",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1751737982955,
+      "tag": "0021_wooden_beast",
+      "breakpoints": true
     }
   ]
 }
