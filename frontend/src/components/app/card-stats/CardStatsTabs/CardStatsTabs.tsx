@@ -37,7 +37,15 @@ const CardStatsTabs: React.FC<CardStatsTabsProps> = ({
           <Link
             key={tab}
             to="."
-            search={prev => ({ ...prev, csPage: tab, csLeaderId: undefined, csBaseId: undefined })}
+            search={prev => {
+              // Preserve leader/base parameters when switching between leader, leader-base and matchup tabs
+              if ((tab === 'leader' || tab === 'leader-base' || tab === 'matchup') && 
+                  (csPage === 'leader' || csPage === 'leader-base' || csPage === 'matchup')) {
+                return { ...prev, csPage: tab };
+              }
+              // Otherwise clear the parameters
+              return { ...prev, csPage: tab, csLeaderId: undefined, csBaseId: undefined, csLeaderId2: undefined, csBaseId2: undefined };
+            }}
             className={cn(
               'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
               csPage === tab

@@ -2,13 +2,10 @@ import * as React from 'react';
 import { useCardStats } from '@/api/card-stats/useCardStats.ts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useSearch, Link, useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import CardStatsWithOptions from '@/components/app/card-stats/CardStatsWithOptions/CardStatsWithOptions.tsx';
-import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
-import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx';
-import { Route } from '@/routes/__root.tsx';
 import { useTopPlayedCards } from '@/api/card-stats/useTopPlayedCards.ts';
 import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatistic.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
@@ -18,7 +15,7 @@ import { getBaseKey } from '@/components/app/tournaments/TournamentMatchups/util
 import { isAspect } from '@/lib/cards/isAspect.ts';
 import { basicBaseForAspect } from '../../../../../../shared/lib/basicBases.ts';
 import { SwuAspect } from '../../../../../../types/enums.ts';
-import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
+import LeaderBaseStatSelector from '../LeaderBaseStatSelector';
 
 interface LeaderBaseCardStatsProps {
   metaId?: number;
@@ -35,7 +32,6 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
 }) => {
   const { decks } = useTournamentMetaStore();
   const { csLeaderId, csBaseId } = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
   const { data: cardListData } = useCardList();
 
   const cardStatParams = useMemo(
@@ -147,25 +143,6 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
     });
   }, [topPlayedData, cardListData, decks, leaderBasePairsAndCounts]);
 
-  const onBaseSelected = useCallback(
-    (baseId: string | undefined) => {
-      if (baseId) {
-        const baseCard = cardListData?.cards[baseId];
-        if (baseCard && isBasicBase(baseCard)) {
-          baseId = baseCard.aspects[0];
-        }
-      }
-
-      navigate({
-        search: prev => ({
-          ...prev,
-          csBaseId: baseId,
-        }),
-      });
-    },
-    [cardListData],
-  );
-
   // Show loading state if either data source is loading
   if ((csLeaderId && isLoading) || (!csLeaderId && isLoadingTopPlayed)) {
     return (
@@ -207,49 +184,7 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
   return (
     <div className={cn('space-y-4', className)}>
       <div className="flex max-sm:flex-col gap-8 w-full items-center justify-center">
-        <div className="flex flex-col gap-2">
-          <LeaderSelector
-            trigger={null}
-            leaderCardId={csLeaderId}
-            onLeaderSelected={leaderId => {
-              navigate({
-                search: prev => ({
-                  ...prev,
-                  csLeaderId: leaderId,
-                }),
-              });
-            }}
-            size="w300"
-          />
-          <Link
-            to="."
-            search={prev => ({ ...prev, csLeaderId: undefined })}
-            className={cn(
-              'text-sm text-muted-foreground hover:text-foreground',
-              !csLeaderId && 'hidden',
-            )}
-          >
-            Clear leader
-          </Link>
-        </div>
-        <div className="flex flex-col gap-2">
-          <BaseSelector
-            trigger={null}
-            baseCardId={isAspect(csBaseId) ? basicBaseForAspect[csBaseId as SwuAspect] : csBaseId}
-            onBaseSelected={onBaseSelected}
-            size="w300"
-          />
-          <Link
-            to="."
-            search={prev => ({ ...prev, csBaseId: undefined })}
-            className={cn(
-              'text-sm text-muted-foreground hover:text-foreground',
-              !csBaseId && 'hidden',
-            )}
-          >
-            Clear base
-          </Link>
-        </div>
+        <LeaderBaseStatSelector type="main" />
       </div>
 
       {/* Card stats with options */}
