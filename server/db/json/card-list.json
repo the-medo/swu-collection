@@ -21370,8 +21370,8 @@
           "back": null
         }
       },
-      "gor--grievous-s-pet-2-twilight-of-the-republic": {
-        "variantId": "gor--grievous-s-pet-2-twilight-of-the-republic",
+      "gor--grievous-s-pet-2-twilight-of-the-republic-top8": {
+        "variantId": "gor--grievous-s-pet-2-twilight-of-the-republic-top8",
         "swuId": 17032,
         "set": "twi",
         "fullSetName": "Twilight of the Republic",
@@ -21385,7 +21385,64 @@
           "horizontal": false
         },
         "image": {
-          "front": "gor--grievous-s-pet-2-twilight-of-the-republic-front.webp",
+          "front": "gor--grievous-s-pet-2-twilight-of-the-republic-top8-front.webp",
+          "back": null
+        }
+      },
+      "gor--grievous-s-pet-2-twilight-of-the-republic-top4": {
+        "variantId": "gor--grievous-s-pet-2-twilight-of-the-republic-top4",
+        "swuId": 17022,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "SS Top 4",
+        "artist": "Aitor Prieto Reyes",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gor--grievous-s-pet-2-twilight-of-the-republic-top4-front.webp",
+          "back": null
+        }
+      },
+      "gor--grievous-s-pet-2-twilight-of-the-republic-finalist": {
+        "variantId": "gor--grievous-s-pet-2-twilight-of-the-republic-finalist",
+        "swuId": 17027,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "SS Finalist",
+        "artist": "Aitor Prieto Reyes",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gor--grievous-s-pet-2-twilight-of-the-republic-finalist-front.webp",
+          "back": null
+        }
+      },
+      "gor--grievous-s-pet-2-twilight-of-the-republic-champion": {
+        "variantId": "gor--grievous-s-pet-2-twilight-of-the-republic-champion",
+        "swuId": 17027,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "SS Champion",
+        "artist": "Aitor Prieto Reyes",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gor--grievous-s-pet-2-twilight-of-the-republic-champion-front.webp",
           "back": null
         }
       }
@@ -51278,8 +51335,8 @@
           "back": null
         }
       },
-      "tranquility--inspiring-flagship-2-twilight-of-the-republic": {
-        "variantId": "tranquility--inspiring-flagship-2-twilight-of-the-republic",
+      "tranquility--inspiring-flagship-2-twilight-of-the-republic-top16": {
+        "variantId": "tranquility--inspiring-flagship-2-twilight-of-the-republic-top16",
         "swuId": 17036,
         "set": "twi",
         "fullSetName": "Twilight of the Republic",
@@ -51293,7 +51350,83 @@
           "horizontal": false
         },
         "image": {
-          "front": "tranquility--inspiring-flagship-2-twilight-of-the-republic-front.webp",
+          "front": "tranquility--inspiring-flagship-2-twilight-of-the-republic-top16-front.webp",
+          "back": null
+        }
+      },
+      "tranquility--inspiring-flagship-2-twilight-of-the-republic-top8": {
+        "variantId": "tranquility--inspiring-flagship-2-twilight-of-the-republic-top8",
+        "swuId": 17016,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "PQ Top 8",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tranquility--inspiring-flagship-2-twilight-of-the-republic-top8-front.webp",
+          "back": null
+        }
+      },
+      "tranquility--inspiring-flagship-2-twilight-of-the-republic-top4": {
+        "variantId": "tranquility--inspiring-flagship-2-twilight-of-the-republic-top4",
+        "swuId": 17026,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "PQ Top 4",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tranquility--inspiring-flagship-2-twilight-of-the-republic-top4-front.webp",
+          "back": null
+        }
+      },
+      "tranquility--inspiring-flagship-2-twilight-of-the-republic-finalist": {
+        "variantId": "tranquility--inspiring-flagship-2-twilight-of-the-republic-finalist",
+        "swuId": 17031,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "PQ Finalist",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tranquility--inspiring-flagship-2-twilight-of-the-republic-finalist-front.webp",
+          "back": null
+        }
+      },
+      "tranquility--inspiring-flagship-2-twilight-of-the-republic-champion": {
+        "variantId": "tranquility--inspiring-flagship-2-twilight-of-the-republic-champion",
+        "swuId": 17036,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "PQ Champion",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tranquility--inspiring-flagship-2-twilight-of-the-republic-champion-front.webp",
           "back": null
         }
       }
