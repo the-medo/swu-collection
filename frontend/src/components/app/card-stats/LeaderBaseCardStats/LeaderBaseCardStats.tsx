@@ -50,6 +50,10 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
     [metaId, tournamentId, tournamentGroupId, csLeaderId, csBaseId],
   );
 
+  // In case of meta card statistics, deck counts are displayed from filtered tournaments,
+  // but the statistics are from whole meta, for now we just hide deck counts under the leader images
+  const correctDeckCount = tournamentId !== undefined || tournamentGroupId !== undefined;
+
   // Fetch card statistics filtered by leader (when a leader is selected)
   const { data, isLoading, error } = useCardStats(cardStatParams);
 
@@ -294,7 +298,9 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
                             forceHorizontal={true}
                           />
                         </Link>
-                        <span className="text-sm">Deck count: {deckCount}</span>
+                        {correctDeckCount && (
+                          <span className="text-sm">Deck count: {deckCount}</span>
+                        )}
                       </div>
                       {topCards.length > 0 ? (
                         <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
