@@ -12545,6 +12545,134 @@
     "name": "Darth Vader, Dark Lord of the Sith",
     "title": "Darth Vader",
     "subtitle": "Dark Lord of the Sith",
+    "variants": {
+      "darth-vader--dark-lord-of-the-sith-10-spark-of-rebellion": {
+        "variantId": "darth-vader--dark-lord-of-the-sith-10-spark-of-rebellion",
+        "swuId": 6,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 10,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "darth-vader--dark-lord-of-the-sith-10-spark-of-rebellion-front.webp",
+          "back": "darth-vader--dark-lord-of-the-sith-10-spark-of-rebellion-back.webp"
+        }
+      },
+      "darth-vader--dark-lord-of-the-sith-2-spark-of-rebellion---hyperspace": {
+        "variantId": "darth-vader--dark-lord-of-the-sith-2-spark-of-rebellion---hyperspace",
+        "swuId": 982,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion - Hyperspace",
+        "cardNo": 2,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Hyperspace",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "darth-vader--dark-lord-of-the-sith-2-spark-of-rebellion---hyperspace-front.webp",
+          "back": "darth-vader--dark-lord-of-the-sith-2-spark-of-rebellion---hyperspace-back.webp"
+        }
+      },
+      "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-promo": {
+        "variantId": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-promo",
+        "swuId": 1017,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion - Prerelease Promo",
+        "cardNo": 1,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Prerelease Promo",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-promo-front.webp",
+          "back": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-promo-back.webp"
+        }
+      },
+      "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-judge": {
+        "variantId": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-judge",
+        "swuId": 2753,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion - Prerelease Judge",
+        "cardNo": 1,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Prerelease Judge",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-judge-front.webp",
+          "back": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-judge-back.webp"
+        }
+      },
+      "darth-vader--dark-lord-of-the-sith-74-2025-promo": {
+        "variantId": "darth-vader--dark-lord-of-the-sith-74-2025-promo",
+        "swuId": 38445,
+        "set": "p25",
+        "fullSetName": "2025 Promo",
+        "cardNo": 74,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "darth-vader--dark-lord-of-the-sith-74-2025-promo-front.webp",
+          "back": "darth-vader--dark-lord-of-the-sith-74-2025-promo-back.webp"
+        }
+      },
+      "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---op-judge": {
+        "swuId": 2753,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion - OP Judge",
+        "cardNo": 1,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "OP Judge",
+        "artist": "David Buisan",
+        "image": {
+          "front": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---op-judge-front.webp",
+          "back": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---op-judge-back.webp"
+        },
+        "variantId": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---op-judge"
+      }
+    },
     "type": "Leader",
     "rarity": "Special",
     "cost": 7,
@@ -12567,81 +12695,15 @@
       "Ground"
     ],
     "aspects": [
-      "Villainy",
-      "Aggression"
+      "Aggression",
+      "Villainy"
     ],
     "keywords": [],
     "traits": [
       "Force",
       "Imperial",
       "Sith"
-    ],
-    "variants": {
-      "darth-vader--dark-lord-of-the-sith-10-spark-of-rebellion": {
-        "swuId": 6,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion",
-        "cardNo": 10,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": false,
-        "variantName": "Standard",
-        "artist": "Borja Pindado",
-        "image": {
-          "front": "darth-vader--dark-lord-of-the-sith-10-spark-of-rebellion-front.webp",
-          "back": "darth-vader--dark-lord-of-the-sith-10-spark-of-rebellion-back.webp"
-        },
-        "variantId": "darth-vader--dark-lord-of-the-sith-10-spark-of-rebellion"
-      },
-      "darth-vader--dark-lord-of-the-sith-2-spark-of-rebellion---hyperspace": {
-        "swuId": 982,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion - Hyperspace",
-        "cardNo": 2,
-        "baseSet": false,
-        "hasNonfoil": false,
-        "hasFoil": false,
-        "variantName": "Hyperspace",
-        "artist": "Borja Pindado",
-        "image": {
-          "front": "darth-vader--dark-lord-of-the-sith-2-spark-of-rebellion---hyperspace-front.webp",
-          "back": "darth-vader--dark-lord-of-the-sith-2-spark-of-rebellion---hyperspace-back.webp"
-        },
-        "variantId": "darth-vader--dark-lord-of-the-sith-2-spark-of-rebellion---hyperspace"
-      },
-      "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-promo": {
-        "swuId": 1017,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion - Prerelease Promo",
-        "cardNo": 1,
-        "baseSet": false,
-        "hasNonfoil": false,
-        "hasFoil": false,
-        "variantName": "Prerelease Promo",
-        "artist": "David Buisan",
-        "image": {
-          "front": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-promo-front.webp",
-          "back": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-promo-back.webp"
-        },
-        "variantId": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---prerelease-promo"
-      },
-      "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---op-judge": {
-        "swuId": 2753,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion - OP Judge",
-        "cardNo": 1,
-        "baseSet": false,
-        "hasNonfoil": false,
-        "hasFoil": false,
-        "variantName": "OP Judge",
-        "artist": "David Buisan",
-        "image": {
-          "front": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---op-judge-front.webp",
-          "back": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---op-judge-back.webp"
-        },
-        "variantId": "darth-vader--dark-lord-of-the-sith-1-spark-of-rebellion---op-judge"
-      }
-    }
+    ]
   },
   "daughter-of-dathomir": {
     "cardId": "daughter-of-dathomir",
@@ -21269,6 +21331,65 @@
     "name": "Gor, Grievous's Pet",
     "title": "Gor",
     "subtitle": "Grievous's Pet",
+    "variants": {
+      "gor--grievous-s-pet-118-twilight-of-the-republic": {
+        "variantId": "gor--grievous-s-pet-118-twilight-of-the-republic",
+        "swuId": 14776,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 118,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "Leonardo Giammichele",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gor--grievous-s-pet-118-twilight-of-the-republic-front.webp",
+          "back": null
+        }
+      },
+      "gor--grievous-s-pet-388-twilight-of-the-republic": {
+        "variantId": "gor--grievous-s-pet-388-twilight-of-the-republic",
+        "swuId": 16196,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 388,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Hyperspace",
+        "artist": "Leonardo Giammichele",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gor--grievous-s-pet-388-twilight-of-the-republic-front.webp",
+          "back": null
+        }
+      },
+      "gor--grievous-s-pet-2-twilight-of-the-republic": {
+        "variantId": "gor--grievous-s-pet-2-twilight-of-the-republic",
+        "swuId": 17032,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "SS Top 8",
+        "artist": "Aitor Prieto Reyes",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gor--grievous-s-pet-2-twilight-of-the-republic-front.webp",
+          "back": null
+        }
+      }
+    },
     "type": "Unit",
     "rarity": "Legendary",
     "cost": 12,
@@ -21299,57 +21420,7 @@
     "traits": [
       "Separatist",
       "Creature"
-    ],
-    "variants": {
-      "gor--grievous-s-pet-118-twilight-of-the-republic": {
-        "swuId": 14776,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 118,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Standard",
-        "artist": "Leonardo Giammichele",
-        "image": {
-          "front": "gor--grievous-s-pet-118-twilight-of-the-republic-front.webp",
-          "back": null
-        },
-        "variantId": "gor--grievous-s-pet-118-twilight-of-the-republic"
-      },
-      "gor--grievous-s-pet-388-twilight-of-the-republic": {
-        "swuId": 16196,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 388,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Hyperspace",
-        "artist": "Leonardo Giammichele",
-        "image": {
-          "front": "gor--grievous-s-pet-388-twilight-of-the-republic-front.webp",
-          "back": null
-        },
-        "variantId": "gor--grievous-s-pet-388-twilight-of-the-republic"
-      },
-      "gor--grievous-s-pet-2-twilight-of-the-republic": {
-        "swuId": 17032,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 2,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "OP Top 8",
-        "artist": "Aitor Prieto Reyes",
-        "image": {
-          "front": "gor--grievous-s-pet-2-twilight-of-the-republic-front.webp",
-          "back": null
-        },
-        "variantId": "gor--grievous-s-pet-2-twilight-of-the-republic"
-      }
-    }
+    ]
   },
   "grand-admiral-thrawn--patient-and-insightful": {
     "cardId": "grand-admiral-thrawn--patient-and-insightful",
@@ -30782,6 +30853,134 @@
     "name": "Luke Skywalker, Faithful Friend",
     "title": "Luke Skywalker",
     "subtitle": "Faithful Friend",
+    "variants": {
+      "luke-skywalker--faithful-friend-5-spark-of-rebellion": {
+        "variantId": "luke-skywalker--faithful-friend-5-spark-of-rebellion",
+        "swuId": 5,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 5,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--faithful-friend-5-spark-of-rebellion-front.webp",
+          "back": "luke-skywalker--faithful-friend-5-spark-of-rebellion-back.webp"
+        }
+      },
+      "luke-skywalker--faithful-friend-1-spark-of-rebellion---hyperspace": {
+        "variantId": "luke-skywalker--faithful-friend-1-spark-of-rebellion---hyperspace",
+        "swuId": 981,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion - Hyperspace",
+        "cardNo": 1,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Hyperspace",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--faithful-friend-1-spark-of-rebellion---hyperspace-front.webp",
+          "back": "luke-skywalker--faithful-friend-1-spark-of-rebellion---hyperspace-back.webp"
+        }
+      },
+      "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-promo": {
+        "variantId": "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-promo",
+        "swuId": 1016,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion - Prerelease Promo",
+        "cardNo": 2,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Prerelease Promo",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-promo-front.webp",
+          "back": "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-promo-back.webp"
+        }
+      },
+      "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-judge": {
+        "variantId": "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-judge",
+        "swuId": 2752,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion - Prerelease Judge",
+        "cardNo": 2,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Prerelease Judge",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-judge-front.webp",
+          "back": "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-judge-back.webp"
+        }
+      },
+      "luke-skywalker--faithful-friend-73-2025-promo": {
+        "variantId": "luke-skywalker--faithful-friend-73-2025-promo",
+        "swuId": 38440,
+        "set": "p25",
+        "fullSetName": "2025 Promo",
+        "cardNo": 73,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--faithful-friend-73-2025-promo-front.webp",
+          "back": "luke-skywalker--faithful-friend-73-2025-promo-back.webp"
+        }
+      },
+      "luke-skywalker--faithful-friend-2-spark-of-rebellion---op-judge": {
+        "swuId": 2752,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion - OP Judge",
+        "cardNo": 2,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "OP Judge",
+        "artist": "David Buisan",
+        "image": {
+          "front": "luke-skywalker--faithful-friend-2-spark-of-rebellion---op-judge-front.webp",
+          "back": "luke-skywalker--faithful-friend-2-spark-of-rebellion---op-judge-back.webp"
+        },
+        "variantId": "luke-skywalker--faithful-friend-2-spark-of-rebellion---op-judge"
+      }
+    },
     "type": "Leader",
     "rarity": "Special",
     "cost": 6,
@@ -30811,73 +31010,7 @@
     "traits": [
       "Force",
       "Rebel"
-    ],
-    "variants": {
-      "luke-skywalker--faithful-friend-5-spark-of-rebellion": {
-        "swuId": 5,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion",
-        "cardNo": 5,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": false,
-        "variantName": "Standard",
-        "artist": "Borja Pindado",
-        "image": {
-          "front": "luke-skywalker--faithful-friend-5-spark-of-rebellion-front.webp",
-          "back": "luke-skywalker--faithful-friend-5-spark-of-rebellion-back.webp"
-        },
-        "variantId": "luke-skywalker--faithful-friend-5-spark-of-rebellion"
-      },
-      "luke-skywalker--faithful-friend-1-spark-of-rebellion---hyperspace": {
-        "swuId": 981,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion - Hyperspace",
-        "cardNo": 1,
-        "baseSet": false,
-        "hasNonfoil": false,
-        "hasFoil": false,
-        "variantName": "Hyperspace",
-        "artist": "Borja Pindado",
-        "image": {
-          "front": "luke-skywalker--faithful-friend-1-spark-of-rebellion---hyperspace-front.webp",
-          "back": "luke-skywalker--faithful-friend-1-spark-of-rebellion---hyperspace-back.webp"
-        },
-        "variantId": "luke-skywalker--faithful-friend-1-spark-of-rebellion---hyperspace"
-      },
-      "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-promo": {
-        "swuId": 1016,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion - Prerelease Promo",
-        "cardNo": 2,
-        "baseSet": false,
-        "hasNonfoil": false,
-        "hasFoil": false,
-        "variantName": "Prerelease Promo",
-        "artist": "David Buisan",
-        "image": {
-          "front": "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-promo-front.webp",
-          "back": "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-promo-back.webp"
-        },
-        "variantId": "luke-skywalker--faithful-friend-2-spark-of-rebellion---prerelease-promo"
-      },
-      "luke-skywalker--faithful-friend-2-spark-of-rebellion---op-judge": {
-        "swuId": 2752,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion - OP Judge",
-        "cardNo": 2,
-        "baseSet": false,
-        "hasNonfoil": false,
-        "hasFoil": false,
-        "variantName": "OP Judge",
-        "artist": "David Buisan",
-        "image": {
-          "front": "luke-skywalker--faithful-friend-2-spark-of-rebellion---op-judge-front.webp",
-          "back": "luke-skywalker--faithful-friend-2-spark-of-rebellion---op-judge-back.webp"
-        },
-        "variantId": "luke-skywalker--faithful-friend-2-spark-of-rebellion---op-judge"
-      }
-    }
+    ]
   },
   "luke-skywalker--jedi-knight": {
     "cardId": "luke-skywalker--jedi-knight",
@@ -51106,6 +51239,65 @@
     "name": "Tranquility, Inspiring Flagship",
     "title": "Tranquility",
     "subtitle": "Inspiring Flagship",
+    "variants": {
+      "tranquility--inspiring-flagship-246-twilight-of-the-republic": {
+        "variantId": "tranquility--inspiring-flagship-246-twilight-of-the-republic",
+        "swuId": 15391,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 246,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tranquility--inspiring-flagship-246-twilight-of-the-republic-front.webp",
+          "back": null
+        }
+      },
+      "tranquility--inspiring-flagship-507-twilight-of-the-republic": {
+        "variantId": "tranquility--inspiring-flagship-507-twilight-of-the-republic",
+        "swuId": 16791,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 507,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Hyperspace",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tranquility--inspiring-flagship-507-twilight-of-the-republic-front.webp",
+          "back": null
+        }
+      },
+      "tranquility--inspiring-flagship-2-twilight-of-the-republic": {
+        "variantId": "tranquility--inspiring-flagship-2-twilight-of-the-republic",
+        "swuId": 17036,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "PQ Top 16",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tranquility--inspiring-flagship-2-twilight-of-the-republic-front.webp",
+          "back": null
+        }
+      }
+    },
     "type": "Unit",
     "rarity": "Rare",
     "cost": 7,
@@ -51132,57 +51324,7 @@
       "Republic",
       "Vehicle",
       "Capital Ship"
-    ],
-    "variants": {
-      "tranquility--inspiring-flagship-246-twilight-of-the-republic": {
-        "swuId": 15391,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 246,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Standard",
-        "artist": "Amad Mir",
-        "image": {
-          "front": "tranquility--inspiring-flagship-246-twilight-of-the-republic-front.webp",
-          "back": null
-        },
-        "variantId": "tranquility--inspiring-flagship-246-twilight-of-the-republic"
-      },
-      "tranquility--inspiring-flagship-507-twilight-of-the-republic": {
-        "swuId": 16791,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 507,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Hyperspace",
-        "artist": "Amad Mir",
-        "image": {
-          "front": "tranquility--inspiring-flagship-507-twilight-of-the-republic-front.webp",
-          "back": null
-        },
-        "variantId": "tranquility--inspiring-flagship-507-twilight-of-the-republic"
-      },
-      "tranquility--inspiring-flagship-2-twilight-of-the-republic": {
-        "swuId": 17036,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 2,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "OP Top 16",
-        "artist": "Kyle Petchock",
-        "image": {
-          "front": "tranquility--inspiring-flagship-2-twilight-of-the-republic-front.webp",
-          "back": null
-        },
-        "variantId": "tranquility--inspiring-flagship-2-twilight-of-the-republic"
-      }
-    }
+    ]
   },
   "tri-droid-suppressor": {
     "cardId": "tri-droid-suppressor",
