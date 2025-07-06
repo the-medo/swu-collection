@@ -155,6 +155,13 @@
       "when": 1751737982955,
       "tag": "0021_wooden_beast",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1751810508429,
+      "tag": "0022_rare_pestilence",
+      "breakpoints": true
     }
   ]
 }

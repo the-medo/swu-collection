@@ -23,6 +23,7 @@ export const deckInformation = pgTable(
     aspectVillainy: integer('aspect_villainy').notNull().default(0),
 
     baseAspect: text('base_aspect'),
+    baseSpecialName: text('base_special_name'),
   },
   table => {
     return {
@@ -33,6 +34,7 @@ export const deckInformation = pgTable(
       aspectHeroismIdx: index('deck_aspect_heroism_idx').on(table.aspectHeroism),
       aspectVillainyIdx: index('deck_aspect_villainy_idx').on(table.aspectVillainy),
       baseAspectIdx: index('deck_base_aspect_idx').on(table.baseAspect),
+      baseSpecialNameIdx: index('deck_base_special_name_idx').on(table.baseSpecialName),
     };
   },
 );
