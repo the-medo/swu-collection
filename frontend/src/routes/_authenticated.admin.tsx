@@ -5,7 +5,7 @@ import { zodValidator } from '@tanstack/zod-adapter';
 
 const searchParams = z.object({
   page: z
-    .enum(['metas', 'sets', 'tournament-groups', 'deck-thumbnails', 'pq-tools'])
+    .enum(['metas', 'sets', 'tournament-groups', 'deck-thumbnails', 'pq-tools', 'special-actions'])
     .default('metas'),
 });
 
