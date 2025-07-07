@@ -8,6 +8,7 @@ import { useMatchupCardStats } from '@/api/card-stats';
 import { toast } from '@/hooks/use-toast.ts';
 import CardMatchupViewSelector, { CardMatchupView } from './CardMatchupViewSelector';
 import MatchupCardStatsTable from './MatchupCardStatsTable';
+import CardMatchupOverview from './CardMatchupOverview';
 
 interface MatchupCardStatsProps {
   metaId?: number;
@@ -54,6 +55,14 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
 
       setStatsData(result.data);
       console.log('Matchup stats result:', result);
+
+      // Scroll to the card matchup data section after a short delay to ensure DOM update
+      setTimeout(() => {
+        const element = document.getElementById('card-matchup-data');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
     } catch (error) {
       console.error('Error computing matchup stats:', error);
       toast({
@@ -90,11 +99,17 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
       </div>
 
       {statsData && (
-        <div className="mt-8 space-y-4">
+        <div id="card-matchup-data" className="mt-8 space-y-4">
           <CardMatchupViewSelector />
 
-          <div className="w-full">
-            <MatchupCardStatsTable
+          <div className="flex flex-row flex-wrap gap-4">
+            <div className="flex-1 min-w-[500px]">
+              <MatchupCardStatsTable
+                data={statsData}
+                selectedView={csCardMatchupView as CardMatchupView}
+              />
+            </div>
+            <CardMatchupOverview
               data={statsData}
               selectedView={csCardMatchupView as CardMatchupView}
             />

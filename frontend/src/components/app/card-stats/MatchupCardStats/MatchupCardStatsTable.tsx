@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { CardMatchupView } from './CardMatchupViewSelector';
 import {
@@ -9,6 +9,7 @@ import {
   useMatchupCardStatsTableColumns,
 } from './useMatchupCardStatsTableColumns';
 import { useCardList } from '@/api/lists/useCardList.ts';
+import { useMatchupCardStatsStoreActions } from './useMatchupCardStatsStore';
 
 interface MatchupCardStatsTableProps {
   data: MatchupCardStatsData;
@@ -17,12 +18,21 @@ interface MatchupCardStatsTableProps {
 
 const MatchupCardStatsTable: React.FC<MatchupCardStatsTableProps> = ({ data, selectedView }) => {
   const { data: cardList } = useCardList();
+  const { setSelectedCardId } = useMatchupCardStatsStoreActions();
 
   // State for sorting
   const [sorting, setSorting] = useState<MatchupCardStatsTableSorting>({
     id: 'cardName',
     desc: false,
   });
+
+  // Handle row click to set the selected card ID
+  const handleRowClick = useCallback(
+    row => {
+      setSelectedCardId(row.original.cardId);
+    },
+    [setSelectedCardId],
+  );
 
   // Get columns from the hook
   const columns = useMatchupCardStatsTableColumns(data, selectedView, sorting, setSorting);
@@ -91,12 +101,12 @@ const MatchupCardStatsTable: React.FC<MatchupCardStatsTableProps> = ({ data, sel
   }
 
   return (
-    <div className="max-h-[65vh] overflow-y-auto">
-      <DataTable<MatchupCardStatsTableRow, unknown> columns={columns} data={tableData} />
-      <div className="mt-4 text-sm text-muted-foreground text-center">
-        <p>Showing data for {tableData.length} cards. Click on column headers to sort.</p>
-        <p>Win rates are calculated as (wins / total games) × 100%.</p>
-      </div>
+    <div className="max-h-[calc(100vh-100px)] overflow-y-auto">
+      <DataTable<MatchupCardStatsTableRow, unknown>
+        columns={columns}
+        data={tableData}
+        onRowClick={handleRowClick}
+      />
     </div>
   );
 };

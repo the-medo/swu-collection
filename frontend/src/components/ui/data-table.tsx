@@ -149,7 +149,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="rounded-md border w-full relative">
       <Table onMouseLeave={onTableMouseLeave}>
-        <TableHeader>
+        <TableHeader className="sticky top-0 z-20 bg-background">
           {table.getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map(header => {
