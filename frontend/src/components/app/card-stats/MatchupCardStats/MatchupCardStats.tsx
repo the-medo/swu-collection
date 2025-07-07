@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import LeaderBaseStatSelector from '../LeaderBaseStatSelector';
 import { useSearch } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
+import { useMatchupCardStats } from '@/api/card-stats';
+import { toast } from '@/hooks/use-toast.ts';
 
 interface MatchupCardStatsProps {
   metaId?: number;
@@ -19,9 +20,38 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
   className,
 }) => {
   const { csLeaderId, csBaseId, csLeaderId2, csBaseId2 } = useSearch({ strict: false });
+  const matchupCardStatsMutation = useMatchupCardStats();
 
   const deck1ready = csLeaderId !== undefined || csBaseId !== undefined;
   const deck2ready = csLeaderId2 !== undefined || csBaseId2 !== undefined;
+
+  const handleComputeStats = async () => {
+    try {
+      const result = await matchupCardStatsMutation.mutateAsync({
+        metaId,
+        tournamentId,
+        tournamentGroupId,
+        leaderId: csLeaderId,
+        baseId: csBaseId,
+        leaderId2: csLeaderId2,
+        baseId2: csBaseId2,
+      });
+
+      toast({
+        title: 'Success',
+        description: 'Matchup statistics computed successfully',
+      });
+
+      console.log('Matchup stats result:', result);
+    } catch (error) {
+      console.error('Error computing matchup stats:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to compute matchup statistics',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className={cn('flex flex-col gap-4 items-center', className)}>
@@ -38,7 +68,12 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
           <p className="text-muted-foreground">{!deck2ready && 'Select a leader or a base'}</p>
         </div>
       </div>
-      <Button disabled={!deck1ready || !deck2ready}>Compute statistics</Button>
+      <Button
+        disabled={!deck1ready || !deck2ready || matchupCardStatsMutation.isPending}
+        onClick={handleComputeStats}
+      >
+        {matchupCardStatsMutation.isPending ? 'Computing...' : 'Compute statistics'}
+      </Button>
     </div>
   );
 };

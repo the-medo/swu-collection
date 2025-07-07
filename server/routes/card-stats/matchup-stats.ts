@@ -112,6 +112,7 @@ export const cardStatsMatchupRoute = new Hono<AuthExtension>().get(
         deckIds,
         deck1: { leaderId, baseId },
         deck2: { leaderId2, baseId2 },
+        cardStats: data,
       },
     });
   },
