@@ -90,7 +90,28 @@ export const cardStatMatchupDecksRelations = relations(cardStatMatchupDecks, ({ 
   }),
 }));
 
+// Card Stat Matchup Info Table
+export const cardStatMatchupInfo = pgTable(
+  'card_stat_matchup_info',
+  {
+    id: uuid('id')
+      .notNull()
+      .references(() => cardStatMatchupOverview.id, { onDelete: 'cascade' })
+      .primaryKey(),
+    info: text('info').notNull(), // JSON column to store combined matchup info
+  },
+);
+
+// Relations for cardStatMatchupInfo
+export const cardStatMatchupInfoRelations = relations(cardStatMatchupInfo, ({ one }) => ({
+  overview: one(cardStatMatchupOverview, {
+    fields: [cardStatMatchupInfo.id],
+    references: [cardStatMatchupOverview.id],
+  }),
+}));
+
 // Export types
 export type CardStatMatchupOverview = InferSelectModel<typeof cardStatMatchupOverview>;
 export type CardStatMatchupTournaments = InferSelectModel<typeof cardStatMatchupTournaments>;
 export type CardStatMatchupDecks = InferSelectModel<typeof cardStatMatchupDecks>;
+export type CardStatMatchupInfo = InferSelectModel<typeof cardStatMatchupInfo>;

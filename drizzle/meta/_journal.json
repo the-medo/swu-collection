@@ -162,6 +162,13 @@
       "when": 1751810508429,
       "tag": "0022_rare_pestilence",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1751903980175,
+      "tag": "0023_first_captain_universe",
+      "breakpoints": true
     }
   ]
 }
