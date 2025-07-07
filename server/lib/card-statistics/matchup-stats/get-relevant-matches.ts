@@ -1,18 +1,16 @@
 import { db } from '../../../db';
 import {
   cardStatMatchupDecks,
-  cardStatMatchupTournaments,
+  cardStatMatchupInfo,
 } from '../../../db/schema/card_stat_matchup_schema.ts';
-import { and, eq, or, inArray } from 'drizzle-orm';
-import { tournamentDeck } from '../../../db/schema/tournament_deck.ts';
+import { and, eq } from 'drizzle-orm';
 import { deck } from '../../../db/schema/deck.ts';
 import { deckInformation } from '../../../db/schema/deck_information.ts';
 import { baseSpecialNames } from '../../../../shared/lib/basicBases.ts';
-import { batchArray } from '../../utils/batch.ts';
 import { tournamentMatch } from '../../../db/schema/tournament_match.ts';
-import { tournamentGroupTournament } from '../../../db/schema/tournament_group_tournament.ts';
 import { deckCard } from '../../../db/schema/deck_card.ts';
 import type { CardMatchupStat } from './types.ts';
+import { compressMatchupInfo } from './utils.ts';
 
 const BOTH_TOGETHER = 'both-decks-together';
 const BOTH_DIVIDED = 'both-decks-divided';
@@ -49,7 +47,7 @@ type CardDeckMap = Record<
     CardMatchMapKey,
     | Record<
         number | string, // count (in form of number or combination like "1+2"
-        string[]
+        number[]
       >
     | undefined
   >
@@ -130,7 +128,9 @@ export async function getRelevantMatches(
   };
 
   const deckMatchMap: Record<string, CardMatchupStat | undefined> = {};
-  const deckMatches: Record<string, string[] | undefined> = {};
+  let deckNumberId = 1;
+  const deckIntegerMap: Record<string, number | undefined> = {};
+  const deckMatches: Record<number, string[] | undefined> = {};
 
   const matchCount = matches1.length + matches2.length;
 
@@ -141,8 +141,12 @@ export async function getRelevantMatches(
         ...emptyObject,
       };
     }
-    if (!deckMatches[deckId]) deckMatches[deckId] = [];
-    deckMatches[deckId].push(matchId);
+    if (!deckIntegerMap[deckId]) {
+      deckIntegerMap[deckId] = deckNumberId;
+      deckNumberId++;
+    }
+    if (!deckMatches[deckIntegerMap[deckId]]) deckMatches[deckIntegerMap[deckId]] = [];
+    deckMatches[deckIntegerMap[deckId]]!.push(matchId);
 
     deckMatchMap[deckId].total++;
     deckMatchMap[deckId].gameWins += match.gameWin;
@@ -161,8 +165,12 @@ export async function getRelevantMatches(
         ...emptyObject,
       };
     }
-    if (!deckMatches[deckId]) deckMatches[deckId] = [];
-    deckMatches[deckId].push(matchId);
+    if (!deckIntegerMap[deckId]) {
+      deckIntegerMap[deckId] = deckNumberId;
+      deckNumberId++;
+    }
+    if (!deckMatches[deckIntegerMap[deckId]]) deckMatches[deckIntegerMap[deckId]] = [];
+    deckMatches[deckIntegerMap[deckId]]!.push(matchId);
 
     // here, the wins and losses are swapped, because it is taken from different perspective
     // (match has data from view of player 1, but now we are looking at player 2)
@@ -260,7 +268,7 @@ export async function getRelevantMatches(
 
         // Update statistics for this card, board, and count
         updateCardStats(cardMatch[count], deckStats);
-        cardDeck[count].push(deckId);
+        cardDeck[count].push(deckIntegerMap[deckId]!);
       });
 
       const count1 = deckCardMap[deckId]?.[cardId]?.[1] || 0;
@@ -306,13 +314,25 @@ export async function getRelevantMatches(
 
       updateCardStats(cardMatchMap[cardId][BOTH_TOGETHER][countTotal], deckStats);
       updateCardStats(cardMatchMap[cardId][BOTH_DIVIDED][countTotalString], deckStats);
-      cardDeckMap[cardId][BOTH_TOGETHER][countTotal].push(deckId);
-      cardDeckMap[cardId][BOTH_DIVIDED][countTotalString].push(deckId);
+      cardDeckMap[cardId][BOTH_TOGETHER][countTotal].push(deckIntegerMap[deckId]!);
+      cardDeckMap[cardId][BOTH_DIVIDED][countTotalString].push(deckIntegerMap[deckId]!);
     }
   }
 
-  // console.log({ cardMatchMap });
-  console.log('huh');
+  // Compress the data and save it to the cardStatMatchupInfo table
+  // For example, when somebody wants to see Data Vault vs. Data Vault data, raw data is 48MB
+  // 1. saving decks as numbers instead of guids goes from 48MB to 5MB
+  // 2. using this compression goes from 5MB to 200kb
+  const dataToCompress = {
+    deckIntegerMap,
+    deckMatches,
+    cardDeckMap,
+  };
+
+  await db.insert(cardStatMatchupInfo).values({
+    id: overviewId,
+    info: compressMatchupInfo(dataToCompress),
+  });
 
   return { matchCount, cardMatchMap };
 }

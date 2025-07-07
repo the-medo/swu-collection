@@ -95,7 +95,7 @@ export const cardStatsMatchupRoute = new Hono<AuthExtension>().get(
     console.log('Deck 1:', { leaderId, baseId });
     console.log('Deck 2:', { leaderId2, baseId2 });
 
-    const data = await getRelevantMatches(overviewId, leaderId2, baseId2);
+    const { cardMatchMap, matchCount } = await getRelevantMatches(overviewId, leaderId2, baseId2);
 
     // Step 4: Update the overview with the finish time
     await db
@@ -106,13 +106,11 @@ export const cardStatsMatchupRoute = new Hono<AuthExtension>().get(
     // Return the response
     return c.json({
       data: {
-        message: 'Matchup stats endpoint created',
         overviewId,
-        tournamentIds,
-        deckIds,
-        deck1: { leaderId, baseId },
-        deck2: { leaderId2, baseId2 },
-        cardStats: data,
+        tournamentCount: tournamentIds.length,
+        deckCount: deckIds.length,
+        matchCount,
+        cardStats: cardMatchMap,
       },
     });
   },
