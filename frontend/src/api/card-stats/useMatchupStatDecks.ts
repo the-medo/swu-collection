@@ -1,6 +1,7 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
+import type { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 
 /**
  * Parameters for the useMatchupStatDecks hook
@@ -15,14 +16,14 @@ export interface MatchupStatDecksParams {
  */
 export interface MatchupStatDecksResponse {
   data: {
-    deckIds: string[];
+    decks: TournamentDeckResponse[];
   };
 }
 
 /**
- * Hook for fetching deck IDs from matchup statistics
+ * Hook for fetching full deck data from matchup statistics
  * @param params - Parameters for the matchup-stats-decks query
- * @returns Query result with deck IDs
+ * @returns Query result with full deck data
  */
 export const useMatchupStatDecks = (params: MatchupStatDecksParams) => {
   const { overviewId, key } = params;

@@ -13,6 +13,10 @@ import DisplayModeSelector from '@/components/app/tournaments/TournamentMatchups
 import { MatchupDisplayMode } from '@/components/app/tournaments/TournamentMatchups/types';
 import { Route } from '@/routes/__root';
 import MobileCard from '@/components/ui/mobile-card.tsx';
+import {
+  useMatchupCardStatsStore,
+  useMatchupCardStatsStoreActions,
+} from '@/components/app/card-stats/MatchupCardStats/useMatchupCardStatsStore.ts';
 
 interface MatchupCardStatsProps {
   metaId?: number;
@@ -37,6 +41,7 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
   } = useSearch({ strict: false });
   const navigate = useNavigate({ from: Route.fullPath });
   const matchupCardStatsMutation = useMatchupCardStats();
+  const { setOverviewId } = useMatchupCardStatsStoreActions();
   const [statsData, setStatsData] = useState<any>(null);
 
   const handleDisplayModeChange = (value: MatchupDisplayMode) => {
@@ -67,6 +72,7 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
 
       setStatsData(result.data);
       console.log('Matchup stats result:', result);
+      setOverviewId(result.data.overviewId);
 
       // Scroll to the card matchup data section after a short delay to ensure DOM update
       setTimeout(() => {

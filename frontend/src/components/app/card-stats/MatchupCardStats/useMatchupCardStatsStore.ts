@@ -4,12 +4,16 @@ import { Store, useStore } from '@tanstack/react-store';
 interface MatchupCardStatsStore {
   selectedCardId: string | null;
   hoveredCardId: string | null;
+  overviewId: string | null;
+  matchupStatDeckKey: string | null;
 }
 
 // Define default state
 const defaultState: MatchupCardStatsStore = {
   selectedCardId: null,
   hoveredCardId: null,
+  overviewId: null,
+  matchupStatDeckKey: null,
 };
 
 // Create the store
@@ -28,13 +32,29 @@ const setHoveredCardId = (hoveredCardId: string | null) =>
     hoveredCardId,
   }));
 
+const setOverviewId = (overviewId: string | null) =>
+  store.setState(state => ({
+    ...state,
+    overviewId,
+  }));
+
+const setMatchupStatDeckKey = (matchupStatDeckKey: string | null) =>
+  store.setState(state => ({
+    ...state,
+    matchupStatDeckKey,
+  }));
+
 // Hook to access the store state
 export function useMatchupCardStatsStore() {
   const selectedCardId = useStore(store, state => state.selectedCardId);
   const hoveredCardId = useStore(store, state => state.hoveredCardId);
+  const overviewId = useStore(store, state => state.overviewId);
+  const matchupStatDeckKey = useStore(store, state => state.matchupStatDeckKey);
 
   return {
     selectedCardId: hoveredCardId ?? selectedCardId,
+    overviewId,
+    matchupStatDeckKey,
   };
 }
 
@@ -43,5 +63,7 @@ export function useMatchupCardStatsStoreActions() {
   return {
     setSelectedCardId,
     setHoveredCardId,
+    setOverviewId,
+    setMatchupStatDeckKey,
   };
 }

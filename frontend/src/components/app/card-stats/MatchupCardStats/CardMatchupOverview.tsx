@@ -8,6 +8,7 @@ import { CardStat, MatchupCardStatsData } from './useMatchupCardStatsTableColumn
 import { MatchupDisplayMode } from '@/components/app/tournaments/TournamentMatchups/types';
 import { getWinrateColorClass } from '@/components/app/tournaments/TournamentMatchups/utils/getWinrateColorClass.ts';
 import { Badge } from '@/components/ui/badge.tsx';
+import CardMatchupDecksDialog from './CardMatchupDecksDialog';
 
 interface CardMatchupOverviewProps {
   className?: string;
@@ -43,7 +44,7 @@ const CardMatchupOverview: React.FC<CardMatchupOverviewProps> = ({
   };
 
   // Function to render stats for a specific count and view
-  const renderStats = (stats: CardStat, count: string) => {
+  const renderStats = (stats: CardStat, count: string, view: CardMatchupView) => {
     // Calculate totals and win rates
     const totalGames = stats.gameWins + stats.gameLosses + stats.gameDraws;
     const totalMatches = stats.matchWins + stats.matchLosses + stats.matchDraws;
@@ -80,9 +81,17 @@ const CardMatchupOverview: React.FC<CardMatchupOverviewProps> = ({
       <div key={count} className="py-[2px] border-b hover:bg-accent">
         <div className="grid grid-cols-3 gap-2 text-xs">
           <span className="font-medium">{count}</span>
-          <span className="text-muted-foreground text-right px-1  cursor-pointer underline decoration-dotted hover:decoration-solid">
-            {stats.total} decks
-          </span>
+          <CardMatchupDecksDialog
+            trigger={
+              <span className="text-muted-foreground text-right px-1 cursor-pointer underline decoration-dotted hover:decoration-solid">
+                {stats.total} decks
+              </span>
+            }
+            cardId={selectedCardId || ''}
+            cardName={card?.name || ''}
+            count={count}
+            view={view}
+          />
           <Badge className={valueClass}>{value}</Badge>
         </div>
       </div>
@@ -103,7 +112,7 @@ const CardMatchupOverview: React.FC<CardMatchupOverviewProps> = ({
       <div className="space-y-0">
         {Object.entries(cardStats)
           .sort(([countA], [countB]) => countB.localeCompare(countA)) // Sort by count in descending order
-          .map(([count, stats]) => renderStats(stats, count))}
+          .map(([count, stats]) => renderStats(stats, count, view))}
       </div>
     );
   };
