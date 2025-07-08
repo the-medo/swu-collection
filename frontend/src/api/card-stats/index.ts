@@ -12,3 +12,9 @@ export type { ComputeCardStatsParams, ComputeCardStatsResponse } from './useComp
 
 export { useTopPlayedCards } from './useTopPlayedCards.ts';
 export type { TopPlayedCardStat, TopPlayedCardsParams, TopPlayedCardsResponse } from './useTopPlayedCards.ts';
+
+export { useMatchupCardStats } from './useMatchupCardStats.ts';
+export type { MatchupCardStatsParams, MatchupCardStatsResponse } from './useMatchupCardStats.ts';
+
+export { useMatchupStatDecks } from './useMatchupStatDecks.ts';
+export type { MatchupStatDecksParams, MatchupStatDecksResponse } from './useMatchupStatDecks.ts';

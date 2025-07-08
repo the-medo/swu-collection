@@ -7,16 +7,20 @@ import { Route } from '@/routes/__root.tsx';
 
 interface TournamentDeckDetailProps {
   highlightedCardId?: string;
+  deckIdSearchParam: 'maDeckId' | 'csDeckId';
 }
 
-const TournamentDeckDetail: React.FC<TournamentDeckDetailProps> = ({ highlightedCardId }) => {
+const TournamentDeckDetail: React.FC<TournamentDeckDetailProps> = ({
+  highlightedCardId,
+  deckIdSearchParam,
+}) => {
   const search = useSearch({ strict: false });
-  const selectedDeckId = search.maDeckId;
+  const selectedDeckId = search[deckIdSearchParam];
 
   const navigate = useNavigate({ from: Route.fullPath });
   const setSelectedDeckId = (value: string | undefined) => {
     navigate({
-      search: prev => ({ ...prev, maDeckId: value }),
+      search: prev => ({ ...prev, [deckIdSearchParam]: value }),
     });
   };
 
@@ -35,7 +39,11 @@ const TournamentDeckDetail: React.FC<TournamentDeckDetailProps> = ({ highlighted
           >
             <X />
           </Button>
-          <DeckContents deckId={selectedDeckId} setDeckId={setSelectedDeckId} highlightedCardId={highlightedCardId} />
+          <DeckContents
+            deckId={selectedDeckId}
+            setDeckId={setSelectedDeckId}
+            highlightedCardId={highlightedCardId}
+          />
         </>
       ) : (
         <div className="flex w-full h-full items-center justify-center">

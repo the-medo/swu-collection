@@ -87,6 +87,7 @@ const CardDecks: React.FC<CardDecksProps> = ({
             </Alert>
           }
           highlightedCardId={cardId}
+          deckIdSearchParam="maDeckId"
         />
       )}
     </div>

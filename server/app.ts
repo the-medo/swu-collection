@@ -14,8 +14,10 @@ import { entitiesRoute } from './routes/entity.ts';
 import { metaRoute } from './routes/meta.ts';
 import { cardStatsRoute } from './routes/card-stats.ts';
 import { setRoute } from './routes/set.ts';
+import { adminRoute } from './routes/admin.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
+import { timeout } from 'hono/timeout';
 import fs from 'fs';
 import path from 'path';
 
@@ -55,6 +57,8 @@ app.use('*', async (c, next) => {
   return next();
 });
 
+app.use('/api/admin/special-actions/update-deck-information', timeout(180000));
+
 const apiRoutes = app
   .basePath('/api')
   .route('/auth', authRoute)
@@ -68,7 +72,8 @@ const apiRoutes = app
   .route('/entities', entitiesRoute)
   .route('/meta', metaRoute)
   .route('/card-stats', cardStatsRoute)
-  .route('/set', setRoute);
+  .route('/set', setRoute)
+  .route('/admin', adminRoute);
 
 // Read the index.html template once at startup
 let indexHtml: string;

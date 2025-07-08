@@ -4,6 +4,7 @@ import { deck } from '../../db/schema/deck.ts';
 import { cardList } from '../../db/lists.ts';
 import { SwuAspect } from '../../../types/enums.ts';
 import { deckInformation } from '../../db/schema/deck_information.ts';
+import { baseSpecialNames } from '../../../shared/lib/basicBases.ts';
 
 /**
  * Updates the deck_information table with aspect counts and other metadata
@@ -17,6 +18,9 @@ export async function updateDeckInformation(deckId: string) {
   const leader1 = deckData.leaderCardId1 ? cardList[deckData.leaderCardId1] : null;
   const leader2 = deckData.leaderCardId2 ? cardList[deckData.leaderCardId2] : null;
   const baseCard = deckData.baseCardId ? cardList[deckData.baseCardId] : null;
+  const baseSpecialName = deckData.baseCardId
+    ? (baseSpecialNames[deckData.baseCardId] ?? null)
+    : null;
 
   // Initialize aspect counts
   const aspectCounts = {
@@ -57,6 +61,7 @@ export async function updateDeckInformation(deckId: string) {
       aspectHeroism: aspectCounts[SwuAspect.HEROISM],
       aspectVillainy: aspectCounts[SwuAspect.VILLAINY],
       baseAspect,
+      baseSpecialName,
       favoritesCount: 0,
       commentsCount: 0,
       score: 0,
@@ -71,6 +76,7 @@ export async function updateDeckInformation(deckId: string) {
         aspectHeroism: aspectCounts[SwuAspect.HEROISM],
         aspectVillainy: aspectCounts[SwuAspect.VILLAINY],
         baseAspect,
+        baseSpecialName,
         // Don't update counts here to avoid resetting them
       },
     });

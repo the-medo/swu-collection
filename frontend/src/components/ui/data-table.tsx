@@ -54,6 +54,7 @@ interface DataTableProps<TData, TValue> {
   infiniteScrollLoading?: boolean;
   enableRowSelection?: boolean;
   rowSelection?: RowSelectionState;
+  cellClassName?: string;
   onRowSelectionChange?: TableOptions<TData>['onRowSelectionChange']; //(newSelection: RowSelectionState) => void;
 }
 
@@ -79,6 +80,7 @@ export function DataTable<TData, TValue>({
   infiniteScrollLoading,
   enableRowSelection = false,
   rowSelection = {},
+  cellClassName,
   onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
@@ -149,7 +151,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="rounded-md border w-full relative">
       <Table onMouseLeave={onTableMouseLeave}>
-        <TableHeader>
+        <TableHeader className="sticky top-0 z-20 bg-background">
           {table.getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map(header => {
@@ -189,10 +191,13 @@ export function DataTable<TData, TValue>({
                   <TableCell
                     key={cell.id}
                     onMouseEnter={() => onCellMouseEnter?.(cell, row)}
-                    className={cn({
-                      [`w-${cell.column.getSize()} min-w-${cell.column.getSize()}`]:
-                        cell.column.getSize() > 0,
-                    })}
+                    className={cn(
+                      {
+                        [`w-${cell.column.getSize()} min-w-${cell.column.getSize()}`]:
+                          cell.column.getSize() > 0,
+                      },
+                      cellClassName,
+                    )}
                   >
                     {loading ? (
                       <Skeleton
