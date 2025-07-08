@@ -139,7 +139,10 @@ export const useMatchupCardStatsTableColumns = (
               return (
                 <div className={cn('text-right font-medium p-1', colorClass)}>
                   {stats.matchWins}/{stats.matchLosses}
-                  <span className="text-xs text-muted-foreground ml-2">({totalMatches})</span>
+                  {stats.matchDraws > 0 && `/${stats.matchDraws}`}
+                  <span className="text-xs text-muted-foreground ml-2" title="Total matches">
+                    ({totalMatches})
+                  </span>
                 </div>
               );
             }
@@ -148,7 +151,10 @@ export const useMatchupCardStatsTableColumns = (
               return (
                 <div className={cn('text-right font-medium p-1', colorClass)}>
                   {stats.gameWins}/{stats.gameLosses}
-                  <span className="text-xs text-muted-foreground ml-2">({totalGames})</span>
+                  {stats.gameDraws > 0 && `/${stats.gameDraws}`}
+                  <span className="text-xs text-muted-foreground ml-2" title="Total games">
+                    ({totalGames})
+                  </span>
                 </div>
               );
             }
@@ -157,7 +163,9 @@ export const useMatchupCardStatsTableColumns = (
               return (
                 <div className={cn('text-right font-medium p-1', colorClass)}>
                   {winRateMatches.toFixed(2)}%
-                  <span className="text-xs text-muted-foreground ml-2">({totalGames})</span>
+                  <span className="text-xs text-muted-foreground ml-2" title="Total games">
+                    ({totalGames})
+                  </span>
                 </div>
               );
             }
@@ -167,7 +175,9 @@ export const useMatchupCardStatsTableColumns = (
               return (
                 <div className={cn('text-right font-medium h-full w-full p-1', colorClass)}>
                   {winRateMatches.toFixed(2)}%
-                  <span className="text-xs text-muted-foreground ml-2">({totalMatches})</span>
+                  <span className="text-xs text-muted-foreground ml-2" title="Total matches">
+                    ({totalMatches})
+                  </span>
                 </div>
               );
             }
