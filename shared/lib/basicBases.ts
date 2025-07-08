@@ -77,3 +77,12 @@ export const baseSpecialNames: Record<string, string> = {
   'crystal-caves': 'Cunning-Force',
   'the-holy-city': 'Cunning-Force',
 };
+
+export const baseSpecialNameValues = new Set(Object.values(baseSpecialNames));
+
+export const getSpecialBaseName = (baseCardId: string | undefined) =>
+  baseCardId
+    ? baseSpecialNameValues.has(baseCardId)
+      ? baseCardId
+      : baseSpecialNames[baseCardId]
+    : undefined;

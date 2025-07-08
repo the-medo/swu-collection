@@ -7,7 +7,7 @@ import { and, eq, or } from 'drizzle-orm';
 import { tournamentDeck } from '../../../db/schema/tournament_deck.ts';
 import { deck } from '../../../db/schema/deck.ts';
 import { deckInformation } from '../../../db/schema/deck_information.ts';
-import { baseSpecialNames } from '../../../../shared/lib/basicBases.ts';
+import { getSpecialBaseName } from '../../../../shared/lib/basicBases.ts';
 import { batchArray } from '../../utils/batch.ts';
 
 /**
@@ -23,7 +23,7 @@ export async function computeCardStatMatchupDecks(
   baseId?: string,
 ): Promise<string[]> {
   // Check if baseId corresponds to a special base name
-  const baseSpecialName = baseId ? baseSpecialNames[baseId] : undefined;
+  const baseSpecialName = getSpecialBaseName(baseId);
 
   // Build the base query with all necessary joins
   let query = db

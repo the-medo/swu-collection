@@ -61,6 +61,7 @@ const globalSearchParams = z.object({
 
   // Card statistics
   csPage: z.enum([...cardStatsTabsArray]).optional(),
+  csDeckId: z.string().optional(),
   csCardMatchupView: z.string().optional(),
   csCardMatchupDataView: z.enum(['winLoss', 'winrate', 'gameWinLoss', 'gameWinrate']).optional(),
   csLeaderId: z.string().optional(),

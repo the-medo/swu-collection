@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
+import { MatchupCardStatsData } from '@/components/app/card-stats/MatchupCardStats/useMatchupCardStatsTableColumns.tsx';
 
 /**
  * Parameters for computing matchup card statistics
@@ -19,7 +20,7 @@ export interface MatchupCardStatsParams {
  * Response from the matchup card statistics API
  */
 export interface MatchupCardStatsResponse {
-  data: any;
+  data: MatchupCardStatsData;
 }
 
 /**

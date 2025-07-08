@@ -89,12 +89,6 @@ export const cardStatsMatchupRoute = new Hono<AuthExtension>().get(
     // Step 3: Compute deck IDs for the first deck and store them
     const deckIds = await computeCardStatMatchupDecks(overviewId, leaderId, baseId);
 
-    // Log the tournament IDs, deck IDs, and deck parameters for debugging
-    console.log('Tournament IDs:', tournamentIds);
-    console.log('Deck IDs:', deckIds);
-    console.log('Deck 1:', { leaderId, baseId });
-    console.log('Deck 2:', { leaderId2, baseId2 });
-
     const { cardMatchMap, matchCount } = await getRelevantMatches(overviewId, leaderId2, baseId2);
 
     // Step 4: Update the overview with the finish time

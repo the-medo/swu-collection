@@ -26,6 +26,7 @@ interface TournamentDeckTableProps {
   tableHead?: React.ReactNode;
   highlightedCardId?: string;
   useKeyAndKeyMetaInfo?: boolean;
+  deckIdSearchParam: 'maDeckId' | 'csDeckId';
 }
 
 const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
@@ -33,6 +34,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
   tableHead,
   highlightedCardId,
   useKeyAndKeyMetaInfo = true,
+  deckIdSearchParam,
 }) => {
   const { leaders, base, aspects } = useDeckFilterStore(false);
   const { data: cardListData } = useCardList();
@@ -41,9 +43,10 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
 
   const search = useSearch({ strict: false });
   const navigate = useNavigate({ from: Route.fullPath });
-  const selectedDeckId = search.maDeckId;
+  const selectedDeckId = search[deckIdSearchParam];
   const key = search.maDeckKey;
   const keyMetaInfo = search.maDeckKeyType;
+  const [defaultDeckInit, setDefaultDeckInit] = useState<boolean>(!!selectedDeckId);
 
   const basicBaseFilter = useMemo(() => {
     if (!base || !cardListData) return false;
@@ -111,35 +114,24 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
 
   const onRowClick = useCallback((row: Row<TournamentDeckResponse>) => {
     navigate({
-      search: prev => ({ ...prev, maDeckId: row.original.deck?.id }),
+      search: prev => ({ ...prev, [deckIdSearchParam]: row.original.deck?.id }),
       hash: isMobile ? 'tournament-deck-detail' : undefined,
     });
   }, []);
 
   useEffect(() => {
-    if (useKeyAndKeyMetaInfo && key && keyMetaInfo) {
+    if (
+      ((useKeyAndKeyMetaInfo && key && keyMetaInfo) || !useKeyAndKeyMetaInfo) &&
+      !defaultDeckInit
+    ) {
       if (!selectedDeckId && sortedDecks.length > 0) {
+        setDefaultDeckInit(true);
         navigate({
-          search: p => ({ ...p, maDeckId: sortedDecks[0].deck?.id }),
+          search: p => ({ ...p, [deckIdSearchParam]: sortedDecks[0].deck?.id }),
         });
       }
     }
-  }, [key, keyMetaInfo, useKeyAndKeyMetaInfo]);
-
-  useEffect(() => {
-    if (!selectedDeckId && sortedDecks.length > 0) {
-      navigate({
-        search: p => ({ ...p, maDeckId: sortedDecks[0].deck?.id }),
-      });
-    } else if (selectedDeckId) {
-      const hasDeck = sortedDecks.find(d => d.deck?.id === selectedDeckId);
-      if (!hasDeck) {
-        navigate({
-          search: p => ({ ...p, maDeckId: sortedDecks[0].deck?.id }),
-        });
-      }
-    }
-  }, [selectedDeckId, sortedDecks]);
+  }, [deckIdSearchParam, key, keyMetaInfo, useKeyAndKeyMetaInfo, defaultDeckInit]);
 
   const { itemsToShow, observerTarget } = useInfiniteScroll({
     totalItems: sortedDecks.length,
@@ -275,7 +267,10 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
             </div>
             {floatingComponent}
           </div>
-          <TournamentDeckDetail highlightedCardId={highlightedCardId} />
+          <TournamentDeckDetail
+            highlightedCardId={highlightedCardId}
+            deckIdSearchParam={deckIdSearchParam}
+          />
         </>
       ) : (
         <div className="bg-muted p-8 rounded-md text-center">

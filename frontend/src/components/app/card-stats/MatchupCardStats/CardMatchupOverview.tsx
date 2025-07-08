@@ -58,7 +58,7 @@ const CardMatchupOverview: React.FC<CardMatchupOverviewProps> = ({
 
     switch (displayMode) {
       case 'gameWinLoss':
-        value = `${stats.gameWins}/${stats.gameLosses}`;
+        value = `${stats.gameWins}/${stats.gameLosses}${stats.gameDraws > 0 ? `/${stats.gameDraws}` : ''}`;
         colorClass = getWinrateColorClass(gameWinRate);
         break;
       case 'gameWinrate':
@@ -66,7 +66,7 @@ const CardMatchupOverview: React.FC<CardMatchupOverviewProps> = ({
         colorClass = getWinrateColorClass(gameWinRate);
         break;
       case 'winLoss':
-        value = `${stats.matchWins}/${stats.matchLosses}`;
+        value = `${stats.matchWins}/${stats.matchLosses}${stats.matchDraws > 0 ? `/${stats.matchDraws}` : ''}`;
         colorClass = getWinrateColorClass(matchWinRate);
         break;
       case 'winrate':
@@ -84,7 +84,7 @@ const CardMatchupOverview: React.FC<CardMatchupOverviewProps> = ({
           <CardMatchupDecksDialog
             trigger={
               <span className="text-muted-foreground text-right px-1 cursor-pointer underline decoration-dotted hover:decoration-solid">
-                {stats.total} decks
+                {stats.total} matches
               </span>
             }
             cardId={selectedCardId || ''}

@@ -16,7 +16,7 @@ const AllDecksTab: React.FC<AllDecksTabProps> = () => {
         {isLoaded ? (
           <>
             <TournamentDeckFilters />
-            <TournamentDeckTable decks={decks} />
+            <TournamentDeckTable decks={decks} deckIdSearchParam="maDeckId" />
           </>
         ) : (
           <div className="bg-muted p-8 rounded-md text-center">

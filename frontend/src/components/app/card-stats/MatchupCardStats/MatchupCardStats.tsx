@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import LeaderBaseStatSelector from '../LeaderBaseStatSelector';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
-import { useMatchupCardStats } from '@/api/card-stats';
+import { MatchupCardStatsResponse, useMatchupCardStats } from '@/api/card-stats';
 import { toast } from '@/hooks/use-toast.ts';
 import CardMatchupViewSelector, { CardMatchupView } from './CardMatchupViewSelector';
 import MatchupCardStatsTable from './MatchupCardStatsTable';
@@ -42,7 +42,7 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
   const navigate = useNavigate({ from: Route.fullPath });
   const matchupCardStatsMutation = useMatchupCardStats();
   const { setOverviewId } = useMatchupCardStatsStoreActions();
-  const [statsData, setStatsData] = useState<any>(null);
+  const [statsData, setStatsData] = useState<MatchupCardStatsResponse['data']>();
 
   const handleDisplayModeChange = (value: MatchupDisplayMode) => {
     navigate({
@@ -71,7 +71,6 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
       });
 
       setStatsData(result.data);
-      console.log('Matchup stats result:', result);
       setOverviewId(result.data.overviewId);
 
       // Scroll to the card matchup data section after a short delay to ensure DOM update
@@ -95,7 +94,7 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
     <div className={cn('flex flex-col gap-4', className)}>
       <div className="flex flex-col md:flex-row items-center gap-8 justify-center">
         <div className="flex flex-col items-center">
-          <h3 className="text-lg font-medium mb-4">Deck 1</h3>
+          <h3 className="text-lg font-medium mb-4">Deck</h3>
           <LeaderBaseStatSelector type="main" size="w200" />
           <p className="text-muted-foreground">{!deck1ready && 'Select a leader or a base'}</p>
         </div>
@@ -117,7 +116,7 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
       </div>
 
       {statsData && (
-        <div id="card-matchup-data" className="mt-8 space-y-4">
+        <div id="card-matchup-data" className="mt-8 space-y-2">
           <div className="flex flex-row gap-2 flex-wrap">
             <MobileCard>
               <CardMatchupViewSelector />
@@ -129,6 +128,17 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
                 onChange={handleDisplayModeChange}
               />
             </MobileCard>
+          </div>
+          <div className="flex gap-8 flex-wrap">
+            <span className="text-xs text-muted-foreground">
+              Data from {statsData.tournamentCount} tournaments
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {statsData.deckCount} valid decks found
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {statsData.matchCount} total matches against opposing deck
+            </span>
           </div>
 
           <div className="flex flex-row flex-wrap gap-4">

@@ -39,15 +39,15 @@ const CardMatchupDecksDialog: React.FC<CardMatchupDecksDialogProps> = ({
         navigate({
           search: prev => ({
             ...prev,
-            maDeckId: undefined,
+            csDeckId: undefined,
           }),
         });
       }
     },
-    [cardId, count, view, setMatchupStatDeckKey],
+    [key, setMatchupStatDeckKey],
   );
 
-  const open = overviewId !== undefined && matchupStatDeckKey === key;
+  const open = overviewId !== null && matchupStatDeckKey === key;
 
   return (
     <Dialog
@@ -59,7 +59,7 @@ const CardMatchupDecksDialog: React.FC<CardMatchupDecksDialogProps> = ({
       contentClassName={`w-[100vw] h-[100vh] md:max-w-[90%] min-h-[90%]`}
     >
       {overviewId ? (
-        <CardMatchupDecks overviewId={overviewId} matchupStatDeckKey={key} />
+        <CardMatchupDecks overviewId={overviewId} matchupStatDeckKey={key} cardId={cardId} />
       ) : (
         'Overview ID is missing!'
       )}

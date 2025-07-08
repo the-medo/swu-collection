@@ -5,10 +5,15 @@ import TournamentDeckTable from '@/components/app/tournaments/TournamentDecks/To
 
 type CardMatchupDecksProps = {
   overviewId: string;
+  cardId: string;
   matchupStatDeckKey: string;
 };
 
-const CardMatchupDecks: React.FC<CardMatchupDecksProps> = ({ overviewId, matchupStatDeckKey }) => {
+const CardMatchupDecks: React.FC<CardMatchupDecksProps> = ({
+  overviewId,
+  cardId,
+  matchupStatDeckKey,
+}) => {
   // Use the API hook to retrieve deck data
 
   const { data, isLoading, error } = useMatchupStatDecks({
@@ -26,7 +31,14 @@ const CardMatchupDecks: React.FC<CardMatchupDecksProps> = ({ overviewId, matchup
     <div className="p-0">
       {isLoading && <p>Loading decks...</p>}
       {error && <p className="text-red-500">Error loading decks: {error.message}</p>}
-      {data && <TournamentDeckTable decks={deckData} />}
+      {data && (
+        <TournamentDeckTable
+          decks={deckData}
+          useKeyAndKeyMetaInfo={false}
+          highlightedCardId={cardId}
+          deckIdSearchParam="csDeckId"
+        />
+      )}
     </div>
   );
 };
