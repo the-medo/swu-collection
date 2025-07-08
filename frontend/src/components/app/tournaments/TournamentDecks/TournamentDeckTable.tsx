@@ -25,9 +25,15 @@ interface TournamentDeckTableProps {
   decks: (TournamentDeckResponse & DeckCardsInfo)[];
   tableHead?: React.ReactNode;
   highlightedCardId?: string;
+  useKeyAndKeyMetaInfo?: boolean;
 }
 
-const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks, tableHead, highlightedCardId }) => {
+const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
+  decks,
+  tableHead,
+  highlightedCardId,
+  useKeyAndKeyMetaInfo = true,
+}) => {
   const { leaders, base, aspects } = useDeckFilterStore(false);
   const { data: cardListData } = useCardList();
   const isMobile = useIsMobile();
@@ -48,7 +54,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks, tableH
   const filteredDecks = useMemo(() => {
     if (!decks.length || !cardListData) return [];
 
-    if (key && keyMetaInfo) {
+    if (useKeyAndKeyMetaInfo && key && keyMetaInfo) {
       return decks.filter(deck => key === getDeckKey(deck, keyMetaInfo as MetaInfo, cardListData));
     }
 
@@ -87,7 +93,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks, tableH
 
       return true;
     });
-  }, [decks, leaders, base, aspects, basicBaseFilter, key, keyMetaInfo]);
+  }, [decks, leaders, base, aspects, basicBaseFilter, key, keyMetaInfo, useKeyAndKeyMetaInfo]);
 
   // Sort decks by placement
   const sortedDecks = useMemo(() => {
@@ -111,14 +117,29 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({ decks, tableH
   }, []);
 
   useEffect(() => {
-    if (key && keyMetaInfo) {
+    if (useKeyAndKeyMetaInfo && key && keyMetaInfo) {
       if (!selectedDeckId && sortedDecks.length > 0) {
         navigate({
           search: p => ({ ...p, maDeckId: sortedDecks[0].deck?.id }),
         });
       }
     }
-  }, [key, keyMetaInfo]);
+  }, [key, keyMetaInfo, useKeyAndKeyMetaInfo]);
+
+  useEffect(() => {
+    if (!selectedDeckId && sortedDecks.length > 0) {
+      navigate({
+        search: p => ({ ...p, maDeckId: sortedDecks[0].deck?.id }),
+      });
+    } else if (selectedDeckId) {
+      const hasDeck = sortedDecks.find(d => d.deck?.id === selectedDeckId);
+      if (!hasDeck) {
+        navigate({
+          search: p => ({ ...p, maDeckId: sortedDecks[0].deck?.id }),
+        });
+      }
+    }
+  }, [selectedDeckId, sortedDecks]);
 
   const { itemsToShow, observerTarget } = useInfiniteScroll({
     totalItems: sortedDecks.length,

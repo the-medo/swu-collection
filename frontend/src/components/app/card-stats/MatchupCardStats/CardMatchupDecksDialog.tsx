@@ -6,6 +6,8 @@ import {
   useMatchupCardStatsStoreActions,
 } from './useMatchupCardStatsStore';
 import CardMatchupDecks from './CardMatchupDecks';
+import { useNavigate } from '@tanstack/react-router';
+import { Route } from '@/routes/__root.tsx';
 
 type CardMatchupDecksDialogProps = {
   trigger: React.ReactNode;
@@ -22,6 +24,7 @@ const CardMatchupDecksDialog: React.FC<CardMatchupDecksDialogProps> = ({
   count,
   view,
 }) => {
+  const navigate = useNavigate({ from: Route.fullPath });
   const { overviewId, matchupStatDeckKey } = useMatchupCardStatsStore();
   const { setMatchupStatDeckKey } = useMatchupCardStatsStoreActions();
 
@@ -33,6 +36,12 @@ const CardMatchupDecksDialog: React.FC<CardMatchupDecksDialogProps> = ({
         setMatchupStatDeckKey(key);
       } else {
         setMatchupStatDeckKey(null);
+        navigate({
+          search: prev => ({
+            ...prev,
+            maDeckId: undefined,
+          }),
+        });
       }
     },
     [cardId, count, view, setMatchupStatDeckKey],
