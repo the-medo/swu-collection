@@ -3,6 +3,9 @@ import { useMemo, useCallback } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowDown, ArrowUp } from 'lucide-react';
+import { MatchupDisplayMode } from '@/components/app/tournaments/TournamentMatchups/types';
+import { getWinrateColorClass } from '@/components/app/tournaments/TournamentMatchups/utils/getWinrateColorClass';
+import { cn } from '@/lib/utils';
 
 // Define the structure of the card stats data
 export interface CardStat {
@@ -49,6 +52,7 @@ export const useMatchupCardStatsTableColumns = (
   selectedView: string,
   sorting: MatchupCardStatsTableSorting,
   setSorting: React.Dispatch<React.SetStateAction<MatchupCardStatsTableSorting>>,
+  displayMode: MatchupDisplayMode = 'winrate',
 ): ColumnDef<MatchupCardStatsTableRow>[] => {
   const handleSort = useCallback(
     (columnId: string) => {
@@ -76,6 +80,7 @@ export const useMatchupCardStatsTableColumns = (
     const cols: ColumnDef<MatchupCardStatsTableRow>[] = [
       {
         accessorKey: 'cardName',
+        size: 80,
         header: () => (
           <Button
             variant="ghost"
@@ -85,7 +90,9 @@ export const useMatchupCardStatsTableColumns = (
             Card {renderSortIcon('cardName')}
           </Button>
         ),
-        cell: ({ row }) => <div>{row.getValue('cardName') || row.getValue('cardId')}</div>,
+        cell: ({ row }) => (
+          <div className="px-2">{row.getValue('cardName') || row.getValue('cardId')}</div>
+        ),
       },
     ];
 
@@ -112,24 +119,63 @@ export const useMatchupCardStatsTableColumns = (
             {column}
           </Button>
         ),
+        size: 32,
         cell: ({ row }) => {
-          const value = row.getValue(columnId) as number;
           const total = row.original[`total_${column}`];
+          const cardId = row.original.cardId;
+          const stats = data.cardStats[cardId]?.[selectedView]?.[column];
 
-          if (isNaN(value) || total === 0) {
-            return <div className="text-right text-muted-foreground">N/A</div>;
+          if (!stats || total === 0) {
+            return <div className="text-right text-muted-foreground p-1 px-2">-</div>;
           }
+          const totalMatches = stats.matchWins + stats.matchLosses + stats.matchDraws;
+          const totalGames = stats.gameWins + stats.gameLosses + stats.gameDraws;
+          const winRateMatches = totalMatches > 0 ? (stats.matchWins / totalMatches) * 100 : 0;
+          const winRateGames = totalGames > 0 ? (stats.gameWins / totalGames) * 100 : 0;
 
-          return (
-            <div className="text-right font-medium">
-              {value.toFixed(2)}%
-              <span className="text-xs text-muted-foreground ml-2">({total})</span>
-            </div>
-          );
+          switch (displayMode) {
+            case 'winLoss': {
+              const colorClass = getWinrateColorClass(winRateMatches);
+              return (
+                <div className={cn('text-right font-medium p-1', colorClass)}>
+                  {stats.matchWins}/{stats.matchLosses}
+                  <span className="text-xs text-muted-foreground ml-2">({totalMatches})</span>
+                </div>
+              );
+            }
+            case 'gameWinLoss': {
+              const colorClass = getWinrateColorClass(winRateGames);
+              return (
+                <div className={cn('text-right font-medium p-1', colorClass)}>
+                  {stats.gameWins}/{stats.gameLosses}
+                  <span className="text-xs text-muted-foreground ml-2">({totalGames})</span>
+                </div>
+              );
+            }
+            case 'gameWinrate': {
+              const colorClass = getWinrateColorClass(winRateGames);
+              return (
+                <div className={cn('text-right font-medium p-1', colorClass)}>
+                  {winRateMatches.toFixed(2)}%
+                  <span className="text-xs text-muted-foreground ml-2">({totalGames})</span>
+                </div>
+              );
+            }
+            case 'winrate':
+            default: {
+              const colorClass = getWinrateColorClass(winRateMatches);
+              return (
+                <div className={cn('text-right font-medium h-full w-full p-1', colorClass)}>
+                  {winRateMatches.toFixed(2)}%
+                  <span className="text-xs text-muted-foreground ml-2">({totalMatches})</span>
+                </div>
+              );
+            }
+          }
         },
       });
     });
 
     return cols;
-  }, [data, selectedView, sorting, handleSort, renderSortIcon]);
+  }, [data, selectedView, sorting, handleSort, renderSortIcon, displayMode]);
 };

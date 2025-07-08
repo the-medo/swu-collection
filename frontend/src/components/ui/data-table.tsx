@@ -54,6 +54,7 @@ interface DataTableProps<TData, TValue> {
   infiniteScrollLoading?: boolean;
   enableRowSelection?: boolean;
   rowSelection?: RowSelectionState;
+  cellClassName?: string;
   onRowSelectionChange?: TableOptions<TData>['onRowSelectionChange']; //(newSelection: RowSelectionState) => void;
 }
 
@@ -79,6 +80,7 @@ export function DataTable<TData, TValue>({
   infiniteScrollLoading,
   enableRowSelection = false,
   rowSelection = {},
+  cellClassName,
   onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
@@ -189,10 +191,13 @@ export function DataTable<TData, TValue>({
                   <TableCell
                     key={cell.id}
                     onMouseEnter={() => onCellMouseEnter?.(cell, row)}
-                    className={cn({
-                      [`w-${cell.column.getSize()} min-w-${cell.column.getSize()}`]:
-                        cell.column.getSize() > 0,
-                    })}
+                    className={cn(
+                      {
+                        [`w-${cell.column.getSize()} min-w-${cell.column.getSize()}`]:
+                          cell.column.getSize() > 0,
+                      },
+                      cellClassName,
+                    )}
                   >
                     {loading ? (
                       <Skeleton

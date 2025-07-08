@@ -2,13 +2,17 @@ import * as React from 'react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import LeaderBaseStatSelector from '../LeaderBaseStatSelector';
-import { useSearch } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { useMatchupCardStats } from '@/api/card-stats';
 import { toast } from '@/hooks/use-toast.ts';
 import CardMatchupViewSelector, { CardMatchupView } from './CardMatchupViewSelector';
 import MatchupCardStatsTable from './MatchupCardStatsTable';
 import CardMatchupOverview from './CardMatchupOverview';
+import DisplayModeSelector from '@/components/app/tournaments/TournamentMatchups/components/DisplayModeSelector';
+import { MatchupDisplayMode } from '@/components/app/tournaments/TournamentMatchups/types';
+import { Route } from '@/routes/__root';
+import MobileCard from '@/components/ui/mobile-card.tsx';
 
 interface MatchupCardStatsProps {
   metaId?: number;
@@ -29,9 +33,17 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
     csLeaderId2,
     csBaseId2,
     csCardMatchupView = '1',
+    csCardMatchupDataView = 'winrate',
   } = useSearch({ strict: false });
+  const navigate = useNavigate({ from: Route.fullPath });
   const matchupCardStatsMutation = useMatchupCardStats();
   const [statsData, setStatsData] = useState<any>(null);
+
+  const handleDisplayModeChange = (value: MatchupDisplayMode) => {
+    navigate({
+      search: prev => ({ ...prev, csCardMatchupDataView: value }),
+    });
+  };
 
   const deck1ready = csLeaderId !== undefined || csBaseId !== undefined;
   const deck2ready = csLeaderId2 !== undefined || csBaseId2 !== undefined;
@@ -100,18 +112,30 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
 
       {statsData && (
         <div id="card-matchup-data" className="mt-8 space-y-4">
-          <CardMatchupViewSelector />
+          <div className="flex flex-row gap-2 flex-wrap">
+            <MobileCard>
+              <CardMatchupViewSelector />
+            </MobileCard>
+            <div className="w-0 border-r"></div>
+            <MobileCard>
+              <DisplayModeSelector
+                value={csCardMatchupDataView as MatchupDisplayMode}
+                onChange={handleDisplayModeChange}
+              />
+            </MobileCard>
+          </div>
 
           <div className="flex flex-row flex-wrap gap-4">
             <div className="flex-1 min-w-[500px]">
               <MatchupCardStatsTable
                 data={statsData}
                 selectedView={csCardMatchupView as CardMatchupView}
+                displayMode={csCardMatchupDataView as MatchupDisplayMode}
               />
             </div>
             <CardMatchupOverview
               data={statsData}
-              selectedView={csCardMatchupView as CardMatchupView}
+              displayMode={csCardMatchupDataView as MatchupDisplayMode}
             />
           </div>
         </div>

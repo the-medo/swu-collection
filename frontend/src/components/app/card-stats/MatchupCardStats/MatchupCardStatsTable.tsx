@@ -10,15 +10,21 @@ import {
 } from './useMatchupCardStatsTableColumns';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useMatchupCardStatsStoreActions } from './useMatchupCardStatsStore';
+import { MatchupDisplayMode } from '@/components/app/tournaments/TournamentMatchups/types';
 
 interface MatchupCardStatsTableProps {
   data: MatchupCardStatsData;
   selectedView: CardMatchupView;
+  displayMode?: MatchupDisplayMode;
 }
 
-const MatchupCardStatsTable: React.FC<MatchupCardStatsTableProps> = ({ data, selectedView }) => {
+const MatchupCardStatsTable: React.FC<MatchupCardStatsTableProps> = ({
+  data,
+  selectedView,
+  displayMode = 'winrate',
+}) => {
   const { data: cardList } = useCardList();
-  const { setSelectedCardId } = useMatchupCardStatsStoreActions();
+  const { setSelectedCardId, setHoveredCardId } = useMatchupCardStatsStoreActions();
 
   // State for sorting
   const [sorting, setSorting] = useState<MatchupCardStatsTableSorting>({
@@ -26,7 +32,6 @@ const MatchupCardStatsTable: React.FC<MatchupCardStatsTableProps> = ({ data, sel
     desc: false,
   });
 
-  // Handle row click to set the selected card ID
   const handleRowClick = useCallback(
     row => {
       setSelectedCardId(row.original.cardId);
@@ -34,8 +39,25 @@ const MatchupCardStatsTable: React.FC<MatchupCardStatsTableProps> = ({ data, sel
     [setSelectedCardId],
   );
 
+  const handleRowMouseEnter = useCallback(
+    row => {
+      setHoveredCardId(row.original.cardId);
+    },
+    [setHoveredCardId],
+  );
+
+  const handleRowMouseLeave = useCallback(() => {
+    setHoveredCardId(null);
+  }, [setHoveredCardId]);
+
   // Get columns from the hook
-  const columns = useMatchupCardStatsTableColumns(data, selectedView, sorting, setSorting);
+  const columns = useMatchupCardStatsTableColumns(
+    data,
+    selectedView,
+    sorting,
+    setSorting,
+    displayMode,
+  );
 
   // Transform the data for the table
   const tableData = useMemo<MatchupCardStatsTableRow[]>(() => {
@@ -51,11 +73,18 @@ const MatchupCardStatsTable: React.FC<MatchupCardStatsTableProps> = ({ data, sel
 
       if (boardStats[selectedView]) {
         Object.entries(boardStats[selectedView]).forEach(([count, stats]) => {
+          const computeGames = displayMode === 'gameWinrate' || displayMode === 'gameWinLoss';
           // Calculate win rate
-          const totalGames = stats.gameWins + stats.gameLosses + stats.gameDraws;
-          const winRate = totalGames > 0 ? (stats.gameWins / totalGames) * 100 : 0;
+          const total = computeGames
+            ? stats.gameWins + stats.gameLosses + stats.gameDraws
+            : stats.matchWins + stats.matchLosses + stats.matchDraws;
+          const winRate =
+            total > 0 ? ((computeGames ? stats.gameWins : stats.matchWins) / total) * 100 : 0;
 
           row[`winRate_${count}`] = winRate;
+          row[`ratio_${count}`] = computeGames
+            ? `${stats.gameWins}/${stats.gameLosses}`
+            : `${stats.matchWins}/${stats.matchLosses}`;
           row[`total_${count}`] = stats.total;
 
           // Check if this card has any non-zero counts
@@ -88,7 +117,7 @@ const MatchupCardStatsTable: React.FC<MatchupCardStatsTableProps> = ({ data, sel
 
       return (aValue - bValue) * multiplier;
     });
-  }, [data, cardList, selectedView, sorting]);
+  }, [data, cardList, selectedView, sorting, displayMode]);
 
   if (tableData.length === 0) {
     return (
@@ -106,6 +135,9 @@ const MatchupCardStatsTable: React.FC<MatchupCardStatsTableProps> = ({ data, sel
         columns={columns}
         data={tableData}
         onRowClick={handleRowClick}
+        onRowMouseEnter={handleRowMouseEnter}
+        onRowMouseLeave={handleRowMouseLeave}
+        cellClassName="p-0"
       />
     </div>
   );
