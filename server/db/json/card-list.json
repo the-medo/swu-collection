@@ -1782,6 +1782,96 @@
     "name": "Ahsoka Tano, Snips",
     "title": "Ahsoka Tano",
     "subtitle": "Snips",
+    "variants": {
+      "ahsoka-tano--snips-11-twilight-of-the-republic": {
+        "variantId": "ahsoka-tano--snips-11-twilight-of-the-republic",
+        "swuId": 13980,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 11,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ahsoka-tano--snips-11-twilight-of-the-republic-front.webp",
+          "back": "ahsoka-tano--snips-11-twilight-of-the-republic-back.webp"
+        }
+      },
+      "ahsoka-tano--snips-11-twilight-of-the-republic-prerelease-judge": {
+        "variantId": "ahsoka-tano--snips-11-twilight-of-the-republic-prerelease-judge",
+        "swuId": 17014,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 11,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Prerelease Judge",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ahsoka-tano--snips-11-twilight-of-the-republic-prerelease-judge-front.webp",
+          "back": "ahsoka-tano--snips-11-twilight-of-the-republic-prerelease-judge-back.webp"
+        }
+      },
+      "ahsoka-tano--snips-268-twilight-of-the-republic": {
+        "variantId": "ahsoka-tano--snips-268-twilight-of-the-republic",
+        "swuId": 16916,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 268,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Ann Maulina",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ahsoka-tano--snips-268-twilight-of-the-republic-front.webp",
+          "back": "ahsoka-tano--snips-268-twilight-of-the-republic-back.webp"
+        }
+      },
+      "ahsoka-tano--snips-1-twilight-of-the-republic": {
+        "variantId": "ahsoka-tano--snips-1-twilight-of-the-republic",
+        "swuId": 19456,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 1,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Hyperspace",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ahsoka-tano--snips-1-twilight-of-the-republic-front.webp",
+          "back": "ahsoka-tano--snips-1-twilight-of-the-republic-back.webp"
+        }
+      }
+    },
     "type": "Leader",
     "rarity": "Special",
     "cost": 5,
@@ -1814,57 +1904,7 @@
       "Force",
       "Jedi",
       "Republic"
-    ],
-    "variants": {
-      "ahsoka-tano--snips-11-twilight-of-the-republic": {
-        "swuId": 13980,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 11,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "OP Judge",
-        "artist": "David Buisan",
-        "image": {
-          "front": "ahsoka-tano--snips-11-twilight-of-the-republic-front.webp",
-          "back": "ahsoka-tano--snips-11-twilight-of-the-republic-back.webp"
-        },
-        "variantId": "ahsoka-tano--snips-11-twilight-of-the-republic"
-      },
-      "ahsoka-tano--snips-268-twilight-of-the-republic": {
-        "swuId": 16916,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 268,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": false,
-        "variantName": "Showcase",
-        "artist": "Ann Maulina",
-        "image": {
-          "front": "ahsoka-tano--snips-268-twilight-of-the-republic-front.webp",
-          "back": "ahsoka-tano--snips-268-twilight-of-the-republic-back.webp"
-        },
-        "variantId": "ahsoka-tano--snips-268-twilight-of-the-republic"
-      },
-      "ahsoka-tano--snips-1-twilight-of-the-republic": {
-        "swuId": 19456,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 1,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": false,
-        "variantName": "Hyperspace",
-        "artist": "David Buisan",
-        "image": {
-          "front": "ahsoka-tano--snips-1-twilight-of-the-republic-front.webp",
-          "back": "ahsoka-tano--snips-1-twilight-of-the-republic-back.webp"
-        },
-        "variantId": "ahsoka-tano--snips-1-twilight-of-the-republic"
-      }
-    }
+    ]
   },
   "aid-from-the-innocent": {
     "cardId": "aid-from-the-innocent",
@@ -20321,6 +20361,96 @@
     "name": "General Grievous, General of the Droid Armies",
     "title": "General Grievous",
     "subtitle": "General of the Droid Armies",
+    "variants": {
+      "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic": {
+        "variantId": "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic",
+        "swuId": 13985,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 15,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Prerelease Judge",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic-front.webp",
+          "back": "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic-back.webp"
+        }
+      },
+      "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic-prerelease-judge": {
+        "variantId": "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic-prerelease-judge",
+        "swuId": 17015,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 15,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Prerelease Judge",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic-prerelease-judge-front.webp",
+          "back": "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic-prerelease-judge-back.webp"
+        }
+      },
+      "general-grievous--general-of-the-droid-armies-272-twilight-of-the-republic": {
+        "variantId": "general-grievous--general-of-the-droid-armies-272-twilight-of-the-republic",
+        "swuId": 16936,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 272,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Sebastián Guidobono",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-grievous--general-of-the-droid-armies-272-twilight-of-the-republic-front.webp",
+          "back": "general-grievous--general-of-the-droid-armies-272-twilight-of-the-republic-back.webp"
+        }
+      },
+      "general-grievous--general-of-the-droid-armies-2-twilight-of-the-republic": {
+        "variantId": "general-grievous--general-of-the-droid-armies-2-twilight-of-the-republic",
+        "swuId": 19461,
+        "set": "twi",
+        "fullSetName": "Twilight of the Republic",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Hyperspace",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-grievous--general-of-the-droid-armies-2-twilight-of-the-republic-front.webp",
+          "back": "general-grievous--general-of-the-droid-armies-2-twilight-of-the-republic-back.webp"
+        }
+      }
+    },
     "type": "Leader",
     "rarity": "Special",
     "cost": 6,
@@ -20343,8 +20473,8 @@
       "Ground"
     ],
     "aspects": [
-      "Villainy",
-      "Cunning"
+      "Cunning",
+      "Villainy"
     ],
     "keywords": [
       "Sentinel"
@@ -20352,57 +20482,7 @@
     "traits": [
       "Separatist",
       "Official"
-    ],
-    "variants": {
-      "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic": {
-        "swuId": 13985,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 15,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "OP Judge",
-        "artist": "David Buisan",
-        "image": {
-          "front": "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic-front.webp",
-          "back": "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic-back.webp"
-        },
-        "variantId": "general-grievous--general-of-the-droid-armies-15-twilight-of-the-republic"
-      },
-      "general-grievous--general-of-the-droid-armies-272-twilight-of-the-republic": {
-        "swuId": 16936,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 272,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": false,
-        "variantName": "Showcase",
-        "artist": "Sebastián Guidobono",
-        "image": {
-          "front": "general-grievous--general-of-the-droid-armies-272-twilight-of-the-republic-front.webp",
-          "back": "general-grievous--general-of-the-droid-armies-272-twilight-of-the-republic-back.webp"
-        },
-        "variantId": "general-grievous--general-of-the-droid-armies-272-twilight-of-the-republic"
-      },
-      "general-grievous--general-of-the-droid-armies-2-twilight-of-the-republic": {
-        "swuId": 19461,
-        "set": "twi",
-        "fullSetName": "Twilight of the Republic",
-        "cardNo": 2,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": false,
-        "variantName": "Hyperspace",
-        "artist": "David Buisan",
-        "image": {
-          "front": "general-grievous--general-of-the-droid-armies-2-twilight-of-the-republic-front.webp",
-          "back": "general-grievous--general-of-the-droid-armies-2-twilight-of-the-republic-back.webp"
-        },
-        "variantId": "general-grievous--general-of-the-droid-armies-2-twilight-of-the-republic"
-      }
-    }
+    ]
   },
   "general-grievous--trophy-collector": {
     "cardId": "general-grievous--trophy-collector",
@@ -116218,6 +116298,150 @@
       "Rebel",
       "Droid",
       "Spectre"
+    ]
+  },
+  "street-gang-recruiter": {
+    "cardId": "street-gang-recruiter",
+    "updatedAt": "2024-07-16T22:00:56.726Z",
+    "name": "Street Gang Recruiter",
+    "title": "Street Gang Recruiter",
+    "subtitle": null,
+    "variants": {
+      "street-gang-recruiter-260-shadows-of-the-galaxy": {
+        "variantId": "street-gang-recruiter-260-shadows-of-the-galaxy",
+        "swuId": 6581,
+        "set": "shd",
+        "fullSetName": "Shadows of the Galaxy",
+        "cardNo": 260,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "Yvette Chua",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "street-gang-recruiter-260-shadows-of-the-galaxy-front.webp",
+          "back": null
+        }
+      },
+      "street-gang-recruiter-521-shadows-of-the-galaxy": {
+        "variantId": "street-gang-recruiter-521-shadows-of-the-galaxy",
+        "swuId": 7798,
+        "set": "shd",
+        "fullSetName": "Shadows of the Galaxy",
+        "cardNo": 521,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Hyperspace",
+        "artist": "Yvette Chua",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "street-gang-recruiter-521-shadows-of-the-galaxy-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 5,
+    "hp": 4,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": null,
+    "rules": "Street Gang Recruiter can return itself to hand if defeated before its “When Played” is resolved.\n",
+    "text": "When Played: You may return an Underworld card from your discard pile to your hand.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [],
+    "keywords": [],
+    "traits": [
+      "Underworld"
+    ]
+  },
+  "twin-pod-cloud-car": {
+    "cardId": "twin-pod-cloud-car",
+    "updatedAt": "2024-07-15T18:07:11.463Z",
+    "name": "Twin Pod Cloud Car",
+    "title": "Twin Pod Cloud Car",
+    "subtitle": null,
+    "variants": {
+      "twin-pod-cloud-car-259-shadows-of-the-galaxy": {
+        "variantId": "twin-pod-cloud-car-259-shadows-of-the-galaxy",
+        "swuId": 6576,
+        "set": "shd",
+        "fullSetName": "Shadows of the Galaxy",
+        "cardNo": 259,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "Christian Papazoglakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "twin-pod-cloud-car-259-shadows-of-the-galaxy-front.webp",
+          "back": null
+        }
+      },
+      "twin-pod-cloud-car-520-shadows-of-the-galaxy": {
+        "variantId": "twin-pod-cloud-car-520-shadows-of-the-galaxy",
+        "swuId": 7793,
+        "set": "shd",
+        "fullSetName": "Shadows of the Galaxy",
+        "cardNo": 520,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Hyperspace",
+        "artist": "Christian Papazoglakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "twin-pod-cloud-car-520-shadows-of-the-galaxy-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 3,
+    "hp": 2,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": null,
+    "rules": null,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [],
+    "keywords": [
+      "Restore"
+    ],
+    "traits": [
+      "Fringe",
+      "Vehicle",
+      "Fighter"
     ]
   }
 }
