@@ -8,13 +8,15 @@ import {
 import CardMatchupDecks from './CardMatchupDecks';
 import { useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
+import { cardMatchupViewLabels } from '@/components/app/card-stats/MatchupCardStats/CardMatchupOverview.tsx';
+import { CardMatchupView } from './CardMatchupViewSelector';
 
 type CardMatchupDecksDialogProps = {
   trigger: React.ReactNode;
   cardId: string;
   cardName: string;
   count: string;
-  view: string;
+  view: CardMatchupView;
 };
 
 const CardMatchupDecksDialog: React.FC<CardMatchupDecksDialogProps> = ({
@@ -49,10 +51,13 @@ const CardMatchupDecksDialog: React.FC<CardMatchupDecksDialogProps> = ({
 
   const open = overviewId !== null && matchupStatDeckKey === key;
 
+  const notContaining = count === '0' || count === '0+0';
+  const header = `Decks ${notContaining ? 'not containing' : 'containing'} "${cardName}" in ${cardMatchupViewLabels[view]} ${notContaining ? '' : `(${count})`}`;
+
   return (
     <Dialog
       trigger={trigger}
-      header={`Decks containing "${cardName}" (${count})`}
+      header={header}
       size="large"
       onOpenChange={onOpenChange}
       open={open}

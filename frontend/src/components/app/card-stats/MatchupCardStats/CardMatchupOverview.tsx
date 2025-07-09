@@ -17,7 +17,7 @@ interface CardMatchupOverviewProps {
 }
 
 // Map of view values to display names
-const viewLabels: Record<CardMatchupView, string> = {
+export const cardMatchupViewLabels: Record<CardMatchupView, string> = {
   '1': 'Main deck',
   '2': 'Sideboard',
   'both-decks-together': 'Main + sideboard',
@@ -54,7 +54,7 @@ const CardMatchupOverview: React.FC<CardMatchupOverviewProps> = ({
     // Determine the value to display based on displayMode
     let value;
     let colorClass;
-    let valueClass = 'w-[80px] text-right font-medium';
+    let valueClass = 'w-[80px] text-right font-medium text-foreground';
 
     switch (displayMode) {
       case 'gameWinLoss':
@@ -133,7 +133,7 @@ const CardMatchupOverview: React.FC<CardMatchupOverviewProps> = ({
           <div className="space-y-4">
             {cardMatchupViewArray.map(view => (
               <div key={view}>
-                <h6 className="mb-0">{viewLabels[view]}</h6>
+                <h6 className="mb-0">{cardMatchupViewLabels[view]}</h6>
                 {renderSection(view)}
               </div>
             ))}

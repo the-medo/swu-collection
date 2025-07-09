@@ -13,10 +13,7 @@ import DisplayModeSelector from '@/components/app/tournaments/TournamentMatchups
 import { MatchupDisplayMode } from '@/components/app/tournaments/TournamentMatchups/types';
 import { Route } from '@/routes/__root';
 import MobileCard from '@/components/ui/mobile-card.tsx';
-import {
-  useMatchupCardStatsStore,
-  useMatchupCardStatsStoreActions,
-} from '@/components/app/card-stats/MatchupCardStats/useMatchupCardStatsStore.ts';
+import { useMatchupCardStatsStoreActions } from '@/components/app/card-stats/MatchupCardStats/useMatchupCardStatsStore.ts';
 
 interface MatchupCardStatsProps {
   metaId?: number;
