@@ -72,7 +72,7 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
                     {owned ? (
                       //@ts-ignore
                       <CollectionCardInput
-                        key={getCollectionCardIdentificationKey(id)}
+                        inputId={getCollectionCardIdentificationKey(id)}
                         id={id}
                         field="price"
                         value={c.price}
@@ -96,7 +96,7 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
                 {owned ? (
                   // @ts-ignore
                   <CollectionCardInput
-                    key={getCollectionCardIdentificationKey(id)}
+                    inputId={getCollectionCardIdentificationKey(id)}
                     id={id}
                     field="amount"
                     value={c.amount}

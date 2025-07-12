@@ -67,8 +67,8 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
           if (cardIndex >= 0) {
             const updatedCard = {
               ...existingCards[cardIndex],
-              amount: (existingCards[cardIndex].amount || 0) + (result.data.amount || 0),
-              amount2: (existingCards[cardIndex].amount2 || 0) + (result.data.amount2 || 0),
+              amount: result.data.amount || 0,
+              amount2: result.data.amount2 || 0,
               note: result.data.note ?? existingCards[cardIndex].note,
               price: result.data.price ?? existingCards[cardIndex].price,
             } as CollectionCard;
