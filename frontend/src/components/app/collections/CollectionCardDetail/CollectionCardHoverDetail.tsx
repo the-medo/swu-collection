@@ -83,7 +83,7 @@ const CollectionCardHoverDetail: React.FC<CollectionCardDetailProps> = ({
                   {owned ? (
                     //@ts-ignore
                     <CollectionCardInput
-                      key={getCollectionCardIdentificationKey(id)}
+                      inputId={getCollectionCardIdentificationKey(id)}
                       id={id}
                       field="price"
                       value={collectionCard.price}
@@ -104,7 +104,7 @@ const CollectionCardHoverDetail: React.FC<CollectionCardDetailProps> = ({
                   {owned ? (
                     //@ts-ignore
                     <CollectionCardInput
-                      key={getCollectionCardIdentificationKey(id)}
+                      inputId={getCollectionCardIdentificationKey(id)}
                       id={id}
                       field="note"
                       value={collectionCard.note}

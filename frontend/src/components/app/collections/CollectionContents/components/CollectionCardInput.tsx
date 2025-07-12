@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 
 export type CollectionCardInputProps = {
   id: CollectionCardIdentification;
-  key: string;
+  inputId: string;
   wide?: boolean;
   ghost?: boolean;
 } & (
@@ -47,17 +47,17 @@ const DEBOUNCE_DELAY = 500;
 
 const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   id,
-  key,
+  inputId,
   field,
   wide = false,
   ghost = false,
   value,
   onChange,
 }) => {
-  const [inputValue, setInputValue] = React.useState<string | number | undefined>(value);
+  const [inputValue, setInputValue] = React.useState<string | number | undefined>(value ?? '');
 
   useEffect(() => {
-    setInputValue(value);
+    setInputValue(value ?? '');
   }, [value]);
 
   const debouncedOnChange = React.useMemo(
@@ -94,7 +94,7 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
 
   return (
     <Input
-      id={key}
+      id={inputId}
       placeholder=""
       className={cn('h-8', {
         'px-1 pl-2 text-right': field !== 'note',

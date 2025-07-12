@@ -88,7 +88,7 @@ export function useCollectionCardTableColumns({
           return (
             // @ts-ignore
             <CollectionCardInput
-              key={getCollectionCardIdentificationKey(id)}
+              inputId={getCollectionCardIdentificationKey(id)}
               id={id}
               field="amount"
               value={amount}
@@ -299,7 +299,7 @@ export function useCollectionCardTableColumns({
           return (
             // @ts-ignore
             <CollectionCardInput
-              key={getCollectionCardIdentificationKey(id)}
+              inputId={getCollectionCardIdentificationKey(id)}
               id={id}
               field="note"
               value={note}
@@ -349,7 +349,7 @@ export function useCollectionCardTableColumns({
             {owned ? (
               //@ts-ignore
               <CollectionCardInput
-                key={getCollectionCardIdentificationKey(id)}
+                inputId={getCollectionCardIdentificationKey(id)}
                 id={id}
                 field="price"
                 value={price}
