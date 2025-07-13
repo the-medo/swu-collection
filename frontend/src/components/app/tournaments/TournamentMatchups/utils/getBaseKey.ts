@@ -1,11 +1,6 @@
-import { isBasicBase } from '../../../../../../../shared/lib/isBasicBase.ts';
+import { getSpecialBaseName } from '../../../../../../../shared/lib/basicBases.ts';
 
 // Helper function to get base key
-export const getBaseKey = (
-  baseCardId: string | undefined | null,
-  baseAspect: string | undefined | null,
-  cardListData: any,
-): string => {
-  const baseCard = baseCardId ? cardListData?.cards[baseCardId] : undefined;
-  return (isBasicBase(baseCard) ? (baseAspect ?? baseCard.aspects[0]) : baseCardId) ?? '';
+export const getBaseKey = (baseCardId: string | undefined | null): string => {
+  return getSpecialBaseName(baseCardId ?? undefined) ?? baseCardId ?? '';
 };

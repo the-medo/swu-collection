@@ -58,11 +58,7 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
 
     decks.forEach(deck => {
       const leaderKey = deck.deck?.leaderCardId1;
-      const baseKey = getBaseKey(
-        deck.deck?.baseCardId,
-        deck.deckInformation?.baseAspect,
-        cardListData,
-      );
+      const baseKey = getBaseKey(deck.deck?.baseCardId);
       const key = `${leaderKey}|${baseKey}`;
       if (key) countMap.set(key, (countMap.get(key) || 0) + 1);
     });

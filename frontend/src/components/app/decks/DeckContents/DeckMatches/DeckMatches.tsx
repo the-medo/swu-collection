@@ -63,7 +63,7 @@ const DeckMatches: React.FC<DeckMatchesProps> = ({ deckId, setDeckId }) => {
               </td>
               <td className="px-1 w-[200px] text-[12px]">
                 {labelRenderer(
-                  getDeckLeadersAndBaseKey(d.opponentDeck, d.opponentDeckInfo, cardListData),
+                  getDeckLeadersAndBaseKey(d.opponentDeck, cardListData),
                   'leadersAndBase',
                   'compact',
                 )}

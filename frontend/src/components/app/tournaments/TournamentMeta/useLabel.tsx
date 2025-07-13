@@ -10,6 +10,7 @@ import { isAspect } from '@/lib/cards/isAspect.ts';
 import { getBaseShortcut } from '@/lib/cards/getBaseShortcut.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
+import { baseSpecialNameValues } from '../../../../../../shared/lib/basicBases.ts';
 
 export type DeckKeyLabelType = 'text' | 'compact' | 'image' | 'image-small';
 
@@ -33,6 +34,25 @@ export function useLabel() {
       let baseCardId: string | undefined;
       let aspects: SwuAspect[] = [];
       let aspectIconSize: IconVariantProps['size'] = 'xSmall';
+      let isBasicForceBase = false;
+
+      const processBase = (baseSplit: string) => {
+        // special base name - can be either aspect name or in format `Aspect-Force`, for example `Cunning-Force`
+        if (baseSpecialNameValues.has(baseSplit)) {
+          const specialNameSplitByDash = baseSplit.split('-');
+          if (specialNameSplitByDash.length === 1) {
+            // dash not found, not a force base
+            aspects.push(baseSplit as SwuAspect);
+          } else if (specialNameSplitByDash.length === 2) {
+            aspects.push(specialNameSplitByDash[0] as SwuAspect);
+            isBasicForceBase = true;
+          }
+        } else if (isAspect(baseSplit)) {
+          aspects.push(baseSplit as SwuAspect);
+        } else {
+          baseCardId = baseSplit;
+        }
+      };
 
       switch (metaInfo) {
         case 'leaders':
@@ -41,18 +61,10 @@ export function useLabel() {
         case 'leadersAndBase':
           const split = value.split('|');
           leaderCardId = split[0];
-          if (isAspect(split[1])) {
-            aspects.push(split[1] as SwuAspect);
-          } else {
-            baseCardId = split[1];
-          }
+          processBase(split[1]);
           break;
         case 'bases':
-          if (isAspect(value)) {
-            aspects.push(value as SwuAspect);
-          } else {
-            baseCardId = value;
-          }
+          processBase(value);
           break;
         case 'aspects':
           aspects.push(value as SwuAspect);
@@ -80,7 +92,7 @@ export function useLabel() {
       const leaderSet = defaultVariant ? leaderCard?.variants[defaultVariant]?.set : undefined;
 
       if (type === 'text') {
-        return `${leaderCardId ? cardList[leaderCardId]?.title : ''} ${leaderSet ? `(${leaderSet?.toUpperCase()})` : ''} ${baseCardId ? cardList[baseCardId]?.name : ''}${aspects.length ? ` ${aspects.join(', ')}` : ''}`;
+        return `${leaderCardId ? cardList[leaderCardId]?.title : ''} ${leaderSet ? `(${leaderSet?.toUpperCase()})` : ''} ${baseCardId ? cardList[baseCardId]?.name : ''}${aspects.length ? ` ${aspects.join(', ')}` : ''}${isBasicForceBase ? '-Force' : ''}`;
       } else if (type === 'compact') {
         return (
           <div
@@ -99,11 +111,17 @@ export function useLabel() {
             )}
             <div className="flex flex-row gap-2 items-center">
               {baseCard && metaInfo !== 'leadersAndBase' && <span>{baseCard.name}</span>}
+
               {aspects.map(a => (
                 <AspectIcon aspect={a} size={aspectIconSize} />
               ))}
-              {metaInfo === 'leadersAndBase' && (
-                <span className="w-[20px]">{getBaseShortcut(baseCard?.name)}</span>
+              {metaInfo === 'leadersAndBase' ? (
+                <span className="w-[20px]">
+                  {getBaseShortcut(baseCard?.name)}
+                  {isBasicForceBase && <AspectIcon aspect="force" size={aspectIconSize} />}
+                </span>
+              ) : (
+                <>{isBasicForceBase && <AspectIcon aspect="force" size={aspectIconSize} />}</>
               )}
             </div>
           </div>
@@ -130,6 +148,7 @@ export function useLabel() {
               />
             )}
             {!baseCardId && aspects.map(a => <AspectIcon key={a} aspect={a} />)}
+            {isBasicForceBase && <AspectIcon aspect="force" />}
           </div>
         );
       }
