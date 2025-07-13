@@ -42,7 +42,7 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
   const { groupBy, sortBy, layout } = useCollectionLayoutStore();
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
   const [groupLoading, setGroupLoading] = useState<boolean>(true);
-  const [sortLoading, setSortLoading] = useState<boolean>(true);
+  const [sortLoading, setSortLoading] = useState<boolean>(depth === groupBy.length);
   const [cardData, setCardData] = useState<CollectionCard[]>([]);
   const [groupData, setGroupData] = useState<CardGroupData>();
 
@@ -136,6 +136,7 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
               </AccordionTrigger>
               <AccordionContent>
                 <CollectionGroups
+                  key={id}
                   depth={depth + 1}
                   cards={cards}
                   horizontal={horizontal || groupData.groups[id]?.horizontal}
