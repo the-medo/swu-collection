@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useCardStats } from '@/api/card-stats/useCardStats.ts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Link, useNavigate, useSearch } from '@tanstack/react-router';
+import { Link, useSearch } from '@tanstack/react-router';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useMemo } from 'react';
 import CardStatsWithOptions from '@/components/app/card-stats/CardStatsWithOptions/CardStatsWithOptions.tsx';
@@ -13,7 +13,10 @@ import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectD
 import { useTournamentMetaStore } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import { getBaseKey } from '@/components/app/tournaments/TournamentMatchups/utils/getBaseKey.ts';
 import { isAspect } from '@/lib/cards/isAspect.ts';
-import { basicBaseForAspect } from '../../../../../../shared/lib/basicBases.ts';
+import {
+  basicBaseForAspect,
+  basicForceBaseForAspect,
+} from '../../../../../../shared/lib/basicBases.ts';
 import { SwuAspect } from '../../../../../../types/enums.ts';
 import LeaderBaseStatSelector from '../LeaderBaseStatSelector';
 
@@ -112,13 +115,16 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
     const topLeaders = Object.keys(topPlayedData.data).slice(0, 10);
 
     return topLeaders.map(leaderBaseKey => {
-      const [leaderId, baseId] = leaderBaseKey.split('|');
+      let [leaderId, baseId] = leaderBaseKey.split('|');
       // Get the leader card details
       const leaderCard = cardListData.cards[leaderId];
 
-      const baseCard = isAspect(baseId)
+      let baseCard = isAspect(baseId)
         ? cardListData.cards[basicBaseForAspect[baseId as SwuAspect]]
         : cardListData.cards[baseId];
+
+      const forceBaseId = basicForceBaseForAspect[baseId];
+      if (forceBaseId) baseCard = cardListData.cards[forceBaseId];
 
       // Get the top cards for this leader
       const topCards = topPlayedData.data[leaderBaseKey].map(cardStat => {
@@ -205,35 +211,36 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
                   baseCard,
                   topCards,
                   deckCount,
-                }) => (
-                  <div key={leaderBaseKey} className="space-y-2">
-                    <div className="flex items-center gap-4 w-full">
-                      <div className="flex flex-col gap-2">
-                        <Link
-                          to="."
-                          search={prev => ({ ...prev, csLeaderId: leaderId, csBaseId: baseId })}
-                          className="hover:opacity-80"
-                        >
-                          <CardImage
-                            card={leaderCard}
-                            cardVariantId={
-                              leaderCard ? selectDefaultVariant(leaderCard) : undefined
-                            }
-                            size="w100"
-                            forceHorizontal={true}
-                          />
-                          <CardImage
-                            card={baseCard}
-                            cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}
-                            size="w100"
-                            forceHorizontal={true}
-                          />
-                        </Link>
-                        {correctDeckCount && (
-                          <span className="text-sm">Deck count: {deckCount}</span>
-                        )}
-                      </div>
-                      {topCards.length > 0 ? (
+                }) => {
+                  if (topCards.length === 0) return null;
+                  return (
+                    <div key={leaderBaseKey} className="space-y-2">
+                      <div className="flex items-center gap-4 w-full">
+                        <div className="flex flex-col gap-2">
+                          <Link
+                            to="."
+                            search={prev => ({ ...prev, csLeaderId: leaderId, csBaseId: baseId })}
+                            className="hover:opacity-80"
+                          >
+                            <CardImage
+                              card={leaderCard}
+                              cardVariantId={
+                                leaderCard ? selectDefaultVariant(leaderCard) : undefined
+                              }
+                              size="w100"
+                              forceHorizontal={true}
+                            />
+                            <CardImage
+                              card={baseCard}
+                              cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}
+                              size="w100"
+                              forceHorizontal={true}
+                            />
+                          </Link>
+                          {correctDeckCount && (
+                            <span className="text-sm">Deck count: {deckCount}</span>
+                          )}
+                        </div>
                         <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
                           {topCards.map((item, index) => (
                             <CardStatistic
@@ -250,12 +257,10 @@ const LeaderBaseCardStats: React.FC<LeaderBaseCardStatsProps> = ({
                             />
                           ))}
                         </div>
-                      ) : (
-                        <p className="text-muted-foreground">No cards for this leader</p>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                ),
+                  );
+                },
               )}
             </div>
           ) : (
