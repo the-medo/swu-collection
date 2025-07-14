@@ -3,6 +3,7 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCallback } from 'react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { isAspect } from '@/lib/cards/isAspect.ts';
+import { baseSpecialNameValues } from '../../../../../../shared/lib/basicBases.ts';
 
 const aspectColors: Record<SwuAspect, string> = {
   [SwuAspect.VIGILANCE]: '#6694ce', // c61 m34 y0 k0
@@ -38,6 +39,23 @@ export const useChartColorsAndGradients = () => {
       let baseCardId: string | undefined;
       const aspects = new Set<SwuAspect>();
 
+      const processBase = (baseSplit: string) => {
+        // special base name - can be either aspect name or in format `Aspect-Force`, for example `Cunning-Force`
+        if (baseSpecialNameValues.has(baseSplit)) {
+          const specialNameSplitByDash = baseSplit.split('-');
+          if (specialNameSplitByDash.length === 1) {
+            // dash not found, not a force base
+            aspects.add(baseSplit as SwuAspect);
+          } else if (specialNameSplitByDash.length === 2) {
+            aspects.add(specialNameSplitByDash[0] as SwuAspect);
+          }
+        } else if (isAspect(baseSplit)) {
+          aspects.add(baseSplit as SwuAspect);
+        } else {
+          baseCardId = baseSplit;
+        }
+      };
+
       switch (metaInfo) {
         case 'leaders':
           leaderCardId = value;
@@ -45,19 +63,11 @@ export const useChartColorsAndGradients = () => {
         case 'leadersAndBase': {
           const split = value.split('|');
           leaderCardId = split[0];
-          if (isAspect(split[1])) {
-            aspects.add(split[1] as SwuAspect);
-          } else {
-            baseCardId = split[1];
-          }
+          processBase(split[1]);
           break;
         }
         case 'bases':
-          if (isAspect(value)) {
-            aspects.add(value as SwuAspect);
-          } else {
-            baseCardId = value;
-          }
+          processBase(value);
           break;
         case 'aspects':
           aspects.add(value as SwuAspect);
