@@ -169,6 +169,13 @@
       "when": 1751903980175,
       "tag": "0023_first_captain_universe",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1752485098642,
+      "tag": "0024_nappy_champions",
+      "breakpoints": true
     }
   ]
 }
