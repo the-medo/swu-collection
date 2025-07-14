@@ -5,7 +5,7 @@ import { zodValidator } from '@tanstack/zod-adapter';
 import { tournamentTypes } from '../../../../types/Tournament.ts';
 import MetaPage from '@/components/app/meta/MetaPage/MetaPage.tsx';
 
-export const DEFAULT_MIN_TOURNAMENT_TYPE = 'sq';
+export const DEFAULT_MIN_TOURNAMENT_TYPE = 'local';
 
 const searchParams = z.object({
   formatId: z
