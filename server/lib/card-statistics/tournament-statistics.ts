@@ -20,6 +20,7 @@ import type {
 import { isBasicBase } from '../../../shared/lib/isBasicBase.ts';
 import { cardList } from '../../db/lists.ts';
 import { batchArray } from '../utils/batch.ts';
+import { getBaseKey } from '../../../shared/lib/basicBases.ts';
 
 /**
  * Fetches all data needed for tournament statistics computation
@@ -103,14 +104,7 @@ function computeTournamentStatistics(
     let baseCardId = deckData.baseCardId;
     const addToDeckCount = deckCardsAdded[deckId][cardId] ? 0 : 1;
 
-    const baseCard = cardList[baseCardId];
-    if (!baseCard) continue; // Skip if base card was not found for some reason
-
-    // In case of "basic" bases, we want to save it as the aspect of the base...
-    // ...just careful later, because all aspect names also have corresponding normal cards
-    if (isBasicBase(baseCard)) {
-      baseCardId = baseCard.aspects[0];
-    }
+    baseCardId = getBaseKey(baseCardId);
 
     const isMd = card.board === 1;
     const quantity = card.quantity;

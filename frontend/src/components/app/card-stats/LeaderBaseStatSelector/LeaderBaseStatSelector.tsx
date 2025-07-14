@@ -6,10 +6,8 @@ import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx'
 import { Route } from '@/routes/__root.tsx';
 import { useCallback } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { isAspect } from '@/lib/cards/isAspect.ts';
-import { basicBaseForAspect } from '../../../../../../shared/lib/basicBases.ts';
+import { baseSpecialNames, basicBaseForAspect } from '../../../../../../shared/lib/basicBases.ts';
 import { SwuAspect } from '../../../../../../types/enums.ts';
-import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
 
 interface LeaderBaseStatSelectorProps {
@@ -36,10 +34,8 @@ const LeaderBaseStatSelector: React.FC<LeaderBaseStatSelectorProps> = ({
   const onBaseSelected = useCallback(
     (baseId: string | undefined) => {
       if (baseId) {
-        const baseCard = cardListData?.cards[baseId];
-        if (baseCard && isBasicBase(baseCard)) {
-          baseId = baseCard.aspects[0];
-        }
+        const specialName = baseSpecialNames[baseId];
+        if (specialName) baseId = specialName;
       }
 
       navigate({
@@ -82,7 +78,7 @@ const LeaderBaseStatSelector: React.FC<LeaderBaseStatSelectorProps> = ({
       <div className="flex flex-col gap-2">
         <BaseSelector
           trigger={null}
-          baseCardId={isAspect(baseId) ? basicBaseForAspect[baseId as SwuAspect] : baseId}
+          baseCardId={basicBaseForAspect[baseId as SwuAspect] ?? baseId}
           onBaseSelected={onBaseSelected}
           size={size}
         />

@@ -7,22 +7,24 @@ export const basicBases: Record<string, true | undefined> = {
   'administrator-s-tower': true, // cunning
 };
 
-export const basicBaseForAspect: Record<SwuAspect, string> = {
+export const basicBaseForAspect: Record<SwuAspect | string, string> = {
   [SwuAspect.VIGILANCE]: 'capital-city',
   [SwuAspect.COMMAND]: 'command-center',
   [SwuAspect.AGGRESSION]: 'catacombs-of-cadera',
   [SwuAspect.CUNNING]: 'administrator-s-tower',
   [SwuAspect.HEROISM]: '',
   [SwuAspect.VILLAINY]: '',
+  ['Vigilance-Force']: 'nightsister-lair',
+  ['Command-Force']: 'jedi-temple',
+  ['Aggression-Force']: 'fortress-vader',
+  ['Cunning-Force']: 'crystal-caves',
 };
 
-export const basicForceBaseForAspect: Record<SwuAspect, string> = {
-  [SwuAspect.VIGILANCE]: 'nightsister-lair',
-  [SwuAspect.COMMAND]: 'jedi-temple',
-  [SwuAspect.AGGRESSION]: 'fortress-vader',
-  [SwuAspect.CUNNING]: 'crystal-caves',
-  [SwuAspect.HEROISM]: '',
-  [SwuAspect.VILLAINY]: '',
+export const basicForceBaseForAspect: Record<string, string> = {
+  ['Vigilance-Force']: 'nightsister-lair',
+  ['Command-Force']: 'jedi-temple',
+  ['Aggression-Force']: 'fortress-vader',
+  ['Cunning-Force']: 'crystal-caves',
 };
 
 export const baseSpecialNames: Record<string, string> = {
@@ -86,3 +88,7 @@ export const getSpecialBaseName = (baseCardId: string | undefined) =>
       ? baseCardId
       : baseSpecialNames[baseCardId]
     : undefined;
+
+export const getBaseKey = (baseCardId: string | undefined | null): string => {
+  return getSpecialBaseName(baseCardId ?? undefined) ?? baseCardId ?? '';
+};

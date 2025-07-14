@@ -60,13 +60,12 @@ export const getTotalDeckCountBasedOnMetaPart = (
 
 export const getDeckLeadersAndBaseKey = (
   deck: TournamentDeckResponse['deck'] | null,
-  deckInformation: DeckInformation | null,
   cardListData: CardListResponse | undefined,
 ) => {
   if (!deck || !cardListData) return '';
   // Use leader card IDs and base card ID as key
   const leaderKey = [deck.leaderCardId1, deck.leaderCardId2].filter(Boolean).sort().join('-');
-  const baseKeyValue = getBaseKey(deck.baseCardId, deckInformation?.baseAspect, cardListData);
+  const baseKeyValue = getBaseKey(deck.baseCardId);
   return `${leaderKey}|${baseKeyValue}`;
 };
 
@@ -77,7 +76,7 @@ export const getDeckLeadersAndBaseKey2 = (
 ) => {
   if (!cardListData) return '';
   const leaderKey = leaderCardId;
-  const baseKeyValue = getBaseKey(baseCardId, undefined, cardListData);
+  const baseKeyValue = getBaseKey(baseCardId);
   return `${leaderKey}|${baseKeyValue}`;
 };
 
@@ -97,10 +96,10 @@ export const getDeckKey = (
       key = [deck.deck.leaderCardId1, deck.deck.leaderCardId2].filter(Boolean).sort().join('-');
       break;
     case 'leadersAndBase':
-      key = getDeckLeadersAndBaseKey(deck.deck, deck.deckInformation, cardListData);
+      key = getDeckLeadersAndBaseKey(deck.deck, cardListData);
       break;
     case 'bases':
-      key = getBaseKey(deck.deck.baseCardId, deck.deckInformation?.baseAspect, cardListData);
+      key = getBaseKey(deck.deck.baseCardId);
       break;
     case 'aspectsBase':
       // Use base aspect as key
@@ -176,7 +175,7 @@ export const getDeckKey2 = (
       key = getDeckLeadersAndBaseKey2(leaderCardId, baseCardId, cardListData);
       break;
     case 'bases':
-      key = getBaseKey(baseCardId, undefined, cardListData);
+      key = getBaseKey(baseCardId);
       break;
     case 'aspectsBase':
       // Use base aspect as key
