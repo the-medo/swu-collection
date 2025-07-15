@@ -1,5 +1,10 @@
 import { Store, useStore } from '@tanstack/react-store';
 import { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
+import {
+  CardDataWithVariants,
+  type CardListVariants,
+  type CardVariant,
+} from '../../../../../../../lib/swu-resources/types.ts';
 
 export interface CardGroupInfoData {
   id: string;
@@ -8,6 +13,12 @@ export interface CardGroupInfoData {
   subGroupIds: string[];
   level: number;
 }
+
+export type CollectionCardExtended = {
+  collectionCard: CollectionCard;
+  card?: CardDataWithVariants<CardListVariants>;
+  variant?: CardVariant;
+};
 
 export type CardGroupInfo = Record<string, CardGroupInfoData>;
 
@@ -20,7 +31,7 @@ interface CollectionGroupStore {
   groupInfo: CardGroupInfo;
 
   // Collection cards mapped by their keys
-  collectionCards: Record<string, CollectionCard>;
+  collectionCards: Record<string, CollectionCardExtended>;
 
   // Group cards - groupIds mapped to sorted array of collectionCard keys
   groupCards: Record<string, string[]>;
@@ -46,7 +57,7 @@ const setCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>) =>
     ...data,
   }));
 
-const setCollectionCards = (cards: Record<string, CollectionCard>) =>
+const setCollectionCards = (cards: Record<string, CollectionCardExtended>) =>
   store.setState(state => ({
     ...state,
     collectionCards: {
@@ -60,7 +71,10 @@ const updateCollectionCard = (key: string, card: CollectionCard) =>
     ...state,
     collectionCards: {
       ...state.collectionCards,
-      [key]: card,
+      [key]: {
+        ...state.collectionCards[key],
+        collectionCard: card,
+      },
     },
   }));
 
@@ -85,14 +99,16 @@ const setGroupInfo = (groupId: string, info: CardGroupInfoData) =>
 const clearStore = () => store.setState(() => defaultState);
 
 // Hook to access the store state
+export function useCollectionGroupStoreLoading() {
+  return useStore(store, state => state.loading);
+}
+
 export function useCollectionGroupStore() {
-  const loading = useStore(store, state => state.loading);
   const groupInfo = useStore(store, state => state.groupInfo);
   const collectionCards = useStore(store, state => state.collectionCards);
   const groupCards = useStore(store, state => state.groupCards);
 
   return {
-    loading,
     groupInfo,
     collectionCards,
     groupCards,
