@@ -120,9 +120,15 @@ export function useGroupCards(groupId: string) {
   return useStore(store, state => state.groupCards[groupId] || []);
 }
 
-// Hook to access a specific collection card
-export function useCollectionCard(cardKey: string) {
-  return useStore(store, state => state.collectionCards[cardKey]);
+// Hooks to access a specific collection card
+export function useCCDetail(cardKey: string) {
+  return useStore(store, state => state.collectionCards[cardKey].collectionCard);
+}
+export function useCCVariant(cardKey: string) {
+  return useStore(store, state => state.collectionCards[cardKey].variant);
+}
+export function useCCCard(cardKey: string) {
+  return useStore(store, state => state.collectionCards[cardKey].card);
 }
 
 // Hook to access a specific group's info
