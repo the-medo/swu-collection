@@ -21,6 +21,9 @@ import { sortCardsByCardNumber } from '@/components/app/collections/CollectionCo
 import { sortCardsByPrice } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByPrice.ts';
 import { sortCardsByQty } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByQty.ts';
 
+export const getCardKey = (card: CollectionCard) =>
+  `${card.cardId}|${card.variantId}|${card.foil}|${card.condition}|${card.language}`;
+
 type CardGroup<T = CollectionCard> = {
   id: string;
   label: string;

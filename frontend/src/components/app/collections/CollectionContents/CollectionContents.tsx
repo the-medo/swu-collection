@@ -1,10 +1,11 @@
-import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards.ts';
 import CollectionLayoutSettings from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionLayoutSettings.tsx';
 import CollectionGroups from '@/components/app/collections/CollectionContents/CollectionGroups/CollectionGroups.tsx';
-import { CollectionCard } from '../../../../../../types/CollectionCard.ts';
 import CollectionFilter from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionFilter.tsx';
-import { useCollectionFilterStore } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionFilterStore.ts';
-import { useEffect, useState } from 'react';
+import { useCollectionGroupData } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupData.ts';
+import {
+  useCollectionGroup,
+  useCollectionGroupStore,
+} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { cn } from '@/lib/utils.ts';
 import { Card, CardHeader } from '@/components/ui/card.tsx';
 
@@ -13,33 +14,15 @@ interface CollectionContentsProps {
 }
 
 const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId }) => {
-  const { data } = useGetCollectionCards(collectionId);
-  const { search } = useCollectionFilterStore();
+  // Use the new hook to initialize data
+  useCollectionGroupData(collectionId);
 
-  const [cards, setCards] = useState<CollectionCard[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const group = useCollectionGroup(collectionId);
 
-  useEffect(() => {
-    // Set loading true before starting the computation.
-    setLoading(true);
+  console.log({ group });
 
-    // Use setTimeout to allow the UI to update and show the loading indicator.
-    const handle = setTimeout(() => {
-      const collectionCards = (data?.data ?? []) as unknown as CollectionCard[];
-
-      if (search !== '') {
-        const s = search.toLowerCase().replace(/[^a-zA-Z0-9]/g, '-');
-        setCards(collectionCards.filter(c => c.cardId.includes(s)));
-      } else {
-        setCards(collectionCards);
-      }
-
-      // End the loading state when done.
-      setLoading(false);
-    }, 0);
-
-    return () => clearTimeout(handle);
-  }, [search]);
+  // Get loading state from the store
+  const { loading } = useCollectionGroupStore();
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -54,7 +37,7 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
           'opacity-50': loading,
         })}
       >
-        <CollectionGroups depth={0} cards={cards} collectionId={collectionId} loading={loading} />
+        <CollectionGroups depth={0} collectionId={collectionId} />
       </div>
     </div>
   );
