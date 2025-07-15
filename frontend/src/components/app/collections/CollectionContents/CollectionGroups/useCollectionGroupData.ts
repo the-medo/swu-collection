@@ -5,10 +5,15 @@ import { useCollectionLayoutStore } from '@/components/app/collections/Collectio
 import {
   getCardKey,
   groupCardsBy,
-  sortCardsBy,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
-import { useCollectionGroupStoreActions } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+import {
+  CardGroupInfo,
+  CardGroupInfoData,
+  useCollectionGroupStoreActions,
+} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
+
+export const ROOT_GROUP_ID = 'root';
 
 /**
  * Hook to fetch, process, and store collection group data
@@ -26,8 +31,7 @@ export function useCollectionGroupData(collectionId: string | undefined) {
   const { groupBy, sortBy } = useCollectionLayoutStore();
 
   // Get store actions
-  const { setLoading, setGroups, setCollectionCards, setGroupCards } =
-    useCollectionGroupStoreActions();
+  const { setLoading, setCollectionStoreData } = useCollectionGroupStoreActions();
 
   // Process data when collection cards, card list, or layout settings change
   useEffect(() => {
@@ -44,52 +48,79 @@ export function useCollectionGroupData(collectionId: string | undefined) {
       try {
         // Create a map of card keys to cards
         const cardMap: Record<string, CollectionCard> = {};
+        const rootCardsArray: string[] = [];
         cards.forEach(card => {
           const key = getCardKey(card);
           cardMap[key] = card;
+          rootCardsArray.push(key);
         });
-
-        // Update the store with the card map
-        setCollectionCards(cardMap);
 
         // Process each group level
         let currentCards = [...cards];
 
-        // Process each group level
-        for (let depth = 0; depth <= groupBy.length; depth++) {
-          const groupByValue = groupBy[depth];
+        const rootGroup: CardGroupInfoData = {
+          id: ROOT_GROUP_ID,
+          label: undefined,
+          cardCount: currentCards.length,
+          subGroupIds: [],
+          level: 0,
+        };
 
-          // Group cards at this level
-          const groupData = groupCardsBy(cardList.cards, currentCards, groupByValue);
-          console.log({ groupData });
+        const cardGroupInfo: CardGroupInfo = {
+          [ROOT_GROUP_ID]: rootGroup,
+        };
 
-          // If this is the first level, store the group data in the store
-          if (depth === 0) {
-            setGroups(collectionId, groupData);
+        const groupCards: Record<string, string[]> = {
+          root: rootCardsArray,
+        };
+
+        const groupIdsToProcess = [ROOT_GROUP_ID];
+
+        const processGroup = (groupId: string, c: CollectionCard[] | undefined) => {
+          const groupInfo = cardGroupInfo[groupId];
+          if (!groupInfo) return;
+          if (!c) {
+            c = groupCards[groupId]?.map(collectionCardKey => cardMap[collectionCardKey]) ?? [];
           }
+          const groupingFunctionByLevel = groupBy[groupInfo.level];
+          if (groupingFunctionByLevel) {
+            const subgroups = groupCardsBy(cardList.cards, c, groupingFunctionByLevel);
+            // console.log({ subgroups });
 
-          // For each group, store the card keys
-          groupData.sortedIds.forEach(groupId => {
-            const groupCards = groupData.groups[groupId]?.cards || [];
-
-            // If this is the last level, sort the cards
-            if (depth === groupBy.length - 1) {
-              const sortedCards = sortCardsBy(cardList.cards, groupCards, sortBy);
-              const sortedCardKeys = sortedCards.map(card => getCardKey(card));
-              setGroupCards(groupId, sortedCardKeys);
-            } else {
-              // Otherwise, just store the card keys
-              const cardKeys = groupCards.map(card => getCardKey(card));
-              setGroupCards(groupId, cardKeys);
-            }
-          });
-
-          // If there are more levels, continue with the first group's cards
-          if (depth < groupBy.length - 1 && groupData.sortedIds.length > 0) {
-            const firstGroupId = groupData.sortedIds[0];
-            currentCards = groupData.groups[firstGroupId]?.cards || [];
+            subgroups.sortedIds.forEach(sgId => {
+              const newGroupId = `${groupId}_${sgId}`;
+              const cardCount = subgroups.groups[sgId]?.cards?.length ?? 0;
+              if (cardCount > 0) {
+                cardGroupInfo[newGroupId] = {
+                  id: newGroupId,
+                  label:
+                    groupInfo.level > 0
+                      ? `${groupInfo.label} - ${subgroups.groups[sgId]?.label}`
+                      : subgroups.groups[sgId]?.label,
+                  cardCount,
+                  subGroupIds: [],
+                  level: groupInfo?.level + 1,
+                };
+                groupInfo.subGroupIds.push(newGroupId);
+                groupIdsToProcess.push(newGroupId);
+                groupCards[newGroupId] = subgroups.groups[sgId]?.cards?.map(getCardKey) ?? [];
+              }
+            });
           }
+        };
+
+        while (groupIdsToProcess.length > 0) {
+          const process = groupIdsToProcess.pop();
+          if (process) processGroup(process, process === ROOT_GROUP_ID ? cards : undefined);
         }
+
+        setCollectionStoreData({
+          groupInfo: cardGroupInfo,
+          collectionCards: cardMap,
+          groupCards,
+        });
+
+        console.log({ cardGroupInfo, groupCards, cardMap });
       } finally {
         // Set loading state to false
         setLoading(false);
@@ -104,9 +135,7 @@ export function useCollectionGroupData(collectionId: string | undefined) {
     groupBy,
     sortBy,
     setLoading,
-    setGroups,
-    setCollectionCards,
-    setGroupCards,
+    setCollectionStoreData,
   ]);
 
   return {

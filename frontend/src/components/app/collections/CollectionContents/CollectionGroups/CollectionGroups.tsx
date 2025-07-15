@@ -8,8 +8,8 @@ import CollectionLayoutTableImage from '@/components/app/collections/CollectionC
 import CollectionLayoutTableSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmall.tsx';
 import {
   useCollectionGroupStore,
-  useCollectionGroup,
   useGroupCards,
+  useCollectionGroupInfo,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import {
   Accordion,
@@ -23,7 +23,6 @@ import { useMemo } from 'react';
 // Separate component for rendering group items
 interface GroupItemProps {
   id: string;
-  group: any;
   parentTitle: string;
   horizontal: boolean;
   collectionId: string;
@@ -32,7 +31,6 @@ interface GroupItemProps {
 
 const GroupItem: React.FC<GroupItemProps> = ({
   id,
-  group,
   parentTitle,
   horizontal,
   collectionId,
@@ -40,10 +38,11 @@ const GroupItem: React.FC<GroupItemProps> = ({
 }) => {
   // Call hooks at the top level of this component
   const cardKeys = useGroupCards(id);
+  const groupInfo = useCollectionGroupInfo(id);
 
-  if (!group || cardKeys.length === 0) return null;
+  if (!groupInfo || cardKeys.length === 0) return null;
 
-  const label = group.label;
+  const label = groupInfo.label;
   const title = parentTitle !== '' ? `${parentTitle} - ${label}` : label;
 
   return (
@@ -55,7 +54,7 @@ const GroupItem: React.FC<GroupItemProps> = ({
         <CollectionGroups
           key={id}
           depth={depth + 1}
-          horizontal={horizontal || group.horizontal}
+          horizontal={horizontal}
           parentTitle={title}
           collectionId={collectionId}
           groupId={id}
@@ -156,11 +155,11 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
   // Call all hooks at the top level
   const { groupBy, sortBy, layout } = useCollectionLayoutStore();
   const { loading } = useCollectionGroupStore();
-  const groupData = useCollectionGroup(collectionId);
+  const groupInfo = groupId ? useCollectionGroupInfo(groupId) : null;
   const dataTransforming = loading;
 
-  // Render cards if we've reached the maximum depth
-  if (depth === groupBy.length) {
+  // Render cards if we've reached the maximum depth or if there are no subgroups
+  if (depth === groupBy.length || (groupInfo && groupInfo.subGroupIds.length === 0)) {
     return (
       <CardLayout
         collectionId={collectionId}
@@ -173,19 +172,18 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
     );
   }
 
-  // If no group data, render nothing
-  if (!groupData || !groupData.sortedIds) {
+  // If no group info, render nothing
+  if (!groupInfo) {
     return null;
   }
 
   return (
     <>
-      <Accordion type="multiple" className="pl-4 w-full" defaultValue={groupData.sortedIds}>
-        {groupData.sortedIds.map(id => (
+      <Accordion type="multiple" className="pl-4 w-full" defaultValue={groupInfo.subGroupIds}>
+        {groupInfo.subGroupIds.map(id => (
           <GroupItem
             key={id}
             id={id}
-            group={groupData.groups[id]}
             parentTitle={parentTitle}
             horizontal={horizontal}
             collectionId={collectionId}

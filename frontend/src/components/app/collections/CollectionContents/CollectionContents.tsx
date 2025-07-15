@@ -1,9 +1,8 @@
 import CollectionLayoutSettings from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionLayoutSettings.tsx';
 import CollectionGroups from '@/components/app/collections/CollectionContents/CollectionGroups/CollectionGroups.tsx';
 import CollectionFilter from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionFilter.tsx';
-import { useCollectionGroupData } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupData.ts';
+import { useCollectionGroupData, ROOT_GROUP_ID } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupData.ts';
 import {
-  useCollectionGroup,
   useCollectionGroupStore,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { cn } from '@/lib/utils.ts';
@@ -16,10 +15,6 @@ interface CollectionContentsProps {
 const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId }) => {
   // Use the new hook to initialize data
   useCollectionGroupData(collectionId);
-
-  const group = useCollectionGroup(collectionId);
-
-  console.log({ group });
 
   // Get loading state from the store
   const { loading } = useCollectionGroupStore();
@@ -37,7 +32,7 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
           'opacity-50': loading,
         })}
       >
-        <CollectionGroups depth={0} collectionId={collectionId} />
+        <CollectionGroups depth={0} collectionId={collectionId} groupId={ROOT_GROUP_ID} />
       </div>
     </div>
   );

@@ -1,18 +1,27 @@
 import { Store, useStore } from '@tanstack/react-store';
 import { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
-import { CardGroupData } from './lib/collectionGroupsLib.ts';
+
+export interface CardGroupInfoData {
+  id: string;
+  label?: string;
+  cardCount: number;
+  subGroupIds: string[];
+  level: number;
+}
+
+export type CardGroupInfo = Record<string, CardGroupInfoData>;
 
 // Define the store interface
 interface CollectionGroupStore {
   // Loading state
   loading: boolean;
-  
+
   // Groups data (id, card count, sub groups, level)
-  groups: Record<string, CardGroupData>;
-  
+  groupInfo: CardGroupInfo;
+
   // Collection cards mapped by their keys
   collectionCards: Record<string, CollectionCard>;
-  
+
   // Group cards - groupIds mapped to sorted array of collectionCard keys
   groupCards: Record<string, string[]>;
 }
@@ -20,7 +29,7 @@ interface CollectionGroupStore {
 // Default state
 const defaultState: CollectionGroupStore = {
   loading: false,
-  groups: {},
+  groupInfo: {},
   collectionCards: {},
   groupCards: {},
 };
@@ -29,16 +38,12 @@ const defaultState: CollectionGroupStore = {
 const store = new Store<CollectionGroupStore>(defaultState);
 
 // Actions to update the store
-const setLoading = (loading: boolean) =>
-  store.setState(state => ({ ...state, loading }));
+const setLoading = (loading: boolean) => store.setState(state => ({ ...state, loading }));
 
-const setGroups = (collectionId: string, groups: CardGroupData) =>
+const setCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>) =>
   store.setState(state => ({
-    ...state,
-    groups: {
-      ...state.groups,
-      [collectionId]: groups,
-    },
+    loading: state.loading,
+    ...data,
   }));
 
 const setCollectionCards = (cards: Record<string, CollectionCard>) =>
@@ -68,27 +73,30 @@ const setGroupCards = (groupId: string, cardKeys: string[]) =>
     },
   }));
 
-const clearStore = () =>
-  store.setState(() => defaultState);
+const setGroupInfo = (groupId: string, info: CardGroupInfoData) =>
+  store.setState(state => ({
+    ...state,
+    groupInfo: {
+      ...state.groupInfo,
+      [groupId]: info,
+    },
+  }));
+
+const clearStore = () => store.setState(() => defaultState);
 
 // Hook to access the store state
 export function useCollectionGroupStore() {
   const loading = useStore(store, state => state.loading);
-  const groups = useStore(store, state => state.groups);
+  const groupInfo = useStore(store, state => state.groupInfo);
   const collectionCards = useStore(store, state => state.collectionCards);
   const groupCards = useStore(store, state => state.groupCards);
 
   return {
     loading,
-    groups,
+    groupInfo,
     collectionCards,
     groupCards,
   };
-}
-
-// Hook to access a specific collection's group data
-export function useCollectionGroup(collectionId: string) {
-  return useStore(store, state => state.groups[collectionId]);
 }
 
 // Hook to access a specific group's card keys
@@ -101,14 +109,20 @@ export function useCollectionCard(cardKey: string) {
   return useStore(store, state => state.collectionCards[cardKey]);
 }
 
+// Hook to access a specific group's info
+export function useCollectionGroupInfo(groupId: string) {
+  return useStore(store, state => state.groupInfo[groupId]);
+}
+
 // Hook to access the store actions
 export function useCollectionGroupStoreActions() {
   return {
+    setCollectionStoreData,
     setLoading,
-    setGroups,
     setCollectionCards,
     updateCollectionCard,
     setGroupCards,
+    setGroupInfo,
     clearStore,
   };
 }
