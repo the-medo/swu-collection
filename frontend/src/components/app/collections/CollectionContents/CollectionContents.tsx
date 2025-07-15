@@ -1,10 +1,11 @@
 import CollectionLayoutSettings from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionLayoutSettings.tsx';
 import CollectionGroups from '@/components/app/collections/CollectionContents/CollectionGroups/CollectionGroups.tsx';
 import CollectionFilter from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionFilter.tsx';
-import { useCollectionGroupData, ROOT_GROUP_ID } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupData.ts';
 import {
-  useCollectionGroupStore,
-} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+  useCollectionGroupData,
+  ROOT_GROUP_ID,
+} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupData.ts';
+import { useCollectionGroupStoreLoading } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { cn } from '@/lib/utils.ts';
 import { Card, CardHeader } from '@/components/ui/card.tsx';
 
@@ -17,7 +18,7 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
   useCollectionGroupData(collectionId);
 
   // Get loading state from the store
-  const { loading } = useCollectionGroupStore();
+  const loading = useCollectionGroupStoreLoading();
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -32,7 +33,7 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
           'opacity-50': loading,
         })}
       >
-        <CollectionGroups depth={0} collectionId={collectionId} groupId={ROOT_GROUP_ID} />
+        <CollectionGroups collectionId={collectionId} groupId={ROOT_GROUP_ID} />
       </div>
     </div>
   );

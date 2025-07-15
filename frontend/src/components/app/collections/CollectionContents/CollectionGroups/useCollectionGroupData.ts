@@ -9,6 +9,7 @@ import {
 import {
   CardGroupInfo,
   CardGroupInfoData,
+  CollectionCardExtended,
   useCollectionGroupStoreActions,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
@@ -47,21 +48,23 @@ export function useCollectionGroupData(collectionId: string | undefined) {
     const handle = setTimeout(() => {
       try {
         // Create a map of card keys to cards
-        const cardMap: Record<string, CollectionCard> = {};
+        const cardMap: Record<string, CollectionCardExtended> = {};
         const rootCardsArray: string[] = [];
-        cards.forEach(card => {
-          const key = getCardKey(card);
-          cardMap[key] = card;
+        cards.forEach(collectionCard => {
+          const key = getCardKey(collectionCard);
+          const card = cardList.cards[collectionCard.cardId];
+          cardMap[key] = {
+            collectionCard: collectionCard,
+            card,
+            variant: card?.variants[collectionCard.variantId],
+          };
           rootCardsArray.push(key);
         });
-
-        // Process each group level
-        let currentCards = [...cards];
 
         const rootGroup: CardGroupInfoData = {
           id: ROOT_GROUP_ID,
           label: undefined,
-          cardCount: currentCards.length,
+          cardCount: cards.length,
           subGroupIds: [],
           level: 0,
         };
@@ -80,7 +83,10 @@ export function useCollectionGroupData(collectionId: string | undefined) {
           const groupInfo = cardGroupInfo[groupId];
           if (!groupInfo) return;
           if (!c) {
-            c = groupCards[groupId]?.map(collectionCardKey => cardMap[collectionCardKey]) ?? [];
+            c =
+              groupCards[groupId]?.map(
+                collectionCardKey => cardMap[collectionCardKey].collectionCard,
+              ) ?? [];
           }
           const groupingFunctionByLevel = groupBy[groupInfo.level];
           if (groupingFunctionByLevel) {
