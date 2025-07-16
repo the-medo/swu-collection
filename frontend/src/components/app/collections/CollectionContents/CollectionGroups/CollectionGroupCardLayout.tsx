@@ -3,12 +3,8 @@ import CollectionLayoutImageBig from '@/components/app/collections/CollectionCon
 import CollectionLayoutImageSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutImageSmall/CollectionLayoutImageSmall.tsx';
 import CollectionLayoutTableImage from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableImage/CollectionLayoutTableImage.tsx';
 import CollectionLayoutTableSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmall.tsx';
-import {
-  useCollectionGroupStore,
-  useGroupCards,
-} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+import { useGroupCards } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import * as React from 'react';
-import { useMemo } from 'react';
 
 // Interface for rendering cards based on layout
 interface CollectionGroupCardLayoutProps {
@@ -28,22 +24,17 @@ const CollectionGroupCardLayout: React.FC<CollectionGroupCardLayoutProps> = ({
   sortBy,
   layout,
 }) => {
-  // Call hooks at the top level of this component
-  const { collectionCards } = useCollectionGroupStore();
-  const groupCards = groupId ? useGroupCards(groupId) : [];
+  const groupCards = useGroupCards(groupId ?? '');
 
-  // Process cards
-  const cards = useMemo(() => {
-    if (!groupId) return [];
-    return groupCards.map(key => collectionCards[key]?.collectionCard).filter(Boolean);
-  }, [groupId, groupCards, collectionCards]);
+  // We no longer need to map keys to CollectionCard objects
+  // Just pass the keys directly to the layout components
 
   if (layout === CollectionLayout.IMAGE_BIG) {
     return (
       <CollectionLayoutImageBig
         key={sortBy.join('-')}
         collectionId={collectionId}
-        cards={cards}
+        cardKeys={groupCards}
         horizontal={horizontal}
         dataTransforming={dataTransforming}
       />
@@ -53,7 +44,7 @@ const CollectionGroupCardLayout: React.FC<CollectionGroupCardLayoutProps> = ({
       <CollectionLayoutImageSmall
         key={sortBy.join('-')}
         collectionId={collectionId}
-        cards={cards}
+        cardKeys={groupCards}
         horizontal={horizontal}
         dataTransforming={dataTransforming}
       />
@@ -63,7 +54,7 @@ const CollectionGroupCardLayout: React.FC<CollectionGroupCardLayoutProps> = ({
       <CollectionLayoutTableImage
         key={sortBy.join('-')}
         collectionId={collectionId}
-        cards={cards}
+        cardKeys={groupCards}
         horizontal={horizontal}
         dataTransforming={dataTransforming}
       />
@@ -73,7 +64,7 @@ const CollectionGroupCardLayout: React.FC<CollectionGroupCardLayoutProps> = ({
       <CollectionLayoutTableSmall
         key={sortBy.join('-')}
         collectionId={collectionId}
-        cards={cards}
+        cardKeys={groupCards}
         horizontal={horizontal}
         dataTransforming={dataTransforming}
       />

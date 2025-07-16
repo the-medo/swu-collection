@@ -136,7 +136,7 @@ export function useCollectionGroupData(collectionId: string | undefined) {
     return () => clearTimeout(handle);
   }, [
     collectionId,
-    collectionCardsData,
+    // collectionCardsData,
     cardList,
     groupBy,
     sortBy,
