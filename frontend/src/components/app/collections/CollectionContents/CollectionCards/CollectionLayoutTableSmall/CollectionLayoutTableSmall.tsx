@@ -1,19 +1,18 @@
 import { useCardList } from '@/api/lists/useCardList.ts';
-import type { CollectionCard } from '../../../../../../../../types/CollectionCard.ts';
 import { useCollectionCardTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/useCollectionCardTableColumns.tsx';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { CollectionLayout } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 
 interface CollectionLayoutTableSmallProps {
   collectionId: string;
-  cards: CollectionCard[];
+  cardKeys: string[];
   horizontal?: boolean;
   dataTransforming?: boolean;
 }
 
 const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({
   collectionId,
-  cards,
+  cardKeys,
   horizontal = false,
   dataTransforming,
 }) => {
@@ -27,7 +26,7 @@ const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({
 
   const loading = isFetchingCardList || dataTransforming;
 
-  return <DataTable columns={columns} data={cards} loading={loading} />;
+  return <DataTable columns={columns} data={cardKeys} loading={loading} />;
 };
 
 export default CollectionLayoutTableSmall;
