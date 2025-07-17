@@ -57,6 +57,91 @@ const setCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>) =>
     ...data,
   }));
 
+/**
+ * Merges new data into the existing store data
+ * 1. Merges groupInfo by adding new groups or updating existing ones with missing subGroupIds
+ * 2. Merges collectionCards by adding new cards or updating existing ones (amount, note, price)
+ * 3. Merges groupCards by adding new groups or adding elements to existing groups
+ * 4. Updates cardCount for each group based on the number of records in groupCards
+ */
+const mergeToCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>) =>
+  store.setState(state => {
+    // 1. Merge groupInfo
+    const mergedGroupInfo: CardGroupInfo = { ...state.groupInfo };
+    
+    // Add new groups or update existing ones
+    Object.entries(data.groupInfo || {}).forEach(([groupId, groupData]) => {
+      if (!mergedGroupInfo[groupId]) {
+        // Add whole group if it doesn't exist
+        mergedGroupInfo[groupId] = { ...groupData };
+      } else {
+        // If group exists, add missing subGroupIds
+        const existingSubGroupIds = new Set(mergedGroupInfo[groupId].subGroupIds);
+        groupData.subGroupIds.forEach(subGroupId => {
+          if (!existingSubGroupIds.has(subGroupId)) {
+            mergedGroupInfo[groupId].subGroupIds.push(subGroupId);
+          }
+        });
+      }
+    });
+    
+    // 2. Merge collectionCards
+    const mergedCollectionCards: Record<string, CollectionCardExtended> = { ...state.collectionCards };
+    
+    // Add new cards or update existing ones
+    Object.entries(data.collectionCards || {}).forEach(([cardKey, cardData]) => {
+      if (!mergedCollectionCards[cardKey]) {
+        // Add new card if it doesn't exist
+        mergedCollectionCards[cardKey] = { ...cardData };
+      } else {
+        // Update existing card's editable properties
+        const existingCard = mergedCollectionCards[cardKey];
+        mergedCollectionCards[cardKey] = {
+          ...existingCard,
+          collectionCard: {
+            ...existingCard.collectionCard,
+            // Update only editable properties
+            amount: cardData.collectionCard.amount,
+            note: cardData.collectionCard.note,
+            price: cardData.collectionCard.price,
+          },
+        };
+      }
+    });
+    
+    // 3. Merge groupCards
+    const mergedGroupCards: Record<string, string[]> = { ...state.groupCards };
+    
+    // Add new groups or update existing ones
+    Object.entries(data.groupCards || {}).forEach(([groupId, cardKeys]) => {
+      if (!mergedGroupCards[groupId]) {
+        // Add new group if it doesn't exist
+        mergedGroupCards[groupId] = [...cardKeys];
+      } else {
+        // If group exists, add missing card keys
+        const existingCardKeys = new Set(mergedGroupCards[groupId]);
+        cardKeys.forEach(cardKey => {
+          if (!existingCardKeys.has(cardKey)) {
+            mergedGroupCards[groupId].push(cardKey);
+          }
+        });
+      }
+    });
+    
+    // 4. Update cardCount for each group based on groupCards
+    Object.keys(mergedGroupInfo).forEach(groupId => {
+      const cardCount = mergedGroupCards[groupId]?.length || 0;
+      mergedGroupInfo[groupId].cardCount = cardCount;
+    });
+    
+    return {
+      ...state,
+      groupInfo: mergedGroupInfo,
+      collectionCards: mergedCollectionCards,
+      groupCards: mergedGroupCards,
+    };
+  });
+
 const setCollectionCards = (cards: Record<string, CollectionCardExtended>) =>
   store.setState(state => ({
     ...state,
@@ -140,6 +225,7 @@ export function useCollectionGroupInfo(groupId: string) {
 export function useCollectionGroupStoreActions() {
   return {
     setCollectionStoreData,
+    mergeToCollectionStoreData,
     setLoading,
     setCollectionCards,
     updateCollectionCard,
