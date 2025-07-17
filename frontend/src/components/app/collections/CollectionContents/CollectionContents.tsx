@@ -1,13 +1,11 @@
 import CollectionLayoutSettings from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionLayoutSettings.tsx';
 import CollectionGroups from '@/components/app/collections/CollectionContents/CollectionGroups/CollectionGroups.tsx';
 import CollectionFilter from '@/components/app/collections/CollectionContents/CollectionSettings/CollectionFilter.tsx';
-import {
-  useCollectionGroupData,
-  ROOT_GROUP_ID,
-} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupData.ts';
+import { useCollectionGroupData } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupData.ts';
 import { useCollectionGroupStoreLoading } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { cn } from '@/lib/utils.ts';
 import { Card, CardHeader } from '@/components/ui/card.tsx';
+import { ROOT_GROUP_ID } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 
 interface CollectionContentsProps {
   collectionId: string;
