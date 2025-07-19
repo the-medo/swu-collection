@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils.ts';
 import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
 import BigCardItem from './BigCardItem';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
+import { useMemo } from 'react';
 
 interface CollectionLayoutImageBigProps {
   collectionId: string;
@@ -23,11 +25,24 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
   const { currency, owned } = useCollectionInfo(collectionId);
   const onChange = useCollectionCardInput(collectionId);
 
+  // Setup infinite scroll
+  const { itemsToShow, observerTarget } = useInfiniteScroll({
+    totalItems: cardKeys.length,
+    initialItemsToLoad: 30,
+    itemsPerBatch: 20,
+    threshold: 300,
+  });
+
+  // Get visible data
+  const visibleCardKeys = useMemo(() => {
+    return cardKeys.slice(0, itemsToShow);
+  }, [cardKeys, itemsToShow]);
+
   const loading = isFetchingCardList || dataTransforming;
 
   return (
     <div className="flex gap-4 flex-wrap">
-      {cardKeys.map(cardKey => {
+      {visibleCardKeys.map(cardKey => {
         if (loading) {
           return (
             <Skeleton
@@ -54,6 +69,9 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
           />
         );
       })}
+      <div ref={observerTarget} id="OBSERVER">
+        {' '}
+      </div>
     </div>
   );
 };
