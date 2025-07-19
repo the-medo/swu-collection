@@ -64,7 +64,7 @@ const CollectionStats: React.FC<CollectionStatsProps> = ({ collectionId }) => {
         <CardDescription className="flex flex-col gap-2">
           <div className="flex gap-4">
             {Object.keys(stats.countByRarity).map(r => (
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center" key={r}>
                 <RarityIcon rarity={r} size="xSmall" />
                 <span className="text-sm">{stats.countByRarity[r]}</span>
               </div>
@@ -72,7 +72,7 @@ const CollectionStats: React.FC<CollectionStatsProps> = ({ collectionId }) => {
           </div>
           <div className="flex gap-4">
             {Object.keys(stats.countBySet).map(s => (
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center" key={s}>
                 <span className="text-sm font-medium">{s.toUpperCase()}:</span>
                 <span className="text-sm">{stats.countBySet[s]}</span>
               </div>

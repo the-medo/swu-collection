@@ -20,6 +20,13 @@ import { sortCardsByVariantName } from '@/components/app/collections/CollectionC
 import { sortCardsByCardNumber } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardNumber.ts';
 import { sortCardsByPrice } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByPrice.ts';
 import { sortCardsByQty } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByQty.ts';
+import {
+  CardGroupInfo,
+  CardGroupInfoData,
+  CollectionCardExtended,
+} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+import { CardListResponse } from '@/api/lists/useCardList.ts';
+import { getCollectionCardIdentificationKey } from '@/api/collections/usePutCollectionCard.ts';
 
 type CardGroup<T = CollectionCard> = {
   id: string;
@@ -94,5 +101,99 @@ export const sortCardsBy = (
   sorts: CollectionSortBy[],
 ) => {
   const [sortBy, ...nextSorts] = sorts;
-  return cards.toSorted(getCollectionCardSorter(sortBy)(cardList, nextSorts));
+  return [...cards].sort(getCollectionCardSorter(sortBy)(cardList, nextSorts));
+};
+
+export const ROOT_GROUP_ID = 'root';
+
+/**
+ * Processes collection data and returns structured data for the collection store
+ * @param cards The collection cards data
+ * @param cardList The card list data
+ * @param groupBy The grouping functions by level
+ * @returns Object with groupInfo, collectionCards, and groupCards
+ */
+export const processCollectionData = (
+  cards: CollectionCard[],
+  cardList: CardListResponse,
+  groupBy: CollectionGroupBy[],
+) => {
+  // Create a map of card keys to cards
+  const cardMap: Record<string, CollectionCardExtended> = {};
+  const rootCardsArray: string[] = [];
+  cards.forEach(collectionCard => {
+    const key = getCollectionCardIdentificationKey(collectionCard);
+    const card = cardList.cards[collectionCard.cardId];
+    cardMap[key] = {
+      collectionCard: collectionCard,
+      card,
+      variant: card?.variants[collectionCard.variantId],
+    };
+    rootCardsArray.push(key);
+  });
+
+  const rootGroup: CardGroupInfoData = {
+    id: ROOT_GROUP_ID,
+    label: undefined,
+    cardCount: cards.length,
+    subGroupIds: [],
+    level: 0,
+  };
+
+  const cardGroupInfo: CardGroupInfo = {
+    [ROOT_GROUP_ID]: rootGroup,
+  };
+
+  const groupCards: Record<string, string[]> = {
+    root: rootCardsArray,
+  };
+
+  const groupIdsToProcess = [ROOT_GROUP_ID];
+
+  const processGroup = (groupId: string, c: CollectionCard[] | undefined) => {
+    const groupInfo = cardGroupInfo[groupId];
+    if (!groupInfo) return;
+    if (!c) {
+      c =
+        groupCards[groupId]?.map(collectionCardKey => cardMap[collectionCardKey].collectionCard) ??
+        [];
+    }
+    const groupingFunctionByLevel = groupBy[groupInfo.level];
+    if (groupingFunctionByLevel) {
+      const subgroups = groupCardsBy(cardList.cards, c, groupingFunctionByLevel);
+      // console.log({ subgroups });
+
+      subgroups.sortedIds.forEach(sgId => {
+        const newGroupId = `${groupId}_${sgId}`;
+        const cardCount = subgroups.groups[sgId]?.cards?.length ?? 0;
+        if (cardCount > 0) {
+          cardGroupInfo[newGroupId] = {
+            id: newGroupId,
+            label:
+              groupInfo.level > 0
+                ? `${groupInfo.label} - ${subgroups.groups[sgId]?.label}`
+                : subgroups.groups[sgId]?.label,
+            cardCount,
+            subGroupIds: [],
+            level: groupInfo?.level + 1,
+          };
+          groupInfo.subGroupIds.push(newGroupId);
+          groupIdsToProcess.push(newGroupId);
+          groupCards[newGroupId] =
+            subgroups.groups[sgId]?.cards?.map(getCollectionCardIdentificationKey) ?? [];
+        }
+      });
+    }
+  };
+
+  while (groupIdsToProcess.length > 0) {
+    const process = groupIdsToProcess.pop();
+    if (process) processGroup(process, process === ROOT_GROUP_ID ? cards : undefined);
+  }
+
+  return {
+    groupInfo: cardGroupInfo,
+    collectionCards: cardMap,
+    groupCards,
+  };
 };
