@@ -1,9 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCollectionLayoutStore } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { processCollectionData } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
-import { useCollectionGroupStoreActions } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+import {
+  useCollectionCards,
+  useCollectionGroupStoreActions,
+} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
 
 /**
@@ -11,49 +14,66 @@ import { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
  * @param collectionId The ID of the collection to fetch data for
  */
 export function useCollectionGroupData(collectionId: string | undefined) {
-  // Get collection cards data
+  //Get data from api hook for initial processing
   const { data: collectionCardsData, isLoading: isLoadingCards } =
     useGetCollectionCards(collectionId);
 
-  // Get card list data
+  //Get data from store for additional processings
+  const collectionCards = useCollectionCards();
+
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
-
-  // Get layout settings
   const { groupBy, sortBy } = useCollectionLayoutStore();
-
-  // Get store actions
   const { setLoading, setCollectionStoreData } = useCollectionGroupStoreActions();
+  const [initialLoadingCollection, setInitialLoadingCollection] = useState<string>();
+
+  /**
+   * This is the initial load - here we use data directly from API hook useGetCollectionCards
+   * Data is processed and saved into store.
+   * This process should run only once.
+   */
+  useEffect(() => {
+    if (!collectionId || !collectionCardsData || !cardList) return;
+    setLoading(true);
+    const cards = collectionCardsData.data as CollectionCard[];
+
+    const handle = setTimeout(() => {
+      try {
+        const processedData = processCollectionData(cards, cardList, []);
+        setCollectionStoreData(processedData);
+      } finally {
+        setLoading(false);
+        setInitialLoadingCollection(collectionId);
+      }
+    }, 0);
+
+    return () => clearTimeout(handle);
+  }, [collectionId, cardList, setLoading, setCollectionStoreData]);
 
   // Process data when collection cards, card list, or layout settings change
   useEffect(() => {
-    if (!collectionId || !collectionCardsData || !cardList) return;
-
-    // Set loading state to true
+    if (!collectionId || !cardList) return;
+    if (initialLoadingCollection !== collectionId) return;
     setLoading(true);
 
-    // Get collection cards
-    const cards = collectionCardsData.data as CollectionCard[];
+    const cards = Object.values(collectionCards).map(cc => cc.collectionCard);
 
-    // Process the data in a setTimeout to avoid blocking the UI
     const handle = setTimeout(() => {
       try {
-        // Process collection data using the extracted function
         const processedData = processCollectionData(cards, cardList, groupBy);
+        console.log({ cards, processedData });
 
-        // Set the processed data to the store
         setCollectionStoreData(processedData);
 
         console.log(processedData);
       } finally {
-        // Set loading state to false
         setLoading(false);
       }
     }, 0);
 
     return () => clearTimeout(handle);
   }, [
+    initialLoadingCollection,
     collectionId,
-    // collectionCardsData,
     cardList,
     groupBy,
     sortBy,

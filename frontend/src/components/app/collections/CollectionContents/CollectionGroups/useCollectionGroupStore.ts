@@ -52,10 +52,32 @@ const store = new Store<CollectionGroupStore>(defaultState);
 const setLoading = (loading: boolean) => store.setState(state => ({ ...state, loading }));
 
 const setCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>) =>
-  store.setState(state => ({
-    loading: state.loading,
-    ...data,
-  }));
+  store.setState(state => {
+    /**
+     * I want to keep reference to the same "collectionCards" object,
+     * so hook useCollectionGroupData can work with newest version of it without it being in dependencies,
+     * thats why state.collectionCards is used directly
+     */
+    Object.keys(state.collectionCards || {}).forEach(cardKey => {
+      if (!data.collectionCards[cardKey]) {
+        delete state.collectionCards[cardKey];
+      } else {
+        state.collectionCards[cardKey] = data.collectionCards[cardKey];
+      }
+    });
+    Object.keys(data.collectionCards || {}).forEach(cardKey => {
+      if (!state.collectionCards[cardKey]) {
+        state.collectionCards[cardKey] = data.collectionCards[cardKey];
+      }
+    });
+
+    console.log(data.collectionCards, state.collectionCards);
+    return {
+      loading: state.loading,
+      ...data,
+      collectionCards: state.collectionCards,
+    };
+  });
 
 /**
  * Merges new data into the existing store data
@@ -67,27 +89,28 @@ const setCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>) =>
 const mergeToCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>) =>
   store.setState(state => {
     // 1. Merge groupInfo
-    const mergedGroupInfo: CardGroupInfo = { ...state.groupInfo };
-    
+    let mergedGroupInfo: CardGroupInfo = { ...data.groupInfo, ...state.groupInfo };
+
     // Add new groups or update existing ones
     Object.entries(data.groupInfo || {}).forEach(([groupId, groupData]) => {
-      if (!mergedGroupInfo[groupId]) {
-        // Add whole group if it doesn't exist
-        mergedGroupInfo[groupId] = { ...groupData };
-      } else {
+      if (mergedGroupInfo[groupId]) {
         // If group exists, add missing subGroupIds
         const existingSubGroupIds = new Set(mergedGroupInfo[groupId].subGroupIds);
         groupData.subGroupIds.forEach(subGroupId => {
           if (!existingSubGroupIds.has(subGroupId)) {
-            mergedGroupInfo[groupId].subGroupIds.push(subGroupId);
+            existingSubGroupIds.add(subGroupId);
           }
         });
+        mergedGroupInfo[groupId].subGroupIds = [...existingSubGroupIds];
       }
     });
-    
-    // 2. Merge collectionCards
-    const mergedCollectionCards: Record<string, CollectionCardExtended> = { ...state.collectionCards };
-    
+
+    /**
+     * 2. Merge collectionCards - i want to keep reference to the same "collectionCards" object,
+     * so hook useCollectionGroupData can work with newest version of it without it being in dependencies
+     */
+    const mergedCollectionCards: Record<string, CollectionCardExtended> = state.collectionCards;
+
     // Add new cards or update existing ones
     Object.entries(data.collectionCards || {}).forEach(([cardKey, cardData]) => {
       if (!mergedCollectionCards[cardKey]) {
@@ -108,10 +131,10 @@ const mergeToCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>)
         };
       }
     });
-    
+
     // 3. Merge groupCards
     const mergedGroupCards: Record<string, string[]> = { ...state.groupCards };
-    
+
     // Add new groups or update existing ones
     Object.entries(data.groupCards || {}).forEach(([groupId, cardKeys]) => {
       if (!mergedGroupCards[groupId]) {
@@ -122,18 +145,18 @@ const mergeToCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>)
         const existingCardKeys = new Set(mergedGroupCards[groupId]);
         cardKeys.forEach(cardKey => {
           if (!existingCardKeys.has(cardKey)) {
-            mergedGroupCards[groupId].push(cardKey);
+            existingCardKeys.add(cardKey);
           }
         });
+        mergedGroupCards[groupId] = [...existingCardKeys];
       }
     });
-    
+
     // 4. Update cardCount for each group based on groupCards
     Object.keys(mergedGroupInfo).forEach(groupId => {
-      const cardCount = mergedGroupCards[groupId]?.length || 0;
-      mergedGroupInfo[groupId].cardCount = cardCount;
+      mergedGroupInfo[groupId].cardCount = mergedGroupCards[groupId]?.length || 0;
     });
-    
+
     return {
       ...state,
       groupInfo: mergedGroupInfo,
@@ -205,6 +228,10 @@ export function useGroupCards(groupId: string) {
   return useStore(store, state => state.groupCards[groupId] || []);
 }
 
+export function useCollectionCards() {
+  return useStore(store, state => state.collectionCards);
+}
+
 // Hooks to access a specific collection card
 export function useCCDetail(cardKey: string) {
   return useStore(store, state => state.collectionCards[cardKey].collectionCard);
@@ -215,10 +242,11 @@ export function useCCVariant(cardKey: string) {
 export function useCCCard(cardKey: string) {
   return useStore(store, state => state.collectionCards[cardKey].card);
 }
-
-// Hook to access a specific group's info
 export function useCollectionGroupInfo(groupId: string) {
   return useStore(store, state => state.groupInfo[groupId]);
+}
+export function useCollectionGroupInfoSubgroups(groupId: string) {
+  return useStore(store, state => state.groupInfo[groupId]?.subGroupIds);
 }
 
 // Hook to access the store actions

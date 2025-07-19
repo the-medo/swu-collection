@@ -1,6 +1,6 @@
 import { useCollectionLayoutStore } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import {
-  useCollectionGroupInfo,
+  useCollectionGroupInfoSubgroups,
   useCollectionGroupStoreLoading,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { Accordion } from '@/components/ui/accordion.tsx';
@@ -24,11 +24,16 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
   // Call all hooks at the top level
   const { sortBy, layout } = useCollectionLayoutStore();
   const loading = useCollectionGroupStoreLoading();
-  const groupInfo = groupId ? useCollectionGroupInfo(groupId) : null;
+  const groupSubgroupIds = useCollectionGroupInfoSubgroups(groupId ?? '');
   const dataTransforming = loading;
 
+  // If no group info, render nothing
+  if (!groupSubgroupIds) {
+    return null;
+  }
+
   // Render cards if we've reached the maximum depth or if there are no subgroups
-  if (groupInfo && groupInfo.subGroupIds.length === 0) {
+  if (groupSubgroupIds.length === 0) {
     return (
       <CollectionGroupCardLayout
         collectionId={collectionId}
@@ -41,15 +46,10 @@ const CollectionGroups: React.FC<CollectionGroupsProps> = ({
     );
   }
 
-  // If no group info, render nothing
-  if (!groupInfo) {
-    return null;
-  }
-
   return (
     <>
-      <Accordion type="multiple" className="pl-4 w-full" defaultValue={groupInfo.subGroupIds}>
-        {groupInfo.subGroupIds.map(id => (
+      <Accordion type="multiple" className="pl-4 w-full" defaultValue={groupSubgroupIds}>
+        {groupSubgroupIds.map(id => (
           <CollectionGroupItem
             key={id}
             id={id}
