@@ -26,9 +26,7 @@ import {
   CollectionCardExtended,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
-
-export const getCardKey = (card: CollectionCard) =>
-  `${card.cardId}|${card.variantId}|${card.foil}|${card.condition}|${card.language}`;
+import { getCollectionCardIdentificationKey } from '@/api/collections/usePutCollectionCard.ts';
 
 type CardGroup<T = CollectionCard> = {
   id: string;
@@ -124,7 +122,7 @@ export const processCollectionData = (
   const cardMap: Record<string, CollectionCardExtended> = {};
   const rootCardsArray: string[] = [];
   cards.forEach(collectionCard => {
-    const key = getCardKey(collectionCard);
+    const key = getCollectionCardIdentificationKey(collectionCard);
     const card = cardList.cards[collectionCard.cardId];
     cardMap[key] = {
       collectionCard: collectionCard,
@@ -181,7 +179,8 @@ export const processCollectionData = (
           };
           groupInfo.subGroupIds.push(newGroupId);
           groupIdsToProcess.push(newGroupId);
-          groupCards[newGroupId] = subgroups.groups[sgId]?.cards?.map(getCardKey) ?? [];
+          groupCards[newGroupId] =
+            subgroups.groups[sgId]?.cards?.map(getCollectionCardIdentificationKey) ?? [];
         }
       });
     }
