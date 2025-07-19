@@ -4,6 +4,8 @@ import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cn } from '@/lib/utils.ts';
 import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import SmallCardItem from './SmallCardItem';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
+import { useMemo } from 'react';
 
 interface CollectionLayoutImageSmallProps {
   collectionId: string;
@@ -21,11 +23,24 @@ const CollectionLayoutImageSmall: React.FC<CollectionLayoutImageSmallProps> = ({
   const { currency } = useCollectionInfo(collectionId);
   const { isFetching: isFetchingCardList } = useCardList();
 
+  // Setup infinite scroll
+  const { itemsToShow, observerTarget } = useInfiniteScroll({
+    totalItems: cardKeys.length,
+    initialItemsToLoad: 50,
+    itemsPerBatch: 30,
+    threshold: 300,
+  });
+
+  // Get visible data
+  const visibleCardKeys = useMemo(() => {
+    return cardKeys.slice(0, itemsToShow);
+  }, [cardKeys, itemsToShow]);
+
   const loading = isFetchingCardList || dataTransforming;
 
   return (
     <div className="flex gap-4 flex-wrap">
-      {cardKeys.map(cardKey => {
+      {visibleCardKeys.map(cardKey => {
         if (loading) {
           return (
             <Skeleton
@@ -51,6 +66,9 @@ const CollectionLayoutImageSmall: React.FC<CollectionLayoutImageSmallProps> = ({
           />
         );
       })}
+      <div ref={observerTarget} id="OBSERVER">
+        {' '}
+      </div>
     </div>
   );
 };
