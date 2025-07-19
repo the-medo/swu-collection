@@ -2,7 +2,9 @@ import React from 'react';
 import { useCCDetail } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { getIdentificationFromCollectionCard } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import { getCollectionCardIdentificationKey } from '@/api/collections/usePutCollectionCard.ts';
-import CollectionCardInput, { CollectionCardInputProps } from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
+import CollectionCardInput, {
+  CollectionCardInputProps,
+} from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
 import { NotebookPen } from 'lucide-react';
 
 interface NoteCellProps {
@@ -12,11 +14,11 @@ interface NoteCellProps {
   onChange: CollectionCardInputProps['onChange'];
 }
 
-const NoteCell: React.FC<NoteCellProps> = ({ cardKey, collectionId, owned, onChange }) => {
+const NoteCell: React.FC<NoteCellProps> = ({ cardKey, owned, onChange }) => {
   const collectionCard = useCCDetail(cardKey);
-  const note = collectionCard.note;
+  const note = collectionCard?.note;
 
-  if (owned) {
+  if (owned && collectionCard) {
     const id = getIdentificationFromCollectionCard(collectionCard);
     return (
       <CollectionCardInput
@@ -29,7 +31,7 @@ const NoteCell: React.FC<NoteCellProps> = ({ cardKey, collectionId, owned, onCha
     );
   }
 
-  if (note === '') return <div className="w-20 min-w-20"></div>;
+  if (note === '' || !note) return <div className="w-20 min-w-20"></div>;
 
   return (
     <div className="text-sm text-gray-500 relative group w-20 min-w-20 max-w-20 flex gap-1 items-center">

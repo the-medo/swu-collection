@@ -10,6 +10,7 @@ export const useCollectionCardInput = (
   return useCallback(
     // @ts-ignore
     async (id, field, value) => {
+      if (!id) return;
       await mutation.mutateAsync({
         id: id,
         data: {

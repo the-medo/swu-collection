@@ -1,5 +1,8 @@
 import React from 'react';
-import { useCCDetail, useCCCard } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+import {
+  useCCDetail,
+  useCCCard,
+} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
@@ -16,7 +19,7 @@ const CardCell: React.FC<CardCellProps> = ({ cardKey, layout }) => {
   const collectionCard = useCCDetail(cardKey);
   const card = useCCCard(cardKey);
 
-  if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+  if (!card || !collectionCard) return <Skeleton className="w-full h-4 rounded-md" />;
 
   return (
     <HoverCard openDelay={0} closeDelay={0}>
@@ -25,12 +28,8 @@ const CardCell: React.FC<CardCellProps> = ({ cardKey, layout }) => {
           <span className="min-w-[250px]">{card.name}</span>
           {layout === CollectionLayout.TABLE_IMAGE && (
             <div className="flex gap-1">
-              {card?.cost !== null ? (
-                <CostIcon cost={card?.cost ?? 0} size="small" />
-              ) : null}
-              {card?.aspects.map((a, i) => (
-                <AspectIcon key={`${a}${i}`} aspect={a} size="small" />
-              ))}
+              {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
+              {card?.aspects.map((a, i) => <AspectIcon key={`${a}${i}`} aspect={a} size="small" />)}
             </div>
           )}
         </div>
