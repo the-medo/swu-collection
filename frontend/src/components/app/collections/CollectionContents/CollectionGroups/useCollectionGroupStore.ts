@@ -26,6 +26,7 @@ export type CardGroupInfo = Record<string, CardGroupInfoData>;
 interface CollectionGroupStore {
   // Loading state
   loading: boolean;
+  loadedCollectionId?: string;
 
   // Groups data (id, card count, sub groups, level)
   groupInfo: CardGroupInfo;
@@ -40,6 +41,7 @@ interface CollectionGroupStore {
 // Default state
 const defaultState: CollectionGroupStore = {
   loading: false,
+  loadedCollectionId: undefined,
   groupInfo: {},
   collectionCards: {},
   groupCards: {},
@@ -50,8 +52,12 @@ const store = new Store<CollectionGroupStore>(defaultState);
 
 // Actions to update the store
 const setLoading = (loading: boolean) => store.setState(state => ({ ...state, loading }));
+const setLoadedCollectionId = (id: string) =>
+  store.setState(state => ({ ...state, loadedCollectionId: id }));
 
-const setCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>) =>
+const setCollectionStoreData = (
+  data: Omit<CollectionGroupStore, 'loading' | 'loadedCollectionId'>,
+) =>
   store.setState(state => {
     /**
      * I want to keep reference to the same "collectionCards" object,
@@ -74,6 +80,7 @@ const setCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>) =>
     console.log(data.collectionCards, state.collectionCards);
     return {
       loading: state.loading,
+      loadedCollectionId: state.loadedCollectionId,
       ...data,
       collectionCards: state.collectionCards,
     };
@@ -211,6 +218,11 @@ export function useCollectionGroupStoreLoading() {
   return useStore(store, state => state.loading);
 }
 
+// Hook to access the store state
+export function useCollectionGroupStoreLoadedCollectionId() {
+  return useStore(store, state => state.loadedCollectionId);
+}
+
 export function useCollectionGroupStore() {
   const groupInfo = useStore(store, state => state.groupInfo);
   const collectionCards = useStore(store, state => state.collectionCards);
@@ -255,6 +267,7 @@ export function useCollectionGroupStoreActions() {
     setCollectionStoreData,
     mergeToCollectionStoreData,
     setLoading,
+    setLoadedCollectionId,
     setCollectionCards,
     updateCollectionCard,
     setGroupCards,

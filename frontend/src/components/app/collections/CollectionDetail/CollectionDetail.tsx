@@ -57,7 +57,13 @@ const CollectionDetail: React.FC = () => {
 
   return (
     <>
-      <Helmet title={data?.collection.title ? `${data.collection.title} | ${cardListString} | SWUBase` : `Loading ${cardListString} | SWUBase`} />
+      <Helmet
+        title={
+          data?.collection.title
+            ? `${data.collection.title} | ${cardListString} | SWUBase`
+            : `Loading ${cardListString} | SWUBase`
+        }
+      />
       <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
         <LoadingTitle
           mainTitle={data?.collection.title}

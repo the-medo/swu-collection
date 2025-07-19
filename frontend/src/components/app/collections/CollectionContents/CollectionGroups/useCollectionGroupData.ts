@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCollectionLayoutStore } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
@@ -6,6 +6,7 @@ import { processCollectionData } from '@/components/app/collections/CollectionCo
 import {
   useCollectionCards,
   useCollectionGroupStoreActions,
+  useCollectionGroupStoreLoadedCollectionId,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
 
@@ -23,8 +24,9 @@ export function useCollectionGroupData(collectionId: string | undefined) {
 
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
   const { groupBy, sortBy } = useCollectionLayoutStore();
-  const { setLoading, setCollectionStoreData } = useCollectionGroupStoreActions();
-  const [initialLoadingCollection, setInitialLoadingCollection] = useState<string>();
+  const { setLoading, setLoadedCollectionId, setCollectionStoreData } =
+    useCollectionGroupStoreActions();
+  const loadedCollectionId = useCollectionGroupStoreLoadedCollectionId();
 
   /**
    * This is the initial load - here we use data directly from API hook useGetCollectionCards
@@ -42,17 +44,24 @@ export function useCollectionGroupData(collectionId: string | undefined) {
         setCollectionStoreData(processedData);
       } finally {
         setLoading(false);
-        setInitialLoadingCollection(collectionId);
+        setLoadedCollectionId(collectionId);
       }
     }, 0);
 
     return () => clearTimeout(handle);
-  }, [collectionId, cardList, setLoading, setCollectionStoreData]);
+  }, [
+    collectionId,
+    collectionCardsData,
+    cardList,
+    setLoading,
+    setLoadedCollectionId,
+    setCollectionStoreData,
+  ]);
 
   // Process data when collection cards, card list, or layout settings change
   useEffect(() => {
     if (!collectionId || !cardList) return;
-    if (initialLoadingCollection !== collectionId) return;
+    if (loadedCollectionId !== collectionId) return;
     setLoading(true);
 
     const cards = Object.values(collectionCards).map(cc => cc.collectionCard);
@@ -72,7 +81,7 @@ export function useCollectionGroupData(collectionId: string | undefined) {
 
     return () => clearTimeout(handle);
   }, [
-    initialLoadingCollection,
+    loadedCollectionId,
     collectionId,
     cardList,
     groupBy,
