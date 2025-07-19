@@ -1,6 +1,10 @@
 import React from 'react';
-import { useCCDetail, useCCCard } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+import {
+  useCCDetail,
+  useCCCard,
+} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
+import { Skeleton } from '@/components/ui/skeleton.tsx';
 
 interface ImageCellProps {
   cardKey: string;
@@ -10,6 +14,8 @@ interface ImageCellProps {
 const ImageCell: React.FC<ImageCellProps> = ({ cardKey, forceHorizontal = false }) => {
   const collectionCard = useCCDetail(cardKey);
   const card = useCCCard(cardKey);
+
+  if (!card || !collectionCard) return <Skeleton className="w-8 h-4 rounded-md" />;
 
   return (
     <CardImage

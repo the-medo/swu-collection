@@ -233,14 +233,14 @@ export function useCollectionCards() {
 }
 
 // Hooks to access a specific collection card
-export function useCCDetail(cardKey: string) {
-  return useStore(store, state => state.collectionCards[cardKey].collectionCard);
+export function useCCDetail(cardKey: string): CollectionCard | undefined {
+  return useStore(store, state => state.collectionCards[cardKey]?.collectionCard);
 }
-export function useCCVariant(cardKey: string) {
-  return useStore(store, state => state.collectionCards[cardKey].variant);
+export function useCCVariant(cardKey: string): CardVariant | undefined {
+  return useStore(store, state => state.collectionCards[cardKey]?.variant);
 }
-export function useCCCard(cardKey: string) {
-  return useStore(store, state => state.collectionCards[cardKey].card);
+export function useCCCard(cardKey: string): CardDataWithVariants<CardListVariants> | undefined {
+  return useStore(store, state => state.collectionCards[cardKey]?.card);
 }
 export function useCollectionGroupInfo(groupId: string) {
   return useStore(store, state => state.groupInfo[groupId]);

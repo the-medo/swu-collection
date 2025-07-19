@@ -2,8 +2,11 @@ import React from 'react';
 import { useCCDetail } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { getIdentificationFromCollectionCard } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
 import { getCollectionCardIdentificationKey } from '@/api/collections/usePutCollectionCard.ts';
-import CollectionCardInput, { CollectionCardInputProps } from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
+import CollectionCardInput, {
+  CollectionCardInputProps,
+} from '@/components/app/collections/CollectionContents/components/CollectionCardInput.tsx';
 import { cn } from '@/lib/utils.ts';
+import { Skeleton } from '@/components/ui/skeleton.tsx';
 
 interface PriceCellProps {
   cardKey: string;
@@ -13,9 +16,12 @@ interface PriceCellProps {
   onChange: CollectionCardInputProps['onChange'];
 }
 
-const PriceCell: React.FC<PriceCellProps> = ({ cardKey, collectionId, owned, currency, onChange }) => {
+const PriceCell: React.FC<PriceCellProps> = ({ cardKey, owned, currency, onChange }) => {
   const collectionCard = useCCDetail(cardKey);
-  const price = collectionCard.price;
+  const price = collectionCard?.price;
+
+  if (!collectionCard) return <Skeleton className="w-8 h-4 rounded-md" />;
+
   const id = getIdentificationFromCollectionCard(collectionCard);
 
   return (
@@ -30,7 +36,7 @@ const PriceCell: React.FC<PriceCellProps> = ({ cardKey, collectionId, owned, cur
           inputId={getCollectionCardIdentificationKey(id)}
           id={id}
           field="price"
-          value={price}
+          value={String(price)}
           onChange={onChange}
         />
       ) : (

@@ -5,43 +5,42 @@ import { cn } from '@/lib/utils.ts';
 import debounce from 'lodash.debounce';
 import { useEffect } from 'react';
 
+export type CollectionCardInputField = 'amount' | 'amount2' | 'note' | 'price' | 'deckCardQuantity';
+
+type CollectionCardInputVariantProps =
+  | {
+      id: CollectionCardIdentification;
+      field: 'amount';
+      value: number;
+    }
+  | {
+      id: CollectionCardIdentification;
+      field: 'amount2';
+      value: number | undefined;
+    }
+  | {
+      id: CollectionCardIdentification;
+      field: 'note' | 'price';
+      value: string | undefined;
+    };
+/*| {
+      id?: undefined;
+      field: 'deckCardQuantity';
+      value: number | undefined;
+    }*/
+
+export type CollectionCardInputOnChange = (
+  id: CollectionCardIdentification | undefined,
+  field: CollectionCardInputField,
+  value: string | number | undefined,
+) => void;
+
 export type CollectionCardInputProps = {
-  id: CollectionCardIdentification;
   inputId: string;
   wide?: boolean;
   ghost?: boolean;
-} & (
-  | {
-      field: 'amount';
-      value: number;
-      onChange: (id: CollectionCardIdentification, field: 'amount', value: number) => void;
-    }
-  | {
-      field: 'amount2';
-      value: number | undefined;
-      onChange: (
-        id: CollectionCardIdentification,
-        field: 'amount2',
-        value: number | undefined,
-      ) => void;
-    }
-  | {
-      field: 'note' | 'price';
-      value: string | undefined;
-      onChange: (
-        id: CollectionCardIdentification,
-        field: 'note' | 'price',
-        value: string | undefined,
-      ) => void;
-    }
-  | {
-      field: 'deckCardQuantity';
-      value: number | undefined;
-      onChange: (value: number | undefined) => void;
-    }
-);
-
-export type CollectionCardInputField = CollectionCardInputProps['field'];
+  onChange: CollectionCardInputOnChange;
+} & CollectionCardInputVariantProps;
 
 const DEBOUNCE_DELAY = 500;
 
@@ -63,11 +62,11 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   const debouncedOnChange = React.useMemo(
     () =>
       debounce((value: unknown) => {
-        if (field === 'deckCardQuantity') {
-          onChange(value as number);
-        } else {
-          onChange(id, field as never, value as never);
-        }
+        // if (field === 'deckCardQuantity') {
+        //   onChange(value as number);
+        // } else {
+        onChange(id, field as never, value as never);
+        // }
       }, DEBOUNCE_DELAY),
     [id, field, onChange],
   );
