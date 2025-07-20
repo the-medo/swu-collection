@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { CardLanguage } from '../../../../types/enums.ts';
 import { CollectionCard } from '../../../../types/CollectionCard.ts';
@@ -7,8 +7,8 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCollectionLayoutStore } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { processCollectionData } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import { useCollectionGroupStoreActions } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+import { CollectionCardResponse } from '@/api/collections/useGetCollectionCards.ts';
 
-// Define the shape of the card data you're sending to the POST endpoint.
 export type CardUpdateData = {
   cardId: string;
   variantId: string;
@@ -22,17 +22,12 @@ export type CardUpdateData = {
 };
 
 export const usePostCollectionCard = (collectionId: string | undefined) => {
-  // Get card list data
+  const queryClient = useQueryClient();
   const { data: cardList } = useCardList();
-
-  // Get collection layout settings
   const { groupBy } = useCollectionLayoutStore();
-
-  // Get store actions
   const { mergeToCollectionStoreData } = useCollectionGroupStoreActions();
 
   return useMutation({
-    // The mutation function posts the card to the collection.
     mutationFn: async (cardData: CardUpdateData) => {
       if (!collectionId) {
         throw new Error('Collection id is required');
@@ -54,21 +49,55 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
       return response.json() as unknown as { data: CollectionCard };
     },
     onSuccess: result => {
-      // Show success toast
       toast({
         title: `Card added!`,
       });
-
-      // Only proceed if we have the card list data
       if (!cardList) return;
 
-      // Create an array with just the new card
+      queryClient.setQueryData<CollectionCardResponse>(
+        ['collection-content', collectionId],
+        oldData => {
+          if (!oldData) return;
+
+          const { data: existingCards } = oldData;
+
+          const cardIndex = existingCards.findIndex(
+            (card: CollectionCard) =>
+              card.cardId === result.data.cardId &&
+              card.variantId === result.data.variantId &&
+              card.foil === result.data.foil &&
+              card.condition === result.data.condition &&
+              card.language === result.data.language,
+          );
+
+          if (cardIndex >= 0) {
+            const updatedCard = {
+              ...existingCards[cardIndex],
+              amount: (existingCards[cardIndex].amount || 0) + (result.data.amount || 0),
+              amount2: (existingCards[cardIndex].amount2 || 0) + (result.data.amount2 || 0),
+              note: result.data.note ?? existingCards[cardIndex].note,
+              price: result.data.price ?? existingCards[cardIndex].price,
+            } as CollectionCard;
+
+            return {
+              ...oldData,
+              data: [
+                ...existingCards.slice(0, cardIndex),
+                updatedCard,
+                ...existingCards.slice(cardIndex + 1),
+              ],
+            };
+          }
+
+          return {
+            ...oldData,
+            data: [...existingCards, result.data],
+          };
+        },
+      );
+
       const newCards = [result.data];
-
-      // Process the new card data
       const processedData = processCollectionData(newCards, cardList, groupBy);
-
-      // Update the store with the processed data
       mergeToCollectionStoreData(processedData);
     },
     onError: error => {
