@@ -5,7 +5,7 @@ import {
 import CollectionLayoutImageBig from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutImageBig/CollectionLayoutImageBig.tsx';
 import CollectionLayoutImageSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutImageSmall/CollectionLayoutImageSmall.tsx';
 import CollectionLayoutTableImage from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableImage/CollectionLayoutTableImage.tsx';
-import CollectionLayoutTableSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmall.tsx';
+import CollectionLayoutTableSmallKeys from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmallKeys.tsx';
 import {
   useCollectionCards,
   useGroupCards,
@@ -83,7 +83,7 @@ const CollectionGroupCardLayout: React.FC<CollectionGroupCardLayoutProps> = ({
     );
   } else if (layout === CollectionLayout.TABLE_SMALL) {
     return (
-      <CollectionLayoutTableSmall
+      <CollectionLayoutTableSmallKeys
         key={sortBy.join('-')}
         collectionId={collectionId}
         cardKeys={groupCards}

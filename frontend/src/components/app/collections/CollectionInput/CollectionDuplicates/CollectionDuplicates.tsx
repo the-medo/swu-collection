@@ -3,12 +3,12 @@ import { useMemo } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { CardCondition, CardLanguage } from '../../../../../../../types/enums.ts';
 import { cardConditionObj } from '../../../../../../../types/iterableEnumInfo.ts';
-import { useCollectionCardTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/useCollectionCardTableColumns.tsx';
+import { useCollectionCardKeysTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/useCollectionCardKeysTableColumns.tsx';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
-import { 
+import {
   useCollectionCards,
-  useCollectionGroupStoreLoading
+  useCollectionGroupStoreLoading,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 
 interface CollectionDuplicatesProps {
@@ -33,7 +33,7 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
   const { cardListString } = useCollectionInfo(collectionId);
   const storeLoading = useCollectionGroupStoreLoading();
 
-  const columns = useCollectionCardTableColumns({
+  const columns = useCollectionCardKeysTableColumns({
     collectionId,
     cardList: cardList?.cards,
     layout: 'table-duplicate',
@@ -42,7 +42,7 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
 
   const cardsById = useMemo(() => {
     if (!selectedCardId) return [];
-    
+
     // Filter card keys where the card has the selected cardId
     return Object.keys(collectionCards).filter(cardKey => {
       const detail = collectionCards[cardKey]?.collectionCard;
@@ -63,7 +63,7 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
         differentVariantKeys.push(cardKey);
         return;
       }
-      
+
       if (
         detail.foil === foil &&
         detail.language === language &&
@@ -72,7 +72,7 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
         exactKey = cardKey;
         return;
       }
-      
+
       sameVariantKeys.push(cardKey);
     });
 

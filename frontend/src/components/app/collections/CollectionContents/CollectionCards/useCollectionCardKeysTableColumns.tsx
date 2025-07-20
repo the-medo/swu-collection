@@ -1,15 +1,14 @@
 import { useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
-import { CardList } from '../../../../../../../lib/swu-resources/types.ts';
 import {
   CollectionLayout,
   CollectionSortBy,
   useCollectionInfo,
   useCollectionLayoutStoreActions,
 } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
-
-// Import table cell components
+import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
+import { CollectionCardTableColumnsProps } from '@/components/app/collections/CollectionContents/CollectionCards/collectionCardTableLib.ts';
 import AmountCell from './table-components/AmountCell';
 import ImageCell from './table-components/ImageCell';
 import CostCell from './table-components/CostCell';
@@ -23,16 +22,8 @@ import SetCell from './table-components/SetCell';
 import RarityCell from './table-components/RarityCell';
 import NoteCell from './table-components/NoteCell';
 import PriceCell from './table-components/PriceCell';
-import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
 
-interface CollectionCardTableColumnsProps {
-  collectionId: string;
-  cardList: CardList | undefined;
-  layout: CollectionLayout | 'table-duplicate';
-  forceHorizontal?: boolean;
-}
-
-export function useCollectionCardTableColumns({
+export function useCollectionCardKeysTableColumns({
   collectionId,
   cardList,
   layout,
@@ -68,7 +59,14 @@ export function useCollectionCardTableColumns({
       ),
       size: 4,
       cell: ({ row }) => {
-        return <AmountCell cardKey={row.original} collectionId={collectionId} owned={owned} onChange={onChange} />;
+        return (
+          <AmountCell
+            cardKey={row.original}
+            collectionId={collectionId}
+            owned={owned}
+            onChange={onChange}
+          />
+        );
       },
     });
 
@@ -195,7 +193,14 @@ export function useCollectionCardTableColumns({
       header: 'Note',
       size: 20,
       cell: ({ row }) => {
-        return <NoteCell cardKey={row.original} collectionId={collectionId} owned={owned} onChange={onChange} />;
+        return (
+          <NoteCell
+            cardKey={row.original}
+            collectionId={collectionId}
+            owned={owned}
+            onChange={onChange}
+          />
+        );
       },
     });
 

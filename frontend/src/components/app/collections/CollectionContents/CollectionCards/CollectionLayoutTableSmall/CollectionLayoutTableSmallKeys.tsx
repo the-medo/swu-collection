@@ -1,25 +1,25 @@
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { useCollectionCardTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/useCollectionCardTableColumns.tsx';
+import { useCollectionCardKeysTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/useCollectionCardKeysTableColumns.tsx';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { CollectionLayout } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import { useMemo } from 'react';
 
-interface CollectionLayoutTableSmallProps {
+interface CollectionLayoutTableSmallKeysProps {
   collectionId: string;
   cardKeys: string[];
   horizontal?: boolean;
   dataTransforming?: boolean;
 }
 
-const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({
+const CollectionLayoutTableSmallKeys: React.FC<CollectionLayoutTableSmallKeysProps> = ({
   collectionId,
   cardKeys,
   horizontal = false,
   dataTransforming,
 }) => {
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
-  const columns = useCollectionCardTableColumns({
+  const columns = useCollectionCardKeysTableColumns({
     collectionId,
     cardList: cardList?.cards,
     layout: CollectionLayout.TABLE_SMALL,
@@ -42,13 +42,13 @@ const CollectionLayoutTableSmall: React.FC<CollectionLayoutTableSmallProps> = ({
   const loading = isFetchingCardList || dataTransforming;
 
   return (
-    <DataTable 
-      columns={columns} 
-      data={visibleCardKeys} 
-      loading={loading} 
+    <DataTable
+      columns={columns}
+      data={visibleCardKeys}
+      loading={loading}
       infiniteScrollObserver={observerTarget}
     />
   );
 };
 
-export default CollectionLayoutTableSmall;
+export default CollectionLayoutTableSmallKeys;
