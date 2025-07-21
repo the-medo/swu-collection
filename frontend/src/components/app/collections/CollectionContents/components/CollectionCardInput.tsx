@@ -5,69 +5,68 @@ import { cn } from '@/lib/utils.ts';
 import debounce from 'lodash.debounce';
 import { useEffect } from 'react';
 
-export type CollectionCardInputProps = {
-  id: CollectionCardIdentification;
-  key: string;
-  wide?: boolean;
-  ghost?: boolean;
-} & (
+export type CollectionCardInputField = 'amount' | 'amount2' | 'note' | 'price' | 'deckCardQuantity';
+
+type CollectionCardInputVariantProps =
   | {
+      id: CollectionCardIdentification;
       field: 'amount';
       value: number;
-      onChange: (id: CollectionCardIdentification, field: 'amount', value: number) => void;
     }
   | {
+      id: CollectionCardIdentification;
       field: 'amount2';
       value: number | undefined;
-      onChange: (
-        id: CollectionCardIdentification,
-        field: 'amount2',
-        value: number | undefined,
-      ) => void;
     }
   | {
+      id: CollectionCardIdentification;
       field: 'note' | 'price';
       value: string | undefined;
-      onChange: (
-        id: CollectionCardIdentification,
-        field: 'note' | 'price',
-        value: string | undefined,
-      ) => void;
-    }
-  | {
+    };
+/*| {
+      id?: undefined;
       field: 'deckCardQuantity';
       value: number | undefined;
-      onChange: (value: number | undefined) => void;
-    }
-);
+    }*/
 
-export type CollectionCardInputField = CollectionCardInputProps['field'];
+export type CollectionCardInputOnChange = (
+  id: CollectionCardIdentification | undefined,
+  field: CollectionCardInputField,
+  value: string | number | undefined,
+) => void;
+
+export type CollectionCardInputProps = {
+  inputId: string;
+  wide?: boolean;
+  ghost?: boolean;
+  onChange: CollectionCardInputOnChange;
+} & CollectionCardInputVariantProps;
 
 const DEBOUNCE_DELAY = 500;
 
 const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   id,
-  key,
+  inputId,
   field,
   wide = false,
   ghost = false,
   value,
   onChange,
 }) => {
-  const [inputValue, setInputValue] = React.useState<string | number | undefined>(value);
+  const [inputValue, setInputValue] = React.useState<string | number | undefined>(value ?? '');
 
   useEffect(() => {
-    setInputValue(value);
+    setInputValue(value ?? '');
   }, [value]);
 
   const debouncedOnChange = React.useMemo(
     () =>
       debounce((value: unknown) => {
-        if (field === 'deckCardQuantity') {
-          onChange(value as number);
-        } else {
-          onChange(id, field as never, value as never);
-        }
+        // if (field === 'deckCardQuantity') {
+        //   onChange(value as number);
+        // } else {
+        onChange(id, field as never, value as never);
+        // }
       }, DEBOUNCE_DELAY),
     [id, field, onChange],
   );
@@ -94,7 +93,7 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
 
   return (
     <Input
-      id={key}
+      id={inputId}
       placeholder=""
       className={cn('h-8', {
         'px-1 pl-2 text-right': field !== 'note',

@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
 import type { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
-import { CardList } from '../../../../../../../lib/swu-resources/types.ts';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
@@ -26,15 +25,9 @@ import {
 import { useCollectionCardInput } from '@/components/app/collections/CollectionContents/components/useCollectionCardInput.ts';
 import { foilRenderer } from '@/lib/table/foilRenderer.tsx';
 import { cn } from '@/lib/utils.ts';
+import { CollectionCardTableColumnsProps } from '@/components/app/collections/CollectionContents/CollectionCards/collectionCardTableLib.ts';
 
-interface CollectionCardTableColumnsProps {
-  collectionId: string;
-  cardList: CardList | undefined;
-  layout: CollectionLayout | 'table-duplicate';
-  forceHorizontal?: boolean;
-}
-
-export function useCollectionCardTableColumns({
+export function useCollectionCardObjectsTableColumns({
   collectionId,
   cardList,
   layout,
@@ -88,7 +81,7 @@ export function useCollectionCardTableColumns({
           return (
             // @ts-ignore
             <CollectionCardInput
-              key={getCollectionCardIdentificationKey(id)}
+              inputId={getCollectionCardIdentificationKey(id)}
               id={id}
               field="amount"
               value={amount}
@@ -299,7 +292,7 @@ export function useCollectionCardTableColumns({
           return (
             // @ts-ignore
             <CollectionCardInput
-              key={getCollectionCardIdentificationKey(id)}
+              inputId={getCollectionCardIdentificationKey(id)}
               id={id}
               field="note"
               value={note}
@@ -349,7 +342,7 @@ export function useCollectionCardTableColumns({
             {owned ? (
               //@ts-ignore
               <CollectionCardInput
-                key={getCollectionCardIdentificationKey(id)}
+                inputId={getCollectionCardIdentificationKey(id)}
                 id={id}
                 field="price"
                 value={price}

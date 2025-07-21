@@ -5,14 +5,14 @@ import { CollectionLayout } from '@/components/app/collections/CollectionContent
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import { useMemo } from 'react';
 
-interface CollectionLayoutTableImageProps {
+interface CollectionLayoutTableSmallKeysProps {
   collectionId: string;
   cardKeys: string[];
   horizontal?: boolean;
   dataTransforming?: boolean;
 }
 
-const CollectionLayoutTableImage: React.FC<CollectionLayoutTableImageProps> = ({
+const CollectionLayoutTableSmallKeys: React.FC<CollectionLayoutTableSmallKeysProps> = ({
   collectionId,
   cardKeys,
   horizontal = false,
@@ -22,7 +22,7 @@ const CollectionLayoutTableImage: React.FC<CollectionLayoutTableImageProps> = ({
   const columns = useCollectionCardKeysTableColumns({
     collectionId,
     cardList: cardList?.cards,
-    layout: CollectionLayout.TABLE_IMAGE,
+    layout: CollectionLayout.TABLE_SMALL,
     forceHorizontal: horizontal,
   });
 
@@ -51,4 +51,4 @@ const CollectionLayoutTableImage: React.FC<CollectionLayoutTableImageProps> = ({
   );
 };
 
-export default CollectionLayoutTableImage;
+export default CollectionLayoutTableSmallKeys;

@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards';
 import { useComparerStore } from '@/components/app/comparer/useComparerStore';
 import { CollectionCard } from '../../../../../../types/CollectionCard';
-import CollectionLayoutTableSmall from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmall.tsx';
 import ItemTypeBadge from './ItemTypeBadge';
+import CollectionLayoutTableSmallObjects from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmallObjects.tsx';
 
 interface ComparerResultProps {
   mainCardsMap: Map<string, CollectionCard>;
@@ -58,7 +58,7 @@ const ComparerResult: React.FC<ComparerResultProps> = ({ mainCardsMap, entry }) 
       </div>
 
       {intersectionCards.length ? (
-        <CollectionLayoutTableSmall collectionId={entry.id} cards={intersectionCards} />
+        <CollectionLayoutTableSmallObjects collectionId={entry.id} cards={intersectionCards} />
       ) : null}
     </div>
   );

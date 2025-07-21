@@ -1,13 +1,15 @@
 import * as React from 'react';
-import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards.ts';
 import { useMemo } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { CollectionCard } from '../../../../../../../types/CollectionCard';
 import { CardCondition, CardLanguage } from '../../../../../../../types/enums.ts';
 import { cardConditionObj } from '../../../../../../../types/iterableEnumInfo.ts';
-import { useCollectionCardTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/useCollectionCardTableColumns.tsx';
+import { useCollectionCardKeysTableColumns } from '@/components/app/collections/CollectionContents/CollectionCards/useCollectionCardKeysTableColumns.tsx';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { useCollectionInfo } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
+import {
+  useCollectionCards,
+  useCollectionGroupStoreLoading,
+} from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 
 interface CollectionDuplicatesProps {
   collectionId: string;
@@ -26,11 +28,12 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
   language,
   condition,
 }) => {
-  const { data: collectionCards, isFetching } = useGetCollectionCards(collectionId);
+  const collectionCards = useCollectionCards();
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
   const { cardListString } = useCollectionInfo(collectionId);
+  const storeLoading = useCollectionGroupStoreLoading();
 
-  const columns = useCollectionCardTableColumns({
+  const columns = useCollectionCardKeysTableColumns({
     collectionId,
     cardList: cardList?.cards,
     layout: 'table-duplicate',
@@ -38,43 +41,54 @@ const CollectionDuplicates: React.FC<CollectionDuplicatesProps> = ({
   });
 
   const cardsById = useMemo(() => {
-    return (collectionCards?.data ?? []).filter(c => c.cardId === selectedCardId);
+    if (!selectedCardId) return [];
+
+    // Filter card keys where the card has the selected cardId
+    return Object.keys(collectionCards).filter(cardKey => {
+      const detail = collectionCards[cardKey]?.collectionCard;
+      return detail && detail.cardId === selectedCardId;
+    });
   }, [selectedCardId, collectionCards]);
 
   const inCollection = useMemo(() => {
-    let exact: CollectionCard | undefined = undefined;
-    let sameVariant: CollectionCard[] = [];
-    let differentVariant: CollectionCard[] = [];
+    let exactKey: string | undefined = undefined;
+    let sameVariantKeys: string[] = [];
+    let differentVariantKeys: string[] = [];
 
-    cardsById.filter(c => {
-      if (c.variantId !== selectedVariantId) {
-        differentVariant.push(c);
+    cardsById.forEach(cardKey => {
+      const detail = collectionCards[cardKey]?.collectionCard;
+      if (!detail) return;
+
+      if (detail.variantId !== selectedVariantId) {
+        differentVariantKeys.push(cardKey);
         return;
       }
+
       if (
-        c.foil === foil &&
-        c.language === language &&
-        c.condition === cardConditionObj[condition].numericValue
+        detail.foil === foil &&
+        detail.language === language &&
+        detail.condition === cardConditionObj[condition].numericValue
       ) {
-        exact = c;
+        exactKey = cardKey;
         return;
       }
-      sameVariant.push(c);
+
+      sameVariantKeys.push(cardKey);
     });
 
     return {
-      exact,
-      sameVariant,
-      differentVariant,
-      data: exact
-        ? [exact, ...sameVariant, ...differentVariant]
-        : [...sameVariant, ...differentVariant],
+      exactKey,
+      sameVariantKeys,
+      differentVariantKeys,
+      data: exactKey
+        ? [exactKey, ...sameVariantKeys, ...differentVariantKeys]
+        : [...sameVariantKeys, ...differentVariantKeys],
     };
-  }, [cardsById, selectedVariantId, foil, language, condition]);
+  }, [cardsById, selectedVariantId, foil, language, condition, collectionCards]);
 
   if (!selectedCardId || !selectedVariantId) return null;
 
-  const loading = isFetching || isFetchingCardList;
+  const loading = isFetchingCardList || storeLoading;
 
   if (inCollection.data.length === 0) return null;
 

@@ -3,10 +3,17 @@ import { AdminPage } from '@/components/app/admin/AdminPage';
 import { z } from 'zod';
 import { zodValidator } from '@tanstack/zod-adapter';
 
+export const adminPages: [string, ...string[]] = [
+  'metas',
+  'sets',
+  'tournament-groups',
+  'deck-thumbnails',
+  'pq-tools',
+  'special-actions',
+] as const;
+
 const searchParams = z.object({
-  page: z
-    .enum(['metas', 'sets', 'tournament-groups', 'deck-thumbnails', 'pq-tools', 'special-actions'])
-    .default('metas'),
+  page: z.enum([...adminPages]).default('metas'),
 });
 
 export const Route = createFileRoute('/_authenticated/admin')({

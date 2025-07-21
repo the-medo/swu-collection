@@ -6,23 +6,24 @@ export interface CollectionCardResponse {
   data: CollectionCard[];
 }
 
-export const useGetCollectionCards = (collectionId: string | undefined) => {
+export const useGetCollectionCards = (collectionId: string | undefined, skip: boolean = false) => {
   return useQuery<CollectionCardResponse>({
     queryKey: ['collection-content', collectionId],
-    queryFn: collectionId
-      ? async () => {
-          const response = await api.collection[':id'].card.$get({
-            param: {
-              id: collectionId,
-            },
-          });
-          if (!response.ok) {
-            throw new Error('Something went wrong');
+    queryFn:
+      collectionId && !skip
+        ? async () => {
+            console.log('Getting collection content', collectionId);
+            const response = await api.collection[':id'].card.$get({
+              param: {
+                id: collectionId,
+              },
+            });
+            if (!response.ok) {
+              throw new Error('Something went wrong');
+            }
+            return await response.json();
           }
-          const data = await response.json();
-          return data;
-        }
-      : skipToken,
+        : skipToken,
     staleTime: Infinity,
   });
 };

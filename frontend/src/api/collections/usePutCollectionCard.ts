@@ -1,9 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { CardLanguage } from '../../../../types/enums.ts';
-import { CollectionCardResponse } from './useGetCollectionCards.ts';
 import { CollectionCard } from '../../../../types/CollectionCard.ts';
 import { toast } from '@/hooks/use-toast.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
+import { useCollectionLayoutStore } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
+import { processCollectionData } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
+import { useCollectionGroupStoreActions } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+import { CollectionCardResponse } from './useGetCollectionCards.ts';
 
 export type CollectionCardIdentification = {
   cardId: string;
@@ -35,9 +39,11 @@ type CollectionCardUpdateRequest = {
 
 export const usePutCollectionCard = (collectionId: string | undefined) => {
   const queryClient = useQueryClient();
+  const { data: cardList } = useCardList();
+  const { groupBy } = useCollectionLayoutStore();
+  const { mergeToCollectionStoreData } = useCollectionGroupStoreActions();
 
   return useMutation({
-    // The mutation function posts the card to the collection.
     mutationFn: async (cardData: CollectionCardUpdateRequest) => {
       if (!collectionId) {
         throw new Error('Collection id is required');
@@ -59,12 +65,16 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
       return response.json() as unknown as { data: CollectionCard };
     },
     onSuccess: (result, vars) => {
+      if (!cardList) return;
+
+      toast({
+        title: `Updated!`,
+      });
+
       queryClient.setQueryData<CollectionCardResponse>(
         ['collection-content', collectionId],
         oldData => {
-          if (!oldData) {
-            return { data: [result.data] };
-          }
+          if (!oldData) return;
 
           const { id } = vars;
 
@@ -105,6 +115,10 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
           };
         },
       );
+
+      const updatedCards = [result.data];
+      const processedData = processCollectionData(updatedCards, cardList, groupBy);
+      mergeToCollectionStoreData(processedData);
     },
     onError: error => {
       toast({

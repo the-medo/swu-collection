@@ -31,10 +31,16 @@ export const usePostCollectionBulk = (collectionId: string) => {
     },
     onSuccess: ({ data }) => {
       queryClient.invalidateQueries({ queryKey: ['collection-content', collectionId] });
+
       toast({
-        title: 'Bulk action succeeded!',
+        title: 'Bulk action succeeded! Reloading page.',
         description: `Changed: ${data.changed}; Removed: ${data.deleted}`,
       });
+
+      /** Reload 1s after success to refresh store */
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     },
     onError: (error: any) => {
       toast({
