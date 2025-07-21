@@ -9,12 +9,13 @@ import { TournamentGroupsPage } from '@/components/app/admin/TournamentGroupsPag
 import { PQToolsPage } from '@/components/app/admin/PQToolsPage/PQToolsPage.tsx';
 import { SpecialActionsPage } from '@/components/app/admin/SpecialActionsPage';
 import { Helmet } from 'react-helmet-async';
+import { Route } from '@/routes/_authenticated.admin';
 
 export function AdminPage() {
   const hasRole = useRole();
   const isAdmin = hasRole('admin');
   const { page } = useSearch({ from: '/_authenticated/admin' });
-  const navigate = useNavigate({ from: '/_authenticated/admin' });
+  const navigate = useNavigate({ from: Route.fullPath });
 
   // Redirect if not an admin
   if (!isAdmin) {

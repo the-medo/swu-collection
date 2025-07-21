@@ -13,6 +13,7 @@ import { ChevronDown, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast.ts';
 import { api } from '@/lib/api.ts';
+import { TournamentGroupWithMeta } from '../../../../../../types/TournamentGroup.ts';
 
 interface PQWeeklyTournamentGroupsProps {
   weeklyTournaments: WeekData[];
@@ -46,9 +47,8 @@ export function PQWeeklyTournamentGroups({
   const pqWeekGroups = allTournamentGroups.filter(group => group.group.name.startsWith('PQ Week '));
 
   // Format weekend dates in a nice way
-  const formatWeekendDates = (startDate: Date | string, endDate: Date | string) => {
+  const formatWeekendDates = (startDate: Date | string) => {
     const start = new Date(startDate);
-    const end = new Date(endDate);
 
     // Find Saturday and Sunday of the week
     const saturday = new Date(start);
@@ -68,7 +68,7 @@ export function PQWeeklyTournamentGroups({
   };
 
   // Create a map of existing PQ Week groups by week number
-  const existingWeekGroups = new Map();
+  const existingWeekGroups = new Map<number, TournamentGroupWithMeta>();
   pqWeekGroups.forEach(group => {
     // Extract week number from group name (e.g., "PQ Week 1" -> 1)
     const weekNumberMatch = group.group.name.match(/PQ Week (\d+)/);
@@ -84,7 +84,7 @@ export function PQWeeklyTournamentGroups({
       return;
     }
 
-    const weekendDates = formatWeekendDates(week.startDate, week.endDate);
+    const weekendDates = formatWeekendDates(week.startDate);
 
     createTournamentGroupMutation.mutate({
       name: `PQ Week ${week.weekNumber}`,
@@ -96,7 +96,10 @@ export function PQWeeklyTournamentGroups({
   };
 
   // Function to handle adding all missing tournaments to a group
-  const handleAddMissingTournaments = async (week: WeekData, existingGroup: any) => {
+  const handleAddMissingTournaments = async (
+    week: WeekData,
+    existingGroup: TournamentGroupWithMeta,
+  ) => {
     if (!existingGroup || !existingGroup.group || !existingGroup.group.id) return;
 
     const groupId = existingGroup.group.id;
@@ -183,12 +186,12 @@ export function PQWeeklyTournamentGroups({
             <p>No tournament groups found for the selected meta.</p>
           )}
 
-          {tournamentGroupsQuery.isSuccess && allTournamentGroups.length > 0 && (
+          {tournamentGroupsQuery.isSuccess && (
             <div className="space-y-6">
               {weeklyTournaments.map(week => {
                 const existingGroup = existingWeekGroups.get(week.weekNumber);
                 const bgColor = existingGroup ? 'bg-white' : 'bg-red-200';
-                const weekendDates = formatWeekendDates(week.startDate, week.endDate);
+                const weekendDates = formatWeekendDates(week.startDate);
 
                 return (
                   <Collapsible key={week.weekNumber} className={`border rounded-md p-4 ${bgColor}`}>
