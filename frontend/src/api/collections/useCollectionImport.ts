@@ -21,7 +21,7 @@ interface ImportCardsResponse {
 }
 
 export const useCollectionImport = (
-  collectionId: string | undefined
+  collectionId: string | undefined,
 ): UseMutationResult<ImportCardsResponse, Error, ImportCardsRequest> => {
   const queryClient = useQueryClient();
 
@@ -43,17 +43,22 @@ export const useCollectionImport = (
 
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       // Invalidate queries to refresh the collection data
       queryClient.invalidateQueries({ queryKey: ['collection', collectionId] });
       queryClient.invalidateQueries({ queryKey: ['collection-content', collectionId] });
 
       toast({
-        title: 'Import successful',
+        title: 'Import successful! Reloading page.',
         description: `Successfully imported ${data.data.inserted} cards to your collection.`,
       });
+
+      /** Reload 1s after success to refresh store */
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Import failed',
         description: error.message || 'Failed to import cards to your collection.',
