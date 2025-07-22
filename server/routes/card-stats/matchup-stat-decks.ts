@@ -42,11 +42,8 @@ export const matchupStatDecksRoute = new Hono<AuthExtension>().get(
     let currentData = cardDeckMap;
     for (const part of keyParts) {
       if (currentData === undefined) {
-        console.log('Part: ', part, ' - NOT FOUND');
         return c.json({ error: 'Invalid key path' }, 400);
       }
-      console.log('Part: ', part, ' - OK');
-      console.log({ currentData });
       currentData = currentData[part];
     }
 
