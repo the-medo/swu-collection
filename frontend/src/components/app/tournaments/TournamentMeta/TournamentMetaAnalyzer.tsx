@@ -109,14 +109,16 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
       decksToAnalyze.forEach(deck => {
         if (!deck.deck) return;
 
-        let key = getDeckKey(deck, metaInfoType, cardListData);
+        let keys = [getDeckKey(deck, metaInfoType, cardListData)];
+        if (metaInfo === 'aspects') {
+          keys = keys[0].split('-');
+        }
 
-        if (key) {
+        keys.forEach(key => {
           countMap.set(key, (countMap.get(key) || 0) + 1);
-          // Track wins and losses for each key
           winsMap.set(key, (winsMap.get(key) || 0) + (deck.tournamentDeck.recordWin || 0));
           lossesMap.set(key, (lossesMap.get(key) || 0) + (deck.tournamentDeck.recordLose || 0));
-        }
+        });
       });
 
       // Convert map to array and sort by count
@@ -138,7 +140,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
         })
         .sort((a, b) => b.count - a.count);
     },
-    [cardListData, getBaseKey],
+    [cardListData, getBaseKey, metaInfo],
   );
 
   // Analyze all meta parts

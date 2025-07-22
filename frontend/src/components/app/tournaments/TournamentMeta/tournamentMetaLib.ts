@@ -137,12 +137,7 @@ export const getDeckKey = (
         Array.from({ length: deck.deckInformation?.aspectVillainy }).forEach(() =>
           aspects.push('Villainy'),
         );
-      if (metaInfo === 'aspects') {
-        // For 'aspects', we'll just use the first aspect as the key
-        key = aspects[0] || 'no-aspect';
-      } else {
-        key = aspects.sort().join('-') || 'no-aspect';
-      }
+      key = aspects.sort().join('-') || 'no-aspect';
       break;
   }
 
