@@ -12,7 +12,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useIsMobile } from '@/hooks/use-mobile.tsx';
-import { getDeckKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { getDeckKeys } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import { Button } from '@/components/ui/button.tsx';
@@ -58,7 +58,9 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
     if (!decks.length || !cardListData) return [];
 
     if (useKeyAndKeyMetaInfo && key && keyMetaInfo) {
-      return decks.filter(deck => key === getDeckKey(deck, keyMetaInfo as MetaInfo, cardListData));
+      return decks.filter(deck =>
+        getDeckKeys(deck, keyMetaInfo as MetaInfo, cardListData)?.includes(key),
+      );
     }
 
     return decks.filter(deck => {

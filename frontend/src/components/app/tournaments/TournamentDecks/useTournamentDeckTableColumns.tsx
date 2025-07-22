@@ -3,7 +3,7 @@ import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.
 import { ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { getDeckKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { getDeckKeys } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useIsMobile } from '@/hooks/use-mobile.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { cn } from '@/lib/utils.ts';
@@ -75,11 +75,11 @@ export function useTournamentDeckTableColumns(
         const tournamentDeck = row.original;
         if (!tournamentDeck) return 'N/A';
 
-        const key = getDeckKey(tournamentDeck, 'leadersAndBase', cardListData);
+        const key = getDeckKeys(tournamentDeck, 'leadersAndBase', cardListData);
 
         return (
           <div className="hover:underline w-48 text-xs">
-            {labelRenderer(key, 'leadersAndBase', 'compact')}
+            {labelRenderer(key[0], 'leadersAndBase', 'compact')}
           </div>
         );
       },

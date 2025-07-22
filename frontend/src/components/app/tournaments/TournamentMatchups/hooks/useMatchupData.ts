@@ -3,7 +3,7 @@ import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.
 import { TournamentMatch } from '../../../../../../../server/db/schema/tournament_match.ts';
 import { MatchupDataMap, MatchupTotalData } from '../types';
 import { MetaInfo } from '../../TournamentMeta/MetaInfoSelector.tsx';
-import { getDeckKey as getDeckKeyBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { getDeckKeys as getDeckKeyBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 
 export function useMatchupData(
   filteredMatches: TournamentMatch[],
@@ -12,7 +12,7 @@ export function useMatchupData(
   metaInfo: MetaInfo,
 ) {
   // Helper function to get key for a deck based on meta info
-  const getDeckKey = useCallback(
+  const getDeckKeys = useCallback(
     (deck: TournamentDeckResponse) => getDeckKeyBasedOnMetaInfo(deck, metaInfo, cardListData),
     [cardListData, metaInfo],
   );
@@ -39,13 +39,13 @@ export function useMatchupData(
       const p2Deck = match.p2DeckId ? deckMap.get(match.p2DeckId) : undefined;
 
       if (p1Deck) {
-        const key = getDeckKey(p1Deck);
-        if (key) deckKeys.add(key);
+        const key = getDeckKeys(p1Deck);
+        if (key) key.forEach(k => deckKeys.add(k));
       }
 
       if (p2Deck) {
-        const key = getDeckKey(p2Deck);
-        if (key) deckKeys.add(key);
+        const key = getDeckKeys(p2Deck);
+        if (key) key.forEach(k => deckKeys.add(k));
       }
     });
 
@@ -73,37 +73,42 @@ export function useMatchupData(
 
       if (!p1Deck || !p2Deck) return;
 
-      const p1Key = getDeckKey(p1Deck);
-      const p2Key = getDeckKey(p2Deck);
+      const p1Keys = getDeckKeys(p1Deck);
+      const p2Keys = getDeckKeys(p2Deck);
 
-      if (!p1Key || !p2Key || p1Key === p2Key) return; // Skip if keys are missing or it's a mirror match
+      if (!p1Keys || !p2Keys) return; // Skip if keys are missing or it's a mirror match
 
-      // Determine the winner based on the result
-      // result: 0 if lose, 1 if draw, 3 if win
-      if (match.result === 3) {
-        // Player 1 won
-        matchups[p1Key][p2Key].wins += 1;
-        matchups[p2Key][p1Key].losses += 1;
-      } else if (match.result === 0) {
-        // Player 1 lost
-        matchups[p1Key][p2Key].losses += 1;
-        matchups[p2Key][p1Key].wins += 1;
-      }
+      p1Keys.forEach(p1Key => {
+        p2Keys.forEach(p2Key => {
+          if (p1Key === p2Key) return;
+          // Determine the winner based on the result
+          // result: 0 if lose, 1 if draw, 3 if win
+          if (match.result === 3) {
+            // Player 1 won
+            matchups[p1Key][p2Key].wins += 1;
+            matchups[p2Key][p1Key].losses += 1;
+          } else if (match.result === 0) {
+            // Player 1 lost
+            matchups[p1Key][p2Key].losses += 1;
+            matchups[p2Key][p1Key].wins += 1;
+          }
 
-      // Draws are not counted in win/loss of matches, but in games it is 1-1
-      // We assume that players drew after 1-1 and not 0-0
-      if (match.gameDraw === 3) {
-        match.gameWin = 1;
-        match.gameLose = 1;
-      }
+          // Draws are not counted in win/loss of matches, but in games it is 1-1
+          // We assume that players drew after 1-1 and not 0-0
+          if (match.gameDraw === 3) {
+            match.gameWin = 1;
+            match.gameLose = 1;
+          }
 
-      // Track game wins and losses
-      if (match.gameWin > 0 || match.gameLose > 0) {
-        matchups[p1Key][p2Key].gameWins += match.gameWin;
-        matchups[p1Key][p2Key].gameLosses += match.gameLose;
-        matchups[p2Key][p1Key].gameWins += match.gameLose;
-        matchups[p2Key][p1Key].gameLosses += match.gameWin;
-      }
+          // Track game wins and losses
+          if (match.gameWin > 0 || match.gameLose > 0) {
+            matchups[p1Key][p2Key].gameWins += match.gameWin;
+            matchups[p1Key][p2Key].gameLosses += match.gameLose;
+            matchups[p2Key][p1Key].gameWins += match.gameLose;
+            matchups[p2Key][p1Key].gameLosses += match.gameWin;
+          }
+        });
+      });
     });
 
     // Calculate total match count and win/loss stats for each deck type
@@ -144,5 +149,5 @@ export function useMatchupData(
       matchups,
       totalStats,
     };
-  }, [filteredMatches, filteredDecks, cardListData, getDeckKey]);
+  }, [filteredMatches, filteredDecks, cardListData, getDeckKeys]);
 }

@@ -14,7 +14,7 @@ import { Route as TournamentDeckCardStatsRoute } from '@/routes/tournaments/$tou
 import { Route as TournamentDeckMetaRoute } from '@/routes/tournaments/$tournamentId/meta.tsx';
 import { Route as TournamentDeckMatchupsRoute } from '@/routes/tournaments/$tournamentId/matchups.tsx';
 import { Route as MetaRoute } from '@/routes/meta';
-import { getDeckKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { getDeckKeys } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useIsMobile } from '@/hooks/use-mobile.tsx';
@@ -76,7 +76,9 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
     if (!cardListData || !decks.length) return [];
 
     // Filter decks with the same key
-    const matchingDecks = decks.filter(deck => getDeckKey(deck, metaInfo, cardListData) === key);
+    const matchingDecks = decks.filter(deck =>
+      getDeckKeys(deck, metaInfo, cardListData)?.includes(key),
+    );
 
     // Sort by placement
     const sortedDecks = [...matchingDecks].sort((a, b) => {
@@ -98,7 +100,9 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
     );
 
     // Filter decks with the same key
-    const matchingDecks = topDecks.filter(deck => getDeckKey(deck, metaInfo, cardListData) === key);
+    const matchingDecks = topDecks.filter(deck =>
+      getDeckKeys(deck, metaInfo, cardListData)?.includes(key),
+    );
 
     // Sort by placement
     const sortedDecks = [...matchingDecks].sort((a, b) => {

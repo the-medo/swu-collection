@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 import {
-  getDeckKey,
+  getDeckKeys,
   TournamentInfoMap,
 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import MetaPartSelector, { MetaPart } from './MetaPartSelector';
@@ -109,10 +109,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
       decksToAnalyze.forEach(deck => {
         if (!deck.deck) return;
 
-        let keys = [getDeckKey(deck, metaInfoType, cardListData)];
-        if (metaInfo === 'aspects') {
-          keys = keys[0].split('-');
-        }
+        let keys = getDeckKeys(deck, metaInfoType, cardListData);
 
         keys.forEach(key => {
           countMap.set(key, (countMap.get(key) || 0) + 1);
