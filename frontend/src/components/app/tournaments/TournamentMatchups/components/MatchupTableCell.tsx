@@ -2,15 +2,16 @@ import * as React from 'react';
 import { MatchupDataMap, MatchupDisplayMode } from '../types';
 import { getWinrateColorClass } from '../utils/getWinrateColorClass';
 import { cn } from '@/lib/utils.ts';
-import { useCallback } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 
 export interface MatchupTableCellProps {
   rowKey: string;
   colKey: string;
   matchups: MatchupDataMap;
   displayMode: MatchupDisplayMode;
-  setHoveredCol: React.Dispatch<React.SetStateAction<number | null>>;
   columnIndex: number;
+  registerCellRef: (columnIndex: number, cellRef: HTMLTableCellElement | null) => void;
+  handleColumnEnter: (index: number) => void;
 }
 
 export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
@@ -18,8 +19,9 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
   colKey,
   matchups,
   displayMode,
-  setHoveredCol,
   columnIndex,
+  registerCellRef,
+  handleColumnEnter,
 }) => {
   const wins = matchups[rowKey]?.[colKey]?.wins || 0;
   const losses = matchups[rowKey]?.[colKey]?.losses || 0;
@@ -39,14 +41,35 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
     total = gameWins + gameLosses;
   }
 
+  const cellRef = useRef<HTMLTableCellElement | null>(null);
+
+  // Register/unregister cell with column reference map
+  useEffect(() => {
+    // Store the current column index and cell reference for cleanup
+    const currentColumnIndex = columnIndex;
+    const currentCellRef = cellRef.current;
+
+    if (currentCellRef) {
+      registerCellRef(currentColumnIndex, currentCellRef);
+    }
+
+    return () => {
+      // Unregister using the stored column index, passing null and the old cell reference
+      if (currentCellRef) {
+        registerCellRef(currentColumnIndex, null);
+      }
+    };
+  }, [columnIndex, registerCellRef]);
+
   const onMouseEnter = useCallback(() => {
-    setHoveredCol(columnIndex);
-  }, [columnIndex]);
+    handleColumnEnter(columnIndex);
+  }, [columnIndex, handleColumnEnter]);
 
   // If there's no data, show a dash
   if (total === 0 || rowKey === colKey) {
     return (
       <td
+        ref={cellRef}
         className={cn('p-2 border text-center w-[50px] text-xs')}
         onMouseEnter={onMouseEnter}
         data-column-index={columnIndex}
@@ -61,6 +84,7 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
 
   return (
     <td
+      ref={cellRef}
       className={cn('p-2 border text-center w-[50px] text-xs', colorClass)}
       onMouseEnter={onMouseEnter}
       data-column-index={columnIndex}

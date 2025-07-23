@@ -1,15 +1,11 @@
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MatchupDataMap, MatchupDisplayMode, MatchupTotalData } from '../types';
-import { MatchupTableCell } from './MatchupTableCell';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import { labelWidthBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
-import RowTotalCell from '@/components/app/tournaments/TournamentMatchups/components/MatchupRowTotalCell.tsx';
-import { cn } from '@/lib/utils.ts';
-
-const MemoizedCell = React.memo(MatchupTableCell);
+import MatchupTableContent from './MatchupTableContent';
 
 export interface MatchupTableProps {
   matchupData: {
@@ -33,7 +29,40 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   const [filterText, setFilterText] = useState<string>('');
   const [debouncedFilterText, setDebouncedFilterText] = useState<string>('');
   const tableRef = useRef<HTMLTableElement>(null);
-  const [hoveredCol, setHoveredCol] = useState<number | null>(null);
+
+  const columnCellsRef = useRef<Map<number, HTMLTableCellElement[]>>(new Map()); // Store column cell references in a ref to avoid re-renders
+  const hoveredColRef = useRef<number | null>(null); // Store the currently hovered column in a ref
+
+  // Function to register or unregister a cell with its column
+  const registerCellRef = useCallback(
+    (
+      columnIndex: number,
+      cellRef: HTMLTableCellElement | null,
+      oldCellRef: HTMLTableCellElement | null = null,
+    ) => {
+      // Ensure the column exists in the map
+      if (!columnCellsRef.current.has(columnIndex)) {
+        columnCellsRef.current.set(columnIndex, []);
+      }
+
+      const cells = columnCellsRef.current.get(columnIndex);
+      if (!cells) return;
+
+      if (cellRef === null && oldCellRef !== null) {
+        // This is an unregister operation - remove the old cell reference
+        const index = cells.indexOf(oldCellRef);
+        if (index !== -1) {
+          cells.splice(index, 1);
+        }
+      } else if (cellRef !== null) {
+        // This is a register operation - add the cell if it's not already in the array
+        if (!cells.includes(cellRef)) {
+          cells.push(cellRef);
+        }
+      }
+    },
+    [],
+  );
 
   // Debounce filter text changes
   useEffect(() => {
@@ -46,16 +75,15 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     };
   }, [filterText]);
 
-  // Set data-highlighted attribute on the table when hovering columns
+  // Cleanup column cell references when component unmounts
   useEffect(() => {
-    if (!tableRef.current) return;
-
-    if (hoveredCol !== null) {
-      tableRef.current.setAttribute('data-highlighted-col', String(hoveredCol));
-    } else {
-      tableRef.current.removeAttribute('data-highlighted-col');
-    }
-  }, [hoveredCol]);
+    return () => {
+      // Clear all column cell references
+      columnCellsRef.current.clear();
+      // Reset hovered column
+      hoveredColRef.current = null;
+    };
+  }, []);
 
   const { setTournamentDeckKey } = useTournamentMetaActions();
 
@@ -92,103 +120,56 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     );
   }, [debouncedFilterText, matchupData.keys]);
 
-  // Handler for column headers
-  const handleColumnHeaderEnter = useCallback((index: number) => {
-    setHoveredCol(index);
-  }, []);
+  // Handler for column hover (works for both headers and data cells)
+  const handleColumnEnter = useCallback((index: number) => {
+    // Only update if the column has changed
+    if (hoveredColRef.current !== index) {
+      // Store the previous column for cleanup
+      const prevCol = hoveredColRef.current;
 
-  useEffect(() => {
-    if (!tableRef.current) return;
+      // Update the ref first
+      hoveredColRef.current = index;
 
-    // Remove existing highlights
-    tableRef.current.querySelectorAll('td.highlight-col').forEach(el => {
-      el.classList.remove('highlight-col', 'brightness-90', 'bg-accent');
-    });
+      // Remove highlights from previous column cells
+      if (prevCol !== null && columnCellsRef.current.has(prevCol)) {
+        const prevCells = columnCellsRef.current.get(prevCol);
+        if (prevCells) {
+          prevCells.forEach(cell => {
+            cell.classList.remove('highlight-col', 'brightness-90', 'bg-accent');
+          });
+        }
+      }
 
-    // Apply new highlights
-    if (hoveredCol !== null) {
-      tableRef.current.querySelectorAll(`td[data-column-index="${hoveredCol}"]`).forEach(el => {
-        el.classList.add('highlight-col', 'brightness-90', 'bg-accent');
-      });
+      // Add highlights to new column cells
+      if (columnCellsRef.current.has(index)) {
+        const newCells = columnCellsRef.current.get(index);
+        if (newCells) {
+          newCells.forEach(cell => {
+            cell.classList.add('highlight-col', 'brightness-90', 'bg-accent');
+          });
+        }
+      }
     }
-  }, [hoveredCol]);
+  }, []);
 
   return (
     <div className="relative overflow-x-auto overflow-y-auto max-h-[100vh]">
-      <table
-        ref={tableRef}
-        className={cn('border-collapse matchup-table td[data-[column-index=3]:bg-primary]')}
-      >
-        <thead className="sticky top-0 z-20 bg-background">
-          <tr>
-            <td className="p-2 border text-center font-semibold align-bottom min-w-[80px]">
-              <div>Total</div>
-              <span className="text-[10px] font-semibold mb-4">{totalMatchesAnalyzed} mtch</span>
-            </td>
-            <td className="p-2 align-bottom border">
-              {filterText && (
-                <div
-                  className="text-[10px] text-muted-foreground cursor-pointer mt-1 text-right"
-                  onClick={() => setFilterText('')}
-                >
-                  Clear filter
-                </div>
-              )}
-              <input
-                type="text"
-                placeholder="Filter..."
-                value={filterText}
-                onChange={e => setFilterText(e.target.value)}
-                className="w-full text-sm p-1 rounded border"
-              />
-            </td>
-            {matchupData.keys.map((key, colIndex) => (
-              <td
-                key={key}
-                data-column-index={colIndex + 2} // +2 because of the two initial columns
-                className="p-2 border w-[40px] max-w-[40px] column-header"
-                onMouseEnter={() => handleColumnHeaderEnter(colIndex + 2)}
-              >
-                <div
-                  className="text-[13px] -rotate-90 origin-bottom-left whitespace-nowrap flex items-end translate-x-1/2 ml-[20px] transform-gpu"
-                  style={labelHeight}
-                >
-                  {labelRenderer(key, metaInfo, 'compact')}
-                </div>
-              </td>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {filteredKeys.map(rowKey => (
-            <tr key={rowKey} className="h-[20px] text-sm hover:bg-accent hover:brightness-90">
-              <RowTotalCell
-                rowKey={rowKey}
-                totalStats={matchupData.totalStats}
-                displayMode={displayMode}
-              />
-              <td
-                className="p-1 border cursor-pointer text-[13px]"
-                onClick={() => onRowClick(rowKey)}
-                style={labelWidth}
-              >
-                {labelRenderer(rowKey, metaInfo, 'compact')}
-              </td>
-              {matchupData.keys.map((colKey, colIndex) => (
-                <MemoizedCell
-                  key={colKey}
-                  rowKey={rowKey}
-                  colKey={colKey}
-                  matchups={matchupData.matchups}
-                  displayMode={displayMode}
-                  setHoveredCol={setHoveredCol}
-                  columnIndex={colIndex + 2} // +2 because of the two initial columns
-                />
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <MatchupTableContent
+        tableRef={tableRef}
+        matchupData={matchupData}
+        filteredKeys={filteredKeys}
+        displayMode={displayMode}
+        metaInfo={metaInfo}
+        labelRenderer={labelRenderer}
+        totalMatchesAnalyzed={totalMatchesAnalyzed}
+        filterText={filterText}
+        setFilterText={setFilterText}
+        handleColumnEnter={handleColumnEnter}
+        onRowClick={onRowClick}
+        labelWidth={labelWidth}
+        labelHeight={labelHeight}
+        registerCellRef={registerCellRef}
+      />
     </div>
   );
 };
