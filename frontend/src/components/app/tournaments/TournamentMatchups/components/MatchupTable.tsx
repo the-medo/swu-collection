@@ -19,6 +19,9 @@ export interface MatchupTableProps {
   totalMatchesAnalyzed: number;
 }
 
+// Maximum number of rows/columns to display when not showing all data
+const MAX_DISPLAY_ITEMS = 30;
+
 export const MatchupTable: React.FC<MatchupTableProps> = ({
   matchupData,
   displayMode,
@@ -28,6 +31,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
 }) => {
   const [filterText, setFilterText] = useState<string>('');
   const [debouncedFilterText, setDebouncedFilterText] = useState<string>('');
+  const [showAllData, setShowAllData] = useState<boolean>(false);
   const tableRef = useRef<HTMLTableElement>(null);
 
   const columnCellsRef = useRef<Map<number, HTMLTableCellElement[]>>(new Map()); // Store column cell references in a ref to avoid re-renders
@@ -112,13 +116,24 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     [metaInfo],
   );
 
-  // Filter keys based on the debounced filter text
+  // Filter keys based on the debounced filter text and limit to 30 if not showing all data
   const filteredKeys = useMemo(() => {
-    if (!debouncedFilterText) return matchupData.keys;
-    return matchupData.keys.filter(key =>
-      key.toLowerCase().includes(debouncedFilterText.toLowerCase()),
-    );
-  }, [debouncedFilterText, matchupData.keys]);
+    let keys = matchupData.keys;
+    
+    // Apply text filter if any
+    if (debouncedFilterText) {
+      keys = keys.filter(key =>
+        key.toLowerCase().includes(debouncedFilterText.toLowerCase()),
+      );
+    }
+    
+    // Limit rows if not showing all data
+    if (!showAllData && keys.length > MAX_DISPLAY_ITEMS) {
+      keys = keys.slice(0, MAX_DISPLAY_ITEMS);
+    }
+    
+    return keys;
+  }, [debouncedFilterText, matchupData.keys, showAllData]);
 
   // Handler for column hover (works for both headers and data cells)
   const handleColumnEnter = useCallback((index: number) => {
@@ -152,11 +167,27 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     }
   }, []);
 
+  // Limit columns if not showing all data
+  const limitedMatchupData = useMemo(() => {
+    if (!showAllData && matchupData.keys.length > MAX_DISPLAY_ITEMS) {
+      const limitedKeys = matchupData.keys.slice(0, MAX_DISPLAY_ITEMS);
+      return {
+        keys: limitedKeys,
+        matchups: matchupData.matchups,
+        totalStats: matchupData.totalStats
+      };
+    }
+    return matchupData;
+  }, [matchupData, showAllData]);
+
+  // Check if data is truncated
+  const isDataTruncated = matchupData.keys.length > MAX_DISPLAY_ITEMS || filteredKeys.length < matchupData.keys.length;
+
   return (
     <div className="relative overflow-x-auto overflow-y-auto max-h-[100vh]">
       <MatchupTableContent
         tableRef={tableRef}
-        matchupData={matchupData}
+        matchupData={limitedMatchupData}
         filteredKeys={filteredKeys}
         displayMode={displayMode}
         metaInfo={metaInfo}
@@ -169,6 +200,11 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         labelWidth={labelWidth}
         labelHeight={labelHeight}
         registerCellRef={registerCellRef}
+        showAllData={showAllData}
+        setShowAllData={setShowAllData}
+        isDataTruncated={isDataTruncated}
+        originalDataLength={matchupData.keys.length}
+        maxDisplayItems={MAX_DISPLAY_ITEMS}
       />
     </div>
   );

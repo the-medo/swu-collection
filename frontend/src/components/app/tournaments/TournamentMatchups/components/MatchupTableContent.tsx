@@ -27,6 +27,11 @@ interface MatchupTableContentProps {
   labelWidth: { width: string; minWidth: string };
   labelHeight: { height: string };
   registerCellRef: (columnIndex: number, cellRef: HTMLTableCellElement | null) => void;
+  showAllData: boolean;
+  setShowAllData: (show: boolean) => void;
+  isDataTruncated: boolean;
+  originalDataLength: number;
+  maxDisplayItems: number;
 }
 
 const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
@@ -44,6 +49,11 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
   labelWidth,
   labelHeight,
   registerCellRef,
+  showAllData,
+  setShowAllData,
+  isDataTruncated,
+  originalDataLength,
+  maxDisplayItems,
 }) => {
   return (
     <table
@@ -119,6 +129,42 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
             ))}
           </tr>
         ))}
+
+        {/* Show All Data button row */}
+        {isDataTruncated && !showAllData && (
+          <tr className="h-[40px] text-sm bg-accent/30">
+            <td colSpan={2} className="p-2 border text-center font-semibold">
+              Showing limited data ({filteredKeys.length} rows, {matchupData.keys.length} columns)
+            </td>
+            <td
+              colSpan={matchupData.keys.length}
+              className="p-2 border pl-12 cursor-pointer hover:bg-accent"
+              onClick={() => setShowAllData(true)}
+            >
+              <span className="font-semibold">
+                Click to show all data ({originalDataLength} total rows and columns)
+              </span>
+            </td>
+          </tr>
+        )}
+
+        {/* Show Less Data button row */}
+        {isDataTruncated && showAllData && (
+          <tr className="h-[40px] text-sm bg-accent/30">
+            <td colSpan={2} className="p-2 border text-center font-semibold">
+              Showing all data ({filteredKeys.length} rows and columns)
+            </td>
+            <td
+              colSpan={matchupData.keys.length}
+              className="p-2 pl-12 border cursor-pointer hover:bg-accent"
+              onClick={() => setShowAllData(false)}
+            >
+              <span className="font-semibold">
+                Click to show limited data ({maxDisplayItems} rows, {maxDisplayItems} columns)
+              </span>
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   );
