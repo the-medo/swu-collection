@@ -22,6 +22,10 @@ interface DeckPlacementProps {
   deckId?: string;
   showDeckLink?: boolean;
   cardImageSize?: CardImageVariantProps['size'];
+  extended?: boolean;
+  gameWins?: number;
+  gameLosses?: number;
+  gameDraws?: number;
 }
 
 const DeckPlacement: React.FC<DeckPlacementProps> = ({
@@ -40,6 +44,10 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
   deckId,
   showDeckLink = false,
   cardImageSize = 'w50',
+  extended = false,
+  gameWins = 0,
+  gameLosses = 0,
+  gameDraws = 0,
 }) => {
   return (
     <div
@@ -52,6 +60,7 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
             ? 'hover:bg-muted/50 border-transparent'
             : '',
         onClick ? 'p-2 rounded-md transition-colors border' : '',
+        extended ? 'w-full' : '',
         className,
       )}
       onClick={onClick}
@@ -91,17 +100,26 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
           </div>
         )}
       </div>
+      {extended && (
+        <div className="text-md font-bold w-[80px] flex-shrink-0">
+          {gameWins}-{gameLosses}-{gameDraws}
+        </div>
+      )}
 
       <div className="flex flex-1 items-center">
         {(username || deckName) && (
-          <div className="flex flex-col justify-center overflow-hidden">
+          <div
+            className={cn('flex flex-col justify-center overflow-hidden', {
+              'flex-row gap-4': extended,
+            })}
+          >
             {username && (
               <div className="font-medium">
                 {showPlacement && placement ? `#${placement} ${username}` : username}
                 {placement === 1 && <Trophy className="h-4 w-4 text-amber-500 inline ml-2" />}
               </div>
             )}
-            {deckName && (
+            {!extended && deckName && (
               <div className="text-xs text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-32">
                 {deckName}
               </div>
@@ -116,7 +134,12 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
             title="Open deck in new tab"
             className="ml-auto"
           >
-            <Link to={'/decks/$deckId'} params={{ deckId }} target="_blank">
+            <Link
+              to={'/decks/$deckId'}
+              params={{ deckId }}
+              target="_blank"
+              onClick={e => e.stopPropagation()}
+            >
               <ExternalLink className="h-4 w-4 text-muted-foreground" />
             </Link>
           </Button>

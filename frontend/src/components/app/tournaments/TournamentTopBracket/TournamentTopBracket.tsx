@@ -248,55 +248,6 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
     return processedRounds.reverse(); // Reverse to start with earlier rounds
   }, [matchesData, topDecks, top]);
 
-  // Create structured placements for the sidebar
-  const placements = useMemo(() => {
-    if (!topDecks.length) return [];
-
-    const result = [];
-
-    // Winner (1st place)
-    if (topDecks[0]) {
-      result.push({
-        placement: '1st',
-        decks: [topDecks[0]],
-      });
-    }
-
-    // Runner-up (2nd place)
-    if (topDecks.length > 1 && topDecks[1]) {
-      result.push({
-        placement: '2nd',
-        decks: [topDecks[1]],
-      });
-    }
-
-    // 3rd-4th places
-    const thirdFourthDecks = topDecks.filter(
-      d => d.tournamentDeck.placement === 3 || d.tournamentDeck.placement === 4,
-    );
-    if (thirdFourthDecks.length) {
-      result.push({
-        placement: '3rd-4th',
-        decks: thirdFourthDecks,
-      });
-    }
-
-    // 5th-8th places if top 8 or top 16
-    if (top === BracketInfo.TOP8 || top === BracketInfo.TOP16) {
-      const fifthToEighthDecks = topDecks.filter(
-        d => (d.tournamentDeck.placement ?? 0) >= 5 && (d.tournamentDeck.placement ?? 0) <= 8,
-      );
-      if (fifthToEighthDecks.length) {
-        result.push({
-          placement: '5th-8th',
-          decks: fifthToEighthDecks,
-        });
-      }
-    }
-
-    return result;
-  }, [topDecks, top]);
-
   // These functions have been moved to separate components
 
   if (isLoadingDecks || isLoadingMatches) {
@@ -318,7 +269,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
           <DeckViewer selectedDeckId={selectedDeckId} setSelectedDeckId={setSelectedDeckId} />
         ) : top === BracketInfo.NONE ? (
           // For "none" bracket type, don't show the bracket rounds
-          <div className="flex-1"></div>
+          <></>
         ) : (
           <BracketRounds
             bracketData={bracketData}

@@ -1,11 +1,9 @@
 import React from 'react';
-import { Button } from '@/components/ui/button.tsx';
-import { Link } from '@tanstack/react-router';
-import { ExternalLink } from 'lucide-react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks';
 import { extractDeckNameFromBrackets } from '../../lib/extractDeckNameFromBrackets';
 import { BracketInfo } from '../../../../../../../types/enums.ts';
 import DeckPlacement from '@/components/app/tournaments/components/DeckPlacement.tsx';
+import { cn } from '@/lib/utils.ts';
 
 interface PlacementGroup {
   placement: string;
@@ -106,17 +104,23 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
     return result;
   }, [topDecks, top]);
 
+  const extended = top === BracketInfo.NONE && !selectedDeckId;
+
   return (
-    <div className="min-w-72 space-y-4 mr-6">
+    <div
+      className={cn('min-w-72 space-y-4 mr-6', {
+        'w-full': extended,
+      })}
+    >
       <h3 className="text-lg font-bold">Final Standings</h3>
       {placements.map((placementGroup, index) => (
-        <div key={index} className="space-y-2">
+        <div key={index} className="space-y-0">
           {placementGroup.placement && (
             <h4 className="text-sm font-semibold text-muted-foreground">
               {placementGroup.placement}
             </h4>
           )}
-          {placementGroup.decks.map(deck => {
+          {placementGroup.decks.map((deck, deckIndex) => {
             const username = deck.tournamentDeck.meleePlayerUsername || 'Unknown';
             const isHighlighted =
               highlightedPlayer === username || selectedDeckId === deck.tournamentDeck.deckId;
@@ -130,7 +134,12 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
               : undefined;
 
             return (
-              <div key={deck.tournamentDeck.deckId}>
+              <div
+                key={deck.tournamentDeck.deckId}
+                className={cn({
+                  'bg-accent/50': deckIndex % 2 === 0,
+                })}
+              >
                 <DeckPlacement
                   leaderCard1={leaderCard}
                   baseCard={baseCard}
@@ -146,6 +155,11 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
                   onMouseLeave={() => setHighlightedPlayer(null)}
                   deckId={deck.deck?.id}
                   showDeckLink={!!deck.deck?.id}
+                  extended={extended}
+                  cardImageSize={extended ? 'w75' : 'w50'}
+                  gameWins={deck.tournamentDeck.recordWin ?? 0}
+                  gameLosses={deck.tournamentDeck.recordLose ?? 0}
+                  gameDraws={deck.tournamentDeck.recordDraw ?? 0}
                 />
               </div>
             );
