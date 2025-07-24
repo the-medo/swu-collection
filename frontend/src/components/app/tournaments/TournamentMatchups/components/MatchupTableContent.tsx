@@ -5,6 +5,7 @@ import { MatchupTableCell } from './MatchupTableCell';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import RowTotalCell from '@/components/app/tournaments/TournamentMatchups/components/MatchupRowTotalCell.tsx';
 import { cn } from '@/lib/utils.ts';
+import { Input } from '@/components/ui/input.tsx';
 
 const MemoizedCell = React.memo(MatchupTableCell);
 
@@ -75,7 +76,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
                 Clear filter
               </div>
             )}
-            <input
+            <Input
               type="text"
               placeholder="Filter..."
               value={filterText}
@@ -131,7 +132,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
         ))}
 
         {/* Show All Data button row */}
-        {isDataTruncated && !showAllData && (
+        {isDataTruncated && !showAllData && !filterText && (
           <tr className="h-[40px] text-sm bg-accent/30">
             <td colSpan={2} className="p-2 border text-center font-semibold">
               Showing limited data ({filteredKeys.length} rows, {matchupData.keys.length} columns)
@@ -149,7 +150,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
         )}
 
         {/* Show Less Data button row */}
-        {isDataTruncated && showAllData && (
+        {isDataTruncated && showAllData && !filterText && (
           <tr className="h-[40px] text-sm bg-accent/30">
             <td colSpan={2} className="p-2 border text-center font-semibold">
               Showing all data ({filteredKeys.length} rows and columns)

@@ -119,19 +119,19 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   // Filter keys based on the debounced filter text and limit to 30 if not showing all data
   const filteredKeys = useMemo(() => {
     let keys = matchupData.keys;
-    
+
     // Apply text filter if any
     if (debouncedFilterText) {
-      keys = keys.filter(key =>
-        key.toLowerCase().includes(debouncedFilterText.toLowerCase()),
-      );
+      keys = keys.filter(key => key.toLowerCase().includes(debouncedFilterText.toLowerCase()));
+
+      return keys;
     }
-    
+
     // Limit rows if not showing all data
     if (!showAllData && keys.length > MAX_DISPLAY_ITEMS) {
       keys = keys.slice(0, MAX_DISPLAY_ITEMS);
     }
-    
+
     return keys;
   }, [debouncedFilterText, matchupData.keys, showAllData]);
 
@@ -174,14 +174,15 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
       return {
         keys: limitedKeys,
         matchups: matchupData.matchups,
-        totalStats: matchupData.totalStats
+        totalStats: matchupData.totalStats,
       };
     }
     return matchupData;
   }, [matchupData, showAllData]);
 
   // Check if data is truncated
-  const isDataTruncated = matchupData.keys.length > MAX_DISPLAY_ITEMS || filteredKeys.length < matchupData.keys.length;
+  const isDataTruncated =
+    matchupData.keys.length > MAX_DISPLAY_ITEMS || filteredKeys.length < matchupData.keys.length;
 
   return (
     <div className="relative overflow-x-auto overflow-y-auto max-h-[100vh]">
