@@ -117,6 +117,7 @@ export async function generateTournamentThumbnail(
   try {
     // Get the background template based on tournament type
     const backgroundUrl = `https://images.swubase.com/tournament-thumbnails/${tournamentData.type}.png`;
+    console.log(`Generating tournament thumbnail; background url: ${backgroundUrl}`);
 
     // Download the background template
     const backgroundBuffer = await safelyFetchImage(backgroundUrl, {

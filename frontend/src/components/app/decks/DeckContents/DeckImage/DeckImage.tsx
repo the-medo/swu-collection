@@ -3,6 +3,8 @@ import { useDeckData } from './../useDeckData';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { formatDataById } from '../../../../../../../types/Format.ts';
+import { SwuAspect } from '../../../../../../../types/enums.ts';
+import { aspectColors } from '../../../../../../../shared/lib/aspectColors.ts';
 
 interface DeckImageProps {
   deckId: string;
@@ -12,13 +14,43 @@ const DeckImage = forwardRef<
   { handleDownload: () => void; handleCopyToClipboard: () => void },
   DeckImageProps
 >(({ deckId }, ref) => {
-  const { deckCardsForLayout, deckMeta, isLoading } = useDeckData(deckId);
+  const { deckCardsForLayout, deckMeta, isLoading, leaderCard, baseCard } = useDeckData(deckId);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadingImages, setLoadingImages] = useState(false);
   const [imagesToLoad, setImagesToLoad] = useState(0);
   const [loadedImages, setLoadedImages] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
+  const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
+
+  const leaderColorAspect = leaderCard?.aspects.find(
+    a => a !== SwuAspect.VILLAINY && a !== SwuAspect.HEROISM,
+  );
+  const baseColorAspect = baseCard?.aspects[0];
+  const leaderVillainyHeroismAspect = leaderCard?.aspects.find(
+    a => a === SwuAspect.VILLAINY || a === SwuAspect.HEROISM,
+  );
+
+  // Helper function to remove text inside brackets
+  const removeBracketContent = (text: string): string => {
+    return text.replace(/\s*\[[^\]]*\]\s*/g, ' ').trim();
+  };
+
+  // Helper function to convert hex color to RGB values
+  const hexToRgb = (hexColor: string): { r: number; g: number; b: number } => {
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+    return { r, g, b };
+  };
+
+  // Background image URL
+  const backgroundImageUrl =
+    'https://images.swubase.com/thumbnails/empty-deck-background-2800x2100.png';
+
+  // Logo image URL
+  const logoImageUrl = 'https://images.swubase.com/logo-light.svg';
 
   // Constants for canvas dimensions and layout
   const canvasWidth = 2800;
@@ -44,7 +76,9 @@ const DeckImage = forwardRef<
 
       const canvas = canvasRef.current;
       const link = document.createElement('a');
-      link.download = `${deckMeta.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}-deck.png`;
+      link.download = `${removeBracketContent(deckMeta.name)
+        .replace(/[^a-z0-9]/gi, '_')
+        .toLowerCase()}-deck.png`;
       link.href = canvas.toDataURL('image/png');
       document.body.appendChild(link);
       link.click();
@@ -100,6 +134,8 @@ const DeckImage = forwardRef<
         setImagesLoaded(false);
         setLoadedImages(0);
         setError(null);
+        setBackgroundImage(null);
+        setLogoImage(null);
 
         const allImgs = new Set<string>();
 
@@ -110,9 +146,10 @@ const DeckImage = forwardRef<
         deckCardsForLayout.cardsByBoard[1].forEach(c => allImgs.add(c.cardId));
         deckCardsForLayout.cardsByBoard[2].forEach(c => allImgs.add(c.cardId));
 
-        let totalImageCount = allImgs.size;
+        let totalImageCount = allImgs.size + 2; // +1 for background image, +1 for logo image
 
-        if (totalImageCount === 0) {
+        if (totalImageCount === 1) {
+          // Only background image, no cards
           setError('No cards to display');
           setLoadingImages(false);
           return;
@@ -122,6 +159,24 @@ const DeckImage = forwardRef<
 
         // Load all images
         const promises: Promise<HTMLImageElement>[] = [];
+
+        // Load background image
+        try {
+          const bgImg = await loadImage(backgroundImageUrl);
+          setBackgroundImage(bgImg);
+        } catch (err) {
+          console.error('Failed to load background image:', err);
+          // Continue even if background image fails to load
+        }
+
+        // Load logo image
+        try {
+          const logoImg = await loadImage(logoImageUrl);
+          setLogoImage(logoImg);
+        } catch (err) {
+          console.error('Failed to load logo image:', err);
+          // Continue even if logo image fails to load
+        }
 
         // Load leader images
         if (deckMeta.leader1) {
@@ -240,19 +295,91 @@ const DeckImage = forwardRef<
     const renderDeckImage = async (final: boolean) => {
       let bottomPoint = 0;
       try {
-        // Clear canvas with dark background
-        ctx.fillStyle = '#1a1a1a';
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        // Clear canvas
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+        // Draw background image or fallback to solid color
+        if (backgroundImage) {
+          // Repeat the background image vertically (on Y-axis)
+          const imgWidth = canvasWidth; // Use full canvas width
+          const imgHeight = backgroundImage.height * (canvasWidth / backgroundImage.width); // Maintain aspect ratio
+
+          // Calculate how many times we need to repeat the image to cover the canvas height
+          const repetitions = Math.ceil(canvasHeight / imgHeight);
+
+          // Draw the background image repeatedly along the Y-axis
+          for (let i = 0; i < repetitions; i++) {
+            const y = i * imgHeight;
+
+            if (i % 2 === 0) {
+              // Draw normal orientation for even indices (0, 2, 4...)
+              ctx.drawImage(backgroundImage, 0, y, imgWidth, imgHeight);
+            } else {
+              // Flip vertically for odd indices (1, 3, 5...)
+              ctx.save();
+              ctx.translate(0, y + imgHeight); // Move to the bottom of where the image should be
+              ctx.scale(1, -1); // Flip vertically
+              ctx.drawImage(backgroundImage, 0, 0, imgWidth, imgHeight);
+              ctx.restore();
+            }
+          }
+        } else {
+          // Fallback to solid color if image failed to load
+          ctx.fillStyle = '#1a1a1a';
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        }
+
+        // Apply aspect color overlays
+        // Apply gradient using leaderColorAspect and baseColorAspect if both are available
+        if (leaderColorAspect && aspectColors[leaderColorAspect]) {
+          console.log('la', aspectColors[leaderColorAspect]);
+          if (baseColorAspect && aspectColors[baseColorAspect]) {
+            // Create gradient with both colors
+            const leaderColor = aspectColors[leaderColorAspect];
+            const baseColor = aspectColors[baseColorAspect];
+            console.log('baseColor', baseColor);
+
+            // Convert hex to rgba for both colors
+            const { r: leaderR, g: leaderG, b: leaderB } = hexToRgb(leaderColor);
+            const { r: baseR, g: baseG, b: baseB } = hexToRgb(baseColor);
+
+            // Create a linear gradient from top to bottom
+            const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+            gradient.addColorStop(0, `rgba(${leaderR}, ${leaderG}, ${leaderB}, 0.35)`);
+            gradient.addColorStop(0.32, `rgba(${baseR}, ${baseG}, ${baseB}, 0.35)`);
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+          } else {
+            // Fallback to just leaderColorAspect if baseColorAspect is not available
+            const color = aspectColors[leaderColorAspect];
+            // Convert hex to rgba with 35% transparency
+            const { r, g, b } = hexToRgb(color);
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.35)`;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+          }
+        }
+
+        // Apply villainy/heroism aspect overlay with 10% transparency if available
+        if (leaderVillainyHeroismAspect && aspectColors[leaderVillainyHeroismAspect]) {
+          const color = aspectColors[leaderVillainyHeroismAspect];
+          // Convert hex to rgba with 10% transparency (alpha 0.1)
+          const { r, g, b } = hexToRgb(color);
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.1)`;
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        }
 
         // Draw title
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 60px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(deckMeta.name, canvasWidth / 2, padding + 60);
+        ctx.fillText(removeBracketContent(deckMeta.name), canvasWidth / 2, padding + 90); // Moved 30px down
 
-        // Draw subtitle (author)
-        ctx.font = '40px Arial';
-        ctx.fillText(`by ${deckMeta.author}`, canvasWidth / 2, padding + 120);
+        if (deckMeta.author !== 'swubase') {
+          // Draw subtitle (author)
+          ctx.font = '28px Arial';
+          ctx.fillText(`by ${deckMeta.author}`, canvasWidth / 2, padding + 140); // Moved 20px down
+        }
 
         // Draw leaders section on the left
         let leftY = titleHeight + padding * 2;
@@ -262,7 +389,7 @@ const DeckImage = forwardRef<
           const cardId = deckMeta.leader1.cardId;
           await drawCard(
             cardId,
-            padding,
+            padding + 30, // Moved 30px to the right
             leftY,
             leaderCardWidth, // Make sure to use the correct width for horizontal cards
             leaderCardHeight, // Make sure to use the correct height for horizontal cards
@@ -275,7 +402,7 @@ const DeckImage = forwardRef<
         if (deckMeta.leader2) {
           await drawCard(
             deckMeta.leader2.cardId,
-            padding,
+            padding + 30, // Moved 30px to the right
             leftY,
             leaderCardWidth,
             leaderCardHeight,
@@ -288,7 +415,7 @@ const DeckImage = forwardRef<
         if (deckMeta.base) {
           await drawCard(
             deckMeta.base.cardId,
-            padding,
+            padding + 30, // Moved 30px to the right
             leftY,
             leaderCardWidth,
             leaderCardHeight,
@@ -302,7 +429,7 @@ const DeckImage = forwardRef<
         ctx.fillStyle = '#ffffff';
         ctx.font = '30px Arial';
         ctx.textAlign = 'left';
-        ctx.fillText(`Format: ${formatInfo.name}`, padding, leftY);
+        ctx.fillText(`Format: ${formatInfo.name}`, padding + 30, leftY); // Moved 30px to the right
 
         bottomPoint = Math.max(bottomPoint, leftY);
 
@@ -312,50 +439,148 @@ const DeckImage = forwardRef<
 
         // Process each card type group
         if (deckCardsForLayout.mainboardGroups) {
+          // First, collect all valid groups
+          const groups = [];
           for (const groupName of deckCardsForLayout.mainboardGroups.sortedIds) {
             const group = deckCardsForLayout.mainboardGroups.groups[groupName];
             if (!group || group.cards.length === 0) continue;
+            groups.push(group);
+          }
 
-            // Draw group header
+          let currentGroupIndex = 0;
+
+          while (currentGroupIndex < groups.length) {
+            // Start processing a new set of groups that might fit in one or more rows
+            const startY = rightY;
+            let remainingSlotsInRow = maxCardsPerRow;
+            let groupsToProcess = [];
+            let totalCardsToProcess = 0;
+
+            // Try to fit as many small groups as possible in the current row(s)
+            while (currentGroupIndex < groups.length) {
+              const currentGroup = groups[currentGroupIndex];
+              const currentGroupSize = currentGroup.cards.length;
+
+              // If this is the first group we're considering or it fits in the remaining slots
+              if (groupsToProcess.length === 0 || currentGroupSize <= remainingSlotsInRow) {
+                groupsToProcess.push(currentGroup);
+                totalCardsToProcess += currentGroupSize;
+                remainingSlotsInRow -= currentGroupSize;
+                currentGroupIndex++;
+
+                // If we've filled the row completely, break
+                if (remainingSlotsInRow === 0) {
+                  break;
+                }
+              } else {
+                // This group doesn't fit in the current row
+                break;
+              }
+            }
+
+            // Calculate how many rows we'll need for these groups
+            const rowsNeeded = Math.ceil(totalCardsToProcess / maxCardsPerRow);
+
+            // Draw headers for all groups
+            rightY = startY + 20;
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 36px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText(
-              `${group.label} (${group.cards.reduce((sum, card) => sum + card.quantity, 0)})`,
-              rightX,
-              rightY,
-            );
-            rightY += 50;
 
-            // Draw cards in grid layout
-            let cardCounter = 0;
-            for (const card of group.cards) {
-              const rowPosition = cardCounter % maxCardsPerRow;
-              const x = rightX + rowPosition * (cardWidth + padding / 2);
-              const y = rightY + Math.floor(cardCounter / maxCardsPerRow) * (cardHeight + padding);
+            // First, draw all headers with appropriate spacing
+            let headerX = rightX;
+            let cardPositionInRow = 0;
 
-              await drawCard(card.cardId, x, y, cardWidth, cardHeight, card.quantity);
+            for (const group of groupsToProcess) {
+              // Draw group header
+              ctx.fillText(
+                `${group.label} (${group.cards.reduce((sum, card) => sum + card.quantity, 0)})`,
+                headerX,
+                rightY,
+              );
 
-              cardCounter++;
+              // Calculate where the next header should go
+              const groupCardCount = group.cards.length;
+              const cardsInThisRow = Math.min(groupCardCount, maxCardsPerRow - cardPositionInRow);
+              const headerWidth = cardsInThisRow * (cardWidth + padding / 2);
+
+              // Add some spacing between headers in the same row
+              headerX += headerWidth;
+              cardPositionInRow += cardsInThisRow;
+
+              // If we've reached the end of a row, reset for the next row
+              if (cardPositionInRow >= maxCardsPerRow) {
+                headerX = rightX;
+                cardPositionInRow = 0;
+              }
             }
 
-            // Move to next group
-            const rowsUsed = Math.ceil(group.cards.length / maxCardsPerRow);
-            rightY += rowsUsed * (cardHeight + padding) + padding * 2;
-            bottomPoint = Math.max(bottomPoint, rightY + rowsUsed * (cardHeight + padding));
+            // Move down past the headers
+            rightY += 30;
+
+            // Draw all cards for the groups
+            let cardCounter = 0;
+
+            for (const group of groupsToProcess) {
+              // Add a small visual separator between groups in the same row
+              if (cardCounter > 0 && cardCounter % maxCardsPerRow !== 0) {
+                cardCounter += 0; // No actual gap, just keeping the code structure for potential future adjustments
+              }
+
+              for (const card of group.cards) {
+                const rowPosition = cardCounter % maxCardsPerRow;
+                const rowNumber = Math.floor(cardCounter / maxCardsPerRow);
+                const x = rightX + rowPosition * (cardWidth + padding / 2);
+                const y = rightY + rowNumber * (cardHeight + padding);
+
+                await drawCard(card.cardId, x, y, cardWidth, cardHeight, card.quantity);
+
+                cardCounter++;
+              }
+            }
+
+            // Move to next set of groups
+            rightY += rowsNeeded * (cardHeight + padding) + padding;
+            bottomPoint = Math.max(bottomPoint, rightY);
           }
         }
 
+        // move sideboard box down
+        rightY += 50;
+
         // Draw sideboard section
         const sideboardCards = deckCardsForLayout.cardsByBoard[2];
-        if (sideboardCards.length > 0) {
-          // Calculate sideboard height
-          const rowsNeeded = Math.ceil(sideboardCards.length / maxCardsPerRow);
-          const sideboardHeight = rowsNeeded * (cardHeight + padding) + padding * 7;
+        const sideboardHeight =
+          Math.ceil(sideboardCards.length / maxCardsPerRow) * (cardHeight + padding) + padding * 7;
 
-          // Draw sideboard background
-          ctx.fillStyle = '#2a2a2a';
-          ctx.fillRect(rightX - padding, rightY - padding, canvasWidth - rightX, sideboardHeight);
+        // Draw logo to the left of sideboard box if available
+        if (logoImage) {
+          const logoSize = 200; // 200x200 px as requested
+          const logoX = rightX / 2 - 100; // Position to the left of sideboard box
+          const logoY = Math.max(
+            920,
+            sideboardCards.length > 0
+              ? rightY - padding + sideboardHeight / 2 - logoSize / 2
+              : rightY - logoSize - 150,
+          ); // Vertically center with sideboard box
+          ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+
+          // Add water mark or signature at the bottom
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.font = '30px Arial';
+          ctx.textAlign = 'right';
+          ctx.fillText('swubase.com', logoX + 190, logoY + 230);
+        }
+
+        if (sideboardCards.length > 0) {
+          // Draw sideboard background with slight transparency
+          ctx.fillStyle = 'rgba(42, 42, 42, 0.5)'; // 70% opacity
+          ctx.fillRect(
+            rightX - padding - 15,
+            rightY - padding,
+            canvasWidth - rightX,
+            sideboardHeight,
+          ); // Moved 15px to the left
 
           // Draw sideboard header
           ctx.fillStyle = '#ffffff';
@@ -381,20 +606,11 @@ const DeckImage = forwardRef<
           }
 
           const sideboardBottom = rightY + sideboardHeight;
-          bottomPoint = Math.max(bottomPoint, sideboardBottom);
+          bottomPoint = Math.max(bottomPoint, sideboardBottom) - 70;
         }
 
         const actualHeight = Math.min(Math.max(bottomPoint, 1200), 8000); // Set reasonable min/max
         if (final) {
-          // Add water mark or signature at the bottom
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-          ctx.font = '30px Arial';
-          ctx.textAlign = 'right';
-          ctx.fillText(
-            'Created on SWUBase.com',
-            canvasWidth - padding * 2,
-            actualHeight - padding * 2,
-          );
         } else {
           canvas.height = actualHeight;
           renderDeckImage(true);
