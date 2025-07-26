@@ -3,6 +3,8 @@ import { useDeckData } from './../useDeckData';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { formatDataById } from '../../../../../../../types/Format.ts';
+import { SwuAspect } from '../../../../../../../types/enums.ts';
+import { aspectColors } from '../../../../../../../shared/lib/aspectColors.ts';
 
 interface DeckImageProps {
   deckId: string;
@@ -12,13 +14,30 @@ const DeckImage = forwardRef<
   { handleDownload: () => void; handleCopyToClipboard: () => void },
   DeckImageProps
 >(({ deckId }, ref) => {
-  const { deckCardsForLayout, deckMeta, isLoading } = useDeckData(deckId);
+  const { deckCardsForLayout, deckMeta, isLoading, leaderCard } = useDeckData(deckId);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadingImages, setLoadingImages] = useState(false);
   const [imagesToLoad, setImagesToLoad] = useState(0);
   const [loadedImages, setLoadedImages] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
+
+  const leaderColorAspect = leaderCard?.aspects.find(
+    a => a !== SwuAspect.VILLAINY && a !== SwuAspect.HEROISM,
+  );
+  const leaderVillainyHeroismAspect = leaderCard?.aspects.find(
+    a => a === SwuAspect.VILLAINY || a === SwuAspect.HEROISM,
+  );
+
+  // Helper function to remove text inside brackets
+  const removeBracketContent = (text: string): string => {
+    return text.replace(/\s*\[[^\]]*\]\s*/g, ' ').trim();
+  };
+
+  // Background image URL
+  const backgroundImageUrl =
+    'https://images.swubase.com/thumbnails/empty-deck-background-2800x2100.png';
 
   // Constants for canvas dimensions and layout
   const canvasWidth = 2800;
@@ -44,7 +63,9 @@ const DeckImage = forwardRef<
 
       const canvas = canvasRef.current;
       const link = document.createElement('a');
-      link.download = `${deckMeta.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}-deck.png`;
+      link.download = `${removeBracketContent(deckMeta.name)
+        .replace(/[^a-z0-9]/gi, '_')
+        .toLowerCase()}-deck.png`;
       link.href = canvas.toDataURL('image/png');
       document.body.appendChild(link);
       link.click();
@@ -100,6 +121,7 @@ const DeckImage = forwardRef<
         setImagesLoaded(false);
         setLoadedImages(0);
         setError(null);
+        setBackgroundImage(null);
 
         const allImgs = new Set<string>();
 
@@ -110,9 +132,10 @@ const DeckImage = forwardRef<
         deckCardsForLayout.cardsByBoard[1].forEach(c => allImgs.add(c.cardId));
         deckCardsForLayout.cardsByBoard[2].forEach(c => allImgs.add(c.cardId));
 
-        let totalImageCount = allImgs.size;
+        let totalImageCount = allImgs.size + 1; // +1 for background image
 
-        if (totalImageCount === 0) {
+        if (totalImageCount === 1) {
+          // Only background image, no cards
           setError('No cards to display');
           setLoadingImages(false);
           return;
@@ -122,6 +145,15 @@ const DeckImage = forwardRef<
 
         // Load all images
         const promises: Promise<HTMLImageElement>[] = [];
+
+        // Load background image
+        try {
+          const bgImg = await loadImage(backgroundImageUrl);
+          setBackgroundImage(bgImg);
+        } catch (err) {
+          console.error('Failed to load background image:', err);
+          // Continue even if background image fails to load
+        }
 
         // Load leader images
         if (deckMeta.leader1) {
@@ -240,19 +272,72 @@ const DeckImage = forwardRef<
     const renderDeckImage = async (final: boolean) => {
       let bottomPoint = 0;
       try {
-        // Clear canvas with dark background
-        ctx.fillStyle = '#1a1a1a';
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        // Clear canvas
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+        // Draw background image or fallback to solid color
+        if (backgroundImage) {
+          // Repeat the background image vertically (on Y-axis)
+          const imgWidth = canvasWidth; // Use full canvas width
+          const imgHeight = backgroundImage.height * (canvasWidth / backgroundImage.width); // Maintain aspect ratio
+
+          // Calculate how many times we need to repeat the image to cover the canvas height
+          const repetitions = Math.ceil(canvasHeight / imgHeight);
+
+          // Draw the background image repeatedly along the Y-axis
+          for (let i = 0; i < repetitions; i++) {
+            const y = i * imgHeight;
+
+            if (i % 2 === 0) {
+              // Draw normal orientation for even indices (0, 2, 4...)
+              ctx.drawImage(backgroundImage, 0, y, imgWidth, imgHeight);
+            } else {
+              // Flip vertically for odd indices (1, 3, 5...)
+              ctx.save();
+              ctx.translate(0, y + imgHeight); // Move to the bottom of where the image should be
+              ctx.scale(1, -1); // Flip vertically
+              ctx.drawImage(backgroundImage, 0, 0, imgWidth, imgHeight);
+              ctx.restore();
+            }
+          }
+        } else {
+          // Fallback to solid color if image failed to load
+          ctx.fillStyle = '#1a1a1a';
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        }
+
+        // Apply aspect color overlays
+        // Apply color aspect overlay with 40% transparency if available
+        if (leaderColorAspect && aspectColors[leaderColorAspect]) {
+          const color = aspectColors[leaderColorAspect];
+          // Convert hex to rgba with 40% transparency (alpha 0.6)
+          const r = parseInt(color.slice(1, 3), 16);
+          const g = parseInt(color.slice(3, 5), 16);
+          const b = parseInt(color.slice(5, 7), 16);
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.35)`;
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        }
+
+        // Apply villainy/heroism aspect overlay with 20% transparency if available
+        if (leaderVillainyHeroismAspect && aspectColors[leaderVillainyHeroismAspect]) {
+          const color = aspectColors[leaderVillainyHeroismAspect];
+          // Convert hex to rgba with 20% transparency (alpha 0.2)
+          const r = parseInt(color.slice(1, 3), 16);
+          const g = parseInt(color.slice(3, 5), 16);
+          const b = parseInt(color.slice(5, 7), 16);
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.1)`;
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        }
 
         // Draw title
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 60px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(deckMeta.name, canvasWidth / 2, padding + 60);
+        ctx.fillText(removeBracketContent(deckMeta.name), canvasWidth / 2, padding + 90); // Moved 30px down
 
         // Draw subtitle (author)
         ctx.font = '40px Arial';
-        ctx.fillText(`by ${deckMeta.author}`, canvasWidth / 2, padding + 120);
+        ctx.fillText(`by ${deckMeta.author}`, canvasWidth / 2, padding + 150); // Moved 30px down
 
         // Draw leaders section on the left
         let leftY = titleHeight + padding * 2;
@@ -262,7 +347,7 @@ const DeckImage = forwardRef<
           const cardId = deckMeta.leader1.cardId;
           await drawCard(
             cardId,
-            padding,
+            padding + 30, // Moved 30px to the right
             leftY,
             leaderCardWidth, // Make sure to use the correct width for horizontal cards
             leaderCardHeight, // Make sure to use the correct height for horizontal cards
@@ -275,7 +360,7 @@ const DeckImage = forwardRef<
         if (deckMeta.leader2) {
           await drawCard(
             deckMeta.leader2.cardId,
-            padding,
+            padding + 30, // Moved 30px to the right
             leftY,
             leaderCardWidth,
             leaderCardHeight,
@@ -288,7 +373,7 @@ const DeckImage = forwardRef<
         if (deckMeta.base) {
           await drawCard(
             deckMeta.base.cardId,
-            padding,
+            padding + 30, // Moved 30px to the right
             leftY,
             leaderCardWidth,
             leaderCardHeight,
@@ -302,7 +387,7 @@ const DeckImage = forwardRef<
         ctx.fillStyle = '#ffffff';
         ctx.font = '30px Arial';
         ctx.textAlign = 'left';
-        ctx.fillText(`Format: ${formatInfo.name}`, padding, leftY);
+        ctx.fillText(`Format: ${formatInfo.name}`, padding + 30, leftY); // Moved 30px to the right
 
         bottomPoint = Math.max(bottomPoint, leftY);
 
@@ -353,9 +438,9 @@ const DeckImage = forwardRef<
           const rowsNeeded = Math.ceil(sideboardCards.length / maxCardsPerRow);
           const sideboardHeight = rowsNeeded * (cardHeight + padding) + padding * 7;
 
-          // Draw sideboard background
-          ctx.fillStyle = '#2a2a2a';
-          ctx.fillRect(rightX - padding, rightY - padding, canvasWidth - rightX, sideboardHeight);
+          // Draw sideboard background with slight transparency
+          ctx.fillStyle = 'rgba(42, 42, 42, 0.5)'; // 70% opacity
+          ctx.fillRect(rightX - padding - 15, rightY - padding, canvasWidth - (rightX - 15), sideboardHeight); // Moved 15px to the left
 
           // Draw sideboard header
           ctx.fillStyle = '#ffffff';

@@ -23,6 +23,7 @@ export function useDeckData(deckId: string) {
   const { data: deckInfo } = useGetDeck(deckId);
   const { data: cardList } = useCardList();
   const { data: deckCardsData } = useGetDeckCards(deckId);
+  const { data: cardListData } = useCardList();
 
   const deckCards = deckCardsData?.data ?? [];
 
@@ -104,9 +105,15 @@ export function useDeckData(deckId: string) {
     };
   }, [cardList, deckCards, groupBy]);
 
+  const leaderCard = useMemo(() => {
+    if (!cardListData || !deckInfo?.deck.leaderCardId1) return undefined;
+    return cardListData.cards[deckInfo.deck.leaderCardId1];
+  }, [deckInfo?.deck.leaderCardId1]);
+
   return {
     deckCardsForLayout,
     deckMeta,
+    leaderCard,
     isLoading: !deckInfo || !cardList || !deckCardsData,
   };
 }
