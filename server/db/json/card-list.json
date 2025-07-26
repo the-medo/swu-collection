@@ -84694,7 +84694,7 @@
   },
   "acolyte-of-the-beyond": {
     "cardId": "acolyte-of-the-beyond",
-    "updatedAt": "2025-05-14T18:45:53.347Z",
+    "updatedAt": "2025-07-21T20:08:55.083Z",
     "name": "Acolyte of the Beyond",
     "title": "Acolyte of the Beyond",
     "subtitle": null,
@@ -84774,6 +84774,44 @@
           "front": "acolyte-of-the-beyond-869-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "acolyte-of-the-beyond-8-legends-of-the-force-weekly-play": {
+        "variantId": "acolyte-of-the-beyond-8-legends-of-the-force-weekly-play",
+        "swuId": 38020,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 8,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "acolyte-of-the-beyond-8-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "acolyte-of-the-beyond-28-legends-of-the-force-weekly-play": {
+        "variantId": "acolyte-of-the-beyond-28-legends-of-the-force-weekly-play",
+        "swuId": 38120,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 28,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "acolyte-of-the-beyond-28-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -84786,7 +84824,7 @@
     "deployBox": null,
     "epicAction": "",
     "rules": null,
-    "text": "On Attack/When Defeated: The Force is with you (create your Force token).",
+    "text": "On Attack/When Defeated: The Force is with you .",
     "front": {
       "horizontal": false
     },
@@ -87335,7 +87373,7 @@
   },
   "baylan-skoll--enigmatic-master": {
     "cardId": "baylan-skoll--enigmatic-master",
-    "updatedAt": "2025-05-27T14:52:23.607Z",
+    "updatedAt": "2025-07-21T20:09:02.367Z",
     "name": "Baylan Skoll, Enigmatic Master",
     "title": "Baylan Skoll",
     "subtitle": "Enigmatic Master",
@@ -87472,6 +87510,44 @@
           "front": "baylan-skoll--enigmatic-master-1157-legends-of-the-force---serialized-prestige-front.webp",
           "back": null
         }
+      },
+      "baylan-skoll--enigmatic-master-14-legends-of-the-force-weekly-play": {
+        "variantId": "baylan-skoll--enigmatic-master-14-legends-of-the-force-weekly-play",
+        "swuId": 38050,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 14,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "baylan-skoll--enigmatic-master-14-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "baylan-skoll--enigmatic-master-34-legends-of-the-force-weekly-play": {
+        "variantId": "baylan-skoll--enigmatic-master-34-legends-of-the-force-weekly-play",
+        "swuId": 38150,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 34,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "baylan-skoll--enigmatic-master-34-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -87483,7 +87559,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "\"Play for free\" ignores all resource costs, including the aspect penalty, but not other additional costs.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\nIf a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
     "text": "Hidden\nWhen Played: You may use the Force. If you do, return a non-leader unit that costs 4 or less to its owner's hand. Then, its owner may play it for free.",
     "front": {
       "horizontal": false
@@ -87506,7 +87582,7 @@
   },
   "bd-1--beep-boo-boo-bweep": {
     "cardId": "bd-1--beep-boo-boo-bweep",
-    "updatedAt": "2025-05-05T14:46:26.600Z",
+    "updatedAt": "2025-07-21T20:09:03.571Z",
     "name": "BD-1, Beep Boo Boo Bweep",
     "title": "BD-1",
     "subtitle": "Beep Boo Boo Bweep",
@@ -87587,6 +87663,44 @@
           "back": null
         }
       },
+      "bd-1--beep-boo-boo-bweep-15-legends-of-the-force-weekly-play": {
+        "variantId": "bd-1--beep-boo-boo-bweep-15-legends-of-the-force-weekly-play",
+        "swuId": 38055,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 15,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "bd-1--beep-boo-boo-bweep-15-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "bd-1--beep-boo-boo-bweep-35-legends-of-the-force-weekly-play": {
+        "variantId": "bd-1--beep-boo-boo-bweep-35-legends-of-the-force-weekly-play",
+        "swuId": 38155,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 35,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "bd-1--beep-boo-boo-bweep-35-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "bd-1--beep-boo-boo-bweep-4-2025-convention-exclusive": {
         "variantId": "bd-1--beep-boo-boo-bweep-4-2025-convention-exclusive",
         "swuId": 38350,
@@ -87616,7 +87730,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\nIf BD-1 is captured and then rescued, his \"When Played\" effect does not resume.\nUntil BD-1 leaves play, the friendly unit gets +1/+0 and Saboteur. This effect is not changed if an opponent takes control of BD-1.\n",
     "text": "Hidden \nWhen Played: Choose another friendly unit. While this unit is in play, the chosen unit gets +1/+0 and gains Saboteur.",
     "front": {
       "horizontal": false
@@ -89625,7 +89739,7 @@
   },
   "crushing-blow": {
     "cardId": "crushing-blow",
-    "updatedAt": "2025-06-06T19:00:01.652Z",
+    "updatedAt": "2025-07-21T20:08:49.014Z",
     "name": "Crushing Blow",
     "title": "Crushing Blow",
     "subtitle": null,
@@ -89705,6 +89819,44 @@
           "front": "crushing-blow-817-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "crushing-blow-3-legends-of-the-force-weekly-play": {
+        "variantId": "crushing-blow-3-legends-of-the-force-weekly-play",
+        "swuId": 37995,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 3,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Ben Vazquez",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "crushing-blow-3-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "crushing-blow-23-legends-of-the-force-weekly-play": {
+        "variantId": "crushing-blow-23-legends-of-the-force-weekly-play",
+        "swuId": 38095,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 23,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Ben Vazquez",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "crushing-blow-23-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Event",
@@ -89716,7 +89868,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
     "text": "Defeat a non-leader unit that costs 2 or less.",
     "front": {
       "horizontal": false
@@ -91839,7 +91991,7 @@
   },
   "do-or-do-not": {
     "cardId": "do-or-do-not",
-    "updatedAt": "2025-06-06T19:01:01.094Z",
+    "updatedAt": "2025-07-21T20:08:59.876Z",
     "name": "Do or Do Not",
     "title": "Do or Do Not",
     "subtitle": null,
@@ -91919,6 +92071,44 @@
           "front": "do-or-do-not-915-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "do-or-do-not-12-legends-of-the-force-weekly-play": {
+        "variantId": "do-or-do-not-12-legends-of-the-force-weekly-play",
+        "swuId": 38040,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 12,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "do-or-do-not-12-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "do-or-do-not-32-legends-of-the-force-weekly-play": {
+        "variantId": "do-or-do-not-32-legends-of-the-force-weekly-play",
+        "swuId": 38140,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 32,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "do-or-do-not-32-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Event",
@@ -91931,7 +92121,7 @@
     "deployBox": null,
     "epicAction": "",
     "rules": null,
-    "text": "You may use the Force (lose your Force token). If you do, draw 2 cards. If you do not, draw a card.",
+    "text": "You may use the Force . If you do, draw 2 cards. If you do not, draw a card.",
     "front": {
       "horizontal": false
     },
@@ -93495,7 +93685,7 @@
   },
   "flight-of-the-inquisitor": {
     "cardId": "flight-of-the-inquisitor",
-    "updatedAt": "2025-06-06T19:01:38.640Z",
+    "updatedAt": "2025-07-21T20:09:09.592Z",
     "name": "Flight of the Inquisitor",
     "title": "Flight of the Inquisitor",
     "subtitle": null,
@@ -93573,6 +93763,44 @@
         },
         "image": {
           "front": "flight-of-the-inquisitor-980-legends-of-the-force---hyperspace-foil-front.webp",
+          "back": null
+        }
+      },
+      "flight-of-the-inquisitor-20-legends-of-the-force-weekly-play": {
+        "variantId": "flight-of-the-inquisitor-20-legends-of-the-force-weekly-play",
+        "swuId": 38080,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 20,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "flight-of-the-inquisitor-20-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "flight-of-the-inquisitor-40-legends-of-the-force-weekly-play": {
+        "variantId": "flight-of-the-inquisitor-40-legends-of-the-force-weekly-play",
+        "swuId": 38180,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 40,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "flight-of-the-inquisitor-40-legends-of-the-force-weekly-play-front.webp",
           "back": null
         }
       }
@@ -94550,7 +94778,7 @@
   },
   "graceful-purrgil": {
     "cardId": "graceful-purrgil",
-    "updatedAt": "2025-05-30T14:44:31.655Z",
+    "updatedAt": "2025-07-21T20:08:47.831Z",
     "name": "Graceful Purrgil",
     "title": "Graceful Purrgil",
     "subtitle": null,
@@ -94630,6 +94858,44 @@
           "front": "graceful-purrgil-809-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "graceful-purrgil-2-legends-of-the-force-weekly-play": {
+        "variantId": "graceful-purrgil-2-legends-of-the-force-weekly-play",
+        "swuId": 37990,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "graceful-purrgil-2-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "graceful-purrgil-22-legends-of-the-force-weekly-play": {
+        "variantId": "graceful-purrgil-22-legends-of-the-force-weekly-play",
+        "swuId": 38090,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 22,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "graceful-purrgil-22-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -94642,7 +94908,7 @@
     "deployBox": null,
     "epicAction": "",
     "rules": null,
-    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "text": "Sentinel ",
     "front": {
       "horizontal": false
     },
@@ -95355,7 +95621,7 @@
   },
   "gungi--finding-himself": {
     "cardId": "gungi--finding-himself",
-    "updatedAt": "2025-05-23T16:43:45.292Z",
+    "updatedAt": "2025-07-21T20:08:50.207Z",
     "name": "Gungi, Finding Himself",
     "title": "Gungi",
     "subtitle": "Finding Himself",
@@ -95490,6 +95756,44 @@
         },
         "image": {
           "front": "gungi--finding-himself-1129-legends-of-the-force---serialized-prestige-front.webp",
+          "back": null
+        }
+      },
+      "gungi--finding-himself-4-legends-of-the-force-weekly-play": {
+        "variantId": "gungi--finding-himself-4-legends-of-the-force-weekly-play",
+        "swuId": 38000,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 4,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gungi--finding-himself-4-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "gungi--finding-himself-24-legends-of-the-force-weekly-play": {
+        "variantId": "gungi--finding-himself-24-legends-of-the-force-weekly-play",
+        "swuId": 38100,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 24,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gungi--finding-himself-24-legends-of-the-force-weekly-play-front.webp",
           "back": null
         }
       }
@@ -96106,7 +96410,7 @@
   },
   "hk-87-assassin-droid": {
     "cardId": "hk-87-assassin-droid",
-    "updatedAt": "2025-06-06T19:01:34.198Z",
+    "updatedAt": "2025-07-21T20:09:08.371Z",
     "name": "HK-87 Assassin Droid",
     "title": "HK-87 Assassin Droid",
     "subtitle": null,
@@ -96186,6 +96490,44 @@
           "front": "hk-87-assassin-droid-975-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "hk-87-assassin-droid-19-legends-of-the-force-weekly-play": {
+        "variantId": "hk-87-assassin-droid-19-legends-of-the-force-weekly-play",
+        "swuId": 38075,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 19,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "hk-87-assassin-droid-19-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "hk-87-assassin-droid-39-legends-of-the-force-weekly-play": {
+        "variantId": "hk-87-assassin-droid-39-legends-of-the-force-weekly-play",
+        "swuId": 38175,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 39,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "hk-87-assassin-droid-39-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -96197,7 +96539,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "All damage dealt by HK-87 Assassin Droid's \"When Defeated\" ability is dealt simultaneously.\n",
     "text": "When Defeated: Deal 2 damage to each ground unit.",
     "front": {
       "horizontal": false
@@ -96658,7 +97000,7 @@
   },
   "infused-brawler": {
     "cardId": "infused-brawler",
-    "updatedAt": "2025-05-14T18:45:56.331Z",
+    "updatedAt": "2025-07-21T20:08:58.676Z",
     "name": "Infused Brawler",
     "title": "Infused Brawler",
     "subtitle": null,
@@ -96738,6 +97080,44 @@
           "front": "infused-brawler-896-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "infused-brawler-11-legends-of-the-force-weekly-play": {
+        "variantId": "infused-brawler-11-legends-of-the-force-weekly-play",
+        "swuId": 38035,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 11,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "infused-brawler-11-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "infused-brawler-31-legends-of-the-force-weekly-play": {
+        "variantId": "infused-brawler-31-legends-of-the-force-weekly-play",
+        "swuId": 38135,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 31,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "infused-brawler-31-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -96749,8 +97129,8 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
-    "text": "When Played: You may use the Force (lose your Force token). If you do, give 2 Experience tokens to this unit.\nWhen this unit completes an attack: Defeat an Experience token on it.",
+    "rules": "A unit must survive an attack to trigger its \"when this unit completes an attack\" abilities.\n",
+    "text": "When Played: You may use the Force . If you do, give 2 Experience tokens to this unit.\nWhen this unit completes an attack: Defeat an Experience token on it.",
     "front": {
       "horizontal": false
     },
@@ -97233,7 +97613,7 @@
   },
   "j-type-nubian-starship": {
     "cardId": "j-type-nubian-starship",
-    "updatedAt": "2025-05-14T18:45:26.419Z",
+    "updatedAt": "2025-07-21T20:09:04.786Z",
     "name": "J-Type Nubian Starship",
     "title": "J-Type Nubian Starship",
     "subtitle": null,
@@ -97313,6 +97693,44 @@
           "front": "j-type-nubian-starship-934-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "j-type-nubian-starship-16-legends-of-the-force-weekly-play": {
+        "variantId": "j-type-nubian-starship-16-legends-of-the-force-weekly-play",
+        "swuId": 38060,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 16,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "j-type-nubian-starship-16-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "j-type-nubian-starship-36-legends-of-the-force-weekly-play": {
+        "variantId": "j-type-nubian-starship-36-legends-of-the-force-weekly-play",
+        "swuId": 38160,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 36,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "j-type-nubian-starship-36-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -97346,7 +97764,7 @@
   },
   "jedi-consular": {
     "cardId": "jedi-consular",
-    "updatedAt": "2025-05-06T15:06:28.861Z",
+    "updatedAt": "2025-07-21T20:08:51.421Z",
     "name": "Jedi Consular",
     "title": "Jedi Consular",
     "subtitle": null,
@@ -97426,6 +97844,44 @@
           "front": "jedi-consular-834-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "jedi-consular-5-legends-of-the-force-weekly-play": {
+        "variantId": "jedi-consular-5-legends-of-the-force-weekly-play",
+        "swuId": 38005,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 5,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Facundo Moyano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "jedi-consular-5-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "jedi-consular-25-legends-of-the-force-weekly-play": {
+        "variantId": "jedi-consular-25-legends-of-the-force-weekly-play",
+        "swuId": 38105,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 25,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Facundo Moyano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "jedi-consular-25-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -97438,7 +97894,7 @@
     "deployBox": null,
     "epicAction": "",
     "rules": null,
-    "text": "Action [Exhaust, use the Force (lose your Force token)]: Play a unit from your hand. It costs 2 resources less.",
+    "text": "Action [Exhaust, use the Force ]: Play a unit from your hand. It costs 2 resources less.",
     "front": {
       "horizontal": false
     },
@@ -101286,7 +101742,7 @@
   },
   "loth-cat": {
     "cardId": "loth-cat",
-    "updatedAt": "2025-06-06T19:01:15.452Z",
+    "updatedAt": "2025-07-21T20:09:07.163Z",
     "name": "Loth-Cat",
     "title": "Loth-Cat",
     "subtitle": null,
@@ -101364,6 +101820,44 @@
         },
         "image": {
           "front": "loth-cat-947-legends-of-the-force---hyperspace-foil-front.webp",
+          "back": null
+        }
+      },
+      "loth-cat-18-legends-of-the-force-weekly-play": {
+        "variantId": "loth-cat-18-legends-of-the-force-weekly-play",
+        "swuId": 38070,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 18,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "loth-cat-18-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "loth-cat-38-legends-of-the-force-weekly-play": {
+        "variantId": "loth-cat-38-legends-of-the-force-weekly-play",
+        "swuId": 38170,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 38,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "loth-cat-38-legends-of-the-force-weekly-play-front.webp",
           "back": null
         }
       }
@@ -101786,7 +102280,7 @@
   },
   "luthen-rael--masquerading-antiquarian": {
     "cardId": "luthen-rael--masquerading-antiquarian",
-    "updatedAt": "2025-04-30T18:56:06.663Z",
+    "updatedAt": "2025-07-21T20:08:46.640Z",
     "name": "Luthen Rael, Masquerading Antiquarian",
     "title": "Luthen Rael",
     "subtitle": "Masquerading Antiquarian",
@@ -101866,6 +102360,44 @@
           "front": "luthen-rael--masquerading-antiquarian-808-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "luthen-rael--masquerading-antiquarian-1-legends-of-the-force-weekly-play": {
+        "variantId": "luthen-rael--masquerading-antiquarian-1-legends-of-the-force-weekly-play",
+        "swuId": 37985,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 1,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luthen-rael--masquerading-antiquarian-1-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "luthen-rael--masquerading-antiquarian-21-legends-of-the-force-weekly-play": {
+        "variantId": "luthen-rael--masquerading-antiquarian-21-legends-of-the-force-weekly-play",
+        "swuId": 38085,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 21,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luthen-rael--masquerading-antiquarian-21-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -101877,8 +102409,8 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
-    "text": "On Attack: Search the top 5 cards of your deck for an Item upgrade, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "text": "On Attack: Search the top 5 cards of your deck for an Item upgrade, reveal it, and draw it. ",
     "front": {
       "horizontal": false
     },
@@ -101896,7 +102428,7 @@
   },
   "mace-windu--leaping-into-action": {
     "cardId": "mace-windu--leaping-into-action",
-    "updatedAt": "2025-06-26T17:00:13.829Z",
+    "updatedAt": "2025-07-21T20:08:57.490Z",
     "name": "Mace Windu, Leaping into Action",
     "title": "Mace Windu",
     "subtitle": "Leaping into Action",
@@ -102034,6 +102566,44 @@
           "back": null
         }
       },
+      "mace-windu--leaping-into-action-10-legends-of-the-force-weekly-play": {
+        "variantId": "mace-windu--leaping-into-action-10-legends-of-the-force-weekly-play",
+        "swuId": 38030,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 10,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kevin Libranda",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mace-windu--leaping-into-action-10-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "mace-windu--leaping-into-action-30-legends-of-the-force-weekly-play": {
+        "variantId": "mace-windu--leaping-into-action-30-legends-of-the-force-weekly-play",
+        "swuId": 38130,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 30,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kevin Libranda",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mace-windu--leaping-into-action-30-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "mace-windu--leaping-into-action-69-2025-promo": {
         "variantId": "mace-windu--leaping-into-action-69-2025-promo",
         "swuId": 38420,
@@ -102063,7 +102633,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "If the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
     "text": "Overwhelm \nWhen Played: You may use the Force . If you do, deal 4 damage to a unit.",
     "front": {
       "horizontal": false
@@ -102201,7 +102771,7 @@
   },
   "malakili--loving-rancor-keeper": {
     "cardId": "malakili--loving-rancor-keeper",
-    "updatedAt": "2025-06-06T19:00:20.469Z",
+    "updatedAt": "2025-07-21T20:08:53.857Z",
     "name": "Malakili, Loving Rancor Keeper",
     "title": "Malakili",
     "subtitle": "Loving Rancor Keeper",
@@ -102281,6 +102851,44 @@
           "front": "malakili--loving-rancor-keeper-848-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "malakili--loving-rancor-keeper-7-legends-of-the-force-weekly-play": {
+        "variantId": "malakili--loving-rancor-keeper-7-legends-of-the-force-weekly-play",
+        "swuId": 38015,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 7,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "malakili--loving-rancor-keeper-7-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "malakili--loving-rancor-keeper-27-legends-of-the-force-weekly-play": {
+        "variantId": "malakili--loving-rancor-keeper-27-legends-of-the-force-weekly-play",
+        "swuId": 38115,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 27,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "malakili--loving-rancor-keeper-27-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -102292,7 +102900,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "If an ability preceding \"if you do\" would deal damage to a friendly unit, but Malakili prevents that damage from being dealt to that unit, the effect following \"if you do\" still resolves.\n",
     "text": "The first Creature unit you play each phase costs 1 resource less.\nIf a friendly Creature unit would deal damage to a friendly unit, prevent that damage.",
     "front": {
       "horizontal": false
@@ -102814,7 +103422,7 @@
   },
   "mind-trick": {
     "cardId": "mind-trick",
-    "updatedAt": "2025-05-21T17:47:48.860Z",
+    "updatedAt": "2025-07-21T20:09:05.969Z",
     "name": "Mind Trick",
     "title": "Mind Trick",
     "subtitle": null,
@@ -102894,6 +103502,44 @@
           "front": "mind-trick-942-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "mind-trick-17-legends-of-the-force-weekly-play": {
+        "variantId": "mind-trick-17-legends-of-the-force-weekly-play",
+        "swuId": 38065,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 17,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mind-trick-17-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "mind-trick-37-legends-of-the-force-weekly-play": {
+        "variantId": "mind-trick-37-legends-of-the-force-weekly-play",
+        "swuId": 38165,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 37,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mind-trick-37-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Event",
@@ -102905,7 +103551,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n",
     "text": "Exhaust any number of units with a combined power of 4 or less. If you control a Force unit, those units lose all abilities and can't gain abilities for this phase.",
     "front": {
       "horizontal": false
@@ -108452,7 +109098,7 @@
   },
   "rey--with-palpatine-s-power": {
     "cardId": "rey--with-palpatine-s-power",
-    "updatedAt": "2025-06-26T17:00:16.423Z",
+    "updatedAt": "2025-07-21T20:08:56.287Z",
     "name": "Rey, With Palpatine's Power",
     "title": "Rey",
     "subtitle": "With Palpatine's Power",
@@ -108533,6 +109179,44 @@
           "back": null
         }
       },
+      "rey--with-palpatine-s-power-9-legends-of-the-force-weekly-play": {
+        "variantId": "rey--with-palpatine-s-power-9-legends-of-the-force-weekly-play",
+        "swuId": 38025,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 9,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Benjamin Paulus van Onzen",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rey--with-palpatine-s-power-9-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "rey--with-palpatine-s-power-29-legends-of-the-force-weekly-play": {
+        "variantId": "rey--with-palpatine-s-power-29-legends-of-the-force-weekly-play",
+        "swuId": 38125,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 29,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Benjamin Paulus van Onzen",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rey--with-palpatine-s-power-29-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "rey--with-palpatine-s-power-71-2025-promo": {
         "variantId": "rey--with-palpatine-s-power-71-2025-promo",
         "swuId": 38430,
@@ -108562,7 +109246,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "If there are any other triggers waiting to resolve when you draw Rey, you must announce to your opponents that you have drawn and triggered Rey. Once drawn, Rey must be kept separate from the rest of the cards in your hand until revealed.\n",
     "text": "When you draw this card during the action phase: If you control a Aggression leader or base, you may reveal this card from your hand. If you do, deal 2 damage to a unit and 2 damage to a base.",
     "front": {
       "horizontal": false
@@ -109833,7 +110517,7 @@
   },
   "shin-hati--overeager-apprentice": {
     "cardId": "shin-hati--overeager-apprentice",
-    "updatedAt": "2025-06-26T17:00:14.965Z",
+    "updatedAt": "2025-07-21T20:09:01.128Z",
     "name": "Shin Hati, Overeager Apprentice",
     "title": "Shin Hati",
     "subtitle": "Overeager Apprentice",
@@ -109971,6 +110655,44 @@
           "back": null
         }
       },
+      "shin-hati--overeager-apprentice-13-legends-of-the-force-weekly-play": {
+        "variantId": "shin-hati--overeager-apprentice-13-legends-of-the-force-weekly-play",
+        "swuId": 38045,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 13,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "shin-hati--overeager-apprentice-13-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "shin-hati--overeager-apprentice-33-legends-of-the-force-weekly-play": {
+        "variantId": "shin-hati--overeager-apprentice-33-legends-of-the-force-weekly-play",
+        "swuId": 38145,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 33,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "shin-hati--overeager-apprentice-33-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "shin-hati--overeager-apprentice-70-2025-promo": {
         "variantId": "shin-hati--overeager-apprentice-70-2025-promo",
         "swuId": 38425,
@@ -110000,7 +110722,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
     "text": "Hidden \nShielded ",
     "front": {
       "horizontal": false
@@ -115610,7 +116332,7 @@
   },
   "yoda--my-ally-is-the-force": {
     "cardId": "yoda--my-ally-is-the-force",
-    "updatedAt": "2025-06-06T19:00:15.009Z",
+    "updatedAt": "2025-07-21T20:08:52.643Z",
     "name": "Yoda, My Ally is the Force",
     "title": "Yoda",
     "subtitle": "My Ally is the Force",
@@ -115747,6 +116469,44 @@
           "front": "yoda--my-ally-is-the-force-1149-legends-of-the-force---serialized-prestige-front.webp",
           "back": null
         }
+      },
+      "yoda--my-ally-is-the-force-6-legends-of-the-force-weekly-play": {
+        "variantId": "yoda--my-ally-is-the-force-6-legends-of-the-force-weekly-play",
+        "swuId": 38010,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 6,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yoda--my-ally-is-the-force-6-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "yoda--my-ally-is-the-force-26-legends-of-the-force-weekly-play": {
+        "variantId": "yoda--my-ally-is-the-force-26-legends-of-the-force-weekly-play",
+        "swuId": 38110,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 26,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yoda--my-ally-is-the-force-26-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -115758,7 +116518,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "Using the Force for Yoda's \"When Played\" ability triggers his second ability.\n",
     "text": "When Played: You may use the Force. If you do, heal 5 damage from a base.\nWhen you use the Force: You may deal damage to a unit equal to twice the number of units you control.",
     "front": {
       "horizontal": false
