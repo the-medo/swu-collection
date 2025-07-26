@@ -117203,5 +117203,2798 @@
       "Vehicle",
       "Fighter"
     ]
+  },
+  "admiral-ozzel--as-clumsy-as-he-is-stupid": {
+    "cardId": "admiral-ozzel--as-clumsy-as-he-is-stupid",
+    "updatedAt": "2025-07-16T15:00:49.674Z",
+    "name": "Admiral Ozzel, As Clumsy as He Is Stupid",
+    "title": "Admiral Ozzel",
+    "subtitle": "As Clumsy as He Is Stupid",
+    "variants": {
+      "admiral-ozzel--as-clumsy-as-he-is-stupid-85-intro-battle--hoth": {
+        "variantId": "admiral-ozzel--as-clumsy-as-he-is-stupid-85-intro-battle--hoth",
+        "swuId": 39255,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 85,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "admiral-ozzel--as-clumsy-as-he-is-stupid-85-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 1,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Defeated: Each opponent discards a card from their hand.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Official"
+    ]
+  },
+  "admiral-piett--in-command-now": {
+    "cardId": "admiral-piett--in-command-now",
+    "updatedAt": "2025-07-16T15:00:26.204Z",
+    "name": "Admiral Piett, In Command Now",
+    "title": "Admiral Piett",
+    "subtitle": "In Command Now",
+    "variants": {
+      "admiral-piett--in-command-now-65-intro-battle--hoth": {
+        "variantId": "admiral-piett--in-command-now-65-intro-battle--hoth",
+        "swuId": 39155,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 65,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Nash",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "admiral-piett--in-command-now-65-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 5,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "On Attack: If you control a Aggression unit, draw a card.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Official"
+    ]
+  },
+  "avenger--hunting-the-rebels": {
+    "cardId": "avenger--hunting-the-rebels",
+    "updatedAt": "2025-07-16T15:00:34.512Z",
+    "name": "Avenger, Hunting the Rebels",
+    "title": "Avenger",
+    "subtitle": "Hunting the Rebels",
+    "variants": {
+      "avenger--hunting-the-rebels-72-intro-battle--hoth": {
+        "variantId": "avenger--hunting-the-rebels-72-intro-battle--hoth",
+        "swuId": 39190,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 72,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "EJ Dela Cruz",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "avenger--hunting-the-rebels-72-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 8,
+    "hp": 6,
+    "power": 8,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: Deal 1 damage to each other unit (including friendly units).",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Capital Ship"
+    ]
+  },
+  "blizzard-force-at-st": {
+    "cardId": "blizzard-force-at-st",
+    "updatedAt": "2025-07-16T15:01:11.287Z",
+    "name": "Blizzard Force AT-ST",
+    "title": "Blizzard Force AT-ST",
+    "subtitle": null,
+    "variants": {
+      "blizzard-force-at-st-103-intro-battle--hoth": {
+        "variantId": "blizzard-force-at-st-103-intro-battle--hoth",
+        "swuId": 39345,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 103,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "blizzard-force-at-st-103-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 4,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [
+      "Sentinel"
+    ],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Walker"
+    ]
+  },
+  "blizzard-one--veers-at-the-helm": {
+    "cardId": "blizzard-one--veers-at-the-helm",
+    "updatedAt": "2025-07-16T15:01:06.500Z",
+    "name": "Blizzard One, Veers at the Helm",
+    "title": "Blizzard One",
+    "subtitle": "Veers at the Helm",
+    "variants": {
+      "blizzard-one--veers-at-the-helm-99-intro-battle--hoth": {
+        "variantId": "blizzard-one--veers-at-the-helm-99-intro-battle--hoth",
+        "swuId": 39325,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 99,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "blizzard-one--veers-at-the-helm-99-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 7,
+    "hp": 7,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: You may defeat a non-leader ground unit with 3 or less remaining HP.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Walker"
+    ]
+  },
+  "bright-hope--narrow-escape": {
+    "cardId": "bright-hope--narrow-escape",
+    "updatedAt": "2025-07-16T14:59:39.463Z",
+    "name": "Bright Hope, Narrow Escape",
+    "title": "Bright Hope",
+    "subtitle": "Narrow Escape",
+    "variants": {
+      "bright-hope--narrow-escape-26-intro-battle--hoth": {
+        "variantId": "bright-hope--narrow-escape-26-intro-battle--hoth",
+        "swuId": 38960,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 26,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ignacio Bazan Lazcano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "bright-hope--narrow-escape-26-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": 6,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [
+      "Sentinel"
+    ],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "c-3po--oh-dear--oh-dear": {
+    "cardId": "c-3po--oh-dear--oh-dear",
+    "updatedAt": "2025-07-16T14:59:57.406Z",
+    "name": "C-3PO, Oh Dear, Oh Dear",
+    "title": "C-3PO",
+    "subtitle": "Oh Dear, Oh Dear",
+    "variants": {
+      "c-3po--oh-dear--oh-dear-41-intro-battle--hoth": {
+        "variantId": "c-3po--oh-dear--oh-dear-41-intro-battle--hoth",
+        "swuId": 39035,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 41,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "c-3po--oh-dear--oh-dear-41-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 4,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: If you control a Cunning unit, draw a card.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Droid"
+    ]
+  },
+  "chewbacca--rrruuuurrr": {
+    "cardId": "chewbacca--rrruuuurrr",
+    "updatedAt": "2025-07-16T15:00:03.455Z",
+    "name": "Chewbacca, Rrruuuurrr",
+    "title": "Chewbacca",
+    "subtitle": "Rrruuuurrr",
+    "variants": {
+      "chewbacca--rrruuuurrr-46-intro-battle--hoth": {
+        "variantId": "chewbacca--rrruuuurrr-46-intro-battle--hoth",
+        "swuId": 39060,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 46,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chewbacca--rrruuuurrr-46-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 6,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [
+      "Sentinel"
+    ],
+    "traits": [
+      "Rebel",
+      "Wookiee"
+    ]
+  },
+  "darth-vader--don-t-fail-me-again": {
+    "cardId": "darth-vader--don-t-fail-me-again",
+    "updatedAt": "2025-07-16T15:00:11.894Z",
+    "name": "Darth Vader, Don't Fail Me Again",
+    "title": "Darth Vader",
+    "subtitle": "Don't Fail Me Again",
+    "variants": {
+      "darth-vader--don-t-fail-me-again-53-intro-battle--hoth": {
+        "variantId": "darth-vader--don-t-fail-me-again-53-intro-battle--hoth",
+        "swuId": 39095,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 53,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "darth-vader--don-t-fail-me-again-53-intro-battle--hoth-front.webp",
+          "back": "darth-vader--don-t-fail-me-again-53-intro-battle--hoth-back.webp"
+        }
+      }
+    },
+    "type": "Leader",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": 8,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": "On Attack: Deal 2 damage to a base.",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
+    "rules": null,
+    "text": "Action [1 resource, Exhaust]: Deal 1 damage to a base.",
+    "front": {
+      "horizontal": true
+    },
+    "back": {
+      "horizontal": false,
+      "type": "Leader Unit"
+    },
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Force",
+      "Imperial",
+      "Sith"
+    ]
+  },
+  "death-squadron-star-destroyer": {
+    "cardId": "death-squadron-star-destroyer",
+    "updatedAt": "2025-07-16T15:01:05.301Z",
+    "name": "Death Squadron Star Destroyer",
+    "title": "Death Squadron Star Destroyer",
+    "subtitle": null,
+    "variants": {
+      "death-squadron-star-destroyer-98-intro-battle--hoth": {
+        "variantId": "death-squadron-star-destroyer-98-intro-battle--hoth",
+        "swuId": 39320,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 98,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "death-squadron-star-destroyer-98-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 7,
+    "hp": 6,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [
+      "Sentinel"
+    ],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Capital Ship"
+    ]
+  },
+  "e-web-gunner": {
+    "cardId": "e-web-gunner",
+    "updatedAt": "2025-07-16T15:00:47.315Z",
+    "name": "E-Web Gunner",
+    "title": "E-Web Gunner",
+    "subtitle": null,
+    "variants": {
+      "e-web-gunner-83-intro-battle--hoth": {
+        "variantId": "e-web-gunner-83-intro-battle--hoth",
+        "swuId": 39245,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 83,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "e-web-gunner-83-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 4,
+    "power": 0,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Raid 4 (This unit gets +4/+0 while attacking.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [
+      "Raid"
+    ],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "echo-caverns": {
+    "cardId": "echo-caverns",
+    "updatedAt": "2025-07-16T14:59:09.982Z",
+    "name": "Echo Caverns",
+    "title": "Echo Caverns",
+    "subtitle": null,
+    "variants": {
+      "echo-caverns-2-intro-battle--hoth": {
+        "variantId": "echo-caverns-2-intro-battle--hoth",
+        "swuId": 38840,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "EJ dela Cruz",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "echo-caverns-2-intro-battle--hoth-front.webp",
+          "back": "echo-caverns-2-intro-battle--hoth-back.webp"
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Special",
+    "cost": null,
+    "hp": 20,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": {
+      "horizontal": true,
+      "type": "Base"
+    },
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "echo-coordinator": {
+    "cardId": "echo-coordinator",
+    "updatedAt": "2025-07-16T15:00:04.699Z",
+    "name": "Echo Coordinator",
+    "title": "Echo Coordinator",
+    "subtitle": null,
+    "variants": {
+      "echo-coordinator-47-intro-battle--hoth": {
+        "variantId": "echo-coordinator-47-intro-battle--hoth",
+        "swuId": 39065,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 47,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Paulus van Onzen",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "echo-coordinator-47-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 5,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel"
+    ]
+  },
+  "evacuation-escort": {
+    "cardId": "evacuation-escort",
+    "updatedAt": "2025-07-16T15:00:01.104Z",
+    "name": "Evacuation Escort",
+    "title": "Evacuation Escort",
+    "subtitle": null,
+    "variants": {
+      "evacuation-escort-44-intro-battle--hoth": {
+        "variantId": "evacuation-escort-44-intro-battle--hoth",
+        "swuId": 39050,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 44,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Pandu Mahardika",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "evacuation-escort-44-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 2,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "first-legion-trooper": {
+    "cardId": "first-legion-trooper",
+    "updatedAt": "2025-07-16T15:01:08.939Z",
+    "name": "First Legion Trooper",
+    "title": "First Legion Trooper",
+    "subtitle": null,
+    "variants": {
+      "first-legion-trooper-101-intro-battle--hoth": {
+        "variantId": "first-legion-trooper-101-intro-battle--hoth",
+        "swuId": 39335,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 101,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Monika Pałosz",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "first-legion-trooper-101-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 4,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "forward-command-post": {
+    "cardId": "forward-command-post",
+    "updatedAt": "2025-07-16T15:00:13.074Z",
+    "name": "Forward Command Post",
+    "title": "Forward Command Post",
+    "subtitle": null,
+    "variants": {
+      "forward-command-post-54-intro-battle--hoth": {
+        "variantId": "forward-command-post-54-intro-battle--hoth",
+        "swuId": 39100,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 54,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "forward-command-post-54-intro-battle--hoth-front.webp",
+          "back": "forward-command-post-54-intro-battle--hoth-back.webp"
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Special",
+    "cost": null,
+    "hp": 20,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": {
+      "horizontal": true,
+      "type": "Base"
+    },
+    "arenas": [],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "general-rieekan--stalwart-tactician": {
+    "cardId": "general-rieekan--stalwart-tactician",
+    "updatedAt": "2025-07-16T14:59:51.384Z",
+    "name": "General Rieekan, Stalwart Tactician",
+    "title": "General Rieekan",
+    "subtitle": "Stalwart Tactician",
+    "variants": {
+      "general-rieekan--stalwart-tactician-36-intro-battle--hoth": {
+        "variantId": "general-rieekan--stalwart-tactician-36-intro-battle--hoth",
+        "swuId": 39010,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 36,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-rieekan--stalwart-tactician-36-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 6,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Action [Exhaust]: Attack with another Heroism unit. It gets +2/+0 for this attack.  (You can only attack with a ready friendly unit.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Official"
+    ]
+  },
+  "general-veers--leading-the-assault": {
+    "cardId": "general-veers--leading-the-assault",
+    "updatedAt": "2025-07-16T15:00:53.193Z",
+    "name": "General Veers, Leading the Assault",
+    "title": "General Veers",
+    "subtitle": "Leading the Assault",
+    "variants": {
+      "general-veers--leading-the-assault-88-intro-battle--hoth": {
+        "variantId": "general-veers--leading-the-assault-88-intro-battle--hoth",
+        "swuId": 39270,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 88,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-veers--leading-the-assault-88-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 6,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: If you control a Vigilance unit, deal 2 damage to an enemy base and heal 2 damage from your base.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Official"
+    ]
+  },
+  "go-for-the-legs": {
+    "cardId": "go-for-the-legs",
+    "updatedAt": "2025-07-16T15:00:02.300Z",
+    "name": "Go for the Legs",
+    "title": "Go for the Legs",
+    "subtitle": null,
+    "variants": {
+      "go-for-the-legs-45-intro-battle--hoth": {
+        "variantId": "go-for-the-legs-45-intro-battle--hoth",
+        "swuId": 39055,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 45,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marko Fiedler",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "go-for-the-legs-45-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 1,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Exhaust an enemy ground unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "gr-75-medium-transport": {
+    "cardId": "gr-75-medium-transport",
+    "updatedAt": "2025-07-16T14:59:56.203Z",
+    "name": "GR-75 Medium Transport",
+    "title": "GR-75 Medium Transport",
+    "subtitle": null,
+    "variants": {
+      "gr-75-medium-transport-40-intro-battle--hoth": {
+        "variantId": "gr-75-medium-transport-40-intro-battle--hoth",
+        "swuId": 39030,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 40,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "French Carlomagno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gr-75-medium-transport-40-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 4,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "ground-assault-at-at": {
+    "cardId": "ground-assault-at-at",
+    "updatedAt": "2025-07-16T15:00:28.580Z",
+    "name": "Ground Assault AT-AT",
+    "title": "Ground Assault AT-AT",
+    "subtitle": null,
+    "variants": {
+      "ground-assault-at-at-67-intro-battle--hoth": {
+        "variantId": "ground-assault-at-at-67-intro-battle--hoth",
+        "swuId": 39165,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 67,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ground-assault-at-at-67-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": 7,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Walker"
+    ]
+  },
+  "han-solo--scruffy-looking-nerf-herder": {
+    "cardId": "han-solo--scruffy-looking-nerf-herder",
+    "updatedAt": "2025-07-16T14:59:58.728Z",
+    "name": "Han Solo, Scruffy-Looking Nerf Herder",
+    "title": "Han Solo",
+    "subtitle": "Scruffy-Looking Nerf Herder",
+    "variants": {
+      "han-solo--scruffy-looking-nerf-herder-42-intro-battle--hoth": {
+        "variantId": "han-solo--scruffy-looking-nerf-herder-42-intro-battle--hoth",
+        "swuId": 39040,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 42,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "han-solo--scruffy-looking-nerf-herder-42-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": 6,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)\nOn Attack:The defender gets -2/-0 for this attack.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [
+      "Raid"
+    ],
+    "traits": [
+      "Rebel"
+    ]
+  },
+  "hoth-lieutenant": {
+    "cardId": "hoth-lieutenant",
+    "updatedAt": "2025-07-16T15:00:57.875Z",
+    "name": "Hoth Lieutenant",
+    "title": "Hoth Lieutenant",
+    "subtitle": null,
+    "variants": {
+      "hoth-lieutenant-92-intro-battle--hoth": {
+        "variantId": "hoth-lieutenant-92-intro-battle--hoth",
+        "swuId": 39290,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 92,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "French Carlomagno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "hoth-lieutenant-92-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 4,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: You may attack with another unit. It gets +2/+0 for this attack.  (You can only attack with a ready friendly unit.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "hoth-trooper": {
+    "cardId": "hoth-trooper",
+    "updatedAt": "2025-07-16T15:00:05.885Z",
+    "name": "Hoth Trooper",
+    "title": "Hoth Trooper",
+    "subtitle": null,
+    "variants": {
+      "hoth-trooper-48-intro-battle--hoth": {
+        "variantId": "hoth-trooper-48-intro-battle--hoth",
+        "swuId": 39070,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 48,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "hoth-trooper-48-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 3,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Trooper"
+    ]
+  },
+  "i-ll-cover-for-you": {
+    "cardId": "i-ll-cover-for-you",
+    "updatedAt": "2025-07-16T14:59:55.007Z",
+    "name": "I'll Cover For You",
+    "title": "I'll Cover For You",
+    "subtitle": null,
+    "variants": {
+      "i-ll-cover-for-you-39-intro-battle--hoth": {
+        "variantId": "i-ll-cover-for-you-39-intro-battle--hoth",
+        "swuId": 39025,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 39,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Kursad Karatas",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "i-ll-cover-for-you-39-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Deal 1 damage to an enemy unit and 1 damage to another enemy unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "i-ve-found-them": {
+    "cardId": "i-ve-found-them",
+    "updatedAt": "2025-07-16T14:59:38.289Z",
+    "name": "I've Found Them",
+    "title": "I've Found Them",
+    "subtitle": null,
+    "variants": {
+      "i-ve-found-them-25-intro-battle--hoth": {
+        "variantId": "i-ve-found-them-25-intro-battle--hoth",
+        "swuId": 38955,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 25,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ario Murti",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "i-ve-found-them-25-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Reveal the top 3 cards of your deck. Draw a unit revealed this way, then discard the other revealed cards.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Command"
+    ],
+    "keywords": [],
+    "traits": [
+      "Gambit"
+    ]
+  },
+  "i-want-proof--not-leads": {
+    "cardId": "i-want-proof--not-leads",
+    "updatedAt": "2025-07-16T15:01:10.105Z",
+    "name": "I Want Proof, Not Leads",
+    "title": "I Want Proof, Not Leads",
+    "subtitle": null,
+    "variants": {
+      "i-want-proof--not-leads-102-intro-battle--hoth": {
+        "variantId": "i-want-proof--not-leads-102-intro-battle--hoth",
+        "swuId": 39340,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 102,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "i-want-proof--not-leads-102-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Draw 2 cards, then discard a card from your hand.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Plan"
+    ]
+  },
+  "imperial-deck-officer": {
+    "cardId": "imperial-deck-officer",
+    "updatedAt": "2025-07-16T15:01:07.685Z",
+    "name": "Imperial Deck Officer",
+    "title": "Imperial Deck Officer",
+    "subtitle": null,
+    "variants": {
+      "imperial-deck-officer-100-intro-battle--hoth": {
+        "variantId": "imperial-deck-officer-100-intro-battle--hoth",
+        "swuId": 39330,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 100,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "imperial-deck-officer-100-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 4,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Action [Exhaust]: Heal 2 damage from a Villainy unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial"
+    ]
+  },
+  "improvised-detonation": {
+    "cardId": "improvised-detonation",
+    "updatedAt": "2025-07-16T14:59:44.172Z",
+    "name": "Improvised Detonation",
+    "title": "Improvised Detonation",
+    "subtitle": null,
+    "variants": {
+      "improvised-detonation-30-intro-battle--hoth": {
+        "variantId": "improvised-detonation-30-intro-battle--hoth",
+        "swuId": 38980,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 30,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Derek Laufman",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "improvised-detonation-30-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Attack with a unit. It gets +2/+0 for this attack. (You can only attack with a ready friendly unit.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "ion-cannon": {
+    "cardId": "ion-cannon",
+    "updatedAt": "2025-07-16T14:59:40.627Z",
+    "name": "Ion Cannon",
+    "title": "Ion Cannon",
+    "subtitle": null,
+    "variants": {
+      "ion-cannon-27-intro-battle--hoth": {
+        "variantId": "ion-cannon-27-intro-battle--hoth",
+        "swuId": 38965,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 27,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marko Fiedler",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ion-cannon-27-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 5,
+    "power": 0,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Action [Exhaust]: Deal 3 damage to a space unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Weapon"
+    ]
+  },
+  "lambda-shuttle": {
+    "cardId": "lambda-shuttle",
+    "updatedAt": "2025-07-16T15:00:55.518Z",
+    "name": "Lambda Shuttle",
+    "title": "Lambda Shuttle",
+    "subtitle": null,
+    "variants": {
+      "lambda-shuttle-90-intro-battle--hoth": {
+        "variantId": "lambda-shuttle-90-intro-battle--hoth",
+        "swuId": 39280,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 90,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Guillaume Ospital",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "lambda-shuttle-90-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 5,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [
+      "Restore"
+    ],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "leia-organa--get-to-your-transports-": {
+    "cardId": "leia-organa--get-to-your-transports-",
+    "updatedAt": "2025-07-16T14:59:08.830Z",
+    "name": "Leia Organa, Get to Your Transports!",
+    "title": "Leia Organa",
+    "subtitle": "Get to Your Transports!",
+    "variants": {
+      "leia-organa--get-to-your-transports--1-intro-battle--hoth": {
+        "variantId": "leia-organa--get-to-your-transports--1-intro-battle--hoth",
+        "swuId": 38835,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 1,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "leia-organa--get-to-your-transports--1-intro-battle--hoth-front.webp",
+          "back": "leia-organa--get-to-your-transports--1-intro-battle--hoth-back.webp"
+        }
+      }
+    },
+    "type": "Leader",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 7,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": "On Attack: Heal 1 damage from a friendly unit and 1 damage from another friendly unit.",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader. (Flip her, ready her, and move her to the ground arena.)",
+    "rules": null,
+    "text": "Action [1 resource, Exhaust]: Heal 1 damage from a friendly unit.",
+    "front": {
+      "horizontal": true
+    },
+    "back": {
+      "horizontal": false,
+      "type": "Leader Unit"
+    },
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Official"
+    ]
+  },
+  "luke-skywalker--do-you-read-me-": {
+    "cardId": "luke-skywalker--do-you-read-me-",
+    "updatedAt": "2025-07-16T14:59:32.353Z",
+    "name": "Luke Skywalker, Do You Read Me?",
+    "title": "Luke Skywalker",
+    "subtitle": "Do You Read Me?",
+    "variants": {
+      "luke-skywalker--do-you-read-me--20-intro-battle--hoth": {
+        "variantId": "luke-skywalker--do-you-read-me--20-intro-battle--hoth",
+        "swuId": 38930,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 20,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--do-you-read-me--20-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 7,
+    "hp": 6,
+    "power": 6,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)\nWhen Played: You may deal 3 damage to a ground unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [
+      "Restore"
+    ],
+    "traits": [
+      "Force",
+      "Rebel"
+    ]
+  },
+  "millennium-falcon--bucket-of-bolts": {
+    "cardId": "millennium-falcon--bucket-of-bolts",
+    "updatedAt": "2025-07-16T14:59:45.376Z",
+    "name": "Millennium Falcon, Bucket of Bolts",
+    "title": "Millennium Falcon",
+    "subtitle": "Bucket of Bolts",
+    "variants": {
+      "millennium-falcon--bucket-of-bolts-31-intro-battle--hoth": {
+        "variantId": "millennium-falcon--bucket-of-bolts-31-intro-battle--hoth",
+        "swuId": 38985,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 31,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "millennium-falcon--bucket-of-bolts-31-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 7,
+    "hp": 6,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: If your base has more damage on it than an enemy base, ready this unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "r2-d2--known-to-make-mistakes": {
+    "cardId": "r2-d2--known-to-make-mistakes",
+    "updatedAt": "2025-07-16T15:00:07.067Z",
+    "name": "R2-D2, Known to Make Mistakes",
+    "title": "R2-D2",
+    "subtitle": "Known to Make Mistakes",
+    "variants": {
+      "r2-d2--known-to-make-mistakes-49-intro-battle--hoth": {
+        "variantId": "r2-d2--known-to-make-mistakes-49-intro-battle--hoth",
+        "swuId": 39075,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 49,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "r2-d2--known-to-make-mistakes-49-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 4,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "On Attack: If you control a Command unit, exhaust an enemy ground unit that costs 4 or less.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Droid"
+    ]
+  },
+  "rampaging-wampa": {
+    "cardId": "rampaging-wampa",
+    "updatedAt": "2025-07-16T15:00:39.128Z",
+    "name": "Rampaging Wampa",
+    "title": "Rampaging Wampa",
+    "subtitle": null,
+    "variants": {
+      "rampaging-wampa-76-intro-battle--hoth": {
+        "variantId": "rampaging-wampa-76-intro-battle--hoth",
+        "swuId": 39210,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 76,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rampaging-wampa-76-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 3,
+    "power": 6,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Creature"
+    ]
+  },
+  "rebellion-y-wing": {
+    "cardId": "rebellion-y-wing",
+    "updatedAt": "2025-07-16T14:59:46.580Z",
+    "name": "Rebellion Y-Wing",
+    "title": "Rebellion Y-Wing",
+    "subtitle": null,
+    "variants": {
+      "rebellion-y-wing-32-intro-battle--hoth": {
+        "variantId": "rebellion-y-wing-32-intro-battle--hoth",
+        "swuId": 38990,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 32,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Shane Molina",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rebellion-y-wing-32-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 3,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "On Attack: Deal 1 damage to a base.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "recovery": {
+    "cardId": "recovery",
+    "updatedAt": "2025-07-16T14:59:24.168Z",
+    "name": "Recovery",
+    "title": "Recovery",
+    "subtitle": null,
+    "variants": {
+      "recovery-13-intro-battle--hoth": {
+        "variantId": "recovery-13-intro-battle--hoth",
+        "swuId": 38895,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 13,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Derek Laufman",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "recovery-13-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Heal 5 damage from a unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Plan"
+    ]
+  },
+  "rogue-squadron-speeder": {
+    "cardId": "rogue-squadron-speeder",
+    "updatedAt": "2025-07-16T14:59:48.964Z",
+    "name": "Rogue Squadron Speeder",
+    "title": "Rogue Squadron Speeder",
+    "subtitle": null,
+    "variants": {
+      "rogue-squadron-speeder-34-intro-battle--hoth": {
+        "variantId": "rogue-squadron-speeder-34-intro-battle--hoth",
+        "swuId": 39000,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 34,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rogue-squadron-speeder-34-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 5,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [
+      "Raid"
+    ],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Speeder"
+    ]
+  },
+  "scouting-tie-fighter": {
+    "cardId": "scouting-tie-fighter",
+    "updatedAt": "2025-07-16T15:01:04.118Z",
+    "name": "Scouting TIE Fighter",
+    "title": "Scouting TIE Fighter",
+    "subtitle": null,
+    "variants": {
+      "scouting-tie-fighter-97-intro-battle--hoth": {
+        "variantId": "scouting-tie-fighter-97-intro-battle--hoth",
+        "swuId": 39315,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 97,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Aaron Dhanda",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "scouting-tie-fighter-97-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 2,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "snowtrooper-vanguard": {
+    "cardId": "snowtrooper-vanguard",
+    "updatedAt": "2025-07-16T15:01:02.717Z",
+    "name": "Snowtrooper Vanguard",
+    "title": "Snowtrooper Vanguard",
+    "subtitle": null,
+    "variants": {
+      "snowtrooper-vanguard-96-intro-battle--hoth": {
+        "variantId": "snowtrooper-vanguard-96-intro-battle--hoth",
+        "swuId": 39310,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 96,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ivan Fiorelli",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "snowtrooper-vanguard-96-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 3,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "snowtrooper": {
+    "cardId": "snowtrooper",
+    "updatedAt": "2025-07-16T15:00:52.009Z",
+    "name": "Snowtrooper",
+    "title": "Snowtrooper",
+    "subtitle": null,
+    "variants": {
+      "snowtrooper-87-intro-battle--hoth": {
+        "variantId": "snowtrooper-87-intro-battle--hoth",
+        "swuId": 39265,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 87,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Nash",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "snowtrooper-87-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 1,
+    "hp": 3,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "surface-assault-bomber": {
+    "cardId": "surface-assault-bomber",
+    "updatedAt": "2025-07-16T15:01:00.281Z",
+    "name": "Surface Assault Bomber",
+    "title": "Surface Assault Bomber",
+    "subtitle": null,
+    "variants": {
+      "surface-assault-bomber-94-intro-battle--hoth": {
+        "variantId": "surface-assault-bomber-94-intro-battle--hoth",
+        "swuId": 39300,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 94,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "surface-assault-bomber-94-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 3,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [
+      "Raid"
+    ],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "target-the-main-generator": {
+    "cardId": "target-the-main-generator",
+    "updatedAt": "2025-07-16T15:00:33.310Z",
+    "name": "Target the Main Generator",
+    "title": "Target the Main Generator",
+    "subtitle": null,
+    "variants": {
+      "target-the-main-generator-71-intro-battle--hoth": {
+        "variantId": "target-the-main-generator-71-intro-battle--hoth",
+        "swuId": 39185,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 71,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ario Murti",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "target-the-main-generator-71-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Deal 2 damage to a base.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "tauntaun-mount": {
+    "cardId": "tauntaun-mount",
+    "updatedAt": "2025-07-16T15:00:09.512Z",
+    "name": "Tauntaun Mount",
+    "title": "Tauntaun Mount",
+    "subtitle": null,
+    "variants": {
+      "tauntaun-mount-51-intro-battle--hoth": {
+        "variantId": "tauntaun-mount-51-intro-battle--hoth",
+        "swuId": 39085,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 51,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tauntaun-mount-51-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 2,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Defeated: Heal 2 damage from your base.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command"
+    ],
+    "keywords": [],
+    "traits": [
+      "Creature"
+    ]
+  },
+  "the-desolation-of-hoth": {
+    "cardId": "the-desolation-of-hoth",
+    "updatedAt": "2025-07-16T15:01:12.485Z",
+    "name": "The Desolation of Hoth",
+    "title": "The Desolation of Hoth",
+    "subtitle": null,
+    "variants": {
+      "the-desolation-of-hoth-104-intro-battle--hoth": {
+        "variantId": "the-desolation-of-hoth-104-intro-battle--hoth",
+        "swuId": 39350,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 104,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-desolation-of-hoth-104-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Defeat up to 2 enemy units that each cost 3 or less.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Disaster"
+    ]
+  },
+  "too-strong-for-blasters": {
+    "cardId": "too-strong-for-blasters",
+    "updatedAt": "2025-07-16T15:00:56.719Z",
+    "name": "Too Strong for Blasters",
+    "title": "Too Strong for Blasters",
+    "subtitle": null,
+    "variants": {
+      "too-strong-for-blasters-91-intro-battle--hoth": {
+        "variantId": "too-strong-for-blasters-91-intro-battle--hoth",
+        "swuId": 39285,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 91,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "too-strong-for-blasters-91-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 1,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Heal 2 damage from a unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Innate"
+    ]
+  },
+  "trench-defender": {
+    "cardId": "trench-defender",
+    "updatedAt": "2025-07-16T15:00:08.307Z",
+    "name": "Trench Defender",
+    "title": "Trench Defender",
+    "subtitle": null,
+    "variants": {
+      "trench-defender-50-intro-battle--hoth": {
+        "variantId": "trench-defender-50-intro-battle--hoth",
+        "swuId": 39080,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 50,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "trench-defender-50-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 4,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Trooper"
+    ]
+  },
+  "watch-this": {
+    "cardId": "watch-this",
+    "updatedAt": "2025-07-16T15:00:10.716Z",
+    "name": "Watch This",
+    "title": "Watch This",
+    "subtitle": null,
+    "variants": {
+      "watch-this-52-intro-battle--hoth": {
+        "variantId": "watch-this-52-intro-battle--hoth",
+        "swuId": 39090,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 52,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "watch-this-52-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Return a non-leader unit that costs 6 or less to its owner's hand. Exhaust each other enemy unit in the same arena.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Gambit"
+    ]
+  },
+  "we-re-in-trouble": {
+    "cardId": "we-re-in-trouble",
+    "updatedAt": "2025-07-16T15:00:50.819Z",
+    "name": "We're In Trouble",
+    "title": "We're In Trouble",
+    "subtitle": null,
+    "variants": {
+      "we-re-in-trouble-86-intro-battle--hoth": {
+        "variantId": "we-re-in-trouble-86-intro-battle--hoth",
+        "swuId": 39260,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 86,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ignacio Bazan Lazcano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "we-re-in-trouble-86-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Deal 3 damage to a unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "you-have-failed-me": {
+    "cardId": "you-have-failed-me",
+    "updatedAt": "2025-07-16T15:01:01.477Z",
+    "name": "You Have Failed Me",
+    "title": "You Have Failed Me",
+    "subtitle": null,
+    "variants": {
+      "you-have-failed-me-95-intro-battle--hoth": {
+        "variantId": "you-have-failed-me-95-intro-battle--hoth",
+        "swuId": 39305,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 95,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "you-have-failed-me-95-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Defeat a friendly unit. If you do, ready a friendly unit with 5 or less power.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
   }
 }
