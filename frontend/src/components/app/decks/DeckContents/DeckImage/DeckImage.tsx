@@ -397,39 +397,114 @@ const DeckImage = forwardRef<
 
         // Process each card type group
         if (deckCardsForLayout.mainboardGroups) {
+          // First, collect all valid groups
+          const groups = [];
           for (const groupName of deckCardsForLayout.mainboardGroups.sortedIds) {
             const group = deckCardsForLayout.mainboardGroups.groups[groupName];
             if (!group || group.cards.length === 0) continue;
+            groups.push(group);
+          }
 
-            // Draw group header
+          let currentGroupIndex = 0;
+
+          while (currentGroupIndex < groups.length) {
+            // Start processing a new set of groups that might fit in one or more rows
+            const startY = rightY;
+            let remainingSlotsInRow = maxCardsPerRow;
+            let groupsToProcess = [];
+            let totalCardsToProcess = 0;
+
+            // Try to fit as many small groups as possible in the current row(s)
+            while (currentGroupIndex < groups.length) {
+              const currentGroup = groups[currentGroupIndex];
+              const currentGroupSize = currentGroup.cards.length;
+
+              // If this is the first group we're considering or it fits in the remaining slots
+              if (groupsToProcess.length === 0 || currentGroupSize <= remainingSlotsInRow) {
+                groupsToProcess.push(currentGroup);
+                totalCardsToProcess += currentGroupSize;
+                remainingSlotsInRow -= currentGroupSize;
+                currentGroupIndex++;
+
+                // If we've filled the row completely, break
+                if (remainingSlotsInRow === 0) {
+                  break;
+                }
+              } else {
+                // This group doesn't fit in the current row
+                break;
+              }
+            }
+
+            // Calculate how many rows we'll need for these groups
+            const rowsNeeded = Math.ceil(totalCardsToProcess / maxCardsPerRow);
+
+            // Draw headers for all groups
+            rightY = startY + 20;
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 36px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText(
-              `${group.label} (${group.cards.reduce((sum, card) => sum + card.quantity, 0)})`,
-              rightX,
-              rightY,
-            );
-            rightY += 50;
 
-            // Draw cards in grid layout
-            let cardCounter = 0;
-            for (const card of group.cards) {
-              const rowPosition = cardCounter % maxCardsPerRow;
-              const x = rightX + rowPosition * (cardWidth + padding / 2);
-              const y = rightY + Math.floor(cardCounter / maxCardsPerRow) * (cardHeight + padding);
+            // First, draw all headers with appropriate spacing
+            let headerX = rightX;
+            let cardPositionInRow = 0;
 
-              await drawCard(card.cardId, x, y, cardWidth, cardHeight, card.quantity);
+            for (const group of groupsToProcess) {
+              // Draw group header
+              ctx.fillText(
+                `${group.label} (${group.cards.reduce((sum, card) => sum + card.quantity, 0)})`,
+                headerX,
+                rightY,
+              );
 
-              cardCounter++;
+              // Calculate where the next header should go
+              const groupCardCount = group.cards.length;
+              const cardsInThisRow = Math.min(groupCardCount, maxCardsPerRow - cardPositionInRow);
+              const headerWidth = cardsInThisRow * (cardWidth + padding / 2);
+
+              // Add some spacing between headers in the same row
+              headerX += headerWidth;
+              cardPositionInRow += cardsInThisRow;
+
+              // If we've reached the end of a row, reset for the next row
+              if (cardPositionInRow >= maxCardsPerRow) {
+                headerX = rightX;
+                cardPositionInRow = 0;
+              }
             }
 
-            // Move to next group
-            const rowsUsed = Math.ceil(group.cards.length / maxCardsPerRow);
-            rightY += rowsUsed * (cardHeight + padding) + padding * 2;
-            bottomPoint = Math.max(bottomPoint, rightY + rowsUsed * (cardHeight + padding));
+            // Move down past the headers
+            rightY += 30;
+
+            // Draw all cards for the groups
+            let cardCounter = 0;
+
+            for (const group of groupsToProcess) {
+              // Add a small visual separator between groups in the same row
+              if (cardCounter > 0 && cardCounter % maxCardsPerRow !== 0) {
+                cardCounter += 0; // No actual gap, just keeping the code structure for potential future adjustments
+              }
+
+              for (const card of group.cards) {
+                const rowPosition = cardCounter % maxCardsPerRow;
+                const rowNumber = Math.floor(cardCounter / maxCardsPerRow);
+                const x = rightX + rowPosition * (cardWidth + padding / 2);
+                const y = rightY + rowNumber * (cardHeight + padding);
+
+                await drawCard(card.cardId, x, y, cardWidth, cardHeight, card.quantity);
+
+                cardCounter++;
+              }
+            }
+
+            // Move to next set of groups
+            rightY += rowsNeeded * (cardHeight + padding) + padding;
+            bottomPoint = Math.max(bottomPoint, rightY);
           }
         }
+
+        // move sideboard box down
+        rightY += 50;
 
         // Draw sideboard section
         const sideboardCards = deckCardsForLayout.cardsByBoard[2];
@@ -440,7 +515,12 @@ const DeckImage = forwardRef<
 
           // Draw sideboard background with slight transparency
           ctx.fillStyle = 'rgba(42, 42, 42, 0.5)'; // 70% opacity
-          ctx.fillRect(rightX - padding - 15, rightY - padding, canvasWidth - (rightX - 15), sideboardHeight); // Moved 15px to the left
+          ctx.fillRect(
+            rightX - padding - 15,
+            rightY - padding,
+            canvasWidth - rightX,
+            sideboardHeight,
+          ); // Moved 15px to the left
 
           // Draw sideboard header
           ctx.fillStyle = '#ffffff';
