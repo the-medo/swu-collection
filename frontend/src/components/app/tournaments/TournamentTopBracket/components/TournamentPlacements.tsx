@@ -4,6 +4,7 @@ import { extractDeckNameFromBrackets } from '../../lib/extractDeckNameFromBracke
 import { BracketInfo } from '../../../../../../../types/enums.ts';
 import DeckPlacement from '@/components/app/tournaments/components/DeckPlacement.tsx';
 import { cn } from '@/lib/utils.ts';
+import { getDeckLeadersAndBaseKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 
 interface PlacementGroup {
   placement: string;
@@ -104,7 +105,7 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
     return result;
   }, [topDecks, top]);
 
-  const extended = top === BracketInfo.NONE && !selectedDeckId;
+  const extended = false; // currently I decided to remove full-screen final standings and display message instead // top === BracketInfo.NONE && !selectedDeckId;
 
   return (
     <div
@@ -160,6 +161,7 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
                   gameWins={deck.tournamentDeck.recordWin ?? 0}
                   gameLosses={deck.tournamentDeck.recordLose ?? 0}
                   gameDraws={deck.tournamentDeck.recordDraw ?? 0}
+                  deckKey={getDeckLeadersAndBaseKey(deck.deck, cardListData)}
                 />
               </div>
             );

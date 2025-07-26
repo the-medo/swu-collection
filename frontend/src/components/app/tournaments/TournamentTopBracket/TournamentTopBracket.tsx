@@ -1,5 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Link } from '@tanstack/react-router';
+import { PieChart } from 'lucide-react';
 import {
   TournamentDeckResponse,
   useGetTournamentDecks,
@@ -268,8 +271,33 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
         {selectedDeckId ? (
           <DeckViewer selectedDeckId={selectedDeckId} setSelectedDeckId={setSelectedDeckId} />
         ) : top === BracketInfo.NONE ? (
-          // For "none" bracket type, don't show the bracket rounds
-          <></>
+          // For "none" bracket type, show a message with a button to meta analysis
+          <div className="flex flex-1 flex-col items-center justify-center p-6 bg-accent rounded-lg">
+            <p className="text-center mb-8 italic">There is no TOP bracket for this tournament.</p>
+            <p className="text-center mb-2">You can check full meta analysis instead:</p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Button asChild>
+                <Link to={`/tournaments/$tournamentId/meta`} params={{ tournamentId }}>
+                  Meta analysis
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link to={`/tournaments/$tournamentId/matchups`} params={{ tournamentId }}>
+                  Matchups
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link to={`/tournaments/$tournamentId/decks`} params={{ tournamentId }}>
+                  All decks
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link to={`/tournaments/$tournamentId/card-stats`} params={{ tournamentId }}>
+                  Card statistics
+                </Link>
+              </Button>
+            </div>
+          </div>
         ) : (
           <BracketRounds
             bracketData={bracketData}

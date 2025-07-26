@@ -5,6 +5,7 @@ import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectD
 import { Trophy, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { Link } from '@tanstack/react-router';
+import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 
 interface DeckPlacementProps {
   leaderCard1: any;
@@ -26,6 +27,7 @@ interface DeckPlacementProps {
   gameWins?: number;
   gameLosses?: number;
   gameDraws?: number;
+  deckKey?: string;
 }
 
 const DeckPlacement: React.FC<DeckPlacementProps> = ({
@@ -48,7 +50,10 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
   gameWins = 0,
   gameLosses = 0,
   gameDraws = 0,
+  deckKey,
 }) => {
+  const labelRenderer = useLabel();
+
   return (
     <div
       className={cn(
@@ -60,7 +65,7 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
             ? 'hover:bg-muted/50 border-transparent'
             : '',
         onClick ? 'p-2 rounded-md transition-colors border' : '',
-        extended ? 'w-full' : '',
+        extended ? 'w-full gap-4 flex-wrap' : '',
         className,
       )}
       onClick={onClick}
@@ -100,6 +105,11 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
           </div>
         )}
       </div>
+      {extended && deckKey && (
+        <div className="ml-2 text-sm text-muted-foreground w-[220px]">
+          {labelRenderer(deckKey, 'leadersAndBase', 'compact')}
+        </div>
+      )}
       {extended && (
         <div className="text-md font-bold w-[80px] flex-shrink-0">
           {gameWins}-{gameLosses}-{gameDraws}
