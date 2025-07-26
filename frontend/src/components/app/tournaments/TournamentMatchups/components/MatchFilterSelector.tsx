@@ -10,6 +10,7 @@ import { Alert } from '@/components/ui/alert.tsx';
 
 export interface MatchFilterSelectorProps {
   value: MatchFilter;
+  displayAdvancingPlayers?: boolean;
   onChange: (value: MatchFilter) => void;
   minRound?: number;
   onMinRoundChange: (value: number | undefined) => void;
@@ -19,6 +20,7 @@ export interface MatchFilterSelectorProps {
 
 export const MatchFilterSelector: React.FC<MatchFilterSelectorProps> = ({
   value,
+  displayAdvancingPlayers = true,
   onChange,
   minRound,
   onMinRoundChange,
@@ -74,25 +76,33 @@ export const MatchFilterSelector: React.FC<MatchFilterSelectorProps> = ({
         className="justify-start gap-2"
       >
         <ToggleGroupItem value="all">All matches</ToggleGroupItem>
-        <Tooltip>
-          <TooltipTrigger>
-            <ToggleGroupItem value="day2" className="relative">
-              Day 2 player matches
-              <Info size={14} className="ml-1 inline-block" />
-            </ToggleGroupItem>
-          </TooltipTrigger>
-          <TooltipContent className="flex flex-col gap-2 text-sm max-w-[400px]">
-            <h4 className="font-semibold">Day 2 Player Matches</h4>
-            <span>
-              Contains all matches from players that got into day 2, including matches of these
-              players from day 1.
-            </span>
-            <span>
-              If you want only matches from day 2, you need to do it through Custom filter, for
-              example SQ in Richmond had 8 rounds in day 1, so you need to set "Min round" to 9.
-            </span>
-          </TooltipContent>
-        </Tooltip>
+        {displayAdvancingPlayers && (
+          <Tooltip>
+            <TooltipTrigger>
+              <ToggleGroupItem value="day2" className="relative">
+                Advancing player matches
+                <Info size={14} className="ml-1 inline-block" />
+              </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent className="flex flex-col gap-2 text-sm max-w-[400px]">
+              <h4 className="font-semibold">Advancing Player Matches</h4>
+              <span>
+                Contains all matches from players that got into next day, including matches of these
+                players from previous day.
+              </span>
+              <span>
+                If you want only matches from the next day, you need to do it through Custom filter,
+                for example SQ in Richmond had 8 rounds in day 1, so you need to set "Min round" to
+                9.
+              </span>
+              <span className="italic">
+                This can be a bit confusing in <b>Galactics</b>, which is 3 day tournament, spread
+                into multiple melee events. Keep in mind that players are "advancing" from day 1 to
+                day 2 and also from day 2 to day 3.
+              </span>
+            </TooltipContent>
+          </Tooltip>
+        )}
         <Tooltip>
           <TooltipTrigger>
             <ToggleGroupItem value="custom" className="relative">

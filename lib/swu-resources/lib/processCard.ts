@@ -43,7 +43,7 @@ export async function processCard(card: any, skipExisting = true) {
           ? {
               horizontal: !!c.artBackHorizontal,
               image: c.artBack.data.attributes.url,
-              type: c.type2.data.attributes.name,
+              type: c.type2.data?.attributes.name ?? c.type.data.attributes.name,
             }
           : null,
       set: c.expansion.data.attributes.code.toLowerCase(),

@@ -14,6 +14,7 @@ import { TournamentMatch } from '../../../../../../server/db/schema/tournament_m
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import MobileCard from '@/components/ui/mobile-card.tsx';
+import { useMemo } from 'react';
 
 export interface TournamentMatchupsProps {
   decks: TournamentDeckResponse[];
@@ -31,6 +32,11 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
   const minPoints = search.maMinPoints as number | undefined;
   const metaInfo = (search.maMetaInfo as MetaInfo) || 'leaders';
   const displayMode = (search.maDisplayMode as MatchupDisplayMode) || 'winLoss';
+
+  const hasDayTwo = useMemo(
+    () => Object.values(tournaments).some(t => t.tournament.days > 1),
+    [tournaments],
+  );
 
   // Functions to update URL parameters
   const setMatchFilter = (value: MatchFilter) => {
@@ -86,6 +92,7 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
         <MobileCard>
           <MatchFilterSelector
             value={matchFilter}
+            displayAdvancingPlayers={hasDayTwo}
             onChange={setMatchFilter}
             minRound={minRound}
             onMinRoundChange={setMinRound}

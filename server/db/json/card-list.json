@@ -84694,7 +84694,7 @@
   },
   "acolyte-of-the-beyond": {
     "cardId": "acolyte-of-the-beyond",
-    "updatedAt": "2025-05-14T18:45:53.347Z",
+    "updatedAt": "2025-07-21T20:08:55.083Z",
     "name": "Acolyte of the Beyond",
     "title": "Acolyte of the Beyond",
     "subtitle": null,
@@ -84774,6 +84774,44 @@
           "front": "acolyte-of-the-beyond-869-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "acolyte-of-the-beyond-8-legends-of-the-force-weekly-play": {
+        "variantId": "acolyte-of-the-beyond-8-legends-of-the-force-weekly-play",
+        "swuId": 38020,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 8,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "acolyte-of-the-beyond-8-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "acolyte-of-the-beyond-28-legends-of-the-force-weekly-play": {
+        "variantId": "acolyte-of-the-beyond-28-legends-of-the-force-weekly-play",
+        "swuId": 38120,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 28,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "acolyte-of-the-beyond-28-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -84786,7 +84824,7 @@
     "deployBox": null,
     "epicAction": "",
     "rules": null,
-    "text": "On Attack/When Defeated: The Force is with you (create your Force token).",
+    "text": "On Attack/When Defeated: The Force is with you .",
     "front": {
       "horizontal": false
     },
@@ -87335,7 +87373,7 @@
   },
   "baylan-skoll--enigmatic-master": {
     "cardId": "baylan-skoll--enigmatic-master",
-    "updatedAt": "2025-05-27T14:52:23.607Z",
+    "updatedAt": "2025-07-21T20:09:02.367Z",
     "name": "Baylan Skoll, Enigmatic Master",
     "title": "Baylan Skoll",
     "subtitle": "Enigmatic Master",
@@ -87472,6 +87510,44 @@
           "front": "baylan-skoll--enigmatic-master-1157-legends-of-the-force---serialized-prestige-front.webp",
           "back": null
         }
+      },
+      "baylan-skoll--enigmatic-master-14-legends-of-the-force-weekly-play": {
+        "variantId": "baylan-skoll--enigmatic-master-14-legends-of-the-force-weekly-play",
+        "swuId": 38050,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 14,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "baylan-skoll--enigmatic-master-14-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "baylan-skoll--enigmatic-master-34-legends-of-the-force-weekly-play": {
+        "variantId": "baylan-skoll--enigmatic-master-34-legends-of-the-force-weekly-play",
+        "swuId": 38150,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 34,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "baylan-skoll--enigmatic-master-34-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -87483,7 +87559,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "\"Play for free\" ignores all resource costs, including the aspect penalty, but not other additional costs.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\nIf a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
     "text": "Hidden\nWhen Played: You may use the Force. If you do, return a non-leader unit that costs 4 or less to its owner's hand. Then, its owner may play it for free.",
     "front": {
       "horizontal": false
@@ -87506,7 +87582,7 @@
   },
   "bd-1--beep-boo-boo-bweep": {
     "cardId": "bd-1--beep-boo-boo-bweep",
-    "updatedAt": "2025-05-05T14:46:26.600Z",
+    "updatedAt": "2025-07-21T20:09:03.571Z",
     "name": "BD-1, Beep Boo Boo Bweep",
     "title": "BD-1",
     "subtitle": "Beep Boo Boo Bweep",
@@ -87587,6 +87663,44 @@
           "back": null
         }
       },
+      "bd-1--beep-boo-boo-bweep-15-legends-of-the-force-weekly-play": {
+        "variantId": "bd-1--beep-boo-boo-bweep-15-legends-of-the-force-weekly-play",
+        "swuId": 38055,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 15,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "bd-1--beep-boo-boo-bweep-15-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "bd-1--beep-boo-boo-bweep-35-legends-of-the-force-weekly-play": {
+        "variantId": "bd-1--beep-boo-boo-bweep-35-legends-of-the-force-weekly-play",
+        "swuId": 38155,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 35,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "bd-1--beep-boo-boo-bweep-35-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "bd-1--beep-boo-boo-bweep-4-2025-convention-exclusive": {
         "variantId": "bd-1--beep-boo-boo-bweep-4-2025-convention-exclusive",
         "swuId": 38350,
@@ -87616,7 +87730,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\nIf BD-1 is captured and then rescued, his \"When Played\" effect does not resume.\nUntil BD-1 leaves play, the friendly unit gets +1/+0 and Saboteur. This effect is not changed if an opponent takes control of BD-1.\n",
     "text": "Hidden \nWhen Played: Choose another friendly unit. While this unit is in play, the chosen unit gets +1/+0 and gains Saboteur.",
     "front": {
       "horizontal": false
@@ -89625,7 +89739,7 @@
   },
   "crushing-blow": {
     "cardId": "crushing-blow",
-    "updatedAt": "2025-06-06T19:00:01.652Z",
+    "updatedAt": "2025-07-21T20:08:49.014Z",
     "name": "Crushing Blow",
     "title": "Crushing Blow",
     "subtitle": null,
@@ -89705,6 +89819,44 @@
           "front": "crushing-blow-817-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "crushing-blow-3-legends-of-the-force-weekly-play": {
+        "variantId": "crushing-blow-3-legends-of-the-force-weekly-play",
+        "swuId": 37995,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 3,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Ben Vazquez",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "crushing-blow-3-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "crushing-blow-23-legends-of-the-force-weekly-play": {
+        "variantId": "crushing-blow-23-legends-of-the-force-weekly-play",
+        "swuId": 38095,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 23,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Ben Vazquez",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "crushing-blow-23-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Event",
@@ -89716,7 +89868,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
     "text": "Defeat a non-leader unit that costs 2 or less.",
     "front": {
       "horizontal": false
@@ -91839,7 +91991,7 @@
   },
   "do-or-do-not": {
     "cardId": "do-or-do-not",
-    "updatedAt": "2025-06-06T19:01:01.094Z",
+    "updatedAt": "2025-07-21T20:08:59.876Z",
     "name": "Do or Do Not",
     "title": "Do or Do Not",
     "subtitle": null,
@@ -91919,6 +92071,44 @@
           "front": "do-or-do-not-915-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "do-or-do-not-12-legends-of-the-force-weekly-play": {
+        "variantId": "do-or-do-not-12-legends-of-the-force-weekly-play",
+        "swuId": 38040,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 12,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "do-or-do-not-12-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "do-or-do-not-32-legends-of-the-force-weekly-play": {
+        "variantId": "do-or-do-not-32-legends-of-the-force-weekly-play",
+        "swuId": 38140,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 32,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "do-or-do-not-32-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Event",
@@ -91931,7 +92121,7 @@
     "deployBox": null,
     "epicAction": "",
     "rules": null,
-    "text": "You may use the Force (lose your Force token). If you do, draw 2 cards. If you do not, draw a card.",
+    "text": "You may use the Force . If you do, draw 2 cards. If you do not, draw a card.",
     "front": {
       "horizontal": false
     },
@@ -93495,7 +93685,7 @@
   },
   "flight-of-the-inquisitor": {
     "cardId": "flight-of-the-inquisitor",
-    "updatedAt": "2025-06-06T19:01:38.640Z",
+    "updatedAt": "2025-07-21T20:09:09.592Z",
     "name": "Flight of the Inquisitor",
     "title": "Flight of the Inquisitor",
     "subtitle": null,
@@ -93573,6 +93763,44 @@
         },
         "image": {
           "front": "flight-of-the-inquisitor-980-legends-of-the-force---hyperspace-foil-front.webp",
+          "back": null
+        }
+      },
+      "flight-of-the-inquisitor-20-legends-of-the-force-weekly-play": {
+        "variantId": "flight-of-the-inquisitor-20-legends-of-the-force-weekly-play",
+        "swuId": 38080,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 20,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "flight-of-the-inquisitor-20-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "flight-of-the-inquisitor-40-legends-of-the-force-weekly-play": {
+        "variantId": "flight-of-the-inquisitor-40-legends-of-the-force-weekly-play",
+        "swuId": 38180,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 40,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "flight-of-the-inquisitor-40-legends-of-the-force-weekly-play-front.webp",
           "back": null
         }
       }
@@ -94550,7 +94778,7 @@
   },
   "graceful-purrgil": {
     "cardId": "graceful-purrgil",
-    "updatedAt": "2025-05-30T14:44:31.655Z",
+    "updatedAt": "2025-07-21T20:08:47.831Z",
     "name": "Graceful Purrgil",
     "title": "Graceful Purrgil",
     "subtitle": null,
@@ -94630,6 +94858,44 @@
           "front": "graceful-purrgil-809-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "graceful-purrgil-2-legends-of-the-force-weekly-play": {
+        "variantId": "graceful-purrgil-2-legends-of-the-force-weekly-play",
+        "swuId": 37990,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "graceful-purrgil-2-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "graceful-purrgil-22-legends-of-the-force-weekly-play": {
+        "variantId": "graceful-purrgil-22-legends-of-the-force-weekly-play",
+        "swuId": 38090,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 22,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "graceful-purrgil-22-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -94642,7 +94908,7 @@
     "deployBox": null,
     "epicAction": "",
     "rules": null,
-    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "text": "Sentinel ",
     "front": {
       "horizontal": false
     },
@@ -95355,7 +95621,7 @@
   },
   "gungi--finding-himself": {
     "cardId": "gungi--finding-himself",
-    "updatedAt": "2025-05-23T16:43:45.292Z",
+    "updatedAt": "2025-07-21T20:08:50.207Z",
     "name": "Gungi, Finding Himself",
     "title": "Gungi",
     "subtitle": "Finding Himself",
@@ -95490,6 +95756,44 @@
         },
         "image": {
           "front": "gungi--finding-himself-1129-legends-of-the-force---serialized-prestige-front.webp",
+          "back": null
+        }
+      },
+      "gungi--finding-himself-4-legends-of-the-force-weekly-play": {
+        "variantId": "gungi--finding-himself-4-legends-of-the-force-weekly-play",
+        "swuId": 38000,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 4,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gungi--finding-himself-4-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "gungi--finding-himself-24-legends-of-the-force-weekly-play": {
+        "variantId": "gungi--finding-himself-24-legends-of-the-force-weekly-play",
+        "swuId": 38100,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 24,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gungi--finding-himself-24-legends-of-the-force-weekly-play-front.webp",
           "back": null
         }
       }
@@ -96106,7 +96410,7 @@
   },
   "hk-87-assassin-droid": {
     "cardId": "hk-87-assassin-droid",
-    "updatedAt": "2025-06-06T19:01:34.198Z",
+    "updatedAt": "2025-07-21T20:09:08.371Z",
     "name": "HK-87 Assassin Droid",
     "title": "HK-87 Assassin Droid",
     "subtitle": null,
@@ -96186,6 +96490,44 @@
           "front": "hk-87-assassin-droid-975-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "hk-87-assassin-droid-19-legends-of-the-force-weekly-play": {
+        "variantId": "hk-87-assassin-droid-19-legends-of-the-force-weekly-play",
+        "swuId": 38075,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 19,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "hk-87-assassin-droid-19-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "hk-87-assassin-droid-39-legends-of-the-force-weekly-play": {
+        "variantId": "hk-87-assassin-droid-39-legends-of-the-force-weekly-play",
+        "swuId": 38175,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 39,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "hk-87-assassin-droid-39-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -96197,7 +96539,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "All damage dealt by HK-87 Assassin Droid's \"When Defeated\" ability is dealt simultaneously.\n",
     "text": "When Defeated: Deal 2 damage to each ground unit.",
     "front": {
       "horizontal": false
@@ -96658,7 +97000,7 @@
   },
   "infused-brawler": {
     "cardId": "infused-brawler",
-    "updatedAt": "2025-05-14T18:45:56.331Z",
+    "updatedAt": "2025-07-21T20:08:58.676Z",
     "name": "Infused Brawler",
     "title": "Infused Brawler",
     "subtitle": null,
@@ -96738,6 +97080,44 @@
           "front": "infused-brawler-896-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "infused-brawler-11-legends-of-the-force-weekly-play": {
+        "variantId": "infused-brawler-11-legends-of-the-force-weekly-play",
+        "swuId": 38035,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 11,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "infused-brawler-11-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "infused-brawler-31-legends-of-the-force-weekly-play": {
+        "variantId": "infused-brawler-31-legends-of-the-force-weekly-play",
+        "swuId": 38135,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 31,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "infused-brawler-31-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -96749,8 +97129,8 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
-    "text": "When Played: You may use the Force (lose your Force token). If you do, give 2 Experience tokens to this unit.\nWhen this unit completes an attack: Defeat an Experience token on it.",
+    "rules": "A unit must survive an attack to trigger its \"when this unit completes an attack\" abilities.\n",
+    "text": "When Played: You may use the Force . If you do, give 2 Experience tokens to this unit.\nWhen this unit completes an attack: Defeat an Experience token on it.",
     "front": {
       "horizontal": false
     },
@@ -97233,7 +97613,7 @@
   },
   "j-type-nubian-starship": {
     "cardId": "j-type-nubian-starship",
-    "updatedAt": "2025-05-14T18:45:26.419Z",
+    "updatedAt": "2025-07-21T20:09:04.786Z",
     "name": "J-Type Nubian Starship",
     "title": "J-Type Nubian Starship",
     "subtitle": null,
@@ -97313,6 +97693,44 @@
           "front": "j-type-nubian-starship-934-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "j-type-nubian-starship-16-legends-of-the-force-weekly-play": {
+        "variantId": "j-type-nubian-starship-16-legends-of-the-force-weekly-play",
+        "swuId": 38060,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 16,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "j-type-nubian-starship-16-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "j-type-nubian-starship-36-legends-of-the-force-weekly-play": {
+        "variantId": "j-type-nubian-starship-36-legends-of-the-force-weekly-play",
+        "swuId": 38160,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 36,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "j-type-nubian-starship-36-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -97346,7 +97764,7 @@
   },
   "jedi-consular": {
     "cardId": "jedi-consular",
-    "updatedAt": "2025-05-06T15:06:28.861Z",
+    "updatedAt": "2025-07-21T20:08:51.421Z",
     "name": "Jedi Consular",
     "title": "Jedi Consular",
     "subtitle": null,
@@ -97426,6 +97844,44 @@
           "front": "jedi-consular-834-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "jedi-consular-5-legends-of-the-force-weekly-play": {
+        "variantId": "jedi-consular-5-legends-of-the-force-weekly-play",
+        "swuId": 38005,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 5,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Facundo Moyano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "jedi-consular-5-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "jedi-consular-25-legends-of-the-force-weekly-play": {
+        "variantId": "jedi-consular-25-legends-of-the-force-weekly-play",
+        "swuId": 38105,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 25,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Facundo Moyano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "jedi-consular-25-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -97438,7 +97894,7 @@
     "deployBox": null,
     "epicAction": "",
     "rules": null,
-    "text": "Action [Exhaust, use the Force (lose your Force token)]: Play a unit from your hand. It costs 2 resources less.",
+    "text": "Action [Exhaust, use the Force ]: Play a unit from your hand. It costs 2 resources less.",
     "front": {
       "horizontal": false
     },
@@ -101286,7 +101742,7 @@
   },
   "loth-cat": {
     "cardId": "loth-cat",
-    "updatedAt": "2025-06-06T19:01:15.452Z",
+    "updatedAt": "2025-07-21T20:09:07.163Z",
     "name": "Loth-Cat",
     "title": "Loth-Cat",
     "subtitle": null,
@@ -101364,6 +101820,44 @@
         },
         "image": {
           "front": "loth-cat-947-legends-of-the-force---hyperspace-foil-front.webp",
+          "back": null
+        }
+      },
+      "loth-cat-18-legends-of-the-force-weekly-play": {
+        "variantId": "loth-cat-18-legends-of-the-force-weekly-play",
+        "swuId": 38070,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 18,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "loth-cat-18-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "loth-cat-38-legends-of-the-force-weekly-play": {
+        "variantId": "loth-cat-38-legends-of-the-force-weekly-play",
+        "swuId": 38170,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 38,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "loth-cat-38-legends-of-the-force-weekly-play-front.webp",
           "back": null
         }
       }
@@ -101786,7 +102280,7 @@
   },
   "luthen-rael--masquerading-antiquarian": {
     "cardId": "luthen-rael--masquerading-antiquarian",
-    "updatedAt": "2025-04-30T18:56:06.663Z",
+    "updatedAt": "2025-07-21T20:08:46.640Z",
     "name": "Luthen Rael, Masquerading Antiquarian",
     "title": "Luthen Rael",
     "subtitle": "Masquerading Antiquarian",
@@ -101866,6 +102360,44 @@
           "front": "luthen-rael--masquerading-antiquarian-808-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "luthen-rael--masquerading-antiquarian-1-legends-of-the-force-weekly-play": {
+        "variantId": "luthen-rael--masquerading-antiquarian-1-legends-of-the-force-weekly-play",
+        "swuId": 37985,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 1,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luthen-rael--masquerading-antiquarian-1-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "luthen-rael--masquerading-antiquarian-21-legends-of-the-force-weekly-play": {
+        "variantId": "luthen-rael--masquerading-antiquarian-21-legends-of-the-force-weekly-play",
+        "swuId": 38085,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 21,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luthen-rael--masquerading-antiquarian-21-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -101877,8 +102409,8 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
-    "text": "On Attack: Search the top 5 cards of your deck for an Item upgrade, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "text": "On Attack: Search the top 5 cards of your deck for an Item upgrade, reveal it, and draw it. ",
     "front": {
       "horizontal": false
     },
@@ -101896,7 +102428,7 @@
   },
   "mace-windu--leaping-into-action": {
     "cardId": "mace-windu--leaping-into-action",
-    "updatedAt": "2025-06-26T17:00:13.829Z",
+    "updatedAt": "2025-07-21T20:08:57.490Z",
     "name": "Mace Windu, Leaping into Action",
     "title": "Mace Windu",
     "subtitle": "Leaping into Action",
@@ -102034,6 +102566,44 @@
           "back": null
         }
       },
+      "mace-windu--leaping-into-action-10-legends-of-the-force-weekly-play": {
+        "variantId": "mace-windu--leaping-into-action-10-legends-of-the-force-weekly-play",
+        "swuId": 38030,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 10,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kevin Libranda",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mace-windu--leaping-into-action-10-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "mace-windu--leaping-into-action-30-legends-of-the-force-weekly-play": {
+        "variantId": "mace-windu--leaping-into-action-30-legends-of-the-force-weekly-play",
+        "swuId": 38130,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 30,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kevin Libranda",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mace-windu--leaping-into-action-30-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "mace-windu--leaping-into-action-69-2025-promo": {
         "variantId": "mace-windu--leaping-into-action-69-2025-promo",
         "swuId": 38420,
@@ -102063,7 +102633,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "If the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
     "text": "Overwhelm \nWhen Played: You may use the Force . If you do, deal 4 damage to a unit.",
     "front": {
       "horizontal": false
@@ -102201,7 +102771,7 @@
   },
   "malakili--loving-rancor-keeper": {
     "cardId": "malakili--loving-rancor-keeper",
-    "updatedAt": "2025-06-06T19:00:20.469Z",
+    "updatedAt": "2025-07-21T20:08:53.857Z",
     "name": "Malakili, Loving Rancor Keeper",
     "title": "Malakili",
     "subtitle": "Loving Rancor Keeper",
@@ -102281,6 +102851,44 @@
           "front": "malakili--loving-rancor-keeper-848-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "malakili--loving-rancor-keeper-7-legends-of-the-force-weekly-play": {
+        "variantId": "malakili--loving-rancor-keeper-7-legends-of-the-force-weekly-play",
+        "swuId": 38015,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 7,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "malakili--loving-rancor-keeper-7-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "malakili--loving-rancor-keeper-27-legends-of-the-force-weekly-play": {
+        "variantId": "malakili--loving-rancor-keeper-27-legends-of-the-force-weekly-play",
+        "swuId": 38115,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 27,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Brian Kesinger",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "malakili--loving-rancor-keeper-27-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -102292,7 +102900,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "If an ability preceding \"if you do\" would deal damage to a friendly unit, but Malakili prevents that damage from being dealt to that unit, the effect following \"if you do\" still resolves.\n",
     "text": "The first Creature unit you play each phase costs 1 resource less.\nIf a friendly Creature unit would deal damage to a friendly unit, prevent that damage.",
     "front": {
       "horizontal": false
@@ -102814,7 +103422,7 @@
   },
   "mind-trick": {
     "cardId": "mind-trick",
-    "updatedAt": "2025-05-21T17:47:48.860Z",
+    "updatedAt": "2025-07-21T20:09:05.969Z",
     "name": "Mind Trick",
     "title": "Mind Trick",
     "subtitle": null,
@@ -102894,6 +103502,44 @@
           "front": "mind-trick-942-legends-of-the-force---hyperspace-foil-front.webp",
           "back": null
         }
+      },
+      "mind-trick-17-legends-of-the-force-weekly-play": {
+        "variantId": "mind-trick-17-legends-of-the-force-weekly-play",
+        "swuId": 38065,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 17,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mind-trick-17-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "mind-trick-37-legends-of-the-force-weekly-play": {
+        "variantId": "mind-trick-37-legends-of-the-force-weekly-play",
+        "swuId": 38165,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 37,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mind-trick-37-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Event",
@@ -102905,7 +103551,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n",
     "text": "Exhaust any number of units with a combined power of 4 or less. If you control a Force unit, those units lose all abilities and can't gain abilities for this phase.",
     "front": {
       "horizontal": false
@@ -108452,7 +109098,7 @@
   },
   "rey--with-palpatine-s-power": {
     "cardId": "rey--with-palpatine-s-power",
-    "updatedAt": "2025-06-26T17:00:16.423Z",
+    "updatedAt": "2025-07-21T20:08:56.287Z",
     "name": "Rey, With Palpatine's Power",
     "title": "Rey",
     "subtitle": "With Palpatine's Power",
@@ -108533,6 +109179,44 @@
           "back": null
         }
       },
+      "rey--with-palpatine-s-power-9-legends-of-the-force-weekly-play": {
+        "variantId": "rey--with-palpatine-s-power-9-legends-of-the-force-weekly-play",
+        "swuId": 38025,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 9,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Benjamin Paulus van Onzen",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rey--with-palpatine-s-power-9-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "rey--with-palpatine-s-power-29-legends-of-the-force-weekly-play": {
+        "variantId": "rey--with-palpatine-s-power-29-legends-of-the-force-weekly-play",
+        "swuId": 38125,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 29,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Benjamin Paulus van Onzen",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rey--with-palpatine-s-power-29-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "rey--with-palpatine-s-power-71-2025-promo": {
         "variantId": "rey--with-palpatine-s-power-71-2025-promo",
         "swuId": 38430,
@@ -108562,7 +109246,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "If there are any other triggers waiting to resolve when you draw Rey, you must announce to your opponents that you have drawn and triggered Rey. Once drawn, Rey must be kept separate from the rest of the cards in your hand until revealed.\n",
     "text": "When you draw this card during the action phase: If you control a Aggression leader or base, you may reveal this card from your hand. If you do, deal 2 damage to a unit and 2 damage to a base.",
     "front": {
       "horizontal": false
@@ -109833,7 +110517,7 @@
   },
   "shin-hati--overeager-apprentice": {
     "cardId": "shin-hati--overeager-apprentice",
-    "updatedAt": "2025-06-26T17:00:14.965Z",
+    "updatedAt": "2025-07-21T20:09:01.128Z",
     "name": "Shin Hati, Overeager Apprentice",
     "title": "Shin Hati",
     "subtitle": "Overeager Apprentice",
@@ -109971,6 +110655,44 @@
           "back": null
         }
       },
+      "shin-hati--overeager-apprentice-13-legends-of-the-force-weekly-play": {
+        "variantId": "shin-hati--overeager-apprentice-13-legends-of-the-force-weekly-play",
+        "swuId": 38045,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 13,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "shin-hati--overeager-apprentice-13-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "shin-hati--overeager-apprentice-33-legends-of-the-force-weekly-play": {
+        "variantId": "shin-hati--overeager-apprentice-33-legends-of-the-force-weekly-play",
+        "swuId": 38145,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 33,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "shin-hati--overeager-apprentice-33-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "shin-hati--overeager-apprentice-70-2025-promo": {
         "variantId": "shin-hati--overeager-apprentice-70-2025-promo",
         "swuId": 38425,
@@ -110000,7 +110722,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
     "text": "Hidden \nShielded ",
     "front": {
       "horizontal": false
@@ -115610,7 +116332,7 @@
   },
   "yoda--my-ally-is-the-force": {
     "cardId": "yoda--my-ally-is-the-force",
-    "updatedAt": "2025-06-06T19:00:15.009Z",
+    "updatedAt": "2025-07-21T20:08:52.643Z",
     "name": "Yoda, My Ally is the Force",
     "title": "Yoda",
     "subtitle": "My Ally is the Force",
@@ -115747,6 +116469,44 @@
           "front": "yoda--my-ally-is-the-force-1149-legends-of-the-force---serialized-prestige-front.webp",
           "back": null
         }
+      },
+      "yoda--my-ally-is-the-force-6-legends-of-the-force-weekly-play": {
+        "variantId": "yoda--my-ally-is-the-force-6-legends-of-the-force-weekly-play",
+        "swuId": 38010,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 6,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yoda--my-ally-is-the-force-6-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "yoda--my-ally-is-the-force-26-legends-of-the-force-weekly-play": {
+        "variantId": "yoda--my-ally-is-the-force-26-legends-of-the-force-weekly-play",
+        "swuId": 38110,
+        "set": "lofw",
+        "fullSetName": "Legends of the Force Weekly Play",
+        "cardNo": 26,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yoda--my-ally-is-the-force-26-legends-of-the-force-weekly-play-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -115758,7 +116518,7 @@
     "upgradePower": null,
     "deployBox": null,
     "epicAction": "",
-    "rules": null,
+    "rules": "Using the Force for Yoda's \"When Played\" ability triggers his second ability.\n",
     "text": "When Played: You may use the Force. If you do, heal 5 damage from a base.\nWhen you use the Force: You may deal damage to a unit equal to twice the number of units you control.",
     "front": {
       "horizontal": false
@@ -116442,6 +117202,2799 @@
       "Fringe",
       "Vehicle",
       "Fighter"
+    ]
+  },
+  "admiral-ozzel--as-clumsy-as-he-is-stupid": {
+    "cardId": "admiral-ozzel--as-clumsy-as-he-is-stupid",
+    "updatedAt": "2025-07-16T15:00:49.674Z",
+    "name": "Admiral Ozzel, As Clumsy as He Is Stupid",
+    "title": "Admiral Ozzel",
+    "subtitle": "As Clumsy as He Is Stupid",
+    "variants": {
+      "admiral-ozzel--as-clumsy-as-he-is-stupid-85-intro-battle--hoth": {
+        "variantId": "admiral-ozzel--as-clumsy-as-he-is-stupid-85-intro-battle--hoth",
+        "swuId": 39255,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 85,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "admiral-ozzel--as-clumsy-as-he-is-stupid-85-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 1,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Defeated: Each opponent discards a card from their hand.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Official"
+    ]
+  },
+  "admiral-piett--in-command-now": {
+    "cardId": "admiral-piett--in-command-now",
+    "updatedAt": "2025-07-16T15:00:26.204Z",
+    "name": "Admiral Piett, In Command Now",
+    "title": "Admiral Piett",
+    "subtitle": "In Command Now",
+    "variants": {
+      "admiral-piett--in-command-now-65-intro-battle--hoth": {
+        "variantId": "admiral-piett--in-command-now-65-intro-battle--hoth",
+        "swuId": 39155,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 65,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Nash",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "admiral-piett--in-command-now-65-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 5,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "On Attack: If you control a Aggression unit, draw a card.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Official"
+    ]
+  },
+  "avenger--hunting-the-rebels": {
+    "cardId": "avenger--hunting-the-rebels",
+    "updatedAt": "2025-07-16T15:00:34.512Z",
+    "name": "Avenger, Hunting the Rebels",
+    "title": "Avenger",
+    "subtitle": "Hunting the Rebels",
+    "variants": {
+      "avenger--hunting-the-rebels-72-intro-battle--hoth": {
+        "variantId": "avenger--hunting-the-rebels-72-intro-battle--hoth",
+        "swuId": 39190,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 72,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "EJ Dela Cruz",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "avenger--hunting-the-rebels-72-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 8,
+    "hp": 6,
+    "power": 8,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: Deal 1 damage to each other unit (including friendly units).",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Capital Ship"
+    ]
+  },
+  "blizzard-force-at-st": {
+    "cardId": "blizzard-force-at-st",
+    "updatedAt": "2025-07-16T15:01:11.287Z",
+    "name": "Blizzard Force AT-ST",
+    "title": "Blizzard Force AT-ST",
+    "subtitle": null,
+    "variants": {
+      "blizzard-force-at-st-103-intro-battle--hoth": {
+        "variantId": "blizzard-force-at-st-103-intro-battle--hoth",
+        "swuId": 39345,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 103,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "blizzard-force-at-st-103-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 4,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [
+      "Sentinel"
+    ],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Walker"
+    ]
+  },
+  "blizzard-one--veers-at-the-helm": {
+    "cardId": "blizzard-one--veers-at-the-helm",
+    "updatedAt": "2025-07-16T15:01:06.500Z",
+    "name": "Blizzard One, Veers at the Helm",
+    "title": "Blizzard One",
+    "subtitle": "Veers at the Helm",
+    "variants": {
+      "blizzard-one--veers-at-the-helm-99-intro-battle--hoth": {
+        "variantId": "blizzard-one--veers-at-the-helm-99-intro-battle--hoth",
+        "swuId": 39325,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 99,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "blizzard-one--veers-at-the-helm-99-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 7,
+    "hp": 7,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: You may defeat a non-leader ground unit with 3 or less remaining HP.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Walker"
+    ]
+  },
+  "bright-hope--narrow-escape": {
+    "cardId": "bright-hope--narrow-escape",
+    "updatedAt": "2025-07-16T14:59:39.463Z",
+    "name": "Bright Hope, Narrow Escape",
+    "title": "Bright Hope",
+    "subtitle": "Narrow Escape",
+    "variants": {
+      "bright-hope--narrow-escape-26-intro-battle--hoth": {
+        "variantId": "bright-hope--narrow-escape-26-intro-battle--hoth",
+        "swuId": 38960,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 26,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ignacio Bazan Lazcano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "bright-hope--narrow-escape-26-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": 6,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [
+      "Sentinel"
+    ],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "c-3po--oh-dear--oh-dear": {
+    "cardId": "c-3po--oh-dear--oh-dear",
+    "updatedAt": "2025-07-16T14:59:57.406Z",
+    "name": "C-3PO, Oh Dear, Oh Dear",
+    "title": "C-3PO",
+    "subtitle": "Oh Dear, Oh Dear",
+    "variants": {
+      "c-3po--oh-dear--oh-dear-41-intro-battle--hoth": {
+        "variantId": "c-3po--oh-dear--oh-dear-41-intro-battle--hoth",
+        "swuId": 39035,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 41,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "c-3po--oh-dear--oh-dear-41-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 4,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: If you control a Cunning unit, draw a card.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Droid"
+    ]
+  },
+  "chewbacca--rrruuuurrr": {
+    "cardId": "chewbacca--rrruuuurrr",
+    "updatedAt": "2025-07-16T15:00:03.455Z",
+    "name": "Chewbacca, Rrruuuurrr",
+    "title": "Chewbacca",
+    "subtitle": "Rrruuuurrr",
+    "variants": {
+      "chewbacca--rrruuuurrr-46-intro-battle--hoth": {
+        "variantId": "chewbacca--rrruuuurrr-46-intro-battle--hoth",
+        "swuId": 39060,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 46,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chewbacca--rrruuuurrr-46-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 6,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [
+      "Sentinel"
+    ],
+    "traits": [
+      "Rebel",
+      "Wookiee"
+    ]
+  },
+  "darth-vader--don-t-fail-me-again": {
+    "cardId": "darth-vader--don-t-fail-me-again",
+    "updatedAt": "2025-07-16T15:00:11.894Z",
+    "name": "Darth Vader, Don't Fail Me Again",
+    "title": "Darth Vader",
+    "subtitle": "Don't Fail Me Again",
+    "variants": {
+      "darth-vader--don-t-fail-me-again-53-intro-battle--hoth": {
+        "variantId": "darth-vader--don-t-fail-me-again-53-intro-battle--hoth",
+        "swuId": 39095,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 53,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "darth-vader--don-t-fail-me-again-53-intro-battle--hoth-front.webp",
+          "back": "darth-vader--don-t-fail-me-again-53-intro-battle--hoth-back.webp"
+        }
+      }
+    },
+    "type": "Leader",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": 8,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": "On Attack: Deal 2 damage to a base.",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
+    "rules": null,
+    "text": "Action [1 resource, Exhaust]: Deal 1 damage to a base.",
+    "front": {
+      "horizontal": true
+    },
+    "back": {
+      "horizontal": false,
+      "type": "Leader Unit"
+    },
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Force",
+      "Imperial",
+      "Sith"
+    ]
+  },
+  "death-squadron-star-destroyer": {
+    "cardId": "death-squadron-star-destroyer",
+    "updatedAt": "2025-07-16T15:01:05.301Z",
+    "name": "Death Squadron Star Destroyer",
+    "title": "Death Squadron Star Destroyer",
+    "subtitle": null,
+    "variants": {
+      "death-squadron-star-destroyer-98-intro-battle--hoth": {
+        "variantId": "death-squadron-star-destroyer-98-intro-battle--hoth",
+        "swuId": 39320,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 98,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "death-squadron-star-destroyer-98-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 7,
+    "hp": 6,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [
+      "Sentinel"
+    ],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Capital Ship"
+    ]
+  },
+  "e-web-gunner": {
+    "cardId": "e-web-gunner",
+    "updatedAt": "2025-07-16T15:00:47.315Z",
+    "name": "E-Web Gunner",
+    "title": "E-Web Gunner",
+    "subtitle": null,
+    "variants": {
+      "e-web-gunner-83-intro-battle--hoth": {
+        "variantId": "e-web-gunner-83-intro-battle--hoth",
+        "swuId": 39245,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 83,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "e-web-gunner-83-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 4,
+    "power": 0,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Raid 4 (This unit gets +4/+0 while attacking.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [
+      "Raid"
+    ],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "echo-caverns": {
+    "cardId": "echo-caverns",
+    "updatedAt": "2025-07-16T14:59:09.982Z",
+    "name": "Echo Caverns",
+    "title": "Echo Caverns",
+    "subtitle": null,
+    "variants": {
+      "echo-caverns-2-intro-battle--hoth": {
+        "variantId": "echo-caverns-2-intro-battle--hoth",
+        "swuId": 38840,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "EJ dela Cruz",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "echo-caverns-2-intro-battle--hoth-front.webp",
+          "back": "echo-caverns-2-intro-battle--hoth-back.webp"
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Special",
+    "cost": null,
+    "hp": 20,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": {
+      "horizontal": true,
+      "type": "Base"
+    },
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "echo-coordinator": {
+    "cardId": "echo-coordinator",
+    "updatedAt": "2025-07-16T15:00:04.699Z",
+    "name": "Echo Coordinator",
+    "title": "Echo Coordinator",
+    "subtitle": null,
+    "variants": {
+      "echo-coordinator-47-intro-battle--hoth": {
+        "variantId": "echo-coordinator-47-intro-battle--hoth",
+        "swuId": 39065,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 47,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Paulus van Onzen",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "echo-coordinator-47-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 5,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel"
+    ]
+  },
+  "evacuation-escort": {
+    "cardId": "evacuation-escort",
+    "updatedAt": "2025-07-16T15:00:01.104Z",
+    "name": "Evacuation Escort",
+    "title": "Evacuation Escort",
+    "subtitle": null,
+    "variants": {
+      "evacuation-escort-44-intro-battle--hoth": {
+        "variantId": "evacuation-escort-44-intro-battle--hoth",
+        "swuId": 39050,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 44,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Pandu Mahardika",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "evacuation-escort-44-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 2,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "first-legion-trooper": {
+    "cardId": "first-legion-trooper",
+    "updatedAt": "2025-07-16T15:01:08.939Z",
+    "name": "First Legion Trooper",
+    "title": "First Legion Trooper",
+    "subtitle": null,
+    "variants": {
+      "first-legion-trooper-101-intro-battle--hoth": {
+        "variantId": "first-legion-trooper-101-intro-battle--hoth",
+        "swuId": 39335,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 101,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Monika Pałosz",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "first-legion-trooper-101-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 4,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "forward-command-post": {
+    "cardId": "forward-command-post",
+    "updatedAt": "2025-07-16T15:00:13.074Z",
+    "name": "Forward Command Post",
+    "title": "Forward Command Post",
+    "subtitle": null,
+    "variants": {
+      "forward-command-post-54-intro-battle--hoth": {
+        "variantId": "forward-command-post-54-intro-battle--hoth",
+        "swuId": 39100,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 54,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "forward-command-post-54-intro-battle--hoth-front.webp",
+          "back": "forward-command-post-54-intro-battle--hoth-back.webp"
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Special",
+    "cost": null,
+    "hp": 20,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": {
+      "horizontal": true,
+      "type": "Base"
+    },
+    "arenas": [],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "general-rieekan--stalwart-tactician": {
+    "cardId": "general-rieekan--stalwart-tactician",
+    "updatedAt": "2025-07-16T14:59:51.384Z",
+    "name": "General Rieekan, Stalwart Tactician",
+    "title": "General Rieekan",
+    "subtitle": "Stalwart Tactician",
+    "variants": {
+      "general-rieekan--stalwart-tactician-36-intro-battle--hoth": {
+        "variantId": "general-rieekan--stalwart-tactician-36-intro-battle--hoth",
+        "swuId": 39010,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 36,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-rieekan--stalwart-tactician-36-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 6,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Action [Exhaust]: Attack with another Heroism unit. It gets +2/+0 for this attack.  (You can only attack with a ready friendly unit.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Official"
+    ]
+  },
+  "general-veers--leading-the-assault": {
+    "cardId": "general-veers--leading-the-assault",
+    "updatedAt": "2025-07-16T15:00:53.193Z",
+    "name": "General Veers, Leading the Assault",
+    "title": "General Veers",
+    "subtitle": "Leading the Assault",
+    "variants": {
+      "general-veers--leading-the-assault-88-intro-battle--hoth": {
+        "variantId": "general-veers--leading-the-assault-88-intro-battle--hoth",
+        "swuId": 39270,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 88,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-veers--leading-the-assault-88-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 6,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: If you control a Vigilance unit, deal 2 damage to an enemy base and heal 2 damage from your base.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Official"
+    ]
+  },
+  "go-for-the-legs": {
+    "cardId": "go-for-the-legs",
+    "updatedAt": "2025-07-16T15:00:02.300Z",
+    "name": "Go for the Legs",
+    "title": "Go for the Legs",
+    "subtitle": null,
+    "variants": {
+      "go-for-the-legs-45-intro-battle--hoth": {
+        "variantId": "go-for-the-legs-45-intro-battle--hoth",
+        "swuId": 39055,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 45,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marko Fiedler",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "go-for-the-legs-45-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 1,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Exhaust an enemy ground unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "gr-75-medium-transport": {
+    "cardId": "gr-75-medium-transport",
+    "updatedAt": "2025-07-16T14:59:56.203Z",
+    "name": "GR-75 Medium Transport",
+    "title": "GR-75 Medium Transport",
+    "subtitle": null,
+    "variants": {
+      "gr-75-medium-transport-40-intro-battle--hoth": {
+        "variantId": "gr-75-medium-transport-40-intro-battle--hoth",
+        "swuId": 39030,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 40,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "French Carlomagno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gr-75-medium-transport-40-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 4,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "ground-assault-at-at": {
+    "cardId": "ground-assault-at-at",
+    "updatedAt": "2025-07-16T15:00:28.580Z",
+    "name": "Ground Assault AT-AT",
+    "title": "Ground Assault AT-AT",
+    "subtitle": null,
+    "variants": {
+      "ground-assault-at-at-67-intro-battle--hoth": {
+        "variantId": "ground-assault-at-at-67-intro-battle--hoth",
+        "swuId": 39165,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 67,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ground-assault-at-at-67-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": 7,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Walker"
+    ]
+  },
+  "han-solo--scruffy-looking-nerf-herder": {
+    "cardId": "han-solo--scruffy-looking-nerf-herder",
+    "updatedAt": "2025-07-16T14:59:58.728Z",
+    "name": "Han Solo, Scruffy-Looking Nerf Herder",
+    "title": "Han Solo",
+    "subtitle": "Scruffy-Looking Nerf Herder",
+    "variants": {
+      "han-solo--scruffy-looking-nerf-herder-42-intro-battle--hoth": {
+        "variantId": "han-solo--scruffy-looking-nerf-herder-42-intro-battle--hoth",
+        "swuId": 39040,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 42,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "han-solo--scruffy-looking-nerf-herder-42-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": 6,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)\nOn Attack:The defender gets -2/-0 for this attack.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [
+      "Raid"
+    ],
+    "traits": [
+      "Rebel"
+    ]
+  },
+  "hoth-lieutenant": {
+    "cardId": "hoth-lieutenant",
+    "updatedAt": "2025-07-16T15:00:57.875Z",
+    "name": "Hoth Lieutenant",
+    "title": "Hoth Lieutenant",
+    "subtitle": null,
+    "variants": {
+      "hoth-lieutenant-92-intro-battle--hoth": {
+        "variantId": "hoth-lieutenant-92-intro-battle--hoth",
+        "swuId": 39290,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 92,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "French Carlomagno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "hoth-lieutenant-92-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 4,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: You may attack with another unit. It gets +2/+0 for this attack.  (You can only attack with a ready friendly unit.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "hoth-trooper": {
+    "cardId": "hoth-trooper",
+    "updatedAt": "2025-07-16T15:00:05.885Z",
+    "name": "Hoth Trooper",
+    "title": "Hoth Trooper",
+    "subtitle": null,
+    "variants": {
+      "hoth-trooper-48-intro-battle--hoth": {
+        "variantId": "hoth-trooper-48-intro-battle--hoth",
+        "swuId": 39070,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 48,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "hoth-trooper-48-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 3,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Trooper"
+    ]
+  },
+  "i-ll-cover-for-you": {
+    "cardId": "i-ll-cover-for-you",
+    "updatedAt": "2025-07-16T14:59:55.007Z",
+    "name": "I'll Cover For You",
+    "title": "I'll Cover For You",
+    "subtitle": null,
+    "variants": {
+      "i-ll-cover-for-you-39-intro-battle--hoth": {
+        "variantId": "i-ll-cover-for-you-39-intro-battle--hoth",
+        "swuId": 39025,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 39,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Kursad Karatas",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "i-ll-cover-for-you-39-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Deal 1 damage to an enemy unit and 1 damage to another enemy unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "i-ve-found-them": {
+    "cardId": "i-ve-found-them",
+    "updatedAt": "2025-07-16T14:59:38.289Z",
+    "name": "I've Found Them",
+    "title": "I've Found Them",
+    "subtitle": null,
+    "variants": {
+      "i-ve-found-them-25-intro-battle--hoth": {
+        "variantId": "i-ve-found-them-25-intro-battle--hoth",
+        "swuId": 38955,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 25,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ario Murti",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "i-ve-found-them-25-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Reveal the top 3 cards of your deck. Draw a unit revealed this way, then discard the other revealed cards.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Command"
+    ],
+    "keywords": [],
+    "traits": [
+      "Gambit"
+    ]
+  },
+  "i-want-proof--not-leads": {
+    "cardId": "i-want-proof--not-leads",
+    "updatedAt": "2025-07-16T15:01:10.105Z",
+    "name": "I Want Proof, Not Leads",
+    "title": "I Want Proof, Not Leads",
+    "subtitle": null,
+    "variants": {
+      "i-want-proof--not-leads-102-intro-battle--hoth": {
+        "variantId": "i-want-proof--not-leads-102-intro-battle--hoth",
+        "swuId": 39340,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 102,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "i-want-proof--not-leads-102-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Draw 2 cards, then discard a card from your hand.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Plan"
+    ]
+  },
+  "imperial-deck-officer": {
+    "cardId": "imperial-deck-officer",
+    "updatedAt": "2025-07-16T15:01:07.685Z",
+    "name": "Imperial Deck Officer",
+    "title": "Imperial Deck Officer",
+    "subtitle": null,
+    "variants": {
+      "imperial-deck-officer-100-intro-battle--hoth": {
+        "variantId": "imperial-deck-officer-100-intro-battle--hoth",
+        "swuId": 39330,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 100,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "imperial-deck-officer-100-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 4,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Action [Exhaust]: Heal 2 damage from a Villainy unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial"
+    ]
+  },
+  "improvised-detonation": {
+    "cardId": "improvised-detonation",
+    "updatedAt": "2025-07-16T14:59:44.172Z",
+    "name": "Improvised Detonation",
+    "title": "Improvised Detonation",
+    "subtitle": null,
+    "variants": {
+      "improvised-detonation-30-intro-battle--hoth": {
+        "variantId": "improvised-detonation-30-intro-battle--hoth",
+        "swuId": 38980,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 30,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Derek Laufman",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "improvised-detonation-30-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Attack with a unit. It gets +2/+0 for this attack. (You can only attack with a ready friendly unit.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "ion-cannon": {
+    "cardId": "ion-cannon",
+    "updatedAt": "2025-07-16T14:59:40.627Z",
+    "name": "Ion Cannon",
+    "title": "Ion Cannon",
+    "subtitle": null,
+    "variants": {
+      "ion-cannon-27-intro-battle--hoth": {
+        "variantId": "ion-cannon-27-intro-battle--hoth",
+        "swuId": 38965,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 27,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marko Fiedler",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ion-cannon-27-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 5,
+    "power": 0,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Action [Exhaust]: Deal 3 damage to a space unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Weapon"
+    ]
+  },
+  "lambda-shuttle": {
+    "cardId": "lambda-shuttle",
+    "updatedAt": "2025-07-16T15:00:55.518Z",
+    "name": "Lambda Shuttle",
+    "title": "Lambda Shuttle",
+    "subtitle": null,
+    "variants": {
+      "lambda-shuttle-90-intro-battle--hoth": {
+        "variantId": "lambda-shuttle-90-intro-battle--hoth",
+        "swuId": 39280,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 90,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Guillaume Ospital",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "lambda-shuttle-90-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 5,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [
+      "Restore"
+    ],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "leia-organa--get-to-your-transports-": {
+    "cardId": "leia-organa--get-to-your-transports-",
+    "updatedAt": "2025-07-16T14:59:08.830Z",
+    "name": "Leia Organa, Get to Your Transports!",
+    "title": "Leia Organa",
+    "subtitle": "Get to Your Transports!",
+    "variants": {
+      "leia-organa--get-to-your-transports--1-intro-battle--hoth": {
+        "variantId": "leia-organa--get-to-your-transports--1-intro-battle--hoth",
+        "swuId": 38835,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 1,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "leia-organa--get-to-your-transports--1-intro-battle--hoth-front.webp",
+          "back": "leia-organa--get-to-your-transports--1-intro-battle--hoth-back.webp"
+        }
+      }
+    },
+    "type": "Leader",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 7,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": "On Attack: Heal 1 damage from a friendly unit and 1 damage from another friendly unit.",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader. (Flip her, ready her, and move her to the ground arena.)",
+    "rules": null,
+    "text": "Action [1 resource, Exhaust]: Heal 1 damage from a friendly unit.",
+    "front": {
+      "horizontal": true
+    },
+    "back": {
+      "horizontal": false,
+      "type": "Leader Unit"
+    },
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Official"
+    ]
+  },
+  "luke-skywalker--do-you-read-me-": {
+    "cardId": "luke-skywalker--do-you-read-me-",
+    "updatedAt": "2025-07-16T14:59:32.353Z",
+    "name": "Luke Skywalker, Do You Read Me?",
+    "title": "Luke Skywalker",
+    "subtitle": "Do You Read Me?",
+    "variants": {
+      "luke-skywalker--do-you-read-me--20-intro-battle--hoth": {
+        "variantId": "luke-skywalker--do-you-read-me--20-intro-battle--hoth",
+        "swuId": 38930,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 20,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--do-you-read-me--20-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 7,
+    "hp": 6,
+    "power": 6,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)\nWhen Played: You may deal 3 damage to a ground unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [
+      "Restore"
+    ],
+    "traits": [
+      "Force",
+      "Rebel"
+    ]
+  },
+  "millennium-falcon--bucket-of-bolts": {
+    "cardId": "millennium-falcon--bucket-of-bolts",
+    "updatedAt": "2025-07-16T14:59:45.376Z",
+    "name": "Millennium Falcon, Bucket of Bolts",
+    "title": "Millennium Falcon",
+    "subtitle": "Bucket of Bolts",
+    "variants": {
+      "millennium-falcon--bucket-of-bolts-31-intro-battle--hoth": {
+        "variantId": "millennium-falcon--bucket-of-bolts-31-intro-battle--hoth",
+        "swuId": 38985,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 31,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "millennium-falcon--bucket-of-bolts-31-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 7,
+    "hp": 6,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: If your base has more damage on it than an enemy base, ready this unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "r2-d2--known-to-make-mistakes": {
+    "cardId": "r2-d2--known-to-make-mistakes",
+    "updatedAt": "2025-07-16T15:00:07.067Z",
+    "name": "R2-D2, Known to Make Mistakes",
+    "title": "R2-D2",
+    "subtitle": "Known to Make Mistakes",
+    "variants": {
+      "r2-d2--known-to-make-mistakes-49-intro-battle--hoth": {
+        "variantId": "r2-d2--known-to-make-mistakes-49-intro-battle--hoth",
+        "swuId": 39075,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 49,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "r2-d2--known-to-make-mistakes-49-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 4,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "On Attack: If you control a Command unit, exhaust an enemy ground unit that costs 4 or less.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Droid"
+    ]
+  },
+  "rampaging-wampa": {
+    "cardId": "rampaging-wampa",
+    "updatedAt": "2025-07-16T15:00:39.128Z",
+    "name": "Rampaging Wampa",
+    "title": "Rampaging Wampa",
+    "subtitle": null,
+    "variants": {
+      "rampaging-wampa-76-intro-battle--hoth": {
+        "variantId": "rampaging-wampa-76-intro-battle--hoth",
+        "swuId": 39210,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 76,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rampaging-wampa-76-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 5,
+    "hp": 3,
+    "power": 6,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Creature"
+    ]
+  },
+  "rebellion-y-wing": {
+    "cardId": "rebellion-y-wing",
+    "updatedAt": "2025-07-16T14:59:46.580Z",
+    "name": "Rebellion Y-Wing",
+    "title": "Rebellion Y-Wing",
+    "subtitle": null,
+    "variants": {
+      "rebellion-y-wing-32-intro-battle--hoth": {
+        "variantId": "rebellion-y-wing-32-intro-battle--hoth",
+        "swuId": 38990,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 32,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Shane Molina",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rebellion-y-wing-32-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 3,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "On Attack: Deal 1 damage to a base.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "recovery": {
+    "cardId": "recovery",
+    "updatedAt": "2025-07-16T14:59:24.168Z",
+    "name": "Recovery",
+    "title": "Recovery",
+    "subtitle": null,
+    "variants": {
+      "recovery-13-intro-battle--hoth": {
+        "variantId": "recovery-13-intro-battle--hoth",
+        "swuId": 38895,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 13,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Derek Laufman",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "recovery-13-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Heal 5 damage from a unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Plan"
+    ]
+  },
+  "rogue-squadron-speeder": {
+    "cardId": "rogue-squadron-speeder",
+    "updatedAt": "2025-07-16T14:59:48.964Z",
+    "name": "Rogue Squadron Speeder",
+    "title": "Rogue Squadron Speeder",
+    "subtitle": null,
+    "variants": {
+      "rogue-squadron-speeder-34-intro-battle--hoth": {
+        "variantId": "rogue-squadron-speeder-34-intro-battle--hoth",
+        "swuId": 39000,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 34,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rogue-squadron-speeder-34-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": 5,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [
+      "Raid"
+    ],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Speeder"
+    ]
+  },
+  "scouting-tie-fighter": {
+    "cardId": "scouting-tie-fighter",
+    "updatedAt": "2025-07-16T15:01:04.118Z",
+    "name": "Scouting TIE Fighter",
+    "title": "Scouting TIE Fighter",
+    "subtitle": null,
+    "variants": {
+      "scouting-tie-fighter-97-intro-battle--hoth": {
+        "variantId": "scouting-tie-fighter-97-intro-battle--hoth",
+        "swuId": 39315,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 97,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Aaron Dhanda",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "scouting-tie-fighter-97-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 2,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "snowtrooper-vanguard": {
+    "cardId": "snowtrooper-vanguard",
+    "updatedAt": "2025-07-16T15:01:02.717Z",
+    "name": "Snowtrooper Vanguard",
+    "title": "Snowtrooper Vanguard",
+    "subtitle": null,
+    "variants": {
+      "snowtrooper-vanguard-96-intro-battle--hoth": {
+        "variantId": "snowtrooper-vanguard-96-intro-battle--hoth",
+        "swuId": 39310,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 96,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ivan Fiorelli",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "snowtrooper-vanguard-96-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 3,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "snowtrooper": {
+    "cardId": "snowtrooper",
+    "updatedAt": "2025-07-16T15:00:52.009Z",
+    "name": "Snowtrooper",
+    "title": "Snowtrooper",
+    "subtitle": null,
+    "variants": {
+      "snowtrooper-87-intro-battle--hoth": {
+        "variantId": "snowtrooper-87-intro-battle--hoth",
+        "swuId": 39265,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 87,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Nash",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "snowtrooper-87-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 1,
+    "hp": 3,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "surface-assault-bomber": {
+    "cardId": "surface-assault-bomber",
+    "updatedAt": "2025-07-16T15:01:00.281Z",
+    "name": "Surface Assault Bomber",
+    "title": "Surface Assault Bomber",
+    "subtitle": null,
+    "variants": {
+      "surface-assault-bomber-94-intro-battle--hoth": {
+        "variantId": "surface-assault-bomber-94-intro-battle--hoth",
+        "swuId": 39300,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 94,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "surface-assault-bomber-94-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 3,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [
+      "Raid"
+    ],
+    "traits": [
+      "Imperial",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "target-the-main-generator": {
+    "cardId": "target-the-main-generator",
+    "updatedAt": "2025-07-16T15:00:33.310Z",
+    "name": "Target the Main Generator",
+    "title": "Target the Main Generator",
+    "subtitle": null,
+    "variants": {
+      "target-the-main-generator-71-intro-battle--hoth": {
+        "variantId": "target-the-main-generator-71-intro-battle--hoth",
+        "swuId": 39185,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 71,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ario Murti",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "target-the-main-generator-71-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Deal 2 damage to a base.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "tauntaun-mount": {
+    "cardId": "tauntaun-mount",
+    "updatedAt": "2025-07-16T15:00:09.512Z",
+    "name": "Tauntaun Mount",
+    "title": "Tauntaun Mount",
+    "subtitle": null,
+    "variants": {
+      "tauntaun-mount-51-intro-battle--hoth": {
+        "variantId": "tauntaun-mount-51-intro-battle--hoth",
+        "swuId": 39085,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 51,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tauntaun-mount-51-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 2,
+    "hp": 2,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Defeated: Heal 2 damage from your base.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command"
+    ],
+    "keywords": [],
+    "traits": [
+      "Creature"
+    ]
+  },
+  "the-desolation-of-hoth": {
+    "cardId": "the-desolation-of-hoth",
+    "updatedAt": "2025-07-16T15:01:12.485Z",
+    "name": "The Desolation of Hoth",
+    "title": "The Desolation of Hoth",
+    "subtitle": null,
+    "variants": {
+      "the-desolation-of-hoth-104-intro-battle--hoth": {
+        "variantId": "the-desolation-of-hoth-104-intro-battle--hoth",
+        "swuId": 39350,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 104,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-desolation-of-hoth-104-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Defeat up to 2 enemy units that each cost 3 or less.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Disaster"
+    ]
+  },
+  "too-strong-for-blasters": {
+    "cardId": "too-strong-for-blasters",
+    "updatedAt": "2025-07-16T15:00:56.719Z",
+    "name": "Too Strong for Blasters",
+    "title": "Too Strong for Blasters",
+    "subtitle": null,
+    "variants": {
+      "too-strong-for-blasters-91-intro-battle--hoth": {
+        "variantId": "too-strong-for-blasters-91-intro-battle--hoth",
+        "swuId": 39285,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 91,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "too-strong-for-blasters-91-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 1,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Heal 2 damage from a unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Innate"
+    ]
+  },
+  "trench-defender": {
+    "cardId": "trench-defender",
+    "updatedAt": "2025-07-16T15:00:08.307Z",
+    "name": "Trench Defender",
+    "title": "Trench Defender",
+    "subtitle": null,
+    "variants": {
+      "trench-defender-50-intro-battle--hoth": {
+        "variantId": "trench-defender-50-intro-battle--hoth",
+        "swuId": 39080,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 50,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "trench-defender-50-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": 4,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Rebel",
+      "Trooper"
+    ]
+  },
+  "watch-this": {
+    "cardId": "watch-this",
+    "updatedAt": "2025-07-16T15:00:10.716Z",
+    "name": "Watch This",
+    "title": "Watch This",
+    "subtitle": null,
+    "variants": {
+      "watch-this-52-intro-battle--hoth": {
+        "variantId": "watch-this-52-intro-battle--hoth",
+        "swuId": 39090,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 52,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Francois Cannels",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "watch-this-52-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 6,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Return a non-leader unit that costs 6 or less to its owner's hand. Exhaust each other enemy unit in the same arena.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Gambit"
+    ]
+  },
+  "we-re-in-trouble": {
+    "cardId": "we-re-in-trouble",
+    "updatedAt": "2025-07-16T15:00:50.819Z",
+    "name": "We're In Trouble",
+    "title": "We're In Trouble",
+    "subtitle": null,
+    "variants": {
+      "we-re-in-trouble-86-intro-battle--hoth": {
+        "variantId": "we-re-in-trouble-86-intro-battle--hoth",
+        "swuId": 39260,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 86,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ignacio Bazan Lazcano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "we-re-in-trouble-86-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 3,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Deal 3 damage to a unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "you-have-failed-me": {
+    "cardId": "you-have-failed-me",
+    "updatedAt": "2025-07-16T15:01:01.477Z",
+    "name": "You Have Failed Me",
+    "title": "You Have Failed Me",
+    "subtitle": null,
+    "variants": {
+      "you-have-failed-me-95-intro-battle--hoth": {
+        "variantId": "you-have-failed-me-95-intro-battle--hoth",
+        "swuId": 39305,
+        "set": "ibh",
+        "fullSetName": "Intro Battle: Hoth",
+        "cardNo": 95,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "you-have-failed-me-95-intro-battle--hoth-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Special",
+    "cost": 4,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Defeat a friendly unit. If you do, ready a friendly unit with 5 or less power.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
     ]
   }
 }

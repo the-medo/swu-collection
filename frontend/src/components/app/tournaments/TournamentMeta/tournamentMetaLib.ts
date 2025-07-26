@@ -5,7 +5,6 @@ import { MetaPart } from '@/components/app/tournaments/TournamentMeta/MetaPartSe
 import { getBaseKey } from '@/components/app/tournaments/TournamentMatchups/utils/getBaseKey.ts';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
-import { DeckInformation } from '../../../../../../server/db/schema/deck_information.ts';
 
 export interface TournamentDeckKey {
   key?: string;
@@ -80,13 +79,13 @@ export const getDeckLeadersAndBaseKey2 = (
   return `${leaderKey}|${baseKeyValue}`;
 };
 
-export const getDeckKey = (
+export const getDeckKeys = (
   deck: TournamentDeckResponse,
   metaInfo: MetaInfo,
   cardListData: CardListResponse | undefined,
 ) => {
-  if (!deck.deck || !cardListData) return '';
-  if (!deck.deck.leaderCardId1 || !deck.deck.baseCardId) return 'unknown';
+  if (!deck.deck || !cardListData) return [''];
+  if (!deck.deck.leaderCardId1 || !deck.deck.baseCardId) return ['unknown'];
 
   let key = '';
 
@@ -137,16 +136,11 @@ export const getDeckKey = (
         Array.from({ length: deck.deckInformation?.aspectVillainy }).forEach(() =>
           aspects.push('Villainy'),
         );
-      if (metaInfo === 'aspects') {
-        // For 'aspects', we'll just use the first aspect as the key
-        key = aspects[0] || 'no-aspect';
-      } else {
-        key = aspects.sort().join('-') || 'no-aspect';
-      }
+      if (metaInfo === 'aspects') return aspects;
+      key = aspects.sort().join('-') || 'no-aspect';
       break;
   }
-
-  return key;
+  return [key];
 };
 
 export const getDeckKey2 = (
