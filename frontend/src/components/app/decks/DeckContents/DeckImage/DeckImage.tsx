@@ -14,7 +14,7 @@ const DeckImage = forwardRef<
   { handleDownload: () => void; handleCopyToClipboard: () => void },
   DeckImageProps
 >(({ deckId }, ref) => {
-  const { deckCardsForLayout, deckMeta, isLoading, leaderCard } = useDeckData(deckId);
+  const { deckCardsForLayout, deckMeta, isLoading, leaderCard, baseCard } = useDeckData(deckId);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadingImages, setLoadingImages] = useState(false);
@@ -22,10 +22,12 @@ const DeckImage = forwardRef<
   const [loadedImages, setLoadedImages] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
+  const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
 
   const leaderColorAspect = leaderCard?.aspects.find(
     a => a !== SwuAspect.VILLAINY && a !== SwuAspect.HEROISM,
   );
+  const baseColorAspect = baseCard?.aspects[0];
   const leaderVillainyHeroismAspect = leaderCard?.aspects.find(
     a => a === SwuAspect.VILLAINY || a === SwuAspect.HEROISM,
   );
@@ -35,9 +37,20 @@ const DeckImage = forwardRef<
     return text.replace(/\s*\[[^\]]*\]\s*/g, ' ').trim();
   };
 
+  // Helper function to convert hex color to RGB values
+  const hexToRgb = (hexColor: string): { r: number; g: number; b: number } => {
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+    return { r, g, b };
+  };
+
   // Background image URL
   const backgroundImageUrl =
     'https://images.swubase.com/thumbnails/empty-deck-background-2800x2100.png';
+
+  // Logo image URL
+  const logoImageUrl = 'https://images.swubase.com/logo-light.svg';
 
   // Constants for canvas dimensions and layout
   const canvasWidth = 2800;
@@ -122,6 +135,7 @@ const DeckImage = forwardRef<
         setLoadedImages(0);
         setError(null);
         setBackgroundImage(null);
+        setLogoImage(null);
 
         const allImgs = new Set<string>();
 
@@ -132,7 +146,7 @@ const DeckImage = forwardRef<
         deckCardsForLayout.cardsByBoard[1].forEach(c => allImgs.add(c.cardId));
         deckCardsForLayout.cardsByBoard[2].forEach(c => allImgs.add(c.cardId));
 
-        let totalImageCount = allImgs.size + 1; // +1 for background image
+        let totalImageCount = allImgs.size + 2; // +1 for background image, +1 for logo image
 
         if (totalImageCount === 1) {
           // Only background image, no cards
@@ -153,6 +167,15 @@ const DeckImage = forwardRef<
         } catch (err) {
           console.error('Failed to load background image:', err);
           // Continue even if background image fails to load
+        }
+
+        // Load logo image
+        try {
+          const logoImg = await loadImage(logoImageUrl);
+          setLogoImage(logoImg);
+        } catch (err) {
+          console.error('Failed to load logo image:', err);
+          // Continue even if logo image fails to load
         }
 
         // Load leader images
@@ -307,24 +330,41 @@ const DeckImage = forwardRef<
         }
 
         // Apply aspect color overlays
-        // Apply color aspect overlay with 40% transparency if available
+        // Apply gradient using leaderColorAspect and baseColorAspect if both are available
         if (leaderColorAspect && aspectColors[leaderColorAspect]) {
-          const color = aspectColors[leaderColorAspect];
-          // Convert hex to rgba with 40% transparency (alpha 0.6)
-          const r = parseInt(color.slice(1, 3), 16);
-          const g = parseInt(color.slice(3, 5), 16);
-          const b = parseInt(color.slice(5, 7), 16);
-          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.35)`;
-          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+          console.log('la', aspectColors[leaderColorAspect]);
+          if (baseColorAspect && aspectColors[baseColorAspect]) {
+            // Create gradient with both colors
+            const leaderColor = aspectColors[leaderColorAspect];
+            const baseColor = aspectColors[baseColorAspect];
+            console.log('baseColor', baseColor);
+
+            // Convert hex to rgba for both colors
+            const { r: leaderR, g: leaderG, b: leaderB } = hexToRgb(leaderColor);
+            const { r: baseR, g: baseG, b: baseB } = hexToRgb(baseColor);
+
+            // Create a linear gradient from top to bottom
+            const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+            gradient.addColorStop(0, `rgba(${leaderR}, ${leaderG}, ${leaderB}, 0.35)`);
+            gradient.addColorStop(0.32, `rgba(${baseR}, ${baseG}, ${baseB}, 0.35)`);
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+          } else {
+            // Fallback to just leaderColorAspect if baseColorAspect is not available
+            const color = aspectColors[leaderColorAspect];
+            // Convert hex to rgba with 35% transparency
+            const { r, g, b } = hexToRgb(color);
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.35)`;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+          }
         }
 
-        // Apply villainy/heroism aspect overlay with 20% transparency if available
+        // Apply villainy/heroism aspect overlay with 10% transparency if available
         if (leaderVillainyHeroismAspect && aspectColors[leaderVillainyHeroismAspect]) {
           const color = aspectColors[leaderVillainyHeroismAspect];
-          // Convert hex to rgba with 20% transparency (alpha 0.2)
-          const r = parseInt(color.slice(1, 3), 16);
-          const g = parseInt(color.slice(3, 5), 16);
-          const b = parseInt(color.slice(5, 7), 16);
+          // Convert hex to rgba with 10% transparency (alpha 0.1)
+          const { r, g, b } = hexToRgb(color);
           ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.1)`;
           ctx.fillRect(0, 0, canvasWidth, canvasHeight);
         }
@@ -335,9 +375,11 @@ const DeckImage = forwardRef<
         ctx.textAlign = 'center';
         ctx.fillText(removeBracketContent(deckMeta.name), canvasWidth / 2, padding + 90); // Moved 30px down
 
-        // Draw subtitle (author)
-        ctx.font = '40px Arial';
-        ctx.fillText(`by ${deckMeta.author}`, canvasWidth / 2, padding + 150); // Moved 30px down
+        if (deckMeta.author !== 'swubase') {
+          // Draw subtitle (author)
+          ctx.font = '28px Arial';
+          ctx.fillText(`by ${deckMeta.author}`, canvasWidth / 2, padding + 140); // Moved 20px down
+        }
 
         // Draw leaders section on the left
         let leftY = titleHeight + padding * 2;
@@ -508,11 +550,29 @@ const DeckImage = forwardRef<
 
         // Draw sideboard section
         const sideboardCards = deckCardsForLayout.cardsByBoard[2];
-        if (sideboardCards.length > 0) {
-          // Calculate sideboard height
-          const rowsNeeded = Math.ceil(sideboardCards.length / maxCardsPerRow);
-          const sideboardHeight = rowsNeeded * (cardHeight + padding) + padding * 7;
+        const sideboardHeight =
+          Math.ceil(sideboardCards.length / maxCardsPerRow) * (cardHeight + padding) + padding * 7;
 
+        // Draw logo to the left of sideboard box if available
+        if (logoImage) {
+          const logoSize = 200; // 200x200 px as requested
+          const logoX = rightX / 2 - 100; // Position to the left of sideboard box
+          const logoY = Math.max(
+            920,
+            sideboardCards.length > 0
+              ? rightY - padding + sideboardHeight / 2 - logoSize / 2
+              : rightY - logoSize - 150,
+          ); // Vertically center with sideboard box
+          ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+
+          // Add water mark or signature at the bottom
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.font = '30px Arial';
+          ctx.textAlign = 'right';
+          ctx.fillText('swubase.com', logoX + 190, logoY + 230);
+        }
+
+        if (sideboardCards.length > 0) {
           // Draw sideboard background with slight transparency
           ctx.fillStyle = 'rgba(42, 42, 42, 0.5)'; // 70% opacity
           ctx.fillRect(
@@ -546,20 +606,11 @@ const DeckImage = forwardRef<
           }
 
           const sideboardBottom = rightY + sideboardHeight;
-          bottomPoint = Math.max(bottomPoint, sideboardBottom);
+          bottomPoint = Math.max(bottomPoint, sideboardBottom) - 70;
         }
 
         const actualHeight = Math.min(Math.max(bottomPoint, 1200), 8000); // Set reasonable min/max
         if (final) {
-          // Add water mark or signature at the bottom
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-          ctx.font = '30px Arial';
-          ctx.textAlign = 'right';
-          ctx.fillText(
-            'Created on SWUBase.com',
-            canvasWidth - padding * 2,
-            actualHeight - padding * 2,
-          );
         } else {
           canvas.height = actualHeight;
           renderDeckImage(true);

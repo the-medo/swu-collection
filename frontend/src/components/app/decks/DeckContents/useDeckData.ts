@@ -105,15 +105,20 @@ export function useDeckData(deckId: string) {
     };
   }, [cardList, deckCards, groupBy]);
 
-  const leaderCard = useMemo(() => {
-    if (!cardListData || !deckInfo?.deck.leaderCardId1) return undefined;
-    return cardListData.cards[deckInfo.deck.leaderCardId1];
+  const [leaderCard, baseCard] = useMemo(() => {
+    if (!cardListData || !deckInfo?.deck.leaderCardId1 || !deckInfo?.deck.baseCardId)
+      return [undefined, undefined];
+    return [
+      cardListData.cards[deckInfo.deck.leaderCardId1],
+      cardListData.cards[deckInfo.deck.baseCardId],
+    ];
   }, [deckInfo?.deck.leaderCardId1]);
 
   return {
     deckCardsForLayout,
     deckMeta,
     leaderCard,
+    baseCard,
     isLoading: !deckInfo || !cardList || !deckCardsData,
   };
 }
