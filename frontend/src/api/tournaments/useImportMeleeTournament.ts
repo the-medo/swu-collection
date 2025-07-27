@@ -6,6 +6,8 @@ export interface ImportMeleeRequest {
   meleeId: string;
   forcedRoundId?: string;
   markAsImported?: boolean;
+  minRound?: number;
+  maxRound?: number;
 }
 
 export const useImportMeleeTournament = (tournamentId: string) => {

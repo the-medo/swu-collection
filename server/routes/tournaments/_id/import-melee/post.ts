@@ -3,7 +3,7 @@ import { auth, type AuthExtension } from '../../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { zTournamentImportMeleeRequest } from '../../../../../types/ZTournament.ts';
 import { z } from 'zod';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { tournament as tournamentTable } from '../../../../db/schema/tournament.ts';
 import { db } from '../../../../db';
 import { runTournamentImport } from '../../../../lib/imports/tournamentImportWorkflow.ts';
@@ -19,7 +19,7 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
   zValidator('json', zTournamentImportMeleeRequest),
   async c => {
     const paramTournamentId = z.string().uuid().parse(c.req.param('id'));
-    const { meleeId, forcedRoundId, markAsImported } = c.req.valid('json');
+    const { meleeId, forcedRoundId, markAsImported, minRound, maxRound } = c.req.valid('json');
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
@@ -61,12 +61,14 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
     // Update the tournament with the meleeId
     await db.update(tournamentTable).set({ meleeId }).where(and(condIsOwner, condTournamentId));
 
-    runTournamentImport(paramTournamentId, forcedRoundId).then(async () => {
+    const generateThumbnails = !minRound && !maxRound;
+
+    runTournamentImport(paramTournamentId, forcedRoundId, minRound, maxRound).then(async () => {
       if (markAsImported) {
         // Update tournament to set imported flag to true
         await db
           .update(tournamentTable)
-          .set({ imported: true })
+          .set({ imported: true, updatedAt: sql`NOW()` })
           .where(and(condIsOwner, condTournamentId));
 
         // Compute tournament card statistics
@@ -86,15 +88,19 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
         }
       }
 
-      // Generate thumbnails for all unique leader/base combinations in the tournament
-      console.log(`Generating thumbnails for tournament: ${paramTournamentId}`);
-      const { results, errors } = await generateDeckThumbnails({
-        tournament_id: paramTournamentId,
-        force: false, // Don't force regeneration of existing thumbnails
-      });
-      console.log(
-        `Generated ${results.length} thumbnails for tournament: ${paramTournamentId}. ${errors.length} errors.`,
-      );
+      if (generateThumbnails) {
+        // Generate thumbnails for all unique leader/base combinations in the tournament
+        console.log(`Generating thumbnails for tournament: ${paramTournamentId}`);
+        const { results, errors } = await generateDeckThumbnails({
+          tournament_id: paramTournamentId,
+          force: false, // Don't force regeneration of existing thumbnails
+        });
+        console.log(
+          `Generated ${results.length} thumbnails for tournament: ${paramTournamentId}. ${errors.length} errors.`,
+        );
+      } else {
+        console.log('Generation of thumbnails skipped.');
+      }
     });
 
     // Mock response - in a real implementation, this would fetch data from melee.gg
@@ -105,6 +111,8 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
       data: {
         tournamentId: paramTournamentId,
         meleeId,
+        minRound,
+        maxRound,
         status: 'processing',
       },
     });

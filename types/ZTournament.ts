@@ -84,6 +84,8 @@ export const zTournamentImportMeleeRequest = z.object({
   meleeId: z.string().min(1).max(255),
   forcedRoundId: z.string().min(0).max(20).optional(),
   markAsImported: z.boolean().optional().default(true),
+  minRound: z.number().int().optional(),
+  maxRound: z.number().int().optional(),
 });
 
 export type ZTournament = z.infer<typeof zTournamentSchema>;

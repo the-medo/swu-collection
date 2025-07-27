@@ -30,6 +30,8 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
       forcedRoundId: '',
       isFix: false,
       markAsImported: true,
+      minRound: undefined,
+      maxRound: undefined,
     },
     onSubmit: async ({ value }) => {
       if (value.meleeId) {
@@ -39,6 +41,8 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
             isFix: value.isFix,
             forcedRoundId: value.forcedRoundId,
             markAsImported: value.markAsImported,
+            minRound: value.minRound,
+            maxRound: value.maxRound,
           },
           {
             onSuccess: () => {
@@ -133,6 +137,42 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
               </div>
             )}
           />
+
+          <div className="space-y-2">
+            <Label>Rounds to import</Label>
+            <div className="flex gap-4">
+              <form.Field
+                name="minRound"
+                children={field => (
+                  <div className="flex-1">
+                    <Input
+                      id={field.name}
+                      type="number"
+                      placeholder="Min"
+                      value={field.state.value !== undefined ? String(field.state.value) : ''}
+                      onBlur={field.handleBlur}
+                      onChange={e => field.handleChange(e.target.value ? parseInt(e.target.value, 10) : undefined)}
+                    />
+                  </div>
+                )}
+              />
+              <form.Field
+                name="maxRound"
+                children={field => (
+                  <div className="flex-1">
+                    <Input
+                      id={field.name}
+                      type="number"
+                      placeholder="Max"
+                      value={field.state.value !== undefined ? String(field.state.value) : ''}
+                      onBlur={field.handleBlur}
+                      onChange={e => field.handleChange(e.target.value ? parseInt(e.target.value, 10) : undefined)}
+                    />
+                  </div>
+                )}
+              />
+            </div>
+          </div>
 
           <form.Field
             name="isFix"
