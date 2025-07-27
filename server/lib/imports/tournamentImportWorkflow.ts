@@ -1,6 +1,6 @@
 import { db } from '../../db';
 import { tournament } from '../../db/schema/tournament.ts';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, sql, gte, lte } from 'drizzle-orm';
 import {
   fetchDecklistView,
   fetchDeckMatchesWithMeleeDeckIds,
@@ -23,6 +23,8 @@ import { updateDeckInformation } from '../decks/updateDeckInformation.ts';
 export async function runTournamentImport(
   tournamentId: string,
   forcedRoundId: string | undefined = '',
+  minRound: number | undefined = undefined,
+  maxRound: number | undefined = undefined,
 ) {
   // let hoverForDecklists = decklistsOnHoverOnly;
   const t = (await db.select().from(tournament).where(eq(tournament.id, tournamentId)))[0];
@@ -113,18 +115,38 @@ export async function runTournamentImport(
   console.log(parsedStandings);
 
   console.log('==================================');
+
+  const deleteExistingDecks = !minRound && !maxRound;
+  const importDeckCards = !minRound && !maxRound;
+
   for (const d of parsedStandings) {
+    console.log('D: ', d.tournamentDeck.deckId);
     if (d.exists) {
       if (d.tournamentDeck.deckId === '') {
         console.warn('Deck ID is empty but it is supposed to exist');
         continue;
       }
-      await db.delete(deckCardTable).where(eq(deckCardTable.deckId, d.tournamentDeck.deckId));
-      await db.delete(entityResource).where(eq(entityResource.entityId, d.tournamentDeck.deckId));
-      console.log(
-        'Deck existed - deleted deck cards and resources for deck ' + d.tournamentDeck.deckId,
-      );
+      if (deleteExistingDecks) {
+        await db.delete(deckCardTable).where(eq(deckCardTable.deckId, d.tournamentDeck.deckId));
+        await db.delete(entityResource).where(eq(entityResource.entityId, d.tournamentDeck.deckId));
+        console.log(
+          'Deck existed - deleted deck cards and resources for deck ' + d.tournamentDeck.deckId,
+        );
+      } else {
+        await db
+          .update(tournamentDeck)
+          .set({
+            placement: d.tournamentDeck.placement,
+            recordWin: d.tournamentDeck.recordWin,
+            recordLose: d.tournamentDeck.recordLose,
+            recordDraw: d.tournamentDeck.recordDraw,
+            points: d.tournamentDeck.points,
+          })
+          .where(eq(tournamentDeck.deckId, d.tournamentDeck.deckId));
+        console.log('Deck existed - updated placement, point and record info');
+      }
     } else {
+      console.log('Creating deck - ', d.decklistName);
       const newDeck = await db
         .insert(deckTable)
         .values({
@@ -173,7 +195,7 @@ export async function runTournamentImport(
       });
     }
 
-    await db.insert(entityResource).values(resources);
+    await db.insert(entityResource).values(resources).onConflictDoNothing();
 
     const newTournamentDeck = await db
       .insert(tournamentDeck)
@@ -193,35 +215,61 @@ export async function runTournamentImport(
     } else if (!d.tournamentDeck.meleeDecklistGuid || d.tournamentDeck.meleeDecklistGuid === '') {
       console.warn('Melee decklist GUID is empty');
     } else {
-      const decklistText = await fetchDecklistView(d.tournamentDeck.meleeDecklistGuid);
-      if (decklistText && decklistText !== '') {
-        const cards = parseTextToSwubase(decklistText, cardList, d.tournamentDeck.deckId);
+      if (importDeckCards) {
+        const decklistText = await fetchDecklistView(d.tournamentDeck.meleeDecklistGuid);
+        if (decklistText && decklistText !== '') {
+          const cards = parseTextToSwubase(decklistText, cardList, d.tournamentDeck.deckId);
 
-        console.log(`Updating leader and base to: ${cards.leader1} ${cards.leader2} ${cards.base}`);
-        await db
-          .update(deckTable)
-          .set({
-            leaderCardId1: cards.leader1,
-            leaderCardId2: cards.leader2,
-            baseCardId: cards.base,
-          })
-          .where(eq(deckTable.id, d.tournamentDeck.deckId));
-        await updateDeckInformation(d.tournamentDeck.deckId);
+          console.log(
+            `Updating leader and base to: ${cards.leader1} ${cards.leader2} ${cards.base}`,
+          );
+          await db
+            .update(deckTable)
+            .set({
+              leaderCardId1: cards.leader1,
+              leaderCardId2: cards.leader2,
+              baseCardId: cards.base,
+            })
+            .where(eq(deckTable.id, d.tournamentDeck.deckId));
+          await updateDeckInformation(d.tournamentDeck.deckId);
 
-        try {
-          console.log(`Inserting deck cards: ${cards.deckCards.length} rows`);
-          await db.insert(deckCardTable).values(cards.deckCards);
-        } catch (error) {
-          console.warn('Error inserting deck cards:', error);
+          try {
+            console.log(`Inserting deck cards: ${cards.deckCards.length} rows`);
+            await db.insert(deckCardTable).values(cards.deckCards);
+          } catch (error) {
+            console.warn('Error inserting deck cards:', error);
+          }
         }
       }
 
-      playerInfo[d.tournamentDeck.meleePlayerUsername].matches =
-        await fetchDeckMatchesWithMeleeDeckIds(
-          d.tournamentDeck.meleeDecklistGuid,
-          t.id,
-          d.tournamentDeck.meleePlayerUsername,
-        );
+      if (d.tournamentDeck.meleePlayerUsername) {
+        //if username exists in playerInfo (player could change it in the meantime probably?)
+        if (playerInfo[d.tournamentDeck.meleePlayerUsername]) {
+          playerInfo[d.tournamentDeck.meleePlayerUsername].matches =
+            await fetchDeckMatchesWithMeleeDeckIds(
+              d.tournamentDeck.meleeDecklistGuid,
+              t.id,
+              d.tournamentDeck.meleePlayerUsername,
+            );
+        } else {
+          //if hes not there, find the player by decklist guid
+          const playerInfoByMeleeDecklistGuid = Object.values(playerInfo).find(
+            pi => pi.meleeDeckId === d.tournamentDeck.meleeDecklistGuid,
+          );
+
+          if (playerInfoByMeleeDecklistGuid) {
+            playerInfo[d.tournamentDeck.meleePlayerUsername] = {
+              deckId: playerInfoByMeleeDecklistGuid.deckId,
+              meleeDeckId: d.tournamentDeck.meleeDecklistGuid ?? '',
+              matches: await fetchDeckMatchesWithMeleeDeckIds(
+                d.tournamentDeck.meleeDecklistGuid,
+                t.id,
+                d.tournamentDeck.meleePlayerUsername,
+              ),
+            };
+          }
+        }
+      }
     }
   }
 
@@ -238,21 +286,48 @@ export async function runTournamentImport(
       insertedMatches.add(key1);
       insertedMatches.add(key2);
 
-      const newMatch: TournamentMatchInsert = {
-        ...match,
-        p1DeckId: playerInfo[match.p1Username].deckId,
-        p2DeckId: match.p2Username ? playerInfo[match.p2Username]?.deckId : null,
-        p2Points: match.p2Username
-          ? playerInfo[match.p2Username]?.matches?.find(m => m.round === match.round)?.p1Points
-          : null,
-      };
+      if (playerInfo[match.p1Username]) {
+        const newMatch: TournamentMatchInsert = {
+          ...match,
+          p1DeckId: playerInfo[match.p1Username].deckId,
+          p2DeckId: match.p2Username ? playerInfo[match.p2Username]?.deckId : null,
+          p2Points: match.p2Username
+            ? playerInfo[match.p2Username]?.matches?.find(m => m.round === match.round)?.p1Points
+            : null,
+        };
 
-      matchesWithSwubaseDeckIds.push(newMatch);
+        if (minRound && newMatch.round < minRound) return;
+        if (maxRound && newMatch.round > maxRound) return;
+        matchesWithSwubaseDeckIds.push(newMatch);
+      } else {
+        console.error('playerInfo[match.p1Username] - ', match.p1Username, ' - doesnt exist!');
+      }
     });
   });
 
   console.log('Inserting matches with Swubase deck IDs...');
-  await db.delete(tournamentMatch).where(eq(tournamentMatch.tournamentId, t.id));
+
+  // Delete tournament matches, conditionally filtering by round if minRound or maxRound are provided
+  if (minRound !== undefined || maxRound !== undefined) {
+    let conditions = [eq(tournamentMatch.tournamentId, t.id)];
+
+    if (minRound !== undefined) {
+      conditions.push(gte(tournamentMatch.round, minRound));
+    }
+
+    if (maxRound !== undefined) {
+      conditions.push(lte(tournamentMatch.round, maxRound));
+    }
+
+    console.log(
+      `Deleting matches for tournament ${t.id} with round constraints: minRound=${minRound}, maxRound=${maxRound}`,
+    );
+    await db.delete(tournamentMatch).where(and(...conditions));
+  } else {
+    console.log(`Deleting all matches for tournament ${t.id}`);
+    await db.delete(tournamentMatch).where(eq(tournamentMatch.tournamentId, t.id));
+  }
+
   await db.insert(tournamentMatch).values(matchesWithSwubaseDeckIds);
   await db
     .update(deckTable)
