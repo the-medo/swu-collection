@@ -50,9 +50,13 @@ export function createDeckJsonExport(
     }));
 
   // Create export object
+  // Remove text in brackets from the deck name
+  // This regex specifically targets the last bracket section at the end of the string
+  const cleanedDeckName = deck.name.replace(/\s*\[[^\[\]]*\]\s*$/, '');
+  
   const exportData: DeckExportJSON = {
     metadata: {
-      name: deck.name,
+      name: cleanedDeckName,
       author: user.displayName,
     },
     deck: mainboardCards,

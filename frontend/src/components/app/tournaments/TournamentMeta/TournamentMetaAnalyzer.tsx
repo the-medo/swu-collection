@@ -9,7 +9,7 @@ import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
 import ViewModeSelector, { ViewMode } from './ViewModeSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
 import TournamentMetaPieChart from './TournamentMetaPieChart';
@@ -18,6 +18,7 @@ import { InfoIcon } from 'lucide-react';
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import MobileCard from '@/components/ui/mobile-card.tsx';
+import { Input } from '@/components/ui/input.tsx';
 
 interface TournamentMetaAnalyzerProps {
   decks: TournamentDeckResponse[];
@@ -32,6 +33,9 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   const metaPart = (search.maMetaPart as MetaPart) || 'all';
   const metaInfo = (search.maMetaInfo as MetaInfo) || 'leaders';
   const viewMode = (search.maViewMode as ViewMode) || 'chart';
+
+  // State for minimum deck count filter
+  const [minDeckCount, setMinDeckCount] = useState<number | undefined>(undefined);
 
   // Functions to update URL parameters
   const setMetaPart = (value: MetaPart) => {
@@ -208,6 +212,21 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
 
       <div className="flex items-center gap-4 flex-wrap justify-between">
         <span className="text-[10px] w-auto">Total decks analyzed: {filteredDecks.length}</span>
+        {viewMode === 'table' && (
+          <div className="flex items-center gap-2">
+            <label htmlFor="minDeckCount" className="text-[10px] w-[130px]">
+              Min. deck count:
+            </label>
+            <Input
+              id="minDeckCount"
+              type="number"
+              className="h-6 w-20 text-xs"
+              min={1}
+              value={minDeckCount || ''}
+              onChange={e => setMinDeckCount(e.target.value ? Number(e.target.value) : undefined)}
+            />
+          </div>
+        )}
         <Alert variant="info" size="xs" className="w-auto">
           <InfoIcon className="size-4 top-0 left-0" />{' '}
           <ul className="">
@@ -254,6 +273,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
           totalDecks={totalDeckCount}
           day2Decks={day2DeckCount}
           metaPartsData={allMetaPartsAnalysis}
+          minDeckCount={minDeckCount}
         />
       )}
     </div>

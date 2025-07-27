@@ -18,6 +18,7 @@ interface TournamentMetaDataTableProps {
   metaInfo: MetaInfo;
   totalDecks: number;
   day2Decks: number;
+  minDeckCount?: number;
   metaPartsData?: {
     all: AnalysisDataItem[];
     top8: AnalysisDataItem[];
@@ -33,6 +34,7 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
   totalDecks,
   day2Decks,
   metaPartsData,
+  minDeckCount,
 }) => {
   const labelRenderer = useLabel();
   const { setTournamentDeckKey } = useTournamentMetaActions();
@@ -46,13 +48,15 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
     [metaPart, totalDecks, day2Decks],
   );
 
-  if (analysisData.length === 0) {
-    return <p className="text-muted-foreground">No data available for the selected filters.</p>;
-  }
-
   const getSortedData = (data: AnalysisDataItem[]) => {
     if (!data) return [];
-    return [...data].sort((a, b) => {
+    
+    // Filter data based on minDeckCount if provided
+    const filteredData = minDeckCount 
+      ? data.filter(item => item.count >= minDeckCount)
+      : data;
+    
+    return [...filteredData].sort((a, b) => {
       const multiplier = sorting.desc ? -1 : 1;
 
       // Basic columns
@@ -329,6 +333,10 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
     },
     [metaInfo],
   );
+
+  if (analysisData.length === 0) {
+    return <p className="text-muted-foreground">No data available for the selected filters.</p>;
+  }
 
   return (
     <div className="mt-4">
