@@ -18,6 +18,13 @@ export function useInfiniteScroll({
   const observerTarget = useRef<HTMLDivElement>(null);
   const hasMore = itemsToShow < totalItems;
 
+  useEffect(() => {
+    // If totalItems changed and we have no items showing but should have some
+    if (totalItems > 0 && itemsToShow === 0) {
+      setItemsToShow(Math.min(initialItemsToLoad, totalItems));
+    }
+  }, [totalItems, initialItemsToLoad, itemsToShow]);
+
   // Load more items when the sentinel element becomes visible
   const loadMore = useCallback(() => {
     if (isLoading || !hasMore) return;
