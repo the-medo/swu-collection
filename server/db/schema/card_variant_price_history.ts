@@ -1,4 +1,4 @@
-import { numeric, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
+import { index, numeric, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
 import type { InferInsertModel } from 'drizzle-orm';
 
 export const cardVariantPriceHistory = pgTable(
@@ -17,6 +17,11 @@ export const cardVariantPriceHistory = pgTable(
         name: 'card_variant_price_history_pk',
         columns: [table.cardId, table.variantId, table.sourceType, table.createdAt],
       }),
+      cardIdIdx: index('cvph_card_id_idx').on(table.cardId),
+      variantIdIdx: index('cvph_variant_id_idx').on(table.variantId),
+      sourceTypeIdx: index('cvph_source_type_idx').on(table.sourceType),
+      createdAtIdx: index('cvph_created_at_idx').on(table.sourceType),
+      priceIdx: index('cvph_price_idx').on(table.price),
     };
   },
 );

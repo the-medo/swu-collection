@@ -176,6 +176,13 @@
       "when": 1752485098642,
       "tag": "0024_nappy_champions",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1753918325464,
+      "tag": "0025_charming_miracleman",
+      "breakpoints": true
     }
   ]
 }
