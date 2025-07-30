@@ -18,10 +18,10 @@ export const cardVariantPrice = pgTable(
         name: 'card_variant_price_pk',
         columns: [table.cardId, table.variantId, table.sourceType],
       }),
-      cardIdIdx: index('card_variant_price_card_id_idx').on(table.cardId),
-      variantIdIdx: index('card_variant_price_variant_id_idx').on(table.variantId),
-      sourceTypeIdx: index('card_variant_price_source_type_idx').on(table.sourceType),
-      priceIdx: index('card_variant_price_price_idx').on(table.price),
+      cardIdIdx: index('cvp_card_id_idx').on(table.cardId),
+      variantIdIdx: index('cvp_variant_id_idx').on(table.variantId),
+      sourceTypeIdx: index('cvp_source_type_idx').on(table.sourceType),
+      priceIdx: index('cvp_price_idx').on(table.price),
     };
   },
 );
