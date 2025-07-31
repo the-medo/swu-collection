@@ -10,6 +10,12 @@
     <meta property="og:image" content="https://images.swubase.com/discord-logo.png" />
     <meta property="og:url" content="https://swubase.com" />
     <meta property="og:type" content="website" />
+    <script src="https://cdn.amplitude.com/script/765bba355a5778baad5eb2ba8c58fa6a.js"></script>
+    <script>
+      if (location.hostname !== 'localhost') {
+        window.amplitude.init('765bba355a5778baad5eb2ba8c58fa6a', {"fetchRemoteConfig": true, "autocapture": true});
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { createFileRoute } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 
@@ -11,15 +12,15 @@ function PrivacyPolicy() {
       <Helmet title="Privacy Policy | SWUBase" />
       <div className="container mx-auto py-8 px-4 max-w-4xl">
         <h1 className="mb-6 flex items-center justify-between">
-          Privacy policy <span className="text-xs">(updated 2025-03-16)</span>
+          Privacy policy <span className="text-xs">(updated 2025-07-31)</span>
         </h1>
 
         <section className="mb-8">
           <h2 className="mb-4">Introduction</h2>
           <p className="mb-4">
             SWU Base ("we", "our", or "us") is committed to protecting your privacy. This Privacy
-            Policy explains how we collect, use, disclose, and safeguard your information when you use
-            our website and services.
+            Policy explains how we collect, use, disclose, and safeguard your information when you
+            use our website and services.
           </p>
         </section>
 
@@ -27,8 +28,8 @@ function PrivacyPolicy() {
           <h2 className="mb-4">Information We Collect</h2>
           <h3 className="mb-2">Personal Information</h3>
           <p className="mb-4">
-            We may collect personal information that you voluntarily provide when creating an account
-            or using our services, including:
+            We may collect personal information that you voluntarily provide when creating an
+            account or using our services, including:
           </p>
           <ul className="list-disc ml-8 mb-4">
             <li>Name</li>
@@ -40,13 +41,33 @@ function PrivacyPolicy() {
 
           <h3 className="mb-2">Usage Information</h3>
           <p className="mb-4">
-            We do NOT collect information about how you access and use our services.
+            We collect information about how you access and use our services. This data is
+            completely anonymous and includes data such as:
+          </p>
+          <ul className="list-disc ml-8 mb-4">
+            <li>Pages visited</li>
+            <li>Click events</li>
+            <li>Device and browser information</li>
+            <li>Referrer URLs</li>
+            <li>Other technical information related to your interaction with the site</li>
+          </ul>
+
+          <p className="mb-4">
+            We use a third-party analytics provider (
+            <Button variant="link" className="px-1 py-0 h-auto text-foreground/50" asChild>
+              <a href="https://amplitude.com/" target="_blank">
+                Amplitude
+              </a>
+            </Button>
+            ). This means some interactions may be automatically logged to help us understand usage
+            patterns and improve the service.{' '}
+            <strong>Session replay is not used or enabled.</strong>
           </p>
 
           <h3 className="mb-2">User Content</h3>
           <p className="mb-4">
-            We collect and store the content you create, upload, or receive from others when using our
-            services, such as:
+            We collect and store the content you create, upload, or receive from others when using
+            our services, such as:
           </p>
           <ul className="list-disc ml-8 mb-4">
             <li>Collection information</li>
@@ -64,6 +85,7 @@ function PrivacyPolicy() {
           <ul className="list-disc ml-8 mb-4">
             <li>Providing and maintaining our services</li>
             <li>Improving our website and services</li>
+            <li>Analyzing usage patterns to enhance user experience</li>
             <li>Communicating with you about updates or changes</li>
             <li>Detecting and preventing fraudulent or unauthorized activities</li>
           </ul>
@@ -72,17 +94,18 @@ function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="mb-4">Cookies and Tracking Technologies</h2>
           <p className="mb-4">
-            We use cookies and similar tracking technologies to hold certain information. Cookies are
-            files with a small amount of data that may include an anonymous unique identifier.
+            We use cookies and similar tracking technologies to hold certain information. Cookies
+            are files with a small amount of data that may include an anonymous unique identifier.
           </p>
           <p className="mb-4">We use cookies for:</p>
           <ul className="list-disc ml-8 mb-4">
             <li>Keeping you signed in</li>
+            <li>Collecting anonymous usage data via our analytics provider (Amplitude)</li>
           </ul>
           <p className="mb-4">
-            You can instruct your browser to refuse all cookies or to indicate when a cookie is being
-            sent. However, if you do not accept cookies, you may not be able to use some portions of
-            our service.
+            You can instruct your browser to refuse all cookies or to indicate when a cookie is
+            being sent. However, if you do not accept cookies, you may not be able to use some
+            portions of our service.
           </p>
         </section>
 
@@ -91,8 +114,8 @@ function PrivacyPolicy() {
           <p className="mb-4">We may share your information in the following situations:</p>
           <ul className="list-disc ml-8 mb-4">
             <li>
-              <strong>With your consent:</strong> We may disclose your information when you have given
-              us permission to do so.
+              <strong>With your consent:</strong> We may disclose your information when you have
+              given us permission to do so.
             </li>
             <li>
               <strong>For legal reasons:</strong> We may disclose your information if required to do
@@ -105,8 +128,8 @@ function PrivacyPolicy() {
           <h2 className="mb-4">Data Security</h2>
           <p className="mb-4">
             We implement appropriate technical and organizational security measures to protect your
-            information from unauthorized access, disclosure, alteration, and destruction. However, no
-            method of transmission over the Internet or electronic storage is 100% secure, and we
+            information from unauthorized access, disclosure, alteration, and destruction. However,
+            no method of transmission over the Internet or electronic storage is 100% secure, and we
             cannot guarantee absolute security.
           </p>
         </section>
