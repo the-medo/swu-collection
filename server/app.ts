@@ -15,6 +15,7 @@ import { metaRoute } from './routes/meta.ts';
 import { cardStatsRoute } from './routes/card-stats.ts';
 import { setRoute } from './routes/set.ts';
 import { adminRoute } from './routes/admin.ts';
+import { cardPricesRoute } from './routes/card-prices.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
 import { timeout } from 'hono/timeout';
@@ -73,7 +74,8 @@ const apiRoutes = app
   .route('/meta', metaRoute)
   .route('/card-stats', cardStatsRoute)
   .route('/set', setRoute)
-  .route('/admin', adminRoute);
+  .route('/admin', adminRoute)
+  .route('/card-prices', cardPricesRoute);
 
 // Read the index.html template once at startup
 let indexHtml: string;
