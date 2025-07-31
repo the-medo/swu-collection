@@ -8,7 +8,6 @@ const CookieConsent: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Check if consent has already been given
     const consentGiven = localStorage.getItem('cookie-consent');
     if (!consentGiven) {
       setIsVisible(true);
@@ -27,8 +26,9 @@ const CookieConsent: React.FC = () => {
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="text-sm flex-grow">
           <p>
-            We use cookies to keep you logged in and that's about it. By clicking "Accept" you agree
-            to our use of cookies as described in our
+            We use cookies to keep you signed in and to understand how SWUBase is used via anonymous
+            analytics (Amplitude, no session recording). By clicking "Accept", you agree to this as
+            described in our
             <Button variant="link" className="px-1 py-0 h-auto text-primary" asChild>
               <Link to="/privacy">Privacy Policy</Link>
             </Button>
