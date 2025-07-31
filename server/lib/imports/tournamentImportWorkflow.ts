@@ -19,6 +19,7 @@ import { deck as deckTable } from '../../db/schema/deck.ts';
 import { parseTextToSwubase } from '../decks/deckConverterService.tsx';
 import { cardList } from '../../db/lists.ts';
 import { updateDeckInformation } from '../decks/updateDeckInformation.ts';
+import { batchArray } from '../utils/batch.ts';
 
 export async function runTournamentImport(
   tournamentId: string,
@@ -328,7 +329,15 @@ export async function runTournamentImport(
     await db.delete(tournamentMatch).where(eq(tournamentMatch.tournamentId, t.id));
   }
 
-  await db.insert(tournamentMatch).values(matchesWithSwubaseDeckIds);
+  // Use batch inserts because of 65k param limit
+  const batches = batchArray(matchesWithSwubaseDeckIds, 3500);
+
+  await db.transaction(async tx => {
+    for (const batch of batches) {
+      await tx.insert(tournamentMatch).values(batch);
+    }
+  });
+
   await db
     .update(deckTable)
     .set({
