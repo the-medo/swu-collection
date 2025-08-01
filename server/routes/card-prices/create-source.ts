@@ -13,7 +13,7 @@ const createSourceSchema = z.object({
   sourceType: z.string().min(1),
   sourceLink: z.string().url(),
   data: z.string().min(1), // JSON as string
-  price: z.number().positive(),
+  price: z.number().min(0),
 });
 
 export const cardPricesCreateSourceRoute = new Hono<AuthExtension>().post(
