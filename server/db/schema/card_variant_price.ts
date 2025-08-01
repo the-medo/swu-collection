@@ -1,5 +1,5 @@
 import { index, numeric, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
-import type { InferInsertModel } from 'drizzle-orm';
+import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 
 export const cardVariantPrice = pgTable(
   'card_variant_price',
@@ -27,3 +27,4 @@ export const cardVariantPrice = pgTable(
 );
 
 export type InsertCardVariantPrice = InferInsertModel<typeof cardVariantPrice>;
+export type CardVariantPrice = InferSelectModel<typeof cardVariantPrice>;
