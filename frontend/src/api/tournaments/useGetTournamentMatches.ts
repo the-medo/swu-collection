@@ -2,7 +2,7 @@ import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { TournamentMatch } from '../../../../server/db/schema/tournament_match.ts';
 import { useGetTournament } from './useGetTournament.ts';
-import { getStoredTournamentMatches, isDataStale, storeTournamentMatches } from '@/lib/db.ts';
+import { getStoredTournamentMatches, isDataStale, storeTournamentMatches } from '@/dexie';
 
 export interface GetTournamentMatchesResponse {
   data: TournamentMatch[];

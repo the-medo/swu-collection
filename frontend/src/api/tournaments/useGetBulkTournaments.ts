@@ -6,7 +6,7 @@ import {
   isDataStale,
   storeTournamentDecks,
   storeTournamentMatches,
-} from '@/lib/db.ts';
+} from '@/dexie';
 import { TournamentDeckResponse } from './useGetTournamentDecks';
 import { TournamentMatch } from '../../../../server/db/schema/tournament_match';
 import { TournamentData } from '../../../../types/Tournament';

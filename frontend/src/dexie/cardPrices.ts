@@ -1,0 +1,211 @@
+import { db } from './db';
+
+// Card variant price interfaces
+export interface CardVariantPriceStore {
+  id: string; // composite key: cardId-variantId-sourceType
+  cardId: string;
+  variantId: string;
+  sourceType: string;
+  sourceLink: string;
+  updatedAt: Date | null;
+  data: string; // JSON as string
+  price: string; // numeric as string to preserve precision
+  fetchedAt: Date; // when this data was fetched from server
+}
+
+export interface CardVariantPriceFetchListStore {
+  id: string; // composite key: cardId-variantId
+  cardId: string;
+  variantId: string;
+  addedAt: Date | null; // nullable datetime when added to list
+}
+
+// Helper functions for card variant prices
+export function createCardVariantPriceId(cardId: string, variantId: string, sourceType: string): string {
+  return `${cardId}-${variantId}-${sourceType}`;
+}
+
+export function createCardVariantFetchListId(cardId: string, variantId: string): string {
+  return `${cardId}-${variantId}`;
+}
+
+export async function getStoredCardVariantPrice(
+  cardId: string,
+  variantId: string,
+  sourceType: string,
+): Promise<CardVariantPriceStore | undefined> {
+  const id = createCardVariantPriceId(cardId, variantId, sourceType);
+  return await db.cardVariantPrices.get(id);
+}
+
+export async function storeCardVariantPrice(
+  cardId: string,
+  variantId: string,
+  sourceType: string,
+  sourceLink: string,
+  updatedAt: Date | null,
+  data: string,
+  price: string,
+): Promise<void> {
+  const id = createCardVariantPriceId(cardId, variantId, sourceType);
+  await db.cardVariantPrices.put({
+    id,
+    cardId,
+    variantId,
+    sourceType,
+    sourceLink,
+    updatedAt,
+    data,
+    price,
+    fetchedAt: new Date(),
+  });
+}
+
+export async function getStoredCardVariantPricesByCard(cardId: string): Promise<CardVariantPriceStore[]> {
+  return await db.cardVariantPrices.where('cardId').equals(cardId).toArray();
+}
+
+export async function getStoredCardVariantPricesByVariant(
+  cardId: string,
+  variantId: string,
+): Promise<CardVariantPriceStore[]> {
+  return await db.cardVariantPrices
+    .where('cardId').equals(cardId)
+    .and(item => item.variantId === variantId)
+    .toArray();
+}
+
+// Helper functions for card variant price fetch list
+export async function addToCardVariantPriceFetchList(
+  cardId: string,
+  variantId: string,
+  addedAt?: Date,
+): Promise<void> {
+  const id = createCardVariantFetchListId(cardId, variantId);
+  await db.cardVariantPriceFetchList.put({
+    id,
+    cardId,
+    variantId,
+    addedAt: addedAt || new Date(),
+  });
+}
+
+export async function removeFromCardVariantPriceFetchList(
+  cardId: string,
+  variantId: string,
+): Promise<void> {
+  const id = createCardVariantFetchListId(cardId, variantId);
+  await db.cardVariantPriceFetchList.delete(id);
+}
+
+export async function getCardVariantPriceFetchList(): Promise<CardVariantPriceFetchListStore[]> {
+  const items = await db.cardVariantPriceFetchList.toArray();
+  return items.sort((a, b) => {
+    if (!a.addedAt && !b.addedAt) return 0;
+    if (!a.addedAt) return 1;
+    if (!b.addedAt) return -1;
+    return a.addedAt.getTime() - b.addedAt.getTime();
+  });
+}
+
+export async function isInCardVariantPriceFetchList(
+  cardId: string,
+  variantId: string,
+): Promise<boolean> {
+  const id = createCardVariantFetchListId(cardId, variantId);
+  const item = await db.cardVariantPriceFetchList.get(id);
+  return !!item;
+}
+
+export async function clearCardVariantPriceFetchList(): Promise<void> {
+  await db.cardVariantPriceFetchList.clear();
+}
+
+// Utility functions for data freshness and batch operations
+export function isCardVariantPriceDataStale(
+  fetchedAt: Date,
+  maxAgeMinutes: number = 30,
+): boolean {
+  const now = new Date();
+  const ageInMinutes = (now.getTime() - fetchedAt.getTime()) / (1000 * 60);
+  return ageInMinutes > maxAgeMinutes;
+}
+
+export async function batchStoreCardVariantPrices(
+  prices: Array<{
+    cardId: string;
+    variantId: string;
+    sourceType: string;
+    sourceLink: string;
+    updatedAt: Date | null;
+    data: string;
+    price: string;
+  }>,
+): Promise<void> {
+  const items = prices.map(price => ({
+    id: createCardVariantPriceId(price.cardId, price.variantId, price.sourceType),
+    ...price,
+    fetchedAt: new Date(),
+  }));
+  
+  await db.cardVariantPrices.bulkPut(items);
+}
+
+export async function batchAddToCardVariantPriceFetchList(
+  cardVariants: Array<{ cardId: string; variantId: string; addedAt?: Date }>,
+): Promise<void> {
+  const items = cardVariants.map(variant => ({
+    id: createCardVariantFetchListId(variant.cardId, variant.variantId),
+    cardId: variant.cardId,
+    variantId: variant.variantId,
+    addedAt: variant.addedAt || new Date(),
+  }));
+  
+  await db.cardVariantPriceFetchList.bulkPut(items);
+}
+
+/*
+ * RECOMMENDATIONS AND IMPLEMENTATION NOTES:
+ * 
+ * 1. USAGE PATTERN:
+ *    - Check if price data exists and is fresh using isCardVariantPriceDataStale()
+ *    - If stale or missing, add to fetch list using addToCardVariantPriceFetchList()
+ *    - Periodically batch fetch from server using getCardVariantPriceFetchList()
+ *    - Store results using batchStoreCardVariantPrices()
+ *    - Clear fetch list after successful batch fetch
+ * 
+ * 2. INDEXING STRATEGY:
+ *    - Primary keys use composite strings (cardId-variantId-sourceType for prices, cardId-variantId for fetch list)
+ *    - Additional indexes on cardId, variantId, sourceType for efficient queries
+ *    - Consider adding compound indexes if query patterns become complex
+ * 
+ * 3. DATA MANAGEMENT:
+ *    - Consider implementing size limits for IndexedDB storage
+ *    - Monitor storage quota usage in production
+ *    - Current prices are kept fresh, no historical data stored
+ * 
+ * 4. POTENTIAL ISSUES:
+ *    - IndexedDB has storage limits (~50MB-1GB depending on browser/device)
+ *    - Composite key strings might become long - consider hashing for very long IDs
+ *    - Browser compatibility: IndexedDB works in all modern browsers but has quirks
+ *    - Transaction conflicts possible with concurrent reads/writes
+ * 
+ * 5. PERFORMANCE CONSIDERATIONS:
+ *    - Use batch operations (bulkPut, bulkDelete) for better performance
+ *    - Avoid frequent small transactions
+ *    - Consider implementing connection pooling for high-frequency operations
+ *    - Use indexes wisely - too many can slow down writes
+ * 
+ * 6. ERROR HANDLING:
+ *    - Implement try-catch blocks around IndexedDB operations
+ *    - Handle quota exceeded errors gracefully
+ *    - Consider fallback to memory storage if IndexedDB fails
+ *    - Log errors for debugging but don't expose sensitive data
+ * 
+ * 7. ADDITIONAL FEATURES TO CONSIDER:
+ *    - Implement data compression for large JSON strings
+ *    - Add data validation before storing
+ *    - Implement cache invalidation strategies
+ *    - Add metrics/analytics for cache hit rates
+ *    - Consider implementing data synchronization conflict resolution
+ */

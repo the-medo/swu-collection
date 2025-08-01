@@ -1,7 +1,7 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { TournamentDeck } from '../../../../server/db/schema/tournament_deck.ts';
-import { getStoredTournamentDecks, isDataStale, storeTournamentDecks } from '@/lib/db.ts';
+import { getStoredTournamentDecks, isDataStale, storeTournamentDecks } from '@/dexie';
 import { useGetTournament } from './useGetTournament.ts';
 import { DeckInformation } from '../../../../server/db/schema/deck_information.ts';
 import { Deck } from '../../../../server/db/schema/deck.ts';
