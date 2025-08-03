@@ -1,7 +1,18 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
-import type { CardVariantPriceHistory } from '../../../../server/db/schema/card_variant_price_history.ts';
+
+/**
+ * Card variant price history data structure
+ */
+export interface CardVariantPriceHistory {
+  cardId: string;
+  variantId: string;
+  sourceType: string;
+  createdAt: string;
+  data: string;
+  price: string;
+}
 
 /**
  * Parameters for the card price history query

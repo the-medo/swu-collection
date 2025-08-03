@@ -11,16 +11,14 @@ const createSourceSchema = z.object({
   cardId: z.string().min(1),
   variantId: z.string().min(1),
   sourceType: z.string().min(1),
-  sourceLink: z.string().url(),
-  data: z.string().min(1), // JSON as string
-  price: z.number().min(0),
+  sourceLink: z.string().min(1),
 });
 
 export const cardPricesCreateSourceRoute = new Hono<AuthExtension>().post(
   '/',
   zValidator('json', createSourceSchema),
   async c => {
-    const { cardId, variantId, sourceType, sourceLink, data, price } = c.req.valid('json');
+    const { cardId, variantId, sourceType, sourceLink } = c.req.valid('json');
 
     // Check if the record already exists
     const existingRecord = await db
@@ -35,15 +33,14 @@ export const cardPricesCreateSourceRoute = new Hono<AuthExtension>().post(
       )
       .limit(1);
 
+    let result = [];
+
     if (existingRecord.length > 0) {
       // Update the existing record
-      await db
+      result = await db
         .update(cardVariantPrice)
         .set({
           sourceLink,
-          updatedAt: new Date(),
-          data,
-          price: price.toString(),
         })
         .where(
           and(
@@ -51,32 +48,23 @@ export const cardPricesCreateSourceRoute = new Hono<AuthExtension>().post(
             eq(cardVariantPrice.variantId, variantId),
             eq(cardVariantPrice.sourceType, sourceType),
           ),
-        );
+        )
+        .returning();
     } else {
       // Insert a new record
-      await db.insert(cardVariantPrice).values({
-        cardId,
-        variantId,
-        sourceType,
-        sourceLink,
-        updatedAt: new Date(),
-        data,
-        price: price.toString(),
-      });
+      result = await db
+        .insert(cardVariantPrice)
+        .values({
+          cardId,
+          variantId,
+          sourceType,
+          sourceLink,
+          updatedAt: null,
+          data: '',
+          price: 0,
+        })
+        .returning();
     }
-
-    // Return the updated/created record
-    const result = await db
-      .select()
-      .from(cardVariantPrice)
-      .where(
-        and(
-          eq(cardVariantPrice.cardId, cardId),
-          eq(cardVariantPrice.variantId, variantId),
-          eq(cardVariantPrice.sourceType, sourceType),
-        ),
-      )
-      .limit(1);
 
     return c.json({
       success: true,

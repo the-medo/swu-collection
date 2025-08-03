@@ -1,7 +1,18 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
-import type { CardVariantPrice } from '../../../../server/db/schema/card_variant_price.ts';
+
+/**
+ * Card variant price data structure
+ */
+export interface CardVariantPrice {
+  cardId: string;
+  variantId: string;
+  sourceType: string;
+  sourceLink: string;
+  updatedAt: string | null;
+  data: string | null;
+}
 
 /**
  * Parameters for creating a card price source
@@ -11,8 +22,6 @@ export interface CreateCardPriceSourceParams {
   variantId: string;
   sourceType: string;
   sourceLink: string;
-  data: string;
-  price: number;
 }
 
 /**
@@ -30,7 +39,7 @@ export interface CreateCardPriceSourceResponse {
 export const useCreateCardPriceSource = () => {
   return useMutation<CreateCardPriceSourceResponse, ErrorWithStatus, CreateCardPriceSourceParams>({
     mutationFn: async (params: CreateCardPriceSourceParams) => {
-      const response = await api['card-prices'].$post({
+      const response = await api['card-prices']['create-source'].$post({
         json: params,
       });
 

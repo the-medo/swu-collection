@@ -1,7 +1,19 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
-import type { CardVariantPrice } from '../../../../server/db/schema/card_variant_price.ts';
+
+/**
+ * Card variant price data structure
+ */
+export interface CardVariantPrice {
+  cardId: string;
+  variantId: string;
+  sourceType: string;
+  sourceLink: string;
+  updatedAt: string | null;
+  data: string;
+  price: string;
+}
 
 /**
  * Parameters for the bulk load card prices request

@@ -16,49 +16,47 @@ export interface CardVariantPrice {
 }
 
 /**
- * Parameters for the single card price query
+ * Parameters for the all card price sources query
  */
-export interface SingleCardPriceParams {
+export interface AllCardPriceSourcesParams {
   cardId: string;
   variantId: string;
-  sourceType: string;
 }
 
 /**
- * Response from the single card price API
+ * Response from the all card price sources API
  */
-export interface SingleCardPriceResponse {
+export interface AllCardPriceSourcesResponse {
   success: boolean;
-  data: CardVariantPrice | undefined;
+  data: CardVariantPrice[];
 }
 
 /**
- * Hook for fetching a single card price
- * @param params - Parameters for the single card price query
- * @returns Query result with single card price data
+ * Hook for fetching all card price sources for a variant
+ * @param params - Parameters for the all card price sources query
+ * @returns Query result with all card price sources data
  */
-export const useGetSingleCardPrice = (params: SingleCardPriceParams) => {
-  const { cardId, variantId, sourceType } = params;
+export const useGetAllCardPriceSources = (params: AllCardPriceSourcesParams) => {
+  const { cardId, variantId } = params;
 
   // All parameters are required
-  const isValidQuery = cardId !== undefined && variantId !== undefined && sourceType !== undefined;
+  const isValidQuery = cardId !== undefined && variantId !== undefined;
 
-  return useQuery<SingleCardPriceResponse, ErrorWithStatus>({
-    queryKey: ['single-card-price', cardId, variantId, sourceType],
+  return useQuery<AllCardPriceSourcesResponse, ErrorWithStatus>({
+    queryKey: ['all-card-price-sources', cardId, variantId],
     queryFn: isValidQuery
       ? async () => {
           // Make the API request
-          const response = await api['card-prices'].$get({
+          const response = await api['card-prices']['sources'].$get({
             query: {
               cardId,
               variantId,
-              sourceType,
             },
           });
 
           if (!response.ok) {
             if (response.status === 404) {
-              const error: ErrorWithStatus = new Error('Card price not found');
+              const error: ErrorWithStatus = new Error('Card price sources not found');
               error.status = 404;
               throw error;
             }
@@ -66,7 +64,7 @@ export const useGetSingleCardPrice = (params: SingleCardPriceParams) => {
           }
 
           const data = await response.json();
-          return data as SingleCardPriceResponse;
+          return data as AllCardPriceSourcesResponse;
         }
       : skipToken,
     retry: (failureCount, error) => (error.status === 404 ? false : failureCount < 3),

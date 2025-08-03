@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
+import { CardVariantPriceAdministration } from '../CardVariantPrice/CardVariantPriceAdministration';
 
 interface CardDetailProps {
   cardId: string;
@@ -124,7 +125,9 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
 
                     <PropertyRow label="Type" value={card.type} />
                     <PropertyRow label="Rarity" value={card.rarity} />
-                    {card.cost !== null && <PropertyRow label="Cost" value={card.cost.toString()} />}
+                    {card.cost !== null && (
+                      <PropertyRow label="Cost" value={card.cost.toString()} />
+                    )}
                     {(card.power !== null || card.hp !== null) && (
                       <PropertyRow
                         label="Power / HP"
@@ -277,6 +280,14 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                         </div>
                       ))}
                     </div>
+
+                    {/* Price Administration for selected variant */}
+                    {selectedVariantId && (
+                      <CardVariantPriceAdministration
+                        cardId={cardId}
+                        variantId={selectedVariantId}
+                      />
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>

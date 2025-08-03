@@ -13,16 +13,14 @@ const bulkLoadSchema = z.object({
 });
 
 export const cardPricesBulkLoadRoute = new Hono<AuthExtension>().post(
-  '/bulk-load',
+  '/',
   zValidator('json', bulkLoadSchema),
   async c => {
     const { sourceType, variantIds } = c.req.valid('json');
-    
+
     // Build where conditions
-    const conditions = [
-      inArray(cardVariantPrice.variantId, variantIds)
-    ];
-    
+    const conditions = [inArray(cardVariantPrice.variantId, variantIds)];
+
     // Add sourceType filter if provided
     if (sourceType) {
       conditions.push(eq(cardVariantPrice.sourceType, sourceType));
