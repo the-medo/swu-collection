@@ -6,5 +6,7 @@ export const Route = createFileRoute('/decks/$deckId/')({
 });
 
 function RouteComponent() {
-  return <DeckDetail />;
+  const { deckId } = Route.useParams();
+
+  return <DeckDetail deckId={deckId} />;
 }

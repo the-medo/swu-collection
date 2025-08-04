@@ -4,6 +4,7 @@ import { and, eq, sql, gte, lte } from 'drizzle-orm';
 import {
   fetchDecklistView,
   fetchDeckMatchesWithMeleeDeckIds,
+  fetchMatchesFromRound,
   fetchPlayerDetails,
   fetchRoundStandings,
   fetchTournamentView,
@@ -35,13 +36,18 @@ export async function runTournamentImport(
   if (!meleeTournamentId) throw new Error('Melee tournament ID is empty');
 
   let roundId: number | undefined;
+  let allRoundIds: number[];
 
+  const tournamentView = await fetchTournamentView(meleeTournamentId);
   if (forcedRoundId && forcedRoundId !== '') {
     roundId = parseInt(forcedRoundId);
+    console.log('Forced round id: ', roundId);
   } else {
-    roundId = await fetchTournamentView(meleeTournamentId);
+    roundId = tournamentView?.finalRoundId ?? undefined;
     console.log('Round id: ', roundId);
   }
+  allRoundIds = tournamentView?.allRoundIds ?? [];
+  console.log('All Round IDs: ', allRoundIds);
 
   if (!roundId) throw new Error('Round ID is empty');
 
@@ -68,8 +74,9 @@ export async function runTournamentImport(
       if (meleeUserId) {
         const playerData = await fetchPlayerDetails(meleeUserId);
         if (playerData) {
-          decklistFound = true;
           userDecklistMap[meleeUserId] = playerData?.decklists?.[0];
+          if (userDecklistMap[meleeUserId]) decklistFound = true;
+          console.log('Decklist: ', userDecklistMap[meleeUserId]);
         }
       } else {
         console.log(`No user ID found in standing, skipping`);
@@ -119,6 +126,7 @@ export async function runTournamentImport(
 
   const deleteExistingDecks = !minRound && !maxRound;
   const importDeckCards = !minRound && !maxRound;
+  let totalMatches = 0;
 
   for (const d of parsedStandings) {
     console.log('D: ', d.tournamentDeck.deckId);
@@ -270,8 +278,40 @@ export async function runTournamentImport(
             };
           }
         }
+
+        totalMatches += playerInfo[d.tournamentDeck.meleePlayerUsername]?.matches.length;
       }
     }
+  }
+
+  if (totalMatches === 0) {
+    console.log('No matches found at all. Trying to fetch matches from API.');
+    for (const rid of allRoundIds) {
+      const roundMatches = await fetchMatchesFromRound(tournamentId, rid, playerInfo);
+      roundMatches.forEach(m => {
+        if (playerInfo[m.p1Username]) {
+          playerInfo[m.p1Username].matches.push(m);
+        }
+        if (m.p2Username && playerInfo[m.p2Username]) {
+          playerInfo[m.p2Username].matches.push(m);
+        }
+      });
+    }
+
+    let playerPointMap: Record<string, number> = {};
+    Object.entries(playerInfo).forEach(([username, info]) => {
+      info.matches.sort((m1, m2) => m1.round - m2.round);
+      info.matches.forEach(m => {
+        if (!playerPointMap[username]) playerPointMap[username] = 0;
+        if (m.p1Username === username) {
+          m.p1Points = playerPointMap[username];
+          playerPointMap[username] += m.result;
+        } else if (m.p2Username === username) {
+          m.p2Points = playerPointMap[username];
+          playerPointMap[username] += m.result === 1 ? 1 : Math.abs(3 - m.result);
+        }
+      });
+    });
   }
 
   console.log('Going to prepare matches with Swubase deck IDs...');

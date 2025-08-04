@@ -34,9 +34,14 @@ const formPostHeaders = {
   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
 };
 
+export interface TournamentViewResult {
+  finalRoundId: number | null;
+  allRoundIds: number[];
+}
+
 export async function fetchTournamentView(
   tournamentId: string | number,
-): Promise<number | undefined> {
+): Promise<TournamentViewResult | undefined> {
   try {
     await delay(500);
     const url = `https://melee.gg/Tournament/View/${tournamentId}`;
@@ -53,15 +58,35 @@ export async function fetchTournamentView(
 
     const html = await response.text();
     const { document } = parseHTML(html);
-    const button = document.querySelector(
+
+    // Get all round buttons
+    const allButtons = document.querySelectorAll(
+      '#standings-round-selector-container button.round-selector',
+    );
+
+    // Get the last button for final round ID
+    const finalButton = document.querySelector(
       '#standings-round-selector-container button.round-selector:last-of-type',
     );
 
-    const finalRoundId = button?.getAttribute('data-id') ?? null;
+    const finalRoundId = finalButton?.getAttribute('data-id') ?? null;
+
+    // Extract all round IDs
+    const allRoundIds: number[] = [];
+    allButtons.forEach(button => {
+      const roundId = button.getAttribute('data-id');
+      if (roundId) {
+        allRoundIds.push(parseInt(roundId));
+      }
+    });
 
     if (finalRoundId) {
       console.log('Final Round ID:', finalRoundId);
-      return parseInt(finalRoundId);
+      console.log('All Round IDs:', allRoundIds);
+      return {
+        finalRoundId: parseInt(finalRoundId),
+        allRoundIds,
+      };
     }
 
     console.log('Final Round Button not found!');
@@ -224,6 +249,167 @@ export async function fetchDeckMatchesWithMeleeDeckIds(
   }
 }
 
+/**
+ * Fetches all matches for a specific round in a tournament.
+ *
+ * This function is an alternative to fetchDeckMatchesWithMeleeDeckIds when decklists
+ * are not available. It fetches matches directly from the round endpoint and parses
+ * them using the same logic.
+ *
+ * @param tournamentId - The ID of the tournament
+ * @param roundId - The ID of the round to fetch matches from
+ * @param playerInfo - A map of player usernames to their deck IDs and match data
+ * @returns An array of TournamentMatchInsert objects
+ */
+export async function fetchMatchesFromRound(
+  tournamentId: string,
+  roundId: number,
+  playerInfo: Record<
+    string,
+    {
+      deckId: string;
+      meleeDeckId: string;
+      matches: TournamentMatchInsert[];
+    }
+  >,
+): Promise<TournamentMatchInsert[]> {
+  let recordsTotal = -1;
+  const matchesData = [];
+  console.log(`Fetching matches for round ${roundId} in tournament ${tournamentId}`);
+  const url = `https://melee.gg/Match/GetRoundMatches/${roundId}`;
+
+  try {
+    let start = 0;
+
+    while (recordsTotal === -1 || matchesData.length < recordsTotal) {
+      await delay(500);
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          ...formPostHeaders,
+        },
+        body: `draw=7&columns%5B0%5D%5Bdata%5D=TableNumber&columns%5B0%5D%5Bname%5D=TableNumber&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=PodNumber&columns%5B1%5D%5Bname%5D=PodNumber&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=Teams&columns%5B2%5D%5Bname%5D=Teams&columns%5B2%5D%5Bsearchable%5D=false&columns%5B2%5D%5Borderable%5D=false&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=Decklists&columns%5B3%5D%5Bname%5D=Decklists&columns%5B3%5D%5Bsearchable%5D=false&columns%5B3%5D%5Borderable%5D=false&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=ResultString&columns%5B4%5D%5Bname%5D=ResultString&columns%5B4%5D%5Bsearchable%5D=false&columns%5B4%5D%5Borderable%5D=false&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc&start=${start}&length=500&search%5Bvalue%5D=&search%5Bregex%5D=false`,
+      });
+
+      if (!response.ok) {
+        console.warn(`Failed to fetch round matches: ${response.status} ${response.statusText}`);
+        return [];
+      }
+
+      const res = await response.json();
+      matchesData.push(...res.data);
+      recordsTotal = res.recordsTotal;
+      start += 500;
+    }
+
+    const matches: TournamentMatchInsert[] = [];
+
+    for (const match of matchesData) {
+      // Skip matches without competitors
+      if (!match.Competitors || match.Competitors.length === 0) continue;
+
+      // Check if it's a bye
+      let isBye = false;
+      if (match.Competitors.length === 1 || match.ResultString.includes('was assigned a bye')) {
+        isBye = true;
+      }
+
+      // Get player 1 info
+      const p1 = match.Competitors[0];
+      const p1Username = p1.Team.Players[0].DisplayName;
+
+      // Get player 2 info (if not a bye)
+      let p2Username = null;
+      if (!isBye && match.Competitors.length > 1) {
+        p2Username = match.Competitors[1].Team.Players[0].DisplayName;
+      }
+
+      // Parse match result
+      let result = 0;
+      let gameWin = 0,
+        gameLose = 0,
+        gameDraw = 0;
+      let points = 0;
+      const pointsBefore = points;
+
+      if (isBye) {
+        // Handle bye - player gets a win
+        gameWin = p1.GameByes || 2;
+        points += 3;
+        result = 3;
+      } else if (match.ResultString.endsWith(' Draw')) {
+        // Handle draw
+        gameDraw = match.GameDraws || 3;
+        points += 1;
+        result = 1;
+      } else if (match.ResultString.includes(' forfeited the match')) {
+        console.log(`Doing nothing - ${match.ResultString}`);
+        // Forfeit handling could be added here if needed
+      } else if (match.ResultString.includes(' won ')) {
+        // Handle win/loss
+        const matchResult = match.ResultString.split(' won ');
+        const gameResult = matchResult.pop();
+        const userName = matchResult.join(' won '); // Just in case someone is named "Dude won the Potato"
+
+        if (gameResult && gameResult.includes('-')) {
+          const results = gameResult.split('-');
+
+          if (matchResult.length === 1 && results.length === 3) {
+            if (userName === p1Username) {
+              // Player 1 won
+              gameWin = parseInt(results[0]) || 0;
+              gameLose = parseInt(results[1]) || 0;
+              gameDraw = parseInt(results[2]) || 0;
+              result = 3;
+              points += 3;
+            } else if (userName === p2Username) {
+              // Player 2 won
+              gameWin = parseInt(results[1]) || 0;
+              gameLose = parseInt(results[0]) || 0;
+              gameDraw = parseInt(results[2]) || 0;
+            } else {
+              // Handle case where winner doesn't match either player
+              console.log(
+                `Winner ${userName} doesn't match either player: ${p1Username} or ${p2Username}`,
+              );
+            }
+          } else {
+            console.log(
+              `Not sure what to do, doing nothing: matchResult.length = ${matchResult.length}; results.length = ${results.length};`,
+            );
+          }
+        }
+      }
+
+      // Find deck IDs from playerInfo
+      const p1DeckId = playerInfo[p1Username]?.deckId || '';
+      const p2DeckId = p2Username ? playerInfo[p2Username]?.deckId || null : null;
+
+      // Create match object
+      matches.push({
+        tournamentId,
+        round: match.RoundNumber,
+        p1Username,
+        p1DeckId,
+        p1Points: pointsBefore,
+        p2Username,
+        p2DeckId,
+        p2Points: isBye ? null : pointsBefore, // This can be inaccurate and is updated later
+        gameWin,
+        gameLose,
+        gameDraw,
+        result,
+        isBye,
+      });
+    }
+
+    return matches;
+  } catch (error) {
+    console.error('Error fetching round matches:', error);
+    throw error;
+  }
+}
+
 export async function fetchDecklistView(decklistId: string) {
   const url = `https://melee.gg/Decklist/View/${decklistId}`;
 
@@ -261,6 +447,7 @@ export type ParsedStanding = {
   tournamentDeck: TournamentDeck;
   decklistName: string;
   exists: boolean;
+  meleeUserId?: number;
 };
 export type ParseStandingsAdditionalInfo = {
   /**
@@ -281,9 +468,9 @@ export const parseStandingsToTournamentDeck = (
 
   const placement = standing.Rank - additionalInfo.skippedStandings.length;
   const meleePlayerUsername = standing.Team.Players[0].DisplayName;
+  const meleeUserId = standing.Team.Players[0].ID;
 
   if (!decklistInfo && userDecklistMap) {
-    const meleeUserId = standing.Team.Players[0].ID;
     if (userDecklistMap[meleeUserId]) {
       const dl = userDecklistMap[meleeUserId];
       decklistInfo = { DecklistId: dl.id, DecklistName: dl.name };
@@ -313,6 +500,7 @@ export const parseStandingsToTournamentDeck = (
     },
     decklistName,
     exists: !!exists,
+    meleeUserId,
   };
 
   console.log(`Parsed ${result.exists ? 'existing' : 'new'} decklist: ${result.decklistName}`);
