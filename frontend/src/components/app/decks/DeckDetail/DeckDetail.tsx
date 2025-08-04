@@ -1,4 +1,4 @@
-import { getRouteApi, Link } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { useUser } from '@/hooks/useUser';
 import LoadingTitle from '../../global/LoadingTitle';
 import { Button } from '@/components/ui/button.tsx';
@@ -11,20 +11,25 @@ import DeckContents from '../DeckContents/DeckContents';
 import { useDeckLayoutStoreActions } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useRole } from '@/hooks/useRole.ts';
 
-const routeApi = getRouteApi('/decks/$deckId/');
+interface DeckDetailProps {
+  adminEdit?: boolean;
+  deckId: string;
+}
 
-const DeckDetail: React.FC = () => {
+const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId }) => {
   const user = useUser();
+  const hasRole = useRole();
+  const isAdmin = hasRole('admin');
 
-  const { deckId } = routeApi.useParams();
   const { data, isFetching, error } = useGetDeck(deckId);
   const { setDeckInfo } = useDeckLayoutStoreActions();
 
   const deckUserId = data?.user?.id ?? '';
   const loading = isFetching;
   const format = data?.deck.format ?? 1;
-  const owned = user?.id === deckUserId;
+  const owned = (user?.id === deckUserId || (isAdmin && adminEdit)) ?? false;
 
   useEffect(() => {
     setDeckInfo(deckId, format, owned);

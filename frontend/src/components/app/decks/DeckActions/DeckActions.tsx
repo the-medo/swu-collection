@@ -9,6 +9,7 @@ import {
   FileText,
   LinkIcon,
   Loader2,
+  Pencil,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
@@ -37,6 +38,7 @@ import { useUser } from '@/hooks/useUser';
 import AddToComparerButton from '@/components/app/comparer/SidebarComparer/AddToComparerButton.tsx';
 import { ComparerEntryAdditionalData } from '@/components/app/comparer/useComparerStore.ts';
 import { useMemo } from 'react';
+import { useRole } from '@/hooks/useRole.ts';
 
 interface DeckActionsProps {
   deckId: string;
@@ -44,6 +46,9 @@ interface DeckActionsProps {
 
 const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
   const user = useUser();
+  const hasRole = useRole();
+  const isAdmin = hasRole('admin');
+
   const { toast } = useToast();
   const { data: deckData } = useGetDeck(deckId);
   const { data: deckCardsData } = useGetDeckCards(deckId);
@@ -267,6 +272,17 @@ const DeckActions: React.FC<DeckActionsProps> = ({ deckId }) => {
           additionalData={additionalData}
           size="xs"
         />
+
+        {isAdmin && (
+          <Button
+            size="iconMedium"
+            variant="destructive"
+            title="Edit deck"
+            onClick={() => window.open(`/decks/${deckId}/edit`, '_blank')}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

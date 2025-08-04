@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../../../auth/auth.ts';
+import { auth, type AuthExtension } from '../../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { zDeckCardCreateRequest } from '../../../../../types/ZDeckCard.ts';
 import { z } from 'zod';
@@ -17,11 +17,21 @@ export const deckIdCardPostRoute = new Hono<AuthExtension>().post(
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
+    const isAdmin = await auth.api.userHasPermission({
+      body: {
+        userId: user.id,
+        permission: {
+          admin: ['access'],
+        },
+      },
+    });
+
     const deckId = eq(deckTable.id, paramDeckId);
 
     const deck = (await db.select().from(deckTable).where(deckId))[0];
     if (!deck) return c.json({ message: "Deck doesn't exist" }, 500);
-    if (deck.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
+    if (deck.userId !== user.id && !isAdmin.success)
+      return c.json({ message: 'Unauthorized' }, 401);
 
     const newDeckCard = await db
       .insert(deckCardTable)

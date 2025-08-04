@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../../auth/auth.ts';
+import { auth, type AuthExtension } from '../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { zDeckUpdateRequest } from '../../../../types/ZDeck.ts';
 import { z } from 'zod';
@@ -19,12 +19,26 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const isOwner = eq(deckTable.userId, user.id);
-    const deckId = eq(deckTable.id, paramDeckId);
+    const isAdmin = await auth.api.userHasPermission({
+      body: {
+        userId: user.id,
+        permission: {
+          admin: ['access'],
+        },
+      },
+    });
+
+    const conditions = [eq(deckTable.id, paramDeckId)];
+    if (!isAdmin.success) {
+      conditions.push(eq(deckTable.userId, user.id));
+    }
 
     // Get the current deck data to check if leader or base card has changed
     const currentDeck = (
-      await db.select().from(deckTable).where(and(isOwner, deckId))
+      await db
+        .select()
+        .from(deckTable)
+        .where(and(...conditions))
     )[0];
 
     if (!currentDeck) {
@@ -32,13 +46,15 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
         {
           message: "Deck doesn't exist or you don't have permission to update it",
         },
-        404
+        404,
       );
     }
 
     // Check if leader or base card is being updated
-    const isLeaderUpdated = data.leaderCardId1 !== undefined && data.leaderCardId1 !== currentDeck.leaderCardId1;
-    const isBaseUpdated = data.baseCardId !== undefined && data.baseCardId !== currentDeck.baseCardId;
+    const isLeaderUpdated =
+      data.leaderCardId1 !== undefined && data.leaderCardId1 !== currentDeck.leaderCardId1;
+    const isBaseUpdated =
+      data.baseCardId !== undefined && data.baseCardId !== currentDeck.baseCardId;
 
     const updatedDeck = (
       await db
@@ -47,7 +63,7 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
           ...data,
           updatedAt: sql`NOW()`,
         })
-        .where(and(isOwner, deckId))
+        .where(and(...conditions))
         .returning()
     )[0];
 
