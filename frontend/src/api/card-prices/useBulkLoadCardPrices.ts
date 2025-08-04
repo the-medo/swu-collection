@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
+import { batchStoreCardVariantPrices } from '@/dexie/cardPrices';
 
 /**
  * Card variant price data structure
@@ -51,8 +52,46 @@ export const useBulkLoadCardPrices = () => {
         throw new Error('Something went wrong');
       }
 
-      const data = await response.json();
-      return data as BulkLoadCardPricesResponse;
+      const data = (await response.json()) as BulkLoadCardPricesResponse;
+
+      if (data.success) {
+        // Create a set of variant IDs that were found in the response
+        const foundVariantIds = new Set(data.data.map(price => price.variantId));
+
+        // Create placeholder entries for variants that were not found
+        const placeholderEntries = params.variantIds
+          .filter(variantId => !foundVariantIds.has(variantId))
+          .map(variantId => ({
+            cardId: '',
+            variantId: variantId,
+            sourceType: params.sourceType || '',
+            sourceLink: '',
+            updatedAt: null,
+            data: '{}',
+            price: '0',
+          }));
+
+        // Combine real entries with placeholder entries
+        const allEntries = [
+          ...data.data.map(price => ({
+            cardId: price.cardId,
+            variantId: price.variantId,
+            sourceType: price.sourceType,
+            sourceLink: price.sourceLink,
+            updatedAt: price.updatedAt ? new Date(price.updatedAt) : null,
+            data: price.data,
+            price: price.price,
+          })),
+          ...placeholderEntries,
+        ];
+
+        // Store all entries in IndexedDB
+        if (allEntries.length > 0) {
+          await batchStoreCardVariantPrices(allEntries);
+        }
+      }
+
+      return data;
     },
   });
 };

@@ -35,9 +35,6 @@ export const CardVariantPriceAdministration: React.FC<CardVariantPriceAdministra
         <h3 className="text-lg font-semibold mb-4">Price Administration</h3>
 
         <div className="space-y-3">
-          {/* Always show the new pricing source row */}
-          <NewPricingSourceRow cardId={cardId} variantId={variantId} onSuccess={handleRefresh} />
-
           {/* Render existing pricing source rows */}
           {priceSources?.data && priceSources.data.length > 0 && (
             <div className="space-y-3">
@@ -52,6 +49,9 @@ export const CardVariantPriceAdministration: React.FC<CardVariantPriceAdministra
               ))}
             </div>
           )}
+
+          {/* Always show the new pricing source row */}
+          <NewPricingSourceRow cardId={cardId} variantId={variantId} onSuccess={handleRefresh} />
         </div>
       </div>
     </div>

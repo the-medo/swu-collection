@@ -1,6 +1,6 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
+import { getStoredCardVariantPrice } from '@/dexie/cardPrices';
 
 /**
  * Card variant price data structure
@@ -47,26 +47,21 @@ export const useGetSingleCardPrice = (params: SingleCardPriceParams) => {
     queryKey: ['single-card-price', cardId, variantId, sourceType],
     queryFn: isValidQuery
       ? async () => {
-          // Make the API request
-          const response = await api['card-prices'].$get({
-            query: {
-              cardId,
-              variantId,
-              sourceType,
-            },
-          });
+          // Fetch from IndexedDB
+          const result = await getStoredCardVariantPrice(cardId, variantId, sourceType);
 
-          if (!response.ok) {
-            if (response.status === 404) {
-              const error: ErrorWithStatus = new Error('Card price not found');
-              error.status = 404;
-              throw error;
-            }
-            throw new Error('Something went wrong');
+          if (!result) {
+            // If not found in IndexedDB, throw a 404 error
+            const error: ErrorWithStatus = new Error('Card price not found');
+            error.status = 404;
+            throw error;
           }
 
-          const data = await response.json();
-          return data as SingleCardPriceResponse;
+          // Transform the result to match the expected format
+          return {
+            success: true,
+            data: result,
+          } as SingleCardPriceResponse;
         }
       : skipToken,
     retry: (failureCount, error) => (error.status === 404 ? false : failureCount < 3),

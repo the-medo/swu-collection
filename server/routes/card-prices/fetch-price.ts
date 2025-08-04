@@ -35,7 +35,7 @@ export const cardPricesFetchPriceRoute = new Hono<AuthExtension>().post(
         .limit(1);
 
       const record = existingRecord[0];
-      
+
       if (!record) {
         return c.json({
           success: false,
@@ -54,22 +54,19 @@ export const cardPricesFetchPriceRoute = new Hono<AuthExtension>().post(
 
         // 3. Update the cardVariantPrice table
         // Determine price: first listing value, or averagePrice1Day if no listings
-        let priceValue = '';
+        let priceValue = 0;
         if (pricingData.topListings && pricingData.topListings.length > 0) {
           priceValue = pricingData.topListings[0].price;
         } else if (pricingData.averagePrice1Day) {
           priceValue = pricingData.averagePrice1Day;
         }
 
-        // Extract numeric value from price string (remove € and convert to number)
-        const numericPrice = parseFloat(priceValue.replace(/[€,\s]/g, '').replace(',', '.')) || 0;
-
         await db
           .update(cardVariantPrice)
           .set({
             updatedAt: sql`NOW()`,
             data: JSON.stringify(pricingData),
-            price: numericPrice.toString(),
+            price: (priceValue ?? 0).toString(),
           })
           .where(
             and(

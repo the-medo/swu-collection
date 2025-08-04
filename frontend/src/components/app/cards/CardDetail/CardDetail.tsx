@@ -267,7 +267,7 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                           title={`${variant.variantName} - ${variant.fullSetName} #${variant.cardNo}`}
                         >
                           <div className="flex flex-col items-center gap-2">
-                            <CardImage size="w200" card={card} cardVariantId={variant.id} />
+                            <CardImage size="w100" card={card} cardVariantId={variant.id} />
                             <div className="flex flex-col items-center">
                               <div className="text-xs font-medium text-center max-w-28 truncate">
                                 {variant.variantName}

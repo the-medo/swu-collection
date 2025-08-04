@@ -21,7 +21,6 @@ export {
   getStoredCardVariantPrice,
   storeCardVariantPrice,
   getStoredCardVariantPricesByCard,
-  getStoredCardVariantPricesByVariant,
   addToCardVariantPriceFetchList,
   removeFromCardVariantPriceFetchList,
   getCardVariantPriceFetchList,
@@ -31,3 +30,9 @@ export {
   batchStoreCardVariantPrices,
   batchAddToCardVariantPriceFetchList,
 } from './cardPrices';
+
+// Export auto-fetch prices hook
+export { useAutofetchPrices } from '../components/app/card-prices/useAutofetchPrices.ts';
+
+// Export PriceFetcher component
+export { PriceFetcher } from '../components/app/card-prices/PriceFetcher.tsx';
