@@ -1,6 +1,6 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
-import { getStoredCardVariantPrice } from '@/dexie/cardPrices';
+import { CardVariantPriceStore, getStoredCardVariantPrice } from '@/dexie/cardPrices';
 
 /**
  * Card variant price data structure
@@ -29,7 +29,7 @@ export interface SingleCardPriceParams {
  */
 export interface SingleCardPriceResponse {
   success: boolean;
-  data: CardVariantPrice | undefined;
+  data: CardVariantPriceStore | undefined;
 }
 
 /**

@@ -1,0 +1,69 @@
+import React from 'react';
+import { useGetSingleCardPrice } from '@/api/card-prices/useGetSingleCardPrice';
+import { Badge } from '@/components/ui/badge';
+import { PriceBadgeTooltip } from './PriceBadgeTooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+interface PriceBadgeProps {
+  cardId: string;
+  variantId: string;
+  sourceType: string;
+}
+
+/**
+ * PriceBadge component
+ *
+ * Displays a badge with the price (in EUR) and CardMarket logo for a specific card variant.
+ * If price data is not available, it returns null.
+ *
+ * @param props - Component props
+ * @param props.cardId - The ID of the card
+ * @param props.variantId - The ID of the card variant
+ * @param props.sourceType - The source type for the price data
+ */
+export const PriceBadge: React.FC<PriceBadgeProps> = ({ cardId, variantId, sourceType }) => {
+  // Fetch price data using the useGetSingleCardPrice hook
+  const { data, isLoading, isError } = useGetSingleCardPrice({
+    cardId,
+    variantId,
+    sourceType,
+  });
+
+  // If loading or error or no data, return null
+  if (isLoading || isError || !data || !data.success || !data.data) {
+    return null;
+  }
+
+  // Extract price from data
+  const price = data.data.price;
+  const hasPrice = price !== '0.00';
+
+  // Format price as EUR
+  const formattedPrice = hasPrice ? `${price}€` : 'N/A';
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <Badge variant="secondary" className="flex items-center gap-1 cursor-pointer">
+            <img src="https://images.swubase.com/cm-logo.png" alt="CardMarket" className="size-3" />
+            <span>{formattedPrice}</span>
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent className="p-4 max-w-sm">
+          {hasPrice ? (
+            <PriceBadgeTooltip
+              data={data.data.data}
+              sourceType={sourceType}
+              sourceLink={data.data.sourceLink}
+              updatedAt={data.data.updatedAt}
+              fetchedAt={data.data.fetchedAt}
+            />
+          ) : (
+            'No price data available.'
+          )}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};

@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.t
 import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { CardVariantPriceAdministration } from '../CardVariantPrice/CardVariantPriceAdministration';
+import { PriceBadge } from '@/components/app/card-prices';
 
 interface CardDetailProps {
   cardId: string;
@@ -275,6 +276,13 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                               <div className="text-xs text-muted-foreground">
                                 {variant.set?.toUpperCase()} #{variant.cardNo}
                               </div>
+                              {variant.variantId && (
+                                <PriceBadge
+                                  cardId={cardId}
+                                  sourceType="cardmarket"
+                                  variantId={variant.variantId}
+                                />
+                              )}
                             </div>
                           </div>
                         </div>

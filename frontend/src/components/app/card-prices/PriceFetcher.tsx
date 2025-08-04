@@ -1,3 +1,4 @@
+import React from 'react';
 import { useAutofetchPrices } from './useAutofetchPrices.ts';
 
 /**
@@ -11,7 +12,7 @@ import { useAutofetchPrices } from './useAutofetchPrices.ts';
  * <PriceFetcher />
  * ```
  */
-export function PriceFetcher() {
+export const PriceFetcher: React.FC = () => {
   // Call the hook to enable automatic price fetching
   useAutofetchPrices();
 

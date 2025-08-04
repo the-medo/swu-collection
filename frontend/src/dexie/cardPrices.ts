@@ -40,6 +40,15 @@ export async function getStoredCardVariantPrice(
     addToCardVariantPriceFetchList(cardId, variantId);
     return undefined;
   }
+  
+  // Check if the fetchedAt property is more than 12 hours ago
+  const now = new Date();
+  const ageInHours = (now.getTime() - result.fetchedAt.getTime()) / (1000 * 60 * 60);
+  if (ageInHours > 12) {
+    // If data is stale (more than 12 hours old), add to fetch list anyway
+    addToCardVariantPriceFetchList(cardId, variantId);
+  }
+  
   return result;
 }
 
