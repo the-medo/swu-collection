@@ -12,13 +12,14 @@ const createSourceSchema = z.object({
   variantId: z.string().min(1),
   sourceType: z.string().min(1),
   sourceLink: z.string().min(1),
+  sourceProductId: z.string().optional(),
 });
 
 export const cardPricesCreateSourceRoute = new Hono<AuthExtension>().post(
   '/',
   zValidator('json', createSourceSchema),
   async c => {
-    const { cardId, variantId, sourceType, sourceLink } = c.req.valid('json');
+    const { cardId, variantId, sourceType, sourceLink, sourceProductId } = c.req.valid('json');
 
     // Check if the record already exists
     const existingRecord = await db
@@ -41,6 +42,7 @@ export const cardPricesCreateSourceRoute = new Hono<AuthExtension>().post(
         .update(cardVariantPrice)
         .set({
           sourceLink,
+          sourceProductId,
         })
         .where(
           and(
@@ -59,9 +61,10 @@ export const cardPricesCreateSourceRoute = new Hono<AuthExtension>().post(
           variantId,
           sourceType,
           sourceLink,
+          sourceProductId,
           updatedAt: null,
-          data: '',
-          price: 0,
+          data: null,
+          price: null,
         })
         .returning();
     }

@@ -1,4 +1,5 @@
 import { db } from './db';
+import { queryClient } from '@/queryClient.ts';
 
 // Card variant price interfaces
 export interface CardVariantPriceStore {
@@ -37,18 +38,25 @@ export async function getStoredCardVariantPrice(
   const id = createCardVariantPriceId(variantId, sourceType);
   const result = await db.cardVariantPrices.get(id);
   if (!result) {
-    addToCardVariantPriceFetchList(cardId, variantId);
+    await addToCardVariantPriceFetchList(cardId, variantId);
     return undefined;
   }
-  
+
   // Check if the fetchedAt property is more than 12 hours ago
   const now = new Date();
+
+  // just for testing purposes
+  /*const ageInMinutes = (now.getTime() - result.fetchedAt.getTime()) / (1000 * 60);
+  if (ageInMinutes > 1) {
+    await addToCardVariantPriceFetchList(cardId, variantId);
+  }*/
+
   const ageInHours = (now.getTime() - result.fetchedAt.getTime()) / (1000 * 60 * 60);
   if (ageInHours > 12) {
     // If data is stale (more than 12 hours old), add to fetch list anyway
-    addToCardVariantPriceFetchList(cardId, variantId);
+    await addToCardVariantPriceFetchList(cardId, variantId);
   }
-  
+
   return result;
 }
 
@@ -143,11 +151,19 @@ export async function batchStoreCardVariantPrices(
   }));
 
   await db.cardVariantPrices.bulkPut(items);
-  
+
   // Remove the fetched variants from the fetch list
   const variantIds = prices.map(price => price.variantId);
   if (variantIds.length > 0) {
     await db.cardVariantPriceFetchList.bulkDelete(variantIds);
+  }
+
+  // Invalidate cache for each item to ensure useGetSingleCardPrice hook fetch fresh data
+  // TODO - maybe update instead of invalidate?
+  for (const price of prices) {
+    queryClient.invalidateQueries({
+      queryKey: ['single-card-price', price.variantId, price.sourceType],
+    });
   }
 }
 

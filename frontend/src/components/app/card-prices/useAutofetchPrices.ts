@@ -41,6 +41,7 @@ export function useAutofetchPrices() {
       // Use the bulk load mutation to fetch prices
       await bulkLoadMutation.mutateAsync({
         variantIds,
+        sourceType: 'cardmarket',
       });
 
       // Note: The variants are automatically removed from the fetch list by batchStoreCardVariantPrices

@@ -72,8 +72,8 @@ export async function parseCardMarketPricing(
         priceMatches && priceMatches.length > 1
           ? priceMatches[1] // Take the second price (lower/actual selling price)
           : priceMatches && priceMatches.length > 0
-          ? priceMatches[0] // Fallback to first price if only one exists
-          : '';
+            ? priceMatches[0] // Fallback to first price if only one exists
+            : '';
       const price = parsePrice(priceString);
 
       // Extract quantity - usually the last number in the row

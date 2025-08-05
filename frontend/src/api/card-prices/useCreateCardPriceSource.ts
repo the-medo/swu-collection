@@ -10,8 +10,10 @@ export interface CardVariantPrice {
   variantId: string;
   sourceType: string;
   sourceLink: string;
+  sourceProductId: string | null;
   updatedAt: string | null;
   data: string | null;
+  price: number | null;
 }
 
 /**
@@ -22,6 +24,7 @@ export interface CreateCardPriceSourceParams {
   variantId: string;
   sourceType: string;
   sourceLink: string;
+  sourceProductId?: string;
 }
 
 /**

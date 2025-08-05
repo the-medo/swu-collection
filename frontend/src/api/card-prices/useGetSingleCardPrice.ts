@@ -44,7 +44,7 @@ export const useGetSingleCardPrice = (params: SingleCardPriceParams) => {
   const isValidQuery = cardId !== undefined && variantId !== undefined && sourceType !== undefined;
 
   return useQuery<SingleCardPriceResponse, ErrorWithStatus>({
-    queryKey: ['single-card-price', cardId, variantId, sourceType],
+    queryKey: ['single-card-price', variantId, sourceType],
     queryFn: isValidQuery
       ? async () => {
           // Fetch from IndexedDB

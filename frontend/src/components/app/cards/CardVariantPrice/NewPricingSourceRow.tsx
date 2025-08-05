@@ -18,6 +18,7 @@ export const NewPricingSourceRow: React.FC<NewPricingSourceRowProps> = ({
 }) => {
   const [sourceType, setSourceType] = useState('cardmarket');
   const [sourceLink, setSourceLink] = useState('');
+  const [sourceProductId, setSourceProductId] = useState<string>('');
 
   const createMutation = useCreateCardPriceSource();
 
@@ -32,10 +33,12 @@ export const NewPricingSourceRow: React.FC<NewPricingSourceRowProps> = ({
         variantId,
         sourceType,
         sourceLink,
+        sourceProductId: sourceProductId || undefined,
       });
 
       // Reset form after successful creation
       setSourceLink('');
+      setSourceProductId('');
 
       // Call onSuccess callback to refresh data
       onSuccess?.();
@@ -68,6 +71,17 @@ export const NewPricingSourceRow: React.FC<NewPricingSourceRowProps> = ({
             onChange={e => setSourceLink(e.target.value)}
             placeholder="https://..."
             className="w-full"
+          />
+        </div>
+
+        <div className="flex-shrink-0">
+          <Label htmlFor="sourceProductId">Source Product ID</Label>
+          <Input
+            id="sourceProductId"
+            value={sourceProductId}
+            onChange={e => setSourceProductId(e.target.value)}
+            placeholder="Product ID"
+            className="w-[150px]"
           />
         </div>
 

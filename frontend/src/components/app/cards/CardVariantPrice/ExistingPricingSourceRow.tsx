@@ -15,8 +15,10 @@ export interface CardVariantPrice {
   variantId: string;
   sourceType: string;
   sourceLink: string;
+  sourceProductId: string | null;
   updatedAt: string | null;
-  data: string;
+  data: string | null;
+  price: number | null;
 }
 
 interface ExistingPricingSourceRowProps {
@@ -32,6 +34,7 @@ export const ExistingPricingSourceRow: React.FC<ExistingPricingSourceRowProps> =
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [sourceLink, setSourceLink] = useState<string>(priceSource.sourceLink);
+  const [sourceProductId, setSourceProductId] = useState<string | null>(priceSource.sourceProductId);
 
   const updateMutation = useCreateCardPriceSource();
   const deleteMutation = useDeleteCardPriceSource();
@@ -44,6 +47,7 @@ export const ExistingPricingSourceRow: React.FC<ExistingPricingSourceRowProps> =
         variantId: priceSource.variantId,
         sourceType: priceSource.sourceType,
         sourceLink,
+        sourceProductId: sourceProductId || undefined,
       });
 
       setIsEditing(false);
@@ -141,6 +145,16 @@ export const ExistingPricingSourceRow: React.FC<ExistingPricingSourceRowProps> =
               placeholder="https://..."
             />
           </div>
+          <div>
+            <Label htmlFor={`sourceProductId-${priceSource.sourceType}`}>Source Product ID</Label>
+            <Input
+              id={`sourceProductId-${priceSource.sourceType}`}
+              value={sourceProductId || ''}
+              onChange={e => setSourceProductId(e.target.value || null)}
+              placeholder="Product ID"
+              className="w-[150px]"
+            />
+          </div>
         </div>
       ) : (
         <div className="text-sm text-muted-foreground">
@@ -155,6 +169,11 @@ export const ExistingPricingSourceRow: React.FC<ExistingPricingSourceRowProps> =
               {priceSource.sourceLink}
             </a>
           </p>
+          {priceSource.sourceProductId && (
+            <p>
+              Product ID: <span className="font-mono">{priceSource.sourceProductId}</span>
+            </p>
+          )}
           <p>
             Last updated:{' '}
             {priceSource.updatedAt ? new Date(priceSource.updatedAt).toLocaleDateString() : 'Never'}

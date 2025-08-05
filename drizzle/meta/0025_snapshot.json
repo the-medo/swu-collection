@@ -1,5 +1,5 @@
 {
-  "id": "fd0a404e-dcd2-4cbf-9b38-2ba15fe00f2a",
+  "id": "5cf3e4d1-20ef-46f1-aa6b-7032146973d9",
   "prevId": "4ce1a1ad-2c55-4aac-bc53-696a8ede25b7",
   "version": "7",
   "dialect": "postgresql",
@@ -1933,7 +1933,83 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "cvph_card_id_idx": {
+          "name": "cvph_card_id_idx",
+          "columns": [
+            {
+              "expression": "card_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "cvph_variant_id_idx": {
+          "name": "cvph_variant_id_idx",
+          "columns": [
+            {
+              "expression": "variant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "cvph_source_type_idx": {
+          "name": "cvph_source_type_idx",
+          "columns": [
+            {
+              "expression": "source_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "cvph_created_at_idx": {
+          "name": "cvph_created_at_idx",
+          "columns": [
+            {
+              "expression": "source_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "cvph_price_idx": {
+          "name": "cvph_price_idx",
+          "columns": [
+            {
+              "expression": "price",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "card_variant_price_history_pk": {
@@ -1979,6 +2055,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "source_product_id": {
+          "name": "source_product_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp",
@@ -1989,18 +2071,18 @@
           "name": "data",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "price": {
           "name": "price",
           "type": "numeric(12, 2)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {
-        "card_variant_price_card_id_idx": {
-          "name": "card_variant_price_card_id_idx",
+        "cvp_card_id_idx": {
+          "name": "cvp_card_id_idx",
           "columns": [
             {
               "expression": "card_id",
@@ -2014,8 +2096,8 @@
           "method": "btree",
           "with": {}
         },
-        "card_variant_price_variant_id_idx": {
-          "name": "card_variant_price_variant_id_idx",
+        "cvp_variant_id_idx": {
+          "name": "cvp_variant_id_idx",
           "columns": [
             {
               "expression": "variant_id",
@@ -2029,8 +2111,8 @@
           "method": "btree",
           "with": {}
         },
-        "card_variant_price_source_type_idx": {
-          "name": "card_variant_price_source_type_idx",
+        "cvp_source_type_idx": {
+          "name": "cvp_source_type_idx",
           "columns": [
             {
               "expression": "source_type",
@@ -2044,8 +2126,23 @@
           "method": "btree",
           "with": {}
         },
-        "card_variant_price_price_idx": {
-          "name": "card_variant_price_price_idx",
+        "cvp_source_product_id_idx": {
+          "name": "cvp_source_product_id_idx",
+          "columns": [
+            {
+              "expression": "source_product_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "cvp_price_idx": {
+          "name": "cvp_price_idx",
           "columns": [
             {
               "expression": "price",
