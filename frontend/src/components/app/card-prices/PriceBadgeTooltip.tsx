@@ -4,7 +4,7 @@ import { Table, TableBody, TableRow, TableCell } from '@/components/ui/table';
 import { formatDistanceToNow } from 'date-fns';
 
 interface PriceBadgeTooltipProps {
-  data: string;
+  data: string | null;
   sourceType: string;
   sourceLink: string;
   updatedAt: Date | null;
@@ -42,6 +42,8 @@ export const PriceBadgeTooltip: React.FC<PriceBadgeTooltipProps> = ({
   updatedAt,
   fetchedAt,
 }) => {
+  if (!data) return null;
+
   let parsedData: CardMarketData | null = null;
 
   if (sourceType === 'cardmarket') {
@@ -57,7 +59,7 @@ export const PriceBadgeTooltip: React.FC<PriceBadgeTooltipProps> = ({
     return null;
   }
 
-  const formatPrice = (price: number) => `${price.toFixed(2)} €`;
+  const formatPrice = (price: number | undefined) => `${price?.toFixed(2)} €`;
 
   return (
     <div className="space-y-2">

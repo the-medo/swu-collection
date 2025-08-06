@@ -16,10 +16,9 @@ interface PriceBadgeProps {
  * Displays a badge with the price (in EUR) and CardMarket logo for a specific card variant.
  * If price data is not available, it returns null.
  *
- * @param props - Component props
- * @param props.cardId - The ID of the card
- * @param props.variantId - The ID of the card variant
- * @param props.sourceType - The source type for the price data
+ * @param cardId - The ID of the card
+ * @param variantId - The ID of the card variant
+ * @param sourceType - The source type for the price data
  */
 export const PriceBadge: React.FC<PriceBadgeProps> = ({ cardId, variantId, sourceType }) => {
   // Fetch price data using the useGetSingleCardPrice hook
@@ -35,8 +34,8 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({ cardId, variantId, sourc
   }
 
   // Extract price from data
-  const price = data.data.price;
-  const hasPrice = price !== '0.00';
+  const price = data?.data?.price;
+  const hasPrice = price && price !== '0.00';
 
   // Format price as EUR
   const formattedPrice = hasPrice ? `${price}€` : 'N/A';

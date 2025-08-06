@@ -67,8 +67,8 @@ export const useBulkLoadCardPrices = () => {
             sourceType: params.sourceType || '',
             sourceLink: '',
             updatedAt: null,
-            data: '{}',
-            price: '0',
+            data: null,
+            price: null,
           }));
 
         // Combine real entries with placeholder entries

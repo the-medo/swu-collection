@@ -9,8 +9,8 @@ export interface CardVariantPriceStore {
   sourceType: string;
   sourceLink: string;
   updatedAt: Date | null;
-  data: string; // JSON as string
-  price: string; // numeric as string to preserve precision
+  data: string | null; // JSON as string
+  price: string | null; // numeric as string to preserve precision
   fetchedAt: Date; // when this data was fetched from server
 }
 
@@ -140,8 +140,8 @@ export async function batchStoreCardVariantPrices(
     sourceType: string;
     sourceLink: string;
     updatedAt: Date | null;
-    data: string;
-    price: string;
+    data: string | null;
+    price: string | null;
   }>,
 ): Promise<void> {
   const items = prices.map(price => ({
