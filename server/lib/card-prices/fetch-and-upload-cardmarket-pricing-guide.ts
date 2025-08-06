@@ -1,4 +1,5 @@
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import type { CardMarketRawData, ParsedPricingObject } from '../../../types/CardPrices.ts';
 
 // Initialize the S3 client
 const bucketName = 'swu-images';
@@ -18,41 +19,6 @@ const s3Client = new S3Client({
 // URL for the CardMarket pricing guide
 const CARDMARKET_PRICING_URL =
   'https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_21.json';
-
-// Interface for raw pricing object from CardMarket
-interface CardMarketPricingObject {
-  idProduct: number;
-  idCategory: number;
-  avg: number | null;
-  low: number | null;
-  trend: number | null;
-  avg1: number | null;
-  avg7: number | null;
-  avg30: number | null;
-  'avg-foil': number | null;
-  'low-foil': number | null;
-  'trend-foil': number | null;
-  'avg1-foil': number | null;
-  'avg7-foil': number | null;
-  'avg30-foil': number | null;
-}
-
-// Interface for raw data from CardMarket
-interface CardMarketRawData {
-  version: number;
-  createdAt: string;
-  priceGuides: CardMarketPricingObject[];
-}
-
-// Interface for our parsed pricing object
-interface ParsedPricingObject {
-  avg: number | null;
-  low: number | null;
-  trend: number | null;
-  avg1: number | null;
-  avg7: number | null;
-  avg30: number | null;
-}
 
 // Interface for our parsed data
 interface ParsedData {
@@ -111,14 +77,25 @@ function parseCardMarketData(rawData: CardMarketRawData): ParsedData {
   const parsedData: ParsedData = {};
 
   for (const priceGuide of rawData.priceGuides) {
-    parsedData[priceGuide.idProduct.toString()] = {
-      avg: priceGuide.avg,
-      low: priceGuide.low,
-      trend: priceGuide.trend,
-      avg1: priceGuide.avg1,
-      avg7: priceGuide.avg7,
-      avg30: priceGuide.avg30,
-    };
+    const productId = priceGuide.idProduct.toString();
+    parsedData[productId] =
+      priceGuide.avg || priceGuide.trend || priceGuide.avg1 || priceGuide.avg7 || priceGuide.avg30 //low is missed on purpose from this condition
+        ? {
+            avg: priceGuide.avg,
+            low: priceGuide.low,
+            trend: priceGuide.trend,
+            avg1: priceGuide.avg1,
+            avg7: priceGuide.avg7,
+            avg30: priceGuide.avg30,
+          }
+        : {
+            avg: priceGuide['avg-foil'],
+            low: priceGuide['low-foil'],
+            trend: priceGuide['trend-foil'],
+            avg1: priceGuide['avg1-foil'],
+            avg7: priceGuide['avg7-foil'],
+            avg30: priceGuide['avg30-foil'],
+          };
   }
 
   return parsedData;

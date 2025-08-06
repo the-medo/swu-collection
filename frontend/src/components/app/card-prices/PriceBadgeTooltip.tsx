@@ -2,6 +2,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableRow, TableCell } from '@/components/ui/table';
 import { formatDistanceToNow } from 'date-fns';
+import { CardMarketPriceData } from '../../../../../types/CardPrices.ts';
 
 interface PriceBadgeTooltipProps {
   data: string | null;
@@ -9,19 +10,6 @@ interface PriceBadgeTooltipProps {
   sourceLink: string;
   updatedAt: Date | null;
   fetchedAt: Date;
-}
-
-interface CardMarketData {
-  availableItems: number;
-  fromPrice: number;
-  priceTrend: number;
-  averagePrice30Days: number;
-  averagePrice7Days: number;
-  averagePrice1Day: number;
-  topListings: Array<{
-    price: number;
-    quantity: number;
-  }>;
 }
 
 /**
@@ -44,11 +32,11 @@ export const PriceBadgeTooltip: React.FC<PriceBadgeTooltipProps> = ({
 }) => {
   if (!data) return null;
 
-  let parsedData: CardMarketData | null = null;
+  let parsedData: CardMarketPriceData | null = null;
 
   if (sourceType === 'cardmarket') {
     try {
-      parsedData = JSON.parse(data) as CardMarketData;
+      parsedData = JSON.parse(data) as CardMarketPriceData;
     } catch (error) {
       console.error('Failed to parse CardMarket data:', error);
       return null;
@@ -101,12 +89,6 @@ export const PriceBadgeTooltip: React.FC<PriceBadgeTooltipProps> = ({
                 {formatPrice(parsedData.fromPrice)}
               </TableCell>
             </TableRow>
-            {parsedData.topListings.map((listing, index) => (
-              <TableRow key={index} className="text-xs border-b-0 p-0">
-                <TableCell className="text-right pr-2">{listing.quantity}x</TableCell>
-                <TableCell className="text-right">{formatPrice(listing.price)}</TableCell>
-              </TableRow>
-            ))}
           </TableBody>
         </Table>
       </div>

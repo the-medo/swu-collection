@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCreateCardPriceSource } from '@/api/card-prices/useCreateCardPriceSource';
 import { useDeleteCardPriceSource } from '@/api/card-prices/useDeleteCardPriceSource';
-import { useFetchCardPrice } from '@/api/card-prices/useFetchCardPrice';
 
 /**
  * Card variant price data structure
@@ -34,11 +33,12 @@ export const ExistingPricingSourceRow: React.FC<ExistingPricingSourceRowProps> =
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [sourceLink, setSourceLink] = useState<string>(priceSource.sourceLink);
-  const [sourceProductId, setSourceProductId] = useState<string | null>(priceSource.sourceProductId);
+  const [sourceProductId, setSourceProductId] = useState<string | null>(
+    priceSource.sourceProductId,
+  );
 
   const updateMutation = useCreateCardPriceSource();
   const deleteMutation = useDeleteCardPriceSource();
-  const fetchPriceMutation = useFetchCardPrice();
 
   const handleUpdate = async () => {
     try {
@@ -80,20 +80,6 @@ export const ExistingPricingSourceRow: React.FC<ExistingPricingSourceRowProps> =
     setIsEditing(false);
   };
 
-  const handleFetchPrices = async () => {
-    try {
-      await fetchPriceMutation.mutateAsync({
-        cardId: priceSource.cardId,
-        variantId: priceSource.variantId,
-        sourceType: priceSource.sourceType,
-      });
-
-      onUpdate?.();
-    } catch (error) {
-      console.error('Failed to fetch price:', error);
-    }
-  };
-
   return (
     <div className="border rounded-lg p-4 bg-background">
       <div className="flex justify-between items-center mb-3">
@@ -101,14 +87,6 @@ export const ExistingPricingSourceRow: React.FC<ExistingPricingSourceRowProps> =
         <div className="flex gap-2">
           {!isEditing ? (
             <>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleFetchPrices}
-                disabled={fetchPriceMutation.isPending}
-              >
-                {fetchPriceMutation.isPending ? 'Fetching prices...' : 'Fetch Prices'}
-              </Button>
               <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
                 Edit
               </Button>

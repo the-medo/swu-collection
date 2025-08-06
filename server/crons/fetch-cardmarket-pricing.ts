@@ -10,6 +10,7 @@
  */
 
 import { fetchAndUploadCardMarketPricingGuide } from '../lib/card-prices/fetch-and-upload-cardmarket-pricing-guide';
+import { pairCardmarketPricesToDatabase } from '../lib/card-prices/pair-cardmarket-prices-to-database.ts';
 
 async function main() {
   console.log('Starting CardMarket pricing guide fetch...');
@@ -18,8 +19,13 @@ async function main() {
     // Call the function to fetch and upload CardMarket pricing guide
     // By default, forceUpload is false, so it will only upload if the file doesn't exist
     await fetchAndUploadCardMarketPricingGuide();
-
     console.log('CardMarket pricing guide fetch completed successfully');
+
+    await pairCardmarketPricesToDatabase();
+    console.log(
+      'CardMarket pricing guide pairing completed successfully and prices saved to database',
+    );
+
     process.exit(0);
   } catch (error) {
     console.error('Error during CardMarket pricing guide fetch:', error);
