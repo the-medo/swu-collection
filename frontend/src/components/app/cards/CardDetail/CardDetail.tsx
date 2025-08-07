@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
+import { CardVariantPriceAdministration } from '../CardVariantPrice/CardVariantPriceAdministration';
+import { PriceBadge } from '@/components/app/card-prices';
 
 interface CardDetailProps {
   cardId: string;
@@ -124,7 +126,9 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
 
                     <PropertyRow label="Type" value={card.type} />
                     <PropertyRow label="Rarity" value={card.rarity} />
-                    {card.cost !== null && <PropertyRow label="Cost" value={card.cost.toString()} />}
+                    {card.cost !== null && (
+                      <PropertyRow label="Cost" value={card.cost.toString()} />
+                    )}
                     {(card.power !== null || card.hp !== null) && (
                       <PropertyRow
                         label="Power / HP"
@@ -264,7 +268,7 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                           title={`${variant.variantName} - ${variant.fullSetName} #${variant.cardNo}`}
                         >
                           <div className="flex flex-col items-center gap-2">
-                            <CardImage size="w200" card={card} cardVariantId={variant.id} />
+                            <CardImage size="w100" card={card} cardVariantId={variant.id} />
                             <div className="flex flex-col items-center">
                               <div className="text-xs font-medium text-center max-w-28 truncate">
                                 {variant.variantName}
@@ -272,11 +276,26 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                               <div className="text-xs text-muted-foreground">
                                 {variant.set?.toUpperCase()} #{variant.cardNo}
                               </div>
+                              {variant.variantId && (
+                                <PriceBadge
+                                  cardId={cardId}
+                                  sourceType="cardmarket"
+                                  variantId={variant.variantId}
+                                />
+                              )}
                             </div>
                           </div>
                         </div>
                       ))}
                     </div>
+
+                    {/* Price Administration for selected variant */}
+                    {selectedVariantId && (
+                      <CardVariantPriceAdministration
+                        cardId={cardId}
+                        variantId={selectedVariantId}
+                      />
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>

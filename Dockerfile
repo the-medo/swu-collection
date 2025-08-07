@@ -1,5 +1,5 @@
 ARG BUN_VERSION=1.2.5
-FROM oven/bun:${BUN_VERSION}-slim as base
+FROM oven/bun:${BUN_VERSION}-slim AS base
 
 LABEL launch_runtime="Bun"
 
@@ -7,7 +7,7 @@ WORKDIR /app
 
 ENV NODE_ENV="production"
 
-FROM base as build
+FROM base AS build
 
 # Install necessary build dependencies
 RUN apt-get update -qq && \

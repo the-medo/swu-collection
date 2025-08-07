@@ -1,6 +1,6 @@
-import Dexie, { type Table } from 'dexie';
 import { type TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks';
 import { type TournamentMatch } from '../../../server/db/schema/tournament_match';
+import { db } from './db';
 
 export interface TournamentDecksStore {
   id: string; // tournamentId
@@ -13,23 +13,6 @@ export interface TournamentMatchesStore {
   matches: TournamentMatch[];
   fetchedAt: Date;
 }
-
-export class SwuBaseDB extends Dexie {
-  // Tables
-  tournamentDecks!: Table<TournamentDecksStore>;
-  tournamentMatches!: Table<TournamentMatchesStore>;
-
-  constructor() {
-    super('SwuBaseDB');
-    this.version(1).stores({
-      tournamentDecks: 'id', // Primary key is tournamentId
-      tournamentMatches: 'id', // Primary key is tournamentId
-    });
-  }
-}
-
-// Create a db instance
-export const db = new SwuBaseDB();
 
 // Helper functions for tournament data
 export async function getStoredTournamentDecks(

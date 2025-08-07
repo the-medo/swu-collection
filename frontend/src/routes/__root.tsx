@@ -3,6 +3,7 @@ import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { LeftSidebar } from '@/components/app/navigation/LeftSidebar/LeftSidebar.tsx';
 import { SidebarProvider } from '@/components/ui/sidebar.tsx';
 import { Toaster } from '@/components/ui/toaster.tsx';
+import { PriceFetcher } from '@/dexie';
 import { z } from 'zod';
 import CardDetailDialog from '@/components/app/cards/CardDetailDialog/CardDetailDialog.tsx';
 import SidebarTriggerButton from '@/components/app/navigation/TopMenu/SidebarTriggerButton.tsx';
@@ -102,6 +103,7 @@ export const Route = createRootRoute({
       </SidebarProvider>
       <CookieConsent />
       <Toaster />
+      <PriceFetcher />
     </>
   ),
   validateSearch: zodValidator(globalSearchParams),

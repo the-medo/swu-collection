@@ -279,7 +279,7 @@ export const collectionRoute = new Hono<AuthExtension>()
     const result = updatedCollectionCard[0];
 
     // in case that updated card has amount === 0 and amount2 is missing/also 0, we can delete it
-    if (result.amount === 0 && !result.amount2) {
+    if (result?.amount === 0 && !result?.amount2) {
       const deletedCollectionCard = (
         await db
           .delete(collectionCardTable)
@@ -471,10 +471,13 @@ export const collectionRoute = new Hono<AuthExtension>()
     }
 
     if (invalidCards.length > 0) {
-      return c.json({
-        message: 'Some cards could not be imported because they do not exist',
-        invalidCards
-      }, 400);
+      return c.json(
+        {
+          message: 'Some cards could not be imported because they do not exist',
+          invalidCards,
+        },
+        400,
+      );
     }
 
     // Prepare cards for insertion with default values
@@ -497,7 +500,7 @@ export const collectionRoute = new Hono<AuthExtension>()
     let allInsertedCards: any[] = [];
 
     // Process batches in a transaction
-    await db.transaction(async (tx) => {
+    await db.transaction(async tx => {
       for (const batch of batches) {
         const insertedBatch = await tx
           .insert(collectionCardTable)
@@ -523,12 +526,15 @@ export const collectionRoute = new Hono<AuthExtension>()
 
     const insertedCards = allInsertedCards;
 
-    return c.json({ 
-      data: {
-        inserted: insertedCards.length,
-        cards: insertedCards
-      }
-    }, 201);
+    return c.json(
+      {
+        data: {
+          inserted: insertedCards.length,
+          cards: insertedCards,
+        },
+      },
+      201,
+    );
   })
 
   .post('/:id/duplicate', zValidator('json', zCollectionDuplicateRequest), async c => {
