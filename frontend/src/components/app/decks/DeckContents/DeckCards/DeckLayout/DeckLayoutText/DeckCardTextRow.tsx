@@ -11,7 +11,7 @@ import { usePutDeckCard } from '@/api/decks/usePutDeckCard.ts';
 import { useCallback } from 'react';
 import { toast } from '@/hooks/use-toast.ts';
 import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInput.tsx';
-import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
 import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';

@@ -4,7 +4,7 @@ import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx'
 import { formatDataById } from '../../../../../../types/Format.ts';
 import DeckCards from '@/components/app/decks/DeckContents/DeckCards/DeckCards.tsx';
 import DeckInputCommand from '@/components/app/decks/DeckContents/DeckInputCommand/DeckInputCommand.tsx';
-import { useDeckInfo } from './useDeckLayoutStore.ts';
+import { useDeckInfo } from './useDeckInfoStore.ts';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
 import { useCallback } from 'react';
 import { toast } from '@/hooks/use-toast.ts';

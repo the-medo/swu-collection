@@ -5,7 +5,7 @@ import type {
 } from '../../../../../../../../../lib/swu-resources/types.ts';
 import * as React from 'react';
 import { useCallback } from 'react';
-import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { usePutDeckCard } from '@/api/decks/usePutDeckCard.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useNavigate } from '@tanstack/react-router';
