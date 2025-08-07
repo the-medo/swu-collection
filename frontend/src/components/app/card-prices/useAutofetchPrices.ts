@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { getCardVariantPriceFetchList } from '@/dexie';
 import { useBulkLoadCardPrices } from '@/api/card-prices/useBulkLoadCardPrices.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 /**
  * Hook that periodically checks the fetch list in IndexedDB for variants to check
@@ -12,6 +13,7 @@ import { useBulkLoadCardPrices } from '@/api/card-prices/useBulkLoadCardPrices.t
  * - Fetched variants are automatically removed from the fetch list by batchStoreCardVariantPrices
  */
 export function useAutofetchPrices() {
+  const { data: priceSourceType } = useGetUserSetting('priceSourceType');
   const bulkLoadMutation = useBulkLoadCardPrices();
   const timerRef = useRef<number | null>(null);
   const isRunningRef = useRef(false);
@@ -41,7 +43,7 @@ export function useAutofetchPrices() {
       // Use the bulk load mutation to fetch prices
       await bulkLoadMutation.mutateAsync({
         variantIds,
-        sourceType: 'cardmarket',
+        sourceType: priceSourceType,
       });
 
       // Note: The variants are automatically removed from the fetch list by batchStoreCardVariantPrices

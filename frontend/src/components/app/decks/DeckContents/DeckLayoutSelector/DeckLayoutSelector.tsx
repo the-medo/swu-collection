@@ -7,22 +7,20 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button.tsx';
 import { Eye } from 'lucide-react';
-import {
-  useDeckLayoutStore,
-  useDeckLayoutStoreActions,
-} from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { deckLayoutArray, deckLayoutObj } from '../../../../../../../types/iterableEnumInfo.ts';
 import React, { useCallback } from 'react';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
 import { DeckLayout } from '../../../../../../../types/enums.ts';
 
 interface DeckLayoutSelectorProps {}
 
 const DeckLayoutSelector: React.FC<DeckLayoutSelectorProps> = ({}) => {
-  const { layout } = useDeckLayoutStore();
-  const { setLayout } = useDeckLayoutStoreActions();
+  const { data: layout } = useGetUserSetting('deckLayout');
+  const { mutate: setSetting } = useSetUserSetting('deckLayout');
 
   const onValueChange = useCallback((v: string) => {
-    setLayout(v as DeckLayout);
+    setSetting(v as DeckLayout);
   }, []);
 
   return (

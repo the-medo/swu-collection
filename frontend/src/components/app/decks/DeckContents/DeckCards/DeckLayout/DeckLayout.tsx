@@ -1,9 +1,9 @@
 import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
-import { useDeckLayoutStore } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import DeckLayoutText from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutText/DeckLayoutText.tsx';
 import DeckLayoutVisualGrid from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutVisualGrid/DeckLayoutVisualGrid.tsx';
 import DeckLayoutVisualStacks from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutVisualGrid/DeckLayoutVisualStacks.tsx';
 import { DeckLayout as DeckLayoutEnum } from '../../../../../../../../types/enums.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 interface DeckLayoutProps {
   deckId: string;
@@ -16,7 +16,7 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({
   deckCardsForLayout,
   highlightedCardId,
 }) => {
-  const { layout } = useDeckLayoutStore();
+  const { data: layout } = useGetUserSetting('deckLayout');
 
   switch (layout) {
     case DeckLayoutEnum.TEXT:

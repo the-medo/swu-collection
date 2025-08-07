@@ -7,13 +7,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button.tsx';
 import { Layers } from 'lucide-react';
-import {
-  useDeckLayoutStore,
-  useDeckLayoutStoreActions,
-} from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { deckGroupByArray, deckGroupByObj } from '../../../../../../../types/iterableEnumInfo.ts';
 import React, { useCallback } from 'react';
 import { DeckGroupBy } from '../../../../../../../types/enums.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
 
 interface GroupBySelectorProps {
   value?: DeckGroupBy;
@@ -21,8 +19,8 @@ interface GroupBySelectorProps {
 }
 
 const GroupBySelector: React.FC<GroupBySelectorProps> = ({ value, onChange }) => {
-  const { groupBy: storeGroupBy } = useDeckLayoutStore();
-  const { setGroupBy } = useDeckLayoutStoreActions();
+  const { data: storeGroupBy } = useGetUserSetting('deckGroupBy');
+  const { mutate: setSetting } = useSetUserSetting('deckGroupBy');
 
   // Use provided value if available, otherwise use the store value
   const groupBy = value !== undefined ? value : storeGroupBy;
@@ -34,7 +32,7 @@ const GroupBySelector: React.FC<GroupBySelectorProps> = ({ value, onChange }) =>
       if (onChange) {
         onChange(newValue);
       } else {
-        setGroupBy(newValue);
+        setSetting(newValue);
       }
     },
     [onChange],
