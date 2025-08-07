@@ -1,3 +1,9 @@
+export enum CardPriceSourceType {
+  CARDMARKET = 'cardmarket',
+  TCGPLAYER = 'tcgplayer',
+  SWUBASE = 'swubase',
+}
+
 // Interface for raw pricing object from CardMarket
 export interface CardMarketPricingObject {
   idProduct: number;

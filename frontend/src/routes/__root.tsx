@@ -14,6 +14,7 @@ import Footer from '@/components/app/pages/Footer.tsx';
 import { metaInfoArray } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { cardStatsTabsArray } from '@/components/app/card-stats/CardStatsTabs/CardStatsTabs.tsx';
 import { aspectTabOptions } from '@/components/app/card-stats/AspectCardStats/AspectCardStats.tsx';
+import { UserSettingsLoader } from '@/components/app/users/UserSettingsLoader.tsx';
 
 const globalSearchParams = z.object({
   // global filters
@@ -104,6 +105,7 @@ export const Route = createRootRoute({
       <CookieConsent />
       <Toaster />
       <PriceFetcher />
+      <UserSettingsLoader />
     </>
   ),
   validateSearch: zodValidator(globalSearchParams),

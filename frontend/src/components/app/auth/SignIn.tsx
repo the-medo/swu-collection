@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { NavUser } from '@/components/app/auth/NavUser.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import { LogIn } from 'lucide-react';
+import { useCallback } from 'react';
 
 interface SignInProps {
   isLeftSidebar?: boolean;
@@ -21,6 +20,17 @@ interface SignInProps {
 export default function SignIn({ isLeftSidebar }: SignInProps) {
   const { open } = useSidebar();
   const session = useSession();
+
+  const handleSignIn = useCallback(async (provider: 'google' | 'github') => {
+    try {
+      sessionStorage.setItem('needsSettingsSync', '1');
+      await signIn.social({
+        provider,
+      });
+    } catch (error) {
+      console.error(`Error during ${provider} sign-in:`, error);
+    }
+  }, []);
 
   if (session.data && isLeftSidebar) {
     return <NavUser />;
@@ -46,11 +56,7 @@ export default function SignIn({ isLeftSidebar }: SignInProps) {
             <Button
               // variant="outline"
               className={cn('w-full gap-2')}
-              onClick={async () => {
-                await signIn.social({
-                  provider: 'google',
-                });
-              }}
+              onClick={() => handleSignIn('google')}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                 <path
@@ -63,11 +69,7 @@ export default function SignIn({ isLeftSidebar }: SignInProps) {
             <Button
               variant="outline"
               className={cn('w-full gap-2')}
-              onClick={async () => {
-                await signIn.social({
-                  provider: 'github',
-                });
-              }}
+              onClick={() => handleSignIn('github')}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                 <path
