@@ -8,7 +8,7 @@ import { useGetDeck } from '@/api/decks/useGetDeck';
 import EditDeckDialog from '../../dialogs/EditDeckDialog';
 import DeleteDeckDialog from '../../dialogs/DeleteDeckDialog';
 import DeckContents from '../DeckContents/DeckContents';
-import { useDeckLayoutStoreActions } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
+import { useDeckInfoStoreActions } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useRole } from '@/hooks/useRole.ts';
@@ -24,7 +24,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId }) => {
   const isAdmin = hasRole('admin');
 
   const { data, isFetching, error } = useGetDeck(deckId);
-  const { setDeckInfo } = useDeckLayoutStoreActions();
+  const { setDeckInfo } = useDeckInfoStoreActions();
 
   const deckUserId = data?.user?.id ?? '';
   const loading = isFetching;

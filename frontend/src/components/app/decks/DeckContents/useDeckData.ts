@@ -9,12 +9,12 @@ import {
 } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { DeckCard } from '../../../../../../types/ZDeckCard.ts';
-import { useDeckLayoutStore } from '@/components/app/decks/DeckContents/useDeckLayoutStore.ts';
 import { groupCardsByCost } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByCost.ts';
 import { groupCardsByAspect } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByAspect.ts';
 import { groupCardsByTrait } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByTrait.ts';
 import { groupCardsByKeywords } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByKeywords.ts';
 import { DeckGroupBy } from '../../../../../../types/enums.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 /**
  * Hook to get all deck data including leader, base, cards, and user info
@@ -40,7 +40,7 @@ export function useDeckData(deckId: string) {
   }, [deckInfo, cardList]);
 
   // Get the current groupBy value from the store
-  const { groupBy } = useDeckLayoutStore();
+  const { data: groupBy } = useGetUserSetting('deckGroupBy');
 
   // Process deck data for display
   const deckCardsForLayout = useMemo((): DeckCardsForLayout => {

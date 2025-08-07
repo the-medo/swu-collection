@@ -8,606 +8,261 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as TournamentsIndexRouteImport } from './routes/tournaments/index'
+import { Route as ToolsIndexRouteImport } from './routes/tools/index'
+import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
+import { Route as MetaIndexRouteImport } from './routes/meta/index'
+import { Route as MessagesIndexRouteImport } from './routes/messages/index'
+import { Route as ComparerIndexRouteImport } from './routes/comparer/index'
+import { Route as WantlistsYourRouteImport } from './routes/wantlists/your'
+import { Route as WantlistsPublicRouteImport } from './routes/wantlists/public'
+import { Route as ListsYourRouteImport } from './routes/lists/your'
+import { Route as DecksYourRouteImport } from './routes/decks/your'
+import { Route as DecksTournamentRouteImport } from './routes/decks/tournament'
+import { Route as DecksPublicRouteImport } from './routes/decks/public'
+import { Route as DecksFavoriteRouteImport } from './routes/decks/favorite'
+import { Route as CollectionsYourRouteImport } from './routes/collections/your'
+import { Route as CollectionsPublicRouteImport } from './routes/collections/public'
+import { Route as CardsSearchRouteImport } from './routes/cards/search'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
+import { Route as WantlistsWantlistIdIndexRouteImport } from './routes/wantlists/$wantlistId/index'
+import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId/index'
+import { Route as TournamentsPlanetaryQualifiersIndexRouteImport } from './routes/tournaments/planetary-qualifiers/index'
+import { Route as TournamentsFeaturedIndexRouteImport } from './routes/tournaments/featured/index'
+import { Route as TournamentsAllIndexRouteImport } from './routes/tournaments/all/index'
+import { Route as TournamentsTournamentIdIndexRouteImport } from './routes/tournaments/$tournamentId/index'
+import { Route as ToolsDeckFormatConverterIndexRouteImport } from './routes/tools/deck-format-converter/index'
+import { Route as ListsCardListIdIndexRouteImport } from './routes/lists/$cardListId/index'
+import { Route as DecksDeckIdIndexRouteImport } from './routes/decks/$deckId/index'
+import { Route as CollectionsCollectionIdIndexRouteImport } from './routes/collections/$collectionId/index'
+import { Route as TournamentsTournamentIdMetaRouteImport } from './routes/tournaments/$tournamentId/meta'
+import { Route as TournamentsTournamentIdMatchupsRouteImport } from './routes/tournaments/$tournamentId/matchups'
+import { Route as TournamentsTournamentIdDetailsRouteImport } from './routes/tournaments/$tournamentId/details'
+import { Route as TournamentsTournamentIdDecksRouteImport } from './routes/tournaments/$tournamentId/decks'
+import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/tournaments/$tournamentId/card-stats'
+import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
+import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as TermsImport } from './routes/terms'
-import { Route as PrivacyImport } from './routes/privacy'
-import { Route as AboutImport } from './routes/about'
-import { Route as AuthenticatedImport } from './routes/_authenticated'
-import { Route as IndexImport } from './routes/index'
-import { Route as TournamentsIndexImport } from './routes/tournaments/index'
-import { Route as ToolsIndexImport } from './routes/tools/index'
-import { Route as NotificationsIndexImport } from './routes/notifications/index'
-import { Route as MetaIndexImport } from './routes/meta/index'
-import { Route as MessagesIndexImport } from './routes/messages/index'
-import { Route as ComparerIndexImport } from './routes/comparer/index'
-import { Route as WantlistsYourImport } from './routes/wantlists/your'
-import { Route as WantlistsPublicImport } from './routes/wantlists/public'
-import { Route as ListsYourImport } from './routes/lists/your'
-import { Route as DecksYourImport } from './routes/decks/your'
-import { Route as DecksTournamentImport } from './routes/decks/tournament'
-import { Route as DecksPublicImport } from './routes/decks/public'
-import { Route as DecksFavoriteImport } from './routes/decks/favorite'
-import { Route as CollectionsYourImport } from './routes/collections/your'
-import { Route as CollectionsPublicImport } from './routes/collections/public'
-import { Route as CardsSearchImport } from './routes/cards/search'
-import { Route as AuthenticatedSettingsImport } from './routes/_authenticated.settings'
-import { Route as AuthenticatedAdminImport } from './routes/_authenticated.admin'
-import { Route as WantlistsWantlistIdIndexImport } from './routes/wantlists/$wantlistId/index'
-import { Route as UsersUserIdIndexImport } from './routes/users/$userId/index'
-import { Route as TournamentsPlanetaryQualifiersIndexImport } from './routes/tournaments/planetary-qualifiers/index'
-import { Route as TournamentsFeaturedIndexImport } from './routes/tournaments/featured/index'
-import { Route as TournamentsAllIndexImport } from './routes/tournaments/all/index'
-import { Route as TournamentsTournamentIdIndexImport } from './routes/tournaments/$tournamentId/index'
-import { Route as ToolsDeckFormatConverterIndexImport } from './routes/tools/deck-format-converter/index'
-import { Route as ListsCardListIdIndexImport } from './routes/lists/$cardListId/index'
-import { Route as DecksDeckIdIndexImport } from './routes/decks/$deckId/index'
-import { Route as CollectionsCollectionIdIndexImport } from './routes/collections/$collectionId/index'
-import { Route as TournamentsTournamentIdMetaImport } from './routes/tournaments/$tournamentId/meta'
-import { Route as TournamentsTournamentIdMatchupsImport } from './routes/tournaments/$tournamentId/matchups'
-import { Route as TournamentsTournamentIdDetailsImport } from './routes/tournaments/$tournamentId/details'
-import { Route as TournamentsTournamentIdDecksImport } from './routes/tournaments/$tournamentId/decks'
-import { Route as TournamentsTournamentIdCardStatsImport } from './routes/tournaments/$tournamentId/card-stats'
-import { Route as DecksDeckIdEditImport } from './routes/decks/$deckId/edit'
-import { Route as CardsDetailCardIdImport } from './routes/cards/detail/$cardId'
-
-// Create/Update Routes
-
-const TermsRoute = TermsImport.update({
+const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const PrivacyRoute = PrivacyImport.update({
+const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AboutRoute = AboutImport.update({
+const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthenticatedRoute = AuthenticatedImport.update({
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const TournamentsIndexRoute = TournamentsIndexImport.update({
+const TournamentsIndexRoute = TournamentsIndexRouteImport.update({
   id: '/tournaments/',
   path: '/tournaments/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ToolsIndexRoute = ToolsIndexImport.update({
+const ToolsIndexRoute = ToolsIndexRouteImport.update({
   id: '/tools/',
   path: '/tools/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const NotificationsIndexRoute = NotificationsIndexImport.update({
+const NotificationsIndexRoute = NotificationsIndexRouteImport.update({
   id: '/notifications/',
   path: '/notifications/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const MetaIndexRoute = MetaIndexImport.update({
+const MetaIndexRoute = MetaIndexRouteImport.update({
   id: '/meta/',
   path: '/meta/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const MessagesIndexRoute = MessagesIndexImport.update({
+const MessagesIndexRoute = MessagesIndexRouteImport.update({
   id: '/messages/',
   path: '/messages/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ComparerIndexRoute = ComparerIndexImport.update({
+const ComparerIndexRoute = ComparerIndexRouteImport.update({
   id: '/comparer/',
   path: '/comparer/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const WantlistsYourRoute = WantlistsYourImport.update({
+const WantlistsYourRoute = WantlistsYourRouteImport.update({
   id: '/wantlists/your',
   path: '/wantlists/your',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const WantlistsPublicRoute = WantlistsPublicImport.update({
+const WantlistsPublicRoute = WantlistsPublicRouteImport.update({
   id: '/wantlists/public',
   path: '/wantlists/public',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ListsYourRoute = ListsYourImport.update({
+const ListsYourRoute = ListsYourRouteImport.update({
   id: '/lists/your',
   path: '/lists/your',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DecksYourRoute = DecksYourImport.update({
+const DecksYourRoute = DecksYourRouteImport.update({
   id: '/decks/your',
   path: '/decks/your',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DecksTournamentRoute = DecksTournamentImport.update({
+const DecksTournamentRoute = DecksTournamentRouteImport.update({
   id: '/decks/tournament',
   path: '/decks/tournament',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DecksPublicRoute = DecksPublicImport.update({
+const DecksPublicRoute = DecksPublicRouteImport.update({
   id: '/decks/public',
   path: '/decks/public',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DecksFavoriteRoute = DecksFavoriteImport.update({
+const DecksFavoriteRoute = DecksFavoriteRouteImport.update({
   id: '/decks/favorite',
   path: '/decks/favorite',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const CollectionsYourRoute = CollectionsYourImport.update({
+const CollectionsYourRoute = CollectionsYourRouteImport.update({
   id: '/collections/your',
   path: '/collections/your',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const CollectionsPublicRoute = CollectionsPublicImport.update({
+const CollectionsPublicRoute = CollectionsPublicRouteImport.update({
   id: '/collections/public',
   path: '/collections/public',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const CardsSearchRoute = CardsSearchImport.update({
+const CardsSearchRoute = CardsSearchRouteImport.update({
   id: '/cards/search',
   path: '/cards/search',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthenticatedSettingsRoute = AuthenticatedSettingsImport.update({
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-
-const AuthenticatedAdminRoute = AuthenticatedAdminImport.update({
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-
-const WantlistsWantlistIdIndexRoute = WantlistsWantlistIdIndexImport.update({
-  id: '/wantlists/$wantlistId/',
-  path: '/wantlists/$wantlistId/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const UsersUserIdIndexRoute = UsersUserIdIndexImport.update({
+const WantlistsWantlistIdIndexRoute =
+  WantlistsWantlistIdIndexRouteImport.update({
+    id: '/wantlists/$wantlistId/',
+    path: '/wantlists/$wantlistId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const UsersUserIdIndexRoute = UsersUserIdIndexRouteImport.update({
   id: '/users/$userId/',
   path: '/users/$userId/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
 const TournamentsPlanetaryQualifiersIndexRoute =
-  TournamentsPlanetaryQualifiersIndexImport.update({
+  TournamentsPlanetaryQualifiersIndexRouteImport.update({
     id: '/tournaments/planetary-qualifiers/',
     path: '/tournaments/planetary-qualifiers/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any)
-
-const TournamentsFeaturedIndexRoute = TournamentsFeaturedIndexImport.update({
-  id: '/tournaments/featured/',
-  path: '/tournaments/featured/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const TournamentsAllIndexRoute = TournamentsAllIndexImport.update({
+const TournamentsFeaturedIndexRoute =
+  TournamentsFeaturedIndexRouteImport.update({
+    id: '/tournaments/featured/',
+    path: '/tournaments/featured/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TournamentsAllIndexRoute = TournamentsAllIndexRouteImport.update({
   id: '/tournaments/all/',
   path: '/tournaments/all/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
 const TournamentsTournamentIdIndexRoute =
-  TournamentsTournamentIdIndexImport.update({
+  TournamentsTournamentIdIndexRouteImport.update({
     id: '/tournaments/$tournamentId/',
     path: '/tournaments/$tournamentId/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any)
-
 const ToolsDeckFormatConverterIndexRoute =
-  ToolsDeckFormatConverterIndexImport.update({
+  ToolsDeckFormatConverterIndexRouteImport.update({
     id: '/tools/deck-format-converter/',
     path: '/tools/deck-format-converter/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any)
-
-const ListsCardListIdIndexRoute = ListsCardListIdIndexImport.update({
+const ListsCardListIdIndexRoute = ListsCardListIdIndexRouteImport.update({
   id: '/lists/$cardListId/',
   path: '/lists/$cardListId/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DecksDeckIdIndexRoute = DecksDeckIdIndexImport.update({
+const DecksDeckIdIndexRoute = DecksDeckIdIndexRouteImport.update({
   id: '/decks/$deckId/',
   path: '/decks/$deckId/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
 const CollectionsCollectionIdIndexRoute =
-  CollectionsCollectionIdIndexImport.update({
+  CollectionsCollectionIdIndexRouteImport.update({
     id: '/collections/$collectionId/',
     path: '/collections/$collectionId/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any)
-
 const TournamentsTournamentIdMetaRoute =
-  TournamentsTournamentIdMetaImport.update({
+  TournamentsTournamentIdMetaRouteImport.update({
     id: '/tournaments/$tournamentId/meta',
     path: '/tournaments/$tournamentId/meta',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any)
-
 const TournamentsTournamentIdMatchupsRoute =
-  TournamentsTournamentIdMatchupsImport.update({
+  TournamentsTournamentIdMatchupsRouteImport.update({
     id: '/tournaments/$tournamentId/matchups',
     path: '/tournaments/$tournamentId/matchups',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any)
-
 const TournamentsTournamentIdDetailsRoute =
-  TournamentsTournamentIdDetailsImport.update({
+  TournamentsTournamentIdDetailsRouteImport.update({
     id: '/tournaments/$tournamentId/details',
     path: '/tournaments/$tournamentId/details',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any)
-
 const TournamentsTournamentIdDecksRoute =
-  TournamentsTournamentIdDecksImport.update({
+  TournamentsTournamentIdDecksRouteImport.update({
     id: '/tournaments/$tournamentId/decks',
     path: '/tournaments/$tournamentId/decks',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any)
-
 const TournamentsTournamentIdCardStatsRoute =
-  TournamentsTournamentIdCardStatsImport.update({
+  TournamentsTournamentIdCardStatsRouteImport.update({
     id: '/tournaments/$tournamentId/card-stats',
     path: '/tournaments/$tournamentId/card-stats',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any)
-
-const DecksDeckIdEditRoute = DecksDeckIdEditImport.update({
+const DecksDeckIdEditRoute = DecksDeckIdEditRouteImport.update({
   id: '/decks/$deckId/edit',
   path: '/decks/$deckId/edit',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const CardsDetailCardIdRoute = CardsDetailCardIdImport.update({
+const CardsDetailCardIdRoute = CardsDetailCardIdRouteImport.update({
   id: '/cards/detail/$cardId',
   path: '/cards/detail/$cardId',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AuthenticatedImport
-      parentRoute: typeof rootRoute
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
-      parentRoute: typeof rootRoute
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyImport
-      parentRoute: typeof rootRoute
-    }
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsImport
-      parentRoute: typeof rootRoute
-    }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminImport
-      parentRoute: typeof AuthenticatedImport
-    }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsImport
-      parentRoute: typeof AuthenticatedImport
-    }
-    '/cards/search': {
-      id: '/cards/search'
-      path: '/cards/search'
-      fullPath: '/cards/search'
-      preLoaderRoute: typeof CardsSearchImport
-      parentRoute: typeof rootRoute
-    }
-    '/collections/public': {
-      id: '/collections/public'
-      path: '/collections/public'
-      fullPath: '/collections/public'
-      preLoaderRoute: typeof CollectionsPublicImport
-      parentRoute: typeof rootRoute
-    }
-    '/collections/your': {
-      id: '/collections/your'
-      path: '/collections/your'
-      fullPath: '/collections/your'
-      preLoaderRoute: typeof CollectionsYourImport
-      parentRoute: typeof rootRoute
-    }
-    '/decks/favorite': {
-      id: '/decks/favorite'
-      path: '/decks/favorite'
-      fullPath: '/decks/favorite'
-      preLoaderRoute: typeof DecksFavoriteImport
-      parentRoute: typeof rootRoute
-    }
-    '/decks/public': {
-      id: '/decks/public'
-      path: '/decks/public'
-      fullPath: '/decks/public'
-      preLoaderRoute: typeof DecksPublicImport
-      parentRoute: typeof rootRoute
-    }
-    '/decks/tournament': {
-      id: '/decks/tournament'
-      path: '/decks/tournament'
-      fullPath: '/decks/tournament'
-      preLoaderRoute: typeof DecksTournamentImport
-      parentRoute: typeof rootRoute
-    }
-    '/decks/your': {
-      id: '/decks/your'
-      path: '/decks/your'
-      fullPath: '/decks/your'
-      preLoaderRoute: typeof DecksYourImport
-      parentRoute: typeof rootRoute
-    }
-    '/lists/your': {
-      id: '/lists/your'
-      path: '/lists/your'
-      fullPath: '/lists/your'
-      preLoaderRoute: typeof ListsYourImport
-      parentRoute: typeof rootRoute
-    }
-    '/wantlists/public': {
-      id: '/wantlists/public'
-      path: '/wantlists/public'
-      fullPath: '/wantlists/public'
-      preLoaderRoute: typeof WantlistsPublicImport
-      parentRoute: typeof rootRoute
-    }
-    '/wantlists/your': {
-      id: '/wantlists/your'
-      path: '/wantlists/your'
-      fullPath: '/wantlists/your'
-      preLoaderRoute: typeof WantlistsYourImport
-      parentRoute: typeof rootRoute
-    }
-    '/comparer/': {
-      id: '/comparer/'
-      path: '/comparer'
-      fullPath: '/comparer'
-      preLoaderRoute: typeof ComparerIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/messages/': {
-      id: '/messages/'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof MessagesIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/meta/': {
-      id: '/meta/'
-      path: '/meta'
-      fullPath: '/meta'
-      preLoaderRoute: typeof MetaIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/notifications/': {
-      id: '/notifications/'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/tools/': {
-      id: '/tools/'
-      path: '/tools'
-      fullPath: '/tools'
-      preLoaderRoute: typeof ToolsIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/tournaments/': {
-      id: '/tournaments/'
-      path: '/tournaments'
-      fullPath: '/tournaments'
-      preLoaderRoute: typeof TournamentsIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/cards/detail/$cardId': {
-      id: '/cards/detail/$cardId'
-      path: '/cards/detail/$cardId'
-      fullPath: '/cards/detail/$cardId'
-      preLoaderRoute: typeof CardsDetailCardIdImport
-      parentRoute: typeof rootRoute
-    }
-    '/decks/$deckId/edit': {
-      id: '/decks/$deckId/edit'
-      path: '/decks/$deckId/edit'
-      fullPath: '/decks/$deckId/edit'
-      preLoaderRoute: typeof DecksDeckIdEditImport
-      parentRoute: typeof rootRoute
-    }
-    '/tournaments/$tournamentId/card-stats': {
-      id: '/tournaments/$tournamentId/card-stats'
-      path: '/tournaments/$tournamentId/card-stats'
-      fullPath: '/tournaments/$tournamentId/card-stats'
-      preLoaderRoute: typeof TournamentsTournamentIdCardStatsImport
-      parentRoute: typeof rootRoute
-    }
-    '/tournaments/$tournamentId/decks': {
-      id: '/tournaments/$tournamentId/decks'
-      path: '/tournaments/$tournamentId/decks'
-      fullPath: '/tournaments/$tournamentId/decks'
-      preLoaderRoute: typeof TournamentsTournamentIdDecksImport
-      parentRoute: typeof rootRoute
-    }
-    '/tournaments/$tournamentId/details': {
-      id: '/tournaments/$tournamentId/details'
-      path: '/tournaments/$tournamentId/details'
-      fullPath: '/tournaments/$tournamentId/details'
-      preLoaderRoute: typeof TournamentsTournamentIdDetailsImport
-      parentRoute: typeof rootRoute
-    }
-    '/tournaments/$tournamentId/matchups': {
-      id: '/tournaments/$tournamentId/matchups'
-      path: '/tournaments/$tournamentId/matchups'
-      fullPath: '/tournaments/$tournamentId/matchups'
-      preLoaderRoute: typeof TournamentsTournamentIdMatchupsImport
-      parentRoute: typeof rootRoute
-    }
-    '/tournaments/$tournamentId/meta': {
-      id: '/tournaments/$tournamentId/meta'
-      path: '/tournaments/$tournamentId/meta'
-      fullPath: '/tournaments/$tournamentId/meta'
-      preLoaderRoute: typeof TournamentsTournamentIdMetaImport
-      parentRoute: typeof rootRoute
-    }
-    '/collections/$collectionId/': {
-      id: '/collections/$collectionId/'
-      path: '/collections/$collectionId'
-      fullPath: '/collections/$collectionId'
-      preLoaderRoute: typeof CollectionsCollectionIdIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/decks/$deckId/': {
-      id: '/decks/$deckId/'
-      path: '/decks/$deckId'
-      fullPath: '/decks/$deckId'
-      preLoaderRoute: typeof DecksDeckIdIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/lists/$cardListId/': {
-      id: '/lists/$cardListId/'
-      path: '/lists/$cardListId'
-      fullPath: '/lists/$cardListId'
-      preLoaderRoute: typeof ListsCardListIdIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/tools/deck-format-converter/': {
-      id: '/tools/deck-format-converter/'
-      path: '/tools/deck-format-converter'
-      fullPath: '/tools/deck-format-converter'
-      preLoaderRoute: typeof ToolsDeckFormatConverterIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/tournaments/$tournamentId/': {
-      id: '/tournaments/$tournamentId/'
-      path: '/tournaments/$tournamentId'
-      fullPath: '/tournaments/$tournamentId'
-      preLoaderRoute: typeof TournamentsTournamentIdIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/tournaments/all/': {
-      id: '/tournaments/all/'
-      path: '/tournaments/all'
-      fullPath: '/tournaments/all'
-      preLoaderRoute: typeof TournamentsAllIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/tournaments/featured/': {
-      id: '/tournaments/featured/'
-      path: '/tournaments/featured'
-      fullPath: '/tournaments/featured'
-      preLoaderRoute: typeof TournamentsFeaturedIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/tournaments/planetary-qualifiers/': {
-      id: '/tournaments/planetary-qualifiers/'
-      path: '/tournaments/planetary-qualifiers'
-      fullPath: '/tournaments/planetary-qualifiers'
-      preLoaderRoute: typeof TournamentsPlanetaryQualifiersIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/users/$userId/': {
-      id: '/users/$userId/'
-      path: '/users/$userId'
-      fullPath: '/users/$userId'
-      preLoaderRoute: typeof UsersUserIdIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/wantlists/$wantlistId/': {
-      id: '/wantlists/$wantlistId/'
-      path: '/wantlists/$wantlistId'
-      fullPath: '/wantlists/$wantlistId'
-      preLoaderRoute: typeof WantlistsWantlistIdIndexImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
-
-interface AuthenticatedRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-}
-
-const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
-  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-}
-
-const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
-  AuthenticatedRouteChildren,
-)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -647,10 +302,8 @@ export interface FileRoutesByFullPath {
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -690,9 +343,8 @@ export interface FileRoutesByTo {
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
@@ -734,12 +386,10 @@ export interface FileRoutesById {
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | ''
     | '/about'
     | '/privacy'
     | '/terms'
@@ -781,7 +431,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | ''
     | '/about'
     | '/privacy'
     | '/terms'
@@ -864,7 +513,6 @@ export interface FileRouteTypes {
     | '/wantlists/$wantlistId/'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
@@ -905,6 +553,305 @@ export interface RootRouteChildren {
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
 }
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/': {
+      id: '/tournaments/'
+      path: '/tournaments'
+      fullPath: '/tournaments'
+      preLoaderRoute: typeof TournamentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/': {
+      id: '/tools/'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof ToolsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications/': {
+      id: '/notifications/'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/meta/': {
+      id: '/meta/'
+      path: '/meta'
+      fullPath: '/meta'
+      preLoaderRoute: typeof MetaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages/': {
+      id: '/messages/'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comparer/': {
+      id: '/comparer/'
+      path: '/comparer'
+      fullPath: '/comparer'
+      preLoaderRoute: typeof ComparerIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wantlists/your': {
+      id: '/wantlists/your'
+      path: '/wantlists/your'
+      fullPath: '/wantlists/your'
+      preLoaderRoute: typeof WantlistsYourRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wantlists/public': {
+      id: '/wantlists/public'
+      path: '/wantlists/public'
+      fullPath: '/wantlists/public'
+      preLoaderRoute: typeof WantlistsPublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lists/your': {
+      id: '/lists/your'
+      path: '/lists/your'
+      fullPath: '/lists/your'
+      preLoaderRoute: typeof ListsYourRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/decks/your': {
+      id: '/decks/your'
+      path: '/decks/your'
+      fullPath: '/decks/your'
+      preLoaderRoute: typeof DecksYourRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/decks/tournament': {
+      id: '/decks/tournament'
+      path: '/decks/tournament'
+      fullPath: '/decks/tournament'
+      preLoaderRoute: typeof DecksTournamentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/decks/public': {
+      id: '/decks/public'
+      path: '/decks/public'
+      fullPath: '/decks/public'
+      preLoaderRoute: typeof DecksPublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/decks/favorite': {
+      id: '/decks/favorite'
+      path: '/decks/favorite'
+      fullPath: '/decks/favorite'
+      preLoaderRoute: typeof DecksFavoriteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/your': {
+      id: '/collections/your'
+      path: '/collections/your'
+      fullPath: '/collections/your'
+      preLoaderRoute: typeof CollectionsYourRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/public': {
+      id: '/collections/public'
+      path: '/collections/public'
+      fullPath: '/collections/public'
+      preLoaderRoute: typeof CollectionsPublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cards/search': {
+      id: '/cards/search'
+      path: '/cards/search'
+      fullPath: '/cards/search'
+      preLoaderRoute: typeof CardsSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/wantlists/$wantlistId/': {
+      id: '/wantlists/$wantlistId/'
+      path: '/wantlists/$wantlistId'
+      fullPath: '/wantlists/$wantlistId'
+      preLoaderRoute: typeof WantlistsWantlistIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/$userId/': {
+      id: '/users/$userId/'
+      path: '/users/$userId'
+      fullPath: '/users/$userId'
+      preLoaderRoute: typeof UsersUserIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/planetary-qualifiers/': {
+      id: '/tournaments/planetary-qualifiers/'
+      path: '/tournaments/planetary-qualifiers'
+      fullPath: '/tournaments/planetary-qualifiers'
+      preLoaderRoute: typeof TournamentsPlanetaryQualifiersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/featured/': {
+      id: '/tournaments/featured/'
+      path: '/tournaments/featured'
+      fullPath: '/tournaments/featured'
+      preLoaderRoute: typeof TournamentsFeaturedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/all/': {
+      id: '/tournaments/all/'
+      path: '/tournaments/all'
+      fullPath: '/tournaments/all'
+      preLoaderRoute: typeof TournamentsAllIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/$tournamentId/': {
+      id: '/tournaments/$tournamentId/'
+      path: '/tournaments/$tournamentId'
+      fullPath: '/tournaments/$tournamentId'
+      preLoaderRoute: typeof TournamentsTournamentIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/deck-format-converter/': {
+      id: '/tools/deck-format-converter/'
+      path: '/tools/deck-format-converter'
+      fullPath: '/tools/deck-format-converter'
+      preLoaderRoute: typeof ToolsDeckFormatConverterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lists/$cardListId/': {
+      id: '/lists/$cardListId/'
+      path: '/lists/$cardListId'
+      fullPath: '/lists/$cardListId'
+      preLoaderRoute: typeof ListsCardListIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/decks/$deckId/': {
+      id: '/decks/$deckId/'
+      path: '/decks/$deckId'
+      fullPath: '/decks/$deckId'
+      preLoaderRoute: typeof DecksDeckIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/$collectionId/': {
+      id: '/collections/$collectionId/'
+      path: '/collections/$collectionId'
+      fullPath: '/collections/$collectionId'
+      preLoaderRoute: typeof CollectionsCollectionIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/$tournamentId/meta': {
+      id: '/tournaments/$tournamentId/meta'
+      path: '/tournaments/$tournamentId/meta'
+      fullPath: '/tournaments/$tournamentId/meta'
+      preLoaderRoute: typeof TournamentsTournamentIdMetaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/$tournamentId/matchups': {
+      id: '/tournaments/$tournamentId/matchups'
+      path: '/tournaments/$tournamentId/matchups'
+      fullPath: '/tournaments/$tournamentId/matchups'
+      preLoaderRoute: typeof TournamentsTournamentIdMatchupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/$tournamentId/details': {
+      id: '/tournaments/$tournamentId/details'
+      path: '/tournaments/$tournamentId/details'
+      fullPath: '/tournaments/$tournamentId/details'
+      preLoaderRoute: typeof TournamentsTournamentIdDetailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/$tournamentId/decks': {
+      id: '/tournaments/$tournamentId/decks'
+      path: '/tournaments/$tournamentId/decks'
+      fullPath: '/tournaments/$tournamentId/decks'
+      preLoaderRoute: typeof TournamentsTournamentIdDecksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/$tournamentId/card-stats': {
+      id: '/tournaments/$tournamentId/card-stats'
+      path: '/tournaments/$tournamentId/card-stats'
+      fullPath: '/tournaments/$tournamentId/card-stats'
+      preLoaderRoute: typeof TournamentsTournamentIdCardStatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/decks/$deckId/edit': {
+      id: '/decks/$deckId/edit'
+      path: '/decks/$deckId/edit'
+      fullPath: '/decks/$deckId/edit'
+      preLoaderRoute: typeof DecksDeckIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cards/detail/$cardId': {
+      id: '/cards/detail/$cardId'
+      path: '/cards/detail/$cardId'
+      fullPath: '/cards/detail/$cardId'
+      preLoaderRoute: typeof CardsDetailCardIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
+}
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -947,183 +894,6 @@ const rootRouteChildren: RootRouteChildren = {
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/_authenticated",
-        "/about",
-        "/privacy",
-        "/terms",
-        "/cards/search",
-        "/collections/public",
-        "/collections/your",
-        "/decks/favorite",
-        "/decks/public",
-        "/decks/tournament",
-        "/decks/your",
-        "/lists/your",
-        "/wantlists/public",
-        "/wantlists/your",
-        "/comparer/",
-        "/messages/",
-        "/meta/",
-        "/notifications/",
-        "/tools/",
-        "/tournaments/",
-        "/cards/detail/$cardId",
-        "/decks/$deckId/edit",
-        "/tournaments/$tournamentId/card-stats",
-        "/tournaments/$tournamentId/decks",
-        "/tournaments/$tournamentId/details",
-        "/tournaments/$tournamentId/matchups",
-        "/tournaments/$tournamentId/meta",
-        "/collections/$collectionId/",
-        "/decks/$deckId/",
-        "/lists/$cardListId/",
-        "/tools/deck-format-converter/",
-        "/tournaments/$tournamentId/",
-        "/tournaments/all/",
-        "/tournaments/featured/",
-        "/tournaments/planetary-qualifiers/",
-        "/users/$userId/",
-        "/wantlists/$wantlistId/"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/_authenticated": {
-      "filePath": "_authenticated.tsx",
-      "children": [
-        "/_authenticated/admin",
-        "/_authenticated/settings"
-      ]
-    },
-    "/about": {
-      "filePath": "about.tsx"
-    },
-    "/privacy": {
-      "filePath": "privacy.tsx"
-    },
-    "/terms": {
-      "filePath": "terms.tsx"
-    },
-    "/_authenticated/admin": {
-      "filePath": "_authenticated.admin.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/settings": {
-      "filePath": "_authenticated.settings.tsx",
-      "parent": "/_authenticated"
-    },
-    "/cards/search": {
-      "filePath": "cards/search.tsx"
-    },
-    "/collections/public": {
-      "filePath": "collections/public.tsx"
-    },
-    "/collections/your": {
-      "filePath": "collections/your.tsx"
-    },
-    "/decks/favorite": {
-      "filePath": "decks/favorite.tsx"
-    },
-    "/decks/public": {
-      "filePath": "decks/public.tsx"
-    },
-    "/decks/tournament": {
-      "filePath": "decks/tournament.tsx"
-    },
-    "/decks/your": {
-      "filePath": "decks/your.tsx"
-    },
-    "/lists/your": {
-      "filePath": "lists/your.tsx"
-    },
-    "/wantlists/public": {
-      "filePath": "wantlists/public.tsx"
-    },
-    "/wantlists/your": {
-      "filePath": "wantlists/your.tsx"
-    },
-    "/comparer/": {
-      "filePath": "comparer/index.tsx"
-    },
-    "/messages/": {
-      "filePath": "messages/index.tsx"
-    },
-    "/meta/": {
-      "filePath": "meta/index.tsx"
-    },
-    "/notifications/": {
-      "filePath": "notifications/index.tsx"
-    },
-    "/tools/": {
-      "filePath": "tools/index.tsx"
-    },
-    "/tournaments/": {
-      "filePath": "tournaments/index.tsx"
-    },
-    "/cards/detail/$cardId": {
-      "filePath": "cards/detail/$cardId.tsx"
-    },
-    "/decks/$deckId/edit": {
-      "filePath": "decks/$deckId/edit.tsx"
-    },
-    "/tournaments/$tournamentId/card-stats": {
-      "filePath": "tournaments/$tournamentId/card-stats.tsx"
-    },
-    "/tournaments/$tournamentId/decks": {
-      "filePath": "tournaments/$tournamentId/decks.tsx"
-    },
-    "/tournaments/$tournamentId/details": {
-      "filePath": "tournaments/$tournamentId/details.tsx"
-    },
-    "/tournaments/$tournamentId/matchups": {
-      "filePath": "tournaments/$tournamentId/matchups.tsx"
-    },
-    "/tournaments/$tournamentId/meta": {
-      "filePath": "tournaments/$tournamentId/meta.tsx"
-    },
-    "/collections/$collectionId/": {
-      "filePath": "collections/$collectionId/index.tsx"
-    },
-    "/decks/$deckId/": {
-      "filePath": "decks/$deckId/index.tsx"
-    },
-    "/lists/$cardListId/": {
-      "filePath": "lists/$cardListId/index.tsx"
-    },
-    "/tools/deck-format-converter/": {
-      "filePath": "tools/deck-format-converter/index.tsx"
-    },
-    "/tournaments/$tournamentId/": {
-      "filePath": "tournaments/$tournamentId/index.tsx"
-    },
-    "/tournaments/all/": {
-      "filePath": "tournaments/all/index.tsx"
-    },
-    "/tournaments/featured/": {
-      "filePath": "tournaments/featured/index.tsx"
-    },
-    "/tournaments/planetary-qualifiers/": {
-      "filePath": "tournaments/planetary-qualifiers/index.tsx"
-    },
-    "/users/$userId/": {
-      "filePath": "users/$userId/index.tsx"
-    },
-    "/wantlists/$wantlistId/": {
-      "filePath": "wantlists/$wantlistId/index.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
