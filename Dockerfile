@@ -1,35 +1,27 @@
-ARG BUN_VERSION=1.2.5
+ARG BUN_VERSION=1.2.19
 FROM oven/bun:${BUN_VERSION}-slim AS base
 
 LABEL launch_runtime="Bun"
 
 WORKDIR /app
-
-ENV NODE_ENV="production"
+ENV NODE_ENV=production
 
 FROM base AS build
-
-# Install necessary build dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
 
-# Install backend dependencies
-COPY --link package.json bun.lockb ./
-RUN bun install --production --ci
+# --- backend ---
+COPY --link package.json bun.lock ./
+RUN bun ci --production          # = bun install --frozen-lockfile
 
-# Install frontend dependencies
-COPY --link frontend/package.json frontend/bun.lockb ./frontend/
-RUN cd frontend && bun install --ci
+# --- frontend ---
+COPY --link frontend/package.json frontend/bun.lock ./frontend/
+RUN cd frontend && bun ci
 
 # Copy source code
 COPY --link . .
-
-# Build frontend
 WORKDIR /app/frontend
-
 RUN bun run direct-build
-
-# Clean up frontend directory, leaving only dist folder
 RUN find . -mindepth 1 ! -regex '^./dist\(/.*\)?' -delete
 
 # Final stage
