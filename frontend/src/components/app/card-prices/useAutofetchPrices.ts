@@ -28,7 +28,7 @@ export function useAutofetchPrices() {
 
       // Get the most recently added 100 variants from the fetch list
       const fetchList = await getCardVariantPriceFetchList();
-      const recentVariants = fetchList.slice(0, 100);
+      const recentVariants = fetchList.slice(0, 500);
 
       if (recentVariants.length === 0) {
         // No variants to fetch
@@ -55,13 +55,13 @@ export function useAutofetchPrices() {
   useEffect(() => {
     // Initial fetch after 15 seconds
     const initialTimer = window.setTimeout(() => {
-      fetchPrices();
-    }, 15000);
+      void fetchPrices();
+    }, 3000);
 
     // Set up interval for subsequent fetches every minute
     const intervalTimer = window.setInterval(() => {
-      fetchPrices();
-    }, 60000);
+      void fetchPrices();
+    }, 15000);
 
     // Clean up timers on unmount
     return () => {
