@@ -18,7 +18,7 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
   return (
     <Dialog
       trigger={
-        <Button size="xs">
+        <Button variant="ghost" size="xs">
           <Image className="h-4 w-4 mr-2" />
           Image
         </Button>

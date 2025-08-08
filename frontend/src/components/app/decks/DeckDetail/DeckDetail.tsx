@@ -79,7 +79,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId }) => {
         )}
       </div>
       <div className="flex flex-row gap-4 text-sm italic mb-2">{data?.deck.description}</div>
-      <div className="flex flex-grow flex-row gap-4">
+      <div className="flex flex-grow flex-col gap-4">
         <DeckContents deckId={deckId} />
       </div>
     </>
