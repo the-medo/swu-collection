@@ -129,7 +129,7 @@ const ExportOptionsMenu: React.FC<ExportOptionsMenuProps> = ({
         <Download className="h-4 w-4 mr-2" />
         Export
       </NavigationMenuTrigger>
-      <NavigationMenuContent>
+      <NavigationMenuContent className="z-10">
         <div className="p-2 w-[180px]">
           <h4 className="mb-2 text-sm font-medium">Download</h4>
           <div className="space-y-1">

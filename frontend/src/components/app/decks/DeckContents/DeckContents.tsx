@@ -12,6 +12,12 @@ import DeckActionsMenu from '@/components/app/decks/DeckContents/DeckActionsMenu
 import DeckBoardCardCounts from '@/components/app/decks/DeckContents/DeckBoardCardCounts/DeckBoardCardCounts.tsx';
 import DeckMatches from '@/components/app/decks/DeckContents/DeckMatches/DeckMatches.tsx';
 import DeckStats from '@/components/app/decks/DeckContents/DeckStats/DeckStats.tsx';
+import DeckNavigationMenu from '@/components/app/decks/DeckContents/DeckNavigationMenu/DeckNavigationMenu.tsx';
+import DeckLayoutMenu from '@/components/app/decks/DeckContents/DeckActionsMenu/components/DeckLayoutMenu.tsx';
+import GroupByMenu from '@/components/app/decks/DeckContents/DeckActionsMenu/components/GroupByMenu.tsx';
+import * as React from 'react';
+import DecklistChartsTabs from '@/components/app/decks/DeckContents/DeckActionsMenu/components/DecklistChartsTabs.tsx';
+import { NavigationMenuList } from '@/components/ui/navigation-menu.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -46,7 +52,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId, highligh
 
   return (
     <>
-      <DeckActionsMenu deckId={deckId} tabsValue={tabsValue} onTabsValueChange={setTabsValue} />
+      <DeckActionsMenu deckId={deckId} />
       <div className="flex max-xl:flex-col justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
         <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center max-xl:w-auto w-[350px] flex-col gap-2">
           <LeaderSelector
@@ -84,10 +90,30 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId, highligh
         <div className="w-full">
           <div className="flex flex-col gap-2 w-full">
             <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">
-              {owned && <DeckInputCommand deckId={deckId} />}
-              <div className="flex flex-wrap gap-4 items-center max-lg:justify-center w-full">
-                <DeckBoardCardCounts deckId={deckId} />
-              </div>
+              <DeckNavigationMenu deckId={deckId} className="justify-between">
+                <NavigationMenuList className="flex-wrap justify-start gap-1">
+                  <DecklistChartsTabs value={tabsValue} onValueChange={setTabsValue} />
+                </NavigationMenuList>
+                <NavigationMenuList className="flex-wrap justify-start gap-1">
+                  {owned ? (
+                    <DeckInputCommand deckId={deckId} />
+                  ) : (
+                    <NavigationMenuList className="flex-wrap justify-start gap-1">
+                      <DeckLayoutMenu />
+                      <GroupByMenu />
+                    </NavigationMenuList>
+                  )}
+                </NavigationMenuList>
+                {owned && (
+                  <NavigationMenuList className="flex-wrap justify-end gap-1">
+                    <DeckLayoutMenu />
+                    <GroupByMenu />
+                  </NavigationMenuList>
+                )}
+              </DeckNavigationMenu>
+            </div>
+            <div className="flex flex-wrap gap-4 items-center max-lg:justify-center w-full">
+              <DeckBoardCardCounts deckId={deckId} />
             </div>
 
             {tabsValue === 'decklist' && (

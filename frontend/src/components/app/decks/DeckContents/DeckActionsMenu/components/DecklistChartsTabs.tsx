@@ -10,12 +10,8 @@ interface DecklistChartsTabsProps {
 const DecklistChartsTabs: React.FC<DecklistChartsTabsProps> = ({ value, onValueChange }) => {
   return (
     <NavigationMenuItem>
-      <Tabs
-        value={value}
-        onValueChange={onValueChange}
-        className="w-auto border rounded-md"
-      >
-        <TabsList>
+      <Tabs value={value} onValueChange={onValueChange} className="w-auto border rounded-md">
+        <TabsList className=" bg-muted/70">
           <TabsTrigger value="decklist">Decklist</TabsTrigger>
           <TabsTrigger value="charts">Charts</TabsTrigger>
         </TabsList>
