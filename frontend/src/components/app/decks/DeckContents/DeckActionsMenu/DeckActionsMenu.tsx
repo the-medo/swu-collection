@@ -45,6 +45,7 @@ import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
+import { DeckLayout, DeckGroupBy } from '../../../../../../../types/enums.ts';
 
 interface DeckActionsMenuProps {
   deckId: string;
@@ -221,35 +222,41 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({
   };
 
   const layoutOptions = [
-    { id: 'grid', label: 'Grid', icon: <LayoutGrid className="h-4 w-4 mr-2" /> },
-    { id: 'list', label: 'List', icon: <LayoutList className="h-4 w-4 mr-2" /> },
-    { id: 'compact', label: 'Compact', icon: <LayoutList className="h-4 w-4 mr-2" /> },
-    { id: 'text', label: 'Text', icon: <FileText className="h-4 w-4 mr-2" /> },
-    { id: 'image', label: 'Image', icon: <LayoutGrid className="h-4 w-4 mr-2" /> },
-    { id: 'full', label: 'Full', icon: <LayoutGrid className="h-4 w-4 mr-2" /> },
+    { id: DeckLayout.TEXT, label: 'Text', icon: <FileText className="h-4 w-4 mr-2" /> },
+    {
+      id: DeckLayout.TEXT_CONDENSED,
+      label: 'Text condensed',
+      icon: <FileText className="h-4 w-4 mr-2" />,
+    },
+    { id: DeckLayout.VISUAL_GRID, label: 'Grid', icon: <LayoutGrid className="h-4 w-4 mr-2" /> },
+    {
+      id: DeckLayout.VISUAL_GRID_OVERLAP,
+      label: 'Grid - Overlap',
+      icon: <LayoutGrid className="h-4 w-4 mr-2" />,
+    },
+    {
+      id: DeckLayout.VISUAL_STACKS,
+      label: 'Stacks',
+      icon: <LayoutList className="h-4 w-4 mr-2" />,
+    },
+    {
+      id: DeckLayout.VISUAL_STACKS_SPLIT,
+      label: 'Stacks - Split',
+      icon: <LayoutList className="h-4 w-4 mr-2" />,
+    },
   ];
 
   const groupByOptions = [
-    { id: 'type', label: 'Type' },
-    { id: 'cost', label: 'Cost' },
-    { id: 'faction', label: 'Faction' },
-    { id: 'rarity', label: 'Rarity' },
-    { id: 'none', label: 'None' },
+    { id: DeckGroupBy.CARD_TYPE, label: 'Card Type' },
+    { id: DeckGroupBy.COST, label: 'Cost' },
+    { id: DeckGroupBy.ASPECT, label: 'Aspect' },
+    { id: DeckGroupBy.TRAIT, label: 'Trait' },
+    { id: DeckGroupBy.KEYWORDS, label: 'Keywords' },
   ];
 
   return (
-    <NavigationMenu className="border rounded-md border-border bg-background p-1">
-      <NavigationMenuList className="flex-wrap justify-start gap-0">
-        {/* Decklist / Charts Tabs */}
-        <NavigationMenuItem className="ml-auto">
-          <Tabs value={tabsValue} onValueChange={onTabsValueChange} className="w-auto">
-            <TabsList>
-              <TabsTrigger value="decklist">Decklist</TabsTrigger>
-              <TabsTrigger value="charts">Charts</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </NavigationMenuItem>
-
+    <NavigationMenu className="rounded-md border-border bg-accent p-1 w-full mb-2 flex-wrap gap-1 justify-end">
+      <NavigationMenuList className="flex-wrap justify-start gap-1">
         {/* Favorite Button */}
         <NavigationMenuItem>
           <Button
@@ -314,12 +321,12 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({
 
         {/* Export Options */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>
+          <NavigationMenuTrigger className="justify-start border w-[180px]">
             <Download className="h-4 w-4 mr-2" />
             Export
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="p-2 w-[220px]">
+            <div className="p-2 w-[180px]">
               <h4 className="mb-2 text-sm font-medium">Download</h4>
               <div className="space-y-1">
                 <Button
@@ -352,7 +359,7 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({
                     onClick={handleCopyJSON}
                   >
                     <ClipboardCopy className="h-4 w-4 mr-2" />
-                    Copy JSON format
+                    Copy JSON
                   </Button>
                   <Button
                     variant="ghost"
@@ -361,7 +368,7 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({
                     onClick={handleCopyText}
                   >
                     <ClipboardCopy className="h-4 w-4 mr-2" />
-                    Copy text format
+                    Copy text
                   </Button>
                 </div>
               </div>
@@ -382,30 +389,45 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({
             </Button>
           </NavigationMenuItem>
         )}
+      </NavigationMenuList>
+      <NavigationMenuList className="flex-wrap justify-start gap-1">
+        {/* Decklist / Charts Tabs */}
+        <NavigationMenuItem>
+          <Tabs
+            value={tabsValue}
+            onValueChange={onTabsValueChange}
+            className="w-auto border rounded-md"
+          >
+            <TabsList>
+              <TabsTrigger value="decklist">Decklist</TabsTrigger>
+              <TabsTrigger value="charts">Charts</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </NavigationMenuItem>
 
         {/* Deck Layout Menu */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>
-            <LayoutGrid className="h-4 w-4 mr-2" />
-            Layout
+          <NavigationMenuTrigger className="w-[220px] justify-start border">
+            <LayoutGrid className="h-4 w-4 mr-0" />
+            <span className="text-xs">Layout: </span>
+            {layoutOptions.find(option => option.id === layout)?.label || 'Default'}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="p-4 grid grid-cols-2 gap-4 w-[500px]">
-              <div className="col-span-1">
+            <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-[220px] md:w-[440px]">
+              <div className="col-span-1 hidden md:block">
                 <Skeleton className="w-full h-[200px] rounded-md" />
               </div>
-              <div className="col-span-1 grid grid-cols-1 gap-2">
+              <div className="col-span-1 grid grid-cols-1 gap-1">
                 {layoutOptions.map(option => (
-                  <Button
+                  <li
                     key={option.id}
-                    variant={layout === option.id ? 'default' : 'outline'}
-                    size="sm"
-                    className="w-full justify-start"
                     onClick={() => setLayout(option.id)}
+                    className="rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer"
                   >
-                    {option.icon}
-                    {option.label}
-                  </Button>
+                    <NavigationMenuLink asChild>
+                      <div className="text-sm leading-none font-medium">{option.label}</div>
+                    </NavigationMenuLink>
+                  </li>
                 ))}
               </div>
             </div>
@@ -414,23 +436,26 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({
 
         {/* Group By Menu */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>
-            <BarChart className="h-4 w-4 mr-2" />
-            Group By
+          <NavigationMenuTrigger className="w-[220px] justify-start border">
+            <BarChart className="h-4 w-4 mr-0" />
+            <span className="text-xs">Group by: </span>
+            {groupByOptions.find(option => option.id === groupBy)?.label || 'Default'}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="p-2 w-[180px]">
-              {groupByOptions.map(option => (
-                <Button
-                  key={option.id}
-                  variant={groupBy === option.id ? 'default' : 'ghost'}
-                  size="sm"
-                  className="w-full justify-start mb-1"
-                  onClick={() => setGroupBy(option.id)}
-                >
-                  {option.label}
-                </Button>
-              ))}
+            <div className="p-4 grid grid-cols-1 gap-4 w-[220px]">
+              <div className="col-span-1 grid grid-cols-1 gap-1">
+                {groupByOptions.map(option => (
+                  <li
+                    key={option.id}
+                    onClick={() => setGroupBy(option.id)}
+                    className="rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer"
+                  >
+                    <NavigationMenuLink asChild>
+                      <div className="text-sm leading-none font-medium">{option.label}</div>
+                    </NavigationMenuLink>
+                  </li>
+                ))}
+              </div>
             </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
