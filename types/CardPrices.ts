@@ -4,6 +4,38 @@ export enum CardPriceSourceType {
   SWUBASE = 'swubase',
 }
 
+export type CardPriceSourceInfo = {
+  id: CardPriceSourceType;
+  name: string;
+  logo: string;
+  enabled: boolean;
+  description: string;
+};
+
+export const cardPriceSourceInfo: Record<CardPriceSourceType, CardPriceSourceInfo> = {
+  [CardPriceSourceType.CARDMARKET]: {
+    id: CardPriceSourceType.CARDMARKET,
+    name: 'CardMarket',
+    logo: 'https://images.swubase.com/price-source-thumbnails/price-source-cardmarket.png',
+    enabled: true,
+    description: 'In progress of pairing cards',
+  },
+  [CardPriceSourceType.TCGPLAYER]: {
+    id: CardPriceSourceType.TCGPLAYER,
+    name: 'TCGPlayer',
+    logo: 'https://images.swubase.com/price-source-thumbnails/price-source-tcgplayer.svg',
+    enabled: false,
+    description: 'TBD',
+  },
+  [CardPriceSourceType.SWUBASE]: {
+    id: CardPriceSourceType.SWUBASE,
+    name: 'SWU Base',
+    logo: 'https://images.swubase.com/price-source-thumbnails/price-source-swubase.svg',
+    enabled: false,
+    description: 'TBD',
+  },
+};
+
 // Interface for raw pricing object from CardMarket
 export interface CardMarketPricingObject {
   idProduct: number;
