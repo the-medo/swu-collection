@@ -19,6 +19,9 @@ import { DeckCardInBoards } from '@/components/app/decks/DeckContents/DeckCards/
 import DeckCardBoardMoveButtons from '@/components/app/decks/DeckContents/DeckCards/DeckCardBoardMoveButtons.tsx';
 import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
+import { PriceBadge } from '@/components/app/card-prices';
+import { selectDefaultVariant } from '../../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 export type DeckCardRowVariant = 'normal' | 'compact';
 
@@ -43,6 +46,10 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   const { isMobile } = useSidebar();
   const { owned } = useDeckInfo(deckId);
   const mutation = usePutDeckCard(deckId);
+
+  const defaultVariant = card ? selectDefaultVariant(card) : undefined;
+  const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
+  const { data: priceSourceType } = useGetUserSetting('priceSourceType');
 
   const quantityChangeHandler = useCallback(
     (quantity: number | undefined, board?: number) => {
@@ -71,7 +78,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   return (
     <DeckCardHoverImage card={card}>
       <div
-        className={cn('flex gap-2 w-[350px] items-center', {
+        className={cn('flex gap-2 items-center', displayDeckPrice ? 'w-[400px]' : 'w-[350px]', {
           'py-1 border-t-[1px]': variant === 'normal',
           'py-0': variant === 'compact',
           'bg-primary/10 border border-primary rounded-sm': isHighlighted,
@@ -116,6 +123,16 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
             {card?.name}
           </span>
           <div className="flex gap-2 justify-end">
+            {defaultVariant && displayDeckPrice && priceSourceType && (
+              <PriceBadge
+                cardId={deckCard.cardId}
+                variantId={defaultVariant}
+                sourceType={priceSourceType}
+                displayLogo={false}
+                displayTooltip={false}
+                displayNA={false}
+              />
+            )}
             <div
               className={cn('flex gap-0 w-[50px] justify-end', {
                 'group-hover:hidden': owned,
