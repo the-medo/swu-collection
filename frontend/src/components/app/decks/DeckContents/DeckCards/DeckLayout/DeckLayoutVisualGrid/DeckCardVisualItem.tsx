@@ -16,6 +16,8 @@ import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '../../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
 import { DeckLayout } from '../../../../../../../../../types/enums.ts';
+import DeckCardPriceBadge from '../DeckLayoutText/DeckCardPriceBadge.tsx';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 interface DeckCardVisualItemProps {
   deckId: string;
@@ -42,6 +44,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
   const { owned } = useDeckInfo(deckId);
   const mutation = usePutDeckCard(deckId);
   const defaultVariant = card ? selectDefaultVariant(card) : undefined;
+  const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
 
   const quantityChangeHandler = useCallback(
     (quantity: number | undefined, board?: number) => {
@@ -83,18 +86,21 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
       data-card-id={deckCard.cardId}
     >
       {(displayDropdown || displayQuantity) && (
-        <div className="absolute top-0 -right-3 px-2 z-10 b-1 border-2 border-foreground/30 bg-background/80 rounded flex gap-2 items-center">
-          {displayQuantity && <span className="font-semibold">x{deckCard.quantity}</span>}
-          {displayDropdown && (
-            <DeckCardDropdownMenu
-              deckId={deckId}
-              deckCard={deckCard}
-              card={card}
-              owned={owned}
-              cardInBoards={cardInBoards}
-              onQuantityChange={quantityChangeHandler}
-            />
-          )}
+        <div className="absolute top-0 -right-3 px-2 z-10 b-1 border-2 border-foreground/30 bg-background/80 rounded flex flex-col items-end">
+          <div className="flex gap-2 items-center">
+            {displayQuantity && <span className="font-semibold">x{deckCard.quantity}</span>}
+            {displayDropdown && (
+              <DeckCardDropdownMenu
+                deckId={deckId}
+                deckCard={deckCard}
+                card={card}
+                owned={owned}
+                cardInBoards={cardInBoards}
+                onQuantityChange={quantityChangeHandler}
+              />
+            )}
+          </div>
+          {displayDeckPrice && <DeckCardPriceBadge card={card} moveTop={true} size="sm" />}
         </div>
       )}
 

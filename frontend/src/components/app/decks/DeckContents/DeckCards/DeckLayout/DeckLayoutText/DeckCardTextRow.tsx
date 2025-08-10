@@ -19,8 +19,7 @@ import { DeckCardInBoards } from '@/components/app/decks/DeckContents/DeckCards/
 import DeckCardBoardMoveButtons from '@/components/app/decks/DeckContents/DeckCards/DeckCardBoardMoveButtons.tsx';
 import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
-import { PriceBadge } from '@/components/app/card-prices';
-import { selectDefaultVariant } from '../../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import DeckCardPriceBadge from './DeckCardPriceBadge.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 export type DeckCardRowVariant = 'normal' | 'compact';
@@ -46,10 +45,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   const { isMobile } = useSidebar();
   const { owned } = useDeckInfo(deckId);
   const mutation = usePutDeckCard(deckId);
-
-  const defaultVariant = card ? selectDefaultVariant(card) : undefined;
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
-  const { data: priceSourceType } = useGetUserSetting('priceSourceType');
 
   const quantityChangeHandler = useCallback(
     (quantity: number | undefined, board?: number) => {
@@ -123,16 +119,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
             {card?.name}
           </span>
           <div className="flex gap-2 justify-end">
-            {defaultVariant && displayDeckPrice && priceSourceType && (
-              <PriceBadge
-                cardId={deckCard.cardId}
-                variantId={defaultVariant}
-                sourceType={priceSourceType}
-                displayLogo={false}
-                displayTooltip={false}
-                displayNA={false}
-              />
-            )}
+            {displayDeckPrice && <DeckCardPriceBadge card={card} />}
             <div
               className={cn('flex gap-0 w-[50px] justify-end', {
                 'group-hover:hidden': owned,

@@ -5,13 +5,15 @@ import { PriceBadgeTooltip } from './PriceBadgeTooltip';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils.ts';
 
-interface PriceBadgeProps {
+export interface PriceBadgeProps {
   cardId: string;
   variantId: string;
   sourceType: string;
   displayLogo?: boolean;
   displayTooltip?: boolean;
   displayNA?: boolean;
+  moveTop?: boolean;
+  size?: 'sm' | 'default';
 }
 
 /**
@@ -26,6 +28,8 @@ interface PriceBadgeProps {
  * @param displayLogo
  * @param displayTooltip
  * @param displayNA
+ * @param moveTop
+ * @param size
  */
 export const PriceBadge: React.FC<PriceBadgeProps> = ({
   cardId,
@@ -34,6 +38,8 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
   displayLogo = true,
   displayTooltip = true,
   displayNA = true,
+  moveTop = false,
+  size = 'default',
 }) => {
   // Fetch price data using the useGetSingleCardPrice hook
   const { data, isLoading, isError } = useGetSingleCardPrice({
@@ -55,7 +61,9 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
         variant="secondary"
         className={cn(
           'flex items-center gap-1 cursor-pointer  border-background',
-          displayLogo ? 'w-[80px]' : 'w-[50px] justify-end px-1',
+          displayLogo ? 'w-[80px]' : 'w-[50px] justify-end pr-[4px] -mt-1',
+          moveTop ? '-mt-1' : '',
+          size === 'sm' ? 'text-[10px] w-[40px] py-0' : '',
         )}
       >
         {displayLogo && (
