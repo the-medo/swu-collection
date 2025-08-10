@@ -40,7 +40,7 @@ const AddToComparerButton: React.FC<AddToComparerButtonProps> = ({
   };
 
   return (
-    <Button className={cn('gap-2', className)} onClick={handleClick} {...props}>
+    <Button variant="outline" className={cn('gap-2', className)} onClick={handleClick} {...props}>
       <Scale className="h-4 w-4" />
       {children || (isInComparer ? 'Remove from comparer' : 'Add to comparer')}
     </Button>

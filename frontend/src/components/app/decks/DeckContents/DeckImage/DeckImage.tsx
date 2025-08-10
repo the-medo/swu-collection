@@ -4,6 +4,8 @@ import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { formatDataById } from '../../../../../../../types/Format.ts';
 import { SwuAspect } from '../../../../../../../types/enums.ts';
+import { useDeckColors } from '@/hooks/useDeckColors';
+import { hexToRgb } from '@/lib/hexToRgb';
 import { aspectColors } from '../../../../../../../shared/lib/aspectColors.ts';
 
 interface DeckImageProps {
@@ -14,7 +16,7 @@ const DeckImage = forwardRef<
   { handleDownload: () => void; handleCopyToClipboard: () => void },
   DeckImageProps
 >(({ deckId }, ref) => {
-  const { deckCardsForLayout, deckMeta, isLoading, leaderCard, baseCard } = useDeckData(deckId);
+  const { deckCardsForLayout, deckMeta, isLoading } = useDeckData(deckId);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadingImages, setLoadingImages] = useState(false);
@@ -24,10 +26,11 @@ const DeckImage = forwardRef<
   const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
   const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
 
-  const leaderColorAspect = leaderCard?.aspects.find(
-    a => a !== SwuAspect.VILLAINY && a !== SwuAspect.HEROISM,
-  );
-  const baseColorAspect = baseCard?.aspects[0];
+  // Get deck colors using the hook
+  const { leaderColor, baseColor } = useDeckColors(deckId, 'rgb');
+
+  // Get villainy/heroism aspect
+  const { leaderCard } = useDeckData(deckId);
   const leaderVillainyHeroismAspect = leaderCard?.aspects.find(
     a => a === SwuAspect.VILLAINY || a === SwuAspect.HEROISM,
   );
@@ -35,14 +38,6 @@ const DeckImage = forwardRef<
   // Helper function to remove text inside brackets
   const removeBracketContent = (text: string): string => {
     return text.replace(/\s*\[[^\]]*\]\s*/g, ' ').trim();
-  };
-
-  // Helper function to convert hex color to RGB values
-  const hexToRgb = (hexColor: string): { r: number; g: number; b: number } => {
-    const r = parseInt(hexColor.slice(1, 3), 16);
-    const g = parseInt(hexColor.slice(3, 5), 16);
-    const b = parseInt(hexColor.slice(5, 7), 16);
-    return { r, g, b };
   };
 
   // Background image URL
@@ -330,32 +325,25 @@ const DeckImage = forwardRef<
         }
 
         // Apply aspect color overlays
-        // Apply gradient using leaderColorAspect and baseColorAspect if both are available
-        if (leaderColorAspect && aspectColors[leaderColorAspect]) {
-          console.log('la', aspectColors[leaderColorAspect]);
-          if (baseColorAspect && aspectColors[baseColorAspect]) {
-            // Create gradient with both colors
-            const leaderColor = aspectColors[leaderColorAspect];
-            const baseColor = aspectColors[baseColorAspect];
-            console.log('baseColor', baseColor);
-
-            // Convert hex to rgba for both colors
-            const { r: leaderR, g: leaderG, b: leaderB } = hexToRgb(leaderColor);
-            const { r: baseR, g: baseG, b: baseB } = hexToRgb(baseColor);
-
+        // Apply gradient using leader and base colors if both are available
+        if (leaderColor && typeof leaderColor !== 'string') {
+          if (baseColor && typeof baseColor !== 'string') {
             // Create a linear gradient from top to bottom
             const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
-            gradient.addColorStop(0, `rgba(${leaderR}, ${leaderG}, ${leaderB}, 0.35)`);
-            gradient.addColorStop(0.32, `rgba(${baseR}, ${baseG}, ${baseB}, 0.35)`);
+            gradient.addColorStop(
+              0,
+              `rgba(${leaderColor.r}, ${leaderColor.g}, ${leaderColor.b}, 0.35)`,
+            );
+            gradient.addColorStop(
+              0.32,
+              `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.35)`,
+            );
 
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
           } else {
-            // Fallback to just leaderColorAspect if baseColorAspect is not available
-            const color = aspectColors[leaderColorAspect];
-            // Convert hex to rgba with 35% transparency
-            const { r, g, b } = hexToRgb(color);
-            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.35)`;
+            // Fallback to just leader color if base color is not available
+            ctx.fillStyle = `rgba(${leaderColor.r}, ${leaderColor.g}, ${leaderColor.b}, 0.35)`;
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
           }
         }
