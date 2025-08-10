@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { NavigationMenuList, NavigationMenuItem } from '@/components/ui/navigation-menu.tsx';
+import { NavigationMenuList } from '@/components/ui/navigation-menu.tsx';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -13,7 +13,6 @@ import ComparerButton from './components/ComparerButton';
 import DuplicateButton from './components/DuplicateButton';
 import ExportOptionsMenu from './components/ExportOptionsMenu';
 import AdminEditButton from './components/AdminEditButton';
-import DeckImageButton from '@/components/app/decks/DeckContents/DeckImage/DeckImageButton.tsx';
 
 interface DeckActionsMenuProps {
   deckId: string;
@@ -43,9 +42,6 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
         <CopyLinkButton deckId={deckId} isPublic={!!deckData?.deck.public} />
         <ComparerButton deckId={deckId} additionalData={additionalData} />
         <DuplicateButton deckId={deckId} />
-        <NavigationMenuItem>
-          <DeckImageButton deckId={deckId} />
-        </NavigationMenuItem>
         <ExportOptionsMenu
           deckData={deckData}
           deckCardsData={deckCardsData}

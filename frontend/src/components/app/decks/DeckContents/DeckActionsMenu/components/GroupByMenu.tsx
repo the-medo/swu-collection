@@ -5,10 +5,11 @@ import {
   NavigationMenuContent,
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu.tsx';
-import { BarChart } from 'lucide-react';
+import { BarChart, Check } from 'lucide-react';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
 import { DeckGroupBy } from '../../../../../../../../types/enums.ts';
+import { cn } from '@/lib/utils';
 
 const GroupByMenu: React.FC = () => {
   const { data: groupBy } = useGetUserSetting('deckGroupBy');
@@ -36,10 +37,16 @@ const GroupByMenu: React.FC = () => {
               <li
                 key={option.id}
                 onClick={() => setGroupBy(option.id)}
-                className="rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer"
+                className={cn(
+                  "rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer",
+                  option.id === groupBy && "bg-accent/50 text-accent-foreground"
+                )}
               >
                 <NavigationMenuLink asChild>
-                  <div className="text-sm leading-none font-medium">{option.label}</div>
+                  <div className="text-sm leading-none font-medium flex items-center justify-between">
+                    {option.label}
+                    {option.id === groupBy && <Check className="h-4 w-4 ml-2" />}
+                  </div>
                 </NavigationMenuLink>
               </li>
             ))}

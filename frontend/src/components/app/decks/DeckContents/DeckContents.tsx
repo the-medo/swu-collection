@@ -17,7 +17,8 @@ import DeckLayoutMenu from '@/components/app/decks/DeckContents/DeckActionsMenu/
 import GroupByMenu from '@/components/app/decks/DeckContents/DeckActionsMenu/components/GroupByMenu.tsx';
 import * as React from 'react';
 import DecklistChartsTabs from '@/components/app/decks/DeckContents/DeckActionsMenu/components/DecklistChartsTabs.tsx';
-import { NavigationMenuList } from '@/components/ui/navigation-menu.tsx';
+import { NavigationMenuItem, NavigationMenuList } from '@/components/ui/navigation-menu.tsx';
+import DeckImageButton from '@/components/app/decks/DeckContents/DeckImage/DeckImageButton.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -93,6 +94,11 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId, highligh
               <DeckNavigationMenu deckId={deckId} className="justify-between">
                 <NavigationMenuList className="flex-wrap justify-start gap-1">
                   <DecklistChartsTabs value={tabsValue} onValueChange={setTabsValue} />
+                  <NavigationMenuItem>
+                    <div className="w-full flex justify-center bg-background rounded-md">
+                      <DeckImageButton deckId={deckId} />
+                    </div>
+                  </NavigationMenuItem>
                 </NavigationMenuList>
                 <NavigationMenuList className="flex-wrap justify-start gap-1">
                   {owned ? (
