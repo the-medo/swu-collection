@@ -19,4 +19,7 @@ export const authClient = createAuthClient({
   ],
 });
 
+export type ClientSession = typeof authClient.$Infer.Session;
+export type ClientUser = ClientSession['user'];
+
 export const { signIn, signOut, signUp, useSession } = authClient;

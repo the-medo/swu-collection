@@ -2,6 +2,8 @@ import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCard
 import DeckCardTextRow, {
   DeckCardRowVariant,
 } from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutText/DeckCardTextRow.tsx';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import { cn } from '@/lib/utils.ts';
 
 interface DeckLayoutTextProps {
   variant: DeckCardRowVariant;
@@ -18,8 +20,12 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
   showSideboard = true,
   highlightedCardId,
 }) => {
-  const columnClasses =
-    '@container columns-1 @[700px]:columns-2 @[1050px]:columns-3 gap-4 space-y-4';
+  const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
+
+  const columnClasses = cn('@container columns-1  gap-4 space-y-4', {
+    '@[700px]:columns-2 @[1050px]:columns-3': !displayDeckPrice,
+    '@[800px]:columns-2 @[1200px]:columns-3': displayDeckPrice,
+  });
 
   return (
     <div className="@container flex w-full flex-col gap-4">
@@ -30,7 +36,12 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
           if (!group) return null;
           if (group.cards.length === 0) return null;
           return (
-            <div className="flex flex-col gap-1 w-[350px] p-1 break-inside-avoid">
+            <div
+              className={cn(
+                'flex flex-col gap-1 p-1 break-inside-avoid',
+                displayDeckPrice ? 'w-[400px]' : 'w-[350px]',
+              )}
+            >
               <span className="font-medium">
                 {group.label} ({group.cards.reduce((p, c) => p + c.quantity, 0)})
               </span>
@@ -51,7 +62,12 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
           );
         })}
         {showSideboard && (
-          <div className="flex flex-col gap-1 w-[350px] p-1 bg-accent break-inside-avoid">
+          <div
+            className={cn(
+              'flex flex-col gap-1 p-1 break-inside-avoid bg-accent',
+              displayDeckPrice ? 'w-[420px]' : 'w-[370px]',
+            )}
+          >
             <span className="font-medium">
               Sideboard ({cardsByBoard[2].reduce((p, c) => p + c.quantity, 0)})
             </span>

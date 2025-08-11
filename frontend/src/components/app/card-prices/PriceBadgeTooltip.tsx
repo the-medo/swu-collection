@@ -50,7 +50,7 @@ export const PriceBadgeTooltip: React.FC<PriceBadgeTooltipProps> = ({
   const formatPrice = (price: number | undefined) => `${price?.toFixed(2)} €`;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 z-10">
       <div className="text-[10px] text-gray-500 text-center">
         {updatedAt && (
           <div>Data from CardMarket: {formatDistanceToNow(updatedAt, { addSuffix: true })}</div>

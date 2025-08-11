@@ -13,6 +13,7 @@ import ComparerButton from './components/ComparerButton';
 import DuplicateButton from './components/DuplicateButton';
 import ExportOptionsMenu from './components/ExportOptionsMenu';
 import AdminEditButton from './components/AdminEditButton';
+import PriceSourceSelector from './components/PriceSourceSelector';
 
 interface DeckActionsMenuProps {
   deckId: string;
@@ -42,6 +43,7 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
         <CopyLinkButton deckId={deckId} isPublic={!!deckData?.deck.public} />
         <ComparerButton deckId={deckId} additionalData={additionalData} />
         <DuplicateButton deckId={deckId} />
+        <PriceSourceSelector />
         <ExportOptionsMenu
           deckData={deckData}
           deckCardsData={deckCardsData}

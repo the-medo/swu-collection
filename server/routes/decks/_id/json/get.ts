@@ -1,0 +1,63 @@
+import { Hono } from 'hono';
+import type { AuthExtension } from '../../../../auth/auth.ts';
+import { z } from 'zod';
+import { and, eq, or } from 'drizzle-orm';
+import { deck as deckTable } from '../../../../db/schema/deck.ts';
+import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
+import { db } from '../../../../db';
+import { selectUser } from '../../../user.ts';
+import { user as userTable } from '../../../../db/schema/auth-schema.ts';
+import { selectDeck } from '../../../deck.ts';
+import { cardList } from '../../../../db/lists.ts';
+import { createDeckJsonExport } from '../../../../lib/decks/deckExport.ts';
+import type { Deck } from '../../../../../types/Deck.ts';
+import type { User } from '../../../../../types/User.ts';
+
+export const deckIdJsonGetRoute = new Hono<AuthExtension>().get('/', async c => {
+  const paramDeckId = z.string().uuid().parse(c.req.param('id'));
+  const user = c.get('user');
+
+  const isPublic = eq(deckTable.public, true);
+  const isOwner = user ? eq(deckTable.userId, user.id) : null;
+
+  // Start with the base query to get deck and user data
+  let query = db
+    .select({
+      user: selectUser,
+      deck: selectDeck,
+    })
+    .from(deckTable)
+    .innerJoin(userTable, eq(deckTable.userId, userTable.id))
+    .$dynamic();
+
+  // Apply where condition - only allow access if deck is public or user is the owner
+  query = query.where(
+    and(eq(deckTable.id, paramDeckId), isOwner ? or(isOwner, isPublic) : isPublic),
+  );
+
+  const deckData = (await query)[0];
+
+  if (!deckData) {
+    return c.json({ message: "Deck doesn't exist or you don't have access to it" }, 404);
+  }
+
+  // Fetch deck cards
+  const deckCards = await db
+    .select()
+    .from(deckCardTable)
+    .where(eq(deckCardTable.deckId, paramDeckId));
+
+  if (!deckCards) {
+    return c.json({ message: "Couldn't fetch deck cards" }, 500);
+  }
+
+  // Generate JSON export using the existing function
+  const jsonData = createDeckJsonExport(
+    deckData.deck as unknown as Deck,
+    deckCards,
+    deckData.user as unknown as User,
+    cardList,
+  );
+
+  return c.json(jsonData);
+});
