@@ -19,14 +19,12 @@ export const useSetUserSetting = <K extends keyof UserSettings>(key: K) => {
   return useMutation({
     mutationFn: async (value: UserSettings[K]) => {
       // Convert value to string for storage
-      const stringValue = String(value);
 
       // 1. Save through API only if user is logged in
       if (user) {
         const response = await api['user-settings'].$post({
           json: {
-            key,
-            value: stringValue,
+            [key]: value,
           },
         });
 
@@ -36,7 +34,7 @@ export const useSetUserSetting = <K extends keyof UserSettings>(key: K) => {
       }
 
       // Always save to IndexedDB and update query cache, even if user is not logged in
-      await saveUserSetting(key, stringValue);
+      await saveUserSetting(key, value);
       queryClient.setQueryData(['user-setting', key], value);
     },
   });
