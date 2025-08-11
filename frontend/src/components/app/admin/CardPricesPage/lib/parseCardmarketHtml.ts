@@ -25,7 +25,7 @@ function cleanCardName(name: string): string {
  */
 export function parseCardmarketHtml(
   htmlContent: string,
-  selectedSet: SwuSet,
+  selectedSet: SwuSet | null,
   cards: CardList | undefined,
 ): ParsedCardData[] {
   // Create a DOM parser
@@ -60,9 +60,8 @@ export function parseCardmarketHtml(
       let probableCardId: string | undefined = createFileName(name);
       let probableVariantId: string | undefined = undefined;
       if (cards && cards[probableCardId]) {
-        console.log(cards[probableCardId]?.variants);
         const variant = Object.values(cards[probableCardId]?.variants || {}).find(v => {
-          return v?.set === selectedSet && v?.cardNo === parseInt(cardNumber);
+          return v?.cardNo === parseInt(cardNumber) && (!selectedSet || v?.set === selectedSet);
         });
         probableVariantId = variant?.variantId;
       } else {

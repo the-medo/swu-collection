@@ -34,10 +34,6 @@ const CardPricesPage: React.FC = () => {
         setError('Please paste HTML content first');
         return;
       }
-      if (!selectedSet) {
-        setError('Please select a set');
-        return;
-      }
 
       const results = parseCardmarketHtml(bulkText, selectedSet, cardList?.cards);
 

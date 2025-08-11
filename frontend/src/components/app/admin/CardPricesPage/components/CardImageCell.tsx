@@ -22,7 +22,10 @@ const CardImageCell: React.FC<CardImageCellProps> = ({ card, variantId }) => {
 
   if (!card.cardId || !variantId) {
     return (
-      <div className="flex items-center justify-center h-[70px] w-[50px] bg-secondary rounded-lg text-xs text-center">
+      <div
+        onClick={handleViewCard}
+        className="flex items-center justify-center h-[70px] w-[50px] bg-secondary rounded-lg text-xs text-center cursor-pointer"
+      >
         No image
       </div>
     );
@@ -32,7 +35,10 @@ const CardImageCell: React.FC<CardImageCellProps> = ({ card, variantId }) => {
 
   if (!cardData) {
     return (
-      <div className="flex items-center justify-center h-[70px] w-[50px] bg-secondary rounded-lg text-xs text-center">
+      <div
+        onClick={handleViewCard}
+        className="flex items-center justify-center h-[70px] w-[50px] bg-secondary rounded-lg text-xs text-center cursor-pointer"
+      >
         Card not found
       </div>
     );
