@@ -1,7 +1,9 @@
-import type { User as BetterAuthUser } from 'better-auth';
+// import type { User as BetterAuthUser } from 'better-auth';
+import { auth } from '../server/auth/auth.ts';
 
 export type User = Omit<
-  BetterAuthUser,
+  // BetterAuthUser,
+  typeof auth.$Infer.Session.user,
   'email' | 'emailVerified' | 'updatedAt' | 'createdAt' | 'country' | 'currency'
 > & {
   updatedAt: string;
