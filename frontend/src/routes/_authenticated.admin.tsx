@@ -10,6 +10,7 @@ export const adminPages: [string, ...string[]] = [
   'deck-thumbnails',
   'pq-tools',
   'special-actions',
+  'card-prices',
 ] as const;
 
 const searchParams = z.object({

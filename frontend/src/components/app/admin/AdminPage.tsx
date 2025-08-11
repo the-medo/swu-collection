@@ -8,6 +8,7 @@ import { ThumbnailsPage } from '@/components/app/admin/ThumbnailsPage.tsx';
 import { TournamentGroupsPage } from '@/components/app/admin/TournamentGroupsPage';
 import { PQToolsPage } from '@/components/app/admin/PQToolsPage/PQToolsPage.tsx';
 import { SpecialActionsPage } from '@/components/app/admin/SpecialActionsPage';
+import { CardPricesPage } from '@/components/app/admin/CardPricesPage/CardPricesPage.tsx';
 import { Helmet } from 'react-helmet-async';
 import { Route } from '@/routes/_authenticated.admin';
 
@@ -43,6 +44,7 @@ export function AdminPage() {
             <TabsTrigger value="deck-thumbnails">SSR Thumbnails</TabsTrigger>
             <TabsTrigger value="pq-tools">PQ Tools</TabsTrigger>
             <TabsTrigger value="special-actions">Special Actions</TabsTrigger>
+            <TabsTrigger value="card-prices">Card Prices</TabsTrigger>
           </TabsList>
 
           <TabsContent value="metas">
@@ -84,6 +86,13 @@ export function AdminPage() {
             <Card>
               <CardContent className="p-4">
                 <SpecialActionsPage />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="card-prices">
+            <Card>
+              <CardContent className="p-4">
+                <CardPricesPage />
               </CardContent>
             </Card>
           </TabsContent>

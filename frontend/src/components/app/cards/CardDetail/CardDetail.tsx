@@ -103,6 +103,15 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                   >
                     ID: {card.cardId}
                   </div>
+                  {selectedVariant && (
+                    <div
+                      className="text-[10px] text-muted-foreground text-center cursor-pointer hover:text-foreground transition-colors"
+                      onClick={() => navigator.clipboard.writeText(selectedVariant.variantId)}
+                      title="Click to copy card variant ID"
+                    >
+                      ID: {selectedVariant.variantId}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}

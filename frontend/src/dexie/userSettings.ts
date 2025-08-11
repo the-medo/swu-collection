@@ -9,7 +9,7 @@ import { z } from 'zod';
 // Interface for the UserSettings store in Dexie
 export interface UserSettingsStore {
   key: string;
-  value: string;
+  value: string | number | boolean;
 }
 
 /**
@@ -32,20 +32,6 @@ export function validateSettingValue<K extends keyof UserSettings>(
   // Extract the property schema for the key
   const propertySchema = userSettingsSchema.shape[key];
 
-  // Handle boolean values stored as text
-  if (
-    (propertySchema instanceof z.ZodBoolean ||
-      (propertySchema instanceof z.ZodDefault &&
-        propertySchema._def.innerType._def.typeName === 'ZodBoolean')) &&
-    typeof value === 'string'
-  ) {
-    if (value === 'true') {
-      return propertySchema.safeParse(true).success;
-    } else if (value === 'false') {
-      return propertySchema.safeParse(false).success;
-    }
-  }
-
   // Use safeParse for a non-throwing result
   return propertySchema.safeParse(value).success;
 }
@@ -61,7 +47,7 @@ export async function saveUserSettings(settings: UserSettings): Promise<void> {
 
   // Convert the settings object to key-value pairs and save each one
   const promises = Object.entries(validatedSettings).map(([key, value]) => {
-    return saveUserSetting(key, String(value));
+    return saveUserSetting(key, value);
   });
 
   await Promise.all(promises);
@@ -74,7 +60,10 @@ export async function saveUserSettings(settings: UserSettings): Promise<void> {
  * @returns Promise that resolves when the setting is saved
  * @throws Error if the key is not valid or the value is not valid for the key
  */
-export async function saveUserSetting(key: string, value: string): Promise<void> {
+export async function saveUserSetting(
+  key: string,
+  value: string | number | boolean,
+): Promise<void> {
   // Check if the key is valid
   if (!isValidSettingKey(key)) {
     throw new Error(`Invalid setting key: ${key}`);
@@ -103,7 +92,7 @@ export async function saveUserSetting(key: string, value: string): Promise<void>
  * @returns Promise that resolves with the setting value (default value if not found or invalid)
  * @throws Error if the key is not valid
  */
-export async function loadUserSetting(key: string): Promise<string> {
+export async function loadUserSetting(key: string): Promise<string | number | boolean> {
   // Check if the key is valid
   if (!isValidSettingKey(key)) {
     throw new Error(`Invalid setting key: ${key}`);
@@ -113,15 +102,9 @@ export async function loadUserSetting(key: string): Promise<string> {
   const setting = await db.userSettings.get(key);
 
   if (!setting) {
-    // Get default value for this key
     const defaultValue = getDefaultSettingValue(key);
-    // Convert to string (as our DB stores strings)
-    const defaultValueStr = String(defaultValue);
-
-    // Save the default value to the database
-    await saveUserSetting(key, defaultValueStr);
-
-    return defaultValueStr;
+    await saveUserSetting(key, defaultValue);
+    return defaultValue;
   }
 
   // Validate the value for this specific key
@@ -133,12 +116,8 @@ export async function loadUserSetting(key: string): Promise<string> {
       `Invalid stored value for setting ${key}: ${setting.value}, using default instead`,
     );
     const defaultValue = getDefaultSettingValue(key);
-    const defaultValueStr = String(defaultValue);
-
-    // Save the default value to the database
-    await saveUserSetting(key, defaultValueStr);
-
-    return defaultValueStr;
+    await saveUserSetting(key, defaultValue);
+    return defaultValue;
   }
 }
 
@@ -154,7 +133,7 @@ export async function loadAllUserSettings(): Promise<UserSettings> {
   const allSettings = await db.userSettings.toArray();
 
   // Create a map of existing settings for quick lookup
-  const existingSettingsMap = new Map<string, string>();
+  const existingSettingsMap = new Map<string, string | number | boolean>();
   for (const setting of allSettings) {
     if (isValidSettingKey(setting.key)) {
       existingSettingsMap.set(setting.key, setting.value);
@@ -179,7 +158,7 @@ export async function loadAllUserSettings(): Promise<UserSettings> {
         validatedSettings[key] = defaultValue;
 
         // Save the default value to the database (don't await to avoid blocking)
-        saveUserSetting(key, String(defaultValue)).catch(error => {
+        saveUserSetting(key, defaultValue).catch(error => {
           console.error(`Failed to save default value for setting ${key}:`, error);
         });
       }
@@ -189,7 +168,7 @@ export async function loadAllUserSettings(): Promise<UserSettings> {
       validatedSettings[key] = defaultValue;
 
       // Save the default value to the database (don't await to avoid blocking)
-      saveUserSetting(key, String(defaultValue)).catch(error => {
+      saveUserSetting(key, defaultValue).catch(error => {
         console.error(`Failed to save default value for setting ${key}:`, error);
       });
     }
