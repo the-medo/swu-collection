@@ -3,17 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.t
 import { Button } from '@/components/ui/button.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { parseCardmarketHtml, ParsedCardData } from './lib/parseCardmarketHtml';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table.tsx';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx';
 import SetSelect from '@/components/app/global/SetSelect';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { SwuSet } from '../../../../../../types/enums.ts';
+import CardRow from './components/CardRow';
 
 const CardPricesPage: React.FC = () => {
   const [bulkText, setBulkText] = React.useState('');
@@ -126,29 +120,16 @@ const CardPricesPage: React.FC = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead>Image</TableHead>
                         <TableHead>Product ID</TableHead>
                         <TableHead>Name</TableHead>
-                        <TableHead>Card Number</TableHead>
                         <TableHead>Link</TableHead>
+                        <TableHead>Submit</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {parsedData.map(card => (
-                        <TableRow key={card.productId}>
-                          <TableCell>{card.productId}</TableCell>
-                          <TableCell>{card.name}</TableCell>
-                          <TableCell>{card.cardNumber}</TableCell>
-                          <TableCell className="max-w-[300px] truncate">
-                            <a
-                              href={`https://www.cardmarket.com${card.link}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-500 hover:underline"
-                            >
-                              {card.link}
-                            </a>
-                          </TableCell>
-                        </TableRow>
+                        <CardRow key={card.productId} card={card} />
                       ))}
                     </TableBody>
                   </Table>
