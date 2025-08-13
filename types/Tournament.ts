@@ -41,6 +41,7 @@ export interface TournamentData {
   user?: User;
   meta: Meta;
   decks?: TournamentDataDeckInfo[];
+  deck?: Deck;
 }
 
 export const tournamentTypes: [string, ...string[]] = [

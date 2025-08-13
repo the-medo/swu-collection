@@ -39,6 +39,8 @@ function MetaPage() {
       tournament: t.tournament,
       tournamentType: t.tournamentType,
       meta: tournamentGroup.data?.meta,
+      deck: t.deck,
+      position: t.position,
     }));
   }, [tournamentGroup, maTournamentGroupId]);
 

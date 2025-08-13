@@ -98,7 +98,9 @@ export function useTournamentTableColumns({
       displayBoxHeader: false,
       cell: ({ row }) => {
         const tournament = row.original.tournament;
-        const winningDeck = row.original.decks?.find(d => d.tournamentDeck.placement === 1);
+        const winningDeck =
+          row.original.decks?.find(d => d.tournamentDeck.placement === 1)?.deck ??
+          row.original.deck;
 
         // Check if tournament is in the future
         const tournamentDate = new Date(tournament.date);
@@ -126,15 +128,17 @@ export function useTournamentTableColumns({
           );
         }
 
-        const leader1 = winningDeck.deck.leaderCardId1
-          ? cardList.cards[winningDeck.deck.leaderCardId1]
+        const leader1 = winningDeck.leaderCardId1
+          ? cardList.cards[winningDeck.leaderCardId1]
           : undefined;
-        const leader2 = winningDeck.deck.leaderCardId2
-          ? cardList.cards[winningDeck.deck.leaderCardId2]
+        const leader2 = winningDeck.leaderCardId2
+          ? cardList.cards[winningDeck.leaderCardId2]
           : undefined;
-        const base = winningDeck.deck.baseCardId
-          ? cardList.cards[winningDeck.deck.baseCardId]
-          : undefined;
+        const base = winningDeck.baseCardId ? cardList.cards[winningDeck.baseCardId] : undefined;
+
+        if (!leader1 && !base) {
+          return null;
+        }
 
         return (
           <div className="flex gap-1">

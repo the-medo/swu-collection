@@ -18,7 +18,7 @@ export const cardPriceSourceInfo: Record<CardPriceSourceType, CardPriceSourceInf
     name: 'CardMarket',
     logo: 'https://images.swubase.com/price-source-thumbnails/price-source-cardmarket.png',
     enabled: true,
-    description: 'In progress of pairing cards',
+    description: '',
   },
   [CardPriceSourceType.TCGPLAYER]: {
     id: CardPriceSourceType.TCGPLAYER,

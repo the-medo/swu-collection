@@ -45,7 +45,9 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
   }, [data, tournaments]);
 
   if (isFetching) return <Skeleton className="h-full w-full rounded-md" />;
-  return <MetaTabs tournaments={tournamentsData} metaId={metaId} tournamentGroupId={tournamentGroupId} />;
+  return (
+    <MetaTabs tournaments={tournamentsData} metaId={metaId} tournamentGroupId={tournamentGroupId} />
+  );
 };
 
 export default MetaPageContent;
