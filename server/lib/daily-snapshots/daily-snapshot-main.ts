@@ -22,13 +22,14 @@ export type DailySnapshotRunResult = {
 
 export const runDailySnapshot = async (): Promise<DailySnapshotRunResult> => {
   const context = await prepareTournamentGroup();
-  console.log(
-    `[daily-snapshot] Preparing for date=${context.date} tg=${context.tournamentGroupId ?? 'none'}`,
-  );
+  console.log(`[daily-snapshot] Preparing for date=${context.date}`);
+  console.log(`[daily-snapshot] Two week tgid=${context.tournamentGroupIdTwoWeeks ?? 'none'}`);
+  console.log(`[daily-snapshot] Weekend1 tgid=${context.tournamentGroupIdWeek1 ?? 'none'}`);
+  console.log(`[daily-snapshot] Weekend2 tgid=${context.tournamentGroupIdWeek2 ?? 'none'}`);
 
   const results: DailySnapshotRunResult = {
     date: context.date,
-    tournamentGroupId: context.tournamentGroupId,
+    tournamentGroupId: context.tournamentGroupIdTwoWeeks,
     sections: [],
   };
 

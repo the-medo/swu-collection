@@ -4,15 +4,119 @@ import { format as formatTable } from '../../db/schema/format';
 import { tournament } from '../../db/schema/tournament';
 import { tournamentGroup } from '../../db/schema/tournament_group';
 import { tournamentGroupTournament } from '../../db/schema/tournament_group_tournament';
+import { tournamentType as tournamentTypeTable } from '../../db/schema/tournament_type.ts';
 import { and, desc, eq, gte, lte } from 'drizzle-orm';
-import { isWeekend, subDays, startOfWeek, isMonday, format as formatDate } from 'date-fns';
+import { isWeekend, subDays, startOfWeek, isMonday, format as formatDate, addDays } from 'date-fns';
 import { updateTournamentGroupStatistics } from '../card-statistics/update-tournament-group-statistics';
 
 export type SnapshotContext = {
   // YYYY-MM-DD string for the snapshot date
   date: string;
-  // Optional tournament group id for which the snapshot is prepared
-  tournamentGroupId: string | null;
+  // Explicit IDs for all prepared groups
+  tournamentGroupIdTwoWeeks: string | null;
+  tournamentGroupIdWeek1: string | null; // most recent weekend
+  tournamentGroupIdWeek2: string | null; // previous weekend
+};
+
+// Helper to create or update a tournament group for a given meta and date range
+const upsertTournamentGroupForRange = async (
+  metaId: number,
+  dateFromInput: Date | string,
+  dateToInput?: Date | string,
+): Promise<string | null> => {
+  const fromDate = typeof dateFromInput === 'string' ? new Date(dateFromInput) : dateFromInput;
+  const toDate = dateToInput
+    ? typeof dateToInput === 'string'
+      ? new Date(dateToInput)
+      : dateToInput
+    : addDays(fromDate, 1); // weekend snapshot spans 2 days if dateTo not provided
+
+  // Build group name
+  let tournamentGroupName: string;
+  if (dateToInput) {
+    tournamentGroupName = `Two week snapshot from ${formatDate(fromDate, 'yyyy-MM-dd')}`;
+  } else {
+    const sameMonthAndYear =
+      fromDate.getFullYear() === toDate.getFullYear() && fromDate.getMonth() === toDate.getMonth();
+    const weekendLabel = sameMonthAndYear
+      ? `${formatDate(fromDate, 'd')}-${formatDate(toDate, 'do MMMM')}`
+      : `${formatDate(fromDate, 'do MMMM')} - ${formatDate(toDate, 'do MMMM')}`;
+    tournamentGroupName = `Weekend ${weekendLabel}`;
+  }
+
+  // Ensure tournament_group exists
+  let groupId: string | null = null;
+  try {
+    const existing = (
+      await db
+        .select({ id: tournamentGroup.id })
+        .from(tournamentGroup)
+        .where(
+          and(eq(tournamentGroup.name, tournamentGroupName), eq(tournamentGroup.metaId, metaId)),
+        )
+        .limit(1)
+    )[0];
+
+    if (existing?.id) {
+      groupId = existing.id;
+    } else {
+      const inserted = (
+        await db
+          .insert(tournamentGroup)
+          .values({
+            name: tournamentGroupName,
+            metaId,
+            position: 0,
+            description: null,
+            visible: false,
+          })
+          .returning({ id: tournamentGroup.id })
+      )[0];
+      groupId = inserted?.id ?? null;
+    }
+  } catch (e) {
+    return null;
+  }
+
+  if (!groupId) return null;
+
+  // Insert tournaments for meta in [fromDate, toDate] and with major type
+  try {
+    const tourneys = await db
+      .select({ id: tournament.id })
+      .from(tournament)
+      .innerJoin(tournamentTypeTable, eq(tournament.type, tournamentTypeTable.id))
+      .where(
+        and(
+          eq(tournament.meta, metaId),
+          eq(tournamentTypeTable.major, 1),
+          gte(tournament.date, new Date(formatDate(fromDate, 'yyyy-MM-dd'))),
+          lte(tournament.date, new Date(formatDate(toDate, 'yyyy-MM-dd'))),
+        ),
+      );
+
+    if (tourneys.length > 0) {
+      const values = tourneys.map(t => ({ tournamentId: t.id, groupId, position: 0 }));
+
+      await db
+        .insert(tournamentGroupTournament)
+        .values(values)
+        .onConflictDoNothing({
+          target: [tournamentGroupTournament.tournamentId, tournamentGroupTournament.groupId],
+        });
+    }
+  } catch (e) {
+    // ignore insert failures
+  }
+
+  // Update stats
+  try {
+    await updateTournamentGroupStatistics(groupId);
+  } catch (e) {
+    // ignore stats failures
+  }
+
+  return groupId;
 };
 
 export const prepareTournamentGroup = async (): Promise<SnapshotContext> => {
@@ -53,6 +157,15 @@ export const prepareTournamentGroup = async (): Promise<SnapshotContext> => {
     // Leave currentMetaId as null if any error
   }
 
+  if (currentMetaId == null) {
+    return {
+      date: dateOnly,
+      tournamentGroupIdTwoWeeks: null,
+      tournamentGroupIdWeek1: null,
+      tournamentGroupIdWeek2: null,
+    };
+  }
+
   // 2) Compute dates of current TG of last 2 weeks using date-fns
   // Rule:
   // - if date is Sat or Sun -> base = DATE-7 days
@@ -61,94 +174,39 @@ export const prepareTournamentGroup = async (): Promise<SnapshotContext> => {
   // Monday strictly before base
   const startOfWeekMonday = startOfWeek(base, { weekStartsOn: 1 });
   const startMonday = isMonday(base) ? subDays(startOfWeekMonday, 7) : startOfWeekMonday;
-  const dateFrom = formatDate(startMonday, 'yyyy-MM-dd');
 
-  // From found start date (monday), make a TG name
-  const tournamentGroupName = `Two week snapshot ${dateFrom}`;
+  // Create two week snapshot group
+  const twoWeekGroupId = await upsertTournamentGroupForRange(
+    currentMetaId,
+    startMonday,
+    new Date(dateOnly),
+  );
 
-  // If we failed to resolve meta, we can't proceed with grouping
-  if (currentMetaId == null) {
-    return { date: dateOnly, tournamentGroupId: null };
+  // Determine two weekend snapshots within the same timeframe
+  // Find the most recent Saturday within [startMonday, now]
+  const currentWeekStart = startOfWeek(now, { weekStartsOn: 1 });
+  let recentSaturday = addDays(currentWeekStart, 5);
+  if (recentSaturday > now) {
+    recentSaturday = addDays(recentSaturday, -7);
   }
-
-  // 3) Ensure tournament_group exists for this name & meta; create if missing
-  let groupId: string | null = null;
-  try {
-    const existing = (
-      await db
-        .select({ id: tournamentGroup.id })
-        .from(tournamentGroup)
-        .where(and(eq(tournamentGroup.name, tournamentGroupName), eq(tournamentGroup.metaId, currentMetaId)))
-        .limit(1)
-    )[0];
-
-    if (existing?.id) {
-      groupId = existing.id;
-    } else {
-      const inserted = (
-        await db
-          .insert(tournamentGroup)
-          .values({
-            name: tournamentGroupName,
-            metaId: currentMetaId,
-            position: 0,
-            description: null,
-            visible: false,
-          })
-          .returning({ id: tournamentGroup.id })
-      )[0];
-      groupId = inserted?.id ?? null;
-    }
-  } catch (e) {
-    // If something went wrong, bail out returning minimal context
-    return { date: dateOnly, tournamentGroupId: null };
+  if (recentSaturday < startMonday) {
+    recentSaturday = addDays(startMonday, 5); // fallback to first Saturday in the window
   }
+  const previousSaturday = addDays(recentSaturday, -7);
 
-  if (!groupId) {
-    return { date: dateOnly, tournamentGroupId: null };
-  }
-
-  // 4) Insert tournaments of given meta between dateFrom and dateOnly into join table
-  try {
-    const tourneys = await db
-      .select({ id: tournament.id })
-      .from(tournament)
-      .where(
-        and(
-          eq(tournament.meta, currentMetaId),
-          gte(tournament.date, new Date(dateFrom)),
-          lte(tournament.date, new Date(dateOnly)),
-        ),
-      );
-
-    if (tourneys.length > 0) {
-      const values = tourneys.map(t => ({
-        tournamentId: t.id,
-        groupId: groupId,
-        position: 0,
-      }));
-
-      await db
-        .insert(tournamentGroupTournament)
-        .values(values)
-        .onConflictDoNothing({
-          target: [tournamentGroupTournament.tournamentId, tournamentGroupTournament.groupId],
-        });
-    }
-  } catch (e) {
-    // Ignore failures for insert; the group was created anyway
-  }
-
-  // 5) Recompute statistics for this tournament group
-  try {
-    await updateTournamentGroupStatistics(groupId!);
-  } catch (e) {
-    // Stats recomputation failures shouldn't break snapshot preparation
+  // Weekend snapshot 1 (most recent)
+  const weekend1GroupId = await upsertTournamentGroupForRange(currentMetaId, recentSaturday);
+  // Weekend snapshot 2 (previous)
+  let weekend2GroupId: string | null = null;
+  if (previousSaturday >= startMonday) {
+    weekend2GroupId = await upsertTournamentGroupForRange(currentMetaId, previousSaturday);
   }
 
   return {
     date: dateOnly,
-    tournamentGroupId: groupId,
+    tournamentGroupIdTwoWeeks: twoWeekGroupId ?? null,
+    tournamentGroupIdWeek1: weekend1GroupId ?? null,
+    tournamentGroupIdWeek2: weekend2GroupId ?? null,
   };
 };
 
