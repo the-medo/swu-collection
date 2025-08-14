@@ -4,15 +4,20 @@ export type DailySnapshotSectionData<T> = {
   data: T;
 };
 
-export type SectionMetaShare2WeeksType = {
-  leaderId: number;
+export type SectionMetaShare2WeeksDataPoint = {
+  leaderCardId: string;
+  baseCardId: string;
+  total: number;
+  top8: number;
+  winners: number;
 };
 
 export type SectionMetaShare2Weeks = {
-  id: string;
-  total: SectionMetaShare2WeeksType[];
-  top8: SectionMetaShare2WeeksType[];
-  winners: SectionMetaShare2WeeksType[];
+  tournamentGroupId: string;
+  tournamentsImported: number;
+  tournamentsTotal: number;
+  tournamentsAttendance: number; // taken as a sum of the "total" datapoints, not from `tournament_group_stats`!
+  dataPoints: SectionMetaShare2WeeksDataPoint[];
 };
 
 export type SectionWeeklyChange = {

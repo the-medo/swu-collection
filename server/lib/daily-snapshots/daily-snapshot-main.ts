@@ -20,7 +20,9 @@ export type DailySnapshotRunResult = {
   sections: Array<SectionResult<SectionWeeklyChange> | SectionResult<SectionMetaShare2Weeks>>;
 };
 
-export const runDailySnapshot = async (dateInput?: Date | string): Promise<DailySnapshotRunResult> => {
+export const runDailySnapshot = async (
+  dateInput?: Date | string,
+): Promise<DailySnapshotRunResult> => {
   const context = await prepareTournamentGroup(dateInput);
   console.log(`[daily-snapshot] Preparing for date=${context.date}`);
   console.log(`[daily-snapshot] Two week tgid=${context.tournamentGroupIdTwoWeeks ?? 'none'}`);
@@ -39,7 +41,7 @@ export const runDailySnapshot = async (dateInput?: Date | string): Promise<Daily
     exec: () => Promise<DailySnapshotSectionData<any>>;
   }> = [
     { name: 'weekly-change', exec: () => buildWeeklyChangeSection() },
-    { name: 'meta-share-2-weeks', exec: () => buildMetaShare2WeeksSection() },
+    { name: 'meta-share-2-weeks', exec: () => buildMetaShare2WeeksSection(context.tournamentGroupIdTwoWeeks) },
   ];
 
   for (const step of steps) {
@@ -65,7 +67,5 @@ export const runDailySnapshot = async (dateInput?: Date | string): Promise<Daily
 
   return results;
 };
-
-runDailySnapshot();
 
 export default runDailySnapshot;
