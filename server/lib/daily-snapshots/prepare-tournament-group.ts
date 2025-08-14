@@ -119,9 +119,9 @@ const upsertTournamentGroupForRange = async (
   return groupId;
 };
 
-export const prepareTournamentGroup = async (): Promise<SnapshotContext> => {
-  // Today and date-only string
-  const now = new Date();
+export const prepareTournamentGroup = async (dateInput?: Date | string): Promise<SnapshotContext> => {
+  // Today and date-only string (can be overridden by dateInput)
+  const now = dateInput ? (typeof dateInput === 'string' ? new Date(dateInput) : dateInput) : new Date();
   const dateOnly = now.toISOString().slice(0, 10);
 
   // 1) Get current meta ID from Meta table, with format called 'Premier'
