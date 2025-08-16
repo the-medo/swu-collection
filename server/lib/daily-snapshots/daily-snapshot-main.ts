@@ -42,7 +42,7 @@ export const runDailySnapshot = async (
     name: string;
     exec: () => Promise<DailySnapshotSectionData<any>>;
   }> = [
-    { name: 'weekly-change', exec: () => buildWeeklyChangeSection() },
+    { name: 'weekly-change', exec: () => buildWeeklyChangeSection(context.tournamentGroupIdWeek1, context.tournamentGroupIdWeek2) },
     {
       name: 'meta-share-2-weeks',
       exec: () => buildMetaShare2WeeksSection(context.tournamentGroupIdTwoWeeks),

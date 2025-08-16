@@ -1,11 +1,192 @@
-import { type DailySnapshotSectionData, type SectionWeeklyChange } from '../../../../types/DailySnapshots.ts';
+import { db } from '../../../db';
+import { tournamentGroupLeaderBase } from '../../../db/schema/tournament_group_leader_base.ts';
+import { tournamentGroupStats } from '../../../db/schema/tournament_group_stats.ts';
+import { eq, inArray } from 'drizzle-orm';
+import {
+  type DailySnapshotSectionData,
+  type SectionWeeklyChange,
+  type SectionWeeklyChangeDataPoint,
+  type TournamentGroupData,
+} from '../../../../types/DailySnapshots.ts';
 
-export const buildWeeklyChangeSection = async (): Promise<DailySnapshotSectionData<SectionWeeklyChange>> => {
-  // Dummy implementation without real data
+const keyOf = (r: { leaderCardId: string; baseCardId: string }) =>
+  `${r.leaderCardId}|${r.baseCardId}`;
+
+export const buildWeeklyChangeSection = async (
+  week1GroupId?: string | null,
+  week2GroupId?: string | null,
+): Promise<DailySnapshotSectionData<SectionWeeklyChange>> => {
+  // If either group id is missing, return empty structure to keep contract stable
+  if (!week1GroupId || !week2GroupId) {
+    const emptyWeek = {
+      tournamentGroupId: '',
+      tournamentsImported: 0,
+      tournamentsTotal: 0,
+      tournamentsAttendance: 0,
+    } satisfies TournamentGroupData;
+
+    const empty: SectionWeeklyChange = {
+      week1: emptyWeek,
+      week2: emptyWeek,
+      dataPoints: [],
+    };
+
+    return { id: 'weekly-change', title: 'Weekly Change', data: empty };
+  }
+
+  // 1) Load rows for both weeks
+  const rowsWeek1 = await db
+    .select({
+      leaderCardId: tournamentGroupLeaderBase.leaderCardId,
+      baseCardId: tournamentGroupLeaderBase.baseCardId,
+      winners: tournamentGroupLeaderBase.winner,
+      top8: tournamentGroupLeaderBase.top8,
+      total: tournamentGroupLeaderBase.total,
+    })
+    .from(tournamentGroupLeaderBase)
+    .where(eq(tournamentGroupLeaderBase.tournamentGroupId, week1GroupId));
+
+  const rowsWeek2 = await db
+    .select({
+      leaderCardId: tournamentGroupLeaderBase.leaderCardId,
+      baseCardId: tournamentGroupLeaderBase.baseCardId,
+      winners: tournamentGroupLeaderBase.winner,
+      top8: tournamentGroupLeaderBase.top8,
+      total: tournamentGroupLeaderBase.total,
+    })
+    .from(tournamentGroupLeaderBase)
+    .where(eq(tournamentGroupLeaderBase.tournamentGroupId, week2GroupId));
+
+  // 2) Build maps for quick lookup
+  const map1 = new Map<
+    string,
+    { leaderCardId: string; baseCardId: string; total: number; top8: number }
+  >();
+  rowsWeek1.forEach(r =>
+    map1.set(keyOf(r), {
+      leaderCardId: r.leaderCardId,
+      baseCardId: r.baseCardId,
+      total: r.total ?? 0,
+      top8: r.top8 ?? 0,
+    }),
+  );
+
+  const map2 = new Map<
+    string,
+    { leaderCardId: string; baseCardId: string; total: number; top8: number }
+  >();
+  rowsWeek2.forEach(r =>
+    map2.set(keyOf(r), {
+      leaderCardId: r.leaderCardId,
+      baseCardId: r.baseCardId,
+      total: r.total ?? 0,
+      top8: r.top8 ?? 0,
+    }),
+  );
+
+  // 3) Determine inclusion set
+  const allKeys = new Set<string>([...map1.keys(), ...map2.keys()]);
+
+  // Top 10 by total for each week
+  const top10Week1 = [...map1.values()]
+    .sort((a, b) => (b.total ?? 0) - (a.total ?? 0))
+    .slice(0, 10)
+    .map(r => keyOf(r));
+
+  const top10Week2 = [...map2.values()]
+    .sort((a, b) => (b.total ?? 0) - (a.total ?? 0))
+    .slice(0, 10)
+    .map(r => keyOf(r));
+
+  const included = new Set<string>();
+  // Add top 8 appearances from either week and union of top10 by total from both weeks
+  for (const k of allKeys) {
+    const r1 = map1.get(k);
+    const r2 = map2.get(k);
+    if ((r1?.top8 ?? 0) > 0 || (r2?.top8 ?? 0) > 0) included.add(k);
+  }
+  top10Week1.forEach(k => included.add(k));
+  top10Week2.forEach(k => included.add(k));
+
+  // 4) Build detailed datapoints
+  const detailed: SectionWeeklyChangeDataPoint[] = [...included].map(k => {
+    const r1 = map1.get(k);
+    const r2 = map2.get(k);
+    const [leaderCardId, baseCardId] = (r1 ?? r2)!
+      ? [r1?.leaderCardId ?? r2!.leaderCardId, r1?.baseCardId ?? r2!.baseCardId]
+      : ['', ''];
+    return {
+      leaderCardId,
+      baseCardId,
+      week1: { total: r1?.total ?? 0, top8: r1?.top8 ?? 0 },
+      week2: { total: r2?.total ?? 0, top8: r2?.top8 ?? 0 },
+    };
+  });
+
+  // 5) Aggregate the rest
+  let restWeek1Total = 0;
+  let restWeek2Total = 0;
+
+  for (const [k, r] of map1.entries()) {
+    if (!included.has(k)) restWeek1Total += r.total ?? 0;
+  }
+  for (const [k, r] of map2.entries()) {
+    if (!included.has(k)) restWeek2Total += r.total ?? 0;
+  }
+
+  const dataPoints: SectionWeeklyChangeDataPoint[] = [...detailed];
+  if (restWeek1Total > 0 || restWeek2Total > 0) {
+    dataPoints.push({
+      leaderCardId: '',
+      baseCardId: '',
+      week1: { total: restWeek1Total, top8: 0 },
+      week2: { total: restWeek2Total, top8: 0 },
+    });
+  }
+
+  // 6) Compute tournaments attendance per week (sum of totals in final datapoints)
+  const attendanceWeek1 = dataPoints.reduce((acc, dp) => acc + (dp.week1.total ?? 0), 0);
+  const attendanceWeek2 = dataPoints.reduce((acc, dp) => acc + (dp.week2.total ?? 0), 0);
+
+  // 7) Load tournaments imported/total for both weeks
+  const statsRows = await db
+    .select({
+      tournamentGroupId: tournamentGroupStats.tournamentGroupId,
+      importedTournaments: tournamentGroupStats.importedTournaments,
+      totalTournaments: tournamentGroupStats.totalTournaments,
+    })
+    .from(tournamentGroupStats)
+    .where(inArray(tournamentGroupStats.tournamentGroupId, [week1GroupId, week2GroupId]));
+
+  const statsMap = new Map<
+    string,
+    { importedTournaments: number | null; totalTournaments: number | null }
+  >();
+  statsRows.forEach(s =>
+    statsMap.set(s.tournamentGroupId, {
+      importedTournaments: s.importedTournaments,
+      totalTournaments: s.totalTournaments,
+    }),
+  );
+
+  const week1Data: TournamentGroupData = {
+    tournamentGroupId: week1GroupId,
+    tournamentsImported: statsMap.get(week1GroupId)?.importedTournaments ?? 0,
+    tournamentsTotal: statsMap.get(week1GroupId)?.totalTournaments ?? 0,
+    tournamentsAttendance: attendanceWeek1,
+  };
+
+  const week2Data: TournamentGroupData = {
+    tournamentGroupId: week2GroupId,
+    tournamentsImported: statsMap.get(week2GroupId)?.importedTournaments ?? 0,
+    tournamentsTotal: statsMap.get(week2GroupId)?.totalTournaments ?? 0,
+    tournamentsAttendance: attendanceWeek2,
+  };
+
   const data: SectionWeeklyChange = {
-    id: 'weekly-change-row-1',
-    week1: 100,
-    week2: 105,
+    week1: week1Data,
+    week2: week2Data,
+    dataPoints,
   };
 
   return {
