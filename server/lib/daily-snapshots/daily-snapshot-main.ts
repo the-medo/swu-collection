@@ -6,6 +6,8 @@ import {
   type SectionWeeklyChange,
   type SectionMetaShare2Weeks,
 } from '../../../types/DailySnapshots.ts';
+import { db } from '../../db';
+import { dailySnapshot, dailySnapshotSection } from '../../db/schema/daily_snapshot.ts';
 
 export type SectionResult<T> = {
   name: string;
@@ -41,7 +43,10 @@ export const runDailySnapshot = async (
     exec: () => Promise<DailySnapshotSectionData<any>>;
   }> = [
     { name: 'weekly-change', exec: () => buildWeeklyChangeSection() },
-    { name: 'meta-share-2-weeks', exec: () => buildMetaShare2WeeksSection(context.tournamentGroupIdTwoWeeks) },
+    {
+      name: 'meta-share-2-weeks',
+      exec: () => buildMetaShare2WeeksSection(context.tournamentGroupIdTwoWeeks),
+    },
   ];
 
   for (const step of steps) {
@@ -65,7 +70,63 @@ export const runDailySnapshot = async (
     results.sections.map(s => `${s.name}:${s.ok ? 'OK' : 'FAIL'}`).join(', '),
   );
 
+  await saveDailySnapshotResults(results);
+
   return results;
+};
+
+/**
+ * Saves the results of runDailySnapshot into the database.
+ * - Upserts daily_snapshot (by date)
+ * - Upserts daily_snapshot_section (by date, section) for successful sections
+ */
+export const saveDailySnapshotResults = async (
+  results: DailySnapshotRunResult,
+): Promise<{ date: string; savedSections: number }> => {
+  const now = new Date();
+
+  // Upsert daily_snapshot
+  await db
+    .insert(dailySnapshot)
+    .values({
+      date: results.date as unknown as any, // schema uses 'date' type, but we provide ISO string; DB will cast
+      tournamentGroupId: results.tournamentGroupId ?? null,
+      updatedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: dailySnapshot.date,
+      set: {
+        tournamentGroupId: results.tournamentGroupId ?? null,
+        updatedAt: now,
+      },
+    });
+
+  // Prepare and upsert sections
+  let saved = 0;
+  for (const section of results.sections) {
+    if (!section.ok || !section.payload) continue;
+    const dataText = JSON.stringify(section.payload);
+
+    await db
+      .insert(dailySnapshotSection)
+      .values({
+        date: results.date as unknown as any,
+        section: section.name,
+        data: dataText,
+        updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: [dailySnapshotSection.date, dailySnapshotSection.section],
+        set: {
+          data: dataText,
+          updatedAt: now,
+        },
+      });
+
+    saved += 1;
+  }
+
+  return { date: results.date, savedSections: saved };
 };
 
 export default runDailySnapshot;
