@@ -1,10 +1,12 @@
 import prepareTournamentGroup from './prepare-tournament-group.ts';
 import buildWeeklyChangeSection from './section/weekly-change.ts';
 import buildMetaShare2WeeksSection from './section/meta-share-2-weeks.ts';
+import buildRecentTournamentsSection from './section/recent-tournaments.ts';
 import {
   type DailySnapshotSectionData,
   type SectionWeeklyChange,
   type SectionMetaShare2Weeks,
+  type SectionRecentTournaments,
 } from '../../../types/DailySnapshots.ts';
 import { db } from '../../db';
 import { dailySnapshot, dailySnapshotSection } from '../../db/schema/daily_snapshot.ts';
@@ -19,7 +21,11 @@ export type SectionResult<T> = {
 export type DailySnapshotRunResult = {
   date: string;
   tournamentGroupId: string | null;
-  sections: Array<SectionResult<SectionWeeklyChange> | SectionResult<SectionMetaShare2Weeks>>;
+  sections: Array<
+    | SectionResult<SectionWeeklyChange>
+    | SectionResult<SectionMetaShare2Weeks>
+    | SectionResult<SectionRecentTournaments>
+  >;
 };
 
 export const runDailySnapshot = async (
@@ -46,6 +52,10 @@ export const runDailySnapshot = async (
     {
       name: 'meta-share-2-weeks',
       exec: () => buildMetaShare2WeeksSection(context.tournamentGroupIdTwoWeeks),
+    },
+    {
+      name: 'recent-tournaments',
+      exec: () => buildRecentTournamentsSection(context.tournamentGroupIdTwoWeeks),
     },
   ];
 

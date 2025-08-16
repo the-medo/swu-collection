@@ -41,3 +41,19 @@ export type SectionWeeklyChange = {
   week2: TournamentGroupData;
   dataPoints: SectionWeeklyChangeDataPoint[];
 };
+
+// New section: Recent Tournaments (last two weeks)
+import type { TournamentStringDate } from './Tournament.ts';
+import type { TournamentDeck } from '../server/db/schema/tournament_deck.ts';
+import type { Deck } from '../server/db/schema/deck.ts';
+
+export type SectionRecentTournamentsItem = {
+  tournament: TournamentStringDate;
+  winningTournamentDeck: TournamentDeck | null;
+  deck: Deck | null;
+};
+
+export type SectionRecentTournaments = {
+  tournamentGroupId: string;
+  tournaments: SectionRecentTournamentsItem[];
+};
