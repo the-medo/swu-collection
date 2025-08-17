@@ -2,11 +2,13 @@ import prepareTournamentGroup from './prepare-tournament-group.ts';
 import buildWeeklyChangeSection from './section/weekly-change.ts';
 import buildMetaShare2WeeksSection from './section/meta-share-2-weeks.ts';
 import buildRecentTournamentsSection from './section/recent-tournaments.ts';
+import buildUpcomingTournamentsSection from './section/upcoming-tournaments.ts';
 import {
   type DailySnapshotSectionData,
   type SectionWeeklyChange,
   type SectionMetaShare2Weeks,
   type SectionRecentTournaments,
+  type SectionUpcomingTournaments,
 } from '../../../types/DailySnapshots.ts';
 import { db } from '../../db';
 import { dailySnapshot, dailySnapshotSection } from '../../db/schema/daily_snapshot.ts';
@@ -25,6 +27,7 @@ export type DailySnapshotRunResult = {
     | SectionResult<SectionWeeklyChange>
     | SectionResult<SectionMetaShare2Weeks>
     | SectionResult<SectionRecentTournaments>
+    | SectionResult<SectionUpcomingTournaments>
   >;
 };
 
@@ -36,6 +39,7 @@ export const runDailySnapshot = async (
   console.log(`[daily-snapshot] Two week tgid=${context.tournamentGroupIdTwoWeeks ?? 'none'}`);
   console.log(`[daily-snapshot] Weekend1 tgid=${context.tournamentGroupIdWeek1 ?? 'none'}`);
   console.log(`[daily-snapshot] Weekend2 tgid=${context.tournamentGroupIdWeek2 ?? 'none'}`);
+  console.log(`[daily-snapshot] UpcomingWeekend tgid=${context.upcomingWeekTournamentGroupId ?? 'none'}`);
 
   const results: DailySnapshotRunResult = {
     date: context.date,
@@ -56,6 +60,10 @@ export const runDailySnapshot = async (
     {
       name: 'recent-tournaments',
       exec: () => buildRecentTournamentsSection(context.tournamentGroupIdTwoWeeks),
+    },
+    {
+      name: 'upcoming-tournaments',
+      exec: () => buildUpcomingTournamentsSection(context.upcomingWeekTournamentGroupId),
     },
   ];
 

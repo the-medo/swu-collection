@@ -16,6 +16,7 @@ export type SnapshotContext = {
   tournamentGroupIdTwoWeeks: string | null;
   tournamentGroupIdWeek1: string | null; // most recent weekend
   tournamentGroupIdWeek2: string | null; // previous weekend
+  upcomingWeekTournamentGroupId: string | null; // current or upcoming weekend, per spec
 };
 
 // Helper to create or update a tournament group for a given meta and date range
@@ -163,6 +164,7 @@ export const prepareTournamentGroup = async (dateInput?: Date | string): Promise
       tournamentGroupIdTwoWeeks: null,
       tournamentGroupIdWeek1: null,
       tournamentGroupIdWeek2: null,
+      upcomingWeekTournamentGroupId: null,
     };
   }
 
@@ -202,11 +204,26 @@ export const prepareTournamentGroup = async (dateInput?: Date | string): Promise
     weekend2GroupId = await upsertTournamentGroupForRange(currentMetaId, previousSaturday);
   }
 
+  // Determine upcoming (or current) weekend group id per spec
+  let upcomingWeekTournamentGroupId: string | null = null;
+  if (isWeekend(now)) {
+    // If it is a weekend now, reuse the most recent weekend group
+    upcomingWeekTournamentGroupId = weekend1GroupId ?? null;
+  } else {
+    // Not a weekend: prepare upcoming weekend group (next Saturday)
+    let nextSaturday = addDays(currentWeekStart, 5);
+    if (nextSaturday <= now) {
+      nextSaturday = addDays(nextSaturday, 7);
+    }
+    upcomingWeekTournamentGroupId = await upsertTournamentGroupForRange(currentMetaId, nextSaturday);
+  }
+
   return {
     date: dateOnly,
     tournamentGroupIdTwoWeeks: twoWeekGroupId ?? null,
     tournamentGroupIdWeek1: weekend1GroupId ?? null,
     tournamentGroupIdWeek2: weekend2GroupId ?? null,
+    upcomingWeekTournamentGroupId: upcomingWeekTournamentGroupId ?? null,
   };
 };
 

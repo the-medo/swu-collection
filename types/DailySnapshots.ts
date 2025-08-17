@@ -57,3 +57,9 @@ export type SectionRecentTournaments = {
   tournamentGroupId: string;
   tournaments: SectionRecentTournamentsItem[];
 };
+
+// New section: Upcoming Tournaments (current or upcoming weekend)
+export type SectionUpcomingTournaments = {
+  tournamentGroupId: string;
+  dataPoints: TournamentStringDate[];
+};
