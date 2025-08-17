@@ -63,3 +63,16 @@ export type SectionUpcomingTournaments = {
   tournamentGroupId: string;
   dataPoints: TournamentStringDate[];
 };
+
+// New section: Most Played Cards (two-week group)
+export type SectionMostPlayedCardsItem = {
+  cardId: string;
+  deckCount: number;
+  countMd: number;
+  countSb: number;
+};
+
+export type SectionMostPlayedCards = {
+  tournamentGroupId: string;
+  dataPoints: SectionMostPlayedCardsItem[];
+};
