@@ -76,3 +76,10 @@ export type SectionMostPlayedCards = {
   tournamentGroupId: string;
   dataPoints: SectionMostPlayedCardsItem[];
 };
+
+// New section: Force vs Non-Force (two-weeks + weeks)
+export type SectionForceVsNonForceCounts = {
+  twoWeeks: { force: number; nonforce: number };
+  week1: { force: number; nonforce: number };
+  week2: { force: number; nonforce: number };
+};

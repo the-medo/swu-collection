@@ -4,6 +4,7 @@ import buildMetaShare2WeeksSection from './section/meta-share-2-weeks.ts';
 import buildRecentTournamentsSection from './section/recent-tournaments.ts';
 import buildUpcomingTournamentsSection from './section/upcoming-tournaments.ts';
 import buildMostPlayedCardsSection from './section/most-played-cards.ts';
+import buildForceVsNonForceSection from './section/force-vs-nonforce.ts';
 import {
   type DailySnapshotSectionData,
   type SectionWeeklyChange,
@@ -11,6 +12,7 @@ import {
   type SectionRecentTournaments,
   type SectionUpcomingTournaments,
   type SectionMostPlayedCards,
+  type SectionForceVsNonForceCounts,
 } from '../../../types/DailySnapshots.ts';
 import { db } from '../../db';
 import { dailySnapshot, dailySnapshotSection } from '../../db/schema/daily_snapshot.ts';
@@ -31,6 +33,7 @@ export type DailySnapshotRunResult = {
     | SectionResult<SectionRecentTournaments>
     | SectionResult<SectionUpcomingTournaments>
     | SectionResult<SectionMostPlayedCards>
+    | SectionResult<SectionForceVsNonForceCounts>
   >;
 };
 
@@ -63,6 +66,15 @@ export const runDailySnapshot = async (
     {
       name: 'most-played-cards',
       exec: () => buildMostPlayedCardsSection(context.tournamentGroupIdTwoWeeks),
+    },
+    {
+      name: 'force-vs-nonforce',
+      exec: () =>
+        buildForceVsNonForceSection(
+          context.tournamentGroupIdTwoWeeks,
+          context.tournamentGroupIdWeek1,
+          context.tournamentGroupIdWeek2,
+        ),
     },
     {
       name: 'recent-tournaments',

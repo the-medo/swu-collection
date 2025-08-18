@@ -120,9 +120,15 @@ const upsertTournamentGroupForRange = async (
   return groupId;
 };
 
-export const prepareTournamentGroup = async (dateInput?: Date | string): Promise<SnapshotContext> => {
+export const prepareTournamentGroup = async (
+  dateInput?: Date | string,
+): Promise<SnapshotContext> => {
   // Today and date-only string (can be overridden by dateInput)
-  const now = dateInput ? (typeof dateInput === 'string' ? new Date(dateInput) : dateInput) : new Date();
+  const now = dateInput
+    ? typeof dateInput === 'string'
+      ? new Date(dateInput)
+      : dateInput
+    : new Date();
   const dateOnly = now.toISOString().slice(0, 10);
 
   // 1) Get current meta ID from Meta table, with format called 'Premier'
@@ -197,25 +203,28 @@ export const prepareTournamentGroup = async (dateInput?: Date | string): Promise
   const previousSaturday = addDays(recentSaturday, -7);
 
   // Weekend snapshot 1 (most recent)
-  const weekend1GroupId = await upsertTournamentGroupForRange(currentMetaId, recentSaturday);
+  const weekend2GroupId = await upsertTournamentGroupForRange(currentMetaId, recentSaturday);
   // Weekend snapshot 2 (previous)
-  let weekend2GroupId: string | null = null;
+  let weekend1GroupId: string | null = null;
   if (previousSaturday >= startMonday) {
-    weekend2GroupId = await upsertTournamentGroupForRange(currentMetaId, previousSaturday);
+    weekend1GroupId = await upsertTournamentGroupForRange(currentMetaId, previousSaturday);
   }
 
   // Determine upcoming (or current) weekend group id per spec
   let upcomingWeekTournamentGroupId: string | null = null;
   if (isWeekend(now)) {
     // If it is a weekend now, reuse the most recent weekend group
-    upcomingWeekTournamentGroupId = weekend1GroupId ?? null;
+    upcomingWeekTournamentGroupId = weekend2GroupId ?? null;
   } else {
     // Not a weekend: prepare upcoming weekend group (next Saturday)
     let nextSaturday = addDays(currentWeekStart, 5);
     if (nextSaturday <= now) {
       nextSaturday = addDays(nextSaturday, 7);
     }
-    upcomingWeekTournamentGroupId = await upsertTournamentGroupForRange(currentMetaId, nextSaturday);
+    upcomingWeekTournamentGroupId = await upsertTournamentGroupForRange(
+      currentMetaId,
+      nextSaturday,
+    );
   }
 
   return {
