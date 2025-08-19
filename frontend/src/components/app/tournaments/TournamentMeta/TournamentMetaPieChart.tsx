@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ResponsivePie } from '@nivo/pie';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
@@ -18,6 +18,8 @@ interface TournamentMetaPieChartProps {
   metaPart: string;
   totalDecks: number;
   day2Decks: number;
+  top8Decks: number;
+  top64Decks: number;
 }
 
 // Define colors for the pie chart segments using shades of primary/secondary colors
@@ -51,12 +53,19 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
   metaPart,
   totalDecks,
   day2Decks,
+  top8Decks,
+  top64Decks,
 }) => {
   const labelRenderer = useLabel();
   const { theme } = useTheme();
   const pieChartColorDefinitions = useChartColorsAndGradients();
   const { setTournamentDeckKey } = useTournamentMetaActions();
   const [hoveredItem, setHoveredItem] = useState<any>(null);
+
+  // Reset the hovered item when the metaInfo or metaPart changes, because old information would be displayed
+  useEffect(() => {
+    setHoveredItem(null);
+  }, [metaInfo, metaPart]);
 
   // Map all items for visualization
   const chartData = useMemo(() => {
@@ -101,12 +110,18 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
         );
 
         // Add percentages and conversion rates
-        const totalDeckCount = getTotalDeckCountBasedOnMetaPart(metaPart, totalDecks, day2Decks);
+        const totalDeckCount = getTotalDeckCountBasedOnMetaPart(
+          metaPart,
+          totalDecks,
+          day2Decks,
+          top8Decks,
+          top64Decks,
+        );
         if (totalDeckCount > 0) {
           combinedData.percentageAll = ((combinedData.all / totalDeckCount) * 100).toFixed(1);
-          combinedData.percentageTop8 = ((combinedData.top8 / 8) * 100).toFixed(1);
+          combinedData.percentageTop8 = ((combinedData.top8 / top8Decks) * 100).toFixed(1);
           combinedData.percentageDay2 = ((combinedData.day2 / day2Decks) * 100).toFixed(1);
-          combinedData.percentageTop64 = ((combinedData.top64 / 64) * 100).toFixed(1);
+          combinedData.percentageTop64 = ((combinedData.top64 / top64Decks) * 100).toFixed(1);
         }
 
         if (combinedData.all > 0) {
@@ -136,11 +151,14 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
     }
 
     return top20Items;
-  }, [analysisData, metaPart, totalDecks, day2Decks]);
+  }, [analysisData, metaPart, totalDecks, day2Decks, top8Decks, top64Decks]);
 
-  const totalDeckCountBasedOnMetaPart = useMemo(
-    () => getTotalDeckCountBasedOnMetaPart(metaPart, totalDecks, day2Decks),
-    [metaPart, totalDecks, day2Decks],
+  const totalDeckCountBasedOnMetaPart = getTotalDeckCountBasedOnMetaPart(
+    metaPart,
+    totalDecks,
+    day2Decks,
+    top8Decks,
+    top64Decks,
   );
 
   const handlePieClick = useCallback(
@@ -235,6 +253,8 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
             data={hoveredItem.data}
             totalDecks={totalDecks}
             day2Decks={day2Decks}
+            top8Decks={top8Decks}
+            top64Decks={top64Decks}
           />
         </div>
       )}
