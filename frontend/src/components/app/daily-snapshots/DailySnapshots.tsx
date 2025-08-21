@@ -97,9 +97,28 @@ const DailySnapshots: React.FC = () => {
   return (
     <>
       <Helmet title="SWUBase | Daily Snapshot" />
-      <div className="w-full mx-auto px-4 py-8">
-        <h1 className="text-2xl font-semibold mb-4">Daily Snapshot</h1>
-        <p className="text-sm text-muted-foreground mb-6">Date: {today}</p>
+      {/* Full-page overlay header for DailySnapshots only */}
+      <div
+        className="fixed top-0 left-0 right-0 h-[143px] w-screen overflow-hidden z-50 pointer-events-none"
+        aria-label="Daily Snapshots header background"
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "url('https://images.swubase.com/thumbnails/header-noise-2800x300.webp')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: 1,
+          }}
+        />
+        <div className="absolute inset-0 bg-primary" style={{ opacity: 0.3 }} />
+      </div>
+      {/* Spacer to prevent content from appearing under the fixed header */}
+      <div className="h-[140px]" aria-hidden="true" />
+      <div className="w-full mx-auto px-2 py-2">
+        {/*<h1 className="text-2xl font-semibold mb-4">Daily Snapshot</h1>
+        <p className="text-sm text-muted-foreground mb-6">Date: {today}</p>*/}
 
         {isLoading && <div className="text-sm text-muted-foreground">Loading daily snapshot…</div>}
 
@@ -149,7 +168,7 @@ const DailySnapshots: React.FC = () => {
             return (
               <GridSection key={sectionName} sizing={sizing}>
                 <div className={cn('border rounded-lg bg-card p-4 shadow-sm h-full min-w-0')}>
-                  <div className="font-medium mb-2 break-words">{sectionName}</div>
+                  {/*<div className="font-medium mb-2 break-words">{sectionName}</div>*/}
                   {Comp ? (
                     <Comp payload={payload} />
                   ) : (
