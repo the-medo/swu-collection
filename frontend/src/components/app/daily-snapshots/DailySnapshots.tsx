@@ -98,7 +98,7 @@ const DailySnapshots: React.FC = () => {
     <>
       <Helmet title="SWUBase | Daily Snapshot" />
       {/* Full-page overlay header for DailySnapshots only */}
-      <div
+      {/*<div
         className="fixed top-0 left-0 right-0 h-[143px] w-screen overflow-hidden z-50 pointer-events-none"
         aria-label="Daily Snapshots header background"
       >
@@ -113,7 +113,7 @@ const DailySnapshots: React.FC = () => {
           }}
         />
         <div className="absolute inset-0 bg-primary" style={{ opacity: 0.3 }} />
-      </div>
+      </div>*/}
       {/* Spacer to prevent content from appearing under the fixed header */}
       <div className="h-[140px]" aria-hidden="true" />
       <div className="w-full mx-auto px-2 py-2">
