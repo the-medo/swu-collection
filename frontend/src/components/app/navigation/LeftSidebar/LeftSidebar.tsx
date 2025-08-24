@@ -264,10 +264,7 @@ export function LeftSidebar() {
                           <SidebarMenuSub>
                             {i.items.map(subItem => (
                               <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton
-                                  asChild
-                                  size="md"
-                                >
+                                <SidebarMenuSubButton asChild size="md">
                                   <Link
                                     to={subItem.url}
                                     onClick={() => {
