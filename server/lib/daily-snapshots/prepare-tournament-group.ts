@@ -178,10 +178,15 @@ export const prepareTournamentGroup = async (
   // Rule:
   // - if date is Sat or Sun -> base = DATE-7 days
   // - else -> base = DATE-14 days
-  const base = subDays(now, isWeekend(now) ? 7 : 14);
+  console.log('Now: ', now);
+  console.log('Is weekend: ', isWeekend(now));
+  const base = subDays(now, isWeekend(now) || isMonday(now) ? 7 : 14);
+  console.log('Base: ', base);
   // Monday strictly before base
   const startOfWeekMonday = startOfWeek(base, { weekStartsOn: 1 });
   const startMonday = isMonday(base) ? subDays(startOfWeekMonday, 7) : startOfWeekMonday;
+  console.log('startOfWeekMonday: ', startOfWeekMonday);
+  console.log('startMonday: ', startMonday);
 
   // Create two week snapshot group
   const twoWeekGroupId = await upsertTournamentGroupForRange(
