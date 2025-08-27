@@ -2,7 +2,9 @@ import { db } from '../../db';
 import { tournamentGroupStats } from '../../db/schema/tournament_group_stats.ts';
 import { tournamentGroupTournament } from '../../db/schema/tournament_group_tournament.ts';
 import { tournament } from '../../db/schema/tournament.ts';
-import { eq, sql, sum, count } from 'drizzle-orm';
+import { eq, sql, sum, count, and, isNotNull } from 'drizzle-orm';
+import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
+import { deck } from '../../db/schema/deck.ts';
 
 /**
  * Type for tournament group stats result
@@ -10,7 +12,9 @@ import { eq, sql, sum, count } from 'drizzle-orm';
 export interface TournamentGroupStatsResult {
   tournamentGroupId: string;
   importedTournaments: number;
+  tournamentsWithData: number;
   totalTournaments: number;
+  totalDecks: number;
   attendance: number;
 }
 
@@ -21,7 +25,7 @@ export interface TournamentGroupStatsResult {
  */
 async function computeTournamentGroupStats(groupId: string): Promise<TournamentGroupStatsResult> {
   // Get stats by joining tournaments to tournament_group_tournament
-  const result = await db
+  const tournamentStats = await db
     .select({
       totalTournaments: count(tournament.id),
       importedTournaments: count(sql`CASE WHEN ${tournament.imported} = true THEN 1 END`).mapWith(
@@ -35,21 +39,45 @@ async function computeTournamentGroupStats(groupId: string): Promise<TournamentG
     .groupBy(tournamentGroupTournament.groupId);
 
   // If no tournaments found, return default values
-  if (result.length === 0) {
+  if (tournamentStats.length === 0) {
     return {
       tournamentGroupId: groupId,
       importedTournaments: 0,
+      tournamentsWithData: 0,
       totalTournaments: 0,
+      totalDecks: 0,
       attendance: 0,
     };
   }
 
+  // Compute decks aggregates (valid decks only: leader and base present)
+  const deckAgg = await db
+    .select({
+      tournamentsWithData: sql`count(distinct ${tournamentDeck.tournamentId})`.mapWith(Number),
+      totalDecks: count(tournamentDeck.tournamentId).mapWith(Number),
+    })
+    .from(tournamentGroupTournament)
+    .innerJoin(tournamentDeck, eq(tournamentGroupTournament.tournamentId, tournamentDeck.tournamentId))
+    .innerJoin(deck, eq(deck.id, tournamentDeck.deckId))
+    .where(
+      and(
+        eq(tournamentGroupTournament.groupId, groupId),
+        isNotNull(deck.leaderCardId1),
+        isNotNull(deck.baseCardId),
+      ),
+    )
+    .groupBy(tournamentGroupTournament.groupId);
+
+  const decksData = deckAgg[0] ?? { tournamentsWithData: 0, totalDecks: 0 };
+
   // Return the stats
   return {
     tournamentGroupId: groupId,
-    importedTournaments: result[0].importedTournaments,
-    totalTournaments: result[0].totalTournaments,
-    attendance: result[0].attendance || 0, // Handle null attendance
+    importedTournaments: tournamentStats[0].importedTournaments,
+    tournamentsWithData: decksData.tournamentsWithData,
+    totalTournaments: tournamentStats[0].totalTournaments,
+    totalDecks: decksData.totalDecks,
+    attendance: tournamentStats[0].attendance || 0, // Handle null attendance
   };
 }
 
@@ -69,7 +97,9 @@ async function saveTournamentGroupStats(stats: TournamentGroupStatsResult): Prom
     await tx.insert(tournamentGroupStats).values({
       tournamentGroupId: stats.tournamentGroupId,
       importedTournaments: stats.importedTournaments,
+      tournamentsWithData: stats.tournamentsWithData,
       totalTournaments: stats.totalTournaments,
+      totalDecks: stats.totalDecks,
       attendance: stats.attendance,
     });
   });
