@@ -42,14 +42,14 @@ export const runDailySnapshot = async (
 ): Promise<DailySnapshotRunResult> => {
   const context = await prepareTournamentGroup(dateInput);
   console.log(`[daily-snapshot] Preparing for date=${context.date}`);
-  console.log(`[daily-snapshot] Two week tgid=${context.tournamentGroupIdTwoWeeks ?? 'none'}`);
-  console.log(`[daily-snapshot] Weekend1 tgid=${context.tournamentGroupIdWeek1 ?? 'none'}`);
-  console.log(`[daily-snapshot] Weekend2 tgid=${context.tournamentGroupIdWeek2 ?? 'none'}`);
-  console.log(`[daily-snapshot] UpcomingWeekend tgid=${context.upcomingWeekTournamentGroupId ?? 'none'}`);
+  console.log(`[daily-snapshot] Two week tgid=${context.tournamentGroupIdTwoWeeks?.tournamentGroup.id ?? 'none'}`);
+  console.log(`[daily-snapshot] Weekend1 tgid=${context.tournamentGroupIdWeek1?.tournamentGroup.id ?? 'none'}`);
+  console.log(`[daily-snapshot] Weekend2 tgid=${context.tournamentGroupIdWeek2?.tournamentGroup.id ?? 'none'}`);
+  console.log(`[daily-snapshot] UpcomingWeekend tgid=${context.upcomingWeekTournamentGroupId?.tournamentGroup.id ?? 'none'}`);
 
   const results: DailySnapshotRunResult = {
     date: context.date,
-    tournamentGroupId: context.tournamentGroupIdTwoWeeks,
+    tournamentGroupId: context.tournamentGroupIdTwoWeeks?.tournamentGroup.id ?? null,
     sections: [],
   };
 
@@ -58,31 +58,34 @@ export const runDailySnapshot = async (
     name: string;
     exec: () => Promise<DailySnapshotSectionData<any>>;
   }> = [
-    { name: 'weekly-change', exec: () => buildWeeklyChangeSection(context.tournamentGroupIdWeek1, context.tournamentGroupIdWeek2) },
+    { name: 'weekly-change', exec: () => buildWeeklyChangeSection(
+      context.tournamentGroupIdWeek1?.tournamentGroup.id ?? null,
+      context.tournamentGroupIdWeek2?.tournamentGroup.id ?? null,
+    ) },
     {
       name: 'meta-share-2-weeks',
-      exec: () => buildMetaShare2WeeksSection(context.tournamentGroupIdTwoWeeks),
+      exec: () => buildMetaShare2WeeksSection(context.tournamentGroupIdTwoWeeks?.tournamentGroup.id ?? null),
     },
     {
       name: 'most-played-cards',
-      exec: () => buildMostPlayedCardsSection(context.tournamentGroupIdTwoWeeks),
+      exec: () => buildMostPlayedCardsSection(context.tournamentGroupIdTwoWeeks?.tournamentGroup.id ?? null),
     },
     {
       name: 'force-vs-nonforce',
       exec: () =>
         buildForceVsNonForceSection(
-          context.tournamentGroupIdTwoWeeks,
-          context.tournamentGroupIdWeek1,
-          context.tournamentGroupIdWeek2,
+          context.tournamentGroupIdTwoWeeks?.tournamentGroup.id ?? null,
+          context.tournamentGroupIdWeek1?.tournamentGroup.id ?? null,
+          context.tournamentGroupIdWeek2?.tournamentGroup.id ?? null,
         ),
     },
     {
       name: 'recent-tournaments',
-      exec: () => buildRecentTournamentsSection(context.tournamentGroupIdTwoWeeks),
+      exec: () => buildRecentTournamentsSection(context.tournamentGroupIdTwoWeeks?.tournamentGroup.id ?? null),
     },
     {
       name: 'upcoming-tournaments',
-      exec: () => buildUpcomingTournamentsSection(context.upcomingWeekTournamentGroupId),
+      exec: () => buildUpcomingTournamentsSection(context.upcomingWeekTournamentGroupId?.tournamentGroup.id ?? null),
     },
   ];
 

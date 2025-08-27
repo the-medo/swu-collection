@@ -2,21 +2,28 @@ import { db } from '../../db';
 import { meta } from '../../db/schema/meta';
 import { format as formatTable } from '../../db/schema/format';
 import { tournament } from '../../db/schema/tournament';
-import { tournamentGroup } from '../../db/schema/tournament_group';
+import { type TournamentGroup, tournamentGroup } from '../../db/schema/tournament_group';
 import { tournamentGroupTournament } from '../../db/schema/tournament_group_tournament';
 import { tournamentType as tournamentTypeTable } from '../../db/schema/tournament_type.ts';
 import { and, desc, eq, gte, lte } from 'drizzle-orm';
 import { isWeekend, subDays, startOfWeek, isMonday, format as formatDate, addDays } from 'date-fns';
 import { updateTournamentGroupStatistics } from '../card-statistics/update-tournament-group-statistics';
+import type { TournamentGroupStats } from '../../db/schema/tournament_group_stats.ts';
+import { tournamentGroupStats as tournamentGroupStatsTable } from '../../db/schema/tournament_group_stats.ts';
+
+export type TournamentGroupExtendedInfo = {
+  tournamentGroup: TournamentGroup;
+  tournamentGroupStats: TournamentGroupStats;
+};
 
 export type SnapshotContext = {
   // YYYY-MM-DD string for the snapshot date
   date: string;
-  // Explicit IDs for all prepared groups
-  tournamentGroupIdTwoWeeks: string | null;
-  tournamentGroupIdWeek1: string | null; // most recent weekend
-  tournamentGroupIdWeek2: string | null; // previous weekend
-  upcomingWeekTournamentGroupId: string | null; // current or upcoming weekend, per spec
+  // Full info for all prepared groups
+  tournamentGroupIdTwoWeeks: TournamentGroupExtendedInfo | null;
+  tournamentGroupIdWeek1: TournamentGroupExtendedInfo | null; // most recent weekend
+  tournamentGroupIdWeek2: TournamentGroupExtendedInfo | null; // previous weekend
+  upcomingWeekTournamentGroupId: TournamentGroupExtendedInfo | null; // current or upcoming weekend, per spec
 };
 
 // Helper to create or update a tournament group for a given meta and date range
@@ -24,7 +31,7 @@ const upsertTournamentGroupForRange = async (
   metaId: number,
   dateFromInput: Date | string,
   dateToInput?: Date | string,
-): Promise<string | null> => {
+): Promise<TournamentGroupExtendedInfo | null> => {
   const fromDate = typeof dateFromInput === 'string' ? new Date(dateFromInput) : dateFromInput;
   const toDate = dateToInput
     ? typeof dateToInput === 'string'
@@ -117,7 +124,34 @@ const upsertTournamentGroupForRange = async (
     // ignore stats failures
   }
 
-  return groupId;
+  // Load full group and its stats with a single INNER JOIN
+  try {
+    const row = (
+      await db
+        .select()
+        .from(tournamentGroup)
+        .innerJoin(
+          tournamentGroupStatsTable,
+          eq(tournamentGroupStatsTable.groupId, tournamentGroup.id),
+        )
+        .where(eq(tournamentGroup.id, groupId))
+        .limit(1)
+    )[0] as
+      | {
+          tournamentGroup: TournamentGroup;
+          tournamentGroupStatsTable: TournamentGroupStats;
+        }
+      | undefined;
+
+    if (row?.tournamentGroup && row?.tournamentGroupStatsTable) {
+      return {
+        tournamentGroup: row.tournamentGroup,
+        tournamentGroupStats: row.tournamentGroupStatsTable,
+      };
+    }
+  } catch {}
+
+  return null;
 };
 
 export const prepareTournamentGroup = async (
@@ -210,13 +244,13 @@ export const prepareTournamentGroup = async (
   // Weekend snapshot 1 (most recent)
   const weekend2GroupId = await upsertTournamentGroupForRange(currentMetaId, recentSaturday);
   // Weekend snapshot 2 (previous)
-  let weekend1GroupId: string | null = null;
+  let weekend1GroupId: TournamentGroupExtendedInfo | null = null;
   if (previousSaturday >= startMonday) {
     weekend1GroupId = await upsertTournamentGroupForRange(currentMetaId, previousSaturday);
   }
 
   // Determine upcoming (or current) weekend group id per spec
-  let upcomingWeekTournamentGroupId: string | null = null;
+  let upcomingWeekTournamentGroupId: TournamentGroupExtendedInfo | null = null;
   if (isWeekend(now)) {
     // If it is a weekend now, reuse the most recent weekend group
     upcomingWeekTournamentGroupId = weekend2GroupId ?? null;
