@@ -18,10 +18,7 @@ interface MetaSharePieChartProps {
   metaView: DailySnapshotMetaView;
 }
 
-const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({
-  processedData,
-  metaView,
-}) => {
+const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({ processedData, metaView }) => {
   const labelRenderer = useLabel();
   const pieChartColorDefinitions = useChartColorsAndGradients();
 
@@ -102,10 +99,11 @@ const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({
     <div className="w-full flex flex-col overflow-visible">
       <div
         className="mx-auto aspect-square max-h-[350px] w-full overflow-visible"
-        style={{ height: '350px' }}
+        style={{ height: '250px' }}
       >
         <ResponsivePie
           data={chartData}
+          margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
           innerRadius={0.5}
           padAngle={0.7}
           cornerRadius={3}
@@ -114,7 +112,7 @@ const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({
           colors={['#3B3B3B']}
           arcLinkLabelsThickness={0}
           arcLinkLabel={() => ''}
-          arcLabelsSkipAngle={1}
+          arcLabelsSkipAngle={10}
           arcLabelsTextColor="#fff"
           defs={chartDefs}
           fill={fill}

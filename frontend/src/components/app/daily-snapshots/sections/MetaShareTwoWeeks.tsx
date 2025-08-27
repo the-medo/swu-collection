@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
+import MetaDetailLinks from './MetaShareTwoWeeks/MetaDetailLinks.tsx';
 import type {
   DailySnapshotSectionData,
   SectionMetaShare2Weeks,
@@ -54,7 +55,7 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({ payload }) => {
     }));
 
     // Sort by the selected meta part descending
-    analysisData.sort((a, b) => b.sortValue - a.sortValue);
+    analysisData.sort((a, b) => (b.key === 'unknown' ? -1 : b.sortValue - a.sortValue));
 
     return analysisData;
   }, [payload.data.dataPoints, metaView, cardListData, metaPart]);
@@ -63,15 +64,17 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({ payload }) => {
     <div className="h-full w-full flex flex-col gap-2">
       <div className="flex gap-2 justify-between items-center">
         <h3>Meta share (last 2 weeks)</h3>
-        <MetaPartSelector value={metaPart} onChange={setMetaPart} />
-        <MetaViewSelector value={metaView} onChange={setMetaView} />
+        <div className="flex gap-2 justify-start items-center">
+          <MetaPartSelector value={metaPart} onChange={setMetaPart} />
+          <div className="w-1 h-full border-r" />
+          <MetaViewSelector value={metaView} onChange={setMetaView} />
+        </div>
       </div>
-      <div className="flex gap-2 justify-around">
+      <div className="flex gap-2 justify-around flex-wrap">
         {/* Center - Pie Chart */}
         <div className="flex flex-col">
-          <div className="flex-1">
-            <MetaSharePieChart processedData={processedData} metaView={metaView} />
-          </div>
+          <div className="flex-1"></div>
+          <MetaSharePieChart processedData={processedData} metaView={metaView} />
         </div>
 
         {/* Right side - Table */}
@@ -79,6 +82,8 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({ payload }) => {
           <div className="flex-1">
             <MetaShareTable processedData={processedData} metaPart={metaPart} metaView={metaView} />
           </div>
+          {/* Links to more detailed info */}
+          <MetaDetailLinks tournamentGroupId={payload.data.tournamentGroupId} />
         </div>
       </div>
     </div>
