@@ -1,25 +1,23 @@
 import { db } from '../../../db';
 import { tournamentGroupLeaderBase } from '../../../db/schema/tournament_group_leader_base.ts';
-import { tournamentGroupStats } from '../../../db/schema/tournament_group_stats.ts';
 import { eq } from 'drizzle-orm';
 import {
   type DailySnapshotSectionData,
   type SectionMetaShare2Weeks,
   type SectionMetaShare2WeeksDataPoint,
+  type TournamentGroupExtendedInfo,
 } from '../../../../types/DailySnapshots.ts';
 import { getDeckKey2 } from '../../../../frontend/src/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 
 export const buildMetaShare2WeeksSection = async (
-  tournamentGroupId?: string | null,
+  groupExt?: TournamentGroupExtendedInfo | null,
 ): Promise<DailySnapshotSectionData<SectionMetaShare2Weeks>> => {
+  const tournamentGroupId = groupExt?.tournamentGroup.id ?? null;
   // If no group id provided, return empty structure
   if (!tournamentGroupId) {
     const empty: SectionMetaShare2Weeks = {
-      tournamentGroupId: '',
-      tournamentsImported: 0,
-      tournamentsTotal: 0,
-      tournamentsAttendance: 0,
       dataPoints: [],
+      tournamentGroupExt: groupExt ?? null,
     };
     return { id: 'meta-share-2-weeks', title: 'Meta Share (2 Weeks)', data: empty };
   }
@@ -102,27 +100,9 @@ export const buildMetaShare2WeeksSection = async (
   if (rest) dataPoints.push(rest);
   if (unknown) dataPoints.push(unknown);
 
-  // Compute tournaments attendance as sum of totals in final datapoints
-  const tournamentsAttendance = dataPoints.reduce((acc, dp) => acc + (dp.total ?? 0), 0);
-
-  // Load tournaments imported/total from tournament_group_stats
-  const stats = (
-    await db
-      .select({
-        importedTournaments: tournamentGroupStats.importedTournaments,
-        totalTournaments: tournamentGroupStats.totalTournaments,
-      })
-      .from(tournamentGroupStats)
-      .where(eq(tournamentGroupStats.tournamentGroupId, tournamentGroupId))
-      .limit(1)
-  )[0];
-
   const data: SectionMetaShare2Weeks = {
-    tournamentGroupId,
-    tournamentsImported: stats?.importedTournaments ?? 0,
-    tournamentsTotal: stats?.totalTournaments ?? 0,
-    tournamentsAttendance,
     dataPoints,
+    tournamentGroupExt: groupExt ?? null,
   };
 
   return {

@@ -4,6 +4,14 @@ export type DailySnapshotSectionData<T> = {
   data: T;
 };
 
+// Extended tournament group info used in snapshot sections
+import type { TournamentGroup } from '../server/db/schema/tournament_group.ts';
+import type { TournamentGroupStats } from '../server/db/schema/tournament_group_stats.ts';
+export type TournamentGroupExtendedInfo = {
+  tournamentGroup: TournamentGroup;
+  tournamentGroupStats: TournamentGroupStats;
+};
+
 export type SectionMetaShare2WeeksDataPoint = {
   leaderCardId: string;
   baseCardId: string;
@@ -12,15 +20,9 @@ export type SectionMetaShare2WeeksDataPoint = {
   winners: number;
 };
 
-export type TournamentGroupData = {
-  tournamentGroupId: string;
-  tournamentsImported: number;
-  tournamentsTotal: number;
-  tournamentsAttendance: number; // taken as a sum of the "total" datapoints, not from `tournament_group_stats`!
-};
-
-export type SectionMetaShare2Weeks = TournamentGroupData & {
+export type SectionMetaShare2Weeks = {
   dataPoints: SectionMetaShare2WeeksDataPoint[];
+  tournamentGroupExt?: TournamentGroupExtendedInfo | null;
 };
 
 export type SectionWeeklyChangeDataPoint = {
@@ -37,8 +39,8 @@ export type SectionWeeklyChangeDataPoint = {
 };
 
 export type SectionWeeklyChange = {
-  week1: TournamentGroupData;
-  week2: TournamentGroupData;
+  week1Ext?: TournamentGroupExtendedInfo | null;
+  week2Ext?: TournamentGroupExtendedInfo | null;
   dataPoints: SectionWeeklyChangeDataPoint[];
 };
 
@@ -56,12 +58,14 @@ export type SectionRecentTournamentsItem = {
 export type SectionRecentTournaments = {
   tournamentGroupId: string;
   tournaments: SectionRecentTournamentsItem[];
+  tournamentGroupExt?: TournamentGroupExtendedInfo | null;
 };
 
 // New section: Upcoming Tournaments (current or upcoming weekend)
 export type SectionUpcomingTournaments = {
   tournamentGroupId: string;
   dataPoints: TournamentStringDate[];
+  tournamentGroupExt?: TournamentGroupExtendedInfo | null;
 };
 
 // New section: Most Played Cards (two-week group)
@@ -75,6 +79,7 @@ export type SectionMostPlayedCardsItem = {
 export type SectionMostPlayedCards = {
   tournamentGroupId: string;
   dataPoints: SectionMostPlayedCardsItem[];
+  tournamentGroupExt?: TournamentGroupExtendedInfo | null;
 };
 
 // New section: Force vs Non-Force (two-weeks + weeks)
@@ -82,4 +87,7 @@ export type SectionForceVsNonForceCounts = {
   twoWeeks: { force: number; nonforce: number };
   week1: { force: number; nonforce: number };
   week2: { force: number; nonforce: number };
+  twoWeeksGroupExt?: TournamentGroupExtendedInfo | null;
+  week1GroupExt?: TournamentGroupExtendedInfo | null;
+  week2GroupExt?: TournamentGroupExtendedInfo | null;
 };

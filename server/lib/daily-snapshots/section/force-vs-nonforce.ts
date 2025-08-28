@@ -3,6 +3,7 @@ import { eq, sql } from 'drizzle-orm';
 import type {
   DailySnapshotSectionData,
   SectionForceVsNonForceCounts,
+  TournamentGroupExtendedInfo,
 } from '../../../../types/DailySnapshots.ts';
 import { tournamentGroupLeaderBase } from '../../../db/schema/tournament_group_leader_base.ts';
 import { baseSpecialNames } from '../../../../shared/lib/basicBases.ts';
@@ -44,8 +45,9 @@ async function countForGroup(
 
     for (const r of rows) {
       const count = typeof r.decks === 'number' ? r.decks : Number((r as any).decks ?? 0);
+      if (!r.baseCardId) continue;
       if (isForceBase(r.baseCardId)) force += count;
-      else nonforce += count;
+      else if (r.baseCardId !== '') nonforce += count;
     }
 
     return { force, nonforce };
@@ -56,13 +58,13 @@ async function countForGroup(
 }
 
 export default async function buildForceVsNonForceSection(
-  twoWeeksId: string | null,
-  week1Id: string | null,
-  week2Id: string | null,
+  twoWeeksExt: TournamentGroupExtendedInfo | null,
+  week1Ext: TournamentGroupExtendedInfo | null,
+  week2Ext: TournamentGroupExtendedInfo | null,
 ): Promise<DailySnapshotSectionData<SectionForceVsNonForceCounts>> {
-  const twoWeeks = await countForGroup(twoWeeksId);
-  const week1 = await countForGroup(week1Id);
-  const week2 = await countForGroup(week2Id);
+  const twoWeeks = await countForGroup(twoWeeksExt?.tournamentGroup.id);
+  const week1 = await countForGroup(week1Ext?.tournamentGroup.id);
+  const week2 = await countForGroup(week2Ext?.tournamentGroup.id);
 
   return {
     id: SECTION_ID,

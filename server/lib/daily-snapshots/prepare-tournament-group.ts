@@ -39,6 +39,8 @@ const upsertTournamentGroupForRange = async (
       : dateToInput
     : addDays(fromDate, 1); // weekend snapshot spans 2 days if dateTo not provided
 
+  console.log('From date: ', fromDate, ' To date: ', toDate);
+
   // Build group name
   let tournamentGroupName: string;
   if (dateToInput) {
@@ -88,6 +90,8 @@ const upsertTournamentGroupForRange = async (
 
   if (!groupId) return null;
 
+  console.log({ groupId });
+
   // Insert tournaments for meta in [fromDate, toDate] and with major type
   try {
     const tourneys = await db
@@ -119,7 +123,9 @@ const upsertTournamentGroupForRange = async (
 
   // Update stats
   try {
+    console.log('Updating stats');
     await updateTournamentGroupStatistics(groupId);
+    console.log('Stats updated!');
   } catch (e) {
     // ignore stats failures
   }
@@ -128,11 +134,14 @@ const upsertTournamentGroupForRange = async (
   try {
     const row = (
       await db
-        .select()
+        .select({
+          tournamentGroup,
+          tournamentGroupStatsTable,
+        })
         .from(tournamentGroup)
         .innerJoin(
           tournamentGroupStatsTable,
-          eq(tournamentGroupStatsTable.groupId, tournamentGroup.id),
+          eq(tournamentGroupStatsTable.tournamentGroupId, tournamentGroup.id),
         )
         .where(eq(tournamentGroup.id, groupId))
         .limit(1)
@@ -149,7 +158,9 @@ const upsertTournamentGroupForRange = async (
         tournamentGroupStats: row.tournamentGroupStatsTable,
       };
     }
-  } catch {}
+  } catch (e) {
+    console.log(e);
+  }
 
   return null;
 };
@@ -157,6 +168,8 @@ const upsertTournamentGroupForRange = async (
 export const prepareTournamentGroup = async (
   dateInput?: Date | string,
 ): Promise<SnapshotContext> => {
+  console.log('DATE INPUT: ', dateInput);
+
   // Today and date-only string (can be overridden by dateInput)
   const now = dateInput
     ? typeof dateInput === 'string'

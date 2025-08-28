@@ -1,36 +1,29 @@
 import { db } from '../../../db';
 import { tournamentGroupLeaderBase } from '../../../db/schema/tournament_group_leader_base.ts';
-import { tournamentGroupStats } from '../../../db/schema/tournament_group_stats.ts';
-import { eq, inArray } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import {
   type DailySnapshotSectionData,
   type SectionWeeklyChange,
   type SectionWeeklyChangeDataPoint,
-  type TournamentGroupData,
+  type TournamentGroupExtendedInfo,
 } from '../../../../types/DailySnapshots.ts';
 
 const keyOf = (r: { leaderCardId: string; baseCardId: string }) =>
   `${r.leaderCardId}|${r.baseCardId}`;
 
 export const buildWeeklyChangeSection = async (
-  week1GroupId?: string | null,
-  week2GroupId?: string | null,
+  week1Ext?: TournamentGroupExtendedInfo | null,
+  week2Ext?: TournamentGroupExtendedInfo | null,
 ): Promise<DailySnapshotSectionData<SectionWeeklyChange>> => {
+  const week1GroupId = week1Ext?.tournamentGroup.id ?? null;
+  const week2GroupId = week2Ext?.tournamentGroup.id ?? null;
   // If either group id is missing, return empty structure to keep contract stable
   if (!week1GroupId || !week2GroupId) {
-    const emptyWeek = {
-      tournamentGroupId: '',
-      tournamentsImported: 0,
-      tournamentsTotal: 0,
-      tournamentsAttendance: 0,
-    } satisfies TournamentGroupData;
-
     const empty: SectionWeeklyChange = {
-      week1: emptyWeek,
-      week2: emptyWeek,
+      week1Ext: week1Ext ?? null,
+      week2Ext: week2Ext ?? null,
       dataPoints: [],
     };
-
     return { id: 'weekly-change', title: 'Weekly Change', data: empty };
   }
 
@@ -144,48 +137,9 @@ export const buildWeeklyChangeSection = async (
     });
   }
 
-  // 6) Compute tournaments attendance per week (sum of totals in final datapoints)
-  const attendanceWeek1 = dataPoints.reduce((acc, dp) => acc + (dp.week1.total ?? 0), 0);
-  const attendanceWeek2 = dataPoints.reduce((acc, dp) => acc + (dp.week2.total ?? 0), 0);
-
-  // 7) Load tournaments imported/total for both weeks
-  const statsRows = await db
-    .select({
-      tournamentGroupId: tournamentGroupStats.tournamentGroupId,
-      importedTournaments: tournamentGroupStats.importedTournaments,
-      totalTournaments: tournamentGroupStats.totalTournaments,
-    })
-    .from(tournamentGroupStats)
-    .where(inArray(tournamentGroupStats.tournamentGroupId, [week1GroupId, week2GroupId]));
-
-  const statsMap = new Map<
-    string,
-    { importedTournaments: number | null; totalTournaments: number | null }
-  >();
-  statsRows.forEach(s =>
-    statsMap.set(s.tournamentGroupId, {
-      importedTournaments: s.importedTournaments,
-      totalTournaments: s.totalTournaments,
-    }),
-  );
-
-  const week1Data: TournamentGroupData = {
-    tournamentGroupId: week1GroupId,
-    tournamentsImported: statsMap.get(week1GroupId)?.importedTournaments ?? 0,
-    tournamentsTotal: statsMap.get(week1GroupId)?.totalTournaments ?? 0,
-    tournamentsAttendance: attendanceWeek1,
-  };
-
-  const week2Data: TournamentGroupData = {
-    tournamentGroupId: week2GroupId,
-    tournamentsImported: statsMap.get(week2GroupId)?.importedTournaments ?? 0,
-    tournamentsTotal: statsMap.get(week2GroupId)?.totalTournaments ?? 0,
-    tournamentsAttendance: attendanceWeek2,
-  };
-
   const data: SectionWeeklyChange = {
-    week1: week1Data,
-    week2: week2Data,
+    week1Ext: week1Ext ?? null,
+    week2Ext: week2Ext ?? null,
     dataPoints,
   };
 

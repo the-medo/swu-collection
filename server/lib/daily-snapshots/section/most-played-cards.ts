@@ -5,24 +5,29 @@ import type {
   DailySnapshotSectionData,
   SectionMostPlayedCards,
   SectionMostPlayedCardsItem,
+  TournamentGroupExtendedInfo,
 } from '../../../../types/DailySnapshots.ts';
 
 const SECTION_ID = 'most-played-cards';
 const SECTION_TITLE = 'Most played cards (last 2 weeks)';
 
-const buildEmpty = (tournamentGroupId: string | null): DailySnapshotSectionData<SectionMostPlayedCards> => ({
+const buildEmpty = (
+  groupExt: TournamentGroupExtendedInfo | null,
+): DailySnapshotSectionData<SectionMostPlayedCards> => ({
   id: SECTION_ID,
   title: SECTION_TITLE,
   data: {
-    tournamentGroupId: tournamentGroupId ?? '',
+    tournamentGroupId: groupExt?.tournamentGroup.id ?? '',
     dataPoints: [],
+    tournamentGroupExt: groupExt ?? null,
   },
 });
 
 export default async function buildMostPlayedCardsSection(
-  tournamentGroupId: string | null,
+  groupExt: TournamentGroupExtendedInfo | null,
 ): Promise<DailySnapshotSectionData<SectionMostPlayedCards>> {
-  if (!tournamentGroupId) return buildEmpty(tournamentGroupId);
+  const tournamentGroupId = groupExt?.tournamentGroup.id ?? null;
+  if (!tournamentGroupId) return buildEmpty(groupExt);
 
   try {
     const rows = await db
@@ -50,6 +55,7 @@ export default async function buildMostPlayedCardsSection(
       data: {
         tournamentGroupId,
         dataPoints,
+        tournamentGroupExt: groupExt ?? null,
       },
     };
   } catch (e) {

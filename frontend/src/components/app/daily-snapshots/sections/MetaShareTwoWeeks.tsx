@@ -86,6 +86,9 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({ payload }) => {
           <MetaDetailLinks tournamentGroupId={payload.data.tournamentGroupId} />
         </div>
       </div>
+      <pre className="text-xs max-h-48 overflow-auto whitespace-pre-wrap bg-muted/40 p-2 rounded">
+        {JSON.stringify(payload, null, 2)}
+      </pre>
     </div>
   );
 };

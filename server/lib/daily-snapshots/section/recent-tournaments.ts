@@ -11,14 +11,18 @@ import {
 } from '../../../../types/DailySnapshots.ts';
 import { user } from '../../../db/schema/auth-schema.ts';
 
+import type { TournamentGroupExtendedInfo } from '../../../../types/DailySnapshots.ts';
+
 export const buildRecentTournamentsSection = async (
-  tournamentGroupId?: string | null,
+  groupExt?: TournamentGroupExtendedInfo | null,
 ): Promise<DailySnapshotSectionData<SectionRecentTournaments>> => {
+  const tournamentGroupId = groupExt?.tournamentGroup.id ?? null;
   // If no group id, return empty payload to keep contract stable
   if (!tournamentGroupId) {
     const empty: SectionRecentTournaments = {
       tournamentGroupId: '',
       tournaments: [],
+      tournamentGroupExt: groupExt ?? null,
     };
     return { id: 'recent-tournaments', title: 'Recent Tournaments', data: empty };
   }
@@ -176,6 +180,7 @@ export const buildRecentTournamentsSection = async (
   const data: SectionRecentTournaments = {
     tournamentGroupId,
     tournaments: items,
+    tournamentGroupExt: groupExt ?? null,
   };
 
   return { id: 'recent-tournaments', title: 'Recent Tournaments', data };

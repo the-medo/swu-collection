@@ -6,19 +6,22 @@ import { isWeekend } from 'date-fns';
 import {
   type DailySnapshotSectionData,
   type SectionUpcomingTournaments,
+  type TournamentGroupExtendedInfo,
 } from '../../../../types/DailySnapshots.ts';
 
 export const buildUpcomingTournamentsSection = async (
-  upcomingWeekTournamentGroupId?: string | null,
+  groupExt?: TournamentGroupExtendedInfo | null,
 ): Promise<DailySnapshotSectionData<SectionUpcomingTournaments>> => {
   const weekendNow = isWeekend(new Date());
   const title = weekendNow ? 'Current weekend' : 'Upcoming weekend';
 
+  const tournamentGroupId = groupExt?.tournamentGroup.id ?? null;
   // If no group id, return empty payload to keep contract stable
-  if (!upcomingWeekTournamentGroupId) {
+  if (!tournamentGroupId) {
     const empty: SectionUpcomingTournaments = {
       tournamentGroupId: '',
       dataPoints: [],
+      tournamentGroupExt: groupExt ?? null,
     };
     return { id: 'upcoming-tournaments', title, data: empty };
   }
@@ -35,7 +38,7 @@ export const buildUpcomingTournamentsSection = async (
       tournamentGroupTournament,
       eq(tournamentGroupTournament.tournamentId, tournament.id),
     )
-    .where(eq(tournamentGroupTournament.groupId, upcomingWeekTournamentGroupId))
+    .where(eq(tournamentGroupTournament.groupId, tournamentGroupId))
     .orderBy(asc(tournament.date));
 
   const dataPoints = rows.map(t => ({
@@ -59,8 +62,9 @@ export const buildUpcomingTournamentsSection = async (
   }));
 
   const data: SectionUpcomingTournaments = {
-    tournamentGroupId: upcomingWeekTournamentGroupId,
+    tournamentGroupId,
     dataPoints,
+    tournamentGroupExt: groupExt ?? null,
   };
 
   return { id: 'upcoming-tournaments', title, data };
