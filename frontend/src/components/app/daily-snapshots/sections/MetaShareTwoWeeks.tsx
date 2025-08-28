@@ -15,14 +15,22 @@ import MetaSharePieChart from './MetaShareTwoWeeks/MetaSharePieChart.tsx';
 import MetaShareTable from './MetaShareTwoWeeks/MetaShareTable.tsx';
 import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
+import { DailySnapshotRow } from '@/api/daily-snapshot';
+import MetaShareTwoWeeksInfoTooltip from './MetaShareTwoWeeks/MetaShareTwoWeeksInfoTooltip.tsx';
 
 export interface MetaShareTwoWeeksProps {
   payload: DailySnapshotSectionData<SectionMetaShare2Weeks>;
+  dailySnapshot?: DailySnapshotRow | null;
+  sectionUpdatedAt?: string;
 }
 
 const fixedKeys = ['unknown', 'others'];
 
-const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({ payload }) => {
+const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
+  payload,
+  dailySnapshot,
+  sectionUpdatedAt,
+}) => {
   const [metaPart, setMetaPart] = useState<DailySnapshotMetaPart>('total');
   const [metaView, setMetaView] = useState<DailySnapshotMetaView>('leaders');
   const { data: cardListData } = useCardList();
@@ -63,7 +71,16 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({ payload }) => {
   return (
     <div className="h-full w-full flex flex-col gap-2">
       <div className="flex gap-2 justify-between items-center">
-        <h3>Meta share (last 2 weeks)</h3>
+        <div className="flex items-center gap-2">
+          <h3>Meta share (last 2 weeks)</h3>
+          <MetaShareTwoWeeksInfoTooltip
+            dailySnapshot={dailySnapshot}
+            sectionUpdatedAt={sectionUpdatedAt}
+            tournamentGroupExtendedInfo={
+              payload.data.tournamentGroupExt ? [payload.data.tournamentGroupExt] : []
+            }
+          />
+        </div>
         <div className="flex gap-2 justify-start items-center">
           <MetaPartSelector value={metaPart} onChange={setMetaPart} />
           <div className="w-1 h-full border-r" />

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useDailySnapshot } from '@/api/daily-snapshot/useDailySnapshot.ts';
+import { DailySnapshotRow, useDailySnapshot } from '@/api/daily-snapshot/useDailySnapshot.ts';
 import {
   MetaShareTwoWeeks,
   ForceVsNonforce,
@@ -12,6 +12,10 @@ import {
 import { cn } from '@/lib/utils.ts';
 import GridSection, { SectionCardSizing } from '@/components/app/daily-snapshots/GridSection.tsx';
 import LogoDarkTheme from '@/assets/logo-dark-theme.svg';
+import type {
+  DailySnapshotSectionData,
+  SectionMetaShare2Weeks,
+} from '../../../../../types/DailySnapshots.ts';
 
 const formatToday = (): string => {
   const d = new Date();
@@ -195,7 +199,11 @@ const DailySnapshots: React.FC = () => {
         >
           {sectionEntries.map(([sectionName, payload]) => {
             const key = sectionName as OrderedKey;
-            const Comp = (componentByKey as any)[key] as React.FC<{ payload: any } | undefined>;
+            const Comp = (componentByKey as any)[key] as React.FC<{
+              payload: DailySnapshotSectionData<any>;
+              dailySnapshot?: DailySnapshotRow | null;
+              sectionUpdatedAt?: string;
+            }>;
             const sizing = (sizingByKey as any)[key] as SectionCardSizing | undefined;
 
             if (!sizing) {
@@ -207,7 +215,11 @@ const DailySnapshots: React.FC = () => {
                 >
                   <div className="font-medium mb-2 break-words">{sectionName}</div>
                   {Comp ? (
-                    <Comp payload={payload} />
+                    <Comp
+                      payload={payload}
+                      dailySnapshot={data?.dailySnapshot}
+                      sectionUpdatedAt={data?.updatedAtMap?.[payload.id]}
+                    />
                   ) : (
                     <pre className="text-xs max-h-48 overflow-auto whitespace-pre-wrap bg-muted/40 p-2 rounded">
                       {JSON.stringify(payload, null, 2)}
@@ -220,9 +232,12 @@ const DailySnapshots: React.FC = () => {
             return (
               <GridSection key={sectionName} sizing={sizing}>
                 <div className={cn('border rounded-lg bg-card p-4 shadow-sm h-full min-w-0')}>
-                  {/*<div className="font-medium mb-2 break-words">{sectionName}</div>*/}
                   {Comp ? (
-                    <Comp payload={payload} />
+                    <Comp
+                      payload={payload}
+                      dailySnapshot={data?.dailySnapshot}
+                      sectionUpdatedAt={data?.updatedAtMap?.[payload.id]}
+                    />
                   ) : (
                     <pre className="text-xs max-h-48 overflow-auto whitespace-pre-wrap bg-muted/40 p-2 rounded">
                       {JSON.stringify(payload, null, 2)}

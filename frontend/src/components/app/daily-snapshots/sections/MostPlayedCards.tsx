@@ -1,7 +1,10 @@
 import * as React from 'react';
+import { DailySnapshotRow } from '@/api/daily-snapshot';
 
 export interface MostPlayedCardsProps {
   payload: any;
+  dailySnapshot?: DailySnapshotRow | null;
+  sectionUpdatedAt?: string;
 }
 
 const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({ payload }) => {

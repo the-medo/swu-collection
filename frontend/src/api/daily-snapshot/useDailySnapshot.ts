@@ -3,11 +3,7 @@ import { api } from '@/lib/api.ts';
 import { queryClient } from '@/queryClient.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
 import type { DailySnapshotSectionData } from '../../../../types/DailySnapshots.ts';
-import {
-  addSectionToDate,
-  getAvailableSectionsWithUpdatedAt,
-  getSectionsFromDate,
-} from '@/dexie';
+import { addSectionToDate, getAvailableSectionsWithUpdatedAt, getSectionsFromDate } from '@/dexie';
 
 // Server response shapes
 export type DailySnapshotRow = {
@@ -33,6 +29,7 @@ export type DailySnapshotGetResponse = {
 export type DailySnapshotHookResult = {
   dailySnapshot: DailySnapshotRow | null;
   sections: Record<string, DailySnapshotSectionData<any>>;
+  updatedAtMap?: Record<string, string>;
 };
 
 function parseSectionRow(row: DailySnapshotSectionRow): {
@@ -50,7 +47,7 @@ function parseSectionRow(row: DailySnapshotSectionRow): {
 
 async function backgroundRefresh(date: string) {
   // Build sections preflight from Dexie (section -> lastUpdatedAt)
-  const updatedAtMap = await getAvailableSectionsWithUpdatedAt(date);
+  let updatedAtMap = await getAvailableSectionsWithUpdatedAt(date);
   const sectionsParam = Object.entries(updatedAtMap).map(([section, lastUpdatedAt]) => ({
     section,
     lastUpdatedAt,
@@ -78,9 +75,11 @@ async function backgroundRefresh(date: string) {
 
   // Merge from Dexie and push into query cache
   const mergedSections = await getSectionsFromDate(date);
+  updatedAtMap = await getAvailableSectionsWithUpdatedAt(date);
   const next: DailySnapshotHookResult = {
     dailySnapshot: json.data.dailySnapshot ?? null,
     sections: mergedSections,
+    updatedAtMap,
   };
 
   queryClient.setQueryData(['daily-snapshot', date], next);
@@ -103,9 +102,11 @@ export function useDailySnapshot(date?: string) {
         // Kick off background refresh, but return local immediately
         // Don't await; let it update cache when finished
         void backgroundRefresh(d);
+        const updatedAtMap = await getAvailableSectionsWithUpdatedAt(d);
         return {
           dailySnapshot: null, // background will populate latest meta; we prioritize speed here
           sections: localSections,
+          updatedAtMap,
         };
       }
 
@@ -132,10 +133,12 @@ export function useDailySnapshot(date?: string) {
       }
 
       const mergedSections = await getSectionsFromDate(d);
+      const updatedAtMap = await getAvailableSectionsWithUpdatedAt(d);
 
       return {
         dailySnapshot: json.data.dailySnapshot ?? null,
         sections: mergedSections,
+        updatedAtMap,
       };
     },
     // Reasonable stale time; background refresh already keeps it current when cached

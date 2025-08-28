@@ -1,7 +1,10 @@
 import * as React from 'react';
+import { DailySnapshotRow } from '@/api/daily-snapshot';
 
 export interface RecentTournamentsProps {
   payload: any;
+  dailySnapshot?: DailySnapshotRow | null;
+  sectionUpdatedAt?: string;
 }
 
 const RecentTournaments: React.FC<RecentTournamentsProps> = ({ payload }) => {
