@@ -32,12 +32,15 @@ export const SectionInfoTooltip: React.FC<SectionInfoTooltipProps> = ({
 
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
           <button
             type="button"
             aria-label="Section info"
-            className={['inline-flex items-center justify-center rounded p-1 hover:bg-muted/60 transition-colors', className]
+            className={[
+              'inline-flex items-center justify-center rounded p-1 hover:bg-muted/60 transition-colors',
+              className,
+            ]
               .filter(Boolean)
               .join(' ')}
           >
@@ -47,22 +50,33 @@ export const SectionInfoTooltip: React.FC<SectionInfoTooltipProps> = ({
         <TooltipContent className="p-4 max-w-xl">
           <div className="flex flex-col gap-3">
             {/* Children on top */}
-            {children ? <div>{children}</div> : null}
+            {children ? <div className="flex flex-col gap-3">{children}</div> : null}
 
             {/* Tournament groups table */}
-            <div>
+            <div className="flex flex-col gap-1 border-t mt-4 pt-2">
+              <span className="text-xs">
+                The table below lists tournament groups that provided the data and how complete the
+                data is. You can open them to see more detailed statistics and list of tournaments,
+                they are computed from.
+              </span>
               <TournamentGroupExtendedInfoTable items={tournamentGroupExtendedInfo ?? []} />
             </div>
 
             {/* Times info */}
-            <div className="text-xs text-muted-foreground space-y-1">
+            <div className="flex flex-row justify-between items-center text-xs text-muted-foreground">
               {secUpdated ? (
-                <div>Section updated at: <span className="font-medium text-foreground">{secUpdated}</span></div>
+                <div>
+                  Section updated at: <span className=" text-foreground">{secUpdated}</span>
+                </div>
               ) : null}
               {snapUpdated ? (
-                <div>Daily snapshot updated at: <span className="font-medium text-foreground">{snapUpdated}</span></div>
+                <div>
+                  Daily snapshot updated at: <span className="text-foreground">{snapUpdated}</span>
+                </div>
               ) : null}
-              {!secUpdated && !snapUpdated ? <div>No update time information available.</div> : null}
+              {!secUpdated && !snapUpdated ? (
+                <div>No update time information available.</div>
+              ) : null}
             </div>
           </div>
         </TooltipContent>

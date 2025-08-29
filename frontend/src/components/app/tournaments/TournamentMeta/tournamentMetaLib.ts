@@ -151,7 +151,6 @@ export const getDeckKey2 = (
 ) => {
   if (!cardListData) return '';
   if (!leaderCardId || !baseCardId) {
-    console.log({ leaderCardId, baseCardId });
     return 'unknown';
   }
 

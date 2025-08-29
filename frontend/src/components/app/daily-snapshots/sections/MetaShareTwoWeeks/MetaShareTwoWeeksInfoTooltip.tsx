@@ -24,10 +24,13 @@ const MetaShareTwoWeeksInfoTooltip: React.FC<MetaShareTwoWeeksInfoTooltipProps> 
       className={className}
     >
       <div className="text-sm">
-        This section shows the meta share over the last two weeks. You can switch between total
-        decks, Top 8, and winners, and choose how decks are grouped (by leader, base, or archetype).
-        The table below lists the tournament group(s) that provided the data and how complete the
-        data is.
+        This section shows the meta share over the last two weeks. You can switch between Total
+        decks, Top 8, and Champions, and choose how decks are grouped (by leader or leader+base).
+      </div>
+      <div className="text-sm">
+        Percentage in "Top 8" and "Champions" columns is{' '}
+        <span className="text-green-600">green</span> if it is bigger than its own "total" meta
+        share and <span className="text-red-600">red</span> if it is below.
       </div>
     </SectionInfoTooltip>
   );

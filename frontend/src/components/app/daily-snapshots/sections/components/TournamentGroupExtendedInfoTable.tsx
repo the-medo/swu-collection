@@ -1,22 +1,34 @@
 import * as React from 'react';
 import type { TournamentGroupExtendedInfo } from '../../../../../../../types/DailySnapshots.ts';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table.tsx';
+import { Link } from '@tanstack/react-router';
+import { Link as LinkIcon } from 'lucide-react';
 
 export interface TournamentGroupExtendedInfoTableProps {
   items: TournamentGroupExtendedInfo[];
   className?: string;
 }
 
-const TournamentGroupExtendedInfoTable: React.FC<TournamentGroupExtendedInfoTableProps> = ({ items, className }) => {
+const TournamentGroupExtendedInfoTable: React.FC<TournamentGroupExtendedInfoTableProps> = ({
+  items,
+  className,
+}) => {
   const safeItems = Array.isArray(items) ? items : [];
 
   return (
     <div className={className}>
-      <Table>
+      <Table className="border">
         <TableHeader>
-          <TableRow>
-            <TableHead className="w-1/2">Name</TableHead>
-            <TableHead className="w-1/4 text-right">Tournaments with data</TableHead>
+          <TableRow className="bg-muted/50">
+            <TableHead className="w-1/2"></TableHead>
+            <TableHead className="w-1/4 text-right">Tournaments</TableHead>
             <TableHead className="w-1/4 text-right">Decks analyzed</TableHead>
           </TableRow>
         </TableHeader>
@@ -41,7 +53,19 @@ const TournamentGroupExtendedInfoTable: React.FC<TournamentGroupExtendedInfoTabl
 
               return (
                 <TableRow key={key}>
-                  <TableCell className="font-medium">{name}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link
+                      to="/meta"
+                      search={prev => ({
+                        ...prev,
+                        maTournamentGroupId: tg.id,
+                      })}
+                      className="flex items-center gap-1"
+                    >
+                      <LinkIcon className="size-2" />
+                      {name}
+                    </Link>
+                  </TableCell>
                   <TableCell className="text-right">
                     {typeof twd === 'number' && typeof totalTournaments === 'number'
                       ? `${twd}/${totalTournaments}`
