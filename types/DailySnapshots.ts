@@ -31,10 +31,12 @@ export type SectionWeeklyChangeDataPoint = {
   week1: {
     total: number;
     top8: number;
+    champions: number;
   };
   week2: {
     total: number;
     top8: number;
+    champions: number;
   };
 };
 

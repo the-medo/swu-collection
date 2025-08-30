@@ -53,7 +53,7 @@ export const buildWeeklyChangeSection = async (
   // 2) Build maps for quick lookup
   const map1 = new Map<
     string,
-    { leaderCardId: string; baseCardId: string; total: number; top8: number }
+    { leaderCardId: string; baseCardId: string; total: number; top8: number; champions: number }
   >();
   rowsWeek1.forEach(r =>
     map1.set(keyOf(r), {
@@ -61,12 +61,13 @@ export const buildWeeklyChangeSection = async (
       baseCardId: r.baseCardId,
       total: r.total ?? 0,
       top8: r.top8 ?? 0,
+      champions: r.winners ?? 0,
     }),
   );
 
   const map2 = new Map<
     string,
-    { leaderCardId: string; baseCardId: string; total: number; top8: number }
+    { leaderCardId: string; baseCardId: string; total: number; top8: number; champions: number }
   >();
   rowsWeek2.forEach(r =>
     map2.set(keyOf(r), {
@@ -74,6 +75,7 @@ export const buildWeeklyChangeSection = async (
       baseCardId: r.baseCardId,
       total: r.total ?? 0,
       top8: r.top8 ?? 0,
+      champions: r.winners ?? 0,
     }),
   );
 
@@ -111,8 +113,8 @@ export const buildWeeklyChangeSection = async (
     return {
       leaderCardId,
       baseCardId,
-      week1: { total: r1?.total ?? 0, top8: r1?.top8 ?? 0 },
-      week2: { total: r2?.total ?? 0, top8: r2?.top8 ?? 0 },
+      week1: { total: r1?.total ?? 0, top8: r1?.top8 ?? 0, champions: r1?.champions ?? 0 },
+      week2: { total: r2?.total ?? 0, top8: r2?.top8 ?? 0, champions: r2?.champions ?? 0 },
     };
   });
 
@@ -132,8 +134,8 @@ export const buildWeeklyChangeSection = async (
     dataPoints.push({
       leaderCardId: '',
       baseCardId: '',
-      week1: { total: restWeek1Total, top8: 0 },
-      week2: { total: restWeek2Total, top8: 0 },
+      week1: { total: restWeek1Total, top8: 0, champions: 0 },
+      week2: { total: restWeek2Total, top8: 0, champions: 0 },
     });
   }
 
