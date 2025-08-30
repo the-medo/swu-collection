@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ResponsiveAreaBump } from '@nivo/bump';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
 import type {
@@ -17,10 +17,7 @@ import MetaViewSelector, {
 } from './MetaShareTwoWeeks/MetaViewSelector.tsx';
 import { SectionInfoTooltip } from './components/SectionInfoTooltip.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
-import {
-  getDeckKey2,
-  labelWidthBasedOnMetaInfo,
-} from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import WeeklyChangeAreaBumpTooltip from '@/components/app/daily-snapshots/sections/WeeklyChangeAreaBumpTooltip.tsx';
 
@@ -32,7 +29,7 @@ export interface WeeklyChangeProps {
 
 // AreaBump datum type
 interface TwoWeekPoint {
-  x: number;
+  x: string;
   y: number;
 }
 
@@ -52,6 +49,9 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
   const metaInfo: MetaInfo = metaView === 'leaders' ? 'leaders' : 'leadersAndBase';
   const colorDefsFactory = useChartColorsAndGradients();
   const labelRenderer = useLabel();
+
+  // active series for the always-visible details panel (defaults to top series)
+  const [activeDeckKey, setActiveDeckKey] = useState<string | null>(null);
 
   // Build chart data from the payload (two x points: 1 for week1, 2 for week2)
   const { chartData, chartDefs, fill } = useMemo(() => {
@@ -81,6 +81,13 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
 
     grouped.delete('unknown');
 
+    // Resolve x-axis labels from tournament group names (fallbacks if missing)
+    const clean = (s: string) => s.replace(/^Weekend\s+/i, '').trim();
+    const x1Raw = payload.data.week1Ext?.tournamentGroup?.name;
+    const x2Raw = payload.data.week2Ext?.tournamentGroup?.name;
+    const x1Label = x1Raw ? clean(x1Raw) : 'Week 1';
+    const x2Label = x2Raw ? clean(x2Raw) : 'Week 2';
+
     // Prepare per-series values for both weeks
     const raw = Array.from(grouped.entries()).map(([id, vals]) => {
       const w1 = vals.w1;
@@ -88,8 +95,8 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
       return {
         id,
         data: [
-          { x: 1, y: w1 },
-          { x: 2, y: w2 },
+          { x: x1Label, y: w1 },
+          { x: x2Label, y: w2 },
         ] as TwoWeekPoint[],
         sum: w1 + w2,
         w1,
@@ -121,7 +128,16 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
     const finalData = filtered.map(({ id, data }) => ({ id, data }));
 
     return { chartData: finalData, chartDefs: defs, fill: fillDefs };
-  }, [payload.data.dataPoints, colorDefsFactory, metaInfo, metaPart, metaView]);
+  }, [
+    payload.data.dataPoints,
+    payload.data.week1Ext?.tournamentGroup?.name,
+    payload.data.week2Ext?.tournamentGroup?.name,
+    metaPart,
+    metaView,
+    cardListData,
+    colorDefsFactory,
+    metaInfo,
+  ]);
 
   // Labels: only on the right side like WeekToWeek
   const endLabel = useMemo(() => {
@@ -133,8 +149,16 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
     };
   }, [labelRenderer, metaInfo]);
 
-  // label width based on metaInfo
-  const labelWidth = labelWidthBasedOnMetaInfo[metaInfo] ?? 140;
+  // Render-time labels (cleaned), to show under the chart
+  const { x1LabelRender, x2LabelRender } = React.useMemo(() => {
+    const clean = (s: string) => s.replace(/^Weekend\s+/i, '').trim();
+    const x1Raw = payload.data.week1Ext?.tournamentGroup?.name;
+    const x2Raw = payload.data.week2Ext?.tournamentGroup?.name;
+    return {
+      x1LabelRender: x1Raw ? clean(x1Raw) : 'Week 1',
+      x2LabelRender: x2Raw ? clean(x2Raw) : 'Week 2',
+    };
+  }, [payload.data.week1Ext?.tournamentGroup?.name, payload.data.week2Ext?.tournamentGroup?.name]);
 
   // Info tooltip tournament groups
   const groups: TournamentGroupExtendedInfo[] = [
@@ -150,7 +174,19 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fillAny = fill as any;
 
-  console.log(chartDataAny);
+  // set default active deck to the top series when data changes
+  useEffect(() => {
+    if (chartDataAny && chartDataAny.length > 0) {
+      setActiveDeckKey(prev => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ids = chartDataAny.map((s: any) => s.id as string);
+        if (prev && ids.includes(prev)) return prev;
+        return chartDataAny[0]?.id as string;
+      });
+    } else {
+      setActiveDeckKey(null);
+    }
+  }, [chartDataAny]);
 
   return (
     <div className="h-full w-full flex flex-col gap-2">
@@ -176,55 +212,68 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
       </div>
 
       <div className="w-full overflow-visible">
-        <div className="h-[300px] min-w-[400px] border rounded-md p-2 overflow-visible">
-          {chartDataAny.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              No data available for weekly change
-            </div>
-          ) : (
-            <ResponsiveAreaBump
-              data={chartDataAny}
-              margin={{ top: 30, right: labelWidth, bottom: 40, left: 20 }}
-              spacing={4}
-              colors={['#3B3B3B']}
-              blendMode="normal"
-              defs={chartDefsAny}
-              fill={fillAny}
-              axisTop={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: 'Week',
-                legendOffset: -20,
-              }}
-              axisBottom={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: 'Week',
-                legendOffset: 32,
-              }}
-              startLabel={() => ''}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              endLabel={endLabel as any}
-              endLabelTextColor={'hsl(var(--muted-foreground))'}
-              tooltip={({ serie }) => (
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                <WeeklyChangeAreaBumpTooltip
-                  deckKey={serie.id as string}
-                  metaInfo={metaInfo}
-                  payload={payload}
-                  labelRenderer={labelRenderer}
+        <div className="flex flex-wrap gap-3">
+          <div className="min-w-[250px] flex-[2] overflow-visible">
+            <div className="h-[250px] w-full">
+              {chartDataAny.length === 0 ? (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  No data available for weekly change
+                </div>
+              ) : (
+                <ResponsiveAreaBump
+                  data={chartDataAny}
+                  margin={{ top: 0, right: 10, bottom: 0, left: 10 }}
+                  spacing={4}
+                  colors={['#3B3B3B']}
+                  blendMode="normal"
+                  defs={chartDefsAny}
+                  fill={fillAny}
+                  tooltip={() => null}
+                  axisTop={null}
+                  axisBottom={null}
+                  startLabel={() => ''}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  endLabel={endLabel as any}
+                  endLabelTextColor={'hsl(var(--muted-foreground))'}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  onMouseEnter={(serie: any) => setActiveDeckKey(serie.id as string)}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  onClick={(serie: any) => setActiveDeckKey(serie.id as string)}
                 />
               )}
-            />
-          )}
+            </div>
+            {chartDataAny.length > 0 && (
+              <div className="mt-1 text-xs text-muted-foreground flex justify-between px-1 w-full">
+                <span className="truncate" title={x1LabelRender}>
+                  {x1LabelRender}
+                </span>
+                <span className="truncate" title={x2LabelRender}>
+                  {x2LabelRender}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className="w-[200px] shrink-0 flex-1">
+            {chartDataAny.length === 0 ? (
+              <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                No selection
+              </div>
+            ) : activeDeckKey ? (
+              <WeeklyChangeAreaBumpTooltip
+                deckKey={activeDeckKey}
+                metaInfo={metaInfo}
+                payload={payload}
+                labelRenderer={labelRenderer}
+              />
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                Hover or click a line to see details.
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      <pre className="text-xs max-h-48 overflow-auto whitespace-pre-wrap bg-muted/40 p-2 rounded">
-        {JSON.stringify(payload, null, 2)}
-      </pre>
     </div>
   );
 };
