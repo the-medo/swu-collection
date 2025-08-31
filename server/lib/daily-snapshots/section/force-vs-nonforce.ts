@@ -26,34 +26,53 @@ const isForceBase = (baseId: string | null | undefined): boolean => {
 
 async function countForGroup(
   tournamentGroupId: string | null | undefined,
-): Promise<{ force: number; nonforce: number }> {
-  if (!tournamentGroupId) return { force: 0, nonforce: 0 };
+): Promise<{ total: { force: number; nonforce: number }; top8: { force: number; nonforce: number }; champions: { force: number; nonforce: number } }> {
+  if (!tournamentGroupId)
+    return {
+      total: { force: 0, nonforce: 0 },
+      top8: { force: 0, nonforce: 0 },
+      champions: { force: 0, nonforce: 0 },
+    };
 
   try {
     const rows = await db
       .select({
         baseCardId: tournamentGroupLeaderBase.baseCardId,
         // SUM returns bigint in Postgres; driver may return it as string. We'll coerce in JS below.
-        decks: sql<number>`sum(${tournamentGroupLeaderBase.total})`,
+        totalSum: sql<number>`sum(${tournamentGroupLeaderBase.total})`,
+        top8Sum: sql<number>`sum(${tournamentGroupLeaderBase.top8})`,
+        winnersSum: sql<number>`sum(${tournamentGroupLeaderBase.winner})`,
       })
       .from(tournamentGroupLeaderBase)
       .where(eq(tournamentGroupLeaderBase.tournamentGroupId, tournamentGroupId))
       .groupBy(tournamentGroupLeaderBase.baseCardId);
 
-    let force = 0;
-    let nonforce = 0;
+    const result = {
+      total: { force: 0, nonforce: 0 },
+      top8: { force: 0, nonforce: 0 },
+      champions: { force: 0, nonforce: 0 },
+    };
 
-    for (const r of rows) {
-      const count = typeof r.decks === 'number' ? r.decks : Number((r as any).decks ?? 0);
-      if (!r.baseCardId) continue;
-      if (isForceBase(r.baseCardId)) force += count;
-      else if (r.baseCardId !== '') nonforce += count;
+    for (const r of rows as any[]) {
+      const total = typeof r.totalSum === 'number' ? r.totalSum : Number(r.totalSum ?? 0);
+      const top8 = typeof r.top8Sum === 'number' ? r.top8Sum : Number(r.top8Sum ?? 0);
+      const winners = typeof r.winnersSum === 'number' ? r.winnersSum : Number(r.winnersSum ?? 0);
+      const baseId: string | null | undefined = r.baseCardId;
+      if (!baseId || baseId === '') continue;
+      const target = isForceBase(baseId) ? 'force' : 'nonforce' as const;
+      result.total[target] += total;
+      result.top8[target] += top8;
+      result.champions[target] += winners;
     }
 
-    return { force, nonforce };
+    return result;
   } catch (e) {
     // Resilient: return zeros on any error
-    return { force: 0, nonforce: 0 };
+    return {
+      total: { force: 0, nonforce: 0 },
+      top8: { force: 0, nonforce: 0 },
+      champions: { force: 0, nonforce: 0 },
+    };
   }
 }
 
@@ -69,6 +88,13 @@ export default async function buildForceVsNonForceSection(
   return {
     id: SECTION_ID,
     title: SECTION_TITLE,
-    data: { twoWeeks, week1, week2 },
+    data: {
+      twoWeeks,
+      week1,
+      week2,
+      twoWeeksGroupExt: twoWeeksExt ?? null,
+      week1GroupExt: week1Ext ?? null,
+      week2GroupExt: week2Ext ?? null,
+    },
   };
 }

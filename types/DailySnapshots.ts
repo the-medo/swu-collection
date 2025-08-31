@@ -85,10 +85,16 @@ export type SectionMostPlayedCards = {
 };
 
 // New section: Force vs Non-Force (two-weeks + weeks)
+export type ForceNonforcePair = { force: number; nonforce: number };
+export type ForceNonforceSplit = {
+  total: ForceNonforcePair;
+  top8: ForceNonforcePair;
+  champions: ForceNonforcePair;
+};
 export type SectionForceVsNonForceCounts = {
-  twoWeeks: { force: number; nonforce: number };
-  week1: { force: number; nonforce: number };
-  week2: { force: number; nonforce: number };
+  twoWeeks: ForceNonforceSplit;
+  week1: ForceNonforceSplit;
+  week2: ForceNonforceSplit;
   twoWeeksGroupExt?: TournamentGroupExtendedInfo | null;
   week1GroupExt?: TournamentGroupExtendedInfo | null;
   week2GroupExt?: TournamentGroupExtendedInfo | null;
