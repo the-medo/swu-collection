@@ -9,7 +9,7 @@ import type {
 } from '../../../../types/DailySnapshots.ts';
 
 const SECTION_ID = 'most-played-cards';
-const SECTION_TITLE = 'Most played cards (last 2 weeks)';
+const SECTION_TITLE = 'Cards in most decks (last 2 weeks)';
 
 const buildEmpty = (
   groupExt: TournamentGroupExtendedInfo | null,

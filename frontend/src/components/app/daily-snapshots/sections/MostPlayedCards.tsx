@@ -1,19 +1,76 @@
 import * as React from 'react';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
+import type {
+  DailySnapshotSectionData,
+  SectionMostPlayedCards,
+} from '../../../../../../types/DailySnapshots.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
+import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatistic.tsx';
+import { SectionInfoTooltip } from './components/SectionInfoTooltip.tsx';
+import { CardStatsParams } from '@/api/card-stats';
 
 export interface MostPlayedCardsProps {
-  payload: any;
+  payload: DailySnapshotSectionData<SectionMostPlayedCards>;
   dailySnapshot?: DailySnapshotRow | null;
   sectionUpdatedAt?: string;
 }
 
-const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({ payload }) => {
+const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({
+  payload,
+  dailySnapshot,
+  sectionUpdatedAt,
+}) => {
+  const { data: cardListData } = useCardList();
+  const items = payload.data.dataPoints ?? [];
+
+  const groups = React.useMemo(
+    () => (payload.data.tournamentGroupExt ? [payload.data.tournamentGroupExt] : []),
+    [payload.data.tournamentGroupExt],
+  );
+
+  const cardStatParams = React.useMemo<CardStatsParams>(
+    () => ({ tournamentGroupId: payload.data.tournamentGroupId }),
+    [payload.data.tournamentGroupId],
+  );
+
   return (
     <div className="h-full w-full">
-      <div className="text-sm font-semibold mb-2">Most Played Cards</div>
-      <pre className="text-xs max-h-48 overflow-auto whitespace-pre-wrap bg-muted/40 p-2 rounded">
-        {JSON.stringify(payload, null, 2)}
-      </pre>
+      <div className="flex gap-2 justify-between items-center mb-2">
+        <div className="flex items-center gap-2">
+          <h3>{payload.title || 'Cards in most decks (last 2 weeks)'}</h3>
+          <SectionInfoTooltip
+            dailySnapshot={dailySnapshot}
+            sectionUpdatedAt={sectionUpdatedAt}
+            tournamentGroupExtendedInfo={groups}
+          >
+            <div className="text-sm">
+              Top cards by number of decks over the last two weeks for the selected group. Counts
+              show total copies in main deck and sideboard, along with average per deck.
+            </div>
+          </SectionInfoTooltip>
+        </div>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="text-sm text-muted-foreground">No data available</div>
+      ) : (
+        <div className="flex flex-row gap-2 w-full overflow-x-auto">
+          {items.map((it, idx) => {
+            const card = cardListData?.cards?.[it.cardId];
+            if (!card) return null;
+            return (
+              <CardStatistic
+                key={it.cardId}
+                card={card}
+                cardStat={it}
+                cardStatParams={cardStatParams}
+                variant="image"
+                preTitle={`#${idx + 1} `}
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
