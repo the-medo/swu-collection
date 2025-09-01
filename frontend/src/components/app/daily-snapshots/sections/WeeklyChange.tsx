@@ -254,7 +254,7 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
             )}
           </div>
 
-          <div className="w-[200px] shrink-0 flex-1">
+          <div className="min-w-[230px] shrink-0 flex-1">
             {chartDataAny.length === 0 ? (
               <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
                 No selection
