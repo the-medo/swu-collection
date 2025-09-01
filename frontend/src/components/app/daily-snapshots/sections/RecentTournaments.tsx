@@ -7,7 +7,7 @@ import type {
   SectionRecentTournaments,
 } from '../../../../../../types/DailySnapshots.ts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { TournamentWinningDeckTooltip } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/TournamentWinningDeckTooltip.tsx';
+import { TournamentGivenDeckTooltip } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/TournamentGivenDeckTooltip.tsx';
 import Flag from '@/components/app/global/Flag.tsx';
 import { Users, X } from 'lucide-react';
 import { CountryCode } from '../../../../../../server/db/lists.ts';
@@ -62,7 +62,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   );
 
   return (
-    <div className="h-full w-full">
+    <div className="w-full h-full">
       <div className="flex gap-2 justify-between items-center mb-2">
         <div className="flex items-center gap-2">
           <h3>Recent tournaments</h3>
@@ -82,7 +82,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
       {sorted.length === 0 ? (
         <div className="text-sm text-muted-foreground">No recent tournaments</div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="h-[700px] overflow-y-scroll overflow-x-auto">
           <table className="w-full text-sm">
             <tbody>
               {rows.map((row, idx) => {
@@ -122,12 +122,14 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
                             ) : null}
                           </td>
                           <td className="py-2 text-right pr-2">
-                            {notImported ? <X className="h-4 w-4 text-red-500 inline-block" /> : null}
+                            {notImported ? (
+                              <X className="h-4 w-4 text-red-500 inline-block" />
+                            ) : null}
                           </td>
                         </tr>
                       </TooltipTrigger>
                       <TooltipContent side="right" className="p-0">
-                        <TournamentWinningDeckTooltip tournamentId={t.id} />
+                        <TournamentGivenDeckTooltip deck={row.item.deck} />
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
