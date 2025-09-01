@@ -109,27 +109,6 @@ export const buildRecentTournamentsSection = async (
     decksRes.forEach(d => deckById.set(d.id, d));
   }
 
-  // Helper to convert a tournament row into TournamentStringDate
-  const toTournamentStringDate = (t: any) => ({
-    id: t.id,
-    userId: t.userId,
-    type: t.type,
-    location: t.location,
-    continent: t.continent,
-    name: t.name,
-    meta: t.meta ?? 0,
-    attendance: t.attendance,
-    meleeId: t.meleeId ?? null,
-    format: t.format,
-    days: t.days,
-    dayTwoPlayerCount: t.dayTwoPlayerCount ?? null,
-    date: (t.date as unknown as Date).toISOString().slice(0, 10),
-    createdAt: (t.createdAt as Date).toISOString(),
-    updatedAt: (t.updatedAt as Date).toISOString(),
-    imported: t.imported,
-    bracketInfo: t.bracketInfo ?? undefined,
-  });
-
   // 6) Build result items
   const items: SectionRecentTournamentsItem[] = [];
 
@@ -140,8 +119,9 @@ export const buildRecentTournamentsSection = async (
     if (!t) continue;
     const d = deckById.get(td.deckId) ?? null;
 
+    // noinspection TypeScriptValidateTypes
     items.push({
-      tournament: toTournamentStringDate(t),
+      tournament: t,
       winningTournamentDeck: {
         tournamentId: td.tournamentId,
         deckId: td.deckId,
@@ -181,7 +161,7 @@ export const buildRecentTournamentsSection = async (
     const d = td ? (deckById.get(td.deckId) ?? null) : null;
 
     items.push({
-      tournament: toTournamentStringDate(t),
+      tournament: t,
       winningTournamentDeck: td
         ? {
             tournamentId: td.tournamentId,
@@ -214,38 +194,8 @@ export const buildRecentTournamentsSection = async (
     });
   }
 
-  // c) Add a random SQ tournament (for frontend testing)
-  const randId = `random-sq-${Math.random().toString(36).slice(2, 10)}`;
-  const nowISO = new Date().toISOString();
-  const todayStr = new Date().toISOString().slice(0, 10);
-  items.push({
-    tournament: {
-      id: randId,
-      userId: 'system',
-      type: 'sq',
-      location: 'Test Location',
-      continent: 'NA',
-      name: 'Random SQ Test Tournament',
-      meta: 0,
-      attendance: 64,
-      meleeId: null,
-      format: 0,
-      days: 1,
-      dayTwoPlayerCount: null,
-      date: todayStr,
-      createdAt: nowISO,
-      updatedAt: nowISO,
-      imported: false,
-      bracketInfo: undefined,
-    },
-    winningTournamentDeck: null,
-    deck: null,
-  });
-
   // Sort items by tournament.updatedAt desc
-  items.sort((a, b) =>
-    (b.tournament.updatedAt as string).localeCompare(a.tournament.updatedAt as string),
-  );
+  items.sort((a, b) => (b.tournament.updatedAt < a.tournament.updatedAt ? -1 : 1));
 
   const data: SectionRecentTournaments = {
     tournamentGroupId,

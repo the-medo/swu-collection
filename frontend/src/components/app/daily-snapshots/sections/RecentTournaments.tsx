@@ -12,6 +12,8 @@ import Flag from '@/components/app/global/Flag.tsx';
 import { Users, X } from 'lucide-react';
 import { CountryCode } from '../../../../../../server/db/lists.ts';
 import { SectionInfoTooltip } from './components/SectionInfoTooltip.tsx';
+import TournamentGroupTournament from '@/components/app/tournaments/TournamentGroup/TournamentGroupTournament';
+import type { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../types/TournamentGroup';
 
 export interface RecentTournamentsProps {
   payload: DailySnapshotSectionData<SectionRecentTournaments>;
@@ -38,14 +40,64 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
     });
   }, [items]);
 
-  // Grouping helper by exact date (for divider rendering)
+  // Split into majors (SQ/RQ/GC) and others (to keep table for others only)
+  const majorTypes = new Set(['sq', 'rq', 'gc']);
+  const majors = useMemo(() => {
+    return sorted.filter(it => majorTypes.has(String(it.tournament.type).toLowerCase()));
+  }, [sorted]);
+  const others = useMemo(() => {
+    return sorted.filter(it => !majorTypes.has(String(it.tournament.type).toLowerCase()));
+  }, [sorted]);
+
+  // Adapt majors to TournamentGroupTournament items (filter out those without a deck)
+  const majorsAdapted = useMemo(() => {
+    const res: TournamentGroupTournamentType[] = [];
+    for (const it of majors) {
+      if (!it.deck) continue; // component expects a deck
+      const t = it.tournament;
+      const tournamentForCard = {
+        ...t,
+        // Ensure date fields are Date instances for the consumer component
+        date: new Date(t.date as string),
+        createdAt: new Date(t.createdAt as string),
+        updatedAt: new Date(t.updatedAt as string),
+      } as unknown as TournamentGroupTournamentType['tournament'];
+      const adapted: TournamentGroupTournamentType = {
+        tournament: tournamentForCard,
+        deck: it.deck,
+        tournamentDeck:
+          (it.winningTournamentDeck as unknown as TournamentGroupTournamentType['tournamentDeck']) ??
+          ({
+            tournamentId: t.id,
+            deckId: it.deck.id,
+            placement: 1,
+            topRelativeToPlayerCount: null,
+            recordWin: 0,
+            recordLose: 0,
+            recordDraw: 0,
+            points: 0,
+            meleeDecklistGuid: null,
+            meleePlayerUsername: null,
+          } as unknown as TournamentGroupTournamentType['tournamentDeck']),
+        tournamentType:
+          t as unknown as TournamentGroupTournamentType['tournament'] as unknown as TournamentGroupTournamentType['tournamentType'],
+        position: 0,
+      } as TournamentGroupTournamentType;
+      res.push(adapted);
+    }
+    return res;
+  }, [majors]);
+
+  // Grouping helper by exact date (for divider rendering) - for others only
   const rows = useMemo(() => {
     type Row = { type: 'divider'; label: string } | { type: 'item'; item: (typeof items)[number] };
     const res: Row[] = [];
     let currentKey: string | null = null;
-    for (const it of sorted) {
+    for (const it of others) {
       const rawDate = it.tournament.date; // assume YYYY-MM-DD
-      const key = rawDate?.slice(0, 10) || new Date(it.tournament.date).toISOString().slice(0, 10);
+      const key =
+        (rawDate as string)?.slice(0, 10) ||
+        new Date(it.tournament.date).toISOString().slice(0, 10);
       if (key !== currentKey) {
         currentKey = key;
         const label = new Date(it.tournament.date).toLocaleDateString();
@@ -54,7 +106,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
       res.push({ type: 'item', item: it });
     }
     return res;
-  }, [sorted, items]);
+  }, [others, items]);
 
   const groups = useMemo(
     () => (payload.data.tournamentGroupExt ? [payload.data.tournamentGroupExt] : []),
@@ -83,6 +135,21 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
         <div className="text-sm text-muted-foreground">No recent tournaments</div>
       ) : (
         <div className="h-[700px] overflow-y-scroll overflow-x-auto">
+          {/* Major tournaments section */}
+          {majorsAdapted.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-base font-semibold mb-2">Major tournaments</h4>
+              <div className="flex flex-col gap-2">
+                {majorsAdapted.map(mi => (
+                  <div key={mi.tournament.id} className="min-h-[150px]">
+                    <TournamentGroupTournament tournamentItem={mi} compact={true} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Regular recent tournaments table (majors removed) */}
           <table className="w-full text-sm">
             <tbody>
               {rows.map((row, idx) => {
