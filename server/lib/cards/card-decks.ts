@@ -36,7 +36,7 @@ type FetchCardDecksDataParams = {
 export async function fetchCardDecksData(
   params: FetchCardDecksDataParams,
 ): Promise<CardDeckData[]> {
-  if (!params.metaId && !params.tournamentId) {
+  if (!params.metaId && !params.tournamentId && !params.tournamentGroupId) {
     throw new Error('Either metaId or tournamentId must be provided');
   }
   const { cardId, metaId, tournamentId, tournamentGroupId, leaderCardId, baseCardId } = params;

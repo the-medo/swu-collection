@@ -27,8 +27,11 @@ export const cardsRoute = new Hono<AuthExtension>()
       c.req.valid('query');
 
     // Ensure at least one of tournamentId or metaId is provided
-    if (!tournamentId && !metaId) {
-      return c.json({ error: 'Either tournamentId or metaId must be provided' }, 400);
+    if (!tournamentId && !tournamentGroupId && !metaId) {
+      return c.json(
+        { error: 'Either tournamentId, tournamentGroupId or metaId must be provided' },
+        400,
+      );
     }
 
     try {
