@@ -54,10 +54,10 @@ async function backgroundRefresh(date: string) {
   }));
 
   // Call API (if sectionsParam empty, server returns all)
-  const res = await api['daily-snapshot'].$get({
-    query: {
+  const res = await api['daily-snapshot'].$post({
+    json: {
       date,
-      sections: JSON.stringify(sectionsParam),
+      sections: sectionsParam,
     },
   });
 
@@ -111,9 +111,9 @@ export function useDailySnapshot(date?: string) {
       }
 
       // 2) No local data: fetch from server and store
-      // When no local sections, we pass empty sections param so server returns all
-      const res = await api['daily-snapshot'].$get({
-        query: { date: d, sections: JSON.stringify([]) },
+      // When no local sections, we pass empty sections in body so server returns all
+      const res = await api['daily-snapshot'].$post({
+        json: { date: d, sections: [] },
       });
 
       if (!res.ok) {

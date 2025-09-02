@@ -11,30 +11,18 @@ const zSectionsItem = z.object({
   lastUpdatedAt: z.string().datetime().optional(),
 });
 
-// Accept sections as JSON string in query for GET, parse to array
-const zDailySnapshotQuery = z.object({
+// Accept sections as JSON body for POST
+const zDailySnapshotBody = z.object({
   date: z.string().min(1),
   lastUpdatedAt: z.string().datetime().optional(), // not used for filtering per requirements
-  sections: z
-    .string()
-    .optional()
-    .transform(val => {
-      if (!val) return [] as Array<z.infer<typeof zSectionsItem>>;
-      try {
-        const parsed = JSON.parse(val);
-        return z.array(zSectionsItem).parse(parsed);
-      } catch {
-        // If malformed, treat as empty -> fetch all
-        return [] as Array<z.infer<typeof zSectionsItem>>;
-      }
-    }),
+  sections: z.array(zSectionsItem).optional().default([]),
 });
 
-export const dailySnapshotGetRoute = new Hono<AuthExtension>().get(
+export const dailySnapshotPostRoute = new Hono<AuthExtension>().post(
   '/',
-  zValidator('query', zDailySnapshotQuery),
+  zValidator('json', zDailySnapshotBody),
   async c => {
-    const { date, sections } = c.req.valid('query');
+    const { date, sections } = c.req.valid('json');
 
     // 1) Always fetch daily_snapshot row
     const dsRows = await db
