@@ -67,6 +67,7 @@ export type SectionRecentTournaments = {
 export type SectionUpcomingTournaments = {
   tournamentGroupId: string;
   dataPoints: TournamentStringDate[];
+  upcomingMajorTournaments?: TournamentStringDate[]; // majors (SQ/RQ/GC) in the next 20 days
   tournamentGroupExt?: TournamentGroupExtendedInfo | null;
 };
 

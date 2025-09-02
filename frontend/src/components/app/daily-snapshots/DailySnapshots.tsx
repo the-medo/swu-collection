@@ -12,10 +12,7 @@ import {
 import { cn } from '@/lib/utils.ts';
 import GridSection, { SectionCardSizing } from '@/components/app/daily-snapshots/GridSection.tsx';
 import LogoDarkTheme from '@/assets/logo-dark-theme.svg';
-import type {
-  DailySnapshotSectionData,
-  SectionMetaShare2Weeks,
-} from '../../../../../types/DailySnapshots.ts';
+import type { DailySnapshotSectionData } from '../../../../../types/DailySnapshots.ts';
 
 const formatToday = (): string => {
   const d = new Date();
@@ -59,7 +56,7 @@ const sizingByKey: Record<OrderedKey, SectionCardSizing> = {
     1: { row: { from: 3, to: 3 }, col: { from: 1, to: 1 } },
   },
   'upcoming-tournaments': {
-    4: { row: { from: 3, to: 4 }, col: { from: 4, to: 4 } },
+    4: { row: { from: 3, to: 3 }, col: { from: 4, to: 4 } },
     3: { row: { from: 2, to: 2 }, col: { from: 3, to: 3 } },
     2: { row: { from: 3, to: 3 }, col: { from: 2, to: 2 } },
     1: { row: { from: 5, to: 5 }, col: { from: 1, to: 1 } },

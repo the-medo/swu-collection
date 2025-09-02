@@ -9,6 +9,7 @@ import type {
 import Flag from '@/components/app/global/Flag.tsx';
 import { CountryCode } from '../../../../../../server/db/lists.ts';
 import { SectionInfoTooltip } from './components/SectionInfoTooltip.tsx';
+import { formatDataById } from '../../../../../../types/Format.ts';
 
 export interface UpcomingTournamentsProps {
   payload: DailySnapshotSectionData<SectionUpcomingTournaments>;
@@ -22,6 +23,7 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
   sectionUpdatedAt,
 }) => {
   const tournaments = payload.data.dataPoints ?? [];
+  const majors = payload.data.upcomingMajorTournaments ?? [];
 
   // Sort by date ascending (soonest first), then by updatedAt desc if present
   const sorted = useMemo(() => {
@@ -37,7 +39,9 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
 
   // Group rows by exact date for divider rendering
   const rows = useMemo(() => {
-    type Row = { type: 'divider'; label: string } | { type: 'item'; item: (typeof tournaments)[number] };
+    type Row =
+      | { type: 'divider'; label: string }
+      | { type: 'item'; item: (typeof tournaments)[number] };
     const res: Row[] = [];
     let currentKey: string | null = null;
     for (const it of sorted) {
@@ -68,16 +72,54 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
             tournamentGroupExtendedInfo={groups}
           >
             <div className="text-sm">
-              Upcoming tournaments for the current and next few days, grouped by date (soonest first).
+              Upcoming tournaments for the current and next few days, grouped by date (soonest
+              first).
             </div>
           </SectionInfoTooltip>
         </div>
       </div>
 
-      {sorted.length === 0 ? (
-        <div className="text-sm text-muted-foreground">No upcoming tournaments</div>
-      ) : (
-        <div className="max-h-[700px] overflow-y-auto overflow-x-auto">
+      <div className="max-h-[400px] overflow-y-auto overflow-x-auto flex flex-col gap-2">
+        {/* Major tournaments each in its own box */}
+        {majors.length > 0 &&
+          majors.map(m => {
+            const cc = (m.location as unknown as CountryCode) || undefined;
+            return (
+              <div
+                key={m.id}
+                className="p-3 rounded-md border border-blue-200 bg-blue-50 dark:bg-blue-950/40 dark:border-blue-900 flex flex-col"
+              >
+                <div className="flex flex-1 items-center justify-between gap-2 min-w-0">
+                  <div className="flex flex-1 items-center gap-2 min-w-0">
+                    {cc ? <Flag countryCode={cc} /> : null}
+                    {m.id ? (
+                      <Link
+                        to="/tournaments/$tournamentId"
+                        params={{ tournamentId: m.id }}
+                        className="text-blue-700 dark:text-blue-300 hover:underline"
+                      >
+                        {m.name}
+                      </Link>
+                    ) : (
+                      <span>{m.name}</span>
+                    )}
+                  </div>
+                  {m.format ? (
+                    <span className="text-xs text-muted-foreground">
+                      ({formatDataById[m.format]?.name})
+                    </span>
+                  ) : null}
+                  <div className="text-sm text-muted-foreground flex items-center gap-3 pl-3 shrink-0">
+                    <span>{new Date(m.date).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+        {sorted.length === 0 ? (
+          <div className="text-sm text-muted-foreground">No upcoming tournaments</div>
+        ) : (
           <table className="w-full text-sm">
             <tbody>
               {rows.map((row, idx) => {
@@ -108,16 +150,14 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
                         )}
                       </div>
                     </td>
-                    <td className="py-2 text-right pr-2">
-                      {/* No attendance or import status for upcoming tournaments */}
-                    </td>
+                    <td className="py-2 text-right pr-2 text-xs">{t.continent}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
