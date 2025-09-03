@@ -9,16 +9,19 @@ import {
   TableRow,
 } from '@/components/ui/table.tsx';
 import { Link } from '@tanstack/react-router';
-import { Link as LinkIcon } from 'lucide-react';
+import { Link as LinkIcon, TriangleAlert } from 'lucide-react';
+import { INCOMPLETE_DATA_PERCENTAGE } from '@/components/app/daily-snapshots/sections/components/SectionInfoTooltip.tsx';
 
 export interface TournamentGroupExtendedInfoTableProps {
   items: TournamentGroupExtendedInfo[];
   className?: string;
+  sectionDataWarning?: boolean;
 }
 
 const TournamentGroupExtendedInfoTable: React.FC<TournamentGroupExtendedInfoTableProps> = ({
   items,
   className,
+  sectionDataWarning,
 }) => {
   const safeItems = Array.isArray(items) ? items : [];
 
@@ -50,6 +53,12 @@ const TournamentGroupExtendedInfoTable: React.FC<TournamentGroupExtendedInfoTabl
               const totalDecks: number | undefined = stats?.totalDecks;
 
               const key = `${name}-${idx}`;
+              const incompleteDataWarning =
+                sectionDataWarning &&
+                typeof twd === 'number' &&
+                typeof totalTournaments === 'number' &&
+                totalTournaments !== 0 &&
+                twd / totalTournaments < INCOMPLETE_DATA_PERCENTAGE;
 
               return (
                 <TableRow key={key}>
@@ -66,7 +75,19 @@ const TournamentGroupExtendedInfoTable: React.FC<TournamentGroupExtendedInfoTabl
                       {name}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell
+                    className={[
+                      'flex flex-row gap-2 justify-end items-center',
+                      incompleteDataWarning
+                        ? 'text-yellow-600 dark:text-yellow-300 font-semibold'
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                  >
+                    {incompleteDataWarning ? (
+                      <TriangleAlert className="size-4 text-yellow-600 dark:text-yellow-300" />
+                    ) : null}
                     {typeof twd === 'number' && typeof totalTournaments === 'number'
                       ? `${twd}/${totalTournaments}`
                       : '—'}

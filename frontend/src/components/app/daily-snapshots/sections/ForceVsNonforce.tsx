@@ -94,6 +94,7 @@ const ForceVsNonforce: React.FC<ForceVsNonforceProps> = ({
           <h3>Force vs Non-Force</h3>
           <SectionInfoTooltip
             dailySnapshot={dailySnapshot}
+            sectionDataWarning={true}
             sectionUpdatedAt={sectionUpdatedAt}
             tournamentGroupExtendedInfo={groups}
           >

@@ -1,14 +1,16 @@
 import * as React from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
+import { AlertCircle, Info, TriangleAlert } from 'lucide-react';
 import type { DailySnapshotRow } from '@/api/daily-snapshot';
 import type { TournamentGroupExtendedInfo } from '../../../../../../../types/DailySnapshots.ts';
 import TournamentGroupExtendedInfoTable from './TournamentGroupExtendedInfoTable.tsx';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 
 export interface SectionInfoTooltipProps {
   dailySnapshot?: DailySnapshotRow | null;
   sectionUpdatedAt?: string;
   tournamentGroupExtendedInfo: TournamentGroupExtendedInfo[];
+  sectionDataWarning?: boolean;
   children?: React.ReactNode;
   className?: string;
 }
@@ -20,15 +22,29 @@ const formatDateTime = (val?: string | null): string | null => {
   return date.toLocaleString();
 };
 
+export const INCOMPLETE_DATA_PERCENTAGE = 0.8;
+
 export const SectionInfoTooltip: React.FC<SectionInfoTooltipProps> = ({
   dailySnapshot,
   sectionUpdatedAt,
   tournamentGroupExtendedInfo,
+  sectionDataWarning,
   children,
   className,
 }) => {
   const secUpdated = formatDateTime(sectionUpdatedAt);
   const snapUpdated = formatDateTime(dailySnapshot?.updatedAt ?? undefined);
+
+  const hasLowCoverage = Array.isArray(tournamentGroupExtendedInfo)
+    ? tournamentGroupExtendedInfo.some(item => {
+        const twd = item?.tournamentGroupStats?.tournamentsWithData;
+        const total = item?.tournamentGroupStats?.totalTournaments;
+        if (typeof twd !== 'number' || typeof total !== 'number' || total === 0) return false;
+        return twd / total < INCOMPLETE_DATA_PERCENTAGE;
+      })
+    : false;
+
+  const triggerDataWarning = Boolean(sectionDataWarning && hasLowCoverage);
 
   return (
     <TooltipProvider>
@@ -44,11 +60,36 @@ export const SectionInfoTooltip: React.FC<SectionInfoTooltipProps> = ({
               .filter(Boolean)
               .join(' ')}
           >
-            <Info className="size-4 text-muted-foreground" />
+            {triggerDataWarning ? (
+              <TriangleAlert className="size-4 dark:text-yellow-300 text-yellow-600" />
+            ) : (
+              <Info className="size-4 text-muted-foreground" />
+            )}
           </button>
         </TooltipTrigger>
         <TooltipContent className="p-4 max-w-xl">
           <div className="flex flex-col gap-3">
+            {/* Data warning */}
+            {triggerDataWarning ? (
+              <Alert variant="warning">
+                <AlertCircle className="h-4 w-4 text-yellow-500 stroke-yellow-500" />
+                <AlertTitle className="text-sm">Data may be incomplete</AlertTitle>
+                <AlertDescription className="text-xs">
+                  <ul className="list-disc ml-5 space-y-1">
+                    <li>
+                      At least one of the tournament groups has less than{' '}
+                      {INCOMPLETE_DATA_PERCENTAGE * 100}% of tournaments with data.
+                    </li>
+                    <li>
+                      It can take some time to import data after tournaments end and not all
+                      tournaments provide this data (data from weekend is usually ready on following
+                      monday evening EU time)
+                    </li>
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            ) : null}
+
             {/* Children on top */}
             {children ? <div className="flex flex-col gap-3">{children}</div> : null}
 
@@ -59,7 +100,10 @@ export const SectionInfoTooltip: React.FC<SectionInfoTooltipProps> = ({
                 data is. You can open them to see more detailed statistics and list of tournaments,
                 they are computed from.
               </span>
-              <TournamentGroupExtendedInfoTable items={tournamentGroupExtendedInfo ?? []} />
+              <TournamentGroupExtendedInfoTable
+                items={tournamentGroupExtendedInfo ?? []}
+                sectionDataWarning={sectionDataWarning}
+              />
             </div>
 
             {/* Times info */}

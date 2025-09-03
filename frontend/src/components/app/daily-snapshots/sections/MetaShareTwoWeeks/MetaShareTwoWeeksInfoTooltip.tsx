@@ -20,6 +20,7 @@ const MetaShareTwoWeeksInfoTooltip: React.FC<MetaShareTwoWeeksInfoTooltipProps> 
     <SectionInfoTooltip
       dailySnapshot={dailySnapshot}
       sectionUpdatedAt={sectionUpdatedAt}
+      sectionDataWarning={true}
       tournamentGroupExtendedInfo={tournamentGroupExtendedInfo}
       className={className}
     >

@@ -196,6 +196,7 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
           <SectionInfoTooltip
             dailySnapshot={dailySnapshot}
             sectionUpdatedAt={sectionUpdatedAt}
+            sectionDataWarning={true}
             tournamentGroupExtendedInfo={groups}
           >
             <div className="text-sm">
