@@ -3,10 +3,10 @@ import { DailySnapshotRow } from '@/api/daily-snapshot';
 import type {
   DailySnapshotSectionData,
   SectionMostPlayedCards,
-} from '../../../../../../types/DailySnapshots.ts';
+} from '../../../../../../../types/DailySnapshots.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatistic.tsx';
-import { SectionInfoTooltip } from './components/SectionInfoTooltip.tsx';
+import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import { CardStatsParams } from '@/api/card-stats';
 
 export interface MostPlayedCardsProps {
@@ -45,8 +45,9 @@ const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({
             tournamentGroupExtendedInfo={groups}
           >
             <div className="text-sm">
-              Top cards by number of decks over the last two weeks for the selected group. Counts
-              show total copies in main deck and sideboard, along with average per deck.
+              Shows 5 cards that have been played in the most amount of decks in the last 2 weeks.
+              That does NOT mean that it has the most copies in the decks. For that, there are more
+              comprehensive card statistics that you can open.
             </div>
           </SectionInfoTooltip>
         </div>

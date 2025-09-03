@@ -5,11 +5,11 @@ import { DailySnapshotRow } from '@/api/daily-snapshot';
 import type {
   DailySnapshotSectionData,
   SectionUpcomingTournaments,
-} from '../../../../../../types/DailySnapshots.ts';
+} from '../../../../../../../types/DailySnapshots.ts';
 import Flag from '@/components/app/global/Flag.tsx';
-import { CountryCode } from '../../../../../../server/db/lists.ts';
-import { SectionInfoTooltip } from './components/SectionInfoTooltip.tsx';
-import { formatDataById } from '../../../../../../types/Format.ts';
+import { CountryCode } from '../../../../../../../server/db/lists.ts';
+import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
+import { formatDataById } from '../../../../../../../types/Format.ts';
 
 export interface UpcomingTournamentsProps {
   payload: DailySnapshotSectionData<SectionUpcomingTournaments>;
@@ -72,8 +72,8 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
             tournamentGroupExtendedInfo={groups}
           >
             <div className="text-sm">
-              Upcoming tournaments for the current and next few days, grouped by date (soonest
-              first).
+              Upcoming tournaments for next weekend + all major tournaments happening in the next 30
+              days.
             </div>
           </SectionInfoTooltip>
         </div>

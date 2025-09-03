@@ -6,8 +6,8 @@ import type {
   DailySnapshotSectionData,
   SectionForceVsNonForceCounts,
   TournamentGroupExtendedInfo,
-} from '../../../../../../types/DailySnapshots.ts';
-import { SectionInfoTooltip } from './components/SectionInfoTooltip.tsx';
+} from '../../../../../../../types/DailySnapshots.ts';
+import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 
 export interface ForceVsNonforceProps {
   payload: DailySnapshotSectionData<SectionForceVsNonForceCounts>;
@@ -99,10 +99,12 @@ const ForceVsNonforce: React.FC<ForceVsNonforceProps> = ({
             tournamentGroupExtendedInfo={groups}
           >
             <div className="text-sm">
-              This section shows how many decks used a Force base versus non-Force. The big number
-              is the percentage of Force-base decks across the last two weeks. The table shows, for
-              each of the two weekends, what percentage of Champions, Top 8, and Total decks used a
-              Force base.
+              This section shows how many decks used a Force base versus non-Force. Force bases
+              include all 28hp common bases and all rare force bases.
+            </div>
+            <div>
+              This metric does NOT show all decks using force units or decks using Force Throw if
+              they don't use the force base.
             </div>
           </SectionInfoTooltip>
         </div>

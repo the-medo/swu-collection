@@ -1,22 +1,18 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
-import MetaDetailLinks from './MetaShareTwoWeeks/MetaDetailLinks.tsx';
+import MetaDetailLinks from './MetaDetailLinks.tsx';
 import type {
   DailySnapshotSectionData,
   SectionMetaShare2Weeks,
-} from '../../../../../../types/DailySnapshots.ts';
-import MetaPartSelector, {
-  type DailySnapshotMetaPart,
-} from './MetaShareTwoWeeks/MetaPartSelector.tsx';
-import MetaViewSelector, {
-  type DailySnapshotMetaView,
-} from './MetaShareTwoWeeks/MetaViewSelector.tsx';
-import MetaSharePieChart from './MetaShareTwoWeeks/MetaSharePieChart.tsx';
-import MetaShareTable from './MetaShareTwoWeeks/MetaShareTable.tsx';
+} from '../../../../../../../types/DailySnapshots.ts';
+import MetaPartSelector, { type DailySnapshotMetaPart } from './MetaPartSelector.tsx';
+import MetaViewSelector, { type DailySnapshotMetaView } from './MetaViewSelector.tsx';
+import MetaSharePieChart from './MetaSharePieChart.tsx';
+import MetaShareTable from './MetaShareTable.tsx';
 import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
-import MetaShareTwoWeeksInfoTooltip from './MetaShareTwoWeeks/MetaShareTwoWeeksInfoTooltip.tsx';
+import MetaShareTwoWeeksInfoTooltip from './MetaShareTwoWeeksInfoTooltip.tsx';
 
 export interface MetaShareTwoWeeksProps {
   payload: DailySnapshotSectionData<SectionMetaShare2Weeks>;

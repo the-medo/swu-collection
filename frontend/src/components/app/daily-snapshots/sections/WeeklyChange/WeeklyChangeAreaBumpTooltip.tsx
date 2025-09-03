@@ -4,10 +4,11 @@ import type { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaI
 import type {
   DailySnapshotSectionData,
   SectionWeeklyChange,
-} from '../../../../../../types/DailySnapshots.ts';
+} from '../../../../../../../types/DailySnapshots.ts';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
+import { ArrowCell } from '@/components/app/daily-snapshots/sections/WeeklyChange/ArrowCell.tsx';
 
 const fixedKeys = ['unknown', 'others', ''];
 
@@ -190,25 +191,6 @@ const WeeklyChangeAreaBumpTooltip: React.FC<WeeklyChangeAreaBumpTooltipProps> = 
       ) : null}
     </div>
   );
-
-  const ArrowCell: React.FC<{ p1: number | null; p2: number | null }> = ({ p1, p2 }) => {
-    if (typeof p1 !== 'number' || typeof p2 !== 'number') return null;
-    if (p2 < p1) {
-      return (
-        <span className="text-emerald-500" title="Improved placement">
-          ▲
-        </span>
-      );
-    }
-    if (p2 > p1) {
-      return (
-        <span className="text-red-500" title="Worse placement">
-          ▼
-        </span>
-      );
-    }
-    return null;
-  };
 
   // Values to display based on toggle
   const w1Pct = {

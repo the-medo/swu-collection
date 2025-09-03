@@ -5,15 +5,20 @@ import { DailySnapshotRow } from '@/api/daily-snapshot';
 import type {
   DailySnapshotSectionData,
   SectionRecentTournaments,
-} from '../../../../../../types/DailySnapshots.ts';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+} from '../../../../../../../types/DailySnapshots.ts';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip.tsx';
 import { TournamentGivenDeckTooltip } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/TournamentGivenDeckTooltip.tsx';
 import Flag from '@/components/app/global/Flag.tsx';
 import { Users, X } from 'lucide-react';
-import { CountryCode } from '../../../../../../server/db/lists.ts';
-import { SectionInfoTooltip } from './components/SectionInfoTooltip.tsx';
-import TournamentGroupTournament from '@/components/app/tournaments/TournamentGroup/TournamentGroupTournament';
-import type { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../types/TournamentGroup';
+import { CountryCode } from '../../../../../../../server/db/lists.ts';
+import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
+import TournamentGroupTournament from '@/components/app/tournaments/TournamentGroup/TournamentGroupTournament.tsx';
+import type { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../../types/TournamentGroup.ts';
 
 export interface RecentTournamentsProps {
   payload: DailySnapshotSectionData<SectionRecentTournaments>;
@@ -124,8 +129,14 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
             tournamentGroupExtendedInfo={groups}
           >
             <div className="text-sm">
-              Recently finished tournaments are listed by date (most recent first). Hover any row to
-              see the winning deck. Rows marked with an X are not yet imported.
+              All major tournaments from last 30 days + all tournaments from last 2 weeks - hover
+              any row to see the winning deck. Rows marked with{' '}
+              <X className="h-4 w-4 text-red-500 inline-block" /> are not yet imported (and maybe
+              won't be, depending on the data that is provided from melee.gg).
+            </div>
+            <div>
+              Possible to turn on "Winning deck mode", which will replace tournament name with deck
+              name and lead you straight to tournament decks.
             </div>
           </SectionInfoTooltip>
         </div>
