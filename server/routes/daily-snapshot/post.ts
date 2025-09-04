@@ -3,7 +3,7 @@ import type { AuthExtension } from '../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { db } from '../../db';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, desc, eq, inArray, lte } from 'drizzle-orm';
 import { dailySnapshot, dailySnapshotSection } from '../../db/schema/daily_snapshot.ts';
 
 const zSectionsItem = z.object({
@@ -28,9 +28,11 @@ export const dailySnapshotPostRoute = new Hono<AuthExtension>().post(
     const dsRows = await db
       .select()
       .from(dailySnapshot)
-      .where(eq(dailySnapshot.date, date as unknown as any))
+      .where(lte(dailySnapshot.date, date as unknown as any))
+      .orderBy(desc(dailySnapshot.date))
       .limit(1);
     const daily = dsRows[0] ?? null;
+    const dateFromDaily = daily?.date ?? date;
 
     // 2) Compute sections to return
     let sectionRows: Array<{
@@ -47,7 +49,7 @@ export const dailySnapshotPostRoute = new Hono<AuthExtension>().post(
       sectionRows = await db
         .select()
         .from(dailySnapshotSection)
-        .where(eq(dailySnapshotSection.date, date as unknown as any));
+        .where(eq(dailySnapshotSection.date, dateFromDaily));
     } else {
       const names = [...new Set(wanted.map(s => s.section))];
       if (names.length > 0) {
@@ -56,7 +58,7 @@ export const dailySnapshotPostRoute = new Hono<AuthExtension>().post(
           .from(dailySnapshotSection)
           .where(
             and(
-              eq(dailySnapshotSection.date, date as unknown as any),
+              eq(dailySnapshotSection.date, dateFromDaily),
               inArray(dailySnapshotSection.section, names),
             ),
           );
