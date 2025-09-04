@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
 import type {
@@ -20,6 +20,9 @@ import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import TournamentGroupTournament from '@/components/app/tournaments/TournamentGroup/TournamentGroupTournament.tsx';
 import RecentTournamentsDropdownMenu from '@/components/app/daily-snapshots/sections/RecentTournaments/RecentTournamentsDropdownMenu.tsx';
 import type { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../../types/TournamentGroup.ts';
+import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
+import { getDeckLeadersAndBaseKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
 
 export interface RecentTournamentsProps {
   payload: DailySnapshotSectionData<SectionRecentTournaments>;
@@ -33,6 +36,9 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   sectionUpdatedAt,
 }) => {
   const items = payload.data.tournaments ?? [];
+  const [winningDeckMode, setWinningDeckMode] = useState(false);
+  const labelRenderer = useLabel();
+  const { data: cardListData } = useCardList();
 
   // Sort tournaments by date desc, then by updatedAt desc
   const sorted = useMemo(() => {
@@ -143,6 +149,16 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
         </div>
         <RecentTournamentsDropdownMenu />
       </div>
+      <div className="flex justify-end items-center">
+        <button
+          type="button"
+          className="text-[11px] text-muted-foreground hover:text-foreground underline"
+          onClick={() => setWinningDeckMode(v => !v)}
+          title="Toggle winning deck mode"
+        >
+          {winningDeckMode ? 'Show tournament names' : 'Show winning decks'}
+        </button>
+      </div>
 
       {sorted.length === 0 ? (
         <div className="text-sm text-muted-foreground">No recent tournaments</div>
@@ -189,7 +205,15 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
                             <div className="flex items-center">
                               <Flag countryCode={countryCode} className="mr-2" />
                               <Link to="/tournaments/$tournamentId" params={{ tournamentId: t.id }}>
-                                {t.name}
+                                {winningDeckMode
+                                  ? row.item.deck?.leaderCardId1
+                                    ? labelRenderer(
+                                        getDeckLeadersAndBaseKey(row.item.deck, cardListData),
+                                        'leadersAndBase',
+                                        'compact',
+                                      )
+                                    : '- No information -'
+                                  : t.name}
                               </Link>
                             </div>
                           </td>
