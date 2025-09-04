@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
-import MetaDetailLinks from './MetaDetailLinks.tsx';
 import type {
   DailySnapshotSectionData,
   SectionMetaShare2Weeks,
@@ -13,6 +12,7 @@ import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournam
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
 import MetaShareTwoWeeksInfoTooltip from './MetaShareTwoWeeksInfoTooltip.tsx';
+import MetaShareDropdownMenu from './MetaShareDropdownMenu.tsx';
 
 export interface MetaShareTwoWeeksProps {
   payload: DailySnapshotSectionData<SectionMetaShare2Weeks>;
@@ -30,6 +30,8 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
   const [metaPart, setMetaPart] = useState<DailySnapshotMetaPart>('total');
   const [metaView, setMetaView] = useState<DailySnapshotMetaView>('leaders');
   const { data: cardListData } = useCardList();
+
+  const tournamentGroupId = payload.data.tournamentGroupExt?.tournamentGroup.id;
 
   // Shared data processing logic
   const processedData = useMemo(() => {
@@ -64,9 +66,9 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
 
   return (
     <div className="h-full w-full flex flex-col gap-2">
-      <div className="flex gap-2 justify-between items-center">
+      <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
-          <h3>Meta share (last 2 weeks)</h3>
+          <h4>Meta share (last 2 weeks)</h4>
           <MetaShareTwoWeeksInfoTooltip
             dailySnapshot={dailySnapshot}
             sectionUpdatedAt={sectionUpdatedAt}
@@ -75,13 +77,9 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
             }
           />
         </div>
-        <div className="flex gap-2 justify-start items-center">
-          <MetaPartSelector value={metaPart} onChange={setMetaPart} />
-          <div className="w-1 h-full border-r" />
-          <MetaViewSelector value={metaView} onChange={setMetaView} />
-        </div>
+        <MetaShareDropdownMenu tournamentGroupId={tournamentGroupId} />
       </div>
-      <div className="flex gap-2 justify-around flex-wrap">
+      <div className="flex gap-2 justify-between flex-wrap">
         {/* Center - Pie Chart */}
         <div className="flex flex-col">
           <div className="flex-1"></div>
@@ -89,12 +87,17 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
         </div>
 
         {/* Right side - Table */}
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-4 justify-start items-center">
+            <MetaPartSelector value={metaPart} onChange={setMetaPart} />
+            <div className="w-1 h-full border-r" />
+            <MetaViewSelector value={metaView} onChange={setMetaView} />
+          </div>
           <div className="flex-1">
             <MetaShareTable processedData={processedData} metaPart={metaPart} metaView={metaView} />
           </div>
           {/* Links to more detailed info */}
-          <MetaDetailLinks tournamentGroupId={payload.data.tournamentGroupId} />
+          {/* Moved MetaDetailLinks into SectionDropdownMenu above */}
         </div>
       </div>
     </div>

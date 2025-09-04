@@ -21,6 +21,7 @@ import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournam
 import { useCardList } from '@/api/lists/useCardList.ts';
 import WeeklyChangeAreaBumpTooltip from '@/components/app/daily-snapshots/sections/WeeklyChange/WeeklyChangeAreaBumpTooltip.tsx';
 import { ArrowCell } from '@/components/app/daily-snapshots/sections/WeeklyChange/ArrowCell.tsx';
+import WeeklyChangeDropdownMenu from '@/components/app/daily-snapshots/sections/WeeklyChange/WeeklyChangeDropdownMenu.tsx';
 
 export interface WeeklyChangeProps {
   payload: DailySnapshotSectionData<SectionWeeklyChange>;
@@ -180,9 +181,9 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
 
   return (
     <div className="h-full w-full flex flex-col gap-2">
-      <div className="flex gap-2 justify-between items-center">
+      <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
-          <h3>Weekly change (last 2 weeks)</h3>
+          <h4>Weekly change (last 2 weeks)</h4>
           <SectionInfoTooltip
             dailySnapshot={dailySnapshot}
             sectionUpdatedAt={sectionUpdatedAt}
@@ -214,6 +215,7 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
             </div>
           </SectionInfoTooltip>
         </div>
+        <WeeklyChangeDropdownMenu />
       </div>
       <div className="flex gap-2 justify-start items-center">
         <MetaPartSelector value={metaPart} onChange={setMetaPart} />

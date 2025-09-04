@@ -8,6 +8,7 @@ import type {
   TournamentGroupExtendedInfo,
 } from '../../../../../../../types/DailySnapshots.ts';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
+import SectionDropdownMenu from '@/components/app/daily-snapshots/sections/components/SectionDropdownMenu.tsx';
 
 export interface ForceVsNonforceProps {
   payload: DailySnapshotSectionData<SectionForceVsNonForceCounts>;
@@ -89,9 +90,9 @@ const ForceVsNonforce: React.FC<ForceVsNonforceProps> = ({
 
   return (
     <div className="h-full w-full flex flex-col gap-2">
-      <div className="flex gap-2 justify-between items-center">
+      <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
-          <h3>Force vs Non-Force</h3>
+          <h4>Force vs Non-Force</h4>
           <SectionInfoTooltip
             dailySnapshot={dailySnapshot}
             sectionDataWarning={true}
@@ -108,6 +109,12 @@ const ForceVsNonforce: React.FC<ForceVsNonforceProps> = ({
             </div>
           </SectionInfoTooltip>
         </div>
+        <SectionDropdownMenu>
+          <div className="flex items-center gap-2 max-w-60 p-2 text-sm">
+            For now, there are no other pages that would show you more detailed data about Force vs.
+            Non-Force usage.
+          </div>
+        </SectionDropdownMenu>
       </div>
 
       <div className="flex flex-wrap gap-4 items-start">

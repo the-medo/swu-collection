@@ -8,6 +8,7 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatistic.tsx';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import { CardStatsParams } from '@/api/card-stats';
+import MostPlayedCardsDropdownMenu from '@/components/app/daily-snapshots/sections/MostPlayedCards/MostPlayedCardsDropdownMenu.tsx';
 
 export interface MostPlayedCardsProps {
   payload: DailySnapshotSectionData<SectionMostPlayedCards>;
@@ -34,10 +35,10 @@ const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({
   );
 
   return (
-    <div className="h-full w-full">
-      <div className="flex gap-2 justify-between items-center mb-2">
+    <div className="h-full w-full flex flex-col gap-2">
+      <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
-          <h3>{payload.title || 'Cards in most decks (last 2 weeks)'}</h3>
+          <h4>{payload.title || 'Cards in most decks (last 2 weeks)'}</h4>
           <SectionInfoTooltip
             dailySnapshot={dailySnapshot}
             sectionUpdatedAt={sectionUpdatedAt}
@@ -51,6 +52,7 @@ const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({
             </div>
           </SectionInfoTooltip>
         </div>
+        <MostPlayedCardsDropdownMenu />
       </div>
 
       {items.length === 0 ? (

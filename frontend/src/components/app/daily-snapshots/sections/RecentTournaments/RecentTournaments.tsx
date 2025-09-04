@@ -18,6 +18,7 @@ import { Users, X } from 'lucide-react';
 import { CountryCode } from '../../../../../../../server/db/lists.ts';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import TournamentGroupTournament from '@/components/app/tournaments/TournamentGroup/TournamentGroupTournament.tsx';
+import RecentTournamentsDropdownMenu from '@/components/app/daily-snapshots/sections/RecentTournaments/RecentTournamentsDropdownMenu.tsx';
 import type { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../../types/TournamentGroup.ts';
 
 export interface RecentTournamentsProps {
@@ -119,10 +120,10 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   );
 
   return (
-    <div className="w-full h-full">
-      <div className="flex gap-2 justify-between items-center mb-2">
+    <div className="w-full h-full flex flex-col gap-2">
+      <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
-          <h3>Recent tournaments</h3>
+          <h4>Recent tournaments</h4>
           <SectionInfoTooltip
             dailySnapshot={dailySnapshot}
             sectionUpdatedAt={sectionUpdatedAt}
@@ -140,6 +141,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
             </div>
           </SectionInfoTooltip>
         </div>
+        <RecentTournamentsDropdownMenu />
       </div>
 
       {sorted.length === 0 ? (
