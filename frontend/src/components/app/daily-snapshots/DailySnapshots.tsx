@@ -228,7 +228,11 @@ const DailySnapshots: React.FC = () => {
 
             return (
               <GridSection key={sectionName} sizing={sizing}>
-                <div className={cn('border rounded-lg bg-card p-4 shadow-sm h-full min-w-0')}>
+                <div
+                  className={cn(
+                    'border rounded-lg bg-card p-4 shadow-sm h-full min-w-0 flex flex-col min-h-0',
+                  )}
+                >
                   {Comp ? (
                     <Comp
                       payload={payload}

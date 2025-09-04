@@ -97,10 +97,7 @@ const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({ processedData, me
 
   return (
     <div className="w-full flex flex-col overflow-visible">
-      <div
-        className="mx-auto aspect-square max-h-[350px] w-full overflow-visible"
-        style={{ height: '300px' }}
-      >
+      <div className="mx-auto aspect-square h-[300px] max-h-[350px] w-full overflow-visible">
         <ResponsivePie
           data={chartData}
           margin={{ top: 10, right: 10, bottom: 10, left: 10 }}

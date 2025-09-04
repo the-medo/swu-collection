@@ -81,7 +81,7 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
         <UpcomingTournamentsDropdownMenu />
       </div>
 
-      <div className="max-h-[400px] overflow-y-auto overflow-x-auto flex flex-col gap-2">
+      <div className="max-h-[400px] overflow-y-auto overflow-x-auto pr-2 -mr-2 flex flex-col gap-2">
         {/* Major tournaments each in its own box */}
         {majors.length > 0 &&
           majors.map(m => {
@@ -91,8 +91,8 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
                 key={m.id}
                 className="p-3 rounded-md border border-blue-200 bg-blue-50 dark:bg-blue-950/40 dark:border-blue-900 flex flex-col"
               >
-                <div className="flex flex-1 items-center justify-between gap-2 min-w-0">
-                  <div className="flex flex-1 items-center gap-2 min-w-0">
+                <div className="flex flex-1 items-center justify-between gap-2 flex-wrap">
+                  <div className="flex flex-1 items-center gap-2 min-w-[200px]">
                     {cc ? <Flag countryCode={cc} /> : null}
                     {m.id ? (
                       <Link
@@ -106,12 +106,12 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
                       <span>{m.name}</span>
                     )}
                   </div>
-                  {m.format ? (
-                    <span className="text-xs text-muted-foreground">
-                      ({formatDataById[m.format]?.name})
-                    </span>
-                  ) : null}
                   <div className="text-sm text-muted-foreground flex items-center gap-3 pl-3 shrink-0">
+                    {m.format ? (
+                      <span className="text-xs text-muted-foreground">
+                        ({formatDataById[m.format]?.name})
+                      </span>
+                    ) : null}
                     <span>{new Date(m.date).toLocaleDateString()}</span>
                   </div>
                 </div>
@@ -152,7 +152,9 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
                         )}
                       </div>
                     </td>
-                    <td className="py-2 text-right pr-2 text-xs">{t.continent}</td>
+                    <td className="py-2 text-right pr-2 text-[10px]">
+                      {t.continent === 'North America' ? 'NA' : t.continent}
+                    </td>
                   </tr>
                 );
               })}

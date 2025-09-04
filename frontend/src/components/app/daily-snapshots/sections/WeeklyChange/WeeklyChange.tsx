@@ -183,7 +183,10 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
     <div className="h-full w-full flex flex-col gap-2">
       <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
-          <h4>Weekly change (last 2 weeks)</h4>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h4>Weekly change</h4>
+            <h5>(last 2 weeks)</h5>
+          </div>
           <SectionInfoTooltip
             dailySnapshot={dailySnapshot}
             sectionUpdatedAt={sectionUpdatedAt}
@@ -218,9 +221,12 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
         <WeeklyChangeDropdownMenu />
       </div>
       <div className="flex gap-2 justify-start items-center">
-        <MetaPartSelector value={metaPart} onChange={setMetaPart} />
-        <div className="w-1 h-full border-r" />
-        <MetaViewSelector value={metaView} onChange={setMetaView} />
+        <div className="flex gap-2 justify-start items-center flex-wrap mb-2">
+          <div className="mr-4">
+            <MetaPartSelector value={metaPart} onChange={setMetaPart} />
+          </div>
+          <MetaViewSelector value={metaView} onChange={setMetaView} />
+        </div>
       </div>
 
       <div className="w-full overflow-visible">

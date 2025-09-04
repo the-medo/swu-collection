@@ -38,7 +38,10 @@ const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({
     <div className="h-full w-full flex flex-col gap-2">
       <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
-          <h4>{payload.title || 'Cards in most decks (last 2 weeks)'}</h4>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h4>Cards in most decks</h4>
+            <h5>(last 2 weeks)</h5>
+          </div>
           <SectionInfoTooltip
             dailySnapshot={dailySnapshot}
             sectionUpdatedAt={sectionUpdatedAt}

@@ -27,7 +27,7 @@ export const GridSection: React.FC<GridSectionProps> = ({ sizing, className, sty
   return (
     <div
       className={cn(
-        'min-w-0',
+        'min-w-0 min-h-0',
         `row-start-${s1.row.from}`,
         `row-end-${s1.row.to + 1}`, // grid end is exclusive, so +1
         `col-start-${s1.col.from}`,

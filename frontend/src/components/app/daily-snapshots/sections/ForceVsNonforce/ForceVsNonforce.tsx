@@ -92,7 +92,7 @@ const ForceVsNonforce: React.FC<ForceVsNonforceProps> = ({
     <div className="h-full w-full flex flex-col gap-2">
       <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
-          <h4>Force vs Non-Force</h4>
+          <h4>Force vs. Non-Force</h4>
           <SectionInfoTooltip
             dailySnapshot={dailySnapshot}
             sectionDataWarning={true}
@@ -119,7 +119,7 @@ const ForceVsNonforce: React.FC<ForceVsNonforceProps> = ({
 
       <div className="flex flex-wrap gap-4 items-start">
         {/* Left: Two-week summary */}
-        <div className="flex flex-1 flex-col items-center gap-2">
+        <div className="flex flex-1 flex-col items-center gap-2 min-w-[200px] ">
           <div className="text-lg text-muted-foreground font-medium">Last 2 weeks</div>
           <div className="w-24 h-24">
             <ResponsivePie
@@ -156,11 +156,60 @@ const ForceVsNonforce: React.FC<ForceVsNonforceProps> = ({
         </div>
 
         {/* Right: By weekends table */}
-        <div className="flex-1 min-w-[260px]">
+        <div className="min-w-[200px] flex-1 @container/f-table">
           <div className="w-full text-center mb-2 text-lg text-muted-foreground font-medium">
             By weekends
           </div>
-          <table className="w-full text-sm">
+          <div className="flex flex-col gap-4 w-full text-sm block @[260px]/f-table:hidden">
+            <div className="flex flex-col w-full">
+              <div className="w-full text-right py-1 px-1 bg-muted/30 rounded-sm font-medium">
+                {w1Label}
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <div>Total</div>
+                <div className="text-right font-medium tabular-nums">
+                  {percFor('week1', 'total')}%
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-1 border-t">
+                <div>Top 8</div>
+                <div className="text-right font-medium tabular-nums">
+                  {percFor('week1', 'top8')}%
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-1 border-t">
+                <div>Champions</div>
+                <div className="text-right font-medium tabular-nums">
+                  {percFor('week1', 'champions')}%
+                </div>
+              </div>
+            </div>
+            {/* Week 2 compact card */}
+            <div className="flex flex-col w-full">
+              <div className="w-full text-right py-1 px-1 bg-muted/30 rounded-sm font-medium">
+                {w2Label}
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <div>Total</div>
+                <div className="text-right font-medium tabular-nums">
+                  {percFor('week2', 'total')}%
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-1 border-t">
+                <div>Top 8</div>
+                <div className="text-right font-medium tabular-nums">
+                  {percFor('week2', 'top8')}%
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-1 border-t">
+                <div>Champions</div>
+                <div className="text-right font-medium tabular-nums">
+                  {percFor('week2', 'champions')}%
+                </div>
+              </div>
+            </div>
+          </div>
+          <table className="w-full text-sm hidden @[260px]/f-table:table">
             <thead>
               <tr className="text-xs text-muted-foreground">
                 <th className="text-left py-1 pl-0 pr-1">&nbsp;</th>

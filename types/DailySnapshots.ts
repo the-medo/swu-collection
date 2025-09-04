@@ -85,7 +85,7 @@ export type SectionMostPlayedCards = {
   tournamentGroupExt?: TournamentGroupExtendedInfo | null;
 };
 
-// New section: Force vs Non-Force (two-weeks + weeks)
+// New section: Force vs. Non-Force (two-weeks + weeks)
 export type ForceNonforcePair = { force: number; nonforce: number };
 export type ForceNonforceSplit = {
   total: ForceNonforcePair;

@@ -126,7 +126,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   );
 
   return (
-    <div className="w-full h-full flex flex-col gap-2">
+    <div className="w-full h-full flex flex-col gap-2 min-h-0">
       <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
           <h4>Recent tournaments</h4>
@@ -163,7 +163,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
       {sorted.length === 0 ? (
         <div className="text-sm text-muted-foreground">No recent tournaments</div>
       ) : (
-        <div className="h-[700px] overflow-y-scroll overflow-x-auto">
+        <div className="flex-1 max-h-[350px] xl:max-h-[700px] overflow-y-auto overflow-x-auto pr-2 -mr-2 @container/recent-tournaments">
           {/* Major tournaments section */}
           {majorsAdapted.length > 0 && (
             <div className="mb-4">
@@ -202,7 +202,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
                       <TooltipTrigger asChild>
                         <tr className="border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-muted/50">
                           <td className="py-2">
-                            <div className="flex items-center">
+                            <div className="flex items-center min-w-[210px]">
                               <Flag countryCode={countryCode} className="mr-2" />
                               <Link to="/tournaments/$tournamentId" params={{ tournamentId: t.id }}>
                                 {winningDeckMode
@@ -219,7 +219,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
                           </td>
                           <td className="py-2 text-right">
                             {t.attendance > 0 ? (
-                              <div className="flex items-center justify-end gap-1">
+                              <div className="items-center justify-end gap-1 hidden @[260px]/recent-tournaments:flex">
                                 <Users className="h-3 w-3 text-muted-foreground" />
                                 <span>{t.attendance}</span>
                               </div>

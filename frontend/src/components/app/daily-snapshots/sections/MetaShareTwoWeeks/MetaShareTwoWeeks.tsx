@@ -68,7 +68,10 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
     <div className="h-full w-full flex flex-col gap-2">
       <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
-          <h4>Meta share (last 2 weeks)</h4>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h4>Meta share</h4>
+            <h5>(last 2 weeks)</h5>
+          </div>
           <MetaShareTwoWeeksInfoTooltip
             dailySnapshot={dailySnapshot}
             sectionUpdatedAt={sectionUpdatedAt}
@@ -79,25 +82,23 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
         </div>
         <MetaShareDropdownMenu tournamentGroupId={tournamentGroupId} />
       </div>
-      <div className="flex gap-2 justify-between flex-wrap">
+      <div className="flex gap-4 justify-center flex-wrap">
         {/* Center - Pie Chart */}
-        <div className="flex flex-col">
-          <div className="flex-1"></div>
+        <div className="flex flex-1 flex-col">
           <MetaSharePieChart processedData={processedData} metaView={metaView} />
         </div>
 
         {/* Right side - Table */}
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-4 justify-start items-center">
-            <MetaPartSelector value={metaPart} onChange={setMetaPart} />
-            <div className="w-1 h-full border-r" />
+        <div className="flex-[1_1_450px] min-w-0 max-w-full gap-4 flex-wrap">
+          <div className="flex gap-2 justify-start items-center flex-wrap mb-2">
+            <div className="mr-4">
+              <MetaPartSelector value={metaPart} onChange={setMetaPart} />
+            </div>
             <MetaViewSelector value={metaView} onChange={setMetaView} />
           </div>
-          <div className="flex-1">
+          <div className="min-w-0">
             <MetaShareTable processedData={processedData} metaPart={metaPart} metaView={metaView} />
           </div>
-          {/* Links to more detailed info */}
-          {/* Moved MetaDetailLinks into SectionDropdownMenu above */}
         </div>
       </div>
     </div>

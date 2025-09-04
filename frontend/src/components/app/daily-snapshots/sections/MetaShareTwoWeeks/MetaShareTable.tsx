@@ -104,9 +104,9 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({ processedData, metaPart
   }
 
   return (
-    <div className="w-full min-w-[450px]">
-      <div className="overflow-hidden rounded-lg border">
-        <table className="w-full">
+    <div className="flex-none min-w-0 w-full max-w-[700px]">
+      <div className="rounded-lg border w-full overflow-x-auto overscroll-x-contain">
+        <table className="min-w-[450px] w-full table-fixed">
           <thead className="bg-muted/50">
             <tr>
               <th className="px-2 py-1 text-left text-sm font-medium">
@@ -153,13 +153,15 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({ processedData, metaPart
                     </div>
                   ) : (
                     (() => {
-                      const totalPct = columnTotals.total === 0 ? 0 : (item.total / columnTotals.total) * 100;
+                      const totalPct =
+                        columnTotals.total === 0 ? 0 : (item.total / columnTotals.total) * 100;
                       const top8Pct = (item.top8 / columnTotals.top8) * 100;
-                      const colorClass = top8Pct > totalPct
-                        ? 'text-green-600'
-                        : top8Pct < totalPct
-                          ? 'text-red-600'
-                          : 'text-muted-foreground';
+                      const colorClass =
+                        top8Pct > totalPct
+                          ? 'text-green-600'
+                          : top8Pct < totalPct
+                            ? 'text-red-600'
+                            : 'text-muted-foreground';
                       return (
                         <div className="flex flex-row justify-end items-center w-16 gap-2">
                           <span>{item.top8}</span>
@@ -181,17 +183,21 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({ processedData, metaPart
                     </div>
                   ) : (
                     (() => {
-                      const totalPct = columnTotals.total === 0 ? 0 : (item.total / columnTotals.total) * 100;
+                      const totalPct =
+                        columnTotals.total === 0 ? 0 : (item.total / columnTotals.total) * 100;
                       const winnersPct = (item.winners / columnTotals.winners) * 100;
-                      const colorClass = winnersPct > totalPct
-                        ? 'text-green-600'
-                        : winnersPct < totalPct
-                          ? 'text-red-600'
-                          : 'text-muted-foreground';
+                      const colorClass =
+                        winnersPct > totalPct
+                          ? 'text-green-600'
+                          : winnersPct < totalPct
+                            ? 'text-red-600'
+                            : 'text-muted-foreground';
                       return (
                         <div className="flex flex-row justify-end items-center w-16 gap-2">
                           <span>{item.winners}</span>
-                          <span className={`text-xs ${colorClass}`}>({winnersPct.toFixed(1)}%)</span>
+                          <span className={`text-xs ${colorClass}`}>
+                            ({winnersPct.toFixed(1)}%)
+                          </span>
                         </div>
                       );
                     })()

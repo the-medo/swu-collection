@@ -9,7 +9,7 @@ import { tournamentGroupLeaderBase } from '../../../db/schema/tournament_group_l
 import { baseSpecialNames } from '../../../../shared/lib/basicBases.ts';
 
 const SECTION_ID = 'force-vs-nonforce';
-const SECTION_TITLE = 'Force vs Non-Force';
+const SECTION_TITLE = 'Force vs. Non-Force';
 
 const FORCE_BASE_EXCEPTIONS = new Set<string>([
   'mystic-monastery',
@@ -26,7 +26,11 @@ const isForceBase = (baseId: string | null | undefined): boolean => {
 
 async function countForGroup(
   tournamentGroupId: string | null | undefined,
-): Promise<{ total: { force: number; nonforce: number }; top8: { force: number; nonforce: number }; champions: { force: number; nonforce: number } }> {
+): Promise<{
+  total: { force: number; nonforce: number };
+  top8: { force: number; nonforce: number };
+  champions: { force: number; nonforce: number };
+}> {
   if (!tournamentGroupId)
     return {
       total: { force: 0, nonforce: 0 },
@@ -59,7 +63,7 @@ async function countForGroup(
       const winners = typeof r.winnersSum === 'number' ? r.winnersSum : Number(r.winnersSum ?? 0);
       const baseId: string | null | undefined = r.baseCardId;
       if (!baseId || baseId === '') continue;
-      const target = isForceBase(baseId) ? 'force' : 'nonforce' as const;
+      const target = isForceBase(baseId) ? 'force' : ('nonforce' as const);
       result.total[target] += total;
       result.top8[target] += top8;
       result.champions[target] += winners;
