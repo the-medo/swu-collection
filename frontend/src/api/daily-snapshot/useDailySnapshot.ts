@@ -4,6 +4,7 @@ import { queryClient } from '@/queryClient.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
 import type { DailySnapshotSectionData } from '../../../../types/DailySnapshots.ts';
 import { addSectionToDate, getAvailableSectionsWithUpdatedAt, getSectionsFromDate } from '@/dexie';
+import { sectionKeys } from '@/components/app/daily-snapshots/DailySnapshots.tsx';
 
 // Server response shapes
 export type DailySnapshotRow = {
@@ -52,6 +53,15 @@ async function backgroundRefresh(date: string) {
     section,
     lastUpdatedAt,
   }));
+
+  sectionKeys.forEach(skey => {
+    if (!updatedAtMap[skey]) {
+      sectionsParam.push({
+        section: skey,
+        lastUpdatedAt: new Date(1970, 1, 1, 0, 0, 0, 0).toISOString(),
+      });
+    }
+  });
 
   // Call API (if sectionsParam empty, server returns all)
   const res = await api['daily-snapshot'].$post({

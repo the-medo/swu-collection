@@ -90,7 +90,7 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({ processedData, metaPart
       );
     const percentage = ((value / columnTotal) * 100).toFixed(1);
     return (
-      <div className="flex flex-row justify-end items-center w-16 gap-2">
+      <div className="flex flex-row justify-end items-center w-20 gap-2">
         <span>{value}</span>
         <span className="text-xs text-muted-foreground">({percentage}%)</span>
       </div>
@@ -112,7 +112,7 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({ processedData, metaPart
               <th className="px-2 py-1 text-left text-sm font-medium">
                 {metaView === 'leaders' ? 'Leader' : 'Leader & Base'}
               </th>
-              <th className="px-2 py-1 text-right text-sm font-medium w-20">Total</th>
+              <th className="px-2 py-1 text-right text-sm font-medium w-24">Total</th>
               <th className="px-2 py-1 text-right text-sm font-medium w-20">Top 8</th>
               <th className="px-2 py-1 text-right text-sm font-medium w-20">Champions</th>
             </tr>
