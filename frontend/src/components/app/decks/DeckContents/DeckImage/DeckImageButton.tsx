@@ -4,9 +4,10 @@ import { ClipboardCopy, Download, Image, SettingsIcon, X } from 'lucide-react';
 import Dialog from '@/components/app/global/Dialog.tsx';
 import DeckImage from './DeckImage.tsx';
 import { useDeckColors } from '@/hooks/useDeckColors';
-import { useMemo, CSSProperties } from 'react';
+import { useMemo, CSSProperties, useState, useRef } from 'react';
 import DeckImageCustomization from './DeckImageCustomization/DeckImageCustomization.tsx';
 import { cn } from '@/lib/utils.ts';
+import { DeckCardVariantMap } from '@/components/app/decks/DeckContents/DeckImage/deckImageLib.ts';
 
 interface DeckImageButtonProps {
   deckId: string;
@@ -14,12 +15,13 @@ interface DeckImageButtonProps {
 
 const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
   // Create refs to access methods from the DeckImage component
-  const deckImageRef = React.useRef<{
+  const deckImageRef = useRef<{
     handleDownload: () => void;
     handleCopyToClipboard: () => void;
   } | null>(null);
 
-  const [customizationOpen, setCustomizationOpen] = React.useState(false);
+  const [customizationOpen, setCustomizationOpen] = useState(false);
+  const [deckCardVariants, setDeckCardVariants] = useState<DeckCardVariantMap>();
 
   // Get gradient colors from the hook
   const { cssBackground } = useDeckColors(deckId, 'rgb');
@@ -71,7 +73,12 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
           },
         )}
       >
-        {customizationOpen && <DeckImageCustomization deckId={deckId} />}
+        <DeckImageCustomization
+          deckId={deckId}
+          open={customizationOpen}
+          deckCardVariants={deckCardVariants}
+          setDeckCardVariants={setDeckCardVariants}
+        />
         <div className="flex gap-2 justify-between w-full items-center">
           <Button
             onClick={() => setCustomizationOpen(o => !o)}

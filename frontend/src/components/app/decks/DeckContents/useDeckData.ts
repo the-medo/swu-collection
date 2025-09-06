@@ -15,11 +15,15 @@ import { groupCardsByTrait } from '@/components/app/decks/DeckContents/DeckCards
 import { groupCardsByKeywords } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByKeywords.ts';
 import { DeckGroupBy } from '../../../../../../types/enums.ts';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import { UserSettings } from '../../../../../../shared/lib/userSettings.ts';
 
 /**
  * Hook to get all deck data including leader, base, cards, and user info
  */
-export function useDeckData(deckId: string) {
+export function useDeckData(
+  deckId: string,
+  groupByUserSettingKey: keyof UserSettings = 'deckGroupBy',
+) {
   const { data: deckInfo } = useGetDeck(deckId);
   const { data: cardList } = useCardList();
   const { data: deckCardsData } = useGetDeckCards(deckId);
@@ -40,7 +44,7 @@ export function useDeckData(deckId: string) {
   }, [deckInfo, cardList]);
 
   // Get the current groupBy value from the store
-  const { data: groupBy } = useGetUserSetting('deckGroupBy');
+  const { data: groupBy } = useGetUserSetting(groupByUserSettingKey);
 
   // Process deck data for display
   const deckCardsForLayout = useMemo((): DeckCardsForLayout => {

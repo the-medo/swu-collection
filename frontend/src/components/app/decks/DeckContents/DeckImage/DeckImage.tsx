@@ -27,7 +27,10 @@ const DeckImage = forwardRef<
   { handleDownload: () => void; handleCopyToClipboard: () => void },
   DeckImageProps
 >(({ deckId }, ref) => {
-  const { deckCardsForLayout, deckMeta, isLoading } = useDeckData(deckId);
+  const { leaderCard, deckCardsForLayout, deckMeta, isLoading } = useDeckData(
+    deckId,
+    'deckImage_groupBy',
+  );
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadingImages, setLoadingImages] = useState(false);
@@ -41,8 +44,6 @@ const DeckImage = forwardRef<
   // Get deck colors using the hook
   const { leaderColor, baseColor } = useDeckColors(deckId, 'rgb');
 
-  // Get villainy/heroism aspect
-  const { leaderCard } = useDeckData(deckId);
   const leaderVillainyHeroismAspect = leaderCard?.aspects.find(
     a => a === SwuAspect.VILLAINY || a === SwuAspect.HEROISM,
   );

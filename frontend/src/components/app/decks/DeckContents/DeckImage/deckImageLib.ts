@@ -1,5 +1,7 @@
 import { DECK_IMAGE_CANVAS_WIDTH_DEFAULT } from '@/components/app/decks/DeckContents/DeckImage/DeckImage.tsx';
 
+export type DeckCardVariantMap = Record<string, string | undefined>;
+
 export type ExportFormat = 'image/webp' | 'image/jpeg' | 'image/png';
 
 export function exportCanvasBlob(
