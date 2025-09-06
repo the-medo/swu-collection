@@ -3,12 +3,8 @@ import { Link } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
 import { BookCheck, BookOpen, PieChart, ScrollText } from 'lucide-react';
 import CardSearchCommand from '@/components/app/global/CardSearchCommand/CardSearchCommand';
-import LogoLightTheme from '../../../assets/logo-light-theme.svg';
-import LogoDarkTheme from '../../../assets/logo-dark-theme.svg';
-import { useTheme } from '@/components/theme-provider';
 import { useUser } from '@/hooks/useUser';
 import { Button } from '@/components/ui/button';
-import { Helmet } from 'react-helmet-async';
 
 interface FeatureCardProps {
   title: string;
@@ -44,8 +40,7 @@ const FeatureCard = ({ title, description, icon, to, delay }: FeatureCardProps) 
   );
 };
 
-const LandingPage: React.FC = () => {
-  const { theme } = useTheme();
+const FallbackPage: React.FC = () => {
   const user = useUser();
 
   const features = [
@@ -81,32 +76,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <>
-      <Helmet title="SWUBase | Star Wars: Unlimited Meta Analysis & Deckbuilding" />
       <div className="flex flex-col items-center justify-center w-full max-w-6xl mx-auto px-4 py-10">
-        {/* Logo */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-xs mx-auto mb-8 flex justify-center"
-        >
-          <img
-            src={theme === 'light' ? LogoLightTheme : LogoDarkTheme}
-            alt="SWU Base Logo"
-            className="w-full max-w-md"
-          />
-        </motion.div>
-
-        {/* Tagline */}
-        <motion.h2
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-2xl md:text-3xl text-center font-medium mb-8 text-foreground/80"
-        >
-          Your Ultimate Star Wars: Unlimited Companion
-        </motion.h2>
-
         {/* Search Bar */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -150,4 +120,4 @@ const LandingPage: React.FC = () => {
   );
 };
 
-export default LandingPage;
+export default FallbackPage;

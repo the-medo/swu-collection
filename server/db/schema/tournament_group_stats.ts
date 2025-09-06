@@ -1,11 +1,4 @@
-import {
-  pgTable,
-  integer,
-  primaryKey,
-  index,
-  uuid,
-  foreignKey,
-} from 'drizzle-orm/pg-core';
+import { pgTable, integer, primaryKey, index, uuid, foreignKey } from 'drizzle-orm/pg-core';
 import { tournamentGroup } from './tournament_group.ts';
 import { type InferSelectModel } from 'drizzle-orm';
 
@@ -15,7 +8,9 @@ export const tournamentGroupStats = pgTable(
   {
     tournamentGroupId: uuid('tournament_group_id').notNull(),
     importedTournaments: integer('imported_tournaments').notNull().default(0),
+    tournamentsWithData: integer('tournaments_with_data').notNull().default(0),
     totalTournaments: integer('total_tournaments').notNull().default(0),
+    totalDecks: integer('total_decks').notNull().default(0),
     attendance: integer('attendance').notNull().default(0),
   },
   table => {

@@ -1,0 +1,2 @@
+ALTER TABLE "tournament_group_stats" ADD COLUMN "tournaments_with_data" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+ALTER TABLE "tournament_group_stats" ADD COLUMN "total_decks" integer DEFAULT 0 NOT NULL;

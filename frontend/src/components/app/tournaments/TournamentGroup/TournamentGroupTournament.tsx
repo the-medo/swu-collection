@@ -9,13 +9,16 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import DeckPlacement from '../components/DeckPlacement';
 import UpcomingBadge from '../components/UpcomingBadge';
 import { isFuture } from 'date-fns';
+import { cn } from '@/lib/utils.ts';
 
 interface TournamentGroupTournamentProps {
   tournamentItem: TournamentGroupTournamentType;
+  compact?: boolean;
 }
 
 const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
   tournamentItem,
+  compact,
 }) => {
   const { tournament, deck } = tournamentItem;
   const { data: countryData } = useCountryList();
@@ -27,6 +30,9 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
   // Get country data
   const countryCode = tournament.continent as CountryCode;
   const country = countryData?.countries[countryCode];
+
+  // Should display deck
+  const displayDeck = tournament?.bracketInfo !== 'none';
 
   // Get card data for the deck
   const leader1 = deck.leaderCardId1 && cardList ? cardList.cards[deck.leaderCardId1] : undefined;
@@ -60,7 +66,7 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
           />
 
           {/* Winning Deck - positioned at the bottom of the image */}
-          {cardList && leader1 && (
+          {cardList && leader1 && displayDeck && (
             <div className="absolute bottom-0 left-[50%] transform -translate-x-1/2 from-black/80 to-transparent">
               <DeckPlacement
                 leaderCard1={leader1}
@@ -72,8 +78,10 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
             </div>
           )}
         </div>
-        <CardContent className="p-4 flex-1 flex flex-col">
-          <h4 className="font-semibold text-lg mb-2 line-clamp-2">{tournament.name}</h4>
+        <CardContent className={cn('flex-1 flex flex-col', compact ? 'p-2' : 'p-4')}>
+          {!compact && (
+            <h4 className="font-semibold text-lg mb-2 line-clamp-2">{tournament.name}</h4>
+          )}
           <div className="mt-auto flex flex-row justify-between items-center text-sm text-gray-600">
             <div className="flex items-center gap-1">
               <Users size={16} />

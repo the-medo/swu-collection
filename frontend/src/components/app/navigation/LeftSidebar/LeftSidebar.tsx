@@ -208,7 +208,10 @@ export function LeftSidebar() {
                 className="w-8 h-8"
                 alt="Logo"
               />
-              <h4>SWU Base</h4>
+              <h3 className="mb-0">
+                <span className="font-[400]">SWU</span>
+                <span className="font-[700]">BASE</span>
+              </h3>
             </div>
           ) : (
             <img
@@ -264,10 +267,7 @@ export function LeftSidebar() {
                           <SidebarMenuSub>
                             {i.items.map(subItem => (
                               <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton
-                                  asChild
-                                  size="md"
-                                >
+                                <SidebarMenuSubButton asChild size="md">
                                   <Link
                                     to={subItem.url}
                                     onClick={() => {

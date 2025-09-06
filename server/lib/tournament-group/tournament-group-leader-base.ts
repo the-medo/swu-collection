@@ -48,8 +48,8 @@ async function computeTournamentGroupLeaderBase(
     .where(
       and(
         sql`${tournamentDeck.tournamentId} IN ${tournamentIds}`,
-        not(isNull(deck.leaderCardId1)),
-        not(isNull(deck.baseCardId)),
+        // not(isNull(deck.leaderCardId1)),
+        // not(isNull(deck.baseCardId)),
       ),
     );
 
@@ -58,8 +58,8 @@ async function computeTournamentGroupLeaderBase(
 
   // Process each deck
   for (const d of decks) {
-    const leaderCardId = d.leaderCardId!;
-    const baseCardId = d.baseCardId!;
+    const leaderCardId = d.leaderCardId ?? '';
+    const baseCardId = d.baseCardId ?? '';
     const key = `${leaderCardId}:${baseCardId}`;
 
     // Initialize stats for this leader-base combination if not exists

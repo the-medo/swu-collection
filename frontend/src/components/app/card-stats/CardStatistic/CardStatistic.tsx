@@ -9,10 +9,19 @@ import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectD
 import { cn } from '@/lib/utils.ts';
 import { CardDecksDialog } from '../CardDecks';
 import { CardStatsParams } from '@/api/card-stats';
+import type { SectionMostPlayedCardsItem } from '../../../../../../types/DailySnapshots';
+
+// Type guard to detect full CardStat
+function isFullCardStat(stat: CardStat | SectionMostPlayedCardsItem): stat is CardStat {
+  return (
+    (stat as CardStat).matchWin !== undefined && (stat as CardStat).matchLose !== undefined
+  );
+}
 
 interface CardStatisticProps {
   card?: CardDataWithVariants<CardListVariants>;
-  cardStat: CardStat;
+  // Accept stats from full CardStat or reduced SectionMostPlayedCardsItem
+  cardStat: CardStat | SectionMostPlayedCardsItem;
   cardStatParams: CardStatsParams;
   variant?: 'image' | 'card-horizontal';
   preTitle?: string;
@@ -28,6 +37,19 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
   if (!card) return null;
 
   const cardVariantId = selectDefaultVariant(card);
+
+  const deckCount = cardStat.deckCount ?? 0;
+  const countMd = cardStat.countMd ?? 0;
+  const countSb = cardStat.countSb ?? 0;
+
+  const winRate = isFullCardStat(cardStat)
+    ? (cardStat.matchWin + cardStat.matchLose > 0
+        ? ((cardStat.matchWin / (cardStat.matchWin + cardStat.matchLose)) * 100).toFixed(1)
+        : null)
+    : null;
+
+  const avgMd = deckCount > 0 ? (countMd / deckCount).toFixed(2) : 'N/A';
+  const avgTotal = deckCount > 0 ? ((countMd + countSb) / deckCount).toFixed(2) : 'N/A';
 
   return (
     <div
@@ -61,21 +83,20 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
         <div className="flex justify-between">
           <span>MD (+SB): </span>
           <span className="text-md font-bold">
-            {cardStat.countMd} (+{cardStat.countSb})
+            {countMd} (+{countSb})
           </span>
         </div>
         <div className="flex justify-between">
           <span>Avg. MD (+SB): </span>
           <span className="text-md font-bold">
-            {(cardStat.countMd / cardStat.deckCount).toFixed(2)} (
-            {((cardStat.countMd + cardStat.countSb) / cardStat.deckCount).toFixed(2)})
+            {avgMd} ({avgTotal})
           </span>
         </div>
         <CardDecksDialog
           trigger={
             <div className="flex justify-between cursor-pointer underline decoration-dotted hover:decoration-solid">
               <span className="decoration-dashed">Deck count: </span>
-              <span className="text-md font-bold">{cardStat.deckCount}</span>
+              <span className="text-md font-bold">{deckCount}</span>
             </div>
           }
           cardId={card.cardId}
@@ -83,12 +104,12 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
           {...cardStatParams}
         />
 
-        <div className="flex justify-between">
-          <span>Win rate: </span>
-          <span className="text-md font-bold">
-            {((cardStat.matchWin / (cardStat.matchWin + cardStat.matchLose)) * 100).toFixed(1)}%
-          </span>
-        </div>
+        {winRate !== null ? (
+          <div className="flex justify-between">
+            <span>Win rate: </span>
+            <span className="text-md font-bold">{winRate}%</span>
+          </div>
+        ) : null}
       </div>
     </div>
   );

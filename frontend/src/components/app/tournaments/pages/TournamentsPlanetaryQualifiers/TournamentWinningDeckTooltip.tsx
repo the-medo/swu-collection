@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import CardImage from '@/components/app/global/CardImage.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { useGetTournamentDecks } from '@/api/tournaments/useGetTournamentDecks.ts';
+import { TournamentWinningDeckContent } from './TournamentWinningDeckContent.tsx';
 
 interface TournamentWinningDeckTooltipProps {
   tournamentId: string;
@@ -40,29 +40,12 @@ export const TournamentWinningDeckTooltip: React.FC<TournamentWinningDeckTooltip
   const baseCardVariantId = baseCard ? selectDefaultVariant(baseCard) : undefined;
 
   return (
-    <div className="p-2">
-      <h4 className="text-sm font-medium mb-2">Winning Deck</h4>
-      <div className="flex flex-row gap-2">
-        {leaderCard && (
-          <CardImage
-            card={leaderCard}
-            cardVariantId={leaderCardVariantId}
-            size="w100"
-            backSideButton={false}
-            forceHorizontal={true}
-          />
-        )}
-        {baseCard && (
-          <CardImage
-            card={baseCard}
-            cardVariantId={baseCardVariantId}
-            size="w100"
-            backSideButton={false}
-            forceHorizontal={true}
-          />
-        )}
-        {!leaderCard && !baseCard && 'No info'}
-      </div>
-    </div>
+    <TournamentWinningDeckContent
+      title="Winning Deck"
+      leaderCard={leaderCard}
+      baseCard={baseCard}
+      leaderCardVariantId={leaderCardVariantId}
+      baseCardVariantId={baseCardVariantId}
+    />
   );
 };

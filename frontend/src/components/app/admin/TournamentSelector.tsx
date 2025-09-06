@@ -19,6 +19,7 @@ export function TournamentSelector({ value, onChange, metaId }: TournamentSelect
   const { data, isLoading } = useGetTournaments({
     meta: metaId,
     sort: 'tournament.date',
+    limit: 250,
     order: 'desc',
   });
 
