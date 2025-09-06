@@ -21,30 +21,4 @@ export default defineConfig({
       },
     },
   },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          // Split React core into its own chunk
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
-            }
-            // Group TanStack packages (router, query, etc.)
-            if (id.includes('@tanstack')) {
-              return 'tanstack';
-            }
-            // Default vendor chunk for other deps
-            return 'vendor';
-          }
-        },
-        // Keep filenames deterministic
-        chunkFileNames: 'assets/chunk-[name]-[hash].js',
-        entryFileNames: 'assets/entry-[name]-[hash].js',
-        assetFileNames: 'assets/asset-[name]-[hash][extname]'
-      },
-    },
-    // Raise warning limit if needed for larger chunks
-    chunkSizeWarningLimit: 900,
-  },
 });
