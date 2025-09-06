@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import { ClipboardCopy, Download, Image } from 'lucide-react';
+import { ClipboardCopy, Download, Image, SettingsIcon, X } from 'lucide-react';
 import Dialog from '@/components/app/global/Dialog.tsx';
 import DeckImage from './DeckImage.tsx';
 import { useDeckColors } from '@/hooks/useDeckColors';
 import { useMemo, CSSProperties } from 'react';
+import DeckImageCustomization from './DeckImageCustomization/DeckImageCustomization.tsx';
+import { cn } from '@/lib/utils.ts';
 
 interface DeckImageButtonProps {
   deckId: string;
@@ -16,6 +18,8 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
     handleDownload: () => void;
     handleCopyToClipboard: () => void;
   } | null>(null);
+
+  const [customizationOpen, setCustomizationOpen] = React.useState(false);
 
   // Get gradient colors from the hook
   const { cssBackground } = useDeckColors(deckId, 'rgb');
@@ -54,22 +58,48 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
       }
       header={'Deck Image'}
       headerHidden={true}
-      footer={
-        <div className="flex gap-2 justify-end w-full">
-          <Button onClick={() => deckImageRef.current?.handleDownload()}>
-            <Download className="h-4 w-4 mr-2" />
-            Download Image
-          </Button>
-          <Button variant="outline" onClick={() => deckImageRef.current?.handleCopyToClipboard()}>
-            <ClipboardCopy className="h-4 w-4 mr-2" />
-            Copy to Clipboard
-          </Button>
-        </div>
-      }
+      footer={null}
       contentClassName="lg:max-w-[95%] min-h-[80%] max-h-[90%]"
       size="large"
     >
       <DeckImage deckId={deckId} ref={deckImageRef} />
+      <div
+        className={cn(
+          'absolute bg-white rounded right-0 bottom-0 p-2 m-2 flex flex-col justify-between overflow-y-auto w-full sm:w-[380px] max-w-full',
+          {
+            'top-0 ': customizationOpen,
+          },
+        )}
+      >
+        {customizationOpen && <DeckImageCustomization deckId={deckId} />}
+        <div className="flex gap-2 justify-between w-full items-center">
+          <Button
+            onClick={() => setCustomizationOpen(o => !o)}
+            className="mr-8"
+            variant={customizationOpen ? 'secondary' : 'default'}
+          >
+            {customizationOpen ? (
+              <X className="h-4 w-4 mr-2" />
+            ) : (
+              <SettingsIcon className="h-4 w-4 mr-2" />
+            )}
+            {customizationOpen ? 'Close' : 'Customization'}
+          </Button>
+          <div className="flex gap-2 justify-end w-full">
+            <Button onClick={() => deckImageRef.current?.handleCopyToClipboard()}>
+              <ClipboardCopy className="h-4 w-4 mr-2" />
+              Copy
+            </Button>
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => deckImageRef.current?.handleDownload()}
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
     </Dialog>
   );
 };
