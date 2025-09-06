@@ -25,6 +25,8 @@ interface TournamentMetaChartProps {
   metaPart: string;
   totalDecks: number;
   day2Decks: number;
+  top8Decks: number;
+  top64Decks: number;
 }
 
 const chartConfig = {
@@ -78,6 +80,8 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
   metaPart,
   totalDecks,
   day2Decks,
+  top8Decks,
+  top64Decks,
 }) => {
   const labelRenderer = useLabel();
   const { setTournamentDeckKey } = useTournamentMetaActions();
@@ -97,9 +101,12 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
     [chartData],
   );
 
-  const totalDeckCountBasedOnMetaPart = useMemo(
-    () => getTotalDeckCountBasedOnMetaPart(metaPart, totalDecks, day2Decks),
-    [metaPart, totalDecks, day2Decks],
+  const totalDeckCountBasedOnMetaPart = getTotalDeckCountBasedOnMetaPart(
+    metaPart,
+    totalDecks,
+    day2Decks,
+    top8Decks,
+    top64Decks,
   );
 
   const onBarClick = useCallback(
@@ -153,6 +160,8 @@ const TournamentMetaChart: React.FC<TournamentMetaChartProps> = ({
                       data={data}
                       totalDecks={totalDecks}
                       day2Decks={day2Decks}
+                      top8Decks={top8Decks}
+                      top64Decks={top64Decks}
                     />
                   );
                 }}

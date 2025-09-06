@@ -211,7 +211,7 @@ const DeckFormatConverter: React.FC = () => {
           </label>
           <input
             id="deckName"
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded bg-background text-foreground border-input"
             value={deckName}
             onChange={e => setDeckName(e.target.value)}
             placeholder="Deck Name"
@@ -223,7 +223,7 @@ const DeckFormatConverter: React.FC = () => {
           </label>
           <input
             id="author"
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded bg-background text-foreground border-input"
             value={author}
             onChange={e => setAuthor(e.target.value)}
             placeholder="Author Name"

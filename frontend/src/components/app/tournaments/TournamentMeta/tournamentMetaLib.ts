@@ -43,6 +43,8 @@ export const getTotalDeckCountBasedOnMetaPart = (
   metaPart: MetaPart | string,
   totalDecks: number,
   day2Decks: number,
+  top8Decks: number,
+  top64Decks: number,
 ) => {
   switch (metaPart) {
     case 'all':
@@ -50,9 +52,9 @@ export const getTotalDeckCountBasedOnMetaPart = (
     case 'day2':
       return day2Decks;
     case 'top8':
-      return 8;
+      return top8Decks;
     case 'top64':
-      return 64;
+      return top64Decks;
   }
   return 0;
 };

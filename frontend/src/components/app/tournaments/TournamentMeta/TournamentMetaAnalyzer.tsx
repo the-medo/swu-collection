@@ -157,6 +157,8 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   }, [metaPartsDecks, metaInfo, analyzeDecks, cardListData]);
 
   const totalDeckCount = metaPartsDecks.all.length;
+  const top8DeckCount = metaPartsDecks.top8.length;
+  const top64DeckCount = metaPartsDecks.top64.length;
   const day2DeckCount = metaPartsDecks.day2.length;
 
   // Enhanced analysis data with additional meta information
@@ -179,9 +181,9 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
         top64: inTop64,
         // Percantages
         percentageAll: inAll > 0 ? ((inAll / totalDeckCount) * 100).toFixed(1) : '0',
-        percentageTop8: inTop8 > 0 ? ((inTop8 / 8) * 100).toFixed(1) : '0',
+        percentageTop8: inTop8 > 0 ? ((inTop8 / top8DeckCount) * 100).toFixed(1) : '0',
         percentageDay2: inDay2 > 0 ? ((inDay2 / day2DeckCount) * 100).toFixed(1) : '0',
-        percentageTop64: inTop64 > 0 ? ((inTop64 / 64) * 100).toFixed(1) : '0',
+        percentageTop64: inTop64 > 0 ? ((inTop64 / top64DeckCount) * 100).toFixed(1) : '0',
         // Conversion rates (as percentages)
         conversionTop8: inAll > 0 ? ((inTop8 / inAll) * 100).toFixed(1) : '0',
         conversionDay2: inAll > 0 ? ((inDay2 / inAll) * 100).toFixed(1) : '0',
@@ -194,7 +196,15 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
         percentage: parseFloat(((item.count / filteredDecks.length) * 100).toFixed(1)),
       };
     });
-  }, [allMetaPartsAnalysis, metaPart, filteredDecks.length]);
+  }, [
+    allMetaPartsAnalysis,
+    metaPart,
+    filteredDecks.length,
+    top8DeckCount,
+    totalDeckCount,
+    day2DeckCount,
+    top64DeckCount,
+  ]);
 
   return (
     <div className="space-y-2">
@@ -253,6 +263,8 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
               metaPart={metaPart}
               totalDecks={totalDeckCount}
               day2Decks={day2DeckCount}
+              top8Decks={top8DeckCount}
+              top64Decks={top64DeckCount}
             />
           </div>
           <div className="w-full md:w-2/3">
@@ -262,6 +274,8 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
               metaPart={metaPart}
               totalDecks={totalDeckCount}
               day2Decks={day2DeckCount}
+              top8Decks={top8DeckCount}
+              top64Decks={top64DeckCount}
             />
           </div>
         </div>
@@ -272,6 +286,8 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
           metaPart={metaPart}
           totalDecks={totalDeckCount}
           day2Decks={day2DeckCount}
+          top8Decks={top8DeckCount}
+          top64Decks={top64DeckCount}
           metaPartsData={allMetaPartsAnalysis}
           minDeckCount={minDeckCount}
         />

@@ -27,6 +27,8 @@ export interface TournamentMetaTooltipProps {
   };
   totalDecks?: number;
   day2Decks?: number;
+  top8Decks?: number;
+  top64Decks?: number;
 }
 
 const TournamentMetaTooltip: React.FC<TournamentMetaTooltipProps> = ({
@@ -38,6 +40,8 @@ const TournamentMetaTooltip: React.FC<TournamentMetaTooltipProps> = ({
   data,
   totalDecks = 0,
   day2Decks = 0,
+  top8Decks = 0,
+  top64Decks = 0,
 }) => {
   // Calculate percentage if value and totalCount are provided
   const percentage =
@@ -72,6 +76,8 @@ const TournamentMetaTooltip: React.FC<TournamentMetaTooltipProps> = ({
             }}
             totalDecks={totalDecks}
             day2Decks={day2Decks}
+            top8Decks={top8Decks}
+            top64Decks={top64Decks}
           />
         </div>
       )}

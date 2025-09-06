@@ -5,7 +5,7 @@ import { ColumnDef, Row } from '@tanstack/react-table';
 import { MetaInfo } from './MetaInfoSelector';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import TournamentMetaTooltip from './TournamentMetaTooltip';
 import { AnalysisDataItem, getTotalDeckCountBasedOnMetaPart } from './tournamentMetaLib.ts';
@@ -18,6 +18,8 @@ interface TournamentMetaDataTableProps {
   metaInfo: MetaInfo;
   totalDecks: number;
   day2Decks: number;
+  top8Decks: number;
+  top64Decks: number;
   minDeckCount?: number;
   metaPartsData?: {
     all: AnalysisDataItem[];
@@ -33,6 +35,8 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
   metaInfo,
   totalDecks,
   day2Decks,
+  top8Decks,
+  top64Decks,
   metaPartsData,
   minDeckCount,
 }) => {
@@ -43,19 +47,20 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
     desc: true,
   });
 
-  const totalDeckCountBasedOnMetaPart = useMemo(
-    () => getTotalDeckCountBasedOnMetaPart(metaPart, totalDecks, day2Decks),
-    [metaPart, totalDecks, day2Decks],
+  const totalDeckCountBasedOnMetaPart = getTotalDeckCountBasedOnMetaPart(
+    metaPart,
+    totalDecks,
+    day2Decks,
+    top8Decks,
+    top64Decks,
   );
 
   const getSortedData = (data: AnalysisDataItem[]) => {
     if (!data) return [];
-    
+
     // Filter data based on minDeckCount if provided
-    const filteredData = minDeckCount 
-      ? data.filter(item => item.count >= minDeckCount)
-      : data;
-    
+    const filteredData = minDeckCount ? data.filter(item => item.count >= minDeckCount) : data;
+
     return [...filteredData].sort((a, b) => {
       const multiplier = sorting.desc ? -1 : 1;
 
@@ -154,6 +159,8 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
                 data={metaPartData}
                 totalDecks={totalDecks}
                 day2Decks={day2Decks}
+                top8Decks={top8Decks}
+                top64Decks={top64Decks}
               />
             </TooltipContent>
           </Tooltip>
