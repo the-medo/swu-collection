@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import { Image } from 'lucide-react';
+import { ClipboardCopy, Download, Image } from 'lucide-react';
 import Dialog from '@/components/app/global/Dialog.tsx';
 import DeckImage from './DeckImage.tsx';
 import { useDeckColors } from '@/hooks/useDeckColors';
@@ -54,7 +54,7 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
       }
       header={'Deck Image'}
       headerHidden={true}
-      /*footer={
+      footer={
         <div className="flex gap-2 justify-end w-full">
           <Button onClick={() => deckImageRef.current?.handleDownload()}>
             <Download className="h-4 w-4 mr-2" />
@@ -65,8 +65,8 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
             Copy to Clipboard
           </Button>
         </div>
-      }*/
-      contentClassName="md:max-w-[95%] min-h-[80%] max-h-[90%]"
+      }
+      contentClassName="lg:max-w-[95%] min-h-[80%] max-h-[90%]"
       size="large"
     >
       <DeckImage deckId={deckId} ref={deckImageRef} />

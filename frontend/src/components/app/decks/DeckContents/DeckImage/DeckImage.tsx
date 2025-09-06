@@ -7,10 +7,21 @@ import { SwuAspect } from '../../../../../../../types/enums.ts';
 import { useDeckColors } from '@/hooks/useDeckColors';
 import { hexToRgb } from '@/lib/hexToRgb';
 import { aspectColors } from '../../../../../../../shared/lib/aspectColors.ts';
+import {
+  exportCanvasBlob,
+  pickClipboardMime,
+} from '@/components/app/decks/DeckContents/DeckImage/deckImageLib.ts';
 
 interface DeckImageProps {
   deckId: string;
 }
+
+export const DECK_IMAGE_CANVAS_WIDTH_DEFAULT = 2800;
+export const DECK_IMAGE_CANVAS_WIDTH_SCALED_DOWN = 2200;
+
+export const DECK_IMAGE_BACKGROUND_URL =
+  'https://images.swubase.com/thumbnails/empty-deck-background-2800x2100.png';
+export const DECK_IMAGE_LOGO_URL = 'https://images.swubase.com/logo-light.svg';
 
 const DeckImage = forwardRef<
   { handleDownload: () => void; handleCopyToClipboard: () => void },
@@ -25,6 +36,7 @@ const DeckImage = forwardRef<
   const [error, setError] = useState<string | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
   const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
+  const [exportUrl, setExportUrl] = useState<string | null>(null);
 
   // Get deck colors using the hook
   const { leaderColor, baseColor } = useDeckColors(deckId, 'rgb');
@@ -40,15 +52,8 @@ const DeckImage = forwardRef<
     return text.replace(/\s*\[[^\]]*\]\s*/g, ' ').trim();
   };
 
-  // Background image URL
-  const backgroundImageUrl =
-    'https://images.swubase.com/thumbnails/empty-deck-background-2800x2100.png';
-
-  // Logo image URL
-  const logoImageUrl = 'https://images.swubase.com/logo-light.svg';
-
   // Constants for canvas dimensions and layout
-  const canvasWidth = 2800;
+  const canvasWidth = DECK_IMAGE_CANVAS_WIDTH_DEFAULT;
   const canvasHeight = 8000;
   // const cardWidth = 300;
   // const cardHeight = 420;
@@ -66,31 +71,44 @@ const DeckImage = forwardRef<
 
   // Expose methods to parent component using useImperativeHandle
   useImperativeHandle(ref, () => ({
-    handleDownload: () => {
+    handleDownload: async () => {
       if (!canvasRef.current) return;
 
-      const canvas = canvasRef.current;
+      // Choose your defaults here:
+      const blob = await exportCanvasBlob(canvasRef.current, {
+        format: 'image/webp', // try webp first
+        targetWidth: DECK_IMAGE_CANVAS_WIDTH_SCALED_DOWN, // downscale at export; set null to skip
+      });
+
+      const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.download = `${removeBracketContent(deckMeta.name)
         .replace(/[^a-z0-9]/gi, '_')
-        .toLowerCase()}-deck.png`;
-      link.href = canvas.toDataURL('image/png');
+        .toLowerCase()}-deck.${
+        blob.type.includes('jpeg') ? 'jpg' : blob.type.includes('webp') ? 'webp' : 'png'
+      }`;
+      link.href = url;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     },
+
     handleCopyToClipboard: async () => {
       if (!canvasRef.current) return;
 
       try {
-        const canvas = canvasRef.current;
-        canvas.toBlob(async blob => {
-          if (blob) {
-            const item = new ClipboardItem({ 'image/png': blob });
-            await navigator.clipboard.write([item]);
-            alert('Deck image copied to clipboard!');
-          }
+        const mime = pickClipboardMime(); // 'image/png' (safe) or 'image/jpeg'
+        // Downscale down for clipboard to keep size reasonable
+        const blob = await exportCanvasBlob(canvasRef.current, {
+          format: mime, // export in the chosen mime
+          quality: 0.9, // only used if jpeg
+          targetWidth: DECK_IMAGE_CANVAS_WIDTH_SCALED_DOWN,
         });
+
+        const item = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([item]);
+        alert('Deck image copied to clipboard!');
       } catch (err) {
         console.error('Failed to copy to clipboard:', err);
         alert('Failed to copy image to clipboard. Your browser may not support this feature.');
@@ -105,6 +123,7 @@ const DeckImage = forwardRef<
 
     return new Promise((resolve, reject) => {
       const img = new Image();
+      img.crossOrigin = 'anonymous';
       img.onload = () => {
         if (!imageCache.current[url]) {
           imageCache.current[url] = img;
@@ -116,7 +135,7 @@ const DeckImage = forwardRef<
         console.error(`Failed to load image: ${url}`, e);
         reject(new Error(`Failed to load image: ${url}`));
       };
-      img.src = url;
+      img.src = `${url}?v=1`;
     });
   };
 
@@ -157,7 +176,7 @@ const DeckImage = forwardRef<
 
         // Load background image
         try {
-          const bgImg = await loadImage(backgroundImageUrl);
+          const bgImg = await loadImage(DECK_IMAGE_BACKGROUND_URL);
           setBackgroundImage(bgImg);
         } catch (err) {
           console.error('Failed to load background image:', err);
@@ -166,7 +185,7 @@ const DeckImage = forwardRef<
 
         // Load logo image
         try {
-          const logoImg = await loadImage(logoImageUrl);
+          const logoImg = await loadImage(DECK_IMAGE_LOGO_URL);
           setLogoImage(logoImg);
         } catch (err) {
           console.error('Failed to load logo image:', err);
@@ -599,6 +618,18 @@ const DeckImage = forwardRef<
 
         const actualHeight = Math.min(Math.max(bottomPoint, 1200), 8000); // Set reasonable min/max
         if (final) {
+          //
+          if (canvasRef.current) {
+            const blob = await exportCanvasBlob(canvasRef.current, {
+              format: 'image/png',
+              targetWidth: DECK_IMAGE_CANVAS_WIDTH_SCALED_DOWN,
+            });
+            const url = URL.createObjectURL(blob);
+            setExportUrl(prev => {
+              if (prev) URL.revokeObjectURL(prev);
+              return url;
+            });
+          }
         } else {
           canvas.height = actualHeight;
           renderDeckImage(true);
@@ -661,8 +692,13 @@ const DeckImage = forwardRef<
         ref={canvasRef}
         width={canvasWidth}
         height={canvasHeight}
-        className="max-w-full h-auto border border-border rounded-md"
+        className={exportUrl ? 'hidden' : ''}
       />
+      {exportUrl ? (
+        <img src={exportUrl} alt="Deck image" className="max-w-full h-auto" />
+      ) : (
+        <div className="text-sm text-muted-foreground">Preparing preview…</div>
+      )}
     </div>
   );
 });
