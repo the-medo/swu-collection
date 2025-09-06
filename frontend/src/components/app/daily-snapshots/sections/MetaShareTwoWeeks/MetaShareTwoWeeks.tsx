@@ -65,7 +65,7 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
   }, [payload.data.dataPoints, metaView, cardListData, metaPart]);
 
   return (
-    <div className="h-full w-full flex flex-col gap-2">
+    <div className="h-full w-full flex flex-col gap-2 ">
       <div className="flex gap-2 justify-between items-center border-b">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 flex-wrap">
@@ -82,21 +82,21 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
         </div>
         <MetaShareDropdownMenu tournamentGroupId={tournamentGroupId} />
       </div>
-      <div className="flex gap-4 justify-center flex-wrap">
+      <div className="flex gap-4 justify-center flex-wrap @container/meta-2-weeks">
         {/* Center - Pie Chart */}
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col justify-center items-center">
           <MetaSharePieChart processedData={processedData} metaView={metaView} />
         </div>
 
         {/* Right side - Table */}
-        <div className="flex-[1_1_450px] min-w-0 max-w-full gap-4 flex-wrap">
-          <div className="flex gap-2 justify-start items-center flex-wrap mb-2">
+        <div className="flex-[1_1_450px] min-w-0 max-w-full gap-4 flex-wrap justify-center">
+          <div className="flex gap-2 justify-center items-center flex-wrap mb-2">
             <div className="mr-4">
               <MetaPartSelector value={metaPart} onChange={setMetaPart} />
             </div>
             <MetaViewSelector value={metaView} onChange={setMetaView} />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex justify-center items-center">
             <MetaShareTable processedData={processedData} metaPart={metaPart} metaView={metaView} />
           </div>
         </div>

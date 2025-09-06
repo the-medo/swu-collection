@@ -104,7 +104,7 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({ processedData, metaPart
   }
 
   return (
-    <div className="flex-none min-w-0 w-full max-w-[700px]">
+    <div className="flex-none min-w-0 w-full max-w-[500px] @[850px]/meta-2-weeks:max-w-[700px]">
       <div className="rounded-lg border w-full overflow-x-auto overscroll-x-contain">
         <table className="min-w-[450px] w-full table-fixed">
           <thead className="bg-muted/50">
