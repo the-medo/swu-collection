@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Accordion } from '@/components/ui/accordion';
 import DeckImageCustomizationDefaults from './DeckImageCustomizationDefaults';
-import DeckImageCardVariants from './DeckImageCardVariants';
+import DeckImageCardVariants from './DeckImageCardVariants/DeckImageCardVariants.tsx';
 import { DeckCardVariantMap } from '@/components/app/decks/DeckContents/DeckImage/deckImageLib.ts';
 import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts';
 import { useEffect } from 'react';
@@ -93,11 +93,10 @@ const DeckImageCustomization: React.FC<DeckImageCustomizationProps> = ({
       <Accordion type="multiple" className="w-full mt-4">
         <DeckImageCustomizationDefaults />
         <DeckImageCardVariants
+          usedCards={deckCardsForLayout.usedCards}
           deckCardVariants={deckCardVariants}
-          setDeckCardVariants={setDeckCardVariants}
         />
       </Accordion>
-      <p className="text-xs text-muted-foreground">Deck: {deckId}</p>
     </div>
   );
 };

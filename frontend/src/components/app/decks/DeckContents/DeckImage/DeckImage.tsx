@@ -8,12 +8,15 @@ import { useDeckColors } from '@/hooks/useDeckColors';
 import { hexToRgb } from '@/lib/hexToRgb';
 import { aspectColors } from '../../../../../../../shared/lib/aspectColors.ts';
 import {
+  DeckCardVariantMap,
   exportCanvasBlob,
   pickClipboardMime,
 } from '@/components/app/decks/DeckContents/DeckImage/deckImageLib.ts';
+import { useDeckImageVariants } from '@/components/app/decks/DeckContents/DeckImage/DeckImageCustomization/useDeckImageVariants.ts';
 
 interface DeckImageProps {
   deckId: string;
+  deckCardVariants?: DeckCardVariantMap;
 }
 
 export const DECK_IMAGE_CANVAS_WIDTH_DEFAULT = 2800;
@@ -26,7 +29,9 @@ export const DECK_IMAGE_LOGO_URL = 'https://images.swubase.com/logo-light.svg';
 const DeckImage = forwardRef<
   { handleDownload: () => void; handleCopyToClipboard: () => void },
   DeckImageProps
->(({ deckId }, ref) => {
+>(({ deckId, deckCardVariants }, ref) => {
+  const { finalVariantMap } = useDeckImageVariants(deckCardVariants);
+
   const { leaderCard, deckCardsForLayout, deckMeta, isLoading } = useDeckData(
     deckId,
     'deckImage_groupBy',
@@ -136,12 +141,12 @@ const DeckImage = forwardRef<
         console.error(`Failed to load image: ${url}`, e);
         reject(new Error(`Failed to load image: ${url}`));
       };
-      img.src = `${url}?v=1`;
+      img.src = `${url}?v=2`;
     });
   };
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || !finalVariantMap) return;
 
     const preloadAllImages = async () => {
       try {
@@ -195,26 +200,29 @@ const DeckImage = forwardRef<
 
         // Load leader images
         if (deckMeta.leader1) {
-          const variantId = selectDefaultVariant(deckMeta.leader1);
+          const variantId =
+            finalVariantMap?.[deckMeta.leader1.cardId] ?? selectDefaultVariant(deckMeta.leader1);
           if (variantId && deckMeta.leader1.variants[variantId]) {
             const url = `https://images.swubase.com/cards/${deckMeta.leader1.variants[variantId].image.front}`;
-            promises.push(loadImage(url));
+            if (!imageCache.current[url]) promises.push(loadImage(url));
           }
         }
 
         if (deckMeta.leader2) {
-          const variantId = selectDefaultVariant(deckMeta.leader2);
+          const variantId =
+            finalVariantMap?.[deckMeta.leader2.cardId] ?? selectDefaultVariant(deckMeta.leader2);
           if (variantId && deckMeta.leader2.variants[variantId]) {
             const url = `https://images.swubase.com/cards/${deckMeta.leader2.variants[variantId].image.front}`;
-            promises.push(loadImage(url));
+            if (!imageCache.current[url]) promises.push(loadImage(url));
           }
         }
 
         if (deckMeta.base) {
-          const variantId = selectDefaultVariant(deckMeta.base);
+          const variantId =
+            finalVariantMap?.[deckMeta.base.cardId] ?? selectDefaultVariant(deckMeta.base);
           if (variantId && deckMeta.base.variants[variantId]) {
             const url = `https://images.swubase.com/cards/${deckMeta.base.variants[variantId].image.front}`;
-            promises.push(loadImage(url));
+            if (!imageCache.current[url]) promises.push(loadImage(url));
           }
         }
 
@@ -223,10 +231,11 @@ const DeckImage = forwardRef<
           for (const card of deckCardsForLayout.cardsByBoard[board]) {
             const cardData = deckCardsForLayout.usedCards[card.cardId];
             if (cardData) {
-              const variantId = selectDefaultVariant(cardData);
+              const variantId =
+                finalVariantMap?.[cardData.cardId] ?? selectDefaultVariant(cardData);
               if (variantId && cardData.variants[variantId]) {
                 const url = `https://images.swubase.com/cards/${cardData.variants[variantId].image.front}`;
-                promises.push(loadImage(url));
+                if (!imageCache.current[url]) promises.push(loadImage(url));
               }
             }
           }
@@ -243,11 +252,11 @@ const DeckImage = forwardRef<
     };
 
     preloadAllImages();
-  }, [isLoading, deckMeta, deckCardsForLayout]);
+  }, [isLoading, deckMeta, deckCardsForLayout, finalVariantMap]);
 
   // Draw the canvas once all images are loaded
   useEffect(() => {
-    if (!imagesLoaded || !canvasRef.current) return;
+    if (!imagesLoaded || !canvasRef.current || !finalVariantMap) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -265,13 +274,17 @@ const DeckImage = forwardRef<
       const card = deckCardsForLayout.usedCards[cardId];
       if (!card) return;
 
-      const variantId = selectDefaultVariant(card);
+      const variantId = finalVariantMap?.[cardId] ?? selectDefaultVariant(card);
 
       if (!variantId || !card.variants[variantId]) return;
 
       const imageUrl = `https://images.swubase.com/cards/${card.variants[variantId].image.front}`;
       try {
-        const img = imageCache.current[imageUrl];
+        let img = imageCache.current[imageUrl];
+        if (!img) {
+          await loadImage(imageUrl);
+          img = imageCache.current[imageUrl];
+        }
         if (!img) throw new Error(`Image not found in cache: ${imageUrl}`);
 
         // Draw card image
@@ -642,7 +655,7 @@ const DeckImage = forwardRef<
     };
 
     renderDeckImage(false);
-  }, [imagesLoaded, deckMeta, deckCardsForLayout]);
+  }, [imagesLoaded, deckMeta, deckCardsForLayout, finalVariantMap]);
 
   // Loading state
   if (isLoading) {

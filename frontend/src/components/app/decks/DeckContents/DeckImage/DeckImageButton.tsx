@@ -64,7 +64,7 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
       contentClassName="lg:max-w-[95%] min-h-[80%] max-h-[90%]"
       size="large"
     >
-      <DeckImage deckId={deckId} ref={deckImageRef} />
+      <DeckImage deckId={deckId} deckCardVariants={deckCardVariants} ref={deckImageRef} />
       <div
         className={cn(
           'absolute bg-white rounded right-0 bottom-0 p-2 m-2 flex flex-col justify-between overflow-y-auto w-full sm:w-[380px] max-w-full',
