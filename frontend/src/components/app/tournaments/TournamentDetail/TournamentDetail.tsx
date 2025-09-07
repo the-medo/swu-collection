@@ -2,10 +2,11 @@ import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
 import { Button } from '@/components/ui/button';
-import { Database, Edit, Trash2, Trophy, ChartColumn, Check } from 'lucide-react';
+import { Database, Edit, Trash2, Trophy, ChartColumn, Check, FileJson2 } from 'lucide-react';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
 import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTournamentDialog.tsx';
+import ImportExportTournamentBlobDialog from '@/components/app/dialogs/ImportExportTournamentBlobDialog.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { usePermissions } from '@/hooks/usePermissions.ts';
 import { TournamentTabs } from '../TournamentTabs';
@@ -163,6 +164,17 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
                   }
                   tournamentId={tournamentId}
                   meleeId={tournament.meleeId}
+                />
+              )}
+
+              {canUpdate && (
+                <ImportExportTournamentBlobDialog
+                  trigger={
+                    <Button size="sm" variant="outline">
+                      <FileJson2 className="h-4 w-4" />
+                    </Button>
+                  }
+                  tournamentId={tournamentId}
                 />
               )}
 

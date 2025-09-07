@@ -96,7 +96,15 @@ export const tournamentIdImportFromBlobPostRoute = new Hono<AuthExtension>().pos
   // Insert in required order inside a transaction, using batching
   await db.transaction(async tx => {
     if (decks.length) {
-      for (const batch of batchArray(decks, BATCH_SIZE)) {
+      for (const batch of batchArray(
+        decks.map(d => ({
+          ...d,
+          createdAt: d.createdAt ? new Date(d.createdAt) : undefined,
+          updatedAt: d.updatedAt ? new Date(d.updatedAt) : undefined,
+        })),
+        BATCH_SIZE,
+      )) {
+        console.log(`Inserting ${batch.length} decks`);
         await tx
           .insert(deckTable)
           .values(batch as any)
@@ -104,7 +112,14 @@ export const tournamentIdImportFromBlobPostRoute = new Hono<AuthExtension>().pos
       }
     }
     if (deckInfos.length) {
-      for (const batch of batchArray(deckInfos, BATCH_SIZE)) {
+      for (const batch of batchArray(
+        deckInfos.map(d => ({
+          ...d,
+          scoredAt: d.scoredAt ? new Date(d.scoredAt) : undefined,
+        })),
+        BATCH_SIZE,
+      )) {
+        console.log(`Inserting ${batch.length} deck infos`);
         await tx
           .insert(deckInformationTable)
           .values(batch as any)
@@ -113,6 +128,7 @@ export const tournamentIdImportFromBlobPostRoute = new Hono<AuthExtension>().pos
     }
     if (deckCards.length) {
       for (const batch of batchArray(deckCards, BATCH_SIZE)) {
+        console.log(`Inserting ${batch.length} deckCards`);
         await tx
           .insert(deckCardTable)
           .values(batch as any)
@@ -121,6 +137,7 @@ export const tournamentIdImportFromBlobPostRoute = new Hono<AuthExtension>().pos
     }
     if (tournamentDecks.length) {
       for (const batch of batchArray(tournamentDecks, BATCH_SIZE)) {
+        console.log(`Inserting ${batch.length} tournamentDecks`);
         await tx
           .insert(tournamentDeckTable)
           .values(batch as any)
@@ -129,6 +146,7 @@ export const tournamentIdImportFromBlobPostRoute = new Hono<AuthExtension>().pos
     }
     if (matches.length) {
       for (const batch of batchArray(matches, BATCH_SIZE)) {
+        console.log(`Inserting ${batch.length} matches`);
         await tx
           .insert(tournamentMatchTable)
           .values(batch as any)
