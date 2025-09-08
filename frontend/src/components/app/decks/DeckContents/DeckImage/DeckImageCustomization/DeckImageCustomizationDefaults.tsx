@@ -4,6 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import GroupBySelector from '../../GroupBySelector/GroupBySelector';
 import { DeckGroupBy } from '../../../../../../../../types/enums.ts';
 import DefaultVariantSelector from './DefaultVariantSelector';
+import ExportWidthSelector from './ExportWidthSelector';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting';
 import { useSetUserSetting } from '@/api/user/useSetUserSetting';
 import { AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
@@ -36,14 +37,6 @@ const DeckImageCustomizationDefaults: React.FC = () => {
         <div className="flex flex-col gap-3">
           <label className="flex items-center gap-2 text-sm">
             <Checkbox
-              checked={!!showNoisyBackground}
-              onCheckedChange={v => setShowNoisyBackground(Boolean(v))}
-            />
-            Show noisy background
-          </label>
-
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox
               checked={!!showcaseLeader}
               onCheckedChange={v => setShowcaseLeader(Boolean(v))}
             />
@@ -60,14 +53,27 @@ const DeckImageCustomizationDefaults: React.FC = () => {
 
           <DefaultVariantSelector fullWidth />
 
-          <div>
-            <GroupBySelector
-              value={groupBy as DeckGroupBy}
-              onChange={v => setGroupBy(v)}
-              userSettingName="deckImage_groupBy"
-              fullWidth
-            />
-          </div>
+          <ExportWidthSelector fullWidth />
+
+          <GroupBySelector
+            value={groupBy as DeckGroupBy}
+            onChange={v => setGroupBy(v)}
+            userSettingName="deckImage_groupBy"
+            fullWidth
+          />
+
+          <label className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={!!showNoisyBackground}
+                onCheckedChange={v => setShowNoisyBackground(Boolean(v))}
+              />
+              Show noisy background
+            </div>
+            <span className="text-xs italic">
+              (turning off noise background reduces image size)
+            </span>
+          </label>
         </div>
       </AccordionContent>
     </AccordionItem>

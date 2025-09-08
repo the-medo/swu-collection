@@ -8,6 +8,7 @@ import { useMemo, CSSProperties, useState, useRef } from 'react';
 import DeckImageCustomization from './DeckImageCustomization/DeckImageCustomization.tsx';
 import { cn } from '@/lib/utils.ts';
 import { DeckCardVariantMap } from '@/components/app/decks/DeckContents/DeckImage/deckImageLib.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 interface DeckImageButtonProps {
   deckId: string;
@@ -22,6 +23,8 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
 
   const [customizationOpen, setCustomizationOpen] = useState(false);
   const [deckCardVariants, setDeckCardVariants] = useState<DeckCardVariantMap>();
+  const { data: showNoisyBackground } = useGetUserSetting('deckImage_showNoisyBackground');
+  const { data: exportWidth } = useGetUserSetting('deckImage_exportWidth');
 
   // Get gradient colors from the hook
   const { cssBackground } = useDeckColors(deckId, 'rgb');
@@ -61,13 +64,18 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
       header={'Deck Image'}
       headerHidden={true}
       footer={null}
-      contentClassName="lg:max-w-[95%] min-h-[80%] max-h-[90%]"
       size="large"
     >
-      <DeckImage deckId={deckId} deckCardVariants={deckCardVariants} ref={deckImageRef} />
+      <DeckImage
+        deckId={deckId}
+        deckCardVariants={deckCardVariants}
+        ref={deckImageRef}
+        showNoisyBackground={showNoisyBackground}
+        exportWidth={exportWidth}
+      />
       <div
         className={cn(
-          'absolute bg-white rounded right-0 bottom-0 p-2 m-2 flex flex-col justify-between overflow-y-auto w-full sm:w-[380px] max-w-full',
+          'flex flex-col fixed  bg-background rounded right-0 bottom-0 p-2 m-2 pt-0  w-full sm:w-[380px] max-w-full',
           {
             'top-0 ': customizationOpen,
           },
@@ -79,7 +87,7 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
           deckCardVariants={deckCardVariants}
           setDeckCardVariants={setDeckCardVariants}
         />
-        <div className="flex gap-2 justify-between w-full items-center">
+        <div className="flex gap-2 pt-2 justify-between items-center ">
           <Button
             onClick={() => setCustomizationOpen(o => !o)}
             className="mr-8"

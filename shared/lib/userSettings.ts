@@ -18,6 +18,7 @@ export interface UserSettings {
   deckImage_defaultVariantName: DeckImagePresets['defaultVariantName'];
   deckImage_groupBy: DeckImagePresets['groupBy'];
   deckImage_cardVariants: string;
+  deckImage_exportWidth: number;
 }
 
 export const userSettingsSchema = z.object({
@@ -34,6 +35,7 @@ export const userSettingsSchema = z.object({
     .default(DeckImagePresetVariant.Standard),
   deckImage_groupBy: z.nativeEnum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
   deckImage_cardVariants: z.string().default('{}'),
+  deckImage_exportWidth: z.number().default(2200),
 });
 
 export type UserSettingsSchema = z.infer<typeof userSettingsSchema>;

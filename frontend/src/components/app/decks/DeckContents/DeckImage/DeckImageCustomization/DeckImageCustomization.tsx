@@ -89,8 +89,8 @@ const DeckImageCustomization: React.FC<DeckImageCustomizationProps> = ({
 
   if (!open) return null;
   return (
-    <div className="p-2 space-y-3 text-sm">
-      <Accordion type="multiple" className="w-full mt-4">
+    <div className="flex flex-1 flex-col w-full overflow-y-auto p-2 text-sm">
+      <Accordion type="multiple" className="w-full mt-4" defaultValue={['defaults']}>
         <DeckImageCustomizationDefaults />
         <DeckImageCardVariants
           usedCards={deckCardsForLayout.usedCards}

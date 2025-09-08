@@ -9,6 +9,7 @@ import {
 import Dialog from '@/components/app/global/Dialog.tsx';
 import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge.tsx';
+import { Button } from '@/components/ui/button.tsx';
 
 interface CardVariantDialogSelectorProps {
   cardId: string;
@@ -49,10 +50,25 @@ const CardVariantDialogSelector: React.FC<CardVariantDialogSelectorProps> = ({
           </CardImage>
         </div>
       }
-      header={'Card variant override'}
       headerHidden={false}
-      footer={null}
-      contentClassName="lg:max-w-[95%] min-h-[80%] max-h-[90%]gap-2"
+      footer={
+        <div className="flex gap-2 justify-end w-full">
+          {isOverride && (
+            <Button
+              onClick={e => {
+                e.preventDefault();
+                saveVariantOverride(cardId, undefined);
+                setOpen(false);
+              }}
+            >
+              Reset to default
+            </Button>
+          )}
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Close
+          </Button>
+        </div>
+      }
       size="large"
     >
       <CardVariantDialogSelectorContent

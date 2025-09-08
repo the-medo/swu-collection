@@ -4,7 +4,7 @@ import {
   CardDataWithVariants,
   CardListVariants,
 } from '../../../../../../../../../lib/swu-resources/types.ts';
-import { Button } from '@/components/ui/button.tsx';
+import { Badge } from '@/components/ui/badge.tsx';
 
 interface CardVariantDialogSelectorContentProps {
   card?: CardDataWithVariants<CardListVariants>;
@@ -28,6 +28,7 @@ const CardVariantDialogSelectorContent: React.FC<CardVariantDialogSelectorConten
   return (
     <>
       <div className="flex flex-col gap-2 p-2 items-center justify-center">
+        <h4>Select a variant you want to use in your deck images:</h4>
         <div className="flex flex-wrap gap-2 p-2 items-center justify-center">
           {variants.map(variantId => (
             <button
@@ -35,7 +36,7 @@ const CardVariantDialogSelectorContent: React.FC<CardVariantDialogSelectorConten
               className={
                 'p-0 m-0 border-[5px] rounded-md ' +
                 (isOverride && variantId === currentVariantId
-                  ? 'border-green-500'
+                  ? 'border-red-500'
                   : 'border-transparent')
               }
               onClick={e => {
@@ -44,22 +45,16 @@ const CardVariantDialogSelectorContent: React.FC<CardVariantDialogSelectorConten
                 onDone?.();
               }}
             >
-              <CardImage card={card} cardVariantId={variantId} size="w200" />
+              <CardImage card={card} cardVariantId={variantId} size="w200">
+                {isOverride && variantId === currentVariantId && (
+                  <div className="absolute bottom-0 w-full flex justify-center items-center bg-black bg-opacity-50 p-1">
+                    <Badge variant="destructive">Override</Badge>
+                  </div>
+                )}
+              </CardImage>
             </button>
           ))}
         </div>
-        {/* Option to reset override */}
-        {isOverride && (
-          <Button
-            onClick={e => {
-              e.preventDefault();
-              saveVariantOverride(cardId, undefined);
-              onDone?.();
-            }}
-          >
-            Reset to default
-          </Button>
-        )}
       </div>
     </>
   );
