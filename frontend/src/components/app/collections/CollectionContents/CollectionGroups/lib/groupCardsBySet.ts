@@ -4,30 +4,21 @@ import {
   CardGroupData,
   CardGroups,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
+import { setArray } from '../../../../../../../../lib/swu-resources/set-info.ts';
 
 export const groupCardsBySet = (cardList: CardList, cards: CollectionCard[]): CardGroupData => {
-  const groups: CardGroups = {
-    jtl: {
-      id: 'jtl',
-      label: 'Jump to Lightspeed',
-      cards: [],
-    },
-    twi: {
-      id: 'twi',
-      label: 'Twilight of the Republic',
-      cards: [],
-    },
-    shd: {
-      id: 'shd',
-      label: 'Shadows of the Galaxy',
-      cards: [],
-    },
-    sor: {
-      id: 'sor',
-      label: 'Spark of Rebellion',
-      cards: [],
-    },
-  };
+  const groups: CardGroups = Object.fromEntries(
+    setArray
+      .sort((a, b) => a.sortValue - b.sortValue)
+      .map(s => [
+        s.code,
+        {
+          id: s.code,
+          label: s.name,
+          cards: [],
+        },
+      ]),
+  );
 
   cards.forEach(card => {
     const set = cardList[card.cardId]?.variants[card.variantId]?.set?.toString();

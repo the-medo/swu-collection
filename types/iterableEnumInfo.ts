@@ -154,6 +154,9 @@ export const deckGroupByObj: Record<DeckGroupBy, { title: string }> = {
   [DeckGroupBy.KEYWORDS]: {
     title: 'Keywords',
   },
+  [DeckGroupBy.SET]: {
+    title: 'Set',
+  },
 };
 
 export const deckGroupByArray = Object.values(DeckGroupBy);

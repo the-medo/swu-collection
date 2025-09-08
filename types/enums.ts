@@ -22,6 +22,8 @@ export enum SwuSet {
   SHD = 'shd',
   JTL = 'jtl',
   LOF = 'lof',
+  IBH = 'ibh',
+  SEC = 'sec',
 }
 
 export enum SwuAspect {
@@ -67,6 +69,7 @@ export enum DeckGroupBy {
   ASPECT = 'aspect',
   TRAIT = 'trait',
   KEYWORDS = 'keywords',
+  SET = 'set',
 }
 
 export enum DiffDisplayMode {

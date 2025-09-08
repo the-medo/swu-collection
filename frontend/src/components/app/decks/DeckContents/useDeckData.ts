@@ -16,6 +16,7 @@ import { groupCardsByKeywords } from '@/components/app/decks/DeckContents/DeckCa
 import { DeckGroupBy } from '../../../../../../types/enums.ts';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { UserSettings } from '../../../../../../shared/lib/userSettings.ts';
+import { groupCardsBySet } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsBySet.ts';
 
 /**
  * Hook to get all deck data including leader, base, cards, and user info
@@ -93,6 +94,9 @@ export function useDeckData(
           break;
         case DeckGroupBy.KEYWORDS:
           mainboardGroups = groupCardsByKeywords(cardList.cards, cardsByBoard[1]);
+          break;
+        case DeckGroupBy.SET:
+          mainboardGroups = groupCardsBySet(cardList.cards, cardsByBoard[1]);
           break;
         case DeckGroupBy.CARD_TYPE:
         default:
