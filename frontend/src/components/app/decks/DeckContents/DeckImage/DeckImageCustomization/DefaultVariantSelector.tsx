@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Image as ImageIcon } from 'lucide-react';
-import { DeckImagePresetVariant } from './deckImageCustomizationLib';
+import { DeckImagePresetVariant } from '../../../../../../../../types/DeckImageCustomization.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting';
 import { useSetUserSetting } from '@/api/user/useSetUserSetting';
 import { cn } from '@/lib/utils.ts';

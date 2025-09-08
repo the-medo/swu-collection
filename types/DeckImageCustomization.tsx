@@ -1,4 +1,4 @@
-import { DeckGroupBy } from '../../../../../../../../types/enums.ts';
+import { DeckGroupBy } from './enums.ts';
 
 export enum DeckImagePresetVariant {
   Standard = 'Standard',

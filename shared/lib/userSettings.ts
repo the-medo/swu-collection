@@ -4,7 +4,7 @@ import { z } from 'zod';
 import {
   type DeckImagePresets,
   DeckImagePresetVariant,
-} from '../../frontend/src/components/app/decks/DeckContents/DeckImage/DeckImageCustomization/deckImageCustomizationLib.tsx';
+} from '../../types/DeckImageCustomization.tsx';
 
 export interface UserSettings {
   deckLayout: DeckLayout; // default: DeckLayout.TEXT
