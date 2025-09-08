@@ -5,6 +5,7 @@ import {
   BookOpenCheck,
   ChartPieIcon,
   Hammer,
+  LayoutGrid,
   NotebookTabs,
   Plus,
   Scale,
@@ -227,7 +228,19 @@ export function LeftSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             {open ? (
-              <CardSearchCommand id="card-search-left-sidebar" />
+              <>
+                <CardSearchCommand id="card-search-left-sidebar" />
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link to={'/cards/search'} className="[&.active]:font-bold">
+                        <LayoutGrid />
+                        Card database
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </>
             ) : (
               <SidebarMenuButton asChild>
                 <Link to="/cards/search" className="[&.active]:font-bold">
@@ -239,7 +252,7 @@ export function LeftSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
         {groups.map(g => (
-          <SidebarGroup key={g.title}>
+          <SidebarGroup key={g.title} className="py-0">
             <SidebarGroupLabel>{g.title}</SidebarGroupLabel>
             {g.sidebarGroupAction ?? null}
             <SidebarGroupContent>

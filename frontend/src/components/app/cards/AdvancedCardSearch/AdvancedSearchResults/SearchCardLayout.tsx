@@ -126,14 +126,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
       {/* Card display */}
       {layoutType === 'imageBig' || layoutType === 'imageSmall' ? (
         <div className="relative">
-          <div
-            className={cn('grid gap-4', {
-              'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6':
-                layoutType === 'imageBig',
-              'grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10':
-                layoutType === 'imageSmall',
-            })}
-          >
+          <div className={cn('flex flex-row flex-wrap gap-2')}>
             {visibleResults.map(cardId => {
               const card = cardListData.cards[cardId];
               if (!card) return null;
@@ -143,7 +136,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
               return (
                 <div
                   key={cardId}
-                  className="cursor-pointer hover:scale-105 transition-transform flex flex-col items-center"
+                  className="cursor-pointer hover:scale-105 transition-transform flex flex-col items-center border p-1"
                   onClick={() => onCardClick(cardId)}
                 >
                   <CardImage
@@ -153,7 +146,10 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
                     backSideButton={false}
                   />
                   <div
-                    className="mt-1 text-sm font-medium text-center truncate w-full"
+                    className={cn(
+                      'mt-1 text-sm font-medium text-center w-full',
+                      layoutType === 'imageBig' ? 'w-[200px]' : 'w-[100px]',
+                    )}
                     title={card.name}
                   >
                     {card.name}
