@@ -44,6 +44,20 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     sortValue: 5,
     expansionId: 53,
   },
+  [SwuSet.IBH]: {
+    code: SwuSet.IBH,
+    name: 'Intro Battle: Hoth',
+    cardCount: 104,
+    sortValue: 6,
+    expansionId: 0,
+  },
+  [SwuSet.SEC]: {
+    code: SwuSet.SEC,
+    name: 'Secrets of Power',
+    cardCount: 264,
+    sortValue: 7,
+    expansionId: 0,
+  },
 } as const;
 
 export const setArray: SetInfo[] = Object.values(setInfo);

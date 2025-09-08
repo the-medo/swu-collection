@@ -21,6 +21,7 @@ const GroupByMenu: React.FC = () => {
     { id: DeckGroupBy.ASPECT, label: 'Aspect' },
     { id: DeckGroupBy.TRAIT, label: 'Trait' },
     { id: DeckGroupBy.KEYWORDS, label: 'Keywords' },
+    { id: DeckGroupBy.SET, label: 'Set' },
   ];
 
   return (
@@ -38,8 +39,8 @@ const GroupByMenu: React.FC = () => {
                 key={option.id}
                 onClick={() => setGroupBy(option.id)}
                 className={cn(
-                  "rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer",
-                  option.id === groupBy && "bg-accent/50 text-accent-foreground"
+                  'rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer',
+                  option.id === groupBy && 'bg-accent/50 text-accent-foreground',
                 )}
               >
                 <NavigationMenuLink asChild>

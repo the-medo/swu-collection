@@ -204,6 +204,13 @@
       "when": 1756313378938,
       "tag": "0028_lush_scorpion",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1757279091682,
+      "tag": "0029_bizarre_nightcrawler",
+      "breakpoints": true
     }
   ]
 }

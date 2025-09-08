@@ -30,7 +30,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
         if (!group || group.cards.length === 0) return null;
 
         return (
-          <div key={groupName} className="flex-none w-full px-3">
+          <div key={groupName} className="flex-none max-w-full px-3">
             <div className="whitespace-nowrap mb-2">
               <span className="inline-block border-b">
                 <span className="inline-block text-end mr-2">{/* Type icon could go here */}</span>
