@@ -19,14 +19,22 @@ import * as React from 'react';
 import DecklistChartsTabs from '@/components/app/decks/DeckContents/DeckActionsMenu/components/DecklistChartsTabs.tsx';
 import { NavigationMenuItem, NavigationMenuList } from '@/components/ui/navigation-menu.tsx';
 import DeckImageButton from '@/components/app/decks/DeckContents/DeckImage/DeckImageButton.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import { Link } from '@tanstack/react-router';
 
 interface DeckContentsProps {
   deckId: string;
   setDeckId?: (id: string) => void;
   highlightedCardId?: string;
+  deckbuilder?: boolean;
 }
 
-const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId, highlightedCardId }) => {
+const DeckContents: React.FC<DeckContentsProps> = ({
+  deckId,
+  setDeckId,
+  highlightedCardId,
+  deckbuilder,
+}) => {
   const { data } = useGetDeck(deckId);
   const { format, owned } = useDeckInfo(deckId);
   const putDeckMutation = usePutDeck(deckId);
@@ -53,41 +61,47 @@ const DeckContents: React.FC<DeckContentsProps> = ({ deckId, setDeckId, highligh
 
   return (
     <>
-      <DeckActionsMenu deckId={deckId} />
+      {!deckbuilder && <DeckActionsMenu deckId={deckId} />}
       <div className="flex max-xl:flex-col justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
-        <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center max-xl:w-auto w-[350px] flex-col gap-2">
-          <LeaderSelector
-            trigger={null}
-            leaderCardId={data?.deck.leaderCardId1 ?? undefined}
-            onLeaderSelected={(cardId: string | undefined) =>
-              updateDeck({ leaderCardId1: cardId ?? null })
-            }
-            editable={owned}
-            size="w300"
-          />
-          {deckFormatInfo.leaderCount === 2 && (
+        {!deckbuilder && (
+          <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center max-xl:w-auto w-[350px] flex-col gap-2">
             <LeaderSelector
               trigger={null}
-              leaderCardId={data?.deck.leaderCardId2 ?? undefined}
+              leaderCardId={data?.deck.leaderCardId1 ?? undefined}
               onLeaderSelected={(cardId: string | undefined) =>
-                updateDeck({ leaderCardId2: cardId ?? null })
+                updateDeck({ leaderCardId1: cardId ?? null })
               }
               editable={owned}
               size="w300"
             />
-          )}
-          <BaseSelector
-            trigger={null}
-            baseCardId={data?.deck.baseCardId ?? undefined}
-            onBaseSelected={(cardId: string | undefined) =>
-              updateDeck({ baseCardId: cardId ?? null })
-            }
-            editable={owned}
-            size="w300"
-          />
-
-          <DeckMatches deckId={deckId} setDeckId={setDeckId} />
-        </div>
+            {deckFormatInfo.leaderCount === 2 && (
+              <LeaderSelector
+                trigger={null}
+                leaderCardId={data?.deck.leaderCardId2 ?? undefined}
+                onLeaderSelected={(cardId: string | undefined) =>
+                  updateDeck({ leaderCardId2: cardId ?? null })
+                }
+                editable={owned}
+                size="w300"
+              />
+            )}
+            <BaseSelector
+              trigger={null}
+              baseCardId={data?.deck.baseCardId ?? undefined}
+              onBaseSelected={(cardId: string | undefined) =>
+                updateDeck({ baseCardId: cardId ?? null })
+              }
+              editable={owned}
+              size="w300"
+            />
+            {owned && (
+              <Link to="/decks/$deckId/edit" params={{ deckId }} search={{ deckbuilder: true }}>
+                <Button>Deckbuilder</Button>
+              </Link>
+            )}
+            <DeckMatches deckId={deckId} setDeckId={setDeckId} />
+          </div>
+        )}
         <div className="w-full">
           <div className="flex flex-col gap-2 w-full">
             <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">

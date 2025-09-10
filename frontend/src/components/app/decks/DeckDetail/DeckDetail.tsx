@@ -16,9 +16,10 @@ import { useRole } from '@/hooks/useRole.ts';
 interface DeckDetailProps {
   adminEdit?: boolean;
   deckId: string;
+  deckbuilder?: boolean;
 }
 
-const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId }) => {
+const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder }) => {
   const user = useUser();
   const hasRole = useRole();
   const isAdmin = hasRole('admin');
@@ -44,6 +45,14 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId }) => {
           description={`The deck you are looking for does not exist. It is possible that it was deleted or it is not public.`}
         />
       </>
+    );
+  }
+
+  if (deckbuilder && owned) {
+    return (
+      <div className="flex flex-[10] flex-col gap-0 h-[100vh] max-h-[100vh] overflow-y-auto">
+        <DeckContents deckId={deckId} deckbuilder />
+      </div>
     );
   }
 

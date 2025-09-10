@@ -5,11 +5,23 @@ import { RangeFilterType } from '@/components/app/global/RangeFilter/RangeFilter
 import { filterCards } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { Route, ZAdvancedSearchParams } from '@/routes/cards/search.tsx';
+import { Route as RouteCardSearch, ZAdvancedSearchParams } from '@/routes/cards/search.tsx';
+import { Route as RouteDeckbuilder } from '@/routes/decks/$deckId/edit.tsx';
 import { CardLayoutType } from './AdvancedSearchResults/SearchCardLayout';
 import { SortField, SortOrder } from './AdvancedSearchResults/useSearchCardTableColumns';
+
+export enum SearchFrom {
+  CARD_SEARCH = 'card-search',
+  DECKBUILDER = 'deckbuilder',
+}
+
+const getSearchFromRoutes = (searchFrom: SearchFrom) => {
+  if (searchFrom === SearchFrom.CARD_SEARCH) return RouteCardSearch.fullPath;
+  if (searchFrom === SearchFrom.DECKBUILDER) return RouteDeckbuilder.fullPath;
+  return undefined;
+};
 
 // Define the store state shape
 export interface AdvancedCardSearchStore {
@@ -106,7 +118,9 @@ export const stringifyRange = (range: RangeFilterType): string | undefined => {
   return `${range.min || ''}-${range.max || ''}`;
 };
 
-export const useInitializeStoreFromUrlParams = () => {
+export const useInitializeStoreFromUrlParams = (
+  searchFrom: SearchFrom = SearchFrom.CARD_SEARCH,
+) => {
   const {
     name,
     text,
@@ -123,7 +137,7 @@ export const useInitializeStoreFromUrlParams = () => {
     hp,
     upgradePower,
     upgradeHp,
-  } = useSearch({ from: Route.fullPath });
+  } = useSearch({ from: getSearchFromRoutes(searchFrom) });
 
   const init = () =>
     store.setState(state => ({
@@ -239,9 +253,21 @@ const resetFilters = () =>
   }));
 
 // Access the store state
-export function useAdvancedCardSearchStore() {
-  const navigate = useNavigate({ from: Route.fullPath });
+export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.CARD_SEARCH) {
+  const navigate = useNavigate({ from: getSearchFromRoutes(searchFrom) });
   const searchInitialized = useStore(store, state => state.searchInitialized);
+
+  const searchParamsBasedOnRoute = useMemo(() => {
+    switch (searchFrom) {
+      case SearchFrom.DECKBUILDER:
+        return {
+          deckbuilder: true,
+        };
+      case SearchFrom.CARD_SEARCH:
+      default:
+        return {};
+    }
+  }, [searchFrom]);
 
   // Extract all the parts of the state we need
   const name = useStore(store, state => state.name);
@@ -340,7 +366,7 @@ export function useAdvancedCardSearchStore() {
 
         setSearchResults(results);
         navigate({
-          search: () => ({ ...searchParams }),
+          search: () => ({ ...searchParams, ...searchParamsBasedOnRoute }),
         });
 
         toast({
@@ -374,6 +400,7 @@ export function useAdvancedCardSearchStore() {
       upgradePower,
       upgradeHp,
       resultsLayout,
+      searchParamsBasedOnRoute,
     ],
   );
 

@@ -120,7 +120,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({ hasActive
           </div>
         ) : (
           <>
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-4 flex-wrap">
               <div className="flex items-center space-x-2">
                 <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
@@ -154,7 +154,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({ hasActive
                 </DropdownMenu>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 flex-wrap">
                 <Button
                   variant={resultsLayout === 'imageBig' ? 'default' : 'outline'}
                   size="sm"

@@ -99,8 +99,8 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
     <div
       className={cn('overflow-hidden w-full md:border-r max-md:border-b p-2', {
         'md:w-[50px]': !filtersExpanded,
-        'lg:w-[400px]': filtersExpanded && sidebarOpen,
-        'md:w-[400px]': filtersExpanded && !sidebarOpen,
+        'lg:w-[350px]': filtersExpanded && sidebarOpen,
+        'md:w-[350px]': filtersExpanded && !sidebarOpen,
       })}
     >
       <div
@@ -144,7 +144,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
                 onChange={e => setText(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
-              <div className="px-40">
+              <div className="px-28">
                 <Separator />
               </div>
               <SetMultiSelect
