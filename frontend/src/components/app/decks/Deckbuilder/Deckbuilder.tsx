@@ -16,7 +16,7 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
   }, []);
 
   return (
-    <AdvancedCardSearch searchFrom={SearchFrom.DECKBUILDER}>
+    <AdvancedCardSearch searchFrom={SearchFrom.DECKBUILDER} childrenTitleButtonText="Decklist">
       <div className="flex flex-1 flex-col">
         <DeckDetail adminEdit={true} deckId={deckId} deckbuilder={true} />
       </div>
