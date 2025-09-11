@@ -14,12 +14,14 @@ import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button.tsx';
 import AdvancedSearchLayoutSelectors from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/AdvancedSearchLayoutSelectors.tsx';
 import * as React from 'react';
+import { SearchCardLayoutProps } from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/SearchCardLayout.tsx';
 
 interface AdvancedCardSearchProps {
   children?: React.ReactNode;
   filtersFooterElement?: React.ReactNode;
   childrenTitleButtonText?: string;
   searchFrom?: SearchFrom;
+  cardSubcomponent?: SearchCardLayoutProps['cardSubcomponent'];
 }
 
 const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
@@ -27,6 +29,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
   filtersFooterElement,
   childrenTitleButtonText,
   searchFrom = SearchFrom.CARD_SEARCH,
+  cardSubcomponent,
 }) => {
   useInitializeStoreFromUrlParams(searchFrom);
   const { toast } = useToast();
@@ -118,6 +121,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
               classNames={{
                 title: 'hidden @[1080px]/main-body:flex',
               }}
+              cardSubcomponent={cardSubcomponent}
             />
           </div>
           <div

@@ -5,7 +5,7 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { useAdvancedCardSearchStore } from '../useAdvancedCardSearchStore.ts';
 import { useNavigate } from '@tanstack/react-router';
 import { Route } from '@/routes/__root.tsx';
-import SearchCardLayout from './SearchCardLayout';
+import SearchCardLayout, { SearchCardLayoutProps } from './SearchCardLayout';
 import { cn } from '@/lib/utils.ts';
 import AdvancedSearchLayoutSelectors from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/AdvancedSearchLayoutSelectors.tsx';
 
@@ -14,11 +14,13 @@ interface AdvancedSearchResultsProps {
   classNames?: {
     title?: string;
   };
+  cardSubcomponent?: SearchCardLayoutProps['cardSubcomponent'];
 }
 
 const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
   hasActiveFilters,
   classNames,
+  cardSubcomponent,
 }) => {
   const navigate = useNavigate({ from: Route.fullPath });
   const { isLoading: isLoadingCardList } = useCardList();
@@ -76,6 +78,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
                 searchResults={searchResults}
                 onCardClick={handleViewCard}
                 layoutType={resultsLayout}
+                cardSubcomponent={cardSubcomponent}
               />
             </ScrollArea>
           </>

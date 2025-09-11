@@ -7,6 +7,10 @@ import RarityIcon from '@/components/app/global/icons/RarityIcon';
 import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import CardImage from '@/components/app/global/CardImage';
 import { CardLayoutType } from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/SearchCardLayout.tsx';
+import {
+  CardDataWithVariants,
+  CardListVariants,
+} from '../../../../../../../lib/swu-resources/types.ts';
 
 export type SearchCardData = {
   cardId: string;
@@ -20,6 +24,7 @@ export type SearchCardTableColumnsProps = {
   sortField?: SortField;
   sortOrder?: SortOrder;
   onSort?: (field: SortField) => void;
+  cardSubcomponent?: (card: CardDataWithVariants<CardListVariants> | undefined) => React.ReactNode;
 };
 
 export function useSearchCardTableColumns({
@@ -27,6 +32,7 @@ export function useSearchCardTableColumns({
   sortField = 'name',
   sortOrder = 'asc',
   onSort,
+  cardSubcomponent,
 }: SearchCardTableColumnsProps): ColumnDef<SearchCardData>[] {
   const { data: cardListData } = useCardList();
   const showImage = layoutType === 'tableImage';
@@ -253,6 +259,21 @@ export function useSearchCardTableColumns({
       },
     });
 
+    if (cardSubcomponent) {
+      // Set/Number column
+      definitions.push({
+        id: 'cardSubcomponent',
+        header: '',
+        size: 75,
+        cell: ({ row }) => {
+          const cardId = row.original.cardId;
+          const card = cardListData?.cards[cardId];
+          if (!card) return null;
+          return cardSubcomponent(card);
+        },
+      });
+    }
+
     return definitions;
-  }, [cardListData, onSort, showImage, sortField, sortOrder]);
+  }, [cardListData, onSort, showImage, sortField, sortOrder, cardSubcomponent]);
 }

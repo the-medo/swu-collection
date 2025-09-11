@@ -10,6 +10,10 @@ import { raritySortValues } from '@/components/app/collections/CollectionContent
 import { useAdvancedCardSearchStore } from '@/components/app/cards/AdvancedCardSearch/useAdvancedCardSearchStore.ts';
 import { Loader2 } from 'lucide-react';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
+import {
+  CardDataWithVariants,
+  CardListVariants,
+} from '../../../../../../../lib/swu-resources/types.ts';
 
 export type CardLayoutType =
   | 'imageBig'
@@ -25,12 +29,14 @@ export interface CardLayoutProps {
 
 export interface SearchCardLayoutProps extends CardLayoutProps {
   layoutType: CardLayoutType;
+  cardSubcomponent?: (card: CardDataWithVariants<CardListVariants> | undefined) => React.ReactNode;
 }
 
 const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
   searchResults,
   onCardClick,
   layoutType,
+  cardSubcomponent,
 }) => {
   const { data: cardListData } = useCardList();
   const { sortField, sortOrder, setSortField, setSortOrder } = useAdvancedCardSearchStore();
@@ -121,6 +127,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
     sortField,
     sortOrder,
     onSort: onSortChange,
+    cardSubcomponent,
   });
 
   if (!cardListData) {
@@ -142,7 +149,9 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
               return (
                 <div
                   key={cardId}
-                  className="cursor-pointer hover:scale-105 transition-transform flex flex-col items-center border p-1"
+                  className={cn('cursor-pointer  flex flex-col items-center border p-1', {
+                    'hover:scale-105 transition-transform': !cardSubcomponent,
+                  })}
                   onClick={() => onCardClick(cardId)}
                 >
                   <CardImage
@@ -156,7 +165,13 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
                           : 'w100'
                     }
                     backSideButton={false}
-                  />
+                  >
+                    {cardSubcomponent && (
+                      <div className="absolute top-0 -right-3 px-2 z-10 b-1 border-2 border-foreground/30 bg-background/80 rounded flex flex-col items-end">
+                        {cardSubcomponent(card) ?? null}
+                      </div>
+                    )}
+                  </CardImage>
                   <div
                     className={cn('mt-1 text-sm font-medium text-center w-full', {
                       'w-[300px]': layoutType === 'imageBig',

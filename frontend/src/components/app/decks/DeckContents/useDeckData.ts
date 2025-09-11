@@ -62,15 +62,17 @@ export function useDeckData(
     if (deckMeta.leader2) usedCards[deckMeta.leader2.cardId] = deckMeta.leader2;
     if (deckMeta.base) usedCards[deckMeta.base.cardId] = deckMeta.base;
 
-    deckCards.forEach(c => {
-      if (!c) return;
-      cardsByBoard[c.board].push(c);
-      if (!usedCardsInBoards[c.cardId]) usedCardsInBoards[c.cardId] = {};
-      usedCardsInBoards[c.cardId]![c.board] = c.quantity;
+    deckCards
+      .filter(dc => dc.quantity > 0)
+      .forEach(c => {
+        if (!c) return;
+        cardsByBoard[c.board].push(c);
+        if (!usedCardsInBoards[c.cardId]) usedCardsInBoards[c.cardId] = {};
+        usedCardsInBoards[c.cardId]![c.board] = c.quantity;
 
-      const card = cardList?.cards[c.cardId];
-      usedCards[c.cardId] = card;
-    });
+        const card = cardList?.cards[c.cardId];
+        usedCards[c.cardId] = card;
+      });
 
     // Sort cards by cost within each board
     for (let i = 1; i <= 3; i++) {

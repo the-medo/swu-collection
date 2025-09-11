@@ -1,12 +1,18 @@
 import AdvancedCardSearch from '@/components/app/cards/AdvancedCardSearch/AdvancedCardSearch.tsx';
 import DeckDetail from '@/components/app/decks/DeckDetail/DeckDetail.tsx';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import { SearchFrom } from '@/components/app/cards/AdvancedCardSearch/useAdvancedCardSearchStore.ts';
 import { Link } from '@tanstack/react-router';
 import DeckGradientButton from '@/components/app/decks/DeckContents/DeckImage/DeckGradientButton.tsx';
 import { X } from 'lucide-react';
 import * as React from 'react';
+import {
+  CardDataWithVariants,
+  CardListVariants,
+} from '../../../../../../lib/swu-resources/types.ts';
+import DeckbuilderCardMenu from '@/components/app/decks/Deckbuilder/DeckbuilderCardMenu.tsx';
+import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts';
 
 interface DeckbuilderProps {
   deckId: string;
@@ -14,6 +20,10 @@ interface DeckbuilderProps {
 
 const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
   const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
+
+  const {
+    deckCardsForLayout: { usedCardsInBoards },
+  } = useDeckData(deckId);
 
   /**
    *  sidebarOpen is not in dependencies:
@@ -38,11 +48,36 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
     );
   }, [deckId]);
 
+  const cardSubcomponent = useCallback(
+    (card: CardDataWithVariants<CardListVariants> | undefined) => {
+      if (!card) return null;
+      const cardId = card.cardId;
+
+      const deckCard = {
+        deckId,
+        cardId,
+        board: 1,
+        quantity: usedCardsInBoards?.[cardId]?.[1] ?? 0,
+      };
+
+      return (
+        <DeckbuilderCardMenu
+          deckId={deckId}
+          deckCard={deckCard}
+          card={card}
+          cardInBoards={usedCardsInBoards?.[cardId] ?? undefined}
+        />
+      );
+    },
+    [deckId, usedCardsInBoards],
+  );
+
   return (
     <AdvancedCardSearch
       searchFrom={SearchFrom.DECKBUILDER}
       childrenTitleButtonText="Decklist"
       filtersFooterElement={filtersFooterElement}
+      cardSubcomponent={cardSubcomponent}
     >
       <div className="flex flex-1 flex-col">
         <DeckDetail adminEdit={true} deckId={deckId} deckbuilder={true} />
