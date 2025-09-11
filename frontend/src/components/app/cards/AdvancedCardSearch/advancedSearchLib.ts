@@ -15,6 +15,7 @@ export const cardSearchParams = z.object({
 
   // Attribute filters
   aspects: z.array(z.enum(Object.values(SwuAspect) as [string, ...string[]])).optional(),
+  aspectsExact: z.boolean().optional(),
   arenas: z.array(z.enum(Object.values(SwuArena) as [string, ...string[]])).optional(),
   traits: z.array(z.string()).optional(),
   keywords: z.array(z.string()).optional(),

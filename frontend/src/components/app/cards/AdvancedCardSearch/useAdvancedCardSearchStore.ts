@@ -40,6 +40,7 @@ export interface AdvancedCardSearchStore {
 
   // Attribute filters
   aspects: SwuAspect[];
+  aspectsExact: boolean;
   arenas: SwuArena[];
   traits: string[];
   keywords: string[];
@@ -76,6 +77,7 @@ const defaultState: AdvancedCardSearchStore = {
   cardTypes: [],
 
   aspects: [],
+  aspectsExact: false,
   arenas: [],
   traits: [],
   keywords: [],
@@ -128,6 +130,7 @@ export const useInitializeStoreFromUrlParams = (
     rarities,
     cardTypes,
     aspects,
+    aspectsExact,
     arenas,
     traits,
     keywords,
@@ -149,6 +152,7 @@ export const useInitializeStoreFromUrlParams = (
       rarities: (rarities ?? defaultState.rarities) as SwuRarity[],
       cardTypes: cardTypes ?? defaultState.cardTypes,
       aspects: (aspects ?? defaultState.aspects) as SwuAspect[],
+      aspectsExact: (aspectsExact ?? defaultState.aspectsExact) as boolean,
       arenas: (arenas ?? defaultState.arenas) as SwuArena[],
       traits: traits ?? defaultState.traits,
       keywords: keywords ?? defaultState.keywords,
@@ -169,6 +173,7 @@ export const useInitializeStoreFromUrlParams = (
     rarities,
     cardTypes,
     aspects,
+    aspectsExact,
     arenas,
     traits,
     keywords,
@@ -200,6 +205,9 @@ const setCardTypes = (cardTypes: string[]) => store.setState(state => ({ ...stat
 
 // Attribute filters
 const setAspects = (aspects: SwuAspect[]) => store.setState(state => ({ ...state, aspects }));
+
+const setAspectsExact = (aspectsExact: boolean) =>
+  store.setState(state => ({ ...state, aspectsExact }));
 
 const setArenas = (arenas: SwuArena[]) => store.setState(state => ({ ...state, arenas }));
 
@@ -279,6 +287,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
   const cardTypes = useStore(store, state => state.cardTypes);
 
   const aspects = useStore(store, state => state.aspects);
+  const aspectsExact = useStore(store, state => state.aspectsExact);
   const arenas = useStore(store, state => state.arenas);
   const traits = useStore(store, state => state.traits);
   const keywords = useStore(store, state => state.keywords);
@@ -306,6 +315,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
     rarities.length > 0,
     cardTypes.length > 0,
     aspects.length > 0,
+    aspectsExact,
     arenas.length > 0,
     traits.length > 0,
     keywords.length > 0,
@@ -330,6 +340,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
           rarities,
           cardTypes,
           aspects,
+          aspectsExact,
           arenas,
           traits,
           keywords,
@@ -348,6 +359,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
           rarities: rarities.length ? rarities : undefined,
           cardTypes: cardTypes.length ? cardTypes : undefined,
           aspects: aspects.length ? aspects : undefined,
+          aspectsExact: aspectsExact || undefined,
           arenas: arenas.length ? arenas : undefined,
           traits: traits.length ? traits : undefined,
           keywords: keywords.length ? keywords : undefined,
@@ -390,6 +402,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
       rarities,
       cardTypes,
       aspects,
+      aspectsExact,
       arenas,
       traits,
       keywords,
@@ -411,6 +424,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
     rarities.length > 0 ||
     cardTypes.length > 0 ||
     aspects.length > 0 ||
+    aspectsExact ||
     arenas.length > 0 ||
     traits.length > 0 ||
     keywords.length > 0 ||
@@ -442,6 +456,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
 
     // Attribute filters
     aspects,
+    aspectsExact,
     arenas,
     traits,
     keywords,
@@ -474,6 +489,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
     setRarities,
     setCardTypes,
     setAspects,
+    setAspectsExact,
     setArenas,
     setTraits,
     setKeywords,
@@ -509,6 +525,7 @@ export function useAdvancedCardSearchStoreActions() {
 
     // Attribute filters
     setAspects,
+    setAspectsExact,
     setArenas,
     setTraits,
     setKeywords,

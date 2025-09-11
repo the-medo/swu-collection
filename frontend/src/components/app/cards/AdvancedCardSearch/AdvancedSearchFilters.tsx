@@ -44,6 +44,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     rarities,
     cardTypes,
     aspects,
+    aspectsExact,
     arenas,
     traits,
     keywords,
@@ -65,6 +66,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     setRarities,
     setCardTypes,
     setAspects,
+    setAspectsExact,
     setArenas,
     setTraits,
     setKeywords,
@@ -170,11 +172,24 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                 value={aspects}
                 onChange={setAspects}
                 multiSelect={true}
+                multiMainAspects={true}
                 showLabel={false}
                 showAllOption={false}
                 showNoneOption={false}
                 className="justify-center"
               />
+              <div className="flex items-center justify-center space-x-2">
+                <Checkbox
+                  id={`aspectsExact`}
+                  checked={aspectsExact}
+                  onCheckedChange={() => setAspectsExact(!aspectsExact)}
+                  className={cn(
+                    'w-4 h-4',
+                    aspectsExact ? 'bg-primary text-primary-foreground' : 'bg-background',
+                  )}
+                />
+                <Label htmlFor={`aspectsExact`}>Exact aspects</Label>
+              </div>
 
               <GenericMultiSelect
                 label="Card Types"
