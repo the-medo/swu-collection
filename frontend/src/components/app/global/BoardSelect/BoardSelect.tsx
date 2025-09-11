@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button.tsx';
 import { useBoardDeckData } from '@/components/app/global/BoardSelect/useBoardDeckData.ts';
 
 const boardObj: Record<number, { name: string; shortName: string }> = {
-  1: { name: 'Maindeck', shortName: 'MD' },
-  2: { name: 'Sideboard', shortName: 'SB' },
-  3: { name: 'Maybeboard', shortName: 'MB' },
+  1: { name: 'Maindeck', shortName: 'Main' },
+  2: { name: 'Sideboard', shortName: 'Side' },
+  3: { name: 'Maybeboard', shortName: 'Maybe' },
 };
 
 export interface BoardSelectProps {
@@ -28,7 +28,7 @@ const BoardSelect: React.FC<BoardSelectProps> = ({ deckId, value, onChange }) =>
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <div className="flex gap-2 items-center">
-          <span className="text-sm font-semibold">Insert into:</span>
+          <span className="text-sm font-semibold"></span>
           <Button variant="outline" className="w-[70px] text-xs justify-between">
             {boardObj[value].shortName}
           </Button>

@@ -16,6 +16,7 @@ export interface ResultsLayoutMenuProps {
 const ResultsLayoutMenu: React.FC<ResultsLayoutMenuProps> = ({ layout, onChange }) => {
   const options: { id: string; label: string; icon: React.ReactNode }[] = [
     { id: 'imageBig', label: 'Large', icon: <ImageIcon className="h-4 w-4" /> },
+    { id: 'imageMedium', label: 'Medium', icon: <ImageIcon className="h-4 w-4" /> },
     { id: 'imageSmall', label: 'Small', icon: <LayoutGrid className="h-4 w-4" /> },
     { id: 'tableImage', label: 'List', icon: <List className="h-4 w-4" /> },
     { id: 'tableSmall', label: 'Table', icon: <Columns className="h-4 w-4" /> },
@@ -25,12 +26,11 @@ const ResultsLayoutMenu: React.FC<ResultsLayoutMenuProps> = ({ layout, onChange 
 
   return (
     <NavigationMenuItem>
-      <NavigationMenuTrigger className="w-[180px] justify-start border">
-        {current?.icon}
+      <NavigationMenuTrigger className="w-[150px] justify-start border">
         <span className="text-xs ml-1">Layout: </span>
         {current?.label ?? 'Default'}
       </NavigationMenuTrigger>
-      <NavigationMenuContent>
+      <NavigationMenuContent className="z-20">
         <div className="p-4 grid grid-cols-1 gap-4 w-[160px]">
           <div className="col-span-1 grid grid-cols-1 gap-1">
             {options.map(option => (

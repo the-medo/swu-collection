@@ -71,7 +71,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
           </div>
         ) : (
           <>
-            <ScrollArea className="h-[calc(100vh-165px)]">
+            <ScrollArea className="h-[calc(100vh-90px)]">
               <SearchCardLayout
                 searchResults={searchResults}
                 onCardClick={handleViewCard}

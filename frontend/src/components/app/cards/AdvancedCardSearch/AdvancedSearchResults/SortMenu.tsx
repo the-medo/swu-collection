@@ -21,7 +21,7 @@ const SortMenu: React.FC<SortMenuProps> = ({ sortField, sortOrder, onChange }) =
     { id: 'type', label: 'Type' },
     { id: 'cost', label: 'Cost' },
     { id: 'rarity', label: 'Rarity' },
-    { id: 'cardNumber', label: 'Card Number' },
+    { id: 'cardNumber', label: 'Number' },
   ];
 
   const getSortIcon = (field: SortField) => {
@@ -37,9 +37,9 @@ const SortMenu: React.FC<SortMenuProps> = ({ sortField, sortOrder, onChange }) =
 
   return (
     <NavigationMenuItem>
-      <NavigationMenuTrigger className="w-[180px] justify-start border">
+      <NavigationMenuTrigger className="w-[150px] justify-start border">
         {getSortIcon(sortField)}
-        <span className="text-xs">Sort by: </span>
+        <span className="text-xs">Sort: </span>
         {currentLabel}
       </NavigationMenuTrigger>
       <NavigationMenuContent>

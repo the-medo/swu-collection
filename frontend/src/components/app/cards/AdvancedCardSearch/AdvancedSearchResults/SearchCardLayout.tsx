@@ -11,7 +11,12 @@ import { useAdvancedCardSearchStore } from '@/components/app/cards/AdvancedCardS
 import { Loader2 } from 'lucide-react';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 
-export type CardLayoutType = 'imageBig' | 'imageSmall' | 'tableImage' | 'tableSmall';
+export type CardLayoutType =
+  | 'imageBig'
+  | 'imageMedium'
+  | 'imageSmall'
+  | 'tableImage'
+  | 'tableSmall';
 
 export interface CardLayoutProps {
   searchResults: string[];
@@ -76,7 +81,8 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
 
   // Configure infinite scrolling
   // Grid layouts need more initial items but smaller batches for smooth scrolling
-  const isGridLayout = layoutType === 'imageBig' || layoutType === 'imageSmall';
+  const isGridLayout =
+    layoutType === 'imageBig' || layoutType === 'imageMedium' || layoutType === 'imageSmall';
   const initialItemsToLoad = isGridLayout ? 60 : 40;
   const itemsPerBatch = isGridLayout ? 30 : 20;
 
@@ -124,7 +130,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
   return (
     <div className="w-full">
       {/* Card display */}
-      {layoutType === 'imageBig' || layoutType === 'imageSmall' ? (
+      {layoutType === 'imageBig' || layoutType === 'imageMedium' || layoutType === 'imageSmall' ? (
         <div className="relative">
           <div className={cn('flex flex-row flex-wrap gap-2')}>
             {visibleResults.map(cardId => {
@@ -142,14 +148,21 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
                   <CardImage
                     card={card}
                     cardVariantId={defaultVariant}
-                    size={layoutType === 'imageBig' ? 'w200' : 'w100'}
+                    size={
+                      layoutType === 'imageBig'
+                        ? 'w300'
+                        : layoutType === 'imageMedium'
+                          ? 'w200'
+                          : 'w100'
+                    }
                     backSideButton={false}
                   />
                   <div
-                    className={cn(
-                      'mt-1 text-sm font-medium text-center w-full',
-                      layoutType === 'imageBig' ? 'w-[200px]' : 'w-[100px]',
-                    )}
+                    className={cn('mt-1 text-sm font-medium text-center w-full', {
+                      'w-[300px]': layoutType === 'imageBig',
+                      'w-[200px]': layoutType === 'imageMedium',
+                      'w-[100px]': layoutType === 'imageSmall',
+                    })}
                     title={card.name}
                   >
                     {card.name}

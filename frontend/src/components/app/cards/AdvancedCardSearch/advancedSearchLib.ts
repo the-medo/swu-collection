@@ -28,7 +28,9 @@ export const cardSearchParams = z.object({
   upgradeHp: z.string().optional(),
 
   // UI state
-  resultsLayout: z.enum(['imageBig', 'imageSmall', 'tableImage', 'tableSmall']).optional(),
+  resultsLayout: z
+    .enum(['imageBig', 'imageMedium', 'imageSmall', 'tableImage', 'tableSmall'])
+    .optional(),
   sort: z.enum(['name', 'cardNumber', 'cost', 'type', 'rarity']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
 });

@@ -26,8 +26,8 @@ const AdvancedSearchLayoutSelectors: React.FC<AdvancedSearchLayoutSelectorsProps
   );
 
   return (
-    <NavigationMenu className={cn('justify-end')}>
-      <NavigationMenuList className="gap-2 justify-end flex-wrap">
+    <NavigationMenu className={cn('justify-end z-[25]')}>
+      <NavigationMenuList className="gap-2 justify-center flex-wrap">
         <SortMenu
           sortField={sortField}
           sortOrder={sortOrder}

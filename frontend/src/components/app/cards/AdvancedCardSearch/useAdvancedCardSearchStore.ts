@@ -91,7 +91,7 @@ const defaultState: AdvancedCardSearchStore = {
   searchResults: [],
 
   filtersExpanded: true,
-  resultsLayout: 'imageBig',
+  resultsLayout: 'imageMedium',
   sortField: 'name',
   sortOrder: 'asc',
 };
