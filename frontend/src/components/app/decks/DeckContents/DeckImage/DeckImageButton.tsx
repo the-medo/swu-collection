@@ -3,12 +3,12 @@ import { Button } from '@/components/ui/button.tsx';
 import { ClipboardCopy, Download, Image, SettingsIcon, X } from 'lucide-react';
 import Dialog from '@/components/app/global/Dialog.tsx';
 import DeckImage from './DeckImage.tsx';
-import { useDeckColors } from '@/hooks/useDeckColors';
-import { useMemo, CSSProperties, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import DeckImageCustomization from './DeckImageCustomization/DeckImageCustomization.tsx';
 import { cn } from '@/lib/utils.ts';
 import { DeckCardVariantMap } from '@/components/app/decks/DeckContents/DeckImage/deckImageLib.ts';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import DeckGradientButton from './DeckGradientButton.tsx';
 
 interface DeckImageButtonProps {
   deckId: string;
@@ -26,40 +26,19 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
   const { data: showNoisyBackground } = useGetUserSetting('deckImage_showNoisyBackground');
   const { data: exportWidth } = useGetUserSetting('deckImage_exportWidth');
 
-  // Get gradient colors from the hook
-  const { cssBackground } = useDeckColors(deckId, 'rgb');
-
-  // Create custom button styles
-  const buttonStyle = useMemo(() => {
-    const style: CSSProperties = {};
-
-    if (cssBackground) {
-      // Use the same gradient for border
-      // style.borderImage = cssBackground.replace('linear-gradient', 'linear-gradient') + ' 1';
-
-      // Create a lighter version of the gradient for background
-      const lighterGradient = cssBackground.replace(
-        /rgba\((\d+),\s*(\d+),\s*(\d+),\s*0.85\)/g,
-        'rgba($1, $2, $3, 0.25)',
-      );
-      style.background = lighterGradient;
-    }
-
-    return style;
-  }, [cssBackground]);
 
   return (
     <Dialog
       trigger={
-        <Button
+        <DeckGradientButton
+          deckId={deckId}
           variant="outline"
           size="default"
           className="border border-accent rounded-md"
-          style={buttonStyle}
         >
           <Image className="h-4 w-4 mr-2" />
           Image
-        </Button>
+        </DeckGradientButton>
       }
       header={'Deck Image'}
       headerHidden={true}

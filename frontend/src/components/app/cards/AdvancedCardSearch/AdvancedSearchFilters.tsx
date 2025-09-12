@@ -26,9 +26,13 @@ const CARD_TYPES = ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'];
 
 interface AdvancedSearchFiltersProps {
   onSearch: () => void;
+  footerElement?: React.ReactNode;
 }
 
-const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch }) => {
+const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
+  onSearch,
+  footerElement,
+}) => {
   const { open: sidebarOpen } = useSidebar();
   const { data: cardListData, isLoading: isLoadingCardList } = useCardList();
 
@@ -40,6 +44,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
     rarities,
     cardTypes,
     aspects,
+    aspectsExact,
     arenas,
     traits,
     keywords,
@@ -61,6 +66,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
     setRarities,
     setCardTypes,
     setAspects,
+    setAspectsExact,
     setArenas,
     setTraits,
     setKeywords,
@@ -99,8 +105,8 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
     <div
       className={cn('overflow-hidden w-full md:border-r max-md:border-b p-2', {
         'md:w-[50px]': !filtersExpanded,
-        'lg:w-[400px]': filtersExpanded && sidebarOpen,
-        'md:w-[400px]': filtersExpanded && !sidebarOpen,
+        'lg:w-[350px] max-w-[350px]': filtersExpanded && sidebarOpen,
+        'md:w-[350px] max-w-[350px]': filtersExpanded && !sidebarOpen,
       })}
     >
       <div
@@ -125,10 +131,17 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
           </Button>
         </div>
       </div>
+      {!filtersExpanded && (
+        <div className="-rotate-90 origin-bottom-left w-[200px] translate-x-[37px] translate-y-[340px]">
+          {footerElement}
+        </div>
+      )}
 
       {filtersExpanded && (
         <div className="px-2">
-          <ScrollArea className="h-[calc(100vh-165px)]">
+          <ScrollArea
+            className={cn(footerElement ? 'h-[calc(100vh-215px)]' : 'h-[calc(100vh-165px)]')}
+          >
             <div className="space-y-2 pr-4">
               <Input
                 id="name-search"
@@ -144,7 +157,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
                 onChange={e => setText(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
-              <div className="px-40">
+              <div className="px-28">
                 <Separator />
               </div>
               <SetMultiSelect
@@ -159,11 +172,24 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
                 value={aspects}
                 onChange={setAspects}
                 multiSelect={true}
+                multiMainAspects={true}
                 showLabel={false}
                 showAllOption={false}
                 showNoneOption={false}
                 className="justify-center"
               />
+              <div className="flex items-center justify-center space-x-2">
+                <Checkbox
+                  id={`aspectsExact`}
+                  checked={aspectsExact}
+                  onCheckedChange={() => setAspectsExact(!aspectsExact)}
+                  className={cn(
+                    'w-4 h-4',
+                    aspectsExact ? 'bg-primary text-primary-foreground' : 'bg-background',
+                  )}
+                />
+                <Label htmlFor={`aspectsExact`}>Exact aspects</Label>
+              </div>
 
               <GenericMultiSelect
                 label="Card Types"
@@ -235,7 +261,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
           </ScrollArea>
 
           <div className="mt-4 pt-2 border-t flex-1 justify-between">
-            <div className="p-3 rounded-md bg-accent/50 dark:bg-primary/10">
+            <div className="p-2 rounded-md bg-accent/50 dark:bg-primary/10">
               <div className="flex justify-between items-center">
                 <h4 className="text-sm font-medium mt-2">Applied: {activeFiltersCount}</h4>
                 <div className="flex items-center gap-2">
@@ -259,6 +285,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({ onSearch 
               </div>
             </div>
           </div>
+          {footerElement}
         </div>
       )}
     </div>

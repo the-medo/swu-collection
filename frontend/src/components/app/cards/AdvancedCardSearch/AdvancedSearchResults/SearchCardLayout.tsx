@@ -10,8 +10,17 @@ import { raritySortValues } from '@/components/app/collections/CollectionContent
 import { useAdvancedCardSearchStore } from '@/components/app/cards/AdvancedCardSearch/useAdvancedCardSearchStore.ts';
 import { Loader2 } from 'lucide-react';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
+import {
+  CardDataWithVariants,
+  CardListVariants,
+} from '../../../../../../../lib/swu-resources/types.ts';
 
-export type CardLayoutType = 'imageBig' | 'imageSmall' | 'tableImage' | 'tableSmall';
+export type CardLayoutType =
+  | 'imageBig'
+  | 'imageMedium'
+  | 'imageSmall'
+  | 'tableImage'
+  | 'tableSmall';
 
 export interface CardLayoutProps {
   searchResults: string[];
@@ -20,12 +29,14 @@ export interface CardLayoutProps {
 
 export interface SearchCardLayoutProps extends CardLayoutProps {
   layoutType: CardLayoutType;
+  cardSubcomponent?: (card: CardDataWithVariants<CardListVariants> | undefined) => React.ReactNode;
 }
 
 const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
   searchResults,
   onCardClick,
   layoutType,
+  cardSubcomponent,
 }) => {
   const { data: cardListData } = useCardList();
   const { sortField, sortOrder, setSortField, setSortOrder } = useAdvancedCardSearchStore();
@@ -76,7 +87,8 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
 
   // Configure infinite scrolling
   // Grid layouts need more initial items but smaller batches for smooth scrolling
-  const isGridLayout = layoutType === 'imageBig' || layoutType === 'imageSmall';
+  const isGridLayout =
+    layoutType === 'imageBig' || layoutType === 'imageMedium' || layoutType === 'imageSmall';
   const initialItemsToLoad = isGridLayout ? 60 : 40;
   const itemsPerBatch = isGridLayout ? 30 : 20;
 
@@ -115,6 +127,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
     sortField,
     sortOrder,
     onSort: onSortChange,
+    cardSubcomponent,
   });
 
   if (!cardListData) {
@@ -124,7 +137,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
   return (
     <div className="w-full">
       {/* Card display */}
-      {layoutType === 'imageBig' || layoutType === 'imageSmall' ? (
+      {layoutType === 'imageBig' || layoutType === 'imageMedium' || layoutType === 'imageSmall' ? (
         <div className="relative">
           <div className={cn('flex flex-row flex-wrap gap-2')}>
             {visibleResults.map(cardId => {
@@ -136,20 +149,35 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
               return (
                 <div
                   key={cardId}
-                  className="cursor-pointer hover:scale-105 transition-transform flex flex-col items-center border p-1"
+                  className={cn('cursor-pointer  flex flex-col items-center border p-1', {
+                    'hover:scale-105 transition-transform': !cardSubcomponent,
+                  })}
                   onClick={() => onCardClick(cardId)}
                 >
                   <CardImage
                     card={card}
                     cardVariantId={defaultVariant}
-                    size={layoutType === 'imageBig' ? 'w200' : 'w100'}
+                    size={
+                      layoutType === 'imageBig'
+                        ? 'w300'
+                        : layoutType === 'imageMedium'
+                          ? 'w200'
+                          : 'w100'
+                    }
                     backSideButton={false}
-                  />
-                  <div
-                    className={cn(
-                      'mt-1 text-sm font-medium text-center w-full',
-                      layoutType === 'imageBig' ? 'w-[200px]' : 'w-[100px]',
+                  >
+                    {cardSubcomponent && (
+                      <div className="absolute top-0 -right-3 px-2 z-10 b-1 border-2 border-foreground/30 bg-background/80 rounded flex flex-col items-end">
+                        {cardSubcomponent(card) ?? null}
+                      </div>
                     )}
+                  </CardImage>
+                  <div
+                    className={cn('mt-1 text-sm font-medium text-center w-full', {
+                      'w-[300px]': layoutType === 'imageBig',
+                      'w-[200px]': layoutType === 'imageMedium',
+                      'w-[100px]': layoutType === 'imageSmall',
+                    })}
                     title={card.name}
                   >
                     {card.name}

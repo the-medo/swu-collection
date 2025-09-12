@@ -5,11 +5,23 @@ import { RangeFilterType } from '@/components/app/global/RangeFilter/RangeFilter
 import { filterCards } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { Route, ZAdvancedSearchParams } from '@/routes/cards/search.tsx';
+import { Route as RouteCardSearch, ZAdvancedSearchParams } from '@/routes/cards/search.tsx';
+import { Route as RouteDeckbuilder } from '@/routes/decks/$deckId/edit.tsx';
 import { CardLayoutType } from './AdvancedSearchResults/SearchCardLayout';
 import { SortField, SortOrder } from './AdvancedSearchResults/useSearchCardTableColumns';
+
+export enum SearchFrom {
+  CARD_SEARCH = 'card-search',
+  DECKBUILDER = 'deckbuilder',
+}
+
+const getSearchFromRoutes = (searchFrom: SearchFrom) => {
+  if (searchFrom === SearchFrom.CARD_SEARCH) return RouteCardSearch.fullPath;
+  if (searchFrom === SearchFrom.DECKBUILDER) return RouteDeckbuilder.fullPath;
+  return undefined;
+};
 
 // Define the store state shape
 export interface AdvancedCardSearchStore {
@@ -28,6 +40,7 @@ export interface AdvancedCardSearchStore {
 
   // Attribute filters
   aspects: SwuAspect[];
+  aspectsExact: boolean;
   arenas: SwuArena[];
   traits: string[];
   keywords: string[];
@@ -64,6 +77,7 @@ const defaultState: AdvancedCardSearchStore = {
   cardTypes: [],
 
   aspects: [],
+  aspectsExact: false,
   arenas: [],
   traits: [],
   keywords: [],
@@ -79,7 +93,7 @@ const defaultState: AdvancedCardSearchStore = {
   searchResults: [],
 
   filtersExpanded: true,
-  resultsLayout: 'imageBig',
+  resultsLayout: 'imageMedium',
   sortField: 'name',
   sortOrder: 'asc',
 };
@@ -106,7 +120,9 @@ export const stringifyRange = (range: RangeFilterType): string | undefined => {
   return `${range.min || ''}-${range.max || ''}`;
 };
 
-export const useInitializeStoreFromUrlParams = () => {
+export const useInitializeStoreFromUrlParams = (
+  searchFrom: SearchFrom = SearchFrom.CARD_SEARCH,
+) => {
   const {
     name,
     text,
@@ -114,6 +130,7 @@ export const useInitializeStoreFromUrlParams = () => {
     rarities,
     cardTypes,
     aspects,
+    aspectsExact,
     arenas,
     traits,
     keywords,
@@ -123,7 +140,7 @@ export const useInitializeStoreFromUrlParams = () => {
     hp,
     upgradePower,
     upgradeHp,
-  } = useSearch({ from: Route.fullPath });
+  } = useSearch({ from: getSearchFromRoutes(searchFrom) });
 
   const init = () =>
     store.setState(state => ({
@@ -135,6 +152,7 @@ export const useInitializeStoreFromUrlParams = () => {
       rarities: (rarities ?? defaultState.rarities) as SwuRarity[],
       cardTypes: cardTypes ?? defaultState.cardTypes,
       aspects: (aspects ?? defaultState.aspects) as SwuAspect[],
+      aspectsExact: (aspectsExact ?? defaultState.aspectsExact) as boolean,
       arenas: (arenas ?? defaultState.arenas) as SwuArena[],
       traits: traits ?? defaultState.traits,
       keywords: keywords ?? defaultState.keywords,
@@ -155,6 +173,7 @@ export const useInitializeStoreFromUrlParams = () => {
     rarities,
     cardTypes,
     aspects,
+    aspectsExact,
     arenas,
     traits,
     keywords,
@@ -186,6 +205,9 @@ const setCardTypes = (cardTypes: string[]) => store.setState(state => ({ ...stat
 
 // Attribute filters
 const setAspects = (aspects: SwuAspect[]) => store.setState(state => ({ ...state, aspects }));
+
+const setAspectsExact = (aspectsExact: boolean) =>
+  store.setState(state => ({ ...state, aspectsExact }));
 
 const setArenas = (arenas: SwuArena[]) => store.setState(state => ({ ...state, arenas }));
 
@@ -239,9 +261,21 @@ const resetFilters = () =>
   }));
 
 // Access the store state
-export function useAdvancedCardSearchStore() {
-  const navigate = useNavigate({ from: Route.fullPath });
+export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.CARD_SEARCH) {
+  const navigate = useNavigate({ from: getSearchFromRoutes(searchFrom) });
   const searchInitialized = useStore(store, state => state.searchInitialized);
+
+  const searchParamsBasedOnRoute = useMemo(() => {
+    switch (searchFrom) {
+      case SearchFrom.DECKBUILDER:
+        return {
+          deckbuilder: true,
+        };
+      case SearchFrom.CARD_SEARCH:
+      default:
+        return {};
+    }
+  }, [searchFrom]);
 
   // Extract all the parts of the state we need
   const name = useStore(store, state => state.name);
@@ -253,6 +287,7 @@ export function useAdvancedCardSearchStore() {
   const cardTypes = useStore(store, state => state.cardTypes);
 
   const aspects = useStore(store, state => state.aspects);
+  const aspectsExact = useStore(store, state => state.aspectsExact);
   const arenas = useStore(store, state => state.arenas);
   const traits = useStore(store, state => state.traits);
   const keywords = useStore(store, state => state.keywords);
@@ -280,6 +315,7 @@ export function useAdvancedCardSearchStore() {
     rarities.length > 0,
     cardTypes.length > 0,
     aspects.length > 0,
+    aspectsExact,
     arenas.length > 0,
     traits.length > 0,
     keywords.length > 0,
@@ -304,6 +340,7 @@ export function useAdvancedCardSearchStore() {
           rarities,
           cardTypes,
           aspects,
+          aspectsExact,
           arenas,
           traits,
           keywords,
@@ -322,6 +359,7 @@ export function useAdvancedCardSearchStore() {
           rarities: rarities.length ? rarities : undefined,
           cardTypes: cardTypes.length ? cardTypes : undefined,
           aspects: aspects.length ? aspects : undefined,
+          aspectsExact: aspectsExact || undefined,
           arenas: arenas.length ? arenas : undefined,
           traits: traits.length ? traits : undefined,
           keywords: keywords.length ? keywords : undefined,
@@ -340,7 +378,7 @@ export function useAdvancedCardSearchStore() {
 
         setSearchResults(results);
         navigate({
-          search: () => ({ ...searchParams }),
+          search: () => ({ ...searchParams, ...searchParamsBasedOnRoute }),
         });
 
         toast({
@@ -364,6 +402,7 @@ export function useAdvancedCardSearchStore() {
       rarities,
       cardTypes,
       aspects,
+      aspectsExact,
       arenas,
       traits,
       keywords,
@@ -374,6 +413,7 @@ export function useAdvancedCardSearchStore() {
       upgradePower,
       upgradeHp,
       resultsLayout,
+      searchParamsBasedOnRoute,
     ],
   );
 
@@ -384,6 +424,7 @@ export function useAdvancedCardSearchStore() {
     rarities.length > 0 ||
     cardTypes.length > 0 ||
     aspects.length > 0 ||
+    aspectsExact ||
     arenas.length > 0 ||
     traits.length > 0 ||
     keywords.length > 0 ||
@@ -415,6 +456,7 @@ export function useAdvancedCardSearchStore() {
 
     // Attribute filters
     aspects,
+    aspectsExact,
     arenas,
     traits,
     keywords,
@@ -447,6 +489,7 @@ export function useAdvancedCardSearchStore() {
     setRarities,
     setCardTypes,
     setAspects,
+    setAspectsExact,
     setArenas,
     setTraits,
     setKeywords,
@@ -482,6 +525,7 @@ export function useAdvancedCardSearchStoreActions() {
 
     // Attribute filters
     setAspects,
+    setAspectsExact,
     setArenas,
     setTraits,
     setKeywords,

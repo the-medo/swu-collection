@@ -89,6 +89,7 @@ interface SearchFilters {
   rarities?: SwuRarity[];
   cardTypes?: string[];
   aspects?: SwuAspect[];
+  aspectsExact?: boolean;
   arenas?: SwuArena[];
   traits?: string[];
   keywords?: string[];
@@ -161,11 +162,18 @@ export const filterCards = async (
         // Check aspects filter - similar to LeaderSelector approach
         if (filters.aspects && filters.aspects.length > 0) {
           if (card.aspects.length === 0) return false;
+
+          if (filters.aspectsExact) {
+            const notFoundAspects2 = filters.aspects.filter(
+              filterAspect => !card.aspects!.includes(filterAspect),
+            );
+            if (notFoundAspects2.length > 0) return false;
+          }
+
           // Find aspects from the card that aren't in the filter
           const notFoundAspects = card.aspects.filter(
             cardAspect => !filters.aspects!.includes(cardAspect),
           );
-
           // If any aspect is missing, fail the filter unless it's the specific Heroism/Villainy exception
           if (notFoundAspects.length > 0) {
             // Special handling for Heroism + Villainy (like Chancellor Palpatine)
