@@ -1,6 +1,6 @@
 import { SwuSet } from '../../../../../../../types/enums.ts';
 import { CardList } from '../../../../../../../lib/swu-resources/types.ts';
-import { createFileName } from '../../../../../../../lib/swu-resources/lib/createFileName.ts';
+import { transformToId } from '../../../../../../../lib/swu-resources/lib/transformToId.ts';
 
 export interface ParsedCardData {
   productId: string;
@@ -57,7 +57,7 @@ export function parseCardmarketHtml(
       );
       const cardNumber = cardNumberContainer ? cardNumberContainer.textContent?.trim() || '' : '';
 
-      let probableCardId: string | undefined = createFileName(name);
+      let probableCardId: string | undefined = transformToId(name);
       let probableVariantId: string | undefined = undefined;
       if (cards && cards[probableCardId]) {
         const variant = Object.values(cards[probableCardId]?.variants || {}).find(v => {

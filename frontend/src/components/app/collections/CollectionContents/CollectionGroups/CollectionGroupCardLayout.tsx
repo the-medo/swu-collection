@@ -15,6 +15,8 @@ import { useMemo } from 'react';
 import { sortCardsBy } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { getCollectionCardIdentificationKey } from '@/api/collections/usePutCollectionCard.ts';
+import { useCollectionFilterStore } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionFilterStore.ts';
+import { transformToId } from '../../../../../../../lib/swu-resources/lib/transformToId.ts';
 
 // Interface for rendering cards based on layout
 interface CollectionGroupCardLayoutProps {
@@ -37,16 +39,25 @@ const CollectionGroupCardLayout: React.FC<CollectionGroupCardLayoutProps> = ({
   const { data: cardList } = useCardList();
   const collectionCards = useCollectionCards();
   const unsortedCards = useGroupCards(groupId ?? '');
+  const { search } = useCollectionFilterStore();
 
   const groupCards = useMemo(() => {
-    console.log({ unsortedCards, sortBy });
     if (!cardList || !collectionCards || !unsortedCards) return [];
     if (sortBy.length === 0) return unsortedCards;
-    const collectionCardArray = unsortedCards.map(c => collectionCards[c]?.collectionCard);
+    const lowercaseSearch = search?.toLowerCase();
+    const normalizedSearch = search ? transformToId(search) : '';
+    const collectionCardArray = unsortedCards
+      .map(c => collectionCards[c]?.collectionCard)
+      .filter(cc => {
+        if (normalizedSearch === '') return true;
+        return (
+          cc.cardId.includes(normalizedSearch) || cc.note.toLowerCase().includes(lowercaseSearch)
+        );
+      });
     return sortCardsBy(cardList?.cards, collectionCardArray, sortBy as CollectionSortBy[]).map(
       getCollectionCardIdentificationKey,
     );
-  }, [unsortedCards, sortBy]);
+  }, [unsortedCards, sortBy, search]);
 
   // We no longer need to map keys to CollectionCard objects
   // Just pass the keys directly to the layout components
