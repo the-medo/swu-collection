@@ -1,6 +1,6 @@
 import type { CardVariant } from '../types.ts';
-import { createFileName } from './createFileName.ts';
+import { transformToId } from './transformToId.ts';
 
 export function variantFilename(variant: CardVariant, cardFilename: string): string {
-  return `${cardFilename}-${variant.cardNo}-${createFileName(variant.fullSetName)}`;
+  return `${cardFilename}-${variant.cardNo}-${transformToId(variant.fullSetName)}`;
 }
