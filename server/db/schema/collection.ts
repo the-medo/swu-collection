@@ -10,6 +10,8 @@ export const collection = pgTable('collection', {
   description: varchar('description').notNull().default(''),
   collectionType: integer('collection_type').notNull(),
   public: boolean('public').notNull().default(false),
+  forSale: boolean('for_sale').notNull().default(false),
+  forDecks: boolean('for_decks').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
