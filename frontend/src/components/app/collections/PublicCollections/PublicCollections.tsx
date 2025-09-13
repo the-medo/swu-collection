@@ -35,7 +35,12 @@ const PublicCollections: React.FC<PublicCollectionsProps> = ({ collectionType })
 
   return (
     <>
-      <CollectionTable variant="public" collections={collections} loading={load} />
+      <CollectionTable
+        variant="public"
+        collections={collections}
+        loading={load}
+        collectionType={collectionType}
+      />
       <CountryAndStateSelectors />
     </>
   );

@@ -8,6 +8,8 @@ export const zCollectionSchema = z.object({
   description: z.string(),
   collectionType: z.nativeEnum(CollectionType).default(CollectionType.COLLECTION),
   public: z.boolean().default(false),
+  forSale: z.boolean().default(false),
+  forDecks: z.boolean().default(false),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
@@ -17,6 +19,8 @@ export const zCollectionCreateRequest = zCollectionSchema.pick({
   description: true,
   collectionType: true,
   public: true,
+  forSale: true,
+  forDecks: true,
 });
 // .partial({
 //   wantlist: true,
@@ -29,6 +33,8 @@ export const zCollectionUpdateRequest = zCollectionSchema
     title: true,
     description: true,
     public: true,
+    forSale: true,
+    forDecks: true,
   })
   .partial();
 

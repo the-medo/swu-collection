@@ -33,7 +33,14 @@ const UserCollections: React.FC<UserCollectionsProps> = ({
     return [];
   }, [user, data, collectionType]);
 
-  return <CollectionTable variant="user" collections={collections} loading={load} />;
+  return (
+    <CollectionTable
+      variant="user"
+      collections={collections}
+      loading={load}
+      collectionType={collectionType}
+    />
+  );
 };
 
 export default UserCollections;

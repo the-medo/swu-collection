@@ -7,6 +7,8 @@ export interface Collection {
   description: string;
   collectionType: CollectionType;
   public: boolean;
+  forSale: boolean;
+  forDecks: boolean;
   createdAt: string;
   updatedAt: string;
 }

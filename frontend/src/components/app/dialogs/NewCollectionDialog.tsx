@@ -35,11 +35,15 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
     title: string;
     description: string;
     public: boolean;
+    forSale: boolean;
+    forDecks: boolean;
   }>({
     defaultValues: {
       title: `My ${cardListString}`,
       description: ``,
       public: false,
+      forSale: false,
+      forDecks: false,
     },
     onSubmit: async ({ value }) => {
       // Call our hook's mutation function.
@@ -49,6 +53,9 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
           description: value.description,
           collectionType,
           public: value.public,
+          ...(collectionType === CollectionType.COLLECTION
+            ? { forSale: value.forSale, forDecks: value.forDecks }
+            : {}),
         },
         {
           onSuccess: result => {
@@ -119,7 +126,7 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
               <div className="flex gap-2">
                 <Checkbox
                   id={field.name}
-                  value={field.state.value ? '1' : '0'}
+                  checked={field.state.value}
                   onBlur={field.handleBlur}
                   onCheckedChange={e => field.handleChange(!!e)}
                 />
@@ -127,6 +134,38 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
               </div>
             )}
           />
+          {collectionType === CollectionType.COLLECTION && (
+            <>
+              <form.Field
+                name="forSale"
+                children={field => (
+                  <div className="flex gap-2">
+                    <Checkbox
+                      id={field.name}
+                      checked={field.state.value}
+                      onBlur={field.handleBlur}
+                      onCheckedChange={e => field.handleChange(!!e)}
+                    />
+                    <Label htmlFor={field.name}>For sale</Label>
+                  </div>
+                )}
+              />
+              <form.Field
+                name="forDecks"
+                children={field => (
+                  <div className="flex gap-2">
+                    <Checkbox
+                      id={field.name}
+                      checked={field.state.value}
+                      onBlur={field.handleBlur}
+                      onCheckedChange={e => field.handleChange(!!e)}
+                    />
+                    <Label htmlFor={field.name}>For decks</Label>
+                  </div>
+                )}
+              />
+            </>
+          )}
           <Button type="submit" disabled={form.state.isSubmitting}>
             {form.state.isSubmitting ? '...' : 'Create'}
           </Button>
