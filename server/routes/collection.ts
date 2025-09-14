@@ -14,12 +14,14 @@ import { collectionIdImportPostRoute } from './collection/_id/import/post.ts';
 import { collectionIdDeleteRoute } from './collection/_id/delete.ts';
 import { collectionIdGetRoute } from './collection/_id/get.ts';
 import { collectionIdPutRoute } from './collection/_id/put.ts';
+import { collectionsBulkDataPostRoute } from './collection/bulk/data/post.ts';
 
 export const selectCollection = getTableColumns(collectionTable);
 
 export const collectionRoute = new Hono<AuthExtension>()
   .route('/', collectionGetRoute)
   .route('/', collectionPostRoute)
+  .route('/bulk/data', collectionsBulkDataPostRoute)
   .route('/:id', collectionIdDeleteRoute)
   .route('/:id', collectionIdGetRoute)
   .route('/:id', collectionIdPutRoute)
