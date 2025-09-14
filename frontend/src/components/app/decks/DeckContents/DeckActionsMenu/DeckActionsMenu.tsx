@@ -14,6 +14,7 @@ import DuplicateButton from './components/DuplicateButton';
 import ExportOptionsMenu from './components/ExportOptionsMenu';
 import AdminEditButton from './components/AdminEditButton';
 import PriceSourceSelector from './components/PriceSourceSelector';
+import SettingsMenu from './components/SettingsMenu';
 
 interface DeckActionsMenuProps {
   deckId: string;
@@ -49,6 +50,7 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
           deckCardsData={deckCardsData}
           cardListData={cardListData}
         />
+        <SettingsMenu />
         <AdminEditButton deckId={deckId} isAdmin={isAdmin} />
       </NavigationMenuList>
     </DeckNavigationMenu>
