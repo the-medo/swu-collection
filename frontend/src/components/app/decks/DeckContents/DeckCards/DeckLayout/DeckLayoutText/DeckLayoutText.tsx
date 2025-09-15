@@ -4,6 +4,7 @@ import DeckCardTextRow, {
 } from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutText/DeckCardTextRow.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { cn } from '@/lib/utils.ts';
+import { useDeckCollection } from '@/components/app/decks/DeckContents/DeckCollection/useDeckCollection.ts';
 
 interface DeckLayoutTextProps {
   variant: DeckCardRowVariant;
@@ -21,6 +22,7 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
   highlightedCardId,
 }) => {
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
+  const { data: d } = useDeckCollection(deckId);
 
   const columnClasses = cn('@container columns-1  gap-4 space-y-4', {
     '@[700px]:columns-2 @[1050px]:columns-3': !displayDeckPrice,
@@ -54,6 +56,8 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                     deckCard={c}
                     card={usedCards[c.cardId]}
                     cardInBoards={usedCardsInBoards[c.cardId]}
+                    missingCardInBoards={d?.missingCards[c.cardId]}
+                    displayMissingCards={d !== null}
                     isHighlighted={highlightedCardId === c.cardId}
                   />
                 );
@@ -81,6 +85,8 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                   deckCard={c}
                   card={usedCards[c.cardId]}
                   cardInBoards={usedCardsInBoards[c.cardId]}
+                  missingCardInBoards={d?.missingCards[c.cardId]}
+                  displayMissingCards={d !== null}
                   isHighlighted={highlightedCardId === c.cardId}
                 />
               );
@@ -103,6 +109,7 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                   deckCard={c}
                   card={usedCards[c.cardId]}
                   cardInBoards={usedCardsInBoards[c.cardId]}
+                  displayMissingCards={d !== null}
                   isHighlighted={highlightedCardId === c.cardId}
                 />
               );

@@ -1,22 +1,27 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ErrorWithStatus } from '../../../../../../../types/ErrorWithStatus.ts';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts';
 import { useUserCollectionsData } from '@/api/collection/useUserCollectionsData.ts';
-import { DeckCardResponse } from '@/api/decks/useGetDeckCards.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 export type DeckCollectionData = {
   total: number;
   missingTotal: number;
   missingCards: Record<string, Record<number, number | undefined> | undefined>;
-};
+} | null;
 
 export function useDeckCollection(deckId: string) {
+  const { data: collectionInfoInDecks } = useGetUserSetting('collectionInfoInDecks');
   const queryClient = useQueryClient();
   const { deckCardsForLayout } = useDeckData(deckId);
-  const { data } = useUserCollectionsData();
+  const { data } = useUserCollectionsData(!collectionInfoInDecks);
 
   useEffect(() => {
+    if (!collectionInfoInDecks) {
+      queryClient.setQueryData<DeckCollectionData>(['deck-collection-data', deckId], () => null);
+      return;
+    }
     let total = 0;
     let missingTotal = 0;
     const missingCards: Record<string, Record<number, number | undefined> | undefined> = {};
@@ -47,21 +52,17 @@ export function useDeckCollection(deckId: string) {
       }
     });
 
-    queryClient.setQueryData<DeckCardResponse>(['deck-collection-data', deckId], oldData => ({
+    queryClient.setQueryData<DeckCollectionData>(['deck-collection-data', deckId], () => ({
       total,
       missingTotal,
       missingCards,
     }));
-  }, [deckCardsForLayout, data]);
+  }, [deckCardsForLayout, data, collectionInfoInDecks]);
 
   return useQuery<DeckCollectionData, ErrorWithStatus>({
     queryKey: ['deck-collection-data', deckId],
     queryFn: () => {
-      return {
-        total: 0,
-        missingTotal: 0,
-        missingCards: {},
-      };
+      return null;
     },
     staleTime: Infinity,
   });
