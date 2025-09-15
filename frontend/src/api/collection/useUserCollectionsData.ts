@@ -39,7 +39,7 @@ type UserCollectionsDataResult = {
   >;
 };
 
-export function useUserCollectionsData(skip: boolean | undefined) {
+export function useUserCollectionsData(skip?: boolean | undefined) {
   return useQuery<UserCollectionsDataResult, ErrorWithStatus>({
     queryKey: ['user-collections-sync'],
     queryFn: skip

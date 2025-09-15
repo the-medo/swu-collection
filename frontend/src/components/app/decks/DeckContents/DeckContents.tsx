@@ -17,6 +17,7 @@ import DeckImageButton from '@/components/app/decks/DeckContents/DeckImage/DeckI
 import { Link } from '@tanstack/react-router';
 import { Hammer } from 'lucide-react';
 import DeckGradientButton from '@/components/app/decks/DeckContents/DeckImage/DeckGradientButton.tsx';
+import DeckCollection from '@/components/app/decks/DeckContents/DeckCollection/DeckCollection.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -101,6 +102,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
               <DeckCards deckId={deckId} highlightedCardId={highlightedCardId} />
             )}
             {tabsValue === 'charts' && <DeckStats deckId={deckId} />}
+            {tabsValue === 'collection' && <DeckCollection deckId={deckId} />}
           </div>
         </div>
       </div>
