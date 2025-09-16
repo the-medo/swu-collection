@@ -12,17 +12,21 @@ import { usePostCollection } from '@/api/collections/usePostCollection.ts';
 import { CollectionType } from '../../../../../types/enums.ts';
 import { collectionTypeTitle } from '../../../../../types/iterableEnumInfo.ts';
 import SignIn from '@/components/app/auth/SignIn.tsx';
+import { useQueryClient } from '@tanstack/react-query';
 
 export interface NewCollectionFormProps {
   collectionType: CollectionType;
   navigateAfterCreation?: boolean; // default true
+  onCollectionCreated?: (newCollectionId: string) => void;
 }
 
 const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
   collectionType,
   navigateAfterCreation = true,
+  onCollectionCreated,
 }) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const user = useUser();
   const { toast } = useToast();
   const cardListString = collectionTypeTitle[collectionType];
@@ -62,6 +66,8 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
             if (navigateAfterCreation) {
               navigate({ to: `/collections/${createdCollection.id}` });
             }
+            onCollectionCreated?.(createdCollection.id);
+            queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
           },
         },
       );

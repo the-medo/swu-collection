@@ -141,6 +141,6 @@ export function useUserCollectionsData(skip?: boolean | undefined) {
 
           return result;
         },
-    staleTime: 5 * 60 * 1000,
+    staleTime: Infinity,
   });
 }

@@ -37,6 +37,7 @@ const MissingCardsActionSelector: React.FC<MissingCardsActionSelectorProps> = ({
         collectionType={actionCollectionType}
         collectionMap={collectionInfo.map}
         collectionIdArray={getIdArray()}
+        setActionCollectionType={setActionCollectionType}
       />
     );
   }
