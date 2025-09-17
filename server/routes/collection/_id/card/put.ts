@@ -7,6 +7,7 @@ import { and, eq } from 'drizzle-orm';
 import { collection as collectionTable } from '../../../../db/schema/collection.ts';
 import { db } from '../../../../db';
 import { collectionCard as collectionCardTable } from '../../../../db/schema/collection_card.ts';
+import { updateCollectionUpdatedAt } from '../../../../lib/updateCollectionUpdatedAt.ts';
 
 /**
  * Update card in collection (wantlist)
@@ -56,9 +57,11 @@ export const collectionIdCardPutRoute = new Hono<AuthExtension>().put(
           .returning()
       )[0];
 
+      await updateCollectionUpdatedAt(paramCollectionId);
       return c.json({ data: deletedCollectionCard }, 201);
     }
 
+    await updateCollectionUpdatedAt(paramCollectionId);
     return c.json({ data: result }, 201);
   },
 );

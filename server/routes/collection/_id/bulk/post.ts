@@ -12,6 +12,7 @@ import {
 } from '../../../../db/schema/collection_card.ts';
 import { type SwuRarity, SwuSet } from '../../../../../types/enums.ts';
 import { cardList } from '../../../../db/lists.ts';
+import { updateCollectionUpdatedAt } from '../../../../lib/updateCollectionUpdatedAt.ts';
 
 /**
  * Bulk action with collection (wantlist)
@@ -122,6 +123,8 @@ export const collectionIdBulkPostRoute = new Hono<AuthExtension>().post(
       .delete(collectionCardTable)
       .where(and(cardCollectionId, lte(collectionCardTable.amount, 0)))
       .returning();
+
+    await updateCollectionUpdatedAt(paramCollectionId);
 
     return c.json({
       data: {

@@ -12,6 +12,7 @@ import {
   type InsertCollectionCard,
 } from '../../../../db/schema/collection_card.ts';
 import { batchArray } from '../../../../lib/utils/batch.ts';
+import { updateCollectionUpdatedAt } from '../../../../lib/updateCollectionUpdatedAt.ts';
 
 export const collectionIdImportPostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -103,6 +104,8 @@ export const collectionIdImportPostRoute = new Hono<AuthExtension>().post(
     });
 
     const insertedCards = allInsertedCards;
+
+    await updateCollectionUpdatedAt(paramCollectionId);
 
     return c.json(
       {

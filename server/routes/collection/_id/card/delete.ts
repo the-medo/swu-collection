@@ -7,6 +7,7 @@ import { and, eq } from 'drizzle-orm';
 import { collection as collectionTable } from '../../../../db/schema/collection.ts';
 import { db } from '../../../../db';
 import { collectionCard as collectionCardTable } from '../../../../db/schema/collection_card.ts';
+import { updateCollectionUpdatedAt } from '../../../../lib/updateCollectionUpdatedAt.ts';
 
 /**
  * Remove card(+variant) from collection (wantlist)
@@ -40,6 +41,7 @@ export const collectionIdCardDeleteRoute = new Hono<AuthExtension>().delete(
       await db.delete(collectionCardTable).where(and(...primaryKeyFilters))
     )[0];
 
+    await updateCollectionUpdatedAt(paramCollectionId);
     return c.json({ data: deletedCollectionCard });
   },
 );

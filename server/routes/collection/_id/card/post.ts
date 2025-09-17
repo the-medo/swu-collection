@@ -7,6 +7,7 @@ import { eq, sql } from 'drizzle-orm';
 import { collection as collectionTable } from '../../../../db/schema/collection.ts';
 import { db } from '../../../../db';
 import { collectionCard as collectionCardTable } from '../../../../db/schema/collection_card.ts';
+import { updateCollectionUpdatedAt } from '../../../../lib/updateCollectionUpdatedAt.ts';
 
 /**
  * Insert / upsert card(+variant) into collection (wantlist)
@@ -49,6 +50,7 @@ export const collectionIdCardPostRoute = new Hono<AuthExtension>().post(
       })
       .returning();
 
+    await updateCollectionUpdatedAt(paramCollectionId);
     return c.json({ data: newCollectionCard[0] }, 201);
   },
 );
