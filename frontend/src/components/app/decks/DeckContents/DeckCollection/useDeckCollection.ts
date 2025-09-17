@@ -4,11 +4,17 @@ import { useEffect } from 'react';
 import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts';
 import { useUserCollectionsData } from '@/api/collection/useUserCollectionsData.ts';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
+import {
+  CardOwnedQuantity
+} from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsTable/missingCardsTableLib.ts';
 
 export type DeckCollectionData = {
   total: number;
   missingTotal: number;
   missingCards: Record<string, Record<number, number | undefined> | undefined>;
+  usedCards: DeckCardsForLayout['usedCards'];
+  ownedCardQuantity: Record<string, CardOwnedQuantity>;
 } | null;
 
 export function useDeckCollection(deckId: string) {
@@ -52,10 +58,27 @@ export function useDeckCollection(deckId: string) {
       }
     });
 
+    // Compute ownedCardQuantity per card used in this deck
+    const ownedCardQuantity: Record<string, CardOwnedQuantity> = {};
+    Object.keys(deckCardsForLayout.usedCardsInBoards).forEach((cardId) => {
+      const colEntry = data?.cards?.[cardId]?.[1]; // CollectionType.COLLECTION = 1
+      const wantEntry = data?.cards?.[cardId]?.[2]; // CollectionType.WANTLIST = 2
+      const otherEntry = data?.cards?.[cardId]?.[3]; // CollectionType.OTHER = 3
+
+      const deckCollection = colEntry?.forDecks ?? 0;
+      const nonDeckCollection = (colEntry?.total ?? 0) - deckCollection;
+      const wantlist = wantEntry?.total ?? 0;
+      const cardlist = otherEntry?.total ?? 0;
+
+      ownedCardQuantity[cardId] = { deckCollection, nonDeckCollection, wantlist, cardlist };
+    });
+
     queryClient.setQueryData<DeckCollectionData>(['deck-collection-data', deckId], () => ({
       total,
       missingTotal,
       missingCards,
+      usedCards: deckCardsForLayout.usedCards,
+      ownedCardQuantity,
     }));
   }, [deckCardsForLayout, data, collectionInfoInDecks]);
 
