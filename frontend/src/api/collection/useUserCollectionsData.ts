@@ -85,7 +85,7 @@ export function useUserCollectionsData(skip?: boolean | undefined) {
           }
 
           // Build cards aggregation per cardId and collection type
-          const cards: UserCollectionsDataResult['cards'] = {} as any;
+          const cards: UserCollectionsDataResult['cards'] = {};
 
           const ensureCardEntry = (cardId: string) => {
             if (!cards[cardId]) {
@@ -109,6 +109,7 @@ export function useUserCollectionsData(skip?: boolean | undefined) {
 
           for (const col of collections) {
             const colCards = cardsByCollectionId[col.id] || [];
+            console.log(col?.title, { col, colCards });
             if (!colCards.length) continue;
             const typeKey = col.collectionType;
             for (const card of colCards) {

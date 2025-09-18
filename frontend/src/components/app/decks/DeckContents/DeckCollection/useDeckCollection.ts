@@ -5,14 +5,15 @@ import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts'
 import { useUserCollectionsData } from '@/api/collection/useUserCollectionsData.ts';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
-import {
-  CardOwnedQuantity
-} from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsTable/missingCardsTableLib.ts';
+import { CardOwnedQuantity } from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsTable/missingCardsTableLib.ts';
 
 export type DeckCollectionData = {
   total: number;
   missingTotal: number;
-  missingCards: Record<string, Record<number, number | undefined> | undefined>;
+  missingCards: Record<
+    string,
+    (Record<number, number | undefined> & { quantity: number }) | undefined
+  >;
   usedCards: DeckCardsForLayout['usedCards'];
   ownedCardQuantity: Record<string, CardOwnedQuantity>;
 } | null;
@@ -30,20 +31,24 @@ export function useDeckCollection(deckId: string) {
     }
     let total = 0;
     let missingTotal = 0;
-    const missingCards: Record<string, Record<number, number | undefined> | undefined> = {};
+    const missingCards: Record<
+      string,
+      (Record<number, number | undefined> & { quantity: number }) | undefined
+    > = {};
     Object.entries(deckCardsForLayout.usedCardsInBoards).forEach(([cardId, cardInBoards]) => {
       let cardForDecks = data?.cards?.[cardId]?.[1]?.forDecks ?? 0;
 
       const inMain = cardInBoards?.[1] ?? 0;
       const inSide = cardInBoards?.[2] ?? 0;
 
-      total += inMain + inSide;
+      const totalForCard = inMain + inSide;
+      total += totalForCard;
 
       if (inMain > 0) {
         cardForDecks -= inMain;
         if (cardForDecks < 0) {
           missingTotal += Math.abs(cardForDecks);
-          missingCards[cardId] = { 1: Math.abs(cardForDecks) };
+          missingCards[cardId] = { 1: Math.abs(cardForDecks), quantity: totalForCard };
           cardForDecks = 0;
         }
       }
@@ -52,15 +57,18 @@ export function useDeckCollection(deckId: string) {
         cardForDecks -= inSide;
         if (cardForDecks < 0) {
           missingTotal += Math.abs(cardForDecks);
-          if (!(cardId in missingCards)) missingCards[cardId] = {};
+          if (!(cardId in missingCards)) missingCards[cardId] = { quantity: totalForCard };
           missingCards[cardId]![2] = Math.abs(cardForDecks);
         }
       }
+
+      if (!missingCards[cardId]) missingCards[cardId] = { quantity: totalForCard };
     });
 
     // Compute ownedCardQuantity per card used in this deck
     const ownedCardQuantity: Record<string, CardOwnedQuantity> = {};
-    Object.keys(deckCardsForLayout.usedCardsInBoards).forEach((cardId) => {
+    Object.keys(deckCardsForLayout.usedCardsInBoards).forEach(cardId => {
+      // console.log(cardId, data?.cards?.[cardId]);
       const colEntry = data?.cards?.[cardId]?.[1]; // CollectionType.COLLECTION = 1
       const wantEntry = data?.cards?.[cardId]?.[2]; // CollectionType.WANTLIST = 2
       const otherEntry = data?.cards?.[cardId]?.[3]; // CollectionType.OTHER = 3

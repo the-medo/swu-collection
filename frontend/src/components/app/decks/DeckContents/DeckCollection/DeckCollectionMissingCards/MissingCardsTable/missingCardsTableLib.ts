@@ -1,3 +1,8 @@
+import {
+  CardDataWithVariants,
+  CardListVariants,
+} from '../../../../../../../../../lib/swu-resources/types.ts';
+
 export interface CardOwnedQuantity {
   deckCollection: number;
   wantlist: number;
@@ -5,8 +10,9 @@ export interface CardOwnedQuantity {
   cardlist: number;
 }
 
-interface MissingCardsRowData {
+export interface MissingCardsRowData {
   cardId: string;
+  card: CardDataWithVariants<CardListVariants> | undefined;
   quantity: number;
-  ownedQuantity: CardOwnedQuantity;
+  ownedQuantity: CardOwnedQuantity | undefined;
 }
