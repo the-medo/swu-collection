@@ -28,7 +28,18 @@ const MissingCardsTable: React.FC<MissingCardsTableProps> = ({ deckId }) => {
   // compute and push final quantities to the store based on rows and settings
   useMissingCardsFinalQuantity(rows);
 
-  return <DataTable columns={columns} data={rows} loading={isLoading} />;
+  return (
+    <div className="flex flex-[100] border min-w-[350px] min-h-[300px] max-h-[60vh] @container/missing-cards-table overflow-auto">
+      <DataTable
+        columns={columns}
+        data={rows}
+        loading={isLoading}
+        cellClassName="p-0"
+        headerCellClassName="px-0"
+        tableBorder={false}
+      />
+    </div>
+  );
 };
 
 export default MissingCardsTable;

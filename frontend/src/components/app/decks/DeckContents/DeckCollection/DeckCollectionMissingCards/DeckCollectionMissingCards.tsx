@@ -8,7 +8,7 @@ interface DeckCollectionMissingCardsProps {
 
 const DeckCollectionMissingCards: React.FC<DeckCollectionMissingCardsProps> = ({ deckId }) => {
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row gap-2 flex-wrap">
       <MissingCardsTable deckId={deckId} />
       <MissingCardsActionSelector deckId={deckId} />
     </div>

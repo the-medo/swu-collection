@@ -27,7 +27,7 @@ const FinalInput: React.FC<FinalInputProps> = ({ cardId }) => {
     setSingleFinalQuantity(cardId, num);
   };
 
-  const wrapperClasses = `flex items-center justify-end w-full -my-1 p-1 bg-primary/20 pl-2`;
+  const wrapperClasses = `flex items-center justify-end w-full p-1 bg-primary/20 pl-2`;
 
   return (
     <div className={wrapperClasses}>

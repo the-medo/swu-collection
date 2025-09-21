@@ -43,7 +43,7 @@ const MissingCardsActionSelector: React.FC<MissingCardsActionSelectorProps> = ({
   }
 
   return (
-    <div className="min-w-[300px] flex flex-col rounded-md border-border p-2 bg-muted/70 gap-2">
+    <div className="min-w-[300px] flex flex-1 flex-col rounded-md border-border p-2 bg-muted/70 gap-2">
       <h4>Action</h4>
       Do a bulk action with missing cards from this deck.
       <div className="flex flex-col gap-2">
