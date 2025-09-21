@@ -28,7 +28,7 @@ export function useMissingCardsTableColumns(): ColumnDef<MissingCardsRowData>[] 
       size: 8,
       cell: ({ row }) => (
         <div className="w-full flex items-center justify-end">
-          <div className="h-8 w-8 rounded-full bg-muted text-foreground flex items-center justify-center text-base font-semibold">
+          <div className="h-8 w-8 rounded-full bg-muted/30 text-foreground flex items-center justify-center text-base xfont-semibold">
             {row.original.quantity}
           </div>
         </div>
@@ -44,7 +44,7 @@ export function useMissingCardsTableColumns(): ColumnDef<MissingCardsRowData>[] 
         const card = row.original.card;
         return (
           <DeckCardHoverImage card={card} size="w200">
-            <div className="flex items-center gap-2 max-w-[320px] cursor-help">
+            <div className="flex items-center gap-2 min-w-[120px] cursor-help">
               <div className="flex gap-1 min-w-[64px] justify-start">
                 {card?.cost !== undefined && card?.cost !== null ? (
                   <CostIcon cost={card?.cost ?? 0} size="small" />
@@ -53,11 +53,14 @@ export function useMissingCardsTableColumns(): ColumnDef<MissingCardsRowData>[] 
                   <AspectIcon key={`${a}${i}`} aspect={a} size="small" />
                 ))}
               </div>
-              <span className="truncate">{card?.name ?? row.original.cardId}</span>
+              <span className="truncate flex-1 overflow-hidden">
+                {card?.name ?? row.original.cardId}
+              </span>
             </div>
           </DeckCardHoverImage>
         );
       },
+      minSize: 120,
     });
 
     // Uniform numeric columns

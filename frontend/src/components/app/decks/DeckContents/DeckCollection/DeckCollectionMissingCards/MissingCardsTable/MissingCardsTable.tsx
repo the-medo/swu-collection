@@ -3,29 +3,30 @@ import { useDeckCollection } from '@/components/app/decks/DeckContents/DeckColle
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { useMissingCardsTableColumns } from './useMissingCardsTableColumns.tsx';
 import { useUserCollectionsData } from '@/api/collection/useUserCollectionsData.ts';
+import { useMissingCardsFinalQuantity } from './useMissingCardsFinalQuantity.ts';
 
 interface MissingCardsTableProps {
   deckId: string;
 }
 
 const MissingCardsTable: React.FC<MissingCardsTableProps> = ({ deckId }) => {
-  const { data: d, isLoading } = useDeckCollection(deckId);
+  const { data: deckCollectionData, isLoading } = useDeckCollection(deckId);
   const { data } = useUserCollectionsData();
   const columns = useMissingCardsTableColumns();
 
   const rows = React.useMemo(() => {
-    if (!d) return [] as any[];
-    const ids = Object.keys(d.usedCards || {});
+    if (!deckCollectionData) return [] as any[];
+    const ids = Object.keys(deckCollectionData.usedCards || {});
     return ids.map(cardId => ({
       cardId,
-      card: d.usedCards[cardId],
-      quantity: d.missingCards[cardId]?.quantity ?? 0,
-      ownedQuantity: d.ownedCardQuantity[cardId],
+      card: deckCollectionData.usedCards[cardId],
+      quantity: deckCollectionData.missingCards[cardId]?.quantity ?? 0,
+      ownedQuantity: deckCollectionData.ownedCardQuantity[cardId],
     }));
-  }, [d]);
+  }, [deckCollectionData]);
 
-  console.log({ d });
-  console.log({ data });
+  // compute and push final quantities to the store based on rows and settings
+  useMissingCardsFinalQuantity(rows);
 
   return <DataTable columns={columns} data={rows} loading={isLoading} />;
 };
