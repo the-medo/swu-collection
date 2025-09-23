@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import {
   DeckMissingCountKey,
@@ -14,16 +14,11 @@ const MissingCountSettingCheckbox: React.FC<MissingCountSettingCheckboxProps> = 
   const checked = useDeckMissingCardsStore(k);
   const { setDeckMissingCardsStore } = useDeckMissingCardsStoreActions();
 
-  useEffect(() => {
-    console.log(checked);
-  }, [checked]);
-
   return (
     <label className="flex items-center gap-2 px-1 py-1">
       <Checkbox
         checked={checked}
         onCheckedChange={val => {
-          // console.log(val);
           setDeckMissingCardsStore(k, Boolean(val));
         }}
       />

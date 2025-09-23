@@ -6,7 +6,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion.tsx';
 import DeckCollectionMissingCards from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/DeckCollectionMissingCards.tsx';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CircleHelp } from 'lucide-react';
 
 interface DeckCollectionProps {
@@ -22,25 +21,18 @@ const DeckCollection: React.FC<DeckCollectionProps> = ({ deckId }) => {
         <AccordionTrigger>
           <div className="flex items-center gap-2">
             <h3 className="mb-0">Missing Cards</h3>
-            <TooltipProvider>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    aria-label="How Missing Cards work"
-                    className="inline-flex items-center justify-center rounded p-1 hover:bg-muted/60 transition-colors"
-                    onClick={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setShowHelp(v => !v);
-                    }}
-                  >
-                    <CircleHelp className="size-4 text-muted-foreground" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>Click to open helper</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <button
+              type="button"
+              aria-label="How Missing Cards work"
+              className="inline-flex items-center justify-center rounded p-1 hover:bg-muted/60 transition-colors"
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowHelp(v => !v);
+              }}
+            >
+              <CircleHelp className="size-4 text-muted-foreground" />
+            </button>
           </div>
         </AccordionTrigger>
         <AccordionContent>

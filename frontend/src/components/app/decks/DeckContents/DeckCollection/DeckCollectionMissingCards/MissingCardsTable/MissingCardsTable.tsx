@@ -17,12 +17,20 @@ const MissingCardsTable: React.FC<MissingCardsTableProps> = ({ deckId }) => {
   const rows = React.useMemo(() => {
     if (!deckCollectionData) return [] as any[];
     const ids = Object.keys(deckCollectionData.usedCards || {});
-    return ids.map(cardId => ({
-      cardId,
-      card: deckCollectionData.usedCards[cardId],
-      quantity: deckCollectionData.missingCards[cardId]?.quantity ?? 0,
-      ownedQuantity: deckCollectionData.ownedCardQuantity[cardId],
-    }));
+    return ids
+      .map(cardId => ({
+        cardId,
+        card: deckCollectionData.usedCards[cardId],
+        quantity: deckCollectionData.missingCards[cardId]?.quantity ?? 0,
+        ownedQuantity: deckCollectionData.ownedCardQuantity[cardId],
+      }))
+      .filter(c => c.card?.type !== 'Base' && c.card?.type !== 'Leader')
+      .sort(
+        (a, b) =>
+          b.quantity -
+          b.ownedQuantity.deckCollection -
+          (a.quantity - a.ownedQuantity.deckCollection),
+      );
   }, [deckCollectionData]);
 
   useEffect(() => {

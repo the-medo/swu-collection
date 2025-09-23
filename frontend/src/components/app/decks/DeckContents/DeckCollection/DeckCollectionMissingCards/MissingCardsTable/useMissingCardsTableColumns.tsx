@@ -101,14 +101,7 @@ export function useMissingCardsTableColumns(): ColumnDef<MissingCardsRowData>[] 
       header: () => (
         <div className="hidden @[550px]/missing-cards-table:flex flex-col items-center justify-center">
           <MissingCountSettingCheckbox k="countCollectionsForDecks" />
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="px-1">CD</span>
-              </TooltipTrigger>
-              <TooltipContent side="top">Total "Collection (for decks)" amount</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <span className="px-1">CD</span>
         </div>
       ),
       accessorFn: r => r.ownedQuantity?.deckCollection ?? 0,
@@ -126,14 +119,7 @@ export function useMissingCardsTableColumns(): ColumnDef<MissingCardsRowData>[] 
       header: () => (
         <div className="hidden @[550px]/missing-cards-table:flex flex-col items-center justify-center">
           <MissingCountSettingCheckbox k="countCollectionsNotForDecks" />
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="hidden @[550px]/missing-cards-table:inline px-1">CO</span>
-              </TooltipTrigger>
-              <TooltipContent side="top">Total "Collection (NOT for decks)" amount</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <span className="hidden @[550px]/missing-cards-table:inline px-1">CO</span>
         </div>
       ),
       accessorFn: r => r.ownedQuantity?.nonDeckCollection ?? 0,
@@ -151,14 +137,7 @@ export function useMissingCardsTableColumns(): ColumnDef<MissingCardsRowData>[] 
       header: () => (
         <div className="hidden @[550px]/missing-cards-table:flex flex-col items-center justify-center">
           <MissingCountSettingCheckbox k="countWantlists" />
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="hidden @[550px]/missing-cards-table:inline px-1">WL</span>
-              </TooltipTrigger>
-              <TooltipContent side="top">Total "Wantlist" amount</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <span className="hidden @[550px]/missing-cards-table:inline px-1">WL</span>
         </div>
       ),
       accessorFn: r => r.ownedQuantity?.wantlist ?? 0,
@@ -173,14 +152,7 @@ export function useMissingCardsTableColumns(): ColumnDef<MissingCardsRowData>[] 
       header: () => (
         <div className="hidden @[550px]/missing-cards-table:flex flex-col items-center justify-center">
           <MissingCountSettingCheckbox k="countOtherLists" />
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="hidden @[550px]/missing-cards-table:inline px-1">OL</span>
-              </TooltipTrigger>
-              <TooltipContent side="top">Total "Other lists" amount</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <span className="hidden @[550px]/missing-cards-table:inline px-1">OL</span>
         </div>
       ),
       accessorFn: r => r.ownedQuantity?.cardlist ?? 0,
@@ -193,18 +165,7 @@ export function useMissingCardsTableColumns(): ColumnDef<MissingCardsRowData>[] 
     // Final column with mock component
     cols.push({
       id: 'final',
-      header: () => (
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span>Final</span>
-            </TooltipTrigger>
-            <TooltipContent side="top">
-              Final amount of a card that will be added to collection / wantlist / card list
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
+      header: () => <span>Final</span>,
       accessorFn: r => r.cardId,
       size: 16,
       cell: ({ row }) => <FinalInput cardId={row.original.cardId} />,
