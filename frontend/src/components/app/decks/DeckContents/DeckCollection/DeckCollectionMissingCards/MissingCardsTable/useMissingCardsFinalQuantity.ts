@@ -16,8 +16,7 @@ export const useMissingCardsFinalQuantity = (rows: MissingCardsRowData[]) => {
   const countWantlists = useDeckMissingCardsStore('countWantlists');
   const countOtherLists = useDeckMissingCardsStore('countOtherLists');
 
-  const { replaceFinalQuantityExceptChanged, resetDeckMissingCardsStore } =
-    useDeckMissingCardsStoreActions();
+  const { replaceFinalQuantityExceptChanged } = useDeckMissingCardsStoreActions();
 
   useEffect(() => {
     const map: DeckMissingCardsStoreFinalQuantity = {};
@@ -40,10 +39,6 @@ export const useMissingCardsFinalQuantity = (rows: MissingCardsRowData[]) => {
     }
 
     replaceFinalQuantityExceptChanged(map);
-
-    return () => {
-      resetDeckMissingCardsStore();
-    };
   }, [
     rows,
     countCollectionsForDecks,

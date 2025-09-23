@@ -21,18 +21,17 @@ const defaultState: DeckMissingCardsStore = {
   finalQuantity: {},
 };
 
+export type DeckMissingCountKey = keyof Omit<DeckMissingCardsStore, 'finalQuantity'>;
+
 const store = new Store<DeckMissingCardsStore>(defaultState);
 
-const setDeckMissingCardsStore = (
-  key: keyof Omit<DeckMissingCardsStore, 'finalQuantity'>,
-  value: boolean,
-) =>
+const setDeckMissingCardsStore = (key: DeckMissingCountKey, value: boolean) =>
   store.setState(state => ({
     ...state,
     [key]: value,
   }));
 
-export function useDeckMissingCardsStore(key: keyof Omit<DeckMissingCardsStore, 'finalQuantity'>) {
+export function useDeckMissingCardsStore(key: DeckMissingCountKey) {
   return useStore(store, state => state[key]);
 }
 
@@ -67,8 +66,7 @@ function replaceFinalQuantityExceptChanged(newMap: DeckMissingCardsStoreFinalQua
         // Take incoming fully; if changed not provided, default to false
         result[id] = {
           quantity: incoming.quantity,
-          originalQuantity:
-            incoming.originalQuantity ?? incoming.quantity,
+          originalQuantity: incoming.originalQuantity ?? incoming.quantity,
           changed: incoming.changed ?? false,
         };
       } else if (current) {
