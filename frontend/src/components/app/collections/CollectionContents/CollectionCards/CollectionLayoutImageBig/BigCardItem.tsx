@@ -5,12 +5,14 @@ import CollectionCardInput from '@/components/app/collections/CollectionContents
 import { languageRenderer } from '@/lib/table/languageRenderer.tsx';
 import { conditionRenderer } from '@/lib/table/conditionRenderer.tsx';
 import { foilRenderer } from '@/lib/table/foilRenderer.tsx';
+import CollectionCardSelectionInput from '@/components/app/collections/CollectionCardSelection/CollectionCardSelectionInput.tsx';
 import {
   useCCDetail,
   useCCCard,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 
 interface BigCardItemProps {
+  collectionId: string;
   cardKey: string;
   horizontal: boolean;
   currency: string;
@@ -19,6 +21,7 @@ interface BigCardItemProps {
 }
 
 const BigCardItem: React.FC<BigCardItemProps> = ({
+  collectionId,
   cardKey,
   horizontal,
   currency,
@@ -75,7 +78,7 @@ const BigCardItem: React.FC<BigCardItemProps> = ({
           {conditionRenderer(collectionCard.condition)}
           {languageRenderer(collectionCard.language, false)}
         </div>
-        <div>
+        <div className="flex flex-col gap-2 justify-end items-end z-[2]">
           {owned ? (
             // @ts-ignore
             <CollectionCardInput
@@ -86,9 +89,12 @@ const BigCardItem: React.FC<BigCardItemProps> = ({
               onChange={onChange}
             />
           ) : (
-            <div className="font-bold text-center px-2 rounded-lg bg-background">
-              {collectionCard.amount}x
-            </div>
+            <>
+              <div className="align-right font-bold text-center px-2 rounded-lg bg-background -mt-8 -mr-1 w-[50px]">
+                {collectionCard.amount}x
+              </div>
+              <CollectionCardSelectionInput collectionId={collectionId} card={collectionCard} />
+            </>
           )}
         </div>
       </div>

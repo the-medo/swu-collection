@@ -6,9 +6,12 @@ import {
   removeCollectionFromMap,
   upsertCard,
 } from '@/components/app/collections/CollectionCardSelection/collectionCardSelectionLib.ts';
+import { CardLanguage } from '../../../../../../types/enums.ts';
+
+export type CollectionCardSelectionSubtype = Omit<CollectionCard, 'cardId' | 'variantId'>;
 
 export interface CollectionCardSelection {
-  cards: Record<string, Record<string, Omit<CollectionCard, 'cardId' | 'variantId'>[]>>;
+  cards: Record<string, Record<string, CollectionCardSelectionSubtype[]>>;
 }
 
 export interface CollectionCardSelectionStore {
@@ -43,6 +46,19 @@ export function useCollectionCardSelectionStore(
   collectionId: string,
 ): CollectionCardSelection | undefined {
   return useStore(store, s => s.collectionData[collectionId]);
+}
+
+export function useCollectionSingleCardSelectionStore(
+  collectionId: string,
+  cardId: string,
+  variantId: string,
+  foil: boolean,
+  condition: number,
+  language: CardLanguage,
+): CollectionCardSelectionSubtype[] | undefined {
+  const c = useStore(store, s => s.collectionData?.[collectionId]?.cards[cardId]?.[variantId]);
+  if (!c) return undefined;
+  return c.find(cc => cc.foil === foil && cc.condition === condition && cc.language === language);
 }
 
 export function useCollectionCardSelectionActions(collectionId: string) {

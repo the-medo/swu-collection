@@ -28,7 +28,7 @@ export function upsertCard(
       arr.splice(idx, 1);
     }
   } else if (amount > 0) {
-    arr.push({ ...rest });
+    arr.push({ amount, ...rest });
   }
 
   if (arr.length > 0) {
