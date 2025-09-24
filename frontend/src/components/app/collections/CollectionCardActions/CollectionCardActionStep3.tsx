@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, MinusCircle, PlusCircle, CheckCircle2, Link as LinkIcon } from 'lucide-react';
-import { CollectionType } from '../../../../../../../../types/enums.ts';
+import { CollectionType } from '../../../../../../types/enums.ts';
 import { useAddMultipleCollectionCards } from '@/api/collections/useAddMultipleCollectionCards.ts';
-import { collectionTypeTitle } from '../../../../../../../../types/iterableEnumInfo.ts';
+import { collectionTypeTitle } from '../../../../../../types/iterableEnumInfo.ts';
 import { Link } from '@tanstack/react-router';
-import { MissingCardsActionProps } from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsAction.tsx';
+import { CollectionCardActionProps } from '@/components/app/collections/CollectionCardActions/CollectionCardAction.tsx';
 
-interface MissingCardsActionStep3Props extends MissingCardsActionProps {
+interface CollectionCardActionStep3Props extends CollectionCardActionProps {
   collectionId: string;
   collectionTitle?: string;
   collectionType: CollectionType;
   onBack: () => void;
 }
 
-const MissingCardsActionStep3: React.FC<MissingCardsActionStep3Props> = ({
+const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
   items,
   collectionId,
   collectionTitle,
   collectionType,
   onBack,
+  ...configuration
 }) => {
   const addMultipleMutation = useAddMultipleCollectionCards();
 
@@ -123,4 +124,4 @@ const MissingCardsActionStep3: React.FC<MissingCardsActionStep3Props> = ({
   );
 };
 
-export default MissingCardsActionStep3;
+export default CollectionCardActionStep3;

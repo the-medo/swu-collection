@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useUserCollectionsData } from '@/api/collection/useUserCollectionsData.ts';
 import { BookOpenCheck, NotebookTabs, ScrollText } from 'lucide-react';
-import { ActionSelectorRow } from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/ActionSelectorRow.tsx';
-import { CollectionType } from '../../../../../../../../types/enums.ts';
-import MissingCardsActionStep2 from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsActionStep2.tsx';
-import { MissingCardsActionProps } from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsAction.tsx';
+import { ActionSelectorRow } from '@/components/app/collections/CollectionCardActions/ActionSelectorRow.tsx';
+import { CollectionType } from '../../../../../../types/enums.ts';
+import CollectionCardActionStep2 from '@/components/app/collections/CollectionCardActions/CollectionCardActionStep2.tsx';
+import { CollectionCardActionProps } from '@/components/app/collections/CollectionCardActions/CollectionCardAction.tsx';
 
-interface MissingCardsActionStep1Props extends MissingCardsActionProps {}
+interface CollectionCardActionStep1Props extends CollectionCardActionProps {}
 
-const MissingCardsActionStep1: React.FC<MissingCardsActionStep1Props> = ({ items }) => {
+const CollectionCardActionStep1: React.FC<CollectionCardActionStep1Props> = ({
+  ...itemsAndConfiguration
+}) => {
   const { data } = useUserCollectionsData();
   const [actionCollectionType, setActionCollectionType] = useState<CollectionType>();
 
@@ -30,12 +32,12 @@ const MissingCardsActionStep1: React.FC<MissingCardsActionStep1Props> = ({ items
 
   if (actionCollectionType && collectionInfo) {
     return (
-      <MissingCardsActionStep2
-        items={items}
+      <CollectionCardActionStep2
         collectionType={actionCollectionType}
         collectionMap={collectionInfo.map}
         collectionIdArray={getIdArray()}
         setActionCollectionType={setActionCollectionType}
+        {...itemsAndConfiguration}
       />
     );
   }
@@ -68,4 +70,4 @@ const MissingCardsActionStep1: React.FC<MissingCardsActionStep1Props> = ({ items
   );
 };
 
-export default MissingCardsActionStep1;
+export default CollectionCardActionStep1;

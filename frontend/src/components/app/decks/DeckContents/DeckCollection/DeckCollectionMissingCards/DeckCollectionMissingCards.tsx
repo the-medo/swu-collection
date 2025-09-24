@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import MissingCardsTable from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsTable/MissingCardsTable.tsx';
-import MissingCardsAction from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsAction.tsx';
+import CollectionCardAction from '@/components/app/collections/CollectionCardActions/CollectionCardAction.tsx';
 import { useDeckMissingCardsStore } from '@/components/app/decks/DeckContents/DeckCollection/useDeckMissingCardsStore.ts';
 import { useDeckCollection } from '@/components/app/decks/DeckContents/DeckCollection/useDeckCollection.ts';
 import { AddMultipleCollectionCardsItem } from '@/api/collections/useAddMultipleCollectionCards.ts';
@@ -64,7 +64,7 @@ const DeckCollectionMissingCards: React.FC<DeckCollectionMissingCardsProps> = ({
       </div>
       <div className="flex flex-row gap-2 flex-wrap">
         <MissingCardsTable deckId={deckId} />
-        <MissingCardsAction items={items} />
+        <CollectionCardAction items={items} />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import NewCollectionForm from '@/components/app/dialogs/NewCollectionForm.tsx';
-import { CollectionType } from '../../../../../../../../types/enums.ts';
-import { collectionTypeTitle } from '../../../../../../../../types/iterableEnumInfo.ts';
+import { CollectionType } from '../../../../../../types/enums.ts';
+import { collectionTypeTitle } from '../../../../../../types/iterableEnumInfo.ts';
 import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils.ts';
 

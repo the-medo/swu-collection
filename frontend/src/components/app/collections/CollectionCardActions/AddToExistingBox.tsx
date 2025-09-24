@@ -1,7 +1,7 @@
 import React from 'react';
-import { CollectionType } from '../../../../../../../../types/enums.ts';
-import { collectionTypeTitle } from '../../../../../../../../types/iterableEnumInfo.ts';
-import { Collection } from '../../../../../../../../types/Collection.ts';
+import { CollectionType } from '../../../../../../types/enums.ts';
+import { collectionTypeTitle } from '../../../../../../types/iterableEnumInfo.ts';
+import { Collection } from '../../../../../../types/Collection.ts';
 import {
   Select,
   SelectContent,

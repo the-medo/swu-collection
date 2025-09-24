@@ -1,27 +1,27 @@
 import React, { useCallback, useState } from 'react';
-import { CollectionType } from '../../../../../../../../types/enums.ts';
+import { CollectionType } from '../../../../../../types/enums.ts';
 import AddToExistingBox from './AddToExistingBox.tsx';
 import CreateNewBox from './CreateNewBox.tsx';
-import { collectionTypeTitle } from '../../../../../../../../types/iterableEnumInfo.ts';
-import { Collection } from '../../../../../../../../types/Collection.ts';
+import { collectionTypeTitle } from '../../../../../../types/iterableEnumInfo.ts';
+import { Collection } from '../../../../../../types/Collection.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import MissingCardsActionStep3 from './MissingCardsActionStep3.tsx';
-import { MissingCardsActionProps } from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsAction.tsx';
+import CollectionCardActionStep3 from './CollectionCardActionStep3.tsx';
+import { CollectionCardActionProps } from '@/components/app/collections/CollectionCardActions/CollectionCardAction.tsx';
 
-interface MissingCardsActionStep2Props extends MissingCardsActionProps {
+interface CollectionCardActionStep2Props extends CollectionCardActionProps {
   collectionType?: CollectionType;
   collectionMap: Record<string, Collection>;
   collectionIdArray: string[] | undefined;
   setActionCollectionType: (collectionType: CollectionType | undefined) => void;
 }
 
-const MissingCardsActionStep2: React.FC<MissingCardsActionStep2Props> = ({
-  items,
+const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
   collectionType,
   collectionMap,
   collectionIdArray,
   setActionCollectionType,
+  ...itemsAndConfiguration
 }) => {
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
   const [collectionCreated, setCollectionCreated] = useState(false);
@@ -38,12 +38,12 @@ const MissingCardsActionStep2: React.FC<MissingCardsActionStep2Props> = ({
   if (step === 3 && selectedId) {
     const selected = collectionMap[selectedId];
     return (
-      <MissingCardsActionStep3
-        items={items}
+      <CollectionCardActionStep3
         collectionId={selectedId}
         collectionTitle={selected?.title}
         collectionType={collectionType}
         onBack={() => setStep(2)}
+        {...itemsAndConfiguration}
       />
     );
   }
@@ -84,4 +84,4 @@ const MissingCardsActionStep2: React.FC<MissingCardsActionStep2Props> = ({
   );
 };
 
-export default MissingCardsActionStep2;
+export default CollectionCardActionStep2;
