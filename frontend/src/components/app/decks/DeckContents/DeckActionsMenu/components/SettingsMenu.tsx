@@ -9,12 +9,14 @@ import { Settings, Check, X } from 'lucide-react';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
 import { cn } from '@/lib/utils';
+import { useUser } from '@/hooks/useUser.ts';
 
 const SettingsMenu: React.FC = () => {
+  const user = useUser();
   const { data: collectionInfoInDecks } = useGetUserSetting('collectionInfoInDecks');
   const { mutate: setCollectionInfoInDecks } = useSetUserSetting('collectionInfoInDecks');
 
-  const toggle = () => setCollectionInfoInDecks(!collectionInfoInDecks);
+  const toggle = () => (user ? setCollectionInfoInDecks(!collectionInfoInDecks) : void 0);
 
   return (
     <NavigationMenuItem>
@@ -29,6 +31,7 @@ const SettingsMenu: React.FC = () => {
               className={cn(
                 'rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer',
                 collectionInfoInDecks && 'bg-accent/50 text-accent-foreground',
+                !user && 'opacity-50 cursor-not-allowed',
               )}
             >
               <NavigationMenuLink asChild>
