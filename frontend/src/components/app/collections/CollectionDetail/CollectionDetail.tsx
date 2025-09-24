@@ -19,6 +19,7 @@ import { Helmet } from 'react-helmet-async';
 import { forSaleRenderer } from '@/lib/table/forSaleRenderer.tsx';
 import { forDecksRenderer } from '@/lib/table/forDecksRenderer.tsx';
 import { usePutCollection } from '@/api/collections/usePutCollection.ts';
+import CollectionCardSelection from '@/components/app/collections/CollectionCardSelection/CollectionCardSelection.tsx';
 
 const routeApi = getRouteApi('/collections/$collectionId/');
 
@@ -119,6 +120,7 @@ const CollectionDetail: React.FC = () => {
         <div className="flex flex-col gap-4 w-full lg:w-[400px]">
           <CollectionActions collectionId={collectionId} />
           <CollectionStats collectionId={collectionId} />
+          {!owned && <CollectionCardSelection collectionId={collectionId} />}
           {owned && <CollectionInputSection collectionId={collectionId} />}
         </div>
       </div>
