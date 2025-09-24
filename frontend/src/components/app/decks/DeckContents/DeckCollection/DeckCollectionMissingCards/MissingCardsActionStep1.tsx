@@ -4,12 +4,11 @@ import { BookOpenCheck, NotebookTabs, ScrollText } from 'lucide-react';
 import { ActionSelectorRow } from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/ActionSelectorRow.tsx';
 import { CollectionType } from '../../../../../../../../types/enums.ts';
 import MissingCardsActionStep2 from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsActionStep2.tsx';
+import { MissingCardsActionProps } from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsAction.tsx';
 
-interface MissingCardsActionStep1Props {
-  deckId: string;
-}
+interface MissingCardsActionStep1Props extends MissingCardsActionProps {}
 
-const MissingCardsActionStep1: React.FC<MissingCardsActionStep1Props> = ({ deckId }) => {
+const MissingCardsActionStep1: React.FC<MissingCardsActionStep1Props> = ({ items }) => {
   const { data } = useUserCollectionsData();
   const [actionCollectionType, setActionCollectionType] = useState<CollectionType>();
 
@@ -32,7 +31,7 @@ const MissingCardsActionStep1: React.FC<MissingCardsActionStep1Props> = ({ deckI
   if (actionCollectionType && collectionInfo) {
     return (
       <MissingCardsActionStep2
-        deckId={deckId}
+        items={items}
         collectionType={actionCollectionType}
         collectionMap={collectionInfo.map}
         collectionIdArray={getIdArray()}

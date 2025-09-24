@@ -1,19 +1,13 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, MinusCircle, PlusCircle, CheckCircle2, Link as LinkIcon } from 'lucide-react';
-import { useDeckMissingCardsStore } from '@/components/app/decks/DeckContents/DeckCollection/useDeckMissingCardsStore.ts';
-import { useDeckCollection } from '@/components/app/decks/DeckContents/DeckCollection/useDeckCollection.ts';
-import { selectDefaultVariant } from '../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
-import { CardLanguage, CollectionType } from '../../../../../../../../types/enums.ts';
-import {
-  AddMultipleCollectionCardsItem,
-  useAddMultipleCollectionCards,
-} from '@/api/collections/useAddMultipleCollectionCards.ts';
+import { CollectionType } from '../../../../../../../../types/enums.ts';
+import { useAddMultipleCollectionCards } from '@/api/collections/useAddMultipleCollectionCards.ts';
 import { collectionTypeTitle } from '../../../../../../../../types/iterableEnumInfo.ts';
 import { Link } from '@tanstack/react-router';
+import { MissingCardsActionProps } from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsAction.tsx';
 
-interface MissingCardsActionStep3Props {
-  deckId: string;
+interface MissingCardsActionStep3Props extends MissingCardsActionProps {
   collectionId: string;
   collectionTitle?: string;
   collectionType: CollectionType;
@@ -21,47 +15,13 @@ interface MissingCardsActionStep3Props {
 }
 
 const MissingCardsActionStep3: React.FC<MissingCardsActionStep3Props> = ({
-  deckId,
+  items,
   collectionId,
   collectionTitle,
   collectionType,
   onBack,
 }) => {
-  const finalQuantity = useDeckMissingCardsStore('finalQuantity');
-  const { data: deckCollection } = useDeckCollection(deckId);
   const addMultipleMutation = useAddMultipleCollectionCards();
-
-  const { totalCount, items } = useMemo(() => {
-    let total = 0;
-    const result: AddMultipleCollectionCardsItem[] = [];
-
-    if (!finalQuantity) return { totalCount: 0, items: result };
-
-    const usedCards = deckCollection?.usedCards ?? {};
-
-    Object.entries(finalQuantity).forEach(([cardId, entry]) => {
-      const qty = entry?.quantity ?? 0;
-      if (qty <= 0) return;
-      const card = usedCards[cardId];
-      // If for some reason card data is missing, skip that entry to avoid bad requests
-      if (!card) return;
-      const variantId = selectDefaultVariant(card);
-      if (!variantId) return;
-
-      total += qty;
-      result.push({
-        cardId,
-        variantId,
-        foil: false,
-        condition: 1,
-        language: CardLanguage.EN,
-        note: '',
-        amount: qty,
-      });
-    });
-
-    return { totalCount: total, items: result };
-  }, [finalQuantity, deckCollection]);
 
   const [completedAction, setCompletedAction] = useState<'insert' | 'remove' | undefined>(
     undefined,
@@ -83,6 +43,7 @@ const MissingCardsActionStep3: React.FC<MissingCardsActionStep3Props> = ({
 
   if (collectionType === undefined) return null;
   const cardListString = collectionTypeTitle[collectionType];
+  const totalCount = items.reduce((acc, item) => acc + item.amount, 0);
 
   return (
     <div className="min-w-[300px] flex flex-col rounded-md border-border p-2 bg-muted/70 gap-2">

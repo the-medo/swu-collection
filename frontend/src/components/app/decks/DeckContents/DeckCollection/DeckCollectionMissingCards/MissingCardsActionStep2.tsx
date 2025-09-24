@@ -7,9 +7,9 @@ import { Collection } from '../../../../../../../../types/Collection.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import MissingCardsActionStep3 from './MissingCardsActionStep3.tsx';
+import { MissingCardsActionProps } from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsAction.tsx';
 
-interface MissingCardsActionStep2Props {
-  deckId: string;
+interface MissingCardsActionStep2Props extends MissingCardsActionProps {
   collectionType?: CollectionType;
   collectionMap: Record<string, Collection>;
   collectionIdArray: string[] | undefined;
@@ -17,7 +17,7 @@ interface MissingCardsActionStep2Props {
 }
 
 const MissingCardsActionStep2: React.FC<MissingCardsActionStep2Props> = ({
-  deckId,
+  items,
   collectionType,
   collectionMap,
   collectionIdArray,
@@ -39,7 +39,7 @@ const MissingCardsActionStep2: React.FC<MissingCardsActionStep2Props> = ({
     const selected = collectionMap[selectedId];
     return (
       <MissingCardsActionStep3
-        deckId={deckId}
+        items={items}
         collectionId={selectedId}
         collectionTitle={selected?.title}
         collectionType={collectionType}
