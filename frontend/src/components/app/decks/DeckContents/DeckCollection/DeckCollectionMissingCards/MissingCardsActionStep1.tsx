@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
-import { useDeckCollection } from '@/components/app/decks/DeckContents/DeckCollection/useDeckCollection.ts';
 import { useUserCollectionsData } from '@/api/collection/useUserCollectionsData.ts';
 import { BookOpenCheck, NotebookTabs, ScrollText } from 'lucide-react';
 import { ActionSelectorRow } from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/ActionSelectorRow.tsx';
 import { CollectionType } from '../../../../../../../../types/enums.ts';
-import MissingCardsAction from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsAction.tsx';
+import MissingCardsActionStep2 from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsActionStep2.tsx';
 
-interface MissingCardsActionSelectorProps {
+interface MissingCardsActionStep1Props {
   deckId: string;
 }
 
-const MissingCardsActionSelector: React.FC<MissingCardsActionSelectorProps> = ({ deckId }) => {
-  const { data: d, isLoading } = useDeckCollection(deckId);
+const MissingCardsActionStep1: React.FC<MissingCardsActionStep1Props> = ({ deckId }) => {
   const { data } = useUserCollectionsData();
   const [actionCollectionType, setActionCollectionType] = useState<CollectionType>();
 
@@ -33,7 +31,8 @@ const MissingCardsActionSelector: React.FC<MissingCardsActionSelectorProps> = ({
 
   if (actionCollectionType && collectionInfo) {
     return (
-      <MissingCardsAction
+      <MissingCardsActionStep2
+        deckId={deckId}
         collectionType={actionCollectionType}
         collectionMap={collectionInfo.map}
         collectionIdArray={getIdArray()}
@@ -70,4 +69,4 @@ const MissingCardsActionSelector: React.FC<MissingCardsActionSelectorProps> = ({
   );
 };
 
-export default MissingCardsActionSelector;
+export default MissingCardsActionStep1;

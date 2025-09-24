@@ -1,5 +1,5 @@
 import React from 'react';
-import MissingCardsActionSelector from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsActionSelector.tsx';
+import MissingCardsActionStep1 from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsActionStep1.tsx';
 import MissingCardsTable from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionMissingCards/MissingCardsTable/MissingCardsTable.tsx';
 
 interface DeckCollectionMissingCardsProps {
@@ -29,7 +29,7 @@ const DeckCollectionMissingCards: React.FC<DeckCollectionMissingCardsProps> = ({
       </div>
       <div className="flex flex-row gap-2 flex-wrap">
         <MissingCardsTable deckId={deckId} />
-        <MissingCardsActionSelector deckId={deckId} />
+        <MissingCardsActionStep1 deckId={deckId} />
       </div>
     </div>
   );

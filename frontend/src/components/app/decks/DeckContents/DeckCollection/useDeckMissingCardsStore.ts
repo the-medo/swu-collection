@@ -31,7 +31,7 @@ const setDeckMissingCardsStore = (key: DeckMissingCountKey, value: boolean) =>
     [key]: value,
   }));
 
-export function useDeckMissingCardsStore(key: DeckMissingCountKey) {
+export function useDeckMissingCardsStore(key: keyof DeckMissingCardsStore) {
   return useStore(store, state => state[key]);
 }
 

@@ -28,7 +28,7 @@ const CreateNewBox: React.FC<CreateNewBoxProps> = ({ collectionType, onCollectio
       {created ? (
         <h5 className="mb-0 flex flex-1 flex-row gap-2 items-center justify-center text-green-600 dark:text-green-500">
           <CheckCircle2 />
-          Collection created!
+          {cardListString} created!
         </h5>
       ) : (
         <>

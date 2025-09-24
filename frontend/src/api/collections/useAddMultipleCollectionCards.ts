@@ -38,15 +38,11 @@ export const useAddMultipleCollectionCards = () => {
       return response.json();
     },
     onSuccess: async (result, variables) => {
-      // Invalidate any queries related to collections, and specifically this collection if such keying exists
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['collections'], exact: false }),
-        queryClient.invalidateQueries({
-          queryKey: ['collection', variables.collectionId],
-          exact: false,
-        }),
-        queryClient.invalidateQueries({ queryKey: ['collection-content', variables.collectionId] }),
-      ]);
+      queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
+      queryClient.invalidateQueries({
+        queryKey: ['collection', variables.collectionId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['collection-content', variables.collectionId] });
 
       const data = result?.data as
         | { changed?: number; deleted?: number; amount?: number }

@@ -6,15 +6,18 @@ import { collectionTypeTitle } from '../../../../../../../../types/iterableEnumI
 import { Collection } from '../../../../../../../../types/Collection.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import MissingCardsActionStep3 from './MissingCardsActionStep3.tsx';
 
-interface MissingCardsActionProps {
+interface MissingCardsActionStep2Props {
+  deckId: string;
   collectionType?: CollectionType;
   collectionMap: Record<string, Collection>;
   collectionIdArray: string[] | undefined;
   setActionCollectionType: (collectionType: CollectionType | undefined) => void;
 }
 
-const MissingCardsAction: React.FC<MissingCardsActionProps> = ({
+const MissingCardsActionStep2: React.FC<MissingCardsActionStep2Props> = ({
+  deckId,
   collectionType,
   collectionMap,
   collectionIdArray,
@@ -22,6 +25,7 @@ const MissingCardsAction: React.FC<MissingCardsActionProps> = ({
 }) => {
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
   const [collectionCreated, setCollectionCreated] = useState(false);
+  const [step, setStep] = useState<2 | 3>(2);
 
   const onCollectionCreated = useCallback((newCollectionId: string) => {
     setSelectedId(newCollectionId);
@@ -30,6 +34,19 @@ const MissingCardsAction: React.FC<MissingCardsActionProps> = ({
 
   if (collectionType === undefined) return null;
   const cardListString = collectionTypeTitle[collectionType];
+
+  if (step === 3 && selectedId) {
+    const selected = collectionMap[selectedId];
+    return (
+      <MissingCardsActionStep3
+        deckId={deckId}
+        collectionId={selectedId}
+        collectionTitle={selected?.title}
+        collectionType={collectionType}
+        onBack={() => setStep(2)}
+      />
+    );
+  }
 
   return (
     <div className="min-w-[300px] flex flex-col rounded-md border-border p-2 bg-muted/70 gap-2">
@@ -58,7 +75,7 @@ const MissingCardsAction: React.FC<MissingCardsActionProps> = ({
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <Button>
+        <Button disabled={!selectedId} onClick={() => selectedId && setStep(3)}>
           Continue
           <ArrowRight className="h-4 w-4" />
         </Button>
@@ -67,4 +84,4 @@ const MissingCardsAction: React.FC<MissingCardsActionProps> = ({
   );
 };
 
-export default MissingCardsAction;
+export default MissingCardsActionStep2;

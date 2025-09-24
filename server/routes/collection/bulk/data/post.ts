@@ -85,6 +85,12 @@ export const collectionsBulkDataPostRoute = new Hono<AuthExtension>().post(
       collectionCards[cid].push(card);
     }
 
+    clientCollections.forEach(cc => {
+      if (!collectionCards[cc.collectionId]) {
+        collectionCards[cc.collectionId] = [];
+      }
+    });
+
     // 6) Determine collections sent by client but not found for this user (removed)
     const userIds = new Set<string>(userCollections.map(uc => uc.id));
     const removedCollections: string[] = [];
