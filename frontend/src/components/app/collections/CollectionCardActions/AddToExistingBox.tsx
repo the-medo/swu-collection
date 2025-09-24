@@ -16,6 +16,7 @@ export interface AddToExistingBoxProps {
   collectionIdArray: string[] | undefined;
   selectedId?: string;
   onChange?: (id: string) => void;
+  disabled?: boolean;
 }
 
 const AddToExistingBox: React.FC<AddToExistingBoxProps> = ({
@@ -24,6 +25,7 @@ const AddToExistingBox: React.FC<AddToExistingBoxProps> = ({
   collectionIdArray,
   selectedId,
   onChange,
+  disabled,
 }) => {
   const options = (collectionIdArray ?? [])
     .filter(id => collectionMap?.[id]?.collectionType === collectionType)
@@ -38,7 +40,7 @@ const AddToExistingBox: React.FC<AddToExistingBoxProps> = ({
   return (
     <div className="flex flex-col gap-2 bg-background p-2 rounded-md">
       <h5 className="mb-0">Add to existing {cardListString}</h5>
-      <Select value={selectedId} onValueChange={val => onChange?.(val)}>
+      <Select value={selectedId} onValueChange={val => onChange?.(val)} disabled={disabled}>
         <SelectTrigger className="bg-card">
           <SelectValue placeholder="Select..." />
         </SelectTrigger>

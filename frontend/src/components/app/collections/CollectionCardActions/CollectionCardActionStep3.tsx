@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, MinusCircle, PlusCircle, CheckCircle2, Link as LinkIcon } from 'lucide-react';
 import { CollectionType } from '../../../../../../types/enums.ts';
@@ -20,9 +20,10 @@ const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
   collectionTitle,
   collectionType,
   onBack,
-  ...configuration
+  configuration,
 }) => {
   const addMultipleMutation = useAddMultipleCollectionCards();
+  const { step3 } = configuration;
 
   const [completedAction, setCompletedAction] = useState<'insert' | 'remove' | undefined>(
     undefined,
@@ -46,11 +47,15 @@ const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
   const cardListString = collectionTypeTitle[collectionType];
   const totalCount = items.reduce((acc, item) => acc + item.amount, 0);
 
+  const allowedActions = step3?.allowedActions ?? ['add', 'remove'];
+  const showInsert = allowedActions.includes('add');
+  const showRemove = allowedActions.includes('remove');
+
   return (
-    <div className="min-w-[300px] flex flex-col rounded-md border-border p-2 bg-muted/70 gap-2">
-      <h4>Finalize</h4>
+    <>
+      <h4>{step3?.title ?? 'Finalize'}</h4>
       {collectionTitle && <h5>{collectionTitle}</h5>}
-      <div className="text-sm">Total cards to apply: {totalCount}</div>
+      <div className="text-sm">{step3?.description ?? `Total cards to apply: ${totalCount}`}</div>
 
       {isDone ? (
         <>
@@ -102,25 +107,29 @@ const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              disabled={items.length === 0 || addMultipleMutation.isPending}
-              onClick={() => act(true)}
-              title="Remove cards (subtract amounts)"
-            >
-              <MinusCircle className="h-4 w-4 mr-1" /> Remove
-            </Button>
-            <Button
-              disabled={items.length === 0 || addMultipleMutation.isPending}
-              onClick={() => act(false)}
-              title="Insert cards (add amounts)"
-            >
-              <PlusCircle className="h-4 w-4 mr-1" /> Insert
-            </Button>
+            {showRemove && (
+              <Button
+                variant="outline"
+                disabled={items.length === 0 || addMultipleMutation.isPending}
+                onClick={() => act(true)}
+                title="Remove cards (subtract amounts)"
+              >
+                <MinusCircle className="h-4 w-4 mr-1" /> Remove
+              </Button>
+            )}
+            {showInsert && (
+              <Button
+                disabled={items.length === 0 || addMultipleMutation.isPending}
+                onClick={() => act(false)}
+                title="Insert cards (add amounts)"
+              >
+                <PlusCircle className="h-4 w-4 mr-1" /> Insert
+              </Button>
+            )}
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import AddToExistingBox from './AddToExistingBox.tsx';
 import CreateNewBox from './CreateNewBox.tsx';
@@ -21,11 +21,22 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
   collectionMap,
   collectionIdArray,
   setActionCollectionType,
-  ...itemsAndConfiguration
+  items,
+  configuration,
 }) => {
+  const { step2 } = configuration;
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
   const [collectionCreated, setCollectionCreated] = useState(false);
   const [step, setStep] = useState<2 | 3>(2);
+
+  const allowCreate = step2?.allowCreate !== false; // default true
+  const allowExisting = step2?.allowExisting !== false; // default true
+
+  useEffect(() => {
+    if (step2?.existing?.preselectedId) {
+      setSelectedId(step2.existing.preselectedId);
+    }
+  }, [step2?.existing?.preselectedId]);
 
   const onCollectionCreated = useCallback((newCollectionId: string) => {
     setSelectedId(newCollectionId);
@@ -43,29 +54,46 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
         collectionTitle={selected?.title}
         collectionType={collectionType}
         onBack={() => setStep(2)}
-        {...itemsAndConfiguration}
+        items={items}
+        configuration={configuration}
       />
     );
   }
 
+  const showOr = allowCreate && allowExisting && !collectionCreated;
+
   return (
-    <div className="min-w-[300px] flex flex-col rounded-md border-border p-2 bg-muted/70 gap-2">
-      <h4>Add to {cardListString}</h4>
-      Choose where to put the cards missing from this deck.
+    <>
+      <h4>{step2?.title ?? `Add to ${cardListString}`}</h4>
+      {step2?.description ?? 'Choose where to put the cards missing from this deck.'}
       <div className="flex flex-col gap-2">
-        <CreateNewBox collectionType={collectionType} onCollectionCreated={onCollectionCreated} />
-        {!collectionCreated && (
+        {allowCreate && (
+          <CreateNewBox
+            collectionType={collectionType}
+            onCollectionCreated={onCollectionCreated}
+            predefinedTitle={step2?.create?.predefinedTitle}
+            predefinedDescription={step2?.create?.predefinedDescription}
+            disable={step2?.create?.disable}
+          />
+        )}
+        {showOr && (
           <div className="flex flex-1 justify-center">
             <h5 className="mb-0">OR</h5>
           </div>
         )}
-        <AddToExistingBox
-          collectionType={collectionType}
-          collectionMap={collectionMap}
-          collectionIdArray={collectionIdArray}
-          selectedId={selectedId}
-          onChange={setSelectedId}
-        />
+        {allowExisting && (
+          <AddToExistingBox
+            collectionType={collectionType}
+            collectionMap={collectionMap}
+            collectionIdArray={collectionIdArray}
+            selectedId={selectedId}
+            onChange={val => {
+              if (step2?.existing?.disable) return; // locked selection
+              setSelectedId(val);
+            }}
+            disabled={step2?.existing?.disable}
+          />
+        )}
       </div>
       <div className="flex justify-between items-center">
         <Button
@@ -75,12 +103,15 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <Button disabled={!selectedId} onClick={() => selectedId && setStep(3)}>
+        <Button
+          disabled={(!selectedId && !collectionCreated) || (!allowExisting && !collectionCreated)}
+          onClick={() => (selectedId || collectionCreated) && setStep(3)}
+        >
           Continue
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
-    </div>
+    </>
   );
 };
 

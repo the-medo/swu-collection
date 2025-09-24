@@ -8,9 +8,18 @@ import { cn } from '@/lib/utils.ts';
 interface CreateNewBoxProps {
   collectionType: CollectionType;
   onCollectionCreated: (newCollectionId: string) => void;
+  predefinedTitle?: string;
+  predefinedDescription?: string;
+  disable?: boolean;
 }
 
-const CreateNewBox: React.FC<CreateNewBoxProps> = ({ collectionType, onCollectionCreated }) => {
+const CreateNewBox: React.FC<CreateNewBoxProps> = ({
+  collectionType,
+  onCollectionCreated,
+  predefinedTitle,
+  predefinedDescription,
+  disable,
+}) => {
   const [created, setCreated] = useState<boolean>(false);
 
   const collectionCreatedHandler = useCallback((newCollectionId: string) => {
@@ -38,6 +47,9 @@ const CreateNewBox: React.FC<CreateNewBoxProps> = ({ collectionType, onCollectio
             collectionType={collectionType}
             navigateAfterCreation={false}
             onCollectionCreated={collectionCreatedHandler}
+            defaultTitle={predefinedTitle}
+            defaultDescription={predefinedDescription}
+            disabled={disable}
           />
         </>
       )}

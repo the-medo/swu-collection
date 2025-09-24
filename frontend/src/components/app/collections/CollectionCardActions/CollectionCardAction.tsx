@@ -5,14 +5,12 @@ import {
   CollectionCardActionItems,
 } from '@/components/app/collections/CollectionCardActions/collectionCardActionLib.ts';
 
-export interface CollectionCardActionProps
-  extends CollectionCardActionItems,
-    CollectionCardActionConfiguration {}
+export interface CollectionCardActionProps extends CollectionCardActionItems {
+  configuration: CollectionCardActionConfiguration;
+}
 
-const CollectionCardAction: React.FC<CollectionCardActionProps> = ({
-  ...itemsAndConfiguration
-}) => {
-  return <CollectionCardActionStep1 {...itemsAndConfiguration} />;
+const CollectionCardAction: React.FC<CollectionCardActionProps> = ({ items, configuration }) => {
+  return <CollectionCardActionStep1 items={items} configuration={configuration} />;
 };
 
 export default CollectionCardAction;

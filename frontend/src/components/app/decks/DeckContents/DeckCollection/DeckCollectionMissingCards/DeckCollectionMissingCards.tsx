@@ -6,6 +6,7 @@ import { useDeckCollection } from '@/components/app/decks/DeckContents/DeckColle
 import { AddMultipleCollectionCardsItem } from '@/api/collections/useAddMultipleCollectionCards.ts';
 import { selectDefaultVariant } from '../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { CardLanguage } from '../../../../../../../../types/enums.ts';
+import { defaultCollectionCardActionConfiguration } from '@/components/app/collections/CollectionCardActions/collectionCardActionLib.ts';
 
 interface DeckCollectionMissingCardsProps {
   deckId: string;
@@ -64,7 +65,12 @@ const DeckCollectionMissingCards: React.FC<DeckCollectionMissingCardsProps> = ({
       </div>
       <div className="flex flex-row gap-2 flex-wrap">
         <MissingCardsTable deckId={deckId} />
-        <CollectionCardAction items={items} />
+        <div className="min-w-[350px] max-w-[350px] flex flex-col rounded-md border-border p-2 bg-muted/70 gap-2">
+          <CollectionCardAction
+            items={items}
+            configuration={defaultCollectionCardActionConfiguration}
+          />
+        </div>
       </div>
     </div>
   );
