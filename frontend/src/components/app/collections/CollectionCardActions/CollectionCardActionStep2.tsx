@@ -25,6 +25,7 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
   items,
   configuration,
   templateReplacements: templateReplacementsWithoutCollectionType,
+  onFinish,
 }) => {
   const { step2 } = configuration;
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
@@ -66,6 +67,7 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
         items={items}
         configuration={configuration}
         templateReplacements={templateReplacements}
+        onFinish={onFinish}
       />
     );
   }

@@ -23,6 +23,7 @@ const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
   onBack,
   configuration,
   templateReplacements,
+  onFinish,
 }) => {
   const addMultipleMutation = useAddMultipleCollectionCards();
   const { step3 } = configuration;
@@ -37,7 +38,10 @@ const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
     addMultipleMutation.mutate(
       { collectionId, items, remove },
       {
-        onSuccess: () => setCompletedAction(remove ? 'remove' : 'insert'),
+        onSuccess: () => {
+          onFinish?.();
+          setCompletedAction(remove ? 'remove' : 'insert');
+        },
       },
     );
   };

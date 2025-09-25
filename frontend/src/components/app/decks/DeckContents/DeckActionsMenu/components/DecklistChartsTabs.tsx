@@ -3,6 +3,7 @@ import { NavigationMenuItem } from '@/components/ui/navigation-menu.tsx';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import DeckCollectionInfo from '@/components/app/decks/DeckContents/DeckCollection/DeckCollectionInfo.tsx';
+import { useUser } from '@/hooks/useUser.ts';
 
 interface DecklistChartsTabsProps {
   deckId: string;
@@ -15,6 +16,7 @@ const DecklistChartsTabs: React.FC<DecklistChartsTabsProps> = ({
   value,
   onValueChange,
 }) => {
+  const user = useUser();
   const { data: collectionInfoInDecks } = useGetUserSetting('collectionInfoInDecks');
 
   return (
@@ -23,7 +25,7 @@ const DecklistChartsTabs: React.FC<DecklistChartsTabsProps> = ({
         <TabsList className=" bg-muted/70">
           <TabsTrigger value="decklist">Decklist</TabsTrigger>
           <TabsTrigger value="charts">Charts</TabsTrigger>
-          {collectionInfoInDecks && (
+          {user && collectionInfoInDecks && (
             <TabsTrigger value="collection">
               <span className="mr-2">Collections</span> <DeckCollectionInfo deckId={deckId} />
             </TabsTrigger>

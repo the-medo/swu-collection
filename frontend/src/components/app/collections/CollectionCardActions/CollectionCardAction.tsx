@@ -14,12 +14,14 @@ const CollectionCardAction: React.FC<CollectionCardActionProps> = ({
   items,
   configuration,
   templateReplacements,
+  onFinish,
 }) => {
   return (
     <CollectionCardActionStep1
       items={items}
       configuration={configuration}
       templateReplacements={templateReplacements}
+      onFinish={onFinish}
     />
   );
 };

@@ -3,6 +3,7 @@ import { AddMultipleCollectionCardsItem } from '@/api/collections/useAddMultiple
 
 export type CollectionCardActionItems = {
   items: AddMultipleCollectionCardsItem[];
+  onFinish?: () => void;
 };
 
 export type TemplatingFunction = (template: string, replacements: Record<string, string>) => string;

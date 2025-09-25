@@ -13,6 +13,7 @@ const CollectionCardActionStep1: React.FC<CollectionCardActionStep1Props> = ({
   items,
   configuration,
   templateReplacements,
+  onFinish,
 }) => {
   const { step1 } = configuration;
   const { data } = useUserCollectionsData();
@@ -83,6 +84,7 @@ const CollectionCardActionStep1: React.FC<CollectionCardActionStep1Props> = ({
         items={items}
         configuration={configuration}
         templateReplacements={templateReplacements}
+        onFinish={onFinish}
       />
     );
   }
