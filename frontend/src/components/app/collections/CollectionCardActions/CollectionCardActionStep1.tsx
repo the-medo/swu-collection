@@ -5,12 +5,14 @@ import { ActionSelectorRow } from '@/components/app/collections/CollectionCardAc
 import { CollectionType } from '../../../../../../types/enums.ts';
 import CollectionCardActionStep2 from '@/components/app/collections/CollectionCardActions/CollectionCardActionStep2.tsx';
 import { CollectionCardActionProps } from '@/components/app/collections/CollectionCardActions/CollectionCardAction.tsx';
+import { resolveTemplatedText } from '@/components/app/collections/CollectionCardActions/collectionCardActionLib.ts';
 
 interface CollectionCardActionStep1Props extends CollectionCardActionProps {}
 
 const CollectionCardActionStep1: React.FC<CollectionCardActionStep1Props> = ({
   items,
   configuration,
+  templateReplacements,
 }) => {
   const { step1 } = configuration;
   const { data } = useUserCollectionsData();
@@ -80,14 +82,16 @@ const CollectionCardActionStep1: React.FC<CollectionCardActionStep1Props> = ({
         setActionCollectionType={setActionCollectionType}
         items={items}
         configuration={configuration}
+        templateReplacements={templateReplacements}
       />
     );
   }
 
   return (
     <>
-      <h4>{step1?.title ?? 'Action'}</h4>
-      {step1?.description ?? 'Do a bulk action with missing cards from this deck.'}
+      <h4>{resolveTemplatedText(step1?.title) ?? 'Action'}</h4>
+      {resolveTemplatedText(step1?.description) ??
+        'Do a bulk action with missing cards from this deck.'}
       <div className="flex flex-col gap-2">
         {rows.map(r => (
           <ActionSelectorRow

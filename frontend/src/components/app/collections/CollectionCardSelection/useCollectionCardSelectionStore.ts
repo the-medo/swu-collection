@@ -55,7 +55,7 @@ export function useCollectionSingleCardSelectionStore(
   foil: boolean,
   condition: number,
   language: CardLanguage,
-): CollectionCardSelectionSubtype[] | undefined {
+): CollectionCardSelectionSubtype | undefined {
   const c = useStore(store, s => s.collectionData?.[collectionId]?.cards[cardId]?.[variantId]);
   if (!c) return undefined;
   return c.find(cc => cc.foil === foil && cc.condition === condition && cc.language === language);

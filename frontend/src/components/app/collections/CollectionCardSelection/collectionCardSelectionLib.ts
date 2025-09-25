@@ -1,9 +1,11 @@
 import type { CollectionCard } from '../../../../../../types/CollectionCard.ts';
 import { CollectionCardSelection } from '@/components/app/collections/CollectionCardSelection/useCollectionCardSelectionStore.ts';
+import { CollectionCardActionConfiguration } from '@/components/app/collections/CollectionCardActions/collectionCardActionLib.ts';
+import { CollectionType } from '../../../../../../types/enums.ts';
 
 function isSameCard(
-  a: Omit<CollectionCard, 'cardId' | 'variantId'>,
-  b: Omit<CollectionCard, 'cardId' | 'variantId'>,
+  a: Omit<CollectionCard, 'cardId' | 'variantId' | 'amount'>,
+  b: Omit<CollectionCard, 'cardId' | 'variantId' | 'amount'>,
 ) {
   return a.foil === b.foil && a.condition === b.condition && a.language === b.language;
 }
@@ -105,4 +107,37 @@ export const removeCollectionFromMap = (id: string) => {
     delete map[id];
     writeCollectionsMap(map);
   }
+};
+
+export const collectionCardActionConfiguration: CollectionCardActionConfiguration = {
+  step1: {
+    title: '',
+    description: 'Create a trade list from selected cards.',
+    allowedCollectionTypes: [CollectionType.OTHER],
+    collectionTypeData: {
+      [CollectionType.COLLECTION]: undefined,
+      [CollectionType.WANTLIST]: undefined,
+      [CollectionType.OTHER]: {
+        title: 'Add to card list',
+        description: undefined,
+      },
+    },
+    defaultSelectedCollectionType: CollectionType.OTHER,
+  },
+  step2: {
+    allowCreate: true,
+    allowExisting: true,
+    create: {
+      predefinedTitle: {
+        template: 'Trade list {date} ["{userName}" {hasFor} "{userNameCollectionOwner}"]',
+      },
+      predefinedDescription: {
+        template:
+          'List from {collectionTypeOriginal} "{collectionName}" that was created by {userNameCollectionOwner}',
+      },
+    },
+  },
+  step3: {
+    allowedActions: ['add'],
+  },
 };

@@ -7,12 +7,14 @@ import { AddMultipleCollectionCardsItem } from '@/api/collections/useAddMultiple
 import { selectDefaultVariant } from '../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { CardLanguage } from '../../../../../../../../types/enums.ts';
 import { defaultCollectionCardActionConfiguration } from '@/components/app/collections/CollectionCardActions/collectionCardActionLib.ts';
+import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts';
 
 interface DeckCollectionMissingCardsProps {
   deckId: string;
 }
 
 const DeckCollectionMissingCards: React.FC<DeckCollectionMissingCardsProps> = ({ deckId }) => {
+  const { deckMeta } = useDeckData(deckId);
   const finalQuantity = useDeckMissingCardsStore('finalQuantity');
   const { data: deckCollection } = useDeckCollection(deckId);
 
@@ -43,6 +45,12 @@ const DeckCollectionMissingCards: React.FC<DeckCollectionMissingCardsProps> = ({
     return result;
   }, [finalQuantity, deckCollection]);
 
+  const replaceStrings = {
+    deckName: deckMeta?.name ?? '',
+    leaderName: deckMeta?.leader1?.title ?? '',
+    baseName: deckMeta?.base?.name ?? '',
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row gap-2 text-xs italic flex-wrap">
@@ -69,6 +77,7 @@ const DeckCollectionMissingCards: React.FC<DeckCollectionMissingCardsProps> = ({
           <CollectionCardAction
             items={items}
             configuration={defaultCollectionCardActionConfiguration}
+            templateReplacements={replaceStrings}
           />
         </div>
       </div>

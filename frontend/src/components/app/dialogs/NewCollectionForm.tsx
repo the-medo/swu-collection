@@ -18,12 +18,18 @@ export interface NewCollectionFormProps {
   collectionType: CollectionType;
   navigateAfterCreation?: boolean; // default true
   onCollectionCreated?: (newCollectionId: string) => void;
+  defaultTitle?: string;
+  defaultDescription?: string;
+  disabled?: boolean;
 }
 
 const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
   collectionType,
   navigateAfterCreation = true,
   onCollectionCreated,
+  defaultTitle,
+  defaultDescription,
+  disabled = false,
 }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -40,13 +46,14 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
     forDecks: boolean;
   }>({
     defaultValues: {
-      title: `My ${cardListString}`,
-      description: ``,
+      title: defaultTitle ?? `My ${cardListString}`,
+      description: defaultDescription ?? ``,
       public: false,
       forSale: false,
       forDecks: false,
     },
     onSubmit: async ({ value }) => {
+      if (disabled) return;
       postCollectionMutation.mutate(
         {
           title: value.title,
@@ -104,6 +111,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
               value={field.state.value}
               onBlur={field.handleBlur}
               onChange={e => field.handleChange(e.target.value)}
+              disabled={disabled}
             />
           </div>
         )}
@@ -119,6 +127,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
               value={field.state.value}
               onBlur={field.handleBlur}
               onChange={e => field.handleChange(e.target.value)}
+              disabled={disabled}
             />
           </div>
         )}
@@ -132,6 +141,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
               checked={field.state.value}
               onBlur={field.handleBlur}
               onCheckedChange={e => field.handleChange(!!e)}
+              disabled={disabled}
             />
             <Label htmlFor={field.name}>Public</Label>
           </div>
@@ -148,6 +158,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
                   checked={field.state.value}
                   onBlur={field.handleBlur}
                   onCheckedChange={e => field.handleChange(!!e)}
+                  disabled={disabled}
                 />
                 <Label htmlFor={field.name}>For sale</Label>
               </div>
@@ -162,6 +173,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
                   checked={field.state.value}
                   onBlur={field.handleBlur}
                   onCheckedChange={e => field.handleChange(!!e)}
+                  disabled={disabled}
                 />
                 <Label htmlFor={field.name}>For decks</Label>
               </div>
@@ -169,7 +181,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
           />
         </>
       )}
-      <Button type="submit" disabled={form.state.isSubmitting}>
+      <Button type="submit" disabled={form.state.isSubmitting || disabled}>
         {form.state.isSubmitting ? '...' : 'Create'}
       </Button>
     </form>

@@ -7,10 +7,21 @@ import {
 
 export interface CollectionCardActionProps extends CollectionCardActionItems {
   configuration: CollectionCardActionConfiguration;
+  templateReplacements: Record<string, string>;
 }
 
-const CollectionCardAction: React.FC<CollectionCardActionProps> = ({ items, configuration }) => {
-  return <CollectionCardActionStep1 items={items} configuration={configuration} />;
+const CollectionCardAction: React.FC<CollectionCardActionProps> = ({
+  items,
+  configuration,
+  templateReplacements,
+}) => {
+  return (
+    <CollectionCardActionStep1
+      items={items}
+      configuration={configuration}
+      templateReplacements={templateReplacements}
+    />
+  );
 };
 
 export default CollectionCardAction;

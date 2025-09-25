@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, MinusCircle, PlusCircle, CheckCircle2, Link as LinkIcon } from 'lucide-react';
 import { CollectionType } from '../../../../../../types/enums.ts';
@@ -6,6 +6,7 @@ import { useAddMultipleCollectionCards } from '@/api/collections/useAddMultipleC
 import { collectionTypeTitle } from '../../../../../../types/iterableEnumInfo.ts';
 import { Link } from '@tanstack/react-router';
 import { CollectionCardActionProps } from '@/components/app/collections/CollectionCardActions/CollectionCardAction.tsx';
+import { resolveTemplatedText } from '@/components/app/collections/CollectionCardActions/collectionCardActionLib.ts';
 
 interface CollectionCardActionStep3Props extends CollectionCardActionProps {
   collectionId: string;
@@ -21,6 +22,7 @@ const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
   collectionType,
   onBack,
   configuration,
+  templateReplacements,
 }) => {
   const addMultipleMutation = useAddMultipleCollectionCards();
   const { step3 } = configuration;
@@ -53,9 +55,12 @@ const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
 
   return (
     <>
-      <h4>{step3?.title ?? 'Finalize'}</h4>
+      <h4>{resolveTemplatedText(step3?.title, templateReplacements) ?? 'Finalize'}</h4>
       {collectionTitle && <h5>{collectionTitle}</h5>}
-      <div className="text-sm">{step3?.description ?? `Total cards to apply: ${totalCount}`}</div>
+      <div className="text-sm">
+        {resolveTemplatedText(step3?.description, templateReplacements) ??
+          `Total cards to apply: ${totalCount}`}
+      </div>
 
       {isDone ? (
         <>

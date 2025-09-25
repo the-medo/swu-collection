@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import CollectionCardActionStep3 from './CollectionCardActionStep3.tsx';
 import { CollectionCardActionProps } from '@/components/app/collections/CollectionCardActions/CollectionCardAction.tsx';
+import { resolveTemplatedText } from '@/components/app/collections/CollectionCardActions/collectionCardActionLib.ts';
 
 interface CollectionCardActionStep2Props extends CollectionCardActionProps {
   collectionType?: CollectionType;
@@ -23,6 +24,7 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
   setActionCollectionType,
   items,
   configuration,
+  templateReplacements: templateReplacementsWithoutCollectionType,
 }) => {
   const { step2 } = configuration;
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
@@ -44,7 +46,14 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
   }, []);
 
   if (collectionType === undefined) return null;
-  const cardListString = collectionTypeTitle[collectionType];
+
+  const templateReplacements = useMemo(
+    () => ({
+      ...templateReplacementsWithoutCollectionType,
+      collectionType: collectionTypeTitle[collectionType],
+    }),
+    [collectionType, templateReplacementsWithoutCollectionType],
+  );
 
   if (step === 3 && selectedId) {
     const selected = collectionMap[selectedId];
@@ -56,6 +65,7 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
         onBack={() => setStep(2)}
         items={items}
         configuration={configuration}
+        templateReplacements={templateReplacements}
       />
     );
   }
@@ -64,15 +74,21 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
 
   return (
     <>
-      <h4>{step2?.title ?? `Add to ${cardListString}`}</h4>
-      {step2?.description ?? 'Choose where to put the cards missing from this deck.'}
+      <h4>{resolveTemplatedText(step2?.title, templateReplacements)}</h4>
+      {resolveTemplatedText(step2?.description, templateReplacements)}
       <div className="flex flex-col gap-2">
         {allowCreate && (
           <CreateNewBox
             collectionType={collectionType}
             onCollectionCreated={onCollectionCreated}
-            predefinedTitle={step2?.create?.predefinedTitle}
-            predefinedDescription={step2?.create?.predefinedDescription}
+            predefinedTitle={resolveTemplatedText(
+              step2?.create?.predefinedTitle,
+              templateReplacements,
+            )}
+            predefinedDescription={resolveTemplatedText(
+              step2?.create?.predefinedDescription,
+              templateReplacements,
+            )}
             disable={step2?.create?.disable}
           />
         )}

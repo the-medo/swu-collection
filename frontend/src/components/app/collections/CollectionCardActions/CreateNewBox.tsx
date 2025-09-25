@@ -42,7 +42,7 @@ const CreateNewBox: React.FC<CreateNewBoxProps> = ({
       ) : (
         <>
           <h5 className="mb-0">Create new {cardListString}</h5>
-          <span className="text-xs">Create a brand new list and add missing cards there.</span>
+          <span className="text-xs">Create a brand new list and add cards there.</span>
           <NewCollectionForm
             collectionType={collectionType}
             navigateAfterCreation={false}

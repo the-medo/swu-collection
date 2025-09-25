@@ -1,12 +1,40 @@
 import { CollectionType } from '../../../../../../types/enums.ts';
+import { AddMultipleCollectionCardsItem } from '@/api/collections/useAddMultipleCollectionCards.ts';
 
 export type CollectionCardActionItems = {
   items: AddMultipleCollectionCardsItem[];
 };
 
+export type TemplatingFunction = (template: string, replacements: Record<string, string>) => string;
+
+export const applyTemplate: TemplatingFunction = (template, replacements) => {
+  if (!template) return '';
+  // Replace named placeholders like {text} using the provided replacements map.
+  // Leaves unknown placeholders intact and allows empty string values.
+  return template.replace(/\{([^}]+)\}/g, (match, key) => {
+    const val = replacements?.[key];
+    return val !== undefined && val !== null ? String(val) : match;
+  });
+};
+
+export type TemplatedText =
+  | string
+  | {
+      template: string;
+    };
+
 type CollectionCardActionStepConfiguration = {
-  title?: string;
-  description?: string;
+  title?: TemplatedText;
+  description?: TemplatedText;
+};
+
+export const resolveTemplatedText = (
+  value: TemplatedText | undefined,
+  replacements: Record<string, string> = {},
+): string | undefined => {
+  if (value === undefined) return undefined;
+  if (typeof value === 'string') return value;
+  return applyTemplate(value.template, replacements);
 };
 
 export type CollectionCardActionConfiguration = {
@@ -57,8 +85,8 @@ export type CollectionCardActionConfiguration = {
      * if allowCreate is false, this setting will be ignored
      */
     create?: {
-      predefinedTitle?: string;
-      predefinedDescription?: string;
+      predefinedTitle?: TemplatedText;
+      predefinedDescription?: TemplatedText;
       disable?: boolean;
     };
     /**
@@ -110,8 +138,14 @@ export const defaultCollectionCardActionConfiguration: CollectionCardActionConfi
     },
   },
   step2: {
+    title: { template: 'Add to {collectionType}' },
+    description: 'Choose where to put the cards missing from this deck.',
     allowCreate: true,
     allowExisting: true,
+    create: {
+      predefinedTitle: { template: 'Missing cards [{leaderName} - {baseName}]' },
+      predefinedDescription: { template: 'Deck: {deckName}' },
+    },
   },
   step3: {
     allowedActions: ['add', 'remove'],

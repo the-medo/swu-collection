@@ -56,7 +56,7 @@ const CollectionCardSelectionInput: React.FC<CollectionCardSelectionInputProps> 
     foil,
     condition,
     language as CardLanguage,
-  ) as unknown as { amount?: number } | undefined;
+  );
 
   const value = useMemo(
     () => clamp(currentSelection?.amount ?? 0, 0, maxAmount ?? 0),
