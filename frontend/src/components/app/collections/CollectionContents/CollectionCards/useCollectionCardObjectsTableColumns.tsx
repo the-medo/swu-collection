@@ -26,6 +26,7 @@ import { useCollectionCardInput } from '@/components/app/collections/CollectionC
 import { foilRenderer } from '@/lib/table/foilRenderer.tsx';
 import { cn } from '@/lib/utils.ts';
 import { CollectionCardTableColumnsProps } from '@/components/app/collections/CollectionContents/CollectionCards/collectionCardTableLib.ts';
+import CircledNumberValue from '@/components/app/global/CircledNumberValue.tsx';
 
 export function useCollectionCardObjectsTableColumns({
   collectionId,
@@ -41,7 +42,7 @@ export function useCollectionCardObjectsTableColumns({
   return useMemo(() => {
     const definitions: ColumnDef<CollectionCard>[] = [];
 
-    if (layout === CollectionLayout.TABLE_IMAGE) {
+    if (layout === CollectionLayout.TABLE_IMAGE || layout === 'table-list') {
       definitions.push({
         id: 'image',
         accessorKey: 'cardId',
@@ -75,6 +76,10 @@ export function useCollectionCardObjectsTableColumns({
       size: 4,
       cell: ({ getValue, row }) => {
         const amount = getValue() as number;
+
+        if (layout === 'table-list') {
+          return <CircledNumberValue val={amount} strong={true} background="muted" />;
+        }
 
         if (owned) {
           const id = getIdentificationFromCollectionCard(row.original);
@@ -113,14 +118,16 @@ export function useCollectionCardObjectsTableColumns({
           return (
             <div className="flex gap-1 w-16">
               {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
-              {card?.aspects.map((a, i) => <AspectIcon key={`${a}${i}`} aspect={a} size="small" />)}
+              {card?.aspects.map((a, i) => (
+                <AspectIcon key={`${a}${i}`} aspect={a} size="small" />
+              ))}
             </div>
           );
         },
       });
     }
 
-    if (layout !== 'table-duplicate') {
+    if (layout !== 'table-duplicate' && layout !== 'table-list') {
       definitions.push({
         id: 'cardId',
         accessorKey: 'cardId',
@@ -167,61 +174,132 @@ export function useCollectionCardObjectsTableColumns({
           );
         },
       });
-    }
-
-    definitions.push({
-      id: 'variantId',
-      accessorKey: 'variantId',
-      header: () => (
-        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.VARIANT_NAME])}>
-          Variant
-        </div>
-      ),
-      size: 16,
-      cell: ({ getValue, row }) => {
-        const cardId = row.original.cardId;
-        const variantId = getValue() as string;
-
-        const card = cardList?.[cardId];
-        if (!card) return <Skeleton className="w-16 h-4 rounded-md" />;
-        const variant = card.variants[variantId];
-        return variantRenderer(variant?.variantName ?? '');
-      },
-    });
-
-    definitions.push({
-      id: 'foil',
-      accessorKey: 'foil',
-      header: 'F',
-      size: 4,
-      cell: ({ getValue }) => foilRenderer(getValue() as boolean),
-    });
-
-    definitions.push({
-      id: 'language',
-      accessorKey: 'language',
-      header: 'Lang.',
-      size: 12,
-      cell: ({ getValue }) => languageRenderer(getValue() as CardLanguage),
-    });
-
-    definitions.push({
-      id: 'condition',
-      accessorKey: 'condition',
-      header: 'Cond.',
-      size: 8,
-      cell: ({ getValue }) => conditionRenderer(getValue() as number),
-    });
-
-    if (layout !== 'table-duplicate') {
+    } else if (layout === 'table-list') {
       definitions.push({
-        id: 'cardNo',
+        id: 'cardId',
         accessorKey: 'cardId',
         header: () => (
-          <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.CARD_NUMBER])}>
-            No.
+          <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.CARD_NAME])}>
+            Card
           </div>
         ),
+        cell: ({ getValue, row }) => {
+          const cardId = getValue() as string;
+          const variantId = row.original.variantId;
+          const foil = row.original.foil;
+          const language = row.original.language;
+          const condition = row.original.condition;
+
+          const card = cardList?.[cardId];
+          if (!card) return <Skeleton className="w-full h-4 rounded-md" />;
+          const variant = card.variants[variantId];
+
+          return (
+            <HoverCard openDelay={0} closeDelay={0}>
+              <HoverCardTrigger>
+                <div className="flex py-1 gap-1 flex-col">
+                  <span>{card.name}</span>
+                  <div className="flex flex-1 gap-2 items-center justify-start">
+                    {foilRenderer(foil)}
+                    {languageRenderer(language)}
+                    {conditionRenderer(condition)}
+                    {variantRenderer(variant?.variantName ?? '', 'free', true)}
+                  </div>
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent side="right" className=" w-fit">
+                <CardImage
+                  card={card}
+                  cardVariantId={variantId}
+                  size={card?.front?.horizontal ? 'h350' : 'w200'}
+                  foil={foil}
+                  forceHorizontal={card?.front?.horizontal}
+                />
+              </HoverCardContent>
+            </HoverCard>
+          );
+        },
+      });
+    }
+
+    if (layout !== 'table-list') {
+      definitions.push({
+        id: 'variantId',
+        accessorKey: 'variantId',
+        header: () => (
+          <div
+            className="cursor-pointer"
+            onClick={() => setSortBy([CollectionSortBy.VARIANT_NAME])}
+          >
+            Variant
+          </div>
+        ),
+        size: 16,
+        cell: ({ getValue, row }) => {
+          const cardId = row.original.cardId;
+          const variantId = getValue() as string;
+
+          const card = cardList?.[cardId];
+          if (!card) return <Skeleton className="w-16 h-4 rounded-md" />;
+          const variant = card.variants[variantId];
+          return variantRenderer(variant?.variantName ?? '');
+        },
+      });
+
+      definitions.push({
+        id: 'foil',
+        accessorKey: 'foil',
+        header: 'F',
+        size: 4,
+        cell: ({ getValue }) => foilRenderer(getValue() as boolean),
+      });
+
+      definitions.push({
+        id: 'language',
+        accessorKey: 'language',
+        header: 'Lang.',
+        size: 12,
+        cell: ({ getValue }) => languageRenderer(getValue() as CardLanguage),
+      });
+
+      definitions.push({
+        id: 'condition',
+        accessorKey: 'condition',
+        header: 'Cond.',
+        size: 8,
+        cell: ({ getValue }) => conditionRenderer(getValue() as number),
+      });
+
+      if (layout !== 'table-duplicate') {
+        definitions.push({
+          id: 'cardNo',
+          accessorKey: 'cardId',
+          header: () => (
+            <div
+              className="cursor-pointer"
+              onClick={() => setSortBy([CollectionSortBy.CARD_NUMBER])}
+            >
+              No.
+            </div>
+          ),
+          size: 8,
+          cell: ({ getValue, row }) => {
+            const cardId = getValue() as string;
+            const variantId = row.original.variantId;
+
+            const card = cardList?.[cardId];
+            if (!card) return <Skeleton className="w-8 h-4 rounded-md" />;
+            const variant = card.variants[variantId];
+
+            return <span className="text-xs text-gray-500 w-8">{variant?.cardNo}</span>;
+          },
+        });
+      }
+
+      definitions.push({
+        id: 'set',
+        accessorKey: 'cardId',
+        header: 'Set',
         size: 8,
         cell: ({ getValue, row }) => {
           const cardId = getValue() as string;
@@ -231,131 +309,114 @@ export function useCollectionCardObjectsTableColumns({
           if (!card) return <Skeleton className="w-8 h-4 rounded-md" />;
           const variant = card.variants[variantId];
 
-          return <span className="text-xs text-gray-500 w-8">{variant?.cardNo}</span>;
-        },
-      });
-    }
-
-    definitions.push({
-      id: 'set',
-      accessorKey: 'cardId',
-      header: 'Set',
-      size: 8,
-      cell: ({ getValue, row }) => {
-        const cardId = getValue() as string;
-        const variantId = row.original.variantId;
-
-        const card = cardList?.[cardId];
-        if (!card) return <Skeleton className="w-8 h-4 rounded-md" />;
-        const variant = card.variants[variantId];
-
-        return (
-          <span className="text-xs font-medium text-gray-500 w-8">
-            {variant?.set.toUpperCase()}
-          </span>
-        );
-      },
-    });
-
-    if (layout !== 'table-duplicate') {
-      definitions.push({
-        id: 'rarity',
-        accessorKey: 'cardId',
-        header: () => (
-          <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.RARITY])}>
-            R.
-          </div>
-        ),
-        size: 4,
-        cell: ({ getValue }) => {
-          const cardId = getValue() as string;
-
-          const card = cardList?.[cardId];
-          if (!card) return <Skeleton className="w-4 h-4 rounded-md" />;
-
-          return <RarityIcon rarity={card.rarity} size="small" />;
-        },
-      });
-    }
-
-    definitions.push({
-      id: 'note',
-      accessorKey: 'note',
-      header: 'Note',
-      size: 20,
-      cell: ({ getValue, row }) => {
-        const note = getValue() as string;
-
-        if (owned) {
-          const id = getIdentificationFromCollectionCard(row.original);
-
           return (
-            // @ts-ignore
-            <CollectionCardInput
-              inputId={getCollectionCardIdentificationKey(id)}
-              id={id}
-              field="note"
-              value={note}
-              onChange={onChange}
-            />
+            <span className="text-xs font-medium text-gray-500 w-8">
+              {variant?.set.toUpperCase()}
+            </span>
           );
-        }
+        },
+      });
 
-        if (note === '') return <div className="w-20 min-w-20"></div>;
+      if (layout !== 'table-duplicate') {
+        definitions.push({
+          id: 'rarity',
+          accessorKey: 'cardId',
+          header: () => (
+            <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.RARITY])}>
+              R.
+            </div>
+          ),
+          size: 4,
+          cell: ({ getValue }) => {
+            const cardId = getValue() as string;
 
-        return (
-          <div className="text-sm text-gray-500 relative group w-20 min-w-20 max-w-20 flex gap-1 items-center">
-            <NotebookPen className="max-w-3 min-w-3 max-h-3 min-h-3" />
-            <span
-              className="text-left truncate max-w-full text-ellipsis overflow-hidden whitespace-nowrap"
-              title={note}
-            >
-              {note}
-            </span>
-            <span className="invisible absolute bottom-6 left-0 z-10 w-max bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:visible group-hover:opacity-100">
-              {note}
-            </span>
-          </div>
-        );
-      },
-    });
+            const card = cardList?.[cardId];
+            if (!card) return <Skeleton className="w-4 h-4 rounded-md" />;
 
-    definitions.push({
-      accessorKey: 'price',
-      header: () => (
-        <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.PRICE])}>
-          Price
-        </div>
-      ),
-      size: owned ? 32 : 20,
-      cell: ({ getValue, row }) => {
-        const price = getValue() as number | undefined;
-        const id = getIdentificationFromCollectionCard(row.original);
+            return <RarityIcon rarity={card.rarity} size="small" />;
+          },
+        });
+      }
 
-        return (
-          <div
-            className={cn('flex gap-2 items-center justify-end', {
-              'w-32': owned,
-              'w-20': !owned,
-            })}
-          >
-            {owned ? (
-              //@ts-ignore
+      definitions.push({
+        id: 'note',
+        accessorKey: 'note',
+        header: 'Note',
+        size: 20,
+        cell: ({ getValue, row }) => {
+          const note = getValue() as string;
+
+          if (owned) {
+            const id = getIdentificationFromCollectionCard(row.original);
+
+            return (
+              // @ts-ignore
               <CollectionCardInput
                 inputId={getCollectionCardIdentificationKey(id)}
                 id={id}
-                field="price"
-                value={price}
+                field="note"
+                value={note}
                 onChange={onChange}
               />
-            ) : (
-              <span>{price}</span>
-            )}
-            <span>{price ? currency : '-'}</span>
+            );
+          }
+
+          if (note === '') return <div className="w-20 min-w-20"></div>;
+
+          return (
+            <div className="text-sm text-gray-500 relative group w-20 min-w-20 max-w-20 flex gap-1 items-center">
+              <NotebookPen className="max-w-3 min-w-3 max-h-3 min-h-3" />
+              <span
+                className="text-left truncate max-w-full text-ellipsis overflow-hidden whitespace-nowrap"
+                title={note}
+              >
+                {note}
+              </span>
+              <span className="invisible absolute bottom-6 left-0 z-10 w-max bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:visible group-hover:opacity-100">
+                {note}
+              </span>
+            </div>
+          );
+        },
+      });
+
+      definitions.push({
+        accessorKey: 'price',
+        header: () => (
+          <div className="cursor-pointer" onClick={() => setSortBy([CollectionSortBy.PRICE])}>
+            Price
           </div>
-        );
-      },
-    });
+        ),
+        size: owned ? 32 : 20,
+        cell: ({ getValue, row }) => {
+          const price = getValue() as number | undefined;
+          const id = getIdentificationFromCollectionCard(row.original);
+
+          return (
+            <div
+              className={cn('flex gap-2 items-center justify-end', {
+                'w-32': owned,
+                'w-20': !owned,
+              })}
+            >
+              {owned ? (
+                //@ts-ignore
+                <CollectionCardInput
+                  inputId={getCollectionCardIdentificationKey(id)}
+                  id={id}
+                  field="price"
+                  value={price}
+                  onChange={onChange}
+                />
+              ) : (
+                <span>{price}</span>
+              )}
+              <span>{price ? currency : '-'}</span>
+            </div>
+          );
+        },
+      });
+    }
 
     return definitions;
   }, [cardList, currencyData, currency, owned, layout, forceHorizontal]);

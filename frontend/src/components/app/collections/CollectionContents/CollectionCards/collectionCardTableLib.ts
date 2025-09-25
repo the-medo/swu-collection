@@ -4,6 +4,6 @@ import { CollectionLayout } from '@/components/app/collections/CollectionContent
 export interface CollectionCardTableColumnsProps {
   collectionId: string;
   cardList: CardList | undefined;
-  layout: CollectionLayout | 'table-duplicate';
+  layout: CollectionLayout | 'table-duplicate' | 'table-list';
   forceHorizontal?: boolean;
 }

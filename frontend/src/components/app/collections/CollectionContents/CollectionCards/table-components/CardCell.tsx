@@ -12,7 +12,7 @@ import { CollectionLayout } from '@/components/app/collections/CollectionContent
 
 interface CardCellProps {
   cardKey: string;
-  layout: CollectionLayout | 'table-duplicate';
+  layout: CollectionLayout | 'table-duplicate' | 'table-list';
 }
 
 const CardCell: React.FC<CardCellProps> = ({ cardKey, layout }) => {
@@ -29,7 +29,9 @@ const CardCell: React.FC<CardCellProps> = ({ cardKey, layout }) => {
           {layout === CollectionLayout.TABLE_IMAGE && (
             <div className="flex gap-1">
               {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
-              {card?.aspects.map((a, i) => <AspectIcon key={`${a}${i}`} aspect={a} size="small" />)}
+              {card?.aspects.map((a, i) => (
+                <AspectIcon key={`${a}${i}`} aspect={a} size="small" />
+              ))}
             </div>
           )}
         </div>
