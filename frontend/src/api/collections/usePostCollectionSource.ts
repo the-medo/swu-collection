@@ -30,7 +30,10 @@ export function usePostCollectionSource() {
       return data;
     },
     onSuccess: (_data, vars) => {
-      queryClient.invalidateQueries({ queryKey: ['collection', vars.collectionId, 'sources'] });
+      void queryClient.invalidateQueries({
+        queryKey: ['collection', vars.collectionId, 'sources'],
+        exact: false,
+      });
     },
   });
 }

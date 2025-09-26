@@ -19,6 +19,7 @@ import { collectionIdMultiplePostRoute } from './collection/_id/multiple/post.ts
 import { collectionIdSourceGetRoute } from './collection/_id/source/get.ts';
 import { collectionIdSourceDisplayPostRoute } from './collection/_id/source/display/post.ts';
 import { collectionIdSourcePostRoute } from './collection/_id/source/post.ts';
+import { collectionIdApplyPostRoute } from './collection/_id/apply/post.ts';
 
 export const selectCollection = getTableColumns(collectionTable);
 
@@ -39,4 +40,5 @@ export const collectionRoute = new Hono<AuthExtension>()
   .route('/:id/multiple', collectionIdMultiplePostRoute)
   .route('/:id/source', collectionIdSourceGetRoute)
   .route('/:id/source', collectionIdSourcePostRoute)
-  .route('/:id/source/display', collectionIdSourceDisplayPostRoute);
+  .route('/:id/source/display', collectionIdSourceDisplayPostRoute)
+  .route('/:id/apply', collectionIdApplyPostRoute);
