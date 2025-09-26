@@ -9,12 +9,13 @@ import { useCollectionCardObjectsTableColumns } from '@/components/app/collectio
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { useMemo } from 'react';
 import CollectionCardAction from '@/components/app/collections/CollectionCardActions/CollectionCardAction.tsx';
-import { collectionCardActionConfiguration } from '@/components/app/collections/CollectionCardSelection/collectionCardSelectionLib.ts';
+import { getCollectionCardActionConfiguration } from '@/components/app/collections/CollectionCardSelection/collectionCardSelectionLib.ts';
 import { useGetCollectionCardSelectionTemplateReplacements } from '@/components/app/collections/CollectionCardSelection/useGetCollectionCardSelectionTemplateReplacements.ts';
 import { AddMultipleCollectionCardsItem } from '@/api/collections/useAddMultipleCollectionCards.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { signIn } from '@/lib/auth-client.ts';
+import { usePostCollectionSource } from '@/api/collections/usePostCollectionSource.ts';
 
 interface CollectionCardSelectionProps {
   collectionId: string;
@@ -25,6 +26,7 @@ const CollectionCardSelection: React.FC<CollectionCardSelectionProps> = ({ colle
   const { data: cardList } = useCardList();
   const selection = useCollectionCardSelectionStore(collectionId);
   const templateReplacements = useGetCollectionCardSelectionTemplateReplacements(collectionId);
+  const postCollectionSource = usePostCollectionSource();
 
   const { clearCollectionSelection } = useCollectionCardSelectionActions(collectionId);
 
@@ -58,6 +60,20 @@ const CollectionCardSelection: React.FC<CollectionCardSelectionProps> = ({ colle
     return result;
   }, [selection]);
 
+  const expandedConfiguration = useMemo(() => {
+    const config = getCollectionCardActionConfiguration();
+    if (!config.step2) config.step2 = {};
+    if (!config.step2.create) config.step2.create = {};
+    config.step2.create.onCollectionCreated = (newCollectionId: string) => {
+      postCollectionSource.mutate({
+        collectionId: newCollectionId,
+        sourceCollectionId: collectionId,
+        displayOnSource: true,
+      });
+    };
+    return config;
+  }, [collectionId, postCollectionSource]);
+
   return (
     <Card>
       <CardHeader>
@@ -82,7 +98,7 @@ const CollectionCardSelection: React.FC<CollectionCardSelectionProps> = ({ colle
               {user ? (
                 <CollectionCardAction
                   items={transformedSelection}
-                  configuration={collectionCardActionConfiguration}
+                  configuration={expandedConfiguration}
                   templateReplacements={templateReplacements}
                   onFinish={clearCollectionSelection}
                 />

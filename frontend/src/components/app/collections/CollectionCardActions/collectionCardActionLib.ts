@@ -88,6 +88,7 @@ export type CollectionCardActionConfiguration = {
     create?: {
       predefinedTitle?: TemplatedText;
       predefinedDescription?: TemplatedText;
+      onCollectionCreated?: (newCollectionId: string) => void;
       disable?: boolean;
     };
     /**

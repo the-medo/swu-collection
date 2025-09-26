@@ -109,35 +109,36 @@ export const removeCollectionFromMap = (id: string) => {
   }
 };
 
-export const collectionCardActionConfiguration: CollectionCardActionConfiguration = {
-  step1: {
-    title: '',
-    description: 'Create a trade list from selected cards.',
-    allowedCollectionTypes: [CollectionType.OTHER],
-    collectionTypeData: {
-      [CollectionType.COLLECTION]: undefined,
-      [CollectionType.WANTLIST]: undefined,
-      [CollectionType.OTHER]: {
-        title: 'Add to card list',
-        description: undefined,
+export const getCollectionCardActionConfiguration: () => CollectionCardActionConfiguration =
+  () => ({
+    step1: {
+      title: '',
+      description: 'Create a trade list from selected cards.',
+      allowedCollectionTypes: [CollectionType.OTHER],
+      collectionTypeData: {
+        [CollectionType.COLLECTION]: undefined,
+        [CollectionType.WANTLIST]: undefined,
+        [CollectionType.OTHER]: {
+          title: 'Add to card list',
+          description: undefined,
+        },
+      },
+      defaultSelectedCollectionType: CollectionType.OTHER,
+    },
+    step2: {
+      allowCreate: true,
+      allowExisting: false,
+      create: {
+        predefinedTitle: {
+          template: 'Trade list {date} ["{userName}" {hasFor} "{userNameCollectionOwner}"]',
+        },
+        predefinedDescription: {
+          template:
+            'List from {collectionTypeOriginal} "{collectionName}" that was created by {userNameCollectionOwner}',
+        },
       },
     },
-    defaultSelectedCollectionType: CollectionType.OTHER,
-  },
-  step2: {
-    allowCreate: true,
-    allowExisting: true,
-    create: {
-      predefinedTitle: {
-        template: 'Trade list {date} ["{userName}" {hasFor} "{userNameCollectionOwner}"]',
-      },
-      predefinedDescription: {
-        template:
-          'List from {collectionTypeOriginal} "{collectionName}" that was created by {userNameCollectionOwner}',
-      },
+    step3: {
+      allowedActions: ['add'],
     },
-  },
-  step3: {
-    allowedActions: ['add'],
-  },
-};
+  });

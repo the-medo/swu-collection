@@ -41,10 +41,15 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
     }
   }, [step2?.existing?.preselectedId]);
 
-  const onCollectionCreated = useCallback((newCollectionId: string) => {
-    setSelectedId(newCollectionId);
-    setCollectionCreated(true);
-  }, []);
+  const onCollectionCreated = useCallback(
+    (newCollectionId: string) => {
+      setSelectedId(newCollectionId);
+      setCollectionCreated(true);
+      setStep(3);
+      step2?.create?.onCollectionCreated?.(newCollectionId);
+    },
+    [step2?.create?.onCollectionCreated],
+  );
 
   if (collectionType === undefined) return null;
 
