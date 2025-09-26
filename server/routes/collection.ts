@@ -16,6 +16,8 @@ import { collectionIdGetRoute } from './collection/_id/get.ts';
 import { collectionIdPutRoute } from './collection/_id/put.ts';
 import { collectionsBulkDataPostRoute } from './collection/bulk/data/post.ts';
 import { collectionIdMultiplePostRoute } from './collection/_id/multiple/post.ts';
+import { collectionIdSourceGetRoute } from './collection/_id/source/get.ts';
+import { collectionIdSourceDisplayPostRoute } from './collection/_id/source/display/post.ts';
 
 export const selectCollection = getTableColumns(collectionTable);
 
@@ -33,4 +35,6 @@ export const collectionRoute = new Hono<AuthExtension>()
   .route('/:id/card', collectionIdCardPutRoute)
   .route('/:id/duplicate', collectionIdDuplicatePostRoute)
   .route('/:id/import', collectionIdImportPostRoute)
-  .route('/:id/multiple', collectionIdMultiplePostRoute);
+  .route('/:id/multiple', collectionIdMultiplePostRoute)
+  .route('/:id/source', collectionIdSourceGetRoute)
+  .route('/:id/source/display', collectionIdSourceDisplayPostRoute);
