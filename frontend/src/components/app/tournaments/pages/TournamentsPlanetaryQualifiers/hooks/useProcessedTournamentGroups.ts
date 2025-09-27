@@ -42,7 +42,11 @@ export const useProcessedTournamentGroups = (
       const isMostRecent = index === mostRecentGroupIndex;
 
       // Get the week number from the group or generate one
-      const weekNumber = index + 1; // Assuming sequential weeks
+      let weekNumber = index + 1; // just in case
+      const weekNumberMatch = group.group.name.match(/PQ Week (\d+)/);
+      if (weekNumberMatch && weekNumberMatch[1]) {
+        weekNumber = parseInt(weekNumberMatch[1], 10);
+      }
 
       // Generate a description for the group
       // This could be based on dates, tournament names, etc.

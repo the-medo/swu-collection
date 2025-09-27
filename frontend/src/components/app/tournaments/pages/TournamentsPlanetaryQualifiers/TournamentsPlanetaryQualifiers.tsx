@@ -19,6 +19,7 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
       meta: metaId,
       visible: false,
       includeStats: true,
+      nameTemplate: 'PQ Week%',
     }),
     [metaId],
   );
