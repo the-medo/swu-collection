@@ -27,6 +27,7 @@ interface CollectionGroupStore {
   // Loading state
   loading: boolean;
   loadedCollectionId?: string;
+  forceRefreshId?: string;
 
   // Groups data (id, card count, sub groups, level)
   groupInfo: CardGroupInfo;
@@ -42,6 +43,7 @@ interface CollectionGroupStore {
 const defaultState: CollectionGroupStore = {
   loading: false,
   loadedCollectionId: undefined,
+  forceRefreshId: Date.now().toString(),
   groupInfo: {},
   collectionCards: {},
   groupCards: {},
@@ -213,6 +215,12 @@ const setGroupInfo = (groupId: string, info: CardGroupInfoData) =>
 
 const clearStore = () => store.setState(() => defaultState);
 
+const forceRefreshCollectionGroupStore = () =>
+  store.setState(state => ({
+    ...state,
+    forceRefreshId: Date.now().toString(),
+  }));
+
 // Hook to access the store state
 export function useCollectionGroupStoreLoading() {
   return useStore(store, state => state.loading);
@@ -233,6 +241,11 @@ export function useCollectionGroupStore() {
     collectionCards,
     groupCards,
   };
+}
+
+// Hook to access a specific group's card keys
+export function useForceRefreshCollectionGroupStore() {
+  return useStore(store, state => state.forceRefreshId);
 }
 
 // Hook to access a specific group's card keys
@@ -273,5 +286,6 @@ export function useCollectionGroupStoreActions() {
     setGroupCards,
     setGroupInfo,
     clearStore,
+    forceRefreshCollectionGroupStore,
   };
 }

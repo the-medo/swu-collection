@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, MinusCircle, PlusCircle, CheckCircle2, Link as LinkIcon } from 'lucide-react';
 import { CollectionType } from '../../../../../../types/enums.ts';
@@ -28,6 +28,9 @@ const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
   const addMultipleMutation = useAddMultipleCollectionCards();
   const { step3 } = configuration;
 
+  // Track if the instant action has been triggered during this component's lifecycle
+  const instantActionTriggeredRef = useRef(false);
+
   const [completedAction, setCompletedAction] = useState<'insert' | 'remove' | undefined>(
     undefined,
   );
@@ -35,16 +38,19 @@ const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
   const act = (remove: boolean) => {
     if (items.length === 0) return;
     setCompletedAction(undefined);
-    addMultipleMutation.mutate(
-      { collectionId, items, remove },
-      {
-        onSuccess: () => {
-          onFinish?.();
-          setCompletedAction(remove ? 'remove' : 'insert');
-        },
-      },
-    );
+    addMultipleMutation.mutateAsync({ collectionId, items, remove }).then(() => {
+      onFinish?.();
+      setCompletedAction(remove ? 'remove' : 'insert');
+    });
   };
+
+  useEffect(() => {
+    if (step3?.instantAction && !instantActionTriggeredRef.current) {
+      instantActionTriggeredRef.current = true;
+      void act(step3.instantAction.action === 'remove');
+    }
+    // Depend on collectionId and instantAction; the ref gates duplicate triggers during a single mount.
+  }, [collectionId, step3?.instantAction]);
 
   const collectionUrl = `/collections/${collectionId}`;
   const isDone = addMultipleMutation.isSuccess && !!completedAction;

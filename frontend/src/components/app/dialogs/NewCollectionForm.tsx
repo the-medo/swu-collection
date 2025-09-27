@@ -21,6 +21,9 @@ export interface NewCollectionFormProps {
   defaultTitle?: string;
   defaultDescription?: string;
   disabled?: boolean;
+  defaultPublic?: boolean;
+  defaultForSale?: boolean;
+  defaultForDecks?: boolean;
 }
 
 const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
@@ -30,6 +33,9 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
   defaultTitle,
   defaultDescription,
   disabled = false,
+  defaultPublic = false,
+  defaultForSale = false,
+  defaultForDecks = false,
 }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -48,9 +54,9 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
     defaultValues: {
       title: defaultTitle ?? `My ${cardListString}`,
       description: defaultDescription ?? ``,
-      public: false,
-      forSale: false,
-      forDecks: false,
+      public: defaultPublic,
+      forSale: defaultForSale,
+      forDecks: defaultForDecks,
     },
     onSubmit: async ({ value }) => {
       if (disabled) return;

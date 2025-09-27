@@ -31,7 +31,7 @@ export function usePostCollectionSource() {
     },
     onSuccess: (_data, vars) => {
       void queryClient.invalidateQueries({
-        queryKey: ['collection', vars.collectionId, 'sources'],
+        queryKey: ['collection', vars.sourceCollectionId, 'sources'],
         exact: false,
       });
     },

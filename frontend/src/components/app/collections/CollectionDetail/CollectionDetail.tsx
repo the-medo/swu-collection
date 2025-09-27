@@ -20,6 +20,7 @@ import { forSaleRenderer } from '@/lib/table/forSaleRenderer.tsx';
 import { forDecksRenderer } from '@/lib/table/forDecksRenderer.tsx';
 import { usePutCollection } from '@/api/collections/usePutCollection.ts';
 import CollectionCardSelection from '@/components/app/collections/CollectionCardSelection/CollectionCardSelection.tsx';
+import CollectionSources from '@/components/app/collections/CollectionSources/CollectionSources.tsx';
 
 const routeApi = getRouteApi('/collections/$collectionId/');
 
@@ -120,6 +121,7 @@ const CollectionDetail: React.FC = () => {
         <div className="flex flex-col gap-4 w-full lg:w-[400px]">
           <CollectionActions collectionId={collectionId} />
           <CollectionStats collectionId={collectionId} />
+          {user && <CollectionSources collectionId={collectionId} owned={owned} />}
           {!owned && <CollectionCardSelection collectionId={collectionId} />}
           {owned && <CollectionInputSection collectionId={collectionId} />}
         </div>

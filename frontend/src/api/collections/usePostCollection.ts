@@ -36,6 +36,7 @@ export const usePostCollection = () => {
       return data;
     },
     onSuccess: result => {
+      console.log('onSuccess 1');
       queryClient.setQueryData<UserCollectionsResponse>(['collections', user?.id], oldData => {
         if (!user?.id) return undefined;
         if (!oldData) {

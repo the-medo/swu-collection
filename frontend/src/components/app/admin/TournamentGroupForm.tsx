@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector';
 import { usePostTournamentGroup, usePutTournamentGroup } from '@/api/tournament-groups';
-import { TournamentGroup } from '../../../../types/TournamentGroup';
+import { TournamentGroup } from '../../../../../types/TournamentGroup.ts';
 
 // Validators
 const nameValidator = (value: string) => {

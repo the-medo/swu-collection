@@ -32,12 +32,12 @@ export const useAddMultipleCollectionCards = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to update collection cards');
+        throw new Error('message' in error ? error.message : 'Failed to update collection cards');
       }
 
       return response.json();
     },
-    onSuccess: async (result, variables) => {
+    onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
       queryClient.invalidateQueries({
         queryKey: ['collection', variables.collectionId],

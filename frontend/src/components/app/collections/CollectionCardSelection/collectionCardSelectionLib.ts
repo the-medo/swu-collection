@@ -140,5 +140,8 @@ export const getCollectionCardActionConfiguration: () => CollectionCardActionCon
     },
     step3: {
       allowedActions: ['add'],
+      instantAction: {
+        action: 'add',
+      },
     },
   });

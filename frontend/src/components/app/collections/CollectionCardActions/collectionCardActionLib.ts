@@ -112,6 +112,10 @@ export type CollectionCardActionConfiguration = {
      * if this is not set, both buttons will be displayed
      */
     allowedActions?: ('add' | 'remove')[];
+
+    instantAction?: {
+      action: 'add' | 'remove';
+    };
   };
 };
 

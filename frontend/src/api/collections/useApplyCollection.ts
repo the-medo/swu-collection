@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
+import { useCollectionGroupStoreActions } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 
 export type ApplyCollectionOperation = 'add' | 'remove';
 
@@ -20,6 +21,7 @@ export type ApplyCollectionResult = {
 
 export function useApplyCollection() {
   const queryClient = useQueryClient();
+  const { forceRefreshCollectionGroupStore } = useCollectionGroupStoreActions();
 
   return useMutation<ApplyCollectionResult, Error, ApplyCollectionVariables>({
     mutationFn: async ({ collectionId, collectionIdToApply, operation = 'add' }) => {
@@ -29,8 +31,9 @@ export function useApplyCollection() {
       });
 
       if (!response.ok) {
-        const error = await response.json().catch(() => ({} as any));
-        const message = (error && (error.message as string)) || 'Failed to apply collection changes';
+        const error = await response.json().catch(() => ({}) as any);
+        const message =
+          (error && (error.message as string)) || 'Failed to apply collection changes';
         throw new Error(message);
       }
 
@@ -42,6 +45,8 @@ export function useApplyCollection() {
       queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
       queryClient.invalidateQueries({ queryKey: ['collection', variables.collectionId] });
       queryClient.invalidateQueries({ queryKey: ['collection-content', variables.collectionId] });
+
+      forceRefreshCollectionGroupStore();
 
       const data = result?.data;
       toast({

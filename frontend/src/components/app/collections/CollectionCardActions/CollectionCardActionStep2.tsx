@@ -78,6 +78,9 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
   }
 
   const showOr = allowCreate && allowExisting && !collectionCreated;
+  const hideBottomContinueButton =
+    allowCreate && !allowExisting && configuration?.step3?.instantAction;
+  const hideBottomBackButton = !!configuration?.step1?.defaultSelectedCollectionType;
 
   return (
     <>
@@ -118,22 +121,34 @@ const CollectionCardActionStep2: React.FC<CollectionCardActionStep2Props> = ({
           />
         )}
       </div>
-      <div className="flex justify-between items-center">
-        <Button
-          size="icon"
-          aria-label={`Go to back`}
-          onClick={() => setActionCollectionType(undefined)}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          disabled={(!selectedId && !collectionCreated) || (!allowExisting && !collectionCreated)}
-          onClick={() => (selectedId || collectionCreated) && setStep(3)}
-        >
-          Continue
-          <ArrowRight className="h-4 w-4" />
-        </Button>
-      </div>
+      {(!hideBottomBackButton || !hideBottomContinueButton) && (
+        <div className="flex justify-between items-center">
+          {hideBottomBackButton ? (
+            <div></div>
+          ) : (
+            <Button
+              size="icon"
+              aria-label={`Go to back`}
+              onClick={() => setActionCollectionType(undefined)}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          )}
+          {hideBottomContinueButton ? (
+            <div></div>
+          ) : (
+            <Button
+              disabled={
+                (!selectedId && !collectionCreated) || (!allowExisting && !collectionCreated)
+              }
+              onClick={() => (selectedId || collectionCreated) && setStep(3)}
+            >
+              Continue
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      )}
     </>
   );
 };

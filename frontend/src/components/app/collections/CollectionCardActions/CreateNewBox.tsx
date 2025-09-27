@@ -49,6 +49,7 @@ const CreateNewBox: React.FC<CreateNewBoxProps> = ({
             onCollectionCreated={collectionCreatedHandler}
             defaultTitle={predefinedTitle}
             defaultDescription={predefinedDescription}
+            defaultPublic={true}
             disabled={disable}
           />
         </>
