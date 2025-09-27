@@ -8,12 +8,22 @@ export type GetTournamentGroupsRequest = {
   meta?: number;
   visible?: boolean;
   includeStats?: boolean;
+  nameTemplate?: string;
   sort?: 'name' | 'position' | 'created_at';
   order?: 'asc' | 'desc';
+  pageSize?: number;
 };
 
 export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) => {
-  const { meta, visible, includeStats, sort = 'position', order = 'asc' } = props;
+  const {
+    meta,
+    visible,
+    includeStats,
+    nameTemplate,
+    sort = 'position',
+    order = 'asc',
+    pageSize = PAGE_SIZE,
+  } = props;
 
   // Create a stable query key based on all filter parameters
   const qk = [
@@ -22,6 +32,7 @@ export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) =
       meta,
       visible,
       includeStats,
+      nameTemplate,
       sort,
       order,
     },
@@ -35,9 +46,10 @@ export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) =
           meta: meta?.toString(),
           visible: visible?.toString(),
           includeStats: includeStats?.toString(),
+          nameTemplate,
           sort,
           order,
-          limit: PAGE_SIZE.toString(),
+          limit: pageSize.toString(),
           offset: pageParam.toString(),
         },
       });

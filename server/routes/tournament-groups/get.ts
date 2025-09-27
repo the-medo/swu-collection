@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import type { AuthExtension } from '../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, like, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { tournamentGroup as tournamentGroupTable } from '../../db/schema/tournament_group.ts';
 import { tournamentGroupTournament as tournamentGroupTournamentTable } from '../../db/schema/tournament_group_tournament.ts';
@@ -28,6 +28,7 @@ const zTournamentGroupQueryParams = z.object({
     if (val === 'true') return true;
     return val;
   }, z.boolean().optional().default(false)),
+  nameTemplate: z.string().optional(),
   limit: z.coerce.number().optional().default(100),
   offset: z.coerce.number().optional().default(0),
   sort: z.enum(['name', 'position', 'created_at']).optional().default('position'),
@@ -38,7 +39,8 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
   '/',
   zValidator('query', zTournamentGroupQueryParams),
   async c => {
-    const { meta, visible, includeStats, limit, offset, sort, order } = c.req.valid('query');
+    const { meta, visible, includeStats, nameTemplate, limit, offset, sort, order } =
+      c.req.valid('query');
 
     const filters = [];
 
@@ -50,6 +52,9 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
     // Visibility filter
     if (visible !== undefined) {
       filters.push(eq(tournamentGroupTable.visible, visible));
+    }
+    if (nameTemplate) {
+      filters.push(like(tournamentGroupTable.name, nameTemplate));
     }
 
     // Define the extra fields to select if includeStats is true

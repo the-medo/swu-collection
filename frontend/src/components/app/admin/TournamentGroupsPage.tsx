@@ -32,11 +32,10 @@ export function TournamentGroupsPage() {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<TournamentGroupWithMeta | null>(null);
 
-  console.log('Here.');
-
   const params = useMemo(
     () => ({
       meta: selectedMetaId || undefined,
+      pageSize: 200,
     }),
     [selectedMetaId],
   );
