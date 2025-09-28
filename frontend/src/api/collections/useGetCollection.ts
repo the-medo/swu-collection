@@ -22,7 +22,7 @@ export const useGetCollection = (collectionId: string | undefined) => {
             }
             throw new Error('Something went wrong');
           }
-          const data = await response.json();
+          const data = (await response.json()) as UserCollectionData;
           return data;
         }
       : skipToken,

@@ -15,11 +15,14 @@ import type {
 } from '../../../../../../../../lib/swu-resources/types.ts';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 
+import type { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
+
 interface DeckCardHoverImageProps extends PropsWithChildren {
   card: CardDataWithVariants<CardListVariants> | undefined;
+  size?: CardImageVariantProps['size'];
 }
 
-const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({ card, children }) => {
+const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({ card, size = 'original', children }) => {
   const { isMobile } = useSidebar();
   const defaultVariant = card ? selectDefaultVariant(card) : '';
 
@@ -34,7 +37,7 @@ const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({ card, children 
           <HoverCardContent
             className={cn(
               cardImageVariants({
-                size: 'original',
+                size,
                 horizontal: card?.front.horizontal ?? false,
               }),
               'm-0 p-0 w-fit',
@@ -44,7 +47,7 @@ const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({ card, children 
             align="start"
             avoidCollisions={true}
           >
-            <CardImage card={card} cardVariantId={defaultVariant} size="original" />
+            <CardImage card={card} cardVariantId={defaultVariant} size={size} />
           </HoverCardContent>
         </HoverCardPortal>
       )}

@@ -11,6 +11,7 @@ export interface UserSettings {
   deckGroupBy: DeckGroupBy; // default: DeckGroupBy.CARD_TYPE
   deckPrices: boolean; // default: false
   priceSourceType: CardPriceSourceType; // default CardPriceSourceType.CARDMARKET
+  collectionInfoInDecks: boolean;
   // DeckImagePresets
   deckImage_showNoisyBackground: DeckImagePresets['showNoisyBackground'];
   deckImage_showcaseLeader: DeckImagePresets['showcaseLeader'];
@@ -26,6 +27,7 @@ export const userSettingsSchema = z.object({
   deckGroupBy: z.nativeEnum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
   deckPrices: z.boolean().default(false),
   priceSourceType: z.nativeEnum(CardPriceSourceType).default(CardPriceSourceType.CARDMARKET),
+  collectionInfoInDecks: z.boolean().default(false),
   // DeckImagePresets
   deckImage_showNoisyBackground: z.boolean().default(true),
   deckImage_showcaseLeader: z.boolean().default(false),

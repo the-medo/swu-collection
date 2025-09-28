@@ -38,6 +38,7 @@ interface DataTableProps<TData, TValue> {
   columns: ExtendedColumnDef<TData, TValue>[];
   data: TData[];
   loading?: boolean;
+  tableBorder?: boolean;
   defaultColumn?: {
     size: number;
     minSize: number;
@@ -55,6 +56,7 @@ interface DataTableProps<TData, TValue> {
   enableRowSelection?: boolean;
   rowSelection?: RowSelectionState;
   cellClassName?: string;
+  headerCellClassName?: string;
   onRowSelectionChange?: TableOptions<TData>['onRowSelectionChange']; //(newSelection: RowSelectionState) => void;
 }
 
@@ -64,6 +66,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   loading = false,
+  tableBorder = true,
   defaultColumn = {
     size: 0,
     minSize: 0,
@@ -81,6 +84,7 @@ export function DataTable<TData, TValue>({
   enableRowSelection = false,
   rowSelection = {},
   cellClassName,
+  headerCellClassName,
   onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
@@ -149,7 +153,11 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div className="rounded-md border w-full relative">
+    <div
+      className={cn('rounded-md w-full relative', {
+        border: tableBorder,
+      })}
+    >
       <Table onMouseLeave={onTableMouseLeave}>
         <TableHeader className="sticky top-0 z-20 bg-background">
           {table.getHeaderGroups().map(headerGroup => (
@@ -158,9 +166,12 @@ export function DataTable<TData, TValue>({
                 return (
                   <TableHead
                     key={header.id}
-                    className={cn({
-                      [`w-${header.getSize()}`]: header.getSize() > 0,
-                    })}
+                    className={cn(
+                      {
+                        [`w-${header.getSize()}`]: header.getSize() > 0,
+                      },
+                      headerCellClassName,
+                    )}
                   >
                     {header.isPlaceholder
                       ? null

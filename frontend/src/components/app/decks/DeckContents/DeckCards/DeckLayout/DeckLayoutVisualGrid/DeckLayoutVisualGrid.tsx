@@ -3,6 +3,7 @@ import * as React from 'react';
 import DeckCardVisualItem from './DeckCardVisualItem.tsx';
 import { cn } from '@/lib/utils.ts';
 import { DeckLayout } from '../../../../../../../../../types/enums.ts';
+import { useDeckCollection } from '@/components/app/decks/DeckContents/DeckCollection/useDeckCollection.ts';
 
 export type DeckLayoutVisualGridVariant = 'overlap' | 'no-overlap';
 
@@ -19,6 +20,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
   deckCardsForLayout: { mainboardGroups, cardsByBoard, usedCardsInBoards, usedCards },
   highlightedCardId,
 }) => {
+  const { data: d } = useDeckCollection(deckId);
   const deckLayout =
     variant === 'overlap' ? DeckLayout.VISUAL_GRID_OVERLAP : DeckLayout.VISUAL_GRID;
 
@@ -54,6 +56,8 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
                     deckCard={card}
                     card={usedCards[card.cardId]}
                     cardInBoards={usedCardsInBoards[card.cardId]}
+                    missingCardInBoards={d?.missingCards[card.cardId]}
+                    displayMissingCards={d !== null}
                     isHighlighted={highlightedCardId === card.cardId}
                   />
                 ))}
@@ -91,6 +95,8 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
                   deckCard={card}
                   card={usedCards[card.cardId]}
                   cardInBoards={usedCardsInBoards[card.cardId]}
+                  missingCardInBoards={d?.missingCards[card.cardId]}
+                  displayMissingCards={d !== null}
                   isHighlighted={highlightedCardId === card.cardId}
                 />
               ))}

@@ -211,6 +211,20 @@
       "when": 1757279091682,
       "tag": "0029_bizarre_nightcrawler",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1757762855412,
+      "tag": "0030_puzzling_grim_reaper",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1758900442848,
+      "tag": "0031_fresh_harrier",
+      "breakpoints": true
     }
   ]
 }

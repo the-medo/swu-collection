@@ -22,6 +22,7 @@ import SetCell from './table-components/SetCell';
 import RarityCell from './table-components/RarityCell';
 import NoteCell from './table-components/NoteCell';
 import PriceCell from './table-components/PriceCell';
+import SelectionCell from './table-components/SelectionCell';
 
 export function useCollectionCardKeysTableColumns({
   collectionId,
@@ -225,6 +226,22 @@ export function useCollectionCardKeysTableColumns({
         );
       },
     });
+
+    if (!owned) {
+      definitions.push({
+        id: 'selection',
+        accessorFn: cardKey => cardKey,
+        header: 'Selection',
+        size: 16,
+        cell: ({ row }) => {
+          return (
+            <div className="flex justify-end">
+              <SelectionCell cardKey={row.original} collectionId={collectionId} />
+            </div>
+          );
+        },
+      });
+    }
 
     return definitions;
   }, [cardList, currencyData, currency, owned, layout, forceHorizontal]);

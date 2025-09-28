@@ -30,6 +30,8 @@ export interface DeckCardTextRowProps {
   deckCard: DeckCard;
   card: CardDataWithVariants<CardListVariants> | undefined;
   cardInBoards: DeckCardInBoards;
+  missingCardInBoards?: DeckCardInBoards;
+  displayMissingCards?: boolean;
   isHighlighted?: boolean;
 }
 
@@ -39,6 +41,8 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   deckCard,
   card,
   cardInBoards,
+  missingCardInBoards,
+  displayMissingCards = false,
   isHighlighted,
 }) => {
   const navigate = useNavigate({ from: Route.fullPath });
@@ -46,6 +50,8 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   const { owned } = useDeckInfo(deckId);
   const mutation = usePutDeckCard(deckId);
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
+
+  const missingAmount = missingCardInBoards?.[deckCard.board] ?? 0;
 
   const quantityChangeHandler = useCallback(
     (quantity: number | undefined, board?: number) => {
@@ -80,7 +86,12 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
           'bg-primary/10 border border-primary rounded-sm': isHighlighted,
         })}
       >
-        <div>
+        <div className="flex items-center">
+          {displayMissingCards && missingAmount > 0 && (
+            <span className="text-red-500 text-xs w-[15px]">
+              {deckCard.quantity - missingAmount}
+            </span>
+          )}
           {owned ? (
             <DebouncedInput
               type="number"

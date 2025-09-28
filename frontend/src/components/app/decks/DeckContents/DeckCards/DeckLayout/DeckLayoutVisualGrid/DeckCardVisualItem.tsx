@@ -25,6 +25,8 @@ interface DeckCardVisualItemProps {
   deckCard: DeckCard;
   card: CardDataWithVariants<CardListVariants> | undefined;
   cardInBoards: DeckCardInBoards;
+  missingCardInBoards?: DeckCardInBoards;
+  displayMissingCards?: boolean;
   displayQuantity?: boolean;
   displayDropdown?: boolean;
   isHighlighted?: boolean;
@@ -36,6 +38,8 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
   deckCard,
   card,
   cardInBoards,
+  missingCardInBoards,
+  displayMissingCards = false,
   displayQuantity = true,
   displayDropdown = true,
   isHighlighted,
@@ -45,6 +49,8 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
   const mutation = usePutDeckCard(deckId);
   const defaultVariant = card ? selectDefaultVariant(card) : undefined;
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
+
+  const missingAmount = missingCardInBoards?.[deckCard.board] ?? 0;
 
   const quantityChangeHandler = useCallback(
     (quantity: number | undefined, board?: number) => {
@@ -88,6 +94,9 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
       {(displayDropdown || displayQuantity) && (
         <div className="absolute top-0 -right-3 px-2 z-10 b-1 border-2 border-foreground/30 bg-background/80 rounded flex flex-col items-end">
           <div className="flex gap-2 items-center">
+            {displayMissingCards && missingAmount > 0 && (
+              <span className="text-red-500 text-xs">{deckCard.quantity - missingAmount}</span>
+            )}
             {displayQuantity && <span className="font-semibold">x{deckCard.quantity}</span>}
             {displayDropdown && (
               <DeckCardDropdownMenu

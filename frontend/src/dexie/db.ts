@@ -2,6 +2,7 @@ import Dexie, { type Table } from 'dexie';
 import { type TournamentDecksStore, type TournamentMatchesStore } from './tournament';
 import { type CardVariantPriceStore, type CardVariantPriceFetchListStore } from './cardPrices';
 import { type UserSettingsStore } from './userSettings';
+import { type CollectionStore, type CollectionCardsStore } from './collections';
 
 export class SwuBaseDB extends Dexie {
   // Tables
@@ -11,6 +12,8 @@ export class SwuBaseDB extends Dexie {
   cardVariantPriceFetchList!: Table<CardVariantPriceFetchListStore>;
   userSettings!: Table<UserSettingsStore>;
   dailySnapshots!: Table<import('./dailySnapshots').DailySnapshotDay>;
+  collections!: Table<CollectionStore>;
+  collectionCards!: Table<CollectionCardsStore>;
 
   constructor() {
     super('SwuBaseDB');
@@ -18,14 +21,14 @@ export class SwuBaseDB extends Dexie {
       tournamentDecks: 'id', // Primary key is tournamentId
       tournamentMatches: 'id', // Primary key is tournamentId
     });
-    
+
     this.version(2).stores({
       tournamentDecks: 'id', // Primary key is tournamentId
       tournamentMatches: 'id', // Primary key is tournamentId
       cardVariantPrices: 'id, cardId, variantId, sourceType, fetchedAt', // Composite key + indexes
       cardVariantPriceFetchList: 'id, cardId, variantId, addedAt', // Composite key + indexes
     });
-    
+
     this.version(3).stores({
       tournamentDecks: 'id', // Primary key is tournamentId
       tournamentMatches: 'id', // Primary key is tournamentId
@@ -42,6 +45,18 @@ export class SwuBaseDB extends Dexie {
       cardVariantPriceFetchList: 'id, cardId, variantId, addedAt',
       userSettings: 'key',
       dailySnapshots: 'date', // Primary key is date (YYYY-MM-DD)
+    });
+
+    // v5: collections and collection cards per collection
+    this.version(5).stores({
+      tournamentDecks: 'id',
+      tournamentMatches: 'id',
+      cardVariantPrices: 'id, cardId, variantId, sourceType, fetchedAt',
+      cardVariantPriceFetchList: 'id, cardId, variantId, addedAt',
+      userSettings: 'key',
+      dailySnapshots: 'date',
+      collections: 'id', // Primary key is collection id
+      collectionCards: 'collectionId', // Primary key is collectionId; value holds array of cards
     });
   }
 }

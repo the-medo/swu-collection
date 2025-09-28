@@ -33,7 +33,7 @@ const PriceSourceSelector: React.FC = () => {
         {showPrices ? (priceSource ? cardPriceSourceInfo[priceSource].name : 'Unknown') : 'None'}
       </NavigationMenuTrigger>
       <NavigationMenuContent>
-        <div className="p-4 grid grid-cols-1 gap-4 w-[300px]">
+        <div className="p-2 grid grid-cols-1 gap-4 w-[300px]">
           {/* First section: Show/Hide options */}
           <div className="col-span-1 grid grid-cols-1 gap-1">
             {/*<div className="text-sm font-medium mb-1">Display</div>*/}

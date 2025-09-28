@@ -6,6 +6,7 @@ import {
   useCollectionCards,
   useCollectionGroupStoreActions,
   useCollectionGroupStoreLoadedCollectionId,
+  useForceRefreshCollectionGroupStore,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
 import { api } from '@/lib/api.ts';
@@ -17,6 +18,7 @@ import { api } from '@/lib/api.ts';
 export function useCollectionGroupData(collectionId: string | undefined) {
   const loadedCollectionId = useCollectionGroupStoreLoadedCollectionId();
   const collectionCards = useCollectionCards();
+  const forceRefresh = useForceRefreshCollectionGroupStore();
 
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
   const { groupBy, sortBy } = useCollectionLayoutStore();
@@ -50,7 +52,14 @@ export function useCollectionGroupData(collectionId: string | undefined) {
     }, 0);
 
     return () => clearTimeout(handle);
-  }, [collectionId, cardList, setLoading, setLoadedCollectionId, setCollectionStoreData]);
+  }, [
+    collectionId,
+    cardList,
+    setLoading,
+    setLoadedCollectionId,
+    setCollectionStoreData,
+    forceRefresh,
+  ]);
 
   // Process data when collection cards, card list, or layout settings change
   useEffect(() => {

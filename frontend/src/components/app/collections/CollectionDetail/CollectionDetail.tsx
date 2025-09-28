@@ -4,7 +4,7 @@ import { useUser } from '@/hooks/useUser';
 import LoadingTitle from '../../global/LoadingTitle';
 import CollectionInputSection from '@/components/app/collections/CollectionInput/CollectionInputSection.tsx';
 import CollectionContents from '@/components/app/collections/CollectionContents/CollectionContents.tsx';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useCollectionLayoutStoreActions } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import EditCollectionDialog from '@/components/app/dialogs/EditCollectionDialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -16,6 +16,11 @@ import CollectionActions from '@/components/app/collections/CollectionActions/Co
 import { collectionTypeTitle } from '../../../../../../types/iterableEnumInfo.ts';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import { Helmet } from 'react-helmet-async';
+import { forSaleRenderer } from '@/lib/table/forSaleRenderer.tsx';
+import { forDecksRenderer } from '@/lib/table/forDecksRenderer.tsx';
+import { usePutCollection } from '@/api/collections/usePutCollection.ts';
+import CollectionCardSelection from '@/components/app/collections/CollectionCardSelection/CollectionCardSelection.tsx';
+import CollectionSources from '@/components/app/collections/CollectionSources/CollectionSources.tsx';
 
 const routeApi = getRouteApi('/collections/$collectionId/');
 
@@ -24,14 +29,31 @@ const CollectionDetail: React.FC = () => {
   const { collectionId } = routeApi.useParams();
   const { data, isFetching, error } = useGetCollection(collectionId);
   const { setCollectionInfo } = useCollectionLayoutStoreActions();
+  const putCollectionMutation = usePutCollection();
 
   const collectionUserId = data?.user?.id ?? '';
-  const collectionCurrency = data?.user.currency;
+  const collectionCurrency = data?.user?.currency;
   const loading = isFetching;
   const owned = user?.id === collectionUserId;
 
+  const publicC = !!data?.collection.public;
+  const forSaleC = !!data?.collection.forSale;
+  const forDecksC = !!data?.collection.forDecks;
+
   const collectionType = data?.collection.collectionType ?? CollectionType.COLLECTION;
   const cardListString = collectionTypeTitle[collectionType];
+
+  const toggleValue = useCallback((fieldName: string, value: boolean) => {
+    if (!['public', 'forDecks', 'forSale'].includes(fieldName)) return;
+    putCollectionMutation.mutate({
+      collectionId: collectionId,
+      [fieldName]: value,
+    });
+  }, []);
+
+  const togglePublic = () => toggleValue('public', !publicC);
+  const toggleForSale = () => toggleValue('forSale', !forSaleC);
+  const toggleForDecks = () => toggleValue('forDecks', !forDecksC);
 
   useEffect(() => {
     setCollectionInfo(
@@ -78,8 +100,10 @@ const CollectionDetail: React.FC = () => {
           loading={loading}
         />
         {owned && data?.collection && (
-          <div className="flex flex-row gap-4 items-center">
-            {publicRenderer(data?.collection.public)}
+          <div className="flex flex-row gap-2 items-center">
+            {publicRenderer(data?.collection.public, owned ? togglePublic : undefined)}
+            {forSaleRenderer(data?.collection.forSale, owned ? toggleForSale : undefined)}
+            {forDecksRenderer(data?.collection.forDecks, owned ? toggleForDecks : undefined)}
             <EditCollectionDialog
               collection={data?.collection}
               trigger={<Button>Edit {cardListString}</Button>}
@@ -97,6 +121,8 @@ const CollectionDetail: React.FC = () => {
         <div className="flex flex-col gap-4 w-full lg:w-[400px]">
           <CollectionActions collectionId={collectionId} />
           <CollectionStats collectionId={collectionId} />
+          {user && <CollectionSources collectionId={collectionId} owned={owned} />}
+          {!owned && <CollectionCardSelection collectionId={collectionId} />}
           {owned && <CollectionInputSection collectionId={collectionId} />}
         </div>
       </div>

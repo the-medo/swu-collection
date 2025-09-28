@@ -9,7 +9,7 @@ export const zCollectionCardSchema = z.object({
   condition: z.number().int().min(0).max(6),
   language: z.nativeEnum(CardLanguage).default(CardLanguage.EN),
   note: z.string().nullable(),
-  amount: z.number().int().min(0),
+  amount: z.number().int().min(0).max(1000),
   amount2: z.number().int().min(0).nullable(),
   price: z.string().nullable(),
 });
@@ -27,6 +27,21 @@ export const zCollectionCardCreateRequest = zCollectionCardSchema
     language: true,
     amount: true,
   });
+
+export const zCollectionCardCreateRequestAllowNegative = zCollectionCardSchema
+  .omit({
+    collectionId: true, //part of api route
+    amount: true, //part of api route
+  })
+  .partial()
+  .required({
+    cardId: true,
+    variantId: true,
+    foil: true,
+    condition: true,
+    language: true,
+  })
+  .and(z.object({ amount: z.number().int().min(-1000).max(1000) }));
 
 export const zCollectionCardUpdateRequest = z.object({
   id: zCollectionCardSchema

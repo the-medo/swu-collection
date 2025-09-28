@@ -17,6 +17,7 @@ import DeckImageButton from '@/components/app/decks/DeckContents/DeckImage/DeckI
 import { Link } from '@tanstack/react-router';
 import { Hammer } from 'lucide-react';
 import DeckGradientButton from '@/components/app/decks/DeckContents/DeckImage/DeckGradientButton.tsx';
+import DeckCollection from '@/components/app/decks/DeckContents/DeckCollection/DeckCollection.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -59,7 +60,11 @@ const DeckContents: React.FC<DeckContentsProps> = ({
             <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">
               <DeckNavigationMenu deckId={deckId} className="justify-between">
                 <NavigationMenuList className="flex-wrap justify-start gap-1">
-                  <DecklistChartsTabs value={tabsValue} onValueChange={setTabsValue} />
+                  <DecklistChartsTabs
+                    deckId={deckId}
+                    value={tabsValue}
+                    onValueChange={setTabsValue}
+                  />
                   <NavigationMenuItem>
                     <div className="w-full flex justify-center bg-background rounded-md">
                       <DeckImageButton deckId={deckId} />
@@ -97,6 +102,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
               <DeckCards deckId={deckId} highlightedCardId={highlightedCardId} />
             )}
             {tabsValue === 'charts' && <DeckStats deckId={deckId} />}
+            {tabsValue === 'collection' && <DeckCollection deckId={deckId} />}
           </div>
         </div>
       </div>

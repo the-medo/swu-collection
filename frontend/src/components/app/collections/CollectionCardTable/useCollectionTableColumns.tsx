@@ -21,11 +21,15 @@ import { useUser } from '@/hooks/useUser.ts';
 import DeleteCollectionDialog from '@/components/app/dialogs/DeleteCollectionDialog.tsx';
 import EditCollectionDialog from '@/components/app/dialogs/EditCollectionDialog.tsx';
 import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table.tsx';
+import { forSaleRenderer } from '@/lib/table/forSaleRenderer.tsx';
+import { forDecksRenderer } from '@/lib/table/forDecksRenderer.tsx';
 
 interface CollectionTableColumnsProps {
   view?: DataTableViewMode;
   showOwner?: boolean;
   showPublic?: boolean;
+  showForSale?: boolean;
+  showForDecks?: boolean;
   showState?: boolean;
   showCurrency?: boolean;
 }
@@ -34,6 +38,8 @@ export function useCollectionTableColumns({
   view,
   showOwner,
   showPublic,
+  showForSale,
+  showForDecks,
   showState,
   showCurrency,
 }: CollectionTableColumnsProps): ExtendedColumnDef<UserCollectionData>[] {
@@ -81,9 +87,9 @@ export function useCollectionTableColumns({
 
       return (
         <div className="justify-end flex items-center gap-2 text-xs">
-          {countryCode && <img src={country?.flag} alt={country?.code} className="w-6" />}
           {country?.name ?? ' - '}
           {state ? ` | ${state}` : ''}
+          {countryCode && <img src={country?.flag} alt={country?.code} className="w-6" />}
         </div>
       );
     };
@@ -127,13 +133,68 @@ export function useCollectionTableColumns({
         header: 'Public',
         size: 20,
         cell: ({ getValue, row }) => {
+          const userId = row.original.user.id as string;
           const collectionId = row.original.collection.id as string;
-          return publicRenderer(getValue() as boolean, () => {
-            putCollectionMutation.mutate({
-              collectionId: collectionId,
-              public: !(getValue() as boolean),
-            });
-          });
+
+          return publicRenderer(
+            getValue() as boolean,
+            user?.id === userId
+              ? () => {
+                  putCollectionMutation.mutate({
+                    collectionId: collectionId,
+                    public: !(getValue() as boolean),
+                  });
+                }
+              : undefined,
+          );
+        },
+      });
+    }
+
+    if (showForSale) {
+      definitions.push({
+        id: 'collectionForSale',
+        accessorKey: 'collection.forSale',
+        header: 'For sale',
+        size: 32,
+        cell: ({ getValue, row }) => {
+          const userId = row.original.user.id as string;
+          const collectionId = row.original.collection.id as string;
+          return forSaleRenderer(
+            getValue() as boolean,
+            user?.id === userId
+              ? () => {
+                  putCollectionMutation.mutate({
+                    collectionId: collectionId,
+                    forSale: !(getValue() as boolean),
+                  });
+                }
+              : undefined,
+          );
+        },
+      });
+    }
+
+    if (showForDecks) {
+      definitions.push({
+        id: 'collectionForDecks',
+        accessorKey: 'collection.forDecks',
+        header: 'For decks',
+        size: 32,
+        cell: ({ getValue, row }) => {
+          const userId = row.original.user.id as string;
+          const collectionId = row.original.collection.id as string;
+          return forDecksRenderer(
+            getValue() as boolean,
+            user?.id === userId
+              ? () => {
+                  putCollectionMutation.mutate({
+                    collectionId: collectionId,
+                    forDecks: !(getValue() as boolean),
+                  });
+                }
+              : undefined,
+          );
         },
       });
     }

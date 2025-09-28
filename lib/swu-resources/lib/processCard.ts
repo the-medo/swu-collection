@@ -2,7 +2,7 @@ import type { CardVariant, ParsedCardData } from '../types.ts';
 import path from 'path';
 import fs from 'fs';
 import { mergeParsedCardAndVariants } from './mergeParsedCardAndVariants.ts';
-import { createFileName } from './createFileName.ts';
+import { transformToId } from './transformToId.ts';
 import { delay } from './delay.ts';
 import { processVariantWithoutImages } from './processVariantWithoutImages.ts';
 import { mergeVariantsWithoutImages } from './mergeVariantsWithoutImages.ts';
@@ -21,7 +21,7 @@ export async function processCard(card: any, skipExisting = true) {
       title: c.title,
       subtitle: c.subtitle,
       name: cardName,
-      cardId: createFileName(cardName),
+      cardId: transformToId(cardName),
       artist: c.artist,
       cost: c.cost,
       hp: c.hp,
@@ -57,7 +57,7 @@ export async function processCard(card: any, skipExisting = true) {
       traits: c.traits.data.map((a: any) => a.attributes.name),
     };
 
-    let filename = createFileName(parsedCard.cardId);
+    let filename = transformToId(parsedCard.cardId);
     let dirpath = path.resolve(`./lib/swu-resources/output/parsed/${parsedCard.set}`);
     let filepath = path.join(dirpath, `${filename}.json`);
     fs.mkdirSync(dirpath, { recursive: true });
@@ -95,7 +95,7 @@ export async function processCard(card: any, skipExisting = true) {
 
     const finalObject = mergeParsedCardAndVariants(allVariants, parsedCard);
 
-    filename = createFileName(parsedCard.cardId);
+    filename = transformToId(parsedCard.cardId);
     dirpath = path.resolve(`./lib/swu-resources/output/cards`);
     filepath = path.join(dirpath, `${filename}.json`);
     fs.mkdirSync(dirpath, { recursive: true });

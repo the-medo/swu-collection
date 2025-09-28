@@ -61,6 +61,7 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
         return (
           <BigCardItem
             key={cardKey}
+            collectionId={collectionId}
             cardKey={cardKey}
             horizontal={horizontal}
             currency={currency}

@@ -10,6 +10,8 @@ export type PostCollectionRequest = {
   description: string;
   collectionType: CollectionType;
   public: boolean;
+  forSale?: boolean;
+  forDecks?: boolean;
 };
 
 /**
@@ -34,6 +36,7 @@ export const usePostCollection = () => {
       return data;
     },
     onSuccess: result => {
+      console.log('onSuccess 1');
       queryClient.setQueryData<UserCollectionsResponse>(['collections', user?.id], oldData => {
         if (!user?.id) return undefined;
         if (!oldData) {
