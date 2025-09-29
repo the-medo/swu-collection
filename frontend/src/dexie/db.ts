@@ -58,6 +58,58 @@ export class SwuBaseDB extends Dexie {
       collections: 'id', // Primary key is collection id
       collectionCards: 'collectionId', // Primary key is collectionId; value holds array of cards
     });
+
+    // v6: migrate Deck.public from boolean to integer (true->1, false->0) in cached tournamentDecks
+    this.version(6)
+      .stores({
+        tournamentDecks: 'id',
+        tournamentMatches: 'id',
+        cardVariantPrices: 'id, cardId, variantId, sourceType, fetchedAt',
+        cardVariantPriceFetchList: 'id, cardId, variantId, addedAt',
+        userSettings: 'key',
+        dailySnapshots: 'date',
+        collections: 'id', // Primary key is collection id
+        collectionCards: 'collectionId', // Primary key is collectionId; value holds array of cards
+      })
+      .upgrade(async tx => {
+        const table = tx.table('tournamentDecks');
+        await table.toCollection().modify((record: any) => {
+          if (record?.decks && Array.isArray(record.decks)) {
+            record.decks.forEach((item: any) => {
+              const deck = item?.deck;
+              if (deck && typeof deck.public !== 'number') {
+                if (deck.public === true || deck.public === 'true') {
+                  deck.public = 1;
+                } else if (deck.public === false || deck.public === 'false') {
+                  deck.public = 0;
+                }
+              }
+            });
+          }
+        });
+
+        const table2 = tx.table('dailySnapshots');
+        await table2.toCollection().modify((record: any) => {
+          const sections = record?.sections;
+          if (sections && typeof sections === 'object') {
+            const recent = sections['recent-tournaments'];
+            const payload = recent?.data;
+            const tournaments = payload?.tournaments;
+            if (Array.isArray(tournaments)) {
+              tournaments.forEach((t: any) => {
+                const deck = t?.deck;
+                if (deck && typeof deck.public !== 'number') {
+                  if (deck.public === true || deck.public === 'true') {
+                    deck.public = 1;
+                  } else if (deck.public === false || deck.public === 'false') {
+                    deck.public = 0;
+                  }
+                }
+              });
+            }
+          }
+        });
+      });
   }
 }
 

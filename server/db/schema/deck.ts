@@ -28,7 +28,7 @@ export const deck = pgTable(
     leaderCardId1: varchar('leader_card_id_1'),
     leaderCardId2: varchar('leader_card_id_2'),
     baseCardId: varchar('base_card_id'),
-    public: boolean('public').notNull().default(false),
+    public: integer('public').notNull().default(0),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
