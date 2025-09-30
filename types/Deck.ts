@@ -9,7 +9,7 @@ export interface Deck {
   leaderCardId1: string | null;
   leaderCardId2: string | null;
   baseCardId: string | null;
-  public: boolean;
+  public: number;
   createdAt: string;
   updatedAt: string;
 }

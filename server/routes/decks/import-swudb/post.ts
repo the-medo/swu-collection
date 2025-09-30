@@ -53,7 +53,7 @@ export const decksImportSwudbPostRoute = new Hono<AuthExtension>().post(
           leaderCardId1: parsedDeck.leader1,
           leaderCardId2: parsedDeck.leader2,
           baseCardId: parsedDeck.base,
-          public: false,
+          public: 2,
           description,
         })
         .returning()

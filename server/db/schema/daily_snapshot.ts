@@ -38,7 +38,6 @@ export const dailySnapshotSection = pgTable(
     date: date('date').notNull(),
     section: text('section').notNull(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    // JSON data stored as string, as requested
     data: text('data').notNull(),
   },
   table => {

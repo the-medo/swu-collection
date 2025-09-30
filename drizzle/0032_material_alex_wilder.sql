@@ -7,3 +7,5 @@ ALTER TABLE "deck"
                     ELSE NULL END);
 
 ALTER TABLE "deck" ALTER COLUMN "public" SET DEFAULT 0;
+
+UPDATE "daily_snapshot_section" SET data = replace(data, '"public":true', '"public":1') WHERE section = 'recent-tournaments';

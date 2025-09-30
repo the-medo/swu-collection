@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
-import { UserDecksResponse } from '../../../../server/routes/user.ts';
 import { ZDeckCreateRequest } from '../../../../types/ZDeck.ts';
 
 /**
@@ -26,14 +25,8 @@ export const usePostDeck = () => {
       const data = await response.json();
       return data;
     },
-    onSuccess: result => {
-      queryClient.setQueryData<UserDecksResponse>(['decks', user?.id], oldData => {
-        if (!user?.id) return undefined;
-        if (!oldData) {
-          return { userId: user.id, decks: [result.data[0]] };
-        }
-        return { userId: user.id, decks: [...oldData.decks, result.data[0]] };
-      });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });
     },
     onError: (error: any) => {
       toast({

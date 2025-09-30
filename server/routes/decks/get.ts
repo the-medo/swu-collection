@@ -72,7 +72,7 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     const filters = [];
 
     // Public decks filter - only show public decks unless viewing your own
-    if (!userId || userId !== user?.id) filters.push(eq(deckTable.public, true));
+    if (!userId || userId !== user?.id) filters.push(eq(deckTable.public, 1));
 
     if (userId) {
       filters.push(eq(deckTable.userId, userId));
