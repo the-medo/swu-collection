@@ -8,8 +8,8 @@ import {
   text,
   foreignKey,
 } from 'drizzle-orm/pg-core';
-import { type InferSelectModel } from 'drizzle-orm';
 import { tournamentGroup } from './tournament_group.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // Daily Snapshot (one row per day)
 export const dailySnapshot = pgTable(

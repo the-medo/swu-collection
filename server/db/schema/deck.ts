@@ -1,17 +1,7 @@
-import {
-  boolean,
-  pgTable,
-  text,
-  timestamp,
-  uuid,
-  integer,
-  varchar,
-  index,
-} from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, integer, varchar, index } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
 import { format } from './format.ts';
 import type { InferSelectModel } from 'drizzle-orm';
-import type { InferResponseType } from 'hono';
 
 export const deck = pgTable(
   'deck',

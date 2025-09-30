@@ -2,7 +2,6 @@ import { getTableColumns } from 'drizzle-orm';
 import { deck as deckTable } from '../db/schema/deck.ts';
 import { deckInformation as deckInformationTable } from '../db/schema/deck_information.ts';
 import { Hono } from 'hono';
-import type { AuthExtension } from '../auth/auth.ts';
 import { deckGetRoute } from './decks/get.ts';
 import { deckPostRoute } from './decks/post.ts';
 import { decksBulkGetRoute } from './decks/bulk.ts';
@@ -19,6 +18,7 @@ import { deckIdTournamentGetRoute } from './decks/_id/tournament/get.ts';
 import { decksThumbnailsPostRoute } from './decks/thumbnails/post.ts';
 import { deckIdFavoritePostRoute } from './decks/_id/favorite/post.ts';
 import { deckIdJsonGetRoute } from './decks/_id/json/get.ts';
+import type { AuthExtension } from '../auth/auth.ts';
 
 export const selectDeck = getTableColumns(deckTable);
 export const selectDeckInformation = getTableColumns(deckInformationTable);

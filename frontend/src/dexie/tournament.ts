@@ -1,6 +1,6 @@
-import { type TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks';
-import { type TournamentMatch } from '../../../server/db/schema/tournament_match';
 import { db } from './db';
+import type { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks';
+import type { TournamentMatch } from '../../../server/db/schema/tournament_match';
 
 export interface TournamentDecksStore {
   id: string; // tournamentId

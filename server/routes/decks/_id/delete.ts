@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../../auth/auth.ts';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { deck as deckTable } from '../../../db/schema/deck.ts';
 import { db } from '../../../db';
 import { deckCard as deckCardTable } from '../../../db/schema/deck_card.ts';
 import { deckInformation as deckInformationTable } from '../../../db/schema/deck_information.ts';
+import type { AuthExtension } from '../../../auth/auth.ts';
 
 export const deckIdDeleteRoute = new Hono<AuthExtension>().delete('/', async c => {
   const paramDeckId = z.string().uuid().parse(c.req.param('id'));

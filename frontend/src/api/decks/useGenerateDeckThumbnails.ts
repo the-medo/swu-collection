@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
-import { type ZGenerateThumbnailsParams } from '../../../../types/ZGenerateThumbnailsParams.ts';
+import type { ZGenerateThumbnailsParams } from '../../../../types/ZGenerateThumbnailsParams.ts';
 
 export interface DeckThumbnailsResult {
   success: number;
@@ -18,7 +18,7 @@ export interface DeckThumbnailsResult {
  * This is an admin-only operation.
  */
 export const useGenerateDeckThumbnails = () => {
-  return useMutation<DeckThumbnailsResult, Error, { force?: boolean, tournament_id?: string }>({
+  return useMutation<DeckThumbnailsResult, Error, { force?: boolean; tournament_id?: string }>({
     mutationFn: async (payload: ZGenerateThumbnailsParams) => {
       const { force, tournament_id } = payload;
       const response = await api.deck.thumbnails.$post({

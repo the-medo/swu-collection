@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
-import { type ZDeckImportSwudbRequest } from '../../../../types/ZDeck.ts';
+import type { ZDeckImportSwudbRequest } from '../../../../types/ZDeck.ts';
 
 export const useImportSwudbDeck = () => {
   const user = useUser();

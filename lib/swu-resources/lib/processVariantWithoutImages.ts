@@ -1,5 +1,5 @@
-import type { CardVariant } from '../types.ts';
 import { setInfo } from '../set-info.ts';
+import type { CardVariant } from '../types.ts';
 import type { SwuSet } from '../../../types/enums.ts';
 
 export function processVariantWithoutImages(variant: any): CardVariant {

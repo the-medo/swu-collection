@@ -1,4 +1,3 @@
-import type { CardVariant, ParsedCardData } from '../types.ts';
 import path from 'path';
 import fs from 'fs';
 import { mergeParsedCardAndVariants } from './mergeParsedCardAndVariants.ts';
@@ -8,6 +7,7 @@ import { processVariantWithoutImages } from './processVariantWithoutImages.ts';
 import { mergeVariantsWithoutImages } from './mergeVariantsWithoutImages.ts';
 import { processVariantImages } from './processVariantImages.ts';
 import { downloadAndTransformVariantImages } from './downloadAndTransformVariantImages.ts';
+import type { CardVariant, ParsedCardData } from '../types.ts';
 
 export async function processCard(card: any, skipExisting = true) {
   const c = card.attributes;

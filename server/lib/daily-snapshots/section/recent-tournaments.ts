@@ -2,16 +2,17 @@ import { db } from '../../../db';
 import { and, desc, eq, getTableColumns, gte, inArray } from 'drizzle-orm';
 import { tournament } from '../../../db/schema/tournament.ts';
 import { tournamentGroupTournament } from '../../../db/schema/tournament_group_tournament.ts';
-import { type TournamentDeck, tournamentDeck } from '../../../db/schema/tournament_deck.ts';
+import { tournamentDeck } from '../../../db/schema/tournament_deck.ts';
 import { deck } from '../../../db/schema/deck.ts';
 import {
   type DailySnapshotSectionData,
   type SectionRecentTournaments,
   type SectionRecentTournamentsItem,
 } from '../../../../types/DailySnapshots.ts';
+import { subDays } from 'date-fns';
 import type { TournamentGroupExtendedInfo } from '../../../../types/DailySnapshots.ts';
 import type { Deck } from '../../../../types/Deck.ts';
-import { subDays } from 'date-fns';
+import type { TournamentDeck } from '../../../db/schema/tournament_deck.ts';
 
 export const buildRecentTournamentsSection = async (
   groupExt?: TournamentGroupExtendedInfo | null,

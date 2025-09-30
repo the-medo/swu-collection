@@ -1,8 +1,9 @@
-import Dexie, { type Table } from 'dexie';
-import { type TournamentDecksStore, type TournamentMatchesStore } from './tournament';
-import { type CardVariantPriceStore, type CardVariantPriceFetchListStore } from './cardPrices';
-import { type UserSettingsStore } from './userSettings';
-import { type CollectionStore, type CollectionCardsStore } from './collections';
+import Dexie from 'dexie';
+import type { Table } from 'dexie';
+import type { TournamentDecksStore, TournamentMatchesStore } from './tournament';
+import type { CardVariantPriceStore, CardVariantPriceFetchListStore } from './cardPrices';
+import type { UserSettingsStore } from './userSettings';
+import type { CollectionStore, CollectionCardsStore } from './collections';
 
 export class SwuBaseDB extends Dexie {
   // Tables

@@ -1,7 +1,8 @@
-import sharp, { type OverlayOptions } from 'sharp';
-import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import sharp from 'sharp';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { SwuSet } from '../../../types/enums.ts';
 import { setInfo } from '../../../lib/swu-resources/set-info.ts';
+import type { OverlayOptions } from 'sharp';
 
 // R2 bucket configuration
 const bucketName = 'swu-images';

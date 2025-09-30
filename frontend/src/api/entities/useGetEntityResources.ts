@@ -1,6 +1,6 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { type EntityResource } from './usePostEntity.ts';
+import type { EntityResource } from './usePostEntity.ts';
 
 export interface EntityResourcesResponse {
   data: EntityResource[];

@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../auth/auth.ts';
 import { getTableColumns } from 'drizzle-orm';
 import { collection as collectionTable } from '../db/schema/collection.ts';
 import { collectionGetRoute } from './collection/get.ts';
@@ -20,6 +19,7 @@ import { collectionIdSourceGetRoute } from './collection/_id/source/get.ts';
 import { collectionIdSourceDisplayPostRoute } from './collection/_id/source/display/post.ts';
 import { collectionIdSourcePostRoute } from './collection/_id/source/post.ts';
 import { collectionIdApplyPostRoute } from './collection/_id/apply/post.ts';
+import type { AuthExtension } from '../auth/auth.ts';
 
 export const selectCollection = getTableColumns(collectionTable);
 

@@ -1,16 +1,17 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../auth/auth.ts';
 import { z } from 'zod';
 import { and, eq, gte, inArray, or, sql } from 'drizzle-orm';
 import { deck as deckTable } from '../../db/schema/deck.ts';
-import { type DeckCard, deckCard as deckCardTable } from '../../db/schema/deck_card.ts';
+import { deckCard as deckCardTable } from '../../db/schema/deck_card.ts';
 import { db } from '../../db';
 import { selectUser } from '../user.ts';
 import { user as userTable } from '../../db/schema/auth-schema.ts';
 import { selectDeck } from '../deck.ts';
 import { userDeckFavorite } from '../../db/schema/user_deck_favorite.ts';
-import type { DeckData } from '../../../types/Deck.ts';
 import { zValidator } from '@hono/zod-validator';
+import type { AuthExtension } from '../../auth/auth.ts';
+import type { DeckData } from '../../../types/Deck.ts';
+import type { DeckCard } from '../../db/schema/deck_card.ts';
 
 export interface DecksBulkResponse {
   decks: Record<string, DeckData | undefined>;

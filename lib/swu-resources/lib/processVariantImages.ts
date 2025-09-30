@@ -1,5 +1,5 @@
-import type { CardVariant } from '../types.ts';
 import { delay } from './delay.ts';
+import type { CardVariant } from '../types.ts';
 
 export async function processVariantImages(variant: CardVariant): Promise<CardVariant> {
   const variantDetailResponse = await fetch(

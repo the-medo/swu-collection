@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../auth/auth.ts';
 import { db } from '../db';
 import { collection } from '../db/schema/collection.ts';
 import { and, eq, getTableColumns, or, sql } from 'drizzle-orm';
@@ -7,6 +6,7 @@ import { user } from '../db/schema/auth-schema.ts';
 import type { User } from '../../types/User.ts';
 import type { Collection } from '../../types/Collection.ts';
 import type { Deck } from '../../types/Deck.ts';
+import type { AuthExtension } from '../auth/auth.ts';
 
 const { email, emailVerified, ...selectUser } = getTableColumns(user);
 export { selectUser };

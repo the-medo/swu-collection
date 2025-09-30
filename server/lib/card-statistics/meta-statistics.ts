@@ -8,9 +8,9 @@ import {
   cardStatTournamentLeaderBase,
 } from '../../db/schema/card_stats_schema.ts';
 import { eq, sql } from 'drizzle-orm';
-import type { CardStat } from './types.ts';
 import { batchArray } from '../utils/batch.ts';
 import { fetchTournamentIdsForMeta } from './meta.ts';
+import type { CardStat } from './types.ts';
 
 /**
  * Interface for meta card statistics data

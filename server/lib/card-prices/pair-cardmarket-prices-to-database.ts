@@ -1,10 +1,11 @@
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { db } from '../../db';
-import { type CardVariantPrice, cardVariantPrice } from '../../db/schema/card_variant_price';
+import { cardVariantPrice } from '../../db/schema/card_variant_price';
 import { cardVariantPriceHistory } from '../../db/schema/card_variant_price_history';
-import { and, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { transformPricingObjectToCardMarketPriceData } from './transform-pricing-object';
 import type { ParsedPricingObject } from '../../../types/CardPrices';
+import type { CardVariantPrice } from '../../db/schema/card_variant_price';
 
 // Initialize the S3 client
 const bucketName = 'swu-images';

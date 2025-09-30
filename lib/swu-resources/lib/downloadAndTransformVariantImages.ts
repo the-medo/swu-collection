@@ -1,7 +1,7 @@
-import type { CardVariant } from '../types.ts';
 import { downloadAndTransformImage } from './downloadAndTransformImage.ts';
 import { variantFilename } from './variantFilename.ts';
 import { delay } from './delay.ts';
+import type { CardVariant } from '../types.ts';
 
 export async function downloadAndTransformVariantImages(
   variant: CardVariant,

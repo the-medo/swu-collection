@@ -9,8 +9,8 @@ import { deckInformation } from '../../../db/schema/deck_information.ts';
 import { getSpecialBaseName } from '../../../../shared/lib/basicBases.ts';
 import { tournamentMatch } from '../../../db/schema/tournament_match.ts';
 import { deckCard } from '../../../db/schema/deck_card.ts';
-import type { CardMatchupStat } from './types.ts';
 import { compressMatchupInfo } from './utils.ts';
+import type { CardMatchupStat } from './types.ts';
 
 const BOTH_TOGETHER = 'both-decks-together';
 const BOTH_DIVIDED = 'both-decks-divided';
