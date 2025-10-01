@@ -23,6 +23,7 @@ interface WeekSelectorProps {
   value: string | undefined;
   onValueChange: (value: string) => void;
   processedTournamentGroups: ProcessedTournamentGroup[];
+  showSpecialOptions?: boolean; // controls visibility of "All weeks" and "Week-to-week"
 }
 
 // Special values for options
@@ -33,6 +34,7 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
   value,
   onValueChange,
   processedTournamentGroups,
+  showSpecialOptions = true,
 }) => {
   const { isMobile } = useSidebar();
 
@@ -47,39 +49,45 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
         <SelectValue placeholder="Select a tournament week" />
       </SelectTrigger>
       <SelectContent className="p-4">
-        {/* All weeks option */}
-        <SelectItem key={ALL_WEEKS_VALUE} value={ALL_WEEKS_VALUE} className="">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center">
-              <span className="font-medium text-xl">All weeks</span>
-              {!isMobile && (
-                <p className="text-md text-muted-foreground ml-4">Combined data from all weeks</p>
-              )}
-            </div>
-            {!isMobile && (
-              <Badge variant="secondary" className="ml-4 bg-primary/20">
-                Combined
-              </Badge>
-            )}
-          </div>
-        </SelectItem>
+        {showSpecialOptions && (
+          <>
+            {/* All weeks option */}
+            <SelectItem key={ALL_WEEKS_VALUE} value={ALL_WEEKS_VALUE} className="">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center">
+                  <span className="font-medium text-xl">All weeks</span>
+                  {!isMobile && (
+                    <p className="text-md text-muted-foreground ml-4">
+                      Combined data from all weeks
+                    </p>
+                  )}
+                </div>
+                {!isMobile && (
+                  <Badge variant="secondary" className="ml-4 bg-primary/20">
+                    Combined
+                  </Badge>
+                )}
+              </div>
+            </SelectItem>
 
-        {/* Week-to-week option */}
-        <SelectItem key={WEEK_TO_WEEK_VALUE} value={WEEK_TO_WEEK_VALUE} className="">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center">
-              <span className="font-medium text-xl">Week-to-week</span>
-              {!isMobile && (
-                <p className="text-md text-muted-foreground ml-4">Compare data across weeks</p>
-              )}
-            </div>
-            {!isMobile && (
-              <Badge variant="secondary" className="ml-4 bg-primary/20">
-                Comparison
-              </Badge>
-            )}
-          </div>
-        </SelectItem>
+            {/* Week-to-week option */}
+            <SelectItem key={WEEK_TO_WEEK_VALUE} value={WEEK_TO_WEEK_VALUE} className="">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center">
+                  <span className="font-medium text-xl">Week-to-week</span>
+                  {!isMobile && (
+                    <p className="text-md text-muted-foreground ml-4">Compare data across weeks</p>
+                  )}
+                </div>
+                {!isMobile && (
+                  <Badge variant="secondary" className="ml-4 bg-primary/20">
+                    Comparison
+                  </Badge>
+                )}
+              </div>
+            </SelectItem>
+          </>
+        )}
 
         {/* Individual weeks */}
         {processedTournamentGroups.map(group => (
@@ -89,7 +97,7 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
                 <span className="font-medium text-xl">Week {group.weekNumber}</span>
                 <p className="text-md text-muted-foreground ml-4">{group.description}</p>
               </div>
-              {(group.isMostRecent || group.isUpcoming) && (
+              {(group.isMostRecent || group.isUpcoming) && !isMobile && (
                 <Badge variant={group.isMostRecent ? 'default' : 'outline'} className="ml-4">
                   {group.isMostRecent ? 'Most Recent' : 'Upcoming'}
                 </Badge>

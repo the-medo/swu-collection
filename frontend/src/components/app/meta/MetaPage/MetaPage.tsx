@@ -19,11 +19,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion.tsx';
+import MetaPageWeekSelectorBySelectedGroup from '@/components/app/meta/MetaPage/MetaPageWeekSelectorBySelectedGroup.tsx';
 
 function MetaPage() {
   const { isMobile } = useSidebar();
   const navigate = useNavigate({ from: Route.fullPath });
-  const { metaId, formatId, minTournamentType, maTournamentGroupId } = useSearch({
+  const {
+    metaId: metaIdFromSearch,
+    formatId,
+    minTournamentType,
+    maTournamentGroupId,
+  } = useSearch({
     from: Route.fullPath,
   });
   const { data, isLoading } = useGetMetas();
@@ -43,6 +49,8 @@ function MetaPage() {
       position: t.position,
     }));
   }, [tournamentGroup, maTournamentGroupId]);
+
+  const metaId = tournamentGroup?.data?.meta?.id || metaIdFromSearch;
 
   const setFormat = useCallback(
     (v: number | null) => {
@@ -109,6 +117,8 @@ function MetaPage() {
     );
   }
 
+  const isPQWeekMeta = tournamentGroup && tournamentGroup.data.group?.name?.startsWith('PQ Week');
+
   return (
     <>
       <Helmet titleTemplate={`%s - ${selectedMeta?.meta?.name}`} defaultTitle={`Meta - SWU Base`} />
@@ -116,7 +126,12 @@ function MetaPage() {
       <div className="p-2">
         {tournamentGroup && tournamentGroup.data?.group ? (
           <div className="flex flex-row flex-wrap gap-4 items-center justify-between mb-4">
-            <h3 className="mb-0">Meta - {tournamentGroup.data?.group.name}</h3>
+            <h3 className="mb-0">
+              {isPQWeekMeta ? 'PQ Meta Analysis' : `Meta - ${tournamentGroup.data?.group.name}`}
+            </h3>
+            <div className="flex flex-row flex-1 gap-2 items-center max-w-[500px]">
+              <MetaPageWeekSelectorBySelectedGroup tournamentGroup={tournamentGroup.data} />
+            </div>
           </div>
         ) : isMobile ? (
           // Mobile view with accordion
