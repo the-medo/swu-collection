@@ -90,13 +90,7 @@ const CollectionCardActionStep3: React.FC<CollectionCardActionStep3Props> = ({
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <Link className="underline text-sm" to={collectionUrl} target="_blank" rel="noreferrer">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() =>
-                  navigator.clipboard.writeText(`${window.location.origin}${collectionUrl}`)
-                }
-              >
+              <Button variant="secondary" size="sm">
                 Open {cardListString}
               </Button>
             </Link>

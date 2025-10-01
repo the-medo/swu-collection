@@ -36,7 +36,7 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar.tsx';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.tsx';
@@ -49,7 +49,6 @@ import SocialLinks from '@/components/app/navigation/LeftSidebar/SocialLinks.tsx
 import { cn } from '@/lib/utils.ts';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import SidebarComparer from '../../comparer/SidebarComparer/SidebarComparer.tsx';
-import { Route } from '@/routes/__root.tsx';
 import { Fragment, useMemo } from 'react';
 
 const getGroups = (setOpenMobile: (open: boolean) => void, state: SidebarContext['state']) => [
@@ -188,7 +187,6 @@ const getGroups = (setOpenMobile: (open: boolean) => void, state: SidebarContext
 
 export function LeftSidebar() {
   const user = useUser();
-  const navigate = useNavigate({ from: Route.fullPath });
   const { theme } = useTheme();
   const { open, state, isMobile, setOpenMobile } = useSidebar();
 
@@ -233,7 +231,13 @@ export function LeftSidebar() {
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                      <Link to={'/cards/search'} className="[&.active]:font-bold">
+                      <Link
+                        to={'/cards/search'}
+                        className="[&.active]:font-bold"
+                        onClick={() => {
+                          setOpenMobile(false);
+                        }}
+                      >
                         <LayoutGrid />
                         Card database
                       </Link>
@@ -243,7 +247,13 @@ export function LeftSidebar() {
               </>
             ) : (
               <SidebarMenuButton asChild>
-                <Link to="/cards/search" className="[&.active]:font-bold">
+                <Link
+                  to="/cards/search"
+                  className="[&.active]:font-bold"
+                  onClick={() => {
+                    setOpenMobile(false);
+                  }}
+                >
                   <Search />
                   <span>Search</span>
                 </Link>
@@ -332,14 +342,16 @@ export function LeftSidebar() {
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Comparer</SidebarGroupLabel>
-          <SidebarGroupAction
-            title="Open comparer"
-            onClick={() => {
-              void navigate({ to: `/comparer` });
-              setOpenMobile(false);
-            }}
-          >
-            <Scale className="w-4 h-4" /> <span className="sr-only">Open comparer</span>
+          <SidebarGroupAction asChild>
+            <Link
+              to={'/comparer'}
+              title="Open comparer"
+              onClick={() => {
+                setOpenMobile(false);
+              }}
+            >
+              <Scale className="w-4 h-4" /> <span className="sr-only">Open comparer</span>
+            </Link>
           </SidebarGroupAction>
           <SidebarGroupContent>
             <SidebarComparer setOpenMobile={setOpenMobile} />

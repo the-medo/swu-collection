@@ -9,7 +9,7 @@ import {
 } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { X, Scale, AlertTriangle } from 'lucide-react';
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { Route as TournamentDeckCardStatsRoute } from '@/routes/tournaments/$tournamentId/card-stats.tsx';
 import { Route as TournamentDeckMetaRoute } from '@/routes/tournaments/$tournamentId/meta.tsx';
 import { Route as TournamentDeckMatchupsRoute } from '@/routes/tournaments/$tournamentId/matchups.tsx';
@@ -115,7 +115,11 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
     return sortedDecks.slice(0, 10);
   };
 
-  const addDecksToComparer = (decksToAdd: typeof decks, context?: 'top8' | 'top16' | 'all') => {
+  const addDecksToComparer = (
+    decksToAdd: typeof decks,
+    context: 'top8' | 'top16' | 'all',
+    newTab: boolean,
+  ) => {
     // Clear any previous warnings
     setWarning(null);
 
@@ -162,7 +166,11 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
     });
 
     // Navigate to comparer page
-    navigate({ to: '/comparer' });
+    if (newTab) {
+      window.open('/comparer', '_blank');
+    } else {
+      navigate({ to: '/comparer' });
+    }
   };
 
   let csLeaderId = key;
@@ -183,55 +191,53 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
           </Button>
         </div>
         <div className="w-full flex gap-4 justify-between items-center">
-          <Button
-            size="xs"
-            onClick={() => {
-              if (route === MetaRoute) {
-                navigate({
-                  search: prev => ({
-                    ...prev,
-                    page: 'decks',
-                    maDeckKey: key,
-                    maDeckKeyType: metaInfo,
-                  }),
-                });
-              } else {
-                // @ts-ignore
-                navigate({
-                  to: '../decks',
-                  search: prev => ({ ...prev, maDeckKey: key, maDeckKeyType: metaInfo }),
-                });
-              }
-            }}
-            className="btn btn-primary"
-          >
-            Show decks
+          <Button size="xs" className="btn btn-primary" asChild>
+            {route === MetaRoute ? (
+              <Link
+                to="."
+                search={prev => ({
+                  ...prev,
+                  page: 'decks',
+                  maDeckKey: key,
+                  maDeckKeyType: metaInfo,
+                })}
+              >
+                Show decks
+              </Link>
+            ) : (
+              // @ts-ignore
+              <Link
+                to={'/tournaments/$tournamentId/decks'}
+                search={prev => ({ ...prev, maDeckKey: key, maDeckKeyType: metaInfo })}
+              >
+                Show decks
+              </Link>
+            )}
           </Button>
           {(metaInfo === 'leaders' || metaInfo === 'leadersAndBase') && (
-            <Button
-              size="xs"
-              onClick={() => {
-                if (route === MetaRoute) {
-                  navigate({
-                    search: prev => ({
-                      ...prev,
-                      page: 'card-stats',
-                      csPage,
-                      csLeaderId,
-                      csBaseId,
-                    }),
-                  });
-                } else {
-                  // @ts-ignore
-                  navigate({
-                    to: '../card-stats',
-                    search: prev => ({ ...prev, csLeaderId, csBaseId, csPage }),
-                  });
-                }
-              }}
-              className="btn btn-primary"
-            >
-              Show card statistics
+            <Button size="xs" className="btn btn-primary" asChild>
+              {route === MetaRoute ? (
+                <Link
+                  to="."
+                  search={prev => ({
+                    ...prev,
+                    page: 'card-stats',
+                    csPage,
+                    csLeaderId,
+                    csBaseId,
+                  })}
+                >
+                  Show card statistics
+                </Link>
+              ) : (
+                // @ts-ignore
+                <Link
+                  to={'/tournaments/$tournamentId/card-stats'}
+                  search={prev => ({ ...prev, csLeaderId, csBaseId, csPage })}
+                >
+                  Show card statistics
+                </Link>
+              )}
             </Button>
           )}
         </div>
@@ -268,14 +274,20 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
                     <Button
                       size="xs"
                       variant="outline"
-                      onClick={() => addDecksToComparer(findDecksByPlacement(5), 'all')}
+                      onMouseDown={e =>
+                        addDecksToComparer(findDecksByPlacement(5), 'all', e.button === 1)
+                      }
+                      onTouchStart={() => addDecksToComparer(findDecksByPlacement(5), 'all', true)}
                     >
                       5
                     </Button>
                     <Button
                       size="xs"
                       variant="outline"
-                      onClick={() => addDecksToComparer(findDecksByPlacement(10), 'all')}
+                      onMouseDown={e =>
+                        addDecksToComparer(findDecksByPlacement(10), 'all', e.button === 1)
+                      }
+                      onTouchStart={() => addDecksToComparer(findDecksByPlacement(10), 'all', true)}
                     >
                       10
                     </Button>
@@ -289,14 +301,20 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
                     <Button
                       size="xs"
                       variant="outline"
-                      onClick={() => addDecksToComparer(findDecksInTopX(8), 'top8')}
+                      onMouseDown={e =>
+                        addDecksToComparer(findDecksInTopX(8), 'top8', e.button === 1)
+                      }
+                      onTouchStart={() => addDecksToComparer(findDecksInTopX(8), 'top8', true)}
                     >
                       Top 8
                     </Button>
                     <Button
                       size="xs"
                       variant="outline"
-                      onClick={() => addDecksToComparer(findDecksInTopX(16), 'top16')}
+                      onMouseDown={e =>
+                        addDecksToComparer(findDecksInTopX(16), 'top16', e.button === 1)
+                      }
+                      onTouchStart={() => addDecksToComparer(findDecksInTopX(16), 'top16', true)}
                     >
                       Top 16
                     </Button>
