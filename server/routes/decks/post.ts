@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { zDeckCreateRequest } from '../../../types/ZDeck.ts';
 import { db } from '../../db';
@@ -7,6 +6,7 @@ import { deck as deckTable } from '../../db/schema/deck.ts';
 import { updateDeckInformation } from '../../lib/decks/updateDeckInformation.ts';
 import { generateDeckThumbnail } from '../../lib/decks/generateDeckThumbnail.ts';
 import { runInBackground } from '../../lib/utils/backgroundProcess.ts';
+import type { AuthExtension } from '../../auth/auth.ts';
 
 export const deckPostRoute = new Hono<AuthExtension>().post(
   '/',

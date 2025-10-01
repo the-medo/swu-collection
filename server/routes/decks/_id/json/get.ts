@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq, gte, or } from 'drizzle-orm';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
 import { db } from '../../../../db';
@@ -21,7 +21,7 @@ export const deckIdJsonGetRoute = new Hono<AuthExtension>().get('/', async c => 
   const paramDeckId = z.string().uuid().parse(normalizedId);
   const user = c.get('user');
 
-  const isPublic = eq(deckTable.public, true);
+  const isPublicOrUnlisted = gte(deckTable.public, 1);
   const isOwner = user ? eq(deckTable.userId, user.id) : null;
 
   // Start with the base query to get deck and user data
@@ -36,7 +36,10 @@ export const deckIdJsonGetRoute = new Hono<AuthExtension>().get('/', async c => 
 
   // Apply where condition - only allow access if deck is public or user is the owner
   query = query.where(
-    and(eq(deckTable.id, paramDeckId), isOwner ? or(isOwner, isPublic) : isPublic),
+    and(
+      eq(deckTable.id, paramDeckId),
+      isOwner ? or(isOwner, isPublicOrUnlisted) : isPublicOrUnlisted,
+    ),
   );
 
   const deckData = (await query)[0];

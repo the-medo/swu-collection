@@ -1,7 +1,8 @@
 import { pgTable, varchar, integer, boolean, uuid, primaryKey } from 'drizzle-orm/pg-core';
 import { tournament } from './tournament.ts';
-import { type InferSelectModel, relations } from 'drizzle-orm';
+import { relations } from 'drizzle-orm';
 import { deck } from './deck.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // Tournament Deck Schema
 export const tournamentDeck = pgTable(

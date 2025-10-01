@@ -3,7 +3,6 @@ import { tournament as tournamentTable } from '../db/schema/tournament.ts';
 import { tournamentType as tournamentTypeTable } from '../db/schema/tournament_type.ts';
 import { meta as metaTable } from '../db/schema/meta.ts';
 import { Hono } from 'hono';
-import type { AuthExtension } from '../auth/auth.ts';
 import { tournamentGetRoute } from './tournaments/get.ts';
 import { tournamentPostRoute } from './tournaments/post.ts';
 import { tournamentIdGetRoute } from './tournaments/_id/get.ts';
@@ -18,6 +17,7 @@ import { tournamentsBulkPostRoute } from './tournaments/bulk/data/post.ts';
 import { tournamentBulkPqParsePostRoute } from './tournaments/bulk/pq-parse/post.ts';
 import { tournamentIdExportToBlobPostRoute } from './tournaments/_id/export-to-blob/post.ts';
 import { tournamentIdImportFromBlobPostRoute } from './tournaments/_id/import-from-blob/post.ts';
+import type { AuthExtension } from '../auth/auth.ts';
 
 export const selectTournament = getTableColumns(tournamentTable);
 export const selectTournamentType = getTableColumns(tournamentTypeTable);

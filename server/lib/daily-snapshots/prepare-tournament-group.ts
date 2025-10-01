@@ -2,14 +2,15 @@ import { db } from '../../db';
 import { meta } from '../../db/schema/meta';
 import { format as formatTable } from '../../db/schema/format';
 import { tournament } from '../../db/schema/tournament';
-import { type TournamentGroup, tournamentGroup } from '../../db/schema/tournament_group';
+import { tournamentGroup } from '../../db/schema/tournament_group';
 import { tournamentGroupTournament } from '../../db/schema/tournament_group_tournament';
 import { tournamentType as tournamentTypeTable } from '../../db/schema/tournament_type.ts';
 import { and, desc, eq, gte, lte } from 'drizzle-orm';
 import { isWeekend, subDays, startOfWeek, isMonday, format as formatDate, addDays } from 'date-fns';
 import { updateTournamentGroupStatistics } from '../card-statistics/update-tournament-group-statistics';
-import type { TournamentGroupStats } from '../../db/schema/tournament_group_stats.ts';
 import { tournamentGroupStats as tournamentGroupStatsTable } from '../../db/schema/tournament_group_stats.ts';
+import type { TournamentGroupStats } from '../../db/schema/tournament_group_stats.ts';
+import type { TournamentGroup } from '../../db/schema/tournament_group';
 
 export type TournamentGroupExtendedInfo = {
   tournamentGroup: TournamentGroup;

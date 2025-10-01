@@ -1,17 +1,15 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '../../../../db';
-import {
-  type TournamentMatch,
-  tournamentMatch as tournamentMatchTable,
-} from '../../../../db/schema/tournament_match.ts';
+import { tournamentMatch as tournamentMatchTable } from '../../../../db/schema/tournament_match.ts';
 import { tournamentDeck as tournamentDeckTable } from '../../../../db/schema/tournament_deck.ts';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckInformation as deckInformationTable } from '../../../../db/schema/deck_information.ts';
 import { zValidator } from '@hono/zod-validator';
-import { type TournamentDeckResponse } from '../../../../../frontend/src/api/tournaments/useGetTournamentDecks.ts';
+import type { AuthExtension } from '../../../../auth/auth.ts';
+import type { TournamentMatch } from '../../../../db/schema/tournament_match.ts';
+import type { TournamentDeckResponse } from '../../../../../frontend/src/api/tournaments/useGetTournamentDecks.ts';
 
 export interface TournamentsBulkResponse {
   matches: Record<string, TournamentMatch[]>; // Tournament matches grouped by tournament ID

@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { and, eq, gte, sql } from 'drizzle-orm';
 import { meta as metaTable } from '../../db/schema/meta.ts';
@@ -8,6 +7,7 @@ import { db } from '../../db';
 import { withPagination } from '../../lib/withPagination.ts';
 import { z } from 'zod';
 import { selectMeta, selectFormat } from '../meta.ts';
+import type { AuthExtension } from '../../auth/auth.ts';
 
 // Define query parameters schema
 const zMetaQueryParams = z.object({
@@ -25,16 +25,7 @@ export const metaGetRoute = new Hono<AuthExtension>().get(
   '/',
   zValidator('query', zMetaQueryParams),
   async c => {
-    const {
-      set,
-      format,
-      season,
-      minSeason,
-      limit,
-      offset,
-      sort,
-      order,
-    } = c.req.valid('query');
+    const { set, format, season, minSeason, limit, offset, sort, order } = c.req.valid('query');
 
     const filters = [];
 

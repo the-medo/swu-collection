@@ -6,11 +6,11 @@ import { deckCard } from '../../db/schema/deck_card.ts';
 import { fetchTournamentIdsForMeta } from '../card-statistics/meta.ts';
 import { deckInformation } from '../../db/schema/deck_information.ts';
 import { aspectArray } from '../../../types/iterableEnumInfo.ts';
-import type { SwuAspect } from '../../../types/enums.ts';
 import { cardList } from '../../db/lists.ts';
 import { isBasicBase } from '../../../shared/lib/isBasicBase.ts';
-import type { CardDeckData } from '../../../types/CardDeckData.ts';
 import { fetchTournamentIdsForGroup } from '../tournament-group/fetch-tournament-ids-for-group.ts';
+import type { CardDeckData } from '../../../types/CardDeckData.ts';
+import type { SwuAspect } from '../../../types/enums.ts';
 
 type FetchCardDecksDataParams = {
   cardId: string;

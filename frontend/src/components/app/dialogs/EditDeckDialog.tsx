@@ -6,7 +6,7 @@ import { useForm } from '@tanstack/react-form';
 import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Checkbox } from '@/components/ui/checkbox.tsx';
+import DeckPrivacySelector, { DeckPrivacy } from '@/components/app/decks/components/DeckPrivacySelector.tsx';
 import { useCallback, useState } from 'react';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
@@ -28,13 +28,13 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
     name: string;
     description: string;
     format: number;
-    public: boolean;
+    public: DeckPrivacy;
   }>({
     defaultValues: {
       name: deck.name ?? '',
       description: deck.description ?? '',
       format: deck.format,
-      public: deck.public ?? false,
+      public: (deck.public as DeckPrivacy) ?? 2,
     },
     onSubmit: async ({ value }) => {
       putDeckMutation.mutate(
@@ -127,15 +127,10 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
           <form.Field
             name="public"
             children={field => (
-              <div className="flex gap-2">
-                <Checkbox
-                  id={field.name}
-                  checked={field.state.value}
-                  onBlur={field.handleBlur}
-                  onCheckedChange={e => field.handleChange(!!e)}
-                />
-                <Label htmlFor={field.name}>Public</Label>
-              </div>
+              <DeckPrivacySelector
+                value={field.state.value as DeckPrivacy}
+                onChange={v => field.handleChange(v)}
+              />
             )}
           />
           <Button type="submit" disabled={form.state.isSubmitting}>

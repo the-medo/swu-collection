@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../auth/auth.ts';
 import { cardList } from '../db/lists.ts';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { fetchCardDecksData } from '../lib/cards/card-decks.ts';
+import type { AuthExtension } from '../auth/auth.ts';
 
 // This timestamp will be regenerated whenever the server restarts
 export const cardListLastUpdated = new Date().toISOString();

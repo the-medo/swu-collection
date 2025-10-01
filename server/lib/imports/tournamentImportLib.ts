@@ -1,6 +1,6 @@
 import { parseHTML } from 'linkedom';
-import type { TournamentDeck } from '../../db/schema/tournament_deck.ts';
 import { delay } from '../../../lib/swu-resources/lib/delay.ts';
+import type { TournamentDeck } from '../../db/schema/tournament_deck.ts';
 import type { TournamentMatchInsert } from '../../db/schema/tournament_match.ts';
 import type { Tournament } from '../../db/schema/tournament.ts';
 

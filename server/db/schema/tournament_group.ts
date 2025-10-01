@@ -1,16 +1,8 @@
-import { type InferSelectModel, relations } from 'drizzle-orm';
-import {
-  pgTable,
-  varchar,
-  integer,
-  uuid,
-  timestamp,
-  index,
-  text,
-  boolean,
-} from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+import { pgTable, varchar, integer, uuid, index, text, boolean } from 'drizzle-orm/pg-core';
 import { meta } from './meta.ts';
 import { tournamentGroupTournament } from './tournament_group_tournament.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // Tournament Group Schema
 export const tournamentGroup = pgTable(

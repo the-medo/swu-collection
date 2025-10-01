@@ -1,8 +1,8 @@
-import type { CardList } from '../../lib/swu-resources/types.ts';
 import cardListData from './json/card-list.json';
 import countryData from './json/country-list.ts';
 import currencyData from './json/currency-list.ts';
 import type { CardsBySetAndNumber } from '../../frontend/src/api/lists/useCardList.ts';
+import type { CardList } from '../../lib/swu-resources/types.ts';
 
 export type CountryCode = (typeof countryData)[number]['code'];
 export type Country = {

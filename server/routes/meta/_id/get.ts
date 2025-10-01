@@ -1,14 +1,14 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../../auth/auth.ts';
 import { eq } from 'drizzle-orm';
 import { meta as metaTable } from '../../../db/schema/meta.ts';
 import { format as formatTable } from '../../../db/schema/format.ts';
 import { db } from '../../../db';
 import { selectMeta, selectFormat } from '../../meta.ts';
+import type { AuthExtension } from '../../../auth/auth.ts';
 
 export const metaIdGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const id = Number(c.req.param('id'));
-  
+
   if (isNaN(id)) {
     return c.json({ message: 'Invalid ID format' }, 400);
   }

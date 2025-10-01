@@ -3,11 +3,12 @@ import * as React from 'react';
 import { useUser } from '@/hooks/useUser.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useForm } from '@tanstack/react-form';
-import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { useState } from 'react';
+import DeckPrivacySelector, {
+  DeckPrivacy,
+} from '@/components/app/decks/components/DeckPrivacySelector.tsx';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useNavigate } from '@tanstack/react-router';
 import { Textarea } from '@/components/ui/textarea.tsx';
@@ -29,23 +30,23 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
   const [selectedLeader2, setSelectedLeader2] = useState<string | undefined>(undefined);
   const [selectedBase, setSelectedBase] = useState<string | undefined>(undefined);
   const { toast } = useToast();
-  const postCollectionMutation = usePostDeck();
+  const postDeckMutation = usePostDeck();
 
   const form = useForm<{
     format: number;
     name: string;
     description: string;
-    public: boolean;
+    public: DeckPrivacy;
   }>({
     defaultValues: {
       format: 1,
       name: `My deck`,
       description: ``,
-      public: false,
+      public: 2,
     },
     onSubmit: async ({ value }) => {
       // Call our hook's mutation function.
-      postCollectionMutation.mutate(
+      postDeckMutation.mutate(
         {
           format: value.format,
           name: value.name,
@@ -159,15 +160,10 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
               <form.Field
                 name="public"
                 children={field => (
-                  <div className="flex gap-2">
-                    <Checkbox
-                      id={field.name}
-                      value={field.state.value ? '1' : '0'}
-                      onBlur={field.handleBlur}
-                      onCheckedChange={e => field.handleChange(!!e)}
-                    />
-                    <Label htmlFor={field.name}>Public</Label>
-                  </div>
+                  <DeckPrivacySelector
+                    value={field.state.value as DeckPrivacy}
+                    onChange={v => field.handleChange(v)}
+                  />
                 )}
               />
               <Button type="submit" disabled={form.state.isSubmitting}>

@@ -381,7 +381,7 @@ export async function runTournamentImport(
   await db
     .update(deckTable)
     .set({
-      public: true,
+      public: 1,
       updatedAt: sql`NOW()`,
     })
     .from(tournamentDeck)

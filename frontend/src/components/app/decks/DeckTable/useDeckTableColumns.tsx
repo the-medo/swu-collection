@@ -10,7 +10,6 @@ import {
 import { Button } from '@/components/ui/button.tsx';
 import { MoreHorizontal } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
-import { publicRenderer } from '@/lib/table/publicRenderer.tsx';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
@@ -22,6 +21,7 @@ import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
 import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table.tsx';
+import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
 
 interface DeckTableColumnsProps {
   view?: DataTableViewMode;
@@ -142,6 +142,26 @@ export function useDeckTableColumns({
       },
     });
 
+    if (showPublic) {
+      definitions.push({
+        id: 'deckPublic',
+        accessorKey: 'deck.public',
+        header: 'Public',
+        size: 20,
+        displayInBoxView: !isCompactBoxView,
+        cell: ({ getValue, row }) => {
+          const deckId = row.original.deck.id as string;
+          const deckPrivacy = getValue() as number;
+          return deckPrivacyRenderer(deckPrivacy, () => {
+            putDeckMutation.mutate({
+              deckId: deckId,
+              public: (deckPrivacy + 1) % 3,
+            });
+          });
+        },
+      });
+    }
+
     definitions.push({
       id: 'deckFormat',
       accessorKey: 'deck.format',
@@ -180,25 +200,6 @@ export function useDeckTableColumns({
         return dateRenderer(getValue() as string);
       },
     });
-
-    if (showPublic) {
-      definitions.push({
-        id: 'deckPublic',
-        accessorKey: 'deck.public',
-        header: 'Public',
-        size: 20,
-        displayInBoxView: !isCompactBoxView,
-        cell: ({ getValue, row }) => {
-          const deckId = row.original.deck.id as string;
-          return publicRenderer(getValue() as boolean, () => {
-            putDeckMutation.mutate({
-              deckId: deckId,
-              public: !(getValue() as boolean),
-            });
-          });
-        },
-      });
-    }
 
     definitions.push({
       id: 'actions',

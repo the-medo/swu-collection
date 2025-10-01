@@ -1,3 +1,4 @@
+import { selectDefaultVariant } from '../cards/selectDefaultVariant.ts';
 import type { Deck } from '../../../types/Deck.ts';
 import type { User } from '../../../types/User.ts';
 import type { DeckCard } from '../../../types/ZDeckCard.ts';
@@ -6,7 +7,6 @@ import type {
   CardList,
   CardListVariants,
 } from '../../../lib/swu-resources/types.ts';
-import { selectDefaultVariant } from '../cards/selectDefaultVariant.ts';
 
 export interface DeckExportJSONCard {
   id: string;
@@ -53,7 +53,7 @@ export function createDeckJsonExport(
   // Remove text in brackets from the deck name
   // This regex specifically targets the last bracket section at the end of the string
   const cleanedDeckName = deck.name.replace(/\s*\[[^\[\]]*\]\s*$/, '');
-  
+
   const exportData: DeckExportJSON = {
     metadata: {
       name: cleanedDeckName,

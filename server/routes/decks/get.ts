@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { and, eq, gt, or, sql } from 'drizzle-orm';
 import { deck as deckTable } from '../../db/schema/deck.ts';
@@ -14,6 +13,7 @@ import { SwuAspect } from '../../../types/enums.ts';
 import { DeckSortField } from '../../../types/ZDeck.ts';
 import { selectUser } from '../user.ts';
 import { selectDeck, selectDeckInformation } from '../deck.ts';
+import type { AuthExtension } from '../../auth/auth.ts';
 
 export const zDeckQueryParams = zPaginationParams.extend({
   userId: z.string().optional(),
@@ -72,7 +72,7 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     const filters = [];
 
     // Public decks filter - only show public decks unless viewing your own
-    if (!userId || userId !== user?.id) filters.push(eq(deckTable.public, true));
+    if (!userId || userId !== user?.id) filters.push(eq(deckTable.public, 1));
 
     if (userId) {
       filters.push(eq(deckTable.userId, userId));

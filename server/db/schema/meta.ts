@@ -1,6 +1,6 @@
-import { type InferSelectModel } from 'drizzle-orm';
 import { pgTable, varchar, integer, index, serial } from 'drizzle-orm/pg-core';
 import { format } from './format.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // Tournament Schema
 export const meta = pgTable(

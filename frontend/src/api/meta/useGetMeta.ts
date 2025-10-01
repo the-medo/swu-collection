@@ -1,7 +1,7 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
-import { type MetaData } from './useGetMetas.ts';
+import type { MetaData } from './useGetMetas.ts';
 
 export interface MetaResponse {
   data: MetaData;

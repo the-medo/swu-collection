@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
-import { type ZGenerateSetThumbnailsParams } from '../../../../types/ZGenerateSetThumbnailsParams.ts';
 import { SwuSet } from '../../../../types/enums.ts';
+import type { ZGenerateSetThumbnailsParams } from '../../../../types/ZGenerateSetThumbnailsParams.ts';
 
 export interface SetThumbnailsResult {
   success: number;

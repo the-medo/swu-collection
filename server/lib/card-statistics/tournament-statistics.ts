@@ -4,10 +4,12 @@ import {
   cardStatTournamentLeader,
   cardStatTournamentLeaderBase,
 } from '../../db/schema/card_stats_schema.ts';
-import { type TournamentDeck, tournamentDeck } from '../../db/schema/tournament_deck.ts';
-import { type Deck, deck } from '../../db/schema/deck.ts';
-import { type DeckCard, deckCard } from '../../db/schema/deck_card.ts';
-import { eq, and, sql } from 'drizzle-orm';
+import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
+import { deck } from '../../db/schema/deck.ts';
+import { deckCard } from '../../db/schema/deck_card.ts';
+import { eq, sql } from 'drizzle-orm';
+import { batchArray } from '../utils/batch.ts';
+import { getBaseKey } from '../../../shared/lib/basicBases.ts';
 import type {
   TournamentStatisticsResult,
   TournamentCardStat,
@@ -17,10 +19,9 @@ import type {
   CardStatTournamentLeaderInsert,
   CardStatTournamentLeaderBaseInsert,
 } from './types.ts';
-import { isBasicBase } from '../../../shared/lib/isBasicBase.ts';
-import { cardList } from '../../db/lists.ts';
-import { batchArray } from '../utils/batch.ts';
-import { getBaseKey } from '../../../shared/lib/basicBases.ts';
+import type { TournamentDeck } from '../../db/schema/tournament_deck.ts';
+import type { Deck } from '../../db/schema/deck.ts';
+import type { DeckCard } from '../../db/schema/deck_card.ts';
 
 /**
  * Fetches all data needed for tournament statistics computation

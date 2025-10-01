@@ -8,8 +8,8 @@ import {
   text,
   foreignKey,
 } from 'drizzle-orm/pg-core';
-import { type InferSelectModel } from 'drizzle-orm';
 import { tournamentGroup } from './tournament_group.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // Daily Snapshot (one row per day)
 export const dailySnapshot = pgTable(
@@ -38,7 +38,6 @@ export const dailySnapshotSection = pgTable(
     date: date('date').notNull(),
     section: text('section').notNull(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    // JSON data stored as string, as requested
     data: text('data').notNull(),
   },
   table => {

@@ -2,7 +2,8 @@ import { pgTable, uuid, text, timestamp, primaryKey, index } from 'drizzle-orm/p
 import { user } from './auth-schema.ts';
 import { tournament } from './tournament.ts';
 import { deck } from './deck.ts';
-import { type InferSelectModel, relations } from 'drizzle-orm';
+import { relations } from 'drizzle-orm';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // Card Stat Matchup Overview Table
 export const cardStatMatchupOverview = pgTable(
@@ -68,16 +69,19 @@ export const cardStatMatchupOverviewRelations = relations(cardStatMatchupOvervie
   decks: many(cardStatMatchupDecks),
 }));
 
-export const cardStatMatchupTournamentsRelations = relations(cardStatMatchupTournaments, ({ one }) => ({
-  overview: one(cardStatMatchupOverview, {
-    fields: [cardStatMatchupTournaments.id],
-    references: [cardStatMatchupOverview.id],
+export const cardStatMatchupTournamentsRelations = relations(
+  cardStatMatchupTournaments,
+  ({ one }) => ({
+    overview: one(cardStatMatchupOverview, {
+      fields: [cardStatMatchupTournaments.id],
+      references: [cardStatMatchupOverview.id],
+    }),
+    tournament: one(tournament, {
+      fields: [cardStatMatchupTournaments.tournamentId],
+      references: [tournament.id],
+    }),
   }),
-  tournament: one(tournament, {
-    fields: [cardStatMatchupTournaments.tournamentId],
-    references: [tournament.id],
-  }),
-}));
+);
 
 export const cardStatMatchupDecksRelations = relations(cardStatMatchupDecks, ({ one }) => ({
   overview: one(cardStatMatchupOverview, {
@@ -91,16 +95,13 @@ export const cardStatMatchupDecksRelations = relations(cardStatMatchupDecks, ({ 
 }));
 
 // Card Stat Matchup Info Table
-export const cardStatMatchupInfo = pgTable(
-  'card_stat_matchup_info',
-  {
-    id: uuid('id')
-      .notNull()
-      .references(() => cardStatMatchupOverview.id, { onDelete: 'cascade' })
-      .primaryKey(),
-    info: text('info').notNull(), // JSON column to store combined matchup info
-  },
-);
+export const cardStatMatchupInfo = pgTable('card_stat_matchup_info', {
+  id: uuid('id')
+    .notNull()
+    .references(() => cardStatMatchupOverview.id, { onDelete: 'cascade' })
+    .primaryKey(),
+  info: text('info').notNull(), // JSON column to store combined matchup info
+});
 
 // Relations for cardStatMatchupInfo
 export const cardStatMatchupInfoRelations = relations(cardStatMatchupInfo, ({ one }) => ({

@@ -19,8 +19,8 @@ export const deckIdDuplicatePostRoute = new Hono<AuthExtension>().post('/', asyn
     return c.json({ message: "Source deck doesn't exist" }, 404);
   }
 
-  // 2. Check if the deck is public or owned by the user
-  if (!sourceDeck.public && sourceDeck.userId !== user.id) {
+  // 2. Check if the deck is public/unlisted or owned by the user
+  if (sourceDeck.public === 0 && sourceDeck.userId !== user.id) {
     return c.json({ message: 'Unauthorized to duplicate this deck' }, 403);
   }
 
@@ -38,7 +38,7 @@ export const deckIdDuplicatePostRoute = new Hono<AuthExtension>().post('/', asyn
         leaderCardId1: sourceDeck.leaderCardId1,
         leaderCardId2: sourceDeck.leaderCardId2,
         baseCardId: sourceDeck.baseCardId,
-        public: false, // Always set new copies to private initially
+        public: 2, // Always set new copies to unlisted
       })
       .returning()
   )[0];

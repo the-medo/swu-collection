@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
 import { and, eq } from 'drizzle-orm';
 import { zValidator } from '@hono/zod-validator';
@@ -7,6 +6,7 @@ import { zDeckCardDeleteRequest } from '../../../../../types/ZDeckCard.ts';
 import { db } from '../../../../db';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
+import type { AuthExtension } from '../../../../auth/auth.ts';
 
 export const deckIdCardDeleteRoute = new Hono<AuthExtension>().delete(
   '/',

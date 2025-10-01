@@ -1,7 +1,7 @@
 import { pgTable, varchar, integer, primaryKey, index, uuid } from 'drizzle-orm/pg-core';
 import { meta } from './meta.ts';
 import { tournament } from './tournament.ts';
-import { type InferSelectModel } from 'drizzle-orm';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // Card Statistics for Meta
 export const cardStatMeta = pgTable(

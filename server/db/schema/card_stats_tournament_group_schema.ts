@@ -8,7 +8,7 @@ import {
   foreignKey,
 } from 'drizzle-orm/pg-core';
 import { tournamentGroup } from './tournament_group.ts';
-import { type InferSelectModel } from 'drizzle-orm';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // Card Statistics for Tournament Group
 export const cardStatTournamentGroup = pgTable(

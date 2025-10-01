@@ -18,7 +18,7 @@ export const zDeckSchema = z.object({
   leaderCardId1: z.string().nullable(),
   leaderCardId2: z.string().nullable(),
   baseCardId: z.string().nullable(),
-  public: z.boolean().default(false),
+  public: z.number().int().min(0).max(2).default(0),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });

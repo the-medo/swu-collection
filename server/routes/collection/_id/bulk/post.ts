@@ -1,18 +1,16 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { zCollectionBulkInsertRequest } from '../../../../../types/ZCollectionCard.ts';
 import { z } from 'zod';
 import { and, eq, lte, sql } from 'drizzle-orm';
 import { collection as collectionTable } from '../../../../db/schema/collection.ts';
 import { db } from '../../../../db';
-import {
-  collectionCard as collectionCardTable,
-  type InsertCollectionCard,
-} from '../../../../db/schema/collection_card.ts';
-import { type SwuRarity, SwuSet } from '../../../../../types/enums.ts';
+import { collectionCard as collectionCardTable } from '../../../../db/schema/collection_card.ts';
 import { cardList } from '../../../../db/lists.ts';
 import { updateCollectionUpdatedAt } from '../../../../lib/updateCollectionUpdatedAt.ts';
+import type { AuthExtension } from '../../../../auth/auth.ts';
+import type { InsertCollectionCard } from '../../../../db/schema/collection_card.ts';
+import type { SwuRarity, SwuSet } from '../../../../../types/enums.ts';
 
 /**
  * Bulk action with collection (wantlist)

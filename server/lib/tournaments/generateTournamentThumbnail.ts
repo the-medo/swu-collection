@@ -1,9 +1,9 @@
-import sharp, { type OverlayOptions } from 'sharp';
+import sharp from 'sharp';
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { db } from '../../db';
 import { tournament } from '../../db/schema/tournament.ts';
 import { eq } from 'drizzle-orm';
-import { countryList } from '../../db/lists.ts';
+import type { OverlayOptions } from 'sharp';
 
 // R2 bucket configuration
 const bucketName = 'swu-images';

@@ -1,4 +1,4 @@
-import { type InferSelectModel, relations } from 'drizzle-orm';
+import { relations } from 'drizzle-orm';
 import {
   pgTable,
   varchar,
@@ -17,6 +17,7 @@ import { format } from './format.ts';
 import { user } from './auth-schema.ts';
 import { meta } from './meta.ts';
 import { tournamentGroupTournament } from './tournament_group_tournament.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // Tournament Schema
 export const tournament = pgTable(

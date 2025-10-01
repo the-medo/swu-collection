@@ -1,17 +1,7 @@
-import {
-  boolean,
-  pgTable,
-  text,
-  timestamp,
-  uuid,
-  integer,
-  varchar,
-  index,
-} from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, integer, varchar, index } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
 import { format } from './format.ts';
 import type { InferSelectModel } from 'drizzle-orm';
-import type { InferResponseType } from 'hono';
 
 export const deck = pgTable(
   'deck',
@@ -28,7 +18,7 @@ export const deck = pgTable(
     leaderCardId1: varchar('leader_card_id_1'),
     leaderCardId2: varchar('leader_card_id_2'),
     baseCardId: varchar('base_card_id'),
-    public: boolean('public').notNull().default(false),
+    public: integer('public').notNull().default(0),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },

@@ -2,7 +2,6 @@ import { Link } from '@tanstack/react-router';
 import { useUser } from '@/hooks/useUser';
 import LoadingTitle from '../../global/LoadingTitle';
 import { Button } from '@/components/ui/button.tsx';
-import { publicRenderer } from '@/lib/table/publicRenderer.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { useGetDeck } from '@/api/decks/useGetDeck';
 import EditDeckDialog from '../../dialogs/EditDeckDialog';
@@ -12,6 +11,7 @@ import { useDeckInfoStoreActions } from '@/components/app/decks/DeckContents/use
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useRole } from '@/hooks/useRole.ts';
+import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
 
 interface DeckDetailProps {
   adminEdit?: boolean;
@@ -76,7 +76,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder 
           <div className="flex flex-row gap-4 items-center">
             {owned && data?.deck && (
               <>
-                {publicRenderer(data?.deck.public)}
+                {deckPrivacyRenderer(data?.deck.public)}
                 <EditDeckDialog deck={data?.deck} trigger={<Button>Edit deck</Button>} />
                 <DeleteDeckDialog
                   deck={data?.deck}
