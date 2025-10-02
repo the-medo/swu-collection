@@ -19,6 +19,7 @@ export interface MultiAspectFilterProps {
   className?: string;
   allLabel?: string;
   noneLabel?: string;
+  availableAspects?: SwuAspect[];
 }
 
 const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
@@ -34,9 +35,12 @@ const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
   className,
   allLabel = 'All',
   noneLabel = 'None',
+  availableAspects,
 }) => {
+  const possibleAspects = availableAspects ?? aspectArray;
+
   const handleAllSelection = () => {
-    onChange(aspectArray);
+    onChange(possibleAspects);
   };
   const handleNoneSelection = () => {
     onChange([]);
@@ -85,7 +89,7 @@ const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
   const toggleGroupClassNames = cn('flex justify-start flex-wrap');
 
   const aspectOptions = useMemo(() => {
-    return aspectArray.map(aspect => (
+    return possibleAspects.map(aspect => (
       <ToggleGroupItem
         key={aspect}
         value={aspect}
@@ -97,7 +101,7 @@ const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
         {showLabel && <span className={getLabelClass()}>{aspect}</span>}
       </ToggleGroupItem>
     ));
-  }, [showLabel]);
+  }, [showLabel, possibleAspects]);
 
   return (
     <div className={cn('flex flex-wrap flex-grow justify-center items-center gap-2', className)}>

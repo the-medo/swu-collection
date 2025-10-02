@@ -11,7 +11,6 @@ import { CollectionSortBy } from '@/components/app/collections/CollectionContent
 import { createFakeCollectionCard } from '../../../../../../types/CollectionCard.ts';
 import MultiAspectFilter from '@/components/app/global/MultiAspectFilter/MultiAspectFilter.tsx';
 import { SwuAspect } from '../../../../../../types/enums.ts';
-import { aspectArray } from '../../../../../../types/iterableEnumInfo.ts';
 import {
   CardDataWithVariants,
   CardListVariants,
@@ -20,6 +19,8 @@ import { Input } from '@/components/ui/input.tsx';
 import { Switch } from '@/components/ui/switch.tsx';
 import { cn } from '@/lib/utils.ts';
 import { basicBases } from '../../../../../../shared/lib/basicBases.ts';
+import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
+import { aspectsForBases } from '@/components/app/global/MultiAspectFilter/multiAspectFilterLib.tsx';
 
 type BaseSelectorProps = Pick<DialogProps, 'trigger'> & {
   baseCardId?: string;
@@ -39,7 +40,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
   const [allBasicBases, setAllBasicBases] = useState(false);
   const [localBaseCardId, setLocalBaseCardId] = useState<string | undefined>(baseCardId);
   const [search, setSearch] = useState<string>('');
-  const [aspectFilter, setAspectFilter] = useState<SwuAspect[]>(aspectArray);
+  const [aspectFilter, setAspectFilter] = useState<SwuAspect[]>(aspectsForBases);
   const { data: cardList } = useCardList();
 
   const baseSorter = useMemo(
@@ -58,18 +59,19 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
 
   const filteringByAspects = useCallback(
     (card: CardDataWithVariants<CardListVariants> | undefined) => {
-      const notFoundAspects = (card?.aspects ?? []).filter(a => !transformedAspectsForFilter[a]);
-      let notFoundAspect: SwuAspect | undefined = notFoundAspects?.[0];
+      if (card?.aspects?.length === 0)
+        return aspectFilter.length === aspectsForBases.length || aspectFilter.length === 0;
 
-      return notFoundAspect === undefined;
+      const notFoundAspects = (card?.aspects ?? []).filter(a => !transformedAspectsForFilter[a]);
+      return notFoundAspects?.length === 0;
     },
-    [transformedAspectsForFilter],
+    [transformedAspectsForFilter, aspectFilter],
   );
 
   const filteringByBasicBases = useCallback(
     (card: CardDataWithVariants<CardListVariants> | undefined) => {
       if (allBasicBases || search !== '') return true;
-      return card?.text !== '' && card?.text !== null;
+      return !isBasicBase(card); // card?.text !== '' && card?.text !== null;
     },
     [search, allBasicBases],
   );
@@ -160,7 +162,12 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <MultiAspectFilter value={aspectFilter} onChange={setAspectFilter} multiSelect={true} />
+        <MultiAspectFilter
+          value={aspectFilter}
+          onChange={setAspectFilter}
+          multiSelect={true}
+          availableAspects={aspectsForBases}
+        />
         <div className="flex flex-row items-center gap-2">
           <label htmlFor="switch-1" className="font-semibold">
             Display all basic bases
