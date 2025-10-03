@@ -22,6 +22,7 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import WeeklyChangeAreaBumpTooltip from '@/components/app/daily-snapshots/sections/WeeklyChange/WeeklyChangeAreaBumpTooltip.tsx';
 import { ArrowCell } from '@/components/app/daily-snapshots/sections/WeeklyChange/ArrowCell.tsx';
 import WeeklyChangeDropdownMenu from '@/components/app/daily-snapshots/sections/WeeklyChange/WeeklyChangeDropdownMenu.tsx';
+import SectionHeader from '../components/SectionHeader.tsx';
 
 export interface WeeklyChangeProps {
   payload: DailySnapshotSectionData<SectionWeeklyChange>;
@@ -181,45 +182,47 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
 
   return (
     <div className="h-full w-full flex flex-col gap-2">
-      <div className="flex gap-2 justify-between items-center border-b">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h4>Weekly change</h4>
-            <h5>(last 2 weeks)</h5>
-          </div>
-          <SectionInfoTooltip
-            dailySnapshot={dailySnapshot}
-            sectionUpdatedAt={sectionUpdatedAt}
-            sectionDataWarning={true}
-            tournamentGroupExtendedInfo={groups}
-          >
-            <div>This section compares meta share over last two weeks.</div>
-            <div>
-              Values in chart are sorted from the most played (on top) to less played.
-              <ul className={'list-disc ml-4'}>
-                <li>
-                  <span className="font-bold">total / top 8</span> - compares meta share of {TOP_X}{' '}
-                  most played leaders (+bases) from both weeks
-                </li>
-                <li>
-                  <span className="font-bold">champions</span> - all winning leaders (+bases) are
-                  included in the chart
-                </li>
-              </ul>
+      <SectionHeader
+        headerAndTooltips={
+          <>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h4>Weekly change</h4>
+              <h5>(last 2 weeks)</h5>
             </div>
-            <div>
-              In table, multiple leaders (+bases) can show the same placement (eg. 1st, 2nd, 3rd) in
-              case they have the same count. In this case, the "best" shared placement is shown.
-            </div>
-            <div>
-              Arrows in the table <ArrowCell p1={10} p2={1} /> <ArrowCell p1={1} p2={10} /> show
-              change in placement and are not visible in case the placement did not change between
-              weeks.
-            </div>
-          </SectionInfoTooltip>
-        </div>
-        <WeeklyChangeDropdownMenu />
-      </div>
+            <SectionInfoTooltip
+              dailySnapshot={dailySnapshot}
+              sectionUpdatedAt={sectionUpdatedAt}
+              sectionDataWarning={true}
+              tournamentGroupExtendedInfo={groups}
+            >
+              <div>This section compares meta share over last two weeks.</div>
+              <div>
+                Values in chart are sorted from the most played (on top) to less played.
+                <ul className={'list-disc ml-4'}>
+                  <li>
+                    <span className="font-bold">total / top 8</span> - compares meta share of {TOP_X}{' '}
+                    most played leaders (+bases) from both weeks
+                  </li>
+                  <li>
+                    <span className="font-bold">champions</span> - all winning leaders (+bases) are
+                    included in the chart
+                  </li>
+                </ul>
+              </div>
+              <div>
+                In table, multiple leaders (+bases) can show the same placement (eg. 1st, 2nd, 3rd) in
+                case they have the same count. In this case, the "best" shared placement is shown.
+              </div>
+              <div>
+                Arrows in the table <ArrowCell p1={10} p2={1} /> <ArrowCell p1={1} p2={10} /> show
+                change in placement and are not visible in case the placement did not change between
+                weeks.
+              </div>
+            </SectionInfoTooltip>
+          </>
+        }
+        dropdownMenu={<WeeklyChangeDropdownMenu />}
+      />
       <div className="flex gap-2 justify-start items-center">
         <div className="flex gap-2 justify-start items-center flex-wrap mb-2">
           <div className="mr-4">

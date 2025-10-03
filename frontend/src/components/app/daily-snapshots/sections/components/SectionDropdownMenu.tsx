@@ -34,7 +34,7 @@ const SectionDropdownMenu: React.FC<SectionDropdownMenuProps> = ({
           )}
           aria-label="Section options"
         >
-          <span className=" hidden sm:inline">More</span>
+          {/*<span className=" hidden sm:inline">More</span>*/}
           <ChevronDown className="size-4 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>

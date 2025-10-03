@@ -11,6 +11,7 @@ import { CountryCode } from '../../../../../../../server/db/lists.ts';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import { formatDataById } from '../../../../../../../types/Format.ts';
 import UpcomingTournamentsDropdownMenu from '@/components/app/daily-snapshots/sections/UpcomingTournaments/UpcomingTournamentsDropdownMenu.tsx';
+import SectionHeader from '../components/SectionHeader.tsx';
 
 export interface UpcomingTournamentsProps {
   payload: DailySnapshotSectionData<SectionUpcomingTournaments>;
@@ -64,22 +65,24 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col gap-2">
-      <div className="flex gap-2 justify-between items-center border-b">
-        <div className="flex items-center gap-2">
-          <h4>Upcoming tournaments</h4>
-          <SectionInfoTooltip
-            dailySnapshot={dailySnapshot}
-            sectionUpdatedAt={sectionUpdatedAt}
-            tournamentGroupExtendedInfo={groups}
-          >
-            <div className="text-sm">
-              Upcoming tournaments for next weekend + all major tournaments happening in the next 30
-              days.
-            </div>
-          </SectionInfoTooltip>
-        </div>
-        <UpcomingTournamentsDropdownMenu />
-      </div>
+      <SectionHeader
+        headerAndTooltips={
+          <>
+            <h4>Upcoming tournaments</h4>
+            <SectionInfoTooltip
+              dailySnapshot={dailySnapshot}
+              sectionUpdatedAt={sectionUpdatedAt}
+              tournamentGroupExtendedInfo={groups}
+            >
+              <div className="text-sm">
+                Upcoming tournaments for next weekend + all major tournaments happening in the next 30
+                days.
+              </div>
+            </SectionInfoTooltip>
+          </>
+        }
+        dropdownMenu={<UpcomingTournamentsDropdownMenu />}
+      />
 
       <div className="max-h-[400px] overflow-y-auto overflow-x-auto pr-2 -mr-2 flex flex-col gap-2">
         {/* Major tournaments each in its own box */}
