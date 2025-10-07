@@ -9,6 +9,7 @@ import type {
 } from '../../../../../../../types/DailySnapshots.ts';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import SectionDropdownMenu from '@/components/app/daily-snapshots/sections/components/SectionDropdownMenu.tsx';
+import SectionHeader from '../components/SectionHeader.tsx';
 
 export interface ForceVsNonforceProps {
   payload: DailySnapshotSectionData<SectionForceVsNonForceCounts>;
@@ -90,32 +91,36 @@ const ForceVsNonforce: React.FC<ForceVsNonforceProps> = ({
 
   return (
     <div className="h-full w-full flex flex-col gap-2">
-      <div className="flex gap-2 justify-between items-center border-b">
-        <div className="flex items-center gap-2">
-          <h4>Force vs. Non-Force</h4>
-          <SectionInfoTooltip
-            dailySnapshot={dailySnapshot}
-            sectionDataWarning={true}
-            sectionUpdatedAt={sectionUpdatedAt}
-            tournamentGroupExtendedInfo={groups}
-          >
-            <div className="text-sm">
-              This section shows how many decks used a Force base versus non-Force. Force bases
-              include all 28hp common bases and all rare force bases.
+      <SectionHeader
+        headerAndTooltips={
+          <>
+            <h4>Force vs. Non-Force</h4>
+            <SectionInfoTooltip
+              dailySnapshot={dailySnapshot}
+              sectionDataWarning={true}
+              sectionUpdatedAt={sectionUpdatedAt}
+              tournamentGroupExtendedInfo={groups}
+            >
+              <div className="text-sm">
+                This section shows how many decks used a Force base versus non-Force. Force bases
+                include all 28hp common bases and all rare force bases.
+              </div>
+              <div>
+                This metric does NOT show all decks using force units or decks using Force Throw if
+                they don't use the force base.
+              </div>
+            </SectionInfoTooltip>
+          </>
+        }
+        dropdownMenu={
+          <SectionDropdownMenu>
+            <div className="flex items-center gap-2 max-w-60 p-2 text-sm">
+              For now, there are no other pages that would show you more detailed data about Force vs.
+              Non-Force usage.
             </div>
-            <div>
-              This metric does NOT show all decks using force units or decks using Force Throw if
-              they don't use the force base.
-            </div>
-          </SectionInfoTooltip>
-        </div>
-        <SectionDropdownMenu>
-          <div className="flex items-center gap-2 max-w-60 p-2 text-sm">
-            For now, there are no other pages that would show you more detailed data about Force vs.
-            Non-Force usage.
-          </div>
-        </SectionDropdownMenu>
-      </div>
+          </SectionDropdownMenu>
+        }
+      />
 
       <div className="flex flex-wrap gap-4 items-start">
         {/* Left: Two-week summary */}

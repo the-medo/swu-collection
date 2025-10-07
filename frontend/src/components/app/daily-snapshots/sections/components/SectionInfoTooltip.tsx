@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { AlertCircle, Info, TriangleAlert } from 'lucide-react';
+import { AlertCircle, Info, Grid2X2Check, Grid2x2X } from 'lucide-react';
 import type { DailySnapshotRow } from '@/api/daily-snapshot';
 import type { TournamentGroupExtendedInfo } from '../../../../../../../types/DailySnapshots.ts';
 import TournamentGroupExtendedInfoTable from './TournamentGroupExtendedInfoTable.tsx';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
+import { cn } from '@/lib/utils.ts';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
 
 export interface SectionInfoTooltipProps {
   dailySnapshot?: DailySnapshotRow | null;
@@ -47,27 +48,46 @@ export const SectionInfoTooltip: React.FC<SectionInfoTooltipProps> = ({
   const triggerDataWarning = Boolean(sectionDataWarning && hasLowCoverage);
 
   return (
-    <TooltipProvider>
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>
+    <div className="inline-flex items-center gap-1 pt-1">
+      <Popover hover>
+        <PopoverTrigger asChild>
           <button
             type="button"
             aria-label="Section info"
-            className={[
+            className={cn(
               'inline-flex items-center justify-center rounded p-1 hover:bg-muted/60 transition-colors',
               className,
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            )}
+          >
+            <Info className="size-4 text-muted-foreground" />
+          </button>
+        </PopoverTrigger>
+        {children ? (
+          <PopoverContent className="p-3 max-w-[300px]">
+            <div className="flex flex-col gap-3 text-sm">{children}</div>
+          </PopoverContent>
+        ) : null}
+      </Popover>
+
+      {/* Second tooltip: everything else, Grid icons based on data warning */}
+      <Popover hover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-label="Section data coverage info"
+            className={cn(
+              'inline-flex items-center justify-center rounded p-1 hover:bg-muted/60 transition-colors',
+              className,
+            )}
           >
             {triggerDataWarning ? (
-              <TriangleAlert className="size-4 dark:text-yellow-300 text-yellow-600" />
+              <Grid2x2X className="size-4 dark:text-orange-300 text-orange-600" />
             ) : (
-              <Info className="size-4 text-muted-foreground" />
+              <Grid2X2Check className="size-4 dark:text-green-300 text-green-600" />
             )}
           </button>
-        </TooltipTrigger>
-        <TooltipContent className="p-4 max-w-xl">
+        </PopoverTrigger>
+        <PopoverContent className="p-4 w-auto max-w-[min(100vw,500px)]">
           <div className="flex flex-col gap-3">
             {/* Data warning */}
             {triggerDataWarning ? (
@@ -90,11 +110,8 @@ export const SectionInfoTooltip: React.FC<SectionInfoTooltipProps> = ({
               </Alert>
             ) : null}
 
-            {/* Children on top */}
-            {children ? <div className="flex flex-col gap-3">{children}</div> : null}
-
             {/* Tournament groups table */}
-            <div className="flex flex-col gap-1 border-t mt-4 pt-2">
+            <div className={cn('flex flex-col gap-1 mt-4 pt-2', triggerDataWarning && 'border-t')}>
               <span className="text-xs">
                 The table below lists tournament groups that provided the data and how complete the
                 data is. You can open them to see more detailed statistics and list of tournaments,
@@ -123,9 +140,9 @@ export const SectionInfoTooltip: React.FC<SectionInfoTooltipProps> = ({
               ) : null}
             </div>
           </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };
 

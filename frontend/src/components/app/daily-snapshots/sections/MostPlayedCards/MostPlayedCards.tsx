@@ -9,6 +9,7 @@ import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatist
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import { CardStatsParams } from '@/api/card-stats';
 import MostPlayedCardsDropdownMenu from '@/components/app/daily-snapshots/sections/MostPlayedCards/MostPlayedCardsDropdownMenu.tsx';
+import SectionHeader from '../components/SectionHeader.tsx';
 
 export interface MostPlayedCardsProps {
   payload: DailySnapshotSectionData<SectionMostPlayedCards>;
@@ -36,27 +37,29 @@ const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({
 
   return (
     <div className="h-full w-full flex flex-col gap-2">
-      <div className="flex gap-2 justify-between items-center border-b">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h4>Cards in most decks</h4>
-            <h5>(last 2 weeks)</h5>
-          </div>
-          <SectionInfoTooltip
-            dailySnapshot={dailySnapshot}
-            sectionUpdatedAt={sectionUpdatedAt}
-            sectionDataWarning={true}
-            tournamentGroupExtendedInfo={groups}
-          >
-            <div className="text-sm">
-              Shows 5 cards that have been played in the most amount of decks in the last 2 weeks.
-              That does NOT mean that it has the most copies in the decks. For that, there are more
-              comprehensive card statistics that you can open.
+      <SectionHeader
+        headerAndTooltips={
+          <>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h4>Cards in most decks</h4>
+              <h5>(last 2 weeks)</h5>
             </div>
-          </SectionInfoTooltip>
-        </div>
-        <MostPlayedCardsDropdownMenu />
-      </div>
+            <SectionInfoTooltip
+              dailySnapshot={dailySnapshot}
+              sectionUpdatedAt={sectionUpdatedAt}
+              sectionDataWarning={true}
+              tournamentGroupExtendedInfo={groups}
+            >
+              <div className="text-sm">
+                Shows 5 cards that have been played in the most amount of decks in the last 2 weeks.
+                That does NOT mean that it has the most copies in the decks. For that, there are more
+                comprehensive card statistics that you can open.
+              </div>
+            </SectionInfoTooltip>
+          </>
+        }
+        dropdownMenu={<MostPlayedCardsDropdownMenu />}
+      />
 
       {items.length === 0 ? (
         <div className="text-sm text-muted-foreground">No data available</div>

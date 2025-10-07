@@ -6,6 +6,7 @@ import MetaSharePieChart from './MetaSharePieChart.tsx';
 import MetaShareTable from './MetaShareTable.tsx';
 import MetaShareTwoWeeksInfoTooltip from './MetaShareTwoWeeksInfoTooltip.tsx';
 import MetaShareDropdownMenu from './MetaShareDropdownMenu.tsx';
+import SectionHeader from '../components/SectionHeader.tsx';
 import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
@@ -68,22 +69,24 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
 
   return (
     <div className="h-full w-full flex flex-col gap-2 ">
-      <div className="flex gap-2 justify-between items-center border-b">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h4>Meta share</h4>
-            <h5>(last 2 weeks)</h5>
-          </div>
-          <MetaShareTwoWeeksInfoTooltip
-            dailySnapshot={dailySnapshot}
-            sectionUpdatedAt={sectionUpdatedAt}
-            tournamentGroupExtendedInfo={
-              payload.data.tournamentGroupExt ? [payload.data.tournamentGroupExt] : []
-            }
-          />
-        </div>
-        <MetaShareDropdownMenu tournamentGroupId={tournamentGroupId} />
-      </div>
+      <SectionHeader
+        headerAndTooltips={
+          <>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h4>Meta share</h4>
+              <h5>(last 2 weeks)</h5>
+            </div>
+            <MetaShareTwoWeeksInfoTooltip
+              dailySnapshot={dailySnapshot}
+              sectionUpdatedAt={sectionUpdatedAt}
+              tournamentGroupExtendedInfo={
+                payload.data.tournamentGroupExt ? [payload.data.tournamentGroupExt] : []
+              }
+            />
+          </>
+        }
+        dropdownMenu={<MetaShareDropdownMenu tournamentGroupId={tournamentGroupId} />}
+      />
       <div className="flex gap-4 justify-center flex-wrap @container/meta-2-weeks">
         {/* Center - Pie Chart */}
         <div className="flex flex-1 flex-col justify-center items-center">

@@ -19,6 +19,7 @@ import { CountryCode } from '../../../../../../../server/db/lists.ts';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import TournamentGroupTournament from '@/components/app/tournaments/TournamentGroup/TournamentGroupTournament.tsx';
 import RecentTournamentsDropdownMenu from '@/components/app/daily-snapshots/sections/RecentTournaments/RecentTournamentsDropdownMenu.tsx';
+import SectionHeader from '../components/SectionHeader.tsx';
 import type { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../../types/TournamentGroup.ts';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { getDeckLeadersAndBaseKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
@@ -127,28 +128,30 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col gap-2 min-h-0">
-      <div className="flex gap-2 justify-between items-center border-b">
-        <div className="flex items-center gap-2">
-          <h4>Recent tournaments</h4>
-          <SectionInfoTooltip
-            dailySnapshot={dailySnapshot}
-            sectionUpdatedAt={sectionUpdatedAt}
-            tournamentGroupExtendedInfo={groups}
-          >
-            <div className="text-sm">
-              All major tournaments from last 30 days + all tournaments from last 2 weeks - hover
-              any row to see the winning deck. Rows marked with{' '}
-              <X className="h-4 w-4 text-red-500 inline-block" /> are not yet imported (and maybe
-              won't be, depending on the data that is provided from melee.gg).
-            </div>
-            <div>
-              Possible to turn on "Winning deck mode", which will replace tournament name with deck
-              name and lead you straight to tournament decks.
-            </div>
-          </SectionInfoTooltip>
-        </div>
-        <RecentTournamentsDropdownMenu />
-      </div>
+      <SectionHeader
+        headerAndTooltips={
+          <>
+            <h4>Recent tournaments</h4>
+            <SectionInfoTooltip
+              dailySnapshot={dailySnapshot}
+              sectionUpdatedAt={sectionUpdatedAt}
+              tournamentGroupExtendedInfo={groups}
+            >
+              <div className="text-sm">
+                All major tournaments from last 30 days + all tournaments from last 2 weeks - hover
+                any row to see the winning deck. Rows marked with{' '}
+                <X className="h-4 w-4 text-red-500 inline-block" /> are not yet imported (and maybe
+                won't be, depending on the data that is provided from melee.gg).
+              </div>
+              <div>
+                Possible to turn on "Winning deck mode", which will replace tournament name with deck
+                name and lead you straight to tournament decks.
+              </div>
+            </SectionInfoTooltip>
+          </>
+        }
+        dropdownMenu={<RecentTournamentsDropdownMenu />}
+      />
       <div className="flex justify-end items-center">
         <button
           type="button"

@@ -14,6 +14,7 @@ import {
   CardDataWithVariants,
   CardListVariants,
 } from '../../../../../../../lib/swu-resources/types.ts';
+import { openCardOnMiddleButton } from '@/lib/cards/openCardOnMiddleButton.ts';
 
 export type CardLayoutType =
   | 'imageBig'
@@ -152,7 +153,10 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
                   className={cn('cursor-pointer  flex flex-col items-center border p-1', {
                     'hover:scale-105 transition-transform': !cardSubcomponent,
                   })}
-                  onClick={() => onCardClick(cardId)}
+                  onClick={() => {
+                    onCardClick(cardId);
+                  }}
+                  onMouseDown={openCardOnMiddleButton(cardId)}
                 >
                   <CardImage
                     card={card}

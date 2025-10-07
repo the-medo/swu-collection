@@ -9,6 +9,7 @@ import { ThemeProvider } from './components/theme-provider';
 import { queryClient } from '@/queryClient.ts';
 import { DatabaseProvider } from '@/providers/DatabaseProvider.tsx';
 import { HelmetProvider } from 'react-helmet-async';
+import { TooltipProvider } from '@/components/ui/tooltip.tsx';
 
 const router = createRouter({ routeTree });
 
@@ -24,7 +25,9 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <DatabaseProvider>
           <HelmetProvider>
-            <RouterProvider router={router} />
+            <TooltipProvider>
+              <RouterProvider router={router} />
+            </TooltipProvider>
           </HelmetProvider>
         </DatabaseProvider>
       </ThemeProvider>

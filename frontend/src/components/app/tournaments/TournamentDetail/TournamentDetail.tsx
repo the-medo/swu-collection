@@ -143,16 +143,16 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
               )}
 
               {tournament.meleeId && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    window.open(`https://melee.gg/Tournament/View/${tournament.meleeId}`, '_blank')
-                  }
+                <a
+                  href={`https://melee.gg/Tournament/View/${tournament.meleeId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <Trophy className="h-4 w-4 mr-2" />
-                  View on Melee.gg
-                </Button>
+                  <Button variant="outline" size="sm">
+                    <Trophy className="h-4 w-4 mr-2" />
+                    View on Melee.gg
+                  </Button>
+                </a>
               )}
               {canUpdate && (
                 <ImportMeleeTournamentDialog
