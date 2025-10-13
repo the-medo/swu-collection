@@ -16567,101 +16567,7 @@
     "title": "Enfys Nest",
     "subtitle": "Champion of Justice",
     "variants": {
-      "enfys-nest--champion-of-justice-219-shadows-of-the-galaxy": {
-        "variantId": "enfys-nest--champion-of-justice-219-shadows-of-the-galaxy",
-        "swuId": 8183,
-        "set": "shd",
-        "fullSetName": "Shadows of the Galaxy",
-        "cardNo": 219,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Standard",
-        "artist": "Afif Khaled",
-        "front": {
-          "horizontal": false
-        },
-        "image": {
-          "front": "enfys-nest--champion-of-justice-219-shadows-of-the-galaxy-front.webp",
-          "back": null
-        }
-      },
-      "enfys-nest--champion-of-justice-487-shadows-of-the-galaxy": {
-        "variantId": "enfys-nest--champion-of-justice-487-shadows-of-the-galaxy",
-        "swuId": 8568,
-        "set": "shd",
-        "fullSetName": "Shadows of the Galaxy",
-        "cardNo": 487,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Hyperspace",
-        "artist": "Afif Khaled",
-        "front": {
-          "horizontal": false
-        },
-        "image": {
-          "front": "enfys-nest--champion-of-justice-487-shadows-of-the-galaxy-front.webp",
-          "back": null
-        }
-      },
-      "enfys-nest--champion-of-justice-15-shadows-of-the-galaxy---weekly-play": {
-        "variantId": "enfys-nest--champion-of-justice-15-shadows-of-the-galaxy---weekly-play",
-        "swuId": 8747,
-        "set": "shd",
-        "fullSetName": "Shadows of the Galaxy - Weekly Play",
-        "cardNo": 15,
-        "baseSet": false,
-        "hasNonfoil": false,
-        "hasFoil": false,
-        "variantName": "Weekly Play",
-        "artist": "Kyle Petchock",
-        "front": {
-          "horizontal": false
-        },
-        "image": {
-          "front": "enfys-nest--champion-of-justice-15-shadows-of-the-galaxy---weekly-play-front.webp",
-          "back": null
-        }
-      },
-      "enfys-nest--champion-of-justice-15-shadows-of-the-galaxy---weekly-play-foil": {
-        "variantId": "enfys-nest--champion-of-justice-15-shadows-of-the-galaxy---weekly-play-foil",
-        "swuId": 14130,
-        "set": "shd",
-        "fullSetName": "Shadows of the Galaxy - Weekly Play Foil",
-        "cardNo": 15,
-        "baseSet": false,
-        "hasNonfoil": false,
-        "hasFoil": false,
-        "variantName": "Weekly Play Foil",
-        "artist": "Kyle Petchock",
-        "front": {
-          "horizontal": false
-        },
-        "image": {
-          "front": "enfys-nest--champion-of-justice-15-shadows-of-the-galaxy---weekly-play-foil-front.webp",
-          "back": null
-        }
-      },
-      "enfys-nest--champion-of-justice-9-2025-judge-program": {
-        "variantId": "enfys-nest--champion-of-justice-9-2025-judge-program",
-        "swuId": 25411,
-        "set": "j25",
-        "fullSetName": "2025 Judge Program",
-        "cardNo": 9,
-        "baseSet": true,
-        "hasNonfoil": false,
-        "hasFoil": false,
-        "variantName": "Judge Program",
-        "artist": "Benjamin Paulus Van Onzen",
-        "front": {
-          "horizontal": false
-        },
-        "image": {
-          "front": "enfys-nest--champion-of-justice-9-2025-judge-program-front.webp",
-          "back": null
-        }
-      },
+
       "enfys-nest--champion-of-justice-198-twilight-of-the-republic": {
         "swuId": 15166,
         "set": "twi",
@@ -16693,6 +16599,25 @@
           "back": null
         },
         "variantId": "enfys-nest--champion-of-justice-463-twilight-of-the-republic"
+      },
+      "enfys-nest--champion-of-justice-9-2025-judge-program": {
+        "variantId": "enfys-nest--champion-of-justice-9-2025-judge-program",
+        "swuId": 25411,
+        "set": "j25",
+        "fullSetName": "2025 Judge Program",
+        "cardNo": 9,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Judge Program",
+        "artist": "Benjamin Paulus Van Onzen",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "enfys-nest--champion-of-justice-9-2025-judge-program-front.webp",
+          "back": null
+        }
       }
     },
     "type": "Unit",
@@ -20371,7 +20296,7 @@
         "baseSet": true,
         "hasNonfoil": true,
         "hasFoil": true,
-        "variantName": "Prerelease Judge",
+        "variantName": "Standard",
         "artist": "David Buisan",
         "front": {
           "horizontal": true
