@@ -11,6 +11,7 @@ export const adminPages: [string, ...string[]] = [
   'pq-tools',
   'special-actions',
   'card-prices',
+  'variant-checker',
 ] as const;
 
 const searchParams = z.object({
