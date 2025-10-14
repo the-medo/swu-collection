@@ -2,9 +2,7 @@ import React from 'react';
 import { useCheckDeletedVariants } from '@/api/admin/useCheckDeletedVariants';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-export interface VariantCheckerTableProps {}
-
-export const VariantCheckerTable: React.FC<VariantCheckerTableProps> = () => {
+export const VariantCheckerTable: React.FC = () => {
   const { data, isLoading, isError, error } = useCheckDeletedVariants();
 
   if (isLoading) {
