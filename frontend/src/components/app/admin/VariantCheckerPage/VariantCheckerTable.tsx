@@ -1,15 +1,24 @@
 import React from 'react';
 import { useCheckDeletedVariants } from '@/api/admin/useCheckDeletedVariants';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useNavigate } from '@tanstack/react-router';
+import { Route } from '@/routes/__root.tsx';
+import { DataTable } from '@/components/ui/data-table.tsx';
+import { useVariantCheckerTableColumns, VariantCheckerRow } from './useVariantCheckerTableColumns';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 export const VariantCheckerTable: React.FC = () => {
   const { data, isLoading, isError, error } = useCheckDeletedVariants();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const { isMobile } = useSidebar();
+  const view = isMobile ? 'box' : 'table';
 
-  if (isLoading) {
-    return (
-      <div className="p-4 text-sm text-muted-foreground">Loading missing variants…</div>
-    );
-  }
+  const handleViewCard = (cardId: string) => {
+    navigate({
+      search: prev => ({ ...prev, modalCardId: cardId }),
+    });
+  };
+
+  const columns = useVariantCheckerTableColumns({ onCardClick: handleViewCard });
 
   if (isError) {
     return (
@@ -20,37 +29,18 @@ export const VariantCheckerTable: React.FC = () => {
   }
 
   const map = data?.data ?? {};
-  const rows = Object.entries(map).flatMap(([cardId, variants]) => {
+  const rows: VariantCheckerRow[] = Object.entries(map).flatMap(([cardId, variants]) => {
     const vids = Object.keys(variants || {});
-    if (vids.length === 0) return [] as { cardId: string; variantId: string }[];
+    if (vids.length === 0) return [] as VariantCheckerRow[];
     return vids.map(variantId => ({ cardId, variantId }));
   });
 
-  if (rows.length === 0) {
-    return (
-      <div className="p-4 text-sm text-muted-foreground">No missing variants found.</div>
-    );
-  }
-
   return (
     <div className="w-full overflow-x-auto">
-      <Table>
-        <TableCaption>List of card variants present in DB references but missing from the current card list</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[220px]">Card ID</TableHead>
-            <TableHead>Variant ID</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((r, idx) => (
-            <TableRow key={`${r.cardId}-${r.variantId}-${idx}`}>
-              <TableCell className="font-mono text-xs">{r.cardId}</TableCell>
-              <TableCell className="font-mono text-xs">{r.variantId}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div className="px-2 py-2 text-sm text-muted-foreground">
+        List of card variants present in DB references but missing from the current card list
+      </div>
+      <DataTable columns={columns} data={rows} loading={isLoading} view={view} />
     </div>
   );
 };

@@ -7,7 +7,7 @@ import { collectionCard } from '../../../../db/schema/collection_card.ts';
 import { cardVariantPrice } from '../../../../db/schema/card_variant_price.ts';
 import { cardVariantPriceHistory } from '../../../../db/schema/card_variant_price_history.ts';
 import { cardList } from '../../../../db/lists.ts';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 
 const zReplaceVariantBody = z.object({
   cardId: z.string(),
@@ -58,10 +58,38 @@ export const replaceVariantPostRoute = new Hono<AuthExtension>().post(
       // Perform replacements in a single transaction
       const result = await db.transaction(async tx => {
         // collection_card
-        const ccUpdate = await tx
-          .update(collectionCard)
-          .set({ variantId: newVariantId })
+        const oldRows = await tx
+          .select()
+          .from(collectionCard)
           .where(and(eq(collectionCard.cardId, cardId), eq(collectionCard.variantId, oldVariantId)));
+
+        let ccMerged = 0;
+        for (const row of oldRows) {
+          // Try to upsert the new variant row
+          await tx
+            .insert(collectionCard)
+            .values({ ...row, variantId: newVariantId })
+            .onConflictDoUpdate({
+              target: [
+                collectionCard.collectionId,
+                collectionCard.cardId,
+                collectionCard.variantId,
+                collectionCard.foil,
+                collectionCard.condition,
+                collectionCard.language,
+              ],
+              set: {
+                amount: sql`${collectionCard.amount} + EXCLUDED.amount`,
+              },
+            });
+
+          // Delete the old variant row
+          await tx
+            .delete(collectionCard)
+            .where(and(eq(collectionCard.cardId, cardId), eq(collectionCard.variantId, oldVariantId)));
+
+          ccMerged++;
+        }
 
         // card_variant_price
         const cvpUpdate = await tx
@@ -82,12 +110,11 @@ export const replaceVariantPostRoute = new Hono<AuthExtension>().post(
             ),
           );
 
-        // Drizzle returns { rowCount } on pg for update
-        const ccUpdated = 'rowCount' in ccUpdate ? (ccUpdate as any).rowCount ?? 0 : 0;
-        const cvpUpdated = 'rowCount' in cvpUpdate ? (cvpUpdate as any).rowCount ?? 0 : 0;
-        const cvphUpdated = 'rowCount' in cvphUpdate ? (cvphUpdate as any).rowCount ?? 0 : 0;
-
-        return { ccUpdated, cvpUpdated, cvphUpdated };
+        return {
+          ccMerged,
+          cvpUpdated: 'rowCount' in cvpUpdate ? (cvpUpdate as any).rowCount ?? 0 : 0,
+          cvphUpdated: 'rowCount' in cvphUpdate ? (cvphUpdate as any).rowCount ?? 0 : 0,
+        };
       });
 
       return c.json(
