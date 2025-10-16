@@ -51,7 +51,7 @@ const CollectionGroupCardLayout: React.FC<CollectionGroupCardLayoutProps> = ({
       .filter(cc => {
         if (normalizedSearch === '') return true;
         return (
-          cc.cardId.includes(normalizedSearch) || cc.note.toLowerCase().includes(lowercaseSearch)
+          cc.cardId.includes(normalizedSearch) || cc.note?.toLowerCase().includes(lowercaseSearch)
         );
       });
     return sortCardsBy(cardList?.cards, collectionCardArray, sortBy as CollectionSortBy[]).map(

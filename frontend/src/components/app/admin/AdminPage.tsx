@@ -9,6 +9,7 @@ import { TournamentGroupsPage } from '@/components/app/admin/TournamentGroupsPag
 import { PQToolsPage } from '@/components/app/admin/PQToolsPage/PQToolsPage.tsx';
 import { SpecialActionsPage } from '@/components/app/admin/SpecialActionsPage';
 import { CardPricesPage } from '@/components/app/admin/CardPricesPage/CardPricesPage.tsx';
+import VariantCheckerPage from '@/components/app/admin/VariantCheckerPage/VariantCheckerPage.tsx';
 import { Helmet } from 'react-helmet-async';
 import { Route } from '@/routes/_authenticated.admin';
 
@@ -45,6 +46,7 @@ export function AdminPage() {
             <TabsTrigger value="pq-tools">PQ Tools</TabsTrigger>
             <TabsTrigger value="special-actions">Special Actions</TabsTrigger>
             <TabsTrigger value="card-prices">Card Prices</TabsTrigger>
+            <TabsTrigger value="variant-checker">Variant Checker</TabsTrigger>
           </TabsList>
 
           <TabsContent value="metas">
@@ -93,6 +95,13 @@ export function AdminPage() {
             <Card>
               <CardContent className="p-4">
                 <CardPricesPage />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="variant-checker">
+            <Card>
+              <CardContent className="p-4">
+                <VariantCheckerPage />
               </CardContent>
             </Card>
           </TabsContent>

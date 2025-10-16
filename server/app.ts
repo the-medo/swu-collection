@@ -61,6 +61,7 @@ app.use('*', async (c, next) => {
 });
 
 app.use('/api/admin/special-actions/update-deck-information', timeout(180000));
+app.use('/api/tournament/:id/export-to-blob', timeout(180000));
 
 const apiRoutes = app
   .basePath('/api')
