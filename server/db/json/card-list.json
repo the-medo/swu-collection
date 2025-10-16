@@ -13051,19 +13051,135 @@
   },
   "death-trooper": {
     "cardId": "death-trooper",
-    "updatedAt": "2024-07-16T19:47:21.131Z",
+    "updatedAt": "2025-10-15T23:37:24.801Z",
     "name": "Death Trooper",
     "title": "Death Trooper",
     "subtitle": null,
+    "variants": {
+      "death-trooper-33-spark-of-rebellion": {
+        "variantId": "death-trooper-33-spark-of-rebellion",
+        "swuId": 313,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 33,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "death-trooper-33-spark-of-rebellion-front.webp",
+          "back": null
+        }
+      },
+      "death-trooper-299-spark-of-rebellion": {
+        "variantId": "death-trooper-299-spark-of-rebellion",
+        "swuId": 1709,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 299,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Hyperspace",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "death-trooper-299-spark-of-rebellion-front.webp",
+          "back": null
+        }
+      },
+      "death-trooper-14-spark-of-rebellion---weekly-play": {
+        "variantId": "death-trooper-14-spark-of-rebellion---weekly-play",
+        "swuId": 2686,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion - Weekly Play",
+        "cardNo": 14,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "death-trooper-14-spark-of-rebellion---weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "death-trooper-30-shadows-of-the-galaxy": {
+        "variantId": "death-trooper-30-shadows-of-the-galaxy",
+        "swuId": 5491,
+        "set": "shd",
+        "fullSetName": "Shadows of the Galaxy",
+        "cardNo": 30,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "death-trooper-30-shadows-of-the-galaxy-front.webp",
+          "back": null
+        }
+      },
+      "death-trooper-14-spark-of-rebellion---weekly-play-foil": {
+        "variantId": "death-trooper-14-spark-of-rebellion---weekly-play-foil",
+        "swuId": 14065,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion - Weekly Play Foil",
+        "cardNo": 14,
+        "baseSet": false,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "death-trooper-14-spark-of-rebellion---weekly-play-foil-front.webp",
+          "back": null
+        }
+      },
+      "death-trooper-30-secrets-of-power": {
+        "variantId": "death-trooper-30-secrets-of-power",
+        "swuId": 39525,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 30,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "death-trooper-30-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
     "type": "Unit",
-    "rarity": "Special",
+    "rarity": "Common",
     "cost": 3,
     "hp": 3,
     "power": 3,
     "upgradeHp": null,
     "upgradePower": null,
     "deployBox": null,
-    "epicAction": null,
+    "epicAction": "",
     "rules": null,
     "text": "When Played: Deal 2 damage to a friendly ground unit and 2 damage to an enemy ground unit.",
     "front": {
@@ -13074,80 +13190,14 @@
       "Ground"
     ],
     "aspects": [
-      "Villainy",
-      "Vigilance"
+      "Vigilance",
+      "Villainy"
     ],
     "keywords": [],
     "traits": [
       "Imperial",
       "Trooper"
-    ],
-    "variants": {
-      "death-trooper---33-spark-of-rebellion": {
-        "swuId": 313,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion",
-        "cardNo": 33,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Standard",
-        "artist": "Borja Pindado",
-        "image": {
-          "front": "death-trooper---33-spark-of-rebellion-front.webp",
-          "back": null
-        },
-        "variantId": "death-trooper---33-spark-of-rebellion"
-      },
-      "death-trooper---299-spark-of-rebellion": {
-        "swuId": 1709,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion",
-        "cardNo": 299,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Hyperspace",
-        "artist": "Borja Pindado",
-        "image": {
-          "front": "death-trooper---299-spark-of-rebellion-front.webp",
-          "back": null
-        },
-        "variantId": "death-trooper---299-spark-of-rebellion"
-      },
-      "death-trooper---14-spark-of-rebellion---op-promo": {
-        "swuId": 2686,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion - OP Promo",
-        "cardNo": 14,
-        "baseSet": false,
-        "hasNonfoil": false,
-        "hasFoil": false,
-        "variantName": "OP Promo",
-        "artist": "Kyle Petchock",
-        "image": {
-          "front": "death-trooper---14-spark-of-rebellion---op-promo-front.webp",
-          "back": null
-        },
-        "variantId": "death-trooper---14-spark-of-rebellion---op-promo"
-      },
-      "death-trooper---30-shadows-of-the-galaxy": {
-        "swuId": 5491,
-        "set": "shd",
-        "fullSetName": "Shadows of the Galaxy",
-        "cardNo": 30,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": false,
-        "variantName": "Standard",
-        "artist": "Borja Pindado",
-        "image": {
-          "front": "death-trooper---30-shadows-of-the-galaxy-front.webp",
-          "back": null
-        },
-        "variantId": "death-trooper---30-shadows-of-the-galaxy"
-      }
-    }
+    ]
   },
   "death-watch-hideout": {
     "cardId": "death-watch-hideout",
@@ -17418,11 +17468,30 @@
   },
   "experience": {
     "cardId": "experience",
-    "updatedAt": "2025-03-03T18:51:30.260Z",
+    "updatedAt": "2025-10-15T23:38:03.785Z",
     "name": "Experience",
     "title": "Experience",
     "subtitle": null,
     "variants": {
+      "experience-2-secrets-of-power": {
+        "variantId": "experience-2-secrets-of-power",
+        "swuId": 40705,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "experience-2-secrets-of-power-front.webp",
+          "back": null
+        }
+      },
       "experience-1-spark-of-rebellion---standard": {
         "variantId": "experience-1-spark-of-rebellion---standard",
         "swuId": 225,
@@ -17559,9 +17628,9 @@
     "upgradeHp": 1,
     "upgradePower": 1,
     "deployBox": null,
-    "epicAction": null,
+    "epicAction": "",
     "rules": null,
-    "text": null,
+    "text": "",
     "front": {
       "horizontal": false
     },
@@ -26631,10 +26700,69 @@
   },
   "isb-agent": {
     "cardId": "isb-agent",
-    "updatedAt": "2024-07-15T17:50:01.235Z",
+    "updatedAt": "2025-10-15T23:37:43.559Z",
     "name": "ISB Agent",
     "title": "ISB Agent",
     "subtitle": null,
+    "variants": {
+      "isb-agent-176-spark-of-rebellion": {
+        "variantId": "isb-agent-176-spark-of-rebellion",
+        "swuId": 365,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 176,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "Yvette Chua",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "isb-agent-176-spark-of-rebellion-front.webp",
+          "back": null
+        }
+      },
+      "isb-agent-439-spark-of-rebellion": {
+        "variantId": "isb-agent-439-spark-of-rebellion",
+        "swuId": 2478,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 439,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Hyperspace",
+        "artist": "Yvette Chua",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "isb-agent-439-spark-of-rebellion-front.webp",
+          "back": null
+        }
+      },
+      "isb-agent-184-secrets-of-power": {
+        "variantId": "isb-agent-184-secrets-of-power",
+        "swuId": 40295,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 184,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Yvette Chua",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "isb-agent-184-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
     "type": "Unit",
     "rarity": "Common",
     "cost": 1,
@@ -26643,7 +26771,7 @@
     "upgradeHp": null,
     "upgradePower": null,
     "deployBox": null,
-    "epicAction": null,
+    "epicAction": "",
     "rules": null,
     "text": "When Played: You may reveal an event from your hand. If you do, deal 1 damage to a unit.",
     "front": {
@@ -26660,41 +26788,7 @@
     "keywords": [],
     "traits": [
       "Imperial"
-    ],
-    "variants": {
-      "isb-agent-176-spark-of-rebellion": {
-        "swuId": 365,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion",
-        "cardNo": 176,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Standard",
-        "artist": "Yvette Chua",
-        "image": {
-          "front": "isb-agent-176-spark-of-rebellion-front.webp",
-          "back": null
-        },
-        "variantId": "isb-agent-176-spark-of-rebellion"
-      },
-      "isb-agent-439-spark-of-rebellion": {
-        "swuId": 2478,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion",
-        "cardNo": 439,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Hyperspace",
-        "artist": "Yvette Chua",
-        "image": {
-          "front": "isb-agent-439-spark-of-rebellion-front.webp",
-          "back": null
-        },
-        "variantId": "isb-agent-439-spark-of-rebellion"
-      }
-    }
+    ]
   },
   "it-binds-all-things": {
     "cardId": "it-binds-all-things",
@@ -40198,10 +40292,69 @@
   },
   "rebel-pathfinder": {
     "cardId": "rebel-pathfinder",
-    "updatedAt": "2024-10-24T04:02:01.737Z",
+    "updatedAt": "2025-10-15T23:37:55.237Z",
     "name": "Rebel Pathfinder",
     "title": "Rebel Pathfinder",
     "subtitle": null,
+    "variants": {
+      "rebel-pathfinder-239-spark-of-rebellion": {
+        "variantId": "rebel-pathfinder-239-spark-of-rebellion",
+        "swuId": 383,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 239,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "Joshua Carson",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rebel-pathfinder-239-spark-of-rebellion-front.webp",
+          "back": null
+        }
+      },
+      "rebel-pathfinder-497-spark-of-rebellion": {
+        "variantId": "rebel-pathfinder-497-spark-of-rebellion",
+        "swuId": 1599,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 497,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Hyperspace",
+        "artist": "Joshua Carson",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rebel-pathfinder-497-spark-of-rebellion-front.webp",
+          "back": null
+        }
+      },
+      "rebel-pathfinder-250-secrets-of-power": {
+        "variantId": "rebel-pathfinder-250-secrets-of-power",
+        "swuId": 40625,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 250,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Joshua Carson",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "rebel-pathfinder-250-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
     "type": "Unit",
     "rarity": "Common",
     "cost": 2,
@@ -40210,7 +40363,7 @@
     "upgradeHp": null,
     "upgradePower": null,
     "deployBox": null,
-    "epicAction": null,
+    "epicAction": "",
     "rules": null,
     "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
     "front": {
@@ -40229,41 +40382,7 @@
     "traits": [
       "Rebel",
       "Trooper"
-    ],
-    "variants": {
-      "rebel-pathfinder-239-spark-of-rebellion": {
-        "swuId": 383,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion",
-        "cardNo": 239,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Standard",
-        "artist": "Joshua Carson",
-        "image": {
-          "front": "rebel-pathfinder-239-spark-of-rebellion-front.webp",
-          "back": null
-        },
-        "variantId": "rebel-pathfinder-239-spark-of-rebellion"
-      },
-      "rebel-pathfinder-497-spark-of-rebellion": {
-        "swuId": 1599,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion",
-        "cardNo": 497,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Hyperspace",
-        "artist": "Joshua Carson",
-        "image": {
-          "front": "rebel-pathfinder-497-spark-of-rebellion-front.webp",
-          "back": null
-        },
-        "variantId": "rebel-pathfinder-497-spark-of-rebellion"
-      }
-    }
+    ]
   },
   "reckless-gunslinger": {
     "cardId": "reckless-gunslinger",
@@ -53577,10 +53696,69 @@
   },
   "viper-probe-droid": {
     "cardId": "viper-probe-droid",
-    "updatedAt": "2024-07-15T17:47:46.362Z",
+    "updatedAt": "2025-10-15T23:37:54.205Z",
     "name": "Viper Probe Droid",
     "title": "Viper Probe Droid",
     "subtitle": null,
+    "variants": {
+      "viper-probe-droid-228-spark-of-rebellion": {
+        "variantId": "viper-probe-droid-228-spark-of-rebellion",
+        "swuId": 155,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 228,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "viper-probe-droid-228-spark-of-rebellion-front.webp",
+          "back": null
+        }
+      },
+      "viper-probe-droid-489-spark-of-rebellion": {
+        "variantId": "viper-probe-droid-489-spark-of-rebellion",
+        "swuId": 1899,
+        "set": "sor",
+        "fullSetName": "Spark of Rebellion",
+        "cardNo": 489,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": true,
+        "variantName": "Hyperspace",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "viper-probe-droid-489-spark-of-rebellion-front.webp",
+          "back": null
+        }
+      },
+      "viper-probe-droid-239-secrets-of-power": {
+        "variantId": "viper-probe-droid-239-secrets-of-power",
+        "swuId": 40570,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 239,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "viper-probe-droid-239-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
     "type": "Unit",
     "rarity": "Common",
     "cost": 2,
@@ -53589,7 +53767,7 @@
     "upgradeHp": null,
     "upgradePower": null,
     "deployBox": null,
-    "epicAction": null,
+    "epicAction": "",
     "rules": null,
     "text": "When Played: Look at an opponent's hand.",
     "front": {
@@ -53606,41 +53784,7 @@
     "traits": [
       "Imperial",
       "Droid"
-    ],
-    "variants": {
-      "viper-probe-droid-228-spark-of-rebellion": {
-        "swuId": 155,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion",
-        "cardNo": 228,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Standard",
-        "artist": "Amad Mir",
-        "image": {
-          "front": "viper-probe-droid-228-spark-of-rebellion-front.webp",
-          "back": null
-        },
-        "variantId": "viper-probe-droid-228-spark-of-rebellion"
-      },
-      "viper-probe-droid-489-spark-of-rebellion": {
-        "swuId": 1899,
-        "set": "sor",
-        "fullSetName": "Spark of Rebellion",
-        "cardNo": 489,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": true,
-        "variantName": "Hyperspace",
-        "artist": "Amad Mir",
-        "image": {
-          "front": "viper-probe-droid-489-spark-of-rebellion-front.webp",
-          "back": null
-        },
-        "variantId": "viper-probe-droid-489-spark-of-rebellion"
-      }
-    }
+    ]
   },
   "volunteer-soldier": {
     "cardId": "volunteer-soldier",
@@ -132545,6 +132689,2962 @@
     "keywords": [],
     "traits": [
       "Underworld"
+    ]
+  },
+  "accelerate-our-plans": {
+    "cardId": "accelerate-our-plans",
+    "updatedAt": "2025-10-15T23:37:53.144Z",
+    "name": "Accelerate Our Plans",
+    "title": "Accelerate Our Plans",
+    "subtitle": null,
+    "variants": {
+      "accelerate-our-plans-228-secrets-of-power": {
+        "variantId": "accelerate-our-plans-228-secrets-of-power",
+        "swuId": 40515,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 228,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "accelerate-our-plans-228-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Common",
+    "cost": 1,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Exhaust a friendly unit. If you do, attack with another unit. It gets +3/+0 for this attack.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Plan"
+    ]
+  },
+  "amnesty-housing": {
+    "cardId": "amnesty-housing",
+    "updatedAt": "2025-10-15T23:37:22.746Z",
+    "name": "Amnesty Housing",
+    "title": "Amnesty Housing",
+    "subtitle": null,
+    "variants": {
+      "amnesty-housing-25-secrets-of-power": {
+        "variantId": "amnesty-housing-25-secrets-of-power",
+        "swuId": 39500,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 25,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Rocío Espín",
+        "front": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "amnesty-housing-25-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Common",
+    "cost": null,
+    "hp": 30,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "arihnda-pryce--on-the-road-to-power": {
+    "cardId": "arihnda-pryce--on-the-road-to-power",
+    "updatedAt": "2025-10-15T23:37:38.389Z",
+    "name": "Arihnda Pryce, On the Road to Power",
+    "title": "Arihnda Pryce",
+    "subtitle": "On the Road to Power",
+    "variants": {
+      "arihnda-pryce--on-the-road-to-power-136-secrets-of-power": {
+        "variantId": "arihnda-pryce--on-the-road-to-power-136-secrets-of-power",
+        "swuId": 40055,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 136,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "arihnda-pryce--on-the-road-to-power-136-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 4,
+    "hp": 4,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Defeated: You may defeat another friendly unit. If you do, deal 4 damage to each enemy base.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial"
+    ]
+  },
+  "asp-laborer": {
+    "cardId": "asp-laborer",
+    "updatedAt": "2025-10-15T23:37:58.487Z",
+    "name": "ASP Laborer",
+    "title": "ASP Laborer",
+    "subtitle": null,
+    "variants": {
+      "asp-laborer-259-secrets-of-power": {
+        "variantId": "asp-laborer-259-secrets-of-power",
+        "swuId": 40670,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 259,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "French Carlomago",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "asp-laborer-259-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "hp": 4,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [],
+    "keywords": [
+      "Restore"
+    ],
+    "traits": [
+      "Droid"
+    ]
+  },
+  "assassin-probe": {
+    "cardId": "assassin-probe",
+    "updatedAt": "2025-10-15T23:38:01.669Z",
+    "name": "Assassin Probe",
+    "title": "Assassin Probe",
+    "subtitle": null,
+    "variants": {
+      "assassin-probe-263-secrets-of-power": {
+        "variantId": "assassin-probe-263-secrets-of-power",
+        "swuId": 40690,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 263,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Jessi Ochse",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "assassin-probe-263-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 5,
+    "hp": 4,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Defeated: Deal 1 damage to each exhausted enemy ground unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [],
+    "keywords": [],
+    "traits": [
+      "Separatist",
+      "Droid"
+    ]
+  },
+  "beloved-orator": {
+    "cardId": "beloved-orator",
+    "updatedAt": "2025-10-14T21:12:23.293Z",
+    "name": "Beloved Orator",
+    "title": "Beloved Orator",
+    "subtitle": null,
+    "variants": {
+      "beloved-orator-97-secrets-of-power": {
+        "variantId": "beloved-orator-97-secrets-of-power",
+        "swuId": 39860,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 97,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "beloved-orator-97-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 3,
+    "hp": 3,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: Create a Spy token.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "New Republic",
+      "Official"
+    ]
+  },
+  "captain-rex--into-the-firefight": {
+    "cardId": "captain-rex--into-the-firefight",
+    "updatedAt": "2025-10-14T21:12:21.194Z",
+    "name": "Captain Rex, Into the Firefight",
+    "title": "Captain Rex",
+    "subtitle": "Into the Firefight",
+    "variants": {
+      "captain-rex--into-the-firefight-48-secrets-of-power": {
+        "variantId": "captain-rex--into-the-firefight-48-secrets-of-power",
+        "swuId": 39615,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 48,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Benjamin Paulus",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "captain-rex--into-the-firefight-48-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 6,
+    "hp": 7,
+    "power": 7,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played/When this unit completes an attack: Give this unit and an enemy unit Sentinel for this phase.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Heroism"
+    ],
+    "keywords": [
+      "Sentinel"
+    ],
+    "traits": [
+      "Republic",
+      "Clone",
+      "Trooper"
+    ]
+  },
+  "cassian-andor--climb-": {
+    "cardId": "cassian-andor--climb-",
+    "updatedAt": "2025-10-15T23:37:15.415Z",
+    "name": "Cassian Andor, Climb!",
+    "title": "Cassian Andor",
+    "subtitle": "Climb!",
+    "variants": {
+      "cassian-andor--climb--12-secrets-of-power": {
+        "variantId": "cassian-andor--climb--12-secrets-of-power",
+        "swuId": 39435,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 12,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "cassian-andor--climb--12-secrets-of-power-front.webp",
+          "back": "cassian-andor--climb--12-secrets-of-power-back.webp"
+        }
+      }
+    },
+    "type": "Leader",
+    "rarity": "Rare",
+    "cost": 6,
+    "hp": 2,
+    "power": 6,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": "Overwhelm\nWhile you have the initiative, this unit isn't defeated by having no remaining HP and can't be defeated by enemy card abilities.",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "rules": null,
+    "text": "Friendly units that have damaged an opponent's base this phase can't be attacked (unless they have Sentinel).",
+    "front": {
+      "horizontal": true
+    },
+    "back": {
+      "horizontal": false,
+      "type": "Leader Unit"
+    },
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Heroism"
+    ],
+    "keywords": [
+      "Overwhelm"
+    ],
+    "traits": [
+      "Rebel"
+    ]
+  },
+  "chairman-papanoida--undaunted-diplomat": {
+    "cardId": "chairman-papanoida--undaunted-diplomat",
+    "updatedAt": "2025-10-15T23:37:39.413Z",
+    "name": "Chairman Papanoida, Undaunted Diplomat",
+    "title": "Chairman Papanoida",
+    "subtitle": "Undaunted Diplomat",
+    "variants": {
+      "chairman-papanoida--undaunted-diplomat-159-secrets-of-power": {
+        "variantId": "chairman-papanoida--undaunted-diplomat-159-secrets-of-power",
+        "swuId": 40170,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 159,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chairman-papanoida--undaunted-diplomat-159-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 3,
+    "hp": 6,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When a player draws 1 or more cards during the action phase: You may disclose AggressionAggression (reveal cards from your hand with these aspect icons among them). If you do, create a Spy token.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Republic",
+      "Official"
+    ]
+  },
+  "clandestine-connections": {
+    "cardId": "clandestine-connections",
+    "updatedAt": "2025-10-15T23:38:02.715Z",
+    "name": "Clandestine Connections",
+    "title": "Clandestine Connections",
+    "subtitle": null,
+    "variants": {
+      "clandestine-connections-264-secrets-of-power": {
+        "variantId": "clandestine-connections-264-secrets-of-power",
+        "swuId": 40695,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 264,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Hoan Nguyen",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "clandestine-connections-264-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Upgrade",
+    "rarity": "Common",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": 1,
+    "upgradePower": 1,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Attached unit gains: “On Attack: You may pay 2 resources. If you do, deal 2 damage to a base.”",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [],
+    "keywords": [],
+    "traits": [
+      "Supply"
+    ]
+  },
+  "contraband-starhopper": {
+    "cardId": "contraband-starhopper",
+    "updatedAt": "2025-10-15T23:37:40.443Z",
+    "name": "Contraband Starhopper",
+    "title": "Contraband Starhopper",
+    "subtitle": null,
+    "variants": {
+      "contraband-starhopper-161-secrets-of-power": {
+        "variantId": "contraband-starhopper-161-secrets-of-power",
+        "swuId": 40180,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 161,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Space gooose",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "contraband-starhopper-161-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "hp": 3,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Underworld",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "corellian-hounds": {
+    "cardId": "corellian-hounds",
+    "updatedAt": "2025-10-14T21:12:29.648Z",
+    "name": "Corellian Hounds",
+    "title": "Corellian Hounds",
+    "subtitle": null,
+    "variants": {
+      "corellian-hounds-170-secrets-of-power": {
+        "variantId": "corellian-hounds-170-secrets-of-power",
+        "swuId": 40225,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 170,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "corellian-hounds-170-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 5,
+    "hp": 5,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "If an opponent controls no ground units, this unit enters play ready.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Creature"
+    ]
+  },
+  "coruscant-undercity-police": {
+    "cardId": "coruscant-undercity-police",
+    "updatedAt": "2025-10-15T23:37:41.481Z",
+    "name": "Coruscant Undercity Police",
+    "title": "Coruscant Undercity Police",
+    "subtitle": null,
+    "variants": {
+      "coruscant-undercity-police-167-secrets-of-power": {
+        "variantId": "coruscant-undercity-police-167-secrets-of-power",
+        "swuId": 40210,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 167,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "coruscant-undercity-police-167-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 4,
+    "hp": 4,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": [
+      "Republic",
+      "Trooper"
+    ]
+  },
+  "crait-veteran": {
+    "cardId": "crait-veteran",
+    "updatedAt": "2025-10-15T23:37:56.364Z",
+    "name": "Crait Veteran",
+    "title": "Crait Veteran",
+    "subtitle": null,
+    "variants": {
+      "crait-veteran-251-secrets-of-power": {
+        "variantId": "crait-veteran-251-secrets-of-power",
+        "swuId": 40630,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 251,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Derek Laufman",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "crait-veteran-251-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 3,
+    "hp": 3,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Resistance",
+      "Trooper"
+    ]
+  },
+  "diplomatic-envoy": {
+    "cardId": "diplomatic-envoy",
+    "updatedAt": "2025-10-15T23:37:34.221Z",
+    "name": "Diplomatic Envoy",
+    "title": "Diplomatic Envoy",
+    "subtitle": null,
+    "variants": {
+      "diplomatic-envoy-109-secrets-of-power": {
+        "variantId": "diplomatic-envoy-109-secrets-of-power",
+        "swuId": 39920,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 109,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Robert Bonchune",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "diplomatic-envoy-109-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "hp": 2,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: You may disclose Command (reveal a card from your hand with this aspect icon). If you do, the next unit you play this phase gains Ambush for this phase.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Command"
+    ],
+    "keywords": [
+      "Ambush"
+    ],
+    "traits": [
+      "Republic",
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "duchess-s-investigators": {
+    "cardId": "duchess-s-investigators",
+    "updatedAt": "2025-10-15T23:37:50.967Z",
+    "name": "Duchess's Investigators",
+    "title": "Duchess's Investigators",
+    "subtitle": null,
+    "variants": {
+      "duchess-s-investigators-223-secrets-of-power": {
+        "variantId": "duchess-s-investigators-223-secrets-of-power",
+        "swuId": 40490,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 223,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ario Anindito",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "duchess-s-investigators-223-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 5,
+    "hp": 4,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: You may disclose Cunning (reveal a card from your hand with this aspect icon). If you do, each opponent discards a random card from their hand.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Mandalorian"
+    ]
+  },
+  "emissaries-from-ryloth": {
+    "cardId": "emissaries-from-ryloth",
+    "updatedAt": "2025-10-15T23:37:44.581Z",
+    "name": "Emissaries from Ryloth",
+    "title": "Emissaries from Ryloth",
+    "subtitle": null,
+    "variants": {
+      "emissaries-from-ryloth-206-secrets-of-power": {
+        "variantId": "emissaries-from-ryloth-206-secrets-of-power",
+        "swuId": 40405,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 206,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "emissaries-from-ryloth-206-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 5,
+    "hp": 6,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: You may give a unit –3/–0 for this phase.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Republic",
+      "Twi'lek",
+      "Official"
+    ]
+  },
+  "escape-pod": {
+    "cardId": "escape-pod",
+    "updatedAt": "2025-10-15T23:37:25.847Z",
+    "name": "Escape Pod",
+    "title": "Escape Pod",
+    "subtitle": null,
+    "variants": {
+      "escape-pod-56-secrets-of-power": {
+        "variantId": "escape-pod-56-secrets-of-power",
+        "swuId": 39655,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 56,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "escape-pod-56-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 1,
+    "hp": 3,
+    "power": 0,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: You may have this unit capture a friendly non-Vehicle, non-leader unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "ferrix-uprising": {
+    "cardId": "ferrix-uprising",
+    "updatedAt": "2025-10-15T23:37:36.341Z",
+    "name": "Ferrix Uprising",
+    "title": "Ferrix Uprising",
+    "subtitle": null,
+    "variants": {
+      "ferrix-uprising-130-secrets-of-power": {
+        "variantId": "ferrix-uprising-130-secrets-of-power",
+        "swuId": 40025,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 130,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Sebastián Guidobono",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ferrix-uprising-130-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Common",
+    "cost": 4,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Deal damage to a unit equal to twice the number of units you control in its arena.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Command"
+    ],
+    "keywords": [],
+    "traits": [
+      "Tactic"
+    ]
+  },
+  "fully-armed-and-operational": {
+    "cardId": "fully-armed-and-operational",
+    "updatedAt": "2025-10-14T21:12:31.694Z",
+    "name": "Fully Armed and Operational",
+    "title": "Fully Armed and Operational",
+    "subtitle": null,
+    "variants": {
+      "fully-armed-and-operational-194-secrets-of-power": {
+        "variantId": "fully-armed-and-operational-194-secrets-of-power",
+        "swuId": 40345,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 194,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fully-armed-and-operational-194-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Rare",
+    "cost": 1,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "If an opponent attacked your base during their previous action this phase, play a unit from your hand. Give it Ambush for this phase.\nPlot",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning",
+      "Villainy"
+    ],
+    "keywords": [
+      "Ambush"
+    ],
+    "traits": [
+      "Trick"
+    ]
+  },
+  "heroic-arc-170": {
+    "cardId": "heroic-arc-170",
+    "updatedAt": "2025-10-15T23:37:57.417Z",
+    "name": "Heroic ARC-170",
+    "title": "Heroic ARC-170",
+    "subtitle": null,
+    "variants": {
+      "heroic-arc-170-254-secrets-of-power": {
+        "variantId": "heroic-arc-170-254-secrets-of-power",
+        "swuId": 40645,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 254,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "heroic-arc-170-254-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 4,
+    "hp": 3,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: If you control a damaged unit, you may deal 2 damage to an enemy unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Republic",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "hired-slicer": {
+    "cardId": "hired-slicer",
+    "updatedAt": "2025-10-15T23:37:49.921Z",
+    "name": "Hired Slicer",
+    "title": "Hired Slicer",
+    "subtitle": null,
+    "variants": {
+      "hired-slicer-220-secrets-of-power": {
+        "variantId": "hired-slicer-220-secrets-of-power",
+        "swuId": 40475,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 220,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "hired-slicer-220-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Uncommon",
+    "cost": 3,
+    "hp": 4,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "On Attack: Reveal the top 2 cards of a deck. If you do, you may exhaust a unit that shares a Trait with one of those cards. Put those cards on the bottom of that deck in a random order.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Fringe"
+    ]
+  },
+  "hutt-cartel-starfighter": {
+    "cardId": "hutt-cartel-starfighter",
+    "updatedAt": "2025-10-14T21:12:32.756Z",
+    "name": "Hutt Cartel Starfighter",
+    "title": "Hutt Cartel Starfighter",
+    "subtitle": null,
+    "variants": {
+      "hutt-cartel-starfighter-240-secrets-of-power": {
+        "variantId": "hutt-cartel-starfighter-240-secrets-of-power",
+        "swuId": 40575,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 240,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Space Gooose",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "hutt-cartel-starfighter-240-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 3,
+    "hp": 5,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: Deal 2 damage to this unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Underworld",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "imperial-dark-trooper": {
+    "cardId": "imperial-dark-trooper",
+    "updatedAt": "2025-10-15T23:37:31.068Z",
+    "name": "Imperial Dark Trooper",
+    "title": "Imperial Dark Trooper",
+    "subtitle": null,
+    "variants": {
+      "imperial-dark-trooper-80-secrets-of-power": {
+        "variantId": "imperial-dark-trooper-80-secrets-of-power",
+        "swuId": 39775,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 80,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "imperial-dark-trooper-80-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "hp": 3,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Droid",
+      "Trooper"
+    ]
+  },
+  "imperial-prison-complex": {
+    "cardId": "imperial-prison-complex",
+    "updatedAt": "2025-10-15T23:37:20.653Z",
+    "name": "Imperial Prison Complex",
+    "title": "Imperial Prison Complex",
+    "subtitle": null,
+    "variants": {
+      "imperial-prison-complex-23-secrets-of-power": {
+        "variantId": "imperial-prison-complex-23-secrets-of-power",
+        "swuId": 39490,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 23,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Henning Ludvigsen",
+        "front": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "imperial-prison-complex-23-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Common",
+    "cost": null,
+    "hp": 30,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "inspector-s-shuttle": {
+    "cardId": "inspector-s-shuttle",
+    "updatedAt": "2025-10-15T23:37:59.544Z",
+    "name": "Inspector's Shuttle",
+    "title": "Inspector's Shuttle",
+    "subtitle": null,
+    "variants": {
+      "inspector-s-shuttle-260-secrets-of-power": {
+        "variantId": "inspector-s-shuttle-260-secrets-of-power",
+        "swuId": 40675,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 260,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "inspector-s-shuttle-260-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "hp": 3,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: Name a card, then an opponent reveals their hand. For each copy of the named card in their hand, give an Experience token to this unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [],
+    "keywords": [],
+    "traits": [
+      "Republic",
+      "Vehicle",
+      "Transport"
+    ]
+  },
+  "inspiring-senator": {
+    "cardId": "inspiring-senator",
+    "updatedAt": "2025-10-15T23:38:00.607Z",
+    "name": "Inspiring Senator",
+    "title": "Inspiring Senator",
+    "subtitle": null,
+    "variants": {
+      "inspiring-senator-261-secrets-of-power": {
+        "variantId": "inspiring-senator-261-secrets-of-power",
+        "swuId": 40680,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 261,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "inspiring-senator-261-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 3,
+    "hp": 3,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Defeated: The next Official unit you play this phase costs 1 resource less.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [],
+    "keywords": [],
+    "traits": [
+      "Republic",
+      "Official"
+    ]
+  },
+  "jabba-the-hutt--wonderful-human-being": {
+    "cardId": "jabba-the-hutt--wonderful-human-being",
+    "updatedAt": "2025-10-14T21:12:20.102Z",
+    "name": "Jabba the Hutt, Wonderful Human Being",
+    "title": "Jabba the Hutt",
+    "subtitle": "Wonderful Human Being",
+    "variants": {
+      "jabba-the-hutt--wonderful-human-being-2-secrets-of-power": {
+        "variantId": "jabba-the-hutt--wonderful-human-being-2-secrets-of-power",
+        "swuId": 39385,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ivan Shavrin",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "jabba-the-hutt--wonderful-human-being-2-secrets-of-power-front.webp",
+          "back": "jabba-the-hutt--wonderful-human-being-2-secrets-of-power-back.webp"
+        }
+      }
+    },
+    "type": "Leader",
+    "rarity": "Common",
+    "cost": 5,
+    "hp": 8,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": "When another friendly unit is dealt damage and survives: You may have that unit deal that much damage to an enemy unit. Use this ability only once each round.",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "rules": null,
+    "text": "Action [1 resource, Exhaust]: A friendly damaged unit deals 1 damage to an enemy unit. If the friendly unit has 3 or more damage on it, it deals 2 damage instead.",
+    "front": {
+      "horizontal": true
+    },
+    "back": {
+      "horizontal": false,
+      "type": "Leader Unit"
+    },
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Underworld",
+      "Hutt"
+    ]
+  },
+  "karis-nemik--freedom-is-a-pure-idea": {
+    "cardId": "karis-nemik--freedom-is-a-pure-idea",
+    "updatedAt": "2025-10-14T21:12:27.539Z",
+    "name": "Karis Nemik, Freedom is a Pure Idea",
+    "title": "Karis Nemik",
+    "subtitle": "Freedom is a Pure Idea",
+    "variants": {
+      "karis-nemik--freedom-is-a-pure-idea-148-secrets-of-power": {
+        "variantId": "karis-nemik--freedom-is-a-pure-idea-148-secrets-of-power",
+        "swuId": 40115,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 148,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "karis-nemik--freedom-is-a-pure-idea-148-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 2,
+    "hp": 2,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Hidden\nWhen Defeated: You may disclose AggressionHeroism (reveal cards from your hand with these aspect icons among them). If you do, create a Spy token and ready it.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Heroism"
+    ],
+    "keywords": [
+      "Hidden"
+    ],
+    "traits": [
+      "Rebel"
+    ]
+  },
+  "lightmaker--i-have-an-idea": {
+    "cardId": "lightmaker--i-have-an-idea",
+    "updatedAt": "2025-10-15T23:37:45.643Z",
+    "name": "Lightmaker, I Have An Idea",
+    "title": "Lightmaker",
+    "subtitle": "I Have An Idea",
+    "variants": {
+      "lightmaker--i-have-an-idea-207-secrets-of-power": {
+        "variantId": "lightmaker--i-have-an-idea-207-secrets-of-power",
+        "swuId": 40410,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 207,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marko Fiedler",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "lightmaker--i-have-an-idea-207-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Legendary",
+    "cost": 5,
+    "hp": 4,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Raid 4\nWhen Defeated: Choose an arena. Exhaust each enemy unit in that arena.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [
+      "Raid"
+    ],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Capital Ship"
+    ]
+  },
+  "mount-tantiss": {
+    "cardId": "mount-tantiss",
+    "updatedAt": "2025-10-15T23:37:23.776Z",
+    "name": "Mount Tantiss",
+    "title": "Mount Tantiss",
+    "subtitle": null,
+    "variants": {
+      "mount-tantiss-26-secrets-of-power": {
+        "variantId": "mount-tantiss-26-secrets-of-power",
+        "swuId": 39505,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 26,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Tyler Edlin",
+        "front": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "mount-tantiss-26-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Common",
+    "cost": null,
+    "hp": 30,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "muckraker-crab-droid": {
+    "cardId": "muckraker-crab-droid",
+    "updatedAt": "2025-10-15T23:37:37.352Z",
+    "name": "Muckraker Crab Droid",
+    "title": "Muckraker Crab Droid",
+    "subtitle": null,
+    "variants": {
+      "muckraker-crab-droid-135-secrets-of-power": {
+        "variantId": "muckraker-crab-droid-135-secrets-of-power",
+        "swuId": 40050,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 135,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "muckraker-crab-droid-135-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Uncommon",
+    "cost": 3,
+    "hp": 3,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "While this unit is ready, it can't be attacked.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [],
+    "traits": [
+      "Separatist",
+      "Droid"
+    ]
+  },
+  "nala-se--chief-medical-scientist": {
+    "cardId": "nala-se--chief-medical-scientist",
+    "updatedAt": "2025-10-15T23:37:26.878Z",
+    "name": "Nala Se, Chief Medical Scientist",
+    "title": "Nala Se",
+    "subtitle": "Chief Medical Scientist",
+    "variants": {
+      "nala-se--chief-medical-scientist-65-secrets-of-power": {
+        "variantId": "nala-se--chief-medical-scientist-65-secrets-of-power",
+        "swuId": 39700,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 65,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "nala-se--chief-medical-scientist-65-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Uncommon",
+    "cost": 5,
+    "hp": 7,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "On Attack: You may disclose VigilanceVigilance (reveal cards from your hand with these aspect icons among them). If you do, heal up to 4 damage from among other units.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Kaminoan"
+    ]
+  },
+  "naval-intelligence-hq": {
+    "cardId": "naval-intelligence-hq",
+    "updatedAt": "2025-10-15T23:37:21.698Z",
+    "name": "Naval Intelligence HQ",
+    "title": "Naval Intelligence HQ",
+    "subtitle": null,
+    "variants": {
+      "naval-intelligence-hq-24-secrets-of-power": {
+        "variantId": "naval-intelligence-hq-24-secrets-of-power",
+        "swuId": 39495,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 24,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Henning Ludvigsen",
+        "front": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "naval-intelligence-hq-24-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Common",
+    "cost": null,
+    "hp": 30,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "nemik-s-manifesto": {
+    "cardId": "nemik-s-manifesto",
+    "updatedAt": "2025-10-14T21:12:28.617Z",
+    "name": "Nemik's Manifesto",
+    "title": "Nemik's Manifesto",
+    "subtitle": null,
+    "variants": {
+      "nemik-s-manifesto-156-secrets-of-power": {
+        "variantId": "nemik-s-manifesto-156-secrets-of-power",
+        "swuId": 40155,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 156,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "nemik-s-manifesto-156-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Upgrade",
+    "rarity": "Legendary",
+    "cost": 1,
+    "hp": null,
+    "power": null,
+    "upgradeHp": 1,
+    "upgradePower": 1,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains the Rebel trait and: “When Defeated: Deal 1 damage to each enemy base for each other friendly Rebel unit.”",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Aggression",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Item",
+      "Rebel"
+    ]
+  },
+  "queen-amidala--championing-her-people": {
+    "cardId": "queen-amidala--championing-her-people",
+    "updatedAt": "2025-10-14T21:12:24.404Z",
+    "name": "Queen Amidala, Championing Her People",
+    "title": "Queen Amidala",
+    "subtitle": "Championing Her People",
+    "variants": {
+      "queen-amidala--championing-her-people-101-secrets-of-power": {
+        "variantId": "queen-amidala--championing-her-people-101-secrets-of-power",
+        "swuId": 39880,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 101,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "queen-amidala--championing-her-people-101-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Legendary",
+    "cost": 5,
+    "hp": 3,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Played: Create 2 Spy tokens.\nIf damage would be dealt to this unit, you may defeat another friendly unit that shares a trait with this unit. If you do, prevent that damage.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Naboo",
+      "Official"
+    ]
+  },
+  "regulations-bureaucrat": {
+    "cardId": "regulations-bureaucrat",
+    "updatedAt": "2025-10-15T23:37:47.782Z",
+    "name": "Regulations Bureaucrat",
+    "title": "Regulations Bureaucrat",
+    "subtitle": null,
+    "variants": {
+      "regulations-bureaucrat-216-secrets-of-power": {
+        "variantId": "regulations-bureaucrat-216-secrets-of-power",
+        "swuId": 40455,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 216,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "EJ Dela Cruz",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "regulations-bureaucrat-216-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "hp": 5,
+    "power": 0,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Action [Exhaust]: Exhaust a resource.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Imperial",
+      "Official"
+    ]
+  },
+  "relief-request": {
+    "cardId": "relief-request",
+    "updatedAt": "2025-10-15T23:37:30.036Z",
+    "name": "Relief Request",
+    "title": "Relief Request",
+    "subtitle": null,
+    "variants": {
+      "relief-request-74-secrets-of-power": {
+        "variantId": "relief-request-74-secrets-of-power",
+        "swuId": 39745,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 74,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "relief-request-74-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Common",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Heal 3 damage from a unit.\nYou may disclose Vigilance (reveal a card from your hand with this aspect icon). If you do, heal 3 damage from another unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Law"
+    ]
+  },
+  "renewed-friendship": {
+    "cardId": "renewed-friendship",
+    "updatedAt": "2025-10-15T23:37:32.152Z",
+    "name": "Renewed Friendship",
+    "title": "Renewed Friendship",
+    "subtitle": null,
+    "variants": {
+      "renewed-friendship-105-secrets-of-power": {
+        "variantId": "renewed-friendship-105-secrets-of-power",
+        "swuId": 39900,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 105,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "renewed-friendship-105-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Uncommon",
+    "cost": 4,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Return a unit from your discard pile to your hand.\nCreate 2 Spy tokens.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Innate"
+    ]
+  },
+  "renowned-dignitaries": {
+    "cardId": "renowned-dignitaries",
+    "updatedAt": "2025-10-14T21:12:25.456Z",
+    "name": "Renowned Dignitaries",
+    "title": "Renowned Dignitaries",
+    "subtitle": null,
+    "variants": {
+      "renowned-dignitaries-102-secrets-of-power": {
+        "variantId": "renowned-dignitaries-102-secrets-of-power",
+        "swuId": 39885,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 102,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Benjamin Paulus",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "renowned-dignitaries-102-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Uncommon",
+    "cost": 6,
+    "hp": 6,
+    "power": 5,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhen Played: Heal 2 damage from your base for each friendly Official unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command",
+      "Heroism"
+    ],
+    "keywords": [
+      "Overwhelm"
+    ],
+    "traits": [
+      "New Republic",
+      "Official"
+    ]
+  },
+  "republic-city": {
+    "cardId": "republic-city",
+    "updatedAt": "2025-10-15T23:37:18.597Z",
+    "name": "Republic City",
+    "title": "Republic City",
+    "subtitle": null,
+    "variants": {
+      "republic-city-21-secrets-of-power": {
+        "variantId": "republic-city-21-secrets-of-power",
+        "swuId": 39480,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 21,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Henning Ludvigsen",
+        "front": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "republic-city-21-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Common",
+    "cost": null,
+    "hp": 30,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Command"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "republic-war-walker": {
+    "cardId": "republic-war-walker",
+    "updatedAt": "2025-10-15T23:37:42.509Z",
+    "name": "Republic War Walker",
+    "title": "Republic War Walker",
+    "subtitle": null,
+    "variants": {
+      "republic-war-walker-173-secrets-of-power": {
+        "variantId": "republic-war-walker-173-secrets-of-power",
+        "swuId": 40240,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 173,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "French Carlomagno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "republic-war-walker-173-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 6,
+    "hp": 6,
+    "power": 7,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [
+      "Overwhelm"
+    ],
+    "traits": [
+      "Republic",
+      "Vehicle",
+      "Walker"
+    ]
+  },
+  "rix-road": {
+    "cardId": "rix-road",
+    "updatedAt": "2025-10-15T23:37:16.485Z",
+    "name": "Rix Road",
+    "title": "Rix Road",
+    "subtitle": null,
+    "variants": {
+      "rix-road-19-secrets-of-power": {
+        "variantId": "rix-road-19-secrets-of-power",
+        "swuId": 39470,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 19,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Henning Ludvigsen",
+        "front": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "rix-road-19-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Common",
+    "cost": null,
+    "hp": 30,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "saw-gerrera-s-u-wing--breaking-the-rules": {
+    "cardId": "saw-gerrera-s-u-wing--breaking-the-rules",
+    "updatedAt": "2025-10-14T21:12:30.678Z",
+    "name": "Saw Gerrera's U-Wing, Breaking the Rules",
+    "title": "Saw Gerrera's U-Wing",
+    "subtitle": "Breaking the Rules",
+    "variants": {
+      "saw-gerrera-s-u-wing--breaking-the-rules-174-secrets-of-power": {
+        "variantId": "saw-gerrera-s-u-wing--breaking-the-rules-174-secrets-of-power",
+        "swuId": 40245,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 174,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Shane Molina",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "saw-gerrera-s-u-wing--breaking-the-rules-174-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 6,
+    "hp": 8,
+    "power": 4,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Saboteur\nWhen this unit completes an attack (and survives): You may attack with another Aggression unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Aggression"
+    ],
+    "keywords": [
+      "Saboteur"
+    ],
+    "traits": [
+      "Rebel",
+      "Vehicle",
+      "Fighter"
+    ]
+  },
+  "scour-the-archives": {
+    "cardId": "scour-the-archives",
+    "updatedAt": "2025-10-15T23:37:28.996Z",
+    "name": "Scour the Archives",
+    "title": "Scour the Archives",
+    "subtitle": null,
+    "variants": {
+      "scour-the-archives-72-secrets-of-power": {
+        "variantId": "scour-the-archives-72-secrets-of-power",
+        "swuId": 39735,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 72,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisan",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "scour-the-archives-72-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Common",
+    "cost": 1,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Search the top 8 cards of your deck for an upgrade, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Learned"
+    ]
+  },
+  "senate-rotunda": {
+    "cardId": "senate-rotunda",
+    "updatedAt": "2025-10-15T23:37:19.642Z",
+    "name": "Senate Rotunda",
+    "title": "Senate Rotunda",
+    "subtitle": null,
+    "variants": {
+      "senate-rotunda-22-secrets-of-power": {
+        "variantId": "senate-rotunda-22-secrets-of-power",
+        "swuId": 39485,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 22,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Adrien Girod",
+        "front": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "senate-rotunda-22-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Common",
+    "cost": null,
+    "hp": 30,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Command"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "senate-warden": {
+    "cardId": "senate-warden",
+    "updatedAt": "2025-10-14T21:12:22.214Z",
+    "name": "Senate Warden",
+    "title": "Senate Warden",
+    "subtitle": null,
+    "variants": {
+      "senate-warden-59-secrets-of-power": {
+        "variantId": "senate-warden-59-secrets-of-power",
+        "swuId": 39670,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 59,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Ario Anindito",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "senate-warden-59-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "hp": 2,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "When Defeated: You may disclose Vigilance (reveal a card from your hand with this aspect icon). If you do, give an Experience token to a unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Republic",
+      "Trooper"
+    ]
+  },
+  "senator-s-aide": {
+    "cardId": "senator-s-aide",
+    "updatedAt": "2025-10-15T23:37:33.185Z",
+    "name": "Senator's Aide",
+    "title": "Senator's Aide",
+    "subtitle": null,
+    "variants": {
+      "senator-s-aide-108-secrets-of-power": {
+        "variantId": "senator-s-aide-108-secrets-of-power",
+        "swuId": 39915,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 108,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Nabetse Zitro",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "senator-s-aide-108-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 1,
+    "hp": 3,
+    "power": 0,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "While you have the initiative, this unit gets +2/+0.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command"
+    ],
+    "keywords": [],
+    "traits": [
+      "Republic",
+      "Official"
+    ]
+  },
+  "shadow-crawler": {
+    "cardId": "shadow-crawler",
+    "updatedAt": "2025-10-15T23:37:35.280Z",
+    "name": "Shadow Crawler",
+    "title": "Shadow Crawler",
+    "subtitle": null,
+    "variants": {
+      "shadow-crawler-121-secrets-of-power": {
+        "variantId": "shadow-crawler-121-secrets-of-power",
+        "swuId": 39980,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 121,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "shadow-crawler-121-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 7,
+    "hp": 7,
+    "power": 6,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Command"
+    ],
+    "keywords": [
+      "Ambush"
+    ],
+    "traits": [
+      "Fringe",
+      "Vehicle",
+      "Walker"
+    ]
+  },
+  "skyhopper-canyon-runner": {
+    "cardId": "skyhopper-canyon-runner",
+    "updatedAt": "2025-10-15T23:37:46.722Z",
+    "name": "Skyhopper Canyon Runner",
+    "title": "Skyhopper Canyon Runner",
+    "subtitle": null,
+    "variants": {
+      "skyhopper-canyon-runner-214-secrets-of-power": {
+        "variantId": "skyhopper-canyon-runner-214-secrets-of-power",
+        "swuId": 40445,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 214,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "skyhopper-canyon-runner-214-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 1,
+    "hp": 4,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Fringe",
+      "Vehicle",
+      "Speeder"
+    ]
+  },
+  "special-modifications": {
+    "cardId": "special-modifications",
+    "updatedAt": "2025-10-15T23:37:52.091Z",
+    "name": "Special Modifications",
+    "title": "Special Modifications",
+    "subtitle": null,
+    "variants": {
+      "special-modifications-227-secrets-of-power": {
+        "variantId": "special-modifications-227-secrets-of-power",
+        "swuId": 40510,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 227,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Fernando Correa",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "special-modifications-227-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Upgrade",
+    "rarity": "Rare",
+    "cost": 2,
+    "hp": null,
+    "power": null,
+    "upgradeHp": 3,
+    "upgradePower": 1,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Attach to a Vehicle unit.\nWhen Played: If attached unit is a Transport, you may create a Spy token.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [],
+    "traits": [
+      "Modification"
+    ]
+  },
+  "the-elite-squad--neutralizing-insurgents": {
+    "cardId": "the-elite-squad--neutralizing-insurgents",
+    "updatedAt": "2025-10-14T21:12:26.502Z",
+    "name": "The Elite Squad, Neutralizing Insurgents",
+    "title": "The Elite Squad",
+    "subtitle": "Neutralizing Insurgents",
+    "variants": {
+      "the-elite-squad--neutralizing-insurgents-143-secrets-of-power": {
+        "variantId": "the-elite-squad--neutralizing-insurgents-143-secrets-of-power",
+        "swuId": 40090,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 143,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-elite-squad--neutralizing-insurgents-143-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 8,
+    "hp": 8,
+    "power": 6,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Grit\nWhen Played/When damage is dealt to this unit: You may deal 2 damage to another <uq> (unique) unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [
+      "Grit"
+    ],
+    "traits": [
+      "Imperial",
+      "Trooper"
+    ]
+  },
+  "umbaran-mobile-cannon": {
+    "cardId": "umbaran-mobile-cannon",
+    "updatedAt": "2025-10-15T23:37:27.940Z",
+    "name": "Umbaran Mobile Cannon",
+    "title": "Umbaran Mobile Cannon",
+    "subtitle": null,
+    "variants": {
+      "umbaran-mobile-cannon-67-secrets-of-power": {
+        "variantId": "umbaran-mobile-cannon-67-secrets-of-power",
+        "swuId": 39710,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 67,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "umbaran-mobile-cannon-67-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Uncommon",
+    "cost": 6,
+    "hp": 3,
+    "power": 7,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "The first time this unit would take damage each phase, prevent that damage.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": [
+      "Fringe",
+      "Vehicle",
+      "Walker"
+    ]
+  },
+  "uscru-entertainment-district": {
+    "cardId": "uscru-entertainment-district",
+    "updatedAt": "2025-10-15T23:37:17.554Z",
+    "name": "Uscru Entertainment District",
+    "title": "Uscru Entertainment District",
+    "subtitle": null,
+    "variants": {
+      "uscru-entertainment-district-20-secrets-of-power": {
+        "variantId": "uscru-entertainment-district-20-secrets-of-power",
+        "swuId": 39475,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 20,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Henning Ludvigsen",
+        "front": {
+          "horizontal": true
+        },
+        "image": {
+          "front": "uscru-entertainment-district-20-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Base",
+    "rarity": "Common",
+    "cost": null,
+    "hp": 30,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "",
+    "front": {
+      "horizontal": true
+    },
+    "back": null,
+    "arenas": [],
+    "aspects": [
+      "Vigilance"
+    ],
+    "keywords": [],
+    "traits": []
+  },
+  "zenuas-shadow-fighter": {
+    "cardId": "zenuas-shadow-fighter",
+    "updatedAt": "2025-10-15T23:37:48.849Z",
+    "name": "Zenuas Shadow Fighter",
+    "title": "Zenuas Shadow Fighter",
+    "subtitle": null,
+    "variants": {
+      "zenuas-shadow-fighter-217-secrets-of-power": {
+        "variantId": "zenuas-shadow-fighter-217-secrets-of-power",
+        "swuId": 40460,
+        "set": "sec",
+        "fullSetName": "Secrets of Power",
+        "cardNo": 217,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Shane Molina",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "zenuas-shadow-fighter-217-secrets-of-power-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "hp": 2,
+    "power": 2,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "arenas": [
+      "Space"
+    ],
+    "aspects": [
+      "Cunning"
+    ],
+    "keywords": [
+      "Hidden"
+    ],
+    "traits": [
+      "Separatist",
+      "Vehicle",
+      "Fighter"
     ]
   }
 }
