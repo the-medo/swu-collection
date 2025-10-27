@@ -8,9 +8,12 @@ import type {
 } from '../../../../lib/swu-resources/types.ts';
 import { SwuSet } from '../../../../types/enums.ts';
 import { setInfo } from '../../../../lib/swu-resources/set-info.ts';
-
-const STORAGE_KEY = 'swubase-card-list';
-const VERSION_KEY = 'swubase-card-list-version';
+import {
+  getCardListData,
+  getCardListVersion,
+  setCardListData,
+  setCardListVersion,
+} from '@/dexie/cardList.ts';
 
 export type CardsBySetAndNumber = Partial<
   Record<SwuSet, Record<number, { variant: CardVariant; cardId: string }> | undefined>
@@ -33,8 +36,8 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
   return useQuery({
     queryKey: ['cardList'],
     queryFn: async () => {
-      const storedVersion = localStorage.getItem(VERSION_KEY);
-      const storedData = localStorage.getItem(STORAGE_KEY);
+      const storedVersion = await getCardListVersion();
+      const storedData = await getCardListData();
 
       let cardListData: CardList | undefined = undefined;
 
@@ -50,14 +53,14 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
         const versionData = await versionResponse.json();
         if (versionData.needsUpdate) {
           if ('cards' in versionData) cardListData = versionData.cards as CardList;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(cardListData));
-          localStorage.setItem(VERSION_KEY, versionData.lastUpdated);
+          if (cardListData) await setCardListData(cardListData);
+          await setCardListVersion(versionData.lastUpdated);
         } else if (storedData) {
-          cardListData = JSON.parse(storedData);
+          cardListData = storedData;
         }
       } catch (error) {
         if (storedData) {
-          cardListData = JSON.parse(storedData);
+          cardListData = storedData;
         }
       }
 
