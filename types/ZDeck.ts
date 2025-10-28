@@ -10,8 +10,8 @@ export const DeckSortField = {
 } as const;
 
 export const zDeckSchema = z.object({
-  id: z.string().uuid(),
-  userId: z.string().uuid(),
+  id: z.guid(),
+  userId: z.guid(),
   format: z.number().int(),
   name: z.string().min(3).max(255),
   description: z.string().default(''),
@@ -19,8 +19,8 @@ export const zDeckSchema = z.object({
   leaderCardId2: z.string().nullable(),
   baseCardId: z.string().nullable(),
   public: z.number().int().min(0).max(2).default(0),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 });
 
 export const zDeckCreateRequest = zDeckSchema

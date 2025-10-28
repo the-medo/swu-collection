@@ -23,19 +23,19 @@ export interface UserSettings {
 }
 
 export const userSettingsSchema = z.object({
-  deckLayout: z.nativeEnum(DeckLayout).default(DeckLayout.TEXT),
-  deckGroupBy: z.nativeEnum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
+  deckLayout: z.enum(DeckLayout).default(DeckLayout.TEXT),
+  deckGroupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
   deckPrices: z.boolean().default(false),
-  priceSourceType: z.nativeEnum(CardPriceSourceType).default(CardPriceSourceType.CARDMARKET),
+  priceSourceType: z.enum(CardPriceSourceType).default(CardPriceSourceType.CARDMARKET),
   collectionInfoInDecks: z.boolean().default(false),
   // DeckImagePresets
   deckImage_showNoisyBackground: z.boolean().default(true),
   deckImage_showcaseLeader: z.boolean().default(false),
   deckImage_hyperspaceBase: z.boolean().default(false),
   deckImage_defaultVariantName: z
-    .nativeEnum(DeckImagePresetVariant)
+    .enum(DeckImagePresetVariant)
     .default(DeckImagePresetVariant.Standard),
-  deckImage_groupBy: z.nativeEnum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
+  deckImage_groupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
   deckImage_cardVariants: z.string().default('{}'),
   deckImage_exportWidth: z.number().default(2200),
 });

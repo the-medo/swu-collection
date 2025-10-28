@@ -13,7 +13,7 @@ import { updateCollectionUpdatedAt } from '../../../../lib/updateCollectionUpdat
 import { CollectionType } from '../../../../../types/enums.ts';
 
 const zApplyBody = z.object({
-  collectionIdToApply: z.string().uuid(),
+  collectionIdToApply: z.guid(),
   operation: z.enum(['add', 'remove']).default('add'),
 });
 
@@ -22,7 +22,7 @@ export const collectionIdApplyPostRoute = new Hono<AuthExtension>().post(
   '/',
   zValidator('json', zApplyBody),
   async c => {
-    const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+    const paramCollectionId = z.guid().parse(c.req.param('id'));
     const { collectionIdToApply, operation } = c.req.valid('json');
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);

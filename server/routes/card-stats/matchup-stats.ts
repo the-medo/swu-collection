@@ -16,8 +16,8 @@ import {
 const zMatchupStatsQueryParams = z
   .object({
     meta_id: z.coerce.number().int().optional(),
-    tournament_id: z.string().uuid().optional(),
-    tournament_group_id: z.string().uuid().optional(),
+    tournament_id: z.guid().optional(),
+    tournament_group_id: z.guid().optional(),
     leaderId: z.string().optional(),
     baseId: z.string().optional(),
     leaderId2: z.string().optional(),

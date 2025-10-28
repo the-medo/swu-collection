@@ -40,12 +40,12 @@ async function getJson<T>(key: string): Promise<T> {
 }
 
 const zImportFromBlobBody = z.object({
-  sourceTournamentId: z.string().uuid(),
+  sourceTournamentId: z.guid(),
   markAsImported: z.boolean().optional().default(true),
 });
 
 export const tournamentIdImportFromBlobPostRoute = new Hono<AuthExtension>().post('/', async c => {
-  const paramTournamentId = z.string().uuid().parse(c.req.param('id'));
+  const paramTournamentId = z.guid().parse(c.req.param('id'));
   const { sourceTournamentId, markAsImported } = zImportFromBlobBody.parse(await c.req.json());
   const user = c.get('user');
   if (!user) return c.json({ message: 'Unauthorized' }, 401);

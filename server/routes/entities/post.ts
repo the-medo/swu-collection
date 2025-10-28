@@ -9,7 +9,7 @@ import { sql } from 'drizzle-orm';
 // Define the schema for entity resource creation
 const entityResourceSchema = z.object({
   entityType: z.string().min(1).max(50),
-  entityId: z.string().uuid(),
+  entityId: z.guid(),
   resourceType: z.string().min(1).max(50),
   resourceUrl: z.string().min(1),
   title: z.string().max(255).optional(),

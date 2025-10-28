@@ -10,7 +10,7 @@ import { fetchDecksByIds } from '../../lib/decks/fetchDecksByIds.ts';
 
 // Define query parameters schema for matchup-stats-decks endpoint
 const zMatchupStatsDecksQueryParams = z.object({
-  overviewId: z.string().uuid(),
+  overviewId: z.guid(),
   key: z.string(),
 });
 

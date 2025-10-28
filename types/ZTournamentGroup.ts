@@ -20,18 +20,22 @@ export const zTournamentGroupUpdateRequest = z.object({
 
 // Schema for assigning a tournament to a group
 export const zTournamentGroupTournamentCreateRequest = z.object({
-  tournamentId: z.string().uuid(),
+  tournamentId: z.guid(),
   position: z.number().int().optional().default(0),
 });
 
 // Schema for updating a tournament's position in a group
 export const zTournamentGroupTournamentUpdateRequest = z.object({
-  tournamentId: z.string().uuid(),
+  tournamentId: z.guid(),
   position: z.number().int(),
 });
 
 // Types inferred from the schemas
 export type ZTournamentGroupCreateRequest = z.infer<typeof zTournamentGroupCreateRequest>;
 export type ZTournamentGroupUpdateRequest = z.infer<typeof zTournamentGroupUpdateRequest>;
-export type ZTournamentGroupTournamentCreateRequest = z.infer<typeof zTournamentGroupTournamentCreateRequest>;
-export type ZTournamentGroupTournamentUpdateRequest = z.infer<typeof zTournamentGroupTournamentUpdateRequest>;
+export type ZTournamentGroupTournamentCreateRequest = z.infer<
+  typeof zTournamentGroupTournamentCreateRequest
+>;
+export type ZTournamentGroupTournamentUpdateRequest = z.infer<
+  typeof zTournamentGroupTournamentUpdateRequest
+>;

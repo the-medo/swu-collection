@@ -8,7 +8,7 @@ import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckInformation as deckInformationTable } from '../../../../db/schema/deck_information.ts';
 
 export const tournamentIdDecksGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const paramTournamentId = z.string().uuid().parse(c.req.param('id'));
+  const paramTournamentId = z.guid().parse(c.req.param('id'));
 
   // Query tournament decks with joined deck and deck information
   const tournamentDecks = await db

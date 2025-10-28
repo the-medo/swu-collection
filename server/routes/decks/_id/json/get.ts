@@ -18,7 +18,7 @@ export const deckIdJsonGetRoute = new Hono<AuthExtension>().get('/', async c => 
   const normalizedId = /^[0-9a-fA-F]{32}$/.test(rawId)
     ? `${rawId.slice(0, 8)}-${rawId.slice(8, 12)}-${rawId.slice(12, 16)}-${rawId.slice(16, 20)}-${rawId.slice(20)}`.toLowerCase()
     : rawId;
-  const paramDeckId = z.string().uuid().parse(normalizedId);
+  const paramDeckId = z.guid().parse(normalizedId);
   const user = c.get('user');
 
   const isPublicOrUnlisted = gte(deckTable.public, 1);

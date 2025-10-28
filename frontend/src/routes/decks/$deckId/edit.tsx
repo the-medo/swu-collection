@@ -1,7 +1,6 @@
 import { createFileRoute, useSearch } from '@tanstack/react-router';
 import DeckDetail from '@/components/app/decks/DeckDetail/DeckDetail.tsx';
 import { z } from 'zod';
-import { zodValidator } from '@tanstack/zod-adapter';
 import { cardSearchParams } from '@/components/app/cards/AdvancedCardSearch/advancedSearchLib.ts';
 import Deckbuilder from '@/components/app/decks/Deckbuilder/Deckbuilder.tsx';
 
@@ -13,7 +12,7 @@ const searchParams = cardSearchParams.merge(
 
 export const Route = createFileRoute('/decks/$deckId/edit')({
   component: RouteComponent,
-  validateSearch: zodValidator(searchParams),
+  validateSearch: searchParams,
 });
 
 function RouteComponent() {

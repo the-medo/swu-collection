@@ -8,7 +8,7 @@ import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
 import { updateDeckInformation } from '../../../../lib/decks/updateDeckInformation.ts';
 
 export const deckIdDuplicatePostRoute = new Hono<AuthExtension>().post('/', async c => {
-  const paramDeckId = z.string().uuid().parse(c.req.param('id'));
+  const paramDeckId = z.guid().parse(c.req.param('id'));
   const user = c.get('user');
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 

@@ -32,7 +32,7 @@ export const zMetaSchema = z.object({
 });
 
 export const zTournamentSchema = z.object({
-  id: z.string().uuid(),
+  id: z.guid(),
   userId: z.string(),
   type: z.string(),
   meta: z.number().int().nullable().optional(),
@@ -56,8 +56,8 @@ export const zTournamentSchema = z.object({
   dayTwoPlayerCount: z.number().int().min(0),
   date: z.string(),
   imported: z.boolean().optional(),
-  createdAt: z.string().datetime().optional(),
-  updatedAt: z.string().datetime().optional(),
+  createdAt: z.iso.datetime().optional(),
+  updatedAt: z.iso.datetime().optional(),
   bracketInfo: z
     .enum(Object.values(BracketInfo) as [string, ...string[]])
     .default('top8')

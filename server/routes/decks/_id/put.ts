@@ -14,7 +14,7 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
   '/',
   zValidator('json', zDeckUpdateRequest),
   async c => {
-    const paramDeckId = z.string().uuid().parse(c.req.param('id'));
+    const paramDeckId = z.guid().parse(c.req.param('id'));
     const data = c.req.valid('json');
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);

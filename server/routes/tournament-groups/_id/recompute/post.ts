@@ -5,7 +5,7 @@ import { updateTournamentGroupStatistics } from '../../../../lib/card-statistics
 
 export const tournamentGroupIdRecomputePostRoute = new Hono<AuthExtension>().post('/', async c => {
   const user = c.get('user');
-  const tournamentGroupId = z.string().uuid().parse(c.req.param('id'));
+  const tournamentGroupId = z.guid().parse(c.req.param('id'));
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
   const hasPermission = await auth.api.userHasPermission({

@@ -11,7 +11,7 @@ export const deckIdFavoritePostRoute = new Hono<AuthExtension>().post(
   '/',
   zValidator('json', zDeckFavoriteRequest),
   async c => {
-    const paramDeckId = z.string().uuid().parse(c.req.param('id'));
+    const paramDeckId = z.guid().parse(c.req.param('id'));
     const user = c.get('user');
     const { isFavorite } = c.req.valid('json');
 

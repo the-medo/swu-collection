@@ -23,7 +23,7 @@ const zBulkDecksQueryParams = z.object({
   ids: z
     .string()
     .transform(val => val.split(','))
-    .pipe(z.array(z.string().uuid())) // Validate each ID as a UUID after splitting
+    .pipe(z.array(z.guid())) // Validate each ID as a UUID after splitting
     .refine(ids => ids.length > 0, {
       message: 'At least one deck ID must be provided',
     }),

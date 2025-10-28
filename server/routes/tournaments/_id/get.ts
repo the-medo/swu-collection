@@ -13,7 +13,7 @@ import { tournamentDeck as tournamentDeckTable } from '../../../db/schema/tourna
 import { deck as deckTable } from '../../../db/schema/deck.ts';
 
 export const tournamentIdGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const paramTournamentId = z.string().uuid().parse(c.req.param('id'));
+  const paramTournamentId = z.guid().parse(c.req.param('id'));
 
   const tournamentData = (
     await db

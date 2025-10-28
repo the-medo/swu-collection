@@ -10,7 +10,7 @@ import { collectionCard as collectionCardTable } from '../../../../db/schema/col
 // Input: array of collectionId-lastUpdatedAt pairs coming from frontend cache
 const zCollectionItem = z.object({
   collectionId: z.string().min(1),
-  lastUpdatedAt: z.string().datetime().optional(),
+  lastUpdatedAt: z.iso.datetime().optional(),
 });
 
 const zBody = z.object({

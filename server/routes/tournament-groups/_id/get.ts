@@ -12,7 +12,7 @@ import { deck } from '../../../db/schema/deck.ts';
 import { z } from 'zod';
 
 export const tournamentGroupIdGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const id = z.string().uuid().parse(c.req.param('id'));
+  const id = z.guid().parse(c.req.param('id'));
 
   // Get the tournament group with its tournaments
   const result = await db

@@ -13,7 +13,7 @@ import { selectCollection } from '../../collection.ts';
  * - only public or owned collection
  * */
 export const collectionIdGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+  const paramCollectionId = z.guid().parse(c.req.param('id'));
   const user = c.get('user');
 
   const isPublic = eq(collectionTable.public, true);

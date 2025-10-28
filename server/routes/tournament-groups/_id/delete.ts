@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 export const tournamentGroupIdDeleteRoute = new Hono<AuthExtension>().delete('/', async c => {
   const user = c.get('user');
-  const id = z.string().uuid().parse(c.req.param('id'));
+  const id = z.guid().parse(c.req.param('id'));
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
   const hasPermission = await auth.api.userHasPermission({

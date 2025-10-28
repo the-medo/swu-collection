@@ -10,7 +10,7 @@ import { userDeckFavorite } from '../../../db/schema/user_deck_favorite.ts';
 import type { AuthExtension } from '../../../auth/auth.ts';
 
 export const deckIdGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const paramDeckId = z.string().uuid().parse(c.req.param('id'));
+  const paramDeckId = z.guid().parse(c.req.param('id'));
   const user = c.get('user');
 
   const isPublicOrUnlisted = gte(deckTable.public, 1);

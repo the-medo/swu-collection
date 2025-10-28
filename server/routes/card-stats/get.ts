@@ -24,8 +24,8 @@ import type { CardStatExtended } from '../../../frontend/src/api/card-stats/useC
 const zCardStatsQueryParams = z
   .object({
     meta_id: z.coerce.number().int().optional(),
-    tournament_id: z.string().uuid().optional(),
-    tournament_group_id: z.string().uuid().optional(),
+    tournament_id: z.guid().optional(),
+    tournament_group_id: z.guid().optional(),
     leader_card_id: z.string().optional(),
     base_card_id: z.string().optional(),
   })

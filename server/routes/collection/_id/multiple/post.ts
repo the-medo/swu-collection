@@ -20,7 +20,7 @@ export const collectionIdMultiplePostRoute = new Hono<AuthExtension>().post(
   '/',
   zValidator('json', z.array(zCollectionCardCreateRequestAllowNegative)),
   async c => {
-    const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+    const paramCollectionId = z.guid().parse(c.req.param('id'));
     const data = c.req.valid('json');
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
