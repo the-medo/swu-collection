@@ -18,7 +18,6 @@ import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 import { useNavigate } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 interface CardSearchCommandProps {
@@ -29,7 +28,7 @@ interface CardSearchCommandProps {
 
 const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   const { isMobile, setOpenMobile } = useSidebar();
   const { open, search, options, isFetching, cardList } = useCardSearchCommandStore(id);
@@ -96,6 +95,7 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
                     setSearch('');
                     setOpen(false);
                     navigate({
+                      to: '.',
                       search: prev => ({ ...prev, modalCardId: i.cardId }),
                     });
                   }}

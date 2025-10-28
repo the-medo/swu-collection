@@ -3,7 +3,6 @@ import CardImage from '@/components/app/global/CardImage.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { ParsedCardData } from '../lib/parseCardmarketHtml';
 import { useNavigate } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 
 interface CardImageCellProps {
   card: ParsedCardData;
@@ -12,10 +11,11 @@ interface CardImageCellProps {
 
 const CardImageCell: React.FC<CardImageCellProps> = ({ card, variantId }) => {
   const { data: cardList } = useCardList();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   const handleViewCard = () => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, modalCardId: card.cardId }),
     });
   };

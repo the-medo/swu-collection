@@ -9,7 +9,6 @@ import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStor
 import { usePutDeckCard } from '@/api/decks/usePutDeckCard.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useNavigate } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import { DeckCardInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
@@ -44,7 +43,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
   displayDropdown = true,
   isHighlighted,
 }) => {
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const { owned } = useDeckInfo(deckId);
   const mutation = usePutDeckCard(deckId);
   const defaultVariant = card ? selectDefaultVariant(card) : undefined;
@@ -118,6 +117,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
         className="cursor-pointer"
         onClick={() => {
           void navigate({
+            to: '.',
             search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
           });
         }}

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { isFuture } from 'date-fns';
 import { Check, X, Users, PieChart } from 'lucide-react';
-import { Route } from '@/routes/__root.tsx';
 import {
   Collapsible,
   CollapsibleContent,
@@ -27,7 +26,7 @@ const WeekColumns: React.FC<WeekColumnsProps> = ({
   openAllCollapsibles = false,
 }) => {
   const currentDate = new Date();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const { weekId } = useSearch({ strict: false });
 
   // State to track which collapsibles are open
@@ -62,6 +61,7 @@ const WeekColumns: React.FC<WeekColumnsProps> = ({
 
     // Update the URL with the selected week ID
     navigate({
+      to: '.',
       search: prev => ({
         ...prev,
         weekId,

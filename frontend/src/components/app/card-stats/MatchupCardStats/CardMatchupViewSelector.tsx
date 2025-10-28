@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
 import { useCallback } from 'react';
-import { Route } from '@/routes/__root';
 
 export type CardMatchupView = '1' | '2' | 'both-decks-together' | 'both-decks-divided';
 
@@ -20,9 +19,9 @@ interface CardMatchupViewSelectorProps {
 
 const CardMatchupViewSelector: React.FC<CardMatchupViewSelectorProps> = ({ value, onChange }) => {
   const { csCardMatchupView = '1' } = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
-  const currentValue = value || csCardMatchupView as CardMatchupView;
+  const currentValue = value || (csCardMatchupView as CardMatchupView);
 
   const onValueChange = useCallback(
     (v: string) => {
@@ -32,6 +31,7 @@ const CardMatchupViewSelector: React.FC<CardMatchupViewSelectorProps> = ({ value
           onChange(newValue);
         } else {
           navigate({
+            to: '.',
             search: prev => ({ ...prev, csCardMatchupView: newValue }),
           });
         }

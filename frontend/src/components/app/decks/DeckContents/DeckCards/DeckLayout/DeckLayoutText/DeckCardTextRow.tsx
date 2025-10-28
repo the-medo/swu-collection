@@ -13,7 +13,6 @@ import { toast } from '@/hooks/use-toast.ts';
 import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInput.tsx';
 import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { useNavigate } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 import { DeckCardInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import DeckCardBoardMoveButtons from '@/components/app/decks/DeckContents/DeckCards/DeckCardBoardMoveButtons.tsx';
@@ -45,7 +44,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   displayMissingCards = false,
   isHighlighted,
 }) => {
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const { isMobile } = useSidebar();
   const { owned } = useDeckInfo(deckId);
   const mutation = usePutDeckCard(deckId);
@@ -117,6 +116,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
           )}
           onClick={() => {
             void navigate({
+              to: '.',
               search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
             });
           }}

@@ -21,7 +21,6 @@ import TournamentTypeSelect from '@/components/app/tournaments/components/Tourna
 import ContinentSelect from '../components/ContinentSelect.tsx';
 import { DatePicker } from '@/components/ui/date-picker.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 interface TournamentFiltersProps {}
@@ -46,11 +45,12 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({}) => {
     strict: false,
   });
   const { isMobile } = useSidebar();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   // Handle filter changes
   const handleFilterChange = useCallback((name: keyof TournamentFilterValues, value: any) => {
     navigate({
+      to: '.',
       search: prev => ({
         ...prev,
         [name]: value,
@@ -61,6 +61,7 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({}) => {
   // Reset filters
   const resetFilters = useCallback(() => {
     navigate({
+      to: '.',
       search: prev => ({
         ...prev,
         tfType: undefined,

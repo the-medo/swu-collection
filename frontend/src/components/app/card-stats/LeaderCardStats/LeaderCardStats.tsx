@@ -7,7 +7,6 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { useMemo } from 'react';
 import CardStatsWithOptions from '@/components/app/card-stats/CardStatsWithOptions/CardStatsWithOptions.tsx';
 import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
-import { Route } from '@/routes/__root.tsx';
 import { useTopPlayedCards } from '@/api/card-stats/useTopPlayedCards.ts';
 import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatistic.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
@@ -29,7 +28,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
 }) => {
   const { decks } = useTournamentMetaStore();
   const { csLeaderId } = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   const cardStatParams = useMemo(
     () => ({
@@ -172,6 +171,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
           leaderCardId={csLeaderId}
           onLeaderSelected={leaderId => {
             navigate({
+              to: '.',
               search: prev => ({
                 ...prev,
                 csLeaderId: leaderId,

@@ -7,7 +7,6 @@ import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.
 import { DeckCard } from '../../../../../../server/db/schema/deck_card.ts';
 import { Alert } from '@/components/ui/alert.tsx';
 import { useNavigate } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 
 type CardDecksProps = {
   cardId: string;
@@ -28,7 +27,7 @@ const CardDecks: React.FC<CardDecksProps> = ({
   leaderCardId,
   baseCardId,
 }) => {
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   const { data, isLoading, error } = useGetCardDecks({
     cardId,
@@ -66,6 +65,7 @@ const CardDecks: React.FC<CardDecksProps> = ({
   useEffect(() => {
     if (deckTableData.length > 0) {
       void navigate({
+        to: '.',
         search: prev => ({
           ...prev,
           maDeckId: !prev.maDeckId ? deckTableData[0].deck?.id : prev.maDeckId,

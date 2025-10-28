@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useSearch, useNavigate } from '@tanstack/react-router';
-import { Route } from '@/routes/__root';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -20,7 +19,7 @@ interface CardStatsFiltersProps {
 
 const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
   const search = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   // Get current filter values from URL
   const sortBy = search.csSortBy || 'md';
@@ -35,6 +34,7 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
   // Update URL search params when filters change
   const updateSearchParams = useCallback((updates: Partial<typeof search>) => {
     navigate({
+      to: '.',
       search: prev => ({
         ...prev,
         ...updates,
@@ -92,7 +92,7 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
           <Label htmlFor="sort-by" className="max-xl:w-32 flex-shrink-0">
             Sort by:
           </Label>
-          <Select value={sortBy} onValueChange={handleSortByChange} className="flex-1">
+          <Select value={sortBy} onValueChange={handleSortByChange}>
             <SelectTrigger id="sort-by">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -113,7 +113,7 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
           <Label htmlFor="group-by" className="max-xl:w-32 flex-shrink-0">
             Group by:
           </Label>
-          <Select value={groupBy} onValueChange={handleGroupByChange} className="flex-1">
+          <Select value={groupBy} onValueChange={handleGroupByChange}>
             <SelectTrigger id="group-by">
               <SelectValue placeholder="Group by" />
             </SelectTrigger>

@@ -1,19 +1,19 @@
 import React from 'react';
 import { useCheckDeletedVariants } from '@/api/admin/useCheckDeletedVariants';
 import { useNavigate } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { useVariantCheckerTableColumns, VariantCheckerRow } from './useVariantCheckerTableColumns';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 export const VariantCheckerTable: React.FC = () => {
   const { data, isLoading, isError, error } = useCheckDeletedVariants();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const { isMobile } = useSidebar();
   const view = isMobile ? 'box' : 'table';
 
   const handleViewCard = (cardId: string) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, modalCardId: cardId }),
     });
   };

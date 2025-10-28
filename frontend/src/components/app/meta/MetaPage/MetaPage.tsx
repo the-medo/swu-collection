@@ -1,4 +1,4 @@
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { useGetMetas } from '@/api/meta';
 import { useCallback, useMemo } from 'react';
 import { formatData, formatDataById } from '../../../../../../types/Format.ts';
@@ -23,15 +23,15 @@ import MetaPageWeekSelectorBySelectedGroup from '@/components/app/meta/MetaPage/
 
 function MetaPage() {
   const { isMobile } = useSidebar();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
+
   const {
     metaId: metaIdFromSearch,
     formatId,
     minTournamentType,
     maTournamentGroupId,
-  } = useSearch({
-    from: Route.fullPath,
-  });
+  } = Route.useSearch();
+
   const { data, isLoading } = useGetMetas();
 
   // Fetch tournament group information if ID is present
@@ -55,6 +55,7 @@ function MetaPage() {
   const setFormat = useCallback(
     (v: number | null) => {
       navigate({
+        to: '.',
         search: prev => ({ ...prev, formatId: v ?? formatData[0].id }),
       });
     },
@@ -64,6 +65,7 @@ function MetaPage() {
   const setMeta = useCallback(
     (v: number) => {
       navigate({
+        to: '.',
         search: prev => ({ ...prev, metaId: v }),
       });
     },
@@ -73,6 +75,7 @@ function MetaPage() {
   const setMinTournamentType = useCallback(
     (v: string | undefined) => {
       navigate({
+        to: '.',
         search: prev => ({ ...prev, minTournamentType: v ?? DEFAULT_MIN_TOURNAMENT_TYPE }),
       });
     },

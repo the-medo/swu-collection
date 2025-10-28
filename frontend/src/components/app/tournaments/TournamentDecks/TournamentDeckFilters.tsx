@@ -13,13 +13,12 @@ import {
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
-import { Route } from '@/routes/__root.tsx';
 
 interface TournamentDeckFiltersProps {}
 
 const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
   const search = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const key = search.maDeckKey;
   const keyMetaInfo = search.maDeckKeyType;
   const labelRenderer = useLabel();
@@ -50,6 +49,7 @@ const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
     setTimeout(() => {
       resetFilters();
       navigate({
+        to: '.',
         search: prev => ({ ...prev, maDeckKey: undefined, maDeckKeyType: undefined }),
       });
     }, 50);

@@ -11,7 +11,6 @@ import MatchupCardStatsTable from './MatchupCardStatsTable';
 import CardMatchupOverview from './CardMatchupOverview';
 import DisplayModeSelector from '@/components/app/tournaments/TournamentMatchups/components/DisplayModeSelector';
 import { MatchupDisplayMode } from '@/components/app/tournaments/TournamentMatchups/types';
-import { Route } from '@/routes/__root';
 import MobileCard from '@/components/ui/mobile-card.tsx';
 import { useMatchupCardStatsStoreActions } from '@/components/app/card-stats/MatchupCardStats/useMatchupCardStatsStore.ts';
 
@@ -36,13 +35,14 @@ const MatchupCardStats: React.FC<MatchupCardStatsProps> = ({
     csCardMatchupView = '1',
     csCardMatchupDataView = 'winrate',
   } = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const matchupCardStatsMutation = useMatchupCardStats();
   const { setOverviewId } = useMatchupCardStatsStoreActions();
   const [statsData, setStatsData] = useState<MatchupCardStatsResponse['data']>();
 
   const handleDisplayModeChange = (value: MatchupDisplayMode) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, csCardMatchupDataView: value }),
     });
   };

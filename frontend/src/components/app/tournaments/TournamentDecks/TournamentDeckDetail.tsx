@@ -3,7 +3,6 @@ import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { X } from 'lucide-react';
 import DeckContents from '@/components/app/decks/DeckContents/DeckContents.tsx';
-import { Route } from '@/routes/__root.tsx';
 
 interface TournamentDeckDetailProps {
   highlightedCardId?: string;
@@ -17,9 +16,10 @@ const TournamentDeckDetail: React.FC<TournamentDeckDetailProps> = ({
   const search = useSearch({ strict: false });
   const selectedDeckId = search[deckIdSearchParam];
 
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const setSelectedDeckId = (value: string | undefined) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, [deckIdSearchParam]: value }),
     });
   };
