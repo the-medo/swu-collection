@@ -49,14 +49,14 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     name: 'Intro Battle: Hoth',
     cardCount: 104,
     sortValue: 6,
-    expansionId: 0,
+    expansionId: 68,
   },
   [SwuSet.SEC]: {
     code: SwuSet.SEC,
     name: 'Secrets of Power',
     cardCount: 264,
     sortValue: 7,
-    expansionId: 0,
+    expansionId: 73,
   },
 } as const;
 

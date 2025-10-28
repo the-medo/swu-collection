@@ -4,6 +4,7 @@ import type { TournamentDecksStore, TournamentMatchesStore } from './tournament'
 import type { CardVariantPriceStore, CardVariantPriceFetchListStore } from './cardPrices';
 import type { UserSettingsStore } from './userSettings';
 import type { CollectionStore, CollectionCardsStore } from './collections';
+import type { CardListCacheStore } from './cardList';
 
 export class SwuBaseDB extends Dexie {
   // Tables
@@ -15,6 +16,7 @@ export class SwuBaseDB extends Dexie {
   dailySnapshots!: Table<import('./dailySnapshots').DailySnapshotDay>;
   collections!: Table<CollectionStore>;
   collectionCards!: Table<CollectionCardsStore>;
+  cardListCache!: Table<CardListCacheStore>;
 
   constructor() {
     super('SwuBaseDB');
@@ -111,6 +113,19 @@ export class SwuBaseDB extends Dexie {
           }
         });
       });
+
+    // v7: card list cache moved from localStorage to IndexedDB
+    this.version(7).stores({
+      tournamentDecks: 'id',
+      tournamentMatches: 'id',
+      cardVariantPrices: 'id, cardId, variantId, sourceType, fetchedAt',
+      cardVariantPriceFetchList: 'id, cardId, variantId, addedAt',
+      userSettings: 'key',
+      dailySnapshots: 'date',
+      collections: 'id',
+      collectionCards: 'collectionId',
+      cardListCache: 'key', // key-value store for card list data and version
+    });
   }
 }
 
