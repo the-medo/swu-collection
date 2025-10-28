@@ -44,13 +44,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
   const cardListString = collectionTypeTitle[collectionType];
   const postCollectionMutation = usePostCollection();
 
-  const form = useForm<{
-    title: string;
-    description: string;
-    public: boolean;
-    forSale: boolean;
-    forDecks: boolean;
-  }>({
+  const form = useForm({
     defaultValues: {
       title: defaultTitle ?? `My ${cardListString}`,
       description: defaultDescription ?? ``,

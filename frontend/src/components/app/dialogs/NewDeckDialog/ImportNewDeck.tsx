@@ -29,9 +29,7 @@ export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({ onSuccess }) => {
   const [swudbDeckId, setSwudbDeckId] = useState<string | false>(false);
   const importSwudbDeck = useImportSwudbDeck();
 
-  const form = useForm<{
-    swudbLink: string;
-  }>({
+  const form = useForm({
     defaultValues: {
       swudbLink: '',
     },
@@ -96,7 +94,6 @@ export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({ onSuccess }) => {
           />
         )}
       />
-
       <Button type="submit" disabled={form.state.isSubmitting || !swudbDeckId}>
         {importSwudbDeck.isPending ? '...' : 'Import'}
       </Button>

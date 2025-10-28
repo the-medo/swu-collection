@@ -6,7 +6,9 @@ import { useForm } from '@tanstack/react-form';
 import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import DeckPrivacySelector, { DeckPrivacy } from '@/components/app/decks/components/DeckPrivacySelector.tsx';
+import DeckPrivacySelector, {
+  DeckPrivacy,
+} from '@/components/app/decks/components/DeckPrivacySelector.tsx';
 import { useCallback, useState } from 'react';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
@@ -24,12 +26,7 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
   const { toast } = useToast();
   const putDeckMutation = usePutDeck(deck.id);
 
-  const form = useForm<{
-    name: string;
-    description: string;
-    format: number;
-    public: DeckPrivacy;
-  }>({
+  const form = useForm({
     defaultValues: {
       name: deck.name ?? '',
       description: deck.description ?? '',
@@ -60,7 +57,7 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
     (open: boolean) => {
       setOpen(open);
       if (open) {
-        form.setFieldValue('public', deck.public);
+        form.setFieldValue('public', deck.public as DeckPrivacy);
         form.setFieldValue('format', deck.format);
       }
     },

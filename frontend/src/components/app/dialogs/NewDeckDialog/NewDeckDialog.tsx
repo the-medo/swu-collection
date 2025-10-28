@@ -32,17 +32,12 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
   const { toast } = useToast();
   const postDeckMutation = usePostDeck();
 
-  const form = useForm<{
-    format: number;
-    name: string;
-    description: string;
-    public: DeckPrivacy;
-  }>({
+  const form = useForm({
     defaultValues: {
       format: 1,
-      name: `My deck`,
-      description: ``,
-      public: 2,
+      name: 'My deck',
+      description: '',
+      public: 2 as DeckPrivacy,
     },
     onSubmit: async ({ value }) => {
       // Call our hook's mutation function.

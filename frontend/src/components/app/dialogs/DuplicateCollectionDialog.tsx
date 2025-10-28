@@ -54,10 +54,7 @@ const DuplicateCollectionDialog: React.FC<DuplicateCollectionDialogProps> = ({
     },
   ];
 
-  const form = useForm<{
-    title: string;
-    public: boolean;
-  }>({
+  const form = useForm({
     defaultValues: {
       title: `Copy of ${collection.title}`,
       public: collection.public,

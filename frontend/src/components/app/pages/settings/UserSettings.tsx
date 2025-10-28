@@ -15,9 +15,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({}) => {
   const user = useUser();
   const { toast } = useToast();
 
-  const form = useForm<{
-    displayName: string;
-  }>({
+  const form = useForm({
     defaultValues: {
       displayName: user?.displayName!,
     },

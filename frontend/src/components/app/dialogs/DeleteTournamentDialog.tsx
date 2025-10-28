@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { useForm } from '@tanstack/react-form';
 import { TournamentStringDate } from '../../../../../types/Tournament.ts';
+import FormFieldError from '@/components/app/global/FormFieldError.tsx';
 
 type DeleteTournamentDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
   tournament: TournamentStringDate;
@@ -72,9 +73,7 @@ const DeleteTournamentDialog: React.FC<DeleteTournamentDialogProps> = ({
                   onBlur={field.handleBlur}
                   onChange={e => field.handleChange(e.target.value)}
                 />
-                {field.state.meta.errors?.length > 0 && (
-                  <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
-                )}
+                <FormFieldError meta={field.state.meta} />
               </div>
             )}
           />
