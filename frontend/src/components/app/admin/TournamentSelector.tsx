@@ -60,7 +60,7 @@ export function TournamentSelector({ value, onChange, metaId }: TournamentSelect
         <SelectItem value="empty">- Select Tournament -</SelectItem>
         {tournaments.map(tournament => (
           <SelectItem key={tournament.tournament.id} value={tournament.tournament.id}>
-            <div className="flex gap-2 flex-grow justify-between">
+            <div className="flex gap-2 grow justify-between">
               <span>{tournament.tournament.name}</span>
               <span className="text-muted-foreground">
                 {new Date(tournament.tournament.date).toLocaleDateString()} -{' '}

@@ -36,7 +36,7 @@ const CollectionInputNumberInsertingDefaults: React.FC<
       <AccordionItem value="item-1">
         <AccordionTrigger>Inserting defaults</AccordionTrigger>
         <AccordionContent>
-          <div className="grid grid-cols-[auto,1fr,auto] grid-rows-3 gap-4 p-4 pt-0">
+          <div className="grid grid-cols-[auto_1fr_auto] grid-rows-3 gap-4 p-4 pt-0">
             <DefaultFoilSwitch value={defaultFoil} onChange={setDefaultFoil} />
             <DefaultNoteInput value={defaultNote} onChange={setDefaultNote} />
             <DefaultAmountInput value={defaultAmount} onChange={setDefaultAmount} />

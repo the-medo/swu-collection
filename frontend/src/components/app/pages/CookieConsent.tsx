@@ -24,7 +24,7 @@ const CookieConsent: React.FC = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-secondary p-4 z-50 shadow-lg">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="text-sm flex-grow">
+        <div className="text-sm grow">
           <p>
             We use cookies to keep you signed in and to understand how SWUBase is used via anonymous
             analytics (Amplitude, no session recording). By clicking "Accept", you agree to this as
@@ -35,7 +35,7 @@ const CookieConsent: React.FC = () => {
             .
           </p>
         </div>
-        <div className="flex gap-2 flex-shrink-0">
+        <div className="flex gap-2 shrink-0">
           <Button variant="outline" size="sm" onClick={() => setIsVisible(false)}>
             <X className="h-4 w-4 mr-1" /> Dismiss
           </Button>

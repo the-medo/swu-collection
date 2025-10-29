@@ -64,7 +64,7 @@ const ViewRowCard: React.FC<ViewRowCardProps> = ({
               <div className="flex items-center">
                 <div
                   className={cn(
-                    'absolute border-b -rotate-[20deg] bg-accent origin-left whitespace-nowrap transform -translate-x-[60px] -translate-y-[65px] truncate w-[500px] h-[300px] pt-[275px] pl-[20px]',
+                    'absolute border-b -rotate-20 bg-accent origin-left whitespace-nowrap transform -translate-x-[60px] -translate-y-[65px] truncate w-[500px] h-[300px] pt-[275px] pl-[20px]',
                   )}
                 >
                   {mainDeckData?.deck?.name || ''}
@@ -81,7 +81,7 @@ const ViewRowCard: React.FC<ViewRowCardProps> = ({
                 <div className="flex items-center">
                   <div
                     className={cn(
-                      'absolute -rotate-[20deg] origin-left whitespace-nowrap transform translate-x-4 translate-y-[60px] truncate w-[300px]',
+                      'absolute -rotate-20 origin-left whitespace-nowrap transform translate-x-4 translate-y-[60px] truncate w-[300px]',
                       {
                         'bg-primary/20': hoveredColumn === index + 1,
                       },

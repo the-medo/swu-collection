@@ -80,7 +80,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
     <DeckCardHoverImage card={card}>
       <div
         className={cn('flex gap-2 items-center', displayDeckPrice ? 'w-[400px]' : 'w-[350px]', {
-          'py-1 border-t-[1px]': variant === 'normal',
+          'py-1 border-t': variant === 'normal',
           'py-0': variant === 'compact',
           'bg-primary/10 border border-primary rounded-sm': isHighlighted,
         })}

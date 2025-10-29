@@ -77,17 +77,13 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
 
   return (
     <div
-      className={cn(
-        'relative inline-block align-middle mr-[1px] rounded-[4.75%/3.5%] isolate group',
-        {
-          'cursor-pointer': true,
-          '-mt-[140px]': deckLayout === DeckLayout.VISUAL_GRID_OVERLAP,
-          '-mt-[240px]':
-            deckLayout === DeckLayout.VISUAL_STACKS ||
-            deckLayout === DeckLayout.VISUAL_STACKS_SPLIT,
-          'ring-4 ring-primary ring-opacity-70': isHighlighted,
-        },
-      )}
+      className={cn('relative inline-block align-middle mr-px rounded-[4.75%/3.5%] isolate group', {
+        'cursor-pointer': true,
+        '-mt-[140px]': deckLayout === DeckLayout.VISUAL_GRID_OVERLAP,
+        '-mt-[240px]':
+          deckLayout === DeckLayout.VISUAL_STACKS || deckLayout === DeckLayout.VISUAL_STACKS_SPLIT,
+        'ring-4 ring-primary/70': isHighlighted,
+      })}
       data-card-id={deckCard.cardId}
     >
       {(displayDropdown || displayQuantity) && (

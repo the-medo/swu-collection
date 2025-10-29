@@ -17,7 +17,7 @@ function FavDecks() {
     <>
       <Helmet title="Favorite Decks | SWUBase" />
       <AuthorizedRouteComponent title="Your favorite decks">
-        <div className="p-2 w-100">
+        <div className="p-2 w-full">
           <div className="flex flex-row gap-4 items-center justify-between mb-2">
             <h3>Your favorite decks</h3>
             <NewDeckDialog trigger={<Button>New deck</Button>} />

@@ -50,7 +50,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder 
 
   if (deckbuilder && owned) {
     return (
-      <div className="flex flex-1 flex-col gap-0 h-[100vh] max-h-[100vh] overflow-y-auto">
+      <div className="flex flex-1 flex-col gap-0 h-screen max-h-screen overflow-y-auto">
         <DeckContents deckId={deckId} deckbuilder />
       </div>
     );
@@ -88,7 +88,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder 
         )}
       </div>
       <div className="flex flex-row gap-4 text-sm italic mb-2">{data?.deck.description}</div>
-      <div className="flex flex-grow flex-col gap-0">
+      <div className="flex grow flex-col gap-0">
         <DeckContents deckId={deckId} />
       </div>
     </>

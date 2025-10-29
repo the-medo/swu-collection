@@ -72,7 +72,7 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div className="flex gap-1 flex-shrink-0">
+      <div className="flex gap-1 shrink-0">
         {leaderCard1 && (
           <CardImage
             card={leaderCard1}
@@ -111,7 +111,7 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
         </div>
       )}
       {extended && (
-        <div className="text-md font-bold w-[80px] flex-shrink-0">
+        <div className="text-md font-bold w-[80px] shrink-0">
           {gameWins}-{gameLosses}-{gameDraws}
         </div>
       )}

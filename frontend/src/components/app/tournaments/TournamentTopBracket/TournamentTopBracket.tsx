@@ -266,7 +266,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
   }
 
   return (
-    <div className="bg-card rounded-md border shadow-sm p-3">
+    <div className="bg-card rounded-md border shadow-xs p-3">
       <div className="flex flex-col lg:flex-row gap-4">
         {selectedDeckId ? (
           <DeckViewer selectedDeckId={selectedDeckId} setSelectedDeckId={setSelectedDeckId} />

@@ -52,7 +52,7 @@ export const NewPricingSourceRow: React.FC<NewPricingSourceRowProps> = ({
       <h4 className="font-medium mb-3">Add New Pricing Source</h4>
 
       <div className="flex flex-wrap gap-3">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <Label htmlFor="sourceType">Source Type</Label>
           <Input
             id="sourceType"
@@ -63,7 +63,7 @@ export const NewPricingSourceRow: React.FC<NewPricingSourceRowProps> = ({
           />
         </div>
 
-        <div className="flex-grow min-w-[200px]">
+        <div className="grow min-w-[200px]">
           <Label htmlFor="sourceLink">Source Link</Label>
           <Input
             id="sourceLink"
@@ -74,7 +74,7 @@ export const NewPricingSourceRow: React.FC<NewPricingSourceRowProps> = ({
           />
         </div>
 
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <Label htmlFor="sourceProductId">Source Product ID</Label>
           <Input
             id="sourceProductId"
@@ -85,7 +85,7 @@ export const NewPricingSourceRow: React.FC<NewPricingSourceRowProps> = ({
           />
         </div>
 
-        <div className="flex items-end flex-shrink-0">
+        <div className="flex items-end shrink-0">
           <Button
             onClick={handleCreate}
             disabled={!sourceLink || createMutation.isPending}

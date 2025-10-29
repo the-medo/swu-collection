@@ -89,7 +89,7 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
         {/* Sort By */}
         <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
-          <Label htmlFor="sort-by" className="max-xl:w-32 flex-shrink-0">
+          <Label htmlFor="sort-by" className="max-xl:w-32 shrink-0">
             Sort by:
           </Label>
           <Select value={sortBy} onValueChange={handleSortByChange}>
@@ -110,7 +110,7 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
 
         {/* Group By */}
         <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
-          <Label htmlFor="group-by" className="max-xl:w-32 flex-shrink-0">
+          <Label htmlFor="group-by" className="max-xl:w-32 shrink-0">
             Group by:
           </Label>
           <Select value={groupBy} onValueChange={handleGroupByChange}>
@@ -127,7 +127,7 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
 
         {/* Min Deck Count */}
         <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
-          <Label htmlFor="min-deck-count" className="max-xl:w-32 flex-shrink-0">
+          <Label htmlFor="min-deck-count" className="max-xl:w-32 shrink-0">
             Min. Deck Count:
           </Label>
           <Input
@@ -143,7 +143,7 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
 
         {/* Card Search */}
         <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
-          <Label htmlFor="card-search" className="max-xl:w-32 flex-shrink-0">
+          <Label htmlFor="card-search" className="max-xl:w-32 shrink-0">
             Card Search:
           </Label>
           <Input

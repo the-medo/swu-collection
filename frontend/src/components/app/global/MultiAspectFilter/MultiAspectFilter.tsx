@@ -104,7 +104,7 @@ const MultiAspectFilter: React.FC<MultiAspectFilterProps> = ({
   }, [showLabel, possibleAspects]);
 
   return (
-    <div className={cn('flex flex-wrap flex-grow justify-center items-center gap-2', className)}>
+    <div className={cn('flex flex-wrap grow justify-center items-center gap-2', className)}>
       {showAllOption && <Button onClick={handleAllSelection}>{allLabel}</Button>}
       {showNoneOption && <Button onClick={handleNoneSelection}>{noneLabel}</Button>}
       <div className="flex items-center">

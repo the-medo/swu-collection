@@ -71,7 +71,7 @@ const PriceSourceSelector: React.FC = () => {
                 >
                   <NavigationMenuLink asChild>
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-10 h-10 relative bg-white/90 p-1">
+                      <div className="shrink-0 w-10 h-10 relative bg-white/90 p-1">
                         <img
                           src={option.logo}
                           alt={option.name}

@@ -50,7 +50,7 @@ const CardDecksDialog: React.FC<CardDecksDialogProps> = ({
       size="large"
       onOpenChange={onOpenChange}
       open={open}
-      contentClassName={`w-[100vw] h-[100vh] md:max-w-[90%] min-h-[90%]`}
+      contentClassName={`w-screen h-screen md:max-w-[90%] min-h-[90%]`}
     >
       <CardDecks cardId={cardId} {...props} />
     </Dialog>

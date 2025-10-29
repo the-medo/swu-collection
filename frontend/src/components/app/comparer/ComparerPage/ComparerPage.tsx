@@ -181,7 +181,7 @@ const ComparerPage: React.FC = () => {
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="flex flex-grow flex-col gap-2 p-4">
+              <div className="flex grow flex-col gap-2 p-4">
                 {allEntries.map(entry => (
                   <div
                     key={entry.id}

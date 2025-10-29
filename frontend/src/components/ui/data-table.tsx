@@ -130,7 +130,7 @@ export function DataTable<TData, TValue>({
                             {typeof headerContent === 'string' ? headerContent : headerContent({})}
                           </div>
                         )}
-                      <div className={cn('flex-grow', headerContent ? 'text-right' : '')}>
+                      <div className={cn('grow', headerContent ? 'text-right' : '')}>
                         {loading ? (
                           <Skeleton className="h-4 w-full rounded-md" />
                         ) : (

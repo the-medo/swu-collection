@@ -16,12 +16,12 @@ import { cn } from '@/lib/utils.ts';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
-const dialogVariants = cva('max-w-[100vw] lg:max-w-[90vw] max-h-[100vh] lg:max-h-[90vh] ', {
+const dialogVariants = cva('max-w-[100vw] lg:max-w-[90vw] max-h-screen lg:max-h-[90vh] ', {
   variants: {
     size: {
       default: 'lg:max-w-[425px]',
       medium: 'lg:max-w-[800px]',
-      large: 'lg:max-w-[95%] h-[100vh] md:min-h-[80%] md:max-h-[90%]',
+      large: 'lg:max-w-[95%] h-screen md:min-h-[80%] md:max-h-[90%]',
     },
   },
   defaultVariants: {
@@ -85,7 +85,7 @@ const Dialog: React.FC<DialogProps> = ({
         aria-describedby={typeof headerDescription === 'string' ? headerDescription : undefined}
       >
         {headerComponent}
-        <div className="overflow-y-auto flex-grow">{children}</div>
+        <div className="overflow-y-auto grow">{children}</div>
         {footerComponent}
       </DialogContent>
     </DialogRoot>

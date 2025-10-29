@@ -56,7 +56,7 @@ const BracketPlayer: React.FC<BracketPlayerProps> = ({
       onMouseLeave={onMouseLeave}
       onClick={onClick}
     >
-      <div className="flex gap-1 flex-shrink-0">
+      <div className="flex gap-1 shrink-0">
         {leaderCard && (
           <CardImage
             card={leaderCard}
@@ -96,7 +96,7 @@ const BracketPlayer: React.FC<BracketPlayerProps> = ({
       {showScore && (
         <div
           className={cn(
-            'ml-auto px-2 py-1 flex items-center justify-center rounded-md text-lg font-bold flex-shrink-0 min-w-8 self-stretch flex items-center justify-center',
+            'ml-auto px-2 py-1 flex items-center justify-center rounded-md text-lg font-bold shrink-0 min-w-8 self-stretch flex items-center justify-center',
             isWinner
               ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
               : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
@@ -106,7 +106,7 @@ const BracketPlayer: React.FC<BracketPlayerProps> = ({
         </div>
       )}
       {isWinner && deck.tournamentDeck.placement === 1 && !showScore && (
-        <Trophy className="h-4 w-4 text-amber-500 ml-auto flex-shrink-0" />
+        <Trophy className="h-4 w-4 text-amber-500 ml-auto shrink-0" />
       )}
     </div>
   );

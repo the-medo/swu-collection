@@ -27,7 +27,7 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({ tournamentId 
         {!loading && tournament && (
           <div className="grid grid-cols-1 gap-4">
             {/* Tournament Info Table */}
-            <div className="bg-card rounded-md border shadow-sm p-3">
+            <div className="bg-card rounded-md border shadow-xs p-3">
               <table className="w-full text-sm">
                 <tbody>
                   <tr>

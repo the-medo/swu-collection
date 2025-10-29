@@ -68,7 +68,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
         <Helmet title="Card Search | SWUBase" />
         <div
           className={cn(
-            'flex flex-col lg:flex-row min-h-[100vh] -m-2',
+            'flex flex-col lg:flex-row min-h-screen -m-2',
             // sidebarOpen ? 'lg:flex-row' : 'md:flex-row',
           )}
         >
@@ -86,11 +86,11 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
         className={cn(
           'flex',
           'flex-col @[580px]/main-body:flex-row',
-          'min-h-[500px] @[580px]/main-body:min-h-[100vh]',
+          'min-h-[500px] @[580px]/main-body:min-h-screen',
         )}
       >
         <AdvancedSearchFilters onSearch={onSearch} footerElement={filtersFooterElement} />
-        <div className="flex flex-col @[1080px]/main-body:flex-row flex-[1]">
+        <div className="flex flex-col @[1080px]/main-body:flex-row flex-1">
           <div className="flex flex-row gap-4 items-start flex-wrap p-2 @[1080px]/main-body:hidden">
             <Button
               onClick={() => setResultsOrChildren('results')}

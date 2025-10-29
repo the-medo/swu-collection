@@ -185,7 +185,7 @@ const WeeklyChangeAreaBumpTooltip: React.FC<WeeklyChangeAreaBumpTooltipProps> = 
     <div className="flex items-center justify-end gap-1">
       <span className="font-semibold tabular-nums text-sm">{isPercent ? formatPct(v) : v}</span>
       {place ? (
-        <span className="inline-flex items-center rounded-full bg-muted px-1 py-[1px] text-[9px] font-medium text-muted-foreground">
+        <span className="inline-flex items-center rounded-full bg-muted px-1 py-px text-[9px] font-medium text-muted-foreground">
           {toOrdinal(place)}
         </span>
       ) : null}

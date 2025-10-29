@@ -43,7 +43,7 @@ const CardVariantDialogSelector: React.FC<CardVariantDialogSelectorProps> = ({
         >
           <CardImage card={card} cardVariantId={variantId} size="w100">
             {isOverride && (
-              <div className="absolute bottom-0 w-full flex justify-center items-center bg-black bg-opacity-50 p-1">
+              <div className="absolute bottom-0 w-full flex justify-center items-center bg-black/50 p-1">
                 <Badge variant="destructive">Override</Badge>
               </div>
             )}

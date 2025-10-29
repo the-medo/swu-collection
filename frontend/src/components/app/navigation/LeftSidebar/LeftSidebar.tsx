@@ -208,8 +208,8 @@ export function LeftSidebar() {
                 alt="Logo"
               />
               <h3 className="mb-0">
-                <span className="font-[400]">SWU</span>
-                <span className="font-[700]">BASE</span>
+                <span className="font-normal">SWU</span>
+                <span className="font-bold">BASE</span>
               </h3>
             </div>
           ) : (
