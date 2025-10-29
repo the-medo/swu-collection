@@ -10,6 +10,7 @@ import { queryClient } from '@/queryClient.ts';
 import { DatabaseProvider } from '@/providers/DatabaseProvider.tsx';
 import { HelmetProvider } from 'react-helmet-async';
 import { TooltipProvider } from '@/components/ui/tooltip.tsx';
+import * as Sentry from '@sentry/react';
 
 const router = createRouter({ routeTree });
 
@@ -18,6 +19,14 @@ declare module '@tanstack/react-router' {
     router: typeof router;
   }
 }
+
+Sentry.init({
+  enabled: import.meta.env.VITE_ENVIRONMENT !== 'local',
+  dsn: import.meta.env.VITE_SENTRY_FRONTEND_DSN,
+  environment: import.meta.env.VITE_ENVIRONMENT,
+  enableLogs: true,
+  integrations: [Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] })],
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
