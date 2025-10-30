@@ -234,7 +234,7 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
 
       <div className="w-full overflow-visible">
         <div className="flex flex-wrap gap-3">
-          <div className="min-w-[250px] flex-[2] overflow-visible">
+          <div className="min-w-[250px] flex-2 overflow-visible">
             <div className="h-[250px] w-full">
               {chartData.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-muted-foreground">

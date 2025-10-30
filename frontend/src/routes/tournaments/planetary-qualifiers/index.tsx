@@ -2,7 +2,6 @@ import TournamentsPlanetaryQualifiers from '@/components/app/tournaments/pages/T
 import { createFileRoute } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
-import { zodValidator } from '@tanstack/zod-adapter';
 
 const searchParams = z.object({
   page: z.enum(['tournaments', 'champions', 'top8', 'total']).default('champions'),
@@ -14,7 +13,7 @@ const searchParams = z.object({
 
 export const Route = createFileRoute('/tournaments/planetary-qualifiers/')({
   component: TournamentsPlanetaryQualifiersPage,
-  validateSearch: zodValidator(searchParams),
+  validateSearch: searchParams,
 });
 
 function TournamentsPlanetaryQualifiersPage() {

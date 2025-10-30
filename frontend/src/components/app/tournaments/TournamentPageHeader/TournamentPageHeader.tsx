@@ -8,7 +8,6 @@ import { useGetMetas } from '@/api/meta';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import NewTournamentDialog from '@/components/app/dialogs/NewTournamentDialog.tsx';
-import { Route } from '@/routes/__root.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import {
   Accordion,
@@ -29,7 +28,7 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
 }) => {
   const { isMobile } = useSidebar();
   const hasPermission = usePermissions();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const { formatId = 1, metaId } = useSearch({ strict: false });
   const { data: metasData, isLoading: isLoadingMetas } = useGetMetas();
   const canCreate = hasPermission('tournament', 'create');
@@ -37,6 +36,7 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
   const setFormat = useCallback(
     (v: number | null) => {
       navigate({
+        to: '.',
         search: prev => ({ ...prev, formatId: v ?? formatData[0].id }),
       });
     },
@@ -46,6 +46,7 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
   const setMeta = useCallback(
     (v: number) => {
       navigate({
+        to: '.',
         search: prev => ({ ...prev, metaId: v }),
       });
     },
@@ -78,6 +79,7 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
   useEffect(() => {
     if (!selectedMetaId || metaId === selectedMetaId) return;
     navigate({
+      to: '.',
       search: prev => ({ ...prev, metaId: selectedMetaId }),
     });
   }, [metaId, selectedMetaId]);

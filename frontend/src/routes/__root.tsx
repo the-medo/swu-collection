@@ -1,4 +1,3 @@
-import { zodValidator } from '@tanstack/zod-adapter';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { LeftSidebar } from '@/components/app/navigation/LeftSidebar/LeftSidebar.tsx';
 import { SidebarProvider } from '@/components/ui/sidebar.tsx';
@@ -30,7 +29,7 @@ const globalSearchParams = z.object({
   // Deck filter params
   deckLeaders: z.array(z.string()).optional(),
   deckBase: z.string().optional(),
-  deckAspects: z.array(z.nativeEnum(SwuAspect)).optional(),
+  deckAspects: z.array(z.enum(SwuAspect)).optional(),
   deckFormat: z.coerce.number().int().positive().optional(),
   deckSort: z
     .enum([
@@ -93,7 +92,7 @@ export const Route = createRootRoute({
     <>
       <SidebarProvider>
         <LeftSidebar />
-        <main className="w-full h-[100vh] max-h-[100vh] overflow-y-scroll p-2">
+        <main className="w-full h-screen max-h-screen overflow-y-scroll p-2">
           <div className="flex flex-col w-full @container/main-body">
             <Outlet />
             <CardDetailDialog />
@@ -108,5 +107,5 @@ export const Route = createRootRoute({
       <UserSettingsLoader />
     </>
   ),
-  validateSearch: zodValidator(globalSearchParams),
+  validateSearch: globalSearchParams,
 });

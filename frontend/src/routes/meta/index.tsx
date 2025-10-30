@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { formatData } from '../../../../types/Format.ts';
 import { z } from 'zod';
-import { zodValidator } from '@tanstack/zod-adapter';
 import { tournamentTypes } from '../../../../types/Tournament.ts';
 import MetaPage from '@/components/app/meta/MetaPage/MetaPage.tsx';
 
@@ -25,5 +24,5 @@ const searchParams = z.object({
 
 export const Route = createFileRoute('/meta/')({
   component: MetaPage,
-  validateSearch: zodValidator(searchParams),
+  validateSearch: searchParams,
 });

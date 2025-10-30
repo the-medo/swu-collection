@@ -2,16 +2,16 @@ import { z } from 'zod';
 import { CollectionType } from './enums.ts';
 
 export const zCollectionSchema = z.object({
-  id: z.string().uuid(),
-  userId: z.string().uuid(),
+  id: z.guid(),
+  userId: z.guid(),
   title: z.string().min(3).max(255),
   description: z.string(),
-  collectionType: z.nativeEnum(CollectionType).default(CollectionType.COLLECTION),
+  collectionType: z.enum(CollectionType).default(CollectionType.COLLECTION),
   public: z.boolean().default(false),
   forSale: z.boolean().default(false),
   forDecks: z.boolean().default(false),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 });
 
 export const zCollectionCreateRequest = zCollectionSchema.pick({
@@ -40,7 +40,7 @@ export const zCollectionUpdateRequest = zCollectionSchema
 
 export const zCollectionDuplicateRequest = z.object({
   title: z.string().min(3).max(255),
-  collectionType: z.nativeEnum(CollectionType).default(CollectionType.COLLECTION),
+  collectionType: z.enum(CollectionType).default(CollectionType.COLLECTION),
   public: z.boolean().default(false),
 });
 

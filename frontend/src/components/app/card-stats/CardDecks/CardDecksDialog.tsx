@@ -3,7 +3,6 @@ import { CardStatsParams } from '@/api/card-stats';
 import Dialog from '@/components/app/global/Dialog.tsx';
 import CardDecks from '@/components/app/card-stats/CardDecks/CardDecks.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import { useCallback } from 'react';
 
 type CardDecksDialogProps = {
@@ -21,11 +20,12 @@ const CardDecksDialog: React.FC<CardDecksDialogProps> = ({
   const { modalCardDecksId, modalCardDecksLeaderCardId, modalCardDecksBaseCardId } = useSearch({
     strict: false,
   });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   const onOpenChange = useCallback(
     (open: boolean) => {
       void navigate({
+        to: '.',
         search: prev => ({
           ...prev,
           modalCardDecksId: open ? cardId : undefined,
@@ -50,7 +50,7 @@ const CardDecksDialog: React.FC<CardDecksDialogProps> = ({
       size="large"
       onOpenChange={onOpenChange}
       open={open}
-      contentClassName={`w-[100vw] h-[100vh] md:max-w-[90%] min-h-[90%]`}
+      contentClassName={`w-screen h-screen md:max-w-[90%] min-h-[90%]`}
     >
       <CardDecks cardId={cardId} {...props} />
     </Dialog>

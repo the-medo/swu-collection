@@ -11,7 +11,7 @@ import { updateTournamentGroupStatistics } from '../../../../lib/card-statistics
 
 // Define request body schema
 const zTournamentGroupTournamentCreateRequest = z.object({
-  tournamentId: z.string().uuid(),
+  tournamentId: z.guid(),
   position: z.number().int().optional(),
 });
 
@@ -20,7 +20,7 @@ export const tournamentGroupIdTournamentsPostRoute = new Hono<AuthExtension>().p
   zValidator('json', zTournamentGroupTournamentCreateRequest),
   async c => {
     const user = c.get('user');
-    const groupId = z.string().uuid().parse(c.req.param('id'));
+    const groupId = z.guid().parse(c.req.param('id'));
     const { tournamentId, position = 0 } = c.req.valid('json');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 

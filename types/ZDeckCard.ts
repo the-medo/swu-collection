@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const zDeckCardSchema = z.object({
-  deckId: z.string().uuid(),
+  deckId: z.guid(),
   cardId: z.string(),
   board: z.number().int().min(1).max(3),
   note: z.string().nullable(),

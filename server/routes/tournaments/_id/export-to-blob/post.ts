@@ -37,7 +37,7 @@ async function putJson(key: string, data: unknown) {
 }
 
 export const tournamentIdExportToBlobPostRoute = new Hono<AuthExtension>().post('/', async c => {
-  const paramTournamentId = z.string().uuid().parse(c.req.param('id'));
+  const paramTournamentId = z.guid().parse(c.req.param('id'));
   const user = c.get('user');
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 

@@ -5,7 +5,7 @@ import { DeckSortField } from '../../../../../../types/ZDeck.ts';
 import { useCallback, useEffect, useState } from 'react';
 import type { DeckQueryParams } from '../../../../../../server/routes/decks/get.ts';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { Route, GlobalSearchParams } from '@/routes/__root.tsx';
+import { GlobalSearchParams } from '@/routes/__root.tsx';
 
 export type SortOrder = 'asc' | 'desc';
 
@@ -101,7 +101,7 @@ const resetFilters = () =>
   }));
 
 export function useDeckFilterStore(sortable?: boolean) {
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   const initialized = useStore(store, state => state.initialized);
   const leaders = useStore(store, state => state.leaders);
@@ -144,6 +144,7 @@ export function useDeckFilterStore(sortable?: boolean) {
       });
 
       void navigate({
+        to: '.',
         search: old => {
           // Create a new object without any deck filter params
           const filteredOld = { ...old };

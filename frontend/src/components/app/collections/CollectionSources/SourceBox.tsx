@@ -16,7 +16,7 @@ const SourceBox: React.FC<SourceBoxProps> = ({ row, selected = false, onSelect }
 
   return (
     <div
-      className={`border rounded-lg p-3 shadow-sm bg-card text-card-foreground flex items-center justify-between gap-4 ${selected ? 'border-primary ring-1 ring-primary' : 'hover:border-primary cursor-pointer'}`}
+      className={`border rounded-lg p-3 shadow-xs bg-card text-card-foreground flex items-center justify-between gap-4 ${selected ? 'border-primary ring-1 ring-primary' : 'hover:border-primary cursor-pointer'}`}
       onClick={onSelect}
       role={onSelect ? 'button' : undefined}
       aria-pressed={onSelect ? (selected ? 'true' : 'false') : undefined}

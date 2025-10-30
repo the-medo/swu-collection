@@ -50,7 +50,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
         className={cn(
           'flex gap-2 items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
           page === 'card-stats'
-            ? 'bg-background text-foreground shadow-sm'
+            ? 'bg-background text-foreground shadow-xs'
             : 'text-muted-foreground hover:text-foreground',
         )}
       >
@@ -70,7 +70,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             page === 'tournaments'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-xs'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >
@@ -85,7 +85,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             page === 'meta'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-xs'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >
@@ -97,7 +97,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             page === 'matchups'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-xs'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >
@@ -109,7 +109,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             page === 'decks'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-xs'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >

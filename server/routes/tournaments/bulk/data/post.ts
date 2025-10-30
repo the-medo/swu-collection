@@ -18,7 +18,7 @@ export interface TournamentsBulkResponse {
 
 // Define request body schema
 const zBulkTournamentsBody = z.object({
-  ids: z.array(z.string().uuid()).refine(ids => ids.length > 0, {
+  ids: z.array(z.guid()).refine(ids => ids.length > 0, {
     message: 'At least one tournament ID must be provided',
   }),
 });

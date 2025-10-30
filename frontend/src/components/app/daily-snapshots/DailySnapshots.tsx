@@ -110,8 +110,8 @@ const DailySnapshots: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-center font-medium text-foreground/80 mb-0"
           >
-            <span className="font-[400]">SWU</span>
-            <span className="font-[700]">BASE</span>
+            <span className="font-normal">SWU</span>
+            <span className="font-bold">BASE</span>
           </motion.h1>
           <motion.h4
             initial={{ opacity: 0 }}
@@ -141,7 +141,7 @@ const DailySnapshots: React.FC = () => {
             'grid gap-4',
             // 2 cols on small, then 3, 4, and your fixed 5-col layout at xl
             'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-            'auto-rows-[minmax(12rem,_auto)]',
+            'auto-rows-[minmax(12rem,auto)]',
             'grid-flow-dense',
           )}
         >
@@ -159,9 +159,9 @@ const DailySnapshots: React.FC = () => {
               return (
                 <div
                   key={sectionName}
-                  className={cn('border rounded-lg bg-card p-4 shadow-sm h-full min-w-0')}
+                  className={cn('border rounded-lg bg-card p-4 shadow-xs h-full min-w-0')}
                 >
-                  <div className="font-medium mb-2 break-words">{sectionName}</div>
+                  <div className="font-medium mb-2 wrap-break-word">{sectionName}</div>
                   {Comp ? (
                     <Comp
                       payload={payload}
@@ -181,7 +181,7 @@ const DailySnapshots: React.FC = () => {
               <GridSection key={sectionName} sizing={sizing}>
                 <div
                   className={cn(
-                    'border rounded-lg bg-card p-4 shadow-sm h-full min-w-0 flex flex-col min-h-0',
+                    'border rounded-lg bg-card p-4 shadow-xs h-full min-w-0 flex flex-col min-h-0',
                   )}
                 >
                   {Comp ? (

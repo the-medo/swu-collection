@@ -2,18 +2,6 @@
 export default {
   darkMode: ['class'],
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  safelist: [
-    ...['', 'md:', 'lg:', 'xl:'].flatMap(bp => [
-      ...Array.from({ length: 6 }, (_, i) => `${bp}row-start-${i + 1}`),
-      ...Array.from({ length: 6 }, (_, i) => `${bp}row-end-${i + 2}`),
-      ...Array.from({ length: 6 }, (_, i) => `${bp}col-start-${i + 1}`),
-      ...Array.from({ length: 6 }, (_, i) => `${bp}col-end-${i + 2}`),
-      `${bp}col-start-[-1]`,
-      `${bp}col-start-[-2]`,
-      `${bp}col-end-[-1]`,
-      `${bp}col-end-[-2]`,
-    ]),
-  ],
   theme: {
     extend: {
       borderRadius: {
@@ -97,5 +85,4 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/container-queries')],
 };

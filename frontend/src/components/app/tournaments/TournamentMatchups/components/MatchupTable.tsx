@@ -185,7 +185,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     matchupData.keys.length > MAX_DISPLAY_ITEMS || filteredKeys.length < matchupData.keys.length;
 
   return (
-    <div className="relative overflow-x-auto overflow-y-auto max-h-[100vh]">
+    <div className="relative overflow-x-auto overflow-y-auto max-h-screen">
       <MatchupTableContent
         tableRef={tableRef}
         matchupData={limitedMatchupData}

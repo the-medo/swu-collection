@@ -140,7 +140,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   const headerDescription = useMemo(() => {
     return (
       <div className="flex flex-wrap gap-2 items-center">
-        <div className="flex flex-grow min-w-[200px]">
+        <div className="flex grow min-w-[200px]">
           <Input
             icon={Search}
             placeholder="Search"

@@ -26,13 +26,7 @@ const EditCollectionDialog: React.FC<EditCollectionDialogProps> = ({ trigger, co
   const cardListString = isCollection ? 'Collection' : 'Wantlist';
   const putCollectionMutation = usePutCollection();
 
-  const form = useForm<{
-    title: string;
-    description: string;
-    public: boolean;
-    forSale: boolean;
-    forDecks: boolean;
-  }>({
+  const form = useForm({
     defaultValues: {
       title: collection.title ?? '',
       description: collection.description ?? '',

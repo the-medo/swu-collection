@@ -1,16 +1,17 @@
 import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
 import * as React from 'react';
+import { useState } from 'react';
 import { useUser } from '@/hooks/useUser.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useForm } from '@tanstack/react-form';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { useState } from 'react';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { Collection } from '../../../../../types/Collection.ts';
 import { useDeleteCollection } from '@/api/collections/useDeleteCollection.ts';
 import { Label } from '@/components/ui/label.tsx';
 import { useNavigate } from '@tanstack/react-router';
+import { CollectionType } from '../../../../../types/enums.ts';
 
 type DeleteCollectionDialogProps = Pick<DialogProps, 'trigger'> & {
   collection: Collection;
@@ -18,16 +19,14 @@ type DeleteCollectionDialogProps = Pick<DialogProps, 'trigger'> & {
 
 const DeleteCollectionDialog: React.FC<DeleteCollectionDialogProps> = ({ trigger, collection }) => {
   const navigate = useNavigate();
-  const wantlist = collection.wantlist;
+  const wantlist = collection.collectionType === CollectionType.WANTLIST;
   const user = useUser();
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const cardListString = wantlist ? 'Wantlist' : 'Collection';
   const deleteCollectionMutation = useDeleteCollection();
 
-  const form = useForm<{
-    confirmationText: string;
-  }>({
+  const form = useForm({
     defaultValues: {
       confirmationText: '',
     },

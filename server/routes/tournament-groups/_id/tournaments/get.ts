@@ -8,7 +8,7 @@ import { tournament as tournamentTable } from '../../../../db/schema/tournament.
 import { z } from 'zod';
 
 export const tournamentGroupIdTournamentsGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const groupId = z.string().uuid().parse(c.req.param('id'));
+  const groupId = z.guid().parse(c.req.param('id'));
 
   // Check if the tournament group exists
   const existingGroup = await db

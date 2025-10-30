@@ -12,7 +12,6 @@ import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.
 import { TournamentInfoMap } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { TournamentMatch } from '../../../../../../server/db/schema/tournament_match.ts';
 import { useSearch, useNavigate } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import MobileCard from '@/components/ui/mobile-card.tsx';
 import { useMemo } from 'react';
 
@@ -24,7 +23,7 @@ export interface TournamentMatchupsProps {
 
 const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tournaments, matches }) => {
   const search = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   // Use URL parameters with fallbacks to default values
   const matchFilter = (search.maMatchFilter as MatchFilter) || 'all';
@@ -41,30 +40,35 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
   // Functions to update URL parameters
   const setMatchFilter = (value: MatchFilter) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, maMatchFilter: value }),
     });
   };
 
   const setMinRound = (value: number | undefined) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, maMinRound: value }),
     });
   };
 
   const setMinPoints = (value: number | undefined) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, maMinPoints: value }),
     });
   };
 
   const setMetaInfo = (value: MetaInfo) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, maMetaInfo: value }),
     });
   };
 
   const setDisplayMode = (value: MatchupDisplayMode) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, maDisplayMode: value }),
     });
   };

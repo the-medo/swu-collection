@@ -8,7 +8,7 @@ import { deckInformation as deckInformationTable } from '../../../db/schema/deck
 import type { AuthExtension } from '../../../auth/auth.ts';
 
 export const deckIdDeleteRoute = new Hono<AuthExtension>().delete('/', async c => {
-  const paramDeckId = z.string().uuid().parse(c.req.param('id'));
+  const paramDeckId = z.guid().parse(c.req.param('id'));
   const user = c.get('user');
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 

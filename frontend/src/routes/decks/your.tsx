@@ -16,7 +16,7 @@ function YourDecks() {
   return (
     <AuthorizedRouteComponent>
       <Helmet title="Your Decks | SWUBase" />
-      <div className="p-2 w-100">
+      <div className="p-2 w-full">
         <div className="flex flex-row gap-4 items-center justify-between mb-2">
           <h3>Your decks</h3>
           <NewDeckDialog trigger={<Button>New deck</Button>} />

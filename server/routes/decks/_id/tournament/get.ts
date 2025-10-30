@@ -12,7 +12,7 @@ import { selectDeck, selectDeckInformation } from '../../../deck.ts';
 import { selectTournament } from '../../../tournament.ts';
 
 export const deckIdTournamentGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const paramDeckId = z.string().uuid().parse(c.req.param('id'));
+  const paramDeckId = z.guid().parse(c.req.param('id'));
 
   // First, check if the deck was in a tournament
   const tournamentDeckData = (

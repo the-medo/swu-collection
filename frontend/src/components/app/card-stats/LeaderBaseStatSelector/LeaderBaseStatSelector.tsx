@@ -3,7 +3,6 @@ import { useSearch, Link, useNavigate } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
 import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
 import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx';
-import { Route } from '@/routes/__root.tsx';
 import { useCallback } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { baseSpecialNames, basicBaseForAspect } from '../../../../../../shared/lib/basicBases.ts';
@@ -22,7 +21,7 @@ const LeaderBaseStatSelector: React.FC<LeaderBaseStatSelectorProps> = ({
   size = 'w300',
 }) => {
   const { csLeaderId, csBaseId, csLeaderId2, csBaseId2 } = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const { data: cardListData } = useCardList();
 
   // Determine which URL parameters to use based on type
@@ -39,6 +38,7 @@ const LeaderBaseStatSelector: React.FC<LeaderBaseStatSelectorProps> = ({
       }
 
       navigate({
+        to: '.',
         search: prev => ({
           ...prev,
           [baseUrlParam]: baseId,
@@ -56,6 +56,7 @@ const LeaderBaseStatSelector: React.FC<LeaderBaseStatSelectorProps> = ({
           leaderCardId={leaderId}
           onLeaderSelected={leaderId => {
             navigate({
+              to: '.',
               search: prev => ({
                 ...prev,
                 [leaderUrlParam]: leaderId,

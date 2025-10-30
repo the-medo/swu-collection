@@ -53,7 +53,7 @@ const BigCardItem: React.FC<BigCardItemProps> = ({
         forceHorizontal={horizontal}
       >
         {(collectionCard.price || owned) && (
-          <div className="absolute bottom-0 right-0 w-fit min-w-20 flex grow-0 items-center gap-1 bg-secondary bg-opacity-80 py-2 px-2 mr-0 mb-0">
+          <div className="absolute bottom-0 right-0 w-fit min-w-20 flex grow-0 items-center gap-1 bg-secondary/80 py-2 px-2 mr-0 mb-0">
             <div className="flex gap-2 items-center w-full justify-end">
               {owned ? (
                 //@ts-ignore
@@ -78,7 +78,7 @@ const BigCardItem: React.FC<BigCardItemProps> = ({
           {conditionRenderer(collectionCard.condition)}
           {languageRenderer(collectionCard.language, false)}
         </div>
-        <div className="flex flex-col gap-2 justify-end items-end z-[2]">
+        <div className="flex flex-col gap-2 justify-end items-end z-2">
           {owned ? (
             // @ts-ignore
             <CollectionCardInput

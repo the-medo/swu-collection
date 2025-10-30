@@ -11,22 +11,16 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox, handleChangeOfNonindeterminateValue } from '@/components/ui/checkbox';
 import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector';
 import { usePostTournamentGroup, usePutTournamentGroup } from '@/api/tournament-groups';
 import { TournamentGroup } from '../../../../../types/TournamentGroup.ts';
+import { z } from 'zod';
+import FormFieldError from '@/components/app/global/FormFieldError.tsx';
 
-// Validators
-const nameValidator = (value: string) => {
-  if (!value) return 'Name is required';
-  if (value.length > 255) return 'Name must be less than 255 characters';
-  return undefined;
-};
-
-const positionValidator = (value: number) => {
-  if (value < 0) return 'Position must be a positive number';
-  return undefined;
-};
+const nameValidator = z.string().min(1).max(255);
+const positionValidator = z.number().min(0);
+const metaValidator = z.number().min(1);
 
 interface TournamentGroupFormProps {
   open: boolean;
@@ -61,10 +55,15 @@ export function TournamentGroupForm({
     onSubmit: async ({ value }) => {
       setIsSubmitting(true);
       try {
+        const finalValue = {
+          ...value,
+          metaId: value?.metaId ?? undefined,
+        };
+
         if (isEditing) {
-          await updateGroup.mutateAsync(value);
+          await updateGroup.mutateAsync(finalValue);
         } else {
-          await createGroup.mutateAsync(value);
+          await createGroup.mutateAsync(finalValue);
         }
         form.reset();
         onSuccess();
@@ -108,11 +107,7 @@ export function TournamentGroupForm({
                   onChange={e => field.handleChange(e.target.value)}
                   required
                 />
-                {field.state.meta.touchedErrors ? (
-                  <p className="text-sm font-medium text-destructive">
-                    {field.state.meta.touchedErrors}
-                  </p>
-                ) : null}
+                <FormFieldError meta={field.state.meta} />
               </div>
             )}
           />
@@ -120,19 +115,19 @@ export function TournamentGroupForm({
           {/* Meta field */}
           <form.Field
             name="metaId"
+            validators={{
+              onChange: metaValidator,
+              onBlur: metaValidator,
+            }}
             children={field => (
               <div className="space-y-2">
                 <Label htmlFor={field.name}>Meta</Label>
                 <MetaSelector
-                  value={field.state.value}
+                  value={field.state.value || null}
                   onChange={field.handleChange}
                   emptyOption={true}
                 />
-                {field.state.meta.touchedErrors ? (
-                  <p className="text-sm font-medium text-destructive">
-                    {field.state.meta.touchedErrors}
-                  </p>
-                ) : null}
+                <FormFieldError meta={field.state.meta} />
               </div>
             )}
           />
@@ -155,11 +150,7 @@ export function TournamentGroupForm({
                   onBlur={field.handleBlur}
                   onChange={e => field.handleChange(parseInt(e.target.value) || 0)}
                 />
-                {field.state.meta.touchedErrors ? (
-                  <p className="text-sm font-medium text-destructive">
-                    {field.state.meta.touchedErrors}
-                  </p>
-                ) : null}
+                <FormFieldError meta={field.state.meta} />
               </div>
             )}
           />
@@ -177,11 +168,6 @@ export function TournamentGroupForm({
                   onBlur={field.handleBlur}
                   onChange={e => field.handleChange(e.target.value)}
                 />
-                {field.state.meta.touchedErrors ? (
-                  <p className="text-sm font-medium text-destructive">
-                    {field.state.meta.touchedErrors}
-                  </p>
-                ) : null}
               </div>
             )}
           />
@@ -194,7 +180,7 @@ export function TournamentGroupForm({
                 <Checkbox
                   id={field.name}
                   checked={field.state.value}
-                  onCheckedChange={field.handleChange}
+                  onCheckedChange={handleChangeOfNonindeterminateValue(field.handleChange)}
                 />
                 <div className="space-y-1 leading-none">
                   <Label htmlFor={field.name}>Visible</Label>

@@ -8,7 +8,7 @@ import type { DeckCard } from '../../../../../types/ZDeckCard.ts';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 
 export const deckIdCardGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const paramDeckId = z.string().uuid().parse(c.req.param('id'));
+  const paramDeckId = z.guid().parse(c.req.param('id'));
   const user = c.get('user');
 
   const isPublicOrUnlisted = gte(deckTable.public, 1);

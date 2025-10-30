@@ -23,6 +23,15 @@ import { injectMetaTags } from './lib/utils/htmlTemplate';
 import { timeout } from 'hono/timeout';
 import fs from 'fs';
 import path from 'path';
+import * as Sentry from '@sentry/bun';
+
+Sentry.init({
+  environment: process.env.ENVIRONMENT,
+  dsn: process.env.SENTRY_BACKEND_DSN,
+  tracesSampleRate: 1.0,
+  enableLogs: process.env.ENVIRONMENT !== 'local',
+  integrations: [Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] })],
+});
 
 const app = new Hono<AuthExtension>();
 
@@ -34,6 +43,13 @@ app.use('*', async (c, next) => {
     c.set('user', null);
     c.set('session', null);
     return next();
+  }
+
+  if (session.user) {
+    Sentry.setUser({
+      id: session.user.id,
+      email: session.user.email,
+    });
   }
 
   c.set('user', session.user);

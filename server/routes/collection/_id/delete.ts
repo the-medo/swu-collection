@@ -11,7 +11,7 @@ import { collectionCard as collectionCardTable } from '../../../db/schema/collec
  * - only user's collection
  * */
 export const collectionIdDeleteRoute = new Hono<AuthExtension>().delete('/', async c => {
-  const paramCollectionId = z.string().uuid().parse(c.req.param('id'));
+  const paramCollectionId = z.guid().parse(c.req.param('id'));
   const user = c.get('user');
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 

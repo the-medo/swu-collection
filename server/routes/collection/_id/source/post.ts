@@ -8,7 +8,7 @@ import { collectionSourceCollection as cscTable } from '../../../../db/schema/co
 import { and, eq } from 'drizzle-orm';
 
 const bodySchema = z.object({
-  sourceCollectionId: z.string().uuid(),
+  sourceCollectionId: z.guid(),
   displayOnSource: z.boolean().optional(),
 });
 

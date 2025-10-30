@@ -10,7 +10,7 @@ import { tournament as tournamentTable } from '../../../../db/schema/tournament.
 
 // Define request body schema
 const zTournamentGroupTournamentUpdateRequest = z.object({
-  tournamentId: z.string().uuid(),
+  tournamentId: z.guid(),
   position: z.number().int(),
 });
 
@@ -19,7 +19,7 @@ export const tournamentGroupIdTournamentsPutRoute = new Hono<AuthExtension>().pu
   zValidator('json', zTournamentGroupTournamentUpdateRequest),
   async c => {
     const user = c.get('user');
-    const groupId = z.string().uuid().parse(c.req.param('id'));
+    const groupId = z.guid().parse(c.req.param('id'));
     const { tournamentId, position } = c.req.valid('json');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 

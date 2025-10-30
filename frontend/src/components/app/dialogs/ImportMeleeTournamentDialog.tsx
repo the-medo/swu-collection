@@ -30,8 +30,8 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
       forcedRoundId: '',
       isFix: false,
       markAsImported: true,
-      minRound: undefined,
-      maxRound: undefined,
+      minRound: 0,
+      maxRound: 0,
     },
     onSubmit: async ({ value }) => {
       if (value.meleeId) {
@@ -151,7 +151,9 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
                       placeholder="Min"
                       value={field.state.value !== undefined ? String(field.state.value) : ''}
                       onBlur={field.handleBlur}
-                      onChange={e => field.handleChange(e.target.value ? parseInt(e.target.value, 10) : undefined)}
+                      onChange={e =>
+                        field.handleChange(e.target.value ? parseInt(e.target.value, 10) : 0)
+                      }
                     />
                   </div>
                 )}
@@ -166,7 +168,9 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
                       placeholder="Max"
                       value={field.state.value !== undefined ? String(field.state.value) : ''}
                       onBlur={field.handleBlur}
-                      onChange={e => field.handleChange(e.target.value ? parseInt(e.target.value, 10) : undefined)}
+                      onChange={e =>
+                        field.handleChange(e.target.value ? parseInt(e.target.value, 10) : 0)
+                      }
                     />
                   </div>
                 )}

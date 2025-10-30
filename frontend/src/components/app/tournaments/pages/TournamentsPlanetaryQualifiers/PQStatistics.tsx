@@ -7,7 +7,6 @@ import WeekChangeButtons from './WeekChangeButtons.tsx';
 import PQSideStats from './PQSideStats.tsx';
 import WeekToWeekSideStats from './WeekToWeek/SideStats/WeekToWeekSideStats.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import PQPageNavigation from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/PQPageNavigation.tsx';
 import { useMemo } from 'react';
 import MetaInfoSelector, {
@@ -44,7 +43,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
   const processedTournamentGroups = useProcessedTournamentGroups(tournamentGroups);
 
   const { weekId, page = 'champions' } = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const chartTop = (page === 'tournaments' ? 'total' : page) as PQTop;
 
   // Find the most recent group ID for default selection
@@ -59,6 +58,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
   // Handle week selection
   const handleWeekSelect = (tournamentGroupId: string) => {
     navigate({
+      to: '.',
       search: prev => ({
         ...prev,
         weekId: tournamentGroupId,
@@ -68,6 +68,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
 
   const handleMetaInfoChange = (mi: MetaInfo) => {
     navigate({
+      to: '.',
       search: prev => ({
         ...prev,
         maMetaInfo: mi,

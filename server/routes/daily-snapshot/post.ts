@@ -8,13 +8,13 @@ import { dailySnapshot, dailySnapshotSection } from '../../db/schema/daily_snaps
 
 const zSectionsItem = z.object({
   section: z.string().min(1),
-  lastUpdatedAt: z.string().datetime().optional(),
+  lastUpdatedAt: z.iso.datetime().optional(),
 });
 
 // Accept sections as JSON body for POST
 const zDailySnapshotBody = z.object({
   date: z.string().min(1),
-  lastUpdatedAt: z.string().datetime().optional(), // not used for filtering per requirements
+  lastUpdatedAt: z.iso.datetime().optional(), // not used for filtering per requirements
   sections: z.array(zSectionsItem).optional().default([]),
 });
 

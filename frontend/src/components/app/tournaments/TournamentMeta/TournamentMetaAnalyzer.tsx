@@ -16,7 +16,6 @@ import TournamentMetaPieChart from './TournamentMetaPieChart';
 import { Alert } from '@/components/ui/alert.tsx';
 import { InfoIcon } from 'lucide-react';
 import { useSearch, useNavigate } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import MobileCard from '@/components/ui/mobile-card.tsx';
 import { Input } from '@/components/ui/input.tsx';
 
@@ -27,7 +26,7 @@ interface TournamentMetaAnalyzerProps {
 
 const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, tournaments }) => {
   const search = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   // Use URL parameters with fallbacks to default values
   const metaPart = (search.maMetaPart as MetaPart) || 'all';
@@ -40,18 +39,21 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   // Functions to update URL parameters
   const setMetaPart = (value: MetaPart) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, maMetaPart: value }),
     });
   };
 
   const setMetaInfo = (value: MetaInfo) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, maMetaInfo: value }),
     });
   };
 
   const setViewMode = (value: ViewMode) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, maViewMode: value }),
     });
   };

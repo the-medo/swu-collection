@@ -4,7 +4,6 @@ import { DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdow
 import DeckCardQuantitySelector from '@/components/app/decks/DeckContents/DeckCards/DeckCardQuantitySelector.tsx';
 import { DeckCardDropdownMenuProps } from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 import { useNavigate } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import { useToast } from '@/hooks/use-toast.ts';
 
 type DeckCardActionsDisplay = 'dropdown-menu' | 'card-detail-modal';
@@ -21,7 +20,7 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
   onQuantityChange,
 }) => {
   const { toast } = useToast();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
 
   return (
     <>
@@ -30,6 +29,7 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
           className="cursor-pointer"
           onSelect={() => {
             navigate({
+              to: '.',
               search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
             });
           }}

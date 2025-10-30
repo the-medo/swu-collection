@@ -26,7 +26,7 @@ interface TournamentFormProps {
 }
 
 const TournamentForm: React.FC<TournamentFormProps> = ({ initialData, onSubmit, isSubmitting }) => {
-  const form = useForm<ZTournamentCreateRequest>({
+  const form = useForm({
     defaultValues: {
       type: initialData?.type ?? 'local_tournament',
       location: initialData?.location || '',

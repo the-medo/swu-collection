@@ -49,7 +49,7 @@ const CardStatsTabs: React.FC<CardStatsTabsProps> = ({
             className={cn(
               'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
               csPage === tab
-                ? 'bg-background text-foreground shadow-sm'
+                ? 'bg-background text-foreground shadow-xs'
                 : 'text-muted-foreground hover:text-foreground',
             )}
           >

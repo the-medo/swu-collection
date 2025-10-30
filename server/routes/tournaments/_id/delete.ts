@@ -7,12 +7,10 @@ import { db } from '../../../db';
 import { tournamentDeck as tournamentDeckTable } from '../../../db/schema/tournament_deck.ts';
 import { tournamentMatch as tournamentMatchTable } from '../../../db/schema/tournament_match.ts';
 import { tournamentGroupTournament } from '../../../db/schema/tournament_group_tournament.ts';
-import {
-  updateTournamentGroupStatistics,
-} from '../../../lib/card-statistics/update-tournament-group-statistics.ts';
+import { updateTournamentGroupStatistics } from '../../../lib/card-statistics/update-tournament-group-statistics.ts';
 
 export const tournamentIdDeleteRoute = new Hono<AuthExtension>().delete('/', async c => {
-  const paramTournamentId = z.string().uuid().parse(c.req.param('id'));
+  const paramTournamentId = z.guid().parse(c.req.param('id'));
   const user = c.get('user');
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 

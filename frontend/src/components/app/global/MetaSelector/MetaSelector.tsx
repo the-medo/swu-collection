@@ -75,7 +75,7 @@ const MetaSelector: React.FC<MetaSelectorProps> = ({
         {emptyOption && <SelectItem value="empty">- No Meta -</SelectItem>}
         {metas.map(meta => (
           <SelectItem key={meta.meta.id} value={meta.meta.id.toString()}>
-            <div className="flex gap-2 flex-grow justify-between">
+            <div className="flex gap-2 grow justify-between">
               <span>{meta.meta.name}</span>
               {showFormat && (
                 <span className="text-muted-foreground">

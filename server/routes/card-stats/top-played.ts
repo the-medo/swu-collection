@@ -22,8 +22,8 @@ import {
 const zTopPlayedCardsQueryParams = z
   .object({
     meta_id: z.coerce.number().int().optional(),
-    tournament_id: z.string().uuid().optional(),
-    tournament_group_id: z.string().uuid().optional(),
+    tournament_id: z.guid().optional(),
+    tournament_group_id: z.guid().optional(),
     leader_ids: z
       .string()
       .optional()
@@ -43,7 +43,11 @@ const zTopPlayedCardsQueryParams = z
   .refine(
     data => {
       // Either meta_id, tournament_id, or tournament_group_id must be provided
-      return data.meta_id !== undefined || data.tournament_id !== undefined || data.tournament_group_id !== undefined;
+      return (
+        data.meta_id !== undefined ||
+        data.tournament_id !== undefined ||
+        data.tournament_group_id !== undefined
+      );
     },
     {
       message: 'Either meta_id, tournament_id, or tournament_group_id must be provided',
@@ -140,7 +144,9 @@ export const cardStatsTopPlayedRoute = new Hono<AuthExtension>().get(
           })
           .from(cardStatTournamentGroup)
           .where(eq(cardStatTournamentGroup.tournamentGroupId, tournament_group_id))
-          .orderBy(sql`${cardStatTournamentGroup.countMd} + ${cardStatTournamentGroup.countSb} desc`)
+          .orderBy(
+            sql`${cardStatTournamentGroup.countMd} + ${cardStatTournamentGroup.countSb} desc`,
+          )
           .limit(limit);
 
         result['all'] = cards;

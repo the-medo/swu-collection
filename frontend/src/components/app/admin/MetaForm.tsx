@@ -24,33 +24,15 @@ import { MetaData } from '@/api/meta/useGetMetas';
 import { formatData } from '../../../../../types/Format';
 import { SwuSet } from '../../../../../types/enums';
 import { toast } from '@/hooks/use-toast.ts';
+import FormFieldError from '@/components/app/global/FormFieldError.tsx';
+import { z } from 'zod';
 
 // Create validators for the form fields
-const nameValidator = (value: string) => {
-  if (!value) return 'Name is required';
-  if (value.length > 255) return 'Name must be less than 255 characters';
-  return undefined;
-};
-
-const setValidator = (value: string) => {
-  if (!value) return 'Set is required';
-  return undefined;
-};
-
-const formatValidator = (value: number) => {
-  if (!value) return 'Format is required';
-  return undefined;
-};
-
-const dateValidator = (value: string) => {
-  if (!value) return 'Date is required';
-  return undefined;
-};
-
-const seasonValidator = (value: number) => {
-  if (value < 0) return 'Season must be a positive number';
-  return undefined;
-};
+const nameValidator = z.string().min(1).max(255);
+const setValidator = z.string().min(1).max(255);
+const formatValidator = z.number().min(1);
+const dateValidator = z.string().min(1).max(12);
+const seasonValidator = z.number().min(0);
 
 interface MetaFormProps {
   open: boolean;
@@ -146,11 +128,7 @@ export function MetaForm({ open, onOpenChange, initialData, onSuccess }: MetaFor
                   onChange={e => field.handleChange(e.target.value)}
                   required
                 />
-                {field.state.meta.touchedErrors ? (
-                  <p className="text-sm font-medium text-destructive">
-                    {field.state.meta.touchedErrors}
-                  </p>
-                ) : null}
+                <FormFieldError meta={field.state.meta} />
               </div>
             )}
           />
@@ -177,11 +155,7 @@ export function MetaForm({ open, onOpenChange, initialData, onSuccess }: MetaFor
                     ))}
                   </SelectContent>
                 </Select>
-                {field.state.meta.touchedErrors ? (
-                  <p className="text-sm font-medium text-destructive">
-                    {field.state.meta.touchedErrors}
-                  </p>
-                ) : null}
+                <FormFieldError meta={field.state.meta} />
               </div>
             )}
           />
@@ -211,11 +185,7 @@ export function MetaForm({ open, onOpenChange, initialData, onSuccess }: MetaFor
                     ))}
                   </SelectContent>
                 </Select>
-                {field.state.meta.touchedErrors ? (
-                  <p className="text-sm font-medium text-destructive">
-                    {field.state.meta.touchedErrors}
-                  </p>
-                ) : null}
+                <FormFieldError meta={field.state.meta} />
               </div>
             )}
           />
@@ -238,11 +208,7 @@ export function MetaForm({ open, onOpenChange, initialData, onSuccess }: MetaFor
                   onChange={e => field.handleChange(e.target.value)}
                   required
                 />
-                {field.state.meta.touchedErrors ? (
-                  <p className="text-sm font-medium text-destructive">
-                    {field.state.meta.touchedErrors}
-                  </p>
-                ) : null}
+                <FormFieldError meta={field.state.meta} />
               </div>
             )}
           />
@@ -267,11 +233,7 @@ export function MetaForm({ open, onOpenChange, initialData, onSuccess }: MetaFor
                   onChange={e => field.handleChange(parseInt(e.target.value) || 0)}
                   required
                 />
-                {field.state.meta.touchedErrors ? (
-                  <p className="text-sm font-medium text-destructive">
-                    {field.state.meta.touchedErrors}
-                  </p>
-                ) : null}
+                <FormFieldError meta={field.state.meta} />
               </div>
             )}
           />

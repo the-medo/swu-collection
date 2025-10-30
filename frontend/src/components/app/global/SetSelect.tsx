@@ -62,7 +62,7 @@ const SetSelect: React.FC<SetSelectProps> = ({
         {setArray.map(s => (
           <SelectItem key={s.code} value={s.code}>
             {showFullName ? (
-              <div className="flex gap-2 flex-grow justify-between">
+              <div className="flex gap-2 grow justify-between">
                 <span>{s.name}</span>
                 <span>[{s.code.toUpperCase()}]</span>
               </div>

@@ -32,7 +32,7 @@ export const zDeckQueryParams = zPaginationParams.extend({
     .optional()
     .transform(val => (val ? val.split(',') : undefined)),
   base: z.string().optional(),
-  baseAspect: z.nativeEnum(SwuAspect).optional(),
+  baseAspect: z.enum(SwuAspect).optional(),
   aspects: z
     .string()
     .optional()

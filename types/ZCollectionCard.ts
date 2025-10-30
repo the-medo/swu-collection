@@ -2,12 +2,12 @@ import { z } from 'zod';
 import { CardLanguage, SwuRarity, SwuSet } from './enums.ts';
 
 export const zCollectionCardSchema = z.object({
-  collectionId: z.string().uuid(),
+  collectionId: z.guid(),
   cardId: z.string(),
   variantId: z.string(),
   foil: z.boolean().default(false),
   condition: z.number().int().min(0).max(6),
-  language: z.nativeEnum(CardLanguage).default(CardLanguage.EN),
+  language: z.enum(CardLanguage).default(CardLanguage.EN),
   note: z.string().nullable(),
   amount: z.number().int().min(0).max(1000),
   amount2: z.number().int().min(0).nullable(),
@@ -73,9 +73,9 @@ export const zCollectionCardDeleteRequest = zCollectionCardSchema
 
 export const zCollectionBulkInsertRequest = z.object({
   condition: z.number().int().min(0).max(6),
-  language: z.nativeEnum(CardLanguage).default(CardLanguage.EN),
-  sets: z.array(z.nativeEnum(SwuSet)),
-  rarities: z.array(z.nativeEnum(SwuRarity)),
+  language: z.enum(CardLanguage).default(CardLanguage.EN),
+  sets: z.array(z.enum(SwuSet)),
+  rarities: z.array(z.enum(SwuRarity)),
   variants: z.array(z.string()),
   note: z.string().nullable(),
   amount: z.number().int().min(-3).max(3),

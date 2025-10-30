@@ -22,12 +22,12 @@ const FeatureCard = ({ title, description, icon, to, delay }: FeatureCardProps) 
       transition={{ duration: 0.5, delay }}
       className="relative group"
     >
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-primary/50 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-300"></div>
+      <div className="absolute -inset-0.5 bg-linear-to-r from-primary to-primary/50 rounded-lg blur-sm opacity-25 group-hover:opacity-75 transition duration-300"></div>
       <Link
         to={to}
         className="relative flex h-full gap-4 p-6 bg-card rounded-lg border shadow-md hover:shadow-lg transition-all duration-300"
       >
-        <div className="text-primary flex-shrink-0 flex items-start pt-1">
+        <div className="text-primary shrink-0 flex items-start pt-1">
           {/* Enlarged icon - now rendered on the left */}
           {React.cloneElement(icon as React.ReactElement, { size: 36 })}
         </div>
@@ -85,7 +85,7 @@ const FallbackPage: React.FC = () => {
           className="w-full max-w-2xl mx-auto mb-12"
         >
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-primary/20 rounded-lg blur-md"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-primary/40 to-primary/20 rounded-lg blur-md"></div>
             <div className="relative bg-card border rounded-lg p-2">
               <CardSearchCommand id="card-search-homepage" />
             </div>

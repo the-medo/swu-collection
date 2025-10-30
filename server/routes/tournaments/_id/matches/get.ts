@@ -6,7 +6,7 @@ import { db } from '../../../../db';
 import { tournamentMatch as tournamentMatchTable } from '../../../../db/schema/tournament_match.ts';
 
 export const tournamentIdMatchesGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const paramTournamentId = z.string().uuid().parse(c.req.param('id'));
+  const paramTournamentId = z.guid().parse(c.req.param('id'));
 
   // Query all matches for this tournament
   const tournamentMatches = await db

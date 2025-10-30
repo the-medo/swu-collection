@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { AdminPage } from '@/components/app/admin/AdminPage';
 import { z } from 'zod';
-import { zodValidator } from '@tanstack/zod-adapter';
 
 export const adminPages: [string, ...string[]] = [
   'metas',
@@ -20,5 +19,5 @@ const searchParams = z.object({
 
 export const Route = createFileRoute('/_authenticated/admin')({
   component: AdminPage,
-  validateSearch: zodValidator(searchParams),
+  validateSearch: searchParams,
 });

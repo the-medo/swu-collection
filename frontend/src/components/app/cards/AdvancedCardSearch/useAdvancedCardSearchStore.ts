@@ -20,7 +20,7 @@ export enum SearchFrom {
 const getSearchFromRoutes = (searchFrom: SearchFrom) => {
   if (searchFrom === SearchFrom.CARD_SEARCH) return RouteCardSearch.fullPath;
   if (searchFrom === SearchFrom.DECKBUILDER) return RouteDeckbuilder.fullPath;
-  return undefined;
+  throw new Error('Invalid searchFrom');
 };
 
 // Define the store state shape

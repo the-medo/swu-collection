@@ -23,9 +23,7 @@ const DeleteDeckDialog: React.FC<DeleteDeckDialogProps> = ({ trigger, deck }) =>
   const { toast } = useToast();
   const deleteDeckMutation = useDeleteDeck();
 
-  const form = useForm<{
-    confirmationText: string;
-  }>({
+  const form = useForm({
     defaultValues: {
       confirmationText: '',
     },

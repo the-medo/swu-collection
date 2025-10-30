@@ -9,7 +9,6 @@ import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import TournamentDeckDetail from '@/components/app/tournaments/TournamentDecks/TournamentDeckDetail.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { Route } from '@/routes/__root.tsx';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useIsMobile } from '@/hooks/use-mobile.tsx';
 import { getDeckKeys } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
@@ -42,7 +41,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const search = useSearch({ strict: false });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = useNavigate();
   const selectedDeckId = search[deckIdSearchParam];
   const key = search.maDeckKey;
   const keyMetaInfo = search.maDeckKeyType;
@@ -116,6 +115,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
 
   const onRowClick = useCallback((row: Row<TournamentDeckResponse>) => {
     navigate({
+      to: '.',
       search: prev => ({ ...prev, [deckIdSearchParam]: row.original.deck?.id }),
       hash: isMobile ? 'tournament-deck-detail' : undefined,
     });
@@ -129,6 +129,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
       if (!selectedDeckId && sortedDecks.length > 0) {
         setDefaultDeckInit(true);
         navigate({
+          to: '.',
           search: p => ({ ...p, [deckIdSearchParam]: sortedDecks[0].deck?.id }),
         });
       }

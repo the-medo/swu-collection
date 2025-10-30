@@ -43,7 +43,7 @@ const MissingCardsTable: React.FC<MissingCardsTableProps> = ({ deckId }) => {
   useMissingCardsFinalQuantity(rows);
 
   return (
-    <div className="flex flex-col flex-[100] border min-w-[350px] min-h-[300px] max-h-[60vh] @container/missing-cards-table overflow-auto">
+    <div className="flex flex-col flex-100 border min-w-[350px] min-h-[300px] max-h-[60vh] @container/missing-cards-table overflow-auto">
       <DataTable
         columns={columns}
         data={rows}

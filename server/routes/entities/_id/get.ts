@@ -6,7 +6,7 @@ import { db } from '../../../db';
 import { entityResource } from '../../../db/schema/entity_resource.ts';
 
 export const entitiesIdGetRoute = new Hono<AuthExtension>().get('/', async c => {
-  const entityId = z.string().uuid().parse(c.req.param('id'));
+  const entityId = z.guid().parse(c.req.param('id'));
 
   // Query all resources for this entity
   const resources = await db

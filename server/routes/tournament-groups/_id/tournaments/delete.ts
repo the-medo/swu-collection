@@ -10,7 +10,7 @@ import { updateTournamentGroupStatistics } from '../../../../lib/card-statistics
 
 // Define query parameters schema
 const zTournamentGroupTournamentDeleteParams = z.object({
-  tournamentId: z.string().uuid(),
+  tournamentId: z.guid(),
 });
 
 export const tournamentGroupIdTournamentsDeleteRoute = new Hono<AuthExtension>().delete(
@@ -18,7 +18,7 @@ export const tournamentGroupIdTournamentsDeleteRoute = new Hono<AuthExtension>()
   zValidator('query', zTournamentGroupTournamentDeleteParams),
   async c => {
     const user = c.get('user');
-    const groupId = z.string().uuid().parse(c.req.param('id'));
+    const groupId = z.guid().parse(c.req.param('id'));
     const { tournamentId } = c.req.valid('query');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 

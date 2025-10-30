@@ -24,7 +24,7 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             activeTab === 'details'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-xs'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >
@@ -36,7 +36,7 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             activeTab === 'meta'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-xs'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >
@@ -48,7 +48,7 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             activeTab === 'matchups'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-xs'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >
@@ -60,7 +60,7 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             activeTab === 'decks'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-xs'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >
@@ -72,7 +72,7 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             activeTab === 'card-stats'
-              ? 'bg-background text-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-xs'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >
