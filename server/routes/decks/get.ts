@@ -14,18 +14,11 @@ import { DeckSortField } from '../../../types/ZDeck.ts';
 import { selectUser } from '../user.ts';
 import { selectDeck, selectDeckInformation } from '../deck.ts';
 import type { AuthExtension } from '../../auth/auth.ts';
+import { booleanPreprocessor } from '../../../shared/lib/zod/booleanPreprocessor.ts';
 
 export const zDeckQueryParams = zPaginationParams.extend({
   userId: z.string().optional(),
-  favorite: z.preprocess(
-    // Convert string "false" to boolean false
-    val => {
-      if (val === 'false') return false;
-      if (val === 'true') return true;
-      return val;
-    },
-    z.boolean().optional().default(false),
-  ),
+  favorite: booleanPreprocessor.optional().default(false),
   format: z.coerce.number().int().positive().optional(),
   leaders: z
     .string()

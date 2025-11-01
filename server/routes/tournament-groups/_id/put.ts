@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { db } from '../../../db';
 import { tournamentGroup as tournamentGroupTable } from '../../../db/schema/tournament_group.ts';
+import { booleanPreprocessor } from '../../../../shared/lib/zod/booleanPreprocessor.ts';
 
 // Define request body schema
 const zTournamentGroupUpdateRequest = z.object({
@@ -12,7 +13,7 @@ const zTournamentGroupUpdateRequest = z.object({
   metaId: z.number().int().optional(),
   position: z.number().int().optional(),
   description: z.string().optional(),
-  visible: z.boolean().optional(),
+  visible: booleanPreprocessor.optional(),
 });
 
 export const tournamentGroupIdPutRoute = new Hono<AuthExtension>().put(

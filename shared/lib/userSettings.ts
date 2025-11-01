@@ -5,6 +5,7 @@ import {
   type DeckImagePresets,
   DeckImagePresetVariant,
 } from '../../types/DeckImageCustomization.tsx';
+import { booleanPreprocessor } from './zod/booleanPreprocessor.ts';
 
 export interface UserSettings {
   deckLayout: DeckLayout; // default: DeckLayout.TEXT
@@ -25,13 +26,13 @@ export interface UserSettings {
 export const userSettingsSchema = z.object({
   deckLayout: z.enum(DeckLayout).default(DeckLayout.TEXT),
   deckGroupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
-  deckPrices: z.boolean().default(false),
+  deckPrices: booleanPreprocessor.default(false),
   priceSourceType: z.enum(CardPriceSourceType).default(CardPriceSourceType.CARDMARKET),
-  collectionInfoInDecks: z.boolean().default(false),
+  collectionInfoInDecks: booleanPreprocessor.default(false),
   // DeckImagePresets
-  deckImage_showNoisyBackground: z.boolean().default(true),
-  deckImage_showcaseLeader: z.boolean().default(false),
-  deckImage_hyperspaceBase: z.boolean().default(false),
+  deckImage_showNoisyBackground: booleanPreprocessor.default(true),
+  deckImage_showcaseLeader: booleanPreprocessor.default(false),
+  deckImage_hyperspaceBase: booleanPreprocessor.default(false),
   deckImage_defaultVariantName: z
     .enum(DeckImagePresetVariant)
     .default(DeckImagePresetVariant.Standard),

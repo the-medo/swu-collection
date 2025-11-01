@@ -1,11 +1,12 @@
 import { z } from 'zod';
 import { CardLanguage, SwuRarity, SwuSet } from './enums.ts';
+import { booleanPreprocessor } from '../shared/lib/zod/booleanPreprocessor.ts';
 
 export const zCollectionCardSchema = z.object({
   collectionId: z.guid(),
   cardId: z.string(),
   variantId: z.string(),
-  foil: z.boolean().default(false),
+  foil: booleanPreprocessor,
   condition: z.number().int().min(0).max(6),
   language: z.enum(CardLanguage).default(CardLanguage.EN),
   note: z.string().nullable(),
@@ -85,7 +86,7 @@ export const zImportCardSchema = z.object({
   cardId: z.string(),
   variantId: z.string(),
   count: z.number().int().min(1),
-  isFoil: z.boolean(),
+  isFoil: booleanPreprocessor,
 });
 
 export const zCollectionImportRequest = z.object({

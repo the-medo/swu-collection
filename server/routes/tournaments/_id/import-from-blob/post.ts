@@ -16,6 +16,7 @@ import {
   computeAndSaveMetaStatistics,
 } from '../../../../lib/card-statistics';
 import { updateTournamentGroupsStatisticsForTournament } from '../../../../lib/card-statistics/update-tournament-group-statistics.ts';
+import { booleanPreprocessor } from '../../../../../shared/lib/zod/booleanPreprocessor.ts';
 
 const bucketName = 'swu-images';
 const r2Endpoint = process.env.R2_ENDPOINT;
@@ -41,7 +42,7 @@ async function getJson<T>(key: string): Promise<T> {
 
 const zImportFromBlobBody = z.object({
   sourceTournamentId: z.guid(),
-  markAsImported: z.boolean().optional().default(true),
+  markAsImported: booleanPreprocessor.optional().default(true),
 });
 
 export const tournamentIdImportFromBlobPostRoute = new Hono<AuthExtension>().post('/', async c => {

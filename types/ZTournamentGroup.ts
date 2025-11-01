@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { booleanPreprocessor } from '../shared/lib/zod/booleanPreprocessor.ts';
 
 // Schema for creating a tournament group
 export const zTournamentGroupCreateRequest = z.object({
@@ -6,7 +7,7 @@ export const zTournamentGroupCreateRequest = z.object({
   metaId: z.number().int().optional(),
   position: z.number().int().optional().default(0),
   description: z.string().optional(),
-  visible: z.boolean().optional().default(true),
+  visible: booleanPreprocessor.optional().default(true),
 });
 
 // Schema for updating a tournament group
@@ -15,7 +16,7 @@ export const zTournamentGroupUpdateRequest = z.object({
   metaId: z.number().int().optional(),
   position: z.number().int().optional(),
   description: z.string().optional(),
-  visible: z.boolean().optional(),
+  visible: booleanPreprocessor.optional(),
 });
 
 // Schema for assigning a tournament to a group
