@@ -26,7 +26,7 @@ export const collectionIdCardPutRoute = new Hono<AuthExtension>().put(
     const collectionId = eq(collectionTable.id, paramCollectionId);
 
     const col = (await db.select().from(collectionTable).where(collectionId))[0];
-    if (!col) return c.json({ message: "Collection doesn't exist" }, 500);
+    if (!col) return c.json({ message: "Collection doesn't exist" }, 404);
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
 
     const cardCollectionId = eq(collectionCardTable.collectionId, paramCollectionId);

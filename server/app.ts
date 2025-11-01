@@ -30,10 +30,23 @@ Sentry.init({
   dsn: process.env.SENTRY_BACKEND_DSN,
   tracesSampleRate: 1.0,
   enableLogs: process.env.ENVIRONMENT !== 'local',
-  integrations: [Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] })],
+  integrations: [
+    Sentry.honoIntegration(),
+    Sentry.requestDataIntegration(),
+    Sentry.httpIntegration(),
+    Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] }),
+  ],
 });
 
-const app = new Hono<AuthExtension>();
+const app = new Hono<AuthExtension>().onError((err, c) => {
+  Sentry.withScope(scope => {
+    scope.setTransactionName((c.req as any).routePath || c.req.path);
+    const user = c.get('user');
+    if (user) scope.setUser({ id: user.id, email: user.email });
+  });
+  Sentry.captureException(err);
+  return c.json({ message: 'Internal Server Error' }, 500);
+});
 
 app.use('*', logger());
 app.use('*', async (c, next) => {
@@ -55,6 +68,13 @@ app.use('*', async (c, next) => {
   c.set('user', session.user);
   c.set('session', session.session);
   return next();
+});
+
+app.use('*', async (c, next) => {
+  await next();
+  if (c.res.status >= 500) {
+    Sentry.captureMessage(`${c.res.status}: ${c.req.method} ${c.req.path} `, 'error');
+  }
 });
 
 // Block common sensitive files pattern
@@ -187,6 +207,8 @@ app.get('*', async (c, next) => {
 
 // Fallback to serving index.html for all other routes
 app.get('*', c => c.html(indexHtml));
+
+Sentry.setupHonoErrorHandler(app);
 
 export default app;
 export type ApiRoutes = typeof apiRoutes;
