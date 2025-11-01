@@ -14,20 +14,13 @@ import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
 import { deck } from '../../db/schema/deck.ts';
 import { tournamentGroupStats } from '../../db/schema/tournament_group_stats.ts';
 import { tournamentGroupLeaderBase } from '../../db/schema/tournament_group_leader_base.ts';
+import { booleanPreprocessor } from '../../../shared/lib/zod/booleanPreprocessor.ts';
 
 // Define query parameters schema
 const zTournamentGroupQueryParams = z.object({
   meta: z.coerce.number().optional(),
-  visible: z.preprocess(val => {
-    if (val === 'false') return false;
-    if (val === 'true') return true;
-    return val;
-  }, z.boolean().optional()),
-  includeStats: z.preprocess(val => {
-    if (val === 'false') return false;
-    if (val === 'true') return true;
-    return val;
-  }, z.boolean().optional().default(false)),
+  visible: booleanPreprocessor.optional(),
+  includeStats: booleanPreprocessor.optional().default(false),
   nameTemplate: z.string().optional(),
   limit: z.coerce.number().optional().default(100),
   offset: z.coerce.number().optional().default(0),

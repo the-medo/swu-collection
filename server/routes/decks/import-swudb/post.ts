@@ -19,8 +19,6 @@ export const decksImportSwudbPostRoute = new Hono<AuthExtension>().post(
     const apiUrl = `https://swudb.com/api/deck/${swudbDeckId}`;
     const deckResponse = await fetch(apiUrl);
 
-    console.log(deckResponse);
-
     if (!deckResponse.ok) {
       if (deckResponse.status === 404) {
         return c.json(

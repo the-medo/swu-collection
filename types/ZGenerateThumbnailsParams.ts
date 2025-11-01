@@ -1,15 +1,8 @@
 import { z } from 'zod';
+import { booleanPreprocessor } from '../shared/lib/zod/booleanPreprocessor.ts';
 
 export const zGenerateThumbnailsParams = z.object({
-  force: z.preprocess(
-    // Convert string "false" to boolean false
-    val => {
-      if (val === 'false') return false;
-      if (val === 'true') return true;
-      return val;
-    },
-    z.boolean().optional().default(false),
-  ),
+  force: booleanPreprocessor.optional().default(false),
   tournament_id: z.guid().optional(),
 });
 

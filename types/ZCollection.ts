@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CollectionType } from './enums.ts';
+import { booleanPreprocessor } from '../shared/lib/zod/booleanPreprocessor.ts';
 
 export const zCollectionSchema = z.object({
   id: z.guid(),
@@ -7,9 +8,9 @@ export const zCollectionSchema = z.object({
   title: z.string().min(3).max(255),
   description: z.string(),
   collectionType: z.enum(CollectionType).default(CollectionType.COLLECTION),
-  public: z.boolean().default(false),
-  forSale: z.boolean().default(false),
-  forDecks: z.boolean().default(false),
+  public: booleanPreprocessor,
+  forSale: booleanPreprocessor,
+  forDecks: booleanPreprocessor,
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 });
@@ -41,7 +42,7 @@ export const zCollectionUpdateRequest = zCollectionSchema
 export const zCollectionDuplicateRequest = z.object({
   title: z.string().min(3).max(255),
   collectionType: z.enum(CollectionType).default(CollectionType.COLLECTION),
-  public: z.boolean().default(false),
+  public: booleanPreprocessor,
 });
 
 export type ZCollection = z.infer<typeof zCollectionSchema>;

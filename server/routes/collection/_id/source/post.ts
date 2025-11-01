@@ -6,10 +6,11 @@ import { db } from '../../../../db';
 import { collection as collectionTable } from '../../../../db/schema/collection.ts';
 import { collectionSourceCollection as cscTable } from '../../../../db/schema/collection_source_collection.ts';
 import { and, eq } from 'drizzle-orm';
+import { booleanPreprocessor } from '../../../../../shared/lib/zod/booleanPreprocessor.ts';
 
 const bodySchema = z.object({
   sourceCollectionId: z.guid(),
-  displayOnSource: z.boolean().optional(),
+  displayOnSource: booleanPreprocessor.optional(),
 });
 
 /**

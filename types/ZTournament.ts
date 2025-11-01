@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { formatData } from './Format.ts';
 import { BracketInfo, SwuSet } from './enums.ts';
+import { booleanPreprocessor } from '../shared/lib/zod/booleanPreprocessor.ts';
 
 export const TournamentSortField = {
   DATE: 'tournament.date',
@@ -55,7 +56,7 @@ export const zTournamentSchema = z.object({
   days: z.number().int().positive(),
   dayTwoPlayerCount: z.number().int().min(0),
   date: z.string(),
-  imported: z.boolean().optional(),
+  imported: booleanPreprocessor.optional(),
   createdAt: z.iso.datetime().optional(),
   updatedAt: z.iso.datetime().optional(),
   bracketInfo: z
@@ -83,7 +84,7 @@ export const zTournamentUpdateRequest = zTournamentSchema
 export const zTournamentImportMeleeRequest = z.object({
   meleeId: z.string().min(1).max(255),
   forcedRoundId: z.string().min(0).max(20).optional(),
-  markAsImported: z.boolean().optional().default(true),
+  markAsImported: booleanPreprocessor.optional().default(true),
   minRound: z.number().int().optional(),
   maxRound: z.number().int().optional(),
 });

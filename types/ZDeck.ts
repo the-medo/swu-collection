@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { booleanPreprocessor } from '../shared/lib/zod/booleanPreprocessor.ts';
 
 export const DeckSortField = {
   CREATED_AT: 'deck.created_at',
@@ -57,7 +58,7 @@ export const zDeckImportSwudbRequest = z.object({
 });
 
 export const zDeckFavoriteRequest = z.object({
-  isFavorite: z.boolean(),
+  isFavorite: booleanPreprocessor,
 });
 
 export type ZDeck = z.infer<typeof zDeckSchema>;

@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { db } from '../../db';
 import { tournamentGroup as tournamentGroupTable } from '../../db/schema/tournament_group.ts';
+import { booleanPreprocessor } from '../../../shared/lib/zod/booleanPreprocessor.ts';
 
 // Define request body schema
 const zTournamentGroupCreateRequest = z.object({
@@ -11,7 +12,7 @@ const zTournamentGroupCreateRequest = z.object({
   metaId: z.number().int().optional(),
   position: z.number().int().optional().default(0),
   description: z.string().optional(),
-  visible: z.boolean().optional().default(true),
+  visible: booleanPreprocessor.optional().default(true),
 });
 
 export const tournamentGroupPostRoute = new Hono<AuthExtension>().post(

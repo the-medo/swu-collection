@@ -6,10 +6,11 @@ import { db } from '../../../../../db';
 import { collection as collectionTable } from '../../../../../db/schema/collection.ts';
 import { collectionSourceCollection as cscTable } from '../../../../../db/schema/collection_source_collection.ts';
 import { and, eq } from 'drizzle-orm';
+import { booleanPreprocessor } from '../../../../../../shared/lib/zod/booleanPreprocessor.ts';
 
 const bodySchema = z.object({
   id: z.number().int(), // mapping row id (NOT the path _id)
-  displayOnSource: z.boolean(),
+  displayOnSource: booleanPreprocessor,
 });
 
 export const collectionIdSourceDisplayPostRoute = new Hono<AuthExtension>().post(
@@ -27,9 +28,7 @@ export const collectionIdSourceDisplayPostRoute = new Hono<AuthExtension>().post
     const { id: mappingId, displayOnSource } = c.req.valid('json');
 
     // 1) Get mapping row by its integer id
-    const mapping = (
-      await db.select().from(cscTable).where(eq(cscTable.id, mappingId))
-    )[0];
+    const mapping = (await db.select().from(cscTable).where(eq(cscTable.id, mappingId)))[0];
 
     if (!mapping) {
       return c.json({ message: 'Mapping not found' }, 404);
@@ -40,7 +39,12 @@ export const collectionIdSourceDisplayPostRoute = new Hono<AuthExtension>().post
       await db
         .select({ id: collectionTable.id, userId: collectionTable.userId })
         .from(collectionTable)
-        .where(and(eq(collectionTable.id, mapping.sourceCollectionId), eq(collectionTable.userId, user.id)))
+        .where(
+          and(
+            eq(collectionTable.id, mapping.sourceCollectionId),
+            eq(collectionTable.userId, user.id),
+          ),
+        )
     )[0];
 
     if (!sourceCollection) {
