@@ -50,11 +50,7 @@ export function parseCardmarketHtml(
       const nameDirty = linkElement.textContent || '';
       const name = cleanCardName(nameDirty);
 
-      // Find the card number (in the column right after the name)
-      // It's in a div with class "col-md-2 d-none d-lg-flex has-content-centered"
-      const cardNumberContainer = row.querySelector(
-        '.col-md-2.d-none.d-lg-flex.has-content-centered',
-      );
+      const cardNumberContainer = row.querySelector('.col-number > div > span:last-child');
       const cardNumber = cardNumberContainer ? cardNumberContainer.textContent?.trim() || '' : '';
 
       let probableCardId: string | undefined = transformToId(name);
