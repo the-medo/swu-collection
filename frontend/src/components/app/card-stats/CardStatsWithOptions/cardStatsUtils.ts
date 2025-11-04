@@ -169,7 +169,8 @@ export const groupCardStats = (
     );
 
     sortedKeys.forEach(key => {
-      sortedGroups[key] = groups[key];
+      const setName = setInfo[key]?.name ?? 'Unknown';
+      sortedGroups[setName] = groups[key];
     });
 
     return sortedGroups;

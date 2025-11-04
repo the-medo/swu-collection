@@ -147,6 +147,37 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
     return sortedDecks.slice(0, itemsToShow);
   }, [sortedDecks, itemsToShow]);
 
+  const selectNextDeck = useCallback(
+    (direction: 'next' | 'previous') => {
+      const newDeckId =
+        visibleDecks[
+          visibleDecks.findIndex(deck => deck.deck?.id === selectedDeckId) +
+            (direction === 'next' ? 1 : -1)
+        ]?.deck?.id ?? selectedDeckId;
+      navigate({
+        to: '.',
+        search: prev => ({ ...prev, [deckIdSearchParam]: newDeckId }),
+        hash: isMobile ? 'tournament-deck-detail' : undefined,
+      });
+    },
+    [selectedDeckId],
+  );
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        selectNextDeck('next');
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        selectNextDeck('previous');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectNextDeck]);
+
   const isRowHighlighted = (row: Row<TournamentDeckResponse>) =>
     row.original.deck?.id === selectedDeckId;
 
