@@ -69,3 +69,6 @@ export const setInfo: Record<SwuSet, SetInfo> = {
 } as const;
 
 export const setArray: SetInfo[] = Object.values(setInfo);
+export const setArraySorted: SwuSet[] = Object.values(setInfo)
+  .sort((a, b) => b.sortValue - a.sortValue)
+  .map(s => s.code as SwuSet);
