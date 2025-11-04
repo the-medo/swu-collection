@@ -141,6 +141,9 @@ export const getDeckKeys = (
       if (metaInfo === 'aspects') return aspects;
       key = aspects.sort().join('-') || 'no-aspect';
       break;
+    case 'sets':
+      key = cardListData?.cards[deck.deck.leaderCardId1]?.set || 'unknown';
+      break;
   }
   return [key];
 };
@@ -194,6 +197,9 @@ export const getDeckKey2 = (
         key = aspects.sort().join('-') || 'no-aspect';
       }
       break;
+    case 'sets':
+      key = leaderCard?.set || 'unknown';
+      break;
   }
 
   return key;
@@ -206,4 +212,5 @@ export const labelWidthBasedOnMetaInfo: Record<MetaInfo, number> = {
   ['aspects']: 70,
   ['aspectsBase']: 70,
   ['aspectsDetailed']: 180,
+  ['sets']: 150,
 };

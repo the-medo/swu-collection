@@ -8,7 +8,8 @@ export type MetaInfo =
   | 'bases'
   | 'aspects'
   | 'aspectsBase'
-  | 'aspectsDetailed';
+  | 'aspectsDetailed'
+  | 'sets';
 
 export const metaInfoArray: [string, ...string[]] = [
   'leaders',
@@ -17,6 +18,7 @@ export const metaInfoArray: [string, ...string[]] = [
   'aspects',
   'aspectsBase',
   'aspectsDetailed',
+  'sets',
 ] as const;
 
 interface MetaInfoSelectorProps {
@@ -48,6 +50,7 @@ const MetaInfoSelector: React.FC<MetaInfoSelectorProps> = ({ value, onChange }) 
       <ToggleGroupItem value="aspects">Aspects</ToggleGroupItem>
       <ToggleGroupItem value="aspectsBase">Aspects (Base)</ToggleGroupItem>
       <ToggleGroupItem value="aspectsDetailed">Aspects (Detailed)</ToggleGroupItem>
+      <ToggleGroupItem value="sets">Sets</ToggleGroupItem>
     </ToggleGroup>
   );
 };
