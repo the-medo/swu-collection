@@ -73,7 +73,7 @@ const globalSearchParams = z.object({
 
   // Card statistics filters and sorters
   csSortBy: z.enum(['md', 'sb', 'total', 'avgMd', 'avgTotal', 'deckCount', 'winRate']).optional(),
-  csGroupBy: z.enum(['none', 'type', 'cost']).optional(),
+  csGroupBy: z.enum(['none', 'type', 'cost', 'set']).optional(),
   csMinDeckCount: z.coerce.number().int().nonnegative().optional(),
   csCardSearch: z.string().optional(),
 

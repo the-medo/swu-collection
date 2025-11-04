@@ -121,6 +121,7 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
               <SelectItem value="none">None</SelectItem>
               <SelectItem value="type">Card Type</SelectItem>
               <SelectItem value="cost">Card Cost</SelectItem>
+              <SelectItem value="set">Set</SelectItem>
             </SelectContent>
           </Select>
         </div>
