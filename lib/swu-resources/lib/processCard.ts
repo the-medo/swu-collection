@@ -8,6 +8,7 @@ import { mergeVariantsWithoutImages } from './mergeVariantsWithoutImages.ts';
 import { processVariantImages } from './processVariantImages.ts';
 import { downloadAndTransformVariantImages } from './downloadAndTransformVariantImages.ts';
 import type { CardVariant, ParsedCardData } from '../types.ts';
+import { setInfo } from '../set-info.ts';
 
 export async function processCard(card: any, skipExisting = true) {
   const c = card.attributes;
@@ -88,10 +89,15 @@ export async function processCard(card: any, skipExisting = true) {
 
     allVariants = mergeVariantsWithoutImages(allVariants);
 
+    let newestSet = parsedCard.set;
     for (const p of allVariants) {
+      if (setInfo[p.set]?.sortValue > setInfo[newestSet]?.sortValue) {
+        newestSet = p.set;
+      }
       await processVariantImages(p);
       await downloadAndTransformVariantImages(p, parsedCard.cardId);
     }
+    parsedCard.set = newestSet;
 
     const finalObject = mergeParsedCardAndVariants(allVariants, parsedCard);
 
