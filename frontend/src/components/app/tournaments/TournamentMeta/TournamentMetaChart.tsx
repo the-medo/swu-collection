@@ -45,12 +45,13 @@ interface CustomLabelProps extends Props {
 
 const CustomLabel = (props: CustomLabelProps) => {
   const { setTournamentDeckKey } = useTournamentMetaActions();
-  const { x, y, name, labelRenderer, metaInfo } = props;
+  const { x, y, value, labelRenderer, metaInfo } = props;
 
   const labelX = (x as number) - 8; // Position left of the bar
   const labelY = y as number; // Center vertically
 
   const labelWidth = labelWidthBasedOnMetaInfo[metaInfo];
+  const key = value as string | undefined;
 
   return (
     <foreignObject
@@ -62,13 +63,13 @@ const CustomLabel = (props: CustomLabelProps) => {
       className="cursor-pointer"
       onClick={() => {
         setTournamentDeckKey({
-          key: name,
+          key,
           metaInfo,
         });
       }}
     >
       <div className="flex items-center justify-end w-full h-full">
-        {labelRenderer(name, metaInfo, 'compact')}
+        {labelRenderer(key, metaInfo, 'compact')}
       </div>
     </foreignObject>
   );
