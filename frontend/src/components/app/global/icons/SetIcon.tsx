@@ -5,7 +5,7 @@ import { cva, VariantProps } from 'class-variance-authority';
 export const setIconVariants = cva('', {
   variants: {
     size: {
-      original: 'h-[32px] w-[150px] min-h-[32px] min-w-[150px]',
+      original: 'w-[150px] min-w-[150px]',
     },
   },
   defaultVariants: {
@@ -21,11 +21,9 @@ type SetIconProps = {
 
 const SetIcon: React.FC<SetIconProps> = ({ set, ...variants }) => {
   return (
-    <img
-      className={cn(setIconVariants({ ...variants }))}
-      src={`https://images.swubase.com/logos/${set.toLowerCase()}.png`}
-      alt={set}
-    />
+    <div className={cn(setIconVariants({ ...variants }), 'bg-black rounded-lg p-2')}>
+      <img src={`https://images.swubase.com/logos/${set.toLowerCase()}.png`} alt={set} />
+    </div>
   );
 };
 

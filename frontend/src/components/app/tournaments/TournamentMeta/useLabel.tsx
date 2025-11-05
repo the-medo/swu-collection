@@ -12,6 +12,7 @@ import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectD
 import { cn } from '@/lib/utils.ts';
 import { baseSpecialNameValues } from '../../../../../../shared/lib/basicBases.ts';
 import { setInfo } from '../../../../../../lib/swu-resources/set-info.ts';
+import SetIcon from '@/components/app/global/icons/SetIcon.tsx';
 
 export type DeckKeyLabelType = 'text' | 'compact' | 'image' | 'image-small';
 
@@ -134,6 +135,13 @@ export function useLabel() {
           </div>
         );
       } else if (type === 'image' || type === 'image-small') {
+        if (metaInfo === 'sets') {
+          return (
+            <div className="flex flex-row gap-2 items-center">
+              <SetIcon set={value} />
+            </div>
+          );
+        }
         const size: CardImageVariantProps['size'] = type === 'image' ? 'w200' : 'w75';
         return (
           <div className="flex flex-row gap-2 items-center">
