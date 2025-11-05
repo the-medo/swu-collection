@@ -2,20 +2,22 @@ import { SwuSet } from '../../../../types/enums.ts';
 import { useCallback } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { DeckCard } from '../../../../types/ZDeckCard.ts';
-import { setInfo } from '../../../../lib/swu-resources/set-info.ts';
+import { rotationBlocks, setInfo } from '../../../../lib/swu-resources/set-info.ts';
 import { CardStat } from '@/api/card-stats/useCardStats.ts';
+import { useChartColorsAndGradients } from '@/components/app/tournaments/TournamentMeta/useChartColorsAndGradients.tsx';
 
 export type SetShare = {
   total: number;
-  setShare: Record<SwuSet, number | undefined>;
-  rotationBlockShare: Record<number, number | undefined>;
+  setShare: Partial<Record<SwuSet, number>>;
+  rotationBlockShare: Partial<Record<number, number>>;
 };
 
 export const useSetShare = () => {
   const { data: cardListData } = useCardList();
+  const chartColors = useChartColorsAndGradients();
 
   const getEmptySetShare = useCallback(
-    () => ({
+    (): SetShare => ({
       total: 0,
       setShare: {},
       rotationBlockShare: {},
@@ -86,11 +88,59 @@ export const useSetShare = () => {
     [addCardStatToSetShare],
   );
 
+  const getSetShareChartData = useCallback(
+    (setShare: SetShare, source: 'setShare' | 'rotationBlock') => {
+      if (source === 'setShare') {
+        const data = Object.entries(setShare.setShare).map(([set, quantity]) => ({
+          id: set,
+          label: setInfo[set as SwuSet].name,
+          value: quantity,
+          data: {
+            quantity,
+          },
+          color: setInfo[set as SwuSet].hexColor,
+        }));
+
+        return {
+          data,
+          defs: data.map(d => chartColors(d.id, 'sets')),
+          fill: data.map(item => ({
+            match: { id: item.id },
+            id: item.id,
+          })),
+        };
+      } else {
+        const data = Object.entries(setShare.rotationBlockShare).map(
+          ([rotationBlock, quantity]) => ({
+            id: rotationBlock,
+            label: rotationBlocks[parseInt(rotationBlock)].name,
+            value: quantity,
+            data: {
+              quantity,
+            },
+            color: rotationBlocks[parseInt(rotationBlock)].hexColor,
+          }),
+        );
+
+        return {
+          data,
+          defs: data.map(d => chartColors(d.id, 'rotationBlocks')),
+          fill: data.map(item => ({
+            match: { id: item.id },
+            id: item.id,
+          })),
+        };
+      }
+    },
+    [chartColors],
+  );
+
   return {
     getEmptySetShare,
     addDeckCardToSetShare,
     addDeckCardsToSetShare,
     addCardStatToSetShare,
     addCardStatsToSetShare,
+    getSetShareChartData,
   };
 };

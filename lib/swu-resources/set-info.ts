@@ -4,6 +4,7 @@ export type RotationBlock = {
   id: number;
   year: number;
   name: string;
+  hexColor: string;
   setMap: Partial<Record<SwuSet, true>>;
 };
 
@@ -17,11 +18,12 @@ export type SetInfo = {
   rotationBlockId?: number;
 };
 
-export const rotationBlocks: Record<number, RotationBlock> = {
+export const rotationBlocks: Record<number | string, RotationBlock> = {
   1: {
     id: 1,
     year: 2024,
     name: 'Block 1 (SOR, SHD, TWI)',
+    hexColor: '#e10600',
     setMap: {
       [SwuSet.SOR]: true,
       [SwuSet.SHD]: true,
@@ -32,6 +34,7 @@ export const rotationBlocks: Record<number, RotationBlock> = {
     id: 2,
     year: 2025,
     name: 'Block 2 (JTL, LOF, SEC + IBH)',
+    hexColor: '#f2a900',
     setMap: {
       [SwuSet.JTL]: true,
       [SwuSet.LOF]: true,
