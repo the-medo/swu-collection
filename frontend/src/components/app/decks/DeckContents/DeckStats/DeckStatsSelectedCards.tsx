@@ -4,9 +4,10 @@ import DeckLayoutText from '@/components/app/decks/DeckContents/DeckCards/DeckLa
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { CardGroupData } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import { DeckCard } from '../../../../../../../types/ZDeckCard.ts';
-import { SwuAspect } from '../../../../../../../types/enums.ts';
+import { SwuAspect, SwuSet } from '../../../../../../../types/enums.ts';
+import { rotationBlocks, setInfo } from '../../../../../../../lib/swu-resources/set-info.ts';
 
-export type FilterType = 'cost' | 'aspect' | null;
+export type FilterType = 'cost' | 'aspect' | 'set' | 'rotationBlock' | null;
 
 interface DeckStatsSelectedCardsProps {
   deckId: string;
@@ -27,6 +28,9 @@ const DeckStatsSelectedCards: React.FC<DeckStatsSelectedCardsProps> = ({
   // Only include mainboard cards (board 1)
   const mainboardCards = cardsByBoard[1];
 
+  // Create a simple group for the filtered cards
+  let groupName = filterType === 'cost' ? `Cost: ${filterValue}` : `Aspect: ${filterValue}`;
+
   const filteredCards = useMemo(() => {
     if (!filterType || !filterValue || !cardListData) {
       return [];
@@ -38,14 +42,22 @@ const DeckStatsSelectedCards: React.FC<DeckStatsSelectedCardsProps> = ({
 
       if (filterType === 'cost') {
         const cost = cardData.cost !== null ? cardData.cost.toString() : 'X';
+        groupName = `Cost: ${cost}`;
         return cost === filterValue;
       } else if (filterType === 'aspect') {
+        groupName = `Aspect: ${filterValue}`;
         if (filterValue === 'No Aspect') {
           return !cardData.aspects || cardData.aspects.length === 0;
         }
-
         // Check if the card has the selected aspect
         return cardData.aspects?.includes(filterValue as SwuAspect);
+      } else if (filterType === 'set') {
+        groupName = `Set: ${setInfo[filterValue as SwuSet].name}`;
+        return cardData.set === filterValue;
+      } else if (filterType === 'rotationBlock') {
+        const rotationBlockId = setInfo[cardData.set].rotationBlockId;
+        groupName = rotationBlocks[filterValue ?? 0]?.name;
+        return rotationBlockId?.toString() === filterValue;
       }
 
       return false;
@@ -57,9 +69,6 @@ const DeckStatsSelectedCards: React.FC<DeckStatsSelectedCardsProps> = ({
     if (filteredCards.length === 0) {
       return deckCardsForLayout;
     }
-
-    // Create a simple group for the filtered cards
-    const groupName = filterType === 'cost' ? `Cost: ${filterValue}` : `Aspect: ${filterValue}`;
 
     const mainboardGroups: CardGroupData<DeckCard> = {
       groups: {
@@ -84,6 +93,21 @@ const DeckStatsSelectedCards: React.FC<DeckStatsSelectedCardsProps> = ({
     };
   }, [deckCardsForLayout, filteredCards, filterType, filterValue]);
 
+  const headerText = useMemo(() => {
+    switch (filterType) {
+      case 'cost':
+        return `Cards with cost ${filterValue}`;
+      case 'aspect':
+        return `Cards with aspect ${filterValue}`;
+      case 'set':
+        return `Cards from set`;
+      case 'rotationBlock':
+        return `Cards from rotation block`;
+      default:
+        return '';
+    }
+  }, [filterType, filterValue]);
+
   if (!filterType || !filterValue) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
@@ -103,9 +127,7 @@ const DeckStatsSelectedCards: React.FC<DeckStatsSelectedCardsProps> = ({
   return (
     <div className="w-full">
       <h3 className="text-lg font-semibold mb-4">
-        {filterType === 'cost'
-          ? `Cards with cost ${filterValue}`
-          : `Cards with aspect ${filterValue}`}
+        {headerText}
         <span className="ml-2 text-sm font-normal text-muted-foreground">
           ({filteredCards.length} cards)
         </span>

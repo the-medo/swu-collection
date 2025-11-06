@@ -121,7 +121,9 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
               <SelectItem value="none">None</SelectItem>
               <SelectItem value="type">Card Type</SelectItem>
               <SelectItem value="cost">Card Cost</SelectItem>
-              <SelectItem value="set">Set</SelectItem>
+              <SelectItem value="set">
+                Set <span className="text-xs ml-16">(shows set meta share)</span>
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
