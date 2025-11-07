@@ -1,6 +1,7 @@
 import { CardStatData } from '@/components/app/card-stats/types.ts';
-import { SwuArena } from '../../../../../../types/enums.ts';
+import { SwuArena, SwuSet } from '../../../../../../types/enums.ts';
 import { CardType, cardTypeSortValues } from '../../../../../../shared/types/cardTypes.ts';
+import { setInfo } from '../../../../../../lib/swu-resources/set-info.ts';
 
 /**
  * Filter card statistics data based on minimum deck count and search term
@@ -105,6 +106,8 @@ export const groupCardStats = (
       }
     } else if (groupBy === 'cost' && item.card) {
       groupKey = item.card.cost !== null ? `Cost ${item.card.cost}` : 'No Cost';
+    } else if (groupBy === 'set' && item.card) {
+      groupKey = item.card.set !== null ? `${item.card.set}` : 'No set';
     }
 
     if (!groups[groupKey]) {
@@ -153,6 +156,21 @@ export const groupCardStats = (
     // Create a new object with sorted keys
     sortedKeys.forEach(key => {
       sortedGroups[key] = groups[key];
+    });
+
+    return sortedGroups;
+  }
+
+  if (groupBy === 'set') {
+    const sortedGroups: Record<string, CardStatData[]> = {};
+
+    const sortedKeys = (Object.keys(groups) as SwuSet[]).sort(
+      (k1, k2) => (setInfo[k2]?.sortValue ?? 0) - (setInfo[k1]?.sortValue ?? 0),
+    );
+
+    sortedKeys.forEach(key => {
+      const setName = setInfo[key]?.name ?? 'Unknown';
+      sortedGroups[setName] = groups[key];
     });
 
     return sortedGroups;

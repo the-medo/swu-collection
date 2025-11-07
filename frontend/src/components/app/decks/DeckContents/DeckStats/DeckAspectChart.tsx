@@ -3,8 +3,15 @@ import { ResponsivePie } from '@nivo/pie';
 import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { SwuAspect } from '../../../../../../../types/enums.ts';
-import { useTheme } from '@/components/theme-provider.tsx';
 import { aspectColors } from '../../../../../../../shared/lib/aspectColors.ts';
+import { getGenericPieChartTooltip } from '@/components/app/global/GenericPieChartTooltip/GenericPieChartTooltip.tsx';
+
+interface AspectData {
+  id: string;
+  label: string;
+  value: number;
+  color: string;
+}
 
 interface DeckAspectChartProps {
   deckCardsForLayout: DeckCardsForLayout;
@@ -13,7 +20,6 @@ interface DeckAspectChartProps {
 
 const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout, onAspectClick }) => {
   const { data: cardListData } = useCardList();
-  const { theme } = useTheme();
   const { cardsByBoard } = deckCardsForLayout;
 
   // Handler for pie section click events
@@ -26,7 +32,7 @@ const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout, o
   // Only include mainboard cards (board 1)
   const mainboardCards = cardsByBoard[1];
 
-  const aspectDistribution = useMemo(() => {
+  const aspectDistribution: AspectData[] = useMemo(() => {
     if (!cardListData) return [];
 
     const aspectCounts: Record<string, number> = {
@@ -82,7 +88,7 @@ const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout, o
   }
 
   return (
-    <div className="w-full" style={{ height: '350px', width: '350px' }}>
+    <div className="mx-auto aspect-square h-[250px] max-h-[350px]">
       <ResponsivePie
         data={aspectDistribution}
         margin={{ top: 20, right: 20, bottom: 40, left: 20 }}
@@ -91,32 +97,14 @@ const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout, o
         cornerRadius={3}
         activeOuterRadiusOffset={8}
         colors={{ datum: 'data.color' }}
-        borderWidth={1}
-        borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
         arcLinkLabel={''}
         arcLinkLabelsThickness={0}
         arcLabelsSkipAngle={10}
-        arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+        arcLabelsTextColor={'white'}
         onClick={handlePieClick}
         isInteractive={true}
         animate={true}
-        legends={[
-          {
-            anchor: 'bottom',
-            direction: 'row',
-            justify: false,
-            translateX: 0,
-            translateY: 36,
-            itemsSpacing: 0,
-            itemWidth: 100,
-            itemHeight: 18,
-            itemTextColor: theme === 'dark' ? '#ffffff' : '#333333',
-            itemDirection: 'left-to-right',
-            itemOpacity: 1,
-            symbolSize: 18,
-            symbolShape: 'circle',
-          },
-        ]}
+        tooltip={getGenericPieChartTooltip}
       />
     </div>
   );

@@ -34,7 +34,7 @@ export function mergeParsedCardAndVariants(
           type: c.back.type,
         }
       : null,
-
+    set: c.set,
     arenas: c.arenas,
     aspects: c.aspects,
     keywords: c.keywords,

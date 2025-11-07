@@ -64,8 +64,6 @@ export const cardStatsGetRoute = new Hono<AuthExtension>().get(
     // Determine which tables to query based on the parameters
     let cardStats: CardStatExtended[] = [];
 
-    console.log({ meta_id, tournament_id, tournament_group_id, leader_card_id, base_card_id });
-
     if (tournament_group_id !== undefined) {
       // Tournament group statistics
       if (leader_card_id && base_card_id) {

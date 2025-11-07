@@ -1,10 +1,11 @@
-import { SwuAspect } from '../../../../../../types/enums.ts';
+import { SwuAspect, SwuSet } from '../../../../../../types/enums.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCallback } from 'react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { isAspect } from '@/lib/cards/isAspect.ts';
 import { baseSpecialNameValues } from '../../../../../../shared/lib/basicBases.ts';
 import { aspectColors } from '../../../../../../shared/lib/aspectColors.ts';
+import { rotationBlocks, setInfo } from '../../../../../../lib/swu-resources/set-info.ts';
 
 const getGradientDef = (id: string, colors: any[]) => ({
   id,
@@ -13,11 +14,17 @@ const getGradientDef = (id: string, colors: any[]) => ({
   colors,
 });
 
+const getSimpleGradientDef = (id: string, colors: any[]) => ({
+  id,
+  type: 'linearGradient',
+  colors: [...colors].map((a, i) => ({ offset: i * 80, color: a })),
+});
+
 export const useChartColorsAndGradients = () => {
   const { data: cardListData } = useCardList();
 
   return useCallback(
-    (value: string | undefined, metaInfo: MetaInfo) => {
+    (value: string | undefined, metaInfo: MetaInfo | 'rotationBlocks') => {
       if (!value || !cardListData || value === 'Others')
         return getGradientDef(value ?? 'unknown', [{ offset: 0, color: '#777777' }]);
       if (value === 'unknown')
@@ -70,6 +77,10 @@ export const useChartColorsAndGradients = () => {
         case 'aspectsDetailed':
           value.split('-').forEach(s => aspects.add(s as SwuAspect));
           break;
+        case 'sets':
+          return getSimpleGradientDef(value ?? 'unknown', [setInfo[value as SwuSet]?.hexColor]);
+        case 'rotationBlocks':
+          return getSimpleGradientDef(value ?? 'unknown', [rotationBlocks[value]?.hexColor]);
       }
 
       const baseCard = baseCardId ? cardList[baseCardId] : undefined;

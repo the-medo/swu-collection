@@ -1,7 +1,7 @@
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCallback } from 'react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
-import { SwuAspect } from '../../../../../../types/enums.ts';
+import { SwuAspect, SwuSet } from '../../../../../../types/enums.ts';
 import { aspectSortValues } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/sortCardsByCardAspects.ts';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import { IconVariantProps } from '@/components/app/global/icons/iconLib.ts';
@@ -11,6 +11,8 @@ import { getBaseShortcut } from '@/lib/cards/getBaseShortcut.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
 import { baseSpecialNameValues } from '../../../../../../shared/lib/basicBases.ts';
+import { setInfo } from '../../../../../../lib/swu-resources/set-info.ts';
+import SetIcon from '@/components/app/global/icons/SetIcon.tsx';
 
 export type DeckKeyLabelType = 'text' | 'compact' | 'image' | 'image-small';
 
@@ -92,8 +94,14 @@ export function useLabel() {
       const leaderSet = defaultVariant ? leaderCard?.variants[defaultVariant]?.set : undefined;
 
       if (type === 'text') {
+        if (metaInfo === 'sets') {
+          return setInfo[value as SwuSet]?.name;
+        }
         return `${leaderCardId ? cardList[leaderCardId]?.title : ''} ${leaderSet ? `(${leaderSet?.toUpperCase()})` : ''} ${baseCardId ? cardList[baseCardId]?.name : ''}${aspects.length ? ` ${aspects.join(', ')}` : ''}${isBasicForceBase ? '-Force' : ''}`;
       } else if (type === 'compact') {
+        if (metaInfo === 'sets') {
+          return <span className="min-w-[150px]">{setInfo[value as SwuSet]?.name}</span>;
+        }
         return (
           <div
             className={cn('flex flex-row gap-2 items-center', {
@@ -127,6 +135,13 @@ export function useLabel() {
           </div>
         );
       } else if (type === 'image' || type === 'image-small') {
+        if (metaInfo === 'sets') {
+          return (
+            <div className="flex flex-row gap-2 items-center">
+              <SetIcon set={value} />
+            </div>
+          );
+        }
         const size: CardImageVariantProps['size'] = type === 'image' ? 'w200' : 'w75';
         return (
           <div className="flex flex-row gap-2 items-center">

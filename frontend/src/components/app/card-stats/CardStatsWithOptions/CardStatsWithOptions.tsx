@@ -10,6 +10,7 @@ import GroupAccordionItem from './GroupAccordionItem';
 import UngroupedCardStats from './UngroupedCardStats';
 import { CardStatsParams } from '@/api/card-stats';
 import MobileCard from '@/components/ui/mobile-card.tsx';
+import CardStatsSetShare from '@/components/app/card-stats/CardStatsSetShare/CardStatsSetShare.tsx';
 
 interface CardStatsWithOptionsProps {
   data: CardStatData[];
@@ -39,6 +40,11 @@ const CardStatsWithOptions: React.FC<CardStatsWithOptionsProps> = ({ data, cardS
       <MobileCard>
         <CardStatsFilters />
       </MobileCard>
+      {groupBy === 'set' && (
+        <MobileCard>
+          <CardStatsSetShare data={data} />
+        </MobileCard>
+      )}
       {filteredAndSortedData.length > 0 ? (
         <>
           {groupBy === 'none' ? (
