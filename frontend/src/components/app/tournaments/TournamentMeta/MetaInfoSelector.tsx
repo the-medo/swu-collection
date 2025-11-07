@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
 import { useCallback } from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 
 export type MetaInfo =
   | 'leaders'
@@ -38,20 +39,25 @@ const MetaInfoSelector: React.FC<MetaInfoSelectorProps> = ({ value, onChange }) 
   );
 
   return (
-    <ToggleGroup
-      type="single"
-      value={value}
-      onValueChange={onValueChange}
-      className="justify-start gap-2 flex-wrap"
-    >
-      <ToggleGroupItem value="leaders">Leaders</ToggleGroupItem>
-      <ToggleGroupItem value="leadersAndBase">Leaders & Bases</ToggleGroupItem>
-      <ToggleGroupItem value="bases">Bases</ToggleGroupItem>
-      <ToggleGroupItem value="aspects">Aspects</ToggleGroupItem>
-      <ToggleGroupItem value="aspectsBase">Aspects (Base)</ToggleGroupItem>
-      <ToggleGroupItem value="aspectsDetailed">Aspects (Detailed)</ToggleGroupItem>
-      <ToggleGroupItem value="sets">Sets</ToggleGroupItem>
-    </ToggleGroup>
+    <Tooltip>
+      <ToggleGroup
+        type="single"
+        value={value}
+        onValueChange={onValueChange}
+        className="justify-start gap-2 flex-wrap"
+      >
+        <ToggleGroupItem value="leaders">Leaders</ToggleGroupItem>
+        <ToggleGroupItem value="leadersAndBase">Leaders & Bases</ToggleGroupItem>
+        <ToggleGroupItem value="bases">Bases</ToggleGroupItem>
+        <ToggleGroupItem value="aspects">Aspects</ToggleGroupItem>
+        <ToggleGroupItem value="aspectsBase">Aspects (Base)</ToggleGroupItem>
+        <ToggleGroupItem value="aspectsDetailed">Aspects (Detailed)</ToggleGroupItem>
+        <ToggleGroupItem value="sets" asChild>
+          <TooltipTrigger>Sets</TooltipTrigger>
+        </ToggleGroupItem>
+      </ToggleGroup>
+      <TooltipContent>Only sets of leaders are analyzed in this view.</TooltipContent>
+    </Tooltip>
   );
 };
 
