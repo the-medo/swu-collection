@@ -17,6 +17,7 @@ import { cardStatsRoute } from './routes/card-stats.ts';
 import { setRoute } from './routes/set.ts';
 import { adminRoute } from './routes/admin.ts';
 import { cardPricesRoute } from './routes/card-prices.ts';
+import { cardPoolsRoute } from './routes/card-pools.ts';
 import { dailySnapshotRoute } from './routes/daily-snapshot.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
@@ -116,6 +117,7 @@ const apiRoutes = app
   .route('/set', setRoute)
   .route('/admin', adminRoute)
   .route('/card-prices', cardPricesRoute)
+  .route('/card-pools', cardPoolsRoute)
   .route('/daily-snapshot', dailySnapshotRoute);
 
 // Read the index.html template once at startup
