@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { Deck } from '../../../../types/Deck.ts';
 
 export interface UpdateCardPoolDeckBody {
   name?: string;
@@ -8,7 +9,7 @@ export interface UpdateCardPoolDeckBody {
 }
 
 export interface UpdateCardPoolDeckResponse {
-  data: any;
+  data: { deck: Deck };
 }
 
 export const useUpdateCardPoolDeck = (id: string | undefined, deckId: string | undefined) => {

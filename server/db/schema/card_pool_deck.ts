@@ -3,6 +3,7 @@ import { visibilityEnum, cardPoolDeckCardLocationEnum, cardPools } from './card_
 import { deck } from './deck.ts';
 import { user } from './auth-schema.ts';
 import { text } from 'drizzle-orm/pg-core';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // card_pool_decks
 export const cardPoolDecks = pgTable(
@@ -45,3 +46,6 @@ export const cardPoolDeckCards = pgTable(
     locIdx: index('cpdc-loc_idx').on(table.location),
   }),
 );
+
+export type CardPoolDeck = InferSelectModel<typeof cardPoolDecks>;
+export type CardPoolDeckCard = InferSelectModel<typeof cardPoolDeckCards>;

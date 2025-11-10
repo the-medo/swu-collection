@@ -5,6 +5,7 @@ import type { Deck } from '../server/db/schema/deck.ts';
 import type { TournamentType } from './Tournament.ts';
 import type { TournamentGroupStats } from '../server/db/schema/tournament_group_stats.ts';
 import type { TournamentGroupLeaderBase } from '../server/db/schema/tournament_group_leader_base.ts';
+import type { Pagination } from './pagination.ts';
 
 export interface TournamentGroup {
   id: string;
@@ -33,11 +34,7 @@ export interface TournamentGroupTournament {
 
 export interface TournamentGroupsResponse {
   data: TournamentGroupWithMeta[];
-  pagination: {
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
+  pagination: Pagination;
 }
 
 export interface TournamentGroupResponse {

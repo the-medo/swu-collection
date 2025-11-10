@@ -1,13 +1,14 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
+import { CardPool } from '../../../../server/db/schema/card_pool.ts';
 
-export interface CardPoolDataEnvelope {
-  data: any;
+export interface CardPoolDataResponse {
+  data: CardPool;
 }
 
 export const useGetCardPool = (id: string | undefined) => {
-  return useQuery<CardPoolDataEnvelope, ErrorWithStatus>({
+  return useQuery<CardPoolDataResponse, ErrorWithStatus>({
     queryKey: ['card-pool', id],
     queryFn: id
       ? async () => {
@@ -20,7 +21,7 @@ export const useGetCardPool = (id: string | undefined) => {
             }
             throw new Error('Something went wrong');
           }
-          return (await res.json()) as CardPoolDataEnvelope;
+          return (await res.json()) as CardPoolDataResponse;
         }
       : skipToken,
     retry: (failureCount, error) => (error.status === 404 ? false : failureCount < 3),

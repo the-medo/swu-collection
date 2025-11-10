@@ -67,7 +67,7 @@ export const cardPoolsIdDeleteRoute = new Hono<AuthExtension>().delete(
         // Archive if used (idempotent)
         const [archived] = await tx
           .update(cardPoolsTable)
-          .set({ archivedAt: new Date(), updatedAt: new Date() })
+          .set({ archivedAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
           .where(and(eq(cardPoolsTable.id, id), eq(cardPoolsTable.userId, user.id)))
           .returning();
 

@@ -1,20 +1,20 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { CardPoolsQuery } from '../../../../server/routes/card-pools/get.ts';
+import { Pagination } from '../../../../types/pagination.ts';
+import { CardPool } from '../../../../server/db/schema/card_pool.ts';
 
 const PAGE_SIZE = 20;
+
+export interface GetCardPoolsResponse {
+  data: CardPool[];
+  pagination: Pagination;
+}
 
 export type GetCardPoolsRequest = Partial<CardPoolsQuery>;
 
 export const useGetCardPools = (props: GetCardPoolsRequest) => {
-  const {
-    userId,
-    visibility,
-    set,
-    type,
-    sort = 'updated_at',
-    order = 'desc',
-  } = props ?? {};
+  const { userId, visibility, set, type, sort = 'updated_at', order = 'desc' } = props ?? {};
 
   const qk = [
     'card-pools',
@@ -49,7 +49,7 @@ export const useGetCardPools = (props: GetCardPoolsRequest) => {
       }
 
       const data = await response.json();
-      return data as any;
+      return data as GetCardPoolsResponse;
     },
     initialPageParam: 0,
     getNextPageParam: lastPage => {

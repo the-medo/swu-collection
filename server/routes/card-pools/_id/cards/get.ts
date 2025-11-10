@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 import { cardPoolCards } from '../../../../db/schema/card_pool.ts';
 import { getCardPoolBasedOnIdAndUser } from '../../../../lib/card-pools/card-pool-access.ts';
 
-type GetCardPoolCardsResponse = Partial<Record<number, string>>;
+export type GetCardPoolCardsResponse = Partial<Record<number, string>>;
 
 const zParams = z.object({ id: z.uuid() });
 

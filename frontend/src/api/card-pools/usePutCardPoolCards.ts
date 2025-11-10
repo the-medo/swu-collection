@@ -24,7 +24,7 @@ export const usePutCardPoolCards = (id: string | undefined) => {
         let msg = 'Failed to replace card pool cards';
         try {
           const err = await res.json();
-          if (err?.message) msg = err.message;
+          if ('message' in err) msg = err.message;
         } catch {}
         throw new Error(msg);
       }

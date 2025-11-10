@@ -10,6 +10,7 @@ import {
   primaryKey,
 } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 // Enums
 export const visibilityEnum = pgEnum('visibility', ['private', 'unlisted', 'public']);
@@ -36,9 +37,9 @@ export const cardPools = pgTable(
     custom: boolean('custom').notNull().default(false),
     status: poolStatusEnum('status'),
     visibility: visibilityEnum('visibility'),
-    archivedAt: timestamp('archived_at', { withTimezone: true }),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    archivedAt: timestamp('archived_at', { mode: 'string' }),
+    createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
   },
   table => ({
     setIdx: index('cp-set_idx').on(table.set),
@@ -65,3 +66,6 @@ export const cardPoolCards = pgTable(
     pk: primaryKey({ columns: [table.cardPoolId, table.cardPoolNumber] }),
   }),
 );
+
+export type CardPool = InferSelectModel<typeof cardPools>;
+export type CardPoolCard = InferSelectModel<typeof cardPoolCards>;

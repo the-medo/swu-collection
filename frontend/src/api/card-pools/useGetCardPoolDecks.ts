@@ -1,7 +1,14 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { Deck } from '../../../../types/Deck.ts';
+import { Pagination } from '../../../../types/pagination.ts';
 
 const PAGE_SIZE = 20;
+
+export interface GetCardPoolDecksResponse {
+  data: Deck[];
+  pagination: Pagination;
+}
 
 export interface GetCardPoolDecksParams {
   id: string | undefined;
@@ -33,7 +40,7 @@ export const useGetCardPoolDecks = (params: GetCardPoolDecksParams) => {
         throw new Error('Something went wrong');
       }
       const data = await res.json();
-      return data as any;
+      return data as GetCardPoolDecksResponse;
     },
     initialPageParam: 0,
     getNextPageParam: lastPage => {

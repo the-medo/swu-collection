@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { Visibility } from '../../../../shared/types/visibility.ts';
+import type { Deck } from '../../../../types/Deck.ts';
 
 export interface CreateCardPoolDeckBody {
   name?: string;
@@ -10,7 +11,7 @@ export interface CreateCardPoolDeckBody {
 
 export interface CreateCardPoolDeckResponse {
   data: {
-    deck: any;
+    deck: Deck;
     createdCardsCount: number;
   };
 }

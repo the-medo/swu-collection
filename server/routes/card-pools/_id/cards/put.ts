@@ -37,7 +37,11 @@ export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
       const result = await db.transaction(async tx => {
         // Ensure pool exists and is owned by the user and is custom
         const [pool] = await tx
-          .select({ id: cardPoolsTable.id, userId: cardPoolsTable.userId, custom: cardPoolsTable.custom })
+          .select({
+            id: cardPoolsTable.id,
+            userId: cardPoolsTable.userId,
+            custom: cardPoolsTable.custom,
+          })
           .from(cardPoolsTable)
           .where(eq(cardPoolsTable.id, id))
           .limit(1);
@@ -51,7 +55,10 @@ export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
 
         // Check usage: referenced by any deck or card_pool_decks row
         const [[{ count: deckRefCountStr }], [{ count: cpdRefCountStr }]] = await Promise.all([
-          tx.select({ count: sql<string>`count(*)` }).from(deckTable).where(eq(deckTable.cardPoolId, id)),
+          tx
+            .select({ count: sql<string>`count(*)` })
+            .from(deckTable)
+            .where(eq(deckTable.cardPoolId, id)),
           tx
             .select({ count: sql<string>`count(*)` })
             .from(cardPoolDecksTable)
@@ -83,7 +90,7 @@ export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
         const leaders = filterLeadersFromCardPool(body.cards);
         const [updated] = await tx
           .update(cardPoolsTable)
-          .set({ status: 'ready', updatedAt: new Date(), leaders: leaders.join(',') })
+          .set({ status: 'ready', updatedAt: new Date().toISOString(), leaders: leaders.join(',') })
           .where(and(eq(cardPoolsTable.id, id), eq(cardPoolsTable.userId, user.id)))
           .returning();
 
@@ -96,7 +103,10 @@ export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
       if (result.status === 'not_custom')
         return c.json({ message: 'Only custom card pools can import/replace cards' }, 400);
       if (result.status === 'used')
-        return c.json({ message: 'Card pool already used in decks; cards cannot be replaced' }, 400);
+        return c.json(
+          { message: 'Card pool already used in decks; cards cannot be replaced' },
+          400,
+        );
       if (result.status === 'invalid_cards')
         return c.json({ message: 'Invalid card ids supplied', invalid: result.invalid }, 400);
       if (result.status === 'ok')

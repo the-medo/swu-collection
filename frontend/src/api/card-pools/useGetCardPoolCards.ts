@@ -1,10 +1,9 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-
-export type CardPoolCardsMap = Partial<Record<number, string>>;
+import type { GetCardPoolCardsResponse } from '../../../../server/routes/card-pools/_id/cards/get.ts';
 
 export const useGetCardPoolCards = (id: string | undefined) => {
-  return useQuery<CardPoolCardsMap>({
+  return useQuery<GetCardPoolCardsResponse>({
     queryKey: ['card-pool-cards', id],
     queryFn: id
       ? async () => {
@@ -12,7 +11,7 @@ export const useGetCardPoolCards = (id: string | undefined) => {
           if (!res.ok) {
             throw new Error('Failed to fetch card pool cards');
           }
-          return (await res.json()) as CardPoolCardsMap;
+          return (await res.json()) as GetCardPoolCardsResponse;
         }
       : skipToken,
     staleTime: Infinity,
