@@ -12,6 +12,7 @@ import { cardPoolsIdDecksPostRoute } from './card-pools/_id/decks/post.ts';
 import { cardPoolsIdDecksDeckIdPatchRoute } from './card-pools/_id/decks/_deckId/patch.ts';
 import { cardPoolsIdDecksDeckIdDeleteRoute } from './card-pools/_id/decks/_deckId/delete.ts';
 import { cardPoolsIdDecksDeckIdCardPatchRoute } from './card-pools/_id/decks/_deckId/card/patch.ts';
+import { cardPoolsIdDecksDeckIdCardGetRoute } from './card-pools/_id/decks/_deckId/card/get.ts';
 
 export const cardPoolsRoute = new Hono<AuthExtension>()
   .route('/', cardPoolsGetRoute)
@@ -25,4 +26,5 @@ export const cardPoolsRoute = new Hono<AuthExtension>()
   .route('/:id/decks', cardPoolsIdDecksPostRoute)
   .route('/:id/decks/:deckId', cardPoolsIdDecksDeckIdPatchRoute)
   .route('/:id/decks/:deckId', cardPoolsIdDecksDeckIdDeleteRoute)
-  .route('/:id/decks/:deckId/card', cardPoolsIdDecksDeckIdCardPatchRoute);
+  .route('/:id/decks/:deckId/card', cardPoolsIdDecksDeckIdCardPatchRoute)
+  .route('/:id/decks/:deckId/card', cardPoolsIdDecksDeckIdCardGetRoute);

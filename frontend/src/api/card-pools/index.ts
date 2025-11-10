@@ -10,3 +10,4 @@ export * from './useCreateCardPoolDeck.ts';
 export * from './useUpdateCardPoolDeck.ts';
 export * from './useDeleteCardPoolDeck.ts';
 export * from './useUpdateCardPoolDeckCard.ts';
+export * from './useGetCardPoolDeckCards.ts';

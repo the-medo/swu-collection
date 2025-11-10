@@ -3,7 +3,7 @@ import { api } from '@/lib/api.ts';
 import type { CardPoolCreate } from '../../../../server/routes/card-pools/post.ts';
 import { CardPool } from '../../../../server/db/schema/card_pool.ts';
 
-export interface CreateCardPoolDeckResponse {
+export interface CreateCardPoolResponse {
   data: CardPool;
 }
 
@@ -18,7 +18,7 @@ export const useCreateCardPool = () => {
       if (!res.ok) {
         throw new Error('Failed to create card pool');
       }
-      return (await res.json()) as CreateCardPoolDeckResponse;
+      return (await res.json()) as CreateCardPoolResponse;
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['card-pools'], exact: false });
