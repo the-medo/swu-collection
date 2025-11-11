@@ -6,6 +6,7 @@ export const setIconVariants = cva('', {
   variants: {
     size: {
       original: 'w-[150px] min-w-[150px]',
+      full: 'w-full',
     },
   },
   defaultVariants: {

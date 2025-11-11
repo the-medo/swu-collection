@@ -51,6 +51,7 @@ import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/t
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
 import { Route as LimitedPoolPoolIdIndexRouteImport } from './routes/limited/pool/$poolId/index'
+import { Route as LimitedDeckDeckIdIndexRouteImport } from './routes/limited/deck/$deckId/index'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -272,6 +273,11 @@ const LimitedPoolPoolIdIndexRoute = LimitedPoolPoolIdIndexRouteImport.update({
   path: '/limited/pool/$poolId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LimitedDeckDeckIdIndexRoute = LimitedDeckDeckIdIndexRouteImport.update({
+  id: '/limited/deck/$deckId/',
+  path: '/limited/deck/$deckId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -314,6 +320,7 @@ export interface FileRoutesByFullPath {
   '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
+  '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
   '/limited/pool/$poolId': typeof LimitedPoolPoolIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -357,6 +364,7 @@ export interface FileRoutesByTo {
   '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
+  '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
   '/limited/pool/$poolId': typeof LimitedPoolPoolIdIndexRoute
 }
 export interface FileRoutesById {
@@ -402,6 +410,7 @@ export interface FileRoutesById {
   '/tournaments/planetary-qualifiers/': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
+  '/limited/deck/$deckId/': typeof LimitedDeckDeckIdIndexRoute
   '/limited/pool/$poolId/': typeof LimitedPoolPoolIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -447,6 +456,7 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
+    | '/limited/deck/$deckId'
     | '/limited/pool/$poolId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -490,6 +500,7 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
+    | '/limited/deck/$deckId'
     | '/limited/pool/$poolId'
   id:
     | '__root__'
@@ -534,6 +545,7 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers/'
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
+    | '/limited/deck/$deckId/'
     | '/limited/pool/$poolId/'
   fileRoutesById: FileRoutesById
 }
@@ -577,6 +589,7 @@ export interface RootRouteChildren {
   TournamentsPlanetaryQualifiersIndexRoute: typeof TournamentsPlanetaryQualifiersIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
+  LimitedDeckDeckIdIndexRoute: typeof LimitedDeckDeckIdIndexRoute
   LimitedPoolPoolIdIndexRoute: typeof LimitedPoolPoolIdIndexRoute
 }
 
@@ -876,6 +889,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LimitedPoolPoolIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/limited/deck/$deckId/': {
+      id: '/limited/deck/$deckId/'
+      path: '/limited/deck/$deckId'
+      fullPath: '/limited/deck/$deckId'
+      preLoaderRoute: typeof LimitedDeckDeckIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -934,6 +954,7 @@ const rootRouteChildren: RootRouteChildren = {
     TournamentsPlanetaryQualifiersIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
+  LimitedDeckDeckIdIndexRoute: LimitedDeckDeckIdIndexRoute,
   LimitedPoolPoolIdIndexRoute: LimitedPoolPoolIdIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -13,4 +13,8 @@ export const cardPoolInfo: Partial<Record<SwuSet, SetCardPoolInfo>> = {
       'chancellor-palpatine--how-liberty-dies',
     ],
   },
+  [SwuSet.LOF]: {
+    hasPrerelease: true,
+    prereleaseLeadersId: ['qui-gon-jinn--student-of-the-living-force', 'darth-maul--sith-revealed'],
+  },
 };
