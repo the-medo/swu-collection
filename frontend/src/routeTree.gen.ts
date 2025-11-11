@@ -19,6 +19,7 @@ import { Route as ToolsIndexRouteImport } from './routes/tools/index'
 import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
 import { Route as MetaIndexRouteImport } from './routes/meta/index'
 import { Route as MessagesIndexRouteImport } from './routes/messages/index'
+import { Route as LimitedIndexRouteImport } from './routes/limited/index'
 import { Route as ComparerIndexRouteImport } from './routes/comparer/index'
 import { Route as WantlistsYourRouteImport } from './routes/wantlists/your'
 import { Route as WantlistsPublicRouteImport } from './routes/wantlists/public'
@@ -49,6 +50,7 @@ import { Route as TournamentsTournamentIdDecksRouteImport } from './routes/tourn
 import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/tournaments/$tournamentId/card-stats'
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
+import { Route as LimitedPoolPoolIdIndexRouteImport } from './routes/limited/pool/$poolId/index'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -97,6 +99,11 @@ const MetaIndexRoute = MetaIndexRouteImport.update({
 const MessagesIndexRoute = MessagesIndexRouteImport.update({
   id: '/messages/',
   path: '/messages/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LimitedIndexRoute = LimitedIndexRouteImport.update({
+  id: '/limited/',
+  path: '/limited/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComparerIndexRoute = ComparerIndexRouteImport.update({
@@ -260,6 +267,11 @@ const CardsDetailCardIdRoute = CardsDetailCardIdRouteImport.update({
   path: '/cards/detail/$cardId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LimitedPoolPoolIdIndexRoute = LimitedPoolPoolIdIndexRouteImport.update({
+  id: '/limited/pool/$poolId/',
+  path: '/limited/pool/$poolId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -279,6 +291,7 @@ export interface FileRoutesByFullPath {
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
+  '/limited': typeof LimitedIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/meta': typeof MetaIndexRoute
   '/notifications': typeof NotificationsIndexRoute
@@ -301,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
+  '/limited/pool/$poolId': typeof LimitedPoolPoolIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -320,6 +334,7 @@ export interface FileRoutesByTo {
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
+  '/limited': typeof LimitedIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/meta': typeof MetaIndexRoute
   '/notifications': typeof NotificationsIndexRoute
@@ -342,6 +357,7 @@ export interface FileRoutesByTo {
   '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
+  '/limited/pool/$poolId': typeof LimitedPoolPoolIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -363,6 +379,7 @@ export interface FileRoutesById {
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer/': typeof ComparerIndexRoute
+  '/limited/': typeof LimitedIndexRoute
   '/messages/': typeof MessagesIndexRoute
   '/meta/': typeof MetaIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
@@ -385,6 +402,7 @@ export interface FileRoutesById {
   '/tournaments/planetary-qualifiers/': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
+  '/limited/pool/$poolId/': typeof LimitedPoolPoolIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -406,6 +424,7 @@ export interface FileRouteTypes {
     | '/wantlists/public'
     | '/wantlists/your'
     | '/comparer'
+    | '/limited'
     | '/messages'
     | '/meta'
     | '/notifications'
@@ -428,6 +447,7 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
+    | '/limited/pool/$poolId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -447,6 +467,7 @@ export interface FileRouteTypes {
     | '/wantlists/public'
     | '/wantlists/your'
     | '/comparer'
+    | '/limited'
     | '/messages'
     | '/meta'
     | '/notifications'
@@ -469,6 +490,7 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
+    | '/limited/pool/$poolId'
   id:
     | '__root__'
     | '/'
@@ -489,6 +511,7 @@ export interface FileRouteTypes {
     | '/wantlists/public'
     | '/wantlists/your'
     | '/comparer/'
+    | '/limited/'
     | '/messages/'
     | '/meta/'
     | '/notifications/'
@@ -511,6 +534,7 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers/'
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
+    | '/limited/pool/$poolId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -530,6 +554,7 @@ export interface RootRouteChildren {
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
+  LimitedIndexRoute: typeof LimitedIndexRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
   MetaIndexRoute: typeof MetaIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
@@ -552,6 +577,7 @@ export interface RootRouteChildren {
   TournamentsPlanetaryQualifiersIndexRoute: typeof TournamentsPlanetaryQualifiersIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
+  LimitedPoolPoolIdIndexRoute: typeof LimitedPoolPoolIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -624,6 +650,13 @@ declare module '@tanstack/react-router' {
       path: '/messages'
       fullPath: '/messages'
       preLoaderRoute: typeof MessagesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/limited/': {
+      id: '/limited/'
+      path: '/limited'
+      fullPath: '/limited'
+      preLoaderRoute: typeof LimitedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/comparer/': {
@@ -836,6 +869,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CardsDetailCardIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/limited/pool/$poolId/': {
+      id: '/limited/pool/$poolId/'
+      path: '/limited/pool/$poolId'
+      fullPath: '/limited/pool/$poolId'
+      preLoaderRoute: typeof LimitedPoolPoolIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -870,6 +910,7 @@ const rootRouteChildren: RootRouteChildren = {
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
   ComparerIndexRoute: ComparerIndexRoute,
+  LimitedIndexRoute: LimitedIndexRoute,
   MessagesIndexRoute: MessagesIndexRoute,
   MetaIndexRoute: MetaIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
@@ -893,6 +934,7 @@ const rootRouteChildren: RootRouteChildren = {
     TournamentsPlanetaryQualifiersIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
+  LimitedPoolPoolIdIndexRoute: LimitedPoolPoolIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
