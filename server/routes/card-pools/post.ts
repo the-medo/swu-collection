@@ -39,7 +39,7 @@ export const cardPoolsPostRoute = new Hono<AuthExtension>().post(
     try {
       const result = await db.transaction(async tx => {
         // Generate the card pool and seed cards
-        const pool = body.custom ? generateCardPool(body.set, body.type) : [];
+        const pool = body.custom ? [] : generateCardPool(body.set, body.type);
         const leaders = filterLeadersFromCardPool(pool).join(',');
 
         const [created] = await tx

@@ -50,8 +50,8 @@ import { Route as TournamentsTournamentIdDecksRouteImport } from './routes/tourn
 import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/tournaments/$tournamentId/card-stats'
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
-import { Route as LimitedPoolPoolIdIndexRouteImport } from './routes/limited/pool/$poolId/index'
 import { Route as LimitedDeckDeckIdIndexRouteImport } from './routes/limited/deck/$deckId/index'
+import { Route as LimitedPoolPoolIdDetailIndexRouteImport } from './routes/limited/pool/$poolId/detail/index'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -268,16 +268,17 @@ const CardsDetailCardIdRoute = CardsDetailCardIdRouteImport.update({
   path: '/cards/detail/$cardId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LimitedPoolPoolIdIndexRoute = LimitedPoolPoolIdIndexRouteImport.update({
-  id: '/limited/pool/$poolId/',
-  path: '/limited/pool/$poolId/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LimitedDeckDeckIdIndexRoute = LimitedDeckDeckIdIndexRouteImport.update({
   id: '/limited/deck/$deckId/',
   path: '/limited/deck/$deckId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LimitedPoolPoolIdDetailIndexRoute =
+  LimitedPoolPoolIdDetailIndexRouteImport.update({
+    id: '/limited/pool/$poolId/detail/',
+    path: '/limited/pool/$poolId/detail/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -321,7 +322,7 @@ export interface FileRoutesByFullPath {
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
   '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
-  '/limited/pool/$poolId': typeof LimitedPoolPoolIdIndexRoute
+  '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -365,7 +366,7 @@ export interface FileRoutesByTo {
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
   '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
-  '/limited/pool/$poolId': typeof LimitedPoolPoolIdIndexRoute
+  '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -411,7 +412,7 @@ export interface FileRoutesById {
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
   '/limited/deck/$deckId/': typeof LimitedDeckDeckIdIndexRoute
-  '/limited/pool/$poolId/': typeof LimitedPoolPoolIdIndexRoute
+  '/limited/pool/$poolId/detail/': typeof LimitedPoolPoolIdDetailIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -457,7 +458,7 @@ export interface FileRouteTypes {
     | '/users/$userId'
     | '/wantlists/$wantlistId'
     | '/limited/deck/$deckId'
-    | '/limited/pool/$poolId'
+    | '/limited/pool/$poolId/detail'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -501,7 +502,7 @@ export interface FileRouteTypes {
     | '/users/$userId'
     | '/wantlists/$wantlistId'
     | '/limited/deck/$deckId'
-    | '/limited/pool/$poolId'
+    | '/limited/pool/$poolId/detail'
   id:
     | '__root__'
     | '/'
@@ -546,7 +547,7 @@ export interface FileRouteTypes {
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
     | '/limited/deck/$deckId/'
-    | '/limited/pool/$poolId/'
+    | '/limited/pool/$poolId/detail/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -590,7 +591,7 @@ export interface RootRouteChildren {
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
   LimitedDeckDeckIdIndexRoute: typeof LimitedDeckDeckIdIndexRoute
-  LimitedPoolPoolIdIndexRoute: typeof LimitedPoolPoolIdIndexRoute
+  LimitedPoolPoolIdDetailIndexRoute: typeof LimitedPoolPoolIdDetailIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -882,18 +883,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CardsDetailCardIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/limited/pool/$poolId/': {
-      id: '/limited/pool/$poolId/'
-      path: '/limited/pool/$poolId'
-      fullPath: '/limited/pool/$poolId'
-      preLoaderRoute: typeof LimitedPoolPoolIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/limited/deck/$deckId/': {
       id: '/limited/deck/$deckId/'
       path: '/limited/deck/$deckId'
       fullPath: '/limited/deck/$deckId'
       preLoaderRoute: typeof LimitedDeckDeckIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/limited/pool/$poolId/detail/': {
+      id: '/limited/pool/$poolId/detail/'
+      path: '/limited/pool/$poolId/detail'
+      fullPath: '/limited/pool/$poolId/detail'
+      preLoaderRoute: typeof LimitedPoolPoolIdDetailIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -955,7 +956,7 @@ const rootRouteChildren: RootRouteChildren = {
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
   LimitedDeckDeckIdIndexRoute: LimitedDeckDeckIdIndexRoute,
-  LimitedPoolPoolIdIndexRoute: LimitedPoolPoolIdIndexRoute,
+  LimitedPoolPoolIdDetailIndexRoute: LimitedPoolPoolIdDetailIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
