@@ -1,8 +1,8 @@
 import React from 'react';
 import { cn } from '@/lib/utils.ts';
 import CreatePool from '@/components/app/limited/CreatePool/CreatePool.tsx';
-import LatestPools from '@/components/app/limited/LatestPools/LatestPools.tsx';
-import PublicPools from '@/components/app/limited/PublicPools/PublicPools.tsx';
+import YourLatestPools from '@/components/app/limited/YourLatestPools/YourLatestPools.tsx';
+import PublicLatestPools from '@/components/app/limited/PublicLatestPools/PublicLatestPools.tsx';
 
 const Limited: React.FC = () => {
   return (
@@ -16,8 +16,8 @@ const Limited: React.FC = () => {
       )}
     >
       <CreatePool />
-      <LatestPools />
-      <PublicPools />
+      <YourLatestPools />
+      <PublicLatestPools />
     </div>
   );
 };
