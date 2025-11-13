@@ -1,5 +1,5 @@
-import { SwuSet } from '../../../types/enums.ts';
-import { setInfo } from '../../../lib/swu-resources/set-info.ts';
+import { SwuSet } from '../../types/enums.ts';
+import { setInfo } from './set-info.ts';
 
 export type SetCardPoolInfo = {
   hasPrerelease: boolean;

@@ -7,7 +7,7 @@ import CardPoolTypeSelector from '@/components/app/limited/CreatePool/CardPoolTy
 import { SwuSet } from '../../../../../../types/enums.ts';
 import SetIcon from '@/components/app/global/icons/SetIcon.tsx';
 import SetSelect from '@/components/app/global/SetSelect.tsx';
-import { cardPoolSets } from '../../../../../../server/lib/card-pools/card-pool-info.ts';
+import { cardPoolSets } from '../../../../../../lib/swu-resources/card-pool-info.ts';
 import VisibilitySelector from '@/components/app/global/VisibilitySelector/VisibilitySelector.tsx';
 import { Visibility } from '../../../../../../shared/types/visibility.ts';
 import { Input } from '@/components/ui/input.tsx';

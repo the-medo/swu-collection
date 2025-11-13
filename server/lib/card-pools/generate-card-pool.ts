@@ -1,5 +1,5 @@
 import type { SwuSet } from '../../../types/enums.ts';
-import { cardPoolInfo } from './card-pool-info.ts';
+import { cardPoolInfo } from '../../../lib/swu-resources/card-pool-info.ts';
 import { CardPoolType } from '../../../shared/types/cardPools.ts';
 import { type CardPoolMap, getCardPoolMap } from './card-pool-map-by-set.ts';
 import { cardList } from '../../db/lists.ts';

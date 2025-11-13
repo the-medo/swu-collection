@@ -17,7 +17,7 @@ import {
 import { SwuSet } from '../../../../../../types/enums.ts';
 import { CardPoolType } from '../../../../../../shared/types/cardPools.ts';
 import SetSelect from '@/components/app/global/SetSelect.tsx';
-import { cardPoolSets } from '../../../../../../server/lib/card-pools/card-pool-info.ts';
+import { cardPoolSets } from '../../../../../../lib/swu-resources/card-pool-info.ts';
 
 interface CardPoolFiltersProps {
   initialized?: boolean;
