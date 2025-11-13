@@ -132,7 +132,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
       return (
         <div className={cn('w-fit', { 'cursor-pointer': editable })}>
           <CardImage forceHorizontal size={size}>
-            <h6 className="flex gap-2 mb-0 items-center">
+            <h6 className="flex gap-2 mb-0 mt-2 items-center">
               <Castle size={20} /> Base
             </h6>
           </CardImage>

@@ -7,8 +7,7 @@ import CardPoolTypeSelector from '@/components/app/limited/CreatePool/CardPoolTy
 import { SwuSet } from '../../../../../../types/enums.ts';
 import SetIcon from '@/components/app/global/icons/SetIcon.tsx';
 import SetSelect from '@/components/app/global/SetSelect.tsx';
-import { cardPoolInfo } from '../../../../../../server/lib/card-pools/card-pool-info.ts';
-import { setInfo } from '../../../../../../lib/swu-resources/set-info.ts';
+import { cardPoolSets } from '../../../../../../server/lib/card-pools/card-pool-info.ts';
 import VisibilitySelector from '@/components/app/global/VisibilitySelector/VisibilitySelector.tsx';
 import { Visibility } from '../../../../../../shared/types/visibility.ts';
 import { Input } from '@/components/ui/input.tsx';
@@ -47,8 +46,6 @@ const typeLabel = (type: CardPoolType): string => {
 const generatePoolName = (type: CardPoolType, setAbbr: SwuSet, date: Date = new Date()) => {
   return `${typeLabel(type)} ${setAbbr.toUpperCase()} [${formatDate(date)}]`;
 };
-
-const cardPoolSets = (Object.keys(cardPoolInfo) as SwuSet[]).map(set => setInfo[set]);
 
 const CreatePool: React.FC = () => {
   const [selectedType, setSelectedType] = useState<CardPoolType>(CardPoolType.Sealed);

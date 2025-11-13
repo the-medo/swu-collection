@@ -5,6 +5,8 @@ import SectionHeader from '@/components/app/daily-snapshots/sections/components/
 import { useGetCardPools } from '@/api/card-pools/useGetCardPools.ts';
 import CardPoolTable from '@/components/app/limited/CardPoolTable/CardPoolTable.tsx';
 import { Loader2 } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import { Button } from '@/components/ui/button.tsx';
 
 const gridSizing = {
   4: { row: { from: 2, to: 3 }, col: { from: 2, to: 4 } },
@@ -32,11 +34,16 @@ const PublicLatestPools: React.FC = () => {
       <GridSectionContent>
         <SectionHeader
           headerAndTooltips={
-            <>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h4>Latest pools</h4>
-              </div>
-            </>
+            <div className="flex items-center gap-2 w-full justify-between">
+              <h4>Latest pools</h4>
+            </div>
+          }
+          dropdownMenu={
+            <Link to={'/limited/public'}>
+              <Button variant="outline" size="xs">
+                See all pools
+              </Button>
+            </Link>
           }
         />
         {isFetching ? (

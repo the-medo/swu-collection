@@ -1,7 +1,6 @@
 import { Badge } from '@/components/ui/badge.tsx';
 import { cn } from '@/lib/utils.ts';
-
-export type CardPoolType = 'prerelease' | 'sealed' | 'draft';
+import { CardPoolType } from '../../../../../../shared/types/cardPools.ts';
 
 export const cardPoolTypeRenderer = (value: CardPoolType) => {
   switch (value) {

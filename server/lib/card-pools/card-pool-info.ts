@@ -1,4 +1,5 @@
 import { SwuSet } from '../../../types/enums.ts';
+import { setInfo } from '../../../lib/swu-resources/set-info.ts';
 
 export type SetCardPoolInfo = {
   hasPrerelease: boolean;
@@ -18,3 +19,5 @@ export const cardPoolInfo: Partial<Record<SwuSet, SetCardPoolInfo>> = {
     prereleaseLeadersId: ['qui-gon-jinn--student-of-the-living-force', 'darth-maul--sith-revealed'],
   },
 };
+
+export const cardPoolSets = (Object.keys(cardPoolInfo) as SwuSet[]).map(set => setInfo[set]);

@@ -8,7 +8,9 @@ export type GridSectionContentProps = {
 export const GridSectionContent: React.FC<GridSectionContentProps> = ({ children }) => {
   return (
     <div
-      className={cn('border rounded-lg bg-card p-4 shadow-xs h-full min-w-0 flex flex-col min-h-0')}
+      className={cn(
+        'border rounded-lg bg-card p-4 shadow-xs h-full min-w-0 flex flex-col min-h-0 gap-2',
+      )}
     >
       {children}
     </div>
