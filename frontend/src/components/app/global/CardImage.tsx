@@ -81,7 +81,7 @@ export type CardImageVariantProps = Omit<VariantProps<typeof cardImageVariants>,
 type CardImageProps = {
   card?: CardDataWithVariants<CardListVariants>;
   cardVariantId?: string;
-  backSideButton?: false | 'mid' | 'left' | 'right';
+  backSideButton?: false | 'mid' | 'left' | 'right' | 'top-left';
   backSide?: boolean;
   foil?: boolean;
   forceHorizontal?: boolean;
@@ -148,8 +148,9 @@ const CardImage: React.FC<CardImageProps> = ({
               size="iconSmall"
               className={cn('absolute bottom-2 ', {
                 'left-[50%] transform -translate-x-1/2': backSideButton === 'mid',
-                'left-2': backSideButton === 'left',
+                'left-2': backSideButton === 'left' || backSideButton === 'top-left',
                 'right-2': backSideButton === 'right',
+                'top-2': backSideButton === 'top-left',
               })}
               onClick={event => {
                 event.preventDefault();

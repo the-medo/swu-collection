@@ -1,9 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
+import CardPoolDetail from '@/components/app/limited/CardPoolDetail/CardPoolDetail.tsx'
 
 export const Route = createFileRoute('/limited/pool/$poolId/detail/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div>Hello "/limited/pool/$poolId/"!</div>
+  const { poolId } = Route.useParams()
+  return <CardPoolDetail poolId={poolId} />
 }
