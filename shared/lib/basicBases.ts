@@ -37,6 +37,8 @@ export const baseSpecialNames: Record<string, string> = {
   'shield-generator-complex': 'Vigilance',
   sundari: 'Vigilance',
   'the-crystal-city': 'Vigilance',
+  'rix-road': 'Vigilance',
+  'uscru-entertainment-district': 'Vigilance',
   //force Vigilance bases
   'nightsister-lair': 'Vigilance-Force',
   'shadowed-undercity': 'Vigilance-Force',
@@ -50,6 +52,8 @@ export const baseSpecialNames: Record<string, string> = {
   'resistance-headquarters': 'Command',
   'theed-palace': 'Command',
   'tipoca-city': 'Command',
+  'republic-city': 'Command',
+  'senate-rotunda': 'Command',
   //force Command bases
   'jedi-temple': 'Command-Force',
   'starlight-temple': 'Command-Force',
@@ -63,6 +67,8 @@ export const baseSpecialNames: Record<string, string> = {
   'nadiri-dockyards': 'Aggression',
   'spice-mines': 'Aggression',
   'the-nest': 'Aggression',
+  'imperial-prison-complex': 'Aggression',
+  'naval-intelligence-hq': 'Aggression',
   // force Aggresion bases
   'fortress-vader': 'Aggression-Force',
   'strangled-cliffs': 'Aggression-Force',
@@ -75,6 +81,8 @@ export const baseSpecialNames: Record<string, string> = {
   'level-1313': 'Cunning',
   'mos-eisley': 'Cunning',
   'pyke-palace': 'Cunning',
+  'amnesty-housing': 'Cunning',
+  'mount-tantiss': 'Cunning',
   // force Cunning bases
   'crystal-caves': 'Cunning-Force',
   'the-holy-city': 'Cunning-Force',
