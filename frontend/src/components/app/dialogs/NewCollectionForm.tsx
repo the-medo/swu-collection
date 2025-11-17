@@ -62,7 +62,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
           public: value.public,
           ...(collectionType === CollectionType.COLLECTION
             ? { forSale: value.forSale, forDecks: value.forDecks }
-            : {}),
+            : { forSale: false, forDecks: false }),
         },
         {
           onSuccess: result => {

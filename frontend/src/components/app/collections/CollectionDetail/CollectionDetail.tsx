@@ -36,6 +36,7 @@ const CollectionDetail: React.FC = () => {
   const loading = isFetching;
   const owned = user?.id === collectionUserId;
 
+  const type = data?.collection.collectionType;
   const publicC = !!data?.collection.public;
   const forSaleC = !!data?.collection.forSale;
   const forDecksC = !!data?.collection.forDecks;
@@ -102,8 +103,8 @@ const CollectionDetail: React.FC = () => {
         {owned && data?.collection && (
           <div className="flex flex-row gap-2 items-center">
             {publicRenderer(data?.collection.public, owned ? togglePublic : undefined)}
-            {forSaleRenderer(data?.collection.forSale, owned ? toggleForSale : undefined)}
-            {forDecksRenderer(data?.collection.forDecks, owned ? toggleForDecks : undefined)}
+            {type === CollectionType.COLLECTION ? forSaleRenderer(data?.collection.forSale, owned ? toggleForSale : undefined) : null}
+            {type === CollectionType.COLLECTION ? forDecksRenderer(data?.collection.forDecks, owned ? toggleForDecks : undefined) : null}
             <EditCollectionDialog
               collection={data?.collection}
               trigger={<Button>Edit {cardListString}</Button>}
