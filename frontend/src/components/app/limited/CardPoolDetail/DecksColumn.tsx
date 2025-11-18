@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { CardPool } from '../../../../../../server/db/schema/card_pool.ts';
 import { useGetCardPoolDecks } from '@/api/card-pools/useGetCardPoolDecks.ts';
 import CreateDeckSection from './CreateDeckSection.tsx';
+import DeckCard from './DeckCard.tsx';
 
 export interface DecksColumnProps {
   pool?: CardPool;
@@ -25,9 +26,11 @@ const DecksColumn: React.FC<DecksColumnProps> = ({ pool }) => {
         <div className="text-xs opacity-60">No decks created for this pool yet.</div>
       )}
       {!isFetching && !isError && decks.length > 0 && (
-        <pre className="text-[10px] leading-tight whitespace-pre-wrap break-words">
-          {JSON.stringify(decks, null, 2)}
-        </pre>
+        <div className="flex flex-wrap gap-2">
+          {decks.map(deck => (
+            <DeckCard key={deck.id} deck={deck} />
+          ))}
+        </div>
       )}
     </div>
   );
