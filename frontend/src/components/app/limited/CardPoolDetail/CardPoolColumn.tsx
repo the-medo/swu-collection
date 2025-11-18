@@ -38,7 +38,7 @@ const CardPoolColumn: React.FC<CardPoolColumnProps> = ({ pool }) => {
       {!isFetching && !error && items.length === 0 && (
         <div className="text-xs opacity-60">No cards in this pool yet.</div>
       )}
-      <div className="mt-2 flex flex-wrap">
+      <div className="mt-2 flex flex-wrap max-h-[calc(100vh-130px)] overflow-y-auto">
         <div className="mt-2 flex flex-col">
           <CardPoolStack items={columns[SwuAspect.VIGILANCE].base} />
           <CardPoolStack items={columns[SwuAspect.VIGILANCE][SwuAspect.HEROISM]} />
@@ -58,6 +58,15 @@ const CardPoolColumn: React.FC<CardPoolColumnProps> = ({ pool }) => {
           <CardPoolStack items={columns[SwuAspect.COMMAND].base} />
           <CardPoolStack items={columns[SwuAspect.COMMAND][SwuAspect.HEROISM]} />
           <CardPoolStack items={columns[SwuAspect.COMMAND][SwuAspect.VILLAINY]} />
+        </div>
+        <div className="mt-2 flex flex-col">
+          <CardPoolStack items={columns[SwuAspect.HEROISM]} />
+        </div>
+        <div className="mt-2 flex flex-col">
+          <CardPoolStack items={columns[SwuAspect.VILLAINY]} />
+        </div>
+        <div className="mt-2 flex flex-col">
+          <CardPoolStack items={columns['no-aspect']} />
         </div>
       </div>
       {pool?.description && <div className="mt-3 text-xs opacity-60">{pool.description}</div>}

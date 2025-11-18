@@ -17,7 +17,7 @@ export interface CardPoolStackProps {
   size?: 'w200' | 'w100';
 }
 
-const CardPoolStack: React.FC<CardPoolStackProps> = ({ items, size = 'w100' }) => {
+const CardPoolStack: React.FC<CardPoolStackProps> = ({ items, size = 'w200' }) => {
   return (
     <div className="flex-none px-1">
       <ul className={cn('flex flex-col pt-[240px]', size === 'w200' ? 'pt-[240px]' : 'pt-[120px]')}>
@@ -26,7 +26,7 @@ const CardPoolStack: React.FC<CardPoolStackProps> = ({ items, size = 'w100' }) =
             <div
               className={cn(
                 'relative inline-block align-middle mr-px rounded-[4.75%/3.5%] isolate group cursor-pointer z-1 hover:z-10',
-                size === 'w200' ? ' -mt-[240px]' : ' -mt-[120px]',
+                size === 'w200' ? ' -mt-[210px]' : ' -mt-[105px]',
               )}
             >
               <CardImage

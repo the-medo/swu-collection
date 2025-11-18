@@ -26,7 +26,7 @@ const LeadersColumn: React.FC<LeadersColumnProps> = ({ pool }) => {
   );
 
   return (
-    <div className="rounded-lg border border-border bg-card p-3">
+    <div className="rounded-lg border border-border bg-card p-3 h-full">
       <h3 className="text-sm font-semibold mb-2">Leaders</h3>
       {isFetching && <div className="text-xs opacity-60">Loading leaders...</div>}
       {!isFetching && leaderCards.length === 0 && (
@@ -34,7 +34,7 @@ const LeadersColumn: React.FC<LeadersColumnProps> = ({ pool }) => {
       )}
       <div className="mt-2 flex flex-col gap-3 items-center">
         {leaderCards.map((lc, i) => (
-          <div className={cn(i > 0 && '-mt-[100px]')}>
+          <div className={cn(i > 0 && '-mt-[120px]')}>
             <CardImage
               key={`${lc.cardId}-${lc.key}`}
               card={lc.card}

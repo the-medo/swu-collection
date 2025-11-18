@@ -41,7 +41,7 @@ export const cardPoolsIdPatchRoute = new Hono<AuthExtension>().patch(
       if (typeof body.name !== 'undefined') updates.name = body.name;
       if (typeof body.description !== 'undefined') updates.description = body.description;
       if (typeof body.visibility !== 'undefined') updates.visibility = body.visibility;
-      updates.updatedAt = new Date();
+      updates.updatedAt = new Date().toISOString();
 
       const [updated] = await db
         .update(cardPoolsTable)
