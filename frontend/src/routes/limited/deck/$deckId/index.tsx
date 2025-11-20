@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import DeckDetail from '@/components/app/limited/DeckDetail/DeckDetail.tsx';
+import CPDeckDetail from '@/components/app/limited/CardPoolDeckDetail/CPDeckDetail.tsx';
 
 export const Route = createFileRoute('/limited/deck/$deckId/')({
   component: RouteComponent,
@@ -7,5 +7,5 @@ export const Route = createFileRoute('/limited/deck/$deckId/')({
 
 function RouteComponent() {
   const { deckId } = Route.useParams();
-  return <DeckDetail deckId={deckId} />;
+  return <CPDeckDetail deckId={deckId} />;
 }
