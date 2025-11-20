@@ -3,9 +3,12 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { db } from '../../../../db';
-import { and, eq, or, sql } from 'drizzle-orm';
+import { and, eq, or, asc, desc } from 'drizzle-orm';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
+import { user as userTable } from '../../../../db/schema/auth-schema.ts';
 import { withPagination } from '../../../../lib/withPagination.ts';
+import { selectUser } from '../../../user.ts';
+import { selectDeck } from '../../../deck.ts';
 
 const zParams = z.object({ id: z.uuid() });
 const zQuery = z.object({
@@ -44,11 +47,26 @@ export const cardPoolsIdDecksGetRoute = new Hono<AuthExtension>().get(
       }
     }
 
-    let query = db.select().from(deckTable).$dynamic();
+    let query = db
+      .select({
+        user: selectUser,
+        deck: selectDeck,
+      })
+      .from(deckTable)
+      .innerJoin(userTable, eq(deckTable.userId, userTable.id))
+      .$dynamic();
+
     query = query.where(and(...filters));
     query = withPagination(query, limit, offset);
 
-    const data = await query.orderBy(sql.raw(`${sort} ${order}`));
+    const sortColumn =
+      sort === 'created_at'
+        ? deckTable.createdAt
+        : sort === 'updated_at'
+          ? deckTable.updatedAt
+          : deckTable.name;
+
+    const data = await query.orderBy(order === 'asc' ? asc(sortColumn) : desc(sortColumn));
 
     return c.json({
       data,

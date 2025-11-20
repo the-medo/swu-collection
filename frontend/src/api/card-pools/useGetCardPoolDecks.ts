@@ -1,12 +1,12 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { Deck } from '../../../../types/Deck.ts';
+import type { DeckData } from '../../../../types/Deck.ts';
 import { Pagination } from '../../../../types/pagination.ts';
 
 const PAGE_SIZE = 20;
 
 export interface GetCardPoolDecksResponse {
-  data: Deck[];
+  data: Pick<DeckData, 'deck' | 'user'>[];
   pagination: Pagination;
 }
 
