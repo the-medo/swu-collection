@@ -1,4 +1,5 @@
-import { SwuAspect } from '../../types/enums.ts';
+import { SwuAspect, SwuSet } from '../../types/enums.ts';
+import type { CardList } from '../../lib/swu-resources/types.ts';
 
 export const basicBases: Record<string, true | undefined> = {
   'capital-city': true, // vigilance
@@ -99,4 +100,19 @@ export const getSpecialBaseName = (baseCardId: string | undefined) =>
 
 export const getBaseKey = (baseCardId: string | undefined | null): string => {
   return getSpecialBaseName(baseCardId ?? undefined) ?? baseCardId ?? '';
+};
+
+export const getBasicBaseIdsForSet = (set: SwuSet, cardList: CardList, single: boolean = false) => {
+  const byAspect: Partial<Record<SwuAspect, true>> = {};
+
+  const basicBaseIds: string[] = [];
+  Object.keys(baseSpecialNames).forEach(baseCardId => {
+    const card = cardList[baseCardId];
+    if (card?.set !== set) return;
+    const aspect = card?.aspects[0];
+    if (!aspect || (single && byAspect[aspect])) return;
+    byAspect[aspect] = true;
+    basicBaseIds.push(baseCardId);
+  });
+  return basicBaseIds;
 };
