@@ -3,6 +3,7 @@ import { useGetCardPool } from '@/api/card-pools/useGetCardPool.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
+import { useCardPoolDeckDetailStoreActions } from './useCardPoolDeckDetailStore.ts';
 
 export interface CPLeaderAndBaseProps {
   deckId?: string; // reserved for future use
@@ -17,6 +18,7 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({
 }) => {
   const { data: poolData, isFetching: isPoolFetching } = useGetCardPool(poolId);
   const { data: cardListData, isFetching: isCardListFetching } = useCardList();
+  const { setHoveredCardId } = useCardPoolDeckDetailStoreActions();
 
   const leaderCards = useMemo(() => {
     const leaders = poolData?.data?.leaders ?? '';
@@ -34,20 +36,19 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({
 
   return (
     <div className={`rounded-lg border border-border bg-card p-3 ${className ?? ''}`}>
-      <h3 className="text-sm font-semibold mb-2">Leader & Base</h3>
       {loading && <div className="text-xs opacity-60">Loading leaders...</div>}
       {!loading && leaderCards.length === 0 && (
         <div className="text-xs opacity-60">No leaders selected for this pool.</div>
       )}
-      <div className="mt-2 flex flex-row gap-3 items-start">
+      <div className="flex flex-row gap-3 items-start">
         {leaderCards.map(lc => (
-          <div key={`${lc.cardId}-${lc.key}`}>
+          <div key={`${lc.cardId}-${lc.key}`} onMouseEnter={() => setHoveredCardId(lc.cardId)}>
             <CardImage
               card={lc.card}
               cardVariantId={lc.cardVariantId}
               forceHorizontal={true}
-              size="w200"
-              backSideButton="top-left"
+              size="w100"
+              backSideButton="mid"
             />
           </div>
         ))}
