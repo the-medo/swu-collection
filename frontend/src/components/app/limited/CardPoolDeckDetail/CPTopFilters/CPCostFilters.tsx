@@ -5,7 +5,7 @@ import {
   useCardPoolDeckDetailStoreActions,
 } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 import { Button } from '@/components/ui/button.tsx';
-import { cn } from '@/lib/utils.ts';
+import { ButtonGroup } from '@/components/ui/button-group.tsx';
 import { XIcon } from 'lucide-react';
 
 const costs: number[] = [0, 1, 2, 3, 4, 5, 6];
@@ -43,7 +43,7 @@ const CPCostFilters: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <ButtonGroup className="flex-wrap">
       {costs.map(c => {
         const displayValue = c === 6 ? '6+' : c;
         const selected = isSelected(c) && hasAnySpecificSelected;
@@ -51,13 +51,13 @@ const CPCostFilters: React.FC = () => {
           <Button
             key={c}
             onClick={() => toggleCost(c)}
-            variant="ghost"
-            size="iconMedium"
-            className={cn('p-1', selected ? 'ring-4 ring-foreground bg-foreground' : 'ring-0')}
+            variant={selected ? 'default' : 'outline'}
+            size="sm"
             aria-pressed={selected}
             aria-label={`Filter by cost ${displayValue}`}
+            title={`Cost: ${displayValue}`}
           >
-            <CostIcon cost={displayValue} />
+            <CostIcon cost={displayValue} size="medium" />
           </Button>
         );
       })}
@@ -65,15 +65,15 @@ const CPCostFilters: React.FC = () => {
       {/* Reset filters button */}
       <Button
         onClick={() => setFilterCost({ all: true })}
-        variant="ghost"
-        size="iconMedium"
-        className="p-1 ring-0"
+        variant="outline"
+        size="sm"
+        className="ring-0"
         aria-label="Reset cost filters"
         title="Reset cost filters"
       >
         <XIcon />
       </Button>
-    </div>
+    </ButtonGroup>
   );
 };
 

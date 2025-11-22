@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { cn } from '@/lib/utils.ts';
 import { XIcon } from 'lucide-react';
+import { ButtonGroup } from '@/components/ui/button-group.tsx';
 import { aspectArray } from '../../../../../../../types/iterableEnumInfo.ts';
 import { SwuAspect } from '../../../../../../../types/enums.ts';
 import {
@@ -48,59 +49,59 @@ const CPAspectFilters: React.FC<CPAspectFiltersProps> = ({ deckId }) => {
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {/* Leader + Base aspects button */}
-      <Button
-        variant="outline"
-        size="sm"
-        className={cn('px-2 h-8', isOnlyLeaderBaseSelected ? 'ring-4 ring-foreground' : 'ring-0')}
-        onClick={() => setFilterAspects('showOnlyLeaderAndBaseAspects')}
-        aria-pressed={isOnlyLeaderBaseSelected}
-        aria-label={`Filter by leader/base aspects: ${leaderBaseAspects.join(', ')}`}
-        title={
-          leaderBaseAspects.length
-            ? `Leader/Base: ${leaderBaseAspects.join(', ')}`
-            : 'Leader/Base aspects'
-        }
-      >
-        <div className="flex items-center gap-1">
-          {leaderBaseAspects.length > 0 ? (
-            leaderBaseAspects.map(a => <AspectIcon key={a} aspect={a} size="small" />)
-          ) : (
-            <span className="text-xs opacity-70">Leader/Base</span>
-          )}
-        </div>
-      </Button>
+      <ButtonGroup className="flex-wrap">
+        {/* Leader + Base aspects button */}
+        <Button
+          variant={isOnlyLeaderBaseSelected ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFilterAspects('showOnlyLeaderAndBaseAspects')}
+          aria-pressed={isOnlyLeaderBaseSelected}
+          aria-label={`Filter by leader/base aspects: ${leaderBaseAspects.join(', ')}`}
+          title={
+            leaderBaseAspects.length
+              ? `Leader/Base: ${leaderBaseAspects.join(', ')}`
+              : 'Leader/Base aspects'
+          }
+        >
+          <div className="flex items-center gap-1">
+            {leaderBaseAspects.length > 0 ? (
+              leaderBaseAspects.map(a => <AspectIcon key={a} aspect={a} size="small" />)
+            ) : (
+              <span className="text-xs opacity-70">Leader/Base</span>
+            )}
+          </div>
+        </Button>
 
-      {/* Individual aspect buttons */}
-      {aspectArray.map(a => {
-        const selected = filterAspects === a;
-        return (
-          <Button
-            key={a}
-            onClick={() => setFilterAspects(a)}
-            variant="ghost"
-            size="iconMedium"
-            className={cn('p-1', selected ? 'ring-4 ring-foreground bg-foreground' : 'ring-0')}
-            aria-pressed={selected}
-            aria-label={`Filter by aspect ${a}`}
-            title={`Aspect: ${a}`}
-          >
-            <AspectIcon aspect={a} />
-          </Button>
-        );
-      })}
+        {/* Individual aspect buttons */}
+        {aspectArray.map(a => {
+          const selected = filterAspects === a;
+          return (
+            <Button
+              key={a}
+              onClick={() => setFilterAspects(a)}
+              variant={selected ? 'default' : 'outline'}
+              size="sm"
+              aria-pressed={selected}
+              aria-label={`Filter by aspect ${a}`}
+              title={`Aspect: ${a}`}
+            >
+              <AspectIcon aspect={a} size="medium" />
+            </Button>
+          );
+        })}
 
-      {/* Reset filters button */}
-      <Button
-        onClick={onReset}
-        variant="ghost"
-        size="iconMedium"
-        className="p-1 ring-0"
-        aria-label="Reset aspect filters"
-        title="Reset aspect filters"
-      >
-        <XIcon />
-      </Button>
+        {/* Reset filters button */}
+        <Button
+          onClick={onReset}
+          variant="outline"
+          size="sm"
+          className="ring-0"
+          aria-label="Reset aspect filters"
+          title="Reset aspect filters"
+        >
+          <XIcon />
+        </Button>
+      </ButtonGroup>
 
       {/* Exact aspects checkbox */}
       <label

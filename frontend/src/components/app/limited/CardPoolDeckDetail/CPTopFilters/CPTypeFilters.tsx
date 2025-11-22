@@ -1,8 +1,7 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { XIcon } from 'lucide-react';
-import { cn } from '@/lib/utils.ts';
+import { ButtonGroup } from '@/components/ui/button-group.tsx';
 import {
   useCardPoolDeckDetailStore,
   useCardPoolDeckDetailStoreActions,
@@ -28,46 +27,34 @@ const CPTypeFilters: React.FC = () => {
   const reset = () => setFilterType([]);
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <ButtonGroup className="flex-wrap">
       {TYPES.map(t => {
         const selected = isSelected(t);
         return (
-          <Badge
+          <Button
             key={t}
-            role="button"
-            tabIndex={0}
             onClick={() => toggleType(t)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleType(t);
-              }
-            }}
             aria-pressed={selected}
             aria-label={`Filter by type ${t}`}
             title={`Type: ${t}`}
-            className={cn(
-              'cursor-pointer select-none',
-              selected ? 'ring-4 ring-foreground bg-foreground text-background' : 'ring-0'
-            )}
             variant={selected ? 'default' : 'outline'}
+            size="sm"
           >
             {t}
-          </Badge>
+          </Button>
         );
       })}
-
       <Button
         onClick={reset}
-        variant="ghost"
-        size="iconMedium"
-        className="p-1 ring-0"
+        size="sm"
+        variant="outline"
+        className="ring-0"
         aria-label="Reset type filters"
         title="Reset type filters"
       >
         <XIcon />
       </Button>
-    </div>
+    </ButtonGroup>
   );
 };
 
