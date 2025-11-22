@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
-import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
-import { useCardPoolDeckDetailStore } from './useCardPoolDeckDetailStore.ts';
+import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { useCardPoolDeckDetailStore } from '../useCardPoolDeckDetailStore.ts';
 
 export interface CardPreviewProps {
   className?: string;

@@ -4,7 +4,7 @@ import LoadingTitle from '../../global/LoadingTitle';
 import { useGetCardPoolDeckCards } from '@/api/card-pools/useGetCardPoolDeckCards.ts';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
-import CPDeckFilters from '@/components/app/limited/CardPoolDeckDetail/CPDeckFilters.tsx';
+import CPLeftFiltersAndPreview from '@/components/app/limited/CardPoolDeckDetail/CPLeftFiltersAndPreview/CPLeftFiltersAndPreview.tsx';
 import CPCardContent from '@/components/app/limited/CardPoolDeckDetail/CPCardContent.tsx';
 import CPResultingDeck from '@/components/app/limited/CardPoolDeckDetail/CPResultingDeck.tsx';
 import CPLeaderAndBase from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase.tsx';
@@ -60,7 +60,7 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
       <CPLeaderAndBase deckId={deckId} poolId={poolId} className="mb-4" />
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         <div className="col-span-1 row-span-2">
-          <CPDeckFilters />
+          <CPLeftFiltersAndPreview />
         </div>
         <div className="col-span-2 md:col-span-2 lg:col-span-3 xl:col-span-4">
           <CPTopFilters deckId={deckId} />
