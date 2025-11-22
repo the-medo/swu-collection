@@ -2,12 +2,14 @@ import React from 'react';
 import { useCardList } from '@/api/lists/useCardList';
 import GenericMultiSelect from '@/components/app/global/GenericMultiSelect/GenericMultiSelect.tsx';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator.tsx';
 import { RefreshCcw } from 'lucide-react';
 import {
   useCardPoolDeckDetailStore,
   useCardPoolDeckDetailStoreActions,
 } from '../useCardPoolDeckDetailStore';
+import CPGroupingSelector from './CPGroupingSelector';
 
 export interface CPLeftFiltersProps {
   className?: string;
@@ -15,12 +17,27 @@ export interface CPLeftFiltersProps {
 
 const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
   const { data: cardListData } = useCardList();
-  const { filterTraits, filterKeywords, activeFiltersCount } = useCardPoolDeckDetailStore();
-  const { setFilterTraits, setFilterKeywords, resetFilters } = useCardPoolDeckDetailStoreActions();
+  const {
+    filterTraits,
+    filterKeywords,
+    activeFiltersCount,
+    contentBoxesBy,
+    contentStacksBy,
+    showCardsInDeck,
+    showRemovedCards,
+  } = useCardPoolDeckDetailStore();
+  const {
+    setFilterTraits,
+    setFilterKeywords,
+    resetFilters,
+    setContentBoxesBy,
+    setContentStacksBy,
+    setShowCardsInDeck,
+    setShowRemovedCards,
+  } = useCardPoolDeckDetailStoreActions();
 
   return (
     <div className={className}>
-      <h3 className="text-sm font-semibold mb-2">Filters</h3>
       <div className="space-y-2">
         {cardListData ? (
           <GenericMultiSelect
@@ -46,6 +63,36 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
         ) : (
           <div className="text-center py-2">Loading keywords...</div>
         )}
+      </div>
+      <div className="mt-4">
+        <div className="text-sm font-semibold mb-2">Grouping</div>
+        <div className="space-y-2">
+          <CPGroupingSelector label="Boxes" value={contentBoxesBy} onChange={setContentBoxesBy} />
+          <CPGroupingSelector
+            label="Stacks by"
+            value={contentStacksBy}
+            onChange={setContentStacksBy}
+          />
+        </div>
+      </div>
+      <div className="mt-4">
+        <div className="text-sm font-semibold mb-2">Visibility</div>
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox
+              checked={showCardsInDeck}
+              onCheckedChange={v => setShowCardsInDeck(v === true)}
+            />
+            <span>Show cards in deck</span>
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox
+              checked={showRemovedCards}
+              onCheckedChange={v => setShowRemovedCards(v === true)}
+            />
+            <span>Show removed cards</span>
+          </label>
+        </div>
       </div>
       <div className="px-6 my-2">
         <Separator />
