@@ -1,0 +1,80 @@
+import React from 'react';
+import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
+import {
+  useCardPoolDeckDetailStore,
+  useCardPoolDeckDetailStoreActions,
+} from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
+import { Button } from '@/components/ui/button.tsx';
+import { cn } from '@/lib/utils.ts';
+import { XIcon } from 'lucide-react';
+
+const costs: number[] = [0, 1, 2, 3, 4, 5, 6];
+
+const CPCostFilters: React.FC = () => {
+  const { filterCost } = useCardPoolDeckDetailStore();
+  const { setFilterCost } = useCardPoolDeckDetailStoreActions();
+
+  const isSelected = (c: number) => !!filterCost[c];
+  const hasAnySpecificSelected = Object.keys(filterCost).some(k => k !== 'all');
+
+  const toggleCost = (c: number) => {
+    // Start from current selection excluding 'all'
+    const next: Record<number, true> = {};
+    for (const key of Object.keys(filterCost)) {
+      if (key === 'all') continue;
+      const num = Number(key);
+      if (!Number.isNaN(num)) next[num] = true;
+    }
+
+    if (next[c]) {
+      // Deselect this cost
+      delete next[c];
+    } else {
+      // Select this cost
+      next[c] = true;
+    }
+
+    // If no specific selected, fall back to 'all'
+    if (Object.keys(next).length === 0) {
+      setFilterCost({ all: true });
+    } else {
+      setFilterCost(next);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      {costs.map(c => {
+        const displayValue = c === 6 ? '6+' : c;
+        const selected = isSelected(c) && hasAnySpecificSelected;
+        return (
+          <Button
+            key={c}
+            onClick={() => toggleCost(c)}
+            variant="ghost"
+            size="iconMedium"
+            className={cn('p-1', selected ? 'ring-4 ring-foreground bg-foreground' : 'ring-0')}
+            aria-pressed={selected}
+            aria-label={`Filter by cost ${displayValue}`}
+          >
+            <CostIcon cost={displayValue} />
+          </Button>
+        );
+      })}
+
+      {/* Reset filters button */}
+      <Button
+        onClick={() => setFilterCost({ all: true })}
+        variant="ghost"
+        size="iconMedium"
+        className="p-1 ring-0"
+        aria-label="Reset cost filters"
+        title="Reset cost filters"
+      >
+        <XIcon />
+      </Button>
+    </div>
+  );
+};
+
+export default CPCostFilters;

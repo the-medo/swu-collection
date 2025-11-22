@@ -17,6 +17,7 @@ export interface CardPoolDeckDetailStore {
 
   // Filters
   filterAspects: CPFilterAspects;
+  exactAspects: boolean;
   filterCost: Partial<Record<number | 'all', true>>; // all,0,1,2,3,4,5,6 (6 = 6+)
   filterType: string[]; // Units, ground/space units, upgrades, events, 'all' etc.
   filterTraits: string[];
@@ -37,6 +38,7 @@ const defaultState: CardPoolDeckDetailStore = {
   showRemovedCards: false,
 
   filterAspects: 'all',
+  exactAspects: false,
   filterCost: { all: true },
   filterType: [],
   filterTraits: [],
@@ -90,6 +92,8 @@ const setFilterAspects = (value: CPFilterAspects) => store.setState(s => ({ ...s
 const setFilterCost = (value: Partial<Record<number | 'all', true>>) =>
   store.setState(s => ({ ...s, filterCost: value }));
 
+const setExactAspects = (value: boolean) => store.setState(s => ({ ...s, exactAspects: value }));
+
 const setFilterType = (value: string[]) => store.setState(s => ({ ...s, filterType: value }));
 
 const setFilterTraits = (value: string[]) => store.setState(s => ({ ...s, filterTraits: value }));
@@ -104,6 +108,7 @@ const resetFilters = () =>
   store.setState(s => ({
     ...s,
     filterAspects: defaultState.filterAspects,
+    exactAspects: defaultState.exactAspects,
     filterCost: defaultState.filterCost,
     filterType: defaultState.filterType,
     filterTraits: defaultState.filterTraits,
@@ -135,6 +140,7 @@ export function useCardPoolDeckDetailStore() {
   const showRemovedCards = useStore(store, s => s.showRemovedCards);
 
   const filterAspects = useStore(store, s => s.filterAspects);
+  const exactAspects = useStore(store, s => s.exactAspects);
   const filterCost = useStore(store, s => s.filterCost);
   const filterType = useStore(store, s => s.filterType);
   const filterTraits = useStore(store, s => s.filterTraits);
@@ -165,6 +171,7 @@ export function useCardPoolDeckDetailStore() {
     showRemovedCards,
 
     filterAspects,
+    exactAspects,
     filterCost,
     filterType,
     filterTraits,
@@ -193,6 +200,7 @@ export function useCardPoolDeckDetailStoreActions() {
     setShowRemovedCards,
     setFilterAspects,
     setFilterCost,
+    setExactAspects,
     setFilterType,
     setFilterTraits,
     setFilterKeywords,

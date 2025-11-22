@@ -8,6 +8,7 @@ import CPDeckFilters from '@/components/app/limited/CardPoolDeckDetail/CPDeckFil
 import CPCardContent from '@/components/app/limited/CardPoolDeckDetail/CPCardContent.tsx';
 import CPResultingDeck from '@/components/app/limited/CardPoolDeckDetail/CPResultingDeck.tsx';
 import CPLeaderAndBase from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase.tsx';
+import CPTopFilters from '@/components/app/limited/CardPoolDeckDetail/CPTopFilters/CPTopFilters.tsx';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft } from 'lucide-react';
@@ -58,8 +59,11 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
 
       <CPLeaderAndBase deckId={deckId} poolId={poolId} className="mb-4" />
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        <div className="col-span-1">
+        <div className="col-span-1 row-span-2">
           <CPDeckFilters />
+        </div>
+        <div className="col-span-2 md:col-span-2 lg:col-span-3 xl:col-span-4">
+          <CPTopFilters deckId={deckId} />
         </div>
         <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-3">
           <CPCardContent deckId={deckId} poolId={poolId} />

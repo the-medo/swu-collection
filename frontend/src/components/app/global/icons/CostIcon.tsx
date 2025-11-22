@@ -3,7 +3,7 @@ import { IconVariantProps, iconVariants } from '@/components/app/global/icons/ic
 import { cn } from '@/lib/utils.ts';
 
 type CostIconProps = {
-  cost?: number;
+  cost?: number | string;
 } & IconVariantProps;
 
 const CostIcon: React.FC<CostIconProps> = ({ cost, ...variants }) => {

@@ -3,9 +3,15 @@ import { useGetCardPool } from '@/api/card-pools/useGetCardPool.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
-import { useCardPoolDeckDetailStoreActions } from './useCardPoolDeckDetailStore.ts';
+import {
+  useCardPoolDeckDetailStore,
+  useCardPoolDeckDetailStoreActions,
+} from './useCardPoolDeckDetailStore.ts';
 import { getBasicBaseIdsForSet } from '../../../../../../shared/lib/basicBases.ts';
 import { SwuSet } from '../../../../../../types/enums.ts';
+import { useGetDeck } from '@/api/decks/useGetDeck.ts';
+import { Button } from '@/components/ui/button.tsx';
+import { usePutDeck } from '@/api/decks/usePutDeck.ts';
 
 export interface CPLeaderAndBaseProps {
   deckId?: string; // reserved for future use
@@ -13,14 +19,13 @@ export interface CPLeaderAndBaseProps {
   className?: string;
 }
 
-const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({
-  deckId: _deckId,
-  poolId,
-  className,
-}) => {
+const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, className }) => {
   const { data: poolData, isFetching: isPoolFetching } = useGetCardPool(poolId);
   const { data: cardListData, isFetching: isCardListFetching } = useCardList();
-  const { setHoveredCardId } = useCardPoolDeckDetailStoreActions();
+  const { data: deckData, isFetching: isDeckFetching } = useGetDeck(deckId);
+  const { selectedLeaderId, selectedBaseId } = useCardPoolDeckDetailStore();
+  const { setHoveredCardId, setSelectedLeaderId, setSelectedBaseId } =
+    useCardPoolDeckDetailStoreActions();
 
   const leaderCards = useMemo(() => {
     const leaders = poolData?.data?.leaders ?? '';
@@ -50,16 +55,47 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({
 
   const loading = isPoolFetching || isCardListFetching;
 
+  const deckLeaderId = deckData?.deck?.leaderCardId1 ?? '';
+  const deckBaseId = deckData?.deck?.baseCardId ?? '';
+  const hasChanges = !!(
+    (selectedLeaderId && selectedLeaderId !== deckLeaderId) ||
+    (selectedBaseId && selectedBaseId !== deckBaseId)
+  );
+
+  const putDeckMutation = usePutDeck(deckId);
+  const onSave = () => {
+    if (!deckId) return;
+    const payload: { leaderCardId1?: string | null; baseCardId?: string | null; deckId?: string } =
+      {
+        deckId,
+      };
+    if (selectedLeaderId !== deckLeaderId) {
+      payload.leaderCardId1 = selectedLeaderId || null;
+    }
+    if (selectedBaseId !== deckBaseId) {
+      payload.baseCardId = selectedBaseId || null;
+    }
+    // Avoid calling if nothing to update (safety)
+    if (payload.leaderCardId1 === undefined && payload.baseCardId === undefined) return;
+    putDeckMutation.mutate(payload);
+  };
+
   return (
     <div className={`rounded-lg border border-border bg-card p-3 ${className ?? ''}`}>
       {loading && <div className="text-xs opacity-60">Loading leaders...</div>}
       {!loading && leaderCards.length === 0 && (
         <div className="text-xs opacity-60">No leaders selected for this pool.</div>
       )}
-      <div className="flex flex-row items-start justify-between gap-3">
+
+      <div className="flex flex-row flex-wrap items-center gap-8">
         <div className="flex flex-row gap-3 items-start">
           {leaderCards.map(lc => (
-            <div key={`${lc.cardId}-${lc.key}`} onMouseEnter={() => setHoveredCardId(lc.cardId)}>
+            <div
+              key={`${lc.cardId}-${lc.key}`}
+              onMouseEnter={() => setHoveredCardId(lc.cardId)}
+              onClick={() => setSelectedLeaderId(lc.cardId)}
+              className={`rounded-md ${lc.cardId === deckLeaderId ? 'ring-4 ring-black dark:ring-white' : selectedLeaderId === lc.cardId ? 'ring-8 ring-primary' : ''}`}
+            >
               <CardImage
                 card={lc.card}
                 cardVariantId={lc.cardVariantId}
@@ -72,7 +108,12 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({
         </div>
         <div className="flex flex-row gap-3 items-start">
           {baseCards.map(bc => (
-            <div key={`${bc.cardId}-${bc.key}`} onMouseEnter={() => setHoveredCardId(bc.cardId)}>
+            <div
+              key={`${bc.cardId}-${bc.key}`}
+              onMouseEnter={() => setHoveredCardId(bc.cardId)}
+              onClick={() => setSelectedBaseId(bc.cardId)}
+              className={`rounded-md ${bc.cardId === deckBaseId ? 'ring-4 ring-black dark:ring-white' : selectedBaseId === bc.cardId ? 'ring-8 ring-primary' : ''}`}
+            >
               <CardImage
                 card={bc.card}
                 cardVariantId={bc.cardVariantId}
@@ -82,6 +123,14 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({
               />
             </div>
           ))}
+        </div>
+
+        <div className="flex items-center justify-end mb-2">
+          {!isDeckFetching && hasChanges && (
+            <Button size="lg" onClick={onSave} disabled={putDeckMutation.isPending}>
+              {putDeckMutation.isPending ? 'Saving...' : 'Save changes'}
+            </Button>
+          )}
         </div>
       </div>
     </div>
