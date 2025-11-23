@@ -1,17 +1,17 @@
 import React, { useMemo } from 'react';
 import { useGetCardPool } from '@/api/card-pools/useGetCardPool.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import {
   useCardPoolDeckDetailStore,
   useCardPoolDeckDetailStoreActions,
-} from './useCardPoolDeckDetailStore.ts';
-import { getBasicBaseIdsForSet } from '../../../../../../shared/lib/basicBases.ts';
-import { SwuSet } from '../../../../../../types/enums.ts';
-import { useGetDeck } from '@/api/decks/useGetDeck.ts';
+} from '../useCardPoolDeckDetailStore.ts';
+import { getBasicBaseIdsForSet } from '../../../../../../../shared/lib/basicBases.ts';
+import { SwuSet } from '../../../../../../../types/enums.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
+import { useDeckLeaderAndBaseCards } from '@/hooks/useDeckLeaderAndBaseCards.ts';
 
 export interface CPLeaderAndBaseProps {
   deckId?: string; // reserved for future use
@@ -22,9 +22,9 @@ export interface CPLeaderAndBaseProps {
 const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, className }) => {
   const { data: poolData, isFetching: isPoolFetching } = useGetCardPool(poolId);
   const { data: cardListData, isFetching: isCardListFetching } = useCardList();
-  const { data: deckData, isFetching: isDeckFetching } = useGetDeck(deckId);
+  const { deckLeaderId, deckBaseId, isDeckFetching } = useDeckLeaderAndBaseCards(deckId);
   const { selectedLeaderId, selectedBaseId } = useCardPoolDeckDetailStore();
-  const { setHoveredCardId, setSelectedLeaderId, setSelectedBaseId } =
+  const { setHoveredCardId, setSelectedLeaderId, setSelectedBaseId, setLeadersAndBasesExpanded } =
     useCardPoolDeckDetailStoreActions();
 
   const leaderCards = useMemo(() => {
@@ -55,8 +55,6 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
 
   const loading = isPoolFetching || isCardListFetching;
 
-  const deckLeaderId = deckData?.deck?.leaderCardId1 ?? '';
-  const deckBaseId = deckData?.deck?.baseCardId ?? '';
   const hasChanges = !!(
     (selectedLeaderId && selectedLeaderId !== deckLeaderId) ||
     (selectedBaseId && selectedBaseId !== deckBaseId)
@@ -69,15 +67,16 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
       {
         deckId,
       };
-    if (selectedLeaderId !== deckLeaderId) {
+    if (selectedLeaderId !== deckLeaderId && selectedLeaderId !== '') {
       payload.leaderCardId1 = selectedLeaderId || null;
     }
-    if (selectedBaseId !== deckBaseId) {
+    if (selectedBaseId !== deckBaseId && selectedBaseId !== '') {
       payload.baseCardId = selectedBaseId || null;
     }
     // Avoid calling if nothing to update (safety)
     if (payload.leaderCardId1 === undefined && payload.baseCardId === undefined) return;
     putDeckMutation.mutate(payload);
+    setLeadersAndBasesExpanded(false);
   };
 
   return (
@@ -131,6 +130,11 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
               {putDeckMutation.isPending ? 'Saving...' : 'Save changes'}
             </Button>
           )}
+        </div>
+        <div className="flex items-center justify-end mb-2">
+          <Button size="sm" variant="ghost" onClick={() => setLeadersAndBasesExpanded(false)}>
+            Collapse
+          </Button>
         </div>
       </div>
     </div>

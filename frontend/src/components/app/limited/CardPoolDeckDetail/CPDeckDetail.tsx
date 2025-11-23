@@ -7,12 +7,14 @@ import { useSidebar } from '@/components/ui/sidebar.tsx';
 import CPLeftFiltersAndPreview from '@/components/app/limited/CardPoolDeckDetail/CPLeftFiltersAndPreview/CPLeftFiltersAndPreview.tsx';
 import CPCardContent from '@/components/app/limited/CardPoolDeckDetail/CPCardContent.tsx';
 import CPResultingDeck from '@/components/app/limited/CardPoolDeckDetail/CPResultingDeck.tsx';
-import CPLeaderAndBase from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase.tsx';
+import CPLeaderAndBase from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase/CPLeaderAndBase.tsx';
+import CPLeaderAndBaseCollapsed from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase/CPLeaderAndBaseCollapsed.tsx';
 import CPTopFilters from '@/components/app/limited/CardPoolDeckDetail/CPTopFilters/CPTopFilters.tsx';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft } from 'lucide-react';
 import { useCPStoreInitializator } from '@/components/app/limited/CardPoolDeckDetail/useCPStoreInitializator.ts';
+import { useCardPoolDeckDetailStore } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 
 export interface DeckDetailProps {
   deckId: string | undefined;
@@ -36,6 +38,7 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
   useCPStoreInitializator(deckId);
 
   const loading = isDeckFetching || isFetching;
+  const { leadersAndBasesExpanded } = useCardPoolDeckDetailStore();
 
   return (
     <>
@@ -44,13 +47,18 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
       <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
         <LoadingTitle
           mainTitle={
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full">
               {poolId && (
                 <Link to="/limited/pool/$poolId/detail" params={{ poolId }}>
                   <Button variant="ghost" size="iconSmall" aria-label="Back to pool">
                     <ArrowLeft />
                   </Button>
                 </Link>
+              )}
+              {!leadersAndBasesExpanded && (
+                <div className="ml-auto">
+                  <CPLeaderAndBaseCollapsed deckId={deckId} />
+                </div>
               )}
               <span>{deckData?.deck?.name}</span>
             </div>
@@ -59,7 +67,9 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
         />
       </div>
 
-      <CPLeaderAndBase deckId={deckId} poolId={poolId} className="mb-4" />
+      {leadersAndBasesExpanded && (
+        <CPLeaderAndBase deckId={deckId} poolId={poolId} className="mb-4" />
+      )}
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         <div className="col-span-1 row-span-2">
           <CPLeftFiltersAndPreview />
