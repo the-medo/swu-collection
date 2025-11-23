@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import type { AuthExtension } from '../../../../../../auth/auth.ts';
 import { db } from '../../../../../../db';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import {
   cardPoolDecks as cardPoolDecksTable,
   cardPoolDeckCards as cardPoolDeckCardsTable,
@@ -11,7 +11,7 @@ import {
 
 const zParams = z.object({ id: z.uuid(), deckId: z.uuid() });
 const zBody = z.object({
-  cardPoolNumber: z.number().int().nonnegative(),
+  cardPoolNumbers: z.array(z.number().int().nonnegative()).nonempty(),
   location: z.enum(['pool', 'deck', 'trash']),
 });
 
@@ -24,7 +24,7 @@ export const cardPoolsIdDecksDeckIdCardPatchRoute = new Hono<AuthExtension>().pa
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
     const { deckId } = c.req.valid('param');
-    const { cardPoolNumber, location } = c.req.valid('json');
+    const { cardPoolNumbers, location } = c.req.valid('json');
 
     // Verify deck belongs to the pool and is owned by the user
     const [existingDeck] = await db
@@ -35,14 +35,14 @@ export const cardPoolsIdDecksDeckIdCardPatchRoute = new Hono<AuthExtension>().pa
     if (!existingDeck) return c.json({ message: 'Deck not found in this pool' }, 404);
     if (existingDeck.userId !== user.id) return c.json({ message: 'Forbidden' }, 403);
 
-    // Update the card location for the given deck and card pool number
+    // Update the card location for the given deck and card pool numbers in a single query
     const updated = await db
       .update(cardPoolDeckCardsTable)
       .set({ location })
       .where(
         and(
           eq(cardPoolDeckCardsTable.deckId, deckId),
-          eq(cardPoolDeckCardsTable.cardPoolNumber, cardPoolNumber),
+          inArray(cardPoolDeckCardsTable.cardPoolNumber, cardPoolNumbers),
         ),
       )
       .returning();
@@ -52,7 +52,7 @@ export const cardPoolsIdDecksDeckIdCardPatchRoute = new Hono<AuthExtension>().pa
     }
 
     return c.json({
-      data: { deckId, cardPoolNumber, location },
+      data: { deckId, cardPoolNumbers, location },
     });
   },
 );

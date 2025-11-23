@@ -4,14 +4,14 @@ import { api } from '@/lib/api.ts';
 export type CardLocation = 'pool' | 'deck' | 'trash';
 
 export interface UpdateCardPoolDeckCardBody {
-  cardPoolNumber: number;
+  cardPoolNumbers: number[];
   location: CardLocation;
 }
 
 export interface UpdateCardPoolDeckCardResponse {
   data: {
     deckId: string;
-    cardPoolNumber: number;
+    cardPoolNumbers: number[];
     location: CardLocation;
   };
 }
