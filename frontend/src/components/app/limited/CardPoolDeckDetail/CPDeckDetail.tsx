@@ -5,8 +5,8 @@ import { useGetCardPoolDeckCards } from '@/api/card-pools/useGetCardPoolDeckCard
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import CPLeftFiltersAndPreview from '@/components/app/limited/CardPoolDeckDetail/CPLeftFiltersAndPreview/CPLeftFiltersAndPreview.tsx';
-import CPCardContent from '@/components/app/limited/CardPoolDeckDetail/CPCardContent.tsx';
-import CPResultingDeck from '@/components/app/limited/CardPoolDeckDetail/CPResultingDeck.tsx';
+import CPCardContent from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPCardContent.tsx';
+import CPResultingDeck from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPResultingDeck.tsx';
 import CPLeaderAndBase from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase/CPLeaderAndBase.tsx';
 import CPLeaderAndBaseCollapsed from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase/CPLeaderAndBaseCollapsed.tsx';
 import CPTopFilters from '@/components/app/limited/CardPoolDeckDetail/CPTopFilters/CPTopFilters.tsx';
