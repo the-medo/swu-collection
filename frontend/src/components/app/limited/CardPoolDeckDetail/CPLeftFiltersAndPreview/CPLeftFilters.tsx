@@ -69,7 +69,12 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
       <div className="mt-4">
         <div className="text-sm font-semibold mb-2">Grouping</div>
         <div className="space-y-2">
-          <CPGroupingSelector label="Boxes" value={contentBoxesBy} onChange={setContentBoxesBy} />
+          <CPGroupingSelector
+            showX={true}
+            label="Boxes"
+            value={contentBoxesBy}
+            onChange={setContentBoxesBy}
+          />
           <CPGroupingSelector
             label="Stacks by"
             value={contentStacksBy}
@@ -78,7 +83,7 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
         </div>
       </div>
       <div className="mt-4">
-        <div className="text-sm font-semibold mb-2">Visibility</div>
+        <div className="text-sm font-semibold mb-2">Visibility in card pool</div>
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm">
             <Checkbox

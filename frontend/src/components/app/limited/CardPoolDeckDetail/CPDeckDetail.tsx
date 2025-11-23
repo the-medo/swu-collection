@@ -12,6 +12,7 @@ import CPTopFilters from '@/components/app/limited/CardPoolDeckDetail/CPTopFilte
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft } from 'lucide-react';
+import { useCPStoreInitializator } from '@/components/app/limited/CardPoolDeckDetail/useCPStoreInitializator.ts';
 
 export interface DeckDetailProps {
   deckId: string | undefined;
@@ -19,7 +20,6 @@ export interface DeckDetailProps {
 
 const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
   const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
-  // First fetch the deck to resolve its poolId
   const { data: deckData, isFetching: isDeckFetching } = useGetDeck(deckId);
   const poolId = deckData?.deck?.cardPoolId ?? undefined;
 
@@ -32,6 +32,8 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
       setSidebarOpen(sidebarOpen);
     };
   }, []);
+
+  useCPStoreInitializator(deckId);
 
   const loading = isDeckFetching || isFetching;
 

@@ -3,6 +3,7 @@ import { SwuAspect } from '../../../../../../types/enums.ts';
 
 // Types
 export type CPGroupBy = 'aspect' | 'type' | 'cost';
+export type CPBoxedGroupBy = 'X' | CPGroupBy;
 export type CPFilterAspects = 'showOnlyLeaderAndBaseAspects' | 'all' | SwuAspect;
 
 export interface CardPoolDeckDetailStore {
@@ -26,7 +27,7 @@ export interface CardPoolDeckDetailStore {
   filterKeywords: string[];
 
   // Content grouping
-  contentBoxesBy: CPGroupBy;
+  contentBoxesBy: CPBoxedGroupBy;
   contentStacksBy: CPGroupBy;
 }
 
@@ -89,14 +90,17 @@ const toggleSelectedCardId = (id: number) =>
     return { ...s, selectedCardIds: { ...s.selectedCardIds, [id]: true } };
   });
 
-const setShowCardsInDeck = (value: boolean) => store.setState(s => ({ ...s, showCardsInDeck: value }));
+const setShowCardsInDeck = (value: boolean) =>
+  store.setState(s => ({ ...s, showCardsInDeck: value }));
 
-const setShowRemovedCards = (value: boolean) => store.setState(s => ({ ...s, showRemovedCards: value }));
+const setShowRemovedCards = (value: boolean) =>
+  store.setState(s => ({ ...s, showRemovedCards: value }));
 
 const setShowUnfilteredCards = (value: boolean) =>
   store.setState(s => ({ ...s, showUnfilteredCards: value }));
 
-const setFilterAspects = (value: CPFilterAspects) => store.setState(s => ({ ...s, filterAspects: value }));
+const setFilterAspects = (value: CPFilterAspects) =>
+  store.setState(s => ({ ...s, filterAspects: value }));
 
 const setFilterCost = (value: Partial<Record<number | 'all', true>>) =>
   store.setState(s => ({ ...s, filterCost: value }));
@@ -107,11 +111,14 @@ const setFilterType = (value: string[]) => store.setState(s => ({ ...s, filterTy
 
 const setFilterTraits = (value: string[]) => store.setState(s => ({ ...s, filterTraits: value }));
 
-const setFilterKeywords = (value: string[]) => store.setState(s => ({ ...s, filterKeywords: value }));
+const setFilterKeywords = (value: string[]) =>
+  store.setState(s => ({ ...s, filterKeywords: value }));
 
-const setContentBoxesBy = (value: CPGroupBy) => store.setState(s => ({ ...s, contentBoxesBy: value }));
+const setContentBoxesBy = (value: CPBoxedGroupBy) =>
+  store.setState(s => ({ ...s, contentBoxesBy: value }));
 
-const setContentStacksBy = (value: CPGroupBy) => store.setState(s => ({ ...s, contentStacksBy: value }));
+const setContentStacksBy = (value: CPGroupBy) =>
+  store.setState(s => ({ ...s, contentStacksBy: value }));
 
 const resetFilters = () =>
   store.setState(s => ({
