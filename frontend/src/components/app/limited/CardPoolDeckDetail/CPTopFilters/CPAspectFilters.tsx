@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
@@ -6,40 +6,20 @@ import { cn } from '@/lib/utils.ts';
 import { XIcon } from 'lucide-react';
 import { ButtonGroup } from '@/components/ui/button-group.tsx';
 import { aspectArray } from '../../../../../../../types/iterableEnumInfo.ts';
-import { SwuAspect } from '../../../../../../../types/enums.ts';
 import {
   useCardPoolDeckDetailStore,
   useCardPoolDeckDetailStoreActions,
 } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
-import { useCardList } from '@/api/lists/useCardList.ts';
-import { useGetDeck } from '@/api/decks/useGetDeck.ts';
+import { useCPLeaderBaseAspects } from '@/components/app/limited/CardPoolDeckDetail/CPTopFilters/useCPLeaderBaseAspects.ts';
 
 interface CPAspectFiltersProps {
   deckId?: string;
 }
 
 const CPAspectFilters: React.FC<CPAspectFiltersProps> = ({ deckId }) => {
-  const { selectedLeaderId, selectedBaseId, filterAspects, exactAspects } =
-    useCardPoolDeckDetailStore();
+  const { filterAspects, exactAspects } = useCardPoolDeckDetailStore();
   const { setFilterAspects, setExactAspects } = useCardPoolDeckDetailStoreActions();
-  const { data: cardListData } = useCardList();
-  const { data: deckData } = useGetDeck(deckId);
-
-  const deckLeaderId = deckData?.deck?.leaderCardId1 ?? '';
-  const deckBaseId = deckData?.deck?.baseCardId ?? '';
-
-  const leaderBaseAspects = useMemo(() => {
-    const set = new Set<SwuAspect>();
-    const leaderId = selectedLeaderId === '' ? deckLeaderId : selectedLeaderId;
-    const baseId = selectedBaseId === '' ? deckBaseId : selectedBaseId;
-
-    const leader = leaderId ? cardListData?.cards?.[leaderId] : undefined;
-    const base = baseId ? cardListData?.cards?.[baseId] : undefined;
-    (leader?.aspects as SwuAspect[] | undefined)?.forEach(a => set.add(a));
-    (base?.aspects as SwuAspect[] | undefined)?.forEach(a => set.add(a));
-    return Array.from(set);
-  }, [selectedLeaderId, selectedBaseId, cardListData?.cards, deckLeaderId, deckBaseId]);
-
+  const leaderBaseAspects = useCPLeaderBaseAspects(deckId);
   const isOnlyLeaderBaseSelected = filterAspects === 'showOnlyLeaderAndBaseAspects';
 
   const onReset = () => {

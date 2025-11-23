@@ -14,6 +14,8 @@ export interface CardPoolDeckDetailStore {
   selectedCardIds: Partial<Record<number, true>>;
   showCardsInDeck: boolean;
   showRemovedCards: boolean;
+  showUnfilteredCards: boolean;
+  initialized: boolean;
 
   // Filters
   filterAspects: CPFilterAspects;
@@ -36,6 +38,8 @@ const defaultState: CardPoolDeckDetailStore = {
   selectedCardIds: {},
   showCardsInDeck: true,
   showRemovedCards: false,
+  showUnfilteredCards: false,
+  initialized: false,
 
   filterAspects: 'all',
   exactAspects: false,
@@ -53,6 +57,8 @@ const store = new Store<CardPoolDeckDetailStore>(defaultState);
 // Actions
 const setLeadersAndBasesExpanded = (expanded: boolean) =>
   store.setState(state => ({ ...state, leadersAndBasesExpanded: expanded }));
+
+const setInitialized = (value: boolean) => store.setState(s => ({ ...s, initialized: value }));
 
 const setSelectedLeaderId = (id: string) => store.setState(s => ({ ...s, selectedLeaderId: id }));
 
@@ -87,6 +93,9 @@ const setShowCardsInDeck = (value: boolean) => store.setState(s => ({ ...s, show
 
 const setShowRemovedCards = (value: boolean) => store.setState(s => ({ ...s, showRemovedCards: value }));
 
+const setShowUnfilteredCards = (value: boolean) =>
+  store.setState(s => ({ ...s, showUnfilteredCards: value }));
+
 const setFilterAspects = (value: CPFilterAspects) => store.setState(s => ({ ...s, filterAspects: value }));
 
 const setFilterCost = (value: Partial<Record<number | 'all', true>>) =>
@@ -114,6 +123,7 @@ const resetFilters = () =>
     filterTraits: defaultState.filterTraits,
     filterKeywords: defaultState.filterKeywords,
     showRemovedCards: defaultState.showRemovedCards,
+    showUnfilteredCards: defaultState.showUnfilteredCards,
   }));
 
 const resetViewAndSelection = () =>
@@ -138,6 +148,8 @@ export function useCardPoolDeckDetailStore() {
   const selectedCardIds = useStore(store, s => s.selectedCardIds);
   const showCardsInDeck = useStore(store, s => s.showCardsInDeck);
   const showRemovedCards = useStore(store, s => s.showRemovedCards);
+  const showUnfilteredCards = useStore(store, s => s.showUnfilteredCards);
+  const initialized = useStore(store, s => s.initialized);
 
   const filterAspects = useStore(store, s => s.filterAspects);
   const exactAspects = useStore(store, s => s.exactAspects);
@@ -169,6 +181,8 @@ export function useCardPoolDeckDetailStore() {
     selectedCardIds,
     showCardsInDeck,
     showRemovedCards,
+    showUnfilteredCards,
+    initialized,
 
     filterAspects,
     exactAspects,
@@ -189,6 +203,7 @@ export function useCardPoolDeckDetailStore() {
 export function useCardPoolDeckDetailStoreActions() {
   return {
     setLeadersAndBasesExpanded,
+    setInitialized,
     setSelectedLeaderId,
     setSelectedBaseId,
     setHoveredCardId,
@@ -198,6 +213,7 @@ export function useCardPoolDeckDetailStoreActions() {
     toggleSelectedCardId,
     setShowCardsInDeck,
     setShowRemovedCards,
+    setShowUnfilteredCards,
     setFilterAspects,
     setFilterCost,
     setExactAspects,

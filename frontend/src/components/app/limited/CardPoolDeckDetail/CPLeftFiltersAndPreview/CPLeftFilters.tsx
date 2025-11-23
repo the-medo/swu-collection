@@ -25,6 +25,7 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
     contentStacksBy,
     showCardsInDeck,
     showRemovedCards,
+    showUnfilteredCards,
   } = useCardPoolDeckDetailStore();
   const {
     setFilterTraits,
@@ -34,6 +35,7 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
     setContentStacksBy,
     setShowCardsInDeck,
     setShowRemovedCards,
+    setShowUnfilteredCards,
   } = useCardPoolDeckDetailStoreActions();
 
   return (
@@ -90,7 +92,14 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
               checked={showRemovedCards}
               onCheckedChange={v => setShowRemovedCards(v === true)}
             />
-            <span>Show removed cards</span>
+            <span>Show removed cards (semi-transparent)</span>
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox
+              checked={showUnfilteredCards}
+              onCheckedChange={v => setShowUnfilteredCards(v === true)}
+            />
+            <span>Show unfiltered cards (semi-transparent)</span>
           </label>
         </div>
       </div>
