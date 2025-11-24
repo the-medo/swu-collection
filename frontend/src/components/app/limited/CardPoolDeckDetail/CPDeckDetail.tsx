@@ -5,8 +5,7 @@ import { useGetCardPoolDeckCards } from '@/api/card-pools/useGetCardPoolDeckCard
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import CPLeftFiltersAndPreview from '@/components/app/limited/CardPoolDeckDetail/CPLeftFiltersAndPreview/CPLeftFiltersAndPreview.tsx';
-import CPCardContent from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPCardContent.tsx';
-import CPResultingDeck from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPResultingDeck.tsx';
+import CPPoolAndDeckSection from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPPoolAndDeckSection.tsx';
 import CPLeaderAndBase from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase/CPLeaderAndBase.tsx';
 import CPLeaderAndBaseCollapsed from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase/CPLeaderAndBaseCollapsed.tsx';
 import CPTopFilters from '@/components/app/limited/CardPoolDeckDetail/CPTopFilters/CPTopFilters.tsx';
@@ -77,12 +76,7 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
         <div className="col-span-2 md:col-span-2 lg:col-span-3 xl:col-span-4">
           <CPTopFilters deckId={deckId} />
         </div>
-        <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-3">
-          <CPCardContent deckId={deckId} poolId={poolId} />
-        </div>
-        <div className="col-span-1">
-          <CPResultingDeck />
-        </div>
+        <CPPoolAndDeckSection deckId={deckId} poolId={poolId} />
       </div>
     </>
   );

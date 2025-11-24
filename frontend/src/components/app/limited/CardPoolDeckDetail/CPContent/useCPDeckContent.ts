@@ -1,33 +1,21 @@
 import { useCardPoolDeckDetailStore } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 import { useGetCardPoolDeckCards } from '@/api/card-pools';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import {
-  CardDataWithVariants,
-  CardListVariants,
-} from '../../../../../../../lib/swu-resources/types.ts';
 import { useCPLeaderBaseAspects } from '@/components/app/limited/CardPoolDeckDetail/CPTopFilters/useCPLeaderBaseAspects.ts';
+import {
+  aspectFilter,
+  CardGroup,
+  costFilter,
+  CPDeckContent,
+  ExpandedCardData,
+  groupByKey,
+  groupStacksWithin,
+  keywordsFilter,
+  traitsFilter,
+  typeFilter,
+} from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
 
-type ExpandedCardData = {
-  cardPoolNumber: number;
-  location: 'pool' | 'deck' | 'trash';
-  card: CardDataWithVariants<CardListVariants>;
-  cardId: string;
-  filterSuccess: boolean;
-};
-
-type CardStack = { title: string; cards: ExpandedCardData[] };
-type CardGroup = { title: string; cards: CardStack[] };
-
-type CPDeckContent = {
-  pool: {
-    cards: ExpandedCardData[];
-    boxes: CardGroup[];
-  };
-  deck: ExpandedCardData[];
-  trash: ExpandedCardData[];
-};
-
-export function useCPDeckContent(deckId: string, poolId: string) {
+export function useCPDeckContent(deckId: string | undefined, poolId: string | undefined) {
   /**
    * Data is in this format:
    *
@@ -61,30 +49,83 @@ export function useCPDeckContent(deckId: string, poolId: string) {
     filterKeywords,
   } = useCardPoolDeckDetailStore();
 
-  /*
-  1. implement filter functions for `filterAspect + exactAspects`, `filterCost`, `filterType`, `filterTraits` and `filterKeywords`
-  - all of them should take the `CardDataWithVariants<CardListVariants>` object and their respective filter values as arguments
-  - the filter functions should return a boolean indicating whether the card should be included in the filtered list
-  2. implement grouping functions:
-  - the grouping functions should take the filtered list of cards and return an array of objects with "title" and "cards" properties
-  - the "title" property should be the value of the "aspect" or "type" property of the card, depending on the grouping type
-  - grouping by "aspect" - SwuAspect.VILLAINY, SwuAspect.HEROISM, SwuAspect.COMMAND, SwuAspect.VIGILANCE, SwuAspect.CUNNING, SwuAspect.AGGRESSION
-  --- just keep in mind, that filterAspects can be "showOnlyLeaderAndBaseAspects" or "all" (which means no filter)
-  --- => setting "showOnlyLeaderAndBaseAspects" implies, that this grouping function should accept an array of SwuAspects, not only one
-  - grouping by "type" - "Ground", "Space", "Upgrade", "Event" (units here are divided into two types here!)
-  - grouping by "cost" - 0, 1, 2, 3, 4, 5, 6 (6 is always the last one and means 6 OR MORE)
-  --- just keep in mind, that filterCost is of type `Partial<Record<number | 'all', true>>;`, so multiple costs can be selected at once
-  - grouping by "X" - means "All" group, just put all cards there
-  3. create an array of ExpandedCardData from the data object ( that means adding
-          "cardPoolNumber" (originally a key), "card" (cardId searched up in cardListData)
-          and "filterSuccess" (boolean, "true" as default) properties to the original object)
-  4. create a "mainPool", "deck" and "trash" arrays from the expanded data array
-  - always remove cards with type "Leader" and "Base" from the arrays! they are not needed in the deck content
-  - if the "showRemovedCards" is true, include also cards in "trash" in the main pool
-  - if the "showCardsInDeck" is true, include also cards in "deck" in the main pool
-  5. run all cards in the main pool through the filter functions (if any) and set "filterSuccess" to false for all cards that don't pass the filter
-  - then, if the showUnfilteredCards is false, remove all cards that have "filterSuccess" set to false from the main pool
-  6. group the remaining cards into boxes based on the
-  '
-   */
+  // 3-7) Compose result
+  const result: CPDeckContent | undefined = (() => {
+    if (!data || !cardListData || !cardListData.cards) return undefined;
+
+    // 3) expand
+    const expanded: ExpandedCardData[] = Object.entries(data).flatMap(([k, v]) => {
+      if (!v) return [];
+      const card = cardListData.cards[v.cardId];
+      if (!card) return [];
+      if (card.type === 'Leader' || card.type === 'Base') return [];
+      return [
+        {
+          cardPoolNumber: Number(k),
+          location: v.location,
+          card,
+          cardId: v.cardId,
+          filterSuccess: true,
+        },
+      ];
+    });
+
+    // 4) split
+    const deck = expanded.filter(c => c.location === 'deck');
+    const trash = expanded.filter(c => c.location === 'trash');
+    const pool = expanded.filter(c => c.location === 'pool');
+
+    let mainPool = pool.slice();
+    if (showCardsInDeck) mainPool = mainPool.concat(deck);
+    if (showRemovedCards) mainPool = mainPool.concat(trash);
+
+    // 5) apply filters
+    for (const item of mainPool) {
+      const card = item.card;
+      const ok =
+        aspectFilter(card, filterAspects, exactAspects, leaderAndBaseAspects) &&
+        costFilter(card, filterCost) &&
+        typeFilter(card, filterType) &&
+        traitsFilter(card, filterTraits) &&
+        keywordsFilter(card, filterKeywords);
+      item.filterSuccess = ok;
+    }
+
+    if (!showUnfilteredCards) {
+      mainPool = mainPool.filter(c => c.filterSuccess);
+    }
+
+    // 6) group
+    const boxes: CardGroup[] = (() => {
+      if (contentBoxesBy === 'X') {
+        const stacks = groupStacksWithin(mainPool, contentStacksBy);
+        return [
+          {
+            title: 'All',
+            cards: stacks.length > 0 ? stacks : [{ title: 'All', cards: mainPool }],
+          },
+        ];
+      }
+
+      // Create boxes in the prescribed order and then populate their stacks by contentStacksBy
+      const baseBoxes = groupByKey(mainPool, contentBoxesBy as any);
+      // Replace inner single stack with stacks by contentStacksBy
+      return baseBoxes.map(box => ({
+        title: box.title,
+        cards: groupStacksWithin(
+          // cards belonging to this box are the union of all inner stacks (from baseBoxes helper)
+          box.cards.flatMap(s => s.cards),
+          contentStacksBy,
+        ),
+      }));
+    })();
+
+    return {
+      pool: { cards: mainPool, boxes },
+      deck,
+      trash,
+    };
+  })();
+
+  return result;
 }

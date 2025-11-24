@@ -1,37 +1,17 @@
 import React from 'react';
-import { useGetCardPoolDeckCards } from '@/api/card-pools/useGetCardPoolDeckCards.ts';
-
-// Local replica of the expected response type
-export type CPDeckCardsResponse = Partial<
-  Record<
-    number,
-    {
-      location: 'pool' | 'deck' | 'trash';
-      cardId: string;
-    }
-  >
->;
+import { CardGroup, ExpandedCardData } from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
 
 export interface CPCardContentProps {
-  deckId?: string;
-  poolId?: string;
+  pool?: { cards: ExpandedCardData[]; boxes: CardGroup[] };
   className?: string;
 }
 
-const CPCardContent: React.FC<CPCardContentProps> = ({ deckId, poolId, className }) => {
-  const { data, isFetching, error } = useGetCardPoolDeckCards(poolId, deckId);
-
+const CPCardContent: React.FC<CPCardContentProps> = ({ pool, className }) => {
   return (
     <div className={`h-full rounded-lg border border-border bg-card p-3 ${className ?? ''}`}>
-      {isFetching && <div className="text-sm opacity-80">Loading deck cards...</div>}
-      {!isFetching && !error && (
-        <pre className="text-xs whitespace-pre-wrap break-words">
-          {JSON.stringify((data as any) ?? null, null, 2)}
-        </pre>
-      )}
-      {!isFetching && error && (
-        <div className="text-xs text-destructive">Failed to load deck cards.</div>
-      )}
+      <pre className="text-xs whitespace-pre-wrap break-words">
+        {pool?.cards.map(c => `${c.cardId} (${c.location})`).join('\n') ?? ''}
+      </pre>
     </div>
   );
 };
