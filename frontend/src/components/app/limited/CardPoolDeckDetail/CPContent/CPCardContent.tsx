@@ -1,5 +1,9 @@
 import React from 'react';
-import { CardGroup, ExpandedCardData } from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
+import {
+  CardGroup,
+  ExpandedCardData,
+} from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
+import CPCardContentBox from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPCardContentBox.tsx';
 
 export interface CPCardContentProps {
   pool?: { cards: ExpandedCardData[]; boxes: CardGroup[] };
@@ -8,10 +12,12 @@ export interface CPCardContentProps {
 
 const CPCardContent: React.FC<CPCardContentProps> = ({ pool, className }) => {
   return (
-    <div className={`h-full rounded-lg border border-border bg-card p-3 ${className ?? ''}`}>
-      <pre className="text-xs whitespace-pre-wrap break-words">
-        {pool?.cards.map(c => `${c.cardId} (${c.location})`).join('\n') ?? ''}
-      </pre>
+    <div className={`h-full ${className ?? ''}`}>
+      <div className="flex flex-col gap-3">
+        {pool?.boxes?.map(group => (
+          <CPCardContentBox key={group.title} group={group} />
+        ))}
+      </div>
     </div>
   );
 };

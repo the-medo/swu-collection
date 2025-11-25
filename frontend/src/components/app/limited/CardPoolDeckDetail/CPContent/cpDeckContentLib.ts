@@ -11,6 +11,7 @@ export type ExpandedCardData = {
   location: 'pool' | 'deck' | 'trash';
   card: CardDataWithVariants<CardListVariants>;
   cardId: string;
+  variantId: string;
   filterSuccess: boolean;
 };
 
@@ -120,7 +121,7 @@ export const keywordsFilter = (
 };
 
 // 2) Grouping helpers
-const aspectOrder = ['Villainy', 'Heroism', 'Command', 'Vigilance', 'Cunning', 'Aggression'];
+const aspectOrder = ['Command', 'Vigilance', 'Cunning', 'Aggression', 'Heroism', 'Villainy'];
 const typeOrder = ['Ground', 'Space', 'Upgrade', 'Event'];
 const costOrder = [0, 1, 2, 3, 4, 5, 6];
 

@@ -1,8 +1,7 @@
 import React from 'react';
 import { useCPDeckContent } from '@/components/app/limited/CardPoolDeckDetail/CPContent/useCPDeckContent.ts';
 import CPCardContent from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPCardContent.tsx';
-import CPResultingDeck from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPResultingDeck.tsx';
-import CPTrash from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPTrash.tsx';
+import CPDeckAndTrashCard from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPDeckAndTrashCard.tsx';
 
 export interface CPPoolAndDeckSectionProps {
   deckId?: string;
@@ -18,10 +17,7 @@ const CPPoolAndDeckSection: React.FC<CPPoolAndDeckSectionProps> = ({ deckId, poo
         <CPCardContent pool={data?.pool} />
       </div>
       <div className="col-span-1">
-        <CPResultingDeck deck={data?.deck} />
-        <div className="mt-4">
-          <CPTrash trash={data?.trash} />
-        </div>
+        <CPDeckAndTrashCard deck={data?.deck} trash={data?.trash} />
       </div>
     </>
   );

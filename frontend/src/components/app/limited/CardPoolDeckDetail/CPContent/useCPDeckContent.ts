@@ -14,6 +14,7 @@ import {
   traitsFilter,
   typeFilter,
 } from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
+import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 
 export function useCPDeckContent(deckId: string | undefined, poolId: string | undefined) {
   /**
@@ -65,6 +66,7 @@ export function useCPDeckContent(deckId: string | undefined, poolId: string | un
           location: v.location,
           card,
           cardId: v.cardId,
+          variantId: selectDefaultVariant(card) ?? '',
           filterSuccess: true,
         },
       ];
