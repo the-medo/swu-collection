@@ -1,7 +1,7 @@
 import * as React from 'react';
-import CardImage from '@/components/app/global/CardImage.tsx';
 import { cn } from '@/lib/utils.ts';
 import { ExpandedCardData } from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
+import CPCard from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPCard.tsx';
 
 export interface CPCardContentStackProps {
   items: ExpandedCardData[];
@@ -16,16 +16,10 @@ const CPCardContentStack: React.FC<CPCardContentStackProps> = ({ items, size = '
           <li key={`${item.cardPoolNumber}-${item.card.cardId}`} className="list-none">
             <div
               className={cn(
-                'relative inline-block align-middle mr-px rounded-[4.75%/3.5%] isolate group cursor-pointer z-1 hover:z-10',
-                size === 'w200' ? ' -mt-[210px]' : ' -mt-[105px]',
+                size === 'w200' ? ' -mt-[210px]' : ' -mt-[105px]'
               )}
             >
-              <CardImage
-                card={item.card}
-                cardVariantId={item.variantId}
-                size={size}
-                backSideButton={false}
-              />
+              <CPCard item={item} size={size} />
             </div>
           </li>
         ))}
