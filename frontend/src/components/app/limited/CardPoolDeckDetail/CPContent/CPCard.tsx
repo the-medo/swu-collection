@@ -20,16 +20,16 @@ const CPCard: React.FC<CPCardProps> = ({ item, size = 'w200' }) => {
 
   const selected = !!selectedCardIds[item.cardPoolNumber];
 
-  const showDeckBadge = !selected && showCardsInDeck && item.location === 'deck';
-  const showTrashBadge = !selected && showRemovedCards && item.location === 'trash';
-  const failedFilter = !selected && showUnfilteredCards && !item.filterSuccess;
+  const showDeckBadge = showCardsInDeck && item.location === 'deck';
+  const showTrashBadge = showRemovedCards && item.location === 'trash';
+  const failedFilter = showUnfilteredCards && !item.filterSuccess;
 
   return (
     <div
       onMouseEnter={() => setHoveredCardId(item.cardId)}
       onClick={() => toggleSelectedCardId(item.cardPoolNumber)}
       className={cn(
-        'relative inline-block align-middle mr-px rounded-[4.75%/3.5%] isolate group cursor-pointer',
+        'relative inline-block align-middle mr-px rounded-[4.75%/3.5%] isolate group cursor-pointer bg-background',
         selected ? ' border-inset text-gray-300' : '',
       )}
     >
@@ -37,7 +37,7 @@ const CPCard: React.FC<CPCardProps> = ({ item, size = 'w200' }) => {
         className={cn('transition-opacity opacity-100', {
           'opacity-40': showTrashBadge,
           'opacity-80': showDeckBadge,
-          'opacity-70': failedFilter,
+          'opacity-50': failedFilter,
         })}
       >
         <CardImage
@@ -53,16 +53,23 @@ const CPCard: React.FC<CPCardProps> = ({ item, size = 'w200' }) => {
 
       {/* Badges */}
       {selected && (
-        <div className="absolute top-1 right-1 z-10 rounded-full border-1 border-black bg-yellow-400 text-black p-1 shadow">
+        <div
+          className={cn(
+            'absolute top-1 right-1 z-10 rounded-full border-1 border-black bg-yellow-400 text-black p-1 shadow',
+            {
+              'right-8': showDeckBadge || showTrashBadge,
+            },
+          )}
+        >
           <Check className="h-4 w-4" />
         </div>
       )}
-      {!selected && showDeckBadge && (
+      {showDeckBadge && (
         <div className="absolute top-1 right-1 z-10 rounded-full border-1 border-black bg-emerald-500 text-white p-1 shadow">
           <Check className="h-4 w-4" />
         </div>
       )}
-      {!selected && showTrashBadge && (
+      {showTrashBadge && (
         <div className="absolute top-1 right-1 z-10 rounded-full border-1 border-black bg-red-500 text-white p-1 shadow">
           <X className="h-4 w-4" />
         </div>

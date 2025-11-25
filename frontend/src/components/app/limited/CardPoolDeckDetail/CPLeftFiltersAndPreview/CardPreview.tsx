@@ -18,9 +18,16 @@ const CardPreview: React.FC<CardPreviewProps> = ({ className }) => {
     return { card, variantId };
   }, [hoveredCardId, cardListData?.cards]);
 
+  const isHorizontal = card?.front.horizontal ?? false;
+
   return (
-    <div className={`mb-3 flex justify-center ${className ?? ''}`}>
-      <CardImage card={card} cardVariantId={variantId} size="w300" />
+    <div className={`mb-3 flex items-center justify-center h-[350px] ${className ?? ''}`}>
+      <CardImage
+        card={card}
+        cardVariantId={variantId}
+        size={isHorizontal ? 'w300' : 'h350'}
+        forceHorizontal={isHorizontal}
+      />
     </div>
   );
 };

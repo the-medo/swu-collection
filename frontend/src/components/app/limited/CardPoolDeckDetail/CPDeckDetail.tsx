@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft } from 'lucide-react';
 import { useCPStoreInitializator } from '@/components/app/limited/CardPoolDeckDetail/useCPStoreInitializator.ts';
 import { useCardPoolDeckDetailStore } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
+import { cn } from '@/lib/utils.ts';
 
 export interface DeckDetailProps {
   deckId: string | undefined;
@@ -42,41 +43,45 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
   return (
     <>
       <Helmet title={`Deck ${deckId} | SWUBase`} />
+      <div className=" max-h-[calc(100vh)] overflow-y-auto">
+        <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
+          <LoadingTitle
+            mainTitle={
+              <div className="flex items-center gap-2 w-full">
+                {poolId && (
+                  <Link to="/limited/pool/$poolId/detail" params={{ poolId }}>
+                    <Button variant="ghost" size="iconSmall" aria-label="Back to pool">
+                      <ArrowLeft />
+                    </Button>
+                  </Link>
+                )}
+                {!leadersAndBasesExpanded && (
+                  <div className="ml-auto">
+                    <CPLeaderAndBaseCollapsed deckId={deckId} />
+                  </div>
+                )}
+                <span>{deckData?.deck?.name}</span>
+              </div>
+            }
+            loading={loading}
+          />
+        </div>
 
-      <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
-        <LoadingTitle
-          mainTitle={
-            <div className="flex items-center gap-2 w-full">
-              {poolId && (
-                <Link to="/limited/pool/$poolId/detail" params={{ poolId }}>
-                  <Button variant="ghost" size="iconSmall" aria-label="Back to pool">
-                    <ArrowLeft />
-                  </Button>
-                </Link>
-              )}
-              {!leadersAndBasesExpanded && (
-                <div className="ml-auto">
-                  <CPLeaderAndBaseCollapsed deckId={deckId} />
-                </div>
-              )}
-              <span>{deckData?.deck?.name}</span>
-            </div>
-          }
-          loading={loading}
-        />
-      </div>
-
-      {leadersAndBasesExpanded && (
-        <CPLeaderAndBase deckId={deckId} poolId={poolId} className="mb-4" />
-      )}
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        <div className="col-span-1 row-span-2">
+        {leadersAndBasesExpanded && (
+          <CPLeaderAndBase deckId={deckId} poolId={poolId} className="mb-4" />
+        )}
+        <div
+          className={cn('flex flex-row gap-2 overflow-y-auto', {
+            'h-[calc(100vh-170px)]': leadersAndBasesExpanded,
+            'h-[calc(100vh-120px)]': !leadersAndBasesExpanded,
+          })}
+        >
           <CPLeftFiltersAndPreview />
+          <div className=" flex flex-col gap-2 w-full">
+            <CPTopFilters deckId={deckId} />
+            <CPPoolAndDeckSection deckId={deckId} poolId={poolId} />
+          </div>
         </div>
-        <div className="col-span-2 md:col-span-2 lg:col-span-3 xl:col-span-4">
-          <CPTopFilters deckId={deckId} />
-        </div>
-        <CPPoolAndDeckSection deckId={deckId} poolId={poolId} />
       </div>
     </>
   );

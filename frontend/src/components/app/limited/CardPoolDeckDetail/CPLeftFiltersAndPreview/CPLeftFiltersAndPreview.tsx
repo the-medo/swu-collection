@@ -1,6 +1,8 @@
 import React from 'react';
 import CardPreview from './CardPreview.tsx';
 import CPLeftFilters from './CPLeftFilters';
+import { cn } from '@/lib/utils.ts';
+import { useCardPoolDeckDetailStore } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 
 export interface CPLeftFiltersAndPreviewProps {
   // in future: filters props
@@ -8,12 +10,23 @@ export interface CPLeftFiltersAndPreviewProps {
 }
 
 const CPLeftFiltersAndPreview: React.FC<CPLeftFiltersAndPreviewProps> = ({ className }) => {
+  const { leadersAndBasesExpanded } = useCardPoolDeckDetailStore();
+
   return (
     <div
-      className={`h-full rounded-lg border border-border bg-card p-3 text-xs opacity-80 ${className ?? ''}`}
+      className={cn(
+        ' min-w-[300px] gap-2 overflow-y-auto',
+        {
+          'h-[calc(100vh-170px)]': leadersAndBasesExpanded,
+          'h-[calc(100vh-120px)]': !leadersAndBasesExpanded,
+        },
+        className,
+      )}
     >
       <CardPreview />
-      <CPLeftFilters className="mt-3" />
+      <div className={`rounded-lg border border-border bg-card p-3 text-xs ${className ?? ''}`}>
+        <CPLeftFilters />
+      </div>
     </div>
   );
 };

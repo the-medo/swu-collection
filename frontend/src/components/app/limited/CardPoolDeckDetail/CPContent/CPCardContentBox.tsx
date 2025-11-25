@@ -13,7 +13,7 @@ const CPCardContentBox: React.FC<CPCardContentBoxProps> = ({ group, className })
       <div className="text-sm font-semibold px-1">{group.title}</div>
       <div className="flex w-full overflow-x-auto gap-2">
         {group.cards.map(stack => (
-          <CPCardContentStack key={stack.title} items={stack.cards} />
+          <CPCardContentStack key={stack.title} items={stack.cards} size="w100" />
         ))}
       </div>
     </div>

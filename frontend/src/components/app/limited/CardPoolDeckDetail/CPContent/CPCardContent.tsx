@@ -13,7 +13,7 @@ export interface CPCardContentProps {
 const CPCardContent: React.FC<CPCardContentProps> = ({ pool, className }) => {
   return (
     <div className={`h-full ${className ?? ''}`}>
-      <div className="flex flex-col gap-3">
+      <div className="flex gap-2 flex-wrap">
         {pool?.boxes?.map(group => (
           <CPCardContentBox key={group.title} group={group} />
         ))}

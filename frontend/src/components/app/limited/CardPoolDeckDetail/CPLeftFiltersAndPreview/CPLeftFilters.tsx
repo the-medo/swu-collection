@@ -40,33 +40,7 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
 
   return (
     <div className={className}>
-      <div className="space-y-2">
-        {cardListData ? (
-          <GenericMultiSelect
-            label="Traits"
-            placeholder="Select traits..."
-            options={cardListData.allTraits}
-            value={filterTraits}
-            onChange={setFilterTraits}
-            maxCount={4}
-          />
-        ) : (
-          <div className="text-center py-2">Loading traits...</div>
-        )}
-        {cardListData ? (
-          <GenericMultiSelect
-            label="Keywords"
-            placeholder="Select keywords..."
-            options={cardListData.allKeywords}
-            value={filterKeywords}
-            onChange={setFilterKeywords}
-            maxCount={4}
-          />
-        ) : (
-          <div className="text-center py-2">Loading keywords...</div>
-        )}
-      </div>
-      <div className="mt-4">
+      <div>
         <div className="text-sm font-semibold mb-2">Grouping</div>
         <div className="space-y-2">
           <CPGroupingSelector
@@ -97,27 +71,53 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
               checked={showRemovedCards}
               onCheckedChange={v => setShowRemovedCards(v === true)}
             />
-            <span>Show removed cards (semi-transparent)</span>
+            <span>Show removed cards</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
             <Checkbox
               checked={showUnfilteredCards}
               onCheckedChange={v => setShowUnfilteredCards(v === true)}
             />
-            <span>Show unfiltered cards (semi-transparent)</span>
+            <span>Show unfiltered cards</span>
           </label>
         </div>
       </div>
       <div className="px-6 my-2">
         <Separator />
       </div>
-      <div className="flex items-center justify-between">
-        <div className="text-xs">Applied: {activeFiltersCount}</div>
-        {activeFiltersCount > 0 && (
-          <Button size="sm" variant="secondary" onClick={resetFilters}>
-            <RefreshCcw className="mr-2 h-4 w-4" /> Reset
-          </Button>
+      <div className="space-y-2">
+        {cardListData ? (
+          <GenericMultiSelect
+            label="Traits"
+            placeholder="Select traits..."
+            options={cardListData.allTraits}
+            value={filterTraits}
+            onChange={setFilterTraits}
+            maxCount={4}
+          />
+        ) : (
+          <div className="text-center py-2">Loading traits...</div>
         )}
+        {cardListData ? (
+          <GenericMultiSelect
+            label="Keywords"
+            placeholder="Select keywords..."
+            options={cardListData.allKeywords}
+            value={filterKeywords}
+            onChange={setFilterKeywords}
+            maxCount={4}
+          />
+        ) : (
+          <div className="text-center py-2">Loading keywords...</div>
+        )}
+        <div className="flex items-center justify-between">
+          <div className="text-xs">Applied: {activeFiltersCount}</div>
+          {activeFiltersCount > 0 && (
+            <Button size="sm" variant="secondary" onClick={resetFilters}>
+              <RefreshCcw className="mr-2 h-4 w-4" /> Reset
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
