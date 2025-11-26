@@ -7,6 +7,8 @@ import {
   useCardPoolDeckDetailStoreActions,
 } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 import { Check, X } from 'lucide-react';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
 
 export interface CPCardProps {
   item: ExpandedCardData;
@@ -23,8 +25,9 @@ const CPCard: React.FC<CPCardProps> = ({ item, size = 'w200' }) => {
   const showDeckBadge = showCardsInDeck && item.location === 'deck';
   const showTrashBadge = showRemovedCards && item.location === 'trash';
   const failedFilter = showUnfilteredCards && !item.filterSuccess;
+  const { data: cardPreview } = useGetUserSetting('cpLayout_cardPreview');
 
-  return (
+  const cardNode = (
     <div
       onMouseEnter={() => setHoveredCardId(item.cardId)}
       onClick={() => toggleSelectedCardId(item.cardPoolNumber)}
@@ -75,6 +78,12 @@ const CPCard: React.FC<CPCardProps> = ({ item, size = 'w200' }) => {
         </div>
       )}
     </div>
+  );
+
+  return (
+    <DeckCardHoverImage card={item.card} size={'w300'} active={cardPreview === 'hover'}>
+      {cardNode}
+    </DeckCardHoverImage>
   );
 };
 

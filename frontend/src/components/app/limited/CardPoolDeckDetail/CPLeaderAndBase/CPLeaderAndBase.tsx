@@ -12,6 +12,8 @@ import { SwuSet } from '../../../../../../../types/enums.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
 import { useDeckLeaderAndBaseCards } from '@/hooks/useDeckLeaderAndBaseCards.ts';
+import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 export interface CPLeaderAndBaseProps {
   deckId?: string; // reserved for future use
@@ -79,6 +81,8 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
     setLeadersAndBasesExpanded(false);
   };
 
+  const { data: cardPreview } = useGetUserSetting('cpLayout_cardPreview');
+
   return (
     <div className={`rounded-lg border border-border bg-card p-3 ${className ?? ''}`}>
       {loading && <div className="text-xs opacity-60">Loading leaders...</div>}
@@ -89,38 +93,51 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
       <div className="flex flex-row flex-wrap items-center gap-8">
         <div className="flex flex-row gap-3 items-start">
           {leaderCards.map(lc => (
-            <div
+            <DeckCardHoverImage
               key={`${lc.cardId}-${lc.key}`}
-              onMouseEnter={() => setHoveredCardId(lc.cardId)}
-              onClick={() => setSelectedLeaderId(lc.cardId)}
-              className={`rounded-md ${lc.cardId === deckLeaderId ? 'ring-4 ring-black dark:ring-white' : selectedLeaderId === lc.cardId ? 'ring-8 ring-primary' : ''}`}
+              card={lc.card}
+              defaultVariantId={lc.cardVariantId}
+              size="w300"
+              active={cardPreview === 'hover'}
             >
-              <CardImage
-                card={lc.card}
-                cardVariantId={lc.cardVariantId}
-                forceHorizontal={true}
-                size="w100"
-                backSideButton="mid"
-              />
-            </div>
+              <div
+                onMouseEnter={() => setHoveredCardId(lc.cardId)}
+                onClick={() => setSelectedLeaderId(lc.cardId)}
+                className={`rounded-md ${lc.cardId === deckLeaderId ? 'ring-4 ring-black dark:ring-white' : selectedLeaderId === lc.cardId ? 'ring-8 ring-primary' : ''}`}
+              >
+                <CardImage
+                  card={lc.card}
+                  cardVariantId={lc.cardVariantId}
+                  forceHorizontal={true}
+                  size="w100"
+                  backSideButton="mid"
+                />
+              </div>
+            </DeckCardHoverImage>
           ))}
         </div>
         <div className="flex flex-row gap-3 items-start">
           {baseCards.map(bc => (
-            <div
+            <DeckCardHoverImage
               key={`${bc.cardId}-${bc.key}`}
-              onMouseEnter={() => setHoveredCardId(bc.cardId)}
-              onClick={() => setSelectedBaseId(bc.cardId)}
-              className={`rounded-md ${bc.cardId === deckBaseId ? 'ring-4 ring-black dark:ring-white' : selectedBaseId === bc.cardId ? 'ring-8 ring-primary' : ''}`}
+              card={bc.card}
+              size="w300"
+              active={cardPreview === 'hover'}
             >
-              <CardImage
-                card={bc.card}
-                cardVariantId={bc.cardVariantId}
-                forceHorizontal={true}
-                size="w100"
-                backSideButton="mid"
-              />
-            </div>
+              <div
+                onMouseEnter={() => setHoveredCardId(bc.cardId)}
+                onClick={() => setSelectedBaseId(bc.cardId)}
+                className={`rounded-md ${bc.cardId === deckBaseId ? 'ring-4 ring-black dark:ring-white' : selectedBaseId === bc.cardId ? 'ring-8 ring-primary' : ''}`}
+              >
+                <CardImage
+                  card={bc.card}
+                  cardVariantId={bc.cardVariantId}
+                  forceHorizontal={true}
+                  size="w100"
+                  backSideButton="mid"
+                />
+              </div>
+            </DeckCardHoverImage>
           ))}
         </div>
 

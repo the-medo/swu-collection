@@ -3,6 +3,7 @@ import CardPreview from './CardPreview.tsx';
 import CPLeftFilters from './CPLeftFilters';
 import { cn } from '@/lib/utils.ts';
 import { useCardPoolDeckDetailStore } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 export interface CPLeftFiltersAndPreviewProps {
   // in future: filters props
@@ -10,6 +11,7 @@ export interface CPLeftFiltersAndPreviewProps {
 }
 
 const CPLeftFiltersAndPreview: React.FC<CPLeftFiltersAndPreviewProps> = ({ className }) => {
+  const { data: cardPreview } = useGetUserSetting('cpLayout_cardPreview');
   const { leadersAndBasesExpanded } = useCardPoolDeckDetailStore();
 
   return (
@@ -23,7 +25,7 @@ const CPLeftFiltersAndPreview: React.FC<CPLeftFiltersAndPreviewProps> = ({ class
         className,
       )}
     >
-      <CardPreview />
+      {cardPreview === 'static' && <CardPreview />}
       <div className={`rounded-lg border border-border bg-card p-3 text-xs ${className ?? ''}`}>
         <CPLeftFilters />
       </div>
