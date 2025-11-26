@@ -17,6 +17,8 @@ export interface UserSettings {
   cpLayout_cardPreview: 'static' | 'hover';
   cpLayout_imageSize: 'big' | 'small';
   cpLayout_catPosition: 'top' | 'left'; // Cost/Aspect/Type position
+  cpLayout_displayBoxTitles: boolean;
+  cpLayout_displayStackTitles: boolean;
   // DeckImagePresets
   deckImage_showNoisyBackground: DeckImagePresets['showNoisyBackground'];
   deckImage_showcaseLeader: DeckImagePresets['showcaseLeader'];
@@ -38,6 +40,8 @@ export const userSettingsSchema = z.object({
   cpLayout_imageSize: z.union([z.literal('big'), z.literal('small')]).default('big'),
   cpLayout_deckInfoPosition: z.union([z.literal('top'), z.literal('left')]).default('top'),
   cpLayout_catPosition: z.union([z.literal('top'), z.literal('left')]).default('top'),
+  cpLayout_displayBoxTitles: booleanPreprocessor.default(true),
+  cpLayout_displayStackTitles: booleanPreprocessor.default(true),
   // DeckImagePresets
   deckImage_showNoisyBackground: booleanPreprocessor.default(true),
   deckImage_showcaseLeader: booleanPreprocessor.default(false),

@@ -10,16 +10,23 @@ export interface CPCardContentBoxProps {
 
 const CPCardContentBox: React.FC<CPCardContentBoxProps> = ({ group, className }) => {
   const { data: imageSize } = useGetUserSetting('cpLayout_imageSize');
+  const { data: displayBoxTitles } = useGetUserSetting('cpLayout_displayBoxTitles');
+  const { data: displayStackTitles } = useGetUserSetting('cpLayout_displayStackTitles');
+
+  const nonEmptyStacks = group.cards.filter(stack => stack.cards && stack.cards.length > 0);
+  if (nonEmptyStacks.length === 0) return null;
 
   return (
     <div className={`rounded-md border border-border bg-card p-2 ${className ?? ''}`}>
-      <div className="text-sm font-semibold px-1">{group.title}</div>
+      {displayBoxTitles && <div className="text-sm font-semibold px-1">{group.title}</div>}
       <div className="flex w-full overflow-x-auto gap-2">
-        {group.cards.map(stack => (
+        {nonEmptyStacks.map(stack => (
           <CPCardContentStack
             key={stack.title}
             items={stack.cards}
             size={imageSize === 'big' ? 'w200' : 'w100'}
+            title={stack.title}
+            showTitle={!!displayStackTitles}
           />
         ))}
       </div>

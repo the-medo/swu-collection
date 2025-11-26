@@ -3,7 +3,6 @@ import { useCardList } from '@/api/lists/useCardList';
 import GenericMultiSelect from '@/components/app/global/GenericMultiSelect/GenericMultiSelect.tsx';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Separator } from '@/components/ui/separator.tsx';
 import { RefreshCcw } from 'lucide-react';
 import {
   Accordion,
@@ -159,9 +158,6 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className, deckId }) => {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <div className="px-6 my-2">
-        <Separator />
-      </div>
     </div>
   );
 };

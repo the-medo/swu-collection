@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const CPLayoutOptions: React.FC = () => {
   const { data: cardPreview } = useGetUserSetting('cpLayout_cardPreview');
@@ -19,6 +20,13 @@ const CPLayoutOptions: React.FC = () => {
 
   const { data: catPos } = useGetUserSetting('cpLayout_catPosition');
   const { mutate: setCatPos } = useSetUserSetting('cpLayout_catPosition');
+
+  // New settings: display titles for boxes and stacks
+  const { data: displayBoxTitles } = useGetUserSetting('cpLayout_displayBoxTitles');
+  const { mutate: setDisplayBoxTitles } = useSetUserSetting('cpLayout_displayBoxTitles');
+
+  const { data: displayStackTitles } = useGetUserSetting('cpLayout_displayStackTitles');
+  const { mutate: setDisplayStackTitles } = useSetUserSetting('cpLayout_displayStackTitles');
 
   return (
     <div className="space-y-2">
@@ -84,6 +92,24 @@ const CPLayoutOptions: React.FC = () => {
           },
         ]}
       />
+
+      <div className="space-y-2 mt-2">
+        <label className="flex items-center gap-2 text-sm">
+          <Checkbox
+            checked={!!displayBoxTitles}
+            onCheckedChange={v => setDisplayBoxTitles(v === true)}
+          />
+          <span>Display box titles</span>
+        </label>
+
+        <label className="flex items-center gap-2 text-sm">
+          <Checkbox
+            checked={!!displayStackTitles}
+            onCheckedChange={v => setDisplayStackTitles(v === true)}
+          />
+          <span>Display stack titles</span>
+        </label>
+      </div>
     </div>
   );
 };
