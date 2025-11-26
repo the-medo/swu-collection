@@ -20,10 +20,13 @@ const CPLeaderAndBaseCollapsed: React.FC<CPLeaderAndBaseCollapsedProps> = ({
   const { data: cardPreview } = useGetUserSetting('cpLayout_cardPreview');
 
   return (
-    <div className={`flex items-center gap-2 ${className ?? ''}`}>
+    <div className={`flex items-center justify-between gap-2 ${className ?? ''}`}>
       {loading && <div className="text-xs opacity-60">Loading...</div>}
       {!loading && (
         <>
+          <Button size="sm" variant="outline" onClick={() => setLeadersAndBasesExpanded(true)}>
+            Change
+          </Button>
           <div className="flex items-center gap-2">
             {leader && (
               <DeckCardHoverImage
@@ -60,14 +63,6 @@ const CPLeaderAndBaseCollapsed: React.FC<CPLeaderAndBaseCollapsedProps> = ({
               </DeckCardHoverImage>
             )}
           </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="ml-2"
-            onClick={() => setLeadersAndBasesExpanded(true)}
-          >
-            Change
-          </Button>
         </>
       )}
     </div>

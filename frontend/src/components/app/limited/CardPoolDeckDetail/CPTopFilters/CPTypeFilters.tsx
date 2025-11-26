@@ -6,12 +6,15 @@ import {
   useCardPoolDeckDetailStore,
   useCardPoolDeckDetailStoreActions,
 } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 const TYPES = ['Ground', 'Space', 'Event', 'Upgrade'] as const;
 
 const CPTypeFilters: React.FC = () => {
   const { filterType } = useCardPoolDeckDetailStore();
   const { setFilterType } = useCardPoolDeckDetailStoreActions();
+  const { data: catPosition } = useGetUserSetting('cpLayout_catPosition');
+  const compact = (catPosition ?? 'top') === 'left';
 
   const isSelected = (t: (typeof TYPES)[number]) => filterType.includes(t);
 
@@ -38,7 +41,7 @@ const CPTypeFilters: React.FC = () => {
             aria-label={`Filter by type ${t}`}
             title={`Type: ${t}`}
             variant={selected ? 'default' : 'outline'}
-            size="sm"
+            size={compact ? 'xs' : 'sm'}
           >
             {t}
           </Button>
@@ -46,7 +49,7 @@ const CPTypeFilters: React.FC = () => {
       })}
       <Button
         onClick={reset}
-        size="sm"
+        size={compact ? 'xs' : 'sm'}
         variant="outline"
         className="ring-0"
         aria-label="Reset type filters"

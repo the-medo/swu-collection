@@ -84,61 +84,68 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
   const { data: cardPreview } = useGetUserSetting('cpLayout_cardPreview');
 
   return (
-    <div className={`rounded-lg border border-border bg-card p-3 ${className ?? ''}`}>
+    <div className={`rounded-lg border border-border bg-card p-2 ${className ?? ''}`}>
       {loading && <div className="text-xs opacity-60">Loading leaders...</div>}
       {!loading && leaderCards.length === 0 && (
         <div className="text-xs opacity-60">No leaders selected for this pool.</div>
       )}
 
-      <div className="flex flex-row flex-wrap items-center gap-8">
-        <div className="flex flex-row gap-3 items-start">
-          {leaderCards.map(lc => (
-            <DeckCardHoverImage
-              key={`${lc.cardId}-${lc.key}`}
-              card={lc.card}
-              defaultVariantId={lc.cardVariantId}
-              size="w300"
-              active={cardPreview === 'hover'}
-            >
-              <div
-                onMouseEnter={() => setHoveredCardId(lc.cardId)}
-                onClick={() => setSelectedLeaderId(lc.cardId)}
-                className={`rounded-md ${lc.cardId === deckLeaderId ? 'ring-4 ring-black dark:ring-white' : selectedLeaderId === lc.cardId ? 'ring-8 ring-primary' : ''}`}
-              >
-                <CardImage
-                  card={lc.card}
-                  cardVariantId={lc.cardVariantId}
-                  forceHorizontal={true}
-                  size="w100"
-                  backSideButton="mid"
-                />
-              </div>
-            </DeckCardHoverImage>
-          ))}
+      <div className="flex flex-row flex-wrap items-center gap-2">
+        <div className="flex items-center justify-end">
+          <Button size="sm" variant="ghost" onClick={() => setLeadersAndBasesExpanded(false)}>
+            Collapse
+          </Button>
         </div>
-        <div className="flex flex-row gap-3 items-start">
-          {baseCards.map(bc => (
-            <DeckCardHoverImage
-              key={`${bc.cardId}-${bc.key}`}
-              card={bc.card}
-              size="w300"
-              active={cardPreview === 'hover'}
-            >
-              <div
-                onMouseEnter={() => setHoveredCardId(bc.cardId)}
-                onClick={() => setSelectedBaseId(bc.cardId)}
-                className={`rounded-md ${bc.cardId === deckBaseId ? 'ring-4 ring-black dark:ring-white' : selectedBaseId === bc.cardId ? 'ring-8 ring-primary' : ''}`}
+        <div className="flex flex-row flex-wrap items-center gap-8">
+          <div className="flex flex-row gap-2 items-start">
+            {leaderCards.map(lc => (
+              <DeckCardHoverImage
+                key={`${lc.cardId}-${lc.key}`}
+                card={lc.card}
+                defaultVariantId={lc.cardVariantId}
+                size="w300"
+                active={cardPreview === 'hover'}
               >
-                <CardImage
-                  card={bc.card}
-                  cardVariantId={bc.cardVariantId}
-                  forceHorizontal={true}
-                  size="w100"
-                  backSideButton="mid"
-                />
-              </div>
-            </DeckCardHoverImage>
-          ))}
+                <div
+                  onMouseEnter={() => setHoveredCardId(lc.cardId)}
+                  onClick={() => setSelectedLeaderId(lc.cardId)}
+                  className={`rounded-md ${lc.cardId === deckLeaderId ? 'ring-4 ring-black dark:ring-white' : selectedLeaderId === lc.cardId ? 'ring-8 ring-primary' : ''}`}
+                >
+                  <CardImage
+                    card={lc.card}
+                    cardVariantId={lc.cardVariantId}
+                    forceHorizontal={true}
+                    size="w100"
+                    backSideButton="mid"
+                  />
+                </div>
+              </DeckCardHoverImage>
+            ))}
+          </div>
+          <div className="flex flex-row gap-2 items-start">
+            {baseCards.map(bc => (
+              <DeckCardHoverImage
+                key={`${bc.cardId}-${bc.key}`}
+                card={bc.card}
+                size="w300"
+                active={cardPreview === 'hover'}
+              >
+                <div
+                  onMouseEnter={() => setHoveredCardId(bc.cardId)}
+                  onClick={() => setSelectedBaseId(bc.cardId)}
+                  className={`rounded-md ${bc.cardId === deckBaseId ? 'ring-4 ring-black dark:ring-white' : selectedBaseId === bc.cardId ? 'ring-8 ring-primary' : ''}`}
+                >
+                  <CardImage
+                    card={bc.card}
+                    cardVariantId={bc.cardVariantId}
+                    forceHorizontal={true}
+                    size="w100"
+                    backSideButton="mid"
+                  />
+                </div>
+              </DeckCardHoverImage>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center justify-end mb-2">
@@ -147,11 +154,6 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
               {putDeckMutation.isPending ? 'Saving...' : 'Save changes'}
             </Button>
           )}
-        </div>
-        <div className="flex items-center justify-end mb-2">
-          <Button size="sm" variant="ghost" onClick={() => setLeadersAndBasesExpanded(false)}>
-            Collapse
-          </Button>
         </div>
       </div>
     </div>

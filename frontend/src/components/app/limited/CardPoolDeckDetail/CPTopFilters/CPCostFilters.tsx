@@ -7,12 +7,15 @@ import {
 import { Button } from '@/components/ui/button.tsx';
 import { ButtonGroup } from '@/components/ui/button-group.tsx';
 import { XIcon } from 'lucide-react';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 const costs: number[] = [0, 1, 2, 3, 4, 5, 6];
 
 const CPCostFilters: React.FC = () => {
   const { filterCost } = useCardPoolDeckDetailStore();
   const { setFilterCost } = useCardPoolDeckDetailStoreActions();
+  const { data: catPosition } = useGetUserSetting('cpLayout_catPosition');
+  const compact = (catPosition ?? 'top') === 'left';
 
   const isSelected = (c: number) => !!filterCost[c];
   const hasAnySpecificSelected = Object.keys(filterCost).some(k => k !== 'all');
@@ -52,12 +55,12 @@ const CPCostFilters: React.FC = () => {
             key={c}
             onClick={() => toggleCost(c)}
             variant={selected ? 'default' : 'outline'}
-            size="sm"
+            size={compact ? 'xs' : 'sm'}
             aria-pressed={selected}
             aria-label={`Filter by cost ${displayValue}`}
             title={`Cost: ${displayValue}`}
           >
-            <CostIcon cost={displayValue} size="medium" />
+            <CostIcon cost={displayValue} size={compact ? 'small' : 'medium'} />
           </Button>
         );
       })}
@@ -66,7 +69,7 @@ const CPCostFilters: React.FC = () => {
       <Button
         onClick={() => setFilterCost({ all: true })}
         variant="outline"
-        size="sm"
+        size={compact ? 'xs' : 'sm'}
         className="ring-0"
         aria-label="Reset cost filters"
         title="Reset cost filters"

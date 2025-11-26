@@ -11,6 +11,7 @@ import {
   useCardPoolDeckDetailStoreActions,
 } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 import { useCPLeaderBaseAspects } from '@/components/app/limited/CardPoolDeckDetail/CPTopFilters/useCPLeaderBaseAspects.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 interface CPAspectFiltersProps {
   deckId?: string;
@@ -21,6 +22,8 @@ const CPAspectFilters: React.FC<CPAspectFiltersProps> = ({ deckId }) => {
   const { setFilterAspects, setExactAspects } = useCardPoolDeckDetailStoreActions();
   const leaderBaseAspects = useCPLeaderBaseAspects(deckId);
   const isOnlyLeaderBaseSelected = filterAspects === 'showOnlyLeaderAndBaseAspects';
+  const { data: catPosition } = useGetUserSetting('cpLayout_catPosition');
+  const compact = (catPosition ?? 'top') === 'left';
 
   const onReset = () => {
     setFilterAspects('all');
@@ -33,7 +36,7 @@ const CPAspectFilters: React.FC<CPAspectFiltersProps> = ({ deckId }) => {
         {/* Leader + Base aspects button */}
         <Button
           variant={isOnlyLeaderBaseSelected ? 'default' : 'outline'}
-          size="sm"
+          size={compact ? 'xs' : 'sm'}
           onClick={() => setFilterAspects('showOnlyLeaderAndBaseAspects')}
           aria-pressed={isOnlyLeaderBaseSelected}
           aria-label={`Filter by leader/base aspects: ${leaderBaseAspects.join(', ')}`}
@@ -45,7 +48,9 @@ const CPAspectFilters: React.FC<CPAspectFiltersProps> = ({ deckId }) => {
         >
           <div className="flex items-center gap-1">
             {leaderBaseAspects.length > 0 ? (
-              leaderBaseAspects.map(a => <AspectIcon key={a} aspect={a} size="small" />)
+              leaderBaseAspects.map(a => (
+                <AspectIcon key={a} aspect={a} size={compact ? 'xSmall' : 'small'} />
+              ))
             ) : (
               <span className="text-xs opacity-70">Leader/Base</span>
             )}
@@ -60,12 +65,12 @@ const CPAspectFilters: React.FC<CPAspectFiltersProps> = ({ deckId }) => {
               key={a}
               onClick={() => setFilterAspects(a)}
               variant={selected ? 'default' : 'outline'}
-              size="sm"
+              size={compact ? 'xs' : 'sm'}
               aria-pressed={selected}
               aria-label={`Filter by aspect ${a}`}
               title={`Aspect: ${a}`}
             >
-              <AspectIcon aspect={a} size="medium" />
+              <AspectIcon aspect={a} size={compact ? 'xSmall' : 'medium'} />
             </Button>
           );
         })}
@@ -74,7 +79,7 @@ const CPAspectFilters: React.FC<CPAspectFiltersProps> = ({ deckId }) => {
         <Button
           onClick={onReset}
           variant="outline"
-          size="sm"
+          size={compact ? 'xs' : 'sm'}
           className="ring-0"
           aria-label="Reset aspect filters"
           title="Reset aspect filters"
@@ -86,7 +91,8 @@ const CPAspectFilters: React.FC<CPAspectFiltersProps> = ({ deckId }) => {
       {/* Exact aspects checkbox */}
       <label
         className={cn(
-          'flex items-center gap-2 text-xs opacity-90 ml-2',
+          'flex items-center gap-2 text-xs opacity-90',
+          compact ? 'ml-1' : 'ml-2',
           isOnlyLeaderBaseSelected ? 'opacity-60' : '',
         )}
       >

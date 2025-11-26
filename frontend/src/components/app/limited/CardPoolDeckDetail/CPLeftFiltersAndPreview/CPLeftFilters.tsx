@@ -17,13 +17,17 @@ import {
 } from '../useCardPoolDeckDetailStore';
 import CPGroupingSelector from './CPGroupingSelector';
 import CPLayoutOptions from './CPLayoutOptions';
+import CPTopFilters from '@/components/app/limited/CardPoolDeckDetail/CPTopFilters/CPTopFilters.tsx';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 export interface CPLeftFiltersProps {
   className?: string;
+  deckId?: string;
 }
 
-const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
+const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className, deckId }) => {
   const { data: cardListData } = useCardList();
+  const { data: catPosition } = useGetUserSetting('cpLayout_catPosition');
   const {
     filterTraits,
     filterKeywords,
@@ -47,7 +51,18 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
 
   return (
     <div className={className}>
-      <Accordion type="multiple" defaultValue={['layout', 'grouping', 'visibility', 'filters']}>
+      <Accordion
+        type="multiple"
+        defaultValue={['filters', 'layout', 'grouping', 'visibility', 'traits-and-keywords']}
+      >
+        {(catPosition ?? 'top') === 'left' && (
+          <AccordionItem value="filters">
+            <AccordionTrigger className="text-sm font-semibold">Filters</AccordionTrigger>
+            <AccordionContent>
+              <CPTopFilters deckId={deckId} />
+            </AccordionContent>
+          </AccordionItem>
+        )}
         <AccordionItem value="grouping">
           <AccordionTrigger className="text-sm font-semibold">Grouping</AccordionTrigger>
           <AccordionContent>
@@ -98,8 +113,8 @@ const CPLeftFilters: React.FC<CPLeftFiltersProps> = ({ className }) => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="filters">
-          <AccordionTrigger className="text-sm font-semibold">Filters</AccordionTrigger>
+        <AccordionItem value="traits-and-keywords">
+          <AccordionTrigger className="text-sm font-semibold">Traits & Keywords</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2 mt-2">
               {cardListData ? (

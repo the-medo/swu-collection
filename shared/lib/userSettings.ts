@@ -16,7 +16,6 @@ export interface UserSettings {
   // Card Pool Layout options
   cpLayout_cardPreview: 'static' | 'hover';
   cpLayout_imageSize: 'big' | 'small';
-  cpLayout_deckInfoPosition: 'top' | 'left';
   cpLayout_catPosition: 'top' | 'left'; // Cost/Aspect/Type position
   // DeckImagePresets
   deckImage_showNoisyBackground: DeckImagePresets['showNoisyBackground'];

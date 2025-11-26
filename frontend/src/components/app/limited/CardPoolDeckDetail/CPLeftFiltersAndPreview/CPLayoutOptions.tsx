@@ -17,14 +17,11 @@ const CPLayoutOptions: React.FC = () => {
   const { data: imageSize } = useGetUserSetting('cpLayout_imageSize');
   const { mutate: setImageSize } = useSetUserSetting('cpLayout_imageSize');
 
-  const { data: deckInfo } = useGetUserSetting('cpLayout_deckInfoPosition');
-  const { mutate: setDeckInfo } = useSetUserSetting('cpLayout_deckInfoPosition');
-
   const { data: catPos } = useGetUserSetting('cpLayout_catPosition');
   const { mutate: setCatPos } = useSetUserSetting('cpLayout_catPosition');
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <CPIconOptionGroup
         title="Card preview"
         value={cardPreview}
@@ -63,27 +60,6 @@ const CPLayoutOptions: React.FC = () => {
             tooltip: 'Small',
             ariaLabel: 'Small',
             icon: <SquareStackIcon />,
-          },
-        ]}
-      />
-
-      <CPIconOptionGroup
-        title="Deck info"
-        value={deckInfo}
-        defaultValue="top"
-        onChange={v => setDeckInfo(v as 'top' | 'left')}
-        options={[
-          {
-            value: 'top',
-            tooltip: 'Top',
-            ariaLabel: 'Top',
-            icon: <PanelTop className="h-4 w-4" />,
-          },
-          {
-            value: 'left',
-            tooltip: 'Left',
-            ariaLabel: 'Left',
-            icon: <PanelLeft className="h-4 w-4" />,
           },
         ]}
       />

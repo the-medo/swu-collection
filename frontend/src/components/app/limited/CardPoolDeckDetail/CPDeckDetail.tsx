@@ -7,8 +7,8 @@ import { useSidebar } from '@/components/ui/sidebar.tsx';
 import CPLeftFiltersAndPreview from '@/components/app/limited/CardPoolDeckDetail/CPLeftFiltersAndPreview/CPLeftFiltersAndPreview.tsx';
 import CPPoolAndDeckSection from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPPoolAndDeckSection.tsx';
 import CPLeaderAndBase from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase/CPLeaderAndBase.tsx';
-import CPLeaderAndBaseCollapsed from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase/CPLeaderAndBaseCollapsed.tsx';
 import CPTopFilters from '@/components/app/limited/CardPoolDeckDetail/CPTopFilters/CPTopFilters.tsx';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft } from 'lucide-react';
@@ -39,6 +39,7 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
 
   const loading = isDeckFetching || isFetching;
   const { leadersAndBasesExpanded } = useCardPoolDeckDetailStore();
+  const { data: catPosition } = useGetUserSetting('cpLayout_catPosition');
 
   return (
     <>
@@ -55,11 +56,6 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
                     </Button>
                   </Link>
                 )}
-                {!leadersAndBasesExpanded && (
-                  <div className="ml-auto">
-                    <CPLeaderAndBaseCollapsed deckId={deckId} />
-                  </div>
-                )}
                 <span>{deckData?.deck?.name}</span>
               </div>
             }
@@ -68,7 +64,7 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
         </div>
 
         {leadersAndBasesExpanded && (
-          <CPLeaderAndBase deckId={deckId} poolId={poolId} className="mb-4" />
+          <CPLeaderAndBase deckId={deckId} poolId={poolId} className="mb-2" />
         )}
         <div
           className={cn('flex flex-row gap-2 overflow-y-auto', {
@@ -76,9 +72,9 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
             'h-[calc(100vh-120px)]': !leadersAndBasesExpanded,
           })}
         >
-          <CPLeftFiltersAndPreview />
+          <CPLeftFiltersAndPreview deckId={deckId} />
           <div className=" flex flex-col gap-2 w-full">
-            <CPTopFilters deckId={deckId} />
+            {(catPosition ?? 'top') === 'top' && <CPTopFilters deckId={deckId} />}
             <CPPoolAndDeckSection deckId={deckId} poolId={poolId} />
           </div>
         </div>

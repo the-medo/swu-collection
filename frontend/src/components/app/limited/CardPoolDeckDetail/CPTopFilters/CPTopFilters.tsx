@@ -10,9 +10,9 @@ interface CPTopFiltersProps {
 const CPTopFilters: React.FC<CPTopFiltersProps> = ({ deckId }) => {
   return (
     <div className="flex flex-row justify-between flex-wrap gap-4">
+      <CPTypeFilters />
       <CPCostFilters />
       <CPAspectFilters deckId={deckId} />
-      <CPTypeFilters />
     </div>
   );
 };
