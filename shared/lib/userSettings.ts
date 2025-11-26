@@ -13,6 +13,11 @@ export interface UserSettings {
   deckPrices: boolean; // default: false
   priceSourceType: CardPriceSourceType; // default CardPriceSourceType.CARDMARKET
   collectionInfoInDecks: boolean;
+  // Card Pool Layout options
+  cpLayout_cardPreview: 'static' | 'hover';
+  cpLayout_imageSize: 'big' | 'small';
+  cpLayout_deckInfoPosition: 'top' | 'left';
+  cpLayout_catPosition: 'top' | 'left'; // Cost/Aspect/Type position
   // DeckImagePresets
   deckImage_showNoisyBackground: DeckImagePresets['showNoisyBackground'];
   deckImage_showcaseLeader: DeckImagePresets['showcaseLeader'];
@@ -29,6 +34,11 @@ export const userSettingsSchema = z.object({
   deckPrices: booleanPreprocessor.default(false),
   priceSourceType: z.enum(CardPriceSourceType).default(CardPriceSourceType.CARDMARKET),
   collectionInfoInDecks: booleanPreprocessor.default(false),
+  // Card Pool Layout options
+  cpLayout_cardPreview: z.union([z.literal('static'), z.literal('hover')]).default('static'),
+  cpLayout_imageSize: z.union([z.literal('big'), z.literal('small')]).default('big'),
+  cpLayout_deckInfoPosition: z.union([z.literal('top'), z.literal('left')]).default('top'),
+  cpLayout_catPosition: z.union([z.literal('top'), z.literal('left')]).default('top'),
   // DeckImagePresets
   deckImage_showNoisyBackground: booleanPreprocessor.default(true),
   deckImage_showcaseLeader: booleanPreprocessor.default(false),
