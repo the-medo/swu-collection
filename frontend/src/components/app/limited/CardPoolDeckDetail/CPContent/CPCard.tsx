@@ -13,17 +13,18 @@ import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/De
 export interface CPCardProps {
   item: ExpandedCardData;
   size?: 'w200' | 'w100';
+  showBadges?: boolean;
 }
 
-const CPCard: React.FC<CPCardProps> = ({ item, size = 'w200' }) => {
+const CPCard: React.FC<CPCardProps> = ({ item, size = 'w200', showBadges = true }) => {
   const { selectedCardIds, showCardsInDeck, showRemovedCards, showUnfilteredCards } =
     useCardPoolDeckDetailStore();
   const { setHoveredCardId, toggleSelectedCardId } = useCardPoolDeckDetailStoreActions();
 
   const selected = !!selectedCardIds[item.cardPoolNumber];
 
-  const showDeckBadge = showCardsInDeck && item.location === 'deck';
-  const showTrashBadge = showRemovedCards && item.location === 'trash';
+  const showDeckBadge = showBadges && showCardsInDeck && item.location === 'deck';
+  const showTrashBadge = showBadges && showRemovedCards && item.location === 'trash';
   const failedFilter = showUnfilteredCards && !item.filterSuccess;
   const { data: cardPreview } = useGetUserSetting('cpLayout_cardPreview');
 

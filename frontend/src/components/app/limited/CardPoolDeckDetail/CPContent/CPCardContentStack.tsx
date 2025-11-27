@@ -8,9 +8,10 @@ export interface CPCardContentStackProps {
   size?: 'w200' | 'w100';
   title?: string;
   showTitle?: boolean;
+  showBadges?: boolean;
 }
 
-const CPCardContentStack: React.FC<CPCardContentStackProps> = ({ items, size = 'w200', title, showTitle = false }) => {
+const CPCardContentStack: React.FC<CPCardContentStackProps> = ({ items, size = 'w200', title, showTitle = false, showBadges = true }) => {
   return (
     <div className="flex-none py-2">
       {showTitle && title && (
@@ -24,7 +25,7 @@ const CPCardContentStack: React.FC<CPCardContentStackProps> = ({ items, size = '
                 size === 'w200' ? ' -mt-[210px]' : ' -mt-[105px]'
               )}
             >
-              <CPCard item={item} size={size} />
+              <CPCard item={item} size={size} showBadges={showBadges} />
             </div>
           </li>
         ))}

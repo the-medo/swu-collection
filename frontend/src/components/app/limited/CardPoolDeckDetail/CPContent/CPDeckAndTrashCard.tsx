@@ -1,5 +1,6 @@
 import React from 'react';
 import { ExpandedCardData } from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
+import CPCardContentStack from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPCardContentStack.tsx';
 import {
   Accordion,
   AccordionContent,
@@ -24,11 +25,9 @@ const CPDeckAndTrashCard: React.FC<CPDeckAndTrashCardProps> = ({ deck, trash, cl
           <AccordionTrigger className="font-semibold">
             <h4 className="text-base md:text-lg">Final Deck ({deck?.length ?? 0})</h4>
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="max-h-[calc(100vh-320px)] overflow-y-auto flex justify-center">
             {deck && deck.length > 0 ? (
-              <pre className="text-xs whitespace-pre-wrap break-words">
-                {deck.map(c => `${c.cardId} (${c.location})`).join('\n')}
-              </pre>
+              <CPCardContentStack items={deck} size="w200" showTitle={false} showBadges={false} />
             ) : (
               <p className="text-xs opacity-80">
                 Deck is empty. Select cards in the pool and move them here!
@@ -36,17 +35,13 @@ const CPDeckAndTrashCard: React.FC<CPDeckAndTrashCardProps> = ({ deck, trash, cl
             )}
           </AccordionContent>
         </AccordionItem>
-
-        {/* Trash card pinned to bottom */}
         <AccordionItem value="trash">
           <AccordionTrigger className="font-semibold">
             <h4 className="text-base md:text-lg">Trash ({trash?.length ?? 0})</h4>
           </AccordionTrigger>
-          <AccordionContent className="mt-auto rounded-md border p-3 bg-red-50/70 border-red-300 dark:bg-red-950/30 dark:border-red-800">
+          <AccordionContent className="max-h-[calc(100vh-320px)] overflow-y-auto rounded-md border p-3 bg-red-50/70 border-red-300 dark:bg-red-950/30 dark:border-red-800 flex justify-center">
             {trash && trash.length > 0 ? (
-              <pre className="text-xs whitespace-pre-wrap break-words">
-                {trash?.map(c => `${c.cardId} (${c.location})`).join('\n') ?? ''}
-              </pre>
+              <CPCardContentStack items={trash} size="w200" showTitle={false} showBadges={false} />
             ) : (
               <p className="text-xs opacity-80">Trash is empty.</p>
             )}

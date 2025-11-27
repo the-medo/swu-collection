@@ -31,7 +31,23 @@ export const useUpdateCardPoolDeckCard = (id: string | undefined, deckId: string
       }
       return (await res.json()) as UpdateCardPoolDeckCardResponse;
     },
-    onSuccess: () => {
+    onSuccess: res => {
+      // Directly update the cache used by useGetCardPoolDeckCards
+      queryClient.setQueryData(['card-pool-deck-cards', id, deckId], (oldData: any) => {
+        if (!oldData || typeof oldData !== 'object') return oldData;
+        const next = { ...oldData } as Record<string, { location: CardLocation; cardId: string }>;
+
+        for (const num of res.data.cardPoolNumbers ?? []) {
+          const key = String(num);
+          if (next[key]) {
+            next[key] = { ...next[key], location: res.data.location };
+          }
+        }
+
+        return next;
+      });
+
+      // Invalidate other potentially affected queries
       void queryClient.invalidateQueries({ queryKey: ['card-pool-decks', id], exact: false });
       void queryClient.invalidateQueries({ queryKey: ['deck', deckId] });
     },
