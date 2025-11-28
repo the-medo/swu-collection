@@ -6,12 +6,16 @@ import {
   PanelTop,
   SquareStackIcon,
   RectangleVerticalIcon,
+  Grid2X2,
+  GalleryHorizontal,
 } from 'lucide-react';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
 import { Checkbox } from '@/components/ui/checkbox';
 
 const CPLayoutOptions: React.FC = () => {
+  const { data: boxLayout } = useGetUserSetting('cpLayout_boxLayout');
+  const { mutate: setBoxLayout } = useSetUserSetting('cpLayout_boxLayout');
   const { data: cardPreview } = useGetUserSetting('cpLayout_cardPreview');
   const { mutate: setCardPreview } = useSetUserSetting('cpLayout_cardPreview');
 
@@ -30,6 +34,27 @@ const CPLayoutOptions: React.FC = () => {
 
   return (
     <div className="space-y-2">
+      <CPIconOptionGroup
+        title="Box layout"
+        value={boxLayout}
+        defaultValue="grid"
+        onChange={v => setBoxLayout(v as 'grid' | 'row')}
+        options={[
+          {
+            value: 'grid',
+            tooltip: 'Grid',
+            ariaLabel: 'Grid',
+            icon: <Grid2X2 className="h-4 w-4" />,
+          },
+          {
+            value: 'row',
+            tooltip: 'Row',
+            ariaLabel: 'Row',
+            icon: <GalleryHorizontal className="h-4 w-4" />,
+          },
+        ]}
+      />
+
       <CPIconOptionGroup
         title="Card preview"
         value={cardPreview}

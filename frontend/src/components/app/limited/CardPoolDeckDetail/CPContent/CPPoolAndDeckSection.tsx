@@ -24,7 +24,7 @@ const CPPoolAndDeckSection: React.FC<CPPoolAndDeckSectionProps> = ({ deckId, poo
           'h-[calc(100vh-170px)]': !leadersAndBasesExpanded,
         })}
       >
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overflow-x-scroll w-[calc(100vw-740px)] min-w-[500px]">
           <CPCardContent pool={data?.pool} />
         </div>
         <CPSelectionAction poolId={poolId} deckId={deckId} />
