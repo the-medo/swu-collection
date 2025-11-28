@@ -27,7 +27,13 @@ const CPDeckAndTrashCard: React.FC<CPDeckAndTrashCardProps> = ({ deck, trash, cl
           </AccordionTrigger>
           <AccordionContent className="max-h-[calc(100vh-320px)] overflow-y-auto flex justify-center">
             {deck && deck.length > 0 ? (
-              <CPCardContentStack items={deck} size="w200" showTitle={false} showBadges={false} />
+              <CPCardContentStack
+                items={deck}
+                size="w200"
+                showTitle={false}
+                showBadges={false}
+                showMultiSelectActions={false}
+              />
             ) : (
               <p className="text-xs opacity-80">
                 Deck is empty. Select cards in the pool and move them here!
@@ -41,7 +47,13 @@ const CPDeckAndTrashCard: React.FC<CPDeckAndTrashCardProps> = ({ deck, trash, cl
           </AccordionTrigger>
           <AccordionContent className="max-h-[calc(100vh-320px)] overflow-y-auto rounded-md border p-3 bg-red-50/70 border-red-300 dark:bg-red-950/30 dark:border-red-800 flex justify-center">
             {trash && trash.length > 0 ? (
-              <CPCardContentStack items={trash} size="w200" showTitle={false} showBadges={false} />
+              <CPCardContentStack
+                items={trash}
+                size="w200"
+                showTitle={false}
+                showBadges={false}
+                showMultiSelectActions={false}
+              />
             ) : (
               <p className="text-xs opacity-80">Trash is empty.</p>
             )}

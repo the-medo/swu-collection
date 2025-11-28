@@ -90,6 +90,28 @@ const toggleSelectedCardId = (id: number) =>
     return { ...s, selectedCardIds: { ...s.selectedCardIds, [id]: true } };
   });
 
+// Select multiple card pool IDs at once
+const selectManyCardIds = (ids: number[]) =>
+  store.setState(s => {
+    if (!ids?.length) return s;
+    const next = { ...s.selectedCardIds } as Partial<Record<number, true>>;
+    for (const id of ids) {
+      if (typeof id === 'number') next[id] = true;
+    }
+    return { ...s, selectedCardIds: next };
+  });
+
+// Deselect multiple card pool IDs at once
+const deselectManyCardIds = (ids: number[]) =>
+  store.setState(s => {
+    if (!ids?.length) return s;
+    const next = { ...s.selectedCardIds } as Partial<Record<number, true>>;
+    for (const id of ids) {
+      if (typeof id === 'number' && next[id]) delete next[id];
+    }
+    return { ...s, selectedCardIds: next };
+  });
+
 const setShowCardsInDeck = (value: boolean) =>
   store.setState(s => ({ ...s, showCardsInDeck: value }));
 
@@ -218,6 +240,8 @@ export function useCardPoolDeckDetailStoreActions() {
     removeSelectedCardId,
     clearSelectedCardIds,
     toggleSelectedCardId,
+    selectManyCardIds,
+    deselectManyCardIds,
     setShowCardsInDeck,
     setShowRemovedCards,
     setShowUnfilteredCards,

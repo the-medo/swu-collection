@@ -2,6 +2,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils.ts';
 import { ExpandedCardData } from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
 import CPCard from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPCard.tsx';
+import CPMultiCardSelectActions from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPMultiCardSelectActions.tsx';
 
 export interface CPCardContentStackProps {
   items: ExpandedCardData[];
@@ -9,22 +10,26 @@ export interface CPCardContentStackProps {
   title?: string;
   showTitle?: boolean;
   showBadges?: boolean;
+  showMultiSelectActions?: boolean;
 }
 
-const CPCardContentStack: React.FC<CPCardContentStackProps> = ({ items, size = 'w200', title, showTitle = false, showBadges = true }) => {
+const CPCardContentStack: React.FC<CPCardContentStackProps> = ({
+  items,
+  size = 'w200',
+  title,
+  showTitle = false,
+  showBadges = true,
+  showMultiSelectActions = true,
+}) => {
   return (
     <div className="flex-none py-2">
-      {showTitle && title && (
-        <div className="text-xs font-medium px-1 pb-1 opacity-80">{title}</div>
+      {showMultiSelectActions && (
+        <CPMultiCardSelectActions cards={items} title={showTitle && title ? title : undefined} />
       )}
       <ul className={cn('flex flex-col pt-[210px]', size === 'w200' ? 'pt-[210px]' : 'pt-[105px]')}>
         {items.map(item => (
           <li key={`${item.cardPoolNumber}-${item.card.cardId}`} className="list-none">
-            <div
-              className={cn(
-                size === 'w200' ? ' -mt-[210px]' : ' -mt-[105px]'
-              )}
-            >
+            <div className={cn(size === 'w200' ? ' -mt-[210px]' : ' -mt-[105px]')}>
               <CPCard item={item} size={size} showBadges={showBadges} />
             </div>
           </li>
