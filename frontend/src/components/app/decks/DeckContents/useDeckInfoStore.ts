@@ -6,6 +6,8 @@ interface DeckInfoStore {
     | {
         format: number;
         owned: boolean;
+        editable: boolean;
+        cardPoolId?: string | null;
       }
     | undefined
   >;
@@ -17,12 +19,12 @@ const defaultState: DeckInfoStore = {
 
 const store = new Store<DeckInfoStore>(defaultState);
 
-const setDeckInfo = (deckId: string, format: number, owned: boolean) =>
+const setDeckInfo = (deckId: string, format: number, owned: boolean, cardPoolId?: string | null) =>
   store.setState(state => ({
     ...state,
     deckInfo: {
       ...state.deckInfo,
-      [deckId]: { format, owned },
+      [deckId]: { format, owned, editable: owned && !cardPoolId, cardPoolId },
     },
   }));
 
@@ -31,6 +33,8 @@ export function useDeckInfo(deckId: string) {
     useStore(store, state => state.deckInfo[deckId]) ?? {
       format: 1,
       owned: false,
+      editable: false,
+      cardPoolId: undefined,
     }
   );
 }

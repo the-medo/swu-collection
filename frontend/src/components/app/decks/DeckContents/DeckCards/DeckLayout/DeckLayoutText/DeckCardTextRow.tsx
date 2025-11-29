@@ -46,7 +46,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
 }) => {
   const navigate = useNavigate();
   const { isMobile } = useSidebar();
-  const { owned } = useDeckInfo(deckId);
+  const { editable } = useDeckInfo(deckId);
   const mutation = usePutDeckCard(deckId);
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
 
@@ -91,7 +91,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
               {deckCard.quantity - missingAmount}
             </span>
           )}
-          {owned ? (
+          {editable ? (
             <DebouncedInput
               type="number"
               onChange={quantityChangeHandler}
@@ -111,7 +111,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
           className={cn(
             'flex gap-1 font text-sm w-full items-center justify-between cursor-pointer',
             {
-              group: owned && !isMobile,
+              group: editable && !isMobile,
             },
           )}
           onClick={() => {
@@ -123,7 +123,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
         >
           <span
             className={cn('max-w-[220px] truncate ellipsis overflow-hidden whitespace-nowrap', {
-              'group-hover:hidden': owned,
+              'group-hover:hidden': editable,
               'text-xs': variant === 'compact',
             })}
           >
@@ -133,7 +133,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
             {displayDeckPrice && <DeckCardPriceBadge card={card} />}
             <div
               className={cn('flex gap-0 w-[50px] justify-end', {
-                'group-hover:hidden': owned,
+                'group-hover:hidden': editable,
               })}
             >
               {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="xSmall" /> : null}
@@ -141,7 +141,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
                 <AspectIcon key={`${a}${i}`} aspect={a} size="xSmall" />
               ))}
             </div>
-            {owned && (
+            {editable && (
               <div className="hidden group-hover:flex gap-8 items-center w-full">
                 <DeckCardBoardMoveButtons
                   deckId={deckId}
@@ -158,7 +158,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
           deckId={deckId}
           deckCard={deckCard}
           card={card}
-          owned={owned}
+          editable={editable}
           cardInBoards={cardInBoards}
           onQuantityChange={quantityChangeHandler}
         />

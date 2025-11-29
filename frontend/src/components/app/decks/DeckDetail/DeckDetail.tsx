@@ -33,7 +33,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder 
   const owned = (user?.id === deckUserId || (isAdmin && adminEdit)) ?? false;
 
   useEffect(() => {
-    setDeckInfo(deckId, format, owned);
+    setDeckInfo(deckId, format, owned, data?.deck.cardPoolId);
   }, [deckId, format, owned]);
 
   if (error?.status === 404) {

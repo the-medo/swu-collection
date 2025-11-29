@@ -11,7 +11,7 @@ import DeckCardActions from '@/components/app/decks/DeckContents/DeckCards/DeckC
 import { DeckCardQuantityChangeHandler } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 
 export interface DeckCardDropdownMenuProps extends DeckCardTextRowProps {
-  owned?: boolean;
+  editable?: boolean;
   onQuantityChange?: DeckCardQuantityChangeHandler;
 }
 

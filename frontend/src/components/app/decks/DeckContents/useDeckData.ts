@@ -18,6 +18,8 @@ import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { UserSettings } from '../../../../../../shared/lib/userSettings.ts';
 import { groupCardsBySet } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsBySet.ts';
 
+const emptyLeaderAndBaseCards = [undefined, undefined];
+
 /**
  * Hook to get all deck data including leader, base, cards, and user info
  */
@@ -28,7 +30,6 @@ export function useDeckData(
   const { data: deckInfo } = useGetDeck(deckId);
   const { data: cardList } = useCardList();
   const { data: deckCardsData } = useGetDeckCards(deckId);
-  const { data: cardListData } = useCardList();
 
   const deckCards = deckCardsData?.data ?? [];
 
@@ -41,6 +42,7 @@ export function useDeckData(
       name: deckInfo?.deck.name || '',
       author: deckInfo?.user.displayName || '',
       format: deckInfo?.deck.format || 1,
+      cardPoolId: deckInfo?.deck.cardPoolId,
     };
   }, [deckInfo, cardList]);
 
@@ -116,13 +118,10 @@ export function useDeckData(
   }, [cardList, deckCards, groupBy]);
 
   const [leaderCard, baseCard] = useMemo(() => {
-    if (!cardListData || !deckInfo?.deck.leaderCardId1 || !deckInfo?.deck.baseCardId)
-      return [undefined, undefined];
-    return [
-      cardListData.cards[deckInfo.deck.leaderCardId1],
-      cardListData.cards[deckInfo.deck.baseCardId],
-    ];
-  }, [deckInfo?.deck.leaderCardId1]);
+    if (!cardList || !deckInfo?.deck.leaderCardId1 || !deckInfo?.deck.baseCardId)
+      return emptyLeaderAndBaseCards;
+    return [cardList.cards[deckInfo.deck.leaderCardId1], cardList.cards[deckInfo.deck.baseCardId]];
+  }, [cardList, deckInfo?.deck.leaderCardId1]);
 
   return {
     deckCardsForLayout,
