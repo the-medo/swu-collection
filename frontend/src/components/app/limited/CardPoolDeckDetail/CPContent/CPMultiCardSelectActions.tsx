@@ -15,10 +15,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
+import { useUpdateCardPoolDeckCard } from '@/api/card-pools/useUpdateCardPoolDeckCard.ts';
 
 export interface CPMultiCardSelectActionsProps {
   cards: ExpandedCardData[];
   title?: string;
+  // When provided, shows special single-option actions for these sections
+  section?: 'deck' | 'trash';
+  // Needed for server mutations in special section mode
+  deckId?: string;
+  poolId?: string;
+  // Allow hiding inline select/deselect helpers (useful in headers)
+  hideInlineSelectDeselect?: boolean;
 }
 
 const poolPredicate = (c: ExpandedCardData) => c.location === 'pool';
@@ -26,9 +34,17 @@ const deckPredicate = (c: ExpandedCardData) => c.location === 'deck';
 const trashPredicate = (c: ExpandedCardData) => c.location === 'trash';
 const unfilteredPredicate = (c: ExpandedCardData) => !c.filterSuccess;
 
-const CPMultiCardSelectActions: React.FC<CPMultiCardSelectActionsProps> = ({ cards, title }) => {
+const CPMultiCardSelectActions: React.FC<CPMultiCardSelectActionsProps> = ({
+  cards,
+  title,
+  section,
+  deckId,
+  poolId,
+  hideInlineSelectDeselect,
+}) => {
   const { selectManyCardIds, deselectManyCardIds } = useCardPoolDeckDetailStoreActions();
   const { showCardsInDeck, showRemovedCards, showUnfilteredCards } = useCardPoolDeckDetailStore();
+  const mutation = useUpdateCardPoolDeckCard(poolId, deckId);
 
   const makeHandler = useCallback(
     (predicate: (c: ExpandedCardData) => boolean, action: 'select' | 'deselect') =>
@@ -43,6 +59,8 @@ const CPMultiCardSelectActions: React.FC<CPMultiCardSelectActionsProps> = ({ car
   );
 
   const selectDeselectButtons = useMemo(() => {
+    if (hideInlineSelectDeselect) return null;
+
     const inlineIds = cards
       .filter(
         card =>
@@ -81,7 +99,17 @@ const CPMultiCardSelectActions: React.FC<CPMultiCardSelectActionsProps> = ({ car
         </button>
       </div>
     );
-  }, [cards, showCardsInDeck, showRemovedCards]);
+  }, [cards, showCardsInDeck, showRemovedCards, hideInlineSelectDeselect]);
+
+  const moveAllToPool = useCallback(
+    async (e: Event) => {
+      if ('stopPropagation' in e && typeof e.stopPropagation === 'function') e.stopPropagation();
+      const ids = cards.map(c => c.cardPoolNumber);
+      if (!ids.length || !poolId || !deckId) return;
+      await mutation.mutateAsync({ cardPoolNumbers: ids, location: 'pool' });
+    },
+    [cards],
+  );
 
   return (
     <div className={'flex flex-col gap-2 pb-2'}>
@@ -105,61 +133,69 @@ const CPMultiCardSelectActions: React.FC<CPMultiCardSelectActionsProps> = ({ car
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" sideOffset={4} onClick={e => e.stopPropagation()}>
-            {/* Pool Section - always visible */}
-            <DropdownMenuLabel>Pool</DropdownMenuLabel>
-            <DropdownMenuItem onSelect={makeHandler(poolPredicate, 'select')}>
-              Select all
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={makeHandler(poolPredicate, 'deselect')}>
-              Deselect all
-            </DropdownMenuItem>
-
-            {(showCardsInDeck || showRemovedCards || showUnfilteredCards) && (
-              <DropdownMenuSeparator />
-            )}
-
-            {/* Deck Section */}
-            {showCardsInDeck && (
+            {section ? (
+              <DropdownMenuItem onSelect={moveAllToPool}>
+                Remove all cards from {section}
+              </DropdownMenuItem>
+            ) : (
               <>
-                <DropdownMenuLabel>Deck</DropdownMenuLabel>
-                <DropdownMenuItem onSelect={makeHandler(deckPredicate, 'select')}>
+                {/* Pool Section - always visible */}
+                <DropdownMenuLabel>Pool</DropdownMenuLabel>
+                <DropdownMenuItem onSelect={makeHandler(poolPredicate, 'select')}>
                   Select all
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={makeHandler(deckPredicate, 'deselect')}>
+                <DropdownMenuItem onSelect={makeHandler(poolPredicate, 'deselect')}>
                   Deselect all
                 </DropdownMenuItem>
-              </>
-            )}
 
-            {showCardsInDeck && (showRemovedCards || showUnfilteredCards) && (
-              <DropdownMenuSeparator />
-            )}
+                {(showCardsInDeck || showRemovedCards || showUnfilteredCards) && (
+                  <DropdownMenuSeparator />
+                )}
 
-            {/* Trash Section */}
-            {showRemovedCards && (
-              <>
-                <DropdownMenuLabel>Trash</DropdownMenuLabel>
-                <DropdownMenuItem onSelect={makeHandler(trashPredicate, 'select')}>
-                  Select all
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={makeHandler(trashPredicate, 'deselect')}>
-                  Deselect all
-                </DropdownMenuItem>
-              </>
-            )}
+                {/* Deck Section */}
+                {showCardsInDeck && (
+                  <>
+                    <DropdownMenuLabel>Deck</DropdownMenuLabel>
+                    <DropdownMenuItem onSelect={makeHandler(deckPredicate, 'select')}>
+                      Select all
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={makeHandler(deckPredicate, 'deselect')}>
+                      Deselect all
+                    </DropdownMenuItem>
+                  </>
+                )}
 
-            {showRemovedCards && showUnfilteredCards && <DropdownMenuSeparator />}
+                {showCardsInDeck && (showRemovedCards || showUnfilteredCards) && (
+                  <DropdownMenuSeparator />
+                )}
 
-            {/* Unfiltered Section */}
-            {showUnfilteredCards && (
-              <>
-                <DropdownMenuLabel>Unfiltered</DropdownMenuLabel>
-                <DropdownMenuItem onSelect={makeHandler(unfilteredPredicate, 'select')}>
-                  Select all
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={makeHandler(unfilteredPredicate, 'deselect')}>
-                  Deselect all
-                </DropdownMenuItem>
+                {/* Trash Section */}
+                {showRemovedCards && (
+                  <>
+                    <DropdownMenuLabel>Trash</DropdownMenuLabel>
+                    <DropdownMenuItem onSelect={makeHandler(trashPredicate, 'select')}>
+                      Select all
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={makeHandler(trashPredicate, 'deselect')}>
+                      Deselect all
+                    </DropdownMenuItem>
+                  </>
+                )}
+
+                {showRemovedCards && showUnfilteredCards && <DropdownMenuSeparator />}
+
+                {/* Unfiltered Section */}
+                {showUnfilteredCards && (
+                  <>
+                    <DropdownMenuLabel>Unfiltered</DropdownMenuLabel>
+                    <DropdownMenuItem onSelect={makeHandler(unfilteredPredicate, 'select')}>
+                      Select all
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={makeHandler(unfilteredPredicate, 'deselect')}>
+                      Deselect all
+                    </DropdownMenuItem>
+                  </>
+                )}
               </>
             )}
           </DropdownMenuContent>

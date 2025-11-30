@@ -43,7 +43,7 @@ const CPPoolAndDeckSection: React.FC<CPPoolAndDeckSectionProps> = ({ deckId, poo
         <CPSelectionAction poolId={poolId} deckId={deckId} />
       </div>
       <div className={cn('min-w-[300px] overflow-y-auto')} style={heightStyle}>
-        <CPDeckAndTrashCard deck={data?.deck} trash={data?.trash} />
+        <CPDeckAndTrashCard deck={data?.deck} trash={data?.trash} poolId={poolId} deckId={deckId} />
       </div>
     </div>
   );
