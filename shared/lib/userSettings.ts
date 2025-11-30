@@ -40,7 +40,6 @@ export const userSettingsSchema = z.object({
   cpLayout_boxLayout: z.union([z.literal('grid'), z.literal('row')]).default('grid'),
   cpLayout_cardPreview: z.union([z.literal('static'), z.literal('hover')]).default('static'),
   cpLayout_imageSize: z.union([z.literal('big'), z.literal('small')]).default('big'),
-  cpLayout_deckInfoPosition: z.union([z.literal('top'), z.literal('left')]).default('top'),
   cpLayout_catPosition: z.union([z.literal('top'), z.literal('left')]).default('top'),
   cpLayout_displayBoxTitles: booleanPreprocessor.default(true),
   cpLayout_displayStackTitles: booleanPreprocessor.default(true),

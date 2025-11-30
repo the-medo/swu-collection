@@ -12,25 +12,42 @@ export interface CPLeftFiltersAndPreviewProps {
 
 const CPLeftFiltersAndPreview: React.FC<CPLeftFiltersAndPreviewProps> = ({ deckId }) => {
   const { data: cardPreview } = useGetUserSetting('cpLayout_cardPreview');
-  const { data: deckInfoPosition } = useGetUserSetting('cpLayout_deckInfoPosition');
-  const { leadersAndBasesExpanded } = useCardPoolDeckDetailStore();
+  const { leadersAndBasesExpanded, filtersExpanded } = useCardPoolDeckDetailStore();
 
   return (
     <div
-      className={cn(' min-w-[350px] max-w-[350px] flex flex-col gap-2 overflow-y-auto', {
-        'h-[calc(100vh-170px)]': leadersAndBasesExpanded,
-        'h-[calc(100vh-120px)]': !leadersAndBasesExpanded,
+      className={cn('overflow-hidden w-full md:border-r max-md:border-b flex flex-col gap-2', {
+        'md:min-w-[50px] md:max-w-[50px] md:-mt-[10px] md:-ml-[1px]': !filtersExpanded,
+        'min-w-[350px] max-w-[350px]': filtersExpanded,
+        'h-[calc(100vh-155px)]': leadersAndBasesExpanded,
+        'h-[calc(100vh-50px)]': !leadersAndBasesExpanded,
       })}
     >
-      {deckInfoPosition === 'left' && !leadersAndBasesExpanded && (
-        <div className={`rounded-lg border border-border bg-card p-3 py-2 text-xs`}>
-          <CPLeaderAndBaseCollapsed deckId={deckId} />
+      {!filtersExpanded && (
+        <div
+          className={cn(
+            'flex transition-all duration-300 justify-between items-center p-2 md:-rotate-90 md:origin-bottom-left md:w-[300px] md:translate-x-[43px] md:translate-y-[130px]',
+          )}
+        >
+          <div className="text-2xl font-semibold tracking-tight cursor-pointer flex items-center gap-2">
+            Filters & Layout
+          </div>
         </div>
       )}
-      {cardPreview === 'static' && <CardPreview />}
-      <div className={`rounded-lg border border-border bg-card p-3 py-2 text-xs`}>
-        <CPLeftFilters deckId={deckId} />
-      </div>
+
+      {filtersExpanded && (
+        <div className="flex-1 overflow-y-auto pr-2">
+          {!leadersAndBasesExpanded && (
+            <div className={`rounded-lg border border-border bg-card p-3 py-2 text-xs mb-2`}>
+              <CPLeaderAndBaseCollapsed deckId={deckId} />
+            </div>
+          )}
+          {cardPreview === 'static' && <CardPreview />}
+          <div className={`rounded-lg border border-border bg-card p-3 py-2 text-xs`}>
+            <CPLeftFilters deckId={deckId} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

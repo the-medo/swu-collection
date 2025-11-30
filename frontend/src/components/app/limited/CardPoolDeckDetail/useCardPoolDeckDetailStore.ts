@@ -9,6 +9,8 @@ export type CPFilterAspects = 'showOnlyLeaderAndBaseAspects' | 'all' | SwuAspect
 export interface CardPoolDeckDetailStore {
   // UI state
   leadersAndBasesExpanded: boolean;
+  // Left filters column expand/collapse
+  filtersExpanded: boolean;
   selectedLeaderId: string;
   selectedBaseId: string;
   hoveredCardId: string;
@@ -33,6 +35,7 @@ export interface CardPoolDeckDetailStore {
 
 const defaultState: CardPoolDeckDetailStore = {
   leadersAndBasesExpanded: false,
+  filtersExpanded: true,
   selectedLeaderId: '',
   selectedBaseId: '',
   hoveredCardId: '',
@@ -58,6 +61,9 @@ const store = new Store<CardPoolDeckDetailStore>(defaultState);
 // Actions
 const setLeadersAndBasesExpanded = (expanded: boolean) =>
   store.setState(state => ({ ...state, leadersAndBasesExpanded: expanded }));
+
+const setFiltersExpanded = (expanded: boolean) =>
+  store.setState(state => ({ ...state, filtersExpanded: expanded }));
 
 const setInitialized = (value: boolean) => store.setState(s => ({ ...s, initialized: value }));
 
@@ -171,6 +177,7 @@ const resetAll = () => store.setState(() => ({ ...defaultState }));
 // Hook to consume state
 export function useCardPoolDeckDetailStore() {
   const leadersAndBasesExpanded = useStore(store, s => s.leadersAndBasesExpanded);
+  const filtersExpanded = useStore(store, s => s.filtersExpanded);
   const selectedLeaderId = useStore(store, s => s.selectedLeaderId);
   const selectedBaseId = useStore(store, s => s.selectedBaseId);
   const hoveredCardId = useStore(store, s => s.hoveredCardId);
@@ -204,6 +211,7 @@ export function useCardPoolDeckDetailStore() {
 
   return {
     leadersAndBasesExpanded,
+    filtersExpanded,
     selectedLeaderId,
     selectedBaseId,
     hoveredCardId,
@@ -232,6 +240,7 @@ export function useCardPoolDeckDetailStore() {
 export function useCardPoolDeckDetailStoreActions() {
   return {
     setLeadersAndBasesExpanded,
+    setFiltersExpanded,
     setInitialized,
     setSelectedLeaderId,
     setSelectedBaseId,

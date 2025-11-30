@@ -15,6 +15,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useCPStoreInitializator } from '@/components/app/limited/CardPoolDeckDetail/useCPStoreInitializator.ts';
 import { useCardPoolDeckDetailStore } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 import { cn } from '@/lib/utils.ts';
+import { CPExpandButton } from '@/components/app/limited/CardPoolDeckDetail/CPLeftFiltersAndPreview/CPExpandButton.tsx';
 
 export interface DeckDetailProps {
   deckId: string | undefined;
@@ -44,14 +45,17 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
   return (
     <>
       <Helmet title={`Deck ${deckId} | SWUBase`} />
-      <div className=" max-h-[calc(100vh)] overflow-y-auto">
+      <div className=" max-h-[calc(100vh)] overflow-y-auto w-full">
         <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
           <LoadingTitle
             mainTitle={
               <div className="flex items-center gap-2 w-full">
+                <div className="border-0 border-r pr-2 border">
+                  <CPExpandButton />
+                </div>
                 {poolId && (
                   <Link to="/limited/pool/$poolId/detail" params={{ poolId }}>
-                    <Button variant="ghost" size="iconSmall" aria-label="Back to pool">
+                    <Button variant="ghost" size="sm" aria-label="Back to pool">
                       <ArrowLeft />
                     </Button>
                   </Link>
@@ -67,13 +71,13 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
           <CPLeaderAndBase deckId={deckId} poolId={poolId} className="mb-2" />
         )}
         <div
-          className={cn('flex flex-row gap-2 overflow-y-auto', {
-            'h-[calc(100vh-170px)]': leadersAndBasesExpanded,
-            'h-[calc(100vh-120px)]': !leadersAndBasesExpanded,
+          className={cn('flex flex-row gap-2', {
+            'h-[calc(100vh-155px)]': leadersAndBasesExpanded,
+            'h-[calc(100vh-50px)]': !leadersAndBasesExpanded,
           })}
         >
           <CPLeftFiltersAndPreview deckId={deckId} />
-          <div className=" flex flex-col gap-2 w-full">
+          <div className=" flex flex-1 flex-col gap-2">
             {(catPosition ?? 'top') === 'top' && <CPTopFilters deckId={deckId} />}
             <CPPoolAndDeckSection deckId={deckId} poolId={poolId} />
           </div>

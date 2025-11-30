@@ -5,36 +5,44 @@ import CPDeckAndTrashCard from '@/components/app/limited/CardPoolDeckDetail/CPCo
 import CPSelectionAction from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPSelectionAction.tsx';
 import { useCardPoolDeckDetailStore } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 import { cn } from '@/lib/utils.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import type { UserSettings } from '../../../../../../../shared/lib/userSettings.ts';
 
 export interface CPPoolAndDeckSectionProps {
   deckId?: string;
   poolId?: string;
 }
 
+const getHeightStyle = (
+  leadersAndBasesExpanded: boolean,
+  catPosition: UserSettings['cpLayout_catPosition'] = 'top',
+) => {
+  let margin = 50;
+  if (catPosition === 'top') {
+    margin += 45;
+  }
+  if (leadersAndBasesExpanded) {
+    margin += 100;
+  }
+  return { height: `calc(100vh - ${margin}px)` };
+};
+
 const CPPoolAndDeckSection: React.FC<CPPoolAndDeckSectionProps> = ({ deckId, poolId }) => {
   const data = useCPDeckContent(deckId, poolId);
-
   const { leadersAndBasesExpanded } = useCardPoolDeckDetailStore();
+  const { data: catPosition } = useGetUserSetting('cpLayout_catPosition');
+
+  const heightStyle = getHeightStyle(leadersAndBasesExpanded, catPosition);
 
   return (
-    <div className="flex flex-1 flex-row">
-      <div
-        className={cn('flex flex-1 flex-col gap-2', {
-          'h-[calc(100vh-220px)]': leadersAndBasesExpanded,
-          'h-[calc(100vh-170px)]': !leadersAndBasesExpanded,
-        })}
-      >
-        <div className="flex-1 overflow-y-auto overflow-x-scroll w-[calc(100vw-740px)] min-w-[500px]">
+    <div className="gap-2 grid grid-cols-[minmax(300px,1fr)_300px]">
+      <div className={cn('flex flex-1 flex-col gap-2 overflow-x-scroll')} style={heightStyle}>
+        <div className="flex-1 overflow-y-auto ">
           <CPCardContent pool={data?.pool} />
         </div>
         <CPSelectionAction poolId={poolId} deckId={deckId} />
       </div>
-      <div
-        className={cn('min-w-[250px] overflow-y-auto', {
-          'h-[calc(100vh-220px)]': leadersAndBasesExpanded,
-          'h-[calc(100vh-170px)]': !leadersAndBasesExpanded,
-        })}
-      >
+      <div className={cn('min-w-[300px] overflow-y-auto')} style={heightStyle}>
         <CPDeckAndTrashCard deck={data?.deck} trash={data?.trash} />
       </div>
     </div>
