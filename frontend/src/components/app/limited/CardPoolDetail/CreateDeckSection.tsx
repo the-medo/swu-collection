@@ -6,6 +6,8 @@ import VisibilitySelector from '@/components/app/global/VisibilitySelector/Visib
 import { Visibility } from '../../../../../../shared/types/visibility.ts';
 import { useCreateCardPoolDeck } from '@/api/card-pools/useCreateCardPoolDeck.ts';
 import { cn } from '@/lib/utils.ts';
+import { useNavigate } from '@tanstack/react-router';
+import { useCardPoolDeckDetailStoreActions } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 
 export interface CreateDeckSectionProps {
   pool?: CardPool;
@@ -14,6 +16,8 @@ export interface CreateDeckSectionProps {
 }
 
 const CreateDeckSection: React.FC<CreateDeckSectionProps> = ({ pool, className, onCreated }) => {
+  const navigate = useNavigate();
+  const { resetAll } = useCardPoolDeckDetailStoreActions();
   const [name, setName] = React.useState<string>('');
   const [visibility, setVisibility] = React.useState<Visibility>(Visibility.Unlisted);
 
@@ -34,10 +38,12 @@ const CreateDeckSection: React.FC<CreateDeckSectionProps> = ({ pool, className, 
     createMutation.mutate(
       { name: name.trim(), visibility },
       {
-        onSuccess: () => {
+        onSuccess: data => {
           // Reset name to default to allow quick subsequent creations
           setName(defaultName);
           onCreated?.();
+          resetAll();
+          navigate({ to: `/limited/deck/$deckId`, params: { deckId: data?.data.deck.id } });
         },
       },
     );
