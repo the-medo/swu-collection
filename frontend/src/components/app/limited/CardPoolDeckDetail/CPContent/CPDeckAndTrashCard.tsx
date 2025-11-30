@@ -7,12 +7,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { Eye, EyeOff } from 'lucide-react';
-import {
-  useCardPoolDeckDetailStore,
-  useCardPoolDeckDetailStoreActions,
-} from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 
 export interface CPDeckAndTrashCardProps {
   deck?: ExpandedCardData[];
@@ -21,8 +15,6 @@ export interface CPDeckAndTrashCardProps {
 }
 
 const CPDeckAndTrashCard: React.FC<CPDeckAndTrashCardProps> = ({ deck, trash, className }) => {
-  const { deckView } = useCardPoolDeckDetailStore();
-  const { toggleDeckView } = useCardPoolDeckDetailStoreActions();
   return (
     <div
       className={`h-full w-[300px] rounded-lg border border-border bg-card p-3 text-xs opacity-80 ${className ?? ''}`}
@@ -33,19 +25,6 @@ const CPDeckAndTrashCard: React.FC<CPDeckAndTrashCardProps> = ({ deck, trash, cl
           <AccordionTrigger className="font-semibold">
             <div className="flex flex-1 items-center justify-between gap-2">
               <h4 className="text-base mb-0! md:text-lg">Final Deck ({deck?.length ?? 0})</h4>
-              <Button
-                type="button"
-                variant="ghost"
-                size="iconSmall"
-                aria-label="Toggle deck view"
-                onClick={e => {
-                  e.stopPropagation();
-                  toggleDeckView();
-                }}
-                title={deckView ? 'Exit deck viewer' : 'Open deck viewer'}
-              >
-                {deckView ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
             </div>
           </AccordionTrigger>
           <AccordionContent className="max-h-[calc(100vh-320px)] overflow-y-auto flex justify-center">
@@ -66,7 +45,7 @@ const CPDeckAndTrashCard: React.FC<CPDeckAndTrashCardProps> = ({ deck, trash, cl
         </AccordionItem>
         <AccordionItem value="trash">
           <AccordionTrigger className="font-semibold">
-            <h4 className="text-base md:text-lg">Trash ({trash?.length ?? 0})</h4>
+            <h4 className="text-base mb-0! md:text-lg">Trash ({trash?.length ?? 0})</h4>
           </AccordionTrigger>
           <AccordionContent className="max-h-[calc(100vh-320px)] overflow-y-auto rounded-md border p-3 bg-red-50/70 border-red-300 dark:bg-red-950/30 dark:border-red-800 flex justify-center">
             {trash && trash.length > 0 ? (

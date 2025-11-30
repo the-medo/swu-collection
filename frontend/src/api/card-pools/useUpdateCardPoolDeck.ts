@@ -12,7 +12,10 @@ export interface UpdateCardPoolDeckResponse {
   data: { deck: Deck };
 }
 
-export const useUpdateCardPoolDeck = (id: string | undefined, deckId: string | undefined) => {
+export const useUpdateCardPoolDeck = (
+  id: string | undefined | null,
+  deckId: string | undefined,
+) => {
   const queryClient = useQueryClient();
 
   return useMutation<UpdateCardPoolDeckResponse, Error, UpdateCardPoolDeckBody>({

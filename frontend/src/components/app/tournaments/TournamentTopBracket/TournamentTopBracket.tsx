@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Link } from '@tanstack/react-router';
-import { PieChart } from 'lucide-react';
 import {
   TournamentDeckResponse,
   useGetTournamentDecks,

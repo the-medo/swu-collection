@@ -1,7 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 
-export const useDeleteCardPoolDeck = (id: string | undefined, deckId: string | undefined) => {
+export const useDeleteCardPoolDeck = (
+  id: string | undefined | null,
+  deckId: string | undefined,
+) => {
   const queryClient = useQueryClient();
 
   return useMutation<boolean, Error, void>({
@@ -10,7 +13,7 @@ export const useDeleteCardPoolDeck = (id: string | undefined, deckId: string | u
       const res = await api['card-pools'][':id'].decks[':deckId'].$delete({
         param: { id, deckId },
       });
-      if (!res.ok && res.status !== 204) {
+      if (!res.ok) {
         throw new Error('Failed to remove deck from card pool');
       }
       return true;

@@ -11,7 +11,7 @@ import CPTopFilters from '@/components/app/limited/CardPoolDeckDetail/CPTopFilte
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Eye, X } from 'lucide-react';
 import { useCPStoreInitializator } from '@/components/app/limited/CardPoolDeckDetail/useCPStoreInitializator.ts';
 import {
   useCardPoolDeckDetailStore,
@@ -20,6 +20,11 @@ import {
 import { cn } from '@/lib/utils.ts';
 import { CPExpandButton } from '@/components/app/limited/CardPoolDeckDetail/CPLeftFiltersAndPreview/CPExpandButton.tsx';
 import DeckViewer from '@/components/app/tournaments/TournamentTopBracket/components/DeckViewer.tsx';
+import { useUser } from '@/hooks/useUser';
+import EditDeckDialog from '@/components/app/dialogs/EditDeckDialog';
+import DeleteDeckDialog from '@/components/app/dialogs/DeleteDeckDialog';
+import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
+import { useSetDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 
 export interface DeckDetailProps {
   deckId: string | undefined;
@@ -46,6 +51,8 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
   const { leadersAndBasesExpanded, deckView } = useCardPoolDeckDetailStore();
   const { setDeckView } = useCardPoolDeckDetailStoreActions();
   const { data: catPosition } = useGetUserSetting('cpLayout_catPosition');
+  const user = useUser();
+  const { owned } = useSetDeckInfo(deckId ?? '', false);
 
   return (
     <>
@@ -70,24 +77,36 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
             }
             loading={loading}
           />
+          {user && (
+            <div className="flex flex-row gap-2 items-center">
+              {owned && deckData?.deck && (
+                <>
+                  {deckPrivacyRenderer(deckData?.deck.public)}
+                  <EditDeckDialog deck={deckData?.deck} trigger={<Button>Edit deck</Button>} />
+                  <DeleteDeckDialog
+                    deck={deckData?.deck}
+                    trigger={<Button variant="destructive">Delete deck</Button>}
+                  />
+                </>
+              )}
+              <Button variant="outline" onClick={() => setDeckView(!deckView)}>
+                {deckView ? <X /> : <Eye />}
+              </Button>
+            </div>
+          )}
         </div>
 
         {leadersAndBasesExpanded && (
           <CPLeaderAndBase deckId={deckId} poolId={poolId} className="mb-2" />
         )}
         <div
-          className={cn('flex flex-row gap-2', {
-            'h-[calc(100vh-155px)]': leadersAndBasesExpanded,
-            'h-[calc(100vh-50px)]': !leadersAndBasesExpanded,
+          className={cn('flex flex-row gap-2 pt-2', {
+            'h-[calc(100vh-165px)]': leadersAndBasesExpanded,
+            'h-[calc(100vh-60px)]': !leadersAndBasesExpanded,
           })}
         >
           {deckView && deckId ? (
-            <DeckViewer
-              selectedDeckId={deckId}
-              setSelectedDeckId={_id => setDeckView(false)}
-              shiftTop={true}
-              buttonRow={true}
-            />
+            <DeckViewer selectedDeckId={deckId} setSelectedDeckId={_id => setDeckView(false)} />
           ) : (
             <>
               <CPLeftFiltersAndPreview deckId={deckId} />

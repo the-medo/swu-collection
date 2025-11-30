@@ -8,25 +8,13 @@ import { cn } from '@/lib/utils.ts';
 interface DeckViewerProps {
   selectedDeckId: string;
   setSelectedDeckId: (deckId: string | undefined) => void;
-  buttonRow?: boolean;
-  shiftTop?: boolean;
 }
 
-const DeckViewer: React.FC<DeckViewerProps> = ({
-  selectedDeckId,
-  setSelectedDeckId,
-  buttonRow,
-  shiftTop,
-}) => {
+const DeckViewer: React.FC<DeckViewerProps> = ({ selectedDeckId, setSelectedDeckId }) => {
   useSetDeckInfo(selectedDeckId, false);
 
   return (
-    <div
-      className={cn('flex-1 mt-8 lg:mt-0 relative', {
-        '-mt-10!': shiftTop,
-        'pt-10': buttonRow,
-      })}
-    >
+    <div className={cn('flex-1 mt-8 lg:mt-0 relative')}>
       <Button
         variant="outline"
         size="iconSmall"

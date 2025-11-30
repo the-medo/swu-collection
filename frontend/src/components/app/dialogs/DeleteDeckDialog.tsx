@@ -11,6 +11,7 @@ import { Deck } from '../../../../../types/Deck.ts';
 import { useDeleteDeck } from '@/api/decks/useDeleteDeck.ts';
 import { Label } from '@/components/ui/label.tsx';
 import { useNavigate } from '@tanstack/react-router';
+import { useDeleteCardPoolDeck } from '@/api/card-pools/useDeleteCardPoolDeck.ts';
 
 type DeleteDeckDialogProps = Pick<DialogProps, 'trigger'> & {
   deck: Deck;
@@ -22,6 +23,7 @@ const DeleteDeckDialog: React.FC<DeleteDeckDialogProps> = ({ trigger, deck }) =>
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const deleteDeckMutation = useDeleteDeck();
+  const deleteCardPoolDeckMutation = useDeleteCardPoolDeck(deck.cardPoolId, deck.id);
 
   const form = useForm({
     defaultValues: {
@@ -29,15 +31,25 @@ const DeleteDeckDialog: React.FC<DeleteDeckDialogProps> = ({ trigger, deck }) =>
     },
     onSubmit: async ({ value }) => {
       if (value.confirmationText === 'DELETE') {
-        deleteDeckMutation.mutate(deck.id, {
-          onSuccess: () => {
-            toast({
-              title: `Deck deleted`,
-            });
-            setOpen(false);
-            navigate({ to: `/decks/your` });
-          },
-        });
+        if (deck.cardPoolId) {
+          deleteCardPoolDeckMutation.mutate(undefined, {
+            onSuccess: () => {
+              toast({ title: `Deck deleted` });
+              setOpen(false);
+              navigate({ to: `/decks/your` });
+            },
+          });
+        } else {
+          deleteDeckMutation.mutate(deck.id, {
+            onSuccess: () => {
+              toast({
+                title: `Deck deleted`,
+              });
+              setOpen(false);
+              navigate({ to: `/decks/your` });
+            },
+          });
+        }
       } else {
         toast({
           variant: 'destructive',
