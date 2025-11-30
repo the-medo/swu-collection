@@ -11,6 +11,7 @@ export interface CPCardContentStackProps {
   showTitle?: boolean;
   showBadges?: boolean;
   showMultiSelectActions?: boolean;
+  disabled?: boolean;
 }
 
 const CPCardContentStack: React.FC<CPCardContentStackProps> = ({
@@ -20,17 +21,18 @@ const CPCardContentStack: React.FC<CPCardContentStackProps> = ({
   showTitle = false,
   showBadges = true,
   showMultiSelectActions = true,
+  disabled = false,
 }) => {
   return (
     <div className="flex-none py-2">
-      {showMultiSelectActions && (
+      {showMultiSelectActions && !disabled && (
         <CPMultiCardSelectActions cards={items} title={showTitle && title ? title : undefined} />
       )}
       <ul className={cn('flex flex-col pt-[210px]', size === 'w200' ? 'pt-[210px]' : 'pt-[105px]')}>
         {items.map(item => (
           <li key={`${item.cardPoolNumber}-${item.card.cardId}`} className="list-none">
             <div className={cn(size === 'w200' ? ' -mt-[210px]' : ' -mt-[105px]')}>
-              <CPCard item={item} size={size} showBadges={showBadges} />
+              <CPCard item={item} size={size} showBadges={showBadges} disabled={disabled} />
             </div>
           </li>
         ))}

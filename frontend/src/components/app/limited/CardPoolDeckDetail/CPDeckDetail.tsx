@@ -101,7 +101,7 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
         )}
         <div
           className={cn('flex flex-row gap-2 pt-2', {
-            'h-[calc(100vh-165px)]': leadersAndBasesExpanded,
+            'h-[calc(100vh-145px)]': leadersAndBasesExpanded,
             'h-[calc(100vh-60px)]': !leadersAndBasesExpanded,
           })}
         >

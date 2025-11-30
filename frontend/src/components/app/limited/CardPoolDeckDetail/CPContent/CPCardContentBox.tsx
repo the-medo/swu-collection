@@ -7,9 +7,10 @@ import CPMultiCardSelectActions from '@/components/app/limited/CardPoolDeckDetai
 export interface CPCardContentBoxProps {
   group: CardGroup;
   className?: string;
+  disabled?: boolean;
 }
 
-const CPCardContentBox: React.FC<CPCardContentBoxProps> = ({ group, className }) => {
+const CPCardContentBox: React.FC<CPCardContentBoxProps> = ({ group, className, disabled = false }) => {
   const { data: imageSize } = useGetUserSetting('cpLayout_imageSize');
   const { data: displayBoxTitles } = useGetUserSetting('cpLayout_displayBoxTitles');
   const { data: displayStackTitles } = useGetUserSetting('cpLayout_displayStackTitles');
@@ -26,7 +27,7 @@ const CPCardContentBox: React.FC<CPCardContentBoxProps> = ({ group, className })
       {/* Header with optional title and always-visible multi-select actions */}
       <div className="flex items-center justify-between px-1 gap-2 border-b border-border pb-1 mb-2">
         {displayBoxTitles ? <div className="font-semibold">{group.title}</div> : null}
-        <CPMultiCardSelectActions cards={cards} />
+        {!disabled ? <CPMultiCardSelectActions cards={cards} /> : null}
       </div>
       <div className="flex w-full overflow-x-auto gap-2">
         {nonEmptyStacks.map(stack => (
@@ -36,6 +37,7 @@ const CPCardContentBox: React.FC<CPCardContentBoxProps> = ({ group, className })
             size={imageSize === 'big' ? 'w200' : 'w100'}
             title={stack.title}
             showTitle={!!displayStackTitles}
+            disabled={disabled}
           />
         ))}
       </div>

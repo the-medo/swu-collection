@@ -14,6 +14,8 @@ import { usePutDeck } from '@/api/decks/usePutDeck.ts';
 import { useDeckLeaderAndBaseCards } from '@/hooks/useDeckLeaderAndBaseCards.ts';
 import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import { useUser } from '@/hooks/useUser.ts';
+import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 
 export interface CPLeaderAndBaseProps {
   deckId?: string; // reserved for future use
@@ -22,6 +24,10 @@ export interface CPLeaderAndBaseProps {
 }
 
 const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, className }) => {
+  const user = useUser();
+  const { data: deckData } = useGetDeck(deckId);
+  const owned = user && user?.id === deckData?.user?.id;
+
   const { data: poolData, isFetching: isPoolFetching } = useGetCardPool(poolId);
   const { data: cardListData, isFetching: isCardListFetching } = useCardList();
   const { deckLeaderId, deckBaseId, isDeckFetching } = useDeckLeaderAndBaseCards(deckId);
@@ -148,13 +154,15 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
           </div>
         </div>
 
-        <div className="flex items-center justify-end mb-2">
-          {!isDeckFetching && hasChanges && (
-            <Button size="lg" onClick={onSave} disabled={putDeckMutation.isPending}>
-              {putDeckMutation.isPending ? 'Saving...' : 'Save changes'}
-            </Button>
-          )}
-        </div>
+        {owned && (
+          <div className="flex items-center justify-end mb-2">
+            {!isDeckFetching && hasChanges && (
+              <Button size="lg" onClick={onSave} disabled={putDeckMutation.isPending}>
+                {putDeckMutation.isPending ? 'Saving...' : 'Save changes'}
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

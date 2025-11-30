@@ -28,7 +28,7 @@ const CPLeaderAndBaseCollapsed: React.FC<CPLeaderAndBaseCollapsedProps> = ({
             Change
           </Button>
           <div className="flex items-center gap-2">
-            {leader && (
+            {leader ? (
               <DeckCardHoverImage
                 card={leader.card}
                 size="w300"
@@ -44,8 +44,10 @@ const CPLeaderAndBaseCollapsed: React.FC<CPLeaderAndBaseCollapsedProps> = ({
                   />
                 </div>
               </DeckCardHoverImage>
+            ) : (
+              <CardImage forceHorizontal={true} size="w100" />
             )}
-            {base && (
+            {base ? (
               <DeckCardHoverImage
                 card={base.card}
                 size="w300"
@@ -61,6 +63,8 @@ const CPLeaderAndBaseCollapsed: React.FC<CPLeaderAndBaseCollapsedProps> = ({
                   />
                 </div>
               </DeckCardHoverImage>
+            ) : (
+              <CardImage forceHorizontal={true} size="w100" />
             )}
           </div>
         </>

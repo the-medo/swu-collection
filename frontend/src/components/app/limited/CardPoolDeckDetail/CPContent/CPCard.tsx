@@ -14,9 +14,10 @@ export interface CPCardProps {
   item: ExpandedCardData;
   size?: 'w200' | 'w100';
   showBadges?: boolean;
+  disabled?: boolean;
 }
 
-const CPCard: React.FC<CPCardProps> = ({ item, size = 'w200', showBadges = true }) => {
+const CPCard: React.FC<CPCardProps> = ({ item, size = 'w200', showBadges = true, disabled = false }) => {
   const { selectedCardIds, showCardsInDeck, showRemovedCards, showUnfilteredCards } =
     useCardPoolDeckDetailStore();
   const { setHoveredCardId, toggleSelectedCardId } = useCardPoolDeckDetailStoreActions();
@@ -31,9 +32,10 @@ const CPCard: React.FC<CPCardProps> = ({ item, size = 'w200', showBadges = true 
   const cardNode = (
     <div
       onMouseEnter={() => setHoveredCardId(item.cardId)}
-      onClick={() => toggleSelectedCardId(item.cardPoolNumber)}
+      onClick={disabled ? undefined : () => toggleSelectedCardId(item.cardPoolNumber)}
       className={cn(
-        'relative inline-block align-middle mr-px rounded-[4.75%/3.5%] isolate group cursor-pointer bg-background',
+        'relative inline-block align-middle mr-px rounded-[4.75%/3.5%] isolate group bg-background',
+        disabled ? 'cursor-default' : 'cursor-pointer',
         selected ? ' border-inset text-gray-300' : '',
       )}
     >

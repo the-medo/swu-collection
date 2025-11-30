@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useCreateCardPool } from '@/api/card-pools/useCreateCardPool.ts';
+import SignInWrapper from '@/components/app/auth/SignInWrapper.tsx';
 
 const gridSizing = {
   4: { row: { from: 1, to: 3 }, col: { from: 1, to: 1 } },
@@ -143,19 +144,21 @@ const CreatePool: React.FC = () => {
           <VisibilitySelector value={visibility} onChange={setVisibility} />
 
           <div className="flex justify-end gap-2 mt-2">
-            <Button
+            {/*<Button
               variant="outline"
               onClick={handleCreateCustom}
               disabled={createPoolMutation.isPending || name.trim().length === 0}
             >
               {createPoolMutation.isPending ? 'Creating...' : 'Import your own'}
-            </Button>
-            <Button
-              onClick={handleCreateAutomatic}
-              disabled={createPoolMutation.isPending || name.trim().length === 0}
-            >
-              {createPoolMutation.isPending ? 'Creating...' : 'Generate'}
-            </Button>
+            </Button>*/}
+            <SignInWrapper text="Sign in to generate">
+              <Button
+                onClick={handleCreateAutomatic}
+                disabled={createPoolMutation.isPending || name.trim().length === 0}
+              >
+                {createPoolMutation.isPending ? 'Creating...' : 'Generate'}
+              </Button>
+            </SignInWrapper>
           </div>
         </div>
       </GridSectionContent>

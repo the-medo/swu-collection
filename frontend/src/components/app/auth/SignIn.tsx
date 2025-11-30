@@ -15,9 +15,13 @@ import { useCallback } from 'react';
 
 interface SignInProps {
   isLeftSidebar?: boolean;
+  // Custom label for the trigger button
+  buttonText?: string;
+  // Force using a text button instead of the compact icon trigger
+  forceTextButton?: boolean;
 }
 
-export default function SignIn({ isLeftSidebar }: SignInProps) {
+export default function SignIn({ isLeftSidebar, buttonText, forceTextButton = false }: SignInProps) {
   const { open } = useSidebar();
   const session = useSession();
 
@@ -26,6 +30,8 @@ export default function SignIn({ isLeftSidebar }: SignInProps) {
       sessionStorage.setItem('needsSettingsSync', '1');
       await signIn.social({
         provider,
+        // keep user on the same page after auth
+        callbackURL: window.location.pathname + window.location.search + window.location.hash,
       });
     } catch (error) {
       console.error(`Error during ${provider} sign-in:`, error);
@@ -39,8 +45,8 @@ export default function SignIn({ isLeftSidebar }: SignInProps) {
   return (
     <Dialog>
       <DialogTrigger asChild disabled={session.isPending}>
-        {open ? (
-          <Button>{session.isPending ? '...' : 'Sign In'}</Button>
+        {open || forceTextButton ? (
+          <Button>{session.isPending ? '...' : buttonText ?? 'Sign In'}</Button>
         ) : (
           <Button size="icon" className="h-8 w-8 [&_svg]:size-4">
             <LogIn />

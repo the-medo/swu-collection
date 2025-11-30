@@ -17,12 +17,12 @@ const getHeightStyle = (
   leadersAndBasesExpanded: boolean,
   catPosition: UserSettings['cpLayout_catPosition'] = 'top',
 ) => {
-  let margin = 50;
+  let margin = 8 /* top padding */ + 8 /* bottom padding */ + 44; /* top title height */
   if (catPosition === 'top') {
-    margin += 45;
+    margin += 8 /* top padding */ + 36; /* type/cost/aspect height */
   }
   if (leadersAndBasesExpanded) {
-    margin += 100;
+    margin += 90;
   }
   return { height: `calc(100vh - ${margin}px)` };
 };

@@ -33,7 +33,9 @@ const DecksColumn: React.FC<DecksColumnProps> = ({ pool }) => {
       <CreateDeckSection pool={pool} className="mb-3" />
       {isFetching && <div className="text-xs opacity-60">Loading decks...</div>}
       {isError && <div className="text-xs text-red-400">Failed to load decks.</div>}
-      {noDecks && <div className="text-xs opacity-60">No decks created for this pool yet.</div>}
+      {noDecks && (
+        <div className="text-xs opacity-60">No public decks created for this pool yet.</div>
+      )}
 
       {!isFetching && !isError && decks.length > 0 && (
         <>
