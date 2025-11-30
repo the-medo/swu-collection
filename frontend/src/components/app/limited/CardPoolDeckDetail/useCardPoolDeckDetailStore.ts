@@ -11,6 +11,8 @@ export interface CardPoolDeckDetailStore {
   leadersAndBasesExpanded: boolean;
   // Left filters column expand/collapse
   filtersExpanded: boolean;
+  // When true, show deck viewer instead of CP content
+  deckView: boolean;
   selectedLeaderId: string;
   selectedBaseId: string;
   hoveredCardId: string;
@@ -36,6 +38,7 @@ export interface CardPoolDeckDetailStore {
 const defaultState: CardPoolDeckDetailStore = {
   leadersAndBasesExpanded: false,
   filtersExpanded: true,
+  deckView: false,
   selectedLeaderId: '',
   selectedBaseId: '',
   hoveredCardId: '',
@@ -64,6 +67,9 @@ const setLeadersAndBasesExpanded = (expanded: boolean) =>
 
 const setFiltersExpanded = (expanded: boolean) =>
   store.setState(state => ({ ...state, filtersExpanded: expanded }));
+
+const setDeckView = (value: boolean) => store.setState(s => ({ ...s, deckView: value }));
+const toggleDeckView = () => store.setState(s => ({ ...s, deckView: !s.deckView }));
 
 const setInitialized = (value: boolean) => store.setState(s => ({ ...s, initialized: value }));
 
@@ -178,6 +184,7 @@ const resetAll = () => store.setState(() => ({ ...defaultState }));
 export function useCardPoolDeckDetailStore() {
   const leadersAndBasesExpanded = useStore(store, s => s.leadersAndBasesExpanded);
   const filtersExpanded = useStore(store, s => s.filtersExpanded);
+  const deckView = useStore(store, s => s.deckView);
   const selectedLeaderId = useStore(store, s => s.selectedLeaderId);
   const selectedBaseId = useStore(store, s => s.selectedBaseId);
   const hoveredCardId = useStore(store, s => s.hoveredCardId);
@@ -212,6 +219,7 @@ export function useCardPoolDeckDetailStore() {
   return {
     leadersAndBasesExpanded,
     filtersExpanded,
+    deckView,
     selectedLeaderId,
     selectedBaseId,
     hoveredCardId,
@@ -241,6 +249,8 @@ export function useCardPoolDeckDetailStoreActions() {
   return {
     setLeadersAndBasesExpanded,
     setFiltersExpanded,
+    setDeckView,
+    toggleDeckView,
     setInitialized,
     setSelectedLeaderId,
     setSelectedBaseId,

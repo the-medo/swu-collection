@@ -18,6 +18,7 @@ import { Link } from '@tanstack/react-router';
 import { EyeIcon, Hammer } from 'lucide-react';
 import DeckGradientButton from '@/components/app/decks/DeckContents/DeckImage/DeckGradientButton.tsx';
 import DeckCollection from '@/components/app/decks/DeckContents/DeckCollection/DeckCollection.tsx';
+import { useCardPoolDeckDetailStoreActions } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 
 interface DeckContentsProps {
   deckId: string;
@@ -34,6 +35,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
 }) => {
   const { cardPoolId, owned, editable } = useDeckInfo(deckId);
   const [tabsValue, setTabsValue] = useState('decklist');
+  const { setDeckView } = useCardPoolDeckDetailStoreActions();
 
   return (
     <>
@@ -58,6 +60,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
                   to="/limited/pool/$poolId/detail"
                   params={{ poolId: cardPoolId }}
                   className="w-full"
+                  onClick={() => setDeckView(false)}
                 >
                   <DeckGradientButton
                     deckId={deckId}
@@ -70,7 +73,12 @@ const DeckContents: React.FC<DeckContentsProps> = ({
                   </DeckGradientButton>
                 </Link>
                 {owned && (
-                  <Link to="/limited/deck/$deckId" params={{ deckId }} className="w-full">
+                  <Link
+                    to="/limited/deck/$deckId"
+                    params={{ deckId }}
+                    className="w-full"
+                    onClick={() => setDeckView(false)}
+                  >
                     <DeckGradientButton
                       deckId={deckId}
                       variant="outline"

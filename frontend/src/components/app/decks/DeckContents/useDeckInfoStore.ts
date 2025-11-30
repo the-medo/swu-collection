@@ -1,4 +1,8 @@
 import { Store, useStore } from '@tanstack/react-store';
+import { useUser } from '@/hooks/useUser.ts';
+import { useRole } from '@/hooks/useRole.ts';
+import { useGetDeck } from '@/api/decks/useGetDeck.ts';
+import { useEffect } from 'react';
 
 interface DeckInfoStore {
   deckInfo: Record<
@@ -44,3 +48,22 @@ export function useDeckInfoStoreActions() {
     setDeckInfo: setDeckInfo,
   };
 }
+
+export const useSetDeckInfo = (deckId: string, adminEdit: boolean = false) => {
+  const user = useUser();
+  const hasRole = useRole();
+  const isAdmin = hasRole('admin');
+
+  const { data, isFetching, error } = useGetDeck(deckId);
+  const { setDeckInfo } = useDeckInfoStoreActions();
+
+  const deckUserId = data?.user?.id ?? '';
+  const format = data?.deck.format ?? 1;
+  const owned = (user?.id === deckUserId || (isAdmin && adminEdit)) ?? false;
+
+  useEffect(() => {
+    setDeckInfo(deckId, format, owned, data?.deck.cardPoolId);
+  }, [deckId, format, owned]);
+
+  return { data, loading: isFetching, error, owned, deckUserId };
+};

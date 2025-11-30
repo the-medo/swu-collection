@@ -3,14 +3,11 @@ import { useUser } from '@/hooks/useUser';
 import LoadingTitle from '../../global/LoadingTitle';
 import { Button } from '@/components/ui/button.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
-import { useGetDeck } from '@/api/decks/useGetDeck';
 import EditDeckDialog from '../../dialogs/EditDeckDialog';
 import DeleteDeckDialog from '../../dialogs/DeleteDeckDialog';
 import DeckContents from '../DeckContents/DeckContents';
-import { useDeckInfoStoreActions } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
-import { useEffect } from 'react';
+import { useSetDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { Helmet } from 'react-helmet-async';
-import { useRole } from '@/hooks/useRole.ts';
 import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
 
 interface DeckDetailProps {
@@ -21,20 +18,7 @@ interface DeckDetailProps {
 
 const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder }) => {
   const user = useUser();
-  const hasRole = useRole();
-  const isAdmin = hasRole('admin');
-
-  const { data, isFetching, error } = useGetDeck(deckId);
-  const { setDeckInfo } = useDeckInfoStoreActions();
-
-  const deckUserId = data?.user?.id ?? '';
-  const loading = isFetching;
-  const format = data?.deck.format ?? 1;
-  const owned = (user?.id === deckUserId || (isAdmin && adminEdit)) ?? false;
-
-  useEffect(() => {
-    setDeckInfo(deckId, format, owned, data?.deck.cardPoolId);
-  }, [deckId, format, owned]);
+  const { data, loading, error, owned, deckUserId } = useSetDeckInfo(deckId, adminEdit);
 
   if (error?.status === 404) {
     return (

@@ -13,9 +13,13 @@ import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft } from 'lucide-react';
 import { useCPStoreInitializator } from '@/components/app/limited/CardPoolDeckDetail/useCPStoreInitializator.ts';
-import { useCardPoolDeckDetailStore } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
+import {
+  useCardPoolDeckDetailStore,
+  useCardPoolDeckDetailStoreActions,
+} from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 import { cn } from '@/lib/utils.ts';
 import { CPExpandButton } from '@/components/app/limited/CardPoolDeckDetail/CPLeftFiltersAndPreview/CPExpandButton.tsx';
+import DeckViewer from '@/components/app/tournaments/TournamentTopBracket/components/DeckViewer.tsx';
 
 export interface DeckDetailProps {
   deckId: string | undefined;
@@ -39,7 +43,8 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
   useCPStoreInitializator(deckId);
 
   const loading = isDeckFetching || isFetching;
-  const { leadersAndBasesExpanded } = useCardPoolDeckDetailStore();
+  const { leadersAndBasesExpanded, deckView } = useCardPoolDeckDetailStore();
+  const { setDeckView } = useCardPoolDeckDetailStoreActions();
   const { data: catPosition } = useGetUserSetting('cpLayout_catPosition');
 
   return (
@@ -76,11 +81,22 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
             'h-[calc(100vh-50px)]': !leadersAndBasesExpanded,
           })}
         >
-          <CPLeftFiltersAndPreview deckId={deckId} />
-          <div className=" flex flex-1 flex-col gap-2">
-            {(catPosition ?? 'top') === 'top' && <CPTopFilters deckId={deckId} />}
-            <CPPoolAndDeckSection deckId={deckId} poolId={poolId} />
-          </div>
+          {deckView && deckId ? (
+            <DeckViewer
+              selectedDeckId={deckId}
+              setSelectedDeckId={_id => setDeckView(false)}
+              shiftTop={true}
+              buttonRow={true}
+            />
+          ) : (
+            <>
+              <CPLeftFiltersAndPreview deckId={deckId} />
+              <div className=" flex flex-1 flex-col gap-2">
+                {(catPosition ?? 'top') === 'top' && <CPTopFilters deckId={deckId} />}
+                <CPPoolAndDeckSection deckId={deckId} poolId={poolId} />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
