@@ -1,5 +1,5 @@
 import { db } from '../../../db';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { cardStatTournamentGroup } from '../../../db/schema/card_stats_tournament_group_schema.ts';
 import type {
   DailySnapshotSectionData,

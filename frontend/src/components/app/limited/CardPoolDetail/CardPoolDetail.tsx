@@ -50,19 +50,14 @@ const CardPoolDetail: React.FC<CardPoolDetailProps> = ({ poolId }) => {
       <div className="flex flex-row gap-4 text-sm italic mb-2">{pool?.description}</div>
 
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {/* Left column: Leaders - always width 1 column */}
+        <div className="col-span-1">
+          <DecksColumn pool={pool} />
+        </div>
         <div className="col-span-1">
           <LeadersColumn pool={pool} />
         </div>
-
-        {/* Middle column(s): Card pool - spans all remaining middle columns */}
         <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-3">
           <CardPoolColumn pool={pool} />
-        </div>
-
-        {/* Right column: Decks - always width 1 column */}
-        <div className="col-span-1">
-          <DecksColumn pool={pool} />
         </div>
       </div>
     </>

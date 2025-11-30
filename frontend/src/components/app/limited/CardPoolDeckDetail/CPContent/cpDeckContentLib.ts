@@ -27,6 +27,17 @@ export type CPDeckContent = {
   trash: ExpandedCardData[];
 };
 
+const aspectKeyForSorting = (card: CardDataWithVariants<CardListVariants>) =>
+  card.aspects.join('-');
+
+export const stackSorter = (a: ExpandedCardData, b: ExpandedCardData) => {
+  const byAspect = aspectKeyForSorting(a.card).localeCompare(aspectKeyForSorting(b.card));
+  if (byAspect !== 0) return byAspect;
+  const byCost = (a.card.cost ?? 0) - (b.card.cost ?? 0);
+  if (byCost !== 0) return byCost;
+  return (a.card?.name ?? '').localeCompare(b.card?.name ?? '');
+};
+
 export const getDisplayType = (
   card: CardDataWithVariants<CardListVariants>,
 ): 'Ground' | 'Space' | 'Upgrade' | 'Event' | 'Other' => {
@@ -190,7 +201,7 @@ export const groupStacksWithin = (
     return aspectOrder
       .map(aspect => ({
         title: aspect,
-        cards: cards.filter(c => c.card.aspectMap[aspect as SwuAspect]),
+        cards: cards.filter(c => c.card.aspectMap[aspect as SwuAspect]).sort(stackSorter),
       }))
       .filter(s => s.cards.length > 0);
   }
@@ -198,7 +209,7 @@ export const groupStacksWithin = (
     return typeOrder
       .map(title => ({
         title,
-        cards: cards.filter(c => getDisplayType(c.card) === (title as any)),
+        cards: cards.filter(c => getDisplayType(c.card) === (title as any)).sort(stackSorter),
       }))
       .filter(s => s.cards.length > 0);
   }
@@ -206,10 +217,12 @@ export const groupStacksWithin = (
   return costOrder
     .map(n => ({
       title: String(n),
-      cards: cards.filter(c => {
-        const cost = c.card.cost ?? -1;
-        return n === 6 ? cost >= 6 : cost === n;
-      }),
+      cards: cards
+        .filter(c => {
+          const cost = c.card.cost ?? -1;
+          return n === 6 ? cost >= 6 : cost === n;
+        })
+        .sort(stackSorter),
     }))
     .filter(s => s.cards.length > 0);
 };

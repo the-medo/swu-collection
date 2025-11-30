@@ -11,6 +11,7 @@ import {
   groupByKey,
   groupStacksWithin,
   keywordsFilter,
+  stackSorter,
   traitsFilter,
   typeFilter,
 } from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
@@ -73,8 +74,8 @@ export function useCPDeckContent(deckId: string | undefined, poolId: string | un
     });
 
     // 4) split
-    const deck = expanded.filter(c => c.location === 'deck');
-    const trash = expanded.filter(c => c.location === 'trash');
+    const deck = expanded.filter(c => c.location === 'deck').sort(stackSorter);
+    const trash = expanded.filter(c => c.location === 'trash').sort(stackSorter);
     const pool = expanded.filter(c => c.location === 'pool');
 
     let mainPool = pool.slice();

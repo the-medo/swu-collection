@@ -7,7 +7,6 @@ import {
   type SectionMetaShare2WeeksDataPoint,
   type TournamentGroupExtendedInfo,
 } from '../../../../types/DailySnapshots.ts';
-import { getDeckKey2 } from '../../../../frontend/src/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 
 export const buildMetaShare2WeeksSection = async (
   groupExt?: TournamentGroupExtendedInfo | null,
