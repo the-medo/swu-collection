@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { Deck } from '../../../../types/Deck.ts';
+import { Visibility } from '../../../../shared/types/visibility.ts';
 
 export interface UpdateCardPoolDeckBody {
   name?: string;
   description?: string;
-  public?: 0 | 1;
+  visibility?: Visibility;
 }
 
 export interface UpdateCardPoolDeckResponse {

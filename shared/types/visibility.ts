@@ -10,3 +10,9 @@ export const visibilityToPublicMap: Record<Visibility, number> = {
   [Visibility.Public]: 1,
   [Visibility.Unlisted]: 2,
 };
+
+export const publicToVisibilityMap: Record<number, Visibility> = {
+  0: Visibility.Private,
+  1: Visibility.Public,
+  2: Visibility.Unlisted,
+};

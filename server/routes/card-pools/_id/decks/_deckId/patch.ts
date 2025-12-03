@@ -70,11 +70,7 @@ export const cardPoolsIdDecksDeckIdPatchRoute = new Hono<AuthExtension>().patch(
           .where(and(eq(cardPoolDecks.deckId, deckId), eq(cardPoolDecks.cardPoolId, id)));
       }
 
-      const [updated] = await tx
-        .select()
-        .from(deckTable)
-        .where(eq(deckTable.id, deckId))
-        .limit(1);
+      const [updated] = await tx.select().from(deckTable).where(eq(deckTable.id, deckId)).limit(1);
 
       return { updated };
     });

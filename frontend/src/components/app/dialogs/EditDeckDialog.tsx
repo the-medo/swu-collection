@@ -16,6 +16,7 @@ import { Deck } from '../../../../../types/Deck.ts';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import { useUpdateCardPoolDeck } from '@/api/card-pools/useUpdateCardPoolDeck.ts';
+import { publicToVisibilityMap } from '../../../../../shared/types/visibility.ts';
 
 type EditDeckDialogProps = Pick<DialogProps, 'trigger'> & {
   deck: Deck;
@@ -42,8 +43,7 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
           {
             name: value.name,
             description: value.description,
-            // coerce privacy to 0|1 for card pool decks
-            public: (value.public === 1 ? 1 : 0) as 0 | 1,
+            visibility: publicToVisibilityMap[value.public],
           },
           {
             onSuccess: () => {

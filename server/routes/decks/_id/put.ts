@@ -9,6 +9,8 @@ import { db } from '../../../db';
 import { updateDeckInformation } from '../../../lib/decks/updateDeckInformation.ts';
 import { generateDeckThumbnail } from '../../../lib/decks/generateDeckThumbnail.ts';
 import { runInBackground } from '../../../lib/utils/backgroundProcess.ts';
+import { cardPoolDecks } from '../../../db/schema/card_pool_deck.ts';
+import { publicToVisibilityMap, Visibility } from '../../../../shared/types/visibility.ts';
 
 export const deckIdPutRoute = new Hono<AuthExtension>().put(
   '/',
@@ -66,6 +68,15 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
         .where(and(...conditions))
         .returning()
     )[0];
+
+    const newVisibility =
+      typeof data.public !== 'undefined' ? publicToVisibilityMap[data.public] : undefined;
+    if (newVisibility) {
+      await db
+        .update(cardPoolDecks)
+        .set({ visibility: newVisibility })
+        .where(eq(cardPoolDecks.deckId, paramDeckId));
+    }
 
     await updateDeckInformation(paramDeckId);
 
