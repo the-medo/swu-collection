@@ -47,9 +47,13 @@ export const useUpdateCardPoolDeckCard = (id: string | undefined, deckId: string
         return next;
       });
 
-      // Invalidate other potentially affected queries
-      void queryClient.invalidateQueries({ queryKey: ['card-pool-decks', id], exact: false });
-      void queryClient.invalidateQueries({ queryKey: ['deck', deckId] });
+      /**
+       * Invalidate whole deck-content, because the card location has changed
+       * Maybe in the future we can update individual cache entries, but not needed now, because
+       * these cards are updated on different screen than the deck view - for now, we can refetch them everytime user changes the view.
+       * Also, I probably just should've just written this to AI instead of writing this comment and it would be done by now, instead of the future..
+       */
+      void queryClient.invalidateQueries({ queryKey: ['deck-content', deckId] });
     },
   });
 };
