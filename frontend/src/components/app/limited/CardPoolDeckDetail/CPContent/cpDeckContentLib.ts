@@ -60,21 +60,19 @@ export const aspectFilter = (
   card: CardDataWithVariants<CardListVariants>,
   aspectSetting: CPFilterAspects,
   exact: boolean,
-  leaderBaseAspects: readonly any[],
+  leaderBaseAspects: SwuAspect[],
 ) => {
   if (aspectSetting === 'all') return true;
-  const selected: string[] =
-    aspectSetting === 'showOnlyLeaderAndBaseAspects'
-      ? (leaderBaseAspects as string[])
-      : [aspectSetting as unknown as string];
+  const selected =
+    aspectSetting === 'showOnlyLeaderAndBaseAspects' ? leaderBaseAspects : [aspectSetting];
   if (!selected || selected.length === 0) return true; // nothing to filter by
 
-  const cardAspects = card.aspects as unknown as string[];
-  if (exact) {
-    // exact means same set equality
+  const cardAspects = card.aspects;
+  if (aspectSetting === 'showOnlyLeaderAndBaseAspects') {
+    return cardAspects.every(a => leaderBaseAspects.includes(a));
+  } else if (exact) {
     if (cardAspects.length !== selected.length) return false;
-    const set = new Set(cardAspects);
-    return selected.every(a => set.has(a));
+    return cardAspects.every(a => card.aspectMap[a]);
   }
   // non-exact: at least one overlap
   const set = new Set(cardAspects);
@@ -132,7 +130,15 @@ export const keywordsFilter = (
 };
 
 // 2) Grouping helpers
-const aspectOrder = ['Command', 'Vigilance', 'Cunning', 'Aggression', 'Heroism', 'Villainy'];
+const aspectOrder: (SwuAspect | 'No Aspect')[] = [
+  SwuAspect.COMMAND,
+  SwuAspect.VIGILANCE,
+  SwuAspect.CUNNING,
+  SwuAspect.AGGRESSION,
+  SwuAspect.HEROISM,
+  SwuAspect.VILLAINY,
+  'No Aspect',
+];
 const typeOrder = ['Ground', 'Space', 'Upgrade', 'Event'];
 const costOrder = [0, 1, 2, 3, 4, 5, 6];
 
@@ -160,7 +166,14 @@ export const groupByKey = (
       cards: [
         {
           title: aspect,
-          cards: cards.filter(c => c.card.aspectMap[aspect as SwuAspect]),
+          cards: cards.filter(c =>
+            aspect === 'No Aspect'
+              ? c.card.aspects.length === 0
+              : c.card.aspectMap[aspect] &&
+                ([SwuAspect.HEROISM, SwuAspect.VILLAINY].includes(aspect)
+                  ? c.card.aspects.length === 1
+                  : true),
+          ),
         },
       ],
     }));
@@ -201,7 +214,16 @@ export const groupStacksWithin = (
     return aspectOrder
       .map(aspect => ({
         title: aspect,
-        cards: cards.filter(c => c.card.aspectMap[aspect as SwuAspect]).sort(stackSorter),
+        cards: cards
+          .filter(c =>
+            aspect === 'No Aspect'
+              ? c.card.aspects.length === 0
+              : c.card.aspectMap[aspect] &&
+                ([SwuAspect.HEROISM, SwuAspect.VILLAINY].includes(aspect)
+                  ? c.card.aspects.length === 1
+                  : true),
+          )
+          .sort(stackSorter),
       }))
       .filter(s => s.cards.length > 0);
   }

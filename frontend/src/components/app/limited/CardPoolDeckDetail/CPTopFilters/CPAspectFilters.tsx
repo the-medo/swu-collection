@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
@@ -25,10 +25,15 @@ const CPAspectFilters: React.FC<CPAspectFiltersProps> = ({ deckId }) => {
   const { data: catPosition } = useGetUserSetting('cpLayout_catPosition');
   const compact = (catPosition ?? 'top') === 'left';
 
-  const onReset = () => {
+  const onLeadersAndBase = useCallback(() => {
+    setFilterAspects('showOnlyLeaderAndBaseAspects');
+    setExactAspects(false);
+  }, []);
+
+  const onReset = useCallback(() => {
     setFilterAspects('all');
     setExactAspects(false);
-  };
+  }, []);
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -37,7 +42,7 @@ const CPAspectFilters: React.FC<CPAspectFiltersProps> = ({ deckId }) => {
         <Button
           variant={isOnlyLeaderBaseSelected ? 'default' : 'outline'}
           size={compact ? 'xs' : 'sm'}
-          onClick={() => setFilterAspects('showOnlyLeaderAndBaseAspects')}
+          onClick={onLeadersAndBase}
           aria-pressed={isOnlyLeaderBaseSelected}
           aria-label={`Filter by leader/base aspects: ${leaderBaseAspects.join(', ')}`}
           title={
