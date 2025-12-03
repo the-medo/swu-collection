@@ -9,9 +9,10 @@ import { NavigationMenuItem } from '@/components/ui/navigation-menu.tsx';
 
 interface DuplicateButtonProps {
   deckId: string;
+  isLimited?: boolean; // if true, navigate to limited deck route after duplication
 }
 
-const DuplicateButton: React.FC<DuplicateButtonProps> = ({ deckId }) => {
+const DuplicateButton: React.FC<DuplicateButtonProps> = ({ deckId, isLimited = false }) => {
   const user = useUser();
   const { toast } = useToast();
   const duplicateMutation = useDuplicateDeck();
@@ -29,7 +30,8 @@ const DuplicateButton: React.FC<DuplicateButtonProps> = ({ deckId }) => {
 
     try {
       const result = await duplicateMutation.mutateAsync(deckId);
-      void navigate({ to: `/decks/${result.data.id}` });
+      const target = isLimited ? `/limited/deck/${result.data.id}` : `/decks/${result.data.id}`;
+      void navigate({ to: target });
     } catch (error) {
       // Error is handled by the mutation
     }

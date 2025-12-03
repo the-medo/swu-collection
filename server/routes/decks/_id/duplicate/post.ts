@@ -6,6 +6,8 @@ import { db } from '../../../../db';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
 import { updateDeckInformation } from '../../../../lib/decks/updateDeckInformation.ts';
+import { cardPoolDecks, cardPoolDeckCards } from '../../../../db/schema/card_pool_deck.ts';
+import { CardPoolLocation } from '../../../../../shared/types/cardPools.ts';
 
 export const deckIdDuplicatePostRoute = new Hono<AuthExtension>().post('/', async c => {
   const paramDeckId = z.guid().parse(c.req.param('id'));
@@ -39,27 +41,60 @@ export const deckIdDuplicatePostRoute = new Hono<AuthExtension>().post('/', asyn
         leaderCardId2: sourceDeck.leaderCardId2,
         baseCardId: sourceDeck.baseCardId,
         public: 2, // Always set new copies to unlisted
+        cardPoolId: sourceDeck.cardPoolId,
       })
       .returning()
   )[0];
 
-  // 4. Get all cards from the source deck
-  const sourceCards = await db
-    .select()
-    .from(deckCardTable)
-    .where(eq(deckCardTable.deckId, paramDeckId));
+  // 4. Check if source deck is associated with a card pool
+  const sourcePoolDeck = (
+    await db.select().from(cardPoolDecks).where(eq(cardPoolDecks.deckId, paramDeckId))
+  )[0];
 
-  if (sourceCards.length > 0) {
-    // 5. Copy all cards to the new deck
-    await db.insert(deckCardTable).values(
-      sourceCards.map(card => ({
-        deckId: newDeck.id,
-        cardId: card.cardId,
-        board: card.board,
-        note: card.note,
-        quantity: card.quantity,
-      })),
-    );
+  if (sourcePoolDeck) {
+    // Source is a card pool deck
+    // 4a. Create a new row in card_pool_decks for the duplicated deck
+    await db.insert(cardPoolDecks).values({
+      deckId: newDeck.id,
+      cardPoolId: sourcePoolDeck.cardPoolId,
+      userId: user.id,
+      visibility: 'unlisted',
+    });
+
+    // 4b. Copy all rows from card_pool_deck_cards for the new deck too,
+    // keeping 'deck' as 'deck' and moving all others to 'pool'
+    const sourceCpCards = await db
+      .select()
+      .from(cardPoolDeckCards)
+      .where(eq(cardPoolDeckCards.deckId, paramDeckId));
+
+    if (sourceCpCards.length > 0) {
+      await db.insert(cardPoolDeckCards).values(
+        sourceCpCards.map(cp => ({
+          deckId: newDeck.id,
+          cardPoolNumber: cp.cardPoolNumber,
+          location: cp.location === 'deck' ? CardPoolLocation.Deck : CardPoolLocation.Pool,
+        })),
+      );
+    }
+  } else {
+    // Not a card pool deck: proceed with copying deck_card rows
+    const sourceCards = await db
+      .select()
+      .from(deckCardTable)
+      .where(eq(deckCardTable.deckId, paramDeckId));
+
+    if (sourceCards.length > 0) {
+      await db.insert(deckCardTable).values(
+        sourceCards.map(card => ({
+          deckId: newDeck.id,
+          cardId: card.cardId,
+          board: card.board,
+          note: card.note,
+          quantity: card.quantity,
+        })),
+      );
+    }
   }
 
   // 6. Update deck information

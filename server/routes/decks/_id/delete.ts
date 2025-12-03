@@ -4,6 +4,10 @@ import { eq } from 'drizzle-orm';
 import { deck as deckTable } from '../../../db/schema/deck.ts';
 import { db } from '../../../db';
 import { deckCard as deckCardTable } from '../../../db/schema/deck_card.ts';
+import {
+  cardPoolDecks as cardPoolDeckTable,
+  cardPoolDeckCards as cardPoolDeckCardsTable,
+} from '../../../db/schema/card_pool_deck.ts';
 import { deckInformation as deckInformationTable } from '../../../db/schema/deck_information.ts';
 import type { AuthExtension } from '../../../auth/auth.ts';
 
@@ -20,6 +24,8 @@ export const deckIdDeleteRoute = new Hono<AuthExtension>().delete('/', async c =
 
   await db.delete(deckInformationTable).where(eq(deckInformationTable.deckId, paramDeckId));
   await db.delete(deckCardTable).where(eq(deckCardTable.deckId, paramDeckId));
+  await db.delete(cardPoolDeckCardsTable).where(eq(cardPoolDeckCardsTable.deckId, paramDeckId));
+  await db.delete(cardPoolDeckTable).where(eq(cardPoolDeckTable.deckId, paramDeckId));
   const deletedDeck = (
     await db.delete(deckTable).where(eq(deckTable.id, paramDeckId)).returning()
   )[0];
