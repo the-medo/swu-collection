@@ -4,12 +4,13 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { cn } from '@/lib/utils.ts';
+import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
 
-export interface LeadersColumnProps {
+export interface LeadersSectionProps {
   pool?: CardPool;
 }
 
-const LeadersColumn: React.FC<LeadersColumnProps> = ({ pool }) => {
+const LeadersSection: React.FC<LeadersSectionProps> = ({ pool }) => {
   const { data: cardListData, isFetching } = useCardList();
 
   const leaderCards = useMemo(
@@ -32,22 +33,29 @@ const LeadersColumn: React.FC<LeadersColumnProps> = ({ pool }) => {
       {!isFetching && leaderCards.length === 0 && (
         <div className="text-xs opacity-60">No leaders selected for this pool.</div>
       )}
-      <div className="mt-2 flex flex-col gap-3 items-center">
+      <div className="mt-2 flex flex-row gap-3 items-center">
         {leaderCards.map((lc, i) => (
-          <div className={cn(i > 0 && '-mt-[120px]')}>
-            <CardImage
-              key={`${lc.cardId}-${lc.key}`}
-              card={lc.card}
-              cardVariantId={lc.cardVariantId}
-              forceHorizontal={true}
-              size="w300"
-              backSideButton="top-left"
-            />
-          </div>
+          <DeckCardHoverImage
+            card={lc.card}
+            defaultVariantId={lc.cardVariantId}
+            size="w300"
+            active={true}
+          >
+            <div className={cn(i > 0 && '-ml-[100px]')}>
+                <CardImage
+                  key={`${lc.cardId}-${lc.key}`}
+                  card={lc.card}
+                  cardVariantId={lc.cardVariantId}
+                  forceHorizontal={true}
+                  size="w200"
+                  backSideButton="top-left"
+                />
+            </div>
+          </DeckCardHoverImage>
         ))}
       </div>
     </div>
   );
 };
 
-export default LeadersColumn;
+export default LeadersSection;

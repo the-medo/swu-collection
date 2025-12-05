@@ -9,11 +9,11 @@ import CardPoolStack, {
 import { groupToCardPoolColumns } from '@/components/app/limited/limitedLib.ts';
 import { SwuAspect } from '../../../../../../types/enums.ts';
 
-export interface CardPoolColumnProps {
+export interface CardPoolSectionProps {
   pool?: CardPool;
 }
 
-const CardPoolColumn: React.FC<CardPoolColumnProps> = ({ pool }) => {
+const CardPoolSection: React.FC<CardPoolSectionProps> = ({ pool }) => {
   const { data: mapping, isFetching, error } = useGetCardPoolCards(pool?.id);
   const { data: cardListData } = useCardList();
 
@@ -32,40 +32,39 @@ const CardPoolColumn: React.FC<CardPoolColumnProps> = ({ pool }) => {
 
   return (
     <div className="rounded-lg border border-border bg-card p-3 h-full">
-      <h3 className="text-sm font-semibold mb-2">Card pool</h3>
       {isFetching && <div className="text-xs opacity-60">Loading pool cards...</div>}
       {error && <div className="text-xs text-red-400">Failed to load pool cards.</div>}
       {!isFetching && !error && items.length === 0 && (
         <div className="text-xs opacity-60">No cards in this pool yet.</div>
       )}
-      <div className="mt-2 flex flex-wrap max-h-[calc(100vh-130px)] overflow-y-auto">
-        <div className="mt-2 flex flex-col">
+      <div className="flex flex-wrap max-h-[calc(100vh-130px)] overflow-y-auto">
+        <div className="flex flex-col">
           <CardPoolStack items={columns[SwuAspect.VIGILANCE].base} />
           <CardPoolStack items={columns[SwuAspect.VIGILANCE][SwuAspect.HEROISM]} />
           <CardPoolStack items={columns[SwuAspect.VIGILANCE][SwuAspect.VILLAINY]} />
         </div>
-        <div className="mt-2 flex flex-col">
+        <div className="flex flex-col">
           <CardPoolStack items={columns[SwuAspect.AGGRESSION].base} />
           <CardPoolStack items={columns[SwuAspect.AGGRESSION][SwuAspect.HEROISM]} />
           <CardPoolStack items={columns[SwuAspect.AGGRESSION][SwuAspect.VILLAINY]} />
         </div>
-        <div className="mt-2 flex flex-col">
+        <div className="flex flex-col">
           <CardPoolStack items={columns[SwuAspect.CUNNING].base} />
           <CardPoolStack items={columns[SwuAspect.CUNNING][SwuAspect.HEROISM]} />
           <CardPoolStack items={columns[SwuAspect.CUNNING][SwuAspect.VILLAINY]} />
         </div>
-        <div className="mt-2 flex flex-col">
+        <div className="flex flex-col">
           <CardPoolStack items={columns[SwuAspect.COMMAND].base} />
           <CardPoolStack items={columns[SwuAspect.COMMAND][SwuAspect.HEROISM]} />
           <CardPoolStack items={columns[SwuAspect.COMMAND][SwuAspect.VILLAINY]} />
         </div>
-        <div className="mt-2 flex flex-col">
+        <div className="flex flex-col">
           <CardPoolStack items={columns[SwuAspect.HEROISM]} />
         </div>
-        <div className="mt-2 flex flex-col">
+        <div className="flex flex-col">
           <CardPoolStack items={columns[SwuAspect.VILLAINY]} />
         </div>
-        <div className="mt-2 flex flex-col">
+        <div className="flex flex-col">
           <CardPoolStack items={columns['no-aspect']} />
         </div>
       </div>
@@ -74,4 +73,4 @@ const CardPoolColumn: React.FC<CardPoolColumnProps> = ({ pool }) => {
   );
 };
 
-export default CardPoolColumn;
+export default CardPoolSection;

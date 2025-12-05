@@ -1,7 +1,7 @@
 import React from 'react';
 import { useGetCardPool } from '@/api/card-pools/useGetCardPool.ts';
-import LeadersColumn from '@/components/app/limited/CardPoolDetail/LeadersColumn.tsx';
-import CardPoolColumn from '@/components/app/limited/CardPoolDetail/CardPoolColumn.tsx';
+import LeadersSection from '@/components/app/limited/CardPoolDetail/LeadersSection.tsx';
+import CardPoolSection from '@/components/app/limited/CardPoolDetail/CardPoolSection.tsx';
 import DecksColumn from '@/components/app/limited/CardPoolDetail/DecksColumn.tsx';
 import { Helmet } from 'react-helmet-async';
 import LoadingTitle from '../../global/LoadingTitle';
@@ -49,15 +49,13 @@ const CardPoolDetail: React.FC<CardPoolDetailProps> = ({ poolId }) => {
       </div>
       <div className="flex flex-row gap-4 text-sm italic mb-2">{pool?.description}</div>
 
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid gap-4 grid-cols-1 md:[grid-template-columns:300px_minmax(0,1fr)] lg:[grid-template-columns:300px_minmax(0,1fr)_minmax(0,1fr)] xl:[grid-template-columns:300px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <div className="col-span-1">
           <DecksColumn pool={pool} />
         </div>
-        <div className="col-span-1">
-          <LeadersColumn pool={pool} />
-        </div>
-        <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-3">
-          <CardPoolColumn pool={pool} />
+        <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-3 flex flex-col gap-4">
+          <LeadersSection pool={pool} />
+          <CardPoolSection pool={pool} />
         </div>
       </div>
     </>
