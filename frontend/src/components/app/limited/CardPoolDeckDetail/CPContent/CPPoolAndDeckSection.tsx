@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCPDeckContent } from '@/components/app/limited/CardPoolDeckDetail/CPContent/useCPDeckContent.ts';
 import CPCardContent from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPCardContent.tsx';
 import CPDeckAndTrashCard from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPDeckAndTrashCard.tsx';
@@ -16,10 +16,12 @@ export interface CPPoolAndDeckSectionProps {
 const getHeightStyle = (
   leadersAndBasesExpanded: boolean,
   catPosition: UserSettings['cpLayout_catPosition'] = 'top',
+  catFiltersHeight: number = 0,
 ) => {
   let margin = 8 /* top padding */ + 8 /* bottom padding */ + 44; /* top title height */
   if (catPosition === 'top') {
-    margin += 8 /* top padding */ + 36; /* type/cost/aspect height */
+    // Add the actual rendered height of the category filters when positioned at the top
+    margin += catFiltersHeight;
   }
   if (leadersAndBasesExpanded) {
     margin += 90;
@@ -32,7 +34,38 @@ const CPPoolAndDeckSection: React.FC<CPPoolAndDeckSectionProps> = ({ deckId, poo
   const { leadersAndBasesExpanded } = useCardPoolDeckDetailStore();
   const { data: catPosition } = useGetUserSetting('cpLayout_catPosition');
 
-  const heightStyle = getHeightStyle(leadersAndBasesExpanded, catPosition);
+  const [catFiltersHeight, setCatFiltersHeight] = useState(0);
+
+  useEffect(() => {
+    if (catPosition !== 'top') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCatFiltersHeight(0);
+      return;
+    }
+    const el = document.getElementById('card-pool-cat-filters');
+    if (!el) {
+      setCatFiltersHeight(0);
+      return;
+    }
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      setCatFiltersHeight(Math.round(rect.height));
+    };
+    update();
+
+    const ro = new ResizeObserver(() => update());
+    ro.observe(el);
+
+    const onResize = () => update();
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', onResize);
+    };
+  }, [catPosition]);
+
+  const heightStyle = getHeightStyle(leadersAndBasesExpanded, catPosition, catFiltersHeight);
 
   return (
     <div className="gap-2 grid grid-cols-[minmax(300px,1fr)_300px]">
