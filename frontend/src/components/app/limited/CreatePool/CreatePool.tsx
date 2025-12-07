@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useCreateCardPool } from '@/api/card-pools/useCreateCardPool.ts';
 import SignInWrapper from '@/components/app/auth/SignInWrapper.tsx';
+import { useNavigate } from '@tanstack/react-router';
 
 const gridSizing = {
   4: { row: { from: 1, to: 3 }, col: { from: 1, to: 1 } },
@@ -49,12 +50,14 @@ const generatePoolName = (type: CardPoolType, setAbbr: SwuSet, date: Date = new 
 };
 
 const CreatePool: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<CardPoolType>(CardPoolType.Sealed);
   const [selectedSet, setSelectedSet] = useState<SwuSet>(SwuSet.SEC);
   const [visibility, setVisibility] = useState<Visibility>(Visibility.Public);
   const [userEditedName, setUserEditedName] = useState<boolean>(false);
   const [name, setName] = useState<string>(generatePoolName(selectedType, selectedSet, new Date()));
   const [description, setDescription] = useState<string>('');
+  const [expanded, setExpanded] = useState<boolean>(false);
 
   const { toast } = useToast();
   const createPoolMutation = useCreateCardPool();
@@ -65,6 +68,13 @@ const CreatePool: React.FC = () => {
       setName(generatePoolName(selectedType, selectedSet, new Date()));
     }
   }, [selectedType, selectedSet, userEditedName]);
+
+  // Ensure simplified view doesn't keep a hidden, unsupported option selected
+  useEffect(() => {
+    if (!expanded && selectedType === CardPoolType.Prerelease) {
+      setSelectedType(CardPoolType.Sealed);
+    }
+  }, [expanded, selectedType]);
 
   const handleCreate = useCallback(
     (custom: boolean) => {
@@ -78,10 +88,9 @@ const CreatePool: React.FC = () => {
           custom,
         },
         {
-          onSuccess: () => {
+          onSuccess: data => {
             toast({ title: `Card pool "${name}" created!` });
-            // Could navigate to the newly created pool if route exists in the app
-            // e.g., navigate({ to: `/limited/pools/${result.data.id}` })
+            navigate({ to: `/limited/pool/$poolId/detail`, params: { poolId: data.data.id } });
           },
           onError: () => {
             toast({ title: 'Failed to create card pool', variant: 'destructive' });
@@ -123,27 +132,33 @@ const CreatePool: React.FC = () => {
               forcedSetList={cardPoolSets}
             />
           </div>
-          <CardPoolTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
+          <CardPoolTypeSelector
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
+            showPrerelease={expanded}
+          />
 
-          <div className="flex flex-col gap-2 mt-2">
-            <Input
-              type="text"
-              placeholder="Name"
-              value={name}
-              onChange={e => {
-                if (!userEditedName) setUserEditedName(true);
-                setName(e.target.value);
-              }}
-            />
-            <Textarea
-              placeholder="Description"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-            />
-          </div>
-          <VisibilitySelector value={visibility} onChange={setVisibility} />
+          {expanded && (
+            <div className="flex flex-col gap-2 mt-2">
+              <Input
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={e => {
+                  if (!userEditedName) setUserEditedName(true);
+                  setName(e.target.value);
+                }}
+              />
+              <Textarea
+                placeholder="Description"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+              />
+            </div>
+          )}
 
-          <div className="flex justify-end gap-2 mt-2">
+          <div className="flex justify-between gap-2 mt-2">
+            <VisibilitySelector value={visibility} onChange={setVisibility} />
             {/*<Button
               variant="outline"
               onClick={handleCreateCustom}
@@ -159,6 +174,18 @@ const CreatePool: React.FC = () => {
                 {createPoolMutation.isPending ? 'Creating...' : 'Generate'}
               </Button>
             </SignInWrapper>
+          </div>
+
+          <div className="-mt-2">
+            {!expanded && (
+              <button
+                type="button"
+                className="text-xs text-muted-foreground hover:text-foreground underline"
+                onClick={() => setExpanded(true)}
+              >
+                Show more options
+              </button>
+            )}
           </div>
         </div>
       </GridSectionContent>

@@ -11,6 +11,7 @@ import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectD
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
+import { CardPoolType } from '../../../../../../shared/types/cardPools.ts';
 
 interface CardPoolBoxProps {
   cardPool: CardPool;
@@ -44,7 +45,13 @@ const CardPoolBox: React.FC<CardPoolBoxProps> = ({ cardPool }) => {
         {cardPool.set ? <SetIcon set={cardPool.set} size="full" /> : null}
 
         <div className="text-base font-semibold leading-tight truncate">
-          {cardPool.name || 'Untitled pool'}
+          <Link
+            to={`/limited/pool/$poolId/detail`}
+            params={{ poolId: cardPool.id }}
+            className="w-full"
+          >
+            {cardPool.name || 'Untitled pool'}
+          </Link>
         </div>
 
         {cardPool.description ? (
@@ -67,7 +74,7 @@ const CardPoolBox: React.FC<CardPoolBoxProps> = ({ cardPool }) => {
 
         {/* Type, Custom, Visibility, Status renderers in a row */}
         <div className="mt-1 flex flex-row flex-wrap items-center gap-2">
-          {cardPool.type ? cardPoolTypeRenderer(cardPool.type) : null}
+          {cardPool.type ? cardPoolTypeRenderer(cardPool.type as CardPoolType) : null}
           {typeof cardPool.custom === 'boolean' ? cardPoolCustomRenderer(cardPool.custom) : null}
           {cardPool.visibility ? cardPoolVisibilityRenderer(cardPool.visibility) : null}
           {cardPool.status ? cardPoolStatusRenderer(cardPool.status) : null}

@@ -55,18 +55,18 @@ const CardPoolFilters: React.FC<CardPoolFiltersProps> = ({ initialized }) => {
   const typeOptions: { value: CardPoolType; label: string }[] = [
     { value: CardPoolType.Sealed, label: 'Sealed' },
     { value: CardPoolType.Prerelease, label: 'Prerelease' },
-    { value: CardPoolType.Draft, label: 'Draft' },
+    // { value: CardPoolType.Draft, label: 'Draft' },
   ];
 
   return (
     <div className="p-2 flex flex-wrap items-center gap-2">
       {/* Leader prepared for the future - control visible now */}
-      <LeaderSelector
+      {/*<LeaderSelector
         trigger={null}
         size="w100"
         leaderCardId={leader}
         onLeaderSelected={onLeaderChange}
-      />
+      />*/}
 
       <div className="w-[230px]">
         <SetSelect
@@ -100,12 +100,12 @@ const CardPoolFilters: React.FC<CardPoolFiltersProps> = ({ initialized }) => {
       </DropdownMenu>
 
       {/* Custom toggle */}
-      <div className="inline-flex items-center gap-2 px-3 py-2 border rounded-md">
+      {/*<div className="inline-flex items-center gap-2 px-3 py-2 border rounded-md">
         <Switch checked={!!custom} onCheckedChange={onCustomToggle} id="pool-custom-switch" />
         <label htmlFor="pool-custom-switch" className="text-sm">
           Custom only
         </label>
-      </div>
+      </div>*/}
 
       <div className="flex justify-end pt-2">
         <Button variant="secondary" size="sm" disabled={!hasActiveFilters} onClick={handleReset}>

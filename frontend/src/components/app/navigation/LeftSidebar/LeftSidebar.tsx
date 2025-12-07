@@ -116,7 +116,7 @@ const getGroups = (setOpenMobile: (open: boolean) => void, state: SidebarContext
         displayMenuActionWhenCollapsed: true,
       },
       {
-        title: 'Limited',
+        title: 'Sealed deck',
         url: '/limited',
         icon: Package,
       },

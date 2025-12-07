@@ -33,19 +33,24 @@ const cardPoolTypeOptions: CardPoolTypeOption[] = [
 interface CardPoolTypeSelectorProps {
   selectedType: CardPoolType;
   setSelectedType: (type: CardPoolType) => void;
+  showPrerelease?: boolean;
 }
 
 const CardPoolTypeSelector: React.FC<CardPoolTypeSelectorProps> = ({
   selectedType,
   setSelectedType,
+  showPrerelease = true,
 }) => {
+  const options = cardPoolTypeOptions.filter(
+    option => showPrerelease || option.value !== CardPoolType.Prerelease,
+  );
   return (
     <RadioGroup
       value={selectedType.toString()}
       onValueChange={value => setSelectedType(value as CardPoolType)}
       className="space-y-1"
     >
-      {cardPoolTypeOptions.map(option => (
+      {options.map(option => (
         <div
           key={option.value}
           className={cn(
