@@ -13,6 +13,7 @@ import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, Eye, X } from 'lucide-react';
 import { useCPStoreInitializator } from '@/components/app/limited/CardPoolDeckDetail/useCPStoreInitializator.ts';
+import { useCPDeckKeyboardShortcuts } from '@/components/app/limited/CardPoolDeckDetail/useCPDeckKeyboardShortcuts.ts';
 import {
   useCardPoolDeckDetailStore,
   useCardPoolDeckDetailStoreActions,
@@ -46,6 +47,7 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
   }, []);
 
   useCPStoreInitializator(deckId);
+  useCPDeckKeyboardShortcuts();
 
   const loading = isDeckFetching || isFetching;
   const { leadersAndBasesExpanded, deckView } = useCardPoolDeckDetailStore();
