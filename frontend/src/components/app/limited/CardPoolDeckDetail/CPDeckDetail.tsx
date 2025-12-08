@@ -8,6 +8,7 @@ import CPLeftFiltersAndPreview from '@/components/app/limited/CardPoolDeckDetail
 import CPPoolAndDeckSection from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPPoolAndDeckSection.tsx';
 import CPLeaderAndBase from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase/CPLeaderAndBase.tsx';
 import CPTopFilters from '@/components/app/limited/CardPoolDeckDetail/CPTopFilters/CPTopFilters.tsx';
+import CPDeckExplainerTooltip from '@/components/app/limited/CardPoolDeckDetail/CPDeckExplainerTooltip.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
@@ -74,7 +75,10 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
                     </Button>
                   </Link>
                 )}
-                <span>{deckData?.deck?.name}</span>
+                <span className="flex items-center gap-1">
+                  {deckData?.deck?.name}
+                  <CPDeckExplainerTooltip />
+                </span>
               </div>
             }
             loading={loading}
