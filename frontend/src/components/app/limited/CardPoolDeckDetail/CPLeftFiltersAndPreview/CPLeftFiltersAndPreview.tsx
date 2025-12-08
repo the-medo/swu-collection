@@ -8,6 +8,7 @@ import {
 } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import CPLeaderAndBaseCollapsed from '@/components/app/limited/CardPoolDeckDetail/CPLeaderAndBase/CPLeaderAndBaseCollapsed.tsx';
+import CPKeyboardShortcuts from '@/components/app/limited/CardPoolDeckDetail/CPLeftFiltersAndPreview/CPKeyboardShortcuts.tsx';
 
 export interface CPLeftFiltersAndPreviewProps {
   deckId?: string;
@@ -51,6 +52,10 @@ const CPLeftFiltersAndPreview: React.FC<CPLeftFiltersAndPreviewProps> = ({ deckI
             </div>
           )}
           {cardPreview === 'static' && <CardPreview />}
+          {/* Keyboard shortcuts toggle section */}
+          <div className={`rounded-lg border border-border bg-card p-3 py-2 text-xs mb-2`}>
+            <CPKeyboardShortcuts />
+          </div>
           <div className={`rounded-lg border border-border bg-card p-3 py-2 text-xs`}>
             <CPLeftFilters deckId={deckId} />
           </div>

@@ -20,6 +20,8 @@ export interface UserSettings {
   cpLayout_catPosition: 'top' | 'left'; // Cost/Aspect/Type position
   cpLayout_displayBoxTitles: boolean;
   cpLayout_displayStackTitles: boolean;
+  // Card Pool - interactions
+  cpKeyboardShortcuts: boolean; // default: true
   // DeckImagePresets
   deckImage_showNoisyBackground: DeckImagePresets['showNoisyBackground'];
   deckImage_showcaseLeader: DeckImagePresets['showcaseLeader'];
@@ -43,6 +45,8 @@ export const userSettingsSchema = z.object({
   cpLayout_catPosition: z.union([z.literal('top'), z.literal('left')]).default('top'),
   cpLayout_displayBoxTitles: booleanPreprocessor.default(true),
   cpLayout_displayStackTitles: booleanPreprocessor.default(true),
+  // Card Pool - interactions
+  cpKeyboardShortcuts: booleanPreprocessor.default(true),
   // DeckImagePresets
   deckImage_showNoisyBackground: booleanPreprocessor.default(true),
   deckImage_showcaseLeader: booleanPreprocessor.default(false),

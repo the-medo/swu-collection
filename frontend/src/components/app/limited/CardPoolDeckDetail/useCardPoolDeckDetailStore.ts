@@ -67,6 +67,8 @@ const setLeadersAndBasesExpanded = (expanded: boolean) =>
 
 const setFiltersExpanded = (expanded: boolean) =>
   store.setState(state => ({ ...state, filtersExpanded: expanded }));
+const toggleFiltersExpanded = () =>
+  store.setState(s => ({ ...s, filtersExpanded: !s.filtersExpanded }));
 
 const setDeckView = (value: boolean) => store.setState(s => ({ ...s, deckView: value }));
 const toggleDeckView = () => store.setState(s => ({ ...s, deckView: !s.deckView }));
@@ -133,6 +135,15 @@ const setShowRemovedCards = (value: boolean) =>
 const setShowUnfilteredCards = (value: boolean) =>
   store.setState(s => ({ ...s, showUnfilteredCards: value }));
 
+const toggleShowCardsInDeck = () =>
+  store.setState(s => ({ ...s, showCardsInDeck: !s.showCardsInDeck }));
+
+const toggleShowRemovedCards = () =>
+  store.setState(s => ({ ...s, showRemovedCards: !s.showRemovedCards }));
+
+const toggleShowUnfilteredCards = () =>
+  store.setState(s => ({ ...s, showUnfilteredCards: !s.showUnfilteredCards }));
+
 const setFilterAspects = (value: CPFilterAspects) =>
   store.setState(s => ({ ...s, filterAspects: value }));
 
@@ -142,6 +153,40 @@ const setFilterCost = (value: Partial<Record<number | 'all', true>>) =>
 const setExactAspects = (value: boolean) => store.setState(s => ({ ...s, exactAspects: value }));
 
 const setFilterType = (value: string[]) => store.setState(s => ({ ...s, filterType: value }));
+// Toggle a single cost or reset costs to all
+const toggleCost = (value: number | 'reset') =>
+  store.setState(s => {
+    if (value === 'reset') {
+      return { ...s, filterCost: { all: true } };
+    }
+    // Build next based on current filterCost (excluding 'all')
+    const next: Partial<Record<number, true>> = {};
+    for (const key of Object.keys(s.filterCost)) {
+      if (key === 'all') continue;
+      const n = Number(key);
+      if (!Number.isNaN(n)) next[n] = true;
+    }
+    if (next[value]) {
+      delete next[value];
+    } else {
+      next[value] = true;
+    }
+    if (Object.keys(next).length === 0) {
+      return { ...s, filterCost: { all: true } };
+    }
+    return { ...s, filterCost: next } as CardPoolDeckDetailStore;
+  });
+
+// Toggle presence of a type filter or reset types
+const toggleType = (value: string | 'reset') =>
+  store.setState(s => {
+    if (value === 'reset') return { ...s, filterType: [] };
+    const exists = s.filterType.includes(value);
+    if (exists) {
+      return { ...s, filterType: s.filterType.filter(t => t !== value) };
+    }
+    return { ...s, filterType: [...s.filterType, value] };
+  });
 
 const setFilterTraits = (value: string[]) => store.setState(s => ({ ...s, filterTraits: value }));
 
@@ -249,6 +294,7 @@ export function useCardPoolDeckDetailStoreActions() {
   return {
     setLeadersAndBasesExpanded,
     setFiltersExpanded,
+    toggleFiltersExpanded,
     setDeckView,
     toggleDeckView,
     setInitialized,
@@ -264,10 +310,15 @@ export function useCardPoolDeckDetailStoreActions() {
     setShowCardsInDeck,
     setShowRemovedCards,
     setShowUnfilteredCards,
+    toggleShowCardsInDeck,
+    toggleShowRemovedCards,
+    toggleShowUnfilteredCards,
     setFilterAspects,
     setFilterCost,
     setExactAspects,
     setFilterType,
+    toggleCost,
+    toggleType,
     setFilterTraits,
     setFilterKeywords,
     setContentBoxesBy,

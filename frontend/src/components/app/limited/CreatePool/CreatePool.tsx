@@ -157,7 +157,7 @@ const CreatePool: React.FC = () => {
             </div>
           )}
 
-          <div className="flex justify-between gap-2 mt-2">
+          <div className="flex justify-between gap-2 mt-2 flex-wrap">
             <VisibilitySelector value={visibility} onChange={setVisibility} />
             {/*<Button
               variant="outline"

@@ -3,92 +3,142 @@ import { SwuAspect } from '../../../../../../types/enums.ts';
 import {
   CPBoxedGroupBy,
   CPGroupBy,
-  useCardPoolDeckDetailStore,
   useCardPoolDeckDetailStoreActions,
 } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 // Hook: Maps keyboard shortcuts to CP store actions
+// Exported key maps so UI can describe shortcuts without duplicating logic
+export const CP_ASPECT_KEY_MAP: Record<string, SwuAspect | 'leaderBase' | 'reset'> = {
+  // qwertu map to 6 aspects
+  q: SwuAspect.VIGILANCE,
+  w: SwuAspect.COMMAND,
+  e: SwuAspect.AGGRESSION,
+  r: SwuAspect.CUNNING,
+  t: SwuAspect.HEROISM,
+  u: SwuAspect.VILLAINY,
+  // skip y intentionally (keyboard layouts)
+  i: 'leaderBase',
+  o: 'reset',
+};
+
+export const CP_TYPE_KEY_MAP: Record<string, string | 'reset'> = {
+  a: 'Ground',
+  s: 'Space',
+  d: 'Event',
+  f: 'Upgrade',
+  g: 'reset',
+} as const;
+
+export const CP_BOXES_KEY_MAP: Record<string, CPBoxedGroupBy> = {
+  h: 'X',
+  j: 'aspect',
+  k: 'type',
+  l: 'cost',
+};
+
+export const CP_STACKS_KEY_MAP: Record<string, CPGroupBy> = {
+  b: 'aspect',
+  n: 'type',
+  m: 'cost',
+};
+
+/**
+ * Returns human readable description of keyboard shortcuts used in Card Pool Deck Detail
+ */
+export function getCPDeckKeybindingsInfo() {
+  return {
+    general: [
+      { keys: ['Space'], action: 'Toggle deck view' },
+      { keys: ['Escape'], action: 'Collapse Filters panel' },
+    ],
+    costs: [
+      { keys: ['0', '1', '2', '3', '4', '5', '6'], action: 'Toggle specific cost filters' },
+      { keys: ['7'], action: 'Reset cost filters to All' },
+    ],
+    aspects: [
+      {
+        keys: Object.entries(CP_ASPECT_KEY_MAP)
+          .filter(([, v]) => v !== 'leaderBase' && v !== 'reset')
+          .map(([k]) => k),
+        action: 'Filter by aspect',
+      },
+      {
+        keys: ['i'],
+        action: 'Show only Leader & Base aspects',
+      },
+      {
+        keys: ['o'],
+        action: 'Reset aspect filter to All',
+      },
+    ],
+    types: [
+      {
+        keys: ['a', 's', 'd', 'f'],
+        action: 'Toggle type filter',
+      },
+      {
+        keys: ['g'],
+        action: 'Reset type filters',
+      },
+    ],
+    grouping: {
+      boxes: Object.entries(CP_BOXES_KEY_MAP).map(([k, v]) => ({
+        keys: [k],
+        action: `${v === 'X' ? 'X (no grouping)' : v}`,
+      })),
+      stacks: Object.entries(CP_STACKS_KEY_MAP).map(([k, v]) => ({
+        keys: [k],
+        action: `${v}`,
+      })),
+    },
+    visibility: [
+      { keys: ['x'], action: 'Toggle showing cards currently in deck' },
+      { keys: ['c'], action: 'Toggle showing removed cards' },
+      { keys: ['v'], action: 'Toggle showing unfiltered cards' },
+    ],
+    note: 'Shortcuts are disabled if the "Keyboard shortcuts" toggle is Off.',
+  } as const;
+}
+
 export function useCPDeckKeyboardShortcuts() {
-  const { filterCost, filterType, showCardsInDeck, showRemovedCards, showUnfilteredCards } =
-    useCardPoolDeckDetailStore();
+  const { data: cpKeyboardShortcuts } = useGetUserSetting('cpKeyboardShortcuts');
 
   const {
     // filters
     setFilterAspects,
-    setFilterCost,
-    setFilterType,
+    toggleCost,
+    toggleType,
     // grouping
     setContentBoxesBy,
     setContentStacksBy,
     // visibility
-    setShowCardsInDeck,
-    setShowRemovedCards,
-    setShowUnfilteredCards,
+    toggleShowCardsInDeck,
+    toggleShowRemovedCards,
+    toggleShowUnfilteredCards,
     // view / layout
     toggleDeckView,
-    setFiltersExpanded,
+    toggleFiltersExpanded,
   } = useCardPoolDeckDetailStoreActions();
 
   useEffect(() => {
-    const aspectKeyMap: Record<string, SwuAspect | 'leaderBase' | 'reset'> = {
-      // qwertu map to 6 aspects
-      q: SwuAspect.VIGILANCE,
-      w: SwuAspect.COMMAND,
-      e: SwuAspect.AGGRESSION,
-      r: SwuAspect.CUNNING,
-      t: SwuAspect.HEROISM,
-      u: SwuAspect.VILLAINY,
-      // skip y intentionally (keyboard layouts)
-      i: 'leaderBase',
-      o: 'reset',
-    };
-
-    const typeKeyMap: Record<string, string | 'reset'> = {
-      a: 'Ground',
-      s: 'Space',
-      d: 'Event',
-      f: 'Upgrade',
-      g: 'reset',
-    } as const;
-
-    const boxesKeyMap: Record<string, CPBoxedGroupBy> = {
-      h: 'X',
-      j: 'aspect',
-      k: 'type',
-      l: 'cost',
-    };
-
-    const stacksKeyMap: Record<string, CPGroupBy> = {
-      b: 'aspect',
-      n: 'type',
-      m: 'cost',
-    };
+    // Respect user setting: if disabled, do not bind shortcuts
+    if (cpKeyboardShortcuts === false) {
+      return;
+    }
+    const aspectKeyMap = CP_ASPECT_KEY_MAP;
+    const typeKeyMap = CP_TYPE_KEY_MAP;
+    const boxesKeyMap = CP_BOXES_KEY_MAP;
+    const stacksKeyMap = CP_STACKS_KEY_MAP;
 
     const handleNumberCostToggle = (numKey: string) => {
       if (numKey === '7') {
-        setFilterCost({ all: true });
+        toggleCost('reset');
         return;
       }
       const cost = Number(numKey);
       if (Number.isNaN(cost)) return;
-
-      // Build next based on current filterCost (excluding 'all')
-      const next: Record<number, true> = {};
-      for (const key of Object.keys(filterCost)) {
-        if (key === 'all') continue;
-        const n = Number(key);
-        if (!Number.isNaN(n)) next[n] = true;
-      }
-      if (next[cost]) {
-        delete next[cost];
-      } else {
-        next[cost] = true;
-      }
-      if (Object.keys(next).length === 0) {
-        setFilterCost({ all: true });
-      } else {
-        setFilterCost(next);
-      }
+      toggleCost(cost);
     };
 
     const isEditableTarget = (el: EventTarget | null) => {
@@ -113,7 +163,7 @@ export function useCPDeckKeyboardShortcuts() {
 
       // Escape collapses left filters
       if (key === 'escape') {
-        setFiltersExpanded(false);
+        toggleFiltersExpanded();
         return;
       }
 
@@ -140,14 +190,9 @@ export function useCPDeckKeyboardShortcuts() {
       if (key in typeKeyMap) {
         const mapped = typeKeyMap[key];
         if (mapped === 'reset') {
-          setFilterType([]);
+          toggleType('reset');
         } else {
-          const exists = filterType.includes(mapped);
-          if (exists) {
-            setFilterType(filterType.filter(t => t !== mapped));
-          } else {
-            setFilterType([...filterType, mapped]);
-          }
+          toggleType(mapped);
         }
         return;
       }
@@ -166,38 +211,22 @@ export function useCPDeckKeyboardShortcuts() {
 
       // Visibility toggles in card pool
       if (key === 'x') {
-        setShowCardsInDeck(!showCardsInDeck);
+        toggleShowCardsInDeck();
         return;
       }
       if (key === 'c') {
-        setShowRemovedCards(!showRemovedCards);
+        toggleShowRemovedCards();
         return;
       }
       if (key === 'v') {
-        setShowUnfilteredCards(!showUnfilteredCards);
+        toggleShowUnfilteredCards();
         return;
       }
     };
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [
-    filterCost,
-    filterType,
-    showCardsInDeck,
-    showRemovedCards,
-    showUnfilteredCards,
-    setFilterAspects,
-    setFilterCost,
-    setFilterType,
-    setContentBoxesBy,
-    setContentStacksBy,
-    setShowCardsInDeck,
-    setShowRemovedCards,
-    setShowUnfilteredCards,
-    toggleDeckView,
-    setFiltersExpanded,
-  ]);
+  }, [cpKeyboardShortcuts]);
 }
 
 export default useCPDeckKeyboardShortcuts;
