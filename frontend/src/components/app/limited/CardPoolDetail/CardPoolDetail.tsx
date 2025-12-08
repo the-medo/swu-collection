@@ -9,6 +9,7 @@ import { useUser } from '@/hooks/useUser.ts';
 import { Button } from '@/components/ui/button.tsx';
 import EditCardPoolDialog from '@/components/app/dialogs/EditCardPoolDialog.tsx';
 import { cardPoolVisibilityRenderer } from '@/components/app/limited/components/cardPoolVisibilityRenderer.tsx';
+import CPExplainerTooltip from '@/components/app/limited/CardPoolDetail/CPExplainerTooltip.tsx';
 
 export interface CardPoolDetailProps {
   poolId: string | undefined;
@@ -37,7 +38,10 @@ const CardPoolDetail: React.FC<CardPoolDetailProps> = ({ poolId }) => {
     <>
       <Helmet title={`${pool?.name || 'Loading card pool'} | SWUBase`} />
       <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
-        <LoadingTitle mainTitle={pool?.name} loading={isFetching} />
+        <div className="flex items-center gap-2">
+          <CPExplainerTooltip />
+          <LoadingTitle mainTitle={pool?.name} loading={isFetching} />
+        </div>
         {user && pool && (
           <div className="flex flex-row gap-4 items-center">
             {pool.visibility ? cardPoolVisibilityRenderer(pool.visibility as any) : null}

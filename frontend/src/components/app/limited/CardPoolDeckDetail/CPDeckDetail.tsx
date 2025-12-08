@@ -76,8 +76,8 @@ const CPDeckDetail: React.FC<DeckDetailProps> = ({ deckId }) => {
                   </Link>
                 )}
                 <span className="flex items-center gap-1">
-                  {deckData?.deck?.name}
                   <CPDeckExplainerTooltip />
+                  {deckData?.deck?.name}
                 </span>
               </div>
             }
