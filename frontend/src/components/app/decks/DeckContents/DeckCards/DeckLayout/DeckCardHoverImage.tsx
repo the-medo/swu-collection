@@ -27,7 +27,7 @@ interface DeckCardHoverImageProps extends PropsWithChildren {
 const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({
   card,
   size = 'original',
-  active,
+  active = true,
   defaultVariantId,
   children,
 }) => {
