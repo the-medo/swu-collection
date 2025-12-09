@@ -585,7 +585,7 @@ const DeckImage = forwardRef<
           rightY += 50;
 
           // Draw sideboard section
-          const sideboardCards = deckCardsForLayout.cardsByBoard[2];
+          const sideboardCards = deckMeta?.cardPoolId ? [] : deckCardsForLayout.cardsByBoard[2];
           const sideboardHeight =
             Math.ceil(sideboardCards.length / maxCardsPerRow) * (cardHeight + padding) +
             padding * 7;

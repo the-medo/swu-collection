@@ -3,10 +3,11 @@ import { IconVariantProps, iconVariants } from '@/components/app/global/icons/ic
 import { cn } from '@/lib/utils.ts';
 
 type CostIconProps = {
-  cost?: number;
+  cost?: number | string;
+  textSize?: 'default' | 'small';
 } & IconVariantProps;
 
-const CostIcon: React.FC<CostIconProps> = ({ cost, ...variants }) => {
+const CostIcon: React.FC<CostIconProps> = ({ cost, textSize = 'default', ...variants }) => {
   return (
     <div className={cn(iconVariants({ ...variants }), 'relative')}>
       <img
@@ -16,7 +17,14 @@ const CostIcon: React.FC<CostIconProps> = ({ cost, ...variants }) => {
       />
       {cost !== undefined && (
         <>
-          <span className="absolute text-lg  font-medium top-[50%] left-[50%] text-white transform -translate-x-1/2 -translate-y-1/2">
+          <span
+            className={cn(
+              'absolute text-[18px] font-medium top-[50%] left-[50%] text-[white] [text-shadow:1px_1px_0_#000,-1px_-1px_0_#000,1px_-1px_0_#000,-1px_1px_0_#000] transform -translate-x-1/2 -translate-y-1/2',
+              {
+                'text-[16px]': variants.size === 'small',
+              },
+            )}
+          >
             {cost}
           </span>
         </>

@@ -44,7 +44,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
   isHighlighted,
 }) => {
   const navigate = useNavigate();
-  const { owned } = useDeckInfo(deckId);
+  const { editable } = useDeckInfo(deckId);
   const mutation = usePutDeckCard(deckId);
   const defaultVariant = card ? selectDefaultVariant(card) : undefined;
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
@@ -98,7 +98,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
                 deckId={deckId}
                 deckCard={deckCard}
                 card={card}
-                owned={owned}
+                editable={editable}
                 cardInBoards={cardInBoards}
                 onQuantityChange={quantityChangeHandler}
               />

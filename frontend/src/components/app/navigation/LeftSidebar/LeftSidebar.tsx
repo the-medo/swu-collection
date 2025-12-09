@@ -13,6 +13,7 @@ import {
   Search,
   Star,
   TrophyIcon,
+  Package,
 } from 'lucide-react';
 
 import {
@@ -113,6 +114,11 @@ const getGroups = (setOpenMobile: (open: boolean) => void, state: SidebarContext
           </Link>
         ),
         displayMenuActionWhenCollapsed: true,
+      },
+      {
+        title: 'Sealed deck',
+        url: '/limited',
+        icon: Package,
       },
     ],
   },

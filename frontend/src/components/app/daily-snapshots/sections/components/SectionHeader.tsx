@@ -2,7 +2,7 @@ import * as React from 'react';
 
 export interface SectionHeaderProps {
   headerAndTooltips: React.ReactNode;
-  dropdownMenu?: React.ReactNode;
+  dropdownMenu?: React.ReactNode; //TODO: should be renamed to something like "endOptions"
 }
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ headerAndTooltips, dropdownMenu }) => {

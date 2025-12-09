@@ -1,6 +1,7 @@
 import { pgTable, text, timestamp, uuid, integer, varchar, index } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
 import { format } from './format.ts';
+import { cardPools } from './card_pool.ts';
 import type { InferSelectModel } from 'drizzle-orm';
 
 export const deck = pgTable(
@@ -19,6 +20,7 @@ export const deck = pgTable(
     leaderCardId2: varchar('leader_card_id_2'),
     baseCardId: varchar('base_card_id'),
     public: integer('public').notNull().default(0),
+    cardPoolId: uuid('card_pool_id').references(() => cardPools.id),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
@@ -30,6 +32,7 @@ export const deck = pgTable(
       leaderCardId1Idx: index('deck-leader_card_id_1_idx').on(table.leaderCardId1),
       leaderCardId2Idx: index('deck-leader_card_id_2_idx').on(table.leaderCardId2),
       baseCardIdIdx: index('deck-base_card_id_idx').on(table.baseCardId),
+      cardPoolIdIdx: index('deck-card_pool_id_idx').on(table.cardPoolId),
       createdAtIdx: index('deck-created_at_idx').on(table.createdAt),
       updatedAtIdx: index('deck-updated_at_idx').on(table.updatedAt),
     };

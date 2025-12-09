@@ -15,9 +15,10 @@ import DecklistChartsTabs from '@/components/app/decks/DeckContents/DeckActionsM
 import { NavigationMenuItem, NavigationMenuList } from '@/components/ui/navigation-menu.tsx';
 import DeckImageButton from '@/components/app/decks/DeckContents/DeckImage/DeckImageButton.tsx';
 import { Link } from '@tanstack/react-router';
-import { Hammer } from 'lucide-react';
+import { EyeIcon, Hammer } from 'lucide-react';
 import DeckGradientButton from '@/components/app/decks/DeckContents/DeckImage/DeckGradientButton.tsx';
 import DeckCollection from '@/components/app/decks/DeckContents/DeckCollection/DeckCollection.tsx';
+import { useCardPoolDeckDetailStoreActions } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 
 interface DeckContentsProps {
   deckId: string;
@@ -32,8 +33,9 @@ const DeckContents: React.FC<DeckContentsProps> = ({
   highlightedCardId,
   deckbuilder,
 }) => {
-  const { owned } = useDeckInfo(deckId);
+  const { cardPoolId, owned, editable } = useDeckInfo(deckId);
   const [tabsValue, setTabsValue] = useState('decklist');
+  const { setDeckView } = useCardPoolDeckDetailStoreActions();
 
   return (
     <>
@@ -44,13 +46,51 @@ const DeckContents: React.FC<DeckContentsProps> = ({
             <div className="flex flex-row gap-2 flex-wrap items-center justify-center">
               <DeckLeaderBase deckId={deckId} size="w300" />
             </div>
-            {owned && (
+            {editable && (
               <Link to="/decks/$deckId/edit" params={{ deckId }} search={{ deckbuilder: true }}>
                 <DeckGradientButton deckId={deckId} variant="outline" size="lg">
                   <Hammer className="mr-4" />
-                  <h4 className="mb-0">Deckbuilder</h4>
+                  <h4 className="mb-0!">Deckbuilder</h4>
                 </DeckGradientButton>
               </Link>
+            )}
+            {cardPoolId && (
+              <>
+                <Link
+                  to="/limited/pool/$poolId/detail"
+                  params={{ poolId: cardPoolId }}
+                  className="w-full"
+                  onClick={() => setDeckView(false)}
+                >
+                  <DeckGradientButton
+                    deckId={deckId}
+                    variant="outline"
+                    size="lg"
+                    className="w-full"
+                  >
+                    <EyeIcon className="mr-4" />
+                    <h4 className="mb-0!">View card pool</h4>
+                  </DeckGradientButton>
+                </Link>
+                {owned && (
+                  <Link
+                    to="/limited/deck/$deckId"
+                    params={{ deckId }}
+                    className="w-full"
+                    onClick={() => setDeckView(false)}
+                  >
+                    <DeckGradientButton
+                      deckId={deckId}
+                      variant="outline"
+                      size="lg"
+                      className="w-full"
+                    >
+                      <Hammer className="mr-4" />
+                      <h4 className="mb-0!">Edit deck</h4>
+                    </DeckGradientButton>
+                  </Link>
+                )}
+              </>
             )}
             <DeckMatches deckId={deckId} setDeckId={setDeckId} />
           </div>
@@ -72,7 +112,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
                   </NavigationMenuItem>
                 </NavigationMenuList>
                 <NavigationMenuList className="flex-wrap justify-start gap-1">
-                  {owned ? (
+                  {editable ? (
                     <DeckInputCommand deckId={deckId} />
                   ) : (
                     <NavigationMenuList className="flex-wrap justify-start gap-1">
@@ -81,7 +121,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
                     </NavigationMenuList>
                   )}
                 </NavigationMenuList>
-                {owned && (
+                {editable && (
                   <NavigationMenuList className="flex-wrap justify-end gap-1">
                     <DeckLayoutMenu />
                     <GroupByMenu />

@@ -1,0 +1,98 @@
+import React from 'react';
+import { ExpandedCardData } from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
+import CPCardContentStack from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPCardContentStack.tsx';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion.tsx';
+import CPMultiCardSelectActions from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPMultiCardSelectActions.tsx';
+
+export interface CPDeckAndTrashCardProps {
+  deck?: ExpandedCardData[];
+  trash?: ExpandedCardData[];
+  className?: string;
+  poolId?: string;
+  deckId?: string;
+}
+
+const CPDeckAndTrashCard: React.FC<CPDeckAndTrashCardProps> = ({
+  deck,
+  trash,
+  className,
+  poolId,
+  deckId,
+}) => {
+  return (
+    <div
+      className={`h-full w-[300px] rounded-lg border border-border bg-card p-3 text-xs opacity-80 ${className ?? ''}`}
+      style={{ display: 'flex', flexDirection: 'column' }}
+    >
+      <Accordion type="single" defaultValue="resulting-deck" collapsible>
+        <AccordionItem value="resulting-deck">
+          <AccordionTrigger className="font-semibold">
+            <div className="flex flex-1 items-center justify-between gap-2">
+              <h4 className="text-base mb-0! md:text-lg">Final Deck ({deck?.length ?? 0})</h4>
+              {deck && deck.length > 0 ? (
+                <CPMultiCardSelectActions
+                  cards={deck}
+                  section="deck"
+                  poolId={poolId}
+                  deckId={deckId}
+                  hideInlineSelectDeselect
+                />
+              ) : null}
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="max-h-[calc(100vh-320px)] overflow-y-auto flex justify-center">
+            {deck && deck.length > 0 ? (
+              <CPCardContentStack
+                items={deck}
+                size="w200"
+                showTitle={false}
+                showBadges={false}
+                showMultiSelectActions={false}
+              />
+            ) : (
+              <p className="text-xs opacity-80">
+                Deck is empty. Select cards in the pool and move them here!
+              </p>
+            )}
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="trash">
+          <AccordionTrigger className="font-semibold">
+            <div className="flex flex-1 items-center justify-between gap-2">
+              <h4 className="text-base mb-0! md:text-lg">Trash ({trash?.length ?? 0})</h4>
+              {trash && trash.length > 0 ? (
+                <CPMultiCardSelectActions
+                  cards={trash}
+                  section="trash"
+                  poolId={poolId}
+                  deckId={deckId}
+                  hideInlineSelectDeselect
+                />
+              ) : null}
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="max-h-[calc(100vh-320px)] overflow-y-auto rounded-md border p-3 bg-red-50/70 border-red-300 dark:bg-red-950/30 dark:border-red-800 flex justify-center">
+            {trash && trash.length > 0 ? (
+              <CPCardContentStack
+                items={trash}
+                size="w200"
+                showTitle={false}
+                showBadges={false}
+                showMultiSelectActions={false}
+              />
+            ) : (
+              <p className="text-xs opacity-80">Trash is empty.</p>
+            )}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+};
+
+export default CPDeckAndTrashCard;

@@ -10,11 +10,14 @@ import {
   MostPlayedCards,
 } from './sections';
 import { cn } from '@/lib/utils.ts';
-import GridSection, { SectionCardSizing } from '@/components/app/daily-snapshots/GridSection.tsx';
+import GridSection, {
+  SectionCardSizing,
+} from '@/components/app/global/GridSection/GridSection.tsx';
 import { motion } from 'framer-motion';
 import type { DailySnapshotSectionData } from '../../../../../types/DailySnapshots.ts';
 import SocialButtons from '@/components/app/global/SocialButtons.tsx';
 import FallbackPage from '@/components/app/daily-snapshots/FallbackPage.tsx';
+import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
 
 const formatToday = (): string => {
   const d = new Date();
@@ -179,11 +182,7 @@ const DailySnapshots: React.FC = () => {
 
             return (
               <GridSection key={sectionName} sizing={sizing}>
-                <div
-                  className={cn(
-                    'border rounded-lg bg-card p-4 shadow-xs h-full min-w-0 flex flex-col min-h-0',
-                  )}
-                >
+                <GridSectionContent>
                   {Comp ? (
                     <Comp
                       payload={payload}
@@ -195,7 +194,7 @@ const DailySnapshots: React.FC = () => {
                       {JSON.stringify(payload, null, 2)}
                     </pre>
                   )}
-                </div>
+                </GridSectionContent>
               </GridSection>
             );
           })}

@@ -20,13 +20,21 @@ import type { CardImageVariantProps } from '@/components/app/global/CardImage.ts
 interface DeckCardHoverImageProps extends PropsWithChildren {
   card: CardDataWithVariants<CardListVariants> | undefined;
   size?: CardImageVariantProps['size'];
+  active?: boolean;
+  defaultVariantId?: string;
 }
 
-const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({ card, size = 'original', children }) => {
+const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({
+  card,
+  size = 'original',
+  active,
+  defaultVariantId,
+  children,
+}) => {
   const { isMobile } = useSidebar();
-  const defaultVariant = card ? selectDefaultVariant(card) : '';
+  const defaultVariant = defaultVariantId ?? (card ? selectDefaultVariant(card) : '');
 
-  if (isMobile) return children;
+  if (isMobile || !active) return children;
 
   return (
     <HoverCard openDelay={0} closeDelay={0}>
@@ -47,7 +55,12 @@ const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({ card, size = 'o
             align="start"
             avoidCollisions={true}
           >
-            <CardImage card={card} cardVariantId={defaultVariant} size={size} />
+            <CardImage
+              card={card}
+              cardVariantId={defaultVariant}
+              size={size}
+              forceHorizontal={card?.front.horizontal ?? false}
+            />
           </HoverCardContent>
         </HoverCardPortal>
       )}

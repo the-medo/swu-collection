@@ -8,10 +8,11 @@ import {
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
 import { SwuSet } from '../../../../../types/enums.ts';
-import { setArray } from '../../../../../lib/swu-resources/set-info.ts';
+import { setArray, SetInfo } from '../../../../../lib/swu-resources/set-info.ts';
 
 export type SetSelectProps = {
   showFullName?: boolean;
+  forcedSetList?: SetInfo[];
 } & (
   | {
       value: SwuSet;
@@ -31,6 +32,7 @@ const SetSelect: React.FC<SetSelectProps> = ({
   value,
   emptyOption,
   showFullName = false,
+  forcedSetList,
 }) => {
   const [swuSet, setSwuSet] = React.useState<SwuSet | 'empty'>(value ?? 'empty');
 
@@ -59,7 +61,7 @@ const SetSelect: React.FC<SetSelectProps> = ({
       </SelectTrigger>
       <SelectContent>
         {emptyOption && <SelectItem value="empty">{showFullName ? '- no set -' : '-'}</SelectItem>}
-        {setArray.map(s => (
+        {(forcedSetList ?? setArray).map(s => (
           <SelectItem key={s.code} value={s.code}>
             {showFullName ? (
               <div className="flex gap-2 grow justify-between">

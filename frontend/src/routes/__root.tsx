@@ -7,13 +7,14 @@ import { z } from 'zod';
 import CardDetailDialog from '@/components/app/cards/CardDetailDialog/CardDetailDialog.tsx';
 import SidebarTriggerButton from '@/components/app/navigation/TopMenu/SidebarTriggerButton.tsx';
 import { DeckSortField } from '../../../types/ZDeck.ts';
-import { SwuAspect } from '../../../types/enums.ts';
+import { SwuAspect, SwuSet } from '../../../types/enums.ts';
 import CookieConsent from '@/components/app/pages/CookieConsent.tsx';
 import Footer from '@/components/app/pages/Footer.tsx';
 import { metaInfoArray } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { cardStatsTabsArray } from '@/components/app/card-stats/CardStatsTabs/CardStatsTabs.tsx';
 import { aspectTabOptions } from '@/components/app/card-stats/AspectCardStats/AspectCardStats.tsx';
 import { UserSettingsLoader } from '@/components/app/users/UserSettingsLoader.tsx';
+import { CardPoolType } from '../../../shared/types/cardPools.ts';
 
 const globalSearchParams = z.object({
   // global filters
@@ -84,6 +85,14 @@ const globalSearchParams = z.object({
   tfSort: z.string().optional(),
   tfOrder: z.enum(['asc', 'desc']).optional(),
   tfShowFuture: z.boolean().optional(),
+
+  // Card pools
+  poolSet: z.enum(SwuSet).optional(),
+  poolType: z.enum(CardPoolType).optional(),
+  poolCustom: z.boolean().optional(),
+  poolLeader: z.string().optional(),
+  poolSort: z.enum(['created_at', 'updated_at']).optional(),
+  poolOrder: z.enum(['asc', 'desc']).optional(),
 });
 export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 

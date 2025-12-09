@@ -43,7 +43,7 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
         <FavoriteButton deckId={deckId} isFavorite={isFavorite} />
         <CopyLinkButton deckId={deckId} isPublic={!!deckData?.deck.public} />
         <ComparerButton deckId={deckId} additionalData={additionalData} />
-        <DuplicateButton deckId={deckId} />
+        <DuplicateButton deckId={deckId} isLimited={!!deckData?.deck.cardPoolId} />
         <PriceSourceSelector />
         <ExportOptionsMenu
           deckData={deckData}

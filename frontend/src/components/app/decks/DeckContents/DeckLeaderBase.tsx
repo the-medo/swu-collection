@@ -16,7 +16,7 @@ interface DeckLeaderBaseProps {
 
 const DeckLeaderBase: React.FC<DeckLeaderBaseProps> = ({ deckId, size = 'w200' }) => {
   const { data } = useGetDeck(deckId);
-  const { format, owned } = useDeckInfo(deckId);
+  const { format, editable } = useDeckInfo(deckId);
   const deckFormatInfo = formatDataById[format];
 
   const putDeckMutation = usePutDeck(deckId);
@@ -45,7 +45,7 @@ const DeckLeaderBase: React.FC<DeckLeaderBaseProps> = ({ deckId, size = 'w200' }
         onLeaderSelected={(cardId: string | undefined) =>
           updateDeck({ leaderCardId1: cardId ?? null })
         }
-        editable={owned}
+        editable={editable}
         size={size}
       />
       {deckFormatInfo.leaderCount === 2 && (
@@ -55,7 +55,7 @@ const DeckLeaderBase: React.FC<DeckLeaderBaseProps> = ({ deckId, size = 'w200' }
           onLeaderSelected={(cardId: string | undefined) =>
             updateDeck({ leaderCardId2: cardId ?? null })
           }
-          editable={owned}
+          editable={editable}
           size={size}
         />
       )}
@@ -63,7 +63,7 @@ const DeckLeaderBase: React.FC<DeckLeaderBaseProps> = ({ deckId, size = 'w200' }
         trigger={null}
         baseCardId={data?.deck.baseCardId ?? undefined}
         onBaseSelected={(cardId: string | undefined) => updateDeck({ baseCardId: cardId ?? null })}
-        editable={owned}
+        editable={editable}
         size={size}
       />
     </>

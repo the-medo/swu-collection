@@ -19,6 +19,7 @@ import { Route as ToolsIndexRouteImport } from './routes/tools/index'
 import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
 import { Route as MetaIndexRouteImport } from './routes/meta/index'
 import { Route as MessagesIndexRouteImport } from './routes/messages/index'
+import { Route as LimitedIndexRouteImport } from './routes/limited/index'
 import { Route as ComparerIndexRouteImport } from './routes/comparer/index'
 import { Route as WantlistsYourRouteImport } from './routes/wantlists/your'
 import { Route as WantlistsPublicRouteImport } from './routes/wantlists/public'
@@ -40,6 +41,7 @@ import { Route as TournamentsAllIndexRouteImport } from './routes/tournaments/al
 import { Route as TournamentsTournamentIdIndexRouteImport } from './routes/tournaments/$tournamentId/index'
 import { Route as ToolsDeckFormatConverterIndexRouteImport } from './routes/tools/deck-format-converter/index'
 import { Route as ListsCardListIdIndexRouteImport } from './routes/lists/$cardListId/index'
+import { Route as LimitedPublicIndexRouteImport } from './routes/limited/public/index'
 import { Route as DecksDeckIdIndexRouteImport } from './routes/decks/$deckId/index'
 import { Route as CollectionsCollectionIdIndexRouteImport } from './routes/collections/$collectionId/index'
 import { Route as TournamentsTournamentIdMetaRouteImport } from './routes/tournaments/$tournamentId/meta'
@@ -49,6 +51,8 @@ import { Route as TournamentsTournamentIdDecksRouteImport } from './routes/tourn
 import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/tournaments/$tournamentId/card-stats'
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
+import { Route as LimitedDeckDeckIdIndexRouteImport } from './routes/limited/deck/$deckId/index'
+import { Route as LimitedPoolPoolIdDetailIndexRouteImport } from './routes/limited/pool/$poolId/detail/index'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -97,6 +101,11 @@ const MetaIndexRoute = MetaIndexRouteImport.update({
 const MessagesIndexRoute = MessagesIndexRouteImport.update({
   id: '/messages/',
   path: '/messages/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LimitedIndexRoute = LimitedIndexRouteImport.update({
+  id: '/limited/',
+  path: '/limited/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComparerIndexRoute = ComparerIndexRouteImport.update({
@@ -209,6 +218,11 @@ const ListsCardListIdIndexRoute = ListsCardListIdIndexRouteImport.update({
   path: '/lists/$cardListId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LimitedPublicIndexRoute = LimitedPublicIndexRouteImport.update({
+  id: '/limited/public/',
+  path: '/limited/public/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DecksDeckIdIndexRoute = DecksDeckIdIndexRouteImport.update({
   id: '/decks/$deckId/',
   path: '/decks/$deckId/',
@@ -260,6 +274,17 @@ const CardsDetailCardIdRoute = CardsDetailCardIdRouteImport.update({
   path: '/cards/detail/$cardId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LimitedDeckDeckIdIndexRoute = LimitedDeckDeckIdIndexRouteImport.update({
+  id: '/limited/deck/$deckId/',
+  path: '/limited/deck/$deckId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LimitedPoolPoolIdDetailIndexRoute =
+  LimitedPoolPoolIdDetailIndexRouteImport.update({
+    id: '/limited/pool/$poolId/detail/',
+    path: '/limited/pool/$poolId/detail/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -279,6 +304,7 @@ export interface FileRoutesByFullPath {
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
+  '/limited': typeof LimitedIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/meta': typeof MetaIndexRoute
   '/notifications': typeof NotificationsIndexRoute
@@ -293,6 +319,7 @@ export interface FileRoutesByFullPath {
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
+  '/limited/public': typeof LimitedPublicIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
@@ -301,6 +328,8 @@ export interface FileRoutesByFullPath {
   '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
+  '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
+  '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -320,6 +349,7 @@ export interface FileRoutesByTo {
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
+  '/limited': typeof LimitedIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/meta': typeof MetaIndexRoute
   '/notifications': typeof NotificationsIndexRoute
@@ -334,6 +364,7 @@ export interface FileRoutesByTo {
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
+  '/limited/public': typeof LimitedPublicIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
@@ -342,6 +373,8 @@ export interface FileRoutesByTo {
   '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
+  '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
+  '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -363,6 +396,7 @@ export interface FileRoutesById {
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer/': typeof ComparerIndexRoute
+  '/limited/': typeof LimitedIndexRoute
   '/messages/': typeof MessagesIndexRoute
   '/meta/': typeof MetaIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
@@ -377,6 +411,7 @@ export interface FileRoutesById {
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
+  '/limited/public/': typeof LimitedPublicIndexRoute
   '/lists/$cardListId/': typeof ListsCardListIdIndexRoute
   '/tools/deck-format-converter/': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId/': typeof TournamentsTournamentIdIndexRoute
@@ -385,6 +420,8 @@ export interface FileRoutesById {
   '/tournaments/planetary-qualifiers/': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
+  '/limited/deck/$deckId/': typeof LimitedDeckDeckIdIndexRoute
+  '/limited/pool/$poolId/detail/': typeof LimitedPoolPoolIdDetailIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -406,6 +443,7 @@ export interface FileRouteTypes {
     | '/wantlists/public'
     | '/wantlists/your'
     | '/comparer'
+    | '/limited'
     | '/messages'
     | '/meta'
     | '/notifications'
@@ -420,6 +458,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/meta'
     | '/collections/$collectionId'
     | '/decks/$deckId'
+    | '/limited/public'
     | '/lists/$cardListId'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
@@ -428,6 +467,8 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
+    | '/limited/deck/$deckId'
+    | '/limited/pool/$poolId/detail'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -447,6 +488,7 @@ export interface FileRouteTypes {
     | '/wantlists/public'
     | '/wantlists/your'
     | '/comparer'
+    | '/limited'
     | '/messages'
     | '/meta'
     | '/notifications'
@@ -461,6 +503,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/meta'
     | '/collections/$collectionId'
     | '/decks/$deckId'
+    | '/limited/public'
     | '/lists/$cardListId'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
@@ -469,6 +512,8 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
+    | '/limited/deck/$deckId'
+    | '/limited/pool/$poolId/detail'
   id:
     | '__root__'
     | '/'
@@ -489,6 +534,7 @@ export interface FileRouteTypes {
     | '/wantlists/public'
     | '/wantlists/your'
     | '/comparer/'
+    | '/limited/'
     | '/messages/'
     | '/meta/'
     | '/notifications/'
@@ -503,6 +549,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/meta'
     | '/collections/$collectionId/'
     | '/decks/$deckId/'
+    | '/limited/public/'
     | '/lists/$cardListId/'
     | '/tools/deck-format-converter/'
     | '/tournaments/$tournamentId/'
@@ -511,6 +558,8 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers/'
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
+    | '/limited/deck/$deckId/'
+    | '/limited/pool/$poolId/detail/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -530,6 +579,7 @@ export interface RootRouteChildren {
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
+  LimitedIndexRoute: typeof LimitedIndexRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
   MetaIndexRoute: typeof MetaIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
@@ -544,6 +594,7 @@ export interface RootRouteChildren {
   TournamentsTournamentIdMetaRoute: typeof TournamentsTournamentIdMetaRoute
   CollectionsCollectionIdIndexRoute: typeof CollectionsCollectionIdIndexRoute
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
+  LimitedPublicIndexRoute: typeof LimitedPublicIndexRoute
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
   ToolsDeckFormatConverterIndexRoute: typeof ToolsDeckFormatConverterIndexRoute
   TournamentsTournamentIdIndexRoute: typeof TournamentsTournamentIdIndexRoute
@@ -552,6 +603,8 @@ export interface RootRouteChildren {
   TournamentsPlanetaryQualifiersIndexRoute: typeof TournamentsPlanetaryQualifiersIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
+  LimitedDeckDeckIdIndexRoute: typeof LimitedDeckDeckIdIndexRoute
+  LimitedPoolPoolIdDetailIndexRoute: typeof LimitedPoolPoolIdDetailIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -624,6 +677,13 @@ declare module '@tanstack/react-router' {
       path: '/messages'
       fullPath: '/messages'
       preLoaderRoute: typeof MessagesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/limited/': {
+      id: '/limited/'
+      path: '/limited'
+      fullPath: '/limited'
+      preLoaderRoute: typeof LimitedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/comparer/': {
@@ -773,6 +833,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ListsCardListIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/limited/public/': {
+      id: '/limited/public/'
+      path: '/limited/public'
+      fullPath: '/limited/public'
+      preLoaderRoute: typeof LimitedPublicIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/decks/$deckId/': {
       id: '/decks/$deckId/'
       path: '/decks/$deckId'
@@ -836,6 +903,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CardsDetailCardIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/limited/deck/$deckId/': {
+      id: '/limited/deck/$deckId/'
+      path: '/limited/deck/$deckId'
+      fullPath: '/limited/deck/$deckId'
+      preLoaderRoute: typeof LimitedDeckDeckIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/limited/pool/$poolId/detail/': {
+      id: '/limited/pool/$poolId/detail/'
+      path: '/limited/pool/$poolId/detail'
+      fullPath: '/limited/pool/$poolId/detail'
+      preLoaderRoute: typeof LimitedPoolPoolIdDetailIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -870,6 +951,7 @@ const rootRouteChildren: RootRouteChildren = {
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
   ComparerIndexRoute: ComparerIndexRoute,
+  LimitedIndexRoute: LimitedIndexRoute,
   MessagesIndexRoute: MessagesIndexRoute,
   MetaIndexRoute: MetaIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
@@ -884,6 +966,7 @@ const rootRouteChildren: RootRouteChildren = {
   TournamentsTournamentIdMetaRoute: TournamentsTournamentIdMetaRoute,
   CollectionsCollectionIdIndexRoute: CollectionsCollectionIdIndexRoute,
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
+  LimitedPublicIndexRoute: LimitedPublicIndexRoute,
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
   ToolsDeckFormatConverterIndexRoute: ToolsDeckFormatConverterIndexRoute,
   TournamentsTournamentIdIndexRoute: TournamentsTournamentIdIndexRoute,
@@ -893,6 +976,8 @@ const rootRouteChildren: RootRouteChildren = {
     TournamentsPlanetaryQualifiersIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
+  LimitedDeckDeckIdIndexRoute: LimitedDeckDeckIdIndexRoute,
+  LimitedPoolPoolIdDetailIndexRoute: LimitedPoolPoolIdDetailIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -117,7 +117,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       return (
         <div className={cn('w-fit', { 'cursor-pointer': editable })}>
           <CardImage forceHorizontal backSideButton={editable ? false : 'mid'} size={size}>
-            <h6 className="flex mb-0 gap-2 items-center">
+            <h6 className="flex mb-0 mt-2 gap-2 items-center">
               <Crown size={20} /> Leader
             </h6>
           </CardImage>

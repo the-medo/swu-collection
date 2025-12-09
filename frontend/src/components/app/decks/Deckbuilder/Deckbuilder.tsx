@@ -42,7 +42,7 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
       <Link to="/decks/$deckId" params={{ deckId }} className="flex mt-2 w-full">
         <DeckGradientButton deckId={deckId} variant="outline" size="lg" className="w-full">
           <X />
-          <h5 className="mb-0">Close deckbuilder</h5>
+          <h5 className="mb-0!">Close deckbuilder</h5>
         </DeckGradientButton>
       </Link>
     );

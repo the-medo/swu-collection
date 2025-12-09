@@ -15,7 +15,7 @@ interface DeckCardActionsProps extends DeckCardDropdownMenuProps {
 const DeckCardActions: React.FC<DeckCardActionsProps> = ({
   deckCard,
   card,
-  owned = false,
+  editable = false,
   cardInBoards,
   onQuantityChange,
 }) => {
@@ -70,7 +70,7 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
               <DeckCardQuantitySelector
                 value={cardInBoards?.[1]}
                 onChange={n => onQuantityChange(n, 1)}
-                disabled={!owned}
+                disabled={!editable}
               />
             </div>
             <div className="flex gap-2 justify-between items-center">
@@ -78,7 +78,7 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
               <DeckCardQuantitySelector
                 value={cardInBoards?.[2]}
                 onChange={n => onQuantityChange(n, 2)}
-                disabled={!owned}
+                disabled={!editable}
               />
             </div>
             <div className="flex gap-2 justify-between items-center">
@@ -86,7 +86,7 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
               <DeckCardQuantitySelector
                 value={cardInBoards?.[3]}
                 onChange={n => onQuantityChange(n, 3)}
-                disabled={!owned}
+                disabled={!editable}
               />
             </div>
             <DropdownMenuSeparator />

@@ -15,6 +15,8 @@ import { Textarea } from '@/components/ui/textarea.tsx';
 import { Deck } from '../../../../../types/Deck.ts';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
+import { useUpdateCardPoolDeck } from '@/api/card-pools/useUpdateCardPoolDeck.ts';
+import { publicToVisibilityMap } from '../../../../../shared/types/visibility.ts';
 
 type EditDeckDialogProps = Pick<DialogProps, 'trigger'> & {
   deck: Deck;
@@ -25,6 +27,7 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const putDeckMutation = usePutDeck(deck.id);
+  const updateCardPoolDeckMutation = useUpdateCardPoolDeck(deck.cardPoolId, deck.id);
 
   const form = useForm({
     defaultValues: {
@@ -34,22 +37,40 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
       public: (deck.public as DeckPrivacy) ?? 2,
     },
     onSubmit: async ({ value }) => {
-      putDeckMutation.mutate(
-        {
-          name: value.name,
-          description: value.description,
-          format: value.format,
-          public: value.public,
-        },
-        {
-          onSuccess: () => {
-            toast({
-              title: `Deck updated!`,
-            });
-            setOpen(false);
+      if (deck.cardPoolId) {
+        // Update a deck that belongs to a card pool (limited deck)
+        updateCardPoolDeckMutation.mutate(
+          {
+            name: value.name,
+            description: value.description,
+            visibility: publicToVisibilityMap[value.public],
           },
-        },
-      );
+          {
+            onSuccess: () => {
+              toast({ title: `Deck updated!` });
+              setOpen(false);
+            },
+          },
+        );
+      } else {
+        // Update a regular deck
+        putDeckMutation.mutate(
+          {
+            name: value.name,
+            description: value.description,
+            format: value.format,
+            public: value.public,
+          },
+          {
+            onSuccess: () => {
+              toast({
+                title: `Deck updated!`,
+              });
+              setOpen(false);
+            },
+          },
+        );
+      }
     },
   });
 
