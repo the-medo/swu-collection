@@ -49,6 +49,10 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
         throw new Error('Collection id is required');
       }
 
+      if (cardData.data.price === '') {
+        cardData.data.price = null;
+      }
+
       const response = await api.collection[':id'].card.$put({
         param: { id: collectionId },
         json: cardData,
