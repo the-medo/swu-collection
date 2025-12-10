@@ -17,6 +17,7 @@ interface DeckbuilderCardMenuProps {
   cardInBoards: DeckCardInBoards;
   displayQuantity?: boolean;
   displayDropdown?: boolean;
+  editable: boolean;
 }
 
 const DeckbuilderCardMenu: React.FC<DeckbuilderCardMenuProps> = ({
@@ -26,6 +27,7 @@ const DeckbuilderCardMenu: React.FC<DeckbuilderCardMenuProps> = ({
   cardInBoards,
   displayQuantity = true,
   displayDropdown = true,
+  editable,
 }) => {
   const mutation = usePutDeckCard(deckId);
 
@@ -63,7 +65,7 @@ const DeckbuilderCardMenu: React.FC<DeckbuilderCardMenuProps> = ({
               deckId={deckId}
               deckCard={deckCard}
               card={card}
-              owned={true}
+              editable={editable}
               cardInBoards={cardInBoards}
               onQuantityChange={quantityChangeHandler}
             />

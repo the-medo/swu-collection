@@ -13,6 +13,7 @@ import {
 } from '../../../../../../lib/swu-resources/types.ts';
 import DeckbuilderCardMenu from '@/components/app/decks/Deckbuilder/DeckbuilderCardMenu.tsx';
 import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts';
+import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 
 interface DeckbuilderProps {
   deckId: string;
@@ -24,6 +25,8 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
   const {
     deckCardsForLayout: { usedCardsInBoards },
   } = useDeckData(deckId);
+
+  const { editable } = useDeckInfo(deckId);
 
   /**
    *  sidebarOpen is not in dependencies:
@@ -65,11 +68,12 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
           deckId={deckId}
           deckCard={deckCard}
           card={card}
+          editable={editable}
           cardInBoards={usedCardsInBoards?.[cardId] ?? undefined}
         />
       );
     },
-    [deckId, usedCardsInBoards],
+    [deckId, usedCardsInBoards, editable],
   );
 
   return (
