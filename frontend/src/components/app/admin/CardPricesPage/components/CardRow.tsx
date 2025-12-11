@@ -12,33 +12,35 @@ interface CardRowProps {
 
 const CardRow: React.FC<CardRowProps> = ({ card }) => {
   const [variantId, setVariantId] = useState(card.variantId || '');
+  const [cardId, setCardId] = useState(card.cardId || '');
+  const [isEditingCardId, setIsEditingCardId] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const createMutation = useCreateCardPriceSource();
-  
+
   const handleSubmit = async () => {
     if (!card.cardId || !variantId) {
       return;
     }
-    
+
     try {
       await createMutation.mutateAsync({
         cardId: card.cardId,
         variantId: variantId,
         sourceType: 'cardmarket',
-        sourceLink: `https://www.cardmarket.com${card.link}`,
+        sourceLink: card.link,
         sourceProductId: card.productId,
       });
-      
+
       setIsSubmitted(true);
     } catch (error) {
       console.error('Failed to create pricing source:', error);
     }
   };
-  
+
   return (
-    <TableRow 
-      key={card.productId}
-      className={isSubmitted ? "bg-gray-100 opacity-80" : ""}
+    <TableRow
+      key={`${card.productId}-${card.cardId}`}
+      className={isSubmitted ? 'bg-gray-100 opacity-80' : ''}
     >
       <TableCell className="w-[150px]">
         <CardImageCell card={card} variantId={variantId} />
@@ -49,17 +51,31 @@ const CardRow: React.FC<CardRowProps> = ({ card }) => {
       </TableCell>
       <TableCell className="space-y-1">
         <Input value={card.productId} disabled className="w-full" />
-        <Input value={card.cardId || ''} disabled className="w-full" />
-        <Input 
-          value={variantId} 
-          onChange={(e) => setVariantId(e.target.value)}
-          className="w-full" 
+        <Input
+          value={cardId}
+          onChange={e => {
+            setCardId(e.target.value);
+            card.cardId = e.target.value;
+          }}
+          onDoubleClick={() => {
+            if (!isSubmitted) setIsEditingCardId(true);
+          }}
+          // Keep blur if you want to exit edit mode automatically
+          // onBlur={() => setIsEditingCardId(false)}
+          readOnly={!isEditingCardId}
+          disabled={isSubmitted}
+          className="w-full"
+        />
+        <Input
+          value={variantId}
+          onChange={e => setVariantId(e.target.value)}
+          className="w-full"
           disabled={isSubmitted}
         />
       </TableCell>
       <TableCell className="w-[150px] truncate">
         <a
-          href={`https://www.cardmarket.com${card.link}`}
+          href={card.link}
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-500 hover:underline text-wrap"
@@ -68,8 +84,8 @@ const CardRow: React.FC<CardRowProps> = ({ card }) => {
         </a>
       </TableCell>
       <TableCell className=" w-[100px]">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={handleSubmit}
           disabled={isSubmitted || createMutation.isPending || !card.cardId || !variantId}
         >

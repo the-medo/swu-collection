@@ -46,7 +46,7 @@ export function parseCardmarketHtml(
       const linkElement = row.querySelector('a[href^="/en/StarWarsUnlimited/Products/"]');
       if (!linkElement) return;
 
-      const link = linkElement.getAttribute('href') || '';
+      const link = 'https://www.cardmarket.com' + linkElement.getAttribute('href') || '';
       const nameDirty = linkElement.textContent || '';
       const name = cleanCardName(nameDirty);
 
