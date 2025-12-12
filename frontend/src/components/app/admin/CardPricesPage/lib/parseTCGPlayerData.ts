@@ -1,5 +1,5 @@
 import { SwuSet } from '../../../../../../../types/enums.ts';
-import { CardList } from '../../../../../../../lib/swu-resources/types.ts';
+import { CardList, CardVariant } from '../../../../../../../lib/swu-resources/types.ts';
 import { transformToId } from '../../../../../../../lib/swu-resources/lib/transformToId.ts';
 import { ParsedCardData } from './parseCardmarketHtml.ts';
 import { TCGCSV_SWU_ID } from '../../../../../../../shared/consts/constants.ts';
@@ -23,6 +23,8 @@ export async function parseTCGPlayerData(
   tcgPlayerGroupId: number,
   selectedSet: SwuSet | null,
   cards: CardList | undefined,
+  preferredVariantName?: string,
+  preferredVariantNameExact?: boolean,
 ): Promise<ParsedCardData[]> {
   try {
     const url = `https://tcgcsv.com/tcgplayer/${TCGCSV_SWU_ID}/${tcgPlayerGroupId}/products`;
@@ -32,6 +34,13 @@ export async function parseTCGPlayerData(
     }
     const json = await res.json();
     const results: TcgplayerProduct[] = Array.isArray(json?.results) ? json.results : [];
+
+    const matchPreferredVariantName = (v: CardVariant | undefined) => {
+      if (!preferredVariantName || preferredVariantName === '' || !v) return false;
+      return preferredVariantNameExact
+        ? (v?.variantName || '').toLowerCase() === preferredVariantName
+        : (v?.variantName || '').toLowerCase().includes(preferredVariantName);
+    };
 
     return results.map(p => {
       const nameDirty = p.name || '';
@@ -49,12 +58,17 @@ export async function parseTCGPlayerData(
       let probableVariantId: string | undefined = undefined;
       if (cards && probableCardId && cards[probableCardId]) {
         const targetNo = parseInt(cardNumber);
-        const variant = Object.values(cards[probableCardId]?.variants || {}).find(v => {
+        let foundPreferred;
+        const candidates = Object.values(cards[probableCardId]?.variants || {}).filter(v => {
           const matchesNumber = Number.isFinite(targetNo) && v?.cardNo === targetNo;
-          if (!matchesNumber) return false;
+          const matchesPreferredVariantName = matchPreferredVariantName(v);
+          if (!matchesNumber && !matchesPreferredVariantName) return false;
+          foundPreferred = v;
           return !selectedSet || v?.set === selectedSet;
         });
-        probableVariantId = variant?.variantId;
+
+        let chosen = foundPreferred ?? candidates[0];
+        probableVariantId = chosen?.variantId;
       } else {
         probableCardId = undefined;
       }

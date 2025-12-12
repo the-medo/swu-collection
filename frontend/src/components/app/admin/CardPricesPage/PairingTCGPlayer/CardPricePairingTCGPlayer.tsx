@@ -9,6 +9,7 @@ import { parseTCGPlayerData } from '../lib/parseTCGPlayerData.ts';
 import { ParsedCardData } from '../lib/parseCardmarketHtml.ts';
 import CardPricePairingTable from '../components/CardPricePairingTable.tsx';
 import TCGPlayerGroupSelect from '@/components/app/admin/CardPricesPage/PairingTCGPlayer/TCGPlayerGroupSelect.tsx';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
 
 const CardPricePairingTCGPlayer: React.FC = () => {
   const [selectedGroupId, setSelectedGroupId] = React.useState<number | null>(null);
@@ -16,6 +17,8 @@ const CardPricePairingTCGPlayer: React.FC = () => {
   const [parsedData, setParsedData] = React.useState<ParsedCardData[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [preferredVariantName, setPreferredVariantName] = React.useState<string>('');
+  const [preferredVariantNameExact, setPreferredVariantNameExact] = React.useState<boolean>(false);
 
   const { data: cardList } = useCardList();
 
@@ -24,6 +27,8 @@ const CardPricePairingTCGPlayer: React.FC = () => {
     setSelectedSet(null);
     setParsedData([]);
     setError(null);
+    setPreferredVariantName('');
+    setPreferredVariantNameExact(false);
   };
 
   const handleParse = async () => {
@@ -34,7 +39,13 @@ const CardPricePairingTCGPlayer: React.FC = () => {
         setError('Please select a TCGplayer group first');
         return;
       }
-      const results = await parseTCGPlayerData(selectedGroupId, selectedSet, cardList?.cards);
+      const results = await parseTCGPlayerData(
+        selectedGroupId,
+        selectedSet,
+        cardList?.cards,
+        preferredVariantName.toLowerCase().trim() || undefined,
+        preferredVariantNameExact,
+      );
       if (results.length === 0) {
         setError('No card data found for the selected group.');
       }
@@ -73,6 +84,25 @@ const CardPricePairingTCGPlayer: React.FC = () => {
                 onChange={setSelectedSet}
                 showFullName={true}
               />
+            </div>
+            <div className="w-56">
+              <input
+                type="text"
+                className="w-full border rounded px-2 py-1"
+                placeholder="Preferred variant name (optional)"
+                value={preferredVariantName}
+                onChange={e => setPreferredVariantName(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                checked={preferredVariantNameExact}
+                onCheckedChange={v => v !== 'indeterminate' && setPreferredVariantNameExact(!!v)}
+                id="preferredVariantNameExact"
+              />
+              <label htmlFor="preferredVariantNameExact" className="text-sm select-none">
+                Exact
+              </label>
             </div>
             <Button onClick={handleParse} disabled={isLoading}>
               {isLoading ? 'Parsing...' : 'Parse'}
