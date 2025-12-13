@@ -130,7 +130,11 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
             {card?.name}
           </span>
           <div className="flex gap-2 justify-end">
-            {displayDeckPrice && <DeckCardPriceBadge card={card} />}
+            {displayDeckPrice && (
+              <div className={cn(editable && 'group-hover:hidden')}>
+                <DeckCardPriceBadge card={card} />
+              </div>
+            )}
             <div
               className={cn('flex gap-0 w-[50px] justify-end', {
                 'group-hover:hidden': editable,

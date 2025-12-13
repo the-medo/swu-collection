@@ -4,11 +4,15 @@ import { Badge } from '@/components/ui/badge';
 import { PriceBadgeTooltip } from './PriceBadgeTooltip';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils.ts';
+import {
+  CardPriceSourceType,
+  priceFormatterBasedOnSourceType,
+} from '../../../../../types/CardPrices.ts';
 
 export interface PriceBadgeProps {
   cardId: string;
   variantId: string;
-  sourceType: string;
+  sourceType: CardPriceSourceType;
   displayLogo?: boolean;
   displayTooltip?: boolean;
   displayNA?: boolean;
@@ -53,7 +57,7 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
   const hasPrice = price && price !== '0.00';
 
   // Format price as EUR
-  const formattedPrice = hasPrice ? `${price}€` : 'N/A';
+  const formattedPrice = hasPrice ? priceFormatterBasedOnSourceType(price, sourceType) : 'N/A';
 
   const badge = useMemo(
     () => (
@@ -67,7 +71,22 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
         )}
       >
         {displayLogo && (
-          <img src="https://images.swubase.com/cm-logo.png" alt="CardMarket" className="size-3" />
+          <>
+            {sourceType === CardPriceSourceType.CARDMARKET && (
+              <img
+                src="https://images.swubase.com/cm-logo.png"
+                alt="CardMarket"
+                className="size-3"
+              />
+            )}
+            {sourceType === CardPriceSourceType.TCGPLAYER && (
+              <img
+                src="https://images.swubase.com/price-source-thumbnails/icon-tcgplayer.png"
+                alt="CardMarket"
+                className="size-3 bg-white border-1 border-white"
+              />
+            )}
+          </>
         )}
         <span>{formattedPrice}</span>
       </Badge>
