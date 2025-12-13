@@ -10,6 +10,7 @@ import { ParsedCardData } from '../lib/parseCardmarketHtml.ts';
 import CardPricePairingTable from '../components/CardPricePairingTable.tsx';
 import TCGPlayerGroupSelect from '@/components/app/admin/CardPricesPage/PairingTCGPlayer/TCGPlayerGroupSelect.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
+import { CardPriceSourceType } from '../../../../../../../types/CardPrices.ts';
 
 const CardPricePairingTCGPlayer: React.FC = () => {
   const [selectedGroupId, setSelectedGroupId] = React.useState<number | null>(null);
@@ -135,7 +136,10 @@ const CardPricePairingTCGPlayer: React.FC = () => {
 
           {error && <div className="text-red-500 mt-2">{error}</div>}
 
-          <CardPricePairingTable parsedData={parsedData} />
+          <CardPricePairingTable
+            parsedData={parsedData}
+            sourceType={CardPriceSourceType.TCGPLAYER}
+          />
         </div>
       </CardContent>
     </Card>

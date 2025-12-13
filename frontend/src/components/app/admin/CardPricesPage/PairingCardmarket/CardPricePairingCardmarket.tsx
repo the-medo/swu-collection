@@ -7,6 +7,7 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { SwuSet } from '../../../../../../../types/enums.ts';
 import { parseCardmarketHtml, ParsedCardData } from '../lib/parseCardmarketHtml.ts';
 import CardPricePairingTable from '../components/CardPricePairingTable.tsx';
+import { CardPriceSourceType } from '../../../../../../../types/CardPrices.ts';
 
 const CardPricePairingCardmarket: React.FC = () => {
   const [bulkText, setBulkText] = React.useState('');
@@ -105,7 +106,10 @@ const CardPricePairingCardmarket: React.FC = () => {
 
           {error && <div className="text-red-500 mt-2">{error}</div>}
 
-          <CardPricePairingTable parsedData={parsedData} />
+          <CardPricePairingTable
+            parsedData={parsedData}
+            sourceType={CardPriceSourceType.CARDMARKET}
+          />
         </div>
       </CardContent>
     </Card>

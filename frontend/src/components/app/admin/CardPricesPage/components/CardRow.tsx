@@ -5,12 +5,14 @@ import CardImageCell from './CardImageCell';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useCreateCardPriceSource } from '@/api/card-prices/useCreateCardPriceSource';
+import { CardPriceSourceType } from '../../../../../../../types/CardPrices.ts';
 
 interface CardRowProps {
   card: ParsedCardData;
+  sourceType: CardPriceSourceType;
 }
 
-const CardRow: React.FC<CardRowProps> = ({ card }) => {
+const CardRow: React.FC<CardRowProps> = ({ card, sourceType }) => {
   const [variantId, setVariantId] = useState(card.variantId || '');
   const [cardId, setCardId] = useState(card.cardId || '');
   const [isEditingCardId, setIsEditingCardId] = useState(false);
@@ -26,7 +28,7 @@ const CardRow: React.FC<CardRowProps> = ({ card }) => {
       await createMutation.mutateAsync({
         cardId: card.cardId,
         variantId: variantId,
-        sourceType: 'cardmarket',
+        sourceType,
         sourceLink: card.link,
         sourceProductId: card.productId,
       });
