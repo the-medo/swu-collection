@@ -8,6 +8,7 @@ import {
   CardPriceSourceType,
   priceFormatterBasedOnSourceType,
 } from '../../../../../types/CardPrices.ts';
+import { LoaderCircle } from 'lucide-react';
 
 export interface PriceBadgeProps {
   cardId: string;
@@ -48,18 +49,15 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
   size = 'default',
   fixedWidth = true,
 }) => {
-  // Fetch price data using the useGetSingleCardPrice hook
   const { data, isLoading, isError } = useGetSingleCardPrice({
     cardId,
     variantId,
     sourceType,
   });
 
-  // Extract price from data
   const price = data?.data?.price;
+  const inFetchlist = data?.inFetchlist;
   const hasPrice = price && price !== '0.00';
-
-  // Format price as EUR
   const formattedPrice = hasPrice ? priceFormatterBasedOnSourceType(price, sourceType) : 'N/A';
 
   const badge = useMemo(
@@ -67,7 +65,7 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
       <Badge
         variant="secondary"
         className={cn(
-          'flex items-center gap-1 cursor-pointer h-[20px] border-background py-0',
+          'relative flex items-center gap-1 cursor-pointer h-[20px] border-background py-0',
           fixedWidth && {
             'w-[80px]': displayLogo,
             'w-[40px]': size === 'sm' && !displayLogo,
@@ -80,32 +78,45 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
           },
         )}
       >
+        {inFetchlist && (
+          <span className="absolute top-1 -left-1 animate-spin">
+            <LoaderCircle className="size-3" />
+          </span>
+        )}
         {displayLogo && (
           <>
             {sourceType === CardPriceSourceType.CARDMARKET && (
               <img
                 src="https://images.swubase.com/cm-logo.png"
                 alt="CardMarket"
-                className="size-3"
+                className={cn('size-3', inFetchlist && 'opacity-40')}
               />
             )}
             {sourceType === CardPriceSourceType.TCGPLAYER && (
               <img
                 src="https://images.swubase.com/price-source-thumbnails/icon-tcgplayer.png"
                 alt="CardMarket"
-                className="size-3 bg-white border-1 border-white"
+                className={cn('size-3 bg-white border-1 border-white', inFetchlist && 'opacity-40')}
               />
             )}
           </>
         )}
-        <span className="whitespace-nowrap">{formattedPrice}</span>
+        <span className={cn('whitespace-nowrap', inFetchlist && 'opacity-40')}>
+          {formattedPrice}
+        </span>
       </Badge>
     ),
-    [formattedPrice, displayLogo, size, moveTop, sourceType],
+    [formattedPrice, displayLogo, size, moveTop, sourceType, inFetchlist],
   );
 
   // If loading or error or no data, return null
-  if (isLoading || isError || !data || !data.success || !data.data || (!displayNA && !hasPrice)) {
+  if (isLoading || isError || !data || (!displayNA && !hasPrice && !inFetchlist)) {
+    console.log({
+      isLoading,
+      isError,
+      data,
+      dataData: data?.data,
+    });
     return null;
   }
 
@@ -118,7 +129,7 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
       <Tooltip>
         <TooltipTrigger>{badge}</TooltipTrigger>
         <TooltipContent className="p-4 max-w-sm">
-          {hasPrice ? (
+          {hasPrice && data.data ? (
             <PriceBadgeTooltip
               data={data.data.data}
               sourceType={sourceType}

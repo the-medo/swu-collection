@@ -38,7 +38,7 @@ export async function getStoredCardVariantPrice(
   const id = createCardVariantPriceId(variantId, sourceType);
   const result = await db.cardVariantPrices.get(id);
   if (!result) {
-    await addToCardVariantPriceFetchList(cardId, variantId);
+    await addToCardVariantPriceFetchList(cardId, variantId, sourceType);
     return undefined;
   }
 
@@ -54,7 +54,7 @@ export async function getStoredCardVariantPrice(
   const ageInHours = (now.getTime() - result.fetchedAt.getTime()) / (1000 * 60 * 60);
   if (ageInHours > 12) {
     // If data is stale (more than 12 hours old), add to fetch list anyway
-    await addToCardVariantPriceFetchList(cardId, variantId);
+    await addToCardVariantPriceFetchList(cardId, variantId, sourceType);
   }
 
   return result;
@@ -93,18 +93,22 @@ export async function getStoredCardVariantPricesByCard(
 export async function addToCardVariantPriceFetchList(
   cardId: string,
   variantId: string,
+  sourceType: string,
   addedAt?: Date,
 ): Promise<void> {
   await db.cardVariantPriceFetchList.put({
-    id: variantId,
+    id: `${variantId}|${sourceType}`,
     cardId,
     variantId,
     addedAt: addedAt || new Date(),
   });
 }
 
-export async function removeFromCardVariantPriceFetchList(variantId: string): Promise<void> {
-  await db.cardVariantPriceFetchList.delete(variantId);
+export async function removeFromCardVariantPriceFetchList(
+  variantId: string,
+  sourceType: string,
+): Promise<void> {
+  await db.cardVariantPriceFetchList.delete(`${variantId}|${sourceType}`);
 }
 
 export async function getCardVariantPriceFetchList(): Promise<CardVariantPriceFetchListStore[]> {
@@ -117,8 +121,11 @@ export async function getCardVariantPriceFetchList(): Promise<CardVariantPriceFe
   });
 }
 
-export async function isInCardVariantPriceFetchList(variantId: string): Promise<boolean> {
-  const item = await db.cardVariantPriceFetchList.get(variantId);
+export async function isInCardVariantPriceFetchList(
+  variantId: string,
+  sourceType: string,
+): Promise<boolean> {
+  const item = await db.cardVariantPriceFetchList.get(`${variantId}|${sourceType}`);
   return !!item;
 }
 
@@ -153,7 +160,7 @@ export async function batchStoreCardVariantPrices(
   await db.cardVariantPrices.bulkPut(items);
 
   // Remove the fetched variants from the fetch list
-  const variantIds = prices.map(price => price.variantId);
+  const variantIds = prices.map(price => `${price.variantId}|${price.sourceType}`);
   if (variantIds.length > 0) {
     await db.cardVariantPriceFetchList.bulkDelete(variantIds);
   }
@@ -163,15 +170,17 @@ export async function batchStoreCardVariantPrices(
   for (const price of prices) {
     queryClient.invalidateQueries({
       queryKey: ['single-card-price', price.variantId, price.sourceType],
+      // exact: false,
     });
   }
 }
 
 export async function batchAddToCardVariantPriceFetchList(
   cardVariants: Array<{ cardId: string; variantId: string; addedAt?: Date }>,
+  sourceType: string,
 ): Promise<void> {
   const items = cardVariants.map(variant => ({
-    id: variant.variantId,
+    id: `${variant.variantId}|${sourceType}`,
     cardId: variant.cardId,
     variantId: variant.variantId,
     addedAt: variant.addedAt || new Date(),
