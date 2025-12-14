@@ -98,7 +98,7 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
             )}
           </>
         )}
-        <span>{formattedPrice}</span>
+        <span className="whitespace-nowrap">{formattedPrice}</span>
       </Badge>
     ),
     [formattedPrice, displayLogo, size, moveTop, sourceType],

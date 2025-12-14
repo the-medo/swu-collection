@@ -12,9 +12,14 @@
 
 import { fetchAndUploadTCGPlayerPricing } from '../lib/card-prices/fetch-and-upload-tcgplayer-prices';
 import { pairTCGPlayerPricesToDatabase } from '../lib/card-prices/pair-tcgplayer-prices-to-database.ts';
+import { SentryCron } from './cron-sentry/sentry-cron.ts';
+import { CRON_SENTRY_MONITOR_SLUGS } from './cron-sentry/sentry-init.ts';
 
 async function main() {
   console.log('Starting TCGplayer pricing fetch...');
+
+  const cron = new SentryCron(CRON_SENTRY_MONITOR_SLUGS['fetch-cardmarket-pricing']);
+  cron.started();
 
   try {
     await fetchAndUploadTCGPlayerPricing();
@@ -23,9 +28,11 @@ async function main() {
     await pairTCGPlayerPricesToDatabase();
     console.log('TCGplayer prices paired to database successfully');
 
+    cron.finished();
     process.exit(0);
   } catch (error) {
     console.error('Error during TCGplayer pricing fetch:', error);
+    cron.crashed(error);
     process.exit(1);
   }
 }

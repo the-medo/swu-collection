@@ -16,9 +16,14 @@ import {
   cardStatMatchupTournaments,
 } from '../db/schema/card_stat_matchup_schema.ts';
 import { sql, not, inArray, gte } from 'drizzle-orm';
+import { SentryCron } from './cron-sentry/sentry-cron.ts';
+import { CRON_SENTRY_MONITOR_SLUGS } from './cron-sentry/sentry-init.ts';
 
 async function main() {
   console.log('Starting card stats cleanup...');
+
+  const cron = new SentryCron(CRON_SENTRY_MONITOR_SLUGS['cleanup-card-stats']);
+  cron.started();
 
   try {
     // Calculate the timestamp for 15 minutes ago
@@ -47,9 +52,11 @@ async function main() {
     }
 
     console.log('Card stats cleanup completed successfully');
+    cron.finished();
     process.exit(0);
   } catch (error) {
     console.error('Error during card stats cleanup:', error);
+    cron.crashed(error);
     process.exit(1);
   }
 }
