@@ -18,6 +18,7 @@ export interface PriceBadgeProps {
   displayNA?: boolean;
   moveTop?: boolean;
   size?: 'sm' | 'default';
+  fixedWidth?: boolean;
 }
 
 /**
@@ -34,6 +35,7 @@ export interface PriceBadgeProps {
  * @param displayNA
  * @param moveTop
  * @param size
+ * @param fixedWidth
  */
 export const PriceBadge: React.FC<PriceBadgeProps> = ({
   cardId,
@@ -44,6 +46,7 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
   displayNA = true,
   moveTop = false,
   size = 'default',
+  fixedWidth = true,
 }) => {
   // Fetch price data using the useGetSingleCardPrice hook
   const { data, isLoading, isError } = useGetSingleCardPrice({
@@ -64,10 +67,17 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
       <Badge
         variant="secondary"
         className={cn(
-          'flex items-center gap-1 cursor-pointer  border-background',
-          displayLogo ? 'w-[80px]' : 'w-[50px] justify-end pr-[4px] -mt-1',
-          moveTop ? '-mt-1' : '',
-          size === 'sm' ? 'text-[10px] w-[40px] py-0' : '',
+          'flex items-center gap-1 cursor-pointer h-[20px] border-background py-0',
+          fixedWidth && {
+            'w-[80px]': displayLogo,
+            'w-[40px]': size === 'sm' && !displayLogo,
+            'w-[50px]': size === 'default' && !displayLogo,
+          },
+          {
+            '-mt-1': moveTop,
+            'text-[10px]': size === 'sm',
+            'justify-end pr-[4px] -mt-1': !displayLogo,
+          },
         )}
       >
         {displayLogo && (
@@ -91,7 +101,7 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
         <span>{formattedPrice}</span>
       </Badge>
     ),
-    [formattedPrice],
+    [formattedPrice, displayLogo, size, moveTop, sourceType],
   );
 
   // If loading or error or no data, return null

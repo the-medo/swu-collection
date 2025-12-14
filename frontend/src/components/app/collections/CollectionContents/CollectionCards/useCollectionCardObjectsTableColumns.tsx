@@ -2,7 +2,12 @@ import { useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
 import type { CollectionCard } from '../../../../../../../types/CollectionCard.ts';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardPortal,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { NotebookPen } from 'lucide-react';
@@ -27,6 +32,9 @@ import { foilRenderer } from '@/lib/table/foilRenderer.tsx';
 import { cn } from '@/lib/utils.ts';
 import { CollectionCardTableColumnsProps } from '@/components/app/collections/CollectionContents/CollectionCards/collectionCardTableLib.ts';
 import CircledNumberValue from '@/components/app/global/CircledNumberValue.tsx';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import { PriceBadge } from '@/components/app/card-prices/PriceBadge.tsx';
+import { CardPriceSourceType, cardPriceSourceInfo } from '../../../../../../../types/CardPrices.ts';
 
 export function useCollectionCardObjectsTableColumns({
   collectionId,
@@ -38,6 +46,7 @@ export function useCollectionCardObjectsTableColumns({
   const { data: currencyData } = useCurrencyList();
   const { currency, owned } = useCollectionInfo(collectionId);
   const onChange = useCollectionCardInput(collectionId);
+  const { data: priceSourceTypeCollection } = useGetUserSetting('priceSourceTypeCollection');
 
   return useMemo(() => {
     const definitions: ColumnDef<CollectionCard>[] = [];
@@ -161,15 +170,17 @@ export function useCollectionCardObjectsTableColumns({
                   )}
                 </div>
               </HoverCardTrigger>
-              <HoverCardContent side="right" className=" w-fit">
-                <CardImage
-                  card={card}
-                  cardVariantId={variantId}
-                  size={card?.front?.horizontal ? 'h350' : 'w200'}
-                  foil={foil}
-                  forceHorizontal={card?.front?.horizontal}
-                />
-              </HoverCardContent>
+              <HoverCardPortal>
+                <HoverCardContent side="right" className=" w-fit">
+                  <CardImage
+                    card={card}
+                    cardVariantId={variantId}
+                    size={card?.front?.horizontal ? 'h350' : 'w200'}
+                    foil={foil}
+                    forceHorizontal={card?.front?.horizontal}
+                  />
+                </HoverCardContent>
+              </HoverCardPortal>
             </HoverCard>
           );
         },
@@ -207,15 +218,17 @@ export function useCollectionCardObjectsTableColumns({
                   </div>
                 </div>
               </HoverCardTrigger>
-              <HoverCardContent side="right" className=" w-fit">
-                <CardImage
-                  card={card}
-                  cardVariantId={variantId}
-                  size={card?.front?.horizontal ? 'h350' : 'w200'}
-                  foil={foil}
-                  forceHorizontal={card?.front?.horizontal}
-                />
-              </HoverCardContent>
+              <HoverCardPortal>
+                <HoverCardContent side="right" className=" w-fit">
+                  <CardImage
+                    card={card}
+                    cardVariantId={variantId}
+                    size={card?.front?.horizontal ? 'h350' : 'w200'}
+                    foil={foil}
+                    forceHorizontal={card?.front?.horizontal}
+                  />
+                </HoverCardContent>
+              </HoverCardPortal>
             </HoverCard>
           );
         },
@@ -416,8 +429,34 @@ export function useCollectionCardObjectsTableColumns({
           );
         },
       });
+      // Insert extra price source column before Price when user setting is set
+      if (priceSourceTypeCollection) {
+        const src = priceSourceTypeCollection as CardPriceSourceType;
+        definitions.splice(definitions.length - 1, 0, {
+          id: 'price-source-extra',
+          accessorKey: 'cardId',
+          header: cardPriceSourceInfo[src]?.name ?? 'Price Source',
+          size: 20,
+          cell: ({ getValue, row }) => {
+            const cardId = getValue() as string;
+            const variantId = row.original.variantId;
+            return (
+              <div className={cn('flex items-center justify-end')}>
+                <PriceBadge
+                  cardId={cardId}
+                  variantId={variantId}
+                  sourceType={src}
+                  displayLogo={true}
+                  displayTooltip={true}
+                  size="sm"
+                />
+              </div>
+            );
+          },
+        });
+      }
     }
 
     return definitions;
-  }, [cardList, currencyData, currency, owned, layout, forceHorizontal]);
+  }, [cardList, currencyData, currency, owned, layout, forceHorizontal, priceSourceTypeCollection]);
 }

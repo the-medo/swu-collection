@@ -6,6 +6,7 @@ import { useCollectionInfo } from '@/components/app/collections/CollectionConten
 import SmallCardItem from './SmallCardItem';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import { useMemo } from 'react';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 interface CollectionLayoutImageSmallProps {
   collectionId: string;
@@ -22,6 +23,7 @@ const CollectionLayoutImageSmall: React.FC<CollectionLayoutImageSmallProps> = ({
 }) => {
   const { currency } = useCollectionInfo(collectionId);
   const { isFetching: isFetchingCardList } = useCardList();
+  const { data: priceSourceTypeCollection } = useGetUserSetting('priceSourceTypeCollection');
 
   // Setup infinite scroll
   const { itemsToShow, observerTarget } = useInfiniteScroll({
@@ -63,6 +65,7 @@ const CollectionLayoutImageSmall: React.FC<CollectionLayoutImageSmallProps> = ({
             collectionId={collectionId}
             horizontal={horizontal}
             currency={currency}
+            priceSourceType={priceSourceTypeCollection}
           />
         );
       })}

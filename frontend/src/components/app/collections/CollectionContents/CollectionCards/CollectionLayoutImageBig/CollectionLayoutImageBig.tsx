@@ -7,6 +7,7 @@ import { useCollectionCardInput } from '@/components/app/collections/CollectionC
 import BigCardItem from './BigCardItem';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import { useMemo } from 'react';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 interface CollectionLayoutImageBigProps {
   collectionId: string;
@@ -24,6 +25,7 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
   const { isFetching: isFetchingCardList } = useCardList();
   const { currency, owned } = useCollectionInfo(collectionId);
   const onChange = useCollectionCardInput(collectionId);
+  const { data: priceSourceTypeCollection } = useGetUserSetting('priceSourceTypeCollection');
 
   // Setup infinite scroll
   const { itemsToShow, observerTarget } = useInfiniteScroll({
@@ -67,6 +69,7 @@ const CollectionLayoutImageBig: React.FC<CollectionLayoutImageBigProps> = ({
             currency={currency}
             owned={owned}
             onChange={onChange}
+            priceSourceType={priceSourceTypeCollection}
           />
         );
       })}
