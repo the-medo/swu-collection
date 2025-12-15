@@ -26,7 +26,7 @@ export interface DeleteCardPriceSourceResponse {
 export const useDeleteCardPriceSource = () => {
   return useMutation<DeleteCardPriceSourceResponse, ErrorWithStatus, DeleteCardPriceSourceParams>({
     mutationFn: async (params: DeleteCardPriceSourceParams) => {
-      const response = await api['card-prices'].$delete({
+      const response = await api['card-prices']['delete-source'].$delete({
         json: params,
       });
 

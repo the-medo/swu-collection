@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../auth/auth.ts';
+import { auth, type AuthExtension } from '../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -17,6 +17,22 @@ export const cardPricesDeleteSourceRoute = new Hono<AuthExtension>().delete(
   '/',
   zValidator('json', deleteSourceSchema),
   async c => {
+    const user = c.get('user');
+    if (!user) return c.json({ message: 'Unauthorized' }, 401);
+
+    const hasPermission = await auth.api.userHasPermission({
+      body: {
+        userId: user.id,
+        permission: {
+          admin: ['access'],
+        },
+      },
+    });
+
+    if (!hasPermission.success) {
+      return c.json({ message: "You don't have permission to modify card price sources." }, 403);
+    }
+
     const { cardId, variantId, sourceType } = c.req.valid('json');
 
     // Check if the record exists
@@ -27,8 +43,8 @@ export const cardPricesDeleteSourceRoute = new Hono<AuthExtension>().delete(
         and(
           eq(cardVariantPrice.cardId, cardId),
           eq(cardVariantPrice.variantId, variantId),
-          eq(cardVariantPrice.sourceType, sourceType)
-        )
+          eq(cardVariantPrice.sourceType, sourceType),
+        ),
       )
       .limit(1);
 
@@ -38,7 +54,7 @@ export const cardPricesDeleteSourceRoute = new Hono<AuthExtension>().delete(
           success: false,
           message: 'Record not found',
         },
-        404
+        404,
       );
     }
 
@@ -49,13 +65,13 @@ export const cardPricesDeleteSourceRoute = new Hono<AuthExtension>().delete(
         and(
           eq(cardVariantPrice.cardId, cardId),
           eq(cardVariantPrice.variantId, variantId),
-          eq(cardVariantPrice.sourceType, sourceType)
-        )
+          eq(cardVariantPrice.sourceType, sourceType),
+        ),
       );
 
     return c.json({
       success: true,
       message: 'Record deleted successfully',
     });
-  }
+  },
 );
