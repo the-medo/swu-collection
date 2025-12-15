@@ -5,6 +5,7 @@ export const CRON_SENTRY_MONITOR_SLUGS = {
   'fetch-tcgplayer-pricing': 'cron-fetch-and-pair-tcgplayer-pricing',
   'cleanup-card-stats': 'cron-cleanup-card-stats',
   'update-card-standard-variants': 'update-card-standard-variants',
+  'compute-deck-pricing': 'compute-deck-pricing',
 };
 
 Sentry.init({

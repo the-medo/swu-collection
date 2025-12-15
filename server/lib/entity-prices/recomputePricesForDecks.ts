@@ -2,7 +2,7 @@ import { db } from '../../db';
 import { deck } from '../../db/schema/deck.ts';
 import { deckCard, type DeckCard } from '../../db/schema/deck_card.ts';
 import { entityPrice } from '../../db/schema/entity_price.ts';
-import { inArray, and, eq } from 'drizzle-orm';
+import { inArray, and, eq, sql } from 'drizzle-orm';
 import { cardStandardVariant } from '../../db/schema/card_standard_variant.ts';
 import { cardVariantPrice, type CardVariantPrice } from '../../db/schema/card_variant_price.ts';
 
@@ -61,8 +61,11 @@ export const recomputePricesForDecks = async (deckIds: string[]): Promise<void> 
 
   for (const r of rows) {
     const dId = r.deckId as string;
+    if (r.deckCard.board === 3) continue;
+
     // build base card map for total deck quantities (independent of price sources)
     if (!baseCardsByDeck[dId]) baseCardsByDeck[dId] = {};
+
     const baseKey = `${r.deckCard.cardId}#${r.deckCard.board}`;
     if (!baseCardsByDeck[dId][baseKey]) {
       baseCardsByDeck[dId][baseKey] = r.deckCard as DeckCard;
@@ -102,17 +105,72 @@ export const recomputePricesForDecks = async (deckIds: string[]): Promise<void> 
       0,
     );
     for (const [sourceType, items] of Object.entries(bySource)) {
+      // Overall price (using main price field)
       let total = 0;
       let pricedQty = 0;
+
+      // Aggregation for per-key data totals and missing counts
+      const keyTotals: Record<string, number> = {};
+      const keyPricedQty: Record<string, number> = {};
+      const candidateKeys = new Set<string>();
+
       for (const item of items) {
         const qty = item.deckCard.quantity ?? 0;
+
+        // 1) Main price aggregation
         const raw = (item.cardVariantPrice?.price ?? null) as unknown as string | number | null;
         const priceNum = raw === null ? null : Number(raw);
         if (priceNum !== null && !Number.isNaN(priceNum)) {
           total += priceNum * qty;
           pricedQty += qty;
         }
+
+        // 2) Per-key data aggregation
+        const dataRaw = item.cardVariantPrice?.data ?? null;
+        let dataObj: any = null;
+        if (dataRaw && typeof dataRaw === 'object') {
+          dataObj = dataRaw;
+        } else if (typeof dataRaw === 'string') {
+          try {
+            const parsed = JSON.parse(dataRaw);
+            if (parsed && typeof parsed === 'object') dataObj = parsed;
+          } catch {
+            // ignore malformed JSON
+          }
+        }
+
+        if (dataObj && typeof dataObj === 'object') {
+          for (const [k, v] of Object.entries<any>(dataObj)) {
+            if (v === null || v === undefined || v === '') {
+              // Treat null/undefined/empty as missing value for a numeric-like key
+              candidateKeys.add(k);
+              continue;
+            }
+            const num = Number(v as any);
+            if (!Number.isNaN(num)) {
+              candidateKeys.add(k);
+              keyTotals[k] = (keyTotals[k] ?? 0) + num * qty;
+              keyPricedQty[k] = (keyPricedQty[k] ?? 0) + qty;
+            }
+            // Non-numeric (e.g., strings like 'subTypeName') are ignored completely
+          }
+        }
       }
+
+      // Build output objects
+      const dataOut: Record<string, number> = {};
+      for (const [k, sum] of Object.entries(keyTotals)) {
+        // round to 2 decimals
+        dataOut[k] = Math.round(sum * 100) / 100;
+      }
+
+      const dataMissingOut: Record<string, number> = {};
+      for (const k of candidateKeys) {
+        const priced = keyPricedQty[k] ?? 0;
+        const missingForKey = Math.max(0, baseQty - priced);
+        dataMissingOut[k] = missingForKey;
+      }
+
       const missing = Math.max(0, baseQty - pricedQty);
       const totalStr = (Math.round(total * 100) / 100).toFixed(2);
       upserts.push({
@@ -120,28 +178,29 @@ export const recomputePricesForDecks = async (deckIds: string[]): Promise<void> 
         sourceType,
         type: 'deck',
         updatedAt: new Date(),
-        data: JSON.stringify({}),
-        dataMissing: JSON.stringify({}),
+        data: JSON.stringify(dataOut),
+        dataMissing: JSON.stringify(dataMissingOut),
         price: totalStr,
         priceMissing: missing,
       });
     }
   }
 
-  // 4) Upsert into entity_price
-  for (const row of upserts) {
+  // 4) Upsert into entity_price (single multi-row statement)
+  if (upserts.length > 0) {
     await db
       .insert(entityPrice)
-      .values(row)
+      .values(upserts)
       .onConflictDoUpdate({
         target: [entityPrice.entityId, entityPrice.sourceType],
+        // Use PostgreSQL "excluded" values to update from the incoming row per conflict
         set: {
-          type: row.type,
-          updatedAt: row.updatedAt,
-          data: row.data,
-          dataMissing: row.dataMissing,
-          price: row.price,
-          priceMissing: row.priceMissing,
+          type: sql`excluded.type`,
+          updatedAt: sql`excluded.updated_at`,
+          data: sql`excluded.data`,
+          dataMissing: sql`excluded.data_missing`,
+          price: sql`excluded.price`,
+          priceMissing: sql`excluded.price_missing`,
         },
       });
   }

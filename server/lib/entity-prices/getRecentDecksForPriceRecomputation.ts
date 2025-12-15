@@ -4,7 +4,7 @@ import { entityPrice } from '../../db/schema/entity_price.ts';
 import { and, desc, eq, isNull, lt, or } from 'drizzle-orm';
 
 // Helper to get cutoff date (30 days ago)
-const monthAgo = () => new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+const twoMonthsAgo = () => new Date(Date.now() - 2 * 30 * 24 * 60 * 60 * 1000);
 
 /**
  * Returns recent deck IDs that need price recomputation.
@@ -26,7 +26,7 @@ export const getRecentDecksForPriceRecomputation = async (count: number): Promis
     .orderBy(desc(deck.updatedAt))
     .limit(count);
 
-  const cutoff = monthAgo();
+  const cutoff = twoMonthsAgo();
   const recent = rows.filter(r => (r.updatedAt ?? r.createdAt) >= cutoff);
   return recent.map(r => r.id);
 };
