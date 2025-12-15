@@ -1,6 +1,10 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
-import { CardVariantPriceStore, getStoredCardVariantPrice } from '@/dexie/cardPrices';
+import {
+  CardVariantPriceStore,
+  getStoredCardVariantPrice,
+  isInCardVariantPriceFetchList,
+} from '@/dexie/cardPrices';
 
 /**
  * Card variant price data structure
@@ -30,6 +34,7 @@ export interface SingleCardPriceParams {
 export interface SingleCardPriceResponse {
   success: boolean;
   data: CardVariantPriceStore | undefined;
+  inFetchlist: boolean;
 }
 
 /**
@@ -49,18 +54,21 @@ export const useGetSingleCardPrice = (params: SingleCardPriceParams) => {
       ? async () => {
           // Fetch from IndexedDB
           const result = await getStoredCardVariantPrice(cardId, variantId, sourceType);
+          const inFetchlist = await isInCardVariantPriceFetchList(variantId, sourceType);
 
           if (!result) {
-            // If not found in IndexedDB, throw a 404 error
-            const error: ErrorWithStatus = new Error('Card price not found');
-            error.status = 404;
-            throw error;
+            return {
+              success: false,
+              data: undefined,
+              inFetchlist,
+            } as SingleCardPriceResponse;
           }
 
           // Transform the result to match the expected format
           return {
             success: true,
             data: result,
+            inFetchlist: false,
           } as SingleCardPriceResponse;
         }
       : skipToken,

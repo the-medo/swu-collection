@@ -98,7 +98,7 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
       className={cn('h-8', {
         'px-1 pl-2 text-right': field !== 'note',
         'w-16': (field === 'amount' || field === 'amount2') && !wide,
-        'w-24': field === 'price' && !wide,
+        'w-20': field === 'price' && !wide,
         'w-full': wide,
         'px-1 pl-1 text-right border-0': ghost,
       })}

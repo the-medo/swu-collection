@@ -12,6 +12,7 @@ import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { CardVariantPriceAdministration } from '../CardVariantPrice/CardVariantPriceAdministration';
 import { PriceBadge } from '@/components/app/card-prices';
+import { CardPriceSourceType } from '../../../../../../types/CardPrices.ts';
 
 interface CardDetailProps {
   cardId: string;
@@ -286,11 +287,18 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                                 {variant.set?.toUpperCase()} #{variant.cardNo}
                               </div>
                               {variant.variantId && (
-                                <PriceBadge
-                                  cardId={cardId}
-                                  sourceType="cardmarket"
-                                  variantId={variant.variantId}
-                                />
+                                <div className="flex flex-col items-center">
+                                  <PriceBadge
+                                    cardId={cardId}
+                                    sourceType={CardPriceSourceType.CARDMARKET}
+                                    variantId={variant.variantId}
+                                  />
+                                  <PriceBadge
+                                    cardId={cardId}
+                                    sourceType={CardPriceSourceType.TCGPLAYER}
+                                    variantId={variant.variantId}
+                                  />
+                                </div>
                               )}
                             </div>
                           </div>

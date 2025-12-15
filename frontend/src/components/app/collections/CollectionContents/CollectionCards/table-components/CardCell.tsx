@@ -3,7 +3,7 @@ import {
   useCCDetail,
   useCCCard,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
+import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
@@ -36,15 +36,17 @@ const CardCell: React.FC<CardCellProps> = ({ cardKey, layout }) => {
           )}
         </div>
       </HoverCardTrigger>
-      <HoverCardContent side="right" className=" w-fit">
-        <CardImage
-          card={card}
-          cardVariantId={collectionCard.variantId}
-          size={card?.front?.horizontal ? 'h350' : 'w200'}
-          foil={collectionCard.foil}
-          forceHorizontal={card?.front?.horizontal}
-        />
-      </HoverCardContent>
+      <HoverCardPortal>
+        <HoverCardContent side="right" className=" w-fit">
+          <CardImage
+            card={card}
+            cardVariantId={collectionCard.variantId}
+            size={card?.front?.horizontal ? 'h350' : 'w200'}
+            foil={collectionCard.foil}
+            forceHorizontal={card?.front?.horizontal}
+          />
+        </HoverCardContent>
+      </HoverCardPortal>
     </HoverCard>
   );
 };

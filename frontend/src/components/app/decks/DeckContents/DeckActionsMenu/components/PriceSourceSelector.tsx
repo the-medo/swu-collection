@@ -11,7 +11,11 @@ import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
 import { cardPriceSourceInfo } from '../../../../../../../../types/CardPrices.ts';
 import { cn } from '@/lib/utils';
 
-const PriceSourceSelector: React.FC = () => {
+interface PriceSourceSelectorProps {
+  showPricesOption: boolean;
+}
+
+const PriceSourceSelector: React.FC<PriceSourceSelectorProps> = ({ showPricesOption = true }) => {
   const { data: showPrices } = useGetUserSetting('deckPrices');
   const { mutate: setShowPrices } = useSetUserSetting('deckPrices');
 
@@ -30,31 +34,37 @@ const PriceSourceSelector: React.FC = () => {
       <NavigationMenuTrigger className="w-[220px] justify-start border">
         <DollarSign className="h-4 w-4 mr-2" />
         <span className="text-xs">Prices: </span>
-        {showPrices ? (priceSource ? cardPriceSourceInfo[priceSource].name : 'Unknown') : 'None'}
+        {showPrices || !showPricesOption
+          ? priceSource
+            ? cardPriceSourceInfo[priceSource].name
+            : 'Unknown'
+          : 'None'}
       </NavigationMenuTrigger>
       <NavigationMenuContent>
         <div className="p-2 grid grid-cols-1 gap-4 w-[300px]">
           {/* First section: Show/Hide options */}
-          <div className="col-span-1 grid grid-cols-1 gap-1">
-            {/*<div className="text-sm font-medium mb-1">Display</div>*/}
-            {displayOptions.map(option => (
-              <li
-                key={String(option.id)}
-                onClick={() => setShowPrices(option.id)}
-                className={cn(
-                  'rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer',
-                  option.id === showPrices && 'bg-accent/50 text-accent-foreground',
-                )}
-              >
-                <NavigationMenuLink asChild>
-                  <div className="text-sm leading-none font-medium flex items-center justify-between">
-                    {option.label}
-                    {option.id === showPrices && <Check className="h-4 w-4 ml-2" />}
-                  </div>
-                </NavigationMenuLink>
-              </li>
-            ))}
-          </div>
+          {showPricesOption && (
+            <div className="col-span-1 grid grid-cols-1 gap-1">
+              {/*<div className="text-sm font-medium mb-1">Display</div>*/}
+              {displayOptions.map(option => (
+                <li
+                  key={String(option.id)}
+                  onClick={() => setShowPrices(option.id)}
+                  className={cn(
+                    'rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer',
+                    option.id === showPrices && 'bg-accent/50 text-accent-foreground',
+                  )}
+                >
+                  <NavigationMenuLink asChild>
+                    <div className="text-sm leading-none font-medium flex items-center justify-between">
+                      {option.label}
+                      {option.id === showPrices && <Check className="h-4 w-4 ml-2" />}
+                    </div>
+                  </NavigationMenuLink>
+                </li>
+              ))}
+            </div>
+          )}
 
           <div className="col-span-1 grid grid-cols-1 gap-1">
             {/*<div className="text-sm font-medium mb-1">Price Source</div>*/}

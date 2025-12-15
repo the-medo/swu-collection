@@ -10,6 +10,8 @@ import {
   useCCDetail,
   useCCCard,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+import { PriceBadge } from '@/components/app/card-prices/PriceBadge.tsx';
+import { CardPriceSourceType } from '../../../../../../../../types/CardPrices.ts';
 
 interface BigCardItemProps {
   collectionId: string;
@@ -18,6 +20,7 @@ interface BigCardItemProps {
   currency: string;
   owned: boolean;
   onChange: any; // Using any for simplicity, should be properly typed in a real application
+  priceSourceType?: CardPriceSourceType | null;
 }
 
 const BigCardItem: React.FC<BigCardItemProps> = ({
@@ -27,6 +30,7 @@ const BigCardItem: React.FC<BigCardItemProps> = ({
   currency,
   owned,
   onChange,
+  priceSourceType,
 }) => {
   // Move hooks to the top level of this component
   const collectionCard = useCCDetail(cardKey);
@@ -39,6 +43,8 @@ const BigCardItem: React.FC<BigCardItemProps> = ({
       </div>
     );
   }
+
+  if (!collectionCard) return null;
 
   const id = getIdentificationFromCollectionCard(collectionCard);
 
@@ -53,21 +59,31 @@ const BigCardItem: React.FC<BigCardItemProps> = ({
         forceHorizontal={horizontal}
       >
         {(collectionCard.price || owned) && (
-          <div className="absolute bottom-0 right-0 w-fit min-w-20 flex grow-0 items-center gap-1 bg-secondary/80 py-2 px-2 mr-0 mb-0">
+          <div className="absolute bottom-0 right-0 left-0 min-w-20 flex grow-0 items-center gap-1 bg-secondary/80 py-2 px-2 mr-0 mb-0">
             <div className="flex gap-2 items-center w-full justify-end">
-              {owned ? (
-                //@ts-ignore
-                <CollectionCardInput
-                  inputId={`${cardKey}-price`}
-                  id={id}
-                  field="price"
-                  value={collectionCard.price}
-                  onChange={onChange}
+              {priceSourceType ? (
+                <PriceBadge
+                  cardId={collectionCard.cardId}
+                  variantId={collectionCard.variantId}
+                  sourceType={priceSourceType}
+                  displayLogo={false}
+                  displayTooltip={true}
                 />
+              ) : null}
+              {owned ? (
+                <div>
+                  <CollectionCardInput
+                    inputId={`${cardKey}-price`}
+                    id={id}
+                    field="price"
+                    value={collectionCard.price as unknown as string}
+                    onChange={onChange}
+                  />
+                </div>
               ) : (
                 <span>{collectionCard.price}</span>
               )}
-              <span>{currency}</span>
+              <span className="text-sm">{currency}</span>
             </div>
           </div>
         )}

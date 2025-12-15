@@ -5,6 +5,7 @@ import {
   getDefaultSettingValue,
 } from '../../../shared/lib/userSettings';
 import { z } from 'zod';
+import { queryClient } from '@/queryClient.ts';
 
 // Interface for the UserSettings store in Dexie
 export interface UserSettingsStore {
@@ -62,7 +63,7 @@ export async function saveUserSettings(settings: UserSettings): Promise<void> {
  */
 export async function saveUserSetting(
   key: string,
-  value: string | number | boolean,
+  value: string | number | boolean | null | undefined,
 ): Promise<void> {
   // Check if the key is valid
   if (!isValidSettingKey(key)) {
@@ -74,10 +75,16 @@ export async function saveUserSetting(
     validateSettingValue(key, value);
 
     // Save to Dexie
-    await db.userSettings.put({
-      key,
-      value,
-    });
+    if (value === null || value === undefined) {
+      await db.userSettings.delete(key);
+      queryClient.setQueryData(['user-setting', key], undefined);
+    } else {
+      await db.userSettings.put({
+        key,
+        value,
+      });
+      queryClient.setQueryData(['user-setting', key], value);
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new Error(`Invalid value for setting ${key}: ${value}`);
@@ -92,7 +99,9 @@ export async function saveUserSetting(
  * @returns Promise that resolves with the setting value (default value if not found or invalid)
  * @throws Error if the key is not valid
  */
-export async function loadUserSetting(key: string): Promise<string | number | boolean> {
+export async function loadUserSetting(
+  key: string,
+): Promise<string | number | boolean | undefined | null> {
   // Check if the key is valid
   if (!isValidSettingKey(key)) {
     throw new Error(`Invalid setting key: ${key}`);

@@ -3,7 +3,7 @@ import type { AuthExtension } from '../../auth/auth.ts';
 import { db } from '../../db';
 import { userSettings } from '../../db/schema/user_settings.ts';
 import { userSettingsSchema } from '../../../shared/lib/userSettings.ts';
-import { z } from 'zod';
+import { and, eq } from 'drizzle-orm';
 
 // Schema for POST request validation
 const settingUpdateSchema = userSettingsSchema.partial();
@@ -28,6 +28,13 @@ export const userSettingsPostRoute = new Hono<AuthExtension>().post('/', async c
 
   // Process each setting in the partial object
   for (const [key, value] of Object.entries(settings)) {
+    if (value === null) {
+      await db
+        .delete(userSettings)
+        .where(and(eq(userSettings.userId, user.id), eq(userSettings.key, key)));
+      continue;
+    }
+
     // Convert value to string for storage
     const stringValue = String(value);
 

@@ -4,16 +4,22 @@ import { Badge } from '@/components/ui/badge';
 import { PriceBadgeTooltip } from './PriceBadgeTooltip';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils.ts';
+import {
+  CardPriceSourceType,
+  priceFormatterBasedOnSourceType,
+} from '../../../../../types/CardPrices.ts';
+import { LoaderCircle } from 'lucide-react';
 
 export interface PriceBadgeProps {
   cardId: string;
   variantId: string;
-  sourceType: string;
+  sourceType: CardPriceSourceType;
   displayLogo?: boolean;
   displayTooltip?: boolean;
   displayNA?: boolean;
   moveTop?: boolean;
   size?: 'sm' | 'default';
+  fixedWidth?: boolean;
 }
 
 /**
@@ -30,6 +36,7 @@ export interface PriceBadgeProps {
  * @param displayNA
  * @param moveTop
  * @param size
+ * @param fixedWidth
  */
 export const PriceBadge: React.FC<PriceBadgeProps> = ({
   cardId,
@@ -40,43 +47,76 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
   displayNA = true,
   moveTop = false,
   size = 'default',
+  fixedWidth = true,
 }) => {
-  // Fetch price data using the useGetSingleCardPrice hook
   const { data, isLoading, isError } = useGetSingleCardPrice({
     cardId,
     variantId,
     sourceType,
   });
 
-  // Extract price from data
   const price = data?.data?.price;
+  const inFetchlist = data?.inFetchlist;
   const hasPrice = price && price !== '0.00';
-
-  // Format price as EUR
-  const formattedPrice = hasPrice ? `${price}€` : 'N/A';
+  const formattedPrice = hasPrice ? priceFormatterBasedOnSourceType(price, sourceType) : 'N/A';
 
   const badge = useMemo(
     () => (
       <Badge
         variant="secondary"
         className={cn(
-          'flex items-center gap-1 cursor-pointer  border-background',
-          displayLogo ? 'w-[80px]' : 'w-[50px] justify-end pr-[4px] -mt-1',
-          moveTop ? '-mt-1' : '',
-          size === 'sm' ? 'text-[10px] w-[40px] py-0' : '',
+          'relative flex items-center gap-1 cursor-pointer h-[20px] border-background py-0',
+          fixedWidth && {
+            'w-[80px]': displayLogo,
+            'w-[40px]': size === 'sm' && !displayLogo,
+            'w-[50px]': size === 'default' && !displayLogo,
+          },
+          {
+            '-mt-1': moveTop,
+            'text-[10px]': size === 'sm',
+            'justify-end pr-[4px] -mt-1': !displayLogo,
+          },
         )}
       >
-        {displayLogo && (
-          <img src="https://images.swubase.com/cm-logo.png" alt="CardMarket" className="size-3" />
+        {inFetchlist && (
+          <span className="absolute top-1 -left-1 animate-spin">
+            <LoaderCircle className="size-3" />
+          </span>
         )}
-        <span>{formattedPrice}</span>
+        {displayLogo && (
+          <>
+            {sourceType === CardPriceSourceType.CARDMARKET && (
+              <img
+                src="https://images.swubase.com/cm-logo.png"
+                alt="CardMarket"
+                className={cn('size-3', inFetchlist && 'opacity-40')}
+              />
+            )}
+            {sourceType === CardPriceSourceType.TCGPLAYER && (
+              <img
+                src="https://images.swubase.com/price-source-thumbnails/icon-tcgplayer.png"
+                alt="CardMarket"
+                className={cn('size-3 bg-white border-1 border-white', inFetchlist && 'opacity-40')}
+              />
+            )}
+          </>
+        )}
+        <span className={cn('whitespace-nowrap', inFetchlist && 'opacity-40')}>
+          {formattedPrice}
+        </span>
       </Badge>
     ),
-    [formattedPrice],
+    [formattedPrice, displayLogo, size, moveTop, sourceType, inFetchlist],
   );
 
   // If loading or error or no data, return null
-  if (isLoading || isError || !data || !data.success || !data.data || (!displayNA && !hasPrice)) {
+  if (isLoading || isError || !data || (!displayNA && !hasPrice && !inFetchlist)) {
+    console.log({
+      isLoading,
+      isError,
+      data,
+      dataData: data?.data,
+    });
     return null;
   }
 
@@ -89,7 +129,7 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
       <Tooltip>
         <TooltipTrigger>{badge}</TooltipTrigger>
         <TooltipContent className="p-4 max-w-sm">
-          {hasPrice ? (
+          {hasPrice && data.data ? (
             <PriceBadgeTooltip
               data={data.data.data}
               sourceType={sourceType}

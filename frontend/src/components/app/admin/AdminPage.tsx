@@ -8,7 +8,7 @@ import { ThumbnailsPage } from '@/components/app/admin/ThumbnailsPage.tsx';
 import { TournamentGroupsPage } from '@/components/app/admin/TournamentGroupsPage';
 import { PQToolsPage } from '@/components/app/admin/PQToolsPage/PQToolsPage.tsx';
 import { SpecialActionsPage } from '@/components/app/admin/SpecialActionsPage';
-import { CardPricesPage } from '@/components/app/admin/CardPricesPage/CardPricesPage.tsx';
+import { CardPricePairingAdministrationPage } from '@/components/app/admin/CardPricesPage/CardPricePairingAdministrationPage.tsx';
 import VariantCheckerPage from '@/components/app/admin/VariantCheckerPage/VariantCheckerPage.tsx';
 import { Helmet } from 'react-helmet-async';
 import { Route } from '@/routes/_authenticated.admin';
@@ -94,7 +94,7 @@ export function AdminPage() {
           <TabsContent value="card-prices">
             <Card>
               <CardContent className="p-4">
-                <CardPricesPage />
+                <CardPricePairingAdministrationPage />
               </CardContent>
             </Card>
           </TabsContent>

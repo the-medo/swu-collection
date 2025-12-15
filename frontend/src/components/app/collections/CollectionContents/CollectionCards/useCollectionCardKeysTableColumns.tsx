@@ -22,6 +22,9 @@ import SetCell from './table-components/SetCell';
 import RarityCell from './table-components/RarityCell';
 import NoteCell from './table-components/NoteCell';
 import PriceCell from './table-components/PriceCell';
+import PriceSourceCell from './table-components/PriceSourceCell';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import { CardPriceSourceType, cardPriceSourceInfo } from '../../../../../../../types/CardPrices.ts';
 import SelectionCell from './table-components/SelectionCell';
 
 export function useCollectionCardKeysTableColumns({
@@ -34,6 +37,7 @@ export function useCollectionCardKeysTableColumns({
   const { data: currencyData } = useCurrencyList();
   const { currency, owned } = useCollectionInfo(collectionId);
   const onChange = useCollectionCardInput(collectionId);
+  const { data: priceSourceTypeCollection } = useGetUserSetting('priceSourceTypeCollection');
 
   return useMemo(() => {
     const definitions: ColumnDef<string>[] = [];
@@ -205,6 +209,20 @@ export function useCollectionCardKeysTableColumns({
       },
     });
 
+    // Insert extra price source column before Price when user setting is set
+    if (priceSourceTypeCollection) {
+      const src = priceSourceTypeCollection as CardPriceSourceType;
+      definitions.push({
+        id: 'price-source-extra',
+        accessorFn: cardKey => cardKey,
+        header: cardPriceSourceInfo[src]?.name ?? 'Price Source',
+        size: 24,
+        cell: ({ row }) => {
+          return <PriceSourceCell cardKey={row.original} sourceType={src} />;
+        },
+      });
+    }
+
     definitions.push({
       id: 'price',
       accessorFn: cardKey => cardKey,
@@ -244,5 +262,5 @@ export function useCollectionCardKeysTableColumns({
     }
 
     return definitions;
-  }, [cardList, currencyData, currency, owned, layout, forceHorizontal]);
+  }, [cardList, currencyData, currency, owned, layout, forceHorizontal, priceSourceTypeCollection]);
 }

@@ -8,6 +8,7 @@ import CurrencySelector from '@/components/app/global/CurrencySelector.tsx';
 import CountrySelector from '@/components/app/global/CountrySelector.tsx';
 import CountryStateSelector from '@/components/app/global/CountryStateSelector.tsx';
 import { CountryCode, CurrencyCode } from '../../../../../../server/db/lists.ts';
+import PriceSourceCollectionSelector from '@/components/app/global/PriceSourceCollectionSelector.tsx';
 
 export interface CollectionAndWantlistSettingsProps {}
 
@@ -88,6 +89,10 @@ const CollectionAndWantlistSettings: React.FC<CollectionAndWantlistSettingsProps
       <ul className="ml-4 list-disc list-inside text-xs text-gray-600">
         <li>all your collections and wantlists will automatically use this currency</li>
       </ul>
+      <div className="flex flex-col gap-2">
+        <Label>Display prices</Label>
+        <PriceSourceCollectionSelector />
+      </div>
       <div className="flex flex-col gap-2">
         <Label>Country</Label>
         <CountrySelector onChangeCountry={onCountryChange} value={user?.country} />

@@ -11,9 +11,14 @@
 
 import { fetchAndUploadCardMarketPricingGuide } from '../lib/card-prices/fetch-and-upload-cardmarket-pricing-guide';
 import { pairCardmarketPricesToDatabase } from '../lib/card-prices/pair-cardmarket-prices-to-database.ts';
+import { CRON_SENTRY_MONITOR_SLUGS } from './cron-sentry/sentry-init.ts';
+import { SentryCron } from './cron-sentry/sentry-cron.ts';
 
 async function main() {
   console.log('Starting CardMarket pricing guide fetch...');
+
+  const cron = new SentryCron(CRON_SENTRY_MONITOR_SLUGS['fetch-cardmarket-pricing']);
+  cron.started();
 
   try {
     // Call the function to fetch and upload CardMarket pricing guide
@@ -26,9 +31,13 @@ async function main() {
       'CardMarket pricing guide pairing completed successfully and prices saved to database',
     );
 
+    cron.finished();
+
     process.exit(0);
   } catch (error) {
     console.error('Error during CardMarket pricing guide fetch:', error);
+
+    cron.crashed(error);
     process.exit(1);
   }
 }

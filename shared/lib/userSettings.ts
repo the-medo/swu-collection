@@ -12,6 +12,7 @@ export interface UserSettings {
   deckGroupBy: DeckGroupBy; // default: DeckGroupBy.CARD_TYPE
   deckPrices: boolean; // default: false
   priceSourceType: CardPriceSourceType; // default CardPriceSourceType.CARDMARKET
+  priceSourceTypeCollection: CardPriceSourceType | null;
   collectionInfoInDecks: boolean;
   // Card Pool Layout options
   cpLayout_boxLayout: 'grid' | 'row';
@@ -37,6 +38,7 @@ export const userSettingsSchema = z.object({
   deckGroupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
   deckPrices: booleanPreprocessor.default(false),
   priceSourceType: z.enum(CardPriceSourceType).default(CardPriceSourceType.CARDMARKET),
+  priceSourceTypeCollection: z.enum(CardPriceSourceType).nullable().default(null),
   collectionInfoInDecks: booleanPreprocessor.default(false),
   // Card Pool Layout options
   cpLayout_boxLayout: z.union([z.literal('grid'), z.literal('row')]).default('grid'),

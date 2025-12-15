@@ -24,8 +24,8 @@ export const cardPriceSourceInfo: Record<CardPriceSourceType, CardPriceSourceInf
     id: CardPriceSourceType.TCGPLAYER,
     name: 'TCGPlayer',
     logo: 'https://images.swubase.com/price-source-thumbnails/price-source-tcgplayer.svg',
-    enabled: false,
-    description: 'TBD',
+    enabled: true,
+    description: '',
   },
   [CardPriceSourceType.SWUBASE]: {
     id: CardPriceSourceType.SWUBASE,
@@ -79,3 +79,33 @@ export interface CardMarketPriceData {
   averagePrice1Day: number;
   averagePrice: number;
 }
+
+// Interface for TCGplayer price data (single product/subtype entry)
+export interface TcgPlayerPriceData {
+  lowPrice: number | null;
+  midPrice: number | null;
+  highPrice: number | null;
+  marketPrice: number | null;
+  directLowPrice: number | null;
+  subTypeName?: string | null;
+}
+
+export const priceFormatterEur = (price: number | null | undefined) => `${price?.toFixed(2)} €`;
+export const priceFormatterUsd = (price: number | null | undefined) =>
+  price === null || price === undefined ? '-' : `$${price.toFixed(2)}`;
+
+export const priceFormatterBasedOnSourceType = (
+  price: string | number | null | undefined,
+  sourceType: CardPriceSourceType,
+) => {
+  const p = typeof price === 'string' ? parseFloat(price) : price;
+
+  switch (sourceType) {
+    case CardPriceSourceType.CARDMARKET:
+      return priceFormatterEur(p);
+    case CardPriceSourceType.TCGPLAYER:
+      return priceFormatterUsd(p);
+    default:
+      return p == null || p === undefined ? '-' : p.toFixed(2);
+  }
+};
