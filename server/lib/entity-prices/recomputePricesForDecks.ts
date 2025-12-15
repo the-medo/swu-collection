@@ -97,8 +97,11 @@ export const recomputePricesForDecks = async (deckIds: string[]): Promise<void> 
   };
 
   const upserts: UpsertRow[] = [];
+  const usedDecks: Set<string> = new Set();
 
   for (const [dId, bySource] of Object.entries(grouped)) {
+    usedDecks.add(dId);
+
     // compute base quantity for this deck (sum of all deck card quantities)
     const baseQty = Object.values(baseCardsByDeck[dId] ?? {}).reduce(
       (acc, dc) => acc + (dc.quantity ?? 0),
@@ -185,6 +188,23 @@ export const recomputePricesForDecks = async (deckIds: string[]): Promise<void> 
       });
     }
   }
+
+  deckIds.forEach(dId => {
+    if (!usedDecks.has(dId)) {
+      ['cardmarket', 'tcgplayer'].forEach(sourceType => {
+        upserts.push({
+          entityId: dId,
+          sourceType,
+          type: 'deck',
+          updatedAt: new Date(),
+          data: '{}',
+          dataMissing: '{}',
+          price: '0.00',
+          priceMissing: 0,
+        });
+      });
+    }
+  });
 
   // 4) Upsert into entity_price (single multi-row statement)
   if (upserts.length > 0) {
