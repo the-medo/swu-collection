@@ -21,7 +21,7 @@ export const entityPrice = pgTable(
     data: text('data'), // JSON as string (same structure as pricing data)
     dataMissing: text('data_missing'), // JSON as string; same keys as data but numeric counts
     price: numeric('price', { precision: 12, scale: 2 }),
-    priceMissing: integer('price_missing'), // number of cards without price
+    priceMissing: integer('price_missing'), // number of cards without price - sum of quantities from the deck_card
   },
   table => {
     return {
