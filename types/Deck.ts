@@ -1,4 +1,5 @@
 import type { User } from './User.ts';
+import type { EntityPrice } from '../server/db/schema/entity_price.ts';
 
 export interface Deck {
   id: string;
@@ -19,4 +20,5 @@ export interface DeckData {
   deck: Deck;
   user: User;
   isFavorite: string | null;
+  entityPrices?: EntityPrice[];
 }

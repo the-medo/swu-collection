@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { and, eq, gt, or, sql } from 'drizzle-orm';
+import { and, eq, gt, inArray, or, sql } from 'drizzle-orm';
 import { deck as deckTable } from '../../db/schema/deck.ts';
 import { db } from '../../db';
 import { user as userTable } from '../../db/schema/auth-schema.ts';
@@ -15,6 +15,7 @@ import { selectUser } from '../user.ts';
 import { selectDeck, selectDeckInformation } from '../deck.ts';
 import type { AuthExtension } from '../../auth/auth.ts';
 import { booleanPreprocessor } from '../../../shared/lib/zod/booleanPreprocessor.ts';
+import { entityPrice } from '../../db/schema/entity_price.ts';
 
 export const zDeckQueryParams = zPaginationParams.extend({
   userId: z.string().optional(),
@@ -172,8 +173,39 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     // Apply sorting, limit, and offset
     const decks = await query.orderBy(sql.raw(`${sort} ${order}`));
 
+    // Optimize: fetch all entity prices for the returned deck IDs in a single query
+    const deckIds = decks.map(d => d.deck.id);
+    let pricesByDeck = new Map<string, any[]>();
+    if (deckIds.length > 0) {
+      const priceRows = await db
+        .select({
+          entityId: entityPrice.entityId,
+          sourceType: entityPrice.sourceType,
+          type: entityPrice.type,
+          updatedAt: entityPrice.updatedAt,
+          data: entityPrice.data,
+          dataMissing: entityPrice.dataMissing,
+          price: entityPrice.price,
+          priceMissing: entityPrice.priceMissing,
+        })
+        .from(entityPrice)
+        .where(and(inArray(entityPrice.entityId, deckIds)));
+
+      pricesByDeck = priceRows.reduce((acc, row) => {
+        const list = acc.get(row.entityId) ?? [];
+        list.push(row);
+        acc.set(row.entityId, list);
+        return acc;
+      }, new Map<string, any[]>());
+    }
+
+    const dataWithPrices = decks.map(d => ({
+      ...d,
+      entityPrices: pricesByDeck.get(d.deck.id) ?? [],
+    }));
+
     return c.json({
-      data: decks,
+      data: dataWithPrices,
       pagination: {
         limit,
         offset,
