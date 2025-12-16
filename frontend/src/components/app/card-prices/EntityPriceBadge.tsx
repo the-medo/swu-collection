@@ -9,6 +9,7 @@ import {
 } from '../../../../../types/CardPrices.ts';
 import { PriceBadgeRenderer } from '@/components/app/card-prices/PriceBadgeRenderer.tsx';
 import { isEntityPriceOutdated } from '../../../../../shared/lib/card-prices/outdated-by-source-type.ts';
+import EntityPriceRefresh from '@/components/app/card-prices/EntityPriceRefresh.tsx';
 
 const customMessageBySourceType: Record<string, string[]> = {
   cardmarket: ['New cardmarket prices are fetched daily 04:00 UTC'],
@@ -23,6 +24,7 @@ const getCustomMessageBySourceType = (sourceType: CardPriceSourceType | undefine
 export interface EntityPriceBadgeProps extends PriceBadgeDisplayProps {
   entityPrice: EntityPrice;
   entityUpdatedAt?: string;
+  displayRefreshIfOutdated?: boolean;
 }
 
 export const EntityPriceBadge: React.FC<EntityPriceBadgeProps> = ({
@@ -35,6 +37,7 @@ export const EntityPriceBadge: React.FC<EntityPriceBadgeProps> = ({
   size = 'default',
   fixedWidth = true,
   entityUpdatedAt,
+  displayRefreshIfOutdated = true,
   // Note: sourceType from display props is ignored in favor of entityPrice.sourceType
 }) => {
   const rawPrice = entityPrice.price as unknown as string | number | null | undefined;
@@ -77,16 +80,22 @@ export const EntityPriceBadge: React.FC<EntityPriceBadgeProps> = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>{badge}</TooltipTrigger>
-        <TooltipContent className="p-4 max-w-sm">
+        <TooltipContent className="p-4 max-w-sm text-center">
           {hasPrice && entityPrice.data ? (
-            <PriceBadgeTooltip
-              data={entityPrice.data}
-              sourceType={entityPrice.sourceType}
-              customMessages={getCustomMessageBySourceType(entityPrice.sourceType)}
-              warningMessages={outdatedInfo !== false ? outdatedInfo : undefined}
-            />
+            <>
+              <PriceBadgeTooltip
+                data={entityPrice.data}
+                sourceType={entityPrice.sourceType}
+                customMessages={getCustomMessageBySourceType(entityPrice.sourceType)}
+                warningMessages={outdatedInfo !== false ? outdatedInfo : undefined}
+              />
+
+              {displayRefreshIfOutdated && outdatedInfo !== false && (
+                <EntityPriceRefresh entityId={entityPrice.entityId} entityType={entityPrice.type} />
+              )}
+            </>
           ) : (
-            'No price data available.'
+            <div>No price data available.</div>
           )}
         </TooltipContent>
       </Tooltip>

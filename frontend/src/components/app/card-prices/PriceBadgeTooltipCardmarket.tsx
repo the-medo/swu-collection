@@ -35,7 +35,7 @@ export const PriceBadgeTooltipCardmarket: React.FC<PriceBadgeTooltipBaseProps> =
 
   return (
     <div className="space-y-2 z-10">
-      <div className="text-[10px] text-gray-500 text-center">
+      <div className="text-[10px] text-gray-500 dark:text-gray-400 text-center">
         {updatedAt && (
           <div>Data from CardMarket: {formatDistanceToNow(updatedAt, { addSuffix: true })}</div>
         )}
@@ -89,7 +89,7 @@ export const PriceBadgeTooltipCardmarket: React.FC<PriceBadgeTooltipBaseProps> =
       </div>
 
       {warningMessages && warningMessages.length > 0 && (
-        <div className="text-[10px] text-orange-500 text-center">
+        <div className="text-[10px] text-yellow-800 dark:text-yellow-200 text-center">
           {warningMessages.map((message, index) => (
             <div key={index}>{message}</div>
           ))}
