@@ -1,12 +1,13 @@
 import { PriceBadgeDisplayProps } from '@/components/app/card-prices/PriceBadge.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, CircleAlert } from 'lucide-react';
 import { cn } from '@/lib/utils.ts';
 import { CardPriceSourceType } from '../../../../../types/CardPrices.ts';
 
 interface PriceBadgeRendererProps extends PriceBadgeDisplayProps {
   formattedPrice: string;
   inFetchlist?: boolean;
+  displayOutdatedWarningIcon?: boolean;
 }
 
 export const PriceBadgeRenderer: React.FC<PriceBadgeRendererProps> = ({
@@ -17,6 +18,7 @@ export const PriceBadgeRenderer: React.FC<PriceBadgeRendererProps> = ({
   moveTop = false,
   size = 'default',
   fixedWidth = true,
+  displayOutdatedWarningIcon = false,
 }) => {
   return (
     <Badge
@@ -38,6 +40,11 @@ export const PriceBadgeRenderer: React.FC<PriceBadgeRendererProps> = ({
       {inFetchlist && (
         <span className="absolute top-1 -left-1 animate-spin">
           <LoaderCircle className="size-3" />
+        </span>
+      )}
+      {displayOutdatedWarningIcon && (
+        <span className="absolute -top-1 -right-1 opacity-60">
+          <CircleAlert className="size-3" />
         </span>
       )}
       {displayLogo && (

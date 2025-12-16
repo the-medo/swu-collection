@@ -7,8 +7,10 @@ import { priceFormatterUsd, TcgPlayerPriceData } from '../../../../../types/Card
 interface PriceBadgeTooltipBaseProps {
   data: string | null;
   sourceLink?: string;
-  updatedAt: Date | null;
-  fetchedAt: Date;
+  updatedAt?: Date | null;
+  fetchedAt?: Date;
+  customMessages?: string[];
+  warningMessages?: string[];
 }
 
 export const PriceBadgeTooltipTcgplayer: React.FC<PriceBadgeTooltipBaseProps> = ({
@@ -16,6 +18,8 @@ export const PriceBadgeTooltipTcgplayer: React.FC<PriceBadgeTooltipBaseProps> = 
   sourceLink,
   updatedAt,
   fetchedAt,
+  customMessages,
+  warningMessages,
 }) => {
   if (!data) return null;
 
@@ -35,16 +39,25 @@ export const PriceBadgeTooltipTcgplayer: React.FC<PriceBadgeTooltipBaseProps> = 
         {updatedAt && (
           <div>Data from TCGplayer: {formatDistanceToNow(updatedAt, { addSuffix: true })}</div>
         )}
-        <div>Last time checked: {formatDistanceToNow(fetchedAt, { addSuffix: true })}</div>
+        {fetchedAt && (
+          <div>Last time checked: {formatDistanceToNow(fetchedAt, { addSuffix: true })}</div>
+        )}
+        {customMessages && customMessages.length > 0 && (
+          <>
+            {customMessages.map((message, index) => (
+              <div key={index}>{message}</div>
+            ))}
+          </>
+        )}
       </div>
 
       <div>
         <Table>
           <TableBody className="border-t">
             <TableRow>
-              <TableCell>Market</TableCell>
+              <TableCell>High</TableCell>
               <TableCell className="text-right">
-                {priceFormatterUsd(parsedData.marketPrice)}
+                {priceFormatterUsd(parsedData.highPrice)}
               </TableCell>
             </TableRow>
             <TableRow>
@@ -55,16 +68,10 @@ export const PriceBadgeTooltipTcgplayer: React.FC<PriceBadgeTooltipBaseProps> = 
               <TableCell>Low</TableCell>
               <TableCell className="text-right">{priceFormatterUsd(parsedData.lowPrice)}</TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell>High</TableCell>
-              <TableCell className="text-right">
-                {priceFormatterUsd(parsedData.highPrice)}
-              </TableCell>
-            </TableRow>
             <TableRow className="border-b-0">
-              <TableCell>Direct Low</TableCell>
-              <TableCell className="text-right">
-                {priceFormatterUsd(parsedData.directLowPrice)}
+              <TableCell className="font-bold pt-4">Market</TableCell>
+              <TableCell className="text-right font-bold pt-4">
+                {priceFormatterUsd(parsedData.marketPrice)}
               </TableCell>
             </TableRow>
             {parsedData.subTypeName && (
@@ -78,6 +85,14 @@ export const PriceBadgeTooltipTcgplayer: React.FC<PriceBadgeTooltipBaseProps> = 
           </TableBody>
         </Table>
       </div>
+
+      {warningMessages && warningMessages.length > 0 && (
+        <div className="text-[10px] text-orange-500 text-center">
+          {warningMessages.map((message, index) => (
+            <div key={index}>{message}</div>
+          ))}
+        </div>
+      )}
 
       {sourceLink && (
         <div className="pt-1 flex items-center justify-center">

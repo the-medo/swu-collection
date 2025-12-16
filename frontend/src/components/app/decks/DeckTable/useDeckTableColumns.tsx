@@ -22,6 +22,8 @@ import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectD
 import { cn } from '@/lib/utils.ts';
 import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
+import { EntityPriceBadge } from '@/components/app/card-prices/EntityPriceBadge.tsx';
+import { getPriceSourceSortValue } from '../../../../../../shared/lib/card-prices/source-type-sorters.ts';
 
 interface DeckTableColumnsProps {
   view?: DataTableViewMode;
@@ -138,6 +140,31 @@ export function useDeckTableColumns({
               )}
             </Button>
           </Link>
+        );
+      },
+    });
+
+    // Price column (before Public)
+    definitions.push({
+      id: 'deckPrice',
+      header: 'Price',
+      size: 24,
+      displayInBoxView: !isCompactBoxView,
+      cell: ({ row }) => {
+        const prices = row.original.entityPrices ?? [];
+        prices.sort(
+          (a, b) => getPriceSourceSortValue(a.sourceType) - getPriceSourceSortValue(b.sourceType),
+        );
+        return (
+          <div className={cn('flex gap-1 items-center', { 'justify-center': view === 'box' })}>
+            {prices.map(p => (
+              <EntityPriceBadge
+                entityPrice={p}
+                sourceType={p.sourceType}
+                entityUpdatedAt={row.original.deck.updatedAt}
+              />
+            ))}
+          </div>
         );
       },
     });

@@ -8,9 +8,21 @@ import {
   priceFormatterBasedOnSourceType,
 } from '../../../../../types/CardPrices.ts';
 import { PriceBadgeRenderer } from '@/components/app/card-prices/PriceBadgeRenderer.tsx';
+import { isEntityPriceOutdated } from '../../../../../shared/lib/card-prices/outdated-by-source-type.ts';
+
+const customMessageBySourceType: Record<string, string[]> = {
+  cardmarket: ['New cardmarket prices are fetched daily 04:00 UTC'],
+  tcgplayer: ['New TCGPlayer prices are fetched daily 9PM UTC'],
+};
+
+const getCustomMessageBySourceType = (sourceType: CardPriceSourceType | undefined): string[] => {
+  if (!sourceType) return [];
+  return sourceType in customMessageBySourceType ? customMessageBySourceType[sourceType] : [];
+};
 
 export interface EntityPriceBadgeProps extends PriceBadgeDisplayProps {
   entityPrice: EntityPrice;
+  entityUpdatedAt?: string;
 }
 
 export const EntityPriceBadge: React.FC<EntityPriceBadgeProps> = ({
@@ -22,33 +34,35 @@ export const EntityPriceBadge: React.FC<EntityPriceBadgeProps> = ({
   moveTop = false,
   size = 'default',
   fixedWidth = true,
+  entityUpdatedAt,
   // Note: sourceType from display props is ignored in favor of entityPrice.sourceType
 }) => {
-  const sourceTypeEnum: CardPriceSourceType =
-    entityPrice.sourceType === 'cardmarket'
-      ? CardPriceSourceType.CARDMARKET
-      : CardPriceSourceType.TCGPLAYER;
-
   const rawPrice = entityPrice.price as unknown as string | number | null | undefined;
   const priceStr = typeof rawPrice === 'number' ? rawPrice.toFixed(2) : (rawPrice ?? undefined);
   const hasPrice = Boolean(priceStr && priceStr !== '0.00');
   const formattedPrice = hasPrice
-    ? priceFormatterBasedOnSourceType(priceStr as string, sourceTypeEnum)
+    ? priceFormatterBasedOnSourceType(priceStr as string, entityPrice.sourceType)
     : 'N/A';
+
+  const outdatedInfo = useMemo(
+    () => isEntityPriceOutdated(entityPrice.sourceType, entityUpdatedAt, entityPrice.updatedAt),
+    [entityPrice.sourceType, entityUpdatedAt, entityPrice.updatedAt],
+  );
 
   const badge = useMemo(
     () => (
       <PriceBadgeRenderer
         formattedPrice={formattedPrice}
-        sourceType={sourceTypeEnum}
+        sourceType={entityPrice.sourceType}
         inFetchlist={false}
         displayLogo={displayLogo}
         moveTop={moveTop}
         size={size}
         fixedWidth={fixedWidth}
+        displayOutdatedWarningIcon={outdatedInfo !== false}
       />
     ),
-    [formattedPrice, sourceTypeEnum, displayLogo, moveTop, size, fixedWidth],
+    [formattedPrice, entityPrice.sourceType, displayLogo, moveTop, size, fixedWidth, outdatedInfo],
   );
 
   if (!displayNA && !hasPrice) {
@@ -68,8 +82,8 @@ export const EntityPriceBadge: React.FC<EntityPriceBadgeProps> = ({
             <PriceBadgeTooltip
               data={entityPrice.data}
               sourceType={entityPrice.sourceType}
-              updatedAt={entityPrice.updatedAt ?? null}
-              fetchedAt={new Date()}
+              customMessages={getCustomMessageBySourceType(entityPrice.sourceType)}
+              warningMessages={outdatedInfo !== false ? outdatedInfo : undefined}
             />
           ) : (
             'No price data available.'

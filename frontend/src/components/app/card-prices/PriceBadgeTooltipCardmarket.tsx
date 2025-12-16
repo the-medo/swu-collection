@@ -7,8 +7,10 @@ import { CardMarketPriceData, priceFormatterEur } from '../../../../../types/Car
 interface PriceBadgeTooltipBaseProps {
   data: string | null;
   sourceLink?: string;
-  updatedAt: Date | null;
-  fetchedAt: Date;
+  updatedAt?: Date | null;
+  fetchedAt?: Date;
+  customMessages?: string[];
+  warningMessages?: string[];
 }
 
 export const PriceBadgeTooltipCardmarket: React.FC<PriceBadgeTooltipBaseProps> = ({
@@ -16,6 +18,8 @@ export const PriceBadgeTooltipCardmarket: React.FC<PriceBadgeTooltipBaseProps> =
   sourceLink,
   updatedAt,
   fetchedAt,
+  customMessages,
+  warningMessages,
 }) => {
   if (!data) return null;
 
@@ -35,7 +39,16 @@ export const PriceBadgeTooltipCardmarket: React.FC<PriceBadgeTooltipBaseProps> =
         {updatedAt && (
           <div>Data from CardMarket: {formatDistanceToNow(updatedAt, { addSuffix: true })}</div>
         )}
-        <div>Last time checked: {formatDistanceToNow(fetchedAt, { addSuffix: true })}</div>
+        {fetchedAt && (
+          <div>Last time checked: {formatDistanceToNow(fetchedAt, { addSuffix: true })}</div>
+        )}
+        {customMessages && customMessages.length > 0 && (
+          <>
+            {customMessages.map((message, index) => (
+              <div key={index}>{message}</div>
+            ))}
+          </>
+        )}
       </div>
 
       <div>
@@ -74,6 +87,14 @@ export const PriceBadgeTooltipCardmarket: React.FC<PriceBadgeTooltipBaseProps> =
           </TableBody>
         </Table>
       </div>
+
+      {warningMessages && warningMessages.length > 0 && (
+        <div className="text-[10px] text-orange-500 text-center">
+          {warningMessages.map((message, index) => (
+            <div key={index}>{message}</div>
+          ))}
+        </div>
+      )}
 
       {sourceLink && (
         <div className="pt-1 flex items-center justify-center">
