@@ -19,6 +19,7 @@ import { EyeIcon, Hammer } from 'lucide-react';
 import DeckGradientButton from '@/components/app/decks/DeckContents/DeckImage/DeckGradientButton.tsx';
 import DeckCollection from '@/components/app/decks/DeckContents/DeckCollection/DeckCollection.tsx';
 import { useCardPoolDeckDetailStoreActions } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
+import DeckPricing from '@/components/app/decks/DeckContents/DeckPricing/DeckPricing.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -54,6 +55,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
                 </DeckGradientButton>
               </Link>
             )}
+            <DeckPricing deckId={deckId} />
             {cardPoolId && (
               <>
                 <Link

@@ -10,6 +10,7 @@ import {
 import { PriceBadgeRenderer } from '@/components/app/card-prices/PriceBadgeRenderer.tsx';
 import { isEntityPriceOutdated } from '../../../../../shared/lib/card-prices/outdated-by-source-type.ts';
 import EntityPriceRefresh from '@/components/app/card-prices/EntityPriceRefresh.tsx';
+import { Badge } from '@/components/ui/badge.tsx';
 
 const customMessageBySourceType: Record<string, string[]> = {
   cardmarket: ['New cardmarket prices are fetched daily 04:00 UTC'],
@@ -83,6 +84,12 @@ export const EntityPriceBadge: React.FC<EntityPriceBadgeProps> = ({
         <TooltipContent className="p-4 max-w-sm text-center">
           {hasPrice && entityPrice.data ? (
             <>
+              {entityPrice.priceMissing ? (
+                <Badge variant="warning" className="mb-2">
+                  Prices missing for {entityPrice.priceMissing} cards!
+                </Badge>
+              ) : null}
+
               <PriceBadgeTooltip
                 data={entityPrice.data}
                 sourceType={entityPrice.sourceType}
