@@ -9,6 +9,7 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import type { CardPriceSourceType } from '../../../types/CardPrices.ts';
 
 // Generic price aggregation per entity (e.g., deck, collection)
 export const entityPrice = pgTable(
@@ -39,4 +40,6 @@ export const entityPrice = pgTable(
 );
 
 export type InsertEntityPrice = InferInsertModel<typeof entityPrice>;
-export type EntityPrice = InferSelectModel<typeof entityPrice>;
+export type EntityPrice = Omit<InferSelectModel<typeof entityPrice>, 'sourceType'> & {
+  sourceType: CardPriceSourceType;
+};
