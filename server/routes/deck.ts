@@ -18,6 +18,7 @@ import { deckIdTournamentGetRoute } from './decks/_id/tournament/get.ts';
 import { decksThumbnailsPostRoute } from './decks/thumbnails/post.ts';
 import { deckIdFavoritePostRoute } from './decks/_id/favorite/post.ts';
 import { deckIdJsonGetRoute } from './decks/_id/json/get.ts';
+import { deckIdPricePostRoute } from './decks/_id/price/post.ts';
 import type { AuthExtension } from '../auth/auth.ts';
 
 export const selectDeck = getTableColumns(deckTable);
@@ -37,6 +38,7 @@ export const deckRoute = new Hono<AuthExtension>()
   .route('/:id/tournament', deckIdTournamentGetRoute)
   .route('/:id/favorite', deckIdFavoritePostRoute)
   .route('/:id/json', deckIdJsonGetRoute)
+  .route('/:id/price', deckIdPricePostRoute)
   .route('/import-swudb', decksImportSwudbPostRoute)
   .route('/thumbnails', decksThumbnailsPostRoute)
   .route('/bulk/data', decksBulkGetRoute);
