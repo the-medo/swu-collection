@@ -5,7 +5,7 @@ import { PriceBadgeTooltipTcgplayer } from './PriceBadgeTooltipTcgplayer';
 interface PriceBadgeTooltipProps {
   data: string | null;
   sourceType: string;
-  sourceLink: string;
+  sourceLink?: string;
   updatedAt: Date | null;
   fetchedAt: Date;
 }

@@ -6,7 +6,7 @@ import { priceFormatterUsd, TcgPlayerPriceData } from '../../../../../types/Card
 
 interface PriceBadgeTooltipBaseProps {
   data: string | null;
-  sourceLink: string;
+  sourceLink?: string;
   updatedAt: Date | null;
   fetchedAt: Date;
 }
@@ -79,18 +79,20 @@ export const PriceBadgeTooltipTcgplayer: React.FC<PriceBadgeTooltipBaseProps> = 
         </Table>
       </div>
 
-      <div className="pt-1 flex items-center justify-center">
-        <a href={sourceLink} target="_blank" rel="noopener noreferrer" className="inline-block">
-          <Badge variant="outline" className="flex items-center gap-1 hover:bg-muted">
-            <img
-              src="https://images.swubase.com/price-source-thumbnails/price-source-tcgplayer.svg"
-              alt="TCGplayer"
-              className="size-3"
-            />
-            <span>View on TCGplayer</span>
-          </Badge>
-        </a>
-      </div>
+      {sourceLink && (
+        <div className="pt-1 flex items-center justify-center">
+          <a href={sourceLink} target="_blank" rel="noopener noreferrer" className="inline-block">
+            <Badge variant="outline" className="flex items-center gap-1 hover:bg-muted">
+              <img
+                src="https://images.swubase.com/price-source-thumbnails/price-source-tcgplayer.svg"
+                alt="TCGplayer"
+                className="size-3"
+              />
+              <span>View on TCGplayer</span>
+            </Badge>
+          </a>
+        </div>
+      )}
     </div>
   );
 };
