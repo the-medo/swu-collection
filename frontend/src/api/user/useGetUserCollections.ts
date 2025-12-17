@@ -3,7 +3,10 @@ import { api } from '@/lib/api.ts';
 import { UserCollectionsResponse } from '../../../../server/routes/user.ts';
 import { queryClient } from '@/queryClient.ts';
 
-export const useGetUserCollections = (userId: string | undefined) => {
+export const useGetUserCollections = (
+  userId: string | undefined,
+  includeEntityPrices: boolean = false,
+) => {
   return useQuery({
     queryKey: ['collections', userId],
     queryFn: userId
@@ -11,6 +14,9 @@ export const useGetUserCollections = (userId: string | undefined) => {
           const response = await api.user[':id'].collection.$get({
             param: {
               id: userId,
+            },
+            query: {
+              includeEntityPrices,
             },
           });
           if (!response.ok) {

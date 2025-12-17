@@ -2,10 +2,12 @@ import { ZCollection } from '../../../../../../types/ZCollection.ts';
 import { User } from '../../../../../../types/User.ts';
 import { CollectionCard } from '../../../../../../types/CollectionCard.ts';
 import { CollectionCardIdentification } from '@/api/collections/usePutCollectionCard.ts';
+import { EntityPrice } from '../../../../../../server/db/schema/entity_price.ts';
 
 export type UserCollectionData = {
   user: User;
   collection: ZCollection;
+  entityPrices: EntityPrice[] | null;
 };
 
 export const getIdentificationFromCollectionCard = (

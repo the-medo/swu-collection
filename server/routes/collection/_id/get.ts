@@ -7,6 +7,7 @@ import { db } from '../../../db';
 import { selectUser } from '../../user.ts';
 import { user as userTable } from '../../../db/schema/auth-schema.ts';
 import { selectCollection } from '../../collection.ts';
+import { selectEntityPricesArrayFor } from '../../../lib/entity-prices/selectEntityPrices.ts';
 
 /**
  * Get collection / wantlist details
@@ -24,6 +25,7 @@ export const collectionIdGetRoute = new Hono<AuthExtension>().get('/', async c =
       .select({
         user: selectUser,
         collection: selectCollection,
+        entityPrices: selectEntityPricesArrayFor(collectionTable.id),
       })
       .from(collectionTable)
       .innerJoin(userTable, eq(collectionTable.userId, userTable.id))

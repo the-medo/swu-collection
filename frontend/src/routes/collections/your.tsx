@@ -31,6 +31,7 @@ function YourCollections() {
               userId={user?.id}
               loading={!user}
               collectionType={CollectionType.COLLECTION}
+              includeEntityPrices={true}
             />
           </div>
         </div>

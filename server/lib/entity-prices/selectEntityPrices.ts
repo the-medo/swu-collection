@@ -19,5 +19,4 @@ export const selectEntityPricesArrayFor = (entityIdExpr: unknown) =>
     SELECT json_agg(${entityPriceJsonObject})
     FROM ${entityPrice}
     WHERE ${entityPrice.entityId} = ${entityIdExpr}
-      AND ${entityPrice.type} = 'deck'
   ), '[]'::json)`;

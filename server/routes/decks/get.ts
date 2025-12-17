@@ -178,16 +178,7 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     let pricesByDeck = new Map<string, any[]>();
     if (deckIds.length > 0) {
       const priceRows = await db
-        .select({
-          entityId: entityPrice.entityId,
-          sourceType: entityPrice.sourceType,
-          type: entityPrice.type,
-          updatedAt: entityPrice.updatedAt,
-          data: entityPrice.data,
-          dataMissing: entityPrice.dataMissing,
-          price: entityPrice.price,
-          priceMissing: entityPrice.priceMissing,
-        })
+        .select()
         .from(entityPrice)
         .where(and(inArray(entityPrice.entityId, deckIds)));
 

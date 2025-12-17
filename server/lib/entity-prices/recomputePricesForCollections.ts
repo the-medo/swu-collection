@@ -80,8 +80,6 @@ export const recomputePricesForCollections = async (collectionIds: string[]): Pr
     grouped[cId][sourceType].push({ amount, cvp });
   }
 
-  console.log({ totalQty });
-
   type UpsertRow = {
     entityId: string;
     sourceType: string;
@@ -147,9 +145,6 @@ export const recomputePricesForCollections = async (collectionIds: string[]): Pr
         }
       }
 
-      console.log({ keyTotals });
-      console.log({ keyPricedQty });
-
       const dataOut: Record<string, number> = {};
       for (const [k, sum] of Object.entries(keyTotals)) {
         dataOut[k] = Math.round(sum * 100) / 100;
@@ -164,8 +159,6 @@ export const recomputePricesForCollections = async (collectionIds: string[]): Pr
 
       const missing = Math.max(0, totalQty - pricedQty);
       const totalStr = (Math.round(total * 100) / 100).toFixed(2);
-
-      console.log({ missing, totalStr, baseQty, pricedQty });
 
       upserts.push({
         entityId: cId,

@@ -31,6 +31,7 @@ function YourWantlists() {
               userId={user?.id}
               loading={!user}
               collectionType={CollectionType.WANTLIST}
+              includeEntityPrices={true}
             />
           </div>
         </div>
