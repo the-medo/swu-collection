@@ -1,20 +1,20 @@
 import * as React from 'react';
-import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import EntityPriceBadge from '@/components/app/card-prices/EntityPriceBadge.tsx';
-import { getPriceSourceSortValue } from '../../../../../../../shared/lib/card-prices/source-type-sorters.ts';
 import { useMemo } from 'react';
+import { useGetCollection } from '@/api/collections/useGetCollection.ts';
+import { getPriceSourceSortValue } from '../../../../../../shared/lib/card-prices/source-type-sorters.ts';
 import EntityPriceRefresh from '@/components/app/card-prices/EntityPriceRefresh.tsx';
 
-interface DeckPricingProps {
-  deckId: string;
+interface CollectionPricingProps {
+  collectionId: string;
   showReloadButtonWhenNoPrices?: boolean;
 }
 
-const DeckPricing: React.FC<DeckPricingProps> = ({
-  deckId,
+const CollectionPricing: React.FC<CollectionPricingProps> = ({
+  collectionId,
   showReloadButtonWhenNoPrices = false,
 }) => {
-  const { data } = useGetDeck(deckId);
+  const { data } = useGetCollection(collectionId);
 
   const prices = useMemo(
     () =>
@@ -32,7 +32,7 @@ const DeckPricing: React.FC<DeckPricingProps> = ({
         showReloadButtonWhenNoPrices ? (
           <div className="text-sm text-muted-foreground flex items-center gap-2">
             <span>No prices available</span>
-            <EntityPriceRefresh entityId={deckId} entityType="deck" />
+            <EntityPriceRefresh entityId={collectionId} entityType="collection" />
           </div>
         ) : null
       ) : (
@@ -41,7 +41,7 @@ const DeckPricing: React.FC<DeckPricingProps> = ({
             key={`${p.sourceType}`}
             entityPrice={p}
             sourceType={p.sourceType}
-            entityUpdatedAt={data?.deck.updatedAt}
+            entityUpdatedAt={data?.collection.updatedAt}
           />
         ))
       )}
@@ -49,4 +49,4 @@ const DeckPricing: React.FC<DeckPricingProps> = ({
   );
 };
 
-export default DeckPricing;
+export default CollectionPricing;

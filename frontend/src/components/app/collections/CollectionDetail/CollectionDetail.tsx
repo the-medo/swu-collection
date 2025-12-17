@@ -21,6 +21,7 @@ import { forDecksRenderer } from '@/lib/table/forDecksRenderer.tsx';
 import { usePutCollection } from '@/api/collections/usePutCollection.ts';
 import CollectionCardSelection from '@/components/app/collections/CollectionCardSelection/CollectionCardSelection.tsx';
 import CollectionSources from '@/components/app/collections/CollectionSources/CollectionSources.tsx';
+import CollectionPricing from '@/components/app/collections/CollectionPricing/CollectionPricing.tsx';
 
 const routeApi = getRouteApi('/collections/$collectionId/');
 
@@ -103,8 +104,12 @@ const CollectionDetail: React.FC = () => {
         {owned && data?.collection && (
           <div className="flex flex-row gap-2 items-center">
             {publicRenderer(data?.collection.public, owned ? togglePublic : undefined)}
-            {type === CollectionType.COLLECTION ? forSaleRenderer(data?.collection.forSale, owned ? toggleForSale : undefined) : null}
-            {type === CollectionType.COLLECTION ? forDecksRenderer(data?.collection.forDecks, owned ? toggleForDecks : undefined) : null}
+            {type === CollectionType.COLLECTION
+              ? forSaleRenderer(data?.collection.forSale, owned ? toggleForSale : undefined)
+              : null}
+            {type === CollectionType.COLLECTION
+              ? forDecksRenderer(data?.collection.forDecks, owned ? toggleForDecks : undefined)
+              : null}
             <EditCollectionDialog
               collection={data?.collection}
               trigger={<Button>Edit {cardListString}</Button>}
@@ -121,6 +126,7 @@ const CollectionDetail: React.FC = () => {
         <CollectionContents collectionId={collectionId} />
         <div className="flex flex-col gap-4 w-full lg:w-[400px]">
           <CollectionActions collectionId={collectionId} />
+          <CollectionPricing collectionId={collectionId} showReloadButtonWhenNoPrices={true} />
           <CollectionStats collectionId={collectionId} />
           {user && <CollectionSources collectionId={collectionId} owned={owned} />}
           {!owned && <CollectionCardSelection collectionId={collectionId} />}

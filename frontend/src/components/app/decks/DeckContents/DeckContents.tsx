@@ -55,7 +55,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
                 </DeckGradientButton>
               </Link>
             )}
-            <DeckPricing deckId={deckId} />
+            <DeckPricing deckId={deckId} showReloadButtonWhenNoPrices={true} />
             {cardPoolId && (
               <>
                 <Link

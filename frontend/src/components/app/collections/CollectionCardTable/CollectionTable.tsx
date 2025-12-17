@@ -9,6 +9,7 @@ interface CollectionTableProps {
   collections: UserCollectionData[];
   loading?: boolean;
   collectionType: CollectionType;
+  showCollectionPrice?: boolean;
 }
 
 const CollectionTable: React.FC<CollectionTableProps> = ({
@@ -16,6 +17,7 @@ const CollectionTable: React.FC<CollectionTableProps> = ({
   collections,
   loading = false,
   collectionType,
+  showCollectionPrice,
 }) => {
   const { isMobile } = useSidebar();
   const view = isMobile ? 'box' : 'table';
@@ -28,6 +30,7 @@ const CollectionTable: React.FC<CollectionTableProps> = ({
     showPublic: variant !== 'public',
     showForSale: collectionType === CollectionType.COLLECTION,
     showForDecks: variant !== 'public' && collectionType === CollectionType.COLLECTION,
+    showCollectionPrice,
   });
 
   return <DataTable columns={columns} data={collections} loading={loading} view={view} />;

@@ -23,6 +23,9 @@ import EditCollectionDialog from '@/components/app/dialogs/EditCollectionDialog.
 import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 import { forSaleRenderer } from '@/lib/table/forSaleRenderer.tsx';
 import { forDecksRenderer } from '@/lib/table/forDecksRenderer.tsx';
+import { getPriceSourceSortValue } from '../../../../../../shared/lib/card-prices/source-type-sorters.ts';
+import { cn } from '@/lib/utils.ts';
+import EntityPriceBadge from '@/components/app/card-prices/EntityPriceBadge.tsx';
 
 interface CollectionTableColumnsProps {
   view?: DataTableViewMode;
@@ -32,6 +35,7 @@ interface CollectionTableColumnsProps {
   showForDecks?: boolean;
   showState?: boolean;
   showCurrency?: boolean;
+  showCollectionPrice?: boolean;
 }
 
 export function useCollectionTableColumns({
@@ -42,6 +46,7 @@ export function useCollectionTableColumns({
   showForDecks,
   showState,
   showCurrency,
+  showCollectionPrice,
 }: CollectionTableColumnsProps): ExtendedColumnDef<UserCollectionData>[] {
   const user = useUser();
   const { data: currencyData } = useCurrencyList();
@@ -121,6 +126,31 @@ export function useCollectionTableColumns({
             <Link to={'/users/' + userId} className="text-xs">
               {displayName}
             </Link>
+          );
+        },
+      });
+    }
+
+    if (showCollectionPrice) {
+      definitions.push({
+        id: 'collectionPrice',
+        header: 'Price',
+        size: 24,
+        cell: ({ row }) => {
+          const prices = row.original.entityPrices ?? [];
+          prices.sort(
+            (a, b) => getPriceSourceSortValue(a.sourceType) - getPriceSourceSortValue(b.sourceType),
+          );
+          return (
+            <div className={cn('flex gap-1 items-center', { 'justify-center': view === 'box' })}>
+              {prices.map(p => (
+                <EntityPriceBadge
+                  entityPrice={p}
+                  sourceType={p.sourceType}
+                  entityUpdatedAt={row.original.collection.updatedAt}
+                />
+              ))}
+            </div>
           );
         },
       });

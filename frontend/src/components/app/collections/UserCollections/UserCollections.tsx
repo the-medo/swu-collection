@@ -42,6 +42,7 @@ const UserCollections: React.FC<UserCollectionsProps> = ({
       collections={collections}
       loading={load}
       collectionType={collectionType}
+      showCollectionPrice={includeEntityPrices}
     />
   );
 };
