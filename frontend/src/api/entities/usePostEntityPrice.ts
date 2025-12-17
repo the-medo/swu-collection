@@ -23,7 +23,9 @@ export const usePostEntityPrice = (entityId: string | undefined, entityType: str
           param: { id: entityId },
         });
       } else if (entityType === 'collection') {
-        // TODO
+        response = await api.collection[':id'].price.$post({
+          param: { id: entityId },
+        });
       }
 
       if (!response?.ok) {
@@ -35,41 +37,113 @@ export const usePostEntityPrice = (entityId: string | undefined, entityType: str
     onSuccess: (result: any) => {
       // Update caches with fresh entity prices instead of refetching
       const prices = result?.data;
-      const deckId = Array.isArray(prices) && prices.length > 0 ? prices[0]?.entityId : undefined;
+      const updatedEntityId =
+        Array.isArray(prices) && prices.length > 0 ? prices[0]?.entityId : undefined;
 
-      if (deckId && Array.isArray(prices)) {
-        // 1) Update the single deck detail cache (useGetDeck)
-        queryClient.setQueryData(['deck', deckId], (oldData: any) => {
-          if (!oldData) return oldData;
-          return {
-            ...oldData,
-            // entityPrices are kept alongside the deck detail response
-            entityPrices: prices,
-          };
-        });
+      // Helper to upsert by sourceType for a specific entityId
+      const upsertBySourceType = (
+        existing: any[] | null | undefined,
+        incoming: any[],
+        entityIdToMatch: string,
+      ) => {
+        if (!Array.isArray(incoming) || incoming.length === 0) return existing ?? [];
+        const relevant = incoming.filter(p => p?.entityId === entityIdToMatch);
+        if (relevant.length === 0) return existing ?? [];
+        const sourceTypes = new Set(relevant.map(p => p?.sourceType));
+        const base = Array.isArray(existing)
+          ? existing.filter(
+              p => !(p?.entityId === entityIdToMatch && sourceTypes.has(p?.sourceType)),
+            )
+          : [];
+        return [...base, ...relevant];
+      };
 
-        // 2) Update all cached useGetDecks queries (infinite queries)
-        const queries = queryClient.getQueriesData({ queryKey: ['decks'] });
-        queries.forEach(([qk, qd]: any) => {
-          if (!qd?.pages) return;
-          let didChange = false;
-          const newPages = qd.pages.map((page: any) => {
-            if (!page?.data) return page;
-            let pageChanged = false;
-            const newData = page.data.map((d: any) => {
-              if (d?.deck?.id === deckId) {
-                pageChanged = true;
-                didChange = true;
-                return { ...d, entityPrices: prices };
-              }
-              return d;
-            });
-            return pageChanged ? { ...page, data: newData } : page;
+      if (updatedEntityId && Array.isArray(prices)) {
+        if (entityType === 'deck') {
+          // 1) Update the single deck detail cache (useGetDeck)
+          queryClient.setQueryData(['deck', updatedEntityId], (oldData: any) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              entityPrices: prices,
+            };
           });
-          if (didChange) {
-            queryClient.setQueryData(qk, { ...qd, pages: newPages });
-          }
-        });
+
+          // 2) Update all cached useGetDecks queries (infinite queries)
+          const deckQueries = queryClient.getQueriesData({ queryKey: ['decks'] });
+          deckQueries.forEach(([qk, qd]: any) => {
+            if (!qd?.pages) return;
+            let didChange = false;
+            const newPages = qd.pages.map((page: any) => {
+              if (!page?.data) return page;
+              let pageChanged = false;
+              const newData = page.data.map((d: any) => {
+                if (d?.deck?.id === updatedEntityId) {
+                  pageChanged = true;
+                  didChange = true;
+                  return { ...d, entityPrices: prices };
+                }
+                return d;
+              });
+              return pageChanged ? { ...page, data: newData } : page;
+            });
+            if (didChange) {
+              queryClient.setQueryData(qk, { ...qd, pages: newPages });
+            }
+          });
+        }
+
+        if (entityType === 'collection') {
+          const collectionId = updatedEntityId;
+
+          // 1) Update the single collection detail cache (useGetCollection)
+          queryClient.setQueryData(['collection', collectionId], (oldData: any) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              entityPrices: upsertBySourceType(oldData?.entityPrices, prices, collectionId),
+            };
+          });
+
+          // 2) Update all cached public collections queries (useGetCollections - infinite queries)
+          const publicQueries = queryClient.getQueriesData({ queryKey: [] as any });
+          publicQueries.forEach(([qk, qd]: any) => {
+            // qk is an array like ["public-collections-..."]
+            const first = Array.isArray(qk) ? qk[0] : undefined;
+            if (typeof first !== 'string' || !first.startsWith('public-collections-')) return;
+            if (!qd?.pages) return;
+
+            let didChange = false;
+            const newPages = qd.pages.map((page: any) => {
+              if (!Array.isArray(page)) return page;
+              let pageChanged = false;
+              const newPage = page.map((item: any) => {
+                const id = item?.collection?.id;
+                if (id === collectionId) {
+                  pageChanged = true;
+                  didChange = true;
+                  const merged = upsertBySourceType(item?.entityPrices, prices, collectionId);
+                  return { ...item, entityPrices: merged };
+                }
+                return item;
+              });
+              return pageChanged ? newPage : page;
+            });
+            if (didChange) {
+              queryClient.setQueryData(qk, { ...qd, pages: newPages });
+            }
+          });
+
+          // 3) Update all cached user collections queries (useGetUserCollections)
+          const userCollectionsQueries = queryClient.getQueriesData({ queryKey: ['collections'] });
+          userCollectionsQueries.forEach(([qk, qd]: any) => {
+            if (!qd) return;
+            const newEntityPrices = upsertBySourceType(qd?.entityPrices, prices, collectionId);
+            if (newEntityPrices !== qd?.entityPrices) {
+              queryClient.setQueryData(qk, { ...qd, entityPrices: newEntityPrices });
+            }
+          });
+        }
       }
 
       toast({
