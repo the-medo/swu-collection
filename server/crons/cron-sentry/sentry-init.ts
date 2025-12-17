@@ -6,6 +6,7 @@ export const CRON_SENTRY_MONITOR_SLUGS = {
   'cleanup-card-stats': 'cron-cleanup-card-stats',
   'update-card-standard-variants': 'update-card-standard-variants',
   'compute-deck-pricing': 'compute-deck-pricing',
+  'compute-collection-pricing': 'compute-collection-pricing',
 };
 
 Sentry.init({
