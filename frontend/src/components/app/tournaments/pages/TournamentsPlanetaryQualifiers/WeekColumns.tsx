@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { isFuture } from 'date-fns';
-import { Check, X, Users, PieChart } from 'lucide-react';
+import { Check, X, Users, PieChart, Package } from 'lucide-react';
 import {
   Collapsible,
   CollapsibleContent,
@@ -150,6 +150,13 @@ const WeekColumns: React.FC<WeekColumnsProps> = ({
                           } else {
                             statusIcon = <X className="h-4 w-4 text-red-500" />;
                           }
+                        }
+                        if (tournamentItem.tournament.format > 1) {
+                          statusIcon = (
+                            <div title="Limited PQ">
+                              <Package className="h-4 w-4 text-yellow-500" />
+                            </div>
+                          );
                         }
 
                         // Check if continent has changed
