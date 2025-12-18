@@ -6,7 +6,7 @@ export const entityPriceJsonObject = sql`json_build_object(
   'entityId', ${entityPrice.entityId},
   'sourceType', ${entityPrice.sourceType},
   'type', ${entityPrice.type},
-  'updatedAt', ${entityPrice.updatedAt},
+  'updatedAt', to_char(${entityPrice.updatedAt} AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
   'data', ${entityPrice.data},
   'dataMissing', ${entityPrice.dataMissing},
   'price', ${entityPrice.price},

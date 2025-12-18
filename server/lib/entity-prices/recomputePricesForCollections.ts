@@ -56,17 +56,18 @@ export const recomputePricesForCollections = async (collectionIds: string[]): Pr
   const countedCards = new Set<string>();
   const grouped: Record<string, Record<string, Item[]>> = {};
   const baseAmountByCollection: Record<string, Record<string, number>> = {};
-  let totalQty = 0;
+  const totalQtyForCollection: Record<string, number> = {};
 
   for (const r of rows) {
     const cId = r.collectionId as string;
+    if (!totalQtyForCollection[cId]) totalQtyForCollection[cId] = 0;
     const amount = (r.cc.amount ?? 0) as number;
     const cvp = (r.cvp ?? null) as Partial<CardVariantPrice> | null;
     const sourceType = cvp?.sourceType!;
 
-    const cardKey = `${r.cc.cardId}|${r.cc.variantId}|${r.cc.foil}|${r.cc.condition}|${r.cc.language}`;
+    const cardKey = `${cId}|${r.cc.cardId}|${r.cc.variantId}|${r.cc.foil}|${r.cc.condition}|${r.cc.language}`;
     if (!countedCards.has(cardKey)) {
-      totalQty += amount;
+      totalQtyForCollection[cId] += amount;
       countedCards.add(cardKey);
     }
 
@@ -84,7 +85,6 @@ export const recomputePricesForCollections = async (collectionIds: string[]): Pr
     entityId: string;
     sourceType: string;
     type: 'collection';
-    updatedAt: Date;
     data: string;
     dataMissing: string;
     price: string;
@@ -98,8 +98,6 @@ export const recomputePricesForCollections = async (collectionIds: string[]): Pr
     usedCollections.add(cId);
 
     for (const [sourceType, items] of Object.entries(bySource)) {
-      const baseQty = baseAmountByCollection[cId][sourceType] ?? 0;
-
       let total = 0;
       let pricedQty = 0;
 
@@ -153,11 +151,11 @@ export const recomputePricesForCollections = async (collectionIds: string[]): Pr
       const dataMissingOut: Record<string, number> = {};
       for (const k of candidateKeys) {
         const priced = keyPricedQty[k] ?? 0;
-        const missingForKey = Math.max(0, totalQty - priced);
+        const missingForKey = Math.max(0, totalQtyForCollection[cId] - priced);
         dataMissingOut[k] = missingForKey;
       }
 
-      const missing = Math.max(0, totalQty - pricedQty);
+      const missing = Math.max(0, totalQtyForCollection[cId] - pricedQty);
       const totalStr = (Math.round(total * 100) / 100).toFixed(2);
 
       upserts.push({
@@ -181,7 +179,6 @@ export const recomputePricesForCollections = async (collectionIds: string[]): Pr
           entityId: cId,
           sourceType,
           type: 'collection',
-          updatedAt: new Date(),
           data: '{}',
           dataMissing: '{}',
           price: '0.00',
@@ -199,7 +196,7 @@ export const recomputePricesForCollections = async (collectionIds: string[]): Pr
         target: [entityPrice.entityId, entityPrice.sourceType],
         set: {
           type: sql`excluded.type`,
-          updatedAt: sql`excluded.updated_at`,
+          updatedAt: sql`NOW()`,
           data: sql`excluded.data`,
           dataMissing: sql`excluded.data_missing`,
           price: sql`excluded.price`,

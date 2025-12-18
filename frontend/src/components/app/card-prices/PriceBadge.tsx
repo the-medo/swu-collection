@@ -88,16 +88,7 @@ export const PriceBadge: React.FC<PriceBadgeProps> = ({
     ],
   );
 
-  // If loading or error or no data, return null
-  if (isLoading || isError || !data || (!displayNA && !hasPrice && !inFetchlist)) {
-    console.log({
-      isLoading,
-      isError,
-      data,
-      dataData: data?.data,
-    });
-    return null;
-  }
+  if (isLoading || isError || !data || (!displayNA && !hasPrice && !inFetchlist)) return null;
 
   if (!displayTooltip) {
     return badge;
