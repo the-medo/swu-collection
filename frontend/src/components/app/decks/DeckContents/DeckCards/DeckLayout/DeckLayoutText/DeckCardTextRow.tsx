@@ -132,7 +132,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
           <div className="flex gap-2 justify-end">
             {displayDeckPrice && (
               <div className={cn(editable && 'group-hover:hidden')}>
-                <DeckCardPriceBadge card={card} />
+                <DeckCardPriceBadge card={card} displayTooltip={true} />
               </div>
             )}
             <div

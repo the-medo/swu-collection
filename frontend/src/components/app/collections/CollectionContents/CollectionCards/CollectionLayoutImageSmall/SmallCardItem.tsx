@@ -57,7 +57,7 @@ const SmallCardItem: React.FC<SmallCardItemProps> = ({
                   variantId={collectionCard.variantId}
                   sourceType={priceSourceType}
                   displayLogo={false}
-                  displayTooltip={false}
+                  displayTooltip={true}
                   moveTop={true}
                 />
               </div>

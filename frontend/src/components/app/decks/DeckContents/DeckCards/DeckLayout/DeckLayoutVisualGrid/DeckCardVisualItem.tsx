@@ -104,7 +104,9 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
               />
             )}
           </div>
-          {displayDeckPrice && <DeckCardPriceBadge card={card} moveTop={true} size="sm" />}
+          {displayDeckPrice && (
+            <DeckCardPriceBadge card={card} moveTop={true} displayTooltip={true} size="sm" />
+          )}
         </div>
       )}
 

@@ -9,6 +9,7 @@ interface PriceBadgeTooltipBaseProps {
   sourceLink?: string;
   updatedAt?: Date | null;
   fetchedAt?: Date;
+  displaySubtype?: boolean;
   customMessages?: string[];
   warningMessages?: string[];
 }
@@ -18,6 +19,7 @@ export const PriceBadgeTooltipTcgplayer: React.FC<PriceBadgeTooltipBaseProps> = 
   sourceLink,
   updatedAt,
   fetchedAt,
+  displaySubtype,
   customMessages,
   warningMessages,
 }) => {
@@ -74,7 +76,7 @@ export const PriceBadgeTooltipTcgplayer: React.FC<PriceBadgeTooltipBaseProps> = 
                 {priceFormatterUsd(parsedData.marketPrice)}
               </TableCell>
             </TableRow>
-            {parsedData.subTypeName && (
+            {displaySubtype && parsedData.subTypeName && (
               <TableRow>
                 <TableCell className="font-bold pt-4">Subtype</TableCell>
                 <TableCell className="text-right font-bold pt-4">
