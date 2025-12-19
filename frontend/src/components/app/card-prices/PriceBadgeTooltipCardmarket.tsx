@@ -6,9 +6,11 @@ import { CardMarketPriceData, priceFormatterEur } from '../../../../../types/Car
 
 interface PriceBadgeTooltipBaseProps {
   data: string | null;
-  sourceLink: string;
-  updatedAt: Date | null;
-  fetchedAt: Date;
+  sourceLink?: string;
+  updatedAt?: Date | null;
+  fetchedAt?: Date;
+  customMessages?: string[];
+  warningMessages?: string[];
 }
 
 export const PriceBadgeTooltipCardmarket: React.FC<PriceBadgeTooltipBaseProps> = ({
@@ -16,6 +18,8 @@ export const PriceBadgeTooltipCardmarket: React.FC<PriceBadgeTooltipBaseProps> =
   sourceLink,
   updatedAt,
   fetchedAt,
+  customMessages,
+  warningMessages,
 }) => {
   if (!data) return null;
 
@@ -31,11 +35,20 @@ export const PriceBadgeTooltipCardmarket: React.FC<PriceBadgeTooltipBaseProps> =
 
   return (
     <div className="space-y-2 z-10">
-      <div className="text-[10px] text-gray-500 text-center">
+      <div className="text-[10px] text-gray-500 dark:text-gray-400 text-center">
         {updatedAt && (
           <div>Data from CardMarket: {formatDistanceToNow(updatedAt, { addSuffix: true })}</div>
         )}
-        <div>Last time checked: {formatDistanceToNow(fetchedAt, { addSuffix: true })}</div>
+        {fetchedAt && (
+          <div>Last time checked: {formatDistanceToNow(fetchedAt, { addSuffix: true })}</div>
+        )}
+        {customMessages && customMessages.length > 0 && (
+          <>
+            {customMessages.map((message, index) => (
+              <div key={index}>{message}</div>
+            ))}
+          </>
+        )}
       </div>
 
       <div>
@@ -75,14 +88,28 @@ export const PriceBadgeTooltipCardmarket: React.FC<PriceBadgeTooltipBaseProps> =
         </Table>
       </div>
 
-      <div className="pt-1 flex items-center justify-center">
-        <a href={sourceLink} target="_blank" rel="noopener noreferrer" className="inline-block">
-          <Badge variant="outline" className="flex items-center gap-1 hover:bg-muted">
-            <img src="https://images.swubase.com/cm-logo.png" alt="CardMarket" className="size-3" />
-            <span>View on CardMarket</span>
-          </Badge>
-        </a>
-      </div>
+      {warningMessages && warningMessages.length > 0 && (
+        <div className="text-[10px] text-yellow-800 dark:text-yellow-200 text-center">
+          {warningMessages.map((message, index) => (
+            <div key={index}>{message}</div>
+          ))}
+        </div>
+      )}
+
+      {sourceLink && (
+        <div className="pt-1 flex items-center justify-center">
+          <a href={sourceLink} target="_blank" rel="noopener noreferrer" className="inline-block">
+            <Badge variant="outline" className="flex items-center gap-1 hover:bg-muted">
+              <img
+                src="https://images.swubase.com/cm-logo.png"
+                alt="CardMarket"
+                className="size-3"
+              />
+              <span>View on CardMarket</span>
+            </Badge>
+          </a>
+        </div>
+      )}
     </div>
   );
 };

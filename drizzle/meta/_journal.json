@@ -239,6 +239,20 @@
       "when": 1762626404578,
       "tag": "0033_superb_the_executioner",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1765827088099,
+      "tag": "0034_icy_princess_powerful",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1765832669808,
+      "tag": "0035_aspiring_radioactive_man",
+      "breakpoints": true
     }
   ]
 }

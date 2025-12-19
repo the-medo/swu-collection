@@ -9,15 +9,17 @@ interface UserCollectionsProps {
   userId: string | undefined;
   loading?: boolean;
   collectionType: CollectionType;
+  includeEntityPrices?: boolean;
 }
 
 const UserCollections: React.FC<UserCollectionsProps> = ({
   userId,
   loading = false,
   collectionType,
+  includeEntityPrices = false,
 }) => {
   const { data: user, isFetching: isFetchingUser } = useGetUser(userId);
-  const { data, isFetching } = useGetUserCollections(userId);
+  const { data, isFetching } = useGetUserCollections(userId, includeEntityPrices);
 
   const load = isFetching || loading || isFetchingUser;
 
@@ -28,6 +30,7 @@ const UserCollections: React.FC<UserCollectionsProps> = ({
         .map(c => ({
           collection: c,
           user,
+          entityPrices: (data.entityPrices ?? []).filter(ep => ep.entityId === c.id),
         }));
     }
     return [];
@@ -39,6 +42,7 @@ const UserCollections: React.FC<UserCollectionsProps> = ({
       collections={collections}
       loading={load}
       collectionType={collectionType}
+      showCollectionPrice={includeEntityPrices}
     />
   );
 };

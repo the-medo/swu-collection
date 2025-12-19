@@ -97,7 +97,7 @@ const CollectionCardHoverDetail: React.FC<CollectionCardDetailProps> = ({
                       variantId={collectionCard.variantId}
                       sourceType={priceSourceType}
                       displayLogo={true}
-                      displayTooltip={false}
+                      displayTooltip={true}
                       moveTop={true}
                     />
                   </div>

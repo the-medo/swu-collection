@@ -8,9 +8,15 @@ export type GetCollectionsRequest = {
   collectionType?: CollectionType;
   country?: string;
   state?: string;
+  includeEntityPrices?: boolean;
 };
 
-export const useGetCollections = ({ collectionType, country, state }: GetCollectionsRequest) => {
+export const useGetCollections = ({
+  collectionType,
+  country,
+  state,
+  includeEntityPrices,
+}: GetCollectionsRequest) => {
   const qk = `public-collections-${collectionType}-${country ?? 'x'}-${state ?? 'x'}`;
 
   return useInfiniteQuery({
@@ -23,6 +29,7 @@ export const useGetCollections = ({ collectionType, country, state }: GetCollect
           state: state ?? undefined,
           top: PAGE_SIZE,
           offset: pageParam * PAGE_SIZE,
+          includeEntityPrices,
         },
       });
       if (!response.ok) {

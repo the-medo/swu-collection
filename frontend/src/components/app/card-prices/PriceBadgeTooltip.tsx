@@ -5,9 +5,11 @@ import { PriceBadgeTooltipTcgplayer } from './PriceBadgeTooltipTcgplayer';
 interface PriceBadgeTooltipProps {
   data: string | null;
   sourceType: string;
-  sourceLink: string;
-  updatedAt: Date | null;
-  fetchedAt: Date;
+  sourceLink?: string;
+  updatedAt?: Date | null;
+  fetchedAt?: Date;
+  customMessages?: string[];
+  warningMessages?: string[];
 }
 
 export const PriceBadgeTooltip: React.FC<PriceBadgeTooltipProps> = ({
@@ -16,6 +18,8 @@ export const PriceBadgeTooltip: React.FC<PriceBadgeTooltipProps> = ({
   sourceLink,
   updatedAt,
   fetchedAt,
+  customMessages,
+  warningMessages,
 }) => {
   if (!data) return null;
 
@@ -26,6 +30,8 @@ export const PriceBadgeTooltip: React.FC<PriceBadgeTooltipProps> = ({
         sourceLink={sourceLink}
         updatedAt={updatedAt}
         fetchedAt={fetchedAt}
+        customMessages={customMessages}
+        warningMessages={warningMessages}
       />
     );
   }
@@ -37,6 +43,8 @@ export const PriceBadgeTooltip: React.FC<PriceBadgeTooltipProps> = ({
         sourceLink={sourceLink}
         updatedAt={updatedAt}
         fetchedAt={fetchedAt}
+        customMessages={customMessages}
+        warningMessages={warningMessages}
       />
     );
   }

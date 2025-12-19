@@ -1,10 +1,11 @@
-import { and, eq, getTableColumns, sql } from 'drizzle-orm';
+import { and, eq, getTableColumns, inArray, sql } from 'drizzle-orm';
 import { collection as collectionTable } from '../../db/schema/collection.ts';
 import { Hono } from 'hono';
 import type { AuthExtension } from '../../auth/auth.ts';
 import { user as userTable } from '../../db/schema/auth-schema.ts';
 import { db } from '../../db';
 import { selectUser } from '../user.ts';
+import { entityPrice } from '../../db/schema/entity_price.ts';
 
 export const selectCollection = getTableColumns(collectionTable);
 
@@ -22,6 +23,7 @@ export const collectionGetRoute = new Hono<AuthExtension>().get('/', async c => 
   const offset = Number(c.req.query('offset') ?? 0);
   const sort = c.req.query('sort') ?? 'collection.created_at';
   const order = c.req.query('order') === 'desc' ? 'desc' : 'asc';
+  const includeEntityPrices = c.req.query('includeEntityPrices') === 'true';
 
   if (state && !country) {
     return c.json({ error: 'State parameter requires country' }, 400);
@@ -51,6 +53,28 @@ export const collectionGetRoute = new Hono<AuthExtension>().get('/', async c => 
     .limit(limit)
     .offset(offset);
 
+  // If requested, fetch entity prices similarly to deckGetRoute and attach them
+  let pricesByCollection = new Map<string, any[]>();
+  if (includeEntityPrices && collections.length > 0) {
+    const collectionIds = collections.map(col => col.collection.id);
+    const priceRows = await db
+      .select()
+      .from(entityPrice)
+      .where(inArray(entityPrice.entityId, collectionIds));
+
+    pricesByCollection = priceRows.reduce((acc, row) => {
+      const list = acc.get(row.entityId) ?? [];
+      list.push(row);
+      acc.set(row.entityId, list);
+      return acc;
+    }, new Map<string, any[]>());
+  }
+
+  const dataWithPrices = collections.map(col => ({
+    ...col,
+    entityPrices: includeEntityPrices ? (pricesByCollection.get(col.collection.id) ?? []) : null,
+  }));
+
   // Return the result
-  return c.json(collections);
+  return c.json(dataWithPrices);
 });

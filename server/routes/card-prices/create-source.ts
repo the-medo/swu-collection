@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import type { AuthExtension } from '../../auth/auth.ts';
+import { auth, type AuthExtension } from '../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -19,6 +19,22 @@ export const cardPricesCreateSourceRoute = new Hono<AuthExtension>().post(
   '/',
   zValidator('json', createSourceSchema),
   async c => {
+    const user = c.get('user');
+    if (!user) return c.json({ message: 'Unauthorized' }, 401);
+
+    const hasPermission = await auth.api.userHasPermission({
+      body: {
+        userId: user.id,
+        permission: {
+          admin: ['access'],
+        },
+      },
+    });
+
+    if (!hasPermission.success) {
+      return c.json({ message: "You don't have permission to modify card price sources." }, 403);
+    }
+
     const { cardId, variantId, sourceType, sourceLink, sourceProductId } = c.req.valid('json');
 
     // Check if the record already exists
