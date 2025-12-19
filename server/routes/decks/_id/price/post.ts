@@ -10,13 +10,13 @@ import { recomputePricesForDecks } from '../../../../lib/entity-prices/recompute
 export const deckIdPricePostRoute = new Hono<AuthExtension>().post('/', async c => {
   const paramDeckId = z.guid().parse(c.req.param('id'));
 
-  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+  const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
 
   // Check if there was a recent update in the last 5 minutes
   const recentlyUpdated = await db
     .select({ entityId: entityPrice.entityId })
     .from(entityPrice)
-    .where(and(eq(entityPrice.entityId, paramDeckId), gte(entityPrice.updatedAt, fiveMinutesAgo)))
+    .where(and(eq(entityPrice.entityId, paramDeckId), gte(entityPrice.updatedAt, tenSecondsAgo)))
     .limit(1);
 
   if (recentlyUpdated.length === 0) {

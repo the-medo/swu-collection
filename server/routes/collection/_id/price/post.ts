@@ -9,14 +9,14 @@ import { recomputePricesForCollections } from '../../../../lib/entity-prices/rec
 export const collectionIdPricePostRoute = new Hono<AuthExtension>().post('/', async c => {
   const paramCollectionId = z.guid().parse(c.req.param('id'));
 
-  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+  const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
 
   // Check if there was a recent update in the last 5 minutes
   const recentlyUpdated = await db
     .select({ entityId: entityPrice.entityId })
     .from(entityPrice)
     .where(
-      and(eq(entityPrice.entityId, paramCollectionId), gte(entityPrice.updatedAt, fiveMinutesAgo)),
+      and(eq(entityPrice.entityId, paramCollectionId), gte(entityPrice.updatedAt, tenSecondsAgo)),
     )
     .limit(1);
 
