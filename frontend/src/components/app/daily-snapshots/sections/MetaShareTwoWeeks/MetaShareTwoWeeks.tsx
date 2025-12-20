@@ -87,7 +87,10 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
         }
         dropdownMenu={<MetaShareDropdownMenu tournamentGroupId={tournamentGroupId} />}
       />
-      <div className="flex gap-4 justify-center flex-wrap @container/meta-2-weeks">
+      <div
+        className="flex gap-4 justify-center flex-wrap @container/meta-2-weeks"
+        id="section-meta-2-weeks"
+      >
         {/* Center - Pie Chart */}
         <div className="flex flex-1 flex-col justify-center items-center">
           <MetaSharePieChart processedData={processedData} metaView={metaView} />

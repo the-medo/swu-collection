@@ -10,6 +10,7 @@ export type GridCardSizing = {
 export type SectionCardSizing = Record<1 | 2 | 3 | 4, GridCardSizing>;
 
 export type GridSectionProps = {
+  id: string;
   sizing: SectionCardSizing;
   className?: string;
   style?: React.CSSProperties;
@@ -18,7 +19,13 @@ export type GridSectionProps = {
 
 // GridSection applies grid placement (row/col start/end) using Tailwind responsive classes
 // for each breakpoint: base (1 col), md (2 cols), lg (3 cols), xl (4 cols).
-export const GridSection: React.FC<GridSectionProps> = ({ sizing, className, style, children }) => {
+export const GridSection: React.FC<GridSectionProps> = ({
+  id,
+  sizing,
+  className,
+  style,
+  children,
+}) => {
   const s1 = sizing[1];
   const s2 = sizing[2];
   const s3 = sizing[3];
@@ -50,6 +57,7 @@ export const GridSection: React.FC<GridSectionProps> = ({ sizing, className, sty
         className,
       )}
       style={style}
+      id={id}
     >
       {children}
     </div>
