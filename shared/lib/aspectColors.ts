@@ -8,3 +8,12 @@ export const aspectColors: Record<SwuAspect, string> = {
   [SwuAspect.HEROISM]: '#c6c1a0', // c18 m14 y36 k6
   [SwuAspect.VILLAINY]: '#040004', // c50 m80 y0 k100
 };
+
+export function getAspectGradient(aspects?: SwuAspect[]) {
+  const unique = Array.from(new Set((aspects ?? []).filter(Boolean)));
+  const colors = unique.map(a => aspectColors[a]).filter(Boolean);
+
+  if (colors.length === 0) return undefined;
+  if (colors.length === 1) return colors[0]; // solid fallback
+  return `linear-gradient(135deg, ${colors.join(', ')})`;
+}

@@ -24,6 +24,7 @@ import type { TournamentGroupTournament as TournamentGroupTournamentType } from 
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { getDeckLeadersAndBaseKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
+import DeckAvatar from '@/components/app/global/DeckAvatar/DeckAvatar.tsx';
 
 export interface RecentTournamentsProps {
   payload: DailySnapshotSectionData<SectionRecentTournaments>;
@@ -144,8 +145,8 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
                 won't be, depending on the data that is provided from melee.gg).
               </div>
               <div>
-                Possible to turn on "Winning deck mode", which will replace tournament name with deck
-                name and lead you straight to tournament decks.
+                Possible to turn on "Winning deck mode", which will replace tournament name with
+                deck name and lead you straight to tournament decks.
               </div>
             </SectionInfoTooltip>
           </>
@@ -206,6 +207,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
                         <tr className="border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-muted/50">
                           <td className="py-2">
                             <div className="flex items-center min-w-[210px]">
+                              <DeckAvatar deck={row.item.deck} size="50" />
                               <Flag countryCode={countryCode} className="mr-2" />
                               <Link to="/tournaments/$tournamentId" params={{ tournamentId: t.id }}>
                                 {winningDeckMode
