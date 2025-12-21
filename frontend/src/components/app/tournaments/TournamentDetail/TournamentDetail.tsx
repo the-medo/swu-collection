@@ -18,17 +18,20 @@ import { Helmet } from 'react-helmet-async';
 import { useMemo } from 'react';
 import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentDataLoader.tsx';
 import { usePutTournament } from '@/api/tournaments/usePutTournament.ts';
+import { TournamentTabsProps } from '@/components/app/tournaments/TournamentTabs/TournamentTabs.tsx';
 
 interface TournamentDetailProps {
   tournamentId: string;
   children?: React.ReactNode;
   activeTab?: string;
+  mode?: TournamentTabsProps['mode'];
 }
 
 const TournamentDetail: React.FC<TournamentDetailProps> = ({
   tournamentId,
   children,
   activeTab,
+  mode = 'tournament-page',
 }) => {
   const { data, isFetching, error } = useGetTournament(tournamentId);
   const hasPermission = usePermissions();
@@ -236,7 +239,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
           )}
         </div>
         <TournamentDataLoader tournamentId={tournamentId} />
-        <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} />
+        <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} mode={mode} />
         {activeTab === 'details' || tournament?.imported ? children : null}
         <NoTournamentData tournamentId={tournamentId} />
       </div>
