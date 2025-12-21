@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
 import type {
   DailySnapshotSectionData,
@@ -16,6 +16,7 @@ import SectionHeader from '../components/SectionHeader.tsx';
 import type { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../../types/TournamentGroup.ts';
 import DeckAvatar from '@/components/app/global/DeckAvatar/DeckAvatar.tsx';
 import { useMatchHeightToElementId } from '@/hooks/useMatchHeightToElementId.tsx';
+import { cn } from '@/lib/utils';
 
 export interface RecentTournamentsProps {
   payload: DailySnapshotSectionData<SectionRecentTournaments>;
@@ -28,6 +29,8 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   dailySnapshot,
   sectionUpdatedAt,
 }) => {
+  const navigate = useNavigate();
+  const { maTournamentId } = useSearch({ strict: false });
   const items = payload.data.tournaments ?? [];
   const scrollRef = useMatchHeightToElementId('s-recent-tournaments', true, h => `${h - 120}px`);
 
@@ -185,8 +188,22 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
 
                 const name = t.name.replace('PQ - ', '').split(', ')[0];
 
+                const isSelected = String(maTournamentId ?? '') === String(t.id);
+
                 return (
-                  <tr className="border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-muted/50">
+                  <tr
+                    key={t.id}
+                    className={cn(
+                      'border-b border-gray-100 dark:border-gray-800 cursor-pointer',
+                      isSelected ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-muted/50',
+                    )}
+                    onClick={() =>
+                      navigate({
+                        to: '.',
+                        search: prev => ({ ...prev, maTournamentId: t.id }),
+                      })
+                    }
+                  >
                     <td className="py-1 px-1 w-[100px]">
                       <DeckAvatar deck={row.item.deck} size="50" />
                     </td>

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
 import { Button } from '@/components/ui/button';
-import { Database, Edit, Trash2, Trophy, ChartColumn, Check, FileJson2 } from 'lucide-react';
+import { Database, Edit, Trash2, ChartColumn, Check, FileJson2 } from 'lucide-react';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
 import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTournamentDialog.tsx';
@@ -19,12 +19,14 @@ import { useMemo } from 'react';
 import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentDataLoader.tsx';
 import { usePutTournament } from '@/api/tournaments/usePutTournament.ts';
 import { TournamentTabsProps } from '@/components/app/tournaments/TournamentTabs/TournamentTabs.tsx';
+import MeleeButton from '@/components/app/tournaments/TournamentDetail/MeleeButton.tsx';
 
 interface TournamentDetailProps {
   tournamentId: string;
   children?: React.ReactNode;
   activeTab?: string;
   mode?: TournamentTabsProps['mode'];
+  displayHeader?: boolean;
 }
 
 const TournamentDetail: React.FC<TournamentDetailProps> = ({
@@ -32,6 +34,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   children,
   activeTab,
   mode = 'tournament-page',
+  displayHeader = true,
 }) => {
   const { data, isFetching, error } = useGetTournament(tournamentId);
   const hasPermission = usePermissions();
@@ -126,118 +129,109 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   return (
     <>
       <Helmet titleTemplate={`%s - ${pageTitle}`} />
-      <div className="space-y-2">
+      <div className="space-y-2 w-full">
         {/* Tournament header */}
-        <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-          <LoadingTitle mainTitle={tournament?.name} loading={loading} />
+        {displayHeader && (
+          <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+            <LoadingTitle mainTitle={tournament?.name} loading={loading} />
 
-          {!loading && tournament && (
-            <div className="flex flex-wrap gap-2">
-              {canUpdate && (
-                <EditTournamentDialog
-                  trigger={
-                    <Button size="sm">
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit
-                    </Button>
-                  }
-                  tournament={tournament}
-                />
-              )}
-
-              {tournament.meleeId && (
-                <a
-                  href={`https://melee.gg/Tournament/View/${tournament.meleeId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button variant="outline" size="sm">
-                    <Trophy className="h-4 w-4 mr-2" />
-                    View on Melee.gg
-                  </Button>
-                </a>
-              )}
-              {canUpdate && (
-                <ImportMeleeTournamentDialog
-                  trigger={
-                    <Button size="sm" variant="outline">
-                      <Database className="h-4 w-4 mr-2" />
-                      Import from Melee.gg
-                    </Button>
-                  }
-                  tournamentId={tournamentId}
-                  meleeId={tournament.meleeId}
-                />
-              )}
-
-              {canUpdate && (
-                <ImportExportTournamentBlobDialog
-                  trigger={
-                    <Button size="sm" variant="outline">
-                      <FileJson2 className="h-4 w-4" />
-                    </Button>
-                  }
-                  tournamentId={tournamentId}
-                />
-              )}
-
-              {canDelete && (
-                <DeleteTournamentDialog
-                  trigger={
-                    <Button size="sm" variant="destructive">
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
-                  }
-                  tournament={tournament}
-                />
-              )}
-
-              {canComputeStats && tournament.imported && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleComputeStats}
-                        disabled={computeCardStats.isPending}
-                      >
-                        <ChartColumn className="h-4 w-4" />
-                        {computeCardStats.isPending ? 'Computing...' : 'Recompute Card Stats'}
+            {!loading && tournament && (
+              <div className="flex flex-wrap gap-2">
+                {canUpdate && (
+                  <EditTournamentDialog
+                    trigger={
+                      <Button size="sm">
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
                       </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Recompute card statistics for this tournament</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
+                    }
+                    tournament={tournament}
+                  />
+                )}
 
-              {canUpdate && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleToggleImported}
-                        disabled={toggleImportedMutation.isPending}
-                      >
-                        <Check
-                          className={`h-4 w-4 ${tournament.imported ? 'text-green-500' : ''}`}
-                        />
+                {tournament.meleeId && <MeleeButton meleeId={tournament.meleeId} />}
+                {canUpdate && (
+                  <ImportMeleeTournamentDialog
+                    trigger={
+                      <Button size="sm" variant="outline">
+                        <Database className="h-4 w-4 mr-2" />
+                        Import from Melee.gg
                       </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{tournament.imported ? 'Mark as not imported' : 'Mark as imported'}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-            </div>
-          )}
-        </div>
+                    }
+                    tournamentId={tournamentId}
+                    meleeId={tournament.meleeId}
+                  />
+                )}
+
+                {canUpdate && (
+                  <ImportExportTournamentBlobDialog
+                    trigger={
+                      <Button size="sm" variant="outline">
+                        <FileJson2 className="h-4 w-4" />
+                      </Button>
+                    }
+                    tournamentId={tournamentId}
+                  />
+                )}
+
+                {canDelete && (
+                  <DeleteTournamentDialog
+                    trigger={
+                      <Button size="sm" variant="destructive">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </Button>
+                    }
+                    tournament={tournament}
+                  />
+                )}
+
+                {canComputeStats && tournament.imported && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleComputeStats}
+                          disabled={computeCardStats.isPending}
+                        >
+                          <ChartColumn className="h-4 w-4" />
+                          {computeCardStats.isPending ? 'Computing...' : 'Recompute Card Stats'}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Recompute card statistics for this tournament</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+
+                {canUpdate && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleToggleImported}
+                          disabled={toggleImportedMutation.isPending}
+                        >
+                          <Check
+                            className={`h-4 w-4 ${tournament.imported ? 'text-green-500' : ''}`}
+                          />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{tournament.imported ? 'Mark as not imported' : 'Mark as imported'}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
+            )}
+          </div>
+        )}
         <TournamentDataLoader tournamentId={tournamentId} />
         <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} mode={mode} />
         {activeTab === 'details' || tournament?.imported ? children : null}

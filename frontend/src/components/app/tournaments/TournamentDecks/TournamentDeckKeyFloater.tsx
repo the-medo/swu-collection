@@ -14,6 +14,7 @@ import { Route as TournamentDeckCardStatsRoute } from '@/routes/tournaments/$tou
 import { Route as TournamentDeckMetaRoute } from '@/routes/tournaments/$tournamentId/meta.tsx';
 import { Route as TournamentDeckMatchupsRoute } from '@/routes/tournaments/$tournamentId/matchups.tsx';
 import { Route as MetaRoute } from '@/routes/meta';
+import { Route as RootRoute } from '@/routes';
 import { getDeckKeys } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -29,7 +30,8 @@ export type TournamentDeckKeyFloaterRoutes =
   | typeof TournamentDeckCardStatsRoute
   | typeof TournamentDeckMatchupsRoute
   | typeof TournamentDeckMetaRoute
-  | typeof MetaRoute;
+  | typeof MetaRoute
+  | typeof RootRoute;
 
 interface TournamentDeckKeyFloaterProps {
   route: TournamentDeckKeyFloaterRoutes;
@@ -181,6 +183,8 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
     csPage = 'leader-base';
   }
 
+  const searchParamsOnly = route === MetaRoute || route === RootRoute;
+
   return (
     <Card className="fixed bottom-4 right-4 w-[300px] border">
       <CardHeader className="p-4 pb-0">
@@ -192,7 +196,7 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
         </div>
         <div className="w-full flex gap-4 justify-between items-center">
           <Button size="xs" className="btn btn-primary" asChild>
-            {route === MetaRoute ? (
+            {searchParamsOnly ? (
               <Link
                 to="."
                 search={prev => ({
@@ -216,7 +220,7 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
           </Button>
           {(metaInfo === 'leaders' || metaInfo === 'leadersAndBase') && (
             <Button size="xs" className="btn btn-primary" asChild>
-              {route === MetaRoute ? (
+              {searchParamsOnly ? (
                 <Link
                   to="."
                   search={prev => ({

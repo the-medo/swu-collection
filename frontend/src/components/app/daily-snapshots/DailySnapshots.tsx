@@ -18,6 +18,7 @@ import type { DailySnapshotSectionData } from '../../../../../types/DailySnapsho
 import SocialButtons from '@/components/app/global/SocialButtons.tsx';
 import FallbackPage from '@/components/app/daily-snapshots/FallbackPage.tsx';
 import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
+import TournamentDetailSection from '@/components/app/daily-snapshots/special-sections/TournamentDetailSection/TournamentDetailSection.tsx';
 
 const formatToday = (): string => {
   const d = new Date();
@@ -83,6 +84,15 @@ const sizingByKey: Record<SectionKey, SectionCardSizing> = {
     3: { row: { from: 3, to: 3 }, col: { from: 1, to: 2 } },
     2: { row: { from: 4, to: 4 }, col: { from: 1, to: 2 } },
     1: { row: { from: 6, to: 6 }, col: { from: 1, to: 1 } },
+  },
+};
+
+export const specialSectionSizing: Record<string, SectionCardSizing> = {
+  'tournament-detail': {
+    4: { row: { from: 1, to: 1 }, col: { from: 1, to: 3 } },
+    3: { row: { from: 1, to: 1 }, col: { from: 1, to: 2 } },
+    2: { row: { from: 0, to: 0 }, col: { from: 0, to: 0 } },
+    1: { row: { from: 0, to: 0 }, col: { from: 0, to: 0 } },
   },
 };
 
@@ -199,6 +209,7 @@ const DailySnapshots: React.FC = () => {
               </GridSection>
             );
           })}
+          <TournamentDetailSection />
         </div>
       </div>
     </>
