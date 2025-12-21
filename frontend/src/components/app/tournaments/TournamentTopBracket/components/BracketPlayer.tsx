@@ -1,10 +1,9 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import CardImage from '@/components/app/global/CardImage';
-import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant';
 import { Trophy } from 'lucide-react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks';
 import { extractDeckNameFromBrackets } from '../../lib/extractDeckNameFromBrackets';
+import DeckAvatar from '@/components/app/global/DeckAvatar/DeckAvatar.tsx';
 
 interface BracketPlayerProps {
   deck: TournamentDeckResponse | null;
@@ -15,7 +14,6 @@ interface BracketPlayerProps {
   onMouseLeave?: () => void;
   onClick?: () => void;
   isHighlighted?: boolean;
-  cardListData: any;
 }
 
 const BracketPlayer: React.FC<BracketPlayerProps> = ({
@@ -27,7 +25,6 @@ const BracketPlayer: React.FC<BracketPlayerProps> = ({
   onMouseLeave,
   onClick,
   isHighlighted = false,
-  cardListData,
 }) => {
   if (!deck) {
     return (
@@ -39,16 +36,11 @@ const BracketPlayer: React.FC<BracketPlayerProps> = ({
 
   const username = deck.tournamentDeck.meleePlayerUsername || 'Unknown';
 
-  // Get leader and base card info
-  const leaderCard = deck.deck?.leaderCardId1
-    ? cardListData?.cards?.[deck.deck.leaderCardId1]
-    : undefined;
-  const baseCard = deck.deck?.baseCardId ? cardListData?.cards?.[deck.deck.baseCardId] : undefined;
-
   return (
     <div
       className={cn(
-        'flex p-2 border rounded-md gap-2 transition-colors duration-200 min-w-72',
+        'flex p-2 border rounded-md gap-2 transition-colors duration-200 min-w-[100px]',
+        ' @[510px]/bracket-detail:min-w-[170px] @[810px]/bracket-detail:min-w-[250px]',
         isWinner ? 'border-primary bg-primary/5' : 'border-muted-foreground/20',
         isHighlighted ? 'bg-amber-500/20 border-amber-500' : '',
       )}
@@ -57,38 +49,23 @@ const BracketPlayer: React.FC<BracketPlayerProps> = ({
       onClick={onClick}
     >
       <div className="flex gap-1 shrink-0">
-        {leaderCard && (
-          <CardImage
-            card={leaderCard}
-            cardVariantId={leaderCard ? selectDefaultVariant(leaderCard) : undefined}
-            forceHorizontal={true}
-            size="w50"
-            backSideButton={false}
-          />
-        )}
-        {baseCard && (
-          <div className="-ml-2">
-            <CardImage
-              card={baseCard}
-              cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}
-              forceHorizontal={true}
-              size="w50"
-              backSideButton={false}
-            />
-          </div>
-        )}
+        <DeckAvatar
+          leaderCardId={deck.deck?.leaderCardId1}
+          baseCardId={deck.deck?.baseCardId}
+          size="40"
+        />
       </div>
-      <div className="flex flex-col justify-center overflow-hidden">
+      <div className="flex flex-col justify-center overflow-hidden hidden @[510px]/bracket-detail:flex">
         <div
           className={cn(
-            'font-medium whitespace-nowrap text-sm overflow-hidden text-ellipsis max-w-32',
+            'font-medium whitespace-nowrap text-sm overflow-hidden text-ellipsis max-w-16 @[810px]/bracket-detail:max-w-32',
             isHighlighted ? 'text-amber-700 dark:text-amber-300' : '',
           )}
         >
           {username}
         </div>
         {deck.deck && deck.deck.name && (
-          <div className="text-xs text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-32">
+          <div className="text-xs text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-16 @[810px]/bracket-detail:max-w-32">
             {extractDeckNameFromBrackets(deck.deck.name)}
           </div>
         )}

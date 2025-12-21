@@ -12,6 +12,7 @@ export const cardAvatarVariants = cva('overflow-hidden relative', {
   variants: {
     size: {
       '30': 'h-[30px] w-[30px] min-h-[30px] min-w-[30px]',
+      '40': 'h-[40px] w-[40px] min-h-[40px] min-w-[40px]',
       '50': 'h-[50px] w-[50px] min-h-[50px] min-w-[50px]',
       '75': 'h-[75px] w-[75px] min-h-[75px] min-w-[75px]',
       '100': 'h-[100px] w-[100px] min-h-[100px] min-w-[100px]',
@@ -34,6 +35,7 @@ export const cardAvatarVariants = cva('overflow-hidden relative', {
 
 export const SCALE_BY_SIZE: Record<NonNullable<CardAvatarProps['size']>, number> = {
   '30': 0.3,
+  '40': 0.4,
   '50': 0.5,
   '75': 0.75,
   '100': 1,

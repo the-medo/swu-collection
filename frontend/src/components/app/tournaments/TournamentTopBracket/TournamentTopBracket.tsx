@@ -266,7 +266,7 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
 
   return (
     <div className="bg-card rounded-md border shadow-xs p-3">
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col lg:flex-row gap-4 justify-around flex-1">
         {selectedDeckId ? (
           <DeckViewer selectedDeckId={selectedDeckId} setSelectedDeckId={setSelectedDeckId} />
         ) : top === BracketInfo.NONE ? (
@@ -305,7 +305,6 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
             highlightedPlayer={highlightedPlayer}
             setHighlightedPlayer={setHighlightedPlayer}
             setSelectedDeckId={setSelectedDeckId}
-            cardListData={cardListData}
           />
         )}
         <TournamentPlacements
