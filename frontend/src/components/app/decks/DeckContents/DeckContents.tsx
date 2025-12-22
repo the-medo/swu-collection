@@ -26,6 +26,7 @@ interface DeckContentsProps {
   setDeckId?: (id: string) => void;
   highlightedCardId?: string;
   deckbuilder?: boolean;
+  compact?: boolean;
 }
 
 const DeckContents: React.FC<DeckContentsProps> = ({
@@ -33,6 +34,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
   setDeckId,
   highlightedCardId,
   deckbuilder,
+  compact,
 }) => {
   const { cardPoolId, owned, editable } = useDeckInfo(deckId);
   const [tabsValue, setTabsValue] = useState('decklist');
@@ -40,13 +42,15 @@ const DeckContents: React.FC<DeckContentsProps> = ({
 
   return (
     <>
-      {!deckbuilder && <DeckActionsMenu deckId={deckId} />}
+      {!deckbuilder && !compact && <DeckActionsMenu deckId={deckId} compact={compact} />}
       <div className="flex max-xl:flex-col justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
         {!deckbuilder && (
           <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center max-xl:w-auto w-[350px] flex-col gap-2 items-center">
-            <div className="flex flex-row gap-2 flex-wrap items-center justify-center">
-              <DeckLeaderBase deckId={deckId} size="w300" />
-            </div>
+            {!compact && (
+              <div className="flex flex-row gap-2 flex-wrap items-center justify-center">
+                <DeckLeaderBase deckId={deckId} size="w300" />
+              </div>
+            )}
             {editable && (
               <Link to="/decks/$deckId/edit" params={{ deckId }} search={{ deckbuilder: true }}>
                 <DeckGradientButton deckId={deckId} variant="outline" size="lg">

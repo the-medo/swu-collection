@@ -37,7 +37,9 @@ const TournamentDetailSection: React.FC<TournamentDetailSectionProps> = ({}) => 
 
     switch (activeTab) {
       case 'details':
-        return <DetailAndBracketTab tournamentId={maTournamentId} displayDetail={false} />;
+        return (
+          <DetailAndBracketTab tournamentId={maTournamentId} displayDetail={false} compact={true} />
+        );
       case 'meta':
         return <MetaAnalysisTab route={RootRoute} />;
       case 'matchups':
@@ -47,7 +49,9 @@ const TournamentDetailSection: React.FC<TournamentDetailSectionProps> = ({}) => 
       case 'card-stats':
         return <CardStatsTab route={RootRoute} tournamentId={maTournamentId} />;
       default:
-        return <DetailAndBracketTab tournamentId={maTournamentId} displayDetail={false} />;
+        return (
+          <DetailAndBracketTab tournamentId={maTournamentId} displayDetail={false} compact={true} />
+        );
     }
   }, [activeTab, maTournamentId]);
 

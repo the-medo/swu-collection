@@ -18,6 +18,7 @@ import SettingsMenu from './components/SettingsMenu';
 
 interface DeckActionsMenuProps {
   deckId: string;
+  compact?: boolean;
 }
 
 const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {

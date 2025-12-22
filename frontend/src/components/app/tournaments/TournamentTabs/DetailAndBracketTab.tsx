@@ -10,11 +10,13 @@ import { BracketInfo } from '../../../../../../types/enums.ts';
 interface DetailAndBracketTabProps {
   tournamentId: string;
   displayDetail?: boolean;
+  compact?: boolean;
 }
 
 const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
   tournamentId,
   displayDetail = true,
+  compact,
 }) => {
   const { data, isFetching } = useGetTournament(tournamentId);
 
@@ -140,6 +142,7 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
             <TournamentTopBracket
               tournamentId={tournamentId}
               top={(tournament.bracketInfo ?? BracketInfo.NONE) as BracketInfo}
+              compact={compact}
             />
           </div>
         )}
