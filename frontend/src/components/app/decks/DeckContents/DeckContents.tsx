@@ -21,6 +21,7 @@ import DeckGradientButton from '@/components/app/decks/DeckContents/DeckImage/De
 import DeckCollection from '@/components/app/decks/DeckContents/DeckCollection/DeckCollection.tsx';
 import { useCardPoolDeckDetailStoreActions } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 import DeckPricing from '@/components/app/decks/DeckContents/DeckPricing/DeckPricing.tsx';
+import DeckTitleBarCompact from '@/components/app/decks/DeckContents/DeckTitlebarCompact/DeckTitleBarCompact.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -45,7 +46,10 @@ const DeckContents: React.FC<DeckContentsProps> = ({
     <>
       {!deckbuilder && !compact && <DeckActionsMenu deckId={deckId} />}
       {!deckbuilder && compact && (
-        <DeckActionsMenuCompact deckId={deckId} tabs={tabsValue} setTabsValue={setTabsValue} />
+        <>
+          <DeckTitleBarCompact deckId={deckId} setDeckId={setDeckId} />
+          <DeckActionsMenuCompact deckId={deckId} tabs={tabsValue} setTabsValue={setTabsValue} />
+        </>
       )}
       <div className="flex max-xl:flex-col justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
         {!deckbuilder && !compact && (
@@ -108,7 +112,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
         <div className="w-full">
           <div className="flex flex-col gap-2 w-full">
             <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">
-              <DeckNavigationMenu deckId={deckId} className="justify-between">
+              <DeckNavigationMenu gradient={!compact} deckId={deckId} className="justify-between">
                 {compact && (
                   <NavigationMenuList className="flex-wrap justify-start gap-1">
                     <DeckBoardCardCounts deckId={deckId} />
