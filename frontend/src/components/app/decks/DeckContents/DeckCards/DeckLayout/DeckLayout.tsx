@@ -9,12 +9,14 @@ interface DeckLayoutProps {
   deckId: string;
   deckCardsForLayout: DeckCardsForLayout;
   highlightedCardId?: string;
+  compact?: boolean;
 }
 
 const DeckLayout: React.FC<DeckLayoutProps> = ({
   deckId,
   deckCardsForLayout,
   highlightedCardId,
+  compact = false,
 }) => {
   const { data: layout } = useGetUserSetting('deckLayout');
 
@@ -26,6 +28,7 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({
           deckId={deckId}
           deckCardsForLayout={deckCardsForLayout}
           highlightedCardId={highlightedCardId}
+          displayDropdown={!compact}
         />
       );
     case DeckLayoutEnum.TEXT_CONDENSED:
@@ -35,6 +38,7 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({
           deckId={deckId}
           deckCardsForLayout={deckCardsForLayout}
           highlightedCardId={highlightedCardId}
+          displayDropdown={!compact}
         />
       );
     case DeckLayoutEnum.VISUAL_GRID_OVERLAP:

@@ -65,7 +65,7 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
         {(username || deckName) && (
           <div className={cn('flex flex-col flex-1 justify-center overflow-hidden')}>
             {username && (
-              <div className="font-semibold text-sm">
+              <div className="font-semibold text-sm max-w-24 truncate">
                 {showPlacement && placement ? `#${placement} ${username}` : username}
                 {placement === 1 && <Trophy className="h-4 w-4 text-amber-500 inline ml-2" />}
               </div>

@@ -105,7 +105,7 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
   }, [topDecks, top]);
 
   return (
-    <div className={cn('min-w-40 space-y-2 mr-0')}>
+    <div className={cn('min-w-40 space-y-2 mr-0 border-l pl-2 bg-primary/5')}>
       {/*<h3 className="text-lg font-bold">Final Standings</h3>*/}
       {placements.map((placementGroup, index) => (
         <div key={index} className="space-y-0">

@@ -166,7 +166,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
             )}
 
             {tabsValue === 'decklist' && (
-              <DeckCards deckId={deckId} highlightedCardId={highlightedCardId} />
+              <DeckCards deckId={deckId} highlightedCardId={highlightedCardId} compact={compact} />
             )}
             {tabsValue === 'charts' && <DeckStats deckId={deckId} />}
             {tabsValue === 'collection' && <DeckCollection deckId={deckId} />}
