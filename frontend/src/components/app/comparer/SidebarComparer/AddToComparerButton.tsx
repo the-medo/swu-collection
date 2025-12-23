@@ -15,6 +15,7 @@ interface AddToComparerButtonProps extends Omit<ButtonProps, 'onClick'> {
   collectionType?: CollectionType;
   additionalData?: ComparerEntryAdditionalData;
   className?: string;
+  compact?: boolean;
 }
 
 const AddToComparerButton: React.FC<AddToComparerButtonProps> = ({
@@ -24,6 +25,7 @@ const AddToComparerButton: React.FC<AddToComparerButtonProps> = ({
   additionalData,
   className,
   children,
+  compact,
   ...props
 }) => {
   const { entries } = useComparerStore();
@@ -42,7 +44,7 @@ const AddToComparerButton: React.FC<AddToComparerButtonProps> = ({
   return (
     <Button variant="outline" className={cn('gap-2', className)} onClick={handleClick} {...props}>
       <Scale className="h-4 w-4" />
-      {children || (isInComparer ? 'Remove from comparer' : 'Add to comparer')}
+      {!compact && <>{children || (isInComparer ? 'Remove from comparer' : 'Add to comparer')}</>}
     </Button>
   );
 };

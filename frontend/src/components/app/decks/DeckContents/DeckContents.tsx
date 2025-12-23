@@ -42,9 +42,9 @@ const DeckContents: React.FC<DeckContentsProps> = ({
 
   return (
     <>
-      {!deckbuilder && !compact && <DeckActionsMenu deckId={deckId} compact={compact} />}
+      {!deckbuilder && compact && <DeckActionsMenu deckId={deckId} compact={compact} />}
       <div className="flex max-xl:flex-col justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
-        {!deckbuilder && (
+        {!deckbuilder && !compact && (
           <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center max-xl:w-auto w-[350px] flex-col gap-2 items-center">
             {!compact && (
               <div className="flex flex-row gap-2 flex-wrap items-center justify-center">

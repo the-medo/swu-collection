@@ -53,7 +53,7 @@ const NavigationMenuTrigger = React.forwardRef<
     className={cn(navigationMenuTriggerStyle(), 'group justify-between', className)}
     {...props}
   >
-    <div className="flex w-full items-center justify-start gap-2">{children} </div>
+    <div className="flex flex-1 items-center justify-start gap-2">{children} </div>
     <ChevronDown
       className="relative top-px ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180"
       aria-hidden="true"

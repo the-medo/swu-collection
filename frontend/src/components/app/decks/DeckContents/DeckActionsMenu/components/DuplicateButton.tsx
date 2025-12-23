@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import { BookCopy } from 'lucide-react';
+import { BookCopy, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { useDuplicateDeck } from '@/api/decks/useDuplicateDeck.ts';
@@ -10,9 +10,14 @@ import { NavigationMenuItem } from '@/components/ui/navigation-menu.tsx';
 interface DuplicateButtonProps {
   deckId: string;
   isLimited?: boolean; // if true, navigate to limited deck route after duplication
+  compact?: boolean;
 }
 
-const DuplicateButton: React.FC<DuplicateButtonProps> = ({ deckId, isLimited = false }) => {
+const DuplicateButton: React.FC<DuplicateButtonProps> = ({
+  deckId,
+  isLimited = false,
+  compact,
+}) => {
   const user = useUser();
   const { toast } = useToast();
   const duplicateMutation = useDuplicateDeck();
@@ -41,12 +46,19 @@ const DuplicateButton: React.FC<DuplicateButtonProps> = ({ deckId, isLimited = f
     <NavigationMenuItem>
       <Button
         variant="outline"
-        size="default"
+        size={compact ? 'icon' : 'default'}
         onClick={handleDuplicate}
+        title={'Duplicate deck'}
         disabled={duplicateMutation.isPending}
       >
-        <BookCopy className="h-4 w-4 mr-2" />
-        {duplicateMutation.isPending ? 'Duplicating...' : 'Duplicate'}
+        {compact ? (
+          <>{duplicateMutation.isPending ? <Loader2 className="animate-spin" /> : <BookCopy />}</>
+        ) : (
+          <>
+            <BookCopy className="h-4 w-4 mr-2" />
+            {duplicateMutation.isPending ? 'Duplicating...' : 'Duplicate'}
+          </>
+        )}
       </Button>
     </NavigationMenuItem>
   );

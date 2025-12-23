@@ -5,24 +5,28 @@ import {
   NavigationMenuTrigger,
   NavigationMenuContent,
 } from '@/components/ui/navigation-menu.tsx';
-import { ClipboardCopy, Download, FileJson, FileText } from 'lucide-react';
+import { ClipboardCopy, DollarSign, Download, FileJson, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
 import {
   createDeckJsonExport,
   createDeckTextExport,
   downloadAsFile,
 } from '../../../../../../../../server/lib/decks/deckExport.ts';
+import { cardPriceSourceInfo } from '../../../../../../../../types/CardPrices.ts';
+import { cn } from '@/lib/utils.ts';
 
 interface ExportOptionsMenuProps {
   deckData: any;
   deckCardsData: any;
   cardListData: any;
+  compact?: boolean;
 }
 
 const ExportOptionsMenu: React.FC<ExportOptionsMenuProps> = ({
   deckData,
   deckCardsData,
   cardListData,
+  compact,
 }) => {
   const { toast } = useToast();
 
@@ -125,9 +129,9 @@ const ExportOptionsMenu: React.FC<ExportOptionsMenuProps> = ({
 
   return (
     <NavigationMenuItem>
-      <NavigationMenuTrigger className="justify-start border w-[180px]">
-        <Download className="h-4 w-4 mr-2" />
-        Export
+      <NavigationMenuTrigger className={cn('justify-start border', compact ? '' : 'w-[180px]')}>
+        <Download className="h-4 w-4" />
+        {!compact && 'Export'}
       </NavigationMenuTrigger>
       <NavigationMenuContent className="z-10">
         <div className="p-2 w-[180px]">

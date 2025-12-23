@@ -21,7 +21,7 @@ interface DeckActionsMenuProps {
   compact?: boolean;
 }
 
-const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
+const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId, compact }) => {
   const hasRole = useRole();
   const isAdmin = hasRole('admin');
 
@@ -42,14 +42,19 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
     <DeckNavigationMenu deckId={deckId} className="z-20">
       <NavigationMenuList className="flex-wrap justify-start gap-1 z-10">
         <FavoriteButton deckId={deckId} isFavorite={isFavorite} />
-        <CopyLinkButton deckId={deckId} isPublic={!!deckData?.deck.public} />
-        <ComparerButton deckId={deckId} additionalData={additionalData} />
-        <DuplicateButton deckId={deckId} isLimited={!!deckData?.deck.cardPoolId} />
-        <PriceSourceSelector />
+        <CopyLinkButton deckId={deckId} isPublic={!!deckData?.deck.public} compact={compact} />
+        <ComparerButton deckId={deckId} additionalData={additionalData} compact={compact} />
+        <DuplicateButton
+          deckId={deckId}
+          isLimited={!!deckData?.deck.cardPoolId}
+          compact={compact}
+        />
+        <PriceSourceSelector showPricesOption={true} compact={compact} />
         <ExportOptionsMenu
           deckData={deckData}
           deckCardsData={deckCardsData}
           cardListData={cardListData}
+          compact={compact}
         />
         <SettingsMenu />
         <AdminEditButton deckId={deckId} isAdmin={isAdmin} />

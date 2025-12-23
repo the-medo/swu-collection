@@ -8,9 +8,10 @@ import { cn } from '@/lib/utils.ts';
 interface CopyLinkButtonProps {
   deckId: string;
   isPublic: boolean;
+  compact?: boolean;
 }
 
-const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({ deckId, isPublic }) => {
+const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({ deckId, isPublic, compact }) => {
   const { toast } = useToast();
   const deckLink = `${window.location.origin}/decks/${deckId}`;
 
@@ -25,14 +26,14 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({ deckId, isPublic }) => 
     <NavigationMenuItem>
       <Button
         variant="outline"
-        size="default"
+        size={compact ? 'icon' : 'default'}
         className={cn({
           'opacity-80': !isPublic,
         })}
         onClick={handleCopyLink}
       >
-        <LinkIcon className="h-4 w-4 mr-2" />
-        Copy link {!isPublic && '(private!)'}
+        <LinkIcon className="h-4 w-4" />
+        {!compact && <span className="ml-2">Copy link {!isPublic && '(private!)'}</span>}
       </Button>
     </NavigationMenuItem>
   );
