@@ -12,7 +12,11 @@ import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
 import { DeckLayout } from '../../../../../../../../types/enums.ts';
 import { cn } from '@/lib/utils';
 
-const DeckLayoutMenu: React.FC = () => {
+interface DeckLayoutMenuProps {
+  compact?: boolean;
+}
+
+const DeckLayoutMenu: React.FC<DeckLayoutMenuProps> = ({ compact }) => {
   const { data: layout } = useGetUserSetting('deckLayout');
   const { mutate: setLayout } = useSetUserSetting('deckLayout');
   const [hoveredLayout, setHoveredLayout] = React.useState<string | null>(null);
@@ -44,9 +48,11 @@ const DeckLayoutMenu: React.FC = () => {
 
   return (
     <NavigationMenuItem>
-      <NavigationMenuTrigger className="w-[220px] justify-start border">
+      <NavigationMenuTrigger
+        className={cn('justify-start border', compact ? 'w-[175px]' : 'w-[220px]')}
+      >
         <LayoutGrid className="h-4 w-4 mr-0" />
-        <span className="text-xs">Layout: </span>
+        {!compact && <span className="text-xs">Layout: </span>}
         {layoutOptions.find(option => option.id === layout)?.label || 'Default'}
       </NavigationMenuTrigger>
       <NavigationMenuContent>
@@ -70,8 +76,8 @@ const DeckLayoutMenu: React.FC = () => {
                 onMouseEnter={() => setHoveredLayout(option.id)}
                 onMouseLeave={() => setHoveredLayout(null)}
                 className={cn(
-                  "rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer",
-                  option.id === layout && "bg-accent/50 text-accent-foreground"
+                  'rounded hover:bg-accent hover:text-accent-foreground p-2 cursor-pointer',
+                  option.id === layout && 'bg-accent/50 text-accent-foreground',
                 )}
               >
                 <NavigationMenuLink asChild>

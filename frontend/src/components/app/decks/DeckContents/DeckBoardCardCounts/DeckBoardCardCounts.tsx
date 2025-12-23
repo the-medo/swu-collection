@@ -9,7 +9,7 @@ const DeckBoardCardCounts: React.FC<DeckBoardCardCountsProps> = ({ deckId }) => 
   const boardCardCounts = useBoardDeckData(deckId);
 
   return (
-    <div className="flex gap-2 items-center text-sm">
+    <div className="flex gap-2 items-center text-sm ml-2">
       <span className="font-semibold">{boardCardCounts[1]}</span>
       <span>maindeck</span>
       <span>/</span>

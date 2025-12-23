@@ -5,14 +5,13 @@ import {
   NavigationMenuTrigger,
   NavigationMenuContent,
 } from '@/components/ui/navigation-menu.tsx';
-import { ClipboardCopy, DollarSign, Download, FileJson, FileText } from 'lucide-react';
+import { ClipboardCopy, Download, FileJson, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
 import {
   createDeckJsonExport,
   createDeckTextExport,
   downloadAsFile,
 } from '../../../../../../../../server/lib/decks/deckExport.ts';
-import { cardPriceSourceInfo } from '../../../../../../../../types/CardPrices.ts';
 import { cn } from '@/lib/utils.ts';
 
 interface ExportOptionsMenuProps {

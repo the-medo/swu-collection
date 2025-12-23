@@ -4,6 +4,7 @@ import DeckInputCommand from '@/components/app/decks/DeckContents/DeckInputComma
 import { useDeckInfo } from './useDeckInfoStore.ts';
 import { useState } from 'react';
 import DeckActionsMenu from '@/components/app/decks/DeckContents/DeckActionsMenu/DeckActionsMenu.tsx';
+import DeckActionsMenuCompact from '@/components/app/decks/DeckContents/DeckActionsMenu/DeckActionsMenuCompact.tsx';
 import DeckBoardCardCounts from '@/components/app/decks/DeckContents/DeckBoardCardCounts/DeckBoardCardCounts.tsx';
 import DeckMatches from '@/components/app/decks/DeckContents/DeckMatches/DeckMatches.tsx';
 import DeckStats from '@/components/app/decks/DeckContents/DeckStats/DeckStats.tsx';
@@ -42,7 +43,10 @@ const DeckContents: React.FC<DeckContentsProps> = ({
 
   return (
     <>
-      {!deckbuilder && compact && <DeckActionsMenu deckId={deckId} compact={compact} />}
+      {!deckbuilder && !compact && <DeckActionsMenu deckId={deckId} />}
+      {!deckbuilder && compact && (
+        <DeckActionsMenuCompact deckId={deckId} tabs={tabsValue} setTabsValue={setTabsValue} />
+      )}
       <div className="flex max-xl:flex-col justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
         {!deckbuilder && !compact && (
           <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center max-xl:w-auto w-[350px] flex-col gap-2 items-center">
@@ -105,26 +109,37 @@ const DeckContents: React.FC<DeckContentsProps> = ({
           <div className="flex flex-col gap-2 w-full">
             <div className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2">
               <DeckNavigationMenu deckId={deckId} className="justify-between">
-                <NavigationMenuList className="flex-wrap justify-start gap-1">
-                  <DecklistChartsTabs
-                    deckId={deckId}
-                    value={tabsValue}
-                    onValueChange={setTabsValue}
-                  />
-                  <NavigationMenuItem>
-                    <div className="w-full flex justify-center bg-background rounded-md">
-                      <DeckImageButton deckId={deckId} />
-                    </div>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
+                {compact && (
+                  <NavigationMenuList className="flex-wrap justify-start gap-1">
+                    <DeckBoardCardCounts deckId={deckId} />
+                  </NavigationMenuList>
+                )}
+                {!compact && (
+                  <>
+                    <NavigationMenuList className="flex-wrap justify-start gap-1">
+                      <DecklistChartsTabs
+                        deckId={deckId}
+                        value={tabsValue}
+                        onValueChange={setTabsValue}
+                      />
+                      <NavigationMenuItem>
+                        <div className="w-full flex justify-center bg-background rounded-md">
+                          <DeckImageButton deckId={deckId} />
+                        </div>
+                      </NavigationMenuItem>
+                    </NavigationMenuList>
+                  </>
+                )}
                 <NavigationMenuList className="flex-wrap justify-start gap-1">
                   {editable ? (
                     <DeckInputCommand deckId={deckId} />
                   ) : (
-                    <NavigationMenuList className="flex-wrap justify-start gap-1">
-                      <DeckLayoutMenu />
-                      <GroupByMenu />
-                    </NavigationMenuList>
+                    <>
+                      <NavigationMenuList className="flex-wrap flex-1 self-end gap-1">
+                        <DeckLayoutMenu compact={compact} />
+                        <GroupByMenu compact={compact} />
+                      </NavigationMenuList>
+                    </>
                   )}
                 </NavigationMenuList>
                 {editable && (
@@ -140,9 +155,11 @@ const DeckContents: React.FC<DeckContentsProps> = ({
                 <DeckLeaderBase deckId={deckId} size="w200" />
               </div>
             )}
-            <div className="flex flex-wrap gap-4 items-center max-lg:justify-center w-full">
-              <DeckBoardCardCounts deckId={deckId} />
-            </div>
+            {!compact && (
+              <div className="flex flex-wrap gap-4 items-center max-lg:justify-center w-full">
+                <DeckBoardCardCounts deckId={deckId} />
+              </div>
+            )}
 
             {tabsValue === 'decklist' && (
               <DeckCards deckId={deckId} highlightedCardId={highlightedCardId} />

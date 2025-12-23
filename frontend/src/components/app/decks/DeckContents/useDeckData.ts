@@ -31,7 +31,7 @@ export function useDeckData(
   const { data: cardList } = useCardList();
   const { data: deckCardsData } = useGetDeckCards(deckId);
 
-  const deckCards = deckCardsData?.data ?? [];
+  const deckCards = useMemo(() => deckCardsData?.data ?? [], [deckCardsData?.data]);
 
   // Get additional deck meta information
   const deckMeta = useMemo(() => {

@@ -11,7 +11,11 @@ import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
 import { DeckGroupBy } from '../../../../../../../../types/enums.ts';
 import { cn } from '@/lib/utils';
 
-const GroupByMenu: React.FC = () => {
+interface GroupByMenuProps {
+  compact?: boolean;
+}
+
+const GroupByMenu: React.FC<GroupByMenuProps> = ({ compact }) => {
   const { data: groupBy } = useGetUserSetting('deckGroupBy');
   const { mutate: setGroupBy } = useSetUserSetting('deckGroupBy');
 
@@ -26,9 +30,11 @@ const GroupByMenu: React.FC = () => {
 
   return (
     <NavigationMenuItem>
-      <NavigationMenuTrigger className="w-[220px] justify-start border">
+      <NavigationMenuTrigger
+        className={cn('justify-start border', compact ? 'w-[150px]' : 'w-[220px]')}
+      >
         <BarChart className="h-4 w-4 mr-0" />
-        <span className="text-xs">Group by: </span>
+        {!compact && <span className="text-xs">Group by: </span>}
         {groupByOptions.find(option => option.id === groupBy)?.label || 'Default'}
       </NavigationMenuTrigger>
       <NavigationMenuContent>
