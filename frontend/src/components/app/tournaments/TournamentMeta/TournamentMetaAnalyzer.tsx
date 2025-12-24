@@ -258,7 +258,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
 
       {viewMode === 'chart' ? (
         <div className="flex flex-col md:flex-row gap-4">
-          <div className="w-full md:w-1/3">
+          <div className="w-full md:w-1/2">
             <TournamentMetaPieChart
               analysisData={analysisData}
               metaInfo={metaInfo}
@@ -269,7 +269,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
               top64Decks={top64DeckCount}
             />
           </div>
-          <div className="w-full md:w-2/3">
+          <div className="w-full md:w-1/2">
             <TournamentMetaChart
               analysisData={analysisData}
               metaInfo={metaInfo}

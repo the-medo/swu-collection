@@ -85,8 +85,8 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
   }, []);
 
   return (
-    <div className={cn('space-y-4', className)}>
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className={cn('space-y-4 @container/card-stat-filters', className)}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 @[1200px]/card-stat-filters:grid-cols-4 gap-4">
         {/* Sort By */}
         <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
           <Label htmlFor="sort-by" className="max-xl:w-32 shrink-0">

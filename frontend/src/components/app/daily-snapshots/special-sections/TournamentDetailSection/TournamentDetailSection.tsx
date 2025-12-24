@@ -32,7 +32,7 @@ const TournamentDetailSection: React.FC<TournamentDetailSectionProps> = ({}) => 
 
   const activeTab = (page as string) || 'details';
 
-  let content = useMemo(() => {
+  const content = useMemo(() => {
     if (!maTournamentId) return null;
 
     switch (activeTab) {
@@ -45,7 +45,7 @@ const TournamentDetailSection: React.FC<TournamentDetailSectionProps> = ({}) => 
       case 'matchups':
         return <MatchupsTab route={RootRoute} />;
       case 'decks':
-        return <AllDecksTab />;
+        return <AllDecksTab compact={true} />;
       case 'card-stats':
         return <CardStatsTab route={RootRoute} tournamentId={maTournamentId} />;
       default:

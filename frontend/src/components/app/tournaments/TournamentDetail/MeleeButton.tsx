@@ -15,7 +15,7 @@ const MeleeButton: React.FC<MeleeButtonProps> = ({ meleeId }) => {
     >
       <Button variant="outline" size="sm">
         <Trophy className="h-4 w-4 mr-2" />
-        View on Melee.gg
+        Melee.gg
       </Button>
     </a>
   );

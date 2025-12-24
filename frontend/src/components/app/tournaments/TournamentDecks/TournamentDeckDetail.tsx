@@ -7,11 +7,13 @@ import DeckContents from '@/components/app/decks/DeckContents/DeckContents.tsx';
 interface TournamentDeckDetailProps {
   highlightedCardId?: string;
   deckIdSearchParam: 'maDeckId' | 'csDeckId';
+  compact?: boolean;
 }
 
 const TournamentDeckDetail: React.FC<TournamentDeckDetailProps> = ({
   highlightedCardId,
   deckIdSearchParam,
+  compact,
 }) => {
   const search = useSearch({ strict: false });
   const selectedDeckId = search[deckIdSearchParam];
@@ -43,6 +45,7 @@ const TournamentDeckDetail: React.FC<TournamentDeckDetailProps> = ({
             deckId={selectedDeckId}
             setDeckId={setSelectedDeckId}
             highlightedCardId={highlightedCardId}
+            compact={compact}
           />
         </>
       ) : (

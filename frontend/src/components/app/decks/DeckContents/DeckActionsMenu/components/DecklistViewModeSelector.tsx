@@ -45,7 +45,7 @@ const DecklistViewModeSelector: React.FC<DecklistViewModeSelectorProps> = ({
           <span>{active.label}</span>
         </div>
       </NavigationMenuTrigger>
-      <NavigationMenuContent>
+      <NavigationMenuContent className="left-0">
         <div className="p-4 grid grid-cols-1 gap-4 w-[220px]">
           <div className="col-span-1 grid grid-cols-1 gap-1">
             {options.map(option => (
@@ -59,9 +59,7 @@ const DecklistViewModeSelector: React.FC<DecklistViewModeSelectorProps> = ({
               >
                 <NavigationMenuLink asChild>
                   <div className="text-sm leading-none font-medium flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {option.label}
-                    </div>
+                    <div className="flex items-center gap-2">{option.label}</div>
                     {option.id === active.id && <Check className="h-4 w-4 ml-2" />}
                   </div>
                 </NavigationMenuLink>

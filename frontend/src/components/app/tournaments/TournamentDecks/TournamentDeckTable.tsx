@@ -26,6 +26,7 @@ interface TournamentDeckTableProps {
   highlightedCardId?: string;
   useKeyAndKeyMetaInfo?: boolean;
   deckIdSearchParam: 'maDeckId' | 'csDeckId';
+  compact?: boolean;
 }
 
 const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
@@ -34,6 +35,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
   highlightedCardId,
   useKeyAndKeyMetaInfo = true,
   deckIdSearchParam,
+  compact,
 }) => {
   const { leaders, base, aspects } = useDeckFilterStore(false);
   const { data: cardListData } = useCardList();
@@ -304,6 +306,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
           <TournamentDeckDetail
             highlightedCardId={highlightedCardId}
             deckIdSearchParam={deckIdSearchParam}
+            compact={compact}
           />
         </>
       ) : (

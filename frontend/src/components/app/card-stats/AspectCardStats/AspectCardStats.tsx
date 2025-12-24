@@ -20,7 +20,12 @@ interface AspectCardStatsProps {
 export const aspectTabOptions = ['overview', ...Object.values(SwuAspect), 'no-aspect'] as const;
 type AspectTabOption = (typeof aspectTabOptions)[number];
 
-const AspectCardStats: React.FC<AspectCardStatsProps> = ({ metaId, tournamentId, tournamentGroupId, className }) => {
+const AspectCardStats: React.FC<AspectCardStatsProps> = ({
+  metaId,
+  tournamentId,
+  tournamentGroupId,
+  className,
+}) => {
   // Get the selected aspect from search params
   const { csAspect = 'overview' } = useSearch({ strict: false });
   const selectedAspect = aspectTabOptions.includes(csAspect as AspectTabOption)
@@ -170,7 +175,7 @@ const AspectCardStats: React.FC<AspectCardStatsProps> = ({ metaId, tournamentId,
                   <div className="flex sm:items-center gap-4 w-full">
                     <AspectIcon aspect={aspect} />
                     {cards.length > 0 ? (
-                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
+                      <div className="@container flex-1 grid grid-cols-1 @[400px]:grid-cols-2 @[600px]:grid-cols-3 @[1200px]:grid-cols-5 gap-4">
                         {cards.slice(0, 5).map((item, index) => (
                           <CardStatistic
                             key={item.card.id}
