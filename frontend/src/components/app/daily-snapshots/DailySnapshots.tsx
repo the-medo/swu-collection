@@ -19,6 +19,7 @@ import SocialButtons from '@/components/app/global/SocialButtons.tsx';
 import FallbackPage from '@/components/app/daily-snapshots/FallbackPage.tsx';
 import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
 import TournamentDetailSection from '@/components/app/daily-snapshots/special-sections/TournamentDetailSection/TournamentDetailSection.tsx';
+import { useSearch } from '@tanstack/react-router';
 
 const formatToday = (): string => {
   const d = new Date();
@@ -91,14 +92,15 @@ export const specialSectionSizing: Record<string, SectionCardSizing> = {
   'tournament-detail': {
     4: { row: { from: 1, to: 1 }, col: { from: 1, to: 3 } },
     3: { row: { from: 1, to: 1 }, col: { from: 1, to: 2 } },
-    2: { row: { from: 0, to: 0 }, col: { from: 0, to: 0 } },
-    1: { row: { from: 0, to: 0 }, col: { from: 0, to: 0 } },
+    2: { row: { from: 1, to: 1 }, col: { from: 1, to: 1 } },
+    1: { row: { from: 1, to: 1 }, col: { from: 1, to: 1 } },
   },
 };
 
 const DailySnapshots: React.FC = () => {
   const today = React.useMemo(() => formatToday(), []);
   const { data, isLoading, isError, error } = useDailySnapshot(today);
+  const { maTournamentId } = useSearch({ strict: false });
 
   const sections = data?.sections ?? {};
 
@@ -209,7 +211,7 @@ const DailySnapshots: React.FC = () => {
               </GridSection>
             );
           })}
-          <TournamentDetailSection />
+          {maTournamentId && <TournamentDetailSection maTournamentId={maTournamentId} />}
         </div>
       </div>
     </>

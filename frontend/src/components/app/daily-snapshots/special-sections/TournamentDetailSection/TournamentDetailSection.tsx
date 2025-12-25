@@ -2,7 +2,9 @@ import * as React from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import SectionHeader from '@/components/app/daily-snapshots/sections/components/SectionHeader.tsx';
 import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
-import GridSection from '@/components/app/global/GridSection/GridSection.tsx';
+import GridSection, {
+  SectionCardSizing,
+} from '@/components/app/global/GridSection/GridSection.tsx';
 import { specialSectionSizing } from '@/components/app/daily-snapshots/DailySnapshots.tsx';
 import TournamentDetail from '@/components/app/tournaments/TournamentDetail/TournamentDetail.tsx';
 import {
@@ -16,25 +18,39 @@ import { Route as RootRoute } from '@/routes';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import MeleeButton from '@/components/app/tournaments/TournamentDetail/MeleeButton.tsx';
 import Flag from '@/components/app/global/Flag.tsx';
-import { Users, X } from 'lucide-react';
+import { SidebarClose, SidebarOpen, Users, X } from 'lucide-react';
 import { CountryCode } from '../../../../../../../server/db/lists.ts';
 import { formatDate } from '@/lib/locale.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 
-export interface TournamentDetailSectionProps {}
+export interface TournamentDetailSectionProps {
+  maTournamentId: string;
+}
 
-const TournamentDetailSection: React.FC<TournamentDetailSectionProps> = ({}) => {
+const TournamentDetailSection: React.FC<TournamentDetailSectionProps> = ({ maTournamentId }) => {
   const navigate = useNavigate();
-  const { maTournamentId, page } = useSearch({ strict: false });
+  const [expanded, setExpanded] = useState(false);
+  const { page } = useSearch({ strict: false });
   const { data } = useGetTournament(maTournamentId);
 
   const activeTab = (page as string) || 'details';
+  const size = useMemo(() => {
+    if (!expanded) return specialSectionSizing['tournament-detail'];
+
+    const expandedSize: SectionCardSizing = { ...specialSectionSizing['tournament-detail'] };
+    Object.entries(specialSectionSizing['tournament-detail']).forEach(([key, section]) => {
+      expandedSize[key as unknown as keyof SectionCardSizing] = {
+        ...section,
+        col: { ...section.col, to: section.col.to + 1 },
+      };
+    });
+
+    return expandedSize;
+  }, [expanded]);
 
   const content = useMemo(() => {
-    if (!maTournamentId) return null;
-
     switch (activeTab) {
       case 'details':
         return (
@@ -55,18 +71,11 @@ const TournamentDetailSection: React.FC<TournamentDetailSectionProps> = ({}) => 
     }
   }, [activeTab, maTournamentId]);
 
-  if (!maTournamentId) return null;
-
   const t = data?.tournament;
   const countryCode = t?.location as CountryCode;
 
   return (
-    <GridSection
-      key="tournament-detail"
-      sizing={specialSectionSizing['tournament-detail']}
-      id={`s-tournament-detail`}
-      className="z-10"
-    >
+    <GridSection key="tournament-detail" sizing={size} id={`s-tournament-detail`} className="z-10">
       <GridSectionContent>
         <div className="h-full w-full flex flex-col gap-2 ">
           <SectionHeader
@@ -103,6 +112,14 @@ const TournamentDetailSection: React.FC<TournamentDetailSectionProps> = ({}) => 
                 >
                   Close
                   <X />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="px-2"
+                  onClick={() => setExpanded(p => !p)}
+                >
+                  {expanded ? <SidebarClose /> : <SidebarOpen />}
                 </Button>
               </div>
             }
