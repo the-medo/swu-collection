@@ -120,7 +120,7 @@ export function useDeckTableColumns({
               })}
             >
               <span
-                className={cn({
+                className={cn('text-wrap', {
                   'truncate ellipsis max-w-[75vw]': view === 'box',
                 })}
               >
@@ -205,12 +205,12 @@ export function useDeckTableColumns({
       definitions.push({
         accessorKey: 'user.displayName',
         header: 'Owner',
-        size: 64,
+        size: 40,
         cell: ({ getValue, row }) => {
           const userId = row.original.user.id as string;
           const displayName = getValue() as string;
           return (
-            <Link to={'/users/' + userId} className="text-xs">
+            <Link to={'/users/' + userId} className="text-xs text-wrap">
               {displayName}
             </Link>
           );
