@@ -92,7 +92,7 @@ export const specialSectionSizing: Record<string, SectionCardSizing> = {
   'tournament-detail': {
     4: { row: { from: 1, to: 1 }, col: { from: 1, to: 3 } },
     3: { row: { from: 1, to: 1 }, col: { from: 1, to: 2 } },
-    2: { row: { from: 1, to: 1 }, col: { from: 1, to: 1 } },
+    2: { row: { from: 1, to: 1 }, col: { from: 1, to: 2 } },
     1: { row: { from: 1, to: 1 }, col: { from: 1, to: 1 } },
   },
 };
@@ -140,7 +140,7 @@ const DailySnapshots: React.FC = () => {
 
         <SocialButtons location="header" />
       </div>
-      <div className="w-full mx-auto px-2 py-2">
+      <div className="w-full mx-auto px-2 py-2" id="section-container">
         {isLoading && <div className="text-sm text-muted-foreground">Loading daily snapshot…</div>}
 
         {isError && (
