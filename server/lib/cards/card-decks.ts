@@ -13,7 +13,7 @@ import type { CardDeckData } from '../../../types/CardDeckData.ts';
 import type { SwuAspect } from '../../../types/enums.ts';
 
 type FetchCardDecksDataParams = {
-  cardId: string;
+  cardId?: string;
   tournamentId?: string;
   tournamentGroupId?: string;
   metaId?: number;
@@ -76,18 +76,39 @@ export async function fetchCardDecksData(
     }
   }
 
-  return db
-    .select({
-      tournamentDeck,
-      deck,
-      deckInformation,
-      deckCard,
-    })
+  // Build dynamic query similar to metaGetRoute
+  const baseSelect = {
+    tournamentDeck,
+    deck,
+    deckInformation,
+  } as const;
+
+  let query = db
+    .select(
+      cardId
+        ? baseSelect
+        : {
+            ...baseSelect,
+            deckCard,
+          },
+    )
     .from(tournamentDeck)
     .innerJoin(deck, eq(deck.id, tournamentDeck.deckId))
     .innerJoin(deckInformation, eq(deck.id, deckInformation.deckId))
-    .innerJoin(deckCard, and(eq(deckCard.deckId, deck.id), eq(deckCard.cardId, cardId)))
+    .$dynamic();
+
+  // Conditionally add INNER JOIN to deckCard only when cardId is provided
+  if (cardId) {
+    query = query.innerJoin(
+      deckCard,
+      and(eq(deckCard.deckId, deck.id), eq(deckCard.cardId, cardId)),
+    );
+  }
+
+  query = query
     .where(and(...conditions))
     .orderBy(tournamentDeck.placement)
     .limit(25);
+
+  return query;
 }

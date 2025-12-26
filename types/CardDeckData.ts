@@ -7,5 +7,6 @@ export type CardDeckData = {
   tournamentDeck: TournamentDeck;
   deck: Deck;
   deckInformation: DeckInformation;
-  deckCard: DeckCard;
+  // Present only when a specific cardId filter is used (deckCard join is conditional)
+  deckCard?: DeckCard;
 };
