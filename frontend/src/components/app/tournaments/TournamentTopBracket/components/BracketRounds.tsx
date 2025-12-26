@@ -4,7 +4,12 @@ import { MatchData } from '@/components/app/tournaments/lib/tournamentLib.ts';
 import BracketPlayer from './BracketPlayer';
 
 // Function to get round name based on round index and bracket type
-const getRoundName = (roundIndex: number, top: BracketInfo, rounds: number[], isLastRound: boolean): string => {
+const getRoundName = (
+  roundIndex: number,
+  top: BracketInfo,
+  rounds: number[],
+  isLastRound: boolean,
+): string => {
   // If it's the last round, it's always the Finals
   if (isLastRound) {
     return 'Finals';
@@ -38,7 +43,6 @@ interface BracketRoundsProps {
   highlightedPlayer: string | null;
   setHighlightedPlayer: (username: string | null) => void;
   setSelectedDeckId: (deckId: string | undefined) => void;
-  cardListData: any;
 }
 
 const BracketRounds: React.FC<BracketRoundsProps> = ({
@@ -48,15 +52,17 @@ const BracketRounds: React.FC<BracketRoundsProps> = ({
   highlightedPlayer,
   setHighlightedPlayer,
   setSelectedDeckId,
-  cardListData,
 }) => {
   if (!bracketData) return null;
 
   return (
-    <div className="flex-1 overflow-x-auto">
-      <div className="flex min-w-max gap-4">
+    <div className="flex-1 max-w-[850px] overflow-x-auto">
+      <div className="flex min-w-max gap-4 @container/bracket-detail">
         {bracketData.map((round, roundIndex) => (
-          <div key={roundIndex} className="flex flex-col w-72">
+          <div
+            key={roundIndex}
+            className="flex flex-col w-[150px] @[510px]/bracket-detail:w-[200px] @[810px]/bracket-detail:w-[260px]"
+          >
             <h4 className="text-center font-medium mb-4 text-muted-foreground">
               {getRoundName(roundIndex, top, rounds, roundIndex === bracketData.length - 1)}
             </h4>
@@ -81,20 +87,24 @@ const BracketRounds: React.FC<BracketRoundsProps> = ({
                           isHighlighted={highlightedPlayer === match.p1Username}
                           onMouseEnter={() => setHighlightedPlayer(match.p1Username)}
                           onMouseLeave={() => setHighlightedPlayer(null)}
-                          onClick={() => match.player1 && setSelectedDeckId(match.player1.tournamentDeck.deckId)}
-                          cardListData={cardListData}
+                          onClick={() =>
+                            match.player1 && setSelectedDeckId(match.player1.tournamentDeck.deckId)
+                          }
                         />
-                        <div className="h-px bg-muted-foreground/30 mx-2"></div>
+                        {/*<div className="h-px bg-muted-foreground/30 mx-2"></div>*/}
                         <BracketPlayer
                           deck={match.player2}
                           isWinner={match.winner === match.player2}
                           showScore={true}
                           gameWins={match.gameLosses}
                           isHighlighted={highlightedPlayer === match.p2Username}
-                          onMouseEnter={() => match.p2Username && setHighlightedPlayer(match.p2Username)}
+                          onMouseEnter={() =>
+                            match.p2Username && setHighlightedPlayer(match.p2Username)
+                          }
                           onMouseLeave={() => setHighlightedPlayer(null)}
-                          onClick={() => match.player2 && setSelectedDeckId(match.player2.tournamentDeck.deckId)}
-                          cardListData={cardListData}
+                          onClick={() =>
+                            match.player2 && setSelectedDeckId(match.player2.tournamentDeck.deckId)
+                          }
                         />
                       </div>
                     </div>

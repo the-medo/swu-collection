@@ -13,9 +13,13 @@ import { cn } from '@/lib/utils';
 
 interface PriceSourceSelectorProps {
   showPricesOption: boolean;
+  compact?: boolean;
 }
 
-const PriceSourceSelector: React.FC<PriceSourceSelectorProps> = ({ showPricesOption = true }) => {
+const PriceSourceSelector: React.FC<PriceSourceSelectorProps> = ({
+  showPricesOption = true,
+  compact,
+}) => {
   const { data: showPrices } = useGetUserSetting('deckPrices');
   const { mutate: setShowPrices } = useSetUserSetting('deckPrices');
 
@@ -31,14 +35,18 @@ const PriceSourceSelector: React.FC<PriceSourceSelectorProps> = ({ showPricesOpt
 
   return (
     <NavigationMenuItem>
-      <NavigationMenuTrigger className="w-[220px] justify-start border">
-        <DollarSign className="h-4 w-4 mr-2" />
-        <span className="text-xs">Prices: </span>
-        {showPrices || !showPricesOption
-          ? priceSource
-            ? cardPriceSourceInfo[priceSource].name
-            : 'Unknown'
-          : 'None'}
+      <NavigationMenuTrigger className={cn('justify-start border', compact ? '' : 'w-[220px]')}>
+        <DollarSign className="h-4 w-4" />
+        {!compact && (
+          <>
+            <span className="ml-2 text-xs">Prices: </span>
+            {showPrices || !showPricesOption
+              ? priceSource
+                ? cardPriceSourceInfo[priceSource].name
+                : 'Unknown'
+              : 'None'}
+          </>
+        )}
       </NavigationMenuTrigger>
       <NavigationMenuContent>
         <div className="p-2 grid grid-cols-1 gap-4 w-[300px]">

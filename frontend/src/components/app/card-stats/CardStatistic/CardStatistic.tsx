@@ -13,9 +13,7 @@ import type { SectionMostPlayedCardsItem } from '../../../../../../types/DailySn
 
 // Type guard to detect full CardStat
 function isFullCardStat(stat: CardStat | SectionMostPlayedCardsItem): stat is CardStat {
-  return (
-    (stat as CardStat).matchWin !== undefined && (stat as CardStat).matchLose !== undefined
-  );
+  return (stat as CardStat).matchWin !== undefined && (stat as CardStat).matchLose !== undefined;
 }
 
 interface CardStatisticProps {
@@ -43,9 +41,9 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
   const countSb = cardStat.countSb ?? 0;
 
   const winRate = isFullCardStat(cardStat)
-    ? (cardStat.matchWin + cardStat.matchLose > 0
-        ? ((cardStat.matchWin / (cardStat.matchWin + cardStat.matchLose)) * 100).toFixed(1)
-        : null)
+    ? cardStat.matchWin + cardStat.matchLose > 0
+      ? ((cardStat.matchWin / (cardStat.matchWin + cardStat.matchLose)) * 100).toFixed(1)
+      : null
     : null;
 
   const avgMd = deckCount > 0 ? (countMd / deckCount).toFixed(2) : 'N/A';
@@ -53,7 +51,7 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
 
   return (
     <div
-      className={cn(' p-2 border', {
+      className={cn('p-2 border', {
         'space-y-2 w-[220px]': variant === 'image',
         'flex gap-2': variant === 'card-horizontal',
       })}

@@ -18,6 +18,8 @@ import type { DailySnapshotSectionData } from '../../../../../types/DailySnapsho
 import SocialButtons from '@/components/app/global/SocialButtons.tsx';
 import FallbackPage from '@/components/app/daily-snapshots/FallbackPage.tsx';
 import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
+import TournamentDetailSection from '@/components/app/daily-snapshots/special-sections/TournamentDetailSection/TournamentDetailSection.tsx';
+import { useSearch } from '@tanstack/react-router';
 
 const formatToday = (): string => {
   const d = new Date();
@@ -56,13 +58,13 @@ const sizingByKey: Record<SectionKey, SectionCardSizing> = {
   },
   'force-vs-nonforce': {
     4: { row: { from: 2, to: 2 }, col: { from: 3, to: 3 } },
-    3: { row: { from: 1, to: 1 }, col: { from: 3, to: 3 } },
+    3: { row: { from: 2, to: 2 }, col: { from: 3, to: 3 } },
     2: { row: { from: 2, to: 2 }, col: { from: 2, to: 2 } },
     1: { row: { from: 3, to: 3 }, col: { from: 1, to: 1 } },
   },
   'upcoming-tournaments': {
     4: { row: { from: 3, to: 3 }, col: { from: 4, to: 4 } },
-    3: { row: { from: 2, to: 2 }, col: { from: 3, to: 3 } },
+    3: { row: { from: 3, to: 3 }, col: { from: 3, to: 3 } },
     2: { row: { from: 3, to: 3 }, col: { from: 2, to: 2 } },
     1: { row: { from: 5, to: 5 }, col: { from: 1, to: 1 } },
   },
@@ -74,7 +76,7 @@ const sizingByKey: Record<SectionKey, SectionCardSizing> = {
   },
   'recent-tournaments': {
     4: { row: { from: 1, to: 2 }, col: { from: 4, to: 4 } },
-    3: { row: { from: 3, to: 3 }, col: { from: 3, to: 3 } },
+    3: { row: { from: 1, to: 1 }, col: { from: 3, to: 3 } },
     2: { row: { from: 3, to: 3 }, col: { from: 1, to: 1 } },
     1: { row: { from: 4, to: 4 }, col: { from: 1, to: 1 } },
   },
@@ -86,9 +88,19 @@ const sizingByKey: Record<SectionKey, SectionCardSizing> = {
   },
 };
 
+export const specialSectionSizing: Record<string, SectionCardSizing> = {
+  'tournament-detail': {
+    4: { row: { from: 1, to: 1 }, col: { from: 1, to: 3 } },
+    3: { row: { from: 1, to: 1 }, col: { from: 1, to: 2 } },
+    2: { row: { from: 1, to: 1 }, col: { from: 1, to: 2 } },
+    1: { row: { from: 1, to: 1 }, col: { from: 1, to: 1 } },
+  },
+};
+
 const DailySnapshots: React.FC = () => {
   const today = React.useMemo(() => formatToday(), []);
   const { data, isLoading, isError, error } = useDailySnapshot(today);
+  const { maTournamentId } = useSearch({ strict: false });
 
   const sections = data?.sections ?? {};
 
@@ -128,7 +140,7 @@ const DailySnapshots: React.FC = () => {
 
         <SocialButtons location="header" />
       </div>
-      <div className="w-full mx-auto px-2 py-2">
+      <div className="w-full mx-auto px-2 py-2" id="section-container">
         {isLoading && <div className="text-sm text-muted-foreground">Loading daily snapshot…</div>}
 
         {isError && (
@@ -141,11 +153,12 @@ const DailySnapshots: React.FC = () => {
 
         <div
           className={cn(
-            'grid gap-4',
-            // 2 cols on small, then 3, 4, and your fixed 5-col layout at xl
-            'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+            'grid gap-4 grid-flow-dense',
             'auto-rows-[minmax(12rem,auto)]',
-            'grid-flow-dense',
+            'grid-cols-1',
+            'md:grid-cols-2',
+            'lg:grid-cols-[repeat(2,minmax(0,1fr))_280px]',
+            'xl:grid-cols-[repeat(3,minmax(0,1fr))_280px]',
           )}
         >
           {sectionEntries.map(([sectionName, payload]) => {
@@ -181,7 +194,7 @@ const DailySnapshots: React.FC = () => {
             }
 
             return (
-              <GridSection key={sectionName} sizing={sizing}>
+              <GridSection key={sectionName} sizing={sizing} id={`s-${sectionName}`}>
                 <GridSectionContent>
                   {Comp ? (
                     <Comp
@@ -198,6 +211,7 @@ const DailySnapshots: React.FC = () => {
               </GridSection>
             );
           })}
+          {maTournamentId && <TournamentDetailSection maTournamentId={maTournamentId} />}
         </div>
       </div>
     </>

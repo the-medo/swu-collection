@@ -228,7 +228,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
                       </div>
                     )}
                     {topCards.length > 0 ? (
-                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
+                      <div className="@container flex-1 grid grid-cols-1 @[400px]:grid-cols-2 @[600px]:grid-cols-3 @[1200px]:grid-cols-5 gap-4">
                         {topCards.map((item, index) => (
                           <CardStatistic
                             key={item.card?.cardId}

@@ -6,16 +6,18 @@ import { ComparerEntryAdditionalData } from '@/components/app/comparer/useCompar
 interface ComparerButtonProps {
   deckId: string;
   additionalData: ComparerEntryAdditionalData;
+  compact?: boolean;
 }
 
-const ComparerButton: React.FC<ComparerButtonProps> = ({ deckId, additionalData }) => {
+const ComparerButton: React.FC<ComparerButtonProps> = ({ deckId, additionalData, compact }) => {
   return (
     <NavigationMenuItem>
       <AddToComparerButton
         id={deckId}
         dataType="deck"
         additionalData={additionalData}
-        size="default"
+        size={compact ? 'icon' : 'default'}
+        compact={compact}
       />
     </NavigationMenuItem>
   );

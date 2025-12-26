@@ -4,9 +4,11 @@ import TournamentDeckFilters from '../TournamentDecks/TournamentDeckFilters.tsx'
 import TournamentDeckTable from '../TournamentDecks/TournamentDeckTable.tsx';
 import { Helmet } from 'react-helmet-async';
 
-interface AllDecksTabProps {}
+interface AllDecksTabProps {
+  compact?: boolean;
+}
 
-const AllDecksTab: React.FC<AllDecksTabProps> = () => {
+const AllDecksTab: React.FC<AllDecksTabProps> = ({ compact }) => {
   const { decks, isLoaded } = useTournamentMetaStore();
 
   return (
@@ -16,7 +18,7 @@ const AllDecksTab: React.FC<AllDecksTabProps> = () => {
         {isLoaded ? (
           <>
             <TournamentDeckFilters />
-            <TournamentDeckTable decks={decks} deckIdSearchParam="maDeckId" />
+            <TournamentDeckTable decks={decks} deckIdSearchParam="maDeckId" compact={compact} />
           </>
         ) : (
           <div className="bg-muted p-8 rounded-md text-center">

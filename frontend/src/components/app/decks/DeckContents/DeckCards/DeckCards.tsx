@@ -5,12 +5,20 @@ import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts'
 interface DeckCardsProps {
   deckId: string;
   highlightedCardId?: string;
+  compact?: boolean;
 }
 
-const DeckCards: React.FC<DeckCardsProps> = ({ deckId, highlightedCardId }) => {
+const DeckCards: React.FC<DeckCardsProps> = ({ deckId, highlightedCardId, compact }) => {
   const { deckCardsForLayout } = useDeckData(deckId);
 
-  return <DeckLayout deckId={deckId} deckCardsForLayout={deckCardsForLayout} highlightedCardId={highlightedCardId} />;
+  return (
+    <DeckLayout
+      deckId={deckId}
+      deckCardsForLayout={deckCardsForLayout}
+      highlightedCardId={highlightedCardId}
+      compact={compact}
+    />
+  );
 };
 
 export default DeckCards;

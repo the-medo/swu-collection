@@ -8,9 +8,10 @@ import { cn } from '@/lib/utils.ts';
 interface DeckViewerProps {
   selectedDeckId: string;
   setSelectedDeckId: (deckId: string | undefined) => void;
+  compact?: boolean;
 }
 
-const DeckViewer: React.FC<DeckViewerProps> = ({ selectedDeckId, setSelectedDeckId }) => {
+const DeckViewer: React.FC<DeckViewerProps> = ({ selectedDeckId, setSelectedDeckId, compact }) => {
   useSetDeckInfo(selectedDeckId, false);
 
   return (
@@ -23,7 +24,7 @@ const DeckViewer: React.FC<DeckViewerProps> = ({ selectedDeckId, setSelectedDeck
       >
         <X />
       </Button>
-      <DeckContents deckId={selectedDeckId} setDeckId={setSelectedDeckId} />
+      <DeckContents deckId={selectedDeckId} setDeckId={setSelectedDeckId} compact={compact} />
     </div>
   );
 };

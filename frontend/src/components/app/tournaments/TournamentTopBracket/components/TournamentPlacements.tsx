@@ -4,7 +4,6 @@ import { extractDeckNameFromBrackets } from '../../lib/extractDeckNameFromBracke
 import { BracketInfo } from '../../../../../../../types/enums.ts';
 import DeckPlacement from '@/components/app/tournaments/components/DeckPlacement.tsx';
 import { cn } from '@/lib/utils.ts';
-import { getDeckLeadersAndBaseKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 
 interface PlacementGroup {
   placement: string;
@@ -52,7 +51,7 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
     // Winner (1st place)
     if (topDecks[0]) {
       result.push({
-        placement: '1st',
+        placement: 'Champion',
         decks: [topDecks[0]],
       });
     }
@@ -60,7 +59,7 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
     // Runner-up (2nd place)
     if (topDecks.length > 1 && topDecks[1]) {
       result.push({
-        placement: '2nd',
+        placement: 'Finalist',
         decks: [topDecks[1]],
       });
     }
@@ -105,21 +104,15 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
     return result;
   }, [topDecks, top]);
 
-  const extended = false; // currently I decided to remove full-screen final standings and display message instead // top === BracketInfo.NONE && !selectedDeckId;
-
   return (
-    <div
-      className={cn('min-w-72 space-y-4 mr-6', {
-        'w-full': extended,
-      })}
-    >
-      <h3 className="text-lg font-bold">Final Standings</h3>
+    <div className={cn('min-w-40 space-y-2 mr-0 border-l pl-2 bg-primary/5')}>
+      {/*<h3 className="text-lg font-bold">Final Standings</h3>*/}
       {placements.map((placementGroup, index) => (
         <div key={index} className="space-y-0">
           {placementGroup.placement && (
-            <h4 className="text-sm font-semibold text-muted-foreground">
+            <h6 className="text-sm font-semibold text-muted-foreground mb-0!">
               {placementGroup.placement}
-            </h4>
+            </h6>
           )}
           {placementGroup.decks.map((deck, deckIndex) => {
             const username = deck.tournamentDeck.meleePlayerUsername || 'Unknown';
@@ -156,12 +149,7 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
                   onMouseLeave={() => setHighlightedPlayer(null)}
                   deckId={deck.deck?.id}
                   showDeckLink={!!deck.deck?.id}
-                  extended={extended}
-                  cardImageSize={extended ? 'w75' : 'w50'}
-                  gameWins={deck.tournamentDeck.recordWin ?? 0}
-                  gameLosses={deck.tournamentDeck.recordLose ?? 0}
-                  gameDraws={deck.tournamentDeck.recordDraw ?? 0}
-                  deckKey={getDeckLeadersAndBaseKey(deck.deck, cardListData)}
+                  cardImageSize={'w50'}
                 />
               </div>
             );

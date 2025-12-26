@@ -8,12 +8,14 @@ interface DeckNavigationMenuProps {
   deckId: string;
   className?: string;
   children: React.ReactNode;
+  gradient?: boolean;
 }
 
 const DeckNavigationMenu: React.FC<DeckNavigationMenuProps> = ({
   deckId,
   className,
   children,
+  gradient = true,
   ...props
 }) => {
   const { cssBackground } = useDeckColors(deckId, 'rgb');
@@ -21,11 +23,11 @@ const DeckNavigationMenu: React.FC<DeckNavigationMenuProps> = ({
   // Create gradient style based on cssBackground
   const gradientStyle = useMemo(() => {
     const style: CSSProperties = {};
-    if (cssBackground) {
+    if (cssBackground && gradient) {
       style.background = cssBackground;
     }
     return style;
-  }, [cssBackground]);
+  }, [cssBackground, gradient]);
 
   return (
     <NavigationMenu

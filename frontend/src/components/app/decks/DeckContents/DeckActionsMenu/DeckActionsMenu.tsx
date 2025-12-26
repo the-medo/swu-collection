@@ -44,7 +44,7 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
         <CopyLinkButton deckId={deckId} isPublic={!!deckData?.deck.public} />
         <ComparerButton deckId={deckId} additionalData={additionalData} />
         <DuplicateButton deckId={deckId} isLimited={!!deckData?.deck.cardPoolId} />
-        <PriceSourceSelector />
+        <PriceSourceSelector showPricesOption={true} />
         <ExportOptionsMenu
           deckData={deckData}
           deckCardsData={deckCardsData}

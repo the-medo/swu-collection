@@ -26,11 +26,13 @@ interface TournamentTopBracketProps {
   tournamentId: string;
   top?: BracketInfo;
   className?: string;
+  compact?: boolean;
 }
 
 const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
   tournamentId,
   top = BracketInfo.TOP8,
+  compact,
 }) => {
   const { data: decksData, isLoading: isLoadingDecks } = useGetTournamentDecks(tournamentId);
   const { data: matchesData, isLoading: isLoadingMatches } = useGetTournamentMatches(tournamentId);
@@ -266,9 +268,13 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
 
   return (
     <div className="bg-card rounded-md border shadow-xs p-3">
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col lg:flex-row gap-4 justify-around flex-1">
         {selectedDeckId ? (
-          <DeckViewer selectedDeckId={selectedDeckId} setSelectedDeckId={setSelectedDeckId} />
+          <DeckViewer
+            selectedDeckId={selectedDeckId}
+            setSelectedDeckId={setSelectedDeckId}
+            compact={compact}
+          />
         ) : top === BracketInfo.NONE ? (
           // For "none" bracket type, show a message with a button to meta analysis
           <div className="flex flex-1 flex-col items-center justify-center p-6 bg-accent rounded-lg">
@@ -305,7 +311,6 @@ const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
             highlightedPlayer={highlightedPlayer}
             setHighlightedPlayer={setHighlightedPlayer}
             setSelectedDeckId={setSelectedDeckId}
-            cardListData={cardListData}
           />
         )}
         <TournamentPlacements

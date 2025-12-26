@@ -31,6 +31,7 @@ export interface DeckCardTextRowProps {
   cardInBoards: DeckCardInBoards;
   missingCardInBoards?: DeckCardInBoards;
   displayMissingCards?: boolean;
+  displayDropdown?: boolean;
   isHighlighted?: boolean;
 }
 
@@ -42,6 +43,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   cardInBoards,
   missingCardInBoards,
   displayMissingCards = false,
+  displayDropdown = true,
   isHighlighted,
 }) => {
   const navigate = useNavigate();
@@ -51,6 +53,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
 
   const missingAmount = missingCardInBoards?.[deckCard.board] ?? 0;
+  const compactMode = !displayDropdown;
 
   const quantityChangeHandler = useCallback(
     (quantity: number | undefined, board?: number) => {
@@ -79,7 +82,10 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   return (
     <DeckCardHoverImage card={card}>
       <div
-        className={cn('flex gap-2 items-center', displayDeckPrice ? 'w-[400px]' : 'w-[350px]', {
+        className={cn('flex gap-2 items-center', {
+          'w-[400px]': displayDeckPrice && !compactMode,
+          'w-[350px]': !displayDeckPrice && !compactMode,
+          'w-[300px]': compactMode,
           'py-1 border-t': variant === 'normal',
           'py-0': variant === 'compact',
           'bg-primary/10 border border-primary rounded-sm': isHighlighted,
@@ -122,9 +128,13 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
           }}
         >
           <span
-            className={cn('max-w-[220px] truncate ellipsis overflow-hidden whitespace-nowrap', {
+            className={cn('truncate ellipsis overflow-hidden whitespace-nowrap', {
               'group-hover:hidden': editable,
               'text-xs': variant === 'compact',
+              'max-w-[220px]': !displayDeckPrice && !compactMode,
+              'max-w-[210px]': displayDeckPrice && !compactMode,
+              'max-w-[200px]': !displayDeckPrice && compactMode,
+              'max-w-[150px]': displayDeckPrice && compactMode,
             })}
           >
             {card?.name}
@@ -158,14 +168,16 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
             )}
           </div>
         </div>
-        <DeckCardDropdownMenu
-          deckId={deckId}
-          deckCard={deckCard}
-          card={card}
-          editable={editable}
-          cardInBoards={cardInBoards}
-          onQuantityChange={quantityChangeHandler}
-        />
+        {displayDropdown && (
+          <DeckCardDropdownMenu
+            deckId={deckId}
+            deckCard={deckCard}
+            card={card}
+            editable={editable}
+            cardInBoards={cardInBoards}
+            onQuantityChange={quantityChangeHandler}
+          />
+        )}
       </div>
     </DeckCardHoverImage>
   );

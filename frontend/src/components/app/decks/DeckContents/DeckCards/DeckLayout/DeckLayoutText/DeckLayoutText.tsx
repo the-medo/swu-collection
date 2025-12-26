@@ -12,6 +12,7 @@ interface DeckLayoutTextProps {
   deckCardsForLayout: DeckCardsForLayout;
   showSideboard?: boolean;
   highlightedCardId?: string;
+  displayDropdown?: boolean;
 }
 
 const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
@@ -20,13 +21,16 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
   deckCardsForLayout: { mainboardGroups, cardsByBoard, usedCardsInBoards, usedCards },
   showSideboard = true,
   highlightedCardId,
+  displayDropdown = true,
 }) => {
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
   const { data: d } = useDeckCollection(deckId);
+  const compactMode = !displayDropdown;
 
   const columnClasses = cn('@container columns-1  gap-4 space-y-4', {
-    '@[700px]:columns-2 @[1050px]:columns-3': !displayDeckPrice,
-    '@[800px]:columns-2 @[1200px]:columns-3': displayDeckPrice,
+    '@[600px]:columns-2 @[900px]:columns-3': compactMode,
+    '@[700px]:columns-2 @[1050px]:columns-3': !displayDeckPrice && !compactMode,
+    '@[800px]:columns-2 @[1200px]:columns-3': displayDeckPrice && !compactMode,
   });
 
   return (
@@ -39,10 +43,11 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
           if (group.cards.length === 0) return null;
           return (
             <div
-              className={cn(
-                'flex flex-col gap-1 p-1 break-inside-avoid',
-                displayDeckPrice ? 'w-[400px]' : 'w-[350px]',
-              )}
+              className={cn('flex flex-col gap-1 p-1 break-inside-avoid', {
+                'w-[400px]': displayDeckPrice && !compactMode,
+                'w-[350px]': !displayDeckPrice && !compactMode,
+                'w-[300px]': compactMode,
+              })}
             >
               <span className="font-medium">
                 {group.label} ({group.cards.reduce((p, c) => p + c.quantity, 0)})
@@ -59,6 +64,7 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                     missingCardInBoards={d?.missingCards[c.cardId]}
                     displayMissingCards={d !== null}
                     isHighlighted={highlightedCardId === c.cardId}
+                    displayDropdown={displayDropdown}
                   />
                 );
               })}
@@ -67,10 +73,11 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
         })}
         {showSideboard && (
           <div
-            className={cn(
-              'flex flex-col gap-1 p-1 break-inside-avoid bg-accent',
-              displayDeckPrice ? 'w-[420px]' : 'w-[370px]',
-            )}
+            className={cn('flex flex-col gap-1 p-1 break-inside-avoid bg-accent', {
+              'w-[420px]': displayDeckPrice && !compactMode,
+              'w-[370px]': !displayDeckPrice && !compactMode,
+              'w-[320px]': compactMode,
+            })}
           >
             <span className="font-medium">
               Sideboard ({cardsByBoard[2].reduce((p, c) => p + c.quantity, 0)})
@@ -88,6 +95,7 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                   missingCardInBoards={d?.missingCards[c.cardId]}
                   displayMissingCards={d !== null}
                   isHighlighted={highlightedCardId === c.cardId}
+                  displayDropdown={displayDropdown}
                 />
               );
             })}
@@ -111,6 +119,7 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                   cardInBoards={usedCardsInBoards[c.cardId]}
                   displayMissingCards={d !== null}
                   isHighlighted={highlightedCardId === c.cardId}
+                  displayDropdown={displayDropdown}
                 />
               );
             })}

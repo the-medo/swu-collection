@@ -1,11 +1,10 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import CardImage, { CardImageVariantProps } from '@/components/app/global/CardImage';
-import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant';
+import { CardImageVariantProps } from '@/components/app/global/CardImage';
 import { Trophy, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { Link } from '@tanstack/react-router';
-import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
+import DeckAvatar from '@/components/app/global/DeckAvatar/DeckAvatar.tsx';
 
 interface DeckPlacementProps {
   leaderCard1: any;
@@ -23,7 +22,6 @@ interface DeckPlacementProps {
   deckId?: string;
   showDeckLink?: boolean;
   cardImageSize?: CardImageVariantProps['size'];
-  extended?: boolean;
   gameWins?: number;
   gameLosses?: number;
   gameDraws?: number;
@@ -33,7 +31,6 @@ interface DeckPlacementProps {
 const DeckPlacement: React.FC<DeckPlacementProps> = ({
   leaderCard1,
   baseCard,
-  leaderCard2,
   username,
   deckName,
   placement,
@@ -45,15 +42,7 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
   className,
   deckId,
   showDeckLink = false,
-  cardImageSize = 'w50',
-  extended = false,
-  gameWins = 0,
-  gameLosses = 0,
-  gameDraws = 0,
-  deckKey,
 }) => {
-  const labelRenderer = useLabel();
-
   return (
     <div
       className={cn(
@@ -64,95 +53,42 @@ const DeckPlacement: React.FC<DeckPlacementProps> = ({
           : onClick
             ? 'hover:bg-muted/50 border-transparent'
             : '',
-        onClick ? 'p-2 rounded-md transition-colors border' : '',
-        extended ? 'w-full gap-4 flex-wrap' : '',
+        onClick ? 'p-1 rounded-md transition-colors border' : '',
         className,
       )}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div className="flex gap-1 shrink-0">
-        {leaderCard1 && (
-          <CardImage
-            card={leaderCard1}
-            cardVariantId={leaderCard1 ? selectDefaultVariant(leaderCard1) : undefined}
-            forceHorizontal={true}
-            size={cardImageSize}
-            backSideButton={false}
-          />
-        )}
-        {leaderCard2 && (
-          <div className="-ml-7">
-            <CardImage
-              card={leaderCard2}
-              cardVariantId={leaderCard2 ? selectDefaultVariant(leaderCard2) : undefined}
-              forceHorizontal={true}
-              size={cardImageSize}
-              backSideButton={false}
-            />
-          </div>
-        )}
-        {baseCard && (
-          <div className={cn({ '-ml-6': !!leaderCard2, '-ml-2': !leaderCard2 })}>
-            <CardImage
-              card={baseCard}
-              cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}
-              forceHorizontal={true}
-              size={cardImageSize}
-              backSideButton={false}
-            />
-          </div>
-        )}
-      </div>
-      {extended && deckKey && (
-        <div className="ml-2 text-sm text-muted-foreground w-[220px]">
-          {labelRenderer(deckKey, 'leadersAndBase', 'compact')}
-        </div>
-      )}
-      {extended && (
-        <div className="text-md font-bold w-[80px] shrink-0">
-          {gameWins}-{gameLosses}-{gameDraws}
-        </div>
-      )}
-
+      <DeckAvatar leaderCardId={leaderCard1?.cardId} baseCardId={baseCard?.cardId} size="40" />
       <div className="flex flex-1 items-center">
         {(username || deckName) && (
-          <div
-            className={cn('flex flex-col justify-center overflow-hidden', {
-              'flex-row gap-4': extended,
-            })}
-          >
+          <div className={cn('flex flex-col flex-1 justify-center overflow-hidden')}>
             {username && (
-              <div className="font-medium">
+              <div className="font-semibold text-sm max-w-24 truncate">
                 {showPlacement && placement ? `#${placement} ${username}` : username}
                 {placement === 1 && <Trophy className="h-4 w-4 text-amber-500 inline ml-2" />}
               </div>
             )}
-            {!extended && deckName && (
-              <div className="text-xs text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-32">
-                {deckName}
-              </div>
+
+            {showDeckLink && deckId && (
+              <Button
+                size="iconSmall"
+                variant="outline"
+                title="Open deck in new tab"
+                className="ml-auto"
+              >
+                <Link
+                  to={'/decks/$deckId'}
+                  params={{ deckId }}
+                  target="_blank"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                </Link>
+              </Button>
             )}
           </div>
-        )}
-
-        {showDeckLink && deckId && (
-          <Button
-            size="iconSmall"
-            variant="outline"
-            title="Open deck in new tab"
-            className="ml-auto"
-          >
-            <Link
-              to={'/decks/$deckId'}
-              params={{ deckId }}
-              target="_blank"
-              onClick={e => e.stopPropagation()}
-            >
-              <ExternalLink className="h-4 w-4 text-muted-foreground" />
-            </Link>
-          </Button>
         )}
       </div>
     </div>

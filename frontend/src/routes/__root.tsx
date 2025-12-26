@@ -48,6 +48,7 @@ const globalSearchParams = z.object({
   maMetaPart: z.enum(['all', 'top8', 'day2', 'top64']).optional(),
   maMetaInfo: z.enum([...metaInfoArray]).optional(),
   maViewMode: z.enum(['chart', 'table']).optional(),
+  maTournamentId: z.string().optional(),
   maTournamentGroupId: z.string().optional(),
 
   // Matchup analysis params

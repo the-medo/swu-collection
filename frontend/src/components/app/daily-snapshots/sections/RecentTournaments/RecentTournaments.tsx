@@ -1,18 +1,12 @@
 import * as React from 'react';
-import { useMemo, useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { useMemo } from 'react';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
 import type {
   DailySnapshotSectionData,
   SectionRecentTournaments,
+  SectionRecentTournamentsItem,
 } from '../../../../../../../types/DailySnapshots.ts';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip.tsx';
-import { TournamentGivenDeckTooltip } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/TournamentGivenDeckTooltip.tsx';
 import Flag from '@/components/app/global/Flag.tsx';
 import { Users, X } from 'lucide-react';
 import { CountryCode } from '../../../../../../../server/db/lists.ts';
@@ -21,9 +15,13 @@ import TournamentGroupTournament from '@/components/app/tournaments/TournamentGr
 import RecentTournamentsDropdownMenu from '@/components/app/daily-snapshots/sections/RecentTournaments/RecentTournamentsDropdownMenu.tsx';
 import SectionHeader from '../components/SectionHeader.tsx';
 import type { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../../types/TournamentGroup.ts';
-import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
-import { getDeckLeadersAndBaseKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
-import { useCardList } from '@/api/lists/useCardList.ts';
+import DeckAvatar from '@/components/app/global/DeckAvatar/DeckAvatar.tsx';
+import { useMatchHeightToElementId } from '@/hooks/useMatchHeightToElementId.tsx';
+import { cn } from '@/lib/utils';
+
+// Split into majors (SQ/RQ/GC) and others (to keep table for others only)
+const majorTypes = new Set(['sq', 'rq', 'gc']);
+const EMPTY_ITEMS: SectionRecentTournamentsItem[] = [];
 
 export interface RecentTournamentsProps {
   payload: DailySnapshotSectionData<SectionRecentTournaments>;
@@ -36,10 +34,46 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   dailySnapshot,
   sectionUpdatedAt,
 }) => {
-  const items = payload.data.tournaments ?? [];
-  const [winningDeckMode, setWinningDeckMode] = useState(false);
-  const labelRenderer = useLabel();
-  const { data: cardListData } = useCardList();
+  const navigate = useNavigate();
+  const { maTournamentId } = useSearch({ strict: false });
+  const items = payload.data.tournaments ?? EMPTY_ITEMS;
+  const scrollRef = useMatchHeightToElementId('s-recent-tournaments', true, h => `${h - 120}px`);
+
+  // Row click handler: decides between selecting in-section vs opening detail page
+  const handleRowClick = React.useCallback(
+    (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, tournamentId: string) => {
+      // Middle-click (auxiliary button) or explicit Ctrl/Meta click should always open new tab
+      const isAuxClick = e.button === 1;
+      const isModifier = e.ctrlKey || e.metaKey;
+
+      const section = document.getElementById('section-container');
+      const width = section?.getBoundingClientRect().width ?? window.innerWidth;
+
+      const openTournamentInNewTab = () => {
+        const url = `/tournaments/${tournamentId}`;
+        window.open(url, '_blank', 'noopener');
+      };
+
+      if (isAuxClick || isModifier) {
+        // Prevent default to avoid accidental text selection or other side-effects
+        e.preventDefault();
+        openTournamentInNewTab();
+        return;
+      }
+
+      if (width < 1000) {
+        e.preventDefault();
+        openTournamentInNewTab();
+      } else {
+        // Keep current in-section navigation
+        navigate({
+          to: '.',
+          search: prev => ({ ...prev, maDeckId: undefined, maTournamentId: tournamentId }),
+        });
+      }
+    },
+    [navigate],
+  );
 
   // Sort tournaments by date desc, then by updatedAt desc
   const sorted = useMemo(() => {
@@ -53,8 +87,6 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
     });
   }, [items]);
 
-  // Split into majors (SQ/RQ/GC) and others (to keep table for others only)
-  const majorTypes = new Set(['sq', 'rq', 'gc']);
   const majors = useMemo(() => {
     return sorted.filter(it => majorTypes.has(String(it.tournament.type).toLowerCase()));
   }, [sorted]);
@@ -119,7 +151,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
       res.push({ type: 'item', item: it });
     }
     return res;
-  }, [others, items]);
+  }, [others]);
 
   const groups = useMemo(
     () => (payload.data.tournamentGroupExt ? [payload.data.tournamentGroupExt] : []),
@@ -144,29 +176,23 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
                 won't be, depending on the data that is provided from melee.gg).
               </div>
               <div>
-                Possible to turn on "Winning deck mode", which will replace tournament name with deck
-                name and lead you straight to tournament decks.
+                Possible to turn on "Winning deck mode", which will replace tournament name with
+                deck name and lead you straight to tournament decks.
               </div>
             </SectionInfoTooltip>
           </>
         }
         dropdownMenu={<RecentTournamentsDropdownMenu />}
       />
-      <div className="flex justify-end items-center">
-        <button
-          type="button"
-          className="text-[11px] text-muted-foreground hover:text-foreground underline"
-          onClick={() => setWinningDeckMode(v => !v)}
-          title="Toggle winning deck mode"
-        >
-          {winningDeckMode ? 'Show tournament names' : 'Show winning decks'}
-        </button>
-      </div>
 
       {sorted.length === 0 ? (
         <div className="text-sm text-muted-foreground">No recent tournaments</div>
       ) : (
-        <div className="flex-1 max-h-[350px] xl:max-h-[700px] overflow-y-auto overflow-x-auto pr-2 -mr-2 @container/recent-tournaments">
+        <div
+          ref={scrollRef}
+          className="min-h-0 overflow-auto pr-2 -mr-2 @container/recent-tournaments"
+          id="section-recent-tournaments"
+        >
           {/* Major tournaments section */}
           {majorsAdapted.length > 0 && (
             <div className="mb-4">
@@ -199,47 +225,43 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
                 const countryCode = t.location as CountryCode;
                 const notImported = !t.imported;
 
+                const name = t.name.replace('PQ - ', '').split(', ')[0];
+
+                const isSelected = String(maTournamentId ?? '') === String(t.id);
+
                 return (
-                  <TooltipProvider key={t.id}>
-                    <Tooltip delayDuration={0}>
-                      <TooltipTrigger asChild>
-                        <tr className="border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-muted/50">
-                          <td className="py-2">
-                            <div className="flex items-center min-w-[210px]">
-                              <Flag countryCode={countryCode} className="mr-2" />
-                              <Link to="/tournaments/$tournamentId" params={{ tournamentId: t.id }}>
-                                {winningDeckMode
-                                  ? row.item.deck?.leaderCardId1
-                                    ? labelRenderer(
-                                        getDeckLeadersAndBaseKey(row.item.deck, cardListData),
-                                        'leadersAndBase',
-                                        'compact',
-                                      )
-                                    : '- No information -'
-                                  : t.name}
-                              </Link>
-                            </div>
-                          </td>
-                          <td className="py-2 text-right">
-                            {t.attendance > 0 ? (
-                              <div className="items-center justify-end gap-1 hidden @[260px]/recent-tournaments:flex">
-                                <Users className="h-3 w-3 text-muted-foreground" />
-                                <span>{t.attendance}</span>
-                              </div>
-                            ) : null}
-                          </td>
-                          <td className="py-2 text-right pr-2">
+                  <tr
+                    key={t.id}
+                    className={cn(
+                      'border-b border-gray-100 dark:border-gray-800 cursor-pointer',
+                      isSelected ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-muted/50',
+                    )}
+                    onMouseDown={e => handleRowClick(e, t.id)}
+                  >
+                    <td className="py-1 px-1 w-[100px]">
+                      <DeckAvatar deck={row.item.deck} size="50" />
+                    </td>
+                    <td className="py-1 px-1">
+                      <div className="flex flex-col gap-2 min-w-[130px]">
+                        <span className="font-semibold">{name}</span>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Flag countryCode={countryCode} className="w-5 h-3" />
+                            {countryCode && <span>{countryCode}</span>}
                             {notImported ? (
                               <X className="h-4 w-4 text-red-500 inline-block" />
                             ) : null}
-                          </td>
-                        </tr>
-                      </TooltipTrigger>
-                      <TooltipContent side="right" className="p-0">
-                        <TournamentGivenDeckTooltip deck={row.item.deck} />
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                          </div>
+                          {t.attendance > 0 ? (
+                            <div className="items-center justify-end gap-1 flex">
+                              <Users className="h-3 w-3 text-muted-foreground" />
+                              <span>{t.attendance}</span>
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
                 );
               })}
             </tbody>
