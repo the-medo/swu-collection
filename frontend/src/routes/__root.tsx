@@ -23,6 +23,7 @@ const globalSearchParams = z.object({
 
   // Card detail dialog
   modalCardId: z.string().optional(),
+  modalDecksForModalOpen: z.boolean().optional(),
   modalCardDecksId: z.string().optional(),
   modalCardDecksLeaderCardId: z.string().optional(),
   modalCardDecksBaseCardId: z.string().optional(),
