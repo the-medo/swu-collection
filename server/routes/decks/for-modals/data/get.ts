@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
-import type { AuthExtension } from '../../../auth/auth.ts';
-import { fetchCardDecksData } from '../../../lib/cards/card-decks.ts';
+import type { AuthExtension } from '../../../../auth/auth.ts';
+import { fetchCardDecksData } from '../../../../lib/cards/card-decks.ts';
 
 const cardDecksQuerySchema = z.object({
   tournamentId: z.string().optional(),

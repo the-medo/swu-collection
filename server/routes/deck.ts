@@ -20,7 +20,7 @@ import { deckIdFavoritePostRoute } from './decks/_id/favorite/post.ts';
 import { deckIdJsonGetRoute } from './decks/_id/json/get.ts';
 import { deckIdPricePostRoute } from './decks/_id/price/post.ts';
 import type { AuthExtension } from '../auth/auth.ts';
-import { decksForModalsGetRoute } from './decks/for-modals/get.ts';
+import { decksForModalsGetRoute } from './decks/for-modals/data/get.ts';
 
 export const selectDeck = getTableColumns(deckTable);
 export const selectDeckInformation = getTableColumns(deckInformationTable);
@@ -43,4 +43,4 @@ export const deckRoute = new Hono<AuthExtension>()
   .route('/import-swudb', decksImportSwudbPostRoute)
   .route('/thumbnails', decksThumbnailsPostRoute)
   .route('/bulk/data', decksBulkGetRoute)
-  .route('/for-modals', decksForModalsGetRoute);
+  .route('/for-modals/data', decksForModalsGetRoute);

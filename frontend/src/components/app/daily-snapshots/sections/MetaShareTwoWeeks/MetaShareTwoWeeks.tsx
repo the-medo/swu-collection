@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import MetaPartSelector from './MetaPartSelector.tsx';
 import MetaViewSelector from './MetaViewSelector.tsx';
 import MetaSharePieChart from './MetaSharePieChart.tsx';
@@ -10,12 +10,16 @@ import SectionHeader from '../components/SectionHeader.tsx';
 import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
+import DecksForModalDialog from '@/components/app/decks/DecksForModal/DecksForModalDialog.tsx';
 import type { DailySnapshotMetaPart } from './MetaPartSelector.tsx';
 import type { DailySnapshotMetaView } from './MetaViewSelector.tsx';
 import type {
   DailySnapshotSectionData,
   SectionMetaShare2Weeks,
 } from '../../../../../../../types/DailySnapshots.ts';
+import LeaderAvatar from '@/components/app/global/LeaderAvatar.tsx';
+import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
+import { Button } from '@/components/ui/button.tsx';
 
 export interface MetaShareTwoWeeksProps {
   payload: DailySnapshotSectionData<SectionMetaShare2Weeks>;
@@ -32,6 +36,7 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
 }) => {
   const [metaPart, setMetaPart] = useState<DailySnapshotMetaPart>('total');
   const [metaView, setMetaView] = useState<DailySnapshotMetaView>('leaders');
+  const [selectedDeckKey, setSelectedDeckKey] = useState<string | null>(null);
   const { data: cardListData } = useCardList();
 
   const tournamentGroupId = payload.data.tournamentGroupExt?.tournamentGroup.id;
@@ -67,6 +72,25 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
     return analysisData;
   }, [payload.data.dataPoints, metaView, cardListData, metaPart]);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedDeckKey(null);
+  }, [metaView]);
+
+  // Derive leader card ID from the selected key (leaders or leadersAndBase format)
+  const { leaderCardId: selectedLeaderCardId, baseCardId: selectedBaseCardId } = useMemo(() => {
+    if (!selectedDeckKey) return { leaderCardId: undefined, baseCardId: undefined };
+    if (metaView === 'leadersAndBase') {
+      const [leader, base] = selectedDeckKey.split('|');
+      if (!leader || leader === 'unknown' || leader === 'others') {
+        return { leaderCardId: undefined, baseCardId: undefined };
+      }
+      return { leaderCardId: leader, baseCardId: base };
+    } else {
+      return { leaderCardId: selectedDeckKey, baseCardId: undefined };
+    }
+  }, [selectedDeckKey, metaView]);
+
   return (
     <div className="h-full w-full flex flex-col gap-2 ">
       <SectionHeader
@@ -93,7 +117,34 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
       >
         {/* Center - Pie Chart */}
         <div className="flex flex-1 flex-col justify-center items-center">
-          <MetaSharePieChart processedData={processedData} metaView={metaView} />
+          <MetaSharePieChart
+            processedData={processedData}
+            metaView={metaView}
+            onClick={key => setSelectedDeckKey(key)}
+          />
+          {selectedLeaderCardId && tournamentGroupId && (
+            <div className="mt-4">
+              <DecksForModalDialog
+                trigger={
+                  <Button
+                    variant="outline"
+                    size="xl"
+                    className="px-4 py-2 rounded-md flex items-center gap-2"
+                  >
+                    <LeaderAvatar cardId={selectedLeaderCardId} bordered size="40" />
+                    {selectedBaseCardId && (
+                      <BaseAvatar cardId={selectedBaseCardId} bordered size="40" />
+                    )}
+                    Show decks
+                  </Button>
+                }
+                header={'Decks'}
+                tournamentGroupId={tournamentGroupId}
+                leaderCardId={selectedLeaderCardId}
+                baseCardId={selectedBaseCardId}
+              />
+            </div>
+          )}
         </div>
 
         {/* Right side - Table */}

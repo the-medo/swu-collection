@@ -42,13 +42,8 @@ const DecksForModal: React.FC<DecksForModalProps> = ({
           deck: d.deck,
           tournamentDeck: d.tournamentDeck,
           deckInformation: d.deckInformation,
-          deckCards: [],
         } as TournamentDeckResponseWithCards;
       }
-      if (d.deckCard) {
-        acc[d.deck.id]?.deckCards?.push(d.deckCard);
-      }
-
       return acc;
     }, {} as TournamentDeckResponseWithCardsMap);
 

@@ -86,11 +86,11 @@ export async function fetchCardDecksData(
   let query = db
     .select(
       cardId
-        ? baseSelect
-        : {
+        ? {
             ...baseSelect,
             deckCard,
-          },
+          }
+        : baseSelect,
     )
     .from(tournamentDeck)
     .innerJoin(deck, eq(deck.id, tournamentDeck.deckId))

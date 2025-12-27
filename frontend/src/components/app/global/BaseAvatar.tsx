@@ -14,6 +14,7 @@ import {
 
 const BaseAvatar: React.FC<CardAvatarProps> = ({
   card,
+  cardId,
   cardVariantId,
   size = '30',
   shape = 'square',
@@ -21,17 +22,23 @@ const BaseAvatar: React.FC<CardAvatarProps> = ({
   contentRight = false,
 }) => {
   const { data: cardList } = useCardList();
-  const variant = card?.variants[cardVariantId ?? ''];
-  const img = variant?.image;
-
-  if (!img?.front) return null;
 
   const scale = size ? SCALE_BY_SIZE[size] * 0.8 : 1;
+
+  const processedBase = card
+    ? processBase(card?.cardId, cardList?.cards)
+    : cardId
+      ? processBase(cardId, cardList?.cards)
+      : undefined;
+
   const gradient = bordered
-    ? getAspectGradient(card?.aspects as SwuAspect[] | undefined)
+    ? getAspectGradient(processedBase?.aspects as SwuAspect[] | undefined)
     : undefined;
 
-  const processedBase = card ? processBase(card?.cardId, cardList?.cards) : undefined;
+  const vId = cardVariantId ?? processedBase?.baseCard?.variantMap?.['Standard'] ?? '';
+  const variant = processedBase?.baseCard?.variants[vId];
+  const img = variant?.image;
+
   const isIconBase =
     processedBase?.isBasicBase ||
     processedBase?.isBasicForceBase ||
@@ -57,18 +64,20 @@ const BaseAvatar: React.FC<CardAvatarProps> = ({
             transformOrigin: 'top left',
           }}
         >
-          <img
-            src={'https://images.swubase.com/cards/' + img.front}
-            alt={`card-${card?.cardId}`}
-            className="absolute"
-            style={{
-              transform: `translate(${-CARD_AVATAR_CROP.X}px, ${-CARD_AVATAR_CROP.Y}px)`,
-              width: 'auto',
-              height: 'auto',
-              maxWidth: 'none',
-              maxHeight: 'none',
-            }}
-          />
+          {img?.front && (
+            <img
+              src={'https://images.swubase.com/cards/' + img?.front}
+              alt={`card-${card?.cardId}`}
+              className="absolute"
+              style={{
+                transform: `translate(${-CARD_AVATAR_CROP.X}px, ${-CARD_AVATAR_CROP.Y}px)`,
+                width: 'auto',
+                height: 'auto',
+                maxWidth: 'none',
+                maxHeight: 'none',
+              }}
+            />
+          )}
           <div className="w-full h-full bg-black opacity-30"></div>
         </div>
       </div>

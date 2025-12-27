@@ -32,7 +32,7 @@ export const useGetDecksForModals = (params: DecksForModalsParams) => {
     ],
     queryFn: isValidQuery
       ? async () => {
-          const response = await api.deck['for-modals'].$get({
+          const response = await api.deck['for-modals'].data.$get({
             query: {
               metaId: metaId?.toString(),
               tournamentId,

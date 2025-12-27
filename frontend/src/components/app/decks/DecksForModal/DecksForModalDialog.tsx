@@ -24,13 +24,13 @@ const DecksForModalDialog: React.FC<DecksForModalDialogProps> = ({ trigger, head
         search: prev => ({
           ...prev,
           modalDecksForModalOpen: open ? true : undefined,
-          modalDecksLeaderCardId: open ? props.leaderCardId : undefined,
-          modalDecksBaseCardId: open ? props.baseCardId : undefined,
+          modalCardDecksLeaderCardId: open ? props.leaderCardId : undefined,
+          modalCardDecksBaseCardId: open ? props.baseCardId : undefined,
           maDeckId: open ? prev.maDeckId : undefined,
         }),
       });
     },
-    [props.leaderCardId, props.baseCardId],
+    [navigate, props.leaderCardId, props.baseCardId],
   );
 
   const open =

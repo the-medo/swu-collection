@@ -38,6 +38,10 @@ export const processBase = (baseName: string, cardList: CardList | undefined) =>
 
   const baseCard = baseCardId && cardList ? cardList[baseCardId] : undefined;
 
+  if (aspects.length === 0) {
+    aspects.push(...(baseCard?.aspects ?? []));
+  }
+
   return {
     aspects,
     baseCard,
