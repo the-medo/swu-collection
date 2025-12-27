@@ -91,6 +91,16 @@ export const baseSpecialNames: Record<string, string> = {
 
 export const baseSpecialNameValues = new Set(Object.values(baseSpecialNames));
 
+export const allBasesBySpecialName = Object.entries(baseSpecialNames).reduce(
+  (p, [cardId, specialName]) => {
+    if (!p[specialName]) p[specialName] = [];
+    return Object.assign(p, { [specialName]: [...p[specialName], cardId] });
+  },
+  {} as Record<string, string[]>,
+);
+
+export const getBasesBySpecialName = (specialName: string) => allBasesBySpecialName[specialName];
+
 export const getSpecialBaseName = (baseCardId: string | undefined) =>
   baseCardId
     ? baseSpecialNameValues.has(baseCardId)

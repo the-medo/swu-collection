@@ -10,7 +10,7 @@ import { cardList } from '../../db/lists.ts';
 import { isBasicBase } from '../../../shared/lib/isBasicBase.ts';
 import { fetchTournamentIdsForGroup } from '../tournament-group/fetch-tournament-ids-for-group.ts';
 import type { CardDeckData } from '../../../types/CardDeckData.ts';
-import type { SwuAspect } from '../../../types/enums.ts';
+import { getBasesBySpecialName } from '../../../shared/lib/basicBases.ts';
 
 type FetchCardDecksDataParams = {
   cardId?: string;
@@ -59,18 +59,9 @@ export async function fetchCardDecksData(
   }
 
   if (baseCardId) {
-    if (aspectArray.includes(baseCardId as SwuAspect)) {
-      let basicBaseCardIds: string[] = [];
-      Object.entries(cardList).forEach(([cardId, card]) => {
-        if (
-          card?.type === 'Base' &&
-          card.aspects.includes(baseCardId as SwuAspect) &&
-          isBasicBase(card)
-        ) {
-          basicBaseCardIds.push(cardId);
-        }
-      });
-      conditions.push(sql`${deck.baseCardId} IN ${basicBaseCardIds}`);
+    const baseCardsId = getBasesBySpecialName(baseCardId) ?? [];
+    if (baseCardsId.length > 0) {
+      conditions.push(sql`${deck.baseCardId} IN ${baseCardsId}`);
     } else {
       conditions.push(eq(deck.baseCardId, baseCardId));
     }
