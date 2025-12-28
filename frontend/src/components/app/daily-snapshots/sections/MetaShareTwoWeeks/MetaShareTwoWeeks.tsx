@@ -91,6 +91,36 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
     }
   }, [selectedDeckKey, metaView]);
 
+  const leaderAndBaseContent = useMemo(
+    () => (
+      <>
+        <LeaderAvatar cardId={selectedLeaderCardId} bordered size="40" />
+        {selectedBaseCardId && <BaseAvatar cardId={selectedBaseCardId} bordered size="40" />}
+      </>
+    ),
+    [selectedLeaderCardId, selectedBaseCardId],
+  );
+
+  const trigger = useMemo(
+    () => (
+      <Button variant="outline" size="xl" className="px-4 py-2 rounded-md flex items-center gap-2">
+        {leaderAndBaseContent}
+        Show decks
+      </Button>
+    ),
+    [leaderAndBaseContent],
+  );
+
+  const header = useMemo(
+    () => (
+      <div className="flex items-center gap-2">
+        {leaderAndBaseContent}
+        <h4 className="mb-0!"> Decks - last 2 weeks</h4>
+      </div>
+    ),
+    [leaderAndBaseContent],
+  );
+
   return (
     <div className="h-full w-full flex flex-col gap-2 ">
       <SectionHeader
@@ -125,20 +155,8 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
           {selectedLeaderCardId && tournamentGroupId && (
             <div className="mt-4">
               <DecksForModalDialog
-                trigger={
-                  <Button
-                    variant="outline"
-                    size="xl"
-                    className="px-4 py-2 rounded-md flex items-center gap-2"
-                  >
-                    <LeaderAvatar cardId={selectedLeaderCardId} bordered size="40" />
-                    {selectedBaseCardId && (
-                      <BaseAvatar cardId={selectedBaseCardId} bordered size="40" />
-                    )}
-                    Show decks
-                  </Button>
-                }
-                header={'Decks'}
+                trigger={trigger}
+                header={header}
                 tournamentGroupId={tournamentGroupId}
                 leaderCardId={selectedLeaderCardId}
                 baseCardId={selectedBaseCardId}

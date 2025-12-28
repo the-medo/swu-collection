@@ -7,7 +7,7 @@ import { CardStatsParams } from '@/api/card-stats';
 
 type DecksForModalDialogProps = {
   trigger: React.ReactNode;
-  header: string;
+  header: React.ReactNode;
 } & CardStatsParams;
 
 const DecksForModalDialog: React.FC<DecksForModalDialogProps> = ({ trigger, header, ...props }) => {
