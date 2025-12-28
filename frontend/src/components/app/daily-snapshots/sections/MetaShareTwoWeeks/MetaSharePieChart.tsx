@@ -16,9 +16,14 @@ export interface ProcessedDataItem {
 interface MetaSharePieChartProps {
   processedData: ProcessedDataItem[];
   metaView: DailySnapshotMetaView;
+  onClick?: (key: string) => void;
 }
 
-const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({ processedData, metaView }) => {
+const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({
+  processedData,
+  metaView,
+  onClick,
+}) => {
   const labelRenderer = useLabel();
   const pieChartColorDefinitions = useChartColorsAndGradients();
 
@@ -113,6 +118,7 @@ const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({ processedData, me
           arcLabelsTextColor="#fff"
           defs={chartDefs}
           fill={fill}
+          onClick={node => onClick?.(node.id as string)}
           tooltip={({ datum }) => (
             <div className="bg-card p-2 rounded-md shadow-md border">
               <div className="flex items-center gap-2">

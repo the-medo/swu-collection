@@ -10,10 +10,10 @@ import { cardList } from '../../db/lists.ts';
 import { isBasicBase } from '../../../shared/lib/isBasicBase.ts';
 import { fetchTournamentIdsForGroup } from '../tournament-group/fetch-tournament-ids-for-group.ts';
 import type { CardDeckData } from '../../../types/CardDeckData.ts';
-import type { SwuAspect } from '../../../types/enums.ts';
+import { getBasesBySpecialName } from '../../../shared/lib/basicBases.ts';
 
 type FetchCardDecksDataParams = {
-  cardId: string;
+  cardId?: string;
   tournamentId?: string;
   tournamentGroupId?: string;
   metaId?: number;
@@ -59,35 +59,47 @@ export async function fetchCardDecksData(
   }
 
   if (baseCardId) {
-    if (aspectArray.includes(baseCardId as SwuAspect)) {
-      let basicBaseCardIds: string[] = [];
-      Object.entries(cardList).forEach(([cardId, card]) => {
-        if (
-          card?.type === 'Base' &&
-          card.aspects.includes(baseCardId as SwuAspect) &&
-          isBasicBase(card)
-        ) {
-          basicBaseCardIds.push(cardId);
-        }
-      });
-      conditions.push(sql`${deck.baseCardId} IN ${basicBaseCardIds}`);
+    const baseCardsId = getBasesBySpecialName(baseCardId) ?? [];
+    if (baseCardsId.length > 0) {
+      conditions.push(sql`${deck.baseCardId} IN ${baseCardsId}`);
     } else {
       conditions.push(eq(deck.baseCardId, baseCardId));
     }
   }
 
-  return db
-    .select({
-      tournamentDeck,
-      deck,
-      deckInformation,
-      deckCard,
-    })
+  // Build dynamic query similar to metaGetRoute
+  const baseSelect = {
+    tournamentDeck,
+    deck,
+    deckInformation,
+  } as const;
+
+  let query = db
+    .select(
+      cardId
+        ? {
+            ...baseSelect,
+            deckCard,
+          }
+        : baseSelect,
+    )
     .from(tournamentDeck)
     .innerJoin(deck, eq(deck.id, tournamentDeck.deckId))
     .innerJoin(deckInformation, eq(deck.id, deckInformation.deckId))
-    .innerJoin(deckCard, and(eq(deckCard.deckId, deck.id), eq(deckCard.cardId, cardId)))
+    .$dynamic();
+
+  // Conditionally add INNER JOIN to deckCard only when cardId is provided
+  if (cardId) {
+    query = query.innerJoin(
+      deckCard,
+      and(eq(deckCard.deckId, deck.id), eq(deckCard.cardId, cardId)),
+    );
+  }
+
+  query = query
     .where(and(...conditions))
     .orderBy(tournamentDeck.placement)
     .limit(25);
+
+  return query;
 }

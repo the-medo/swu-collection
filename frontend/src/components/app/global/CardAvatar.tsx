@@ -49,6 +49,7 @@ export const CARD_AVATAR_CROP = {
 
 export type CardAvatarProps = {
   card?: CardDataWithVariants<CardListVariants>;
+  cardId?: string;
   cardVariantId?: string;
   bordered?: boolean; // optional colored border
   contentRight?: boolean;

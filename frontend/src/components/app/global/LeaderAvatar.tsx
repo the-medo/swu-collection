@@ -8,22 +8,26 @@ import {
   cardAvatarVariants,
   SCALE_BY_SIZE,
 } from '@/components/app/global/CardAvatar.tsx';
+import { useCardList } from '@/api/lists/useCardList.ts';
 
 const LeaderAvatar: React.FC<CardAvatarProps> = ({
   card,
+  cardId,
   cardVariantId,
   size = '30',
   shape = 'square',
   bordered = false,
 }) => {
-  const variant = card?.variants[cardVariantId ?? ''];
+  const { data: cardList } = useCardList();
+
+  const c = card ?? cardList?.cards[cardId ?? ''];
+  const vId = cardVariantId ?? c?.variantMap?.['Standard'] ?? '';
+  const variant = c?.variants[vId];
   const img = variant?.image;
 
   if (!img?.front) return null;
 
-  const gradient = bordered
-    ? getAspectGradient(card?.aspects as SwuAspect[] | undefined)
-    : undefined;
+  const gradient = bordered ? getAspectGradient(c?.aspects as SwuAspect[] | undefined) : undefined;
 
   const scale = size ? SCALE_BY_SIZE[size] * 0.8 : 1;
 
