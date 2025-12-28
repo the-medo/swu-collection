@@ -62,7 +62,7 @@ const DecksForModal: React.FC<DecksForModalProps> = ({
         }),
       });
     }
-  }, [deckTableData]);
+  }, [navigate, deckTableData]);
 
   return (
     <div className="p-0">

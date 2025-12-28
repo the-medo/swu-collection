@@ -4,16 +4,23 @@ import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.t
 import type { DailySnapshotMetaPart } from './MetaPartSelector.tsx';
 import type { DailySnapshotMetaView } from './MetaViewSelector.tsx';
 import type { ProcessedDataItem } from './MetaSharePieChart.tsx';
+import { cn } from '@/lib/utils.ts';
 
 interface MetaShareTableProps {
   processedData: ProcessedDataItem[];
   metaPart: DailySnapshotMetaPart;
   metaView: DailySnapshotMetaView;
+  onClick: (key: string) => void;
 }
 
 const TOP_DISPLAY_COUNT = 5;
 
-const MetaShareTable: React.FC<MetaShareTableProps> = ({ processedData, metaPart, metaView }) => {
+const MetaShareTable: React.FC<MetaShareTableProps> = ({
+  processedData,
+  metaPart,
+  metaView,
+  onClick,
+}) => {
   const labelRenderer = useLabel();
 
   // Transform processed data for table display
@@ -119,7 +126,11 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({ processedData, metaPart
           </thead>
           <tbody className="divide-y">
             {tableData.map((item, index) => (
-              <tr key={item.key} className="hover:bg-muted/30">
+              <tr
+                key={item.key}
+                className={cn('hover:bg-muted/30', item.key !== 'Others' && 'cursor-pointer')}
+                onClick={item.key !== 'Others' ? () => onClick(item.key) : undefined}
+              >
                 <td className="px-2 py-1">
                   <div className="flex items-center gap-2">
                     {index < TOP_DISPLAY_COUNT && (

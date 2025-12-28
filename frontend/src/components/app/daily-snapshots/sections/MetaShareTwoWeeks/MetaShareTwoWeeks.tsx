@@ -120,7 +120,7 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
           <MetaSharePieChart
             processedData={processedData}
             metaView={metaView}
-            onClick={key => setSelectedDeckKey(key)}
+            onClick={setSelectedDeckKey}
           />
           {selectedLeaderCardId && tournamentGroupId && (
             <div className="mt-4">
@@ -156,7 +156,12 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
             <MetaViewSelector value={metaView} onChange={setMetaView} />
           </div>
           <div className="min-w-0 flex justify-center items-center">
-            <MetaShareTable processedData={processedData} metaPart={metaPart} metaView={metaView} />
+            <MetaShareTable
+              processedData={processedData}
+              metaPart={metaPart}
+              metaView={metaView}
+              onClick={setSelectedDeckKey}
+            />
           </div>
         </div>
       </div>
