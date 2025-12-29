@@ -7,7 +7,7 @@ import {
   tournamentTypesInfo,
 } from '../../../../../../types/Tournament.ts';
 import * as React from 'react';
-import MetaTabs from '@/components/app/meta/MetaTabs/MetaTabs.tsx';
+import MetaTabs, { MetaTabsProps } from '@/components/app/meta/MetaTabs/MetaTabs.tsx';
 import { format } from 'date-fns';
 
 interface MetaPageContentProps {
@@ -16,6 +16,7 @@ interface MetaPageContentProps {
   minTournamentType: string;
   tournaments?: TournamentData[];
   tournamentGroupId?: string;
+  route?: MetaTabsProps['route'];
 }
 
 const todayDate = format(new Date(), 'yyyy-MM-dd');
@@ -26,6 +27,7 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
   minTournamentType,
   tournaments,
   tournamentGroupId,
+  route,
 }) => {
   const { data, isFetching } = useGetTournaments(
     {
@@ -46,7 +48,12 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
 
   if (isFetching) return <Skeleton className="h-full w-full rounded-md" />;
   return (
-    <MetaTabs tournaments={tournamentsData} metaId={metaId} tournamentGroupId={tournamentGroupId} />
+    <MetaTabs
+      tournaments={tournamentsData}
+      metaId={metaId}
+      tournamentGroupId={tournamentGroupId}
+      route={route}
+    />
   );
 };
 

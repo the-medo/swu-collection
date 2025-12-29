@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Link, useSearch } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
-import { Route } from '@/routes/meta';
+import { Route as MetaRoute } from '@/routes/meta';
+import { Route as PlanetaryQualifiersRoute } from '@/routes/tournaments/planetary-qualifiers';
 import {
   AllDecksTab,
   MatchupsTab,
@@ -23,11 +24,14 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 const tableColumnProps: TournamentTableColumnsProps = {};
 
-interface MetaTabsProps {
+export type MetaTabsRoutes = typeof MetaRoute | typeof PlanetaryQualifiersRoute;
+
+export interface MetaTabsProps {
   className?: string;
   metaId: number;
   tournaments: TournamentData[];
   tournamentGroupId?: string;
+  route?: MetaTabsRoutes;
 }
 
 const MetaTabs: React.FC<MetaTabsProps> = ({
@@ -35,8 +39,9 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
   metaId,
   tournaments,
   tournamentGroupId,
+  route = MetaRoute,
 }) => {
-  const { page } = useSearch({ from: Route.fullPath });
+  const { page } = useSearch({ strict: false });
   const columns = useTournamentTableColumns(tableColumnProps);
   const tournamentIds = useMemo(() => tournaments.map(t => t.tournament.id), [tournaments]);
 
@@ -45,7 +50,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
   const cardStatLink = useMemo(
     () => (
       <Link
-        to={Route.fullPath}
+        to={route.fullPath}
         search={prev => ({ ...prev, page: 'card-stats' })}
         className={cn(
           'flex gap-2 items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
@@ -65,7 +70,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
     <div className={cn('w-full', className)}>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mb-2 rounded-lg bg-muted p-1">
         <Link
-          to={Route.fullPath}
+          to={route.fullPath}
           search={prev => ({ ...prev, page: 'tournaments' })}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
@@ -80,7 +85,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
           </Badge>
         </Link>
         <Link
-          to={Route.fullPath}
+          to={route.fullPath}
           search={prev => ({ ...prev, page: 'meta' })}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
@@ -92,7 +97,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
           Meta Analysis
         </Link>
         <Link
-          to={Route.fullPath}
+          to={route.fullPath}
           search={prev => ({ ...prev, page: 'matchups' })}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
@@ -104,7 +109,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
           Matchups
         </Link>
         <Link
-          to={Route.fullPath}
+          to={route.fullPath}
           search={prev => ({ ...prev, page: 'decks' })}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
@@ -135,15 +140,15 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
         </>
       )}
       <TournamentsDataLoader tournaments={tournaments} />
-      {page === 'meta' && <MetaAnalysisTab route={Route} />}
-      {page === 'matchups' && <MatchupsTab route={Route} />}
+      {page === 'meta' && <MetaAnalysisTab route={route} />}
+      {page === 'matchups' && <MatchupsTab route={route} />}
       {page === 'decks' && <AllDecksTab />}
       {page === 'card-stats' && (
         <CardStatsTab
           tournamentId={metaId ? undefined : tournamentIds[0]}
           metaId={metaId}
           tournamentGroupId={tournamentGroupId}
-          route={Route}
+          route={route}
         />
       )}
     </div>
