@@ -52,13 +52,16 @@ Object.keys(cardList).forEach(cid => {
   });
 });
 
+export const getCountryFlagUrl = (countryCode: string) =>
+  `https://images.swubase.com/flags/countries/${countryCode.toLowerCase()}.webp`;
+
 const countryList = {} as CountryList;
 countryData.forEach(p => {
   countryList[p.code] = {
     name: p.name,
     code: p.code,
     states: p.states ? [...p.states] : null,
-    flag: p['flag-image'].find((i: string) => i.indexOf('small_')) ?? '',
+    flag: getCountryFlagUrl(p.code),
   };
 });
 
