@@ -24,6 +24,7 @@ const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({
 }) => {
   const { data: cardListData } = useCardList();
   const items = payload.data.dataPoints ?? [];
+  const tournamentGroupId = payload.data.tournamentGroupId;
 
   const groups = React.useMemo(
     () => (payload.data.tournamentGroupExt ? [payload.data.tournamentGroupExt] : []),
@@ -31,8 +32,8 @@ const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({
   );
 
   const cardStatParams = React.useMemo<CardStatsParams>(
-    () => ({ tournamentGroupId: payload.data.tournamentGroupId }),
-    [payload.data.tournamentGroupId],
+    () => ({ tournamentGroupId }),
+    [tournamentGroupId],
   );
 
   return (
@@ -52,13 +53,13 @@ const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({
             >
               <div className="text-sm">
                 Shows 5 cards that have been played in the most amount of decks in the last 2 weeks.
-                That does NOT mean that it has the most copies in the decks. For that, there are more
-                comprehensive card statistics that you can open.
+                That does NOT mean that it has the most copies in the decks. For that, there are
+                more comprehensive card statistics that you can open.
               </div>
             </SectionInfoTooltip>
           </>
         }
-        dropdownMenu={<MostPlayedCardsDropdownMenu />}
+        dropdownMenu={<MostPlayedCardsDropdownMenu tournamentGroupId={tournamentGroupId} />}
       />
 
       {items.length === 0 ? (
