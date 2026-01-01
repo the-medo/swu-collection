@@ -185,7 +185,8 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
     csPage = 'leader-base';
   }
 
-  const searchParamsOnly = route === MetaRoute || route === RootRoute;
+  const searchParamsOnly =
+    route === MetaRoute || route === RootRoute || route === PlanetaryQualifiersRoute;
 
   return (
     <Card className="fixed bottom-4 right-4 w-[300px] border">

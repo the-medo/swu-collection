@@ -41,7 +41,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
   tournamentGroupId,
   route = MetaRoute,
 }) => {
-  const { page } = useSearch({ strict: false });
+  const { page = 'meta' } = useSearch({ strict: false });
   const columns = useTournamentTableColumns(tableColumnProps);
   const tournamentIds = useMemo(() => tournaments.map(t => t.tournament.id), [tournaments]);
 

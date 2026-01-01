@@ -7,17 +7,11 @@ import WeekChangeButtons from './WeekChangeButtons.tsx';
 import PQSideStats from './PQSideStats.tsx';
 import WeekToWeekSideStats from './WeekToWeek/SideStats/WeekToWeekSideStats.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import PQPageNavigation from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/PQPageNavigation.tsx';
 import { useMemo } from 'react';
-import MetaInfoSelector, {
-  MetaInfo,
-} from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
-import PQStatPieChart from './PQStatPieChart.tsx';
-import PQStatChart from './PQStatChart.tsx';
+import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useStatistics } from './hooks/useStatistics.ts';
 import { useProcessedTournamentGroups } from './hooks/useProcessedTournamentGroups.ts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
-import { TournamentGroupLeaderBase } from '../../../../../../../server/db/schema/tournament_group_leader_base.ts';
 import DiscordPing from '@/components/app/global/DiscordPing.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
@@ -28,7 +22,6 @@ import {
 } from '@/components/ui/tooltip.tsx';
 import { cn } from '@/lib/utils.ts';
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
-import MobileCard from '@/components/ui/mobile-card';
 import MetaPageContent from '@/components/app/meta/MetaPageContent/MetaPageContent.tsx';
 import { Route as PlanetaryQualifiersRoute } from '@/routes/tournaments/planetary-qualifiers';
 
@@ -75,35 +68,6 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
       }),
     });
   };
-
-  const handleMetaInfoChange = (mi: MetaInfo) => {
-    navigate({
-      to: '.',
-      search: prev => ({
-        ...prev,
-        maMetaInfo: mi,
-      }),
-    });
-  };
-
-  const data: TournamentGroupLeaderBase[] | null = useMemo(() => {
-    if (selectedGroupId === ALL_WEEKS_VALUE) {
-      // Combine leaderBase data from all tournament groups
-      return processedTournamentGroups.reduce((acc, group) => {
-        if (group.leaderBase && group.leaderBase.length > 0 && !group.isUpcoming) {
-          return [...acc, ...group.leaderBase];
-        }
-        return acc;
-      }, [] as TournamentGroupLeaderBase[]);
-    }
-
-    // Handle individual week selection
-    const selectedGroup = processedTournamentGroups.find(
-      group => group.group.id === selectedGroupId,
-    );
-
-    return selectedGroup?.leaderBase || null;
-  }, [selectedGroupId, processedTournamentGroups]);
 
   // const hasData = data && data.length > 0;
   const hasData = processedTournamentGroups && processedTournamentGroups.length > 0;
@@ -160,14 +124,6 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
             )}
           </div>
         </div>
-        {/*<div className="flex items-center justify-between flex-wrap gap-2">
-          <MobileCard>
-            <PQPageNavigation />
-          </MobileCard>
-          <MobileCard>
-            <MetaInfoSelector value={metaInfo} onChange={handleMetaInfoChange} />
-          </MobileCard>
-        </div>*/}
 
         {/* Display information about the selected week */}
         {selectedGroupId && (
@@ -181,7 +137,6 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
                 processedTournamentGroups={processedTournamentGroups}
               />
             ) : hasData ? (
-              // <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               <div className="flex flex-1">
                 <MetaPageContent
                   formatId={formatId}
@@ -191,8 +146,6 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
                   tournamentGroupId={selectedGroupId}
                   route={PlanetaryQualifiersRoute}
                 />
-                {/*<PQStatPieChart metaInfo={metaInfo} data={data} top={chartTop} />
-                <PQStatChart metaInfo={metaInfo} data={data} top={chartTop} />*/}
               </div>
             ) : (
               <Alert variant="info" className="mt-6 mb-4">
