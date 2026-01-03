@@ -7,18 +7,22 @@ interface MetaPercentageTableProps {
     top8: number;
     day2: number;
     top64: number;
+    champions: number;
     percentageAll: string;
     percentageTop8: string;
     percentageDay2: string;
     percentageTop64: string;
+    percentageChampions: string;
     conversionTop8: string;
     conversionDay2: string;
     conversionTop64: string;
+    conversionChampions: string;
   };
   totalDecks: number;
   day2Decks: number;
   top8Decks?: number;
   top64Decks?: number;
+  championsDecks?: number;
 }
 
 export const MetaPercentageTable: React.FC<MetaPercentageTableProps> = ({
@@ -27,6 +31,7 @@ export const MetaPercentageTable: React.FC<MetaPercentageTableProps> = ({
   day2Decks,
   top8Decks,
   top64Decks,
+  championsDecks,
 }) => {
   return (
     <div className="text-xs space-y-1 mt-2">
@@ -66,6 +71,12 @@ export const MetaPercentageTable: React.FC<MetaPercentageTableProps> = ({
             count={data.top8}
             percentage={data.percentageTop8}
             conversion={data.conversionTop8}
+          />
+          <MetaPercentageTableRow
+            title={`Champions ${championsDecks !== 1 ? `(${championsDecks} decks)` : ''}`}
+            count={data.champions}
+            percentage={data.percentageChampions}
+            conversion={data.conversionChampions}
           />
         </tbody>
       </table>

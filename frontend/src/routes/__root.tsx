@@ -46,7 +46,7 @@ const globalSearchParams = z.object({
   deckOrder: z.enum(['asc', 'desc']).optional(),
 
   // Meta analysis params
-  maMetaPart: z.enum(['all', 'top8', 'day2', 'top64']).optional(),
+  maMetaPart: z.enum(['all', 'top8', 'day2', 'top64', 'champions']).optional(),
   maMetaInfo: z.enum([...metaInfoArray]).optional(),
   maViewMode: z.enum(['chart', 'table']).optional(),
   maTournamentId: z.string().optional(),

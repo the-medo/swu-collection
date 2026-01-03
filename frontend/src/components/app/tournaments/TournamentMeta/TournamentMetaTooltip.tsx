@@ -17,18 +17,22 @@ export interface TournamentMetaTooltipProps {
     top8: number;
     day2: number;
     top64: number;
+    champions: number;
     percentageAll?: string;
     percentageTop8?: string;
     percentageDay2?: string;
     percentageTop64?: string;
+    percentageChampions?: string;
     conversionTop8: string;
     conversionDay2: string;
     conversionTop64: string;
+    conversionChampions: string;
   };
   totalDecks?: number;
   day2Decks?: number;
   top8Decks?: number;
   top64Decks?: number;
+  championsDecks?: number;
 }
 
 const TournamentMetaTooltip: React.FC<TournamentMetaTooltipProps> = ({
@@ -42,6 +46,7 @@ const TournamentMetaTooltip: React.FC<TournamentMetaTooltipProps> = ({
   day2Decks = 0,
   top8Decks = 0,
   top64Decks = 0,
+  championsDecks = 0,
 }) => {
   // Calculate percentage if value and totalCount are provided
   const percentage =
@@ -73,11 +78,13 @@ const TournamentMetaTooltip: React.FC<TournamentMetaTooltipProps> = ({
               percentageTop8: data.percentageTop8 || '0.0%',
               percentageDay2: data.percentageDay2 || '0.0%',
               percentageTop64: data.percentageTop64 || '0.0%',
+              percentageChampions: data.percentageChampions || '0.0%',
             }}
             totalDecks={totalDecks}
             day2Decks={day2Decks}
             top8Decks={top8Decks}
             top64Decks={top64Decks}
+            championsDecks={championsDecks}
           />
         </div>
       )}

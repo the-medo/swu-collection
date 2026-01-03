@@ -32,9 +32,11 @@ export interface AnalysisDataItem {
     top8: number;
     day2: number;
     top64: number;
+    champions: number;
     conversionTop8: string;
     conversionDay2: string;
     conversionTop64: string;
+    conversionChampions: string;
   };
   percentage?: number;
 }
@@ -45,6 +47,7 @@ export const getTotalDeckCountBasedOnMetaPart = (
   day2Decks: number,
   top8Decks: number,
   top64Decks: number,
+  championsDecks: number,
 ) => {
   switch (metaPart) {
     case 'all':
@@ -55,6 +58,8 @@ export const getTotalDeckCountBasedOnMetaPart = (
       return top8Decks;
     case 'top64':
       return top64Decks;
+    case 'champions':
+      return championsDecks;
   }
   return 0;
 };

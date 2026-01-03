@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
 import { useCallback } from 'react';
 
-export type MetaPart = 'all' | 'top8' | 'day2' | 'top64';
+export type MetaPart = 'all' | 'top8' | 'day2' | 'top64' | 'champions';
 
 interface MetaPartSelectorProps {
   value: MetaPart;
@@ -29,8 +29,9 @@ const MetaPartSelector: React.FC<MetaPartSelectorProps> = ({ value, onChange }) 
     >
       <ToggleGroupItem value="all">All Decks</ToggleGroupItem>
       <ToggleGroupItem value="top8">Top 8</ToggleGroupItem>
-      <ToggleGroupItem value="day2">Day 2</ToggleGroupItem>
-      <ToggleGroupItem value="top64">Top 64</ToggleGroupItem>
+      <ToggleGroupItem value="champions">Champions</ToggleGroupItem>
+      {/*<ToggleGroupItem value="day2">Day 2</ToggleGroupItem>
+      <ToggleGroupItem value="top64">Top 64</ToggleGroupItem>*/}
     </ToggleGroup>
   );
 };
