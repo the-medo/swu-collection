@@ -33,6 +33,7 @@ const TournamentsPlanetaryQualifiers: React.FC<TournamentsPlanetaryQualifiersPro
             <PQStatistics
               tournamentGroups={pqWeekGroups}
               onOpenAllTournaments={() => setOpenAllCollapsibles(p => !p)}
+              metaId={metaId}
             />
           )}
 

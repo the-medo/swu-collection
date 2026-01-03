@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TournamentGroupWithMeta } from '../../../../../../../types/TournamentGroup';
-import { AlertCircle, PieChart } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import WeekSelector, { ALL_WEEKS_VALUE, WEEK_TO_WEEK_VALUE } from './WeekSelector.tsx';
 import WeekToWeekData from './WeekToWeek/WeekToWeekData.tsx';
 import WeekChangeButtons from './WeekChangeButtons.tsx';
@@ -13,13 +13,6 @@ import { useStatistics } from './hooks/useStatistics.ts';
 import { useProcessedTournamentGroups } from './hooks/useProcessedTournamentGroups.ts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 import DiscordPing from '@/components/app/global/DiscordPing.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip.tsx';
 import { cn } from '@/lib/utils.ts';
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
 import MetaPageContent from '@/components/app/meta/MetaPageContent/MetaPageContent.tsx';
@@ -28,17 +21,21 @@ import { Route as PlanetaryQualifiersRoute } from '@/routes/tournaments/planetar
 interface PQStatisticsProps {
   tournamentGroups: TournamentGroupWithMeta[];
   onOpenAllTournaments?: () => void;
+  metaId: number;
 }
 
-const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAllTournaments }) => {
+const PQStatistics: React.FC<PQStatisticsProps> = ({
+  tournamentGroups,
+  onOpenAllTournaments,
+  metaId,
+}) => {
   const {
     weekId,
     pageObsolete = 'champions',
     maMetaInfo,
     formatId = 1,
-    metaId,
   } = useSearch({ strict: false });
-  const metaInfo = maMetaInfo ?? ('leaders' as MetaInfo);
+  const metaInfo = (maMetaInfo ?? 'leaders') as MetaInfo;
 
   const statistics = useStatistics(tournamentGroups);
   const processedTournamentGroups = useProcessedTournamentGroups(tournamentGroups);
@@ -54,9 +51,12 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
   const selectedGroupId = weekId || mostRecentGroupId;
   const isMostRecent = selectedGroupId === mostRecentGroupId;
 
-  const selectedGroupTournaments = useMemo(() => {
+  const tournamentsToDisplay = useMemo(() => {
+    if (weekId === ALL_WEEKS_VALUE) {
+      return processedTournamentGroups.map(group => group.tournaments).flat(1);
+    }
     return processedTournamentGroups.find(group => group.group.id === selectedGroupId)?.tournaments;
-  }, [processedTournamentGroups, selectedGroupId]);
+  }, [processedTournamentGroups, selectedGroupId, weekId]);
 
   // Handle week selection
   const handleWeekSelect = (tournamentGroupId: string) => {
@@ -71,8 +71,6 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
 
   // const hasData = data && data.length > 0;
   const hasData = processedTournamentGroups && processedTournamentGroups.length > 0;
-  const metaButtonDisabled =
-    selectedGroupId === ALL_WEEKS_VALUE || selectedGroupId === WEEK_TO_WEEK_VALUE;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -92,36 +90,6 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
               processedTournamentGroups={processedTournamentGroups}
               onWeekChange={handleWeekSelect}
             />
-            {selectedGroupId && (
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-2 h-12"
-                        disabled={metaButtonDisabled}
-                        onClick={() => {
-                          navigate({
-                            to: '/meta',
-                            search: { maTournamentGroupId: selectedGroupId },
-                          });
-                        }}
-                      >
-                        <PieChart className="h-4 w-4" />
-                        Full meta analysis
-                      </Button>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {metaButtonDisabled
-                      ? 'Viewing full meta analysis is possible only for single weeks'
-                      : 'Display full meta analysis, matchups, decks and card statistics'}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
           </div>
         </div>
 
@@ -142,7 +110,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({ tournamentGroups, onOpenAll
                   formatId={formatId}
                   metaId={metaId}
                   minTournamentType={'pq'}
-                  tournaments={selectedGroupTournaments || []}
+                  tournaments={tournamentsToDisplay || []}
                   tournamentGroupId={selectedGroupId}
                   route={PlanetaryQualifiersRoute}
                 />
