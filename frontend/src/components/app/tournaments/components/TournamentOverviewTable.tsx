@@ -6,9 +6,11 @@ import { Users, X } from 'lucide-react';
 import { CountryCode } from '../../../../../../server/db/lists.ts';
 import { TournamentStringDate } from '../../../../../../types/Tournament.ts';
 import { TournamentDeck } from '../../../../../../server/db/schema/tournament_deck.ts';
-import { Deck } from '../../../../../../types/Deck.ts';
+import { Deck } from '../../../../../../server/db/schema/deck.ts';
+import { useSearch } from '@tanstack/react-router';
+import { useTournamentOverviewTableRowClick } from '@/components/app/tournaments/lib/useTournamentOverviewTableRowClick.ts';
 
-export type TournamentOverviewTable = {
+export type TournamentOverviewTableItem = {
   tournament: TournamentStringDate;
   winningTournamentDeck: TournamentDeck | null;
   deck: Deck | null;
@@ -16,22 +18,20 @@ export type TournamentOverviewTable = {
 
 export type TournamentOverviewTableRow =
   | { type: 'divider'; label: string }
-  | { type: 'item'; item: TournamentOverviewTable };
+  | { type: 'item'; item: TournamentOverviewTableItem };
 
-interface TournamentOverviewTableProps {
+export interface TournamentOverviewTableProps {
   rows: TournamentOverviewTableRow[];
-  handleRowClick: (
-    e: React.MouseEvent<HTMLTableRowElement, MouseEvent>,
+  onRowClick?: (
+    e: React.MouseEvent<HTMLTableRowElement | HTMLDivElement, MouseEvent>,
     tournamentId: string,
   ) => void;
-  selectedTournamentId?: string | null;
 }
 
-const TournamentOverviewTable: React.FC<TournamentOverviewTableProps> = ({
-  rows,
-  handleRowClick,
-  selectedTournamentId,
-}) => {
+const TournamentOverviewTable: React.FC<TournamentOverviewTableProps> = ({ rows, onRowClick }) => {
+  const handleRowClick = useTournamentOverviewTableRowClick(onRowClick);
+  const { maTournamentId: selectedTournamentId } = useSearch({ strict: false });
+
   return (
     <table className="w-full text-sm">
       <tbody>

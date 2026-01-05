@@ -1,9 +1,7 @@
 import type { TournamentGroup } from '../server/db/schema/tournament_group.ts';
 import type { TournamentGroupStats } from '../server/db/schema/tournament_group_stats.ts';
 import type { TournamentStringDate } from './Tournament.ts';
-import type { TournamentDeck } from '../server/db/schema/tournament_deck.ts';
-import type { Deck } from '../server/db/schema/deck.ts';
-import TournamentOverviewTable from '../frontend/src/components/app/tournaments/components/TournamentOverviewTable.tsx';
+import type { TournamentOverviewTableItem } from '../frontend/src/components/app/tournaments/components/TournamentOverviewTable.tsx';
 
 export type DailySnapshotSectionData<T> = {
   id: string;
@@ -50,7 +48,7 @@ export type SectionWeeklyChange = {
   dataPoints: SectionWeeklyChangeDataPoint[];
 };
 
-export type SectionRecentTournamentsItem = TournamentOverviewTable;
+export type SectionRecentTournamentsItem = TournamentOverviewTableItem;
 
 export type SectionRecentTournaments = {
   tournamentGroupId: string;
