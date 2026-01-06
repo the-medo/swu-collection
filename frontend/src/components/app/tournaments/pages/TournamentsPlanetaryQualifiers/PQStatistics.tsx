@@ -17,6 +17,8 @@ import { cn } from '@/lib/utils.ts';
 import { PQTop } from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/pqLib.ts';
 import MetaPageContent from '@/components/app/meta/MetaPageContent/MetaPageContent.tsx';
 import { Route as PlanetaryQualifiersRoute } from '@/routes/tournaments/planetary-qualifiers';
+import PQSelectedWeekTournaments from '@/components/app/tournaments/pages/TournamentsPlanetaryQualifiers/PQSelectedWeekTournaments.tsx';
+import TournamentDetailContent from '@/components/app/daily-snapshots/special-sections/TournamentDetailSection/TournamentDetailContent.tsx';
 
 interface PQStatisticsProps {
   tournamentGroups: TournamentGroupWithMeta[];
@@ -33,6 +35,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({
     weekId,
     pageObsolete = 'champions',
     maMetaInfo,
+    maTournamentId,
     formatId = 1,
   } = useSearch({ strict: false });
   const metaInfo = (maMetaInfo ?? 'leaders') as MetaInfo;
@@ -65,6 +68,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({
       search: prev => ({
         ...prev,
         weekId: tournamentGroupId,
+        maTournamentId: undefined,
       }),
     });
   };
@@ -106,14 +110,18 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({
               />
             ) : hasData ? (
               <div className="flex flex-1">
-                <MetaPageContent
-                  formatId={formatId}
-                  metaId={metaId}
-                  minTournamentType={'pq'}
-                  tournaments={tournamentsToDisplay || []}
-                  tournamentGroupId={selectedGroupId}
-                  route={PlanetaryQualifiersRoute}
-                />
+                {maTournamentId ? (
+                  <TournamentDetailContent maTournamentId={maTournamentId} />
+                ) : (
+                  <MetaPageContent
+                    formatId={formatId}
+                    metaId={metaId}
+                    minTournamentType={'pq'}
+                    tournaments={tournamentsToDisplay || []}
+                    tournamentGroupId={selectedGroupId}
+                    route={PlanetaryQualifiersRoute}
+                  />
+                )}
               </div>
             ) : (
               <Alert variant="info" className="mt-6 mb-4">
@@ -156,7 +164,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({
           processedTournamentGroups={processedTournamentGroups}
           handleWeekSelect={handleWeekSelect}
         />
-      ) : (
+      ) : selectedGroupId === ALL_WEEKS_VALUE ? (
         <PQSideStats
           statistics={statistics}
           tournamentGroups={tournamentGroups}
@@ -164,6 +172,8 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({
           handleWeekSelect={handleWeekSelect}
           onOpenAllTournaments={onOpenAllTournaments}
         />
+      ) : (
+        <PQSelectedWeekTournaments tournaments={tournamentsToDisplay || []} />
       )}
     </div>
   );

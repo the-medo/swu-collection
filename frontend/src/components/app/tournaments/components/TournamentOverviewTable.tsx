@@ -64,7 +64,11 @@ const TournamentOverviewTable: React.FC<TournamentOverviewTableProps> = ({ rows,
               onMouseDown={e => handleRowClick(e, t.id)}
             >
               <td className="py-1 px-1 w-[100px]">
-                <DeckAvatar deck={row.item.deck} size="50" />
+                {row.item.tournament.imported ? (
+                  <DeckAvatar deck={row.item.deck} size="50" />
+                ) : (
+                  <span className="italic px-4">No data</span>
+                )}
               </td>
               <td className="py-1 px-1">
                 <div className="flex flex-col gap-2 min-w-[130px]">
