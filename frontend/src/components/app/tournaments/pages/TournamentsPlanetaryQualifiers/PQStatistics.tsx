@@ -33,7 +33,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({
 }) => {
   const {
     weekId,
-    pageObsolete = 'champions',
+    pageWtw = 'champions',
     maMetaInfo,
     maTournamentId,
     formatId = 1,
@@ -43,7 +43,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({
   const statistics = useStatistics(tournamentGroups);
   const processedTournamentGroups = useProcessedTournamentGroups(tournamentGroups);
   const navigate = useNavigate();
-  const chartTop = (pageObsolete === 'tournaments' ? 'total' : pageObsolete) as PQTop;
+  const chartTop = (pageWtw === 'tournaments' ? 'total' : pageWtw) as PQTop;
 
   // Find the most recent group ID for default selection
   const mostRecentGroupId = useMemo(() => {

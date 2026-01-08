@@ -121,6 +121,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
           day2Decks,
           top8Decks,
           top64Decks,
+          championsDecks,
         );
         if (totalDeckCount > 0) {
           combinedData.percentageAll = ((combinedData.all / totalDeckCount) * 100).toFixed(1);
