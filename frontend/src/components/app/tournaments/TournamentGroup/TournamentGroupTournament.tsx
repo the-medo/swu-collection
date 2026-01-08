@@ -72,7 +72,7 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
                 leaderCard1={leader1}
                 leaderCard2={leader2}
                 baseCard={base}
-                className="bg-transparent w-[150px]"
+                className="bg-transparent"
                 cardImageSize="w75"
               />
             </div>

@@ -41,7 +41,6 @@ const CardPricePairingCardmarket: React.FC = () => {
         setError('No card data found. Please check the HTML content.');
       } else {
         setParsedData(results);
-        console.log(`Successfully parsed ${results.length} cards`);
       }
     } catch (err) {
       setError(`Error parsing data: ${err instanceof Error ? err.message : String(err)}`);

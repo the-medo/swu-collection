@@ -9,7 +9,6 @@ interface PQSelectedWeekTournamentsProps {
 }
 
 const PQSelectedWeekTournaments: React.FC<PQSelectedWeekTournamentsProps> = ({ tournaments }) => {
-  console.log('rows', tournaments);
   const rows: TournamentOverviewTableRow[] = React.useMemo(() => {
     if (!tournaments) return [];
 

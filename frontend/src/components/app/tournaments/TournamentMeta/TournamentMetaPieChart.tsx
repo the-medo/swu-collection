@@ -82,8 +82,6 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
       originalIndex: index,
     }));
 
-    console.log({ top20Items });
-
     // Calculate the sum of the remaining items (if any)
     if (analysisData.length > 20) {
       const remainingItems = analysisData.slice(20);

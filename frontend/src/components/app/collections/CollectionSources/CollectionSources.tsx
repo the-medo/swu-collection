@@ -54,13 +54,6 @@ const CollectionSources: React.FC<CollectionSourcesProps> = ({ collectionId, own
     applyingOpenedCardListToMyOwnSelectedCollectionOrWantlist;
   const allowedToApply = canSelect && !!selectedCollectionId; // && collectionType !== CollectionType.OTHER;
 
-  console.log({
-    applyingToMyOwnOpenedCollectionOrWantlist,
-    applyingOpenedCardListToMyOwnSelectedCollectionOrWantlist,
-    canSelect,
-    allowedToApply,
-  });
-
   const onSelect = useCallback(
     (id: string) => {
       if (!canSelect) return;

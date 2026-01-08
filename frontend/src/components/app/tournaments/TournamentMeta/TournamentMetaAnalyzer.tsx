@@ -8,7 +8,6 @@ import MetaPartSelector, { MetaPart } from './MetaPartSelector';
 import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
 import ViewModeSelector, { ViewMode } from './ViewModeSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { useCallback, useMemo, useState } from 'react';
 import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
@@ -32,6 +31,11 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   const metaPart = (search.maMetaPart as MetaPart) || 'all';
   const metaInfo = (search.maMetaInfo as MetaInfo) || 'leaders';
   const viewMode = (search.maViewMode as ViewMode) || 'chart';
+
+  const showDay2Selector = useMemo(() => {
+    const ts = Object.values(tournaments) ?? [];
+    return ts.length > 0 && ts.every(t => t.tournament?.days > 1);
+  }, [metaPart]);
 
   // State for minimum deck count filter
   const [minDeckCount, setMinDeckCount] = useState<number | undefined>(undefined);
@@ -99,14 +103,6 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   const filteredDecks = useMemo(() => {
     return metaPartsDecks[metaPart] || [];
   }, [metaPartsDecks, metaPart]);
-
-  const getBaseKey = useCallback(
-    (baseCardId: string | undefined | null, baseAspect: string | undefined | null) => {
-      const baseCard = baseCardId ? cardListData?.cards[baseCardId] : undefined;
-      return (isBasicBase(baseCard) ? baseAspect : baseCardId) ?? '';
-    },
-    [cardListData],
-  );
 
   // Helper function to analyze decks based on meta info
   const analyzeDecks = useCallback(
@@ -228,7 +224,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
           <ViewModeSelector value={viewMode} onChange={setViewMode} />
         </MobileCard>
         <MobileCard>
-          <MetaPartSelector value={metaPart} onChange={setMetaPart} />
+          <MetaPartSelector value={metaPart} onChange={setMetaPart} showDay2={showDay2Selector} />
         </MobileCard>
         <MobileCard>
           <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
