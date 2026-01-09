@@ -20,6 +20,7 @@ interface TournamentMetaPieChartProps {
   day2Decks: number;
   top8Decks: number;
   top64Decks: number;
+  championsDecks: number;
 }
 
 // Define colors for the pie chart segments using shades of primary/secondary colors
@@ -55,6 +56,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
   day2Decks,
   top8Decks,
   top64Decks,
+  championsDecks,
 }) => {
   const labelRenderer = useLabel();
   const { theme } = useTheme();
@@ -80,8 +82,6 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
       originalIndex: index,
     }));
 
-    console.log({ top20Items });
-
     // Calculate the sum of the remaining items (if any)
     if (analysisData.length > 20) {
       const remainingItems = analysisData.slice(20);
@@ -97,6 +97,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
               acc.top8 += item.data.top8 || 0;
               acc.day2 += item.data.day2 || 0;
               acc.top64 += item.data.top64 || 0;
+              acc.champions += item.data.champions || 0;
             }
             return acc;
           },
@@ -105,9 +106,11 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
             top8: 0,
             day2: 0,
             top64: 0,
+            champions: 0,
             conversionTop8: '',
             conversionDay2: '',
             conversionTop64: '',
+            conversionChampions: '',
           },
         );
 
@@ -118,6 +121,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
           day2Decks,
           top8Decks,
           top64Decks,
+          championsDecks,
         );
         if (totalDeckCount > 0) {
           combinedData.percentageAll = ((combinedData.all / totalDeckCount) * 100).toFixed(1);
@@ -161,6 +165,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
     day2Decks,
     top8Decks,
     top64Decks,
+    championsDecks,
   );
 
   const handlePieClick = useCallback(
@@ -257,6 +262,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
             day2Decks={day2Decks}
             top8Decks={top8Decks}
             top64Decks={top64Decks}
+            championsDecks={championsDecks}
           />
         </div>
       )}

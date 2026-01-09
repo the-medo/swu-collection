@@ -6,6 +6,7 @@ import AspectCardStats from '../AspectCardStats/AspectCardStats';
 import LeaderCardStats from '../LeaderCardStats/LeaderCardStats';
 import LeaderBaseCardStats from '../LeaderBaseCardStats/LeaderBaseCardStats';
 import MatchupCardStats from '../MatchupCardStats/MatchupCardStats';
+import { Button } from '@/components/ui/button.tsx';
 
 export const cardStatsTabsArray: [string, ...string[]] = [
   'all',
@@ -30,6 +31,20 @@ const CardStatsTabs: React.FC<CardStatsTabsProps> = ({
 }) => {
   const { csPage = 'all' } = useSearch({ strict: false });
 
+  if (tournamentGroupId === 'all') {
+    return (
+      <div className={cn('w-full', className)}>
+        <div className="flex flex-col items-center align-middle gap-2">
+          <span>Card statistics are not available for this view.</span>
+          <span>You can still display card statistics for full meta (PQs, SQs and RCs)</span>
+          <Link to="/meta" search={prev => ({ ...prev, page: 'card-stats' })}>
+            <Button size="sm">Display full meta card statistics</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={cn('w-full', className)}>
       <div className="grid grid-cols-2 sm:grid-cols-5 mb-2 rounded-lg bg-muted p-1">
@@ -39,12 +54,21 @@ const CardStatsTabs: React.FC<CardStatsTabsProps> = ({
             to="."
             search={prev => {
               // Preserve leader/base parameters when switching between leader, leader-base and matchup tabs
-              if ((tab === 'leader' || tab === 'leader-base' || tab === 'matchup') && 
-                  (csPage === 'leader' || csPage === 'leader-base' || csPage === 'matchup')) {
+              if (
+                (tab === 'leader' || tab === 'leader-base' || tab === 'matchup') &&
+                (csPage === 'leader' || csPage === 'leader-base' || csPage === 'matchup')
+              ) {
                 return { ...prev, csPage: tab };
               }
               // Otherwise clear the parameters
-              return { ...prev, csPage: tab, csLeaderId: undefined, csBaseId: undefined, csLeaderId2: undefined, csBaseId2: undefined };
+              return {
+                ...prev,
+                csPage: tab,
+                csLeaderId: undefined,
+                csBaseId: undefined,
+                csLeaderId2: undefined,
+                csBaseId2: undefined,
+              };
             }}
             className={cn(
               'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',

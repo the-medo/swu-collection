@@ -14,6 +14,7 @@ import { Route as TournamentDeckCardStatsRoute } from '@/routes/tournaments/$tou
 import { Route as TournamentDeckMetaRoute } from '@/routes/tournaments/$tournamentId/meta.tsx';
 import { Route as TournamentDeckMatchupsRoute } from '@/routes/tournaments/$tournamentId/matchups.tsx';
 import { Route as MetaRoute } from '@/routes/meta';
+import { Route as PlanetaryQualifiersRoute } from '@/routes/tournaments/planetary-qualifiers';
 import { Route as RootRoute } from '@/routes';
 import { getDeckKeys } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore.ts';
@@ -31,7 +32,8 @@ export type TournamentDeckKeyFloaterRoutes =
   | typeof TournamentDeckMatchupsRoute
   | typeof TournamentDeckMetaRoute
   | typeof MetaRoute
-  | typeof RootRoute;
+  | typeof RootRoute
+  | typeof PlanetaryQualifiersRoute;
 
 interface TournamentDeckKeyFloaterProps {
   route: TournamentDeckKeyFloaterRoutes;
@@ -183,7 +185,8 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
     csPage = 'leader-base';
   }
 
-  const searchParamsOnly = route === MetaRoute || route === RootRoute;
+  const searchParamsOnly =
+    route === MetaRoute || route === RootRoute || route === PlanetaryQualifiersRoute;
 
   return (
     <Card className="fixed bottom-4 right-4 w-[300px] border">

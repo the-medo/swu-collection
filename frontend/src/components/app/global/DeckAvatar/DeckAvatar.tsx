@@ -38,7 +38,7 @@ export const DeckAvatar: React.FC<TournamentGivenDeckTooltipProps> = ({
         <div className="z-1">
           <CardAvatar card={leaderCard} cardVariantId={leaderCardVariantId} bordered size={size} />
         </div>
-        <div className="-ml-[25px] z-0" style={{ marginLeft: `${35 - Number(size)}px` }}>
+        <div className="z-0" style={{ marginLeft: `${35 - Number(size)}px` }}>
           <CardAvatar
             card={baseCard}
             cardVariantId={baseCardVariantId}

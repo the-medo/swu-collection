@@ -8,7 +8,6 @@ import MetaPartSelector, { MetaPart } from './MetaPartSelector';
 import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
 import ViewModeSelector, { ViewMode } from './ViewModeSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { useCallback, useMemo, useState } from 'react';
 import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
@@ -32,6 +31,11 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   const metaPart = (search.maMetaPart as MetaPart) || 'all';
   const metaInfo = (search.maMetaInfo as MetaInfo) || 'leaders';
   const viewMode = (search.maViewMode as ViewMode) || 'chart';
+
+  const showDay2Selector = useMemo(() => {
+    const ts = Object.values(tournaments) ?? [];
+    return ts.length > 0 && ts.every(t => t.tournament?.days > 1);
+  }, [metaPart]);
 
   // State for minimum deck count filter
   const [minDeckCount, setMinDeckCount] = useState<number | undefined>(undefined);
@@ -62,10 +66,14 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
 
   // Compute filtered decks for all meta parts
   const metaPartsDecks = useMemo(() => {
-    if (!decks.length) return { all: [], top8: [], day2: [], top64: [] };
+    if (!decks.length) return { all: [], top8: [], day2: [], top64: [], champions: [] };
 
     const top8Decks = decks.filter(
       deck => deck.tournamentDeck.placement !== null && deck.tournamentDeck.placement <= 8,
+    );
+
+    const championsDecks = decks.filter(
+      deck => deck.tournamentDeck.placement !== null && deck.tournamentDeck.placement === 1,
     );
 
     const day2Decks = decks.filter(deck => {
@@ -87,6 +95,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
       top8: top8Decks,
       day2: day2Decks,
       top64: top64Decks,
+      champions: championsDecks,
     };
   }, [decks, tournaments]);
 
@@ -94,14 +103,6 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   const filteredDecks = useMemo(() => {
     return metaPartsDecks[metaPart] || [];
   }, [metaPartsDecks, metaPart]);
-
-  const getBaseKey = useCallback(
-    (baseCardId: string | undefined | null, baseAspect: string | undefined | null) => {
-      const baseCard = baseCardId ? cardListData?.cards[baseCardId] : undefined;
-      return (isBasicBase(baseCard) ? baseAspect : baseCardId) ?? '';
-    },
-    [cardListData],
-  );
 
   // Helper function to analyze decks based on meta info
   const analyzeDecks = useCallback(
@@ -115,7 +116,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
       decksToAnalyze.forEach(deck => {
         if (!deck.deck) return;
 
-        let keys = getDeckKeys(deck, metaInfoType, cardListData);
+        const keys = getDeckKeys(deck, metaInfoType, cardListData);
 
         keys.forEach(key => {
           countMap.set(key, (countMap.get(key) || 0) + 1);
@@ -143,18 +144,19 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
         })
         .sort((a, b) => b.count - a.count);
     },
-    [cardListData, getBaseKey, metaInfo],
+    [cardListData],
   );
 
   // Analyze all meta parts
   const allMetaPartsAnalysis = useMemo(() => {
-    if (!cardListData) return { all: [], top8: [], day2: [], top64: [] };
+    if (!cardListData) return { all: [], top8: [], day2: [], top64: [], champions: [] };
 
     return {
       all: analyzeDecks(metaPartsDecks.all, metaInfo),
       top8: analyzeDecks(metaPartsDecks.top8, metaInfo),
       day2: analyzeDecks(metaPartsDecks.day2, metaInfo),
       top64: analyzeDecks(metaPartsDecks.top64, metaInfo),
+      champions: analyzeDecks(metaPartsDecks.champions, metaInfo),
     };
   }, [metaPartsDecks, metaInfo, analyzeDecks, cardListData]);
 
@@ -162,6 +164,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   const top8DeckCount = metaPartsDecks.top8.length;
   const top64DeckCount = metaPartsDecks.top64.length;
   const day2DeckCount = metaPartsDecks.day2.length;
+  const championsDeckCount = metaPartsDecks.champions.length;
 
   // Enhanced analysis data with additional meta information
   const analysisData = useMemo(() => {
@@ -174,6 +177,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
       const inTop8 = allMetaPartsAnalysis.top8.find(i => i.key === item.key)?.count || 0;
       const inDay2 = allMetaPartsAnalysis.day2.find(i => i.key === item.key)?.count || 0;
       const inTop64 = allMetaPartsAnalysis.top64.find(i => i.key === item.key)?.count || 0;
+      const inChampions = allMetaPartsAnalysis.champions.find(i => i.key === item.key)?.count || 0;
 
       // Calculate conversion rates
       const data = {
@@ -181,15 +185,19 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
         top8: inTop8,
         day2: inDay2,
         top64: inTop64,
+        champions: inChampions,
         // Percantages
         percentageAll: inAll > 0 ? ((inAll / totalDeckCount) * 100).toFixed(1) : '0',
         percentageTop8: inTop8 > 0 ? ((inTop8 / top8DeckCount) * 100).toFixed(1) : '0',
         percentageDay2: inDay2 > 0 ? ((inDay2 / day2DeckCount) * 100).toFixed(1) : '0',
         percentageTop64: inTop64 > 0 ? ((inTop64 / top64DeckCount) * 100).toFixed(1) : '0',
+        percentageChampions:
+          inChampions > 0 ? ((inChampions / championsDeckCount) * 100).toFixed(1) : '0',
         // Conversion rates (as percentages)
         conversionTop8: inAll > 0 ? ((inTop8 / inAll) * 100).toFixed(1) : '0',
         conversionDay2: inAll > 0 ? ((inDay2 / inAll) * 100).toFixed(1) : '0',
         conversionTop64: inAll > 0 ? ((inTop64 / inAll) * 100).toFixed(1) : '0',
+        conversionChampions: inAll > 0 ? ((inChampions / inAll) * 100).toFixed(1) : '0',
       };
 
       return {
@@ -206,6 +214,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
     totalDeckCount,
     day2DeckCount,
     top64DeckCount,
+    championsDeckCount,
   ]);
 
   return (
@@ -215,7 +224,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
           <ViewModeSelector value={viewMode} onChange={setViewMode} />
         </MobileCard>
         <MobileCard>
-          <MetaPartSelector value={metaPart} onChange={setMetaPart} />
+          <MetaPartSelector value={metaPart} onChange={setMetaPart} showDay2={showDay2Selector} />
         </MobileCard>
         <MobileCard>
           <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
@@ -267,6 +276,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
               day2Decks={day2DeckCount}
               top8Decks={top8DeckCount}
               top64Decks={top64DeckCount}
+              championsDecks={championsDeckCount}
             />
           </div>
           <div className="w-full md:w-1/2">
@@ -278,6 +288,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
               day2Decks={day2DeckCount}
               top8Decks={top8DeckCount}
               top64Decks={top64DeckCount}
+              championsDecks={championsDeckCount}
             />
           </div>
         </div>
@@ -290,6 +301,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
           day2Decks={day2DeckCount}
           top8Decks={top8DeckCount}
           top64Decks={top64DeckCount}
+          championsDecks={championsDeckCount}
           metaPartsData={allMetaPartsAnalysis}
           minDeckCount={minDeckCount}
         />

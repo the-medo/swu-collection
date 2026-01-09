@@ -8,14 +8,14 @@ import { Trophy } from 'lucide-react';
 interface PQPageNavigationProps {}
 
 const PQPageNavigation: React.FC<PQPageNavigationProps> = () => {
-  const { page = 'champions' } = useSearch({ strict: false });
+  const { pageWtw = 'champions' } = useSearch({ strict: false });
   const navigate = useNavigate({ from: Route.fullPath });
 
   const onValueChange = useCallback(
     (value: 'top8' | 'total' | 'tournaments' | 'champions') => {
       if (value) {
         navigate({
-          search: prev => ({ ...prev, page: value }),
+          search: prev => ({ ...prev, pageWtw: value }),
         });
       }
     },
@@ -25,7 +25,7 @@ const PQPageNavigation: React.FC<PQPageNavigationProps> = () => {
   return (
     <ToggleGroup
       type="single"
-      value={page}
+      value={pageWtw}
       onValueChange={onValueChange}
       className="justify-start gap-2"
     >

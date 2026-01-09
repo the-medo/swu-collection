@@ -20,12 +20,14 @@ interface TournamentMetaDataTableProps {
   day2Decks: number;
   top8Decks: number;
   top64Decks: number;
+  championsDecks: number;
   minDeckCount?: number;
   metaPartsData?: {
     all: AnalysisDataItem[];
     top8: AnalysisDataItem[];
     day2: AnalysisDataItem[];
     top64: AnalysisDataItem[];
+    champions: AnalysisDataItem[];
   };
 }
 
@@ -37,6 +39,7 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
   day2Decks,
   top8Decks,
   top64Decks,
+  championsDecks,
   metaPartsData,
   minDeckCount,
 }) => {
@@ -53,6 +56,7 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
     day2Decks,
     top8Decks,
     top64Decks,
+    championsDecks,
   );
 
   const getSortedData = (data: AnalysisDataItem[]) => {
@@ -84,6 +88,13 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
 
       // Meta part columns
       if (metaPartsData) {
+        // Champions
+        if (sorting.id === 'championsCount' || sorting.id === 'championsPercentage') {
+          const aCount = metaPartsData.champions.find(d => d.key === a.key)?.count || 0;
+          const bCount = metaPartsData.champions.find(d => d.key === b.key)?.count || 0;
+          return (aCount - bCount) * multiplier;
+        }
+
         // Top 8
         if (sorting.id === 'top8Count' || sorting.id === 'top8Percentage') {
           const aCount = metaPartsData.top8.find(d => d.key === a.key)?.count || 0;
@@ -161,6 +172,7 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
                 day2Decks={day2Decks}
                 top8Decks={top8Decks}
                 top64Decks={top64Decks}
+                championsDecks={championsDecks}
               />
             </TooltipContent>
           </Tooltip>
@@ -324,6 +336,44 @@ const TournamentMetaDataTable: React.FC<TournamentMetaDataTableProps> = ({
           ),
           cell: ({ row }) => {
             const item = metaPartsData.top8.find(d => d.key === row.original.key);
+            return item ? `${item.percentage?.toFixed(1)}%` : '0.0%';
+          },
+        },
+      );
+    }
+
+    if (metaPartsData.champions.length > 0) {
+      columns.push(
+        {
+          id: 'championsCount',
+          header: () => (
+            <Button
+              variant="ghost"
+              className="p-0 font-bold flex items-center"
+              onClick={() => handleSort('championsCount')}
+            >
+              Champions Count
+              {renderSortIcon('championsCount')}
+            </Button>
+          ),
+          cell: ({ row }) => {
+            const item = metaPartsData.champions.find(d => d.key === row.original.key);
+            return item ? item.count : 0;
+          },
+        },
+        {
+          id: 'championsPercentage',
+          header: () => (
+            <Button
+              variant="ghost"
+              className="p-0 font-bold flex items-center"
+              onClick={() => handleSort('championsPercentage')}
+            >
+              Champions %{renderSortIcon('championsPercentage')}
+            </Button>
+          ),
+          cell: ({ row }) => {
+            const item = metaPartsData.champions.find(d => d.key === row.original.key);
             return item ? `${item.percentage?.toFixed(1)}%` : '0.0%';
           },
         },

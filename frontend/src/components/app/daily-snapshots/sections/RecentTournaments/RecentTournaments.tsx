@@ -1,23 +1,20 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { useNavigate, useSearch } from '@tanstack/react-router';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
 import type {
   DailySnapshotSectionData,
   SectionRecentTournaments,
   SectionRecentTournamentsItem,
 } from '../../../../../../../types/DailySnapshots.ts';
-import Flag from '@/components/app/global/Flag.tsx';
-import { Users, X } from 'lucide-react';
-import { CountryCode } from '../../../../../../../server/db/lists.ts';
+import { X } from 'lucide-react';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import TournamentGroupTournament from '@/components/app/tournaments/TournamentGroup/TournamentGroupTournament.tsx';
 import RecentTournamentsDropdownMenu from '@/components/app/daily-snapshots/sections/RecentTournaments/RecentTournamentsDropdownMenu.tsx';
 import SectionHeader from '../components/SectionHeader.tsx';
 import type { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../../types/TournamentGroup.ts';
-import DeckAvatar from '@/components/app/global/DeckAvatar/DeckAvatar.tsx';
+import TournamentOverviewTable from '@/components/app/tournaments/components/TournamentOverviewTable.tsx';
 import { useMatchHeightToElementId } from '@/hooks/useMatchHeightToElementId.tsx';
-import { cn } from '@/lib/utils';
+import { useTournamentOverviewTableRowClick } from '@/components/app/tournaments/lib/useTournamentOverviewTableRowClick.ts';
 
 // Split into majors (SQ/RQ/GC) and others (to keep table for others only)
 const majorTypes = new Set(['sq', 'rq', 'gc']);
@@ -34,46 +31,9 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   dailySnapshot,
   sectionUpdatedAt,
 }) => {
-  const navigate = useNavigate();
-  const { maTournamentId } = useSearch({ strict: false });
+  const handleRowClick = useTournamentOverviewTableRowClick();
   const items = payload.data.tournaments ?? EMPTY_ITEMS;
   const scrollRef = useMatchHeightToElementId('s-recent-tournaments', true, h => `${h - 120}px`);
-
-  // Row click handler: decides between selecting in-section vs opening detail page
-  const handleRowClick = React.useCallback(
-    (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, tournamentId: string) => {
-      // Middle-click (auxiliary button) or explicit Ctrl/Meta click should always open new tab
-      const isAuxClick = e.button === 1;
-      const isModifier = e.ctrlKey || e.metaKey;
-
-      const section = document.getElementById('section-container');
-      const width = section?.getBoundingClientRect().width ?? window.innerWidth;
-
-      const openTournamentInNewTab = () => {
-        const url = `/tournaments/${tournamentId}`;
-        window.open(url, '_blank', 'noopener');
-      };
-
-      if (isAuxClick || isModifier) {
-        // Prevent default to avoid accidental text selection or other side-effects
-        e.preventDefault();
-        openTournamentInNewTab();
-        return;
-      }
-
-      if (width < 1000) {
-        e.preventDefault();
-        openTournamentInNewTab();
-      } else {
-        // Keep current in-section navigation
-        navigate({
-          to: '.',
-          search: prev => ({ ...prev, maDeckId: undefined, maTournamentId: tournamentId }),
-        });
-      }
-    },
-    [navigate],
-  );
 
   // Sort tournaments by date desc, then by updatedAt desc
   const sorted = useMemo(() => {
@@ -199,7 +159,11 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
               <h4 className="text-base font-semibold mb-2">Major tournaments</h4>
               <div className="flex flex-col gap-2">
                 {majorsAdapted.map(mi => (
-                  <div key={mi.tournament.id} className="min-h-[150px]">
+                  <div
+                    key={mi.tournament.id}
+                    className="min-h-[150px]"
+                    onMouseDown={e => handleRowClick(e, mi.tournament.id)}
+                  >
                     <TournamentGroupTournament tournamentItem={mi} compact={true} />
                   </div>
                 ))}
@@ -207,65 +171,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
             </div>
           )}
 
-          {/* Regular recent tournaments table (majors removed) */}
-          <table className="w-full text-sm">
-            <tbody>
-              {rows.map((row, idx) => {
-                if (row.type === 'divider') {
-                  return (
-                    <tr key={`div-${idx}`} className="bg-muted/40">
-                      <td className="py-1 px-2 font-medium" colSpan={3}>
-                        {row.label}
-                      </td>
-                    </tr>
-                  );
-                }
-
-                const t = row.item.tournament;
-                const countryCode = t.location as CountryCode;
-                const notImported = !t.imported;
-
-                const name = t.name.replace('PQ - ', '').split(', ')[0];
-
-                const isSelected = String(maTournamentId ?? '') === String(t.id);
-
-                return (
-                  <tr
-                    key={t.id}
-                    className={cn(
-                      'border-b border-gray-100 dark:border-gray-800 cursor-pointer',
-                      isSelected ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-muted/50',
-                    )}
-                    onMouseDown={e => handleRowClick(e, t.id)}
-                  >
-                    <td className="py-1 px-1 w-[100px]">
-                      <DeckAvatar deck={row.item.deck} size="50" />
-                    </td>
-                    <td className="py-1 px-1">
-                      <div className="flex flex-col gap-2 min-w-[130px]">
-                        <span className="font-semibold">{name}</span>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Flag countryCode={countryCode} className="w-5 h-3" />
-                            {countryCode && <span>{countryCode}</span>}
-                            {notImported ? (
-                              <X className="h-4 w-4 text-red-500 inline-block" />
-                            ) : null}
-                          </div>
-                          {t.attendance > 0 ? (
-                            <div className="items-center justify-end gap-1 flex">
-                              <Users className="h-3 w-3 text-muted-foreground" />
-                              <span>{t.attendance}</span>
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <TournamentOverviewTable rows={rows} />
         </div>
       )}
     </div>

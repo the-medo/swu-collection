@@ -1,16 +1,21 @@
 import * as React from 'react';
 import SectionDropdownMenu from '@/components/app/daily-snapshots/sections/components/SectionDropdownMenu';
 import { Link } from '@tanstack/react-router';
-import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-
-// Fixed maTournamentGroupId provided by the request
-const FIXED_TG_ID = 'fb440739-8002-4a7d-8d7e-113758997f3f';
+import {
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 export interface MostPlayedCardsDropdownMenuProps {
   className?: string;
+  tournamentGroupId: string;
 }
 
-const MostPlayedCardsDropdownMenu: React.FC<MostPlayedCardsDropdownMenuProps> = ({ className }) => {
+const MostPlayedCardsDropdownMenu: React.FC<MostPlayedCardsDropdownMenuProps> = ({
+  className,
+  tournamentGroupId,
+}) => {
   return (
     <SectionDropdownMenu className={className}>
       <DropdownMenuLabel>More card stats</DropdownMenuLabel>
@@ -20,7 +25,7 @@ const MostPlayedCardsDropdownMenu: React.FC<MostPlayedCardsDropdownMenuProps> = 
           to="/meta"
           search={prev => ({
             ...prev,
-            maTournamentGroupId: FIXED_TG_ID,
+            maTournamentGroupId: tournamentGroupId,
             page: 'card-stats',
             csPage: 'all',
           })}
@@ -33,7 +38,7 @@ const MostPlayedCardsDropdownMenu: React.FC<MostPlayedCardsDropdownMenuProps> = 
           to="/meta"
           search={prev => ({
             ...prev,
-            maTournamentGroupId: FIXED_TG_ID,
+            maTournamentGroupId: tournamentGroupId,
             page: 'card-stats',
             csPage: 'aspect',
           })}
@@ -46,7 +51,7 @@ const MostPlayedCardsDropdownMenu: React.FC<MostPlayedCardsDropdownMenuProps> = 
           to="/meta"
           search={prev => ({
             ...prev,
-            maTournamentGroupId: FIXED_TG_ID,
+            maTournamentGroupId: tournamentGroupId,
             page: 'card-stats',
             csPage: 'leader',
           })}
@@ -59,7 +64,7 @@ const MostPlayedCardsDropdownMenu: React.FC<MostPlayedCardsDropdownMenuProps> = 
           to="/meta"
           search={prev => ({
             ...prev,
-            maTournamentGroupId: FIXED_TG_ID,
+            maTournamentGroupId: tournamentGroupId,
             page: 'card-stats',
             csPage: 'leader-base',
           })}
@@ -72,7 +77,7 @@ const MostPlayedCardsDropdownMenu: React.FC<MostPlayedCardsDropdownMenuProps> = 
           to="/meta"
           search={prev => ({
             ...prev,
-            maTournamentGroupId: FIXED_TG_ID,
+            maTournamentGroupId: tournamentGroupId,
             page: 'card-stats',
             csPage: 'matchup',
           })}
