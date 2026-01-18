@@ -1,0 +1,63 @@
+import {
+  pgTable,
+  text,
+  smallint,
+  timestamp,
+  uuid,
+  index,
+  unique,
+  jsonb,
+} from 'drizzle-orm/pg-core';
+import { user } from './auth-schema.ts';
+
+export const integration = pgTable('integration', {
+  id: smallint('id').primaryKey(),
+  name: text('name').notNull().unique(),
+});
+
+export const userIntegration = pgTable(
+  'user_integration',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    integrationId: smallint('integration_id')
+      .notNull()
+      .references(() => integration.id, { onDelete: 'restrict' }),
+
+    externalUserId: text('external_user_id').notNull(),
+    externalUsername: text('external_username'),
+
+    refreshTokenEnc: text('refresh_token_enc'),
+    accessTokenEnc: text('access_token_enc'),
+    accessTokenExpiresAt: timestamp('access_token_expires_at'),
+    refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
+
+    linkedAt: timestamp('linked_at').notNull().defaultNow(),
+    lastUsedAt: timestamp('last_used_at'),
+    revokedAt: timestamp('revoked_at'),
+
+    scopes: text('scopes').array().notNull().default([]),
+    metadata: jsonb('metadata').notNull().default({}),
+
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => {
+    return {
+      userIdIntegrationIdUnique: unique().on(table.userId, table.integrationId),
+      integrationIdExternalUserIdUnique: unique().on(table.integrationId, table.externalUserId),
+      idxUserIntegrationUser: index('idx_user_integration_user').on(table.userId),
+      idxUserIntegrationIntegration: index('idx_user_integration_integration').on(
+        table.integrationId,
+      ),
+    };
+  },
+);
+
+export const integrationSchema = {
+  integration,
+  userIntegration,
+};

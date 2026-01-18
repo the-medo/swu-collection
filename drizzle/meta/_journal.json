@@ -253,6 +253,13 @@
       "when": 1765832669808,
       "tag": "0035_aspiring_radioactive_man",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1768750852237,
+      "tag": "0036_clammy_puck",
+      "breakpoints": true
     }
   ]
 }
