@@ -1,5 +1,5 @@
 {
-  "id": "8bd6dac0-85a9-495d-a6f2-750e7203305f",
+  "id": "85c770e3-188c-4585-8838-4c16fbb1e71d",
   "prevId": "bc6e16aa-cf75-430f-81e1-3e1d3ab27190",
   "version": "7",
   "dialect": "postgresql",
@@ -93,8 +93,12 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -170,8 +174,12 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -181,7 +189,9 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": ["token"]
+          "columns": [
+            "token"
+          ]
         }
       },
       "policies": {},
@@ -290,12 +300,16 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         },
         "user_display_name_unique": {
           "name": "user_display_name_unique",
           "nullsNotDistinct": false,
-          "columns": ["display_name"]
+          "columns": [
+            "display_name"
+          ]
         }
       },
       "policies": {},
@@ -427,8 +441,12 @@
           "name": "card_pool_deck_cards_deck_id_deck_id_fk",
           "tableFrom": "card_pool_deck_cards",
           "tableTo": "deck",
-          "columnsFrom": ["deck_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -436,7 +454,10 @@
       "compositePrimaryKeys": {
         "card_pool_deck_cards_deck_id_card_pool_number_pk": {
           "name": "card_pool_deck_cards_deck_id_card_pool_number_pk",
-          "columns": ["deck_id", "card_pool_number"]
+          "columns": [
+            "deck_id",
+            "card_pool_number"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -541,8 +562,12 @@
           "name": "card_pool_decks_deck_id_deck_id_fk",
           "tableFrom": "card_pool_decks",
           "tableTo": "deck",
-          "columnsFrom": ["deck_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -550,8 +575,12 @@
           "name": "card_pool_decks_card_pool_id_card_pools_id_fk",
           "tableFrom": "card_pool_decks",
           "tableTo": "card_pools",
-          "columnsFrom": ["card_pool_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "card_pool_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -559,8 +588,12 @@
           "name": "card_pool_decks_user_id_user_id_fk",
           "tableFrom": "card_pool_decks",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -600,8 +633,12 @@
           "name": "card_pool_cards_card_pool_id_card_pools_id_fk",
           "tableFrom": "card_pool_cards",
           "tableTo": "card_pools",
-          "columnsFrom": ["card_pool_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "card_pool_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -609,7 +646,10 @@
       "compositePrimaryKeys": {
         "card_pool_cards_card_pool_id_card_pool_number_pk": {
           "name": "card_pool_cards_card_pool_id_card_pool_number_pk",
-          "columns": ["card_pool_id", "card_pool_number"]
+          "columns": [
+            "card_pool_id",
+            "card_pool_number"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -826,8 +866,12 @@
           "name": "card_pools_user_id_user_id_fk",
           "tableFrom": "card_pools",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -933,8 +977,12 @@
           "name": "card_stat_matchup_decks_id_card_stat_matchup_overview_id_fk",
           "tableFrom": "card_stat_matchup_decks",
           "tableTo": "card_stat_matchup_overview",
-          "columnsFrom": ["id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -942,8 +990,12 @@
           "name": "card_stat_matchup_decks_deck_id_deck_id_fk",
           "tableFrom": "card_stat_matchup_decks",
           "tableTo": "deck",
-          "columnsFrom": ["deck_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -951,7 +1003,10 @@
       "compositePrimaryKeys": {
         "card_stat_matchup_decks_id_deck_id_pk": {
           "name": "card_stat_matchup_decks_id_deck_id_pk",
-          "columns": ["id", "deck_id"]
+          "columns": [
+            "id",
+            "deck_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -982,8 +1037,12 @@
           "name": "card_stat_matchup_info_id_card_stat_matchup_overview_id_fk",
           "tableFrom": "card_stat_matchup_info",
           "tableTo": "card_stat_matchup_overview",
-          "columnsFrom": ["id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1068,8 +1127,12 @@
           "name": "card_stat_matchup_overview_user_id_user_id_fk",
           "tableFrom": "card_stat_matchup_overview",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1134,8 +1197,12 @@
           "name": "card_stat_matchup_tournaments_id_card_stat_matchup_overview_id_fk",
           "tableFrom": "card_stat_matchup_tournaments",
           "tableTo": "card_stat_matchup_overview",
-          "columnsFrom": ["id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1143,8 +1210,12 @@
           "name": "card_stat_matchup_tournaments_tournament_id_tournament_id_fk",
           "tableFrom": "card_stat_matchup_tournaments",
           "tableTo": "tournament",
-          "columnsFrom": ["tournament_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1152,7 +1223,10 @@
       "compositePrimaryKeys": {
         "card_stat_matchup_tournaments_id_tournament_id_pk": {
           "name": "card_stat_matchup_tournaments_id_tournament_id_pk",
-          "columns": ["id", "tournament_id"]
+          "columns": [
+            "id",
+            "tournament_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -1249,8 +1323,12 @@
           "name": "card_stat_meta_meta_id_meta_id_fk",
           "tableFrom": "card_stat_meta",
           "tableTo": "meta",
-          "columnsFrom": ["meta_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "meta_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1258,7 +1336,10 @@
       "compositePrimaryKeys": {
         "card_stat_meta_meta_id_card_id_pk": {
           "name": "card_stat_meta_meta_id_card_id_pk",
-          "columns": ["meta_id", "card_id"]
+          "columns": [
+            "meta_id",
+            "card_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -1376,8 +1457,12 @@
           "name": "card_stat_meta_leader_meta_id_meta_id_fk",
           "tableFrom": "card_stat_meta_leader",
           "tableTo": "meta",
-          "columnsFrom": ["meta_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "meta_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1385,7 +1470,11 @@
       "compositePrimaryKeys": {
         "card_stat_meta_leader_meta_id_leader_card_id_card_id_pk": {
           "name": "card_stat_meta_leader_meta_id_leader_card_id_card_id_pk",
-          "columns": ["meta_id", "leader_card_id", "card_id"]
+          "columns": [
+            "meta_id",
+            "leader_card_id",
+            "card_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -1524,8 +1613,12 @@
           "name": "card_stat_meta_leader_base_meta_id_meta_id_fk",
           "tableFrom": "card_stat_meta_leader_base",
           "tableTo": "meta",
-          "columnsFrom": ["meta_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "meta_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1533,7 +1626,12 @@
       "compositePrimaryKeys": {
         "card_stat_meta_leader_base_meta_id_leader_card_id_base_card_id_card_id_pk": {
           "name": "card_stat_meta_leader_base_meta_id_leader_card_id_base_card_id_card_id_pk",
-          "columns": ["meta_id", "leader_card_id", "base_card_id", "card_id"]
+          "columns": [
+            "meta_id",
+            "leader_card_id",
+            "base_card_id",
+            "card_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -1630,8 +1728,12 @@
           "name": "card_stat_tournament_tournament_id_tournament_id_fk",
           "tableFrom": "card_stat_tournament",
           "tableTo": "tournament",
-          "columnsFrom": ["tournament_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1639,7 +1741,10 @@
       "compositePrimaryKeys": {
         "card_stat_tournament_tournament_id_card_id_pk": {
           "name": "card_stat_tournament_tournament_id_card_id_pk",
-          "columns": ["tournament_id", "card_id"]
+          "columns": [
+            "tournament_id",
+            "card_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -1757,8 +1862,12 @@
           "name": "card_stat_tournament_leader_tournament_id_tournament_id_fk",
           "tableFrom": "card_stat_tournament_leader",
           "tableTo": "tournament",
-          "columnsFrom": ["tournament_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1766,7 +1875,11 @@
       "compositePrimaryKeys": {
         "card_stat_tournament_leader_tournament_id_leader_card_id_card_id_pk": {
           "name": "card_stat_tournament_leader_tournament_id_leader_card_id_card_id_pk",
-          "columns": ["tournament_id", "leader_card_id", "card_id"]
+          "columns": [
+            "tournament_id",
+            "leader_card_id",
+            "card_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -1905,8 +2018,12 @@
           "name": "card_stat_tournament_leader_base_tournament_id_tournament_id_fk",
           "tableFrom": "card_stat_tournament_leader_base",
           "tableTo": "tournament",
-          "columnsFrom": ["tournament_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1914,7 +2031,12 @@
       "compositePrimaryKeys": {
         "card_stat_tournament_leader_base_tournament_id_leader_card_id_base_card_id_card_id_pk": {
           "name": "card_stat_tournament_leader_base_tournament_id_leader_card_id_base_card_id_card_id_pk",
-          "columns": ["tournament_id", "leader_card_id", "base_card_id", "card_id"]
+          "columns": [
+            "tournament_id",
+            "leader_card_id",
+            "base_card_id",
+            "card_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -2011,8 +2133,12 @@
           "name": "cstg_tournament_group_fk",
           "tableFrom": "card_stat_tournament_group",
           "tableTo": "tournament_group",
-          "columnsFrom": ["tournament_group_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2020,7 +2146,10 @@
       "compositePrimaryKeys": {
         "cstg-pk": {
           "name": "cstg-pk",
-          "columns": ["tournament_group_id", "card_id"]
+          "columns": [
+            "tournament_group_id",
+            "card_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -2138,8 +2267,12 @@
           "name": "cstgl_tournament_group_fk",
           "tableFrom": "card_stat_tournament_group_leader",
           "tableTo": "tournament_group",
-          "columnsFrom": ["tournament_group_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2147,7 +2280,11 @@
       "compositePrimaryKeys": {
         "cstgl-pk": {
           "name": "cstgl-pk",
-          "columns": ["tournament_group_id", "leader_card_id", "card_id"]
+          "columns": [
+            "tournament_group_id",
+            "leader_card_id",
+            "card_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -2286,8 +2423,12 @@
           "name": "cstglb_tournament_group_fk",
           "tableFrom": "card_stat_tournament_group_leader_base",
           "tableTo": "tournament_group",
-          "columnsFrom": ["tournament_group_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2295,7 +2436,12 @@
       "compositePrimaryKeys": {
         "cstglb-pk": {
           "name": "cstglb-pk",
-          "columns": ["tournament_group_id", "leader_card_id", "base_card_id", "card_id"]
+          "columns": [
+            "tournament_group_id",
+            "leader_card_id",
+            "base_card_id",
+            "card_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -2426,7 +2572,12 @@
       "compositePrimaryKeys": {
         "card_variant_price_history_pk": {
           "name": "card_variant_price_history_pk",
-          "columns": ["card_id", "variant_id", "source_type", "created_at"]
+          "columns": [
+            "card_id",
+            "variant_id",
+            "source_type",
+            "created_at"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -2568,7 +2719,11 @@
       "compositePrimaryKeys": {
         "card_variant_price_pk": {
           "name": "card_variant_price_pk",
-          "columns": ["card_id", "variant_id", "source_type"]
+          "columns": [
+            "card_id",
+            "variant_id",
+            "source_type"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -2725,8 +2880,12 @@
           "name": "collection_card_collection_id_collection_id_fk",
           "tableFrom": "collection_card",
           "tableTo": "collection",
-          "columnsFrom": ["collection_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "collection_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2734,7 +2893,14 @@
       "compositePrimaryKeys": {
         "collection_card_pk": {
           "name": "collection_card_pk",
-          "columns": ["collection_id", "card_id", "variant_id", "foil", "condition", "language"]
+          "columns": [
+            "collection_id",
+            "card_id",
+            "variant_id",
+            "foil",
+            "condition",
+            "language"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -2831,8 +2997,12 @@
           "name": "collection_source_collection_collection_id_collection_id_fk",
           "tableFrom": "collection_source_collection",
           "tableTo": "collection",
-          "columnsFrom": ["collection_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "collection_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2840,8 +3010,12 @@
           "name": "collection_source_collection_source_collection_id_collection_id_fk",
           "tableFrom": "collection_source_collection",
           "tableTo": "collection",
-          "columnsFrom": ["source_collection_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "source_collection_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2930,8 +3104,12 @@
           "name": "collection_user_id_user_id_fk",
           "tableFrom": "collection",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2988,8 +3166,12 @@
           "name": "ds_tournament_group_fk",
           "tableFrom": "daily_snapshot",
           "tableTo": "tournament_group",
-          "columnsFrom": ["tournament_group_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3066,7 +3248,10 @@
       "compositePrimaryKeys": {
         "daily_snapshot_section_date_section_pk": {
           "name": "daily_snapshot_section_date_section_pk",
-          "columns": ["date", "section"]
+          "columns": [
+            "date",
+            "section"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -3148,8 +3333,12 @@
           "name": "deck_card_deck_id_deck_id_fk",
           "tableFrom": "deck_card",
           "tableTo": "deck",
-          "columnsFrom": ["deck_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3157,7 +3346,11 @@
       "compositePrimaryKeys": {
         "deck_card-pk": {
           "name": "deck_card-pk",
-          "columns": ["deck_id", "card_id", "board"]
+          "columns": [
+            "deck_id",
+            "card_id",
+            "board"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -3385,8 +3578,12 @@
           "name": "deck_information_deck_id_deck_id_fk",
           "tableFrom": "deck_information",
           "tableTo": "deck",
-          "columnsFrom": ["deck_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3622,8 +3819,12 @@
           "name": "deck_user_id_user_id_fk",
           "tableFrom": "deck",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3631,8 +3832,12 @@
           "name": "deck_format_format_id_fk",
           "tableFrom": "deck",
           "tableTo": "format",
-          "columnsFrom": ["format"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "format"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3640,8 +3845,12 @@
           "name": "deck_card_pool_id_card_pools_id_fk",
           "tableFrom": "deck",
           "tableTo": "card_pools",
-          "columnsFrom": ["card_pool_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "card_pool_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3786,7 +3995,10 @@
       "compositePrimaryKeys": {
         "entity_price_pk": {
           "name": "entity_price_pk",
-          "columns": ["entity_id", "source_type"]
+          "columns": [
+            "entity_id",
+            "source_type"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -3928,7 +4140,9 @@
         "format_name_unique": {
           "name": "format_name_unique",
           "nullsNotDistinct": false,
-          "columns": ["name"]
+          "columns": [
+            "name"
+          ]
         }
       },
       "policies": {},
@@ -3959,7 +4173,9 @@
         "integration_name_unique": {
           "name": "integration_name_unique",
           "nullsNotDistinct": false,
-          "columns": ["name"]
+          "columns": [
+            "name"
+          ]
         }
       },
       "policies": {},
@@ -3995,8 +4211,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "external_username": {
-          "name": "external_username",
+        "link_token_enc": {
+          "name": "link_token_enc",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -4029,8 +4245,7 @@
           "name": "linked_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
+          "notNull": false
         },
         "last_used_at": {
           "name": "last_used_at",
@@ -4089,6 +4304,36 @@
           "method": "btree",
           "with": {}
         },
+        "idx_access_token": {
+          "name": "idx_access_token",
+          "columns": [
+            {
+              "expression": "access_token_enc",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_refresh_token": {
+          "name": "idx_refresh_token",
+          "columns": [
+            {
+              "expression": "refresh_token_enc",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "idx_user_integration_integration": {
           "name": "idx_user_integration_integration",
           "columns": [
@@ -4110,8 +4355,12 @@
           "name": "user_integration_user_id_user_id_fk",
           "tableFrom": "user_integration",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4119,8 +4368,12 @@
           "name": "user_integration_integration_id_integration_id_fk",
           "tableFrom": "user_integration",
           "tableTo": "integration",
-          "columnsFrom": ["integration_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "integration_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -4130,12 +4383,18 @@
         "user_integration_user_id_integration_id_unique": {
           "name": "user_integration_user_id_integration_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["user_id", "integration_id"]
+          "columns": [
+            "user_id",
+            "integration_id"
+          ]
         },
         "user_integration_integration_id_external_user_id_unique": {
           "name": "user_integration_integration_id_external_user_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["integration_id", "external_user_id"]
+          "columns": [
+            "integration_id",
+            "external_user_id"
+          ]
         }
       },
       "policies": {},
@@ -4235,8 +4494,12 @@
           "name": "meta_format_format_id_fk",
           "tableFrom": "meta",
           "tableTo": "format",
-          "columnsFrom": ["format"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "format"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -4289,12 +4552,16 @@
         "set_name_unique": {
           "name": "set_name_unique",
           "nullsNotDistinct": false,
-          "columns": ["name"]
+          "columns": [
+            "name"
+          ]
         },
         "set_abbr_unique": {
           "name": "set_abbr_unique",
           "nullsNotDistinct": false,
-          "columns": ["abbr"]
+          "columns": [
+            "abbr"
+          ]
         }
       },
       "policies": {},
@@ -4372,8 +4639,12 @@
           "name": "tournament_deck_tournament_id_tournament_id_fk",
           "tableFrom": "tournament_deck",
           "tableTo": "tournament",
-          "columnsFrom": ["tournament_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -4381,8 +4652,12 @@
           "name": "tournament_deck_deck_id_deck_id_fk",
           "tableFrom": "tournament_deck",
           "tableTo": "deck",
-          "columnsFrom": ["deck_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -4390,7 +4665,10 @@
       "compositePrimaryKeys": {
         "tournament_deck_tournament_id_deck_id_pk": {
           "name": "tournament_deck_tournament_id_deck_id_pk",
-          "columns": ["tournament_id", "deck_id"]
+          "columns": [
+            "tournament_id",
+            "deck_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -4494,8 +4772,12 @@
           "name": "tglb_tournament_group_fk",
           "tableFrom": "tournament_group_leader_base",
           "tableTo": "tournament_group",
-          "columnsFrom": ["tournament_group_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4503,7 +4785,11 @@
       "compositePrimaryKeys": {
         "tglb-pk": {
           "name": "tglb-pk",
-          "columns": ["tournament_group_id", "leader_card_id", "base_card_id"]
+          "columns": [
+            "tournament_group_id",
+            "leader_card_id",
+            "base_card_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -4579,8 +4865,12 @@
           "name": "tgs_tournament_group_fk",
           "tableFrom": "tournament_group_stats",
           "tableTo": "tournament_group",
-          "columnsFrom": ["tournament_group_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4588,7 +4878,9 @@
       "compositePrimaryKeys": {
         "tgs-pk": {
           "name": "tgs-pk",
-          "columns": ["tournament_group_id"]
+          "columns": [
+            "tournament_group_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -4672,8 +4964,12 @@
           "name": "tournament_group_tournament_tournament_id_tournament_id_fk",
           "tableFrom": "tournament_group_tournament",
           "tableTo": "tournament",
-          "columnsFrom": ["tournament_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4681,8 +4977,12 @@
           "name": "tournament_group_tournament_group_id_tournament_group_id_fk",
           "tableFrom": "tournament_group_tournament",
           "tableTo": "tournament_group",
-          "columnsFrom": ["group_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4690,7 +4990,10 @@
       "compositePrimaryKeys": {
         "tournament_group_tournament_tournament_id_group_id_pk": {
           "name": "tournament_group_tournament_tournament_id_group_id_pk",
-          "columns": ["tournament_id", "group_id"]
+          "columns": [
+            "tournament_id",
+            "group_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -4779,8 +5082,12 @@
           "name": "tournament_group_meta_id_meta_id_fk",
           "tableFrom": "tournament_group",
           "tableTo": "meta",
-          "columnsFrom": ["meta_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "meta_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -4933,8 +5240,12 @@
           "name": "tournament_match_tournament_id_tournament_id_fk",
           "tableFrom": "tournament_match",
           "tableTo": "tournament",
-          "columnsFrom": ["tournament_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -4942,8 +5253,12 @@
           "name": "tournament_match_p1_deck_id_deck_id_fk",
           "tableFrom": "tournament_match",
           "tableTo": "deck",
-          "columnsFrom": ["p1_deck_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "p1_deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -4951,8 +5266,12 @@
           "name": "tournament_match_p2_deck_id_deck_id_fk",
           "tableFrom": "tournament_match",
           "tableTo": "deck",
-          "columnsFrom": ["p2_deck_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "p2_deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -5149,8 +5468,12 @@
           "name": "tournament_user_id_user_id_fk",
           "tableFrom": "tournament",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -5158,8 +5481,12 @@
           "name": "tournament_type_tournament_type_id_fk",
           "tableFrom": "tournament",
           "tableTo": "tournament_type",
-          "columnsFrom": ["type"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "type"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -5167,8 +5494,12 @@
           "name": "tournament_format_format_id_fk",
           "tableFrom": "tournament",
           "tableTo": "format",
-          "columnsFrom": ["format"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "format"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -5176,8 +5507,12 @@
           "name": "tournament_meta_meta_id_fk",
           "tableFrom": "tournament",
           "tableTo": "meta",
-          "columnsFrom": ["meta"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "meta"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -5218,8 +5553,12 @@
           "name": "user_deck_favorite_user_id_user_id_fk",
           "tableFrom": "user_deck_favorite",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5227,8 +5566,12 @@
           "name": "user_deck_favorite_deck_id_deck_id_fk",
           "tableFrom": "user_deck_favorite",
           "tableTo": "deck",
-          "columnsFrom": ["deck_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5236,7 +5579,10 @@
       "compositePrimaryKeys": {
         "user_deck_favorite_user_id_deck_id_pk": {
           "name": "user_deck_favorite_user_id_deck_id_pk",
-          "columns": ["user_id", "deck_id"]
+          "columns": [
+            "user_id",
+            "deck_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -5273,8 +5619,12 @@
           "name": "user_settings_user_id_user_id_fk",
           "tableFrom": "user_settings",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5282,7 +5632,10 @@
       "compositePrimaryKeys": {
         "user_settings_user_id_key_pk": {
           "name": "user_settings_user_id_key_pk",
-          "columns": ["user_id", "key"]
+          "columns": [
+            "user_id",
+            "key"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -5295,22 +5648,37 @@
     "public.card_pool_deck_card_location": {
       "name": "card_pool_deck_card_location",
       "schema": "public",
-      "values": ["pool", "deck", "trash"]
+      "values": [
+        "pool",
+        "deck",
+        "trash"
+      ]
     },
     "public.card_pool_type": {
       "name": "card_pool_type",
       "schema": "public",
-      "values": ["prerelease", "sealed", "draft"]
+      "values": [
+        "prerelease",
+        "sealed",
+        "draft"
+      ]
     },
     "public.pool_status": {
       "name": "pool_status",
       "schema": "public",
-      "values": ["in_progress", "ready"]
+      "values": [
+        "in_progress",
+        "ready"
+      ]
     },
     "public.visibility": {
       "name": "visibility",
       "schema": "public",
-      "values": ["private", "unlisted", "public"]
+      "values": [
+        "private",
+        "unlisted",
+        "public"
+      ]
     }
   },
   "schemas": {},

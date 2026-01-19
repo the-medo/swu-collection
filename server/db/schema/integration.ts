@@ -28,14 +28,14 @@ export const userIntegration = pgTable(
       .references(() => integration.id, { onDelete: 'restrict' }),
 
     externalUserId: text('external_user_id').notNull(),
-    externalUsername: text('external_username'),
 
+    linkTokenEnc: text('link_token_enc'),
     refreshTokenEnc: text('refresh_token_enc'),
     accessTokenEnc: text('access_token_enc'),
     accessTokenExpiresAt: timestamp('access_token_expires_at'),
     refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
 
-    linkedAt: timestamp('linked_at').notNull().defaultNow(),
+    linkedAt: timestamp('linked_at'),
     lastUsedAt: timestamp('last_used_at'),
     revokedAt: timestamp('revoked_at'),
 
@@ -50,6 +50,8 @@ export const userIntegration = pgTable(
       userIdIntegrationIdUnique: unique().on(table.userId, table.integrationId),
       integrationIdExternalUserIdUnique: unique().on(table.integrationId, table.externalUserId),
       idxUserIntegrationUser: index('idx_user_integration_user').on(table.userId),
+      idxUserAccessToken: index('idx_access_token').on(table.accessTokenEnc),
+      idxUserRefreshToken: index('idx_refresh_token').on(table.refreshTokenEnc),
       idxUserIntegrationIntegration: index('idx_user_integration_integration').on(
         table.integrationId,
       ),
