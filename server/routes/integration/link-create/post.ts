@@ -51,50 +51,46 @@ export const linkCreatePostRoute = new Hono<AuthExtension>().post(
       return c.json({ error: 'Integration not found' }, 400);
     }
 
-    try {
-      const linkToken = generateLinkToken();
-      const linkTokenEnc = encrypt(linkToken);
+    const linkToken = generateLinkToken();
+    const linkTokenEnc = encrypt(linkToken);
 
-      // Check if link already exists for this user and integration
-      const [existingLink] = await db
-        .select()
-        .from(userIntegration)
-        .where(
-          and(
-            eq(userIntegration.userId, user.id),
-            eq(userIntegration.integrationId, integrationRecord.id),
-          ),
-        );
+    // Check if link already exists for this user and integration
+    const [existingLink] = await db
+      .select()
+      .from(userIntegration)
+      .where(
+        and(
+          eq(userIntegration.userId, user.id),
+          eq(userIntegration.integrationId, integrationRecord.id),
+        ),
+      );
 
-      if (existingLink) {
-        // Update existing link with new token and external user ID
-        await db
-          .update(userIntegration)
-          .set({
-            externalUserId,
-            linkTokenEnc,
-            scopes,
-            metadata: metadata || {},
-            updatedAt: new Date(),
-          })
-          .where(eq(userIntegration.id, existingLink.id));
-
-        return c.json({ linkToken });
-      }
-
-      // Create new link
-      await db.insert(userIntegration).values({
-        userId: user.id,
-        integrationId: integrationRecord.id,
-        externalUserId,
-        linkTokenEnc,
-        scopes,
-        metadata: metadata || {},
-      });
+    if (existingLink) {
+      // Update existing link with new token and external user ID
+      await db
+        .update(userIntegration)
+        .set({
+          externalUserId,
+          linkTokenEnc,
+          scopes,
+          metadata: metadata || {},
+          updatedAt: new Date(),
+        })
+        .where(eq(userIntegration.id, existingLink.id));
 
       return c.json({ linkToken });
-    } catch (e) {
-      console.error(e);
     }
+
+    // Create new link
+    await db.insert(userIntegration).values({
+      userId: user.id,
+      integrationId: integrationRecord.id,
+      externalUserId,
+      linkTokenEnc,
+      scopes,
+      metadata: metadata || {},
+    });
+
+    return c.json({ linkToken });
   },
 );

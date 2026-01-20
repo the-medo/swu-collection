@@ -31,7 +31,6 @@ import { Route as DecksFavoriteRouteImport } from './routes/decks/favorite'
 import { Route as CollectionsYourRouteImport } from './routes/collections/your'
 import { Route as CollectionsPublicRouteImport } from './routes/collections/public'
 import { Route as CardsSearchRouteImport } from './routes/cards/search'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as WantlistsWantlistIdIndexRouteImport } from './routes/wantlists/$wantlistId/index'
 import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId/index'
@@ -44,6 +43,7 @@ import { Route as ListsCardListIdIndexRouteImport } from './routes/lists/$cardLi
 import { Route as LimitedPublicIndexRouteImport } from './routes/limited/public/index'
 import { Route as DecksDeckIdIndexRouteImport } from './routes/decks/$deckId/index'
 import { Route as CollectionsCollectionIdIndexRouteImport } from './routes/collections/$collectionId/index'
+import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as TournamentsTournamentIdMetaRouteImport } from './routes/tournaments/$tournamentId/meta'
 import { Route as TournamentsTournamentIdMatchupsRouteImport } from './routes/tournaments/$tournamentId/matchups'
 import { Route as TournamentsTournamentIdDetailsRouteImport } from './routes/tournaments/$tournamentId/details'
@@ -53,6 +53,7 @@ import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
 import { Route as LimitedDeckDeckIdIndexRouteImport } from './routes/limited/deck/$deckId/index'
 import { Route as LimitedPoolPoolIdDetailIndexRouteImport } from './routes/limited/pool/$poolId/detail/index'
+import { Route as AuthenticatedSettingsLinkKarabastIndexRouteImport } from './routes/_authenticated/settings/link/karabast/index'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -163,11 +164,6 @@ const CardsSearchRoute = CardsSearchRouteImport.update({
   path: '/cards/search',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -234,6 +230,12 @@ const CollectionsCollectionIdIndexRoute =
     path: '/collections/$collectionId/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedSettingsIndexRoute =
+  AuthenticatedSettingsIndexRouteImport.update({
+    id: '/settings/',
+    path: '/settings/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const TournamentsTournamentIdMetaRoute =
   TournamentsTournamentIdMetaRouteImport.update({
     id: '/tournaments/$tournamentId/meta',
@@ -285,6 +287,12 @@ const LimitedPoolPoolIdDetailIndexRoute =
     path: '/limited/pool/$poolId/detail/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedSettingsLinkKarabastIndexRoute =
+  AuthenticatedSettingsLinkKarabastIndexRouteImport.update({
+    id: '/settings/link/karabast/',
+    path: '/settings/link/karabast/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -292,7 +300,6 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/settings': typeof AuthenticatedSettingsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -317,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/limited/public': typeof LimitedPublicIndexRoute
@@ -329,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
   '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
+  '/settings/link/karabast': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
 }
 export interface FileRoutesByTo {
@@ -337,7 +346,6 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/settings': typeof AuthenticatedSettingsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -362,6 +370,7 @@ export interface FileRoutesByTo {
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/limited/public': typeof LimitedPublicIndexRoute
@@ -374,6 +383,7 @@ export interface FileRoutesByTo {
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
   '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
+  '/settings/link/karabast': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
 }
 export interface FileRoutesById {
@@ -384,7 +394,6 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
-  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -409,6 +418,7 @@ export interface FileRoutesById {
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
+  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
   '/limited/public/': typeof LimitedPublicIndexRoute
@@ -421,6 +431,7 @@ export interface FileRoutesById {
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
   '/limited/deck/$deckId/': typeof LimitedDeckDeckIdIndexRoute
+  '/_authenticated/settings/link/karabast/': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail/': typeof LimitedPoolPoolIdDetailIndexRoute
 }
 export interface FileRouteTypes {
@@ -431,7 +442,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/admin'
-    | '/settings'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -456,6 +466,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
+    | '/settings'
     | '/collections/$collectionId'
     | '/decks/$deckId'
     | '/limited/public'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/users/$userId'
     | '/wantlists/$wantlistId'
     | '/limited/deck/$deckId'
+    | '/settings/link/karabast'
     | '/limited/pool/$poolId/detail'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -476,7 +488,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/admin'
-    | '/settings'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -501,6 +512,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
+    | '/settings'
     | '/collections/$collectionId'
     | '/decks/$deckId'
     | '/limited/public'
@@ -513,6 +525,7 @@ export interface FileRouteTypes {
     | '/users/$userId'
     | '/wantlists/$wantlistId'
     | '/limited/deck/$deckId'
+    | '/settings/link/karabast'
     | '/limited/pool/$poolId/detail'
   id:
     | '__root__'
@@ -522,7 +535,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/_authenticated/admin'
-    | '/_authenticated/settings'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -547,6 +559,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
+    | '/_authenticated/settings/'
     | '/collections/$collectionId/'
     | '/decks/$deckId/'
     | '/limited/public/'
@@ -559,6 +572,7 @@ export interface FileRouteTypes {
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
     | '/limited/deck/$deckId/'
+    | '/_authenticated/settings/link/karabast/'
     | '/limited/pool/$poolId/detail/'
   fileRoutesById: FileRoutesById
 }
@@ -763,13 +777,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CardsSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -854,6 +861,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsCollectionIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/settings/': {
+      id: '/_authenticated/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/tournaments/$tournamentId/meta': {
       id: '/tournaments/$tournamentId/meta'
       path: '/tournaments/$tournamentId/meta'
@@ -917,17 +931,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LimitedPoolPoolIdDetailIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/settings/link/karabast/': {
+      id: '/_authenticated/settings/link/karabast/'
+      path: '/settings/link/karabast'
+      fullPath: '/settings/link/karabast'
+      preLoaderRoute: typeof AuthenticatedSettingsLinkKarabastIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
+  AuthenticatedSettingsLinkKarabastIndexRoute: typeof AuthenticatedSettingsLinkKarabastIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
-  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
+  AuthenticatedSettingsLinkKarabastIndexRoute:
+    AuthenticatedSettingsLinkKarabastIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
