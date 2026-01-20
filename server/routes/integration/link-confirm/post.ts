@@ -73,14 +73,22 @@ export const linkConfirmPostRoute = new Hono<AuthExtension>().post(
       return c.json({ error: 'Account already linked' }, 400);
     }
 
-    const { accessToken, refreshToken, expiresIn, accessExpiresAt, refreshExpiresAt, now } =
-      generateIntegrationTokens();
+    const {
+      accessToken,
+      accessTokenEnc,
+      refreshToken,
+      refreshTokenEnc,
+      expiresIn,
+      accessExpiresAt,
+      refreshExpiresAt,
+      now,
+    } = generateIntegrationTokens();
 
     await db
       .update(userIntegration)
       .set({
-        accessTokenEnc: accessToken,
-        refreshTokenEnc: refreshToken,
+        accessTokenEnc,
+        refreshTokenEnc,
         accessTokenExpiresAt: accessExpiresAt,
         refreshTokenExpiresAt: refreshExpiresAt,
         linkedAt: now,
