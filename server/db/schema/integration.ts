@@ -59,7 +59,30 @@ export const userIntegration = pgTable(
   },
 );
 
+export const integrationGameData = pgTable(
+  'integration_game_data',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    integrationId: smallint('integration_id')
+      .notNull()
+      .references(() => integration.id, { onDelete: 'restrict' }),
+    gameId: text('game_id').notNull(),
+    lobbyId: text('lobby_id').notNull(),
+    userId1: text('user_id_1').references(() => user.id, { onDelete: 'set null' }),
+    userId2: text('user_id_2').references(() => user.id, { onDelete: 'set null' }),
+    data: jsonb('data').notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  table => {
+    return {
+      idxIntegrationGameDataGameId: index('idx_integration_game_data_game_id').on(table.gameId),
+      idxIntegrationGameDataLobbyId: index('idx_integration_game_data_lobby_id').on(table.lobbyId),
+    };
+  },
+);
+
 export const integrationSchema = {
   integration,
   userIntegration,
+  integrationGameData,
 };

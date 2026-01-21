@@ -260,6 +260,13 @@
       "when": 1768835919118,
       "tag": "0036_useful_santa_claus",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1769001915365,
+      "tag": "0037_thick_rocket_raccoon",
+      "breakpoints": true
     }
   ]
 }
