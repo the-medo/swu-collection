@@ -4,7 +4,7 @@ import {
   BookOpen,
   BookOpenCheck,
   ChartPieIcon,
-  Hammer,
+  ChartSpline,
   LayoutGrid,
   NotebookTabs,
   Plus,
@@ -120,6 +120,12 @@ const getGroups = (setOpenMobile: (open: boolean) => void, state: SidebarContext
         url: '/limited',
         icon: Package,
       },
+      /*{
+        title: 'Your statistics',
+        url: '/statistics',
+        icon: ChartSpline,
+        authenticated: true,
+      },*/
     ],
   },
   {
@@ -326,7 +332,7 @@ export function LeftSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
-        <SidebarGroup>
+        {/*<SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -345,7 +351,7 @@ export function LeftSidebar() {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup>*/}
         <SidebarGroup>
           <SidebarGroupLabel>Comparer</SidebarGroupLabel>
           <SidebarGroupAction asChild>

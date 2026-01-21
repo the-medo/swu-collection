@@ -1,0 +1,92 @@
+{
+  "format": "premier",
+  "gameId": "68b17657-32b5-4714-aaa6-978c7cf6a1a8",
+  "lobbyId": "8888fa84-7c33-4a87-8c66-22a96b39a16b",
+  "players": [
+    {
+      "data": {
+        "id": "6952ccbe-d5d5-4506-b483-42451b9d548d",
+        "base": "4301437393",
+        "deck": {
+          "id": "unknown",
+          "base": { "id": "JTL_025", "cost": null, "count": 1, "internalName": "4301437393" },
+          "name": "Han2 Oscillator v2",
+          "leader": { "id": "SHD_013", "cost": 5, "count": 1, "internalName": "9226435975" },
+          "deckSource": "swuBase"
+        },
+        "name": "Medo",
+        "leader": "9226435975",
+        "isWinner": true,
+        "accessToken": "this field arrives from karabast (is null when user is not linked) but is not inserted into swubase db"
+      },
+      "cardMetrics": {
+        "0400955141": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "0994241595": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "3232845719": { "drawn": 1, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "3337614029": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "3646264648": { "drawn": 1, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "3736081333": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "4301437393": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "4571900905": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "5876721507": { "drawn": 1, "played": 1, "activated": 0, "discarded": 0, "resourced": 0 },
+        "5966087637": { "drawn": 2, "played": 0, "activated": 0, "discarded": 0, "resourced": 2 },
+        "6234506067": { "drawn": 1, "played": 1, "activated": 1, "discarded": 0, "resourced": 0 },
+        "6404471739": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "7243187516": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "7439418148": { "drawn": 1, "played": 0, "activated": 0, "discarded": 0, "resourced": 1 },
+        "7517208605": { "drawn": 1, "played": 0, "activated": 0, "discarded": 0, "resourced": 1 },
+        "7789777396": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "8287246260": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "9033398895": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "9226435975": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "9637610169": { "drawn": 2, "played": 1, "activated": 0, "discarded": 0, "resourced": 0 }
+      }
+    },
+    {
+      "data": {
+        "id": "exe66",
+        "base": "0450346170",
+        "deck": {
+          "id": "7547f2ce-fa50-459f-8a29-fbaae89ad4a4",
+          "base": { "id": "LOF_023", "cost": null, "count": 1, "internalName": "0450346170" },
+          "name": "Qui-Gon Green Force - v2",
+          "leader": { "id": "LOF_016", "cost": 6, "count": 1, "internalName": "2580909557" },
+          "deckSource": "swuBase"
+        },
+        "name": "Order66",
+        "leader": "2580909557",
+        "isWinner": false,
+        "accessToken": "this field arrives from karabast (is null when user is not linked) but is not inserted into swubase db"
+      },
+      "cardMetrics": {
+        "0450346170": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "0612354523": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "1553569317": { "drawn": 2, "played": 0, "activated": 0, "discarded": 0, "resourced": 1 },
+        "1785627279": { "drawn": 1, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "2236831712": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "2580909557": { "drawn": 0, "played": 0, "activated": 1, "discarded": 0, "resourced": 0 },
+        "2940037100": { "drawn": 1, "played": 1, "activated": 1, "discarded": 0, "resourced": 0 },
+        "3348783048": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "3388566378": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "3426168686": { "drawn": 1, "played": 1, "activated": 0, "discarded": 0, "resourced": 0 },
+        "4571900905": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "4581577866": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "4919000710": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "5098263349": { "drawn": 1, "played": 0, "activated": 0, "discarded": 0, "resourced": 1 },
+        "5482818255": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "6059510270": { "drawn": 2, "played": 1, "activated": 1, "discarded": 0, "resourced": 1 },
+        "6536128825": { "drawn": 1, "played": 0, "activated": 0, "discarded": 0, "resourced": 1 },
+        "6847268098": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "6849037019": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "7494987248": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "7529152088": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
+        "8834515285": { "drawn": 1, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 }
+      }
+    }
+  ],
+  "startedAt": "2026-01-21T16:28:42.574Z",
+  "finishedAt": "2026-01-21T16:29:20.605Z",
+  "roundNumber": 3,
+  "winnerNames": ["Medo"],
+  "sequenceNumber": 1
+}

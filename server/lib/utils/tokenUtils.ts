@@ -77,8 +77,10 @@ export function validateCliendIdSecretCredentials(
  * Generates access and refresh tokens for integration
  */
 export function generateIntegrationTokens() {
-  const accessToken = encrypt(`access-${crypto.randomUUID()}`);
-  const refreshToken = encrypt(`refresh-${crypto.randomUUID()}`);
+  const accessToken = `access-${crypto.randomUUID()}`;
+  const refreshToken = `refresh-${crypto.randomUUID()}`;
+  const accessTokenEnc = encrypt(accessToken);
+  const refreshTokenEnc = encrypt(refreshToken);
   const now = new Date();
   const expiresIn = 3600; // 1 hour in seconds
   const accessExpiresAt = new Date(now.getTime() + expiresIn * 1000);
@@ -86,7 +88,9 @@ export function generateIntegrationTokens() {
 
   return {
     accessToken,
+    accessTokenEnc,
     refreshToken,
+    refreshTokenEnc,
     expiresIn,
     accessExpiresAt,
     refreshExpiresAt,

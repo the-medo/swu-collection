@@ -5,6 +5,7 @@ import type { AuthExtension } from '../../../auth/auth.ts';
 import {
   validateCliendIdSecretCredentials,
   generateIntegrationTokens,
+  decrypt,
 } from '../../../lib/utils/tokenUtils.ts';
 import { db } from '../../../db';
 import {
@@ -52,17 +53,25 @@ export const refreshTokenPostRoute = new Hono<AuthExtension>().post(
       return c.json({ error: 'Integration not found' }, 400);
     }
 
-    // Find the link record by refresh token and external user ID
-    const [link] = await db
+    // Find the link records by external user ID
+    const userIntegrations = await db
       .select()
       .from(userIntegration)
       .where(
         and(
           eq(userIntegration.integrationId, integrationRecord.id),
           eq(userIntegration.externalUserId, externalUserId),
-          eq(userIntegration.refreshTokenEnc, refreshToken),
         ),
       );
+
+    const link = userIntegrations.find(li => {
+      // console.log({
+      //   li,
+      //   refreshToken,
+      //   refreshToken2: li.refreshTokenEnc && decrypt(li.refreshTokenEnc),
+      // });
+      return li.refreshTokenEnc && decrypt(li.refreshTokenEnc) === refreshToken;
+    });
 
     if (!link) {
       return c.json({ error: 'Invalid refresh token or user ID' }, 400);
@@ -76,7 +85,9 @@ export const refreshTokenPostRoute = new Hono<AuthExtension>().post(
     // Generate new tokens
     const {
       accessToken,
+      accessTokenEnc,
       refreshToken: newRefreshToken,
+      refreshTokenEnc: newRefreshTokenEnc,
       expiresIn,
       accessExpiresAt,
       refreshExpiresAt,
@@ -86,8 +97,8 @@ export const refreshTokenPostRoute = new Hono<AuthExtension>().post(
     await db
       .update(userIntegration)
       .set({
-        accessTokenEnc: accessToken,
-        refreshTokenEnc: newRefreshToken,
+        accessTokenEnc,
+        refreshTokenEnc: newRefreshTokenEnc,
         accessTokenExpiresAt: accessExpiresAt,
         refreshTokenExpiresAt: refreshExpiresAt,
         updatedAt: now,
