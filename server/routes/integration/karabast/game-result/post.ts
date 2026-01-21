@@ -15,7 +15,7 @@ import { IntegrationType } from '../../../../../shared/types/integration.ts';
 const playerDataSchema = z.object({
   name: z.string(),
   id: z.string(),
-  accessToken: z.string().nullable(),
+  accessToken: z.string().nullable().optional(),
   leader: z.string().optional().nullable(),
   base: z.string().optional().nullable(),
   deck: z.any().optional().nullable(),
@@ -94,6 +94,13 @@ export const karabastGameResultPostRoute = new Hono<AuthExtension>().post(
         }
       }
     }
+
+    // Remove access tokens from the object - do not save them in the database!
+    data.players.forEach(p => {
+      if (p.data) {
+        delete p.data.accessToken;
+      }
+    });
 
     // Save to integration_game_data
     await db.insert(integrationGameData).values({

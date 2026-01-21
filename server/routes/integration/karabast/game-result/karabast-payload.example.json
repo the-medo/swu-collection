@@ -17,7 +17,7 @@
         "name": "Medo",
         "leader": "9226435975",
         "isWinner": true,
-        "accessToken": "access-1bd7ceea-1914-4f5d-9e6d-56a8de1c97ff"
+        "accessToken": "this field arrives from karabast (is null when user is not linked) but is not inserted into swubase db"
       },
       "cardMetrics": {
         "0400955141": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
@@ -56,7 +56,7 @@
         "name": "Order66",
         "leader": "2580909557",
         "isWinner": false,
-        "accessToken": null
+        "accessToken": "this field arrives from karabast (is null when user is not linked) but is not inserted into swubase db"
       },
       "cardMetrics": {
         "0450346170": { "drawn": 0, "played": 0, "activated": 0, "discarded": 0, "resourced": 0 },
