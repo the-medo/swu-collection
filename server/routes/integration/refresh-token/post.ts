@@ -64,9 +64,14 @@ export const refreshTokenPostRoute = new Hono<AuthExtension>().post(
         ),
       );
 
-    const link = userIntegrations.find(
-      li => li.refreshTokenEnc && decrypt(li.refreshTokenEnc) === refreshToken,
-    );
+    const link = userIntegrations.find(li => {
+      // console.log({
+      //   li,
+      //   refreshToken,
+      //   refreshToken2: li.refreshTokenEnc && decrypt(li.refreshTokenEnc),
+      // });
+      return li.refreshTokenEnc && decrypt(li.refreshTokenEnc) === refreshToken;
+    });
 
     if (!link) {
       return c.json({ error: 'Invalid refresh token or user ID' }, 400);
