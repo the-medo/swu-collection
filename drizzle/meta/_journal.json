@@ -267,6 +267,13 @@
       "when": 1769001915365,
       "tag": "0037_thick_rocket_raccoon",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1769381328153,
+      "tag": "0038_good_robin_chapel",
+      "breakpoints": true
     }
   ]
 }
