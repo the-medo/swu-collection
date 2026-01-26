@@ -9,6 +9,7 @@ import {
   jsonb,
 } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
+import type { InferSelectModel } from 'drizzle-orm';
 
 export const integration = pgTable('integration', {
   id: smallint('id').primaryKey(),
@@ -71,7 +72,7 @@ export const integrationGameData = pgTable(
     userId1: text('user_id_1').references(() => user.id, { onDelete: 'set null' }),
     userId2: text('user_id_2').references(() => user.id, { onDelete: 'set null' }),
     data: jsonb('data').notNull(),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
+    createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
   },
   table => {
     return {
@@ -86,3 +87,6 @@ export const integrationSchema = {
   userIntegration,
   integrationGameData,
 };
+
+export type UserIntegration = InferSelectModel<typeof userIntegration>;
+export type IntegrationGameData = InferSelectModel<typeof integrationGameData>;
