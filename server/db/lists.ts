@@ -2,7 +2,11 @@ import cardListData from './json/card-list.json';
 import countryData from './json/country-list.ts';
 import currencyData from './json/currency-list.ts';
 import type { CardsBySetAndNumber } from '../../frontend/src/api/lists/useCardList.ts';
-import type { CardList } from '../../lib/swu-resources/types.ts';
+import type {
+  CardDataWithVariants,
+  CardList,
+  CardListVariants,
+} from '../../lib/swu-resources/types.ts';
 
 export type CountryCode = (typeof countryData)[number]['code'];
 export type Country = {
@@ -21,6 +25,10 @@ export type Currency = {
 };
 export type CurrencyList = Record<CurrencyCode, Currency>;
 
+export type CardsByUid = Partial<
+  Record<string, CardDataWithVariants<CardListVariants> | undefined>
+>;
+
 const cardList = cardListData as unknown as CardList;
 Object.entries(cardList).forEach(([cardId, card]) => {
   card?.aspects.sort((a, b) => (['Heroism', 'Villainy'].includes(a) ? 1 : -1));
@@ -35,10 +43,13 @@ const validVariantNames: Record<string, true | undefined> = {
 };
 
 export const cardsBySetAndNumber: CardsBySetAndNumber = {};
+export const cardsByUid: CardsByUid = {};
+
 Object.keys(cardList).forEach(cid => {
   const card = cardList[cid];
   const variantIds = Object.keys(card?.variants ?? {});
   const type = card?.type ?? 'Unknown';
+  if (card?.cardUid) cardsByUid[card.cardUid] = card;
 
   variantIds.forEach(vid => {
     const v = card?.variants[vid];
