@@ -1,5 +1,17 @@
 import type { IntegrationGameData } from '../../db/schema/integration.ts';
 import type { GameResult } from '../../db/schema/game_result.ts';
+import { cardUidToCardId } from '../../../shared/lib/cardUidToCardId.ts';
+
+type CardMetric = Record<
+  string,
+  {
+    drawn?: number;
+    played?: number;
+    activated?: number;
+    discarded?: number;
+    resourced?: number;
+  }
+>;
 
 export type IntegrationGameDataContent = {
   format?: string;
@@ -31,16 +43,7 @@ export type IntegrationGameDataContent = {
       isWinner?: boolean;
       accessToken?: string | null;
     };
-    cardMetrics?: Record<
-      string,
-      {
-        drawn?: number;
-        played?: number;
-        activated?: number;
-        discarded?: number;
-        resourced?: number;
-      }
-    >;
+    cardMetrics?: CardMetric;
   }[];
   startedAt?: string;
   finishedAt?: string;
@@ -63,6 +66,19 @@ export const transformKarabastGameDataToGameResults = (
 
   const userIds = [integrationData.userId1, integrationData.userId2];
 
+  const mapCardMetricsKeysToCardIds = (metrics: CardMetric) => {
+    const out: typeof metrics = {};
+
+    Object.entries(metrics).forEach(([uid, value]) => {
+      const cardId = cardUidToCardId(uid);
+      if (!cardId) return;
+
+      out[cardId] = value ?? {};
+    });
+
+    return out;
+  };
+
   players.forEach((player, index) => {
     const userId = userIds[index];
 
@@ -80,17 +96,17 @@ export const transformKarabastGameDataToGameResults = (
       matchId: integrationData.lobbyId,
       gameNumber: data.sequenceNumber || null,
 
-      leaderCardId: player.data?.leader || null,
-      baseCardKey: player.data?.base || null,
+      leaderCardId: cardUidToCardId(player.data?.leader),
+      baseCardKey: cardUidToCardId(player.data?.base, true),
 
-      opponentLeaderCardId: opponent?.data?.leader || null,
-      opponentBaseCardKey: opponent?.data?.base || null,
+      opponentLeaderCardId: cardUidToCardId(opponent?.data?.leader),
+      opponentBaseCardKey: cardUidToCardId(opponent?.data?.base, true),
 
       isWinner: player.data?.isWinner || false,
 
       gameSource: 'karabast',
 
-      cardMetrics: player.cardMetrics || {},
+      cardMetrics: mapCardMetricsKeysToCardIds(player.cardMetrics || {}),
       roundMetrics: {},
 
       otherData: {
