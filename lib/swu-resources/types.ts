@@ -3,6 +3,7 @@ import { SwuArena, SwuAspect, SwuRarity, SwuSet } from '../../types/enums.ts';
 export interface ParsedCardData {
   swuId: number;
   cardId: string;
+  cardUid: string;
   updatedAt: string;
   title: string;
   subtitle?: string;
@@ -62,6 +63,7 @@ export interface CardVariant {
 
 export interface CardDataWithVariants<T = CardVariant[]> {
   cardId: string;
+  cardUid: string;
   updatedAt: string;
   variants: T;
   title: string;
@@ -90,11 +92,11 @@ export interface CardDataWithVariants<T = CardVariant[]> {
   arenas: SwuArena[];
   rarity: SwuRarity;
   set: SwuSet;
-  aspectMap: Partial<Record<SwuAspect, number | undefined>>;
-  arenaMap: Partial<Record<SwuArena, boolean>>;
-  traitMap: Record<string, boolean> | undefined;
-  keywordMap: Record<string, boolean> | undefined;
-  variantMap: Record<string, string | undefined> | undefined;
+  aspectMap?: Partial<Record<SwuAspect, number | undefined>>;
+  arenaMap?: Partial<Record<SwuArena, boolean>>;
+  traitMap?: Record<string, boolean> | undefined;
+  keywordMap?: Record<string, boolean> | undefined;
+  variantMap?: Record<string, string | undefined> | undefined;
 }
 
 export type CardListVariants = Record<string, CardVariant | undefined>;

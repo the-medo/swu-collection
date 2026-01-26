@@ -6,6 +6,7 @@ export function mergeParsedCardAndVariants(
 ): CardDataWithVariants {
   return {
     cardId: c.cardId,
+    cardUid: c.cardUid,
     updatedAt: c.updatedAt,
     name: c.name,
     title: c.title,
