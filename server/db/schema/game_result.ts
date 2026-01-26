@@ -58,6 +58,8 @@ export const gameResult = pgTable(
     opponentBaseCardKey: text('opponent_base_card_key'),
     hasInitiative: boolean('has_initiative'),
     hasMulligan: boolean('has_mulligan'),
+    isWinner: boolean('is_winner'),
+    containsUnknownCards: boolean('contains_unknown_cards').notNull().default(false),
     exclude: boolean('exclude').notNull().default(false), // exclude this game from stats
     gameSource: text('game_source').notNull(), // 'karabast' | 'manual' (extend later if needed)
     manuallyEdited: boolean('manually_edited').notNull().default(false),
