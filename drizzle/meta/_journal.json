@@ -274,6 +274,13 @@
       "when": 1769381328153,
       "tag": "0038_good_robin_chapel",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1769384483223,
+      "tag": "0039_lean_lilandra",
+      "breakpoints": true
     }
   ]
 }
