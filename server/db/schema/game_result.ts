@@ -52,6 +52,7 @@ export const gameResult = pgTable(
     matchId: text('match_id'), // Karabast lobby_id OR generated OR null
     gameId: text('game_id').notNull(), // Karabast gameId OR generated uuid/string for manual
     gameNumber: smallint('game_number'), // 1|2|3 (nullable for manual / unknown)
+    format: text('format'),
     leaderCardId: text('leader_card_id'),
     baseCardKey: text('base_card_key'),
     opponentLeaderCardId: text('opponent_leader_card_id'),

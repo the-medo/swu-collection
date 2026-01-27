@@ -95,6 +95,7 @@ export const transformKarabastGameDataToGameResults = (
       gameId: integrationData.gameId,
       matchId: integrationData.lobbyId,
       gameNumber: data.sequenceNumber || null,
+      format: data.format || null,
 
       leaderCardId: cardUidToCardId(player.data?.leader),
       baseCardKey: cardUidToCardId(player.data?.base, true),
@@ -110,7 +111,6 @@ export const transformKarabastGameDataToGameResults = (
       roundMetrics: {},
 
       otherData: {
-        format: data.format,
         roundNumber: data.roundNumber,
         startedAt: data.startedAt,
         finishedAt: data.finishedAt,
