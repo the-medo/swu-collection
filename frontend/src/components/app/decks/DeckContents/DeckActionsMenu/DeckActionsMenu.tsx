@@ -13,6 +13,7 @@ import ComparerButton from './components/ComparerButton';
 import DuplicateButton from './components/DuplicateButton';
 import ExportOptionsMenu from './components/ExportOptionsMenu';
 import AdminEditButton from './components/AdminEditButton';
+import AdminMockGameDataButton from './components/AdminMockGameDataButton';
 import PriceSourceSelector from './components/PriceSourceSelector';
 import SettingsMenu from './components/SettingsMenu';
 
@@ -52,6 +53,7 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
         />
         <SettingsMenu />
         <AdminEditButton deckId={deckId} isAdmin={isAdmin} />
+        <AdminMockGameDataButton deckId={deckId} isAdmin={isAdmin} />
       </NavigationMenuList>
     </DeckNavigationMenu>
   );
