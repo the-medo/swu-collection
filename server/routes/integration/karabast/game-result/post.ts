@@ -11,6 +11,8 @@ import {
 } from '../../../../db/schema/integration.ts';
 import { eq, and } from 'drizzle-orm';
 import { IntegrationType } from '../../../../../shared/types/integration.ts';
+import { transformKarabastGameDataToGameResults } from '../../../../lib/game-results/transformKarabastGameDataToGameResults.ts';
+import { upsertGameResults } from '../../../../lib/game-results/upsertGameResults.ts';
 
 const playerDataSchema = z.object({
   name: z.string(),
@@ -103,14 +105,22 @@ export const karabastGameResultPostRoute = new Hono<AuthExtension>().post(
     });
 
     // Save to integration_game_data
-    await db.insert(integrationGameData).values({
-      integrationId: integrationRecord.id,
-      gameId: data.gameId,
-      lobbyId: data.lobbyId,
-      userId1: playerUserIds[0],
-      userId2: playerUserIds[1],
-      data: data,
-    });
+    const [insertedRecord] = await db
+      .insert(integrationGameData)
+      .values({
+        integrationId: integrationRecord.id,
+        gameId: data.gameId,
+        lobbyId: data.lobbyId,
+        userId1: playerUserIds[0],
+        userId2: playerUserIds[1],
+        data: data,
+      })
+      .returning();
+
+    if (insertedRecord) {
+      const results = transformKarabastGameDataToGameResults(insertedRecord);
+      await upsertGameResults(results);
+    }
 
     return c.json({ success: true });
   },
