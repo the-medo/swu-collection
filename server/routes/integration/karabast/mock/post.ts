@@ -70,6 +70,7 @@ const mockSingleGame = ({
     matchId,
     gameId: crypto.randomUUID(),
     gameNumber,
+    format: 'premier',
     leaderCardId,
     baseCardKey,
     opponentLeaderCardId,
@@ -81,7 +82,6 @@ const mockSingleGame = ({
     cardMetrics: mockCardMetrics(cards),
     roundMetrics: {},
     otherData: {
-      format: 'premier',
       roundNumber,
       opponentName: 'Unknown',
       startedAt: new Date().toISOString(),
