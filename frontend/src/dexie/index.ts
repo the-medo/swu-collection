@@ -40,6 +40,23 @@ export {
   getSectionData,
 } from './dailySnapshots';
 
+// Game results exports
+export {
+  type GameResultStore,
+  getGameResultsByScope,
+  getGameResultsByScopeAndDateRange,
+  getGameResultsByScopeAndDeck,
+  getGameResultsByScopeAndFormat,
+  getGameResultsByScopeAndLeader,
+  getGameResultsByScopeLeaderAndBase,
+  getGameResultById,
+  storeGameResult,
+  storeGameResults,
+  deleteGameResult,
+  deleteGameResultsByScope,
+  getLatestUpdatedAtForScope,
+} from './gameResults';
+
 // Export auto-fetch prices hook
 export { useAutofetchPrices } from '../components/app/card-prices/useAutofetchPrices.ts';
 
