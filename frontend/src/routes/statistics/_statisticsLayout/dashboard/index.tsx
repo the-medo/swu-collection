@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Helmet } from 'react-helmet-async';
+import StatisticsDashboard from '@/components/app/statistics/StatisticsDashboard/StatisticsDashboard';
 
 export const Route = createFileRoute('/statistics/_statisticsLayout/dashboard/')({
   component: StatisticsDashboardPage,
@@ -13,9 +13,5 @@ export const Route = createFileRoute('/statistics/_statisticsLayout/dashboard/')
 });
 
 function StatisticsDashboardPage() {
-  return (
-    <>
-      <Helmet title="asd" />
-    </>
-  );
+  return <StatisticsDashboard />;
 }
