@@ -1,17 +1,7 @@
 import type { IntegrationGameData } from '../../db/schema/integration.ts';
 import type { GameResult } from '../../db/schema/game_result.ts';
 import { cardUidToCardId } from '../../../shared/lib/cardUidToCardId.ts';
-
-type CardMetric = Record<
-  string,
-  {
-    drawn?: number;
-    played?: number;
-    activated?: number;
-    discarded?: number;
-    resourced?: number;
-  }
->;
+import type { CardMetrics } from '../../../shared/types/cardMetrics.ts';
 
 export type IntegrationGameDataContent = {
   format?: string;
@@ -43,7 +33,7 @@ export type IntegrationGameDataContent = {
       isWinner?: boolean;
       accessToken?: string | null;
     };
-    cardMetrics?: CardMetric;
+    cardMetrics?: CardMetrics;
   }[];
   startedAt?: string;
   finishedAt?: string;
@@ -66,7 +56,7 @@ export const transformKarabastGameDataToGameResults = (
 
   const userIds = [integrationData.userId1, integrationData.userId2];
 
-  const mapCardMetricsKeysToCardIds = (metrics: CardMetric) => {
+  const mapCardMetricsKeysToCardIds = (metrics: CardMetrics) => {
     const out: typeof metrics = {};
 
     Object.entries(metrics).forEach(([uid, value]) => {

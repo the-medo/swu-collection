@@ -17,6 +17,7 @@ export class SwuBaseDB extends Dexie {
   collections!: Table<CollectionStore>;
   collectionCards!: Table<CollectionCardsStore>;
   cardListCache!: Table<CardListCacheStore>;
+  gameResults!: Table<import('./gameResults').GameResultStore>;
 
   constructor() {
     super('SwuBaseDB');
@@ -125,6 +126,22 @@ export class SwuBaseDB extends Dexie {
       collections: 'id',
       collectionCards: 'collectionId',
       cardListCache: 'key', // key-value store for card list data and version
+    });
+
+    // v8: game results table for caching user/team game data
+    // scopeId is either the userId (for personal games) or teamId (for team games)
+    this.version(8).stores({
+      tournamentDecks: 'id',
+      tournamentMatches: 'id',
+      cardVariantPrices: 'id, cardId, variantId, sourceType, fetchedAt',
+      cardVariantPriceFetchList: 'id, cardId, variantId, addedAt',
+      userSettings: 'key',
+      dailySnapshots: 'date',
+      collections: 'id',
+      collectionCards: 'collectionId',
+      cardListCache: 'key',
+      gameResults:
+        'id, [scopeId+updatedAt], [scopeId+deckId], [scopeId+format], [scopeId+leaderCardId], [scopeId+leaderCardId+baseCardKey]',
     });
   }
 }
