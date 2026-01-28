@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import StatisticsHistory from '@/components/app/statistics/StatisticsHistory/StatisticsHistory';
 
 export const Route = createFileRoute('/statistics/_statisticsLayout/history/')({
   component: StatisticsHistoryPage,
@@ -12,9 +13,5 @@ export const Route = createFileRoute('/statistics/_statisticsLayout/history/')({
 });
 
 function StatisticsHistoryPage() {
-  return (
-    <>
-      <div className="p-2"></div>
-    </>
-  );
+  return <StatisticsHistory />;
 }

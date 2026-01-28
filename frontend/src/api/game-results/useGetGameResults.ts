@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import {
   getGameResultsByScopeAndDateRange,
@@ -37,6 +37,8 @@ interface UseGetGameResultsParams {
   datetimeFrom?: string;
   datetimeTo?: string;
   teamId?: string;
+  userId?: string;
+  enabled?: boolean;
 }
 
 /**
@@ -47,70 +49,71 @@ interface UseGetGameResultsParams {
  * - Returns appropriate game results for given timeframe
  */
 export const useGetGameResults = (params: UseGetGameResultsParams = {}) => {
-  const { datetimeFrom, datetimeTo, teamId } = params;
+  const { datetimeFrom, datetimeTo, teamId, userId, enabled } = params;
 
   // Determine the scope: teamId if provided, otherwise 'user' for personal games
-  const scopeId = teamId ?? 'user';
+  const scopeId = enabled ? (teamId ?? userId) : undefined;
 
   return useQuery<GameResultStore[]>({
-    queryKey: ['game-results', scopeId, datetimeFrom, datetimeTo],
-    queryFn: async () => {
-      // Get last updated timestamp from localStorage for this scope
-      const lastUpdatedMap = getLastUpdatedFromStorage();
-      const lastUpdated = lastUpdatedMap[scopeId];
+    queryKey: ['game-results', scopeId],
+    queryFn:
+      enabled && scopeId
+        ? async () => {
+            // Get last updated timestamp from localStorage for this scope
+            const lastUpdatedMap = getLastUpdatedFromStorage();
+            const lastUpdated = lastUpdatedMap[scopeId];
+            const isRange = datetimeFrom && datetimeTo;
 
-      // Determine the datetime to fetch from
-      // If we have a lastUpdated, use it to only fetch newer records
-      // Otherwise, use the provided datetimeFrom or fetch all
-      const fetchFrom = lastUpdated ?? datetimeFrom;
+            // Determine the datetime to fetch from
+            // If we have a lastUpdated, use it to only fetch newer records
+            // Otherwise, use the provided datetimeFrom or fetch all
+            const fetchFrom = isRange ? datetimeFrom : (lastUpdated ?? datetimeFrom);
+            const currentUtcTime = new Date().toISOString();
 
-      // Fetch from API
-      const response = await api['game-results'].$get({
-        query: {
-          datetimeFrom: fetchFrom,
-          datetimeTo,
-          teamId,
-        },
-      });
+            // Fetch from API
+            const response = await api['game-results'].$get({
+              query: {
+                datetimeFrom: fetchFrom,
+                datetimeTo,
+                teamId,
+              },
+            });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch game results');
-      }
+            if (!response.ok) {
+              throw new Error('Failed to fetch game results');
+            }
 
-      const apiResults = (await response.json()) as GameResult[];
+            const apiResults = (await response.json()) as GameResult[];
 
-      // Transform API results to store format (add scopeId)
-      const resultsToStore: GameResultStore[] = apiResults.map(result => ({
-        ...result,
-        scopeId,
-        cardMetrics: result.cardMetrics as CardMetrics,
-        roundMetrics: result.roundMetrics as Record<string, unknown>,
-        otherData: result.otherData as Record<string, unknown>,
-      }));
+            // Transform API results to store format (add scopeId)
+            const resultsToStore: GameResultStore[] = apiResults.map(result => ({
+              ...result,
+              scopeId,
+              cardMetrics: result.cardMetrics as CardMetrics,
+              roundMetrics: result.roundMetrics as Record<string, unknown>,
+              otherData: result.otherData as Record<string, unknown>,
+            }));
 
-      // Store in Dexie (only updates if newer)
-      if (resultsToStore.length > 0) {
-        await storeGameResults(resultsToStore);
+            // Store in Dexie (only updates if newer)
+            if (resultsToStore.length > 0) {
+              await storeGameResults(resultsToStore);
+            }
 
-        // Update the last updated timestamp in localStorage
-        // Find the most recent updatedAt from the fetched results
-        const mostRecentUpdatedAt = resultsToStore.reduce((latest, result) => {
-          return result.updatedAt! > latest! ? result.updatedAt! : latest;
-        }, resultsToStore[0].updatedAt!);
+            if (!isRange) {
+              setLastUpdatedInStorage(scopeId, currentUtcTime);
+            }
 
-        setLastUpdatedInStorage(scopeId, mostRecentUpdatedAt);
-      }
+            // Return game results from Dexie for the requested date range
+            // This ensures we return all cached data, not just what was fetched
+            const cachedResults = await getGameResultsByScopeAndDateRange(
+              scopeId,
+              datetimeFrom,
+              datetimeTo,
+            );
 
-      // Return game results from Dexie for the requested date range
-      // This ensures we return all cached data, not just what was fetched
-      const cachedResults = await getGameResultsByScopeAndDateRange(
-        scopeId,
-        datetimeFrom,
-        datetimeTo,
-      );
-
-      return cachedResults;
-    },
+            return cachedResults;
+          }
+        : skipToken,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };

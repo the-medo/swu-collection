@@ -4,7 +4,7 @@ import { z } from 'zod';
 import type { AuthExtension } from '../../auth/auth.ts';
 import { db } from '../../db';
 import { gameResult } from '../../db/schema/game_result.ts';
-import { eq, and, gte, lte, desc } from 'drizzle-orm';
+import { eq, and, lte, desc, gt } from 'drizzle-orm';
 
 const schema = z.object({
   datetimeFrom: z.string().optional(),
@@ -29,11 +29,11 @@ export const gameResultGetRoute = new Hono<AuthExtension>().get(
     if (datetimeFrom && datetimeTo) {
       whereClause = and(
         eq(gameResult.userId, user.id),
-        gte(gameResult.createdAt, datetimeFrom),
+        gt(gameResult.createdAt, datetimeFrom),
         lte(gameResult.createdAt, datetimeTo),
       );
     } else if (datetimeFrom) {
-      whereClause = and(eq(gameResult.userId, user.id), gte(gameResult.updatedAt, datetimeFrom));
+      whereClause = and(eq(gameResult.userId, user.id), gt(gameResult.updatedAt, datetimeFrom));
     } else {
       whereClause = eq(gameResult.userId, user.id);
     }
