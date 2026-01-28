@@ -120,12 +120,12 @@ const getGroups = (setOpenMobile: (open: boolean) => void, state: SidebarContext
         url: '/limited',
         icon: Package,
       },
-      /*{
+      {
         title: 'Your statistics',
         url: '/statistics',
         icon: ChartSpline,
         authenticated: true,
-      },*/
+      },
     ],
   },
   {
