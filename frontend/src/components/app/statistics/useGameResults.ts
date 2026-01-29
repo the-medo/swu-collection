@@ -23,6 +23,7 @@ export type MatchResult = {
   finalWins?: number;
   finalLosses?: number;
 
+  deckId?: string;
   userEventId?: string;
   firstGameCreatedAt: string;
 };
@@ -36,6 +37,14 @@ export interface StatisticsHistoryData {
     object: Record<string, MatchResult>; // match id is the key
     array: MatchResult[]; // sorted match pointers to `.object` property (desc by firstGameCreatedAt)
     byDate: Record<string, MatchResult[]>;
+    byLeaderBase: {
+      lastPlayed: Record<string, string>;
+      matches: Record<string, MatchResult[]>;
+    };
+    byDeckId: {
+      lastPlayed: Record<string, string>;
+      matches: Record<string, MatchResult[]>;
+    };
   };
 }
 
@@ -69,6 +78,14 @@ export const useGameResults = (
           object: {},
           array: [],
           byDate: {},
+          byLeaderBase: {
+            lastPlayed: {},
+            matches: {},
+          },
+          byDeckId: {
+            lastPlayed: {},
+            matches: {},
+          },
         },
       };
     }
@@ -101,6 +118,7 @@ export const useGameResults = (
           baseCardKey: game.baseCardKey ?? undefined,
           opponentLeaderCardId: game.opponentLeaderCardId ?? undefined,
           opponentBaseCardKey: game.opponentBaseCardKey ?? undefined,
+          deckId: game.deckId ?? undefined,
           userEventId: game.userEventId ?? undefined,
           exclude: false,
           manuallyEdited: false,
@@ -158,7 +176,7 @@ export const useGameResults = (
     const matchesByDate: Record<string, MatchResult[]> = {};
     matchesArray.forEach(match => {
       if (!match.firstGameCreatedAt) return;
-      const date = new Date(match.firstGameCreatedAt);
+      const date = new Date(`${match.firstGameCreatedAt}Z`);
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
@@ -170,6 +188,43 @@ export const useGameResults = (
       matchesByDate[dateString].push(match);
     });
 
+    const matchesByLeaderBase: StatisticsHistoryData['matches']['byLeaderBase'] = {
+      lastPlayed: {},
+      matches: {},
+    };
+    const matchesByDeckId: StatisticsHistoryData['matches']['byDeckId'] = {
+      lastPlayed: {},
+      matches: {},
+    };
+
+    matchesArray.forEach(match => {
+      if (match.leaderCardId && match.baseCardKey) {
+        const key = `${match.leaderCardId}:${match.baseCardKey}`;
+        if (!matchesByLeaderBase.matches[key]) {
+          matchesByLeaderBase.matches[key] = [];
+        }
+        matchesByLeaderBase.matches[key].push(match);
+
+        const currentLastPlayed = matchesByLeaderBase.lastPlayed[key];
+        if (!currentLastPlayed || match.firstGameCreatedAt > currentLastPlayed) {
+          matchesByLeaderBase.lastPlayed[key] = match.firstGameCreatedAt;
+        }
+      }
+
+      if (match.deckId) {
+        const key = match.deckId;
+        if (!matchesByDeckId.matches[key]) {
+          matchesByDeckId.matches[key] = [];
+        }
+        matchesByDeckId.matches[key].push(match);
+
+        const currentLastPlayed = matchesByDeckId.lastPlayed[key];
+        if (!currentLastPlayed || match.firstGameCreatedAt > currentLastPlayed) {
+          matchesByDeckId.lastPlayed[key] = match.firstGameCreatedAt;
+        }
+      }
+    });
+
     return {
       games: {
         object: gamesObject,
@@ -179,6 +234,8 @@ export const useGameResults = (
         object: matchesObject,
         array: matchesArray,
         byDate: matchesByDate,
+        byLeaderBase: matchesByLeaderBase,
+        byDeckId: matchesByDeckId,
       },
     };
   }, [gameResultData, isLoading, datetimeFrom, datetimeTo]);
