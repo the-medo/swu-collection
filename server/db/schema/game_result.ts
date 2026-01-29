@@ -94,4 +94,8 @@ export const gameResult = pgTable(
 );
 
 export type UserEvent = InferSelectModel<typeof userEvent>;
-export type GameResult = InferInsertModel<typeof gameResult>;
+export type GameResult = InferInsertModel<typeof gameResult> & {
+  otherData: {
+    opponentName?: string;
+  };
+};

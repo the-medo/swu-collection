@@ -23,7 +23,7 @@ function RouteComponent() {
   });
 
   return (
-    <div className="p-4">
+    <div className="p-4 @container/full-stats-page">
       <StatisticsTabs activeTab={activeTab} className="mb-4" />
       <Outlet />
     </div>
