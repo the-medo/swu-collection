@@ -87,9 +87,9 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({ match }) => {
               </div>
             </div>
 
-            <div className="flex absolute gap-2 right-40 top-10">
+            <div className="flex absolute gap-2 left-40 right-40 top-12 justify-between">
               <span className="text-[10px] text-muted-foreground">
-                {formatDistanceToNow(match.firstGameCreatedAt, { addSuffix: true })}
+                {formatDistanceToNow(`${match.firstGameCreatedAt}Z`, { addSuffix: true })}
               </span>
               <Badge variant="outline" size="small">
                 {match.type}

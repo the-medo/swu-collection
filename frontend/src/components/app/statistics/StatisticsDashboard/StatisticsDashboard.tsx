@@ -1,20 +1,22 @@
 import * as React from 'react';
-import { useGetGameResults } from '@/api/game-results/useGetGameResults.ts';
-import { useSession } from '@/lib/auth-client.ts';
+import { useGameResults } from '@/components/app/statistics/useGameResults.ts';
+import { Card } from '@/components/ui/card.tsx';
+import DashboardCalendar from '@/components/app/statistics/StatisticsDashboard/DashboardCalendar/DashboardCalendar.tsx';
 
 interface StatisticsDashboardProps {
-  scopeId?: string;
+  teamId?: string;
 }
 
-const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ scopeId }) => {
-  const session = useSession();
+const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => {
+  const gameResultData = useGameResults({ teamId });
 
-  useGetGameResults({
-    enabled: !!session.data,
-    userId: session.data?.user.id,
-  });
-
-  return <div>Statistics Dashboard {scopeId}</div>;
+  return (
+    <div className="flex flex-col gap-4">
+      <Card className="p-4">
+        <DashboardCalendar matchesByDate={gameResultData?.matches.byDate} />
+      </Card>
+    </div>
+  );
 };
 
 export default StatisticsDashboard;
