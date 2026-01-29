@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@nivo/bump": "^0.99.0",
+    "@nivo/calendar": "^0.99.0",
     "@nivo/pie": "^0.99.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",

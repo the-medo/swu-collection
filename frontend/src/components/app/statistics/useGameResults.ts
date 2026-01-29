@@ -35,6 +35,7 @@ export interface StatisticsHistoryData {
   matches: {
     object: Record<string, MatchResult>; // match id is the key
     array: MatchResult[]; // sorted match pointers to `.object` property (desc by firstGameCreatedAt)
+    byDate: Record<string, MatchResult[]>;
   };
 }
 
@@ -67,6 +68,7 @@ export const useGameResults = (
         matches: {
           object: {},
           array: [],
+          byDate: {},
         },
       };
     }
@@ -153,6 +155,21 @@ export const useGameResults = (
       return new Date(b.firstGameCreatedAt).getTime() - new Date(a.firstGameCreatedAt).getTime();
     });
 
+    const matchesByDate: Record<string, MatchResult[]> = {};
+    matchesArray.forEach(match => {
+      if (!match.firstGameCreatedAt) return;
+      const date = new Date(match.firstGameCreatedAt);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateString = `${year}-${month}-${day}`;
+
+      if (!matchesByDate[dateString]) {
+        matchesByDate[dateString] = [];
+      }
+      matchesByDate[dateString].push(match);
+    });
+
     return {
       games: {
         object: gamesObject,
@@ -161,6 +178,7 @@ export const useGameResults = (
       matches: {
         object: matchesObject,
         array: matchesArray,
+        byDate: matchesByDate,
       },
     };
   }, [gameResultData, isLoading, datetimeFrom, datetimeTo]);
