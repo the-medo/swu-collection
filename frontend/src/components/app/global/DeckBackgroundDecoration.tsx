@@ -10,8 +10,8 @@ const positionClasses = {
 };
 
 const positionBaseClasses = {
-  'top-left': ' -top-[50px] left-[30px] rotate-25',
-  'top-right': ' -top-[50px] right-[30px] -rotate-25',
+  'top-left': ' -top-[50px] -left-[15px] rotate-25',
+  'top-right': ' -top-[50px] -right-[10px] -rotate-25',
 };
 
 const positionChildrenClasses = {
@@ -88,7 +88,7 @@ const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
       </div>
       <div
         className={cn(
-          'absolute w-[100px] h-[300px] overflow-hidden z-10',
+          'absolute w-[100px] h-[450px] overflow-hidden z-10',
           positionBaseClasses[position],
           position === 'top-left' && `border-r-[10px]`,
           position === 'top-right' && `border-l-[10px]`,
