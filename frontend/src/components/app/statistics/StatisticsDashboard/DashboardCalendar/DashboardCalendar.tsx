@@ -73,7 +73,7 @@ const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) 
   }, []);
 
   return (
-    <div style={{ height: '200px', minWidth: '330px' }}>
+    <div style={{ height: '200px', minWidth: '400px' }}>
       <ResponsiveTimeRange
         data={calendarData}
         from={from}
