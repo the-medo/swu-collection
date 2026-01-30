@@ -5,6 +5,7 @@ import { basicBaseForAspect } from '../../../../../../../shared/lib/basicBases.t
 import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
 import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
+import { StatSection } from '@/components/app/statistics/common/StatSection';
 
 interface DeckInfoThumbnailProps {
   leaderCardId: string;
@@ -44,31 +45,6 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
       baseCard: base,
     };
   }, [leaderCardId, baseCardKey, cardListData]);
-
-  const getWRColor = (wr: number) => {
-    if (wr > 50) return 'text-green-600';
-    if (wr < 50) return 'text-red-600';
-    return 'text-black';
-  };
-
-  const StatSection: React.FC<{
-    label: string;
-    wins: number;
-    losses: number;
-    winrate: number;
-  }> = ({ label, wins, losses, winrate }) => (
-    <div className="flex flex-col items-center">
-      <span className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{label}</span>
-      <div className="bg-muted/50 rounded-lg p-2 flex flex-col items-center min-w-[80px]">
-        <h4 className="text-lg font-black leading-none mb-0!">
-          {wins}W-{losses}L
-        </h4>
-        <span className={`text-xs font-bold mt-1 ${getWRColor(winrate)}`}>
-          {winrate.toFixed(1)}% WR
-        </span>
-      </div>
-    </div>
-  );
 
   return (
     <Card className="overflow-hidden relative w-full h-[200px] min-w-[300px]">
