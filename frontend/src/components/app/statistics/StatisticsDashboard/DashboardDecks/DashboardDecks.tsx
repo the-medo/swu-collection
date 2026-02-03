@@ -7,8 +7,10 @@ interface DashboardDecksProps {
   byDeckId: StatisticsHistoryData['matches']['byDeckId'];
 }
 
+const RECENT_DECK_COUNT = 5;
+
 const DashboardDecks: React.FC<DashboardDecksProps> = ({ byDeckId }) => {
-  const topDecks = useMemo(() => {
+  const recentDecks = useMemo(() => {
     if (!byDeckId || !byDeckId.lastPlayed) return [];
 
     const deckIds = Object.keys(byDeckId.lastPlayed);
@@ -20,10 +22,9 @@ const DashboardDecks: React.FC<DashboardDecksProps> = ({ byDeckId }) => {
       return dateB - dateA;
     });
 
-    // Take top 3
-    const topThreeIds = sortedDeckIds.slice(0, 3);
+    const recentIds = sortedDeckIds.slice(0, RECENT_DECK_COUNT);
 
-    return topThreeIds.map(deckId => {
+    return recentIds.map(deckId => {
       const matches = byDeckId.matches[deckId] || [];
       const firstMatch = matches[0]; // To get leader and base
 
@@ -57,11 +58,11 @@ const DashboardDecks: React.FC<DashboardDecksProps> = ({ byDeckId }) => {
     });
   }, [byDeckId]);
 
-  if (topDecks.length === 0) return null;
+  if (recentDecks.length === 0) return null;
 
   return (
     <div className="flex gap-4">
-      {topDecks.map(deck => (
+      {recentDecks.map(deck => (
         <DeckInfoThumbnail
           key={deck.deckId}
           leaderCardId={deck.leaderCardId}
