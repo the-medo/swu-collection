@@ -1,6 +1,7 @@
 import path from 'path';
 import fs, { promises as fsPromises } from 'fs';
 import type { CardDataWithVariants, CardList, CardListVariants } from './types.ts';
+import type { SwuSet } from '../../types/enums.ts';
 
 const directoryPath = path.join(__dirname, './output/cards');
 const outputPath = path.join('./server/db/json');
@@ -17,7 +18,11 @@ async function addCardToCardList(filePath: string, cl: CardList) {
       oldVariants = cl[cardId]?.variants;
     }
 
-    cl[cardId] = { ...cardData, variants: {} };
+    cl[cardId] = {
+      ...cardData,
+      set: cardData.set ?? cl[cardId]?.set, // use the old set when not present in card data
+      variants: {},
+    };
     variants.forEach(v => {
       cl[cardId]!.variants[v.variantId] = v;
     });

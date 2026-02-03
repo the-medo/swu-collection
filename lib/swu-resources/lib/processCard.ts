@@ -9,11 +9,14 @@ import { processVariantImages } from './processVariantImages.ts';
 import { downloadAndTransformVariantImages } from './downloadAndTransformVariantImages.ts';
 import type { CardVariant, ParsedCardData } from '../types.ts';
 import { setInfo } from '../set-info.ts';
+import type { SwuSet } from '../../../types/enums.ts';
 
 export async function processCard(card: any, skipExisting = true) {
   const c = card.attributes;
   if (c.subtitle === '') c.subtitle = null;
   const cardName = c.subtitle !== null ? `${c.title}, ${c.subtitle}` : c.title;
+
+  const expansion = c.expansion.data.attributes.code.toLowerCase() as SwuSet;
 
   try {
     const parsedCard: ParsedCardData = {
@@ -48,7 +51,7 @@ export async function processCard(card: any, skipExisting = true) {
               type: c.type2.data?.attributes.name ?? c.type.data.attributes.name,
             }
           : null,
-      set: c.expansion.data.attributes.code.toLowerCase(),
+      set: expansion,
       aspects: c.aspects.data
         .map((a: any) => a.attributes.name)
         .concat(c.aspectDuplicates.data.map((a: any) => a.attributes.name)),
@@ -92,11 +95,11 @@ export async function processCard(card: any, skipExisting = true) {
 
     let newestSet = parsedCard.set;
     for (const p of allVariants) {
-      if (setInfo[p.set]?.sortValue > setInfo[newestSet]?.sortValue) {
-        newestSet = p.set;
-      }
       await processVariantImages(p);
       await downloadAndTransformVariantImages(p, parsedCard.cardId);
+      if ((setInfo[p.set]?.sortValue ?? 0) > (setInfo[newestSet]?.sortValue ?? 0)) {
+        newestSet = p.set;
+      }
     }
     parsedCard.set = newestSet;
 
