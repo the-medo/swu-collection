@@ -42,6 +42,15 @@ export const rotationBlocks: Record<number | string, RotationBlock> = {
       [SwuSet.SEC]: true,
     },
   },
+  3: {
+    id: 3,
+    year: 2026,
+    name: 'Block 3 (LAW)',
+    hexColor: '#4782c6',
+    setMap: {
+      [SwuSet.LAW]: true,
+    },
+  },
 };
 
 export const setInfo: Record<SwuSet, SetInfo> = {
@@ -107,6 +116,15 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 73,
     hexColor: '#68177f',
     rotationBlockId: 2,
+  },
+  [SwuSet.LAW]: {
+    code: SwuSet.LAW,
+    name: 'A Lawless Time',
+    cardCount: 264,
+    sortValue: 8,
+    expansionId: 93,
+    hexColor: '#df7826',
+    rotationBlockId: 3,
   },
 } as const;
 
