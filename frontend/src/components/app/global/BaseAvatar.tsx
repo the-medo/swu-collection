@@ -107,6 +107,11 @@ const BaseAvatar: React.FC<CardAvatarProps> = ({
             <AspectIcon aspect="force" size="small" />
           </div>
         )}
+        {processedBase?.isBasicAspectIgnoreBase && (
+          <div className="bg-white p-[2px] rounded-full">
+            <AspectIcon aspect="aspect-ignore" size="small" />
+          </div>
+        )}
         {!isIconBase && processedBase?.shortcut}
       </span>
     </div>
