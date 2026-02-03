@@ -47,7 +47,7 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
   }, [leaderCardId, baseCardKey, cardListData]);
 
   return (
-    <Card className="overflow-hidden relative w-full h-[200px] min-w-[300px]">
+    <Card className="overflow-hidden relative w-full h-[200px] min-w-[350px]">
       <div className="flex-1 relative h-full">
         {leaderCard && (
           <DeckBackgroundDecoration leaderCard={leaderCard} baseCard={baseCard} position="top-left">
@@ -55,15 +55,6 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
           </DeckBackgroundDecoration>
         )}
         <CardContent className="flex flex-col h-full p-2 relative z-10 items-end justify-end gap-4">
-          <div className="flex flex-col gap-2">
-            <span className="text-[10px] font-bold uppercase text-muted-foreground">
-              Total matches
-            </span>
-            <div className="bg-muted/50 rounded-lg p-1 flex flex-col items-center">
-              <h5 className="mb-0!">{matchWins + matchLosses}</h5>
-            </div>
-          </div>
-
           <div className="flex gap-4">
             <StatSection label="Games" wins={gameWins} losses={gameLosses} winrate={gameWinrate} />
             <StatSection

@@ -58,29 +58,12 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
     };
   }, [matches]);
 
-  if (!matches || matches.length === 0) {
+  if (!matches) {
     return <div className="text-muted-foreground italic">No matches recorded yet.</div>;
   }
 
   return (
     <div className="flex flex-col items-center justify-center h-full gap-4 py-2">
-      <div className="flex gap-8 items-center">
-        <div className="flex flex-col gap-2 items-center">
-          <span className="text-[10px] font-bold uppercase text-muted-foreground">Total games</span>
-          <div className="bg-muted/50 rounded-lg p-1 px-4 flex flex-col items-center">
-            <h5 className="mb-0! font-bold">{stats.totalGames}</h5>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2 items-center">
-          <span className="text-[10px] font-bold uppercase text-muted-foreground">
-            Total matches
-          </span>
-          <div className="bg-muted/50 rounded-lg p-1 px-4 flex flex-col items-center">
-            <h5 className="mb-0! font-bold">{stats.totalMatches}</h5>
-          </div>
-        </div>
-      </div>
-
       <div className="flex gap-4">
         <StatSection
           label="Games"
