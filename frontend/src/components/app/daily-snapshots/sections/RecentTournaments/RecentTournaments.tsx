@@ -119,7 +119,7 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   );
 
   return (
-    <div className="w-full h-full flex flex-col gap-2 min-h-0">
+    <div className="w-full h-full flex flex-col gap-2 min-h-[500px] md:min-h-0">
       <SectionHeader
         headerAndTooltips={
           <>
@@ -130,14 +130,9 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
               tournamentGroupExtendedInfo={groups}
             >
               <div className="text-sm">
-                All major tournaments from last 30 days + all tournaments from last 2 weeks - hover
-                any row to see the winning deck. Rows marked with{' '}
-                <X className="h-4 w-4 text-red-500 inline-block" /> are not yet imported (and maybe
-                won't be, depending on the data that is provided from melee.gg).
-              </div>
-              <div>
-                Possible to turn on "Winning deck mode", which will replace tournament name with
-                deck name and lead you straight to tournament decks.
+                All major tournaments from last 30 days + all tournaments from last 2 weeks. Rows
+                marked with <X className="h-4 w-4 text-red-500 inline-block" /> are not yet imported
+                (and maybe won't be, depending on the data that is provided from melee.gg).
               </div>
             </SectionInfoTooltip>
           </>
