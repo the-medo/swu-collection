@@ -19,6 +19,10 @@ export const basicBaseForAspect: Record<SwuAspect | string, string> = {
   ['Command-Force']: 'jedi-temple',
   ['Aggression-Force']: 'fortress-vader',
   ['Cunning-Force']: 'crystal-caves',
+  ['Vigilance-AspectIgnore']: 'daimyo-s-palace',
+  ['Command-AspectIgnore']: 'aldhani-garrison',
+  ['Aggression-AspectIgnore']: 'stygeon-spire',
+  ['Cunning-AspectIgnore']: 'canto-bight',
 };
 
 export const basicForceBaseForAspect: Record<string, string> = {
@@ -26,6 +30,13 @@ export const basicForceBaseForAspect: Record<string, string> = {
   ['Command-Force']: 'jedi-temple',
   ['Aggression-Force']: 'fortress-vader',
   ['Cunning-Force']: 'crystal-caves',
+};
+
+export const basicAspectIgnoreBaseForAspect: Record<string, string> = {
+  ['Vigilance-AspectIgnore']: 'daimyo-s-palace',
+  ['Command-AspectIgnore']: 'aldhani-garrison',
+  ['Aggression-AspectIgnore']: 'stygeon-spire',
+  ['Cunning-AspectIgnore']: 'canto-bight',
 };
 
 export const baseSpecialNames: Record<string, string> = {
@@ -43,6 +54,8 @@ export const baseSpecialNames: Record<string, string> = {
   //force Vigilance bases
   'nightsister-lair': 'Vigilance-Force',
   'shadowed-undercity': 'Vigilance-Force',
+  // aspect ignore base
+  'daimyo-s-palace': 'Vigilance-AspectIgnore',
 
   // basic Command bases
   'command-center': 'Command',
@@ -58,6 +71,8 @@ export const baseSpecialNames: Record<string, string> = {
   //force Command bases
   'jedi-temple': 'Command-Force',
   'starlight-temple': 'Command-Force',
+  // aspect ignore base
+  'aldhani-garrison': 'Command-AspectIgnore',
 
   // basic Aggresion bases
   'catacombs-of-cadera': 'Aggression',
@@ -73,6 +88,8 @@ export const baseSpecialNames: Record<string, string> = {
   // force Aggresion bases
   'fortress-vader': 'Aggression-Force',
   'strangled-cliffs': 'Aggression-Force',
+  // aspect ignore base
+  'stygeon-spire': 'Aggression-AspectIgnore',
 
   // basic Cunning bases
   'administrator-s-tower': 'Cunning',
@@ -87,6 +104,8 @@ export const baseSpecialNames: Record<string, string> = {
   // force Cunning bases
   'crystal-caves': 'Cunning-Force',
   'the-holy-city': 'Cunning-Force',
+  // aspect ignore base
+  'canto-bight': 'Cunning-AspectIgnore',
 };
 
 export const baseSpecialNameValues = new Set(Object.values(baseSpecialNames));

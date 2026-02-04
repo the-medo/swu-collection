@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils.ts';
 import GridSection, {
   SectionCardSizing,
 } from '@/components/app/global/GridSection/GridSection.tsx';
-import { motion } from 'framer-motion';
 import type { DailySnapshotSectionData } from '../../../../../types/DailySnapshots.ts';
 import SocialButtons from '@/components/app/global/SocialButtons.tsx';
 import FallbackPage from '@/components/app/daily-snapshots/FallbackPage.tsx';
@@ -119,23 +118,13 @@ const DailySnapshots: React.FC = () => {
       {/* Spacer to prevent content from appearing under the fixed header */}
       <div className="flex gap-4 justify-between" aria-hidden="true">
         <div className="flex flex-1 flex-col" aria-hidden="true">
-          <motion.h1
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-center font-medium text-foreground/80 mb-0"
-          >
+          <h1 className="text-center font-medium text-foreground/80 mb-0">
             <span className="font-normal">SWU</span>
             <span className="font-bold">BASE</span>
-          </motion.h1>
-          <motion.h4
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-center font-medium  text-foreground/80"
-          >
+          </h1>
+          <h4 className="text-center font-medium  text-foreground/80">
             Your Ultimate Star Wars: Unlimited Companion
-          </motion.h4>
+          </h4>
         </div>
 
         <SocialButtons location="header" />
