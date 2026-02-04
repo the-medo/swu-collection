@@ -199,7 +199,7 @@ export const useGameResults = (
 
     matchesArray.forEach(match => {
       if (match.leaderCardId && match.baseCardKey) {
-        const key = `${match.leaderCardId}:${match.baseCardKey}`;
+        const key = `${match.leaderCardId}|${match.baseCardKey}`;
         if (!matchesByLeaderBase.matches[key]) {
           matchesByLeaderBase.matches[key] = [];
         }
