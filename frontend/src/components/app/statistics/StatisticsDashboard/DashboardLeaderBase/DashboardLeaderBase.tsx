@@ -11,7 +11,7 @@ interface DashboardLeaderBaseProps {
   byDeckId: StatisticsHistoryData['matches']['byDeckId'];
 }
 
-const RECENT_LEADER_BASE_COUNT = 5;
+const RECENT_LEADER_BASE_COUNT = 4;
 
 const DashboardLeaderBase: React.FC<DashboardLeaderBaseProps> = ({ byLeaderBase, byDeckId }) => {
   const recentCombinations = useMemo(() => {
@@ -47,17 +47,13 @@ const DashboardLeaderBase: React.FC<DashboardLeaderBaseProps> = ({ byLeaderBase,
 
   if (recentCombinations.length === 0) return null;
 
-  return (
-    <div className="flex gap-4">
-      {recentCombinations.map(combo => (
-        <LeaderBaseInfoThumbnail
-          key={combo.leaderBaseStatistics.deckId}
-          statistics={combo.leaderBaseStatistics}
-          deckStatistics={combo.deckStatistics}
-        />
-      ))}
-    </div>
-  );
+  return recentCombinations.map(combo => (
+    <LeaderBaseInfoThumbnail
+      key={combo.leaderBaseStatistics.deckId}
+      statistics={combo.leaderBaseStatistics}
+      deckStatistics={combo.deckStatistics}
+    />
+  ));
 };
 
 export default DashboardLeaderBase;

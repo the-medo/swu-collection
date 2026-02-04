@@ -67,10 +67,12 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
       }
     });
 
-    return Object.values(recentDecksMap).sort((a, b) => {
-      if (!a.lastPlayed || !b.lastPlayed) return 0;
-      return new Date(b.lastPlayed).getTime() - new Date(a.lastPlayed).getTime();
-    });
+    return Object.values(recentDecksMap)
+      .sort((a, b) => {
+        if (!a.lastPlayed || !b.lastPlayed) return 0;
+        return new Date(b.lastPlayed).getTime() - new Date(a.lastPlayed).getTime();
+      })
+      .slice(0, 3);
   }, [matches]);
 
   const { leaderCard, baseCard } = useMemo(() => {
@@ -86,7 +88,7 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
 
   return (
     <Link to={'/statistics/decks'} search={prev => ({ ...prev, leaderCardId, baseCardKey })}>
-      <Card className="overflow-hidden relative w-full h-full min-h-[200px] min-w-[350px]">
+      <Card className="overflow-hidden relative w-full h-full min-h-[200px] min-w-[350px] hover:shadow-md">
         <div className="flex-1 relative h-full">
           {leaderCard && (
             <DeckBackgroundDecoration
