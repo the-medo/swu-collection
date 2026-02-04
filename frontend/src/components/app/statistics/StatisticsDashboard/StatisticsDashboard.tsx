@@ -3,6 +3,7 @@ import { useGameResults } from '@/components/app/statistics/useGameResults.ts';
 import { Card } from '@/components/ui/card.tsx';
 import DashboardCalendar from '@/components/app/statistics/StatisticsDashboard/DashboardCalendar/DashboardCalendar.tsx';
 import DashboardDecks from '@/components/app/statistics/StatisticsDashboard/DashboardDecks/DashboardDecks.tsx';
+import DashboardLeaderBase from '@/components/app/statistics/StatisticsDashboard/DashboardLeaderBase/DashboardLeaderBase.tsx';
 import DashboardOverview from '@/components/app/statistics/StatisticsDashboard/DashboardOverview/DashboardOverview.tsx';
 import { isAfter, startOfDay, subDays } from 'date-fns';
 
@@ -51,10 +52,19 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
         )}
       </div>
       {gameResultData && (
-        <Card className="p-4 overflow-x-auto">
-          <h3 className="text-lg font-semibold mb-4">Recently played decks</h3>
-          <DashboardDecks byDeckId={gameResultData.matches.byDeckId} />
-        </Card>
+        <>
+          <Card className="p-4 overflow-x-auto">
+            <h3 className="text-lg font-semibold mb-4">Recently played decks</h3>
+            <DashboardDecks byDeckId={gameResultData.matches.byDeckId} />
+          </Card>
+          <Card className="p-4 overflow-x-auto">
+            <h3 className="text-lg font-semibold mb-4">Recently played Leader/Base combinations</h3>
+            <DashboardLeaderBase
+              byLeaderBase={gameResultData.matches.byLeaderBase}
+              byDeckId={gameResultData.matches.byDeckId}
+            />
+          </Card>
+        </>
       )}
     </div>
   );
