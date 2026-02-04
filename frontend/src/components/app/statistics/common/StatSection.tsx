@@ -24,7 +24,7 @@ export const StatSection: React.FC<StatSectionProps> = ({ label, wins, losses, w
           background: `conic-gradient(${color} 0deg ${percentage}%, ${color}44 ${percentage}% 360deg)`,
         }}
       >
-        <div className="bg-background rounded-lg p-2 flex flex-col items-center min-w-[80px] w-full h-full">
+        <div className="bg-background rounded-lg p-2 flex flex-col items-center min-w-[90px] w-full h-full">
           <h5 className="text-lg font-black leading-none mb-0!">
             {wins}W-{losses}L
           </h5>

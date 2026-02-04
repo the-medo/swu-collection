@@ -118,7 +118,7 @@ export const karabastGameResultPostRoute = new Hono<AuthExtension>().post(
       .returning();
 
     if (insertedRecord) {
-      const results = transformKarabastGameDataToGameResults(insertedRecord);
+      const results = await transformKarabastGameDataToGameResults(insertedRecord);
       await upsertGameResults(results);
     }
 

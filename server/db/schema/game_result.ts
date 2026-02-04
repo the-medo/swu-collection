@@ -93,9 +93,18 @@ export const gameResult = pgTable(
   }),
 );
 
+export type GameResultDeckInfo = {
+  name?: string;
+  cardPoolId?: string | null;
+};
+
 export type UserEvent = InferSelectModel<typeof userEvent>;
 export type GameResult = InferInsertModel<typeof gameResult> & {
   otherData: {
+    roundNumber?: number;
+    startedAt?: string;
+    finishedAt?: string;
     opponentName?: string;
+    deckInfo?: GameResultDeckInfo;
   };
 };

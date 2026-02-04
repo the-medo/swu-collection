@@ -36,7 +36,12 @@ const DeckActionsMenuCompact: React.FC<DeckActionsMenuCompactProps> = ({
       </NavigationMenuList>
       <NavigationMenuList className="flex-wrap justify-start gap-1 z-10">
         <FavoriteButton deckId={deckId} isFavorite={isFavorite} />
-        <CopyLinkButton deckId={deckId} isPublic={!!deckData?.deck.public} compact={true} />
+        <CopyLinkButton
+          deckId={deckId}
+          isPublic={!!deckData?.deck.public}
+          compact={true}
+          inNavigation={true}
+        />
         <PriceSourceSelector showPricesOption={true} compact={true} />
         <DeckMenu deckId={deckId} />
       </NavigationMenuList>

@@ -8,6 +8,7 @@ import { deckCard } from '../../../../db/schema/deck_card.ts';
 import { eq, sql } from 'drizzle-orm';
 import { upsertGameResults } from '../../../../lib/game-results/upsertGameResults.ts';
 import { baseSpecialNames } from '../../../../../shared/lib/basicBases.ts';
+import type { GameResultDeckInfo } from '../../../../db/schema/game_result.ts';
 
 const schema = z.object({
   deckId: z.string().uuid(),
@@ -48,6 +49,7 @@ const mockSingleGame = ({
   opponentLeaderCardId,
   opponentBaseCardKey,
   cards,
+  deckInfo,
 }: {
   userId: string;
   deckId: string;
@@ -58,6 +60,7 @@ const mockSingleGame = ({
   opponentLeaderCardId: string | null;
   opponentBaseCardKey: string | null;
   cards: { cardId: string }[];
+  deckInfo: GameResultDeckInfo;
 }) => {
   const isWinner = Math.random() > 0.5;
   const hasInitiative = Math.random() > 0.5;
@@ -86,6 +89,7 @@ const mockSingleGame = ({
       opponentName: 'Unknown',
       startedAt: new Date().toISOString(),
       finishedAt: new Date().toISOString(),
+      deckInfo,
     },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -175,6 +179,10 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
             ? baseSpecialNames[opponent.base_card_id]
             : opponent.base_card_id,
         cards,
+        deckInfo: {
+          name: deckRecord.name,
+          cardPoolId: deckRecord.cardPoolId,
+        },
       });
 
       if (game.isWinner) playerWins++;
