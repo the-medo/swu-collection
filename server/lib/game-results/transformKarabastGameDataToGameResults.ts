@@ -92,6 +92,7 @@ export const transformKarabastGameDataToGameResults = async (
           .select({
             name: deck.name,
             cardPoolId: deck.cardPoolId,
+            formatId: deck.format,
           })
           .from(deck)
           .where(eq(deck.id, deckId))
@@ -105,7 +106,7 @@ export const transformKarabastGameDataToGameResults = async (
       gameId: integrationData.gameId,
       matchId: integrationData.lobbyId,
       gameNumber: data.sequenceNumber || null,
-      format: data.format || null,
+      format: data.format || null, //this is karabast format string
 
       leaderCardId: cardUidToCardId(player.data?.leader),
       baseCardKey: cardUidToCardId(player.data?.base, true),

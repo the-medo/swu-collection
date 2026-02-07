@@ -96,6 +96,7 @@ export const gameResult = pgTable(
 export type GameResultDeckInfo = {
   name?: string;
   cardPoolId?: string | null;
+  formatId?: number; //this is swubase format id
 };
 
 export type UserEvent = InferSelectModel<typeof userEvent>;

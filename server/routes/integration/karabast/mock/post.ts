@@ -182,6 +182,7 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
         deckInfo: {
           name: deckRecord.name,
           cardPoolId: deckRecord.cardPoolId,
+          formatId: deckRecord.format,
         },
       });
 
