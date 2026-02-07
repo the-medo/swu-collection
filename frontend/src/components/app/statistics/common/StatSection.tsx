@@ -1,21 +1,37 @@
 import * as React from 'react';
 import { getWRColor, getWRHexColor } from './statsUtils';
+import { cn } from '@/lib/utils.ts';
 
-interface StatSectionProps {
+export interface StatSectionProps {
   label: string;
   wins: number;
   losses: number;
   winrate: number;
+  variant?: 'vertical' | 'horizontal';
 }
 
-export const StatSection: React.FC<StatSectionProps> = ({ label, wins, losses, winrate }) => {
+export const StatSection: React.FC<StatSectionProps> = ({
+  label,
+  wins,
+  losses,
+  winrate,
+  variant = 'vertical',
+}) => {
   const color = getWRHexColor(winrate);
   const percentage = winrate;
 
   return (
-    <div className="flex flex-col gap-2 items-center">
-      <span className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{label}</span>
-      <div className="bg-muted/50 rounded-lg p-1 flex flex-1 items-center w-full justify-center">
+    <div
+      className={cn('flex gap-2 items-center', variant === 'horizontal' ? 'flex-row' : 'flex-col')}
+    >
+      <span className="text-[10px] font-bold uppercase text-muted-foreground mb-1 min-w-[50px]">
+        {label}
+      </span>
+      <div
+        className={cn('bg-muted/50 rounded-lg p-1 flex flex-1 items-center w-full justify-center', {
+          'min-w-[40px] h-full': variant === 'horizontal',
+        })}
+      >
         <h5 className="mb-0!">{wins + losses}</h5>
       </div>
       <div

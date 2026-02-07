@@ -7,7 +7,7 @@ import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
 import { Link } from '@tanstack/react-router';
-import DeckInfoThumbnailCompact from '@/components/app/statistics/StatisticsDashboard/DashboardDecks/DeckInfoThumbnailCompact.tsx';
+import DeckInfoThumbnailCompact from '@/components/app/statistics/StatisticsDecks/StatisticsDeckLists/DeckInfoThumbnailCompact.tsx';
 import { StatSection } from '@/components/app/statistics/common/StatSection.tsx';
 
 export interface LeaderBaseInfoThumbnailProps {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
-import { StatSectionCompact } from '@/components/app/statistics/common/StatSectionCompact';
+import { StatSectionCompact } from '@/components/app/statistics/common/StatSectionCompact.tsx';
 import { Link } from '@tanstack/react-router';
 import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/components/CopyLinkButton.tsx';
 

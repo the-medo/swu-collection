@@ -6,12 +6,14 @@ import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDeco
 import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
-import { StatSection } from '@/components/app/statistics/common/StatSection';
+import { StatSection, StatSectionProps } from '@/components/app/statistics/common/StatSection.tsx';
 import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/components/CopyLinkButton.tsx';
 import { Link } from '@tanstack/react-router';
+import { cn } from '@/lib/utils.ts';
 
 interface DeckInfoThumbnailProps {
   statistics: DeckStatistics;
+  statSectionVariant?: StatSectionProps['variant'];
 }
 
 const getCardIdFromKey = (key: string | undefined, cards: any) => {
@@ -19,7 +21,10 @@ const getCardIdFromKey = (key: string | undefined, cards: any) => {
   return key in cards ? key : basicBaseForAspect[key];
 };
 
-const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({ statistics }) => {
+const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
+  statistics,
+  statSectionVariant = 'vertical',
+}) => {
   const {
     deckId,
     deckName,
@@ -48,7 +53,12 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({ statistics }) => 
 
   return (
     <Link to={'/statistics/decks'} search={prev => ({ ...prev, deckId })}>
-      <Card className="overflow-hidden relative w-full h-[200px] min-w-[350px]">
+      <Card
+        className={cn('overflow-hidden relative', {
+          'w-full h-[200px] min-w-[350px]': statSectionVariant === 'vertical',
+          'w-full': statSectionVariant === 'horizontal',
+        })}
+      >
         <div className="flex-1 relative h-full">
           {leaderCard && (
             <DeckBackgroundDecoration
@@ -59,24 +69,44 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({ statistics }) => 
               <BaseAvatar cardId={baseCardKey} bordered={false} size="40" shape="circle" />
             </DeckBackgroundDecoration>
           )}
-          <CardContent className="flex flex-col h-full p-2 relative z-10 items-end justify-end gap-4">
-            <h6 className="w-[170px] truncate text-xs">{deckName}</h6>
-            <div className="flex gap-4 w-full items-end justify-between">
+          <CardContent
+            className={cn('flex p-2 relative z-10 gap-4', {
+              'flex-col h-full items-end justify-end': statSectionVariant === 'vertical',
+              'flex-row flex-1 items-center justify-between pl-45 flex-wrap':
+                statSectionVariant === 'horizontal',
+            })}
+          >
+            <h6
+              className={cn('mb-0!', {
+                'truncate text-xs w-[170px]': statSectionVariant === 'vertical',
+                'min-w-[170px] max-w-[500px] ': statSectionVariant === 'horizontal',
+              })}
+            >
+              {deckName}
+            </h6>
+            <div
+              className={cn('flex gap-4 flex-1', {
+                'justify-between items-end': statSectionVariant === 'vertical',
+                'flex-row-reverse justify-start items-center': statSectionVariant === 'horizontal',
+              })}
+            >
               <div className="flex gap-4">
                 <CopyLinkButton deckId={deckId} isPublic={true} compact={true} />
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-4">
                 <StatSection
                   label="Games"
                   wins={gameWins}
                   losses={gameLosses}
                   winrate={gameWinrate}
+                  variant={statSectionVariant}
                 />
                 <StatSection
                   label="Matches"
                   wins={matchWins}
                   losses={matchLosses}
                   winrate={matchWinrate}
+                  variant={statSectionVariant}
                 />
               </div>
             </div>

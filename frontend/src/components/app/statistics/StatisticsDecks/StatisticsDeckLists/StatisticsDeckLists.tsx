@@ -3,14 +3,13 @@ import { StatisticsHistoryData } from '@/components/app/statistics/useGameResult
 import { useMemo } from 'react';
 import DeckInfoThumbnail from './DeckInfoThumbnail.tsx';
 import { calculateDeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 
-interface DashboardDecksProps {
+interface StatisticsDeckListsProps {
   byDeckId: StatisticsHistoryData['matches']['byDeckId'];
 }
 
-const RECENT_DECK_COUNT = 5;
-
-const DashboardDecks: React.FC<DashboardDecksProps> = ({ byDeckId }) => {
+const StatisticsDeckLists: React.FC<StatisticsDeckListsProps> = ({ byDeckId }) => {
   const recentDecks = useMemo(() => {
     if (!byDeckId || !byDeckId.lastPlayed) return [];
 
@@ -23,23 +22,36 @@ const DashboardDecks: React.FC<DashboardDecksProps> = ({ byDeckId }) => {
       return dateB - dateA;
     });
 
-    const recentIds = sortedDeckIds.slice(0, RECENT_DECK_COUNT);
-
-    return recentIds.map(deckId => {
+    return sortedDeckIds.map(deckId => {
       const matches = byDeckId.matches[deckId] || [];
       return calculateDeckStatistics(deckId, matches);
     });
   }, [byDeckId]);
 
-  if (recentDecks.length === 0) return null;
+  const totalMatches = recentDecks.length ?? 0;
+
+  const { itemsToShow, observerTarget } = useInfiniteScroll({
+    totalItems: totalMatches,
+    initialItemsToLoad: 20,
+    itemsPerBatch: 20,
+    threshold: 400,
+  });
+
+  const visibleDecks = useMemo(() => {
+    if (!recentDecks) return [];
+    return recentDecks.slice(0, itemsToShow);
+  }, [recentDecks, itemsToShow]);
+
+  if (visibleDecks.length === 0) return null;
 
   return (
-    <div className="flex gap-4">
-      {recentDecks.map(deck => (
-        <DeckInfoThumbnail key={deck.deckId} statistics={deck} />
+    <div className="flex flex-col gap-2">
+      {visibleDecks.map(deck => (
+        <DeckInfoThumbnail key={deck.deckId} statistics={deck} statSectionVariant="horizontal" />
       ))}
+      <div ref={observerTarget} className="h-4" />
     </div>
   );
 };
 
-export default DashboardDecks;
+export default StatisticsDeckLists;
