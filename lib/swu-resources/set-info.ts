@@ -16,6 +16,7 @@ export type SetInfo = {
   expansionId: number;
   hexColor: string;
   rotationBlockId?: number;
+  releaseDate: string;
 };
 
 export const rotationBlocks: Record<number | string, RotationBlock> = {
@@ -62,6 +63,7 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 2,
     hexColor: '#e10600',
     rotationBlockId: 1,
+    releaseDate: '2024-03-08',
   },
   [SwuSet.SHD]: {
     code: SwuSet.SHD,
@@ -71,6 +73,7 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 8,
     hexColor: '#3b3fb6',
     rotationBlockId: 1,
+    releaseDate: '2024-07-12',
   },
   [SwuSet.TWI]: {
     code: SwuSet.TWI,
@@ -80,6 +83,7 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 18,
     hexColor: '#7c2529',
     rotationBlockId: 1,
+    releaseDate: '2024-11-08',
   },
   [SwuSet.JTL]: {
     code: SwuSet.JTL,
@@ -89,6 +93,7 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 23,
     hexColor: '#f2a900',
     rotationBlockId: 2,
+    releaseDate: '2025-03-14',
   },
   [SwuSet.LOF]: {
     code: SwuSet.LOF,
@@ -98,6 +103,7 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 53,
     hexColor: '#00a3e0',
     rotationBlockId: 2,
+    releaseDate: '2025-07-11',
   },
   [SwuSet.IBH]: {
     code: SwuSet.IBH,
@@ -107,6 +113,7 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 68,
     hexColor: '#d1eee3',
     rotationBlockId: 2,
+    releaseDate: '2025-11-07',
   },
   [SwuSet.SEC]: {
     code: SwuSet.SEC,
@@ -116,6 +123,7 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 73,
     hexColor: '#68177f',
     rotationBlockId: 2,
+    releaseDate: '2025-11-07',
   },
   [SwuSet.LAW]: {
     code: SwuSet.LAW,
@@ -125,6 +133,7 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 93,
     hexColor: '#df7826',
     rotationBlockId: 3,
+    releaseDate: '2026-03-13',
   },
 } as const;
 

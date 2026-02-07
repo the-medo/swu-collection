@@ -23,6 +23,10 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({
 
   const handleCopyLink: React.MouseEventHandler<HTMLButtonElement> = e => {
     e.preventDefault();
+    if (e.button === 1) {
+      window.open(deckLink, '_blank');
+      return;
+    }
     navigator.clipboard.writeText(deckLink);
     toast({
       title: `Link copied to clipboard`,
@@ -37,6 +41,7 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({
         'opacity-80': !isPublic,
       })}
       onClick={handleCopyLink}
+      onAuxClick={handleCopyLink}
     >
       <LinkIcon className="h-4 w-4" />
       {!compact && <span className="ml-2">Copy link {!isPublic && '(private!)'}</span>}
