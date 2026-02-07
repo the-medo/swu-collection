@@ -2,6 +2,8 @@ import { useSession } from '@/lib/auth-client.ts';
 import { useGetGameResults } from '@/api/game-results/useGetGameResults.ts';
 import { useMemo } from 'react';
 import { GameResult } from '../../../../../server/db/schema/game_result.ts';
+import { useSearch } from '@tanstack/react-router';
+import { format } from 'date-fns';
 
 export type MatchResult = {
   id: string;
@@ -58,6 +60,9 @@ export const useGameResults = (
   params: UseGameResultsParams = {},
 ): StatisticsHistoryData | undefined => {
   const { datetimeFrom, datetimeTo, teamId } = params;
+  const { sFormatId, sDateRangeFrom, sDateRangeTo, sKarabastFormat } = useSearch({
+    strict: false,
+  });
 
   const session = useSession();
 
@@ -93,8 +98,17 @@ export const useGameResults = (
     const gamesObject: Record<string, GameResult> = {};
     gameResultData.forEach(game => {
       if (game.id) {
-        if (datetimeFrom && (!game.createdAt || game.createdAt < datetimeFrom)) return;
-        if (datetimeTo && (!game.createdAt || game.createdAt > datetimeTo)) return;
+        if (!game.createdAt) return;
+
+        const createdAtDateString = format(new Date(`${game.createdAt}Z`), 'yyyy-MM-dd');
+
+        if (datetimeFrom && createdAtDateString < datetimeFrom) return;
+        if (datetimeTo && createdAtDateString > datetimeTo) return;
+        if (sDateRangeFrom && createdAtDateString < sDateRangeFrom) return;
+        if (sDateRangeTo && createdAtDateString > sDateRangeTo) return;
+
+        if (sFormatId && game.otherData?.deckInfo?.formatId !== sFormatId) return;
+        if (sKarabastFormat && game.format !== sKarabastFormat) return;
         gamesObject[game.id] = game;
       }
     });
@@ -238,5 +252,14 @@ export const useGameResults = (
         byDeckId: matchesByDeckId,
       },
     };
-  }, [gameResultData, isLoading, datetimeFrom, datetimeTo]);
+  }, [
+    gameResultData,
+    isLoading,
+    datetimeFrom,
+    datetimeTo,
+    sDateRangeFrom,
+    sDateRangeTo,
+    sFormatId,
+    sKarabastFormat,
+  ]);
 };
