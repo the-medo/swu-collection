@@ -288,6 +288,13 @@
       "when": 1769553664116,
       "tag": "0040_lean_la_nuit",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1770465193321,
+      "tag": "0041_add_new_formats",
+      "breakpoints": true
     }
   ]
 }
