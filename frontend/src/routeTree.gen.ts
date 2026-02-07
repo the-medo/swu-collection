@@ -57,6 +57,7 @@ import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/t
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
 import { Route as StatisticsStatisticsLayoutMatchupsIndexRouteImport } from './routes/statistics/_statisticsLayout/matchups/index'
+import { Route as StatisticsStatisticsLayoutLeaderAndBaseIndexRouteImport } from './routes/statistics/_statisticsLayout/leader-and-base/index'
 import { Route as StatisticsStatisticsLayoutHistoryIndexRouteImport } from './routes/statistics/_statisticsLayout/history/index'
 import { Route as StatisticsStatisticsLayoutDecksIndexRouteImport } from './routes/statistics/_statisticsLayout/decks/index'
 import { Route as StatisticsStatisticsLayoutDashboardIndexRouteImport } from './routes/statistics/_statisticsLayout/dashboard/index'
@@ -313,6 +314,12 @@ const StatisticsStatisticsLayoutMatchupsIndexRoute =
     path: '/matchups/',
     getParentRoute: () => StatisticsStatisticsLayoutRoute,
   } as any)
+const StatisticsStatisticsLayoutLeaderAndBaseIndexRoute =
+  StatisticsStatisticsLayoutLeaderAndBaseIndexRouteImport.update({
+    id: '/leader-and-base/',
+    path: '/leader-and-base/',
+    getParentRoute: () => StatisticsStatisticsLayoutRoute,
+  } as any)
 const StatisticsStatisticsLayoutHistoryIndexRoute =
   StatisticsStatisticsLayoutHistoryIndexRouteImport.update({
     id: '/history/',
@@ -398,6 +405,7 @@ export interface FileRoutesByFullPath {
   '/statistics/dashboard': typeof StatisticsStatisticsLayoutDashboardIndexRoute
   '/statistics/decks': typeof StatisticsStatisticsLayoutDecksIndexRoute
   '/statistics/history': typeof StatisticsStatisticsLayoutHistoryIndexRoute
+  '/statistics/leader-and-base': typeof StatisticsStatisticsLayoutLeaderAndBaseIndexRoute
   '/statistics/matchups': typeof StatisticsStatisticsLayoutMatchupsIndexRoute
   '/settings/link/karabast': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
@@ -450,6 +458,7 @@ export interface FileRoutesByTo {
   '/statistics/dashboard': typeof StatisticsStatisticsLayoutDashboardIndexRoute
   '/statistics/decks': typeof StatisticsStatisticsLayoutDecksIndexRoute
   '/statistics/history': typeof StatisticsStatisticsLayoutHistoryIndexRoute
+  '/statistics/leader-and-base': typeof StatisticsStatisticsLayoutLeaderAndBaseIndexRoute
   '/statistics/matchups': typeof StatisticsStatisticsLayoutMatchupsIndexRoute
   '/settings/link/karabast': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
@@ -506,6 +515,7 @@ export interface FileRoutesById {
   '/statistics/_statisticsLayout/dashboard/': typeof StatisticsStatisticsLayoutDashboardIndexRoute
   '/statistics/_statisticsLayout/decks/': typeof StatisticsStatisticsLayoutDecksIndexRoute
   '/statistics/_statisticsLayout/history/': typeof StatisticsStatisticsLayoutHistoryIndexRoute
+  '/statistics/_statisticsLayout/leader-and-base/': typeof StatisticsStatisticsLayoutLeaderAndBaseIndexRoute
   '/statistics/_statisticsLayout/matchups/': typeof StatisticsStatisticsLayoutMatchupsIndexRoute
   '/_authenticated/settings/link/karabast/': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail/': typeof LimitedPoolPoolIdDetailIndexRoute
@@ -561,6 +571,7 @@ export interface FileRouteTypes {
     | '/statistics/dashboard'
     | '/statistics/decks'
     | '/statistics/history'
+    | '/statistics/leader-and-base'
     | '/statistics/matchups'
     | '/settings/link/karabast'
     | '/limited/pool/$poolId/detail'
@@ -613,6 +624,7 @@ export interface FileRouteTypes {
     | '/statistics/dashboard'
     | '/statistics/decks'
     | '/statistics/history'
+    | '/statistics/leader-and-base'
     | '/statistics/matchups'
     | '/settings/link/karabast'
     | '/limited/pool/$poolId/detail'
@@ -668,6 +680,7 @@ export interface FileRouteTypes {
     | '/statistics/_statisticsLayout/dashboard/'
     | '/statistics/_statisticsLayout/decks/'
     | '/statistics/_statisticsLayout/history/'
+    | '/statistics/_statisticsLayout/leader-and-base/'
     | '/statistics/_statisticsLayout/matchups/'
     | '/_authenticated/settings/link/karabast/'
     | '/limited/pool/$poolId/detail/'
@@ -1051,6 +1064,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatisticsStatisticsLayoutMatchupsIndexRouteImport
       parentRoute: typeof StatisticsStatisticsLayoutRoute
     }
+    '/statistics/_statisticsLayout/leader-and-base/': {
+      id: '/statistics/_statisticsLayout/leader-and-base/'
+      path: '/leader-and-base'
+      fullPath: '/statistics/leader-and-base'
+      preLoaderRoute: typeof StatisticsStatisticsLayoutLeaderAndBaseIndexRouteImport
+      parentRoute: typeof StatisticsStatisticsLayoutRoute
+    }
     '/statistics/_statisticsLayout/history/': {
       id: '/statistics/_statisticsLayout/history/'
       path: '/history'
@@ -1117,6 +1137,7 @@ interface StatisticsStatisticsLayoutRouteChildren {
   StatisticsStatisticsLayoutDashboardIndexRoute: typeof StatisticsStatisticsLayoutDashboardIndexRoute
   StatisticsStatisticsLayoutDecksIndexRoute: typeof StatisticsStatisticsLayoutDecksIndexRoute
   StatisticsStatisticsLayoutHistoryIndexRoute: typeof StatisticsStatisticsLayoutHistoryIndexRoute
+  StatisticsStatisticsLayoutLeaderAndBaseIndexRoute: typeof StatisticsStatisticsLayoutLeaderAndBaseIndexRoute
   StatisticsStatisticsLayoutMatchupsIndexRoute: typeof StatisticsStatisticsLayoutMatchupsIndexRoute
 }
 
@@ -1128,6 +1149,8 @@ const StatisticsStatisticsLayoutRouteChildren: StatisticsStatisticsLayoutRouteCh
       StatisticsStatisticsLayoutDecksIndexRoute,
     StatisticsStatisticsLayoutHistoryIndexRoute:
       StatisticsStatisticsLayoutHistoryIndexRoute,
+    StatisticsStatisticsLayoutLeaderAndBaseIndexRoute:
+      StatisticsStatisticsLayoutLeaderAndBaseIndexRoute,
     StatisticsStatisticsLayoutMatchupsIndexRoute:
       StatisticsStatisticsLayoutMatchupsIndexRoute,
   }

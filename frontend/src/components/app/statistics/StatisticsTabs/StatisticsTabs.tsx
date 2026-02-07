@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils.ts';
 import { Route as RouteDashboard } from '@/routes/statistics/_statisticsLayout/dashboard';
 import { Route as RouteHistory } from '@/routes/statistics/_statisticsLayout/history';
 import { Route as RouteDecks } from '@/routes/statistics/_statisticsLayout/decks';
+import { Route as RouteLeaderBases } from '@/routes/statistics/_statisticsLayout/leader-and-base';
 import { Route as RouteMatchups } from '@/routes/statistics/_statisticsLayout/matchups';
 
 export interface StatisticsTabsProps {
@@ -14,7 +15,12 @@ export interface StatisticsTabsProps {
 interface TabConfig {
   key: string;
   label: string;
-  path: typeof RouteDashboard | typeof RouteHistory | typeof RouteDecks | typeof RouteMatchups;
+  path:
+    | typeof RouteDashboard
+    | typeof RouteHistory
+    | typeof RouteDecks
+    | typeof RouteLeaderBases
+    | typeof RouteMatchups;
 }
 
 interface TabLinkProps {
@@ -41,13 +47,14 @@ const tabs: TabConfig[] = [
   { key: 'dashboard', label: 'Dashboard', path: RouteDashboard },
   { key: 'history', label: 'Match History', path: RouteHistory },
   { key: 'decks', label: 'Decks', path: RouteDecks },
+  { key: 'leader-and-base', label: 'Leader & Bases', path: RouteLeaderBases },
   { key: 'matchups', label: 'Matchups', path: RouteMatchups },
 ] as const;
 
 const StatisticsTabs: React.FC<StatisticsTabsProps> = ({ className, activeTab }) => {
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-2 md:grid-cols-4 mb-2 rounded-lg bg-muted p-1">
+      <div className="grid grid-cols-2 md:grid-cols-5 mb-2 rounded-lg bg-muted p-1">
         {tabs.map(tab => (
           <TabLink key={tab.key} tab={tab} isActive={activeTab === tab.key} />
         ))}
