@@ -1,16 +1,15 @@
 import Dexie from 'dexie';
 import { db } from './db';
-import type { GameResult } from '../../../server/db/schema/game_result';
+import type { GameResult, GameResultOtherData } from '../../../server/db/schema/game_result';
 import { CardMetrics } from '../../../shared/types/cardMetrics.ts';
 
 // Store interface for game results in IndexedDB
 // scopeId is either userId (for personal games) or teamId (for team games)
-export interface GameResultStore
-  extends Omit<GameResult, 'cardMetrics' | 'roundMetrics' | 'otherData'> {
+export interface GameResultStore extends Omit<GameResult, 'cardMetrics' | 'roundMetrics' | 'otherData'> {
   scopeId: string; // userId or teamId for indexing
   cardMetrics: CardMetrics;
   roundMetrics: Record<string, unknown>;
-  otherData: Record<string, unknown>;
+  otherData: GameResultOtherData;
 }
 
 /**

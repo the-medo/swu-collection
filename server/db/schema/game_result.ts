@@ -99,13 +99,15 @@ export type GameResultDeckInfo = {
   formatId?: number; //this is swubase format id
 };
 
+export type GameResultOtherData = {
+  roundNumber?: number;
+  startedAt?: string;
+  finishedAt?: string;
+  opponentName?: string;
+  deckInfo?: GameResultDeckInfo;
+};
+
 export type UserEvent = InferSelectModel<typeof userEvent>;
 export type GameResult = InferInsertModel<typeof gameResult> & {
-  otherData: {
-    roundNumber?: number;
-    startedAt?: string;
-    finishedAt?: string;
-    opponentName?: string;
-    deckInfo?: GameResultDeckInfo;
-  };
+  otherData: GameResultOtherData;
 };
