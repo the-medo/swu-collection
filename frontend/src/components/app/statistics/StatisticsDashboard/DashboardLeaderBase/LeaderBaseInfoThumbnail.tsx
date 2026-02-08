@@ -8,11 +8,14 @@ import { Card, CardContent } from '@/components/ui/card.tsx';
 import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
 import { Link } from '@tanstack/react-router';
 import DeckInfoThumbnailCompact from '@/components/app/statistics/StatisticsDecks/StatisticsDeckLists/DeckInfoThumbnailCompact.tsx';
-import { StatSection } from '@/components/app/statistics/common/StatSection.tsx';
+import { StatSection, StatSectionProps } from '@/components/app/statistics/common/StatSection.tsx';
+import { cn } from '@/lib/utils.ts';
+import DeckInfoThumbnail from '@/components/app/statistics/StatisticsDecks/StatisticsDeckLists/DeckInfoThumbnail.tsx';
 
 export interface LeaderBaseInfoThumbnailProps {
   statistics: DeckStatistics;
   deckStatistics: Record<string, DeckStatistics | undefined>;
+  statSectionVariant?: StatSectionProps['variant'];
 }
 
 const getCardIdFromKey = (key: string | undefined, cards: any) => {
@@ -23,6 +26,7 @@ const getCardIdFromKey = (key: string | undefined, cards: any) => {
 const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
   statistics,
   deckStatistics,
+  statSectionVariant = 'vertical',
 }) => {
   const {
     leaderCardId,
@@ -87,7 +91,10 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
   }, [leaderCardId, baseCardKey, cardListData]);
 
   return (
-    <Link to={'/statistics/decks'} search={prev => ({ ...prev, leaderCardId, baseCardKey })}>
+    <Link
+      to={'/statistics/leader-and-base'}
+      search={prev => ({ ...prev, sLeaderCardId: leaderCardId, sBaseCardKey: baseCardKey })}
+    >
       <Card className="overflow-hidden relative w-full h-full min-h-[200px] min-w-[350px] hover:shadow-md">
         <div className="flex-1 relative h-full">
           {leaderCard && (
@@ -99,29 +106,57 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
               <BaseAvatar cardId={baseCardKey} bordered={false} size="40" shape="circle" />
             </DeckBackgroundDecoration>
           )}
-          <CardContent className="flex flex-col h-full p-2 pt-12 relative z-10 items-start justify-start gap-4">
-            <div className="flex gap-4 w-full items-end justify-end">
-              <div className="flex gap-4">
+          <CardContent
+            className={cn('flex h-full p-2 relative z-10 items-start gap-4', {
+              'flex-row flex-wrap justify-end': statSectionVariant === 'horizontal',
+              'flex-col pt-12 justify-start': statSectionVariant === 'vertical',
+            })}
+          >
+            {statSectionVariant === 'horizontal' && (
+              <div className="flex flex-col flex-1 gap-2 pl-40">
+                {recentDecks.map(deck => (
+                  <DeckInfoThumbnail
+                    key={deck.lastPlayed}
+                    statistics={deckStatistics[deck.deckId]}
+                    statSectionVariant={statSectionVariant}
+                    displayDeckBackground={false}
+                  />
+                ))}
+              </div>
+            )}
+            <div
+              className={cn('flex gap-4 items-end justify-end', {
+                'self-end': statSectionVariant === 'vertical',
+              })}
+            >
+              <div
+                className={cn('flex gap-4', {
+                  'flex-col p-2 m-2 bg-secondary rounded-lg': statSectionVariant === 'horizontal',
+                })}
+              >
                 <StatSection
                   label="Games"
                   wins={gameWins}
                   losses={gameLosses}
                   winrate={gameWinrate}
+                  variant={statSectionVariant}
                 />
                 <StatSection
                   label="Matches"
                   wins={matchWins}
                   losses={matchLosses}
                   winrate={matchWinrate}
+                  variant={statSectionVariant}
                 />
               </div>
             </div>
-            {recentDecks.map(deck => (
-              <DeckInfoThumbnailCompact
-                key={deck.lastPlayed}
-                statistics={deckStatistics[deck.deckId]}
-              />
-            ))}
+            {statSectionVariant === 'vertical' &&
+              recentDecks.map(deck => (
+                <DeckInfoThumbnailCompact
+                  key={deck.lastPlayed}
+                  statistics={deckStatistics[deck.deckId]}
+                />
+              ))}
           </CardContent>
         </div>
       </Card>

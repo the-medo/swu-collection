@@ -4,17 +4,17 @@ import { cn } from '@/lib/utils.ts';
 
 export interface StatSectionProps {
   label: string;
-  wins: number;
-  losses: number;
-  winrate: number;
+  wins?: number;
+  losses?: number;
+  winrate?: number;
   variant?: 'vertical' | 'horizontal';
 }
 
 export const StatSection: React.FC<StatSectionProps> = ({
   label,
-  wins,
-  losses,
-  winrate,
+  wins = 0,
+  losses = 0,
+  winrate = 0,
   variant = 'vertical',
 }) => {
   const color = getWRHexColor(winrate);

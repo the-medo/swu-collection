@@ -38,7 +38,7 @@ const TabLink: React.FC<TabLinkProps> = ({ tab, isActive }) => {
 
   return (
     <Link
-      to={tab.path.fullPath}
+      to={tab.path.to}
       search={prev => ({
         sDateRangeOption: prev.sDateRangeOption,
         sDateRangeFrom: prev.sDateRangeFrom,

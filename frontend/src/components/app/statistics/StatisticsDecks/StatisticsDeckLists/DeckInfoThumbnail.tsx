@@ -12,8 +12,9 @@ import { Link } from '@tanstack/react-router';
 import { cn } from '@/lib/utils.ts';
 
 interface DeckInfoThumbnailProps {
-  statistics: DeckStatistics;
+  statistics?: DeckStatistics;
   statSectionVariant?: StatSectionProps['variant'];
+  displayDeckBackground?: boolean;
 }
 
 const getCardIdFromKey = (key: string | undefined, cards: any) => {
@@ -24,19 +25,18 @@ const getCardIdFromKey = (key: string | undefined, cards: any) => {
 const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
   statistics,
   statSectionVariant = 'vertical',
+  displayDeckBackground = true,
 }) => {
-  const {
-    deckId,
-    deckName,
-    leaderCardId,
-    baseCardKey,
-    matchWinrate,
-    gameWinrate,
-    matchWins,
-    matchLosses,
-    gameWins,
-    gameLosses,
-  } = statistics;
+  const deckId = statistics?.deckId;
+  const deckName = statistics?.deckName;
+  const leaderCardId = statistics?.leaderCardId;
+  const baseCardKey = statistics?.baseCardKey;
+  const matchWinrate = statistics?.matchWinrate;
+  const gameWinrate = statistics?.gameWinrate;
+  const matchWins = statistics?.matchWins;
+  const matchLosses = statistics?.matchLosses;
+  const gameWins = statistics?.gameWins;
+  const gameLosses = statistics?.gameLosses;
 
   const { data: cardListData } = useCardList();
 
@@ -52,7 +52,7 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
   }, [leaderCardId, baseCardKey, cardListData]);
 
   return (
-    <Link to={'/statistics/decks'} search={prev => ({ ...prev, deckId })}>
+    <Link to={'/statistics/decks'} search={prev => ({ ...prev, sDeckId: deckId })}>
       <Card
         className={cn('overflow-hidden relative', {
           'w-full h-[200px] min-w-[350px]': statSectionVariant === 'vertical',
@@ -60,7 +60,7 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
         })}
       >
         <div className="flex-1 relative h-full">
-          {leaderCard && (
+          {leaderCard && displayDeckBackground && (
             <DeckBackgroundDecoration
               leaderCard={leaderCard}
               baseCard={baseCard}
@@ -72,8 +72,9 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
           <CardContent
             className={cn('flex p-2 relative z-10 gap-4', {
               'flex-col h-full items-end justify-end': statSectionVariant === 'vertical',
-              'flex-row flex-1 items-center justify-between pl-45 flex-wrap':
+              'flex-row flex-1 items-center justify-between flex-wrap':
                 statSectionVariant === 'horizontal',
+              'pl-45': displayDeckBackground && statSectionVariant === 'horizontal',
             })}
           >
             <h6
@@ -91,7 +92,7 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
               })}
             >
               <div className="flex gap-4">
-                <CopyLinkButton deckId={deckId} isPublic={true} compact={true} />
+                {deckId && <CopyLinkButton deckId={deckId} isPublic={true} compact={true} />}
               </div>
               <div className="flex flex-wrap gap-4">
                 <StatSection

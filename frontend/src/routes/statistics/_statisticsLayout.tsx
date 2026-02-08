@@ -5,12 +5,19 @@ import { useSession } from '@/lib/auth-client.ts';
 import { format, subDays } from 'date-fns';
 import StatisticsFilters from '@/components/app/statistics/components/StatisticsFilters/StatisticsFilters.tsx';
 import { z } from 'zod';
+import { StatisticsSubpage } from '@/components/app/statistics/components/StatisticsSubpageTabs/StatisticsSubpageTabs.tsx';
 
 const statisticsSearchParams = z.object({
+  sDeckId: z.string().optional(),
+  sLeaderCardId: z.string().optional(),
+  sBaseCardKey: z.string().optional(),
+
+  sSubpage: z.enum(StatisticsSubpage).optional(),
+
   sDateRangeOption: z.string().optional(),
   sDateRangeFrom: z.string().optional(),
   sDateRangeTo: z.string().optional(),
-  sFormatId: z.number().optional(),
+  sFormatId: z.coerce.number().optional(),
   sKarabastFormat: z.string().optional(),
 });
 
