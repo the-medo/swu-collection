@@ -48,12 +48,11 @@ const StatisticsLeaderBaseDetail: React.FC<StatisticsLeaderBaseDetailProps> = ({
         statSectionVariant="horizontal"
         deckStatistics={deckStatistics}
       />
-      <StatisticsSubpageTabs className="mt-4" />
+      <StatisticsSubpageTabs className="mt-4" type="leader-base" />
       <div className="mt-4">
         {sSubpage === 'matches' && <SubpageMatches matches={matches} />}
         {sSubpage === 'card-stats' && <SubpageCardStats matches={matches} />}
         {sSubpage === 'matchups' && <SubpageMatchups matches={matches} />}
-        {sSubpage === 'decklist' && <SubpageDecklist matches={matches} />}
         {!sSubpage && <SubpageMatches matches={matches} />}
       </div>
     </>
