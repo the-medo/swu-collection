@@ -37,7 +37,17 @@ const TabLink: React.FC<TabLinkProps> = ({ tab, isActive }) => {
   );
 
   return (
-    <Link to={tab.path.fullPath} className={commonClass}>
+    <Link
+      to={tab.path.fullPath}
+      search={prev => ({
+        sDateRangeOption: prev.sDateRangeOption,
+        sDateRangeFrom: prev.sDateRangeFrom,
+        sDateRangeTo: prev.sDateRangeTo,
+        sFormatId: prev.sFormatId,
+        sKarabastFormat: prev.sKarabastFormat,
+      })}
+      className={commonClass}
+    >
       {tab.label}
     </Link>
   );
