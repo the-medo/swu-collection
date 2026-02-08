@@ -24,7 +24,11 @@ const DeckInfoThumbnailCompact: React.FC<DeckInfoThumbnailCompactProps> = ({ sta
   } = statistics;
 
   return (
-    <Link to={'/statistics/decks'} search={prev => ({ ...prev, deckId })} className="w-full">
+    <Link
+      to={'/statistics/decks'}
+      search={prev => ({ ...prev, sDeckId: deckId })}
+      className="w-full"
+    >
       <Card className="overflow-hidden relative w-full hover:bg-muted/50 transition-colors">
         <CardContent className="p-2 flex justify-between">
           <div className="p-2 flex flex-col items-start gap-2">
