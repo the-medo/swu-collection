@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { MatchResult } from '@/components/app/statistics/useGameResults.ts';
+import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
+import DeckContents from '@/components/app/decks/DeckContents/DeckContents.tsx';
 
 interface SubpageDecklistProps {
-  matches: MatchResult[];
+  deckStatistics: DeckStatistics;
 }
 
-const SubpageDecklist: React.FC<SubpageDecklistProps> = ({ matches }) => {
-  return <div>SubpageDecklist (Matches count: {matches.length})</div>;
+const SubpageDecklist: React.FC<SubpageDecklistProps> = ({ deckStatistics }) => {
+  return <DeckContents deckId={deckStatistics.deckId} />;
 };
 
 export default SubpageDecklist;

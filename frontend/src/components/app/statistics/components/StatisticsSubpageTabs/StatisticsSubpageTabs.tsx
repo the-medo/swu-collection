@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils.ts';
 
 export interface StatisticsSubpageTabsProps {
   className?: string;
+  type: 'deck' | 'leader-base';
 }
 
 export enum StatisticsSubpage {
@@ -18,20 +19,26 @@ interface TabConfig {
   label: string;
 }
 
-const tabs: TabConfig[] = [
-  { key: StatisticsSubpage.matches, label: 'Match History' },
-  { key: StatisticsSubpage.cardStats, label: 'Card Statistics' },
-  { key: StatisticsSubpage.matchups, label: 'Matchups' },
-  { key: StatisticsSubpage.decklist, label: 'Decklist' },
-];
-
-const StatisticsSubpageTabs: React.FC<StatisticsSubpageTabsProps> = ({ className }) => {
+const tabs: Record<StatisticsSubpageTabsProps['type'], TabConfig[]> = {
+  deck: [
+    { key: StatisticsSubpage.matches, label: 'Match History' },
+    { key: StatisticsSubpage.cardStats, label: 'Card Statistics' },
+    { key: StatisticsSubpage.matchups, label: 'Matchups' },
+    { key: StatisticsSubpage.decklist, label: 'Decklist' },
+  ],
+  'leader-base': [
+    { key: StatisticsSubpage.matches, label: 'Match History' },
+    { key: StatisticsSubpage.cardStats, label: 'Card Statistics' },
+    { key: StatisticsSubpage.matchups, label: 'Matchups' },
+  ],
+};
+const StatisticsSubpageTabs: React.FC<StatisticsSubpageTabsProps> = ({ className, type }) => {
   const { sSubpage = 'matches' } = useSearch({ strict: false });
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-4 mb-2 rounded-lg bg-muted p-1">
-        {tabs.map(tab => {
+      <div className="grid grid-cols-6 mb-2 rounded-lg bg-muted p-1">
+        {tabs[type].map(tab => {
           const isActive = sSubpage === tab.key;
           return (
             <Link

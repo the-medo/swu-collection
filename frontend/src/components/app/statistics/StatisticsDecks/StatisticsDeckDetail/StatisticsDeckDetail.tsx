@@ -29,12 +29,12 @@ const StatisticsDeckDetail: React.FC<StatisticsDeckDetailProps> = ({ matches = [
   return (
     <>
       <DeckInfoThumbnail statistics={deck} statSectionVariant="horizontal" />
-      <StatisticsSubpageTabs className="mt-4" />
+      <StatisticsSubpageTabs className="mt-4" type="deck" />
       <div className="mt-4">
         {sSubpage === 'matches' && <SubpageMatches matches={matches} />}
         {sSubpage === 'card-stats' && <SubpageCardStats matches={matches} />}
         {sSubpage === 'matchups' && <SubpageMatchups matches={matches} />}
-        {sSubpage === 'decklist' && <SubpageDecklist matches={matches} />}
+        {sSubpage === 'decklist' && <SubpageDecklist deckStatistics={deck} />}
         {!sSubpage && <SubpageMatches matches={matches} />}
       </div>
     </>
