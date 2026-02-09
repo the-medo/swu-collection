@@ -17,9 +17,8 @@ const SingleMatchupRow: React.FC<SingleMatchupRowProps> = ({ opponentDeckKey, re
 
   const [leaderCardId, baseCardKey] = opponentDeckKey.split('|');
 
-  const matchWinrate =
-    result.matchesTotal > 0 ? (result.matchesWon / result.matchesTotal) * 100 : 0;
-  const gameWinrate = result.gamesTotal > 0 ? (result.gamesWon / result.gamesTotal) * 100 : 0;
+  const matchWinrate = result.total > 0 ? (result.wins / result.total) * 100 : 0;
+  const gameWinrate = result.gameTotal > 0 ? (result.gameWins / result.gameTotal) * 100 : 0;
 
   const { leaderCard, baseCard } = useMemo(() => {
     const leader = leaderCardId ? cardList?.cards[leaderCardId] : undefined;
@@ -52,8 +51,8 @@ const SingleMatchupRow: React.FC<SingleMatchupRowProps> = ({ opponentDeckKey, re
         <div className="flex flex-col">
           <StatSection
             variant="horizontal"
-            wins={result.matchesWon}
-            losses={result.matchesLost}
+            wins={result.wins}
+            losses={result.losses}
             winrate={matchWinrate}
             percentageVariant="horizontal"
           />
@@ -63,8 +62,8 @@ const SingleMatchupRow: React.FC<SingleMatchupRowProps> = ({ opponentDeckKey, re
         <div className="flex flex-col">
           <StatSection
             variant="horizontal"
-            wins={result.gamesWon}
-            losses={result.gamesLost}
+            wins={result.gameWins}
+            losses={result.gameLosses}
             winrate={gameWinrate}
             percentageVariant="horizontal"
           />
