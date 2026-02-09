@@ -6,6 +6,7 @@ import { format, subDays } from 'date-fns';
 import StatisticsFilters from '@/components/app/statistics/components/StatisticsFilters/StatisticsFilters.tsx';
 import { z } from 'zod';
 import { StatisticsSubpage } from '@/components/app/statistics/components/StatisticsSubpageTabs/StatisticsSubpageTabs.tsx';
+import { MatchupSort } from '@/components/app/statistics/components/SubpageMatchups/matchupLib.ts';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),
@@ -13,6 +14,10 @@ const statisticsSearchParams = z.object({
   sBaseCardKey: z.string().optional(),
 
   sSubpage: z.enum(StatisticsSubpage).optional(),
+  sMatchupSort: z.enum(MatchupSort).optional(),
+
+  sMinMatches: z.coerce.number().optional(),
+  sMinGames: z.coerce.number().optional(),
 
   sDateRangeOption: z.string().optional(),
   sDateRangeFrom: z.string().optional(),

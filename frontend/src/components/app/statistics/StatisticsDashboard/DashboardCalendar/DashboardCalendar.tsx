@@ -2,9 +2,9 @@ import * as React from 'react';
 import { useMemo, useCallback } from 'react';
 import { ResponsiveTimeRange, CalendarDatum, TimeRangeSvgProps } from '@nivo/calendar';
 import { useTheme } from '@/components/theme-provider.tsx';
-import { MatchResult } from '@/components/app/statistics/useGameResults.ts';
 import { format, subDays } from 'date-fns';
 import DashboardCalendarTooltip from './DashboardCalendarTooltip.tsx';
+import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 
 export type DashboardCalendarData = CalendarDatum & {
   matchWins: number;

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { MatchResult } from '@/components/app/statistics/useGameResults.ts';
 import { StatSection } from '@/components/app/statistics/common/StatSection';
+import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 
 interface DashboardOverviewProps {
   matches: MatchResult[] | undefined;

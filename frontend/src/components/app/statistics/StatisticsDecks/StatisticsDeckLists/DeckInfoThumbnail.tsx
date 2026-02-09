@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { useCardList } from '@/api/lists/useCardList.ts';
 import { useMemo } from 'react';
-import { basicBaseForAspect } from '../../../../../../../shared/lib/basicBases.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
 import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
 import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
@@ -10,17 +9,13 @@ import { StatSection, StatSectionProps } from '@/components/app/statistics/commo
 import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/components/CopyLinkButton.tsx';
 import { Link } from '@tanstack/react-router';
 import { cn } from '@/lib/utils.ts';
+import { getCardIdFromKey } from '@/components/app/statistics/lib/lib.ts';
 
 interface DeckInfoThumbnailProps {
   statistics?: DeckStatistics;
   statSectionVariant?: StatSectionProps['variant'];
   displayDeckBackground?: boolean;
 }
-
-const getCardIdFromKey = (key: string | undefined, cards: any) => {
-  if (!key || !cards) return undefined;
-  return key in cards ? key : basicBaseForAspect[key];
-};
 
 const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
   statistics,

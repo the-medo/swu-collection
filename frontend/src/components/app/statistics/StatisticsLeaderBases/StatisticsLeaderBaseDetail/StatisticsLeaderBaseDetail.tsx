@@ -1,4 +1,4 @@
-import { MatchResult, StatisticsHistoryData } from '@/components/app/statistics/useGameResults.ts';
+import { StatisticsHistoryData } from '@/components/app/statistics/useGameResults.ts';
 import { useSearch } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { calculateDeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
@@ -7,10 +7,10 @@ import StatisticsSubpageTabs from '@/components/app/statistics/components/Statis
 import SubpageMatches from '@/components/app/statistics/components/SubpageMatches/SubpageMatches.tsx';
 import SubpageCardStats from '@/components/app/statistics/components/SubpageCardStats/SubpageCardStats.tsx';
 import SubpageMatchups from '@/components/app/statistics/components/SubpageMatchups/SubpageMatchups.tsx';
-import SubpageDecklist from '@/components/app/statistics/components/SubpageDecklist/SubpageDecklist.tsx';
 import LeaderBaseInfoThumbnail, {
   LeaderBaseInfoThumbnailProps,
 } from '@/components/app/statistics/StatisticsDashboard/DashboardLeaderBase/LeaderBaseInfoThumbnail.tsx';
+import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 
 interface StatisticsLeaderBaseDetailProps {
   matches: MatchResult[];
@@ -52,7 +52,7 @@ const StatisticsLeaderBaseDetail: React.FC<StatisticsLeaderBaseDetailProps> = ({
       <div className="mt-4">
         {sSubpage === 'matches' && <SubpageMatches matches={matches} />}
         {sSubpage === 'card-stats' && <SubpageCardStats matches={matches} />}
-        {sSubpage === 'matchups' && <SubpageMatchups matches={matches} />}
+        {sSubpage === 'matchups' && <SubpageMatchups matches={matches} matrixKey={key} />}
         {!sSubpage && <SubpageMatches matches={matches} />}
       </div>
     </>

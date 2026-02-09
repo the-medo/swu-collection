@@ -1,4 +1,3 @@
-import { MatchResult } from '@/components/app/statistics/useGameResults.ts';
 import { useSearch } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { calculateDeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
@@ -9,6 +8,8 @@ import SubpageMatches from '@/components/app/statistics/components/SubpageMatche
 import SubpageCardStats from '@/components/app/statistics/components/SubpageCardStats/SubpageCardStats.tsx';
 import SubpageMatchups from '@/components/app/statistics/components/SubpageMatchups/SubpageMatchups.tsx';
 import SubpageDecklist from '@/components/app/statistics/components/SubpageDecklist/SubpageDecklist.tsx';
+import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
+import { getDeckKeyFromDeckStatistics } from '@/components/app/statistics/lib/lib.ts';
 
 interface StatisticsDeckDetailProps {
   matches: MatchResult[];
@@ -33,7 +34,9 @@ const StatisticsDeckDetail: React.FC<StatisticsDeckDetailProps> = ({ matches = [
       <div className="mt-4">
         {sSubpage === 'matches' && <SubpageMatches matches={matches} />}
         {sSubpage === 'card-stats' && <SubpageCardStats matches={matches} />}
-        {sSubpage === 'matchups' && <SubpageMatchups matches={matches} />}
+        {sSubpage === 'matchups' && (
+          <SubpageMatchups matches={matches} matrixKey={getDeckKeyFromDeckStatistics(deck)} />
+        )}
         {sSubpage === 'decklist' && <SubpageDecklist deckStatistics={deck} />}
         {!sSubpage && <SubpageMatches matches={matches} />}
       </div>
