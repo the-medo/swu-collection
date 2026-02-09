@@ -2,6 +2,13 @@ export type MatchFilter = 'all' | 'day2' | 'custom';
 
 export type MatchupDisplayMode = 'winLoss' | 'winrate' | 'gameWinLoss' | 'gameWinrate';
 
+export type MatchupTableData = {
+  rowKeys: string[];
+  colKeys: string[];
+  matchups: MatchupDataMap;
+  totalStats?: Map<string, MatchupTotalData>;
+};
+
 export type MatchupData = {
   wins: number;
   losses: number;

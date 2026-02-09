@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { memo, RefObject } from 'react';
-import { MatchupDataMap, MatchupDisplayMode, MatchupTotalData } from '../types';
+import { MatchupDisplayMode, MatchupTableData } from '../types';
 import { MatchupTableCell } from './MatchupTableCell';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import RowTotalCell from '@/components/app/tournaments/TournamentMatchups/components/MatchupRowTotalCell.tsx';
@@ -10,13 +10,9 @@ import { Input } from '@/components/ui/input.tsx';
 const MemoizedCell = React.memo(MatchupTableCell);
 
 interface MatchupTableContentProps {
-  tableRef: RefObject<HTMLTableElement>;
-  matchupData: {
-    keys: string[];
-    matchups: MatchupDataMap;
-    totalStats?: Map<string, MatchupTotalData>;
-  };
-  filteredKeys: string[];
+  tableRef: RefObject<HTMLTableElement | null>;
+  matchupData: MatchupTableData;
+  rowKeys: string[];
   displayMode: MatchupDisplayMode;
   metaInfo: MetaInfo;
   labelRenderer: any;
@@ -38,7 +34,7 @@ interface MatchupTableContentProps {
 const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
   tableRef,
   matchupData,
-  filteredKeys,
+  rowKeys,
   displayMode,
   metaInfo,
   labelRenderer,
@@ -84,7 +80,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
               className="w-full text-sm p-1 rounded border"
             />
           </td>
-          {matchupData.keys.map((key, colIndex) => (
+          {matchupData.colKeys.map((key, colIndex) => (
             <td
               key={key}
               data-column-index={colIndex + 2} // +2 because of the two initial columns
@@ -102,7 +98,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
         </tr>
       </thead>
       <tbody>
-        {filteredKeys.map(rowKey => (
+        {rowKeys.map(rowKey => (
           <tr key={rowKey} className="h-[20px] text-sm hover:bg-accent hover:brightness-90">
             <RowTotalCell
               rowKey={rowKey}
@@ -116,7 +112,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
             >
               {labelRenderer(rowKey, metaInfo, 'compact')}
             </td>
-            {matchupData.keys.map((colKey, colIndex) => (
+            {matchupData.colKeys.map((colKey, colIndex) => (
               <MemoizedCell
                 key={colKey}
                 rowKey={rowKey}
@@ -135,10 +131,10 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
         {isDataTruncated && !showAllData && !filterText && (
           <tr className="h-[40px] text-sm bg-accent/30">
             <td colSpan={2} className="p-2 border text-center font-semibold">
-              Showing limited data ({filteredKeys.length} rows, {matchupData.keys.length} columns)
+              Showing limited data ({rowKeys.length} rows, {matchupData.colKeys.length} columns)
             </td>
             <td
-              colSpan={matchupData.keys.length}
+              colSpan={matchupData.colKeys.length}
               className="p-2 border pl-12 cursor-pointer hover:bg-accent"
               onClick={() => setShowAllData(true)}
             >
@@ -153,10 +149,10 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
         {isDataTruncated && showAllData && !filterText && (
           <tr className="h-[40px] text-sm bg-accent/30">
             <td colSpan={2} className="p-2 border text-center font-semibold">
-              Showing all data ({filteredKeys.length} rows and columns)
+              Showing all data ({rowKeys.length} rows and columns)
             </td>
             <td
-              colSpan={matchupData.keys.length}
+              colSpan={matchupData.colKeys.length}
               className="p-2 pl-12 border cursor-pointer hover:bg-accent"
               onClick={() => setShowAllData(false)}
             >
