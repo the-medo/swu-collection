@@ -14,21 +14,21 @@ export const sortMatchups = (
   return [...matchups].sort((a, b) => {
     switch (sortMode) {
       case MatchupSort.matchesTotal:
-        return b[1].matchesTotal - a[1].matchesTotal;
+        return b[1].total - a[1].total;
       case MatchupSort.matchesWinrate: {
-        const wrA = a[1].matchesTotal > 0 ? a[1].matchesWon / a[1].matchesTotal : 0;
-        const wrB = b[1].matchesTotal > 0 ? b[1].matchesWon / b[1].matchesTotal : 0;
+        const wrA = a[1].total > 0 ? a[1].wins / a[1].total : 0;
+        const wrB = b[1].total > 0 ? b[1].wins / b[1].total : 0;
         return wrB - wrA;
       }
       case MatchupSort.gamesTotal:
-        return b[1].gamesTotal - a[1].gamesTotal;
+        return b[1].gameTotal - a[1].gameTotal;
       case MatchupSort.gamesWinrate: {
-        const wrA = a[1].gamesTotal > 0 ? a[1].gamesWon / a[1].gamesTotal : 0;
-        const wrB = b[1].gamesTotal > 0 ? b[1].gamesWon / b[1].gamesTotal : 0;
+        const wrA = a[1].gameTotal > 0 ? a[1].gameWins / a[1].gameTotal : 0;
+        const wrB = b[1].gameTotal > 0 ? b[1].gameWins / b[1].gameTotal : 0;
         return wrB - wrA;
       }
       default:
-        return b[1].matchesTotal - a[1].matchesTotal;
+        return b[1].total - a[1].total;
     }
   });
 };

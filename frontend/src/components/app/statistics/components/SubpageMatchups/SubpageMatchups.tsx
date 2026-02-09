@@ -26,7 +26,7 @@ const SubpageMatchups: React.FC<SubpageMatchupsProps> = ({ matches, matrixKey })
     sMinGames,
   } = useSearch({ strict: false });
 
-  const matrix = useAnalyzeMatchups(matches);
+  const { matchups: matrix } = useAnalyzeMatchups(matches);
   const matchups = matrix[matrixKey] || {};
 
   const onSortChange = useCallback((sort: MatchupSort) => {
@@ -56,11 +56,11 @@ const SubpageMatchups: React.FC<SubpageMatchupsProps> = ({ matches, matrixKey })
     console.log({ matchups });
 
     if (sMinMatches) {
-      filtered = filtered.filter(([, result]) => result.matchesTotal >= sMinMatches);
+      filtered = filtered.filter(([, result]) => result.total >= sMinMatches);
     }
 
     if (sMinGames) {
-      filtered = filtered.filter(([, result]) => result.gamesTotal >= sMinGames);
+      filtered = filtered.filter(([, result]) => result.gameTotal >= sMinGames);
     }
 
     return sortMatchups(filtered, sMatchupSort);
