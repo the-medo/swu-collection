@@ -18,7 +18,8 @@ export type MatchupResult = MatchupData & {
 export type AnalyzedMatchupOpponents = Record<string, MatchupResult>;
 export type AnalyzedMatchupsMatrix = Record<string, AnalyzedMatchupOpponents>;
 export type AnalyzedMatchups = {
-  keys: string[];
+  rowKeys: string[];
+  colKeys: string[];
   matchups: AnalyzedMatchupsMatrix;
   totalStats: Map<string, MatchupTotalData>;
 };
@@ -26,10 +27,16 @@ export type AnalyzedMatchups = {
 export const useAnalyzeMatchups = (matches: MatchResult[]): AnalyzedMatchups => {
   return useMemo(() => {
     const matrix: AnalyzedMatchupsMatrix = {};
+    const opponentDeckKeys: Record<string, number> = {};
 
     matches.forEach(m => {
       const deckKey = getDeckKeyFromMatchResult(m); //this is matrix key (in AnalyzedMatchupsMatrix)
       const opponentDeckKey = getOpponentDeckKeyFromMatchResult(m); // this is the matchup result key (in AnalyzedMatchups)
+
+      if (!opponentDeckKeys[opponentDeckKey]) {
+        opponentDeckKeys[opponentDeckKey] = 0;
+      }
+      opponentDeckKeys[opponentDeckKey]++;
 
       if (!matrix[deckKey]) {
         matrix[deckKey] = {};
@@ -91,10 +98,13 @@ export const useAnalyzeMatchups = (matches: MatchResult[]): AnalyzedMatchups => 
     });
 
     // Sort keys by total match count (descending)
-    const sortedKeys = deckKeys.sort((a, b) => {
+    const sortedRowKeys = deckKeys.sort((a, b) => {
       return (matchCounts.get(b) || 0) - (matchCounts.get(a) || 0);
     });
+    const sortedColKeys = Object.keys(opponentDeckKeys).sort((a, b) => {
+      return opponentDeckKeys[b] - opponentDeckKeys[a];
+    });
 
-    return { keys: sortedKeys, matchups: matrix, totalStats };
+    return { rowKeys: sortedRowKeys, colKeys: sortedColKeys, matchups: matrix, totalStats };
   }, [matches]);
 };

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MatchupDataMap, MatchupDisplayMode, MatchupTotalData } from '../types';
+import { MatchupDisplayMode, MatchupTableData } from '../types';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
@@ -8,11 +8,7 @@ import { labelWidthBasedOnMetaInfo } from '@/components/app/tournaments/Tourname
 import MatchupTableContent from './MatchupTableContent';
 
 export interface MatchupTableProps {
-  matchupData: {
-    keys: string[];
-    matchups: MatchupDataMap;
-    totalStats?: Map<string, MatchupTotalData>;
-  };
+  matchupData: MatchupTableData;
   displayMode: MatchupDisplayMode;
   metaInfo: MetaInfo;
   labelRenderer: ReturnType<typeof useLabel>;
@@ -32,7 +28,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   const [filterText, setFilterText] = useState<string>('');
   const [debouncedFilterText, setDebouncedFilterText] = useState<string>('');
   const [showAllData, setShowAllData] = useState<boolean>(false);
-  const tableRef = useRef<HTMLTableElement>(null);
+  const tableRef = useRef<HTMLTableElement | null>(null);
 
   const columnCellsRef = useRef<Map<number, HTMLTableCellElement[]>>(new Map()); // Store column cell references in a ref to avoid re-renders
   const hoveredColRef = useRef<number | null>(null); // Store the currently hovered column in a ref
@@ -118,7 +114,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
 
   // Filter keys based on the debounced filter text and limit to 30 if not showing all data
   const filteredKeys = useMemo(() => {
-    let keys = matchupData.keys;
+    let keys = matchupData.rowKeys;
 
     // Apply text filter if any
     if (debouncedFilterText) {
@@ -133,7 +129,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     }
 
     return keys;
-  }, [debouncedFilterText, matchupData.keys, showAllData]);
+  }, [debouncedFilterText, matchupData.rowKeys, showAllData]);
 
   // Handler for column hover (works for both headers and data cells)
   const handleColumnEnter = useCallback((index: number) => {
@@ -169,10 +165,12 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
 
   // Limit columns if not showing all data
   const limitedMatchupData = useMemo(() => {
-    if (!showAllData && matchupData.keys.length > MAX_DISPLAY_ITEMS) {
-      const limitedKeys = matchupData.keys.slice(0, MAX_DISPLAY_ITEMS);
+    if (!showAllData && matchupData.colKeys.length > MAX_DISPLAY_ITEMS) {
+      const rowKeys = matchupData.rowKeys.slice(0, MAX_DISPLAY_ITEMS);
+      const colKeys = matchupData.colKeys.slice(0, MAX_DISPLAY_ITEMS);
       return {
-        keys: limitedKeys,
+        rowKeys,
+        colKeys,
         matchups: matchupData.matchups,
         totalStats: matchupData.totalStats,
       };
@@ -182,14 +180,15 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
 
   // Check if data is truncated
   const isDataTruncated =
-    matchupData.keys.length > MAX_DISPLAY_ITEMS || filteredKeys.length < matchupData.keys.length;
+    matchupData.rowKeys.length > MAX_DISPLAY_ITEMS ||
+    filteredKeys.length < matchupData.rowKeys.length;
 
   return (
     <div className="relative overflow-x-auto overflow-y-auto max-h-screen">
       <MatchupTableContent
         tableRef={tableRef}
         matchupData={limitedMatchupData}
-        filteredKeys={filteredKeys}
+        rowKeys={filteredKeys}
         displayMode={displayMode}
         metaInfo={metaInfo}
         labelRenderer={labelRenderer}
@@ -204,7 +203,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         showAllData={showAllData}
         setShowAllData={setShowAllData}
         isDataTruncated={isDataTruncated}
-        originalDataLength={matchupData.keys.length}
+        originalDataLength={matchupData.colKeys.length}
         maxDisplayItems={MAX_DISPLAY_ITEMS}
       />
     </div>
