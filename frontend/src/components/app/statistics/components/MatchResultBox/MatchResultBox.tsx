@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { MatchResult } from '@/components/app/statistics/useGameResults.ts';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -11,6 +10,7 @@ import { getResultBorderColor } from '@/components/app/statistics/lib/lib.ts';
 import { useMemo } from 'react';
 import MatchGames from './MatchGames.tsx';
 import { formatDistanceToNow } from 'date-fns';
+import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 
 interface MatchResultBoxProps {
   match: MatchResult;

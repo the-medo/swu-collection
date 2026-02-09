@@ -1,4 +1,4 @@
-import { MatchResult } from '@/components/app/statistics/useGameResults.ts';
+import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 
 export interface DeckStatistics {
   deckId: string;

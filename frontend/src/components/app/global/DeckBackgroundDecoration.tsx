@@ -47,7 +47,7 @@ const imageOffsetClasses = {
 };
 
 interface DeckBackgroundDecorationProps extends PropsWithChildren {
-  leaderCard: CardDataWithVariants<CardListVariants>;
+  leaderCard: CardDataWithVariants<CardListVariants> | undefined;
   baseCard: CardDataWithVariants<CardListVariants> | undefined;
   position: 'top-left' | 'top-right';
 }
@@ -58,7 +58,7 @@ const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
   position,
   children,
 }) => {
-  const leaderVariant = leaderCard.variants[Object.keys(leaderCard.variants)[0]];
+  const leaderVariant = leaderCard?.variants[Object.keys(leaderCard?.variants)[0]];
 
   if (!leaderVariant) return null;
 

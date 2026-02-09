@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { MatchResult } from '@/components/app/statistics/useGameResults.ts';
 import MatchResultBox from '@/components/app/statistics/components/MatchResultBox/MatchResultBox.tsx';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import { useMemo } from 'react';
+import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 
 interface SubpageMatchesProps {
   matches: MatchResult[];

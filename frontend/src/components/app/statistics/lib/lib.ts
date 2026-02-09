@@ -1,3 +1,7 @@
+import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
+import { basicBaseForAspect } from '../../../../../../shared/lib/basicBases.ts';
+import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
+
 export const getResultColor = (result?: number) => {
   switch (result) {
     case 3:
@@ -35,4 +39,21 @@ export const getResultText = (result?: number) => {
     default:
       return 'Unknown';
   }
+};
+
+export const getDeckKey = (leaderCardId: string | undefined, baseCardKey: string | undefined) =>
+  `${leaderCardId}|${baseCardKey}`;
+
+export const getDeckKeyFromMatchResult = (match: MatchResult) =>
+  getDeckKey(match.leaderCardId, match.baseCardKey);
+
+export const getDeckKeyFromDeckStatistics = (ds: DeckStatistics | undefined) =>
+  getDeckKey(ds?.leaderCardId, ds?.baseCardKey);
+
+export const getOpponentDeckKeyFromMatchResult = (match: MatchResult) =>
+  getDeckKey(match.opponentLeaderCardId, match.opponentBaseCardKey);
+
+export const getCardIdFromKey = (key: string | undefined, cards: any) => {
+  if (!key || !cards) return undefined;
+  return key in cards ? key : basicBaseForAspect[key];
 };

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { MatchResult } from '@/components/app/statistics/useGameResults.ts';
+
+import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 
 interface SubpageCardStatsProps {
   matches: MatchResult[];
