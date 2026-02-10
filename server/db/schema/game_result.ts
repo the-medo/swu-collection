@@ -13,6 +13,7 @@ import {
 import { user } from './auth-schema.ts';
 import { deck } from './deck.ts';
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import type { CardMetrics } from '../../../shared/types/cardMetrics.ts';
 
 export const userEvent = pgTable(
   'user_event',
@@ -110,4 +111,5 @@ export type GameResultOtherData = {
 export type UserEvent = InferSelectModel<typeof userEvent>;
 export type GameResult = InferInsertModel<typeof gameResult> & {
   otherData: GameResultOtherData;
+  cardMetrics: CardMetrics;
 };

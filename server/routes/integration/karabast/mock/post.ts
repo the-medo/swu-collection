@@ -9,13 +9,14 @@ import { eq, sql } from 'drizzle-orm';
 import { upsertGameResults } from '../../../../lib/game-results/upsertGameResults.ts';
 import { baseSpecialNames } from '../../../../../shared/lib/basicBases.ts';
 import type { GameResultDeckInfo } from '../../../../db/schema/game_result.ts';
+import type { CardMetrics } from '../../../../../shared/types/cardMetrics.ts';
 
 const schema = z.object({
   deckId: z.string().uuid(),
 });
 
 const mockCardMetrics = (cards: { cardId: string }[]) => {
-  const metrics: Record<string, any> = {};
+  const metrics: CardMetrics = {};
   cards.forEach(card => {
     // Randomly decide to include metrics for this card
     if (Math.random() > 0.3) {
