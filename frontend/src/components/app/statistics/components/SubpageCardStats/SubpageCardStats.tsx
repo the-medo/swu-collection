@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 import { useMemo, useState } from 'react';
+import CardStatsTable from './CardStatsTable/CardStatsTable.tsx';
 
 interface SubpageCardStatsProps {
   matches: MatchResult[];
@@ -23,7 +24,12 @@ const SubpageCardStats: React.FC<SubpageCardStatsProps> = ({ matches }) => {
     return result;
   }, [matches, hasIni, gameNumber]);
 
-  return <div>SubpageCardStats (Game count: {games.length})</div>;
+  return (
+    <div className="flex flex-col gap-4">
+      <div>SubpageCardStats (Game count: {games.length})</div>
+      <CardStatsTable games={games} />
+    </div>
+  );
 };
 
 export default SubpageCardStats;

@@ -7,6 +7,7 @@ import StatisticsFilters from '@/components/app/statistics/components/Statistics
 import { z } from 'zod';
 import { StatisticsSubpage } from '@/components/app/statistics/components/StatisticsSubpageTabs/StatisticsSubpageTabs.tsx';
 import { MatchupSort } from '@/components/app/statistics/components/SubpageMatchups/matchupLib.ts';
+import { emptyCardStatTableRow } from '@/components/app/statistics/components/SubpageCardStats/cardStatLib.ts';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),
@@ -15,6 +16,8 @@ const statisticsSearchParams = z.object({
 
   sSubpage: z.enum(StatisticsSubpage).optional(),
   sMatchupSort: z.enum(MatchupSort).optional(),
+  sCardMetricColumn: z.enum(Object.keys(emptyCardStatTableRow)).optional(),
+  sCardMetricSort: z.enum(['asc', 'desc']).optional(),
 
   sMinMatches: z.coerce.number().optional(),
   sMinGames: z.coerce.number().optional(),

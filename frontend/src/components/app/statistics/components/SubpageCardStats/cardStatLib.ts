@@ -33,6 +33,34 @@ export type CardStatTableRow = {
   discardedWinrate: number;
 };
 
+export const emptyCardStatTableRow = {
+  cardId: '',
+  included: 0,
+  includedInWins: 0,
+  includedInLosses: 0,
+  includedWinrate: 0,
+  drawn: 0,
+  drawnInWins: 0,
+  drawnInLosses: 0,
+  drawnWinrate: 0,
+  played: 0,
+  playedInWins: 0,
+  playedInLosses: 0,
+  playedWinrate: 0,
+  activated: 0,
+  activatedInWins: 0,
+  activatedInLosses: 0,
+  activatedWinrate: 0,
+  resourced: 0,
+  resourcedInWins: 0,
+  resourcedInLosses: 0,
+  resourcedWinrate: 0,
+  discarded: 0,
+  discardedInWins: 0,
+  discardedInLosses: 0,
+  discardedWinrate: 0,
+} as const;
+
 export type CardStatTableDataMap = Record<string, CardStatTableRow>;
 export type CardStatTableData = CardStatTableRow[];
 
@@ -45,33 +73,7 @@ export const transformMetricsToTableData = (games: GameResult[]): CardStatTableD
 
     Object.entries(metrics).forEach(([cardId, metric]) => {
       if (!map[cardId]) {
-        map[cardId] = {
-          cardId,
-          included: 0,
-          includedInWins: 0,
-          includedInLosses: 0,
-          includedWinrate: 0,
-          drawn: 0,
-          drawnInWins: 0,
-          drawnInLosses: 0,
-          drawnWinrate: 0,
-          played: 0,
-          playedInWins: 0,
-          playedInLosses: 0,
-          playedWinrate: 0,
-          activated: 0,
-          activatedInWins: 0,
-          activatedInLosses: 0,
-          activatedWinrate: 0,
-          resourced: 0,
-          resourcedInWins: 0,
-          resourcedInLosses: 0,
-          resourcedWinrate: 0,
-          discarded: 0,
-          discardedInWins: 0,
-          discardedInLosses: 0,
-          discardedWinrate: 0,
-        };
+        map[cardId] = { ...emptyCardStatTableRow, cardId };
       }
 
       const row = map[cardId];
