@@ -63,9 +63,9 @@ We need to store teams, their members (with roles), and join requests.
 
 ---
 
-### 4. API Endpoints - IN PROGRESS (teams endpoints done, `user-setup` pending)
+### 4. API Endpoints - DONE
 
-- [ ] `GET /api/user-setup`: Returns user settings, integrations, and teams in one go.
+- [x] `GET /api/user-setup`: Returns user settings, integrations, and teams in one go.
 - [x] `POST /api/teams`: Create a new team.
     - Input: `name`, `shortcut`, `description` (optional).
     - Logic: Check team limit (max 2), creator becomes `owner`.
@@ -98,18 +98,18 @@ We need to store teams, their members (with roles), and join requests.
 #### API Hooks (TanStack Query)
 Located in `frontend/src/api/teams/`.
 
-- [ ] `useUserSetup`: Fetch combined user data (settings, integrations, teams).
-- [ ] `useTeams`: Fetch current user's teams.
-- [ ] `useTeam(idOrShortcut)`: Fetch specific team details.
-- [ ] `useCreateTeam`: Mutation to create a team.
-- [ ] `useUpdateTeam`: Mutation for team settings.
-- [ ] `useUploadTeamLogo`: Mutation for logo upload.
-- [ ] `useTeamMembers(teamId)`: Fetch members list.
-- [ ] `useSubmitJoinRequest`: Mutation to ask to join.
-- [ ] `useJoinRequests(teamId)`: Fetch pending requests for owners.
-- [ ] `useHandleJoinRequest`: Mutation to approve/reject.
-- [ ] `useAddTeamDeck`: Mutation to link a deck to a team.
-- [ ] `useRemoveTeamDeck`: Mutation to unlink a deck.
+- [x] `useUserSetup`: Fetch combined user data (settings, integrations, teams).
+- [x] `useTeams`: Fetch current user's teams.
+- [x] `useTeam(idOrShortcut)`: Fetch specific team details.
+- [x] `useCreateTeam`: Mutation to create a team.
+- [x] `useUpdateTeam`: Mutation for team settings.
+- [x] `useUploadTeamLogo`: Mutation for logo upload.
+- [x] `useTeamMembers(teamId)`: Fetch members list.
+- [x] `useSubmitJoinRequest`: Mutation to ask to join.
+- [x] `useJoinRequests(teamId)`: Fetch pending requests for owners.
+- [x] `useHandleJoinRequest`: Mutation to approve/reject.
+- [x] `useAddTeamDeck`: Mutation to link a deck to a team.
+- [x] `useRemoveTeamDeck`: Mutation to unlink a deck.
 
 #### Left Menu Updates (`LeftSidebar.tsx`)
 - Add a new "Teams" group.
@@ -138,7 +138,7 @@ Located in `frontend/src/api/teams/`.
 ### 6. Task Checklist
 
 - [x] Create DB migration for `team`, `team_member`, `team_deck`, `team_join_request`.
-- [ ] Implement `GET /api/user-setup` endpoint.
+- [x] Implement `GET /api/user-setup` endpoint.
 - [x] Implement backend routes and controllers for teams.
 - [ ] Add S3 bucket/folder for team logos.
 - [ ] Create frontend API hooks for teams (checklist in Step 5).
