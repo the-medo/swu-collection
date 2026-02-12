@@ -7,6 +7,7 @@ import { zTeamJoinRequestAction } from '../../../../../../types/ZTeam.ts';
 import type { AuthExtension } from '../../../../../auth/auth.ts';
 import { teamMember } from '../../../../../db/schema/team_member.ts';
 import { teamJoinRequest } from '../../../../../db/schema/team_join_request.ts';
+import { getTeamMembership } from '../../../../../lib/getTeamMembership.ts';
 
 export const teamsIdJoinRequestRequestIdPatchRoute = new Hono<AuthExtension>().patch(
   '/',
@@ -20,11 +21,7 @@ export const teamsIdJoinRequestRequestIdPatchRoute = new Hono<AuthExtension>().p
     const { status } = c.req.valid('json');
 
     // Check ownership
-    const [membership] = await db
-      .select()
-      .from(teamMember)
-      .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, user.id)))
-      .limit(1);
+    const membership = await getTeamMembership(teamId, user.id);
 
     if (!membership || membership.role !== 'owner') {
       return c.json({ message: 'Only team owners can handle join requests' }, 403);

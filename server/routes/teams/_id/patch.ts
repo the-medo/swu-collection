@@ -3,10 +3,10 @@ import { zValidator } from '@hono/zod-validator';
 import { zTeamUpdateRequest } from '../../../../types/ZTeam.ts';
 import { db } from '../../../db';
 import { team as teamTable } from '../../../db/schema/team.ts';
-import { teamMember } from '../../../db/schema/team_member.ts';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import type { AuthExtension } from '../../../auth/auth.ts';
 import { z } from 'zod';
+import { getTeamMembership } from '../../../lib/getTeamMembership.ts';
 
 export const teamsIdPatchRoute = new Hono<AuthExtension>().patch(
   '/',
@@ -19,11 +19,7 @@ export const teamsIdPatchRoute = new Hono<AuthExtension>().patch(
     const data = c.req.valid('json');
 
     // Check ownership
-    const [membership] = await db
-      .select()
-      .from(teamMember)
-      .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, user.id)))
-      .limit(1);
+    const membership = await getTeamMembership(teamId, user.id);
 
     if (!membership || membership.role !== 'owner') {
       return c.json({ message: 'Only team owners can update team settings' }, 403);

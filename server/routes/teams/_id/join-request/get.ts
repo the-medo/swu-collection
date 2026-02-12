@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 import { db } from '../../../../db';
-import { teamMember } from '../../../../db/schema/team_member.ts';
 import { teamJoinRequest } from '../../../../db/schema/team_join_request.ts';
 import { user as userTable } from '../../../../db/schema/auth-schema.ts';
 import { eq, and } from 'drizzle-orm';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
+import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
 
 export const teamsIdJoinRequestGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const user = c.get('user');
@@ -14,11 +14,7 @@ export const teamsIdJoinRequestGetRoute = new Hono<AuthExtension>().get('/', asy
   const teamId = z.guid().parse(c.req.param('id'));
 
   // Check ownership
-  const [membership] = await db
-    .select()
-    .from(teamMember)
-    .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, user.id)))
-    .limit(1);
+  const membership = await getTeamMembership(teamId, user.id);
 
   if (!membership || membership.role !== 'owner') {
     return c.json({ message: 'Only team owners can view join requests' }, 403);
