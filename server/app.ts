@@ -21,6 +21,7 @@ import { cardPoolsRoute } from './routes/card-pools.ts';
 import { dailySnapshotRoute } from './routes/daily-snapshot.ts';
 import { integrationRoute } from './routes/integration.ts';
 import { gameResultRoute } from './routes/game-results.ts';
+import { teamsRoute } from './routes/teams.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
 import { timeout } from 'hono/timeout';
@@ -122,7 +123,8 @@ const apiRoutes = app
   .route('/card-pools', cardPoolsRoute)
   .route('/daily-snapshot', dailySnapshotRoute)
   .route('/integration', integrationRoute)
-  .route('/game-results', gameResultRoute);
+  .route('/game-results', gameResultRoute)
+  .route('/teams', teamsRoute);
 
 // Read the index.html template once at startup
 let indexHtml: string;
