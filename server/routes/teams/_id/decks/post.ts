@@ -2,12 +2,12 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { zTeamDeckRequest } from '../../../../../types/ZTeam.ts';
 import { db } from '../../../../db';
-import { teamMember } from '../../../../db/schema/team_member.ts';
 import { teamDeck } from '../../../../db/schema/team_deck.ts';
 import { deck } from '../../../../db/schema/deck.ts';
 import { eq, and } from 'drizzle-orm';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import z from 'zod';
+import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
 
 export const teamsIdDecksPostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -32,11 +32,7 @@ export const teamsIdDecksPostRoute = new Hono<AuthExtension>().post(
     }
 
     // Check membership (owner or member)
-    const [membership] = await db
-      .select()
-      .from(teamMember)
-      .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, user.id)))
-      .limit(1);
+    const membership = await getTeamMembership(teamId, user.id);
 
     if (!membership) {
       return c.json({ message: 'You must be a team member to add decks' }, 403);

@@ -5,6 +5,7 @@ import { teamJoinRequest } from '../../../../db/schema/team_join_request.ts';
 import { eq, and, count } from 'drizzle-orm';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
+import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
 
 const MAX_TEAMS_PER_USER = 2;
 
@@ -15,11 +16,7 @@ export const teamsIdJoinRequestPostRoute = new Hono<AuthExtension>().post('/', a
   const teamId = z.guid().parse(c.req.param('id'));
 
   // Check if already a member
-  const [existingMember] = await db
-    .select()
-    .from(teamMember)
-    .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, user.id)))
-    .limit(1);
+  const existingMember = await getTeamMembership(teamId, user.id);
 
   if (existingMember) {
     return c.json({ message: 'You are already a member of this team' }, 400);

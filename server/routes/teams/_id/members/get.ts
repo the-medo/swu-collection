@@ -2,9 +2,10 @@ import { Hono } from 'hono';
 import { db } from '../../../../db';
 import { teamMember } from '../../../../db/schema/team_member.ts';
 import { user as userTable } from '../../../../db/schema/auth-schema.ts';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
+import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
 
 export const teamsIdMembersGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const user = c.get('user');
@@ -13,11 +14,7 @@ export const teamsIdMembersGetRoute = new Hono<AuthExtension>().get('/', async c
   const teamId = z.guid().parse(c.req.param('id'));
 
   // Check if the requesting user is a member of the team
-  const [membership] = await db
-    .select()
-    .from(teamMember)
-    .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, user.id)))
-    .limit(1);
+  const membership = await getTeamMembership(teamId, user.id);
 
   if (!membership) {
     return c.json({ message: 'You must be a team member to view members' }, 403);
