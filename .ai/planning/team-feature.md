@@ -2,7 +2,7 @@
 
 Plan for the new Swubase feature: Teams.
 
-### 1. Database Schema (Drizzle / PostgreSQL)
+### 1. Database Schema (Drizzle / PostgreSQL) - DONE
 
 We need to store teams, their members (with roles), and join requests.
 
@@ -26,6 +26,7 @@ We need to store teams, their members (with roles), and join requests.
 #### `team_deck` table
 - `teamId`: `uuid`, references `team.id`
 - `deckId`: `uuid`, references `deck.id`
+- `addedAt`: `timestamp`, default now()
 - Primary key: `(teamId, deckId)`
 
 #### `team_join_request` table
@@ -62,32 +63,32 @@ We need to store teams, their members (with roles), and join requests.
 
 ---
 
-### 4. API Endpoints
+### 4. API Endpoints - IN PROGRESS (teams endpoints done, `user-setup` pending)
 
 - [ ] `GET /api/user-setup`: Returns user settings, integrations, and teams in one go.
-- [ ] `POST /api/teams`: Create a new team.
+- [x] `POST /api/teams`: Create a new team.
     - Input: `name`, `shortcut`, `description` (optional).
     - Logic: Check team limit (max 2), creator becomes `owner`.
-- [ ] `GET /api/teams/:idOrShortcut`: Get team details.
+- [x] `GET /api/teams/:idOrShortcut`: Get team details.
     - Logic: Allow fetching by either UUID or unique shortcut.
-- [ ] `PATCH /api/teams/:id`: Update team details.
+- [x] `PATCH /api/teams/:id`: Update team details.
     - Permissions: `Owner` only.
     - Fields: `name`, `shortcut`, `description`, `privacy`.
-- [ ] `POST /api/teams/:id/logo`: Upload logo to S3 and update team.
+- [x] `POST /api/teams/:id/logo`: Upload logo to S3 and update team.
     - Permissions: `Owner` only.
     - Storage: S3 bucket `swubase-teams`.
-- [ ] `GET /api/teams/:id/members`: List team members and their roles.
-- [ ] `POST /api/teams/:id/join-request`: Submit a request to join.
+- [x] `GET /api/teams/:id/members`: List team members and their roles.
+- [x] `POST /api/teams/:id/join-request`: Submit a request to join.
     - Logic: Check if user is already a member or has a pending request.
-- [ ] `GET /api/teams/:id/join-requests`: List pending requests.
+- [x] `GET /api/teams/:id/join-requests`: List pending requests.
     - Permissions: `Owner` only.
-- [ ] `PATCH /api/teams/:id/join-requests/:requestId`: Approve/Reject request.
+- [x] `PATCH /api/teams/:id/join-requests/:requestId`: Approve/Reject request.
     - Permissions: `Owner` only.
     - Action: If approved, create `team_member` entry.
-- [ ] `GET /api/teams/my`: List teams the current user is a member of.
-- [ ] `POST /api/teams/:id/decks`: Add a deck to the team.
+- [x] `GET /api/teams/my`: List teams the current user is a member of.
+- [x] `POST /api/teams/:id/decks`: Add a deck to the team.
     - Permissions: `Owner` or `Member`.
-- [ ] `DELETE /api/teams/:id/decks/:deckId`: Remove a deck from the team.
+- [x] `DELETE /api/teams/:id/decks/:deckId`: Remove a deck from the team.
     - Permissions: `Owner` or `Member`.
 
 ---
@@ -136,9 +137,9 @@ Located in `frontend/src/api/teams/`.
 
 ### 6. Task Checklist
 
-- [ ] Create DB migration for `team`, `team_member`, `team_deck`, `team_join_request`.
+- [x] Create DB migration for `team`, `team_member`, `team_deck`, `team_join_request`.
 - [ ] Implement `GET /api/user-setup` endpoint.
-- [ ] Implement backend routes and controllers for teams.
+- [x] Implement backend routes and controllers for teams.
 - [ ] Add S3 bucket/folder for team logos.
 - [ ] Create frontend API hooks for teams (checklist in Step 5).
 - [ ] Create `TeamPage` in frontend.
