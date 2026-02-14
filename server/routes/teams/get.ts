@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
-import { db } from '../../../db';
-import { team as teamTable } from '../../../db/schema/team.ts';
-import { teamMember } from '../../../db/schema/team_member.ts';
+import { db } from '../../db';
+import { team as teamTable } from '../../db/schema/team.ts';
+import { teamMember } from '../../db/schema/team_member.ts';
 import { eq } from 'drizzle-orm';
-import type { AuthExtension } from '../../../auth/auth.ts';
+import type { AuthExtension } from '../../auth/auth.ts';
 
-export const teamsMyGetRoute = new Hono<AuthExtension>().get('/', async c => {
+export const teamsGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const user = c.get('user');
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
