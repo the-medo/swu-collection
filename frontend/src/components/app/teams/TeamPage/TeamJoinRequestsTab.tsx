@@ -3,7 +3,7 @@ import { useJoinRequests, useHandleJoinRequest } from '@/api/teams';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { Check, X, Inbox } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 
 interface TeamJoinRequestsTabProps {
   teamId: string;
@@ -26,18 +26,14 @@ const TeamJoinRequestsTab: React.FC<TeamJoinRequestsTabProps> = ({ teamId }) => 
     );
   }
 
-  if (!requests || requests.length === 0) {
-    return (
-      <div className="flex flex-col items-center gap-4 py-12 text-center">
-        <Inbox className="w-12 h-12 text-muted-foreground" />
-        <p className="text-muted-foreground">No pending join requests.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-2 py-4">
-      {requests.map(request => (
+      <h4>Join Requests</h4>
+      {!requests ||
+        (requests.length === 0 && (
+          <p className="text-muted-foreground">No pending join requests.</p>
+        ))}
+      {requests?.map(request => (
         <div key={request.id} className="flex items-center gap-3 p-3 rounded-lg border">
           <Avatar className="w-10 h-10">
             <AvatarImage src={request.userImage ?? undefined} alt={request.userName ?? 'User'} />

@@ -39,19 +39,19 @@ const TeamCard: React.FC<{ team: Team }> = ({ team }) => {
   return (
     <Link to={teamUrl} className="block">
       <Card className="h-full transition-colors hover:border-primary/50 hover:shadow-md cursor-pointer">
-        <CardHeader className="flex flex-row items-center gap-4">
+        <CardHeader className="flex flex-col items-center gap-4 text-center">
           {team.logoUrl ? (
             <img
               src={team.logoUrl}
               alt={`${team.name} logo`}
-              className="w-14 h-14 rounded-lg object-cover shrink-0"
+              className="w-20 h-20 rounded-xl object-cover"
             />
           ) : (
-            <div className="w-14 h-14 rounded-lg bg-muted flex items-center justify-center shrink-0">
-              <Users className="w-7 h-7 text-muted-foreground" />
+            <div className="w-20 h-20 rounded-xl bg-muted flex items-center justify-center">
+              <Users className="w-10 h-10 text-muted-foreground" />
             </div>
           )}
-          <div className="flex flex-col gap-1 min-w-0">
+          <div className="flex flex-col gap-1 min-w-0 w-full">
             <CardTitle className="text-xl truncate">{team.name}</CardTitle>
             {team.description && (
               <CardDescription className="line-clamp-2">{team.description}</CardDescription>
@@ -92,11 +92,11 @@ const TeamsPage: React.FC = () => {
   return (
     <>
       <Helmet title="Teams | SWUBase" />
-      <div className="p-2">
+      <div className="p-4 max-w-[1200px] mx-auto">
         <h3>Teams</h3>
 
-        <div className="flex flex-col lg:flex-row gap-8 mt-4">
-          <div className="flex-1 min-w-0">
+        <div className="flex flex-col gap-6 mt-4">
+          <div className="min-w-0">
             {!user ? (
               <Card>
                 <CardContent className="flex flex-col items-center gap-4 py-8">
@@ -120,57 +120,18 @@ const TeamsPage: React.FC = () => {
             )}
 
             <div className="rounded-lg border bg-card p-6 space-y-4 mt-6">
-              <h4 className="font-semibold flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                How do teams work?
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-muted-foreground">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2 text-foreground font-medium">
-                    <Lock className="w-4 h-4" />
-                    Private by default
-                  </div>
-                  <p>
-                    Teams are private and cannot be discovered through browsing or search. Your
-                    team's decks and members are only visible to team members.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2 text-foreground font-medium">
-                    <LinkIcon className="w-4 h-4" />
-                    Invite via link
-                  </div>
-                  <p>
-                    The only way to join a team is through a direct invite link. Share your team's
-                    link with players you want to invite.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2 text-foreground font-medium">
-                    <ShieldCheck className="w-4 h-4" />
-                    Approval required
-                  </div>
-                  <p>
-                    When someone uses your invite link, they submit a join request. A team owner
-                    must approve the request before they become a member.
-                  </p>
-                </div>
+              <div>
+                <h4 className="font-semibold">Why create a team?</h4>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Teams exist to group the statistics of all team members together, giving you a
+                  combined view of your team's performance.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Each user can be a member of up to {MAX_TEAMS} teams. You can create a new team or
+                  join an existing one using an invite link.
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground pt-2 border-t">
-                Each user can be a member of up to {MAX_TEAMS} teams. You can create a new team or
-                join an existing one using an invite link.
-              </p>
-            </div>
-          </div>
-
-          <div className="lg:w-80 shrink-0">
-            <div className="rounded-lg border bg-card p-6 space-y-5">
-              <h4 className="font-semibold">Why create a team?</h4>
-              <p className="text-sm text-muted-foreground">
-                Teams exist to group the statistics of all team members together, giving you a
-                combined view of your team's performance.
-              </p>
-              <div className="space-y-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm">
                 <div className="flex gap-3">
                   <ChartSpline className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <div>
@@ -198,6 +159,45 @@ const TeamsPage: React.FC = () => {
                     <p className="text-muted-foreground">
                       Coordinate with your teammates, share game results, and analyze matchups
                       together to find the best strategies for upcoming events.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border bg-card p-6 space-y-4 mt-6">
+              <h4 className="font-semibold flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                How do teams work?
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm">
+                <div className="flex gap-3">
+                  <Lock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Private by default</p>
+                    <p className="text-muted-foreground">
+                      Teams are private and cannot be discovered through browsing or search. Your
+                      team's decks and members are only visible to team members.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <LinkIcon className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Invite via link</p>
+                    <p className="text-muted-foreground">
+                      The only way to join a team is through a direct invite link. Share your team's
+                      link with players you want to invite.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Approval required</p>
+                    <p className="text-muted-foreground">
+                      When someone uses your invite link, they submit a join request. A team owner
+                      must approve the request before they become a member.
                     </p>
                   </div>
                 </div>

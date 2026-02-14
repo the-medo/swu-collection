@@ -8,5 +8,6 @@ export * from './useTeamMembers.ts';
 export * from './useSubmitJoinRequest.ts';
 export * from './useJoinRequests.ts';
 export * from './useHandleJoinRequest.ts';
+export * from './useTeamDecks.ts';
 export * from './useAddTeamDeck.ts';
 export * from './useRemoveTeamDeck.ts';

@@ -6,6 +6,10 @@ import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import TeamMemberView from './TeamMemberView.tsx';
 import TeamNonMemberView from './TeamNonMemberView.tsx';
+import { Input } from '@/components/ui/input.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import { Copy, Check } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast.ts';
 import type { ErrorWithStatus } from '../../../../../../types/ErrorWithStatus.ts';
 
 interface TeamPageProps {
@@ -14,6 +18,8 @@ interface TeamPageProps {
 
 const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
   const { data: team, isLoading, error } = useTeam(idOrShortcut);
+  const { toast } = useToast();
+  const [copied, setCopied] = React.useState(false);
 
   if (error && (error as ErrorWithStatus).status === 404) {
     return (
@@ -40,6 +46,17 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
   const isMember = !!team.membership;
   const isOwner = team.membership?.role === 'owner';
 
+  const teamLink = `${window.location.origin}/teams/${team.id}`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(teamLink);
+    setCopied(true);
+    toast({
+      description: 'Invite link copied to clipboard',
+    });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <>
       <Helmet title={`${team.name} | SWUBase`} />
@@ -52,7 +69,18 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
               className="w-16 h-16 rounded-lg object-cover"
             />
           )}
-          <LoadingTitle mainTitle={team.name} subTitle={team.description} />
+          <div className="flex flex-col gap-2">
+            <LoadingTitle mainTitle={team.name} subTitle={team.description} />
+            <div className="flex items-center gap-2">
+              <span>Invite link: </span>
+              <div>
+                <Input readOnly value={teamLink} className="h-8 w-[200px] text-[10px]" />
+              </div>
+              <Button variant="outline" size="iconMedium" onClick={handleCopy} title="Copy Team ID">
+                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
         </div>
         {isMember ? (
           <TeamMemberView team={team} isOwner={isOwner} />

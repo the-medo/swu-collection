@@ -21,6 +21,7 @@ export const useRemoveTeamDeck = (teamId: string | undefined) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team', teamId] });
+      queryClient.invalidateQueries({ queryKey: ['team-decks', teamId] });
     },
     onError: (error: Error) => {
       toast({
