@@ -5,7 +5,8 @@ import { CardMetrics } from '../../../shared/types/cardMetrics.ts';
 
 // Store interface for game results in IndexedDB
 // scopeId is either userId (for personal games) or teamId (for team games)
-export interface GameResultStore extends Omit<GameResult, 'cardMetrics' | 'roundMetrics' | 'otherData'> {
+export interface GameResultStore
+  extends Omit<GameResult, 'cardMetrics' | 'roundMetrics' | 'otherData'> {
   scopeId: string; // userId or teamId for indexing
   cardMetrics: CardMetrics;
   roundMetrics: Record<string, unknown>;
@@ -98,10 +99,13 @@ export async function getGameResultsByScopeLeaderAndBase(
 }
 
 /**
- * Get a single game result by ID
+ * Get a single game result by scope and ID
  */
-export async function getGameResultById(id: string): Promise<GameResultStore | undefined> {
-  return db.gameResults.get(id);
+export async function getGameResultById(
+  scopeId: string,
+  id: string,
+): Promise<GameResultStore | undefined> {
+  return db.gameResults.get([scopeId, id]);
 }
 
 /**
@@ -118,14 +122,18 @@ export async function storeGameResult(gameResult: GameResultStore): Promise<void
 export async function storeGameResults(gameResults: GameResultStore[]): Promise<void> {
   if (gameResults.length === 0) return;
 
-  // Get existing records by IDs
-  const ids = gameResults.map(g => g.id!);
-  const existingRecords = await db.gameResults.where('id').anyOf(ids).toArray();
-  const existingMap = new Map(existingRecords.map(r => [r.id, r]));
+  // Get existing records by compound keys [scopeId, id]
+  const keys = gameResults.map(g => [g.scopeId, g.id!] as [string, string]);
+  const existingRecords = await db.gameResults.bulkGet(keys);
+  const existingMap = new Map(
+    existingRecords
+      .filter((r): r is GameResultStore => r !== undefined)
+      .map(r => [`${r.scopeId}:${r.id}`, r]),
+  );
 
   // Filter to only include records that are newer or don't exist
   const recordsToStore = gameResults.filter(newRecord => {
-    const existing = existingMap.get(newRecord.id);
+    const existing = existingMap.get(`${newRecord.scopeId}:${newRecord.id}`);
     if (!newRecord.updatedAt) return false;
     if (!existing) return true;
     // Compare updatedAt - only store if newer
@@ -138,10 +146,10 @@ export async function storeGameResults(gameResults: GameResultStore[]): Promise<
 }
 
 /**
- * Delete a game result by ID
+ * Delete a game result by scope and ID
  */
-export async function deleteGameResult(id: string): Promise<void> {
-  await db.gameResults.delete(id);
+export async function deleteGameResult(scopeId: string, id: string): Promise<void> {
+  await db.gameResults.delete([scopeId, id]);
 }
 
 /**
@@ -149,8 +157,8 @@ export async function deleteGameResult(id: string): Promise<void> {
  */
 export async function deleteGameResultsByScope(scopeId: string): Promise<void> {
   const results = await getGameResultsByScope(scopeId);
-  const ids = results.map(r => r.id);
-  await db.gameResults.bulkDelete(ids);
+  const keys = results.map(r => [scopeId, r.id] as [string, string]);
+  await db.gameResults.bulkDelete(keys);
 }
 
 /**

@@ -49,19 +49,19 @@ gameResults: '[scopeId+id], [scopeId+updatedAt], [scopeId+deckId], [scopeId+form
 ## Implementation Plan
 
 ### 1. Update `gameResults.ts` functions
-- [ ] `getGameResultById(id)` → change signature to `getGameResultById(scopeId, id)` and use `db.gameResults.get([scopeId, id])`
-- [ ] `storeGameResults()` → update existing record lookup to use `[scopeId+id]` compound key instead of `id` only
-- [ ] `storeGameResult()` → no changes needed (`put()` will use the new compound primary key automatically)
-- [ ] `deleteGameResult(id)` → change signature to `deleteGameResult(scopeId, id)` and use `db.gameResults.delete([scopeId, id])`
-- [ ] `deleteGameResultsByScope()` → update `bulkDelete` to use `[scopeId, id]` key pairs instead of plain `id` strings
+- [x] `getGameResultById(id)` → change signature to `getGameResultById(scopeId, id)` and use `db.gameResults.get([scopeId, id])`
+- [x] `storeGameResults()` → update existing record lookup to use `[scopeId+id]` compound key instead of `id` only
+- [x] `storeGameResult()` → no changes needed (`put()` will use the new compound primary key automatically)
+- [x] `deleteGameResult(id)` → change signature to `deleteGameResult(scopeId, id)` and use `db.gameResults.delete([scopeId, id])`
+- [x] `deleteGameResultsByScope()` → update `bulkDelete` to use `[scopeId, id]` key pairs instead of plain `id` strings
 
 ### 2. Update consumers / hooks
-- [ ] `useGetGameResults.ts` — verify no changes needed (already passes `scopeId` and uses scope-based queries)
-- [ ] Check all other callers of `getGameResultById` and `deleteGameResult` — update to pass `scopeId`
+- [x] `useGetGameResults.ts` — verify no changes needed (already passes `scopeId` and uses scope-based queries)
+- [x] Check all other callers of `getGameResultById` and `deleteGameResult` — update to pass `scopeId`
 
 ### 3. Update exports (`index.ts`)
-- [ ] Verify re-exports still match updated signatures (no breaking changes to export list)
+- [x] Verify re-exports still match updated signatures (no breaking changes to export list)
 
 ### 4. Verify
-- [ ] Confirm the app builds successfully
-- [ ] Manual verification: fetch games for team, then for user — both scopes retain their games
+- [x] Confirm the app builds successfully
+- [x] Manual verification: fetch games for team, then for user — both scopes retain their games
