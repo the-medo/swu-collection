@@ -141,7 +141,7 @@ export class SwuBaseDB extends Dexie {
       collectionCards: 'collectionId',
       cardListCache: 'key',
       gameResults:
-        'id, [scopeId+updatedAt], [scopeId+deckId], [scopeId+format], [scopeId+leaderCardId], [scopeId+leaderCardId+baseCardKey]',
+        '[scopeId+id], [scopeId+updatedAt], [scopeId+deckId], [scopeId+format], [scopeId+leaderCardId], [scopeId+leaderCardId+baseCardKey]',
     });
   }
 }
