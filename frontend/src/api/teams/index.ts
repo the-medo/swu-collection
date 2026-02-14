@@ -11,3 +11,4 @@ export * from './useHandleJoinRequest.ts';
 export * from './useTeamDecks.ts';
 export * from './useAddTeamDeck.ts';
 export * from './useRemoveTeamDeck.ts';
+export * from './useDeleteJoinRequest.ts';

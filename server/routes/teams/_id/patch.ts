@@ -40,7 +40,7 @@ export const teamsIdPatchRoute = new Hono<AuthExtension>().patch(
 
     const [updated] = await db
       .update(teamTable)
-      .set({ ...data, updatedAt: new Date() })
+      .set({ ...data, updatedAt: new Date().toISOString() })
       .where(eq(teamTable.id, teamId))
       .returning();
 

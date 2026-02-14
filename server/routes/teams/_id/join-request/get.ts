@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { db } from '../../../../db';
 import { teamJoinRequest } from '../../../../db/schema/team_join_request.ts';
 import { user as userTable } from '../../../../db/schema/auth-schema.ts';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
 import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
@@ -26,12 +26,18 @@ export const teamsIdJoinRequestGetRoute = new Hono<AuthExtension>().get('/', asy
       userId: teamJoinRequest.userId,
       status: teamJoinRequest.status,
       createdAt: teamJoinRequest.createdAt,
+      updatedAt: teamJoinRequest.updatedAt,
       userName: userTable.displayName,
       userImage: userTable.image,
     })
     .from(teamJoinRequest)
     .innerJoin(userTable, eq(teamJoinRequest.userId, userTable.id))
-    .where(and(eq(teamJoinRequest.teamId, teamId), eq(teamJoinRequest.status, 'pending')));
+    .where(
+      and(
+        eq(teamJoinRequest.teamId, teamId),
+        inArray(teamJoinRequest.status, ['pending', 'rejected']),
+      ),
+    );
 
   return c.json({ data: requests });
 });

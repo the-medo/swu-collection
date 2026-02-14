@@ -71,6 +71,7 @@ We need to store teams, their members (with roles), and join requests.
     - Logic: Check team limit (max 2), creator becomes `owner`.
 - [x] `GET /api/teams/:idOrShortcut`: Get team details.
     - Logic: Allow fetching by either UUID or unique shortcut.
+    - Returns a `joinRequest` field (with `id`, `status`, `createdAt`) for non-member users who have a pending or rejected join request.
 - [x] `PATCH /api/teams/:id`: Update team details.
     - Permissions: `Owner` only.
     - Fields: `name`, `shortcut`, `description`, `privacy`.
@@ -80,11 +81,16 @@ We need to store teams, their members (with roles), and join requests.
 - [x] `GET /api/teams/:id/members`: List team members and their roles.
 - [x] `POST /api/teams/:id/join-request`: Submit a request to join.
     - Logic: Check if user is already a member or has a pending request.
-- [x] `GET /api/teams/:id/join-requests`: List pending requests.
+    - Rejects if user has a previously rejected request (must be removed by owner first).
+- [x] `GET /api/teams/:id/join-request`: List pending and rejected requests.
     - Permissions: `Owner` only.
-- [x] `PATCH /api/teams/:id/join-requests/:requestId`: Approve/Reject request.
+    - Returns both `pending` and `rejected` requests with `updatedAt` field.
+- [x] `PATCH /api/teams/:id/join-request/:requestId`: Approve/Reject request.
     - Permissions: `Owner` only.
     - Action: If approved, create `team_member` entry.
+- [x] `DELETE /api/teams/:id/join-request/:requestId`: Remove a rejected join request.
+    - Permissions: `Owner` only.
+    - Logic: Only rejected requests can be deleted. Removing allows the user to request to join again.
 - [x] `GET /api/teams/my`: List teams the current user is a member of.
 - [x] `POST /api/teams/:id/decks`: Add a deck to the team.
     - Permissions: `Owner` or `Member`.
@@ -108,6 +114,7 @@ Located in `frontend/src/api/teams/`.
 - [x] `useSubmitJoinRequest`: Mutation to ask to join.
 - [x] `useJoinRequests(teamId)`: Fetch pending requests for owners.
 - [x] `useHandleJoinRequest`: Mutation to approve/reject.
+- [x] `useDeleteJoinRequest`: Mutation to permanently remove a rejected join request.
 - [x] `useAddTeamDeck`: Mutation to link a deck to a team.
 - [x] `useRemoveTeamDeck`: Mutation to unlink a deck.
 
@@ -123,11 +130,17 @@ Located in `frontend/src/api/teams/`.
     - Display a **small Swubase Logo** at the bottom right corner of the sidebar.
 - **Access Control & Views**:
     - **Member View**: Tabs for Decks, Members, Settings (Owner only), Join Requests (Owner only).
-    - **Non-Member View**:
-        - Display team logo and name.
-        - **Description**: Show the team's description to the user.
-        - **Join Button**: Large "Request to Join" button.
-        - Message: "You are not a member of this team. Join to see their decks and participate."
+        - Header (team logo, title, invite link) is only shown to members.
+        - Join requests badge on Members tab only counts pending requests.
+        - Join Requests section separates pending and rejected requests:
+            - Pending requests shown with approve/reject buttons.
+            - "Show rejected requests" toggle at the bottom.
+            - Note explaining rejected users can't rejoin unless removed by owner.
+            - "Remove" button on each rejected request to delete it permanently.
+    - **Non-Member View** (header is hidden):
+        - **No request**: Shows "Request to Join" button with team description.
+        - **Pending request**: Shows clock icon with "Request pending" message.
+        - **Rejected request**: Shows "Your request was rejected" with explanation that another request is impossible.
 
 #### Team Logo Upload
 - Implement S3 upload logic in the backend.
@@ -146,4 +159,4 @@ Located in `frontend/src/api/teams/`.
 - [x] Create `TeamsPage` (teams overview page at `/teams` route).
 - [x] Update `LeftSidebar.tsx` with new "Teams" section.
 - [ ] Implement logo replacement logic based on route context.
-- [ ] Implement join request flow.
+- [x] Implement join request flow (including rejected request handling and removal).

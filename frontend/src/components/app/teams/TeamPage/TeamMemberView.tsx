@@ -18,7 +18,7 @@ interface TeamMemberViewProps {
 
 const TeamMemberView: React.FC<TeamMemberViewProps> = ({ team, isOwner }) => {
   const { data: requests } = useJoinRequests(isOwner ? team.id : undefined);
-  const requestsCount = requests?.length ?? 0;
+  const requestsCount = requests?.filter(r => r.status === 'pending').length ?? 0;
 
   return (
     <Tabs defaultValue="decks" className="w-full">
@@ -29,7 +29,7 @@ const TeamMemberView: React.FC<TeamMemberViewProps> = ({ team, isOwner }) => {
         <TabsTrigger value="members" className="flex-1">
           Members
           {isOwner && requestsCount > 0 && (
-            <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+            <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
               {requestsCount}
             </span>
           )}

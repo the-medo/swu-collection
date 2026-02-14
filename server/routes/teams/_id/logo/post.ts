@@ -69,7 +69,7 @@ export const teamsIdLogoPostRoute = new Hono<AuthExtension>().post('/', async c 
 
   const [updated] = await db
     .update(teamTable)
-    .set({ logoUrl, updatedAt: new Date() })
+    .set({ logoUrl, updatedAt: new Date().toISOString() })
     .where(eq(teamTable.id, teamId))
     .returning();
 
