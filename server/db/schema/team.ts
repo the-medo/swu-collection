@@ -12,8 +12,8 @@ export const team = pgTable(
     description: text('description'),
     logoUrl: text('logo_url'),
     privacy: teamPrivacyEnum('privacy').notNull().default('private'),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
   },
   table => ({
     shortcutIdx: index('team-shortcut_idx').on(table.shortcut),

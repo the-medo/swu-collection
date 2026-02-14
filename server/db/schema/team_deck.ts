@@ -12,7 +12,7 @@ export const teamDeck = pgTable(
     deckId: uuid('deck_id')
       .notNull()
       .references(() => deck.id, { onDelete: 'cascade' }),
-    addedAt: timestamp('added_at').notNull().defaultNow(),
+    addedAt: timestamp('added_at', { mode: 'string' }).notNull().defaultNow(),
   },
   table => ({
     pk: primaryKey({ columns: [table.teamId, table.deckId] }),

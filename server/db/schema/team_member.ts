@@ -15,7 +15,7 @@ export const teamMember = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     role: teamRoleEnum('role').notNull().default('member'),
-    joinedAt: timestamp('joined_at').notNull().defaultNow(),
+    joinedAt: timestamp('joined_at', { mode: 'string' }).notNull().defaultNow(),
   },
   table => ({
     pk: primaryKey({ columns: [table.teamId, table.userId] }),

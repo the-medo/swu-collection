@@ -47,7 +47,7 @@ export const teamsIdJoinRequestRequestIdPatchRoute = new Hono<AuthExtension>().p
     // Update request status
     const [updated] = await db
       .update(teamJoinRequest)
-      .set({ status, updatedAt: new Date() })
+      .set({ status, updatedAt: new Date().toISOString() })
       .where(eq(teamJoinRequest.id, requestId))
       .returning();
 

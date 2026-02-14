@@ -20,8 +20,8 @@ export const teamJoinRequest = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     status: teamJoinRequestStatusEnum('status').notNull().default('pending'),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
   },
   table => ({
     teamIdIdx: index('team_join_request-team_id_idx').on(table.teamId),
