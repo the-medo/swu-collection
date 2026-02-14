@@ -6,6 +6,7 @@ export interface StatisticsTabsProps {
   className?: string;
   activeTab?: string;
   basePath?: string;
+  teamId?: string;
 }
 
 interface TabConfig {
@@ -37,6 +38,7 @@ const TabLink: React.FC<TabLinkProps> = ({ tab, isActive, basePath }) => {
         sDateRangeTo: prev.sDateRangeTo,
         sFormatId: prev.sFormatId,
         sKarabastFormat: prev.sKarabastFormat,
+        sInTeam: prev.sInTeam,
       })}
       className={commonClass}
     >
@@ -45,7 +47,7 @@ const TabLink: React.FC<TabLinkProps> = ({ tab, isActive, basePath }) => {
   );
 };
 
-const tabs: TabConfig[] = [
+const baseTabs: TabConfig[] = [
   { key: 'dashboard', label: 'Dashboard', segment: 'dashboard' },
   { key: 'history', label: 'Match History', segment: 'history' },
   { key: 'decks', label: 'Decks', segment: 'decks' },
@@ -53,14 +55,20 @@ const tabs: TabConfig[] = [
   { key: 'matchups', label: 'Matchups', segment: 'matchups' },
 ];
 
+const membersTab: TabConfig = { key: 'members', label: 'Members', segment: 'members' };
+
 const StatisticsTabs: React.FC<StatisticsTabsProps> = ({
   className,
   activeTab,
   basePath = '/statistics',
+  teamId,
 }) => {
+  const tabs = teamId ? [...baseTabs, membersTab] : baseTabs;
+  const gridCols = teamId ? 'grid-cols-2 md:grid-cols-6' : 'grid-cols-2 md:grid-cols-5';
+
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-2 md:grid-cols-5 mb-2 rounded-lg bg-muted p-1">
+      <div className={cn('grid mb-2 rounded-lg bg-muted p-1', gridCols)}>
         {tabs.map(tab => (
           <TabLink key={tab.key} tab={tab} isActive={activeTab === tab.key} basePath={basePath} />
         ))}

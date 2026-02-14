@@ -27,6 +27,7 @@ const statisticsSearchParams = z.object({
   sDateRangeTo: z.string().optional(),
   sFormatId: z.coerce.number().optional(),
   sKarabastFormat: z.string().optional(),
+  sInTeam: z.boolean().optional(),
 });
 
 export const Route = createFileRoute('/teams/$teamId/statistics/_statisticsLayout')({
@@ -55,13 +56,14 @@ function RouteComponent() {
       <div className="flex flex-row gap-4 items-center justify-between mb-2">
         <h3>{team?.name ? `Team ${team.name} statistics` : 'Team statistics'}</h3>
         <div className="flex gap-4">
-          <StatisticsFilters />
+          <StatisticsFilters teamId={team?.id} />
         </div>
       </div>
       <StatisticsTabs
         activeTab={activeTab}
         className="mb-4"
         basePath={`/teams/${teamId}/statistics`}
+        teamId={team?.id}
       />
       <Outlet />
     </div>

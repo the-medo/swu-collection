@@ -68,6 +68,7 @@ import { Route as LimitedDeckDeckIdIndexRouteImport } from './routes/limited/dec
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout'
 import { Route as LimitedPoolPoolIdDetailIndexRouteImport } from './routes/limited/pool/$poolId/detail/index'
 import { Route as AuthenticatedSettingsLinkKarabastIndexRouteImport } from './routes/_authenticated/settings/link/karabast/index'
+import { Route as TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/members/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/matchups/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/leader-and-base/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/history/index'
@@ -393,6 +394,12 @@ const AuthenticatedSettingsLinkKarabastIndexRoute =
     path: '/settings/link/karabast/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute =
+  TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRouteImport.update({
+    id: '/members/',
+    path: '/members/',
+    getParentRoute: () => TeamsTeamIdStatisticsStatisticsLayoutRoute,
+  } as any)
 const TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute =
   TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRouteImport.update({
     id: '/matchups/',
@@ -486,6 +493,7 @@ export interface FileRoutesByFullPath {
   '/teams/$teamId/statistics/history': typeof TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRoute
   '/teams/$teamId/statistics/leader-and-base': typeof TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRoute
   '/teams/$teamId/statistics/matchups': typeof TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute
+  '/teams/$teamId/statistics/members': typeof TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -547,6 +555,7 @@ export interface FileRoutesByTo {
   '/teams/$teamId/statistics/history': typeof TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRoute
   '/teams/$teamId/statistics/leader-and-base': typeof TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRoute
   '/teams/$teamId/statistics/matchups': typeof TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute
+  '/teams/$teamId/statistics/members': typeof TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -614,6 +623,7 @@ export interface FileRoutesById {
   '/teams/$teamId/statistics/_statisticsLayout/history/': typeof TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRoute
   '/teams/$teamId/statistics/_statisticsLayout/leader-and-base/': typeof TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRoute
   '/teams/$teamId/statistics/_statisticsLayout/matchups/': typeof TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute
+  '/teams/$teamId/statistics/_statisticsLayout/members/': typeof TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -679,6 +689,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId/statistics/history'
     | '/teams/$teamId/statistics/leader-and-base'
     | '/teams/$teamId/statistics/matchups'
+    | '/teams/$teamId/statistics/members'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -740,6 +751,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId/statistics/history'
     | '/teams/$teamId/statistics/leader-and-base'
     | '/teams/$teamId/statistics/matchups'
+    | '/teams/$teamId/statistics/members'
   id:
     | '__root__'
     | '/'
@@ -806,6 +818,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId/statistics/_statisticsLayout/history/'
     | '/teams/$teamId/statistics/_statisticsLayout/leader-and-base/'
     | '/teams/$teamId/statistics/_statisticsLayout/matchups/'
+    | '/teams/$teamId/statistics/_statisticsLayout/members/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1273,6 +1286,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsLinkKarabastIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/teams/$teamId/statistics/_statisticsLayout/members/': {
+      id: '/teams/$teamId/statistics/_statisticsLayout/members/'
+      path: '/members'
+      fullPath: '/teams/$teamId/statistics/members'
+      preLoaderRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRouteImport
+      parentRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutRoute
+    }
     '/teams/$teamId/statistics/_statisticsLayout/matchups/': {
       id: '/teams/$teamId/statistics/_statisticsLayout/matchups/'
       path: '/matchups'
@@ -1375,6 +1395,7 @@ interface TeamsTeamIdStatisticsStatisticsLayoutRouteChildren {
   TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRoute
   TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRoute
   TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute
+  TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute
 }
 
 const TeamsTeamIdStatisticsStatisticsLayoutRouteChildren: TeamsTeamIdStatisticsStatisticsLayoutRouteChildren =
@@ -1389,6 +1410,8 @@ const TeamsTeamIdStatisticsStatisticsLayoutRouteChildren: TeamsTeamIdStatisticsS
       TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRoute,
     TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute:
       TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute,
+    TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute:
+      TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute,
   }
 
 const TeamsTeamIdStatisticsStatisticsLayoutRouteWithChildren =
