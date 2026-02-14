@@ -25,6 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog.tsx';
+import { Alert } from '@/components/ui/alert.tsx';
 
 interface TeamDecksTabProps {
   teamId: string;
@@ -155,7 +156,13 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-4">
       {/* Left: Team Decks List */}
       <div>
-        <h3 className="text-lg font-semibold mb-3">Team Decks</h3>
+        <div className="flex gap-4 justify-between items-center">
+          <h3 className="text-lg font-semibold mb-3">Team Decks</h3>
+          <Alert variant="warning" size="xs" className="text-xs flex flex-1 p">
+            Removing decks form team will also remove them from team statistics (even historical
+            ones).
+          </Alert>
+        </div>
         {isLoadingTeamDecks ? (
           <div className="flex flex-col gap-3">
             {[1, 2, 3].map(i => (

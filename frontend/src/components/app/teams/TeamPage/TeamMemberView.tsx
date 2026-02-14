@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import TeamDecksTab from './TeamDecksTab.tsx';
-import TeamMembersTab from './TeamMembersTab.tsx';
+import TeamMembersTab from './TeamMembersTab/TeamMembersTab.tsx';
 import TeamSettingsTab from './TeamSettingsTab.tsx';
 import TeamJoinRequestsTab from './TeamJoinRequestsTab.tsx';
 import { useJoinRequests } from '@/api/teams';
@@ -44,7 +44,7 @@ const TeamMemberView: React.FC<TeamMemberViewProps> = ({ team, isOwner }) => {
         <TeamDecksTab teamId={team.id} />
       </TabsContent>
       <TabsContent value="members">
-        <TeamMembersTab teamId={team.id} />
+        <TeamMembersTab teamId={team.id} isOwner={isOwner} />
         {isOwner && <TeamJoinRequestsTab teamId={team.id} />}
       </TabsContent>
       {isOwner && (

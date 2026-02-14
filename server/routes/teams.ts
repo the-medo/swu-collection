@@ -6,6 +6,8 @@ import { teamsIdGetRoute } from './teams/_id/get.ts';
 import { teamsIdPatchRoute } from './teams/_id/patch.ts';
 import { teamsIdLogoPostRoute } from './teams/_id/logo/post.ts';
 import { teamsIdMembersGetRoute } from './teams/_id/members/get.ts';
+import { teamsIdMembersUserIdPatchRoute } from './teams/_id/members/_userId/patch.ts';
+import { teamsIdMembersUserIdDeleteRoute } from './teams/_id/members/_userId/delete.ts';
 import { teamsIdJoinRequestPostRoute } from './teams/_id/join-request/post.ts';
 import { teamsIdJoinRequestGetRoute } from './teams/_id/join-request/get.ts';
 import { teamsIdJoinRequestRequestIdPatchRoute } from './teams/_id/join-request/_requestId/patch.ts';
@@ -21,6 +23,8 @@ export const teamsRoute = new Hono<AuthExtension>()
   .route('/:id', teamsIdPatchRoute)
   .route('/:id/logo', teamsIdLogoPostRoute)
   .route('/:id/members', teamsIdMembersGetRoute)
+  .route('/:id/members/:userId', teamsIdMembersUserIdPatchRoute)
+  .route('/:id/members/:userId', teamsIdMembersUserIdDeleteRoute)
   .route('/:id/join-request', teamsIdJoinRequestPostRoute)
   .route('/:id/join-request', teamsIdJoinRequestGetRoute)
   .route('/:id/join-request/:requestId', teamsIdJoinRequestRequestIdPatchRoute)
