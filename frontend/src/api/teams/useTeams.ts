@@ -1,11 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { useUser } from '@/hooks/useUser.ts';
 
 export const useTeams = () => {
+  const user = useUser();
+
   return useQuery({
-    queryKey: ['teams'],
+    queryKey: ['teams', user?.id],
     queryFn: async () => {
-      const response = await api.teams.my.$get();
+      if (!user) return { data: [] };
+      const response = await api.teams.$get();
       if (!response.ok) {
         throw new Error('Failed to fetch teams');
       }
