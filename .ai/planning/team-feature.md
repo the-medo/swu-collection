@@ -140,9 +140,10 @@ Located in `frontend/src/api/teams/`.
 - [x] Create DB migration for `team`, `team_member`, `team_deck`, `team_join_request`.
 - [x] Implement `GET /api/user-setup` endpoint.
 - [x] Implement backend routes and controllers for teams.
-- [ ] Add S3 bucket/folder for team logos.
-- [ ] Create frontend API hooks for teams (checklist in Step 5).
-- [ ] Create `TeamPage` in frontend.
-- [ ] Update `LeftSidebar.tsx` with new "Teams" section.
+- [x] Add S3 bucket/folder for team logos.
+- [x] Create frontend API hooks for teams (checklist in Step 5).
+- [x] Create `TeamPage` in frontend.
+- [x] Create `TeamsPage` (teams overview page at `/teams` route).
+- [x] Update `LeftSidebar.tsx` with new "Teams" section.
 - [ ] Implement logo replacement logic based on route context.
 - [ ] Implement join request flow.
