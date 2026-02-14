@@ -5,9 +5,10 @@ import type { AuthExtension } from '../../auth/auth.ts';
 import { db } from '../../db';
 import { gameResult } from '../../db/schema/game_result.ts';
 import { teamMember } from '../../db/schema/team_member.ts';
-import { eq, and, lte, desc, gt, inArray } from 'drizzle-orm';
+import { eq, and, lte, desc, gt, inArray, getTableColumns } from 'drizzle-orm';
 import { team as teamTable } from '../../db/schema/team.ts';
 import { getTeamMembership } from '../../lib/getTeamMembership.ts';
+import { teamDeck } from '../../db/schema/team_deck.ts';
 
 const isUuid = (value: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
@@ -17,6 +18,8 @@ const schema = z.object({
   datetimeTo: z.string().optional(),
   teamId: z.string().optional(),
 });
+
+const gameResultColumns = getTableColumns(gameResult);
 
 export const gameResultGetRoute = new Hono<AuthExtension>().get(
   '/',
@@ -72,8 +75,9 @@ export const gameResultGetRoute = new Hono<AuthExtension>().get(
       }
 
       const results = await db
-        .select()
+        .select(gameResultColumns)
         .from(gameResult)
+        .innerJoin(teamDeck, eq(gameResult.deckId, teamDeck.deckId))
         .where(whereClause)
         .orderBy(desc(gameResult.createdAt));
 
