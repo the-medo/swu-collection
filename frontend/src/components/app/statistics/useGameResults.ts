@@ -24,6 +24,10 @@ export interface StatisticsHistoryData {
       lastPlayed: Record<string, string>;
       matches: Record<string, MatchResult[]>;
     };
+    byUserId: {
+      lastPlayed: Record<string, string>;
+      matches: Record<string, MatchResult[]>;
+    };
   };
 }
 
@@ -66,6 +70,10 @@ export const useGameResults = (
             matches: {},
           },
           byDeckId: {
+            lastPlayed: {},
+            matches: {},
+          },
+          byUserId: {
             lastPlayed: {},
             matches: {},
           },
@@ -211,7 +219,28 @@ export const useGameResults = (
       matches: {},
     };
 
+    const matchesByUserId: StatisticsHistoryData['matches']['byUserId'] = {
+      lastPlayed: {},
+      matches: {},
+    };
+
     matchesArray.forEach(match => {
+      // we don't need to do this in case of simple user statistics, only in team statistics
+      if (teamId) {
+        const userIds = new Set(match.games.map(g => g.userId));
+        userIds.forEach(userId => {
+          if (!matchesByUserId.matches[userId]) {
+            matchesByUserId.matches[userId] = [];
+          }
+          matchesByUserId.matches[userId].push(match);
+
+          const currentLastPlayed = matchesByUserId.lastPlayed[userId];
+          if (!currentLastPlayed || match.firstGameCreatedAt > currentLastPlayed) {
+            matchesByUserId.lastPlayed[userId] = match.firstGameCreatedAt;
+          }
+        });
+      }
+
       if (match.leaderCardId && match.baseCardKey) {
         const key = `${match.leaderCardId}|${match.baseCardKey}`;
         if (!matchesByLeaderBase.matches[key]) {
@@ -250,6 +279,7 @@ export const useGameResults = (
         byDate: matchesByDate,
         byLeaderBase: matchesByLeaderBase,
         byDeckId: matchesByDeckId,
+        byUserId: matchesByUserId,
       },
     };
   }, [
