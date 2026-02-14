@@ -110,26 +110,24 @@ Several components already accept `teamId` (e.g., `StatisticsDashboard`). Verify
 
 ### 2.1 New "Members" tab in team statistics
 
-- [ ] Add a new tab "Members" to `StatisticsTabs` (only shown in team context)
-- [ ] Create new route: `frontend/src/routes/teams/$teamId/statistics/_statisticsLayout/members/index.tsx`
-- [ ] Create new component: `frontend/src/components/app/statistics/StatisticsMembers/StatisticsMembers.tsx`
-- [ ] Fetch team members via existing `useTeamMembers` (or the members GET endpoint)
-- [ ] For each member, display individual statistics summary:
+- [x] Add a new tab "Members" to `StatisticsTabs` (only shown in team context)
+- [x] Create new route: `frontend/src/routes/teams/$teamId/statistics/_statisticsLayout/members/index.tsx`
+- [x] Create new component: `frontend/src/components/app/statistics/StatisticsMembers/StatisticsMembers.tsx`
+- [x] Fetch team members via existing `useTeamMembers` (or the members GET endpoint)
+- [x] For each member, display individual statistics summary:
   - Member name + avatar
   - Win/loss record, win rate
   - Most played leader/base
   - Number of matches in the selected time period
-- [ ] Consider a collapsible/expandable row per member for detailed stats
+- [x] Collapsible/expandable row per member with leader & base breakdown
 
 ### 2.2 "InTeam" filter checkbox
 
-- [ ] Add an "InTeam" checkbox to `StatisticsFilters` (only visible in team statistics context)
-- [ ] When checked, filter game results to only include matches where **both** the player AND the opponent are members of the same team
-- [ ] Implementation options:
-  - **Option A (backend):** Add `inTeam=true` query param to `game-results/get.ts`. On the backend, filter to games where `matchId` appears for at least 2 different team members. This requires that Karabast games with the same `matchId` link opponents.
-  - **Option B (frontend):** If opponent identity is available in `otherData.opponentName` or a future `opponentUserId` field, filter client-side by checking if the opponent is a team member.
-  - **Recommended:** Option A is more reliable. Add `opponentUserId` to game_result schema if not already derivable, or match by `matchId` + `team_member` join.
-- [ ] Pass `inTeam` filter state through search params (e.g., `sInTeam: z.boolean().optional()`)
+- [x] Add an "InTeam" checkbox to `StatisticsFilters` (only visible in team statistics context)
+- [x] When checked, filter game results to only include matches where **both** the player AND the opponent are members of the same team
+- [x] Implementation: Hybrid approach — backend supports `inTeam=true` query param (`game-results/get.ts`) that filters by `matchId` shared by 2+ team members; frontend also filters in `useGameResults.ts` by checking matchIds with 2+ distinct userIds (avoids Dexie cache issues)
+- [x] Pass `inTeam` filter state through search params (`sInTeam: z.boolean().optional()`) in team statistics layout
+- [x] `sInTeam` is preserved across tab navigation in `StatisticsTabs`
 
 ---
 
@@ -141,8 +139,8 @@ Several components already accept `teamId` (e.g., `StatisticsDashboard`). Verify
 4. **StatisticsTabs** (1.4) — Make tabs dynamic ✅
 5. **Subpage components** (1.5) — Pass teamId through all statistics components ✅
 6. **Navigation** (1.6 + 1.7) — Sidebar chart icon + team detail page button ✅
-7. **Members tab** (2.1) — New per-member statistics view
-8. **InTeam filter** (2.2) — Intra-team match filtering
+7. **Members tab** (2.1) — New per-member statistics view ✅
+8. **InTeam filter** (2.2) — Intra-team match filtering ✅
 
 ---
 

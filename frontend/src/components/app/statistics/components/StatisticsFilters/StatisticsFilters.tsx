@@ -6,15 +6,20 @@ import { useCallback } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { KarabastSwuGameFormat } from '../../../../../../../types/karabastTypes.ts';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
+import { Label } from '@/components/ui/label.tsx';
 
-interface StatisticsFiltersProps {}
+interface StatisticsFiltersProps {
+  teamId?: string;
+}
 
-const StatisticsFilters: React.FC<StatisticsFiltersProps> = () => {
+const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
   const navigate = useNavigate();
 
-  const { sFormatId, sDateRangeOption, sDateRangeFrom, sDateRangeTo, sKarabastFormat } = useSearch({
-    strict: false,
-  });
+  const { sFormatId, sDateRangeOption, sDateRangeFrom, sDateRangeTo, sKarabastFormat, sInTeam } =
+    useSearch({
+      strict: false,
+    });
 
   const dateRange = sDateRangeFrom
     ? {
@@ -74,6 +79,23 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = () => {
           });
         }}
       />
+      {teamId && (
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="inTeam"
+            checked={!!sInTeam}
+            onCheckedChange={checked => {
+              navigate({
+                to: '.',
+                search: prev => ({ ...prev, sInTeam: checked ? true : undefined }),
+              });
+            }}
+          />
+          <Label htmlFor="inTeam" className="text-sm whitespace-nowrap cursor-pointer">
+            In-team only
+          </Label>
+        </div>
+      )}
     </div>
   );
 };
