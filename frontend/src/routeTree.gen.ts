@@ -19,6 +19,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TournamentsIndexRouteImport } from './routes/tournaments/index'
 import { Route as ToolsIndexRouteImport } from './routes/tools/index'
+import { Route as TeamsIndexRouteImport } from './routes/teams/index'
 import { Route as StatisticsIndexRouteImport } from './routes/statistics/index'
 import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
 import { Route as MetaIndexRouteImport } from './routes/meta/index'
@@ -44,6 +45,7 @@ import { Route as TournamentsFeaturedIndexRouteImport } from './routes/tournamen
 import { Route as TournamentsAllIndexRouteImport } from './routes/tournaments/all/index'
 import { Route as TournamentsTournamentIdIndexRouteImport } from './routes/tournaments/$tournamentId/index'
 import { Route as ToolsDeckFormatConverterIndexRouteImport } from './routes/tools/deck-format-converter/index'
+import { Route as TeamsTeamIdIndexRouteImport } from './routes/teams/$teamId/index'
 import { Route as ListsCardListIdIndexRouteImport } from './routes/lists/$cardListId/index'
 import { Route as LimitedPublicIndexRouteImport } from './routes/limited/public/index'
 import { Route as DecksDeckIdIndexRouteImport } from './routes/decks/$deckId/index'
@@ -109,6 +111,11 @@ const TournamentsIndexRoute = TournamentsIndexRouteImport.update({
 const ToolsIndexRoute = ToolsIndexRouteImport.update({
   id: '/tools/',
   path: '/tools/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamsIndexRoute = TeamsIndexRouteImport.update({
+  id: '/teams/',
+  path: '/teams/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StatisticsIndexRoute = StatisticsIndexRouteImport.update({
@@ -241,6 +248,11 @@ const ToolsDeckFormatConverterIndexRoute =
     path: '/tools/deck-format-converter/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const TeamsTeamIdIndexRoute = TeamsTeamIdIndexRouteImport.update({
+  id: '/teams/$teamId/',
+  path: '/teams/$teamId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ListsCardListIdIndexRoute = ListsCardListIdIndexRouteImport.update({
   id: '/lists/$cardListId/',
   path: '/lists/$cardListId/',
@@ -380,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/meta': typeof MetaIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/statistics/': typeof StatisticsIndexRoute
+  '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
@@ -394,6 +407,7 @@ export interface FileRoutesByFullPath {
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/limited/public': typeof LimitedPublicIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
+  '/teams/$teamId': typeof TeamsTeamIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/tournaments/all': typeof TournamentsAllIndexRoute
@@ -433,6 +447,7 @@ export interface FileRoutesByTo {
   '/messages': typeof MessagesIndexRoute
   '/meta': typeof MetaIndexRoute
   '/notifications': typeof NotificationsIndexRoute
+  '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
@@ -447,6 +462,7 @@ export interface FileRoutesByTo {
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/limited/public': typeof LimitedPublicIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
+  '/teams/$teamId': typeof TeamsTeamIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/tournaments/all': typeof TournamentsAllIndexRoute
@@ -490,6 +506,7 @@ export interface FileRoutesById {
   '/meta/': typeof MetaIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/statistics/': typeof StatisticsIndexRoute
+  '/teams/': typeof TeamsIndexRoute
   '/tools/': typeof ToolsIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
@@ -504,6 +521,7 @@ export interface FileRoutesById {
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
   '/limited/public/': typeof LimitedPublicIndexRoute
   '/lists/$cardListId/': typeof ListsCardListIdIndexRoute
+  '/teams/$teamId/': typeof TeamsTeamIdIndexRoute
   '/tools/deck-format-converter/': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId/': typeof TournamentsTournamentIdIndexRoute
   '/tournaments/all/': typeof TournamentsAllIndexRoute
@@ -546,6 +564,7 @@ export interface FileRouteTypes {
     | '/meta'
     | '/notifications'
     | '/statistics/'
+    | '/teams'
     | '/tools'
     | '/tournaments'
     | '/cards/detail/$cardId'
@@ -560,6 +579,7 @@ export interface FileRouteTypes {
     | '/decks/$deckId'
     | '/limited/public'
     | '/lists/$cardListId'
+    | '/teams/$teamId'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
     | '/tournaments/all'
@@ -599,6 +619,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/meta'
     | '/notifications'
+    | '/teams'
     | '/tools'
     | '/tournaments'
     | '/cards/detail/$cardId'
@@ -613,6 +634,7 @@ export interface FileRouteTypes {
     | '/decks/$deckId'
     | '/limited/public'
     | '/lists/$cardListId'
+    | '/teams/$teamId'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
     | '/tournaments/all'
@@ -655,6 +677,7 @@ export interface FileRouteTypes {
     | '/meta/'
     | '/notifications/'
     | '/statistics/'
+    | '/teams/'
     | '/tools/'
     | '/tournaments/'
     | '/cards/detail/$cardId'
@@ -669,6 +692,7 @@ export interface FileRouteTypes {
     | '/decks/$deckId/'
     | '/limited/public/'
     | '/lists/$cardListId/'
+    | '/teams/$teamId/'
     | '/tools/deck-format-converter/'
     | '/tournaments/$tournamentId/'
     | '/tournaments/all/'
@@ -709,6 +733,7 @@ export interface RootRouteChildren {
   MessagesIndexRoute: typeof MessagesIndexRoute
   MetaIndexRoute: typeof MetaIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
+  TeamsIndexRoute: typeof TeamsIndexRoute
   ToolsIndexRoute: typeof ToolsIndexRoute
   TournamentsIndexRoute: typeof TournamentsIndexRoute
   CardsDetailCardIdRoute: typeof CardsDetailCardIdRoute
@@ -722,6 +747,7 @@ export interface RootRouteChildren {
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
   LimitedPublicIndexRoute: typeof LimitedPublicIndexRoute
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
+  TeamsTeamIdIndexRoute: typeof TeamsTeamIdIndexRoute
   ToolsDeckFormatConverterIndexRoute: typeof ToolsDeckFormatConverterIndexRoute
   TournamentsTournamentIdIndexRoute: typeof TournamentsTournamentIdIndexRoute
   TournamentsAllIndexRoute: typeof TournamentsAllIndexRoute
@@ -796,6 +822,13 @@ declare module '@tanstack/react-router' {
       path: '/tools'
       fullPath: '/tools'
       preLoaderRoute: typeof ToolsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teams/': {
+      id: '/teams/'
+      path: '/teams'
+      fullPath: '/teams'
+      preLoaderRoute: typeof TeamsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/statistics/': {
@@ -971,6 +1004,13 @@ declare module '@tanstack/react-router' {
       path: '/tools/deck-format-converter'
       fullPath: '/tools/deck-format-converter'
       preLoaderRoute: typeof ToolsDeckFormatConverterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teams/$teamId/': {
+      id: '/teams/$teamId/'
+      path: '/teams/$teamId'
+      fullPath: '/teams/$teamId'
+      preLoaderRoute: typeof TeamsTeamIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lists/$cardListId/': {
@@ -1197,6 +1237,7 @@ const rootRouteChildren: RootRouteChildren = {
   MessagesIndexRoute: MessagesIndexRoute,
   MetaIndexRoute: MetaIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
+  TeamsIndexRoute: TeamsIndexRoute,
   ToolsIndexRoute: ToolsIndexRoute,
   TournamentsIndexRoute: TournamentsIndexRoute,
   CardsDetailCardIdRoute: CardsDetailCardIdRoute,
@@ -1210,6 +1251,7 @@ const rootRouteChildren: RootRouteChildren = {
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
   LimitedPublicIndexRoute: LimitedPublicIndexRoute,
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
+  TeamsTeamIdIndexRoute: TeamsTeamIdIndexRoute,
   ToolsDeckFormatConverterIndexRoute: ToolsDeckFormatConverterIndexRoute,
   TournamentsTournamentIdIndexRoute: TournamentsTournamentIdIndexRoute,
   TournamentsAllIndexRoute: TournamentsAllIndexRoute,

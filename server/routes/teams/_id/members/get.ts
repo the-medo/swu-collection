@@ -25,7 +25,7 @@ export const teamsIdMembersGetRoute = new Hono<AuthExtension>().get('/', async c
       userId: teamMember.userId,
       role: teamMember.role,
       joinedAt: teamMember.joinedAt,
-      name: userTable.name,
+      name: userTable.displayName,
       image: userTable.image,
     })
     .from(teamMember)

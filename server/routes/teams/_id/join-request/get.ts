@@ -26,7 +26,7 @@ export const teamsIdJoinRequestGetRoute = new Hono<AuthExtension>().get('/', asy
       userId: teamJoinRequest.userId,
       status: teamJoinRequest.status,
       createdAt: teamJoinRequest.createdAt,
-      userName: userTable.name,
+      userName: userTable.displayName,
       userImage: userTable.image,
     })
     .from(teamJoinRequest)
