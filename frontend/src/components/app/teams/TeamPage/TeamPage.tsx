@@ -71,7 +71,7 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
               />
             )}
             <div className="flex flex-col gap-2">
-              <LoadingTitle mainTitle={team.name} subTitle={team.description} />
+              <LoadingTitle mainTitle={team.name} />
               <div className="flex items-center gap-2">
                 <span>Invite link: </span>
                 <div>

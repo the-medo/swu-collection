@@ -43,7 +43,8 @@ We need to store teams, their members (with roles), and join requests.
 
 - **Owner**:
     - Manage team details (name, shortcut, description, logo).
-    - Manage members (promote to owner, remove members).
+    - Manage members (promote to owner, demote to member, remove members).
+    - Leave team (unless last team member or last owner in the team).
     - Approve/Reject join requests.
     - Delete team.
     - Add/Edit/Delete team decks (via `team_deck`).
@@ -96,6 +97,12 @@ We need to store teams, their members (with roles), and join requests.
     - Permissions: `Owner` or `Member`.
 - [x] `DELETE /api/teams/:id/decks/:deckId`: Remove a deck from the team.
     - Permissions: `Owner` or `Member`.
+- [x] `PATCH /api/teams/:id/members/:userId`: Change a member's role (promote/demote).
+    - Permissions: `Owner` only.
+    - Input: `{ role: 'owner' | 'member' }`.
+- [x] `DELETE /api/teams/:id/members/:userId`: Remove a member from the team.
+    - Permissions: `Owner` only.
+    - Owners can remove themselves (leave) unless they are the last member.
 
 ---
 
@@ -117,6 +124,9 @@ Located in `frontend/src/api/teams/`.
 - [x] `useDeleteJoinRequest`: Mutation to permanently remove a rejected join request.
 - [x] `useAddTeamDeck`: Mutation to link a deck to a team.
 - [x] `useRemoveTeamDeck`: Mutation to unlink a deck.
+- [x] `usePromoteMember`: Mutation to promote a member to owner.
+- [x] `useDemoteMember`: Mutation to demote an owner to member.
+- [x] `useKickMember`: Mutation to remove a member (or self-leave).
 
 #### Left Menu Updates (`LeftSidebar.tsx`)
 - Add a new "Teams" group.
@@ -158,5 +168,6 @@ Located in `frontend/src/api/teams/`.
 - [x] Create `TeamPage` in frontend.
 - [x] Create `TeamsPage` (teams overview page at `/teams` route).
 - [x] Update `LeftSidebar.tsx` with new "Teams" section.
-- [ ] Implement logo replacement logic based on route context.
+- [x] Implement logo replacement logic based on route context.
 - [x] Implement join request flow (including rejected request handling and removal).
+- [x] Implement member management (promote, demote, kick, leave team).

@@ -12,3 +12,6 @@ export * from './useTeamDecks.ts';
 export * from './useAddTeamDeck.ts';
 export * from './useRemoveTeamDeck.ts';
 export * from './useDeleteJoinRequest.ts';
+export * from './usePromoteMember.ts';
+export * from './useDemoteMember.ts';
+export * from './useKickMember.ts';
