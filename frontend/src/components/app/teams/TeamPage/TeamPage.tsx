@@ -8,7 +8,8 @@ import TeamMemberView from './TeamMemberView.tsx';
 import TeamNonMemberView from './TeamNonMemberView.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Copy, Check } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import { Copy, Check, ChartSpline } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
 import type { ErrorWithStatus } from '../../../../../../types/ErrorWithStatus.ts';
 
@@ -27,7 +28,7 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
         <Helmet title="Team not found | SWUBase" />
         <Error404
           title="Team not found"
-          description="The team you are looking for does not exist or has been deleted."
+          description="The team you are looking for does not exist or you don't have the rights to see it."
         />
       </>
     );
@@ -71,7 +72,15 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
               />
             )}
             <div className="flex flex-col gap-2">
-              <LoadingTitle mainTitle={team.name} />
+              <div className="flex items-center gap-2">
+                <LoadingTitle mainTitle={team.name} />
+                <Link to={`/teams/${team.shortcut ?? team.id}/statistics`}>
+                  <Button variant="outline" size="sm" className="gap-1.5">
+                    <ChartSpline className="h-4 w-4" />
+                    Statistics
+                  </Button>
+                </Link>
+              </div>
               <div className="flex items-center gap-2">
                 <span>Invite link: </span>
                 <div>

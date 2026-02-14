@@ -22,7 +22,5 @@ export const useTeam = (idOrShortcut: string | undefined) => {
           return data;
         }
       : skipToken,
-    retry: (failureCount, error) =>
-      (error as ErrorWithStatus).status === 404 ? false : failureCount < 3,
   });
 };

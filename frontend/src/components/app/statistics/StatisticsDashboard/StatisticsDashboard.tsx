@@ -63,7 +63,7 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
         {visibleMatches.map(match => (
           <MatchResultBox key={match.id} match={match} />
         ))}
-        <Link to={`/statistics/history`}>
+        <Link to={teamId ? `/teams/${teamId}/statistics/history` : `/statistics/history`}>
           <Button variant="outline">View full match history</Button>
         </Link>
       </div>

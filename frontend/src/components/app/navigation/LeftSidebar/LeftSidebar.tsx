@@ -60,7 +60,7 @@ type Team = { id: string; name: string; shortcut: string | null };
 const getGroups = (
   setOpenMobile: (open: boolean) => void,
   state: SidebarContext['state'],
-  teams?: Team[],
+  teams: Team[],
 ) => [
   {
     title: 'Analysis & Decks',
@@ -154,6 +154,7 @@ const getGroups = (
             ? teams.map(team => ({
                 title: team.name,
                 url: `/teams/${team.shortcut ?? team.id}`,
+                statisticsUrl: `/teams/${team.shortcut ?? team.id}/statistics`,
               }))
             : [],
       },
@@ -237,7 +238,7 @@ export function LeftSidebar() {
   const { data: activeTeam } = useTeam(teamIdOrShortcut);
 
   const { data: teams } = useTeams();
-  const groups = useMemo(() => getGroups(setOpenMobile, state, teams), [state, teams]);
+  const groups = useMemo(() => getGroups(setOpenMobile, state, teams ?? []), [state, teams]);
 
   const swubaseLogo = theme === 'light' ? LogoLightTheme : LogoDarkTheme;
 
@@ -245,11 +246,7 @@ export function LeftSidebar() {
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
         {activeTeam?.logoUrl ? (
-          <Link
-            to={`/teams/${activeTeam.shortcut ?? activeTeam.id}`}
-            className={cn({ 'self-center': !isMobile, 'self-start pl-4': isMobile })}
-            onClick={() => setOpenMobile(false)}
-          >
+          <div className={cn({ 'self-center': !isMobile, 'self-start pl-4': isMobile })}>
             <img
               src={activeTeam.logoUrl}
               alt={`${activeTeam.name} logo`}
@@ -258,7 +255,7 @@ export function LeftSidebar() {
                 'w-32 h-32': state !== 'collapsed' && !isMobile,
               })}
             />
-          </Link>
+          </div>
         ) : (
           <Link
             to="/"
@@ -358,6 +355,18 @@ export function LeftSidebar() {
                                     <span>{subItem.title}</span>
                                   </Link>
                                 </SidebarMenuSubButton>
+                                {'statisticsUrl' in subItem && subItem.statisticsUrl && (
+                                  <SidebarMenuAction title="Create Team">
+                                    <Link
+                                      to={subItem.statisticsUrl}
+                                      onClick={() => setOpenMobile(false)}
+                                      title="Team statistics"
+                                      className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                      <ChartSpline className="h-3.5 w-3.5" />
+                                    </Link>
+                                  </SidebarMenuAction>
+                                )}
                               </SidebarMenuSubItem>
                             ))}
                           </SidebarMenuSub>

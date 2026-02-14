@@ -1,5 +1,7 @@
 # Team Statistics — Feature Plan
 
+> **Always update this planning document when you do stuff!**
+
 ## Overview
 
 Add a **Team Statistics** page at `/teams/{teamId}/statistics` that reuses the existing personal statistics UI (`/statistics`) but displays aggregated game results for all members of a given team. The feature is split into two parts: Part 1 mirrors the existing statistics view for a team, and Part 2 adds team-specific enhancements (per-member breakdown and "InTeam" filtering).
@@ -14,15 +16,15 @@ Add a **Team Statistics** page at `/teams/{teamId}/statistics` that reuses the e
 | FE components | `/frontend/src/components/app/statistics/` |
 | Data hook | `useGameResults.ts` — transforms raw API data into `StatisticsHistoryData` (games, matches, byDate, byLeaderBase, byDeckId) |
 | API hook | `/frontend/src/api/game-results/useGetGameResults.ts` — already accepts `teamId` param & scopes Dexie cache by `teamId` |
-| Backend endpoint | `/server/routes/game-results/get.ts` — accepts `teamId` in query schema but **currently ignores it** (always filters by `user.id`) |
+| Backend endpoint | `/server/routes/game-results/get.ts` — accepts `teamId` in query schema and filters by team members when provided |
 | DB schema | `game_result` table — has `userId`, no `teamId` column |
 | Team schema | `team` + `team_member` tables — `team_member(teamId, userId, role)` |
 
 Key observations:
 - `StatisticsDashboard` already accepts an optional `teamId` prop and passes it to `useGameResults`.
-- `StatisticsTabs` has hardcoded `Link` paths to `/statistics/_statisticsLayout/*` routes — needs to be made dynamic for team context.
-- `_statisticsLayout.tsx` hardcodes title "Your statistics" and fetches by `session.data?.user.id`.
-- The backend endpoint needs to JOIN `game_result` with `team_member` when `teamId` is provided.
+- `StatisticsTabs` accepts a `basePath` prop for dynamic tab links in both personal and team contexts.
+- Team `_statisticsLayout.tsx` displays "Team {name} statistics" and fetches by `team.id`.
+- The backend endpoint resolves team shortcut to UUID, then JOINs `game_result` with `team_member` when `teamId` is provided.
 
 ---
 
@@ -32,18 +34,19 @@ Key observations:
 
 **File:** `server/routes/game-results/get.ts`
 
-- [ ] When `teamId` query param is provided:
+- [x] When `teamId` query param is provided:
+  - Resolve shortcut to actual team UUID if needed (using `isUuid` check + team table lookup)
   - Verify the requesting user is a member of the team (reuse `getTeamMembership` from `server/lib/getTeamMembership.ts`)
   - Return 403 if not a member
   - Query `game_result` rows where `userId IN (SELECT userId FROM team_member WHERE teamId = :teamId)` instead of filtering by the single authenticated user
   - Apply the same date range filters (`datetimeFrom` / `datetimeTo`) as the personal query
-- [ ] When `teamId` is **not** provided, keep existing behavior (personal stats by `user.id`)
+- [x] When `teamId` is **not** provided, keep existing behavior (personal stats by `user.id`)
 
 ### 1.2 Frontend — New route: `/teams/$teamId/statistics`
 
 **New files under:** `frontend/src/routes/teams/$teamId/statistics/`
 
-- [ ] Create route structure mirroring `/statistics/`:
+- [x] Create route structure mirroring `/statistics/`:
   - `index.tsx` — redirects to `/teams/$teamId/statistics/dashboard`
   - `_statisticsLayout.tsx` — team statistics layout (see 1.3)
   - `_statisticsLayout/dashboard/index.tsx`
@@ -51,55 +54,55 @@ Key observations:
   - `_statisticsLayout/decks/index.tsx`
   - `_statisticsLayout/leader-and-base/index.tsx`
   - `_statisticsLayout/matchups/index.tsx`
-- [ ] Each sub-route renders the **same component** as its `/statistics/` counterpart, but passes `teamId` from route params
+- [x] Each sub-route renders the **same component** as its `/statistics/` counterpart, but passes `teamId` from route params
 
 ### 1.3 Frontend — Team statistics layout
 
 **New file:** `frontend/src/routes/teams/$teamId/statistics/_statisticsLayout.tsx`
 
-- [ ] Extract `teamId` from route params (`Route.useParams()`)
-- [ ] Call `useGetGameResults({ teamId, datetimeFrom, enabled })` instead of using `session.data?.user.id`
-- [ ] Display team name in header (e.g., "Team {name} statistics") — use `useTeam(teamId)` hook
-- [ ] Render `StatisticsFilters` (same as personal)
-- [ ] Render `StatisticsTabs` — but with team-aware paths (see 1.4)
-- [ ] Render `<Outlet />` for sub-pages
-- [ ] Define `statisticsSearchParams` (same zod schema as personal layout)
+- [x] Extract `teamId` from route params (`Route.useParams()`)
+- [x] Call `useGetGameResults({ teamId, datetimeFrom, enabled })` instead of using `session.data?.user.id`
+- [x] Display team name in header (e.g., "Team {name} statistics") — use `useTeam(teamId)` hook
+- [x] Render `StatisticsFilters` (same as personal)
+- [x] Render `StatisticsTabs` — but with team-aware paths (see 1.4)
+- [x] Render `<Outlet />` for sub-pages
+- [x] Define `statisticsSearchParams` (same zod schema as personal layout)
 
 ### 1.4 Frontend — Make `StatisticsTabs` route-aware
 
 **File:** `frontend/src/components/app/statistics/StatisticsTabs/StatisticsTabs.tsx`
 
-- [ ] Accept an optional `basePath` prop (default: `/statistics`) or a `teamId` prop
-- [ ] Generate tab links dynamically based on context:
+- [x] Accept an optional `basePath` prop (default: `/statistics`) or a `teamId` prop
+- [x] Generate tab links dynamically based on context:
   - Personal: `/statistics/dashboard`, `/statistics/history`, etc.
   - Team: `/teams/{teamId}/statistics/dashboard`, `/teams/{teamId}/statistics/history`, etc.
-- [ ] Keep the same tab keys, labels, and search param forwarding
+- [x] Keep the same tab keys, labels, and search param forwarding
 
 ### 1.5 Frontend — Pass `teamId` through statistics subpage components
 
 Several components already accept `teamId` (e.g., `StatisticsDashboard`). Verify and update all subpage components:
 
-- [ ] `StatisticsDashboard` — already accepts `teamId` ✓; fix hardcoded "View full match history" link to be context-aware
-- [ ] `StatisticsHistory` — pass `teamId` to `useGameResults`
-- [ ] `StatisticsDecks` — pass `teamId` to `useGameResults`
-- [ ] `StatisticsLeaderBases` — pass `teamId` to `useGameResults`
-- [ ] `StatisticsMatchups` — pass `teamId` to `useGameResults`
+- [x] `StatisticsDashboard` — already accepts `teamId` ✓; fix hardcoded "View full match history" link to be context-aware
+- [x] `StatisticsHistory` — pass `teamId` to `useGameResults`
+- [x] `StatisticsDecks` — pass `teamId` to `useGameResults`
+- [x] `StatisticsLeaderBases` — pass `teamId` to `useGameResults`
+- [x] `StatisticsMatchups` — pass `teamId` to `useGameResults`
 
 ### 1.6 Frontend — LeftSidebar: chart icon for team statistics
 
 **File:** `frontend/src/components/app/navigation/LeftSidebar/LeftSidebar.tsx`
 
-- [ ] In the teams sub-items list (where each team is rendered with `title` and `url`), add a small chart icon button (`ChartSpline` or `BarChart3` from lucide-react) next to each team link
-- [ ] The icon button links to `/teams/{team.shortcut ?? team.id}/statistics`
-- [ ] Icon should be visually subtle (muted color, small size) so it doesn't compete with the team name link
+- [x] In the teams sub-items list (where each team is rendered with `title` and `url`), add a small chart icon button (`ChartSpline` or `BarChart3` from lucide-react) next to each team link
+- [x] The icon button links to `/teams/{team.shortcut ?? team.id}/statistics`
+- [x] Icon should be visually subtle (muted color, small size) so it doesn't compete with the team name link
 
 ### 1.7 Frontend — Team detail page: "Statistics" button
 
 **File:** `frontend/src/components/app/teams/TeamPage/TeamPage.tsx` (or `TeamMemberView.tsx`)
 
-- [ ] Add a prominent "Statistics" button/link in the top-right corner of the team detail page (visible only to team members)
-- [ ] Use `Link` to navigate to `/teams/{team.shortcut ?? team.id}/statistics`
-- [ ] Style as a clearly visible action button (e.g., with `ChartSpline` icon + "Statistics" text)
+- [x] Add a prominent "Statistics" button/link in the top-right corner of the team detail page (visible only to team members)
+- [x] Use `Link` to navigate to `/teams/{team.shortcut ?? team.id}/statistics`
+- [x] Style as a clearly visible action button (e.g., with `ChartSpline` icon + "Statistics" text)
 
 ---
 
@@ -132,12 +135,12 @@ Several components already accept `teamId` (e.g., `StatisticsDashboard`). Verify
 
 ## Implementation Order
 
-1. **Backend** (1.1) — Update game results endpoint to support `teamId` query
-2. **Routes** (1.2) — Create team statistics route structure
-3. **Layout** (1.3) — Team statistics layout with team context
-4. **StatisticsTabs** (1.4) — Make tabs dynamic
-5. **Subpage components** (1.5) — Pass teamId through all statistics components
-6. **Navigation** (1.6 + 1.7) — Sidebar chart icon + team detail page button
+1. **Backend** (1.1) — Update game results endpoint to support `teamId` query ✅
+2. **Routes** (1.2) — Create team statistics route structure ✅
+3. **Layout** (1.3) — Team statistics layout with team context ✅
+4. **StatisticsTabs** (1.4) — Make tabs dynamic ✅
+5. **Subpage components** (1.5) — Pass teamId through all statistics components ✅
+6. **Navigation** (1.6 + 1.7) — Sidebar chart icon + team detail page button ✅
 7. **Members tab** (2.1) — New per-member statistics view
 8. **InTeam filter** (2.2) — Intra-team match filtering
 
@@ -150,5 +153,5 @@ Several components already accept `teamId` (e.g., `StatisticsDashboard`). Verify
 - **Dexie caching:** `useGetGameResults` already scopes cache by `teamId` — verify that switching between teams invalidates/re-fetches correctly.
 - **Large teams:** If a team has many members, the aggregated game results could be large. Consider pagination or limiting the date range.
 - **Deck visibility:** In team context, deck names/details might reference other members' decks. Ensure deck lookup works cross-user or shows limited info.
-- **Route params:** Teams can be accessed by `id` or `shortcut`. The statistics route uses `$teamId` param — resolve to actual UUID before API calls (the `useTeam` hook already handles this).
+- **Route params:** Teams can be accessed by `id` or `shortcut`. The statistics route uses `$teamId` param — backend resolves shortcut to UUID before querying.
 - **Search params preservation:** When navigating between tabs in team statistics, preserve all filter search params (same as personal statistics).
