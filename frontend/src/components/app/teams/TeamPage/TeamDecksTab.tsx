@@ -44,7 +44,18 @@ const parseDeckId = (input: string): string | null => {
 const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
   const user = useUser();
   const { data: cardList } = useCardList();
-  const { data: teamDecks, isLoading: isLoadingTeamDecks } = useTeamDecks(teamId);
+  const {
+    data: teamDecksData,
+    isLoading: isLoadingTeamDecks,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useTeamDecks(teamId);
+
+  const teamDecks = useMemo(() => {
+    if (!teamDecksData) return undefined;
+    return teamDecksData.pages.flatMap(page => page.data || []);
+  }, [teamDecksData]);
   const addDeckMutation = useAddTeamDeck(teamId);
   const removeDeckMutation = useRemoveTeamDeck(teamId);
 
@@ -204,6 +215,17 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
                 </Button>
               </div>
             ))}
+            {hasNextPage && (
+              <Button
+                variant="outline"
+                className="mt-2"
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+              >
+                {isFetchingNextPage ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
+                Load more
+              </Button>
+            )}
           </div>
         )}
       </div>

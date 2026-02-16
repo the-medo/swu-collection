@@ -13,6 +13,7 @@ import { teamsIdJoinRequestGetRoute } from './teams/_id/join-request/get.ts';
 import { teamsIdJoinRequestRequestIdPatchRoute } from './teams/_id/join-request/_requestId/patch.ts';
 import { teamsIdJoinRequestRequestIdDeleteRoute } from './teams/_id/join-request/_requestId/delete.ts';
 import { teamsIdDecksGetRoute } from './teams/_id/decks/get.ts';
+import { teamsIdDeckMapGetRoute } from './teams/_id/deck-map/get.ts';
 import { teamsIdDecksPostRoute } from './teams/_id/decks/post.ts';
 import { teamsIdDecksDeckIdDeleteRoute } from './teams/_id/decks/_deckId/delete.ts';
 
@@ -29,6 +30,7 @@ export const teamsRoute = new Hono<AuthExtension>()
   .route('/:id/join-request', teamsIdJoinRequestGetRoute)
   .route('/:id/join-request/:requestId', teamsIdJoinRequestRequestIdPatchRoute)
   .route('/:id/join-request/:requestId', teamsIdJoinRequestRequestIdDeleteRoute)
+  .route('/:id/deck-map', teamsIdDeckMapGetRoute)
   .route('/:id/decks', teamsIdDecksGetRoute)
   .route('/:id/decks', teamsIdDecksPostRoute)
   .route('/:id/decks/:deckId', teamsIdDecksDeckIdDeleteRoute);
