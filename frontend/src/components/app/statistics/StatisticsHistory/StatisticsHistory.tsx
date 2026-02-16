@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useGameResults } from '@/components/app/statistics/useGameResults.ts';
+import { useGameResultsContext } from '@/components/app/statistics/GameResultsContext.tsx';
 import MatchResultBox from '@/components/app/statistics/components/MatchResultBox/MatchResultBox.tsx';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import { useMemo } from 'react';
@@ -8,8 +8,8 @@ interface StatisticsHistoryProps {
   teamId?: string;
 }
 
-const StatisticsHistory: React.FC<StatisticsHistoryProps> = ({ teamId }) => {
-  const gameResultData = useGameResults({ teamId });
+const StatisticsHistory: React.FC<StatisticsHistoryProps> = () => {
+  const gameResultData = useGameResultsContext();
 
   const totalMatches = gameResultData?.matches.array.length ?? 0;
 

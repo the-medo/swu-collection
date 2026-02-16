@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useGameResults } from '@/components/app/statistics/useGameResults.ts';
+import { useGameResultsContext } from '@/components/app/statistics/GameResultsContext.tsx';
 import { useSearch } from '@tanstack/react-router';
 import StatisticsLeaderBaseLists from '@/components/app/statistics/StatisticsLeaderBases/StatisticsLeaderBaseLists/StatisticsLeaderBaseLists.tsx';
 import StatisticsLeaderBaseDetail from '@/components/app/statistics/StatisticsLeaderBases/StatisticsLeaderBaseDetail/StatisticsLeaderBaseDetail.tsx';
@@ -8,8 +8,8 @@ interface StatisticsLeaderBasesProps {
   teamId?: string;
 }
 
-const StatisticsLeaderBases: React.FC<StatisticsLeaderBasesProps> = ({ teamId }) => {
-  const gameResultData = useGameResults({ teamId });
+const StatisticsLeaderBases: React.FC<StatisticsLeaderBasesProps> = () => {
+  const gameResultData = useGameResultsContext();
 
   const { sLeaderCardId, sBaseCardKey } = useSearch({ strict: false });
 

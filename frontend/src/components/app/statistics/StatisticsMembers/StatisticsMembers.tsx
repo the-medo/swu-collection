@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useMemo, useState } from 'react';
 import { useTeamMembers } from '@/api/teams';
-import { useGameResults } from '@/components/app/statistics/useGameResults.ts';
+import { useGameResultsContext } from '@/components/app/statistics/GameResultsContext.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
@@ -130,7 +130,7 @@ const getMostPlayedLeaderBase = (
 
 const StatisticsMembers: React.FC<StatisticsMembersProps> = ({ teamId }) => {
   const { data: members, isLoading: membersLoading } = useTeamMembers(teamId);
-  const gameResultData = useGameResults({ teamId });
+  const gameResultData = useGameResultsContext();
   const { data: cardListData } = useCardList();
 
   const memberStats = useMemo<MemberStats[]>(() => {
