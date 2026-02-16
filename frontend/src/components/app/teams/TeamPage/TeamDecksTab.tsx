@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
+import { useInfiniteQueryScroll } from '@/hooks/useInfiniteQueryScroll.ts';
 import { BookOpen, Link2, Loader2, Plus, Trash2 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { useTeamDecks } from '@/api/teams/useTeamDecks.ts';
@@ -51,6 +52,13 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
     fetchNextPage,
     isFetchingNextPage,
   } = useTeamDecks(teamId);
+
+  const { observerTarget } = useInfiniteQueryScroll({
+    fetchNextPage,
+    hasNextPage: !!hasNextPage,
+    isFetchingNextPage,
+    isLoading: isLoadingTeamDecks,
+  });
 
   const teamDecks = useMemo(() => {
     if (!teamDecksData) return undefined;
@@ -215,17 +223,12 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
                 </Button>
               </div>
             ))}
-            {hasNextPage && (
-              <Button
-                variant="outline"
-                className="mt-2"
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage}
-              >
-                {isFetchingNextPage ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
-                Load more
-              </Button>
+            {isFetchingNextPage && (
+              <div className="flex justify-center py-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </div>
             )}
+            <div ref={observerTarget} />
           </div>
         )}
       </div>
