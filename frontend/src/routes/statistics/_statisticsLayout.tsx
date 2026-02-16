@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { StatisticsSubpage } from '@/components/app/statistics/components/StatisticsSubpageTabs/StatisticsSubpageTabs.tsx';
 import { MatchupSort } from '@/components/app/statistics/components/SubpageMatchups/matchupLib.ts';
 import { emptyCardStatTableRow } from '@/components/app/statistics/components/SubpageCardStats/cardStatLib.ts';
+import { GameResultsProvider } from '@/components/app/statistics/GameResultsContext.tsx';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),
@@ -58,7 +59,9 @@ function RouteComponent() {
         </div>
       </div>
       <StatisticsTabs activeTab={activeTab} className="mb-4" />
-      <Outlet />
+      <GameResultsProvider>
+        <Outlet />
+      </GameResultsProvider>
     </div>
   );
 }

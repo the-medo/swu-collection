@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useGameResults } from '@/components/app/statistics/useGameResults.ts';
+import { useGameResultsContext } from '@/components/app/statistics/GameResultsContext.tsx';
 import { Card } from '@/components/ui/card.tsx';
 import DashboardCalendar from '@/components/app/statistics/StatisticsDashboard/DashboardCalendar/DashboardCalendar.tsx';
 import DashboardLeaderBase from '@/components/app/statistics/StatisticsDashboard/DashboardLeaderBase/DashboardLeaderBase.tsx';
@@ -15,7 +15,7 @@ interface StatisticsDashboardProps {
 }
 
 const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => {
-  const gameResultData = useGameResults({ teamId });
+  const gameResultData = useGameResultsContext();
 
   const { todayMatches, last7DaysMatches, allMatches } = React.useMemo(() => {
     const matches = gameResultData?.matches.array ?? [];

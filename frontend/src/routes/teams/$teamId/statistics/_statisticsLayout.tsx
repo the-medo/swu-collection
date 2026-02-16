@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { StatisticsSubpage } from '@/components/app/statistics/components/StatisticsSubpageTabs/StatisticsSubpageTabs.tsx';
 import { MatchupSort } from '@/components/app/statistics/components/SubpageMatchups/matchupLib.ts';
 import { emptyCardStatTableRow } from '@/components/app/statistics/components/SubpageCardStats/cardStatLib.ts';
+import { GameResultsProvider } from '@/components/app/statistics/GameResultsContext.tsx';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),
@@ -54,7 +55,7 @@ function RouteComponent() {
   return (
     <div className="p-2 @container/full-stats-page">
       <div className="flex flex-row gap-4 items-center justify-between mb-2">
-        <h3>{team?.name ? `Team ${team.name} statistics` : 'Team statistics'}</h3>
+        <h3>{team?.name ? `Team statistics - ${team.name}` : 'Team statistics'}</h3>
         <div className="flex gap-4">
           <StatisticsFilters teamId={team?.id} />
         </div>
@@ -65,7 +66,9 @@ function RouteComponent() {
         basePath={`/teams/${teamId}/statistics`}
         teamId={team?.id}
       />
-      <Outlet />
+      <GameResultsProvider teamId={team?.id}>
+        <Outlet />
+      </GameResultsProvider>
     </div>
   );
 }
