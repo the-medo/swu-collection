@@ -1,21 +1,17 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
 import { useInfiniteQueryScroll } from '@/hooks/useInfiniteQueryScroll.ts';
-import { BookOpen, Link2, Loader2, Plus, Trash2 } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
+import { BookOpen, Link2, Loader2, Plus } from 'lucide-react';
 import { useTeamDecks } from '@/api/teams/useTeamDecks.ts';
 import { useAddTeamDeck } from '@/api/teams/useAddTeamDeck.ts';
 import { useRemoveTeamDeck } from '@/api/teams/useRemoveTeamDeck.ts';
 import { useGetDecks } from '@/api/decks/useGetDecks.ts';
 import { useUser } from '@/hooks/useUser.ts';
-import { useCardList } from '@/api/lists/useCardList.ts';
-import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { toast } from '@/hooks/use-toast.ts';
-import CardImage from '@/components/app/global/CardImage.tsx';
-import { getFormatName } from '@/components/app/decks/DeckTable/deckTableLib.tsx';
+import DeckListItem from '@/components/app/teams/TeamPage/TeamDecksTab/DeckListItem.tsx';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,7 +40,6 @@ const parseDeckId = (input: string): string | null => {
 
 const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
   const user = useUser();
-  const { data: cardList } = useCardList();
   const {
     data: teamDecksData,
     isLoading: isLoadingTeamDecks,
@@ -125,52 +120,6 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
     });
   };
 
-  const renderLeaderBase = (deck: {
-    leaderCardId1: string | null;
-    leaderCardId2: string | null;
-    baseCardId: string | null;
-  }) => {
-    const leader1 = deck.leaderCardId1 ? cardList?.cards[deck.leaderCardId1] : undefined;
-    const leader2 = deck.leaderCardId2 ? cardList?.cards[deck.leaderCardId2] : undefined;
-    const base = deck.baseCardId ? cardList?.cards[deck.baseCardId] : undefined;
-
-    return (
-      <div className="flex gap-1">
-        <CardImage
-          card={leader1}
-          cardVariantId={leader1 ? selectDefaultVariant(leader1) : undefined}
-          forceHorizontal={true}
-          size="w100"
-          backSideButton={false}
-        >
-          No leader
-        </CardImage>
-        {leader2 && (
-          <div className="-ml-14">
-            <CardImage
-              card={leader2}
-              cardVariantId={leader2 ? selectDefaultVariant(leader2) : undefined}
-              forceHorizontal={true}
-              size="w100"
-              backSideButton={false}
-            />
-          </div>
-        )}
-        <div className={leader2 ? '-ml-12' : ''}>
-          <CardImage
-            card={base}
-            cardVariantId={base ? selectDefaultVariant(base) : undefined}
-            forceHorizontal={true}
-            size="w100"
-            backSideButton={false}
-          >
-            No base
-          </CardImage>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-4">
       {/* Left: Team Decks List */}
@@ -194,34 +143,18 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
         ) : !teamDecks || teamDecks.length === 0 ? (
           <div className="flex flex-col items-center gap-4 py-12 text-center border rounded-lg">
             <BookOpen className="w-12 h-12 text-muted-foreground" />
-            <p className="text-muted-foreground">
-              No decks added yet. Use the panel on the right to add decks.
-            </p>
+            <p className="text-muted-foreground">No decks added to the team yet.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
             {teamDecks.map(td => (
-              <div key={td.deck.id} className="flex items-center gap-3 p-3 rounded-lg border">
-                {renderLeaderBase(td.deck)}
-                <div className="flex flex-col flex-1 min-w-0">
-                  <Link to={'/decks/' + td.deck.id}>
-                    <Button variant="link" className="p-0 h-auto font-bold justify-start">
-                      <span className="truncate">{td.deck.name}</span>
-                    </Button>
-                  </Link>
-                  <span className="text-xs text-muted-foreground">
-                    {getFormatName(td.deck.format)} · by {td.user.displayName ?? td.user.name}
-                  </span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="iconMedium"
-                  onClick={() => setDeckToRemove({ id: td.deck.id, name: td.deck.name })}
-                  disabled={removeDeckMutation.isPending}
-                >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </div>
+              <DeckListItem
+                key={td.deck.id}
+                variant="team-deck"
+                teamDeck={td}
+                onRemove={() => setDeckToRemove({ id: td.deck.id, name: td.deck.name })}
+                removeDisabled={removeDeckMutation.isPending}
+              />
             ))}
             {isFetchingNextPage && (
               <div className="flex justify-center py-2">
@@ -287,27 +220,13 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
             ) : (
               <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto">
                 {availableRecentDecks.map(d => (
-                  <div
+                  <DeckListItem
                     key={d.deck.id}
-                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
-                  >
-                    {renderLeaderBase(d.deck)}
-                    <div className="flex flex-col flex-1 min-w-0">
-                      <span className="text-sm font-medium truncate">{d.deck.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {getFormatName(d.deck.format)}
-                      </span>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleAddRecent(d.deck.id)}
-                      disabled={addDeckMutation.isPending}
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      Add
-                    </Button>
-                  </div>
+                    variant="add-deck"
+                    deck={d.deck}
+                    onAdd={() => handleAddRecent(d.deck.id)}
+                    addDisabled={addDeckMutation.isPending}
+                  />
                 ))}
               </div>
             )}

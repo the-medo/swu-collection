@@ -1,7 +1,14 @@
 import { skipToken, useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { TeamDeckExpanded } from '../../../../server/routes/teams/_id/decks/get.ts';
+import { Pagination } from '../../../../types/pagination.ts';
 
 const PAGE_SIZE = 20;
+
+export interface GetTeamDecksResponse {
+  data: TeamDeckExpanded[];
+  pagination: Pagination;
+}
 
 export const useTeamDecks = (teamId: string | undefined) => {
   return useInfiniteQuery({
@@ -18,7 +25,7 @@ export const useTeamDecks = (teamId: string | undefined) => {
           if (!response.ok) {
             throw new Error('Failed to fetch team decks');
           }
-          return await response.json();
+          return (await response.json()) as unknown as GetTeamDecksResponse;
         }
       : skipToken,
     initialPageParam: 0,
