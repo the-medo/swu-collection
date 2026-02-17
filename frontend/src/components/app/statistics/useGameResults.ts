@@ -5,7 +5,7 @@ import { GameResult } from '../../../../../server/db/schema/game_result.ts';
 import { useSearch } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
-import { useTeamMemberMap } from '@/components/app/statistics/lib/useTeamMemberMap.ts';
+import { useTeamDataMap } from '@/components/app/statistics/lib/useTeamDataMap.ts';
 
 export interface StatisticsHistoryData {
   games: {
@@ -44,7 +44,7 @@ export const useGameResults = (
   const { sFormatId, sDateRangeFrom, sDateRangeTo, sKarabastFormat, sInTeam } = useSearch({
     strict: false,
   });
-  const teamMemberMap = useTeamMemberMap(teamId);
+  const teamDataMap = useTeamDataMap(teamId);
 
   const session = useSession();
 
@@ -95,18 +95,20 @@ export const useGameResults = (
 
         if (sFormatId && game.otherData?.deckInfo?.formatId !== sFormatId) return;
         if (sKarabastFormat && game.format !== sKarabastFormat) return;
+        if (teamId && game.deckId && !teamDataMap.decks[game.deckId]) return;
+
         gamesObject[game.id] = game;
       }
     });
 
     // Apply inTeam filter: only keep games whose matchId is shared by 2+ distinct userIds
-    if (sInTeam && teamId && Object.values(teamMemberMap).length > 0) {
+    if (sInTeam && teamId && Object.values(teamDataMap.members).length > 0) {
       const matchUserCounts: Record<string, Set<string>> = {};
       Object.values(gamesObject).forEach(game => {
         const mid = game.matchId;
         if (!mid) return;
         if (!matchUserCounts[mid]) matchUserCounts[mid] = new Set();
-        if (teamMemberMap[game.userId]) matchUserCounts[mid].add(game.userId);
+        if (teamDataMap.members[game.userId]) matchUserCounts[mid].add(game.userId);
       });
       const inTeamMatchIds = new Set(
         Object.entries(matchUserCounts)
@@ -293,6 +295,6 @@ export const useGameResults = (
     sKarabastFormat,
     sInTeam,
     teamId,
-    teamMemberMap,
+    teamDataMap,
   ]);
 };
