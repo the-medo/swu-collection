@@ -75,7 +75,7 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
             <h6
               className={cn('mb-0!', {
                 'truncate text-xs w-[170px]': statSectionVariant === 'vertical',
-                'min-w-[170px] max-w-[500px] ': statSectionVariant === 'horizontal',
+                'min-w-[170px] max-w-[500px] truncate': statSectionVariant === 'horizontal',
               })}
             >
               {deckName}

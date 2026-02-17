@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { db } from '../../../../db';
 import { teamDeck } from '../../../../db/schema/team_deck.ts';
-import { deck as deckTable } from '../../../../db/schema/deck.ts';
+import { type Deck, deck as deckTable } from '../../../../db/schema/deck.ts';
 import { user as userTable } from '../../../../db/schema/auth-schema.ts';
 import { desc, eq } from 'drizzle-orm';
 import type { AuthExtension } from '../../../../auth/auth.ts';
@@ -11,11 +11,18 @@ import { selectDeck } from '../../../deck.ts';
 import { selectUser } from '../../../user.ts';
 import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
 import { withPagination } from '../../../../lib/withPagination.ts';
+import type { User } from '../../../../../types/User.ts';
 
 const zQuery = z.object({
   limit: z.coerce.number().int().positive().max(100).default(20),
   offset: z.coerce.number().int().nonnegative().default(0),
 });
+
+export type TeamDeckExpanded = {
+  deck: Deck;
+  user: User;
+  addedAt: string;
+};
 
 export const teamsIdDecksGetRoute = new Hono<AuthExtension>().get(
   '/',
@@ -48,7 +55,7 @@ export const teamsIdDecksGetRoute = new Hono<AuthExtension>().get(
 
     query = withPagination(query, limit, offset);
 
-    const data = await query;
+    const data = (await query) as unknown as TeamDeckExpanded[];
 
     return c.json({
       data,

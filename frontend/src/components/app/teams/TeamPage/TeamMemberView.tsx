@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
-import TeamDecksTab from './TeamDecksTab.tsx';
+import TeamDecksTab from './TeamDecksTab/TeamDecksTab.tsx';
 import TeamMembersTab from './TeamMembersTab/TeamMembersTab.tsx';
 import TeamSettingsTab from './TeamSettingsTab.tsx';
 import TeamJoinRequestsTab from './TeamJoinRequestsTab.tsx';
