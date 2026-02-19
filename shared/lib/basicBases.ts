@@ -56,6 +56,7 @@ export const baseSpecialNames: Record<string, string> = {
   'shadowed-undercity': 'Vigilance-Force',
   // aspect ignore base
   'daimyo-s-palace': 'Vigilance-AspectIgnore',
+  'coaxium-mine': 'Vigilance-AspectIgnore',
 
   // basic Command bases
   'command-center': 'Command',
@@ -73,6 +74,7 @@ export const baseSpecialNames: Record<string, string> = {
   'starlight-temple': 'Command-Force',
   // aspect ignore base
   'aldhani-garrison': 'Command-AspectIgnore',
+  'imperial-command-complex': 'Command-AspectIgnore',
 
   // basic Aggresion bases
   'catacombs-of-cadera': 'Aggression',
@@ -90,6 +92,7 @@ export const baseSpecialNames: Record<string, string> = {
   'strangled-cliffs': 'Aggression-Force',
   // aspect ignore base
   'stygeon-spire': 'Aggression-AspectIgnore',
+  'contested-caverns': 'Aggression-AspectIgnore',
 
   // basic Cunning bases
   'administrator-s-tower': 'Cunning',
@@ -106,6 +109,7 @@ export const baseSpecialNames: Record<string, string> = {
   'the-holy-city': 'Cunning-Force',
   // aspect ignore base
   'canto-bight': 'Cunning-AspectIgnore',
+  'partisan-hideout': 'Cunning-AspectIgnore',
 };
 
 export const baseSpecialNameValues = new Set(Object.values(baseSpecialNames));
