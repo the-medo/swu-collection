@@ -71,15 +71,9 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
                 className="w-16 h-16 rounded-lg object-cover"
               />
             )}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-1 flex-col gap-2">
+              <div className="flex items-center justify-between gap-2">
                 <LoadingTitle mainTitle={team.name} />
-                <Link to={`/teams/${team.shortcut ?? team.id}/statistics`}>
-                  <Button variant="outline" size="sm" className="gap-1.5">
-                    <ChartSpline className="h-4 w-4" />
-                    Statistics
-                  </Button>
-                </Link>
               </div>
               <div className="flex items-center gap-2">
                 <span>Invite link: </span>
@@ -96,6 +90,13 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
                 </Button>
               </div>
             </div>
+            <Link
+              to={`/teams/${team.shortcut ?? team.id}/statistics`}
+              className="flex items-center gap-1.5 p-4 text-lg border-dashed border bg-primary/50 hover:bg-primary rounded-lg font-bold text-black"
+            >
+              <ChartSpline className="h-4 w-4" />
+              Team Statistics
+            </Link>
           </div>
         )}
         {isMember ? (
