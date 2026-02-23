@@ -30,7 +30,7 @@ args.forEach(arg => {
 
 const expansionsToProcess = params.expansions
   ? params.expansions.split(',').map(e => setInfo[e as SwuSet]?.expansionId ?? e)
-  : [];
+  : [93];
 
 async function main() {
   try {
