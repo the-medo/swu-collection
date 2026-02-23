@@ -22,12 +22,13 @@ export const rotationBlocks: Record<number | string, RotationBlock> = {
   1: {
     id: 1,
     year: 2024,
-    name: 'Block 1 (SOR, SHD, TWI)',
+    name: 'Block 1 (SOR, SHD, TWI, TS26)',
     hexColor: '#e10600',
     setMap: {
       [SwuSet.SOR]: true,
       [SwuSet.SHD]: true,
       [SwuSet.TWI]: true,
+      [SwuSet.TS26]: true, // Twin Suns 2026 - eternal only
     },
   },
   2: {
@@ -125,6 +126,15 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 93,
     hexColor: '#df7826',
     rotationBlockId: 3,
+  },
+  [SwuSet.TS26]: {
+    code: SwuSet.TS26,
+    name: 'Twin Suns 2026',
+    cardCount: 84,
+    sortValue: 9,
+    expansionId: 103,
+    hexColor: '#89684e',
+    rotationBlockId: 1, // eternal only
   },
 } as const;
 
