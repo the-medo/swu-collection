@@ -2,31 +2,15 @@ import * as fs from 'fs';
 import { processCard } from './lib/processCard.ts';
 import { setInfo } from './set-info.ts';
 import type { SwuSet } from '../../types/enums.ts';
+import { processArguments } from './lib/processArguments.ts';
 
 const imagePath = './lib/swu-resources/output/images';
 export const pngImagePath = `${imagePath}/png`;
 export const webpImagePath = `${imagePath}/webp`;
 
 // Parse command line arguments
-const args = process.argv.slice(2);
-const params: Record<string, string> = {};
 
-// Process arguments in format --key=value
-args.forEach(arg => {
-  if (arg.startsWith('--')) {
-    const paramString = arg.substring(2);
-    const firstEqualIndex = paramString.indexOf('=');
-
-    if (firstEqualIndex !== -1) {
-      const key = paramString.substring(0, firstEqualIndex);
-      const value = paramString.substring(firstEqualIndex + 1);
-
-      if (key && value) {
-        params[key] = value;
-      }
-    }
-  }
-});
+const params = processArguments();
 
 const expansionsToProcess = params.expansions
   ? params.expansions.split(',').map(e => setInfo[e as SwuSet]?.expansionId ?? e)
