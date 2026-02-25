@@ -11,7 +11,7 @@ import { setInfo } from './set-info.ts';
 const directoryPath = path.join(__dirname, './output/cards');
 const outputPath = path.join('./server/db/json');
 
-function getSetFromCard(card: CardDataWithVariants<CardListVariants>): SwuSet | undefined {
+function getNewestSetFromCard(card: CardDataWithVariants<CardListVariants>): SwuSet | undefined {
   let newestSet: SwuSet | undefined = undefined;
 
   Object.keys(card.variants).forEach(vId => {
@@ -35,7 +35,7 @@ async function processCardsDirectory() {
     }
 
     Object.keys(cardList).forEach(async cardId => {
-      const newestCardSet = getSetFromCard(cardList[cardId]!);
+      const newestCardSet = getNewestSetFromCard(cardList[cardId]!);
       if (newestCardSet) {
         cardList[cardId]!.set = newestCardSet;
       } else {
