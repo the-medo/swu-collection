@@ -9,6 +9,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { MoreHorizontal, Shield, ShieldOff, UserX, LogOut } from 'lucide-react';
+import { Switch } from '@/components/ui/switch.tsx';
+import InfoTooltip from '@/components/app/global/InfoTooltip/InfoTooltip.tsx';
+import { AutoAddDeckTooltip } from '@/components/app/teams/TeamPage/components/AutoAddDeckTooltip.tsx';
 
 interface Member {
   userId: string;
@@ -16,6 +19,7 @@ interface Member {
   image: string | null;
   joinedAt: string;
   role: 'owner' | 'member';
+  autoAddDeck: boolean;
 }
 
 interface MemberRowProps {
@@ -27,6 +31,7 @@ interface MemberRowProps {
   onDemote: () => void;
   onKick: () => void;
   onLeave: () => void;
+  onAutoAddDeckChange: (checked: boolean) => void;
 }
 
 const MemberRow: React.FC<MemberRowProps> = ({
@@ -38,6 +43,7 @@ const MemberRow: React.FC<MemberRowProps> = ({
   onDemote,
   onKick,
   onLeave,
+  onAutoAddDeckChange,
 }) => {
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg border">
@@ -54,6 +60,13 @@ const MemberRow: React.FC<MemberRowProps> = ({
           Joined {new Date(member.joinedAt).toLocaleDateString()}
         </span>
       </div>
+      {(isOwner || isSelf) && (
+        <div className="flex items-center gap-2 mr-10" title="Auto-add deck">
+          <AutoAddDeckTooltip />
+          <span className="text-xs text-muted-foreground">Auto-add played decks to team</span>
+          <Switch checked={member.autoAddDeck} onCheckedChange={onAutoAddDeckChange} />
+        </div>
+      )}
       <Badge variant={member.role === 'owner' ? 'default' : 'secondary'}>{member.role}</Badge>
       {(isOwner || isSelf) && (
         <DropdownMenu>

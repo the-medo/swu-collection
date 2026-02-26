@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { Users, Upload } from 'lucide-react';
+import { Switch } from '@/components/ui/switch.tsx';
 import type { Team } from '../../../../../../server/db/schema/team.ts';
 
 type TeamWithMembership = Team & {
@@ -152,6 +153,29 @@ const TeamSettingsTab: React.FC<TeamSettingsTabProps> = ({ team }) => {
           {updateTeam.isPending ? 'Saving...' : 'Save Settings'}
         </Button>
       </form>
+
+      <div className="flex flex-col gap-3">
+        <Label>Defaul "Auto-add deck" value for new members:</Label>
+        <div className="flex items-center gap-3">
+          <Switch
+            checked={team.autoAddDeck}
+            onCheckedChange={checked =>
+              updateTeam.mutate(
+                { autoAddDeck: checked },
+                {
+                  onSuccess: () => {
+                    toast({ title: 'Auto-add deck setting updated!' });
+                  },
+                },
+              )
+            }
+          />
+          <span className="text-sm text-muted-foreground">
+            When enabled, `Auto-add deck` will be turned on by default for new members. You can
+            still turn it on/off for individual member.
+          </span>
+        </div>
+      </div>
     </div>
   );
 };

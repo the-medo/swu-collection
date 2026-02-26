@@ -20,6 +20,7 @@ export const zTeamUpdateRequest = z.object({
     .optional(),
   description: z.string().max(500).optional(),
   privacy: z.enum(['public', 'private']).optional(),
+  autoAddDeck: z.boolean().optional(),
 });
 
 export const zTeamJoinRequestAction = z.object({

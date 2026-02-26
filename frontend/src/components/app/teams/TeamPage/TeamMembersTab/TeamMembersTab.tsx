@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { useTeamMembers, usePromoteMember, useDemoteMember, useKickMember } from '@/api/teams';
+import {
+  useTeamMembers,
+  usePromoteMember,
+  useDemoteMember,
+  useKickMember,
+  useUpdateMemberAutoAddDeck,
+} from '@/api/teams';
 import { useUser } from '@/hooks/useUser.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import MemberRow from './MemberRow';
@@ -22,6 +28,7 @@ const TeamMembersTab: React.FC<TeamMembersTabProps> = ({ teamId, isOwner }) => {
   const promoteMember = usePromoteMember(teamId);
   const demoteMember = useDemoteMember(teamId);
   const kickMember = useKickMember(teamId);
+  const updateMemberAutoAddDeck = useUpdateMemberAutoAddDeck(teamId);
 
   const [dialogTarget, setDialogTarget] = React.useState<DialogTarget>(null);
 
@@ -83,6 +90,9 @@ const TeamMembersTab: React.FC<TeamMembersTabProps> = ({ teamId, isOwner }) => {
                 name: member.name ?? 'Unknown user',
                 action: 'leave',
               })
+            }
+            onAutoAddDeckChange={checked =>
+              updateMemberAutoAddDeck.mutate({ userId: member.userId, autoAddDeck: checked })
             }
           />
         ))}

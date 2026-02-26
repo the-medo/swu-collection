@@ -7,7 +7,8 @@ import { z } from 'zod';
 import { getTeamMembership } from '../../../../../lib/getTeamMembership.ts';
 
 const patchBodySchema = z.object({
-  role: z.enum(['owner', 'member']),
+  role: z.enum(['owner', 'member']).optional(),
+  autoAddDeck: z.boolean().optional(),
 });
 
 export const teamsIdMembersUserIdPatchRoute = new Hono<AuthExtension>().patch('/', async c => {
@@ -20,8 +21,21 @@ export const teamsIdMembersUserIdPatchRoute = new Hono<AuthExtension>().patch('/
   const body = patchBodySchema.parse(await c.req.json());
 
   const membership = await getTeamMembership(teamId, user.id);
-  if (!membership || membership.role !== 'owner') {
+  if (!membership) {
+    return c.json({ message: 'You must be a team member' }, 403);
+  }
+
+  const isOwner = membership.role === 'owner';
+  const isSelf = user.id === userId;
+
+  // Only owners can change roles
+  if (body.role !== undefined && !isOwner) {
     return c.json({ message: 'Only owners can change member roles' }, 403);
+  }
+
+  // autoAddDeck can be changed by owners (for anyone) or by the member themselves
+  if (body.autoAddDeck !== undefined && !isOwner && !isSelf) {
+    return c.json({ message: 'You can only change your own auto-add deck setting' }, 403);
   }
 
   const targetMembership = await getTeamMembership(teamId, userId);
@@ -29,13 +43,26 @@ export const teamsIdMembersUserIdPatchRoute = new Hono<AuthExtension>().patch('/
     return c.json({ message: 'User is not a member of this team' }, 404);
   }
 
-  if (targetMembership.role === body.role) {
-    return c.json({ message: `User already has the role "${body.role}"` }, 400);
+  const updateData: { role?: 'owner' | 'member'; autoAddDeck?: boolean } = {};
+
+  if (body.role !== undefined) {
+    if (targetMembership.role === body.role) {
+      return c.json({ message: `User already has the role "${body.role}"` }, 400);
+    }
+    updateData.role = body.role;
+  }
+
+  if (body.autoAddDeck !== undefined) {
+    updateData.autoAddDeck = body.autoAddDeck;
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    return c.json({ message: 'No changes provided' }, 400);
   }
 
   await db
     .update(teamMember)
-    .set({ role: body.role })
+    .set(updateData)
     .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, userId)));
 
   return c.json({ data: { success: true } });

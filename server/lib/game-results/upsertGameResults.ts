@@ -1,13 +1,44 @@
 import { db } from '../../db';
 import { gameResult } from '../../db/schema/game_result.ts';
 import type { GameResult } from '../../db/schema/game_result.ts';
-import { sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
+import { teamMember } from '../../db/schema/team_member.ts';
+import { teamDeck } from '../../db/schema/team_deck.ts';
 
 export const upsertGameResults = async (results: GameResult[]) => {
   if (results.length === 0) {
     return;
   }
 
+  // ======== Overcomplicated logic of adding new decks to teams ============
+  // - in case of data mocking, game results of multiple users can be upserted at once
+  const distinctUserIds = [...new Set(results.map(result => result.userId))];
+  const userTeamsWithAutoAddDeck = await db
+    .select({
+      teamId: teamMember.teamId,
+      userId: teamMember.userId,
+    })
+    .from(teamMember)
+    .where(and(inArray(teamMember.userId, distinctUserIds), eq(teamMember.autoAddDeck, true)));
+
+  if (userTeamsWithAutoAddDeck.length > 0) {
+    const teamDecksToAdd: { teamId: string; deckId: string }[] = [];
+    results.forEach(result => {
+      userTeamsWithAutoAddDeck.forEach(userTeam => {
+        if (userTeam.userId === result.userId) {
+          teamDecksToAdd.push({ teamId: userTeam.teamId, deckId: result.deckId });
+        }
+      });
+    });
+
+    if (teamDecksToAdd.length > 0) {
+      await db.insert(teamDeck).values(teamDecksToAdd).onConflictDoNothing();
+    }
+  }
+
+  // ======================================================
+
+  // ======== Insert game results
   await db
     .insert(gameResult)
     .values(results)
