@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '../../db';
-import { team as teamTable } from '../../db/schema/team.ts';
-import { teamMember } from '../../db/schema/team_member.ts';
+import { team as teamTable, type Team } from '../../db/schema/team.ts';
+import { teamMember, type TeamMember } from '../../db/schema/team_member.ts';
 import { eq } from 'drizzle-orm';
 import type { AuthExtension } from '../../auth/auth.ts';
 
@@ -26,3 +26,9 @@ export const teamsGetRoute = new Hono<AuthExtension>().get('/', async c => {
 
   return c.json({ data: teams });
 });
+
+export type UserTeam = Pick<
+  Team,
+  'id' | 'name' | 'shortcut' | 'description' | 'logoUrl' | 'privacy' | 'createdAt'
+> &
+  Pick<TeamMember, 'role'>;

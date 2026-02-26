@@ -54,13 +54,12 @@ import { cn } from '@/lib/utils.ts';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import SidebarComparer from '../../comparer/SidebarComparer/SidebarComparer.tsx';
 import { Fragment, useMemo } from 'react';
-
-type Team = { id: string; name: string; shortcut: string | null };
+import { UserTeam } from '../../../../../../server/routes/teams/get.ts';
 
 const getGroups = (
   setOpenMobile: (open: boolean) => void,
   state: SidebarContext['state'],
-  teams: Team[],
+  teams: UserTeam[],
 ) => [
   {
     title: 'Analysis & Decks',
@@ -234,10 +233,14 @@ export function LeftSidebar() {
   const { theme } = useTheme();
   const { open, state, isMobile, setOpenMobile } = useSidebar();
   const teamMatch = useMatch({ from: '/teams/$teamId/', shouldThrow: false });
-  const teamIdOrShortcut = teamMatch?.params?.teamId;
+
+  const teamStatisticsMatch = useMatch({ from: '/teams/$teamId/statistics', shouldThrow: false });
+  const teamIdOrShortcut = teamMatch?.params?.teamId ?? teamStatisticsMatch?.params?.teamId;
+
   const { data: activeTeam } = useTeam(teamIdOrShortcut);
 
   const { data: teams } = useTeams();
+
   const groups = useMemo(() => getGroups(setOpenMobile, state, teams ?? []), [state, teams]);
 
   const swubaseLogo = theme === 'light' ? LogoLightTheme : LogoDarkTheme;
@@ -245,16 +248,39 @@ export function LeftSidebar() {
   return (
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
-        {activeTeam?.logoUrl ? (
-          <div className={cn({ 'self-center': !isMobile, 'self-start pl-4': isMobile })}>
-            <img
-              src={activeTeam.logoUrl}
-              alt={`${activeTeam.name} logo`}
-              className={cn('rounded-lg object-cover', {
-                'w-8 h-8': state === 'collapsed' || isMobile,
-                'w-32 h-32': state !== 'collapsed' && !isMobile,
-              })}
-            />
+        {activeTeam?.logoUrl && teamIdOrShortcut ? (
+          <div
+            className={cn('relative', { 'self-center': !isMobile, 'self-start pl-4': isMobile })}
+          >
+            <Link
+              to="/teams/$teamId"
+              params={{ teamId: teamIdOrShortcut }}
+              onClick={() => setOpenMobile(false)}
+            >
+              <img
+                src={activeTeam.logoUrl}
+                alt={`${activeTeam.name} logo`}
+                className={cn('rounded-lg object-cover', {
+                  'w-8 h-8': state === 'collapsed' || isMobile,
+                  'w-32 h-32': state !== 'collapsed' && !isMobile,
+                })}
+              />
+            </Link>
+            {activeTeam?.logoUrl && state !== 'collapsed' && (
+              <div
+                className={cn(
+                  'bg-background absolute bottom-1 -right-7 rounded-lg justify-end p-1',
+                )}
+              >
+                <Link to="/" onClick={() => setOpenMobile(false)}>
+                  <img
+                    src={swubaseLogo}
+                    alt="SWUBase"
+                    className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity"
+                  />
+                </Link>
+              </div>
+            )}
           </div>
         ) : (
           <Link
@@ -425,17 +451,6 @@ export function LeftSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      {activeTeam?.logoUrl && (
-        <div className="flex justify-end p-2">
-          <Link to="/" onClick={() => setOpenMobile(false)}>
-            <img
-              src={swubaseLogo}
-              alt="SWUBase"
-              className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity"
-            />
-          </Link>
-        </div>
-      )}
       <SocialLinks />
       <SidebarSeparator />
       <SidebarFooter>
