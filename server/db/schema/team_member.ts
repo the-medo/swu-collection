@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, primaryKey, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, primaryKey, pgEnum, boolean } from 'drizzle-orm/pg-core';
 import { team } from './team.ts';
 import { user } from './auth-schema.ts';
 import type { InferSelectModel } from 'drizzle-orm';
@@ -16,6 +16,7 @@ export const teamMember = pgTable(
       .references(() => user.id, { onDelete: 'cascade' }),
     role: teamRoleEnum('role').notNull().default('member'),
     joinedAt: timestamp('joined_at', { mode: 'string' }).notNull().defaultNow(),
+    autoAddDeck: boolean('auto_add_deck').notNull().default(true),
   },
   table => ({
     pk: primaryKey({ columns: [table.teamId, table.userId] }),

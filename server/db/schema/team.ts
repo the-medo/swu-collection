@@ -1,4 +1,13 @@
-import { pgTable, uuid, varchar, text, timestamp, index, pgEnum } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  uuid,
+  varchar,
+  text,
+  timestamp,
+  index,
+  pgEnum,
+  boolean,
+} from 'drizzle-orm/pg-core';
 import type { InferSelectModel } from 'drizzle-orm';
 
 export const teamPrivacyEnum = pgEnum('team_privacy', ['public', 'private']);
@@ -14,6 +23,7 @@ export const team = pgTable(
     privacy: teamPrivacyEnum('privacy').notNull().default('private'),
     createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
+    autoAddDeck: boolean('auto_add_deck').notNull().default(true),
   },
   table => ({
     shortcutIdx: index('team-shortcut_idx').on(table.shortcut),
