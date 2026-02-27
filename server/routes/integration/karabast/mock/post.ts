@@ -5,10 +5,11 @@ import type { AuthExtension } from '../../../../auth/auth.ts';
 import { db } from '../../../../db';
 import { deck } from '../../../../db/schema/deck.ts';
 import { deckCard } from '../../../../db/schema/deck_card.ts';
+import { user as userTable } from '../../../../db/schema/auth-schema.ts';
 import { eq, sql } from 'drizzle-orm';
 import { upsertGameResults } from '../../../../lib/game-results/upsertGameResults.ts';
 import { baseSpecialNames } from '../../../../../shared/lib/basicBases.ts';
-import type { GameResultDeckInfo } from '../../../../db/schema/game_result.ts';
+import type { GameResult, GameResultDeckInfo } from '../../../../db/schema/game_result.ts';
 import type { CardMetrics } from '../../../../../shared/types/cardMetrics.ts';
 
 const schema = z.object({
@@ -47,6 +48,7 @@ const mockSingleGame = ({
   gameNumber,
   leaderCardId,
   baseCardKey,
+  opponentName,
   opponentLeaderCardId,
   opponentBaseCardKey,
   cards,
@@ -58,6 +60,7 @@ const mockSingleGame = ({
   gameNumber: number;
   leaderCardId: string | null;
   baseCardKey: string | null;
+  opponentName: string | null;
   opponentLeaderCardId: string | null;
   opponentBaseCardKey: string | null;
   cards: { cardId: string }[];
@@ -87,7 +90,7 @@ const mockSingleGame = ({
     roundMetrics: {},
     otherData: {
       roundNumber,
-      opponentName: 'Unknown',
+      opponentName: opponentName ?? 'Unknown',
       startedAt: new Date().toISOString(),
       finishedAt: new Date().toISOString(),
       deckInfo,
@@ -131,7 +134,10 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
         )
         SELECT
             d.leader_card_id_1 as leader_card_id,
-            d.base_card_id as base_card_id
+            d.base_card_id as base_card_id,
+            d.id as deck_id,
+            d.card_pool_id as deck_card_pool_id,
+            d.name as deck_name
         FROM
             tournament t
             JOIN tournament_deck td ON t.id = td.tournament_id
@@ -146,11 +152,33 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
     `);
 
     const opponent = opponentResult[0] as
-      | { leader_card_id: string; base_card_id: string }
+      | {
+          leader_card_id: string;
+          base_card_id: string;
+          deck_id: string;
+          deck_card_pool_id: string;
+          deck_name: string;
+        }
       | undefined;
 
     if (!opponent) {
       return c.json({ error: 'Could not find a suitable opponent in meta' }, 400);
+    }
+
+    let opponentName = 'Unknown';
+    let opponentCards = [] as { cardId: string }[];
+
+    if (process.env.MOCK_SECOND_USER_ID) {
+      opponentName = await db
+        .select({ displayName: userTable.displayName })
+        .from(userTable)
+        .where(eq(userTable.id, process.env.MOCK_SECOND_USER_ID))
+        .then(result => result[0]?.displayName || 'Unknown');
+
+      opponentCards = await db
+        .select({ cardId: deckCard.cardId })
+        .from(deckCard)
+        .where(eq(deckCard.deckId, opponent.deck_id));
     }
 
     // 3. Randomly decide Bo1 or Bo3
@@ -174,6 +202,7 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
           deckRecord.baseCardId! in baseSpecialNames
             ? baseSpecialNames[deckRecord.baseCardId!]
             : deckRecord.baseCardId,
+        opponentName,
         opponentLeaderCardId: opponent.leader_card_id,
         opponentBaseCardKey:
           opponent.base_card_id in baseSpecialNames
@@ -191,6 +220,43 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
       else opponentWins++;
 
       gamesToUpsert.push(game);
+
+      if (process.env.MOCK_SECOND_USER_ID) {
+        const opponentGame = {
+          userId: process.env.MOCK_SECOND_USER_ID,
+          deckId: opponent.deck_id,
+          matchId,
+          gameId: game.gameId,
+          gameNumber,
+          format: 'premier',
+          leaderCardId: game.opponentLeaderCardId,
+          baseCardKey: game.opponentBaseCardKey,
+          opponentLeaderCardId: game.leaderCardId,
+          opponentBaseCardKey: game.baseCardKey,
+          isWinner: !game.isWinner,
+          hasInitiative: !game.hasInitiative,
+          hasMulligan: Math.random() > 0.5,
+          gameSource: 'karabast',
+          cardMetrics: mockCardMetrics(opponentCards),
+          roundMetrics: {},
+          otherData: {
+            roundNumber: game.otherData.roundNumber,
+            opponentName: user?.displayName ?? 'Unknown',
+            startedAt: game.otherData.startedAt,
+            finishedAt: game.otherData.finishedAt,
+            deckInfo: {
+              name: opponent.deck_name,
+              cardPoolId: opponent.deck_card_pool_id,
+              formatId: deckRecord.format,
+            },
+          },
+          createdAt: game.createdAt,
+          updatedAt: game.updatedAt,
+        } as GameResult;
+
+        gamesToUpsert.push(opponentGame);
+      }
+
       gameNumber++;
     }
 
