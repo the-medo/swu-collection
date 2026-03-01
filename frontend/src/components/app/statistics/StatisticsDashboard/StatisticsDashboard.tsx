@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import MatchResultBox from '@/components/app/statistics/components/MatchResultBox/MatchResultBox.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Link } from '@tanstack/react-router';
+import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
 
 interface StatisticsDashboardProps {
   teamId?: string;
@@ -63,13 +64,19 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
         {visibleMatches.map(match => (
           <MatchResultBox key={match.id} match={match} />
         ))}
-        <Link to={teamId ? `/teams/${teamId}/statistics/history` : `/statistics/history`}>
+        <Link
+          to={`${getTeamUrlPrefix(teamId)}/statistics/history`}
+          params={{
+            teamId,
+          }}
+        >
           <Button variant="outline">View full match history</Button>
         </Link>
       </div>
       <div className="flex flex-1 flex-wrap gap-4">
         {gameResultData && (
           <DashboardLeaderBase
+            teamId={teamId}
             byLeaderBase={gameResultData.matches.byLeaderBase}
             byDeckId={gameResultData.matches.byDeckId}
           />

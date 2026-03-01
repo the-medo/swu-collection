@@ -20,6 +20,8 @@ export type MatchResult = {
   finalWins?: number;
   finalLosses?: number;
 
+  inTeam?: boolean;
+  userName?: string;
   deckId?: string;
   userEventId?: string;
   firstGameCreatedAt: string;

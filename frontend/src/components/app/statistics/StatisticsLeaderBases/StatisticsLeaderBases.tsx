@@ -8,7 +8,7 @@ interface StatisticsLeaderBasesProps {
   teamId?: string;
 }
 
-const StatisticsLeaderBases: React.FC<StatisticsLeaderBasesProps> = () => {
+const StatisticsLeaderBases: React.FC<StatisticsLeaderBasesProps> = ({ teamId }) => {
   const gameResultData = useGameResultsContext();
 
   const { sLeaderCardId, sBaseCardKey } = useSearch({ strict: false });
@@ -18,6 +18,7 @@ const StatisticsLeaderBases: React.FC<StatisticsLeaderBasesProps> = () => {
     const key = `${sLeaderCardId}|${sBaseCardKey}`;
     return (
       <StatisticsLeaderBaseDetail
+        teamId={teamId}
         matches={gameResultData.matches.byLeaderBase.matches[key]}
         byDeckId={gameResultData.matches.byDeckId}
       />
@@ -25,6 +26,7 @@ const StatisticsLeaderBases: React.FC<StatisticsLeaderBasesProps> = () => {
   }
   return (
     <StatisticsLeaderBaseLists
+      teamId={teamId}
       byLeaderBase={gameResultData.matches.byLeaderBase}
       byDeckId={gameResultData.matches.byDeckId}
     />

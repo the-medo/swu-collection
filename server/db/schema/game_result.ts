@@ -112,4 +112,5 @@ export type UserEvent = InferSelectModel<typeof userEvent>;
 export type GameResult = InferInsertModel<typeof gameResult> & {
   otherData: GameResultOtherData;
   cardMetrics: CardMetrics;
+  inTeam?: boolean;
 };

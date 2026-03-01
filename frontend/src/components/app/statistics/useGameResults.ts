@@ -6,6 +6,7 @@ import { useSearch } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 import { useTeamDataMap } from '@/components/app/statistics/lib/useTeamDataMap.ts';
+import { createMatchResultBasedOnGameResult } from '@/components/app/statistics/lib/lib.ts';
 
 export interface StatisticsHistoryData {
   games: {
@@ -102,7 +103,7 @@ export const useGameResults = (
     });
 
     // Apply inTeam filter: only keep games whose matchId is shared by 2+ distinct userIds
-    if (sInTeam && teamId && Object.values(teamDataMap.members).length > 0) {
+    if (teamId && Object.values(teamDataMap.members).length > 0) {
       const matchUserCounts: Record<string, Set<string>> = {};
       Object.values(gamesObject).forEach(game => {
         const mid = game.matchId;
@@ -117,8 +118,14 @@ export const useGameResults = (
       );
       Object.keys(gamesObject).forEach(id => {
         const game = gamesObject[id];
+
         if (!game.matchId || !inTeamMatchIds.has(game.matchId)) {
-          delete gamesObject[id];
+          if (sInTeam) {
+            // delete it from the object only if the "In-team only" setting is turned ON
+            delete gamesObject[id];
+          }
+        } else {
+          gamesObject[id].inTeam = true;
         }
       });
     }
@@ -130,24 +137,28 @@ export const useGameResults = (
     const matchesObject: Record<string, MatchResult> = {};
 
     gamesArray.forEach(game => {
-      const matchId = game.matchId || `manual-${game.id}`;
+      let matchId = game.matchId || `manual-${game.id}`;
       if (!matchesObject[matchId]) {
-        matchesObject[matchId] = {
-          id: matchId,
-          type: 'other',
-          games: [],
-          gameSource: game.gameSource,
-          format: game.format ?? '',
-          leaderCardId: game.leaderCardId ?? undefined,
-          baseCardKey: game.baseCardKey ?? undefined,
-          opponentLeaderCardId: game.opponentLeaderCardId ?? undefined,
-          opponentBaseCardKey: game.opponentBaseCardKey ?? undefined,
-          deckId: game.deckId ?? undefined,
-          userEventId: game.userEventId ?? undefined,
-          exclude: false,
-          manuallyEdited: false,
-          firstGameCreatedAt: '',
-        };
+        matchesObject[matchId] = createMatchResultBasedOnGameResult(
+          matchId,
+          game,
+          teamDataMap.members,
+        );
+      } else {
+        if (game.inTeam) {
+          if (game.userId !== matchesObject[matchId]?.games[0]?.userId) {
+            //we just want to divide this match into two, so it display correctly in statistics - so we create fake ID for this match
+            matchId = `inTeam-${matchId}`;
+
+            if (!matchesObject[matchId]) {
+              matchesObject[matchId] = createMatchResultBasedOnGameResult(
+                matchId,
+                game,
+                teamDataMap.members,
+              );
+            }
+          }
+        }
       }
       matchesObject[matchId].games.push(game);
     });

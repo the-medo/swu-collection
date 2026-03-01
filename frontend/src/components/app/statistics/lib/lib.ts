@@ -1,6 +1,8 @@
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 import { basicBaseForAspect } from '../../../../../../shared/lib/basicBases.ts';
 import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
+import { GameResult } from '../../../../../../server/db/schema/game_result.ts';
+import { TeamDataMap } from '@/components/app/statistics/lib/useTeamDataMap.ts';
 
 export const getResultColor = (result?: number) => {
   switch (result) {
@@ -56,4 +58,29 @@ export const getOpponentDeckKeyFromMatchResult = (match: MatchResult) =>
 export const getCardIdFromKey = (key: string | undefined, cards: any) => {
   if (!key || !cards) return undefined;
   return key in cards ? key : basicBaseForAspect[key];
+};
+
+export const createMatchResultBasedOnGameResult = (
+  matchId: string,
+  game: GameResult,
+  teamDataMapMembers: TeamDataMap['members'],
+): MatchResult => {
+  return {
+    id: matchId,
+    type: 'other',
+    games: [],
+    gameSource: game.gameSource,
+    format: game.format ?? '',
+    leaderCardId: game.leaderCardId ?? undefined,
+    baseCardKey: game.baseCardKey ?? undefined,
+    opponentLeaderCardId: game.opponentLeaderCardId ?? undefined,
+    opponentBaseCardKey: game.opponentBaseCardKey ?? undefined,
+    deckId: game.deckId ?? undefined,
+    userName: teamDataMapMembers[game.userId],
+    userEventId: game.userEventId ?? undefined,
+    exclude: false,
+    manuallyEdited: false,
+    firstGameCreatedAt: '',
+    inTeam: game.inTeam ?? false,
+  };
 };

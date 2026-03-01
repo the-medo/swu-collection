@@ -6,10 +6,11 @@ import { calculateDeckStatistics } from '@/components/app/statistics/lib/deckLib
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 
 interface StatisticsDeckListsProps {
+  teamId?: string;
   byDeckId: StatisticsHistoryData['matches']['byDeckId'];
 }
 
-const StatisticsDeckLists: React.FC<StatisticsDeckListsProps> = ({ byDeckId }) => {
+const StatisticsDeckLists: React.FC<StatisticsDeckListsProps> = ({ teamId, byDeckId }) => {
   const recentDecks = useMemo(() => {
     if (!byDeckId || !byDeckId.lastPlayed) return [];
 
@@ -47,7 +48,12 @@ const StatisticsDeckLists: React.FC<StatisticsDeckListsProps> = ({ byDeckId }) =
   return (
     <div className="flex flex-col gap-2">
       {visibleDecks.map(deck => (
-        <DeckInfoThumbnail key={deck.deckId} statistics={deck} statSectionVariant="horizontal" />
+        <DeckInfoThumbnail
+          key={deck.deckId}
+          teamId={teamId}
+          statistics={deck}
+          statSectionVariant="horizontal"
+        />
       ))}
       <div ref={observerTarget} className="h-4" />
     </div>

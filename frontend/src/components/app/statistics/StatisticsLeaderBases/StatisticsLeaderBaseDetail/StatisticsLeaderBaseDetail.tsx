@@ -13,11 +13,13 @@ import LeaderBaseInfoThumbnail, {
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 
 interface StatisticsLeaderBaseDetailProps {
+  teamId?: string;
   matches: MatchResult[];
   byDeckId: StatisticsHistoryData['matches']['byDeckId'];
 }
 
 const StatisticsLeaderBaseDetail: React.FC<StatisticsLeaderBaseDetailProps> = ({
+  teamId,
   matches = [],
   byDeckId,
 }) => {
@@ -44,6 +46,7 @@ const StatisticsLeaderBaseDetail: React.FC<StatisticsLeaderBaseDetailProps> = ({
   return (
     <>
       <LeaderBaseInfoThumbnail
+        teamId={teamId}
         statistics={leaderBaseStatistics}
         statSectionVariant="horizontal"
         deckStatistics={deckStatistics}

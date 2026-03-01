@@ -7,13 +7,18 @@ import LeaderBaseInfoThumbnail, {
 } from './LeaderBaseInfoThumbnail.tsx';
 
 interface DashboardLeaderBaseProps {
+  teamId?: string;
   byLeaderBase: StatisticsHistoryData['matches']['byLeaderBase'];
   byDeckId: StatisticsHistoryData['matches']['byDeckId'];
 }
 
 const RECENT_LEADER_BASE_COUNT = 4;
 
-const DashboardLeaderBase: React.FC<DashboardLeaderBaseProps> = ({ byLeaderBase, byDeckId }) => {
+const DashboardLeaderBase: React.FC<DashboardLeaderBaseProps> = ({
+  teamId,
+  byLeaderBase,
+  byDeckId,
+}) => {
   const recentCombinations = useMemo(() => {
     if (!byLeaderBase || !byLeaderBase.lastPlayed) return [];
 
@@ -49,6 +54,7 @@ const DashboardLeaderBase: React.FC<DashboardLeaderBaseProps> = ({ byLeaderBase,
 
   return recentCombinations.map(combo => (
     <LeaderBaseInfoThumbnail
+      teamId={teamId}
       key={combo.leaderBaseStatistics.deckId}
       statistics={combo.leaderBaseStatistics}
       deckStatistics={combo.deckStatistics}

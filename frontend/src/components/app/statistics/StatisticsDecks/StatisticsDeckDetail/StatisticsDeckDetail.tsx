@@ -12,10 +12,11 @@ import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 import { getDeckKeyFromDeckStatistics } from '@/components/app/statistics/lib/lib.ts';
 
 interface StatisticsDeckDetailProps {
+  teamId?: string;
   matches: MatchResult[];
 }
 
-const StatisticsDeckDetail: React.FC<StatisticsDeckDetailProps> = ({ matches = [] }) => {
+const StatisticsDeckDetail: React.FC<StatisticsDeckDetailProps> = ({ teamId, matches = [] }) => {
   const { sDeckId, sSubpage } = useSearch({ strict: false });
 
   const deck = useMemo(() => {
@@ -29,7 +30,7 @@ const StatisticsDeckDetail: React.FC<StatisticsDeckDetailProps> = ({ matches = [
 
   return (
     <>
-      <DeckInfoThumbnail statistics={deck} statSectionVariant="horizontal" />
+      <DeckInfoThumbnail teamId={teamId} statistics={deck} statSectionVariant="horizontal" />
       <StatisticsSubpageTabs className="mt-4" type="deck" />
       <div className="mt-4">
         {sSubpage === 'matches' && <SubpageMatches matches={matches} />}

@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils.ts';
 
 export interface StatSectionProps {
   label?: string;
+  total?: number;
   wins?: number;
   losses?: number;
   winrate?: number;
@@ -13,6 +14,7 @@ export interface StatSectionProps {
 
 export const StatSection: React.FC<StatSectionProps> = ({
   label,
+  total,
   wins = 0,
   losses = 0,
   winrate = 0,
@@ -37,7 +39,7 @@ export const StatSection: React.FC<StatSectionProps> = ({
           'max-w-[80px]': percentageVariant === 'horizontal',
         })}
       >
-        <h5 className="mb-0!">{wins + losses}</h5>
+        <h5 className="mb-0!">{total ?? wins + losses}</h5>
       </div>
       <div
         className="rounded-lg p-[5px] flex items-center justify-center min-w-[90px]"

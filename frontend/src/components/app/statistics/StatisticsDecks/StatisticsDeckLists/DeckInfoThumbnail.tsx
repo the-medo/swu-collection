@@ -10,14 +10,17 @@ import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/
 import { Link } from '@tanstack/react-router';
 import { cn } from '@/lib/utils.ts';
 import { getCardIdFromKey } from '@/components/app/statistics/lib/lib.ts';
+import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
 
 interface DeckInfoThumbnailProps {
+  teamId?: string;
   statistics?: DeckStatistics;
   statSectionVariant?: StatSectionProps['variant'];
   displayDeckBackground?: boolean;
 }
 
 const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
+  teamId,
   statistics,
   statSectionVariant = 'vertical',
   displayDeckBackground = true,
@@ -47,7 +50,13 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
   }, [leaderCardId, baseCardKey, cardListData]);
 
   return (
-    <Link to={'/statistics/decks'} search={prev => ({ ...prev, sDeckId: deckId })}>
+    <Link
+      to={`${getTeamUrlPrefix(teamId)}/statistics/decks`}
+      params={{
+        teamId,
+      }}
+      search={prev => ({ ...prev, sDeckId: deckId })}
+    >
       <Card
         className={cn('overflow-hidden relative', {
           'w-full h-[200px] min-w-[350px]': statSectionVariant === 'vertical',

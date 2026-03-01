@@ -1,7 +1,7 @@
 import { useTeamDeckMap, useTeamMembers } from '@/api/teams';
 import { useMemo } from 'react';
 
-export type TeamDataMap = { members: Record<string, true>; decks: Record<string, string> };
+export type TeamDataMap = { members: Record<string, string>; decks: Record<string, string> };
 
 const emptyTeamDataMap: TeamDataMap = {
   members: {},
@@ -22,7 +22,7 @@ export const useTeamDataMap = (teamId: string | undefined): TeamDataMap => {
 
     teamDataMap.members = members.reduce(
       (map, member) => {
-        map[member.userId] = true;
+        map[member.userId] = member.name;
         return map;
       },
       {} as TeamDataMap['members'],

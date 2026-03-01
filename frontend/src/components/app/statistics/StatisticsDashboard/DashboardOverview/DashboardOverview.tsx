@@ -27,15 +27,24 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
     let losses = 0;
     let draws = 0;
     let totalGames = 0;
+    let totalMatches = 0;
     let gameWins = 0;
     let gameLosses = 0;
 
     matches.forEach(match => {
+      if (match.inTeam) {
+        if (match.id.startsWith('inTeam-')) {
+          totalGames += match.games.length;
+          totalMatches++;
+        }
+        return;
+      }
       if (match.result === 3) wins++;
       else if (match.result === 1) draws++;
       else if (match.result === 0) losses++;
 
       totalGames += match.games.length;
+      totalMatches++;
       match.games.forEach(game => {
         if (game.isWinner === true) gameWins++;
         else if (game.isWinner === false) gameLosses++;
@@ -46,12 +55,12 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
     const gameWinRate = totalGames > 0 ? (gameWins / totalGames) * 100 : 0;
 
     return {
-      totalMatches: matches.length,
+      totalMatches,
+      totalGames,
       wins,
       losses,
       draws,
       winRate,
-      totalGames,
       gameWins,
       gameLosses,
       gameWinRate,
@@ -67,12 +76,14 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
       <div className="flex gap-4">
         <StatSection
           label="Games"
+          total={stats.totalGames}
           wins={stats.gameWins}
           losses={stats.gameLosses}
           winrate={stats.gameWinRate}
         />
         <StatSection
           label="Matches"
+          total={stats.totalMatches}
           wins={stats.wins}
           losses={stats.losses}
           winrate={stats.winRate}

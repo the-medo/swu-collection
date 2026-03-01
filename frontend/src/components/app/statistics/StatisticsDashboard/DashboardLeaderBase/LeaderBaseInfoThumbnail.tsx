@@ -11,8 +11,10 @@ import DeckInfoThumbnailCompact from '@/components/app/statistics/StatisticsDeck
 import { StatSection, StatSectionProps } from '@/components/app/statistics/common/StatSection.tsx';
 import { cn } from '@/lib/utils.ts';
 import DeckInfoThumbnail from '@/components/app/statistics/StatisticsDecks/StatisticsDeckLists/DeckInfoThumbnail.tsx';
+import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
 
 export interface LeaderBaseInfoThumbnailProps {
+  teamId?: string;
   statistics: DeckStatistics;
   deckStatistics: Record<string, DeckStatistics | undefined>;
   statSectionVariant?: StatSectionProps['variant'];
@@ -24,6 +26,7 @@ const getCardIdFromKey = (key: string | undefined, cards: any) => {
 };
 
 const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
+  teamId,
   statistics,
   deckStatistics,
   statSectionVariant = 'vertical',
@@ -92,7 +95,10 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
 
   return (
     <Link
-      to={'/statistics/leader-and-base'}
+      to={`${getTeamUrlPrefix(teamId)}/statistics/leader-and-base`}
+      params={{
+        teamId,
+      }}
       search={prev => ({ ...prev, sLeaderCardId: leaderCardId, sBaseCardKey: baseCardKey })}
     >
       <Card className="overflow-hidden relative w-full h-full min-h-[200px] min-w-[350px] hover:shadow-md">
@@ -117,6 +123,7 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
                 {recentDecks.map(deck => (
                   <DeckInfoThumbnail
                     key={deck.lastPlayed}
+                    teamId={teamId}
                     statistics={deckStatistics[deck.deckId]}
                     statSectionVariant={statSectionVariant}
                     displayDeckBackground={false}
@@ -154,6 +161,7 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
               recentDecks.map(deck => (
                 <DeckInfoThumbnailCompact
                   key={deck.lastPlayed}
+                  teamId={teamId}
                   statistics={deckStatistics[deck.deckId]}
                 />
               ))}

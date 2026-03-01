@@ -4,12 +4,17 @@ import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
 import { StatSectionCompact } from '@/components/app/statistics/common/StatSectionCompact.tsx';
 import { Link } from '@tanstack/react-router';
 import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/components/CopyLinkButton.tsx';
+import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
 
 interface DeckInfoThumbnailCompactProps {
+  teamId?: string;
   statistics: DeckStatistics | undefined;
 }
 
-const DeckInfoThumbnailCompact: React.FC<DeckInfoThumbnailCompactProps> = ({ statistics }) => {
+const DeckInfoThumbnailCompact: React.FC<DeckInfoThumbnailCompactProps> = ({
+  teamId,
+  statistics,
+}) => {
   if (!statistics) return null;
 
   const {
@@ -25,7 +30,10 @@ const DeckInfoThumbnailCompact: React.FC<DeckInfoThumbnailCompactProps> = ({ sta
 
   return (
     <Link
-      to={'/statistics/decks'}
+      to={`${getTeamUrlPrefix(teamId)}/statistics/decks`}
+      params={{
+        teamId,
+      }}
       search={prev => ({ ...prev, sDeckId: deckId })}
       className="w-full"
     >

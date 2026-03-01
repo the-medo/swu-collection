@@ -8,11 +8,13 @@ import LeaderBaseInfoThumbnail, {
 } from '@/components/app/statistics/StatisticsDashboard/DashboardLeaderBase/LeaderBaseInfoThumbnail.tsx';
 
 interface StatisticsLeaderBaseListsProps {
+  teamId?: string;
   byLeaderBase: StatisticsHistoryData['matches']['byLeaderBase'];
   byDeckId: StatisticsHistoryData['matches']['byDeckId'];
 }
 
 const StatisticsLeaderBaseLists: React.FC<StatisticsLeaderBaseListsProps> = ({
+  teamId,
   byLeaderBase,
   byDeckId,
 }) => {
@@ -64,6 +66,7 @@ const StatisticsLeaderBaseLists: React.FC<StatisticsLeaderBaseListsProps> = ({
       {visibleCombinations.map(combo => (
         <LeaderBaseInfoThumbnail
           key={combo.leaderBaseStatistics.deckId}
+          teamId={teamId}
           statistics={combo.leaderBaseStatistics}
           deckStatistics={combo.deckStatistics}
           statSectionVariant="horizontal"
