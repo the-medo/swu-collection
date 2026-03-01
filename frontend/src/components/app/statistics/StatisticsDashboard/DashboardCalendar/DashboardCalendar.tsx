@@ -5,6 +5,7 @@ import { useTheme } from '@/components/theme-provider.tsx';
 import { format, subDays } from 'date-fns';
 import DashboardCalendarTooltip from './DashboardCalendarTooltip.tsx';
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
+import { useSearch } from '@tanstack/react-router';
 
 export type DashboardCalendarData = CalendarDatum & {
   matchWins: number;
@@ -14,6 +15,8 @@ export type DashboardCalendarData = CalendarDatum & {
   gamesCount: number;
   gameWins: number;
   gameLosses: number;
+  containsInTeam: boolean;
+  containsNotInTeam: boolean;
 };
 
 interface DashboardCalendarProps {
@@ -22,21 +25,42 @@ interface DashboardCalendarProps {
 
 const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) => {
   const { theme } = useTheme();
+  const { sInTeam } = useSearch({
+    strict: false,
+  });
 
   const calendarData = useMemo<DashboardCalendarData[]>(() => {
     if (!matchesByDate) return [];
 
     return Object.entries(matchesByDate).map(([date, matches]) => {
+      let totalMatches = 0;
+      let totalGames = 0;
       let wins = 0;
       let losses = 0;
       let draws = 0;
       let gWins = 0;
       let gLosses = 0;
+      let containsInTeam = false;
+      let containsNotInTeam = false;
 
       matches.forEach(match => {
+        if (match.inTeam) {
+          containsInTeam = true;
+          if (match.id.startsWith('inTeam-')) {
+            totalGames += match.games.length;
+            totalMatches++;
+          }
+          return;
+        } else {
+          containsNotInTeam = true;
+        }
+
         if (match.result === 3) wins++;
         else if (match.result === 1) draws++;
         else if (match.result === 0) losses++;
+
+        totalGames += match.games.length;
+        totalMatches++;
 
         match.games.forEach(game => {
           if (game.isWinner === true) gWins++;
@@ -46,14 +70,16 @@ const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) 
 
       return {
         day: date,
-        value: matches.length ? wins / matches.length : 0,
+        value: totalMatches ? wins / totalMatches : 0,
         matchWins: wins,
         matchLosses: losses,
         matchDraws: draws,
-        matchesCount: matches.length,
-        gamesCount: matches.reduce((acc, match) => acc + (match.games?.length || 0), 0),
+        matchesCount: totalMatches,
+        gamesCount: totalGames,
         gameWins: gWins,
         gameLosses: gLosses,
+        containsInTeam,
+        containsNotInTeam,
       };
     });
   }, [matchesByDate]);
@@ -68,9 +94,12 @@ const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) 
 
   const isDark = theme === 'dark';
 
-  const tooltip = useCallback((n: DashboardCalendarData) => {
-    return <DashboardCalendarTooltip data={n} />;
-  }, []);
+  const tooltip = useCallback(
+    (n: DashboardCalendarData) => {
+      return <DashboardCalendarTooltip data={n} showWinLose={!sInTeam} />;
+    },
+    [sInTeam],
+  );
 
   return (
     <div style={{ height: '200px', minWidth: '400px' }}>

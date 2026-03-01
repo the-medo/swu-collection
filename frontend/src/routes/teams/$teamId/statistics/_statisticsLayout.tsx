@@ -54,7 +54,7 @@ function RouteComponent() {
 
   return (
     <div className="p-2 @container/full-stats-page">
-      <div className="flex flex-row gap-4 items-center justify-between mb-2">
+      <div className="flex flex-row justify-between mb-2">
         <h3>{team?.name ? `Team statistics - ${team.name}` : 'Team statistics'}</h3>
         <div className="flex gap-4">
           <StatisticsFilters teamId={team?.id} />

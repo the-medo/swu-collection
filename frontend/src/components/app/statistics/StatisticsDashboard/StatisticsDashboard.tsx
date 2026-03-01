@@ -8,7 +8,7 @@ import { isAfter, startOfDay, subDays } from 'date-fns';
 import { useMemo } from 'react';
 import MatchResultBox from '@/components/app/statistics/components/MatchResultBox/MatchResultBox.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Link } from '@tanstack/react-router';
+import { Link, useSearch } from '@tanstack/react-router';
 import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
 
 interface StatisticsDashboardProps {
@@ -17,6 +17,9 @@ interface StatisticsDashboardProps {
 
 const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => {
   const gameResultData = useGameResultsContext();
+  const { sInTeam } = useSearch({
+    strict: false,
+  });
 
   const { todayMatches, last7DaysMatches, allMatches } = React.useMemo(() => {
     const matches = gameResultData?.matches.array ?? [];
@@ -38,6 +41,8 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
     return gameResultData.matches.array.slice(0, 5);
   }, [gameResultData]);
 
+  const showWinLose = !sInTeam;
+
   return (
     <div className="flex flex-wrap gap-4">
       <div className="flex flex-1 flex-col gap-2">
@@ -47,16 +52,16 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
           <div className="flex">
             <div className="p-2 w-full md:w-[250px]">
               <h3 className="text-lg font-semibold">Today</h3>
-              <DashboardOverview matches={todayMatches} />
+              <DashboardOverview matches={todayMatches} showWinLose={showWinLose} />
             </div>
             <div className="p-2 w-full md:w-[250px]">
               <h3 className="text-lg font-semibold mb-4">Last 7 days</h3>
-              <DashboardOverview matches={last7DaysMatches} />
+              <DashboardOverview matches={last7DaysMatches} showWinLose={showWinLose} />
             </div>
             {allMatches.length !== last7DaysMatches.length && (
               <div className="p-2 w-full md:w-[250px]">
                 <h3 className="text-lg font-semibold mb-4">All</h3>
-                <DashboardOverview matches={allMatches} />
+                <DashboardOverview matches={allMatches} showWinLose={showWinLose} />
               </div>
             )}
           </div>

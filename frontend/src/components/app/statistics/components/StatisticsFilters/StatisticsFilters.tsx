@@ -6,8 +6,9 @@ import { useCallback } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { KarabastSwuGameFormat } from '../../../../../../../types/karabastTypes.ts';
-import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Label } from '@/components/ui/label.tsx';
+import { Switch } from '@/components/ui/switch.tsx';
+import InfoTooltip from '@/components/app/global/InfoTooltip/InfoTooltip.tsx';
 
 interface StatisticsFiltersProps {
   teamId?: string;
@@ -54,48 +55,60 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
 
   return (
     <div className="flex gap-4">
-      <StatisticsDateRange
-        selectedOptionId={sDateRangeOption}
-        dateRange={dateRange}
-        onOptionChange={onDateRangeOptionChange}
-        onDateRangeChange={onDateRangeChange}
-      />
-      <FormatSelect
-        value={sFormatId ?? null}
-        onChange={formatId => {
-          navigate({
-            to: '.',
-            search: prev => ({ ...prev, sFormatId: formatId ?? undefined }),
-          });
-        }}
-        showInfoTooltip={false}
-      />
-      <KarabastFormatSelect
-        value={(sKarabastFormat as KarabastSwuGameFormat) ?? null}
-        onChange={formatId => {
-          navigate({
-            to: '.',
-            search: prev => ({ ...prev, sKarabastFormat: formatId ?? undefined }),
-          });
-        }}
-      />
       {teamId && (
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="inTeam"
-            checked={!!sInTeam}
-            onCheckedChange={checked => {
-              navigate({
-                to: '.',
-                search: prev => ({ ...prev, sInTeam: checked ? true : undefined }),
-              });
-            }}
-          />
-          <Label htmlFor="inTeam" className="text-sm whitespace-nowrap cursor-pointer">
-            In-team only
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="inTeam" className="text-xs font-semibold">
+            In-team only:
           </Label>
+          <div className="flex gap-2">
+            <Switch
+              id="inTeam"
+              checked={!!sInTeam}
+              onCheckedChange={checked => {
+                navigate({
+                  to: '.',
+                  search: prev => ({ ...prev, sInTeam: checked ? true : undefined }),
+                });
+              }}
+            />
+            <InfoTooltip tooltip="With this option, only games in between teammates are shown." />
+          </div>
         </div>
       )}
+      <div className="flex flex-col gap-1">
+        <span className="text-xs font-semibold">Date range:</span>
+        <StatisticsDateRange
+          selectedOptionId={sDateRangeOption}
+          dateRange={dateRange}
+          onOptionChange={onDateRangeOptionChange}
+          onDateRangeChange={onDateRangeChange}
+        />
+      </div>
+      <div className="flex flex-col gap-1">
+        <span className="text-xs font-semibold">Swubase deck format:</span>
+        <FormatSelect
+          value={sFormatId ?? null}
+          onChange={formatId => {
+            navigate({
+              to: '.',
+              search: prev => ({ ...prev, sFormatId: formatId ?? undefined }),
+            });
+          }}
+          showInfoTooltip={false}
+        />
+      </div>
+      <div className="flex flex-col gap-1">
+        <span className="text-xs font-semibold">Karabast game format:</span>
+        <KarabastFormatSelect
+          value={(sKarabastFormat as KarabastSwuGameFormat) ?? null}
+          onChange={formatId => {
+            navigate({
+              to: '.',
+              search: prev => ({ ...prev, sKarabastFormat: formatId ?? undefined }),
+            });
+          }}
+        />
+      </div>
     </div>
   );
 };

@@ -4,10 +4,11 @@ import { StatSection } from '@/components/app/statistics/common/StatSection';
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 
 interface DashboardOverviewProps {
+  showWinLose?: boolean;
   matches: MatchResult[] | undefined;
 }
 
-const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
+const DashboardOverview: React.FC<DashboardOverviewProps> = ({ showWinLose = true, matches }) => {
   const stats = useMemo(() => {
     if (!matches || matches.length === 0) {
       return {
@@ -20,6 +21,8 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
         gameWins: 0,
         gameLosses: 0,
         gameWinRate: 0,
+        containsInTeam: false,
+        containsNotInTeam: false,
       };
     }
 
@@ -30,14 +33,19 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
     let totalMatches = 0;
     let gameWins = 0;
     let gameLosses = 0;
+    let containsInTeam = false;
+    let containsNotInTeam = false;
 
     matches.forEach(match => {
       if (match.inTeam) {
+        containsInTeam = true;
         if (match.id.startsWith('inTeam-')) {
           totalGames += match.games.length;
           totalMatches++;
         }
         return;
+      } else {
+        containsNotInTeam = true;
       }
       if (match.result === 3) wins++;
       else if (match.result === 1) draws++;
@@ -64,6 +72,8 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
       gameWins,
       gameLosses,
       gameWinRate,
+      containsInTeam,
+      containsNotInTeam,
     };
   }, [matches]);
 
@@ -72,7 +82,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-4 py-2">
+    <div className="flex flex-col items-center justify-center h-full gap-2 py-2">
       <div className="flex gap-4">
         <StatSection
           label="Games"
@@ -80,6 +90,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
           wins={stats.gameWins}
           losses={stats.gameLosses}
           winrate={stats.gameWinRate}
+          showWinLose={showWinLose}
         />
         <StatSection
           label="Matches"
@@ -87,8 +98,12 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ matches }) => {
           wins={stats.wins}
           losses={stats.losses}
           winrate={stats.winRate}
+          showWinLose={showWinLose}
         />
       </div>
+      {stats.containsInTeam && showWinLose && (
+        <div className="text-[10px]">In-team games are not included in W-L ratio.</div>
+      )}
     </div>
   );
 };

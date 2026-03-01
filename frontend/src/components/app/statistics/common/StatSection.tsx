@@ -8,6 +8,7 @@ export interface StatSectionProps {
   wins?: number;
   losses?: number;
   winrate?: number;
+  showWinLose?: boolean;
   variant?: 'vertical' | 'horizontal';
   percentageVariant?: 'vertical' | 'horizontal';
 }
@@ -18,6 +19,7 @@ export const StatSection: React.FC<StatSectionProps> = ({
   wins = 0,
   losses = 0,
   winrate = 0,
+  showWinLose = true,
   variant = 'vertical',
   percentageVariant = 'vertical',
 }) => {
@@ -41,27 +43,31 @@ export const StatSection: React.FC<StatSectionProps> = ({
       >
         <h5 className="mb-0!">{total ?? wins + losses}</h5>
       </div>
-      <div
-        className="rounded-lg p-[5px] flex items-center justify-center min-w-[90px]"
-        style={{
-          background: `conic-gradient(${color} 0deg ${percentage}%, ${color}44 ${percentage}% 360deg)`,
-        }}
-      >
+      {showWinLose && (
         <div
-          className={cn(
-            'bg-background rounded-lg p-2 flex items-center min-w-[90px] w-full h-full',
-            {
-              'flex-col': percentageVariant === 'vertical',
-              'flex-row gap-4 min-w-[160px]': percentageVariant === 'horizontal',
-            },
-          )}
+          className="rounded-lg p-[5px] flex items-center justify-center min-w-[90px]"
+          style={{
+            background: `conic-gradient(${color} 0deg ${percentage}%, ${color}44 ${percentage}% 360deg)`,
+          }}
         >
-          <h5 className="text-lg font-black leading-none mb-0!">
-            {wins}W-{losses}L
-          </h5>
-          <span className={`text-sm font-bold ${getWRColor(winrate)}`}>{winrate.toFixed(1)}%</span>
+          <div
+            className={cn(
+              'bg-background rounded-lg p-2 flex items-center min-w-[90px] w-full h-full',
+              {
+                'flex-col': percentageVariant === 'vertical',
+                'flex-row gap-4 min-w-[160px]': percentageVariant === 'horizontal',
+              },
+            )}
+          >
+            <h5 className="text-lg font-black leading-none mb-0!">
+              {wins}W-{losses}L
+            </h5>
+            <span className={`text-sm font-bold ${getWRColor(winrate)}`}>
+              {winrate.toFixed(1)}%
+            </span>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
