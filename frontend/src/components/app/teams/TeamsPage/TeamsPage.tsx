@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/card.tsx';
 import NewTeamDialog from '@/components/app/dialogs/NewTeamDialog.tsx';
 import SignIn from '@/components/app/auth/SignIn.tsx';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 
 const MAX_TEAMS = 2;
 
@@ -95,7 +96,14 @@ const TeamsPage: React.FC = () => {
       <div className="p-4 max-w-[1200px] mx-auto">
         <h3>Teams</h3>
 
-        <div className="flex flex-col gap-6 mt-4">
+        <div className="flex flex-col gap-6 mt-4 items-center">
+          <Alert variant="warning" className="max-w-3xl p-8 flex flex-col gap-8">
+            <AlertTitle>Coming Soon!</AlertTitle>
+            <AlertDescription>
+              Karabast game result tracking is on the way and will be ready soon. You can create or
+              join a team, but <b>stat-tracking doesn't work yet</b>.
+            </AlertDescription>
+          </Alert>
           <div className="min-w-0">
             {!user ? (
               <Card>

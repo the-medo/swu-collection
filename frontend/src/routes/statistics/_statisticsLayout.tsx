@@ -8,6 +8,8 @@ import { StatisticsSubpage } from '@/components/app/statistics/components/Statis
 import { MatchupSort } from '@/components/app/statistics/components/SubpageMatchups/matchupLib.ts';
 import { emptyCardStatTableRow } from '@/components/app/statistics/components/SubpageCardStats/cardStatLib.ts';
 import { GameResultsProvider } from '@/components/app/statistics/GameResultsContext.tsx';
+import { useUserSetup } from '@/api/teams';
+import KarabastIntegrationGuide from '@/components/app/guides/KarabastIntegrationGuide.tsx';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),
@@ -38,8 +40,13 @@ function RouteComponent() {
   const { pathname } = useLocation();
   const activeTab = pathname.split('/').pop() || 'dashboard';
   const { sDateRangeFrom, sDateRangeTo } = Route.useSearch();
+  const { data: userSetup } = useUserSetup();
 
   const session = useSession();
+
+  const hasKarabastIntegration = userSetup?.integrations?.some(
+    integration => integration.integrationName === 'karabast' && !integration.revokedAt,
+  );
 
   useGetGameResults({
     dateFrom: sDateRangeFrom,
@@ -52,14 +59,22 @@ function RouteComponent() {
     <div className="p-2 @container/full-stats-page">
       <div className="flex flex-row justify-between mb-2">
         <h3>Your statistics</h3>
-        <div className="flex gap-4">
-          <StatisticsFilters />
-        </div>
+        {hasKarabastIntegration && (
+          <div className="flex gap-4">
+            <StatisticsFilters />
+          </div>
+        )}
       </div>
-      <StatisticsTabs activeTab={activeTab} className="mb-4" />
-      <GameResultsProvider>
-        <Outlet />
-      </GameResultsProvider>
+      {hasKarabastIntegration ? (
+        <>
+          <StatisticsTabs activeTab={activeTab} className="mb-4" />
+          <GameResultsProvider>
+            <Outlet />
+          </GameResultsProvider>
+        </>
+      ) : (
+        <KarabastIntegrationGuide />
+      )}
     </div>
   );
 }

@@ -1,14 +1,14 @@
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
-import KarabastFormatSelect from './KarabastFormatSelect/KarabastFormatSelect.tsx';
 import StatisticsDateRange from '@/components/app/statistics/components/StatisticsFilters/StatisticsDateRange/StatisticsDateRange.tsx';
 import { DateRange } from 'react-day-picker';
 import { useCallback } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { format } from 'date-fns';
-import { KarabastSwuGameFormat } from '../../../../../../../types/karabastTypes.ts';
 import { Label } from '@/components/ui/label.tsx';
 import { Switch } from '@/components/ui/switch.tsx';
 import InfoTooltip from '@/components/app/global/InfoTooltip/InfoTooltip.tsx';
+// import KarabastFormatSelect from './KarabastFormatSelect/KarabastFormatSelect.tsx';
+// import { KarabastSwuGameFormat } from '../../../../../../../types/karabastTypes.ts';
 
 interface StatisticsFiltersProps {
   teamId?: string;
@@ -17,10 +17,16 @@ interface StatisticsFiltersProps {
 const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
   const navigate = useNavigate();
 
-  const { sFormatId, sDateRangeOption, sDateRangeFrom, sDateRangeTo, sKarabastFormat, sInTeam } =
-    useSearch({
-      strict: false,
-    });
+  const {
+    sFormatId,
+    sDateRangeOption,
+    sDateRangeFrom,
+    sDateRangeTo,
+    sInTeam,
+    /*sKarabastFormat,*/
+  } = useSearch({
+    strict: false,
+  });
 
   const dateRange = sDateRangeFrom
     ? {
@@ -97,7 +103,8 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
           showInfoTooltip={false}
         />
       </div>
-      <div className="flex flex-col gap-1">
+      {/* === Commented for now, as we will track games only for premier ===  */}
+      {/*<div className="flex flex-col gap-1">
         <span className="text-xs font-semibold">Karabast game format:</span>
         <KarabastFormatSelect
           value={(sKarabastFormat as KarabastSwuGameFormat) ?? null}
@@ -108,7 +115,7 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
             });
           }}
         />
-      </div>
+      </div>*/}
     </div>
   );
 };

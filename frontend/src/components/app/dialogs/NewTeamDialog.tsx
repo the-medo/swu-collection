@@ -11,6 +11,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { useCreateTeam } from '@/api/teams';
 import { Label } from '@/components/ui/label.tsx';
+import FormFieldError from '@/components/app/global/FormFieldError.tsx';
 
 type NewTeamDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'>;
 
@@ -108,6 +109,14 @@ const NewTeamDialog: React.FC<NewTeamDialogProps> = ({ trigger, triggerDisabled 
           />
           <form.Field
             name="shortcut"
+            validators={{
+              onChange: ({ value }) => {
+                if (value && !/^[a-z0-9-]+$/.test(value)) {
+                  return 'Only lowercase letters, numbers and hyphens are allowed';
+                }
+                return undefined;
+              },
+            }}
             children={field => (
               <div className="flex flex-col gap-2">
                 <Label htmlFor={field.name}>Shortcut (URL-friendly)</Label>
@@ -119,6 +128,7 @@ const NewTeamDialog: React.FC<NewTeamDialogProps> = ({ trigger, triggerDisabled 
                   onBlur={field.handleBlur}
                   onChange={e => field.handleChange(e.target.value)}
                 />
+                <FormFieldError meta={field.state.meta} />
                 <p className="text-xs text-muted-foreground">
                   Only lowercase letters, numbers and hyphens. Used in the team URL.
                 </p>
@@ -140,9 +150,17 @@ const NewTeamDialog: React.FC<NewTeamDialogProps> = ({ trigger, triggerDisabled 
               </div>
             )}
           />
-          <Button type="submit" disabled={createTeamMutation.isPending}>
-            {createTeamMutation.isPending ? 'Creating...' : 'Create Team'}
-          </Button>
+          <form.Subscribe
+            selector={state => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
+              <Button
+                type="submit"
+                disabled={!canSubmit || isSubmitting || createTeamMutation.isPending}
+              >
+                {createTeamMutation.isPending ? 'Creating...' : 'Create Team'}
+              </Button>
+            )}
+          />
         </form>
       ) : (
         <div className="flex flex-col gap-4">

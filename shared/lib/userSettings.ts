@@ -58,7 +58,7 @@ export const userSettingsSchema = z.object({
     .default(DeckImagePresetVariant.Standard),
   deckImage_groupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
   deckImage_cardVariants: z.string().default('{}'),
-  deckImage_exportWidth: z.number().default(2200),
+  deckImage_exportWidth: z.coerce.number().default(2200),
 });
 
 export type UserSettingsSchema = z.infer<typeof userSettingsSchema>;

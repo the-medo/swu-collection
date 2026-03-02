@@ -55,6 +55,7 @@ import { CollectionType } from '../../../../../../types/enums.ts';
 import SidebarComparer from '../../comparer/SidebarComparer/SidebarComparer.tsx';
 import { Fragment, useMemo } from 'react';
 import { UserTeam } from '../../../../../../server/routes/teams/get.ts';
+import { Badge } from '@/components/ui/badge.tsx';
 
 const getGroups = (
   setOpenMobile: (open: boolean) => void,
@@ -132,13 +133,13 @@ const getGroups = (
         title: 'Your statistics',
         url: '/statistics',
         icon: ChartSpline,
-        authenticated: true,
+        soon: true,
       },
       {
         title: 'Teams',
         url: '/teams',
         icon: Users,
-        authenticated: true,
+        soon: true,
         menuAction: (
           <NewTeamDialog
             trigger={
@@ -363,6 +364,11 @@ export function LeftSidebar() {
                             >
                               <i.icon />
                               <span>{i.title}</span>
+                              {'soon' in i && i.soon && (
+                                <Badge size="small" className="text-xs px-2" variant="outline">
+                                  Soon<sup className="text-[6px]">TM</sup>
+                                </Badge>
+                              )}
                             </Link>
                           </SidebarMenuButton>
                           {'menuAction' in i && state !== 'collapsed' ? i.menuAction : null}
@@ -370,7 +376,7 @@ export function LeftSidebar() {
                         {'items' in i && i.items && i.items.length > 0 && (
                           <SidebarMenuSub>
                             {i.items.map(subItem => (
-                              <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubItem key={subItem.title} className="relative">
                                 <SidebarMenuSubButton asChild size="md">
                                   <Link
                                     to={subItem.url}
@@ -382,11 +388,10 @@ export function LeftSidebar() {
                                   </Link>
                                 </SidebarMenuSubButton>
                                 {'statisticsUrl' in subItem && subItem.statisticsUrl && (
-                                  <SidebarMenuAction title="Create Team">
+                                  <SidebarMenuAction title="Team statistics">
                                     <Link
                                       to={subItem.statisticsUrl}
                                       onClick={() => setOpenMobile(false)}
-                                      title="Team statistics"
                                       className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
                                     >
                                       <ChartSpline className="h-3.5 w-3.5" />
