@@ -64,7 +64,7 @@ interface StatisticsDateRangeProps {
 }
 
 const StatisticsDateRange: React.FC<StatisticsDateRangeProps> = ({
-  selectedOptionId = 'last30days',
+  selectedOptionId = 'last90days',
   dateRange,
   onOptionChange,
   onDateRangeChange,

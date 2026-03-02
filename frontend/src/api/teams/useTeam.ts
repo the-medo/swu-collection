@@ -22,5 +22,6 @@ export const useTeam = (idOrShortcut: string | undefined) => {
           return data;
         }
       : skipToken,
+    staleTime: 2 * 60 * 1000,
   });
 };

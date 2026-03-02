@@ -155,7 +155,7 @@ const TeamSettingsTab: React.FC<TeamSettingsTabProps> = ({ team }) => {
       </form>
 
       <div className="flex flex-col gap-3">
-        <Label>Defaul "Auto-add deck" value for new members:</Label>
+        <Label>Default "Auto-add deck" value for new members:</Label>
         <div className="flex items-center gap-3">
           <Switch
             checked={team.autoAddDeck}

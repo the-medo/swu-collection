@@ -17,5 +17,6 @@ export const useTeams = () => {
       const { data } = await response.json();
       return data as UserTeam[];
     },
+    staleTime: 2 * 60 * 1000,
   });
 };

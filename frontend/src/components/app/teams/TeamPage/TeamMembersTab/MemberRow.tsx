@@ -8,9 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
-import { MoreHorizontal, Shield, ShieldOff, UserX, LogOut } from 'lucide-react';
+import { MoreHorizontal, Shield, ShieldOff, UserX, LogOut, Check, X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch.tsx';
-import InfoTooltip from '@/components/app/global/InfoTooltip/InfoTooltip.tsx';
 import { AutoAddDeckTooltip } from '@/components/app/teams/TeamPage/components/AutoAddDeckTooltip.tsx';
 
 interface Member {
@@ -20,6 +19,7 @@ interface Member {
   joinedAt: string;
   role: 'owner' | 'member';
   autoAddDeck: boolean;
+  integration?: 'karabast';
 }
 
 interface MemberRowProps {
@@ -60,6 +60,14 @@ const MemberRow: React.FC<MemberRowProps> = ({
           Joined {new Date(member.joinedAt).toLocaleDateString()}
         </span>
       </div>
+
+      <Badge
+        variant={member.integration ? 'success' : 'warning'}
+        className="flex items-center gap-2"
+      >
+        <span>Karabast linked:</span>{' '}
+        {member.integration ? <Check className="size-4" /> : <X className="size-4" />}
+      </Badge>
       {(isOwner || isSelf) && (
         <div className="flex items-center gap-2 mr-10" title="Auto-add deck">
           <AutoAddDeckTooltip />

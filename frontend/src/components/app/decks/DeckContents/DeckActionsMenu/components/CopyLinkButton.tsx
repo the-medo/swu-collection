@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { Button } from '@/components/ui/button.tsx';
+import { Button, ButtonProps } from '@/components/ui/button.tsx';
 import { LinkIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
 import { NavigationMenuItem } from '@/components/ui/navigation-menu.tsx';
 import { cn } from '@/lib/utils.ts';
 
-interface CopyLinkButtonProps {
+interface CopyLinkButtonProps extends ButtonProps {
   deckId: string;
   isPublic: boolean;
   compact?: boolean;
@@ -17,6 +17,8 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({
   isPublic,
   compact,
   inNavigation,
+  variant = 'outline',
+  size,
 }) => {
   const { toast } = useToast();
   const deckLink = `${window.location.origin}/decks/${deckId}`;
@@ -35,8 +37,8 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({
 
   const content = (
     <Button
-      variant="outline"
-      size={compact ? 'icon' : 'default'}
+      variant={variant}
+      size={size ?? (compact ? 'icon' : 'default')}
       className={cn({
         'opacity-80': !isPublic,
       })}

@@ -58,7 +58,7 @@ export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) =
         throw new Error('Failed to fetch tournament groups');
       }
 
-      return (await response.json()) as TournamentGroupsResponse;
+      return (await response.json()) as unknown as TournamentGroupsResponse;
     },
     initialPageParam: 0,
     getNextPageParam: lastPage => {

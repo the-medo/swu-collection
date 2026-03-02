@@ -125,7 +125,7 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
       {/* Left: Team Decks List */}
       <div>
         <div className="flex gap-4 justify-between items-center">
-          <h3 className="text-lg font-semibold mb-3">Team Decks</h3>
+          <h3 className="text-lg font-semibold mb-3">Team decks</h3>
           <Alert variant="warning" size="xs" className="text-xs flex flex-1 p">
             Removing decks form team will also remove them from team statistics (even historical
             ones).
@@ -146,11 +146,12 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
             <p className="text-muted-foreground">No decks added to the team yet.</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 max-h-[600px] overflow-y-auto">
             {teamDecks.map(td => (
               <DeckListItem
                 key={td.deck.id}
                 variant="team-deck"
+                teamId={teamId}
                 teamDeck={td}
                 onRemove={() => setDeckToRemove({ id: td.deck.id, name: td.deck.name })}
                 removeDisabled={removeDeckMutation.isPending}
@@ -168,7 +169,7 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
 
       {/* Right: Add Deck Panel */}
       <div>
-        <h3 className="text-lg font-semibold mb-3">Add Deck</h3>
+        <h3 className="text-lg font-semibold mb-3">Add deck to team decks</h3>
         <div className="flex flex-col gap-6">
           {/* Add by link */}
           <div className="flex flex-col gap-2 border rounded-lg p-4">
@@ -223,6 +224,7 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
                   <DeckListItem
                     key={d.deck.id}
                     variant="add-deck"
+                    teamId={teamId}
                     deck={d.deck}
                     onAdd={() => handleAddRecent(d.deck.id)}
                     addDisabled={addDeckMutation.isPending}

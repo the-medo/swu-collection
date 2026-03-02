@@ -2,10 +2,11 @@ import { Hono } from 'hono';
 import { db } from '../../../../db';
 import { teamMember } from '../../../../db/schema/team_member.ts';
 import { user as userTable } from '../../../../db/schema/auth-schema.ts';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
 import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
+import { integration, userIntegration } from '../../../../db/schema/integration.ts';
 
 export const teamsIdMembersGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const user = c.get('user');
@@ -28,9 +29,15 @@ export const teamsIdMembersGetRoute = new Hono<AuthExtension>().get('/', async c
       autoAddDeck: teamMember.autoAddDeck,
       name: userTable.displayName,
       image: userTable.image,
+      integration: integration.name,
     })
     .from(teamMember)
     .innerJoin(userTable, eq(teamMember.userId, userTable.id))
+    .leftJoin(userIntegration, eq(userIntegration.userId, teamMember.userId))
+    .leftJoin(
+      integration,
+      and(eq(integration.id, userIntegration.integrationId), eq(integration.name, 'karabast')),
+    )
     .where(eq(teamMember.teamId, teamId));
 
   return c.json({ data: members });

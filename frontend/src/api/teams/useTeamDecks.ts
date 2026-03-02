@@ -35,5 +35,6 @@ export const useTeamDecks = (teamId: string | undefined) => {
       }
       return lastPage.pagination.offset + lastPage.pagination.limit;
     },
+    staleTime: 2 * 60 * 1000,
   });
 };

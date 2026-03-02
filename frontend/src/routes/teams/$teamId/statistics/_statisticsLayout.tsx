@@ -48,7 +48,7 @@ function RouteComponent() {
 
   useGetGameResults({
     teamId: team?.id,
-    datetimeFrom: sDateRangeFrom ?? datetimeFrom,
+    dateFrom: sDateRangeFrom ?? datetimeFrom,
     enabled: !!team?.id,
   });
 

@@ -4,6 +4,7 @@ import {
   StatisticsHistoryData,
   useGameResults,
 } from '@/components/app/statistics/useGameResults.ts';
+import { useSearch } from '@tanstack/react-router';
 
 const GameResultsContext = createContext<StatisticsHistoryData | undefined>(undefined);
 
@@ -13,7 +14,12 @@ interface GameResultsProviderProps {
 }
 
 export const GameResultsProvider: React.FC<GameResultsProviderProps> = ({ teamId, children }) => {
-  const gameResultData = useGameResults({ teamId });
+  const { sDateRangeFrom, sDateRangeTo } = useSearch({ strict: false });
+  const gameResultData = useGameResults({
+    datetimeFrom: sDateRangeFrom,
+    datetimeTo: sDateRangeTo,
+    teamId,
+  });
 
   return (
     <GameResultsContext.Provider value={gameResultData}>{children}</GameResultsContext.Provider>

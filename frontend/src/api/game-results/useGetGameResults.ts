@@ -7,6 +7,7 @@ import {
 } from '@/dexie/gameResults';
 import type { GameResult } from '../../../../server/db/schema/game_result';
 import { CardMetrics } from '../../../../shared/types/cardMetrics.ts';
+import { format, subDays } from 'date-fns';
 
 const GAME_RESULTS_LAST_UPDATED_KEY = 'game-results-last-updated';
 
@@ -34,12 +35,14 @@ function setLastUpdatedInStorage(scopeId: string, datetime: string): void {
 }
 
 interface UseGetGameResultsParams {
-  datetimeFrom?: string;
-  datetimeTo?: string;
+  dateFrom?: string;
+  dateTo?: string;
   teamId?: string;
   userId?: string;
   enabled?: boolean;
 }
+
+const defaultDatetimeFrom = format(subDays(new Date(), 90), 'yyyy-MM-dd');
 
 /**
  * Hook to fetch and cache game results.
@@ -49,32 +52,33 @@ interface UseGetGameResultsParams {
  * - Returns appropriate game results for given timeframe
  */
 export const useGetGameResults = (params: UseGetGameResultsParams = {}) => {
-  const { datetimeFrom, datetimeTo, teamId, userId, enabled } = params;
+  const { dateFrom: dateFromParam, dateTo, teamId, userId, enabled } = params;
 
   // Determine the scope: teamId if provided, otherwise 'user' for personal games
   const scopeId = enabled ? (teamId ?? userId) : undefined;
 
   return useQuery<GameResultStore[]>({
-    queryKey: ['game-results', scopeId],
+    queryKey: ['game-results', scopeId, `${dateFromParam}-${dateTo}`],
     queryFn:
       enabled && scopeId
         ? async () => {
             // Get last updated timestamp from localStorage for this scope
+            const dateFrom = dateFromParam ?? defaultDatetimeFrom;
             const lastUpdatedMap = getLastUpdatedFromStorage();
             const lastUpdated = lastUpdatedMap[scopeId];
-            const isRange = datetimeFrom && datetimeTo;
+            const isRange = dateFrom && dateTo;
 
             // Determine the datetime to fetch from
             // If we have a lastUpdated, use it to only fetch newer records
             // Otherwise, use the provided datetimeFrom or fetch all
-            const fetchFrom = isRange ? datetimeFrom : (lastUpdated ?? datetimeFrom);
+            const fetchFrom = isRange ? dateFrom : (lastUpdated ?? dateFrom);
             const currentUtcTime = new Date().toISOString();
 
             // Fetch from API
             const response = await api['game-results'].$get({
               query: {
                 datetimeFrom: fetchFrom,
-                datetimeTo,
+                datetimeTo: dateTo,
                 teamId,
               },
             });
@@ -107,8 +111,8 @@ export const useGetGameResults = (params: UseGetGameResultsParams = {}) => {
             // This ensures we return all cached data, not just what was fetched
             const cachedResults = await getGameResultsByScopeAndDateRange(
               scopeId,
-              datetimeFrom,
-              datetimeTo,
+              dateFrom,
+              dateTo,
             );
 
             return cachedResults;

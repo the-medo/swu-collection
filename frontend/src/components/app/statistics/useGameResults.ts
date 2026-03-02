@@ -50,6 +50,8 @@ export const useGameResults = (
   const session = useSession();
 
   const { data: gameResultData, isLoading } = useGetGameResults({
+    dateFrom: datetimeFrom,
+    dateTo: datetimeTo,
     enabled: !!session.data,
     userId: session.data?.user.id,
     teamId,
