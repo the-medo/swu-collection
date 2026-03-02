@@ -105,19 +105,21 @@ const store = new Store<AdvancedCardSearchStore>(defaultState);
 const parseRangeString = (rangeStr?: string): RangeFilterType => {
   if (!rangeStr) return {};
 
-  const [min, max] = rangeStr.split('-').map(Number);
+  const parts = rangeStr.split('-');
   const result: RangeFilterType = {};
 
-  if (!isNaN(min)) result.min = min;
-  if (!isNaN(max)) result.max = max;
+  if (parts[0] !== undefined && parts[0] !== '' && !isNaN(Number(parts[0])))
+    result.min = Number(parts[0]);
+  if (parts[1] !== undefined && parts[1] !== '' && !isNaN(Number(parts[1])))
+    result.max = Number(parts[1]);
 
   return result;
 };
 
 // Helper function to stringify a RangeFilterType to "min-max" format
 export const stringifyRange = (range: RangeFilterType): string | undefined => {
-  if (!range.min && !range.max) return undefined;
-  return `${range.min || ''}-${range.max || ''}`;
+  if (range.min === undefined && range.max === undefined) return undefined;
+  return `${range.min ?? ''}-${range.max ?? ''}`;
 };
 
 export const useInitializeStoreFromUrlParams = (

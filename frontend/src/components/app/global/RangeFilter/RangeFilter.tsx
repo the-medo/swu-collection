@@ -17,13 +17,13 @@ interface RangeFilterProps {
 }
 
 const RangeFilter: React.FC<RangeFilterProps> = ({ label, value, onChange, className }) => {
-  const [min, setMin] = useState<string>(value.min?.toString() || '');
-  const [max, setMax] = useState<string>(value.max?.toString() || '');
+  const [min, setMin] = useState<string>(value.min !== undefined ? value.min.toString() : '');
+  const [max, setMax] = useState<string>(value.max !== undefined ? value.max.toString() : '');
 
   // Update component state when props change
   useEffect(() => {
-    setMin(value.min?.toString() || '');
-    setMax(value.max?.toString() || '');
+    setMin(value.min !== undefined ? value.min.toString() : '');
+    setMax(value.max !== undefined ? value.max.toString() : '');
   }, [value]);
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
