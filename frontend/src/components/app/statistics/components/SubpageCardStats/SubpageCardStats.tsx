@@ -30,8 +30,8 @@ const SubpageCardStats: React.FC<SubpageCardStatsProps> = ({ matches }) => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-8">
-        <IniSelector value={hasIni} onChange={setHasIni} />
-        <Separator orientation="vertical" />
+        {/*<IniSelector value={hasIni} onChange={setHasIni} />
+        <Separator orientation="vertical" />*/}
         <GameNumberSelector value={gameNumber} onChange={setGameNumber} />
       </div>
       <CardStatsTable games={games} />

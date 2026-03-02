@@ -53,8 +53,6 @@ const SubpageMatchups: React.FC<SubpageMatchupsProps> = ({ matches, matrixKey })
   const finalMatchups = useMemo(() => {
     let filtered = Object.entries(matchups);
 
-    console.log({ matchups });
-
     if (sMinMatches) {
       filtered = filtered.filter(([, result]) => result.total >= sMinMatches);
     }

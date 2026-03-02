@@ -24,8 +24,6 @@ const getCardIdFromKey = (key: string | undefined, cards: any) => {
 const MatchResultBox: React.FC<MatchResultBoxProps> = ({ match }) => {
   const { data: cardListData } = useCardList();
 
-  console.log({ match });
-
   const { leaderCard, baseCard, opponentLeaderCard, opponentBaseCard } = useMemo(() => {
     const leader = match.leaderCardId ? cardListData?.cards[match.leaderCardId] : undefined;
     const baseId = getCardIdFromKey(match.baseCardKey, cardListData?.cards);

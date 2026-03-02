@@ -31,8 +31,12 @@ export const GameNumberSelector: React.FC<GameNumberSelectorProps> = ({ value, o
       className="justify-start gap-2"
     >
       <ToggleGroupItem value="all">All</ToggleGroupItem>
-      <ToggleGroupItem value="1">Pre-sideboard</ToggleGroupItem>
-      <ToggleGroupItem value="2">Post-sideboard</ToggleGroupItem>
+      <ToggleGroupItem value="1">
+        Pre-sideboard <span className="text-[10px]">(game 1)</span>
+      </ToggleGroupItem>
+      <ToggleGroupItem value="2">
+        Post-sideboard <span className="text-[10px]">(game 2+)</span>
+      </ToggleGroupItem>
     </ToggleGroup>
   );
 };

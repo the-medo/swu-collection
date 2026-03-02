@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils.ts';
 import { getResultColor, getResultText } from '@/components/app/statistics/lib/lib.ts';
 import { Badge } from '@/components/ui/badge.tsx';
 
+const SHOW_BADGES = false;
+
 interface GameRowProps {
   game: GameResult;
 }
@@ -15,15 +17,19 @@ const GameRow: React.FC<GameRowProps> = ({ game }) => {
     <div className="flex items-center gap-2 py-1 px-2 border-b last:border-0 border-border/40 text-xs">
       <span className={cn('w-4 h-4 rounded', getResultColor(result))}></span>
       <span className={cn('font-medium')}>{getResultText(result)}</span>
-      {game.hasInitiative !== undefined && (
-        <Badge size="small" variant="outline">
-          {game.hasInitiative ? 'ini' : 'no ini'}
-        </Badge>
-      )}
-      {game.hasMulligan !== undefined && (
-        <Badge size="small" variant="outline">
-          {game.hasMulligan ? 'mull' : 'keep'}
-        </Badge>
+      {SHOW_BADGES && (
+        <>
+          {game.hasInitiative !== undefined && (
+            <Badge size="small" variant="outline">
+              {game.hasInitiative ? 'ini' : 'no ini'}
+            </Badge>
+          )}
+          {game.hasMulligan !== undefined && (
+            <Badge size="small" variant="outline">
+              {game.hasMulligan ? 'mull' : 'keep'}
+            </Badge>
+          )}
+        </>
       )}
     </div>
   );
