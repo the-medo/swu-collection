@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { createRootRoute, HeadContent, Outlet } from '@tanstack/react-router';
 import { LeftSidebar } from '@/components/app/navigation/LeftSidebar/LeftSidebar.tsx';
 import { SidebarProvider } from '@/components/ui/sidebar.tsx';
 import { Toaster } from '@/components/ui/toaster.tsx';
@@ -101,6 +101,7 @@ export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 export const Route = createRootRoute({
   component: () => (
     <>
+      <HeadContent />
       <SidebarProvider>
         <LeftSidebar />
         <main className="w-full h-screen max-h-screen overflow-y-scroll p-2">

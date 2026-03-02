@@ -20,7 +20,7 @@ export function useMatchupData(
   // Analyze matchups using actual match data
   return useMemo(() => {
     if (!filteredMatches.length || !cardListData)
-      return { keys: [], matchups: {} as MatchupDataMap };
+      return { rowKeys: [], colKeys: [], matchups: {} as MatchupDataMap };
 
     // Get all unique deck keys
     const deckKeys = new Set<string>();
@@ -145,7 +145,8 @@ export function useMatchupData(
     });
 
     return {
-      keys: sortedKeys,
+      rowKeys: sortedKeys,
+      colKeys: sortedKeys,
       matchups,
       totalStats,
     };

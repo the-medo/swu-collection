@@ -1,0 +1,1 @@
+ALTER TABLE "game_result" ADD COLUMN "format" text;

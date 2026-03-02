@@ -1,0 +1,175 @@
+import * as React from 'react';
+import { useCardList } from '@/api/lists/useCardList.ts';
+import { useMemo } from 'react';
+import { basicBaseForAspect } from '../../../../../../../shared/lib/basicBases.ts';
+import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
+import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
+import { Card, CardContent } from '@/components/ui/card.tsx';
+import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
+import { Link } from '@tanstack/react-router';
+import DeckInfoThumbnailCompact from '@/components/app/statistics/StatisticsDecks/StatisticsDeckLists/DeckInfoThumbnailCompact.tsx';
+import { StatSection, StatSectionProps } from '@/components/app/statistics/common/StatSection.tsx';
+import { cn } from '@/lib/utils.ts';
+import DeckInfoThumbnail from '@/components/app/statistics/StatisticsDecks/StatisticsDeckLists/DeckInfoThumbnail.tsx';
+import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
+
+export interface LeaderBaseInfoThumbnailProps {
+  teamId?: string;
+  statistics: DeckStatistics;
+  deckStatistics: Record<string, DeckStatistics | undefined>;
+  statSectionVariant?: StatSectionProps['variant'];
+}
+
+const getCardIdFromKey = (key: string | undefined, cards: any) => {
+  if (!key || !cards) return undefined;
+  return key in cards ? key : basicBaseForAspect[key];
+};
+
+const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
+  teamId,
+  statistics,
+  deckStatistics,
+  statSectionVariant = 'vertical',
+}) => {
+  const {
+    leaderCardId,
+    baseCardKey,
+    matchWinrate,
+    gameWinrate,
+    matchWins,
+    matchLosses,
+    gameWins,
+    gameLosses,
+    matches,
+  } = statistics;
+
+  const { data: cardListData } = useCardList();
+
+  const recentDecks = useMemo(() => {
+    const recentDecksMap: Record<
+      string,
+      {
+        deckId: string;
+        deckName?: string;
+        lastPlayed?: string;
+      }
+    > = {};
+    matches.forEach(m => {
+      const deckId = m.deckId;
+      if (!deckId) return;
+
+      const deckName = m.games[0]?.otherData?.deckInfo?.name;
+      const playedAt = m.firstGameCreatedAt;
+
+      if (!recentDecksMap[deckId]) {
+        recentDecksMap[deckId] = {
+          deckId,
+          deckName,
+          lastPlayed: playedAt,
+        };
+      } else {
+        if (!recentDecksMap[deckId].lastPlayed || recentDecksMap[deckId].lastPlayed < playedAt) {
+          recentDecksMap[deckId].lastPlayed = playedAt;
+        }
+      }
+    });
+
+    return Object.values(recentDecksMap)
+      .sort((a, b) => {
+        if (!a.lastPlayed || !b.lastPlayed) return 0;
+        return new Date(b.lastPlayed).getTime() - new Date(a.lastPlayed).getTime();
+      })
+      .slice(0, 3);
+  }, [matches]);
+
+  const { leaderCard, baseCard } = useMemo(() => {
+    const leader = leaderCardId ? cardListData?.cards[leaderCardId] : undefined;
+    const baseId = getCardIdFromKey(baseCardKey, cardListData?.cards);
+    const base = baseId ? cardListData?.cards[baseId] : undefined;
+
+    return {
+      leaderCard: leader,
+      baseCard: base,
+    };
+  }, [leaderCardId, baseCardKey, cardListData]);
+
+  return (
+    <Link
+      to={`${getTeamUrlPrefix(teamId)}/statistics/leader-and-base`}
+      params={{
+        teamId,
+      }}
+      search={prev => ({ ...prev, sLeaderCardId: leaderCardId, sBaseCardKey: baseCardKey })}
+    >
+      <Card className="overflow-hidden relative w-full h-full min-h-[200px] min-w-[350px] hover:shadow-md">
+        <div className="flex-1 relative h-full">
+          {leaderCard && (
+            <DeckBackgroundDecoration
+              leaderCard={leaderCard}
+              baseCard={baseCard}
+              position="top-left"
+            >
+              <BaseAvatar cardId={baseCardKey} bordered={false} size="40" shape="circle" />
+            </DeckBackgroundDecoration>
+          )}
+          <CardContent
+            className={cn('flex h-full p-2 relative z-10 items-start gap-4', {
+              'flex-row flex-wrap justify-end': statSectionVariant === 'horizontal',
+              'flex-col pt-12 justify-start': statSectionVariant === 'vertical',
+            })}
+          >
+            {statSectionVariant === 'horizontal' && (
+              <div className="flex flex-col flex-1 gap-2 pl-40">
+                {recentDecks.map(deck => (
+                  <DeckInfoThumbnail
+                    key={deck.lastPlayed}
+                    teamId={teamId}
+                    statistics={deckStatistics[deck.deckId]}
+                    statSectionVariant={statSectionVariant}
+                    displayDeckBackground={false}
+                  />
+                ))}
+              </div>
+            )}
+            <div
+              className={cn('flex gap-4 items-end justify-end', {
+                'self-end': statSectionVariant === 'vertical',
+              })}
+            >
+              <div
+                className={cn('flex gap-4', {
+                  'flex-col p-2 m-2 bg-secondary rounded-lg': statSectionVariant === 'horizontal',
+                })}
+              >
+                <StatSection
+                  label="Games"
+                  wins={gameWins}
+                  losses={gameLosses}
+                  winrate={gameWinrate}
+                  variant={statSectionVariant}
+                />
+                <StatSection
+                  label="Matches"
+                  wins={matchWins}
+                  losses={matchLosses}
+                  winrate={matchWinrate}
+                  variant={statSectionVariant}
+                />
+              </div>
+            </div>
+            {statSectionVariant === 'vertical' &&
+              recentDecks.map(deck => (
+                <DeckInfoThumbnailCompact
+                  key={deck.lastPlayed}
+                  teamId={teamId}
+                  statistics={deckStatistics[deck.deckId]}
+                />
+              ))}
+          </CardContent>
+        </div>
+      </Card>
+    </Link>
+  );
+};
+
+export default LeaderBaseInfoThumbnail;

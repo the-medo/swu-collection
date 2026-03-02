@@ -62,10 +62,10 @@ function RouteComponent() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
+            {/*<div className="flex justify-between">
               <span className="text-muted-foreground">External User ID:</span>
               <span className="font-mono">{karabast_user_id}</span>
-            </div>
+            </div>*/}
             <div className="flex justify-between">
               <span className="text-muted-foreground">Scopes:</span>
               <span>{scope?.replace(/\+/g, ', ')}</span>

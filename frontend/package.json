@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "4.11.4",
+  "version": "5.0.0",
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@nivo/bump": "^0.99.0",
+    "@nivo/calendar": "^0.99.0",
     "@nivo/pie": "^0.99.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -71,6 +72,7 @@
     "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "@typescript/native-preview": "^7.0.0-dev.20260216.1",
     "@vitejs/plugin-react": "^5.1.0",
     "eslint": "^9.38.0",
     "eslint-plugin-react-hooks": "^7.0.1",

@@ -54,8 +54,6 @@ export const linkCreatePostRoute = new Hono<AuthExtension>().post(
     const linkToken = generateLinkToken();
     const linkTokenEnc = encrypt(linkToken);
 
-    console.log({ linkToken, linkTokenEnc });
-
     // Check if link already exists for this user and integration
     const [existingLink] = await db
       .select()
@@ -68,8 +66,6 @@ export const linkCreatePostRoute = new Hono<AuthExtension>().post(
       );
 
     if (existingLink) {
-      console.log('Existing link...');
-
       // Update existing link with new token and external user ID
       await db
         .update(userIntegration)
@@ -84,8 +80,6 @@ export const linkCreatePostRoute = new Hono<AuthExtension>().post(
 
       return c.json({ linkToken });
     }
-
-    console.log('Not-existing link...');
 
     // Create new link
     await db.insert(userIntegration).values({

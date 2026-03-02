@@ -109,7 +109,7 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
         </MobileCard>
       </div>
 
-      {matchupData.keys.length > 0 ? (
+      {matchupData.rowKeys.length > 0 ? (
         <MatchupTable
           matchupData={matchupData}
           displayMode={displayMode}

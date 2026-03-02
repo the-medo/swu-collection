@@ -13,6 +13,7 @@ import ComparerButton from './components/ComparerButton';
 import DuplicateButton from './components/DuplicateButton';
 import ExportOptionsMenu from './components/ExportOptionsMenu';
 import AdminEditButton from './components/AdminEditButton';
+import AdminMockGameDataButton from './components/AdminMockGameDataButton';
 import PriceSourceSelector from './components/PriceSourceSelector';
 import SettingsMenu from './components/SettingsMenu';
 
@@ -41,7 +42,7 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
     <DeckNavigationMenu deckId={deckId} className="z-20">
       <NavigationMenuList className="flex-wrap justify-start gap-1 z-10">
         <FavoriteButton deckId={deckId} isFavorite={isFavorite} />
-        <CopyLinkButton deckId={deckId} isPublic={!!deckData?.deck.public} />
+        <CopyLinkButton deckId={deckId} isPublic={!!deckData?.deck.public} inNavigation={true} />
         <ComparerButton deckId={deckId} additionalData={additionalData} />
         <DuplicateButton deckId={deckId} isLimited={!!deckData?.deck.cardPoolId} />
         <PriceSourceSelector showPricesOption={true} />
@@ -52,6 +53,7 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
         />
         <SettingsMenu />
         <AdminEditButton deckId={deckId} isAdmin={isAdmin} />
+        <AdminMockGameDataButton deckId={deckId} isAdmin={isAdmin} />
       </NavigationMenuList>
     </DeckNavigationMenu>
   );

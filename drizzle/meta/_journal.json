@@ -267,6 +267,48 @@
       "when": 1769001915365,
       "tag": "0037_thick_rocket_raccoon",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1769381328153,
+      "tag": "0038_good_robin_chapel",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1769384483223,
+      "tag": "0039_lean_lilandra",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1769553664116,
+      "tag": "0040_lean_la_nuit",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1770465193321,
+      "tag": "0041_add_new_formats",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1770933374423,
+      "tag": "0042_nifty_bushwacker",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1772145051824,
+      "tag": "0043_ambitious_the_call",
+      "breakpoints": true
     }
   ]
 }

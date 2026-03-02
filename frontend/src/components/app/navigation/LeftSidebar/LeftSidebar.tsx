@@ -14,6 +14,7 @@ import {
   Star,
   TrophyIcon,
   Package,
+  Users,
 } from 'lucide-react';
 
 import {
@@ -37,7 +38,7 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar.tsx';
-import { Link } from '@tanstack/react-router';
+import { Link, useMatch } from '@tanstack/react-router';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.tsx';
@@ -45,14 +46,22 @@ import LogoLightTheme from '../../../../assets/logo-light-theme.svg';
 import LogoDarkTheme from '../../../../assets/logo-dark-theme.svg';
 import { useTheme } from '@/components/theme-provider.tsx';
 import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog/NewDeckDialog.tsx';
+import NewTeamDialog from '@/components/app/dialogs/NewTeamDialog.tsx';
+import { useTeam, useTeams } from '@/api/teams';
 import CardSearchCommand from '@/components/app/global/CardSearchCommand/CardSearchCommand.tsx';
 import SocialLinks from '@/components/app/navigation/LeftSidebar/SocialLinks.tsx';
 import { cn } from '@/lib/utils.ts';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import SidebarComparer from '../../comparer/SidebarComparer/SidebarComparer.tsx';
 import { Fragment, useMemo } from 'react';
+import { UserTeam } from '../../../../../../server/routes/teams/get.ts';
+import { Badge } from '@/components/ui/badge.tsx';
 
-const getGroups = (setOpenMobile: (open: boolean) => void, state: SidebarContext['state']) => [
+const getGroups = (
+  setOpenMobile: (open: boolean) => void,
+  state: SidebarContext['state'],
+  teams: UserTeam[],
+) => [
   {
     title: 'Analysis & Decks',
     actionLabel: 'Add Deck',
@@ -120,12 +129,35 @@ const getGroups = (setOpenMobile: (open: boolean) => void, state: SidebarContext
         url: '/limited',
         icon: Package,
       },
-      /*{
+      {
         title: 'Your statistics',
         url: '/statistics',
         icon: ChartSpline,
-        authenticated: true,
-      },*/
+        soon: true,
+      },
+      {
+        title: 'Teams',
+        url: '/teams',
+        icon: Users,
+        soon: true,
+        menuAction: (
+          <NewTeamDialog
+            trigger={
+              <SidebarMenuAction title="Create Team">
+                <Plus /> <span className="sr-only">Create Team</span>
+              </SidebarMenuAction>
+            }
+          />
+        ),
+        items:
+          teams && teams.length > 0
+            ? teams.map(team => ({
+                title: team.name,
+                url: `/teams/${team.shortcut ?? team.id}`,
+                statisticsUrl: `/teams/${team.shortcut ?? team.id}/statistics`,
+              }))
+            : [],
+      },
     ],
   },
   {
@@ -201,37 +233,75 @@ export function LeftSidebar() {
   const user = useUser();
   const { theme } = useTheme();
   const { open, state, isMobile, setOpenMobile } = useSidebar();
+  const teamMatch = useMatch({ from: '/teams/$teamId/', shouldThrow: false });
 
-  const groups = useMemo(() => getGroups(setOpenMobile, state), [state]);
+  const teamStatisticsMatch = useMatch({ from: '/teams/$teamId/statistics', shouldThrow: false });
+  const teamIdOrShortcut = teamMatch?.params?.teamId ?? teamStatisticsMatch?.params?.teamId;
+
+  const { data: activeTeam } = useTeam(teamIdOrShortcut);
+
+  const { data: teams } = useTeams();
+
+  const groups = useMemo(() => getGroups(setOpenMobile, state, teams ?? []), [state, teams]);
+
+  const swubaseLogo = theme === 'light' ? LogoLightTheme : LogoDarkTheme;
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
-        <Link
-          to="/"
-          className={cn({ 'self-center': !isMobile, 'self-start pl-4': isMobile })}
-          onClick={() => setOpenMobile(false)}
-        >
-          {isMobile ? (
-            <div className="w-full flex justify-between gap-4">
+        {activeTeam?.logoUrl && teamIdOrShortcut ? (
+          <div
+            className={cn('relative', { 'self-center': !isMobile, 'self-start pl-4': isMobile })}
+          >
+            <Link
+              to="/teams/$teamId"
+              params={{ teamId: teamIdOrShortcut }}
+              onClick={() => setOpenMobile(false)}
+            >
               <img
-                src={theme === 'light' ? LogoLightTheme : LogoDarkTheme}
-                className="w-8 h-8"
-                alt="Logo"
+                src={activeTeam.logoUrl}
+                alt={`${activeTeam.name} logo`}
+                className={cn('rounded-lg object-cover', {
+                  'w-8 h-8': state === 'collapsed' || isMobile,
+                  'w-32 h-32': state !== 'collapsed' && !isMobile,
+                })}
               />
-              <h3 className="mb-0">
-                <span className="font-normal">SWU</span>
-                <span className="font-bold">BASE</span>
-              </h3>
-            </div>
-          ) : (
-            <img
-              src={theme === 'light' ? LogoLightTheme : LogoDarkTheme}
-              alt="Logo"
-              className="w-32"
-            />
-          )}
-        </Link>
+            </Link>
+            {activeTeam?.logoUrl && state !== 'collapsed' && (
+              <div
+                className={cn(
+                  'bg-background absolute bottom-1 -right-7 rounded-lg justify-end p-1',
+                )}
+              >
+                <Link to="/" onClick={() => setOpenMobile(false)}>
+                  <img
+                    src={swubaseLogo}
+                    alt="SWUBase"
+                    className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity"
+                  />
+                </Link>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link
+            to="/"
+            className={cn({ 'self-center': !isMobile, 'self-start pl-4': isMobile })}
+            onClick={() => setOpenMobile(false)}
+          >
+            {isMobile ? (
+              <div className="w-full flex justify-between gap-4">
+                <img src={swubaseLogo} className="w-8 h-8" alt="Logo" />
+                <h3 className="mb-0">
+                  <span className="font-normal">SWU</span>
+                  <span className="font-bold">BASE</span>
+                </h3>
+              </div>
+            ) : (
+              <img src={swubaseLogo} alt="Logo" className="w-32" />
+            )}
+          </Link>
+        )}
       </SidebarHeader>
       <SidebarSeparator />
       <SidebarContent>
@@ -294,6 +364,11 @@ export function LeftSidebar() {
                             >
                               <i.icon />
                               <span>{i.title}</span>
+                              {'soon' in i && i.soon && (
+                                <Badge size="small" className="text-xs px-2" variant="outline">
+                                  Soon<sup className="text-[6px]">TM</sup>
+                                </Badge>
+                              )}
                             </Link>
                           </SidebarMenuButton>
                           {'menuAction' in i && state !== 'collapsed' ? i.menuAction : null}
@@ -301,7 +376,7 @@ export function LeftSidebar() {
                         {'items' in i && i.items && i.items.length > 0 && (
                           <SidebarMenuSub>
                             {i.items.map(subItem => (
-                              <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubItem key={subItem.title} className="relative">
                                 <SidebarMenuSubButton asChild size="md">
                                   <Link
                                     to={subItem.url}
@@ -312,6 +387,17 @@ export function LeftSidebar() {
                                     <span>{subItem.title}</span>
                                   </Link>
                                 </SidebarMenuSubButton>
+                                {'statisticsUrl' in subItem && subItem.statisticsUrl && (
+                                  <SidebarMenuAction title="Team statistics">
+                                    <Link
+                                      to={subItem.statisticsUrl}
+                                      onClick={() => setOpenMobile(false)}
+                                      className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                      <ChartSpline className="h-3.5 w-3.5" />
+                                    </Link>
+                                  </SidebarMenuAction>
+                                )}
                               </SidebarMenuSubItem>
                             ))}
                           </SidebarMenuSub>

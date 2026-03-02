@@ -1,0 +1,44 @@
+import { Hono } from 'hono';
+import { db } from '../../../../db';
+import { teamMember } from '../../../../db/schema/team_member.ts';
+import { user as userTable } from '../../../../db/schema/auth-schema.ts';
+import { and, eq } from 'drizzle-orm';
+import type { AuthExtension } from '../../../../auth/auth.ts';
+import { z } from 'zod';
+import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
+import { integration, userIntegration } from '../../../../db/schema/integration.ts';
+
+export const teamsIdMembersGetRoute = new Hono<AuthExtension>().get('/', async c => {
+  const user = c.get('user');
+  if (!user) return c.json({ message: 'Unauthorized' }, 401);
+
+  const teamId = z.guid().parse(c.req.param('id'));
+
+  // Check if the requesting user is a member of the team
+  const membership = await getTeamMembership(teamId, user.id);
+
+  if (!membership) {
+    return c.json({ message: 'You must be a team member to view members' }, 403);
+  }
+
+  const members = await db
+    .select({
+      userId: teamMember.userId,
+      role: teamMember.role,
+      joinedAt: teamMember.joinedAt,
+      autoAddDeck: teamMember.autoAddDeck,
+      name: userTable.displayName,
+      image: userTable.image,
+      integration: integration.name,
+    })
+    .from(teamMember)
+    .innerJoin(userTable, eq(teamMember.userId, userTable.id))
+    .leftJoin(userIntegration, eq(userIntegration.userId, teamMember.userId))
+    .leftJoin(
+      integration,
+      and(eq(integration.id, userIntegration.integrationId), eq(integration.name, 'karabast')),
+    )
+    .where(eq(teamMember.teamId, teamId));
+
+  return c.json({ data: members });
+});

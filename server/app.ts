@@ -20,6 +20,9 @@ import { cardPricesRoute } from './routes/card-prices.ts';
 import { cardPoolsRoute } from './routes/card-pools.ts';
 import { dailySnapshotRoute } from './routes/daily-snapshot.ts';
 import { integrationRoute } from './routes/integration.ts';
+import { gameResultRoute } from './routes/game-results.ts';
+import { teamsRoute } from './routes/teams.ts';
+import { userSetupRoute } from './routes/user-setup.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
 import { timeout } from 'hono/timeout';
@@ -120,7 +123,10 @@ const apiRoutes = app
   .route('/card-prices', cardPricesRoute)
   .route('/card-pools', cardPoolsRoute)
   .route('/daily-snapshot', dailySnapshotRoute)
-  .route('/integration', integrationRoute);
+  .route('/integration', integrationRoute)
+  .route('/game-results', gameResultRoute)
+  .route('/teams', teamsRoute)
+  .route('/user-setup', userSetupRoute);
 
 // Read the index.html template once at startup
 let indexHtml: string;

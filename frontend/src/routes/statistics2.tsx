@@ -78,6 +78,6 @@ const StatisticsPage: React.FC = () => {
   );
 };
 
-export const Route = createFileRoute('/statistics')({
+export const Route = createFileRoute('/statistics2')({
   component: StatisticsPage,
 });
