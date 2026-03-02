@@ -7,7 +7,7 @@ import {
 } from '@/dexie/gameResults';
 import type { GameResult } from '../../../../server/db/schema/game_result';
 import { CardMetrics } from '../../../../shared/types/cardMetrics.ts';
-import { format, subDays } from 'date-fns';
+import { format, isBefore, startOfToday, subDays } from 'date-fns';
 
 const GAME_RESULTS_LAST_UPDATED_KEY = 'game-results-last-updated';
 
@@ -52,18 +52,23 @@ const defaultDatetimeFrom = format(subDays(new Date(), 90), 'yyyy-MM-dd');
  * - Returns appropriate game results for given timeframe
  */
 export const useGetGameResults = (params: UseGetGameResultsParams = {}) => {
-  const { dateFrom: dateFromParam, dateTo, teamId, userId, enabled } = params;
+  const { dateFrom: dateFromParam, dateTo: dateToParam, teamId, userId, enabled } = params;
 
   // Determine the scope: teamId if provided, otherwise 'user' for personal games
   const scopeId = enabled ? (teamId ?? userId) : undefined;
 
   return useQuery<GameResultStore[]>({
-    queryKey: ['game-results', scopeId, `${dateFromParam}-${dateTo}`],
+    queryKey: ['game-results', scopeId, `${dateFromParam}-${dateToParam}`],
     queryFn:
       enabled && scopeId
         ? async () => {
-            // Get last updated timestamp from localStorage for this scope
             const dateFrom = dateFromParam ?? defaultDatetimeFrom;
+            const dateTo =
+              dateToParam && isBefore(new Date(dateToParam), startOfToday())
+                ? dateToParam
+                : undefined;
+
+            // Get last updated timestamp from localStorage for this scope
             const lastUpdatedMap = getLastUpdatedFromStorage();
             const lastUpdated = lastUpdatedMap[scopeId];
             const isRange = dateFrom && dateTo;
