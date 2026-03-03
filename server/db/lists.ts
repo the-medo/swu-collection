@@ -49,8 +49,8 @@ Object.keys(cardList).forEach(cid => {
   const card = cardList[cid];
   const variantIds = Object.keys(card?.variants ?? {});
   const type = card?.type ?? 'Unknown';
-  if (card?.cardUid) {
-    card.cardUid?.forEach(cuid => {
+  if (Array.isArray(card?.cardUid)) {
+    card.cardUid.forEach(cuid => {
       cardsByUid[cuid] = card;
     });
   }
