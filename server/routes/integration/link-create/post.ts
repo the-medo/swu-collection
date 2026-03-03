@@ -74,6 +74,7 @@ export const linkCreatePostRoute = new Hono<AuthExtension>().post(
           linkTokenEnc,
           scopes,
           metadata: metadata || {},
+          linkedAt: null,
           updatedAt: new Date(),
         })
         .where(eq(userIntegration.id, existingLink.id));

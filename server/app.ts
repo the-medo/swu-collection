@@ -107,7 +107,8 @@ app.use('/api/tournament/:id/export-to-blob', timeout(180000));
 app.use(
   '/api/deck/:id/json',
   cors({
-    origin: ['https://karabast.net', 'http://localhost:3000'],
+    origin: ['https://karabast.net', 'https://www.karabast.net', 'http://localhost:3000'],
+    allowMethods: ['GET'],
   }),
 );
 
