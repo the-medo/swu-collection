@@ -20,6 +20,7 @@ async function addCardToCardList(filePath: string, cl: CardList) {
 
     cl[cardId] = {
       ...cardData,
+      cardUid: [...new Set([...cardData.cardUid, ...(cl[cardId]?.cardUid ?? [])])],
       set: cardData.set ?? cl[cardId]?.set, // use the old set when not present in card data
       variants: {},
     };

@@ -91,9 +91,22 @@ async function processCardList() {
     }
 
     if (foundUid) {
-      // Save cardUid at the card object level (as requested)
-      (card as any).cardUid = foundUid;
-      updatedCards++;
+      if ('cardUid' in card && Array.isArray(card.cardUid)) {
+        if (!card.cardUid.includes(foundUid)) {
+          card.cardUid.push(foundUid);
+          updatedCards++;
+        }
+      } else if (typeof card.cardUid === 'string') {
+        if (card.cardUid === foundUid) {
+          card.cardUid = [foundUid];
+        } else {
+          card.cardUid = [card.cardUid, foundUid];
+        }
+        updatedCards++;
+      } else {
+        card.cardUid = [foundUid];
+        updatedCards++;
+      }
     } else {
       notFound++;
     }
