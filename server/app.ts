@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
+import { cors } from 'hono/cors';
 import { collectionRoute } from './routes/collection.ts';
 import { deckRoute } from './routes/deck.ts';
 import { serveStatic } from 'hono/bun';
@@ -103,6 +104,13 @@ app.use('*', async (c, next) => {
 
 app.use('/api/admin/special-actions/update-deck-information', timeout(180000));
 app.use('/api/tournament/:id/export-to-blob', timeout(180000));
+app.use(
+  '/api/deck/:id/json',
+  cors({
+    origin: ['https://karabast.net', 'https://www.karabast.net', 'http://localhost:3000'],
+    allowMethods: ['GET'],
+  }),
+);
 
 const apiRoutes = app
   .basePath('/api')
