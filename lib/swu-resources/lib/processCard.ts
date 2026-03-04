@@ -26,7 +26,7 @@ export async function processCard(card: any, skipExisting = true) {
       subtitle: c.subtitle,
       name: cardName,
       cardId: transformToId(cardName),
-      cardUid: String(c.cardUid),
+      cardUid: [String(c.cardUid)],
       artist: c.artist,
       cost: c.cost,
       hp: c.hp,

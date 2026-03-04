@@ -3,7 +3,7 @@ import { SwuArena, SwuAspect, SwuRarity, SwuSet } from '../../types/enums.ts';
 export interface ParsedCardData {
   swuId: number;
   cardId: string;
-  cardUid: string;
+  cardUid: string[];
   updatedAt: string;
   title: string;
   subtitle?: string;
@@ -63,7 +63,7 @@ export interface CardVariant {
 
 export interface CardDataWithVariants<T = CardVariant[]> {
   cardId: string;
-  cardUid: string;
+  cardUid: string[];
   updatedAt: string;
   variants: T;
   title: string;
