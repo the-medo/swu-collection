@@ -37,5 +37,5 @@ export const useTeamDataMap = (teamId: string | undefined): TeamDataMap => {
     );
 
     return teamDataMap;
-  }, [membersLoading, members]);
+  }, [membersLoading, members, decks]);
 };

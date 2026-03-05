@@ -44,6 +44,7 @@ import { Route as TournamentsPlanetaryQualifiersIndexRouteImport } from './route
 import { Route as TournamentsFeaturedIndexRouteImport } from './routes/tournaments/featured/index'
 import { Route as TournamentsAllIndexRouteImport } from './routes/tournaments/all/index'
 import { Route as TournamentsTournamentIdIndexRouteImport } from './routes/tournaments/$tournamentId/index'
+import { Route as ToolsWebsocketIndexRouteImport } from './routes/tools/websocket/index'
 import { Route as ToolsDeckFormatConverterIndexRouteImport } from './routes/tools/deck-format-converter/index'
 import { Route as TeamsTeamIdIndexRouteImport } from './routes/teams/$teamId/index'
 import { Route as ListsCardListIdIndexRouteImport } from './routes/lists/$cardListId/index'
@@ -258,6 +259,11 @@ const TournamentsTournamentIdIndexRoute =
     path: '/tournaments/$tournamentId/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ToolsWebsocketIndexRoute = ToolsWebsocketIndexRouteImport.update({
+  id: '/tools/websocket/',
+  path: '/tools/websocket/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ToolsDeckFormatConverterIndexRoute =
   ToolsDeckFormatConverterIndexRouteImport.update({
     id: '/tools/deck-format-converter/',
@@ -472,6 +478,7 @@ export interface FileRoutesByFullPath {
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/teams/$teamId': typeof TeamsTeamIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
+  '/tools/websocket': typeof ToolsWebsocketIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/tournaments/all': typeof TournamentsAllIndexRoute
   '/tournaments/featured': typeof TournamentsFeaturedIndexRoute
@@ -535,6 +542,7 @@ export interface FileRoutesByTo {
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/teams/$teamId': typeof TeamsTeamIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
+  '/tools/websocket': typeof ToolsWebsocketIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/tournaments/all': typeof TournamentsAllIndexRoute
   '/tournaments/featured': typeof TournamentsFeaturedIndexRoute
@@ -601,6 +609,7 @@ export interface FileRoutesById {
   '/lists/$cardListId/': typeof ListsCardListIdIndexRoute
   '/teams/$teamId/': typeof TeamsTeamIdIndexRoute
   '/tools/deck-format-converter/': typeof ToolsDeckFormatConverterIndexRoute
+  '/tools/websocket/': typeof ToolsWebsocketIndexRoute
   '/tournaments/$tournamentId/': typeof TournamentsTournamentIdIndexRoute
   '/tournaments/all/': typeof TournamentsAllIndexRoute
   '/tournaments/featured/': typeof TournamentsFeaturedIndexRoute
@@ -668,6 +677,7 @@ export interface FileRouteTypes {
     | '/lists/$cardListId'
     | '/teams/$teamId'
     | '/tools/deck-format-converter'
+    | '/tools/websocket'
     | '/tournaments/$tournamentId'
     | '/tournaments/all'
     | '/tournaments/featured'
@@ -731,6 +741,7 @@ export interface FileRouteTypes {
     | '/lists/$cardListId'
     | '/teams/$teamId'
     | '/tools/deck-format-converter'
+    | '/tools/websocket'
     | '/tournaments/$tournamentId'
     | '/tournaments/all'
     | '/tournaments/featured'
@@ -796,6 +807,7 @@ export interface FileRouteTypes {
     | '/lists/$cardListId/'
     | '/teams/$teamId/'
     | '/tools/deck-format-converter/'
+    | '/tools/websocket/'
     | '/tournaments/$tournamentId/'
     | '/tournaments/all/'
     | '/tournaments/featured/'
@@ -860,6 +872,7 @@ export interface RootRouteChildren {
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
   TeamsTeamIdIndexRoute: typeof TeamsTeamIdIndexRoute
   ToolsDeckFormatConverterIndexRoute: typeof ToolsDeckFormatConverterIndexRoute
+  ToolsWebsocketIndexRoute: typeof ToolsWebsocketIndexRoute
   TournamentsTournamentIdIndexRoute: typeof TournamentsTournamentIdIndexRoute
   TournamentsAllIndexRoute: typeof TournamentsAllIndexRoute
   TournamentsFeaturedIndexRoute: typeof TournamentsFeaturedIndexRoute
@@ -1116,6 +1129,13 @@ declare module '@tanstack/react-router' {
       path: '/tournaments/$tournamentId'
       fullPath: '/tournaments/$tournamentId'
       preLoaderRoute: typeof TournamentsTournamentIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/websocket/': {
+      id: '/tools/websocket/'
+      path: '/tools/websocket'
+      fullPath: '/tools/websocket'
+      preLoaderRoute: typeof ToolsWebsocketIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tools/deck-format-converter/': {
@@ -1474,6 +1494,7 @@ const rootRouteChildren: RootRouteChildren = {
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
   TeamsTeamIdIndexRoute: TeamsTeamIdIndexRoute,
   ToolsDeckFormatConverterIndexRoute: ToolsDeckFormatConverterIndexRoute,
+  ToolsWebsocketIndexRoute: ToolsWebsocketIndexRoute,
   TournamentsTournamentIdIndexRoute: TournamentsTournamentIdIndexRoute,
   TournamentsAllIndexRoute: TournamentsAllIndexRoute,
   TournamentsFeaturedIndexRoute: TournamentsFeaturedIndexRoute,

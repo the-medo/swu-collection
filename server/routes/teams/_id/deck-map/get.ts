@@ -1,10 +1,12 @@
 import { Hono } from 'hono';
 import { db } from '../../../../db';
-import { teamDeck } from '../../../../db/schema/team_deck.ts';
+import { type TeamDeck, teamDeck } from '../../../../db/schema/team_deck.ts';
 import { desc, eq } from 'drizzle-orm';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
 import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
+
+export type TeamDeckShortened = Omit<TeamDeck, 'teamId'>;
 
 export const teamsIdDeckMapGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const user = c.get('user');
@@ -26,5 +28,5 @@ export const teamsIdDeckMapGetRoute = new Hono<AuthExtension>().get('/', async c
     .where(eq(teamDeck.teamId, teamId))
     .orderBy(desc(teamDeck.addedAt));
 
-  return c.json({ data: rows });
+  return c.json({ data: rows } as { data: TeamDeckShortened[] });
 });
