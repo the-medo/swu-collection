@@ -34,7 +34,6 @@ const gameResultDataSchema = z.object({
   lobbyId: z.string(),
   startedAt: z.string(),
   finishedAt: z.string(),
-  winnerNames: z.array(z.string()),
   roundNumber: z.number(),
   sequenceNumber: z.number(),
   format: z.string(),

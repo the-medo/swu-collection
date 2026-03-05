@@ -31,7 +31,6 @@ export type IntegrationGameDataContent = {
           internalName?: string;
         };
       };
-      name?: string;
       leader?: string;
       isWinner?: boolean;
       accessToken?: string | null;
@@ -41,7 +40,6 @@ export type IntegrationGameDataContent = {
   startedAt?: string;
   finishedAt?: string;
   roundNumber?: number;
-  winnerNames?: string[];
   sequenceNumber?: number;
 };
 
@@ -125,7 +123,6 @@ export const transformKarabastGameDataToGameResults = async (
         roundNumber: data.roundNumber,
         startedAt: data.startedAt,
         finishedAt: data.finishedAt,
-        opponentName: opponent?.data?.name,
         deckInfo,
       },
 
