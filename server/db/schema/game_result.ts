@@ -104,7 +104,6 @@ export type GameResultOtherData = {
   roundNumber?: number;
   startedAt?: string;
   finishedAt?: string;
-  opponentName?: string;
   deckInfo?: GameResultDeckInfo;
 };
 

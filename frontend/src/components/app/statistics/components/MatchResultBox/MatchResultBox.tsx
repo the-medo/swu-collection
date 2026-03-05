@@ -43,8 +43,6 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({ match }) => {
     };
   }, [match, cardListData]);
 
-  const opponentName = match.games[0]?.otherData?.opponentName ?? 'Unknown';
-
   return (
     <div className="flex gap-2">
       <Card className="overflow-hidden relative w-[600px]">
@@ -83,7 +81,6 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({ match }) => {
                 >
                   {match.finalWins} - {match.finalLosses}
                 </h3>
-                <span className="text-[10px]">vs. {opponentName}</span>
               </div>
             </div>
 

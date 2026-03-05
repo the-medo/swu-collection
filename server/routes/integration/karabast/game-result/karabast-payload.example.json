@@ -14,7 +14,6 @@
           "leader": { "id": "SHD_013", "cost": 5, "count": 1, "internalName": "9226435975" },
           "deckSource": "swuBase"
         },
-        "name": "Medo",
         "leader": "9226435975",
         "isWinner": true,
         "accessToken": "this field arrives from karabast (is null when user is not linked) but is not inserted into swubase db"
@@ -53,7 +52,6 @@
           "leader": { "id": "LOF_016", "cost": 6, "count": 1, "internalName": "2580909557" },
           "deckSource": "swuBase"
         },
-        "name": "Order66",
         "leader": "2580909557",
         "isWinner": false,
         "accessToken": "this field arrives from karabast (is null when user is not linked) but is not inserted into swubase db"
@@ -87,6 +85,5 @@
   "startedAt": "2026-01-21T16:28:42.574Z",
   "finishedAt": "2026-01-21T16:29:20.605Z",
   "roundNumber": 3,
-  "winnerNames": ["Medo"],
   "sequenceNumber": 1
 }

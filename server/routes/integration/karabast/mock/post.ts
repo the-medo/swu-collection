@@ -48,7 +48,6 @@ const mockSingleGame = ({
   gameNumber,
   leaderCardId,
   baseCardKey,
-  opponentName,
   opponentLeaderCardId,
   opponentBaseCardKey,
   cards,
@@ -60,7 +59,6 @@ const mockSingleGame = ({
   gameNumber: number;
   leaderCardId: string | null;
   baseCardKey: string | null;
-  opponentName: string | null;
   opponentLeaderCardId: string | null;
   opponentBaseCardKey: string | null;
   cards: { cardId: string }[];
@@ -90,7 +88,6 @@ const mockSingleGame = ({
     roundMetrics: {},
     otherData: {
       roundNumber,
-      opponentName: opponentName ?? 'Unknown',
       startedAt: new Date().toISOString(),
       finishedAt: new Date().toISOString(),
       deckInfo,
@@ -165,16 +162,9 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
       return c.json({ error: 'Could not find a suitable opponent in meta' }, 400);
     }
 
-    let opponentName = 'Unknown';
     let opponentCards = [] as { cardId: string }[];
 
     if (process.env.MOCK_SECOND_USER_ID) {
-      opponentName = await db
-        .select({ displayName: userTable.displayName })
-        .from(userTable)
-        .where(eq(userTable.id, process.env.MOCK_SECOND_USER_ID))
-        .then(result => result[0]?.displayName || 'Unknown');
-
       opponentCards = await db
         .select({ cardId: deckCard.cardId })
         .from(deckCard)
@@ -202,7 +192,6 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
           deckRecord.baseCardId! in baseSpecialNames
             ? baseSpecialNames[deckRecord.baseCardId!]
             : deckRecord.baseCardId,
-        opponentName,
         opponentLeaderCardId: opponent.leader_card_id,
         opponentBaseCardKey:
           opponent.base_card_id in baseSpecialNames
@@ -241,7 +230,6 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
           roundMetrics: {},
           otherData: {
             roundNumber: game.otherData.roundNumber,
-            opponentName: user?.displayName ?? 'Unknown',
             startedAt: game.otherData.startedAt,
             finishedAt: game.otherData.finishedAt,
             deckInfo: {
