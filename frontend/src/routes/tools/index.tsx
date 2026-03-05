@@ -16,6 +16,11 @@ function ToolsLayout() {
             description="Transform decklists from melee.gg or text format into JSON"
             path="/tools/deck-format-converter"
           />
+          <ToolCard
+            title="WebSocket Demo"
+            description="Realtime game-results WebSocket stream demo (/api/ws/game-results)"
+            path="/tools/websocket"
+          />
         </div>
       </div>
     </>

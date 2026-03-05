@@ -3,7 +3,7 @@ import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
 import { collectionRoute } from './routes/collection.ts';
 import { deckRoute } from './routes/deck.ts';
-import { serveStatic } from 'hono/bun';
+import { serveStatic, upgradeWebSocket, websocket } from 'hono/bun';
 import { authRoute } from './routes/auth.ts';
 import { auth, type AuthExtension } from './auth/auth.ts';
 import { cardsRoute } from './routes/cards.ts';
@@ -30,6 +30,11 @@ import { timeout } from 'hono/timeout';
 import fs from 'fs';
 import path from 'path';
 import * as Sentry from '@sentry/bun';
+import {
+  getUserTeamIdsForRealtime,
+  registerGameResultSocket,
+  unregisterGameResultSocket,
+} from './lib/ws/gameResultsRealtime.ts';
 
 Sentry.init({
   environment: process.env.ENVIRONMENT,
@@ -136,6 +141,100 @@ const apiRoutes = app
   .route('/teams', teamsRoute)
   .route('/user-setup', userSetupRoute);
 
+app.get('/api/ws/game-results', async c => {
+  const user = c.get('user');
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  const teamIds = await getUserTeamIdsForRealtime(user.id);
+
+  return upgradeWebSocket(c, {
+    onOpen(_event, ws) {
+      registerGameResultSocket(ws, {
+        userId: user.id,
+        teamIds,
+      });
+
+      ws.send(
+        JSON.stringify({
+          type: 'game_results.connected',
+          data: {
+            userId: user.id,
+            teamIds,
+            at: new Date().toISOString(),
+          },
+        }),
+      );
+    },
+    onMessage(event, ws) {
+      const input = typeof event.data === 'string' ? event.data.trim() : '';
+
+      if (input === 'ping') {
+        ws.send(
+          JSON.stringify({
+            type: 'pong',
+            at: new Date().toISOString(),
+          }),
+        );
+        return;
+      }
+
+      ws.send(
+        JSON.stringify({
+          type: 'error',
+          message: 'Unsupported websocket command',
+        }),
+      );
+    },
+    onClose(_event, ws) {
+      unregisterGameResultSocket(ws);
+    },
+    onError(_event, ws) {
+      unregisterGameResultSocket(ws);
+    },
+  });
+});
+app.get(
+  '/api/ws/demo',
+  upgradeWebSocket(() => {
+    return {
+      onOpen(_event, ws) {
+        ws.send(
+          JSON.stringify({
+            type: 'connected',
+            message: 'WebSocket connection established',
+            at: new Date().toISOString(),
+          }),
+        );
+      },
+      onMessage(event, ws) {
+        const input = typeof event.data === 'string' ? event.data.trim() : '';
+
+        if (input.toLowerCase() === 'time') {
+          ws.send(
+            JSON.stringify({
+              type: 'time',
+              value: new Date().toISOString(),
+            }),
+          );
+          return;
+        }
+
+        ws.send(
+          JSON.stringify({
+            type: 'echo',
+            value: input || '(empty message)',
+          }),
+        );
+      },
+      onClose() {
+        // No cleanup needed for this stateless demo socket.
+      },
+    };
+  }),
+);
+
 // Read the index.html template once at startup
 let indexHtml: string;
 try {
@@ -229,4 +328,5 @@ app.get('*', c => c.html(indexHtml));
 Sentry.setupHonoErrorHandler(app);
 
 export default app;
+export const bunWebsocket = websocket;
 export type ApiRoutes = typeof apiRoutes;
