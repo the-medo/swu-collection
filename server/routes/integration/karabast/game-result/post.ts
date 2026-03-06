@@ -15,7 +15,6 @@ import { transformKarabastGameDataToGameResults } from '../../../../lib/game-res
 import { upsertGameResults } from '../../../../lib/game-results/upsertGameResults.ts';
 
 const playerDataSchema = z.object({
-  name: z.string(),
   id: z.string(),
   accessToken: z.string().nullable().optional(),
   leader: z.string().optional().nullable(),

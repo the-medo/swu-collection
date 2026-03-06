@@ -45,7 +45,7 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({ match }) => {
 
   return (
     <div className="flex gap-2">
-      <Card className="overflow-hidden relative w-[600px]">
+      <Card className="overflow-hidden relative w-[600px] min-h-[80px]">
         <div className="flex-1 relative">
           {leaderCard && (
             <DeckBackgroundDecoration
