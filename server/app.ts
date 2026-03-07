@@ -138,46 +138,6 @@ const apiRoutes = app
   .route('/user-setup', userSetupRoute)
   .route('/ws', wsRoute);
 
-app.get(
-  '/api/ws/demo',
-  upgradeWebSocket(() => {
-    return {
-      onOpen(_event, ws) {
-        ws.send(
-          JSON.stringify({
-            type: 'connected',
-            message: 'WebSocket connection established',
-            at: new Date().toISOString(),
-          }),
-        );
-      },
-      onMessage(event, ws) {
-        const input = typeof event.data === 'string' ? event.data.trim() : '';
-
-        if (input.toLowerCase() === 'time') {
-          ws.send(
-            JSON.stringify({
-              type: 'time',
-              value: new Date().toISOString(),
-            }),
-          );
-          return;
-        }
-
-        ws.send(
-          JSON.stringify({
-            type: 'echo',
-            value: input || '(empty message)',
-          }),
-        );
-      },
-      onClose() {
-        // No cleanup needed for this stateless demo socket.
-      },
-    };
-  }),
-);
-
 // Read the index.html template once at startup
 let indexHtml: string;
 try {
