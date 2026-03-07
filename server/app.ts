@@ -24,17 +24,13 @@ import { integrationRoute } from './routes/integration.ts';
 import { gameResultRoute } from './routes/game-results.ts';
 import { teamsRoute } from './routes/teams.ts';
 import { userSetupRoute } from './routes/user-setup.ts';
+import { wsRoute } from './routes/ws.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
 import { timeout } from 'hono/timeout';
 import fs from 'fs';
 import path from 'path';
 import * as Sentry from '@sentry/bun';
-import {
-  getUserTeamIdsForRealtime,
-  registerGameResultSocket,
-  unregisterGameResultSocket,
-} from './lib/ws/gameResultsRealtime.ts';
 
 Sentry.init({
   environment: process.env.ENVIRONMENT,
@@ -139,62 +135,9 @@ const apiRoutes = app
   .route('/integration', integrationRoute)
   .route('/game-results', gameResultRoute)
   .route('/teams', teamsRoute)
-  .route('/user-setup', userSetupRoute);
+  .route('/user-setup', userSetupRoute)
+  .route('/ws', wsRoute);
 
-app.get('/api/ws/game-results', async c => {
-  const user = c.get('user');
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
-
-  const teamIds = await getUserTeamIdsForRealtime(user.id);
-
-  return upgradeWebSocket(c, {
-    onOpen(_event, ws) {
-      registerGameResultSocket(ws, {
-        userId: user.id,
-        teamIds,
-      });
-
-      ws.send(
-        JSON.stringify({
-          type: 'game_results.connected',
-          data: {
-            userId: user.id,
-            teamIds,
-            at: new Date().toISOString(),
-          },
-        }),
-      );
-    },
-    onMessage(event, ws) {
-      const input = typeof event.data === 'string' ? event.data.trim() : '';
-
-      if (input === 'ping') {
-        ws.send(
-          JSON.stringify({
-            type: 'pong',
-            at: new Date().toISOString(),
-          }),
-        );
-        return;
-      }
-
-      ws.send(
-        JSON.stringify({
-          type: 'error',
-          message: 'Unsupported websocket command',
-        }),
-      );
-    },
-    onClose(_event, ws) {
-      unregisterGameResultSocket(ws);
-    },
-    onError(_event, ws) {
-      unregisterGameResultSocket(ws);
-    },
-  });
-});
 app.get(
   '/api/ws/demo',
   upgradeWebSocket(() => {
