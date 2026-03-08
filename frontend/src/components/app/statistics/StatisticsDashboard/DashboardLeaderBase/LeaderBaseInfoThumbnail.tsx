@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCardList } from '@/api/lists/useCardList.ts';
+import { useCardList, type CardListResponse } from '@/api/lists/useCardList.ts';
 import { useMemo } from 'react';
 import { basicBaseForAspect } from '../../../../../../../shared/lib/basicBases.ts';
 import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
@@ -12,6 +12,7 @@ import { StatSection, StatSectionProps } from '@/components/app/statistics/commo
 import { cn } from '@/lib/utils.ts';
 import DeckInfoThumbnail from '@/components/app/statistics/StatisticsDecks/StatisticsDeckLists/DeckInfoThumbnail.tsx';
 import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
+import { getStatisticsTimestampMs } from '@/components/app/statistics/lib/date.ts';
 
 export interface LeaderBaseInfoThumbnailProps {
   teamId?: string;
@@ -20,7 +21,10 @@ export interface LeaderBaseInfoThumbnailProps {
   statSectionVariant?: StatSectionProps['variant'];
 }
 
-const getCardIdFromKey = (key: string | undefined, cards: any) => {
+const getCardIdFromKey = (
+  key: string | undefined,
+  cards: CardListResponse['cards'] | undefined,
+) => {
   if (!key || !cards) return undefined;
   return key in cards ? key : basicBaseForAspect[key];
 };
@@ -77,7 +81,7 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
     return Object.values(recentDecksMap)
       .sort((a, b) => {
         if (!a.lastPlayed || !b.lastPlayed) return 0;
-        return new Date(b.lastPlayed).getTime() - new Date(a.lastPlayed).getTime();
+        return getStatisticsTimestampMs(b.lastPlayed) - getStatisticsTimestampMs(a.lastPlayed);
       })
       .slice(0, 3);
   }, [matches]);

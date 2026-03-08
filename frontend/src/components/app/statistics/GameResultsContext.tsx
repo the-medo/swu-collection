@@ -155,8 +155,7 @@ export const GameResultsProvider: React.FC<GameResultsProviderProps> = ({ teamId
           const publicQueries = queryClient.getQueriesData({
             queryKey: ['game-results', scopeId] as any,
           });
-          publicQueries.forEach(([qk, qd]: any) => {
-            console.log(qk, qd);
+          publicQueries.forEach(([qk, _qd]: any) => {
             const gameDate = payload.data?.createdAt;
             if (
               gameDate &&
