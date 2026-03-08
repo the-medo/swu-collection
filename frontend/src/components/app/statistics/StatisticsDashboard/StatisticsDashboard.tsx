@@ -4,12 +4,13 @@ import { Card } from '@/components/ui/card.tsx';
 import DashboardCalendar from '@/components/app/statistics/StatisticsDashboard/DashboardCalendar/DashboardCalendar.tsx';
 import DashboardLeaderBase from '@/components/app/statistics/StatisticsDashboard/DashboardLeaderBase/DashboardLeaderBase.tsx';
 import DashboardOverview from '@/components/app/statistics/StatisticsDashboard/DashboardOverview/DashboardOverview.tsx';
-import { isAfter, startOfDay, subDays } from 'date-fns';
+import { startOfDay, subDays } from 'date-fns';
 import { useMemo } from 'react';
 import MatchResultBox from '@/components/app/statistics/components/MatchResultBox/MatchResultBox.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Link, useSearch } from '@tanstack/react-router';
 import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
+import { getStatisticsTimestampMs } from '@/components/app/statistics/lib/date.ts';
 
 interface StatisticsDashboardProps {
   teamId?: string;
@@ -23,14 +24,15 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
 
   const { todayMatches, last7DaysMatches, allMatches } = React.useMemo(() => {
     const matches = gameResultData?.matches.array ?? [];
-    const now = new Date();
-    const todayStart = startOfDay(now);
-    const last7DaysStart = startOfDay(subDays(now, 7));
+    const todayStartTime = startOfDay(new Date()).getTime();
+    const last7DaysStartTime = startOfDay(subDays(new Date(), 7)).getTime();
 
     return {
-      todayMatches: matches.filter(m => isAfter(new Date(m.firstGameCreatedAt), todayStart)),
-      last7DaysMatches: matches.filter(m =>
-        isAfter(new Date(m.firstGameCreatedAt), last7DaysStart),
+      todayMatches: matches.filter(
+        m => getStatisticsTimestampMs(m.firstGameCreatedAt) >= todayStartTime,
+      ),
+      last7DaysMatches: matches.filter(
+        m => getStatisticsTimestampMs(m.firstGameCreatedAt) >= last7DaysStartTime,
       ),
       allMatches: matches,
     };

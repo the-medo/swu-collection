@@ -3,7 +3,7 @@ import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
 import { collectionRoute } from './routes/collection.ts';
 import { deckRoute } from './routes/deck.ts';
-import { serveStatic } from 'hono/bun';
+import { serveStatic, upgradeWebSocket, websocket } from 'hono/bun';
 import { authRoute } from './routes/auth.ts';
 import { auth, type AuthExtension } from './auth/auth.ts';
 import { cardsRoute } from './routes/cards.ts';
@@ -24,6 +24,7 @@ import { integrationRoute } from './routes/integration.ts';
 import { gameResultRoute } from './routes/game-results.ts';
 import { teamsRoute } from './routes/teams.ts';
 import { userSetupRoute } from './routes/user-setup.ts';
+import { wsRoute } from './routes/ws.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
 import { timeout } from 'hono/timeout';
@@ -134,7 +135,8 @@ const apiRoutes = app
   .route('/integration', integrationRoute)
   .route('/game-results', gameResultRoute)
   .route('/teams', teamsRoute)
-  .route('/user-setup', userSetupRoute);
+  .route('/user-setup', userSetupRoute)
+  .route('/ws', wsRoute);
 
 // Read the index.html template once at startup
 let indexHtml: string;
@@ -229,4 +231,5 @@ app.get('*', c => c.html(indexHtml));
 Sentry.setupHonoErrorHandler(app);
 
 export default app;
+export const bunWebsocket = websocket;
 export type ApiRoutes = typeof apiRoutes;

@@ -58,7 +58,7 @@ export const useGetGameResults = (params: UseGetGameResultsParams = {}) => {
   const scopeId = enabled ? (teamId ?? userId) : undefined;
 
   return useQuery<GameResultStore[]>({
-    queryKey: ['game-results', scopeId, `${dateFromParam}-${dateToParam}`],
+    queryKey: ['game-results', scopeId, dateFromParam, dateToParam],
     queryFn:
       enabled && scopeId
         ? async () => {

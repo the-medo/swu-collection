@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useMemo, useState } from 'react';
 import { useTeamMembers } from '@/api/teams';
 import { useGameResultsContext } from '@/components/app/statistics/GameResultsContext.tsx';
-import { useCardList } from '@/api/lists/useCardList.ts';
+import { useCardList, type CardListResponse } from '@/api/lists/useCardList.ts';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import {
@@ -17,6 +17,7 @@ import LeaderAvatar from '@/components/app/global/LeaderAvatar.tsx';
 import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import type { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 import type { GameResult } from '../../../../../../server/db/schema/game_result.ts';
+import { getStatisticsTimestampMs } from '@/components/app/statistics/lib/date.ts';
 
 interface StatisticsMembersProps {
   teamId: string;
@@ -91,7 +92,7 @@ const buildMatchesFromGames = (games: GameResult[]): MatchResult[] => {
     match.games.sort((a, b) => (a.gameNumber ?? 0) - (b.gameNumber ?? 0));
 
     const firstGame = match.games.reduce((prev, curr) =>
-      new Date(prev.createdAt ?? 0).getTime() < new Date(curr.createdAt ?? 0).getTime()
+      getStatisticsTimestampMs(prev.createdAt) < getStatisticsTimestampMs(curr.createdAt)
         ? prev
         : curr,
     );
@@ -99,7 +100,9 @@ const buildMatchesFromGames = (games: GameResult[]): MatchResult[] => {
   });
 
   return Object.values(matchesObject).sort(
-    (a, b) => new Date(b.firstGameCreatedAt).getTime() - new Date(a.firstGameCreatedAt).getTime(),
+    (a, b) =>
+      getStatisticsTimestampMs(b.firstGameCreatedAt) -
+      getStatisticsTimestampMs(a.firstGameCreatedAt),
   );
 };
 
@@ -215,7 +218,7 @@ const StatisticsMembers: React.FC<StatisticsMembersProps> = ({ teamId }) => {
 
 interface MemberStatsRowProps {
   member: MemberStats;
-  cardListData: any;
+  cardListData: CardListResponse | undefined;
 }
 
 const MemberStatsRow: React.FC<MemberStatsRowProps> = ({ member, cardListData }) => {

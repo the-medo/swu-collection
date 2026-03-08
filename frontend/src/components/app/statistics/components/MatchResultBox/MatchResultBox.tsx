@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
-import { useCardList } from '@/api/lists/useCardList.ts';
+import { useCardList, type CardListResponse } from '@/api/lists/useCardList.ts';
 import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
 import { cn } from '@/lib/utils.ts';
 import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
@@ -11,12 +11,16 @@ import { useMemo } from 'react';
 import MatchGames from './MatchGames.tsx';
 import { formatDistanceToNow } from 'date-fns';
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
+import { parseStatisticsTimestamp } from '@/components/app/statistics/lib/date.ts';
 
 interface MatchResultBoxProps {
   match: MatchResult;
 }
 
-const getCardIdFromKey = (key: string | undefined, cards: any) => {
+const getCardIdFromKey = (
+  key: string | undefined,
+  cards: CardListResponse['cards'] | undefined,
+) => {
   if (!key || !cards) return undefined;
   return key in cards ? key : basicBaseForAspect[key];
 };
@@ -86,7 +90,9 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({ match }) => {
 
             <div className="flex absolute gap-2 left-40 right-40 top-12 justify-between">
               <span className="text-[10px] text-muted-foreground">
-                {formatDistanceToNow(`${match.firstGameCreatedAt}Z`, { addSuffix: true })}
+                {formatDistanceToNow(parseStatisticsTimestamp(match.firstGameCreatedAt), {
+                  addSuffix: true,
+                })}
               </span>
               <Badge variant="outline" size="small">
                 {match.type}

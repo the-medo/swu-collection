@@ -7,6 +7,10 @@ import { format } from 'date-fns';
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 import { useTeamDataMap } from '@/components/app/statistics/lib/useTeamDataMap.ts';
 import { createMatchResultBasedOnGameResult } from '@/components/app/statistics/lib/lib.ts';
+import {
+  getStatisticsTimestampMs,
+  parseStatisticsTimestamp,
+} from '@/components/app/statistics/lib/date.ts';
 
 export interface StatisticsHistoryData {
   games: {
@@ -89,7 +93,7 @@ export const useGameResults = (
       if (game.id) {
         if (!game.createdAt) return;
 
-        const createdAtDateString = format(new Date(`${game.createdAt}Z`), 'yyyy-MM-dd');
+        const createdAtDateString = format(parseStatisticsTimestamp(game.createdAt), 'yyyy-MM-dd');
 
         if (datetimeFrom && createdAtDateString < datetimeFrom) return;
         if (datetimeTo && createdAtDateString > datetimeTo) return;
@@ -133,7 +137,7 @@ export const useGameResults = (
     }
 
     const gamesArray = Object.values(gamesObject).sort((a, b) => {
-      return new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime();
+      return getStatisticsTimestampMs(b.createdAt) - getStatisticsTimestampMs(a.createdAt);
     });
 
     const matchesObject: Record<string, MatchResult> = {};
@@ -199,7 +203,7 @@ export const useGameResults = (
       match.games.sort((a, b) => (a.gameNumber ?? 0) - (b.gameNumber ?? 0));
 
       const firstGame = match.games.reduce((prev, curr) => {
-        return new Date(prev.createdAt ?? 0).getTime() < new Date(curr.createdAt ?? 0).getTime()
+        return getStatisticsTimestampMs(prev.createdAt) < getStatisticsTimestampMs(curr.createdAt)
           ? prev
           : curr;
       });
@@ -207,13 +211,16 @@ export const useGameResults = (
     });
 
     const matchesArray = Object.values(matchesObject).sort((a, b) => {
-      return new Date(b.firstGameCreatedAt).getTime() - new Date(a.firstGameCreatedAt).getTime();
+      return (
+        getStatisticsTimestampMs(b.firstGameCreatedAt) -
+        getStatisticsTimestampMs(a.firstGameCreatedAt)
+      );
     });
 
     const matchesByDate: Record<string, MatchResult[]> = {};
     matchesArray.forEach(match => {
       if (!match.firstGameCreatedAt) return;
-      const date = new Date(`${match.firstGameCreatedAt}Z`);
+      const date = parseStatisticsTimestamp(match.firstGameCreatedAt);
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');

@@ -4,6 +4,7 @@ import type { GameResult } from '../../db/schema/game_result.ts';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 import { teamMember } from '../../db/schema/team_member.ts';
 import { teamDeck } from '../../db/schema/team_deck.ts';
+import { hasActiveGameResultSockets, publishGameResultUpserts } from '../ws/gameResultsRealtime.ts';
 
 export const upsertGameResults = async (results: GameResult[]) => {
   if (results.length === 0) {
@@ -39,7 +40,7 @@ export const upsertGameResults = async (results: GameResult[]) => {
   // ======================================================
 
   // ======== Insert game results
-  await db
+  const rows = await db
     .insert(gameResult)
     .values(results)
     .onConflictDoUpdate({
@@ -68,5 +69,14 @@ export const upsertGameResults = async (results: GameResult[]) => {
 
         updatedAt: new Date().toISOString(),
       },
-    });
+    })
+    .returning();
+
+  if (hasActiveGameResultSockets()) {
+    try {
+      await publishGameResultUpserts(rows as GameResult[]);
+    } catch (error) {
+      console.error('Failed to publish game result realtime update', error);
+    }
+  }
 };
