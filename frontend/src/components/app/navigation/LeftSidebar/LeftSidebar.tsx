@@ -133,13 +133,13 @@ const getGroups = (
         title: 'Your statistics',
         url: '/statistics',
         icon: ChartSpline,
-        soon: true,
+        beta: true,
       },
       {
         title: 'Teams',
         url: '/teams',
         icon: Users,
-        soon: true,
+        beta: true,
         menuAction: (
           <NewTeamDialog
             trigger={
@@ -364,9 +364,9 @@ export function LeftSidebar() {
                             >
                               <i.icon />
                               <span>{i.title}</span>
-                              {'soon' in i && i.soon && (
+                              {'beta' in i && i.beta && (
                                 <Badge size="small" className="text-xs px-2" variant="outline">
-                                  Soon<sup className="text-[6px]">TM</sup>
+                                  Beta
                                 </Badge>
                               )}
                             </Link>

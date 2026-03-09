@@ -71,7 +71,7 @@ const MemberRow: React.FC<MemberRowProps> = ({
       {(isOwner || isSelf) && (
         <div className="flex items-center gap-2 mr-10" title="Auto-add deck">
           <AutoAddDeckTooltip />
-          <span className="text-xs text-muted-foreground">Auto-add played decks to team</span>
+          <span className="text-xs text-muted-foreground">Auto-add played decks to team decks</span>
           <Switch checked={member.autoAddDeck} onCheckedChange={onAutoAddDeckChange} />
         </div>
       )}

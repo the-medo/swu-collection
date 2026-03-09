@@ -97,13 +97,6 @@ const TeamsPage: React.FC = () => {
         <h3>Teams</h3>
 
         <div className="flex flex-col gap-6 mt-4 items-center">
-          <Alert variant="warning" className="max-w-3xl p-8 flex flex-col gap-8">
-            <AlertTitle>Coming Soon!</AlertTitle>
-            <AlertDescription>
-              Karabast game result tracking is on the way and will be ready soon. You can create or
-              join a team, but <b>stat-tracking doesn't work yet</b>.
-            </AlertDescription>
-          </Alert>
           <div className="min-w-0">
             {!user ? (
               <Card>
