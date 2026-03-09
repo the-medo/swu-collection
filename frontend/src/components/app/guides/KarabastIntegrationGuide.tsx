@@ -50,13 +50,6 @@ const KarabastIntegrationGuide: React.FC = () => {
         </p>
       </div>
 
-      <Alert variant="warning" className="max-w-3xl p-8 flex flex-col gap-8">
-        <AlertTitle>Coming Soon!</AlertTitle>
-        <AlertDescription>
-          Karabast game result tracking is on the way and will be ready soon.
-        </AlertDescription>
-      </Alert>
-
       <Step
         stepNumber={1}
         title="Open Karabast, go to Preferences"
