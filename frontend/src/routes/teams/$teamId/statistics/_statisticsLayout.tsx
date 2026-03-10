@@ -10,6 +10,12 @@ import { MatchupSort } from '@/components/app/statistics/components/SubpageMatch
 import { emptyCardStatTableRow } from '@/components/app/statistics/components/SubpageCardStats/cardStatLib.ts';
 import { GameResultsProvider } from '@/components/app/statistics/GameResultsContext.tsx';
 
+export enum MatchType {
+  BO1 = 'Bo1',
+  BO3 = 'Bo3',
+  ALL = 'All',
+}
+
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),
   sLeaderCardId: z.string().optional(),
@@ -29,6 +35,7 @@ const statisticsSearchParams = z.object({
   sFormatId: z.coerce.number().optional(),
   sKarabastFormat: z.string().optional(),
   sInTeam: z.boolean().optional(),
+  sMatchType: z.enum(MatchType).optional(),
 });
 
 export const Route = createFileRoute('/teams/$teamId/statistics/_statisticsLayout')({

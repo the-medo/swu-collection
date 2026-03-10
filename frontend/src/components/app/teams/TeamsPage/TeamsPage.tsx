@@ -22,7 +22,6 @@ import {
 } from '@/components/ui/card.tsx';
 import NewTeamDialog from '@/components/app/dialogs/NewTeamDialog.tsx';
 import SignIn from '@/components/app/auth/SignIn.tsx';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 
 const MAX_TEAMS = 2;
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useCallback } from 'react';
-import GenericToggleSelector, { ToggleOption } from '../components/GenericToggleSelector.tsx';
+import GenericToggleSelector, { ToggleOption } from '../../../global/GenericToggleSelector.tsx';
 
 export type DailySnapshotMetaPart = 'total' | 'top8' | 'winners';
 
