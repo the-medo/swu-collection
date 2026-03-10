@@ -10,7 +10,7 @@ import { emptyCardStatTableRow } from '@/components/app/statistics/components/Su
 import { GameResultsProvider } from '@/components/app/statistics/GameResultsContext.tsx';
 import { useUserSetup } from '@/api/teams';
 import KarabastIntegrationGuide from '@/components/app/guides/KarabastIntegrationGuide.tsx';
-import { MatchType } from '@/routes/teams/$teamId/statistics/_statisticsLayout.tsx';
+import { MatchType } from '@/components/app/statistics/components/StatisticsFilters/MatchTypeSelector.tsx';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),

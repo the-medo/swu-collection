@@ -9,12 +9,7 @@ import { StatisticsSubpage } from '@/components/app/statistics/components/Statis
 import { MatchupSort } from '@/components/app/statistics/components/SubpageMatchups/matchupLib.ts';
 import { emptyCardStatTableRow } from '@/components/app/statistics/components/SubpageCardStats/cardStatLib.ts';
 import { GameResultsProvider } from '@/components/app/statistics/GameResultsContext.tsx';
-
-export enum MatchType {
-  BO1 = 'Bo1',
-  BO3 = 'Bo3',
-  ALL = 'All',
-}
+import { MatchType } from '@/components/app/statistics/components/StatisticsFilters/MatchTypeSelector.tsx';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),

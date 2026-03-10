@@ -39,6 +39,7 @@ const TabLink: React.FC<TabLinkProps> = ({ tab, isActive, basePath }) => {
         sFormatId: prev.sFormatId,
         sKarabastFormat: prev.sKarabastFormat,
         sInTeam: prev.sInTeam,
+        sMatchType: prev.sMatchType,
       })}
       className={commonClass}
     >

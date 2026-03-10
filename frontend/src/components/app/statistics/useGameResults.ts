@@ -11,6 +11,7 @@ import {
   getStatisticsTimestampMs,
   parseStatisticsTimestamp,
 } from '@/components/app/statistics/lib/date.ts';
+import { MatchType } from '@/components/app/statistics/components/StatisticsFilters/MatchTypeSelector.tsx';
 
 export interface StatisticsHistoryData {
   games: {
@@ -46,10 +47,12 @@ export const useGameResults = (
   params: UseGameResultsParams = {},
 ): StatisticsHistoryData | undefined => {
   const { datetimeFrom, datetimeTo, teamId } = params;
-  const { sFormatId, sDateRangeFrom, sDateRangeTo, sKarabastFormat, sInTeam } = useSearch({
-    strict: false,
-  });
+  const { sFormatId, sDateRangeFrom, sDateRangeTo, sKarabastFormat, sInTeam, sMatchType } =
+    useSearch({
+      strict: false,
+    });
   const teamDataMap = useTeamDataMap(teamId);
+  const selectedMatchType = sMatchType as MatchType | undefined;
 
   const session = useSession();
 
@@ -210,7 +213,34 @@ export const useGameResults = (
       match.firstGameCreatedAt = firstGame.createdAt ?? '';
     });
 
-    const matchesArray = Object.values(matchesObject).sort((a, b) => {
+    let filteredMatchesObject: Record<string, MatchResult> = matchesObject;
+    let filteredGamesObject: Record<string, GameResult> = gamesObject;
+
+    if (selectedMatchType && selectedMatchType !== MatchType.ALL) {
+      filteredMatchesObject = {};
+      Object.entries(matchesObject).forEach(([matchId, match]) => {
+        if (match.type !== selectedMatchType) {
+          return;
+        }
+
+        filteredMatchesObject[matchId] = match;
+      });
+
+      filteredGamesObject = {};
+      Object.values(filteredMatchesObject).forEach(match => {
+        match.games.forEach(game => {
+          if (game.id) {
+            filteredGamesObject[game.id] = game;
+          }
+        });
+      });
+    }
+
+    const filteredGamesArray = Object.values(filteredGamesObject).sort((a, b) => {
+      return getStatisticsTimestampMs(b.createdAt) - getStatisticsTimestampMs(a.createdAt);
+    });
+
+    const matchesArray = Object.values(filteredMatchesObject).sort((a, b) => {
       return (
         getStatisticsTimestampMs(b.firstGameCreatedAt) -
         getStatisticsTimestampMs(a.firstGameCreatedAt)
@@ -292,11 +322,11 @@ export const useGameResults = (
 
     return {
       games: {
-        object: gamesObject,
-        array: gamesArray,
+        object: filteredGamesObject,
+        array: filteredGamesArray,
       },
       matches: {
-        object: matchesObject,
+        object: filteredMatchesObject,
         array: matchesArray,
         byDate: matchesByDate,
         byLeaderBase: matchesByLeaderBase,
@@ -314,6 +344,7 @@ export const useGameResults = (
     sFormatId,
     sKarabastFormat,
     sInTeam,
+    selectedMatchType,
     teamId,
     teamDataMap,
   ]);
