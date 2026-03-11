@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useMemo, useState } from 'react';
 import { useTeamMembers } from '@/api/teams';
 import { useGameResultsContext } from '@/components/app/statistics/GameResultsContext.tsx';
-import { useCardList, type CardListResponse } from '@/api/lists/useCardList.ts';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import {
@@ -16,8 +15,6 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import LeaderAvatar from '@/components/app/global/LeaderAvatar.tsx';
 import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import type { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
-import type { GameResult } from '../../../../../../server/db/schema/game_result.ts';
-import { getStatisticsTimestampMs } from '@/components/app/statistics/lib/date.ts';
 
 interface StatisticsMembersProps {
   teamId: string;
@@ -36,120 +33,18 @@ interface MemberStats {
   gameWins: number;
   gameLosses: number;
   gameWinRate: number;
-  mostPlayedLeaderCardId?: string;
-  mostPlayedBaseCardKey?: string;
 }
-
-const buildMatchesFromGames = (games: GameResult[]): MatchResult[] => {
-  const matchesObject: Record<string, MatchResult> = {};
-
-  games.forEach(game => {
-    const matchId = game.matchId || `manual-${game.id}`;
-    if (!matchesObject[matchId]) {
-      matchesObject[matchId] = {
-        id: matchId,
-        type: 'other',
-        games: [],
-        gameSource: game.gameSource,
-        format: game.format ?? '',
-        leaderCardId: game.leaderCardId ?? undefined,
-        baseCardKey: game.baseCardKey ?? undefined,
-        opponentLeaderCardId: game.opponentLeaderCardId ?? undefined,
-        opponentBaseCardKey: game.opponentBaseCardKey ?? undefined,
-        deckId: game.deckId ?? undefined,
-        userEventId: game.userEventId ?? undefined,
-        exclude: false,
-        manuallyEdited: false,
-        firstGameCreatedAt: '',
-      };
-    }
-    matchesObject[matchId].games.push(game);
-  });
-
-  Object.values(matchesObject).forEach(match => {
-    match.exclude = match.games.every(g => g.exclude);
-    match.manuallyEdited = match.games.some(g => g.manuallyEdited);
-
-    const gameCount = match.games.length;
-    if (gameCount === 1) match.type = 'Bo1';
-    else if (gameCount >= 2 && gameCount <= 3) match.type = 'Bo3';
-    else match.type = 'other';
-
-    let wins = 0;
-    let losses = 0;
-    match.games.forEach(g => {
-      if (g.isWinner === true) wins++;
-      else if (g.isWinner === false) losses++;
-    });
-
-    match.finalWins = wins;
-    match.finalLosses = losses;
-
-    if (wins > losses) match.result = 3;
-    else if (wins === losses) match.result = 1;
-    else match.result = 0;
-
-    match.games.sort((a, b) => (a.gameNumber ?? 0) - (b.gameNumber ?? 0));
-
-    const firstGame = match.games.reduce((prev, curr) =>
-      getStatisticsTimestampMs(prev.createdAt) < getStatisticsTimestampMs(curr.createdAt)
-        ? prev
-        : curr,
-    );
-    match.firstGameCreatedAt = firstGame.createdAt ?? '';
-  });
-
-  return Object.values(matchesObject).sort(
-    (a, b) =>
-      getStatisticsTimestampMs(b.firstGameCreatedAt) -
-      getStatisticsTimestampMs(a.firstGameCreatedAt),
-  );
-};
-
-const getMostPlayedLeaderBase = (
-  matches: MatchResult[],
-): { leaderCardId?: string; baseCardKey?: string } => {
-  const counts: Record<string, number> = {};
-  matches.forEach(m => {
-    if (m.leaderCardId && m.baseCardKey) {
-      const key = `${m.leaderCardId}|${m.baseCardKey}`;
-      counts[key] = (counts[key] || 0) + 1;
-    }
-  });
-
-  let maxKey: string | undefined;
-  let maxCount = 0;
-  for (const [key, count] of Object.entries(counts)) {
-    if (count > maxCount) {
-      maxCount = count;
-      maxKey = key;
-    }
-  }
-
-  if (!maxKey) return {};
-  const [leaderCardId, baseCardKey] = maxKey.split('|');
-  return { leaderCardId, baseCardKey };
-};
 
 const StatisticsMembers: React.FC<StatisticsMembersProps> = ({ teamId }) => {
   const { data: members, isLoading: membersLoading } = useTeamMembers(teamId);
   const gameResultData = useGameResultsContext();
-  const { data: cardListData } = useCardList();
 
   const memberStats = useMemo<MemberStats[]>(() => {
     if (!members || !gameResultData) return [];
 
-    const gamesByUser: Record<string, GameResult[]> = {};
-    gameResultData.games.array.forEach(game => {
-      const uid = game.userId;
-      if (!gamesByUser[uid]) gamesByUser[uid] = [];
-      gamesByUser[uid].push(game);
-    });
-
     return members
       .map(member => {
-        const userGames = gamesByUser[member.userId] ?? [];
-        const matches = buildMatchesFromGames(userGames);
+        const matches = gameResultData.matches.byUserId.matches[member.userId] ?? [];
 
         let wins = 0;
         let losses = 0;
@@ -173,8 +68,6 @@ const StatisticsMembers: React.FC<StatisticsMembersProps> = ({ teamId }) => {
         const totalGames = gameWins + gameLosses;
         const gameWinRate = totalGames > 0 ? (gameWins / totalGames) * 100 : 0;
 
-        const { leaderCardId, baseCardKey } = getMostPlayedLeaderBase(matches);
-
         return {
           userId: member.userId,
           name: member.name,
@@ -188,8 +81,6 @@ const StatisticsMembers: React.FC<StatisticsMembersProps> = ({ teamId }) => {
           gameWins,
           gameLosses,
           gameWinRate,
-          mostPlayedLeaderCardId: leaderCardId,
-          mostPlayedBaseCardKey: baseCardKey,
         };
       })
       .sort((a, b) => b.totalMatches - a.totalMatches);
@@ -210,7 +101,7 @@ const StatisticsMembers: React.FC<StatisticsMembersProps> = ({ teamId }) => {
   return (
     <div className="flex flex-col gap-2">
       {memberStats.map(member => (
-        <MemberStatsRow key={member.userId} member={member} cardListData={cardListData} />
+        <MemberStatsRow key={member.userId} member={member} />
       ))}
     </div>
   );
@@ -218,15 +109,10 @@ const StatisticsMembers: React.FC<StatisticsMembersProps> = ({ teamId }) => {
 
 interface MemberStatsRowProps {
   member: MemberStats;
-  cardListData: CardListResponse | undefined;
 }
 
-const MemberStatsRow: React.FC<MemberStatsRowProps> = ({ member, cardListData }) => {
+const MemberStatsRow: React.FC<MemberStatsRowProps> = ({ member }) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const leaderCard = member.mostPlayedLeaderCardId
-    ? cardListData?.cards[member.mostPlayedLeaderCardId]
-    : undefined;
 
   // Group matches by leader/base for the expanded detail
   const leaderBaseBreakdown = useMemo(() => {
@@ -279,14 +165,6 @@ const MemberStatsRow: React.FC<MemberStatsRowProps> = ({ member, cardListData })
 
             {member.totalMatches > 0 && (
               <div className="flex items-center gap-4 flex-wrap justify-end">
-                <div className="flex items-center gap-2">
-                  {leaderCard && (
-                    <LeaderAvatar cardId={member.mostPlayedLeaderCardId} size="30" shape="circle" />
-                  )}
-                  {member.mostPlayedBaseCardKey && (
-                    <BaseAvatar cardId={member.mostPlayedBaseCardKey} size="30" shape="circle" />
-                  )}
-                </div>
                 <StatSectionCompact
                   label="Matches"
                   wins={member.wins}
@@ -319,8 +197,8 @@ const MemberStatsRow: React.FC<MemberStatsRowProps> = ({ member, cardListData })
                         key={`${entry.leaderCardId}|${entry.baseCardKey}`}
                         className="flex items-center gap-2 py-1"
                       >
-                        <LeaderAvatar cardId={entry.leaderCardId} size="30" shape="circle" />
-                        <BaseAvatar cardId={entry.baseCardKey} size="30" shape="circle" />
+                        <LeaderAvatar cardId={entry.leaderCardId} size="40" shape="circle" />
+                        <BaseAvatar cardId={entry.baseCardKey} size="40" shape="circle" />
                         <span className="text-xs font-black whitespace-nowrap ml-1">
                           {entry.wins}W-{entry.losses}L
                         </span>
