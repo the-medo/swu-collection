@@ -76,6 +76,7 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
           params={{
             teamId,
           }}
+          search={prev => prev}
         >
           <Button variant="outline">View full match history</Button>
         </Link>

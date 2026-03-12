@@ -88,7 +88,13 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({ match }) => {
               </div>
             </div>
 
-            <div className="flex absolute gap-2 left-40 right-40 top-12 justify-between">
+            <div className="flex absolute gap-2 left-1 right-1 top-14 justify-between text-[10px]">
+              <span className="bg-background/90 rounded p-0.5">{match.userName}</span>
+              {match.inTeamOppUserName && (
+                <span className="bg-background/90 rounded p-0.5">{match.inTeamOppUserName}</span>
+              )}
+            </div>
+            <div className="flex absolute gap-2 left-40 right-40 top-10 justify-between">
               <span className="text-[10px] text-muted-foreground">
                 {formatDistanceToNow(parseStatisticsTimestamp(match.firstGameCreatedAt), {
                   addSuffix: true,

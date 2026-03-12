@@ -91,7 +91,10 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
               </div>
             </div>
             <Link
-              to={`/teams/${team.shortcut ?? team.id}/statistics`}
+              to={`/teams/$teamId/statistics`}
+              params={{
+                teamId: team.shortcut ?? team.id,
+              }}
               className="flex items-center gap-1.5 p-4 text-lg border-dashed border bg-primary/50 hover:bg-primary rounded-lg font-bold text-black"
             >
               <ChartSpline className="h-4 w-4" />

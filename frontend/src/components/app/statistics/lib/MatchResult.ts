@@ -21,6 +21,7 @@ export type MatchResult = {
   finalLosses?: number;
 
   inTeam?: boolean;
+  inTeamOppUserName?: string;
   userName?: string;
   deckId?: string;
   userEventId?: string;

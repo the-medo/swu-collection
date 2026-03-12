@@ -10,6 +10,8 @@ import { emptyCardStatTableRow } from '@/components/app/statistics/components/Su
 import { GameResultsProvider } from '@/components/app/statistics/GameResultsContext.tsx';
 import { useUserSetup } from '@/api/teams';
 import KarabastIntegrationGuide from '@/components/app/guides/KarabastIntegrationGuide.tsx';
+import { MatchType } from '@/components/app/statistics/components/StatisticsFilters/MatchTypeSelector.tsx';
+import { matchResultStatsTableSortColumns } from '@/components/app/statistics/common/MatchResultStatsTable/matchResultStatsTableLib.ts';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),
@@ -20,6 +22,8 @@ const statisticsSearchParams = z.object({
   sMatchupSort: z.enum(MatchupSort).optional(),
   sCardMetricColumn: z.enum(Object.keys(emptyCardStatTableRow)).optional(),
   sCardMetricSort: z.enum(['asc', 'desc']).optional(),
+  sMatchResultStatsColumn: z.enum(matchResultStatsTableSortColumns).optional(),
+  sMatchResultStatsSort: z.enum(['asc', 'desc']).optional(),
 
   sMinMatches: z.coerce.number().optional(),
   sMinGames: z.coerce.number().optional(),
@@ -29,6 +33,7 @@ const statisticsSearchParams = z.object({
   sDateRangeTo: z.string().optional(),
   sFormatId: z.coerce.number().optional(),
   sKarabastFormat: z.string().optional(),
+  sMatchType: z.enum(MatchType).optional(),
 });
 
 export const Route = createFileRoute('/statistics/_statisticsLayout')({

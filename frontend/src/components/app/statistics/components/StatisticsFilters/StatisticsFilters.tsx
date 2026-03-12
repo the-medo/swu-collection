@@ -7,6 +7,9 @@ import { format } from 'date-fns';
 import { Label } from '@/components/ui/label.tsx';
 import { Switch } from '@/components/ui/switch.tsx';
 import InfoTooltip from '@/components/app/global/InfoTooltip/InfoTooltip.tsx';
+import MatchTypeSelector, {
+  MatchType,
+} from '@/components/app/statistics/components/StatisticsFilters/MatchTypeSelector.tsx';
 // import KarabastFormatSelect from './KarabastFormatSelect/KarabastFormatSelect.tsx';
 // import { KarabastSwuGameFormat } from '../../../../../../../types/karabastTypes.ts';
 
@@ -23,6 +26,7 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
     sDateRangeFrom,
     sDateRangeTo,
     sInTeam,
+    sMatchType,
     /*sKarabastFormat,*/
   } = useSearch({
     strict: false,
@@ -61,6 +65,18 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
 
   return (
     <div className="flex gap-4">
+      <div className="flex flex-col gap-1">
+        <span className="text-xs font-semibold">Match type:</span>
+        <MatchTypeSelector
+          value={(sMatchType as MatchType | undefined) ?? MatchType.ALL}
+          onChange={matchType => {
+            navigate({
+              to: '.',
+              search: prev => ({ ...prev, sMatchType: matchType }),
+            });
+          }}
+        />
+      </div>
       {teamId && (
         <div className="flex flex-col gap-1">
           <Label htmlFor="inTeam" className="text-xs font-semibold">
