@@ -10,6 +10,7 @@ import { MatchupSort } from '@/components/app/statistics/components/SubpageMatch
 import { emptyCardStatTableRow } from '@/components/app/statistics/components/SubpageCardStats/cardStatLib.ts';
 import { GameResultsProvider } from '@/components/app/statistics/GameResultsContext.tsx';
 import { MatchType } from '@/components/app/statistics/components/StatisticsFilters/MatchTypeSelector.tsx';
+import { matchResultStatsTableSortColumns } from '@/components/app/statistics/common/MatchResultStatsTable/matchResultStatsTableLib.ts';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),
@@ -20,6 +21,8 @@ const statisticsSearchParams = z.object({
   sMatchupSort: z.enum(MatchupSort).optional(),
   sCardMetricColumn: z.enum(Object.keys(emptyCardStatTableRow)).optional(),
   sCardMetricSort: z.enum(['asc', 'desc']).optional(),
+  sMatchResultStatsColumn: z.enum(matchResultStatsTableSortColumns).optional(),
+  sMatchResultStatsSort: z.enum(['asc', 'desc']).optional(),
 
   sMinMatches: z.coerce.number().optional(),
   sMinGames: z.coerce.number().optional(),

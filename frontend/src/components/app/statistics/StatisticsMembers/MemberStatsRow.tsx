@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx'
 import { StatSectionCompact } from '@/components/app/statistics/common/StatSectionCompact.tsx';
 import { MemberStats } from '@/components/app/statistics/StatisticsMembers/StatisticsMembers.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
-import MatchResultStatsTable from '@/components/app/statistics/common/MatchResultStatsTable.tsx';
+import MatchResultStatsTable from '@/components/app/statistics/common/MatchResultStatsTable/MatchResultStatsTable.tsx';
 
 interface MemberStatsRowProps {
   member: MemberStats;
@@ -65,9 +65,6 @@ export const MemberStatsRow: React.FC<MemberStatsRowProps> = ({ member }) => {
           {member.totalMatches > 0 && (
             <div className="px-6 pb-4 pt-0">
               <div className="border-t pt-3">
-                <span className="text-xs font-bold uppercase text-muted-foreground mb-2 block">
-                  Leader & Base breakdown
-                </span>
                 <MatchResultStatsTable
                   matches={member.matches}
                   keyFunction={match =>
@@ -75,6 +72,7 @@ export const MemberStatsRow: React.FC<MemberStatsRowProps> = ({ member }) => {
                       ? `${match.leaderCardId}|${match.baseCardKey}`
                       : undefined
                   }
+                  labelHeader="Leader & Base"
                   labelFunction={key => labelRenderer(key, 'leadersAndBase', 'compact')}
                   emptyMessage="No leader/base data available in the selected time period."
                 />
