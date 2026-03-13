@@ -17,7 +17,7 @@ const DashboardCalendarTooltip: React.FC<DashboardCalendarTooltipProps> = ({
   const gameWinrate = data.gamesCount > 0 ? (data.gameWins / data.gamesCount) * 100 : 0;
 
   return (
-    <div className="p-4 rounded-md flex flex-col gap-2 z-50 bg-background text-foreground shadow-md border border-border">
+    <div className="p-4 rounded-md flex flex-col w-[280px] items-center gap-2 z-50 bg-background text-foreground shadow-md border border-border">
       <div className="font-bold text-sm border-b border-border pb-1 text-center">{data.day}</div>
 
       <div className="flex gap-4">
