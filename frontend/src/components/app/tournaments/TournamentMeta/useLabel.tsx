@@ -6,13 +6,12 @@ import { aspectSortValues } from '@/components/app/collections/CollectionContent
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import { IconVariantProps } from '@/components/app/global/icons/iconLib.ts';
 import CardImage, { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
-import { isAspect } from '@/lib/cards/isAspect.ts';
-import { getBaseShortcut } from '@/lib/cards/getBaseShortcut.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
-import { baseSpecialNameValues } from '../../../../../../shared/lib/basicBases.ts';
 import { setInfo } from '../../../../../../lib/swu-resources/set-info.ts';
 import SetIcon from '@/components/app/global/icons/SetIcon.tsx';
+import { processBase, ProcessedBase } from '../../../../../../shared/lib/processBase.ts';
+import SpecialBaseIcon from '@/components/app/global/icons/SpecialBaseIcon.tsx';
 
 export type DeckKeyLabelType = 'text' | 'compact' | 'image' | 'image-small';
 
@@ -33,28 +32,9 @@ export function useLabel() {
       const cardList = cardListData.cards;
 
       let leaderCardId: string | undefined;
-      let baseCardId: string | undefined;
-      let aspects: SwuAspect[] = [];
+      let processedBase: ProcessedBase | undefined = undefined;
       let aspectIconSize: IconVariantProps['size'] = 'xSmall';
-      let isBasicForceBase = false;
-
-      const processBase = (baseSplit: string) => {
-        // special base name - can be either aspect name or in format `Aspect-Force`, for example `Cunning-Force`
-        if (baseSpecialNameValues.has(baseSplit)) {
-          const specialNameSplitByDash = baseSplit.split('-');
-          if (specialNameSplitByDash.length === 1) {
-            // dash not found, not a force base
-            aspects.push(baseSplit as SwuAspect);
-          } else if (specialNameSplitByDash.length === 2) {
-            aspects.push(specialNameSplitByDash[0] as SwuAspect);
-            isBasicForceBase = true;
-          }
-        } else if (isAspect(baseSplit)) {
-          aspects.push(baseSplit as SwuAspect);
-        } else {
-          baseCardId = baseSplit;
-        }
-      };
+      let aspects: SwuAspect[] = [];
 
       switch (metaInfo) {
         case 'leaders':
@@ -63,10 +43,10 @@ export function useLabel() {
         case 'leadersAndBase':
           const split = value.split('|');
           leaderCardId = split[0];
-          processBase(split[1]);
+          processedBase = processBase(split[1], cardList);
           break;
         case 'bases':
-          processBase(value);
+          processedBase = processBase(value, cardList);
           break;
         case 'aspects':
           aspects.push(value as SwuAspect);
@@ -84,11 +64,11 @@ export function useLabel() {
           break;
       }
 
-      if (baseCardId && type !== 'text') {
-        aspects.push(...(cardList[baseCardId]?.aspects ?? []));
+      if (processedBase?.baseCardId && type !== 'text') {
+        aspects.push(...(cardList[processedBase?.baseCardId]?.aspects ?? []));
       }
 
-      const baseCard = baseCardId ? cardList[baseCardId] : undefined;
+      const baseCard = processedBase?.baseCardId ? cardList[processedBase?.baseCardId] : undefined;
       const leaderCard = leaderCardId ? cardList[leaderCardId] : undefined;
       const defaultVariant = leaderCard ? selectDefaultVariant(leaderCard) : undefined;
       const leaderSet = defaultVariant ? leaderCard?.variants[defaultVariant]?.set : undefined;
@@ -97,7 +77,7 @@ export function useLabel() {
         if (metaInfo === 'sets') {
           return setInfo[value as SwuSet]?.name;
         }
-        return `${leaderCardId ? cardList[leaderCardId]?.title : ''} ${leaderSet ? `(${leaderSet?.toUpperCase()})` : ''} ${baseCardId ? cardList[baseCardId]?.name : ''}${aspects.length ? ` ${aspects.join(', ')}` : ''}${isBasicForceBase ? '-Force' : ''}`;
+        return `${leaderCardId ? cardList[leaderCardId]?.title : ''} ${leaderSet ? `(${leaderSet?.toUpperCase()})` : ''} ${processedBase?.baseCardId ? cardList[processedBase?.baseCardId]?.name : ''}${aspects.length ? ` ${aspects.join(', ')}` : ''}${processedBase?.isBasicForceBase ? '-Force' : ''}`;
       } else if (type === 'compact') {
         if (metaInfo === 'sets') {
           return <span className="min-w-[150px]">{setInfo[value as SwuSet]?.name}</span>;
@@ -118,18 +98,26 @@ export function useLabel() {
               </div>
             )}
             <div className="flex flex-row gap-2 items-center">
-              {baseCard && metaInfo !== 'leadersAndBase' && <span>{baseCard.name}</span>}
+              {baseCard && !processedBase?.isAnyBasicBase && metaInfo !== 'leadersAndBase' && (
+                <span>{baseCard.name}</span>
+              )}
 
               {aspects.map(a => (
                 <AspectIcon aspect={a} size={aspectIconSize} />
               ))}
               {metaInfo === 'leadersAndBase' ? (
                 <span className="w-[20px]">
-                  {getBaseShortcut(baseCard?.name)}
-                  {isBasicForceBase && <AspectIcon aspect="force" size={aspectIconSize} />}
+                  {processedBase?.shortcut}
+                  {processedBase && (
+                    <SpecialBaseIcon processedBase={processedBase} size={aspectIconSize} />
+                  )}
                 </span>
               ) : (
-                <>{isBasicForceBase && <AspectIcon aspect="force" size={aspectIconSize} />}</>
+                <>
+                  {processedBase && (
+                    <SpecialBaseIcon processedBase={processedBase} size={aspectIconSize} />
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -154,16 +142,16 @@ export function useLabel() {
                 backSideButton={false}
               />
             )}
-            {baseCardId && (
+            {processedBase?.baseCardId && (
               <CardImage
                 size={size}
                 forceHorizontal={true}
-                card={cardList[baseCardId]}
+                card={cardList[processedBase?.baseCardId]}
                 cardVariantId={baseCard ? selectDefaultVariant(baseCard) : undefined}
               />
             )}
-            {!baseCardId && aspects.map(a => <AspectIcon key={a} aspect={a} />)}
-            {isBasicForceBase && <AspectIcon aspect="force" />}
+            {!processedBase?.baseCardId && aspects.map(a => <AspectIcon key={a} aspect={a} />)}
+            {processedBase?.isBasicForceBase && <AspectIcon aspect="force" />}
           </div>
         );
       }
