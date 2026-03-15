@@ -43,6 +43,7 @@ const CollectionLayoutTableSmallKeys: React.FC<CollectionLayoutTableSmallKeysPro
 
   return (
     <DataTable
+      className=" xl:w-[calc(100vw-700px)] overflow-x-auto"
       columns={columns}
       data={visibleCardKeys}
       loading={loading}

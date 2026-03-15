@@ -3,7 +3,12 @@ import {
   useCCDetail,
   useCCCard,
 } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
-import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '@/components/ui/hover-card.tsx';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardPortal,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
@@ -25,7 +30,7 @@ const CardCell: React.FC<CardCellProps> = ({ cardKey, layout }) => {
     <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger>
         <div className="flex py-1 gap-1 flex-col">
-          <span className="min-w-[250px]">{card.name}</span>
+          <span className="min-w-[200px]">{card.name}</span>
           {layout === CollectionLayout.TABLE_IMAGE && (
             <div className="flex gap-1">
               {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}

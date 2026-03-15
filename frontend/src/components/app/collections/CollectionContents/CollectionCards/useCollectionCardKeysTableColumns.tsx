@@ -84,7 +84,7 @@ export function useCollectionCardKeysTableColumns({
             Cost
           </div>
         ),
-        size: 16,
+        size: 20,
         cell: ({ row }) => {
           return <CostCell cardKey={row.original} />;
         },

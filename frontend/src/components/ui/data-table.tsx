@@ -55,6 +55,7 @@ interface DataTableProps<TData, TValue> {
   infiniteScrollLoading?: boolean;
   enableRowSelection?: boolean;
   rowSelection?: RowSelectionState;
+  className?: string;
   cellClassName?: string;
   headerCellClassName?: string;
   onRowSelectionChange?: TableOptions<TData>['onRowSelectionChange']; //(newSelection: RowSelectionState) => void;
@@ -83,6 +84,7 @@ export function DataTable<TData, TValue>({
   infiniteScrollLoading,
   enableRowSelection = false,
   rowSelection = {},
+  className,
   cellClassName,
   headerCellClassName,
   onRowSelectionChange,
@@ -154,9 +156,13 @@ export function DataTable<TData, TValue>({
 
   return (
     <div
-      className={cn('rounded-md w-full relative', {
-        border: tableBorder,
-      })}
+      className={cn(
+        'rounded-md w-full relative',
+        {
+          border: tableBorder,
+        },
+        className,
+      )}
     >
       <Table onMouseLeave={onTableMouseLeave}>
         <TableHeader className="sticky top-0 z-20 bg-background">
