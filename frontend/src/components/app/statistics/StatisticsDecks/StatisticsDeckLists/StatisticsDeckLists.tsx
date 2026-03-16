@@ -1,9 +1,13 @@
 import * as React from 'react';
 import { StatisticsHistoryData } from '@/components/app/statistics/useGameResults.ts';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import DeckInfoThumbnail from './DeckInfoThumbnail.tsx';
-import { calculateDeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
+import {
+  calculateDeckStatistics,
+  matchesDeckQuickFilter,
+} from '@/components/app/statistics/lib/deckLib.ts';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
+import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInput.tsx';
 
 interface StatisticsDeckListsProps {
   teamId?: string;
@@ -11,6 +15,8 @@ interface StatisticsDeckListsProps {
 }
 
 const StatisticsDeckLists: React.FC<StatisticsDeckListsProps> = ({ teamId, byDeckId }) => {
+  const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined);
+
   const recentDecks = useMemo(() => {
     if (!byDeckId || !byDeckId.lastPlayed) return [];
 
@@ -29,7 +35,12 @@ const StatisticsDeckLists: React.FC<StatisticsDeckListsProps> = ({ teamId, byDec
     });
   }, [byDeckId]);
 
-  const totalMatches = recentDecks.length ?? 0;
+  const filteredDecks = useMemo(() => {
+    return recentDecks.filter(deck => matchesDeckQuickFilter(deck, quickFilter));
+  }, [quickFilter, recentDecks]);
+
+  const hasQuickFilter = !!quickFilter?.trim();
+  const totalMatches = filteredDecks.length ?? 0;
 
   const { itemsToShow, observerTarget } = useInfiniteScroll({
     totalItems: totalMatches,
@@ -39,23 +50,40 @@ const StatisticsDeckLists: React.FC<StatisticsDeckListsProps> = ({ teamId, byDec
   });
 
   const visibleDecks = useMemo(() => {
-    if (!recentDecks) return [];
-    return recentDecks.slice(0, itemsToShow);
-  }, [recentDecks, itemsToShow]);
+    return filteredDecks.slice(0, itemsToShow);
+  }, [filteredDecks, itemsToShow]);
 
-  if (visibleDecks.length === 0) return null;
+  if (recentDecks.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-2">
-      {visibleDecks.map(deck => (
-        <DeckInfoThumbnail
-          key={deck.deckId}
-          teamId={teamId}
-          statistics={deck}
-          statSectionVariant="horizontal"
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-medium whitespace-nowrap">Quick filter:</span>
+        <DebouncedInput
+          type="text"
+          value={quickFilter}
+          onChange={setQuickFilter}
+          width="full"
+          placeholder="Deck name, leader, or base"
         />
-      ))}
-      <div ref={observerTarget} className="h-4" />
+      </div>
+      {visibleDecks.length === 0 ? (
+        <p className="text-sm text-muted-foreground py-2">
+          {hasQuickFilter ? 'No decks match this quick filter.' : 'No decks to show.'}
+        </p>
+      ) : (
+        <>
+          {visibleDecks.map(deck => (
+            <DeckInfoThumbnail
+              key={deck.deckId}
+              teamId={teamId}
+              statistics={deck}
+              statSectionVariant="horizontal"
+            />
+          ))}
+          <div ref={observerTarget} className="h-4" />
+        </>
+      )}
     </div>
   );
 };
