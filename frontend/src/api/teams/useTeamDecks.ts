@@ -10,9 +10,11 @@ export interface GetTeamDecksResponse {
   pagination: Pagination;
 }
 
-export const useTeamDecks = (teamId: string | undefined) => {
+export const useTeamDecks = (teamId: string | undefined, quickFilter?: string) => {
+  const normalizedQuickFilter = quickFilter?.trim() || undefined;
+
   return useInfiniteQuery({
-    queryKey: ['team-decks', teamId],
+    queryKey: ['team-decks', teamId, normalizedQuickFilter],
     queryFn: teamId
       ? async ({ pageParam }) => {
           const response = await api.teams[':id'].decks.$get({
@@ -20,6 +22,7 @@ export const useTeamDecks = (teamId: string | undefined) => {
             query: {
               limit: PAGE_SIZE.toString(),
               offset: pageParam.toString(),
+              ...(normalizedQuickFilter ? { quickFilter: normalizedQuickFilter } : {}),
             },
           });
           if (!response.ok) {

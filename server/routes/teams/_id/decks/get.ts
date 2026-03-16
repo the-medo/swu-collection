@@ -4,7 +4,7 @@ import { db } from '../../../../db';
 import { teamDeck } from '../../../../db/schema/team_deck.ts';
 import { type Deck, deck as deckTable } from '../../../../db/schema/deck.ts';
 import { user as userTable } from '../../../../db/schema/auth-schema.ts';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
 import { selectDeck } from '../../../deck.ts';
@@ -12,11 +12,19 @@ import { selectUser } from '../../../user.ts';
 import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
 import { withPagination } from '../../../../lib/withPagination.ts';
 import type { User } from '../../../../../types/User.ts';
+import { allBasesBySpecialName } from '../../../../../shared/lib/basicBases.ts';
 
 const zQuery = z.object({
   limit: z.coerce.number().int().positive().max(100).default(20),
   offset: z.coerce.number().int().nonnegative().default(0),
+  quickFilter: z
+    .string()
+    .trim()
+    .optional()
+    .transform(value => value || undefined),
 });
+
+const escapeLikePattern = (value: string) => value.replace(/[\\%_]/g, '\\$&');
 
 export type TeamDeckExpanded = {
   deck: Deck;
@@ -38,7 +46,23 @@ export const teamsIdDecksGetRoute = new Hono<AuthExtension>().get(
       return c.json({ message: 'You must be a team member to view team decks' }, 403);
     }
 
-    const { limit, offset } = c.req.valid('query');
+    const { limit, offset, quickFilter } = c.req.valid('query');
+    const quickFilterTerms = quickFilter?.split(/\s+/).filter(Boolean) ?? [];
+    const whereClause =
+      quickFilterTerms.length > 0
+        ? and(
+            eq(teamDeck.teamId, teamId),
+            ...quickFilterTerms.map(term => {
+              const pattern = `%${escapeLikePattern(term)}%`;
+
+              return sql<boolean>`(
+                coalesce(${deckTable.name}, '') ilike ${pattern} escape '\\'
+                or coalesce(${deckTable.leaderCardId1}, '') ilike ${pattern} escape '\\'
+                or coalesce(${deckTable.baseCardId}, '') ilike ${pattern} escape '\\'
+              )`;
+            }),
+          )
+        : eq(teamDeck.teamId, teamId);
 
     let query = db
       .select({
@@ -49,7 +73,7 @@ export const teamsIdDecksGetRoute = new Hono<AuthExtension>().get(
       .from(teamDeck)
       .innerJoin(deckTable, eq(teamDeck.deckId, deckTable.id))
       .innerJoin(userTable, eq(deckTable.userId, userTable.id))
-      .where(eq(teamDeck.teamId, teamId))
+      .where(whereClause)
       .orderBy(desc(teamDeck.addedAt))
       .$dynamic();
 

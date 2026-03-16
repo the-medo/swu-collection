@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { toast } from '@/hooks/use-toast.ts';
 import DeckListItem from '@/components/app/teams/TeamPage/TeamDecksTab/DeckListItem.tsx';
+import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInput.tsx';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,13 +41,14 @@ const parseDeckId = (input: string): string | null => {
 
 const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
   const user = useUser();
+  const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined);
   const {
     data: teamDecksData,
     isLoading: isLoadingTeamDecks,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useTeamDecks(teamId);
+  } = useTeamDecks(teamId, quickFilter);
 
   const { observerTarget } = useInfiniteQueryScroll({
     fetchNextPage,
@@ -79,6 +81,7 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
   const teamDeckIds = useMemo(() => {
     return new Set(teamDecks?.map(td => td.deck.id) ?? []);
   }, [teamDecks]);
+  const hasQuickFilter = !!quickFilter?.trim();
 
   const availableRecentDecks = useMemo(() => {
     return recentDecks.filter(d => !teamDeckIds.has(d.deck.id));
@@ -131,6 +134,16 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
             ones).
           </Alert>
         </div>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-sm font-medium whitespace-nowrap">Quick filter:</span>
+          <DebouncedInput
+            type="text"
+            value={quickFilter}
+            onChange={setQuickFilter}
+            width="full"
+            placeholder="Deck name, leader or base"
+          />
+        </div>
         {isLoadingTeamDecks ? (
           <div className="flex flex-col gap-3">
             {[1, 2, 3].map(i => (
@@ -143,7 +156,11 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
         ) : !teamDecks || teamDecks.length === 0 ? (
           <div className="flex flex-col items-center gap-4 py-12 text-center border rounded-lg">
             <BookOpen className="w-12 h-12 text-muted-foreground" />
-            <p className="text-muted-foreground">No decks added to the team yet.</p>
+            <p className="text-muted-foreground">
+              {hasQuickFilter
+                ? 'No decks match this quick filter.'
+                : 'No decks added to the team yet.'}
+            </p>
           </div>
         ) : (
           <div className="flex flex-col gap-2 max-h-[600px] overflow-y-auto">
