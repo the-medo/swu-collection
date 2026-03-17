@@ -14,12 +14,40 @@ export interface StatisticsMetaDataItem {
   percentage: number;
 }
 
-export const getOpponentMetaKey = (match: MatchResult) => {
-  if (!match.opponentLeaderCardId || !match.opponentBaseCardKey) {
+export const getStatisticsMetaKey = (
+  leaderCardId: string | undefined,
+  baseCardKey: string | undefined,
+) => {
+  if (!leaderCardId || !baseCardKey) {
     return unknownOpponentMetaKey;
   }
 
-  return getDeckKey(match.opponentLeaderCardId, match.opponentBaseCardKey);
+  return getDeckKey(leaderCardId, baseCardKey);
+};
+
+export const getOpponentMetaKey = (match: MatchResult) => {
+  return getStatisticsMetaKey(match.opponentLeaderCardId, match.opponentBaseCardKey);
+};
+
+export const getPlayerMetaKey = (match: MatchResult) => {
+  return getStatisticsMetaKey(match.leaderCardId, match.baseCardKey);
+};
+
+export const toOpponentPerspectiveMatchResult = (match: MatchResult): MatchResult => {
+  return {
+    ...match,
+    leaderCardId: match.opponentLeaderCardId,
+    baseCardKey: match.opponentBaseCardKey,
+    opponentLeaderCardId: match.leaderCardId,
+    opponentBaseCardKey: match.baseCardKey,
+    result: match.result === 3 ? 0 : match.result === 0 ? 3 : match.result,
+    finalWins: match.finalLosses,
+    finalLosses: match.finalWins,
+    deckId: undefined,
+    userEventId: undefined,
+    userName: match.inTeamOppUserName ?? match.userName,
+    inTeamOppUserName: match.userName,
+  };
 };
 
 export const analyzeStatisticsMeta = (matches: MatchResult[]): StatisticsMetaDataItem[] => {
@@ -30,7 +58,8 @@ export const analyzeStatisticsMeta = (matches: MatchResult[]): StatisticsMetaDat
   const countMap = new Map<string, Omit<StatisticsMetaDataItem, 'percentage'>>();
 
   matches.forEach(match => {
-    const key = getOpponentMetaKey(match);
+    const opponentMatch = toOpponentPerspectiveMatchResult(match);
+    const key = getPlayerMetaKey(opponentMatch);
     const existingItem = countMap.get(key) ?? {
       key,
       count: 0,
@@ -43,16 +72,16 @@ export const analyzeStatisticsMeta = (matches: MatchResult[]): StatisticsMetaDat
 
     existingItem.count += 1;
 
-    if (match.result === 3) {
+    if (opponentMatch.result === 3) {
       existingItem.wins += 1;
-    } else if (match.result === 0) {
+    } else if (opponentMatch.result === 0) {
       existingItem.losses += 1;
-    } else if (match.result === 1) {
+    } else if (opponentMatch.result === 1) {
       existingItem.draws += 1;
     }
 
-    existingItem.gameWins += match.finalWins ?? 0;
-    existingItem.gameLosses += match.finalLosses ?? 0;
+    existingItem.gameWins += opponentMatch.finalWins ?? 0;
+    existingItem.gameLosses += opponentMatch.finalLosses ?? 0;
 
     countMap.set(key, existingItem);
   });

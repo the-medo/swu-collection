@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { StatisticsMetaDataItem } from '@/components/app/statistics/StatisticsMeta/statisticsMetaLib.ts';
+import { StatSection } from '@/components/app/statistics/common/StatSection.tsx';
 
 const metaInfo: MetaInfo = 'leadersAndBase';
 
@@ -14,10 +15,6 @@ interface StatisticsMetaTooltipProps {
   ) => React.ReactNode;
 }
 
-const formatRecord = (wins: number, losses: number, draws = 0) => {
-  return draws > 0 ? `${wins}-${losses}-${draws}` : `${wins}-${losses}`;
-};
-
 const StatisticsMetaTooltip: React.FC<StatisticsMetaTooltipProps> = ({
   item,
   totalMatches,
@@ -25,8 +22,8 @@ const StatisticsMetaTooltip: React.FC<StatisticsMetaTooltipProps> = ({
 }) => {
   const percentage = totalMatches > 0 ? ((item.count / totalMatches) * 100).toFixed(1) : '0.0';
   const totalGames = item.gameWins + item.gameLosses;
-  const matchWinRate = item.count > 0 ? ((item.wins / item.count) * 100).toFixed(1) : '0.0';
-  const gameWinRate = totalGames > 0 ? ((item.gameWins / totalGames) * 100).toFixed(1) : '0.0';
+  const matchWinRate = item.count > 0 ? (item.wins / item.count) * 100 : 0;
+  const gameWinRate = totalGames > 0 ? (item.gameWins / totalGames) * 100 : 0;
 
   return (
     <div className="space-y-4 flex flex-col items-center text-center">
@@ -41,23 +38,33 @@ const StatisticsMetaTooltip: React.FC<StatisticsMetaTooltipProps> = ({
         <div className="text-lg italic">({percentage}%)</div>
       </div>
 
-      <div className="grid w-full max-w-md grid-cols-2 gap-2 text-left">
-        <div className="rounded-lg border bg-muted/30 p-3">
-          <div className="text-xs text-muted-foreground">Match record</div>
-          <div className="font-medium">{formatRecord(item.wins, item.losses, item.draws)}</div>
+      <div className="grid w-full max-w-2xl gap-3 md:grid-cols-2">
+        <div className="flex flex-col items-center gap-2">
+          <StatSection
+            label="Matches"
+            total={item.count}
+            wins={item.wins}
+            losses={item.losses}
+            winrate={matchWinRate}
+          />
+          {item.draws > 0 && (
+            <span className="text-xs text-muted-foreground">Draws: {item.draws}</span>
+          )}
         </div>
-        <div className="rounded-lg border bg-muted/30 p-3">
-          <div className="text-xs text-muted-foreground">Game record</div>
-          <div className="font-medium">{formatRecord(item.gameWins, item.gameLosses)}</div>
+        <div className="flex flex-col items-center gap-2">
+          <StatSection
+            label="Games"
+            total={totalGames}
+            wins={item.gameWins}
+            losses={item.gameLosses}
+            winrate={gameWinRate}
+          />
         </div>
-        <div className="rounded-lg border bg-muted/30 p-3">
-          <div className="text-xs text-muted-foreground">Match win rate</div>
-          <div className="font-medium">{matchWinRate}%</div>
-        </div>
-        <div className="rounded-lg border bg-muted/30 p-3">
-          <div className="text-xs text-muted-foreground">Game win rate</div>
-          <div className="font-medium">{gameWinRate}%</div>
-        </div>
+      </div>
+
+      <div className="w-full max-w-2xl rounded-lg border bg-muted/30 p-3 text-left text-sm text-muted-foreground">
+        Count shows how many filtered matches were played against this leader/base combination.
+        Match and game records are shown from the grouped opponent&apos;s point of view.
       </div>
     </div>
   );
