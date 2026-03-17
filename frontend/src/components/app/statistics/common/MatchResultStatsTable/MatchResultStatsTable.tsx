@@ -27,7 +27,7 @@ import { RowSpanHeaderCell } from '@/components/app/statistics/common/MatchResul
 
 interface MatchResultStatsTableProps {
   matches: MatchResult[];
-  keyFunction: (match: MatchResult) => string | null | undefined;
+  keyFunction: (match: MatchResult) => string | string[] | null | undefined;
   labelFunction: (key: string) => React.ReactNode;
   labelHeader?: string;
   emptyMessage?: string;
@@ -83,40 +83,44 @@ const MatchResultStatsTable: React.FC<MatchResultStatsTableProps> = ({
     >();
 
     matches.forEach(match => {
-      const key = keyFunction(match);
-      if (!key) return;
+      const rawKeys = keyFunction(match);
+      const keys = Array.isArray(rawKeys) ? rawKeys : [rawKeys];
 
-      if (!groups.has(key)) {
-        groups.set(key, {
-          totalMatches: 0,
-          matchWins: 0,
-          matchLosses: 0,
-          matchDraws: 0,
-          gameWins: 0,
-          gameLosses: 0,
-          lastPlayedAt: undefined,
-          lastPlayedAtMs: Number.NEGATIVE_INFINITY,
-        });
-      }
+      keys.forEach(key => {
+        if (!key) return;
 
-      const entry = groups.get(key);
-      if (!entry) return;
+        if (!groups.has(key)) {
+          groups.set(key, {
+            totalMatches: 0,
+            matchWins: 0,
+            matchLosses: 0,
+            matchDraws: 0,
+            gameWins: 0,
+            gameLosses: 0,
+            lastPlayedAt: undefined,
+            lastPlayedAtMs: Number.NEGATIVE_INFINITY,
+          });
+        }
 
-      entry.totalMatches++;
+        const entry = groups.get(key);
+        if (!entry) return;
 
-      if (match.result === 3) entry.matchWins++;
-      else if (match.result === 0) entry.matchLosses++;
-      else if (match.result === 1) entry.matchDraws++;
+        entry.totalMatches++;
 
-      const { wins, losses } = getGameRecord(match);
-      entry.gameWins += wins;
-      entry.gameLosses += losses;
+        if (match.result === 3) entry.matchWins++;
+        else if (match.result === 0) entry.matchLosses++;
+        else if (match.result === 1) entry.matchDraws++;
 
-      const playedAtMs = getStatisticsTimestampMs(match.firstGameCreatedAt);
-      if (playedAtMs > entry.lastPlayedAtMs) {
-        entry.lastPlayedAt = match.firstGameCreatedAt;
-        entry.lastPlayedAtMs = playedAtMs;
-      }
+        const { wins, losses } = getGameRecord(match);
+        entry.gameWins += wins;
+        entry.gameLosses += losses;
+
+        const playedAtMs = getStatisticsTimestampMs(match.firstGameCreatedAt);
+        if (playedAtMs > entry.lastPlayedAtMs) {
+          entry.lastPlayedAt = match.firstGameCreatedAt;
+          entry.lastPlayedAtMs = playedAtMs;
+        }
+      });
     });
 
     return Array.from(groups.entries()).map(([key, value]) => {

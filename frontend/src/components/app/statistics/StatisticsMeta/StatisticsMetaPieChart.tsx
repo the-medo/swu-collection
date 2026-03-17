@@ -10,6 +10,7 @@ import { StatisticsMetaDataItem } from '@/components/app/statistics/StatisticsMe
 
 interface StatisticsMetaPieChartProps {
   analysisData: StatisticsMetaDataItem[];
+  metaInfo: MetaInfo;
   totalMatches: number;
 }
 
@@ -20,10 +21,9 @@ interface StatisticsMetaPieDatum {
   item: StatisticsMetaDataItem;
 }
 
-const metaInfo: MetaInfo = 'leadersAndBase';
-
 const StatisticsMetaPieChart: React.FC<StatisticsMetaPieChartProps> = ({
   analysisData,
+  metaInfo,
   totalMatches,
 }) => {
   const labelRenderer = useLabel();
@@ -126,6 +126,7 @@ const StatisticsMetaPieChart: React.FC<StatisticsMetaPieChartProps> = ({
         <div className="mt-4 p-4 border rounded-lg bg-card">
           <StatisticsMetaTooltip
             item={hoveredItem}
+            metaInfo={metaInfo}
             totalMatches={totalMatches}
             labelRenderer={labelRenderer}
           />

@@ -15,10 +15,9 @@ import { StatisticsMetaDataItem } from '@/components/app/statistics/StatisticsMe
 
 interface StatisticsMetaBarChartProps {
   analysisData: StatisticsMetaDataItem[];
+  metaInfo: MetaInfo;
   totalMatches: number;
 }
-
-const metaInfo: MetaInfo = 'leadersAndBase';
 
 const chartConfig = {
   count: {
@@ -31,9 +30,10 @@ const BAR_THICKNESS = 15;
 
 interface CustomLabelProps extends Props {
   labelRenderer: ReturnType<typeof useLabel>;
+  metaInfo: MetaInfo;
 }
 
-const CustomLabel = ({ x, y, value, labelRenderer }: CustomLabelProps) => {
+const CustomLabel = ({ x, y, value, labelRenderer, metaInfo }: CustomLabelProps) => {
   const labelX = (x as number) - 8;
   const labelY = y as number;
   const key = value as string | undefined;
@@ -55,6 +55,7 @@ const CustomLabel = ({ x, y, value, labelRenderer }: CustomLabelProps) => {
 
 const StatisticsMetaBarChart: React.FC<StatisticsMetaBarChartProps> = ({
   analysisData,
+  metaInfo,
   totalMatches,
 }) => {
   const labelRenderer = useLabel();
@@ -102,6 +103,7 @@ const StatisticsMetaBarChart: React.FC<StatisticsMetaBarChartProps> = ({
                 formatter={(_value, _name, props) => (
                   <StatisticsMetaTooltip
                     item={props.payload.item}
+                    metaInfo={metaInfo}
                     totalMatches={totalMatches}
                     labelRenderer={labelRenderer}
                   />
@@ -120,7 +122,9 @@ const StatisticsMetaBarChart: React.FC<StatisticsMetaBarChartProps> = ({
             <LabelList
               dataKey="key"
               position="left"
-              content={props => <CustomLabel {...props} labelRenderer={labelRenderer} />}
+              content={props => (
+                <CustomLabel {...props} labelRenderer={labelRenderer} metaInfo={metaInfo} />
+              )}
             />
             <LabelList dataKey="count" position="right" style={{ fontWeight: 'bold' }} />
           </Bar>

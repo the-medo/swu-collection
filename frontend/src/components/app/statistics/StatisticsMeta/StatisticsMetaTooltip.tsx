@@ -3,10 +3,19 @@ import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSe
 import { StatisticsMetaDataItem } from '@/components/app/statistics/StatisticsMeta/statisticsMetaLib.ts';
 import { StatSection } from '@/components/app/statistics/common/StatSection.tsx';
 
-const metaInfo: MetaInfo = 'leadersAndBase';
+const groupingDescriptionByMetaInfo: Record<MetaInfo, string> = {
+  leaders: "opponent leader",
+  leadersAndBase: 'opponent leader/base combination',
+  bases: 'opponent base',
+  aspects: 'opponent aspect',
+  aspectsBase: 'opponent base aspect',
+  aspectsDetailed: 'opponent aspect mix',
+  sets: 'opponent leader set',
+};
 
 interface StatisticsMetaTooltipProps {
   item: StatisticsMetaDataItem;
+  metaInfo: MetaInfo;
   totalMatches: number;
   labelRenderer: (
     value: string,
@@ -17,6 +26,7 @@ interface StatisticsMetaTooltipProps {
 
 const StatisticsMetaTooltip: React.FC<StatisticsMetaTooltipProps> = ({
   item,
+  metaInfo,
   totalMatches,
   labelRenderer,
 }) => {
@@ -63,8 +73,9 @@ const StatisticsMetaTooltip: React.FC<StatisticsMetaTooltipProps> = ({
       </div>
 
       <div className="w-full max-w-2xl rounded-lg border bg-muted/30 p-3 text-left text-sm text-muted-foreground">
-        Count shows how many filtered matches were played against this leader/base combination.
-        Match and game records are shown from the grouped opponent&apos;s point of view.
+        Count shows how many filtered matches were played against this{' '}
+        {groupingDescriptionByMetaInfo[metaInfo]}. Match and game records are shown from the
+        grouped opponent&apos;s point of view.
       </div>
     </div>
   );

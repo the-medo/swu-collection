@@ -12,6 +12,7 @@ import { useUserSetup } from '@/api/teams';
 import KarabastIntegrationGuide from '@/components/app/guides/KarabastIntegrationGuide.tsx';
 import { MatchType } from '@/components/app/statistics/components/StatisticsFilters/MatchTypeSelector.tsx';
 import { matchResultStatsTableSortColumns } from '@/components/app/statistics/common/MatchResultStatsTable/matchResultStatsTableLib.ts';
+import { metaInfoArray } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),
@@ -24,6 +25,8 @@ const statisticsSearchParams = z.object({
   sCardMetricSort: z.enum(['asc', 'desc']).optional(),
   sMatchResultStatsColumn: z.enum(matchResultStatsTableSortColumns).optional(),
   sMatchResultStatsSort: z.enum(['asc', 'desc']).optional(),
+  sMetaInfo: z.enum([...metaInfoArray]).optional(),
+  sMetaViewMode: z.enum(['chart', 'table']).optional(),
 
   sMinMatches: z.coerce.number().optional(),
   sMinGames: z.coerce.number().optional(),
