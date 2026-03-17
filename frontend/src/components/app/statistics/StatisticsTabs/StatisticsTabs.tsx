@@ -54,6 +54,7 @@ const baseTabs: TabConfig[] = [
   { key: 'decks', label: 'Decks', segment: 'decks' },
   { key: 'leader-and-base', label: 'Leader & Bases', segment: 'leader-and-base' },
   { key: 'matchups', label: 'Matchups', segment: 'matchups' },
+  { key: 'meta', label: 'Meta', segment: 'meta' },
 ];
 
 const membersTab: TabConfig = { key: 'members', label: 'Members', segment: 'members' };
@@ -65,7 +66,7 @@ const StatisticsTabs: React.FC<StatisticsTabsProps> = ({
   teamId,
 }) => {
   const tabs = teamId ? [...baseTabs, membersTab] : baseTabs;
-  const gridCols = teamId ? 'grid-cols-2 md:grid-cols-6' : 'grid-cols-2 md:grid-cols-5';
+  const gridCols = teamId ? 'grid-cols-2 md:grid-cols-7' : 'grid-cols-2 md:grid-cols-6';
 
   return (
     <div className={cn('w-full', className)}>
