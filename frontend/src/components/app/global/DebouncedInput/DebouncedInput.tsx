@@ -41,6 +41,7 @@ export type DebouncedInputProps = VariantProps<typeof inputVariants> & {
   className?: string;
   min?: number;
   max?: number;
+  placeholder?: string;
 } & (
     | {
         type: 'text';
@@ -67,6 +68,7 @@ const DebouncedInput: React.FC<DebouncedInputProps> = ({
   onChange,
   min,
   max,
+  placeholder,
 }) => {
   const [inputValue, setInputValue] = React.useState<string | undefined>(
     type === 'number' ? value?.toString() : value,
@@ -87,7 +89,7 @@ const DebouncedInput: React.FC<DebouncedInputProps> = ({
           onChange(v);
         }
       }, DEBOUNCE_DELAY),
-    [onChange],
+    [onChange, type],
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,7 +106,7 @@ const DebouncedInput: React.FC<DebouncedInputProps> = ({
 
   return (
     <Input
-      placeholder=""
+      placeholder={placeholder}
       className={cn(inputVariants({ width, alignment, appearance, size }), className)}
       type={type}
       value={inputValue}

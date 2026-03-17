@@ -9,6 +9,11 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import type { TeamDeckExpanded } from '../../../../../../../server/routes/teams/_id/decks/get.ts';
 import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/components/CopyLinkButton.tsx';
 
+type DeckListItemDeck = Pick<
+  TeamDeckExpanded['deck'],
+  'id' | 'name' | 'format' | 'leaderCardId1' | 'leaderCardId2' | 'baseCardId'
+>;
+
 interface TeamDeckVariantProps {
   variant: 'team-deck';
   teamId: string;
@@ -20,7 +25,7 @@ interface TeamDeckVariantProps {
 interface AddDeckVariantProps {
   variant: 'add-deck';
   teamId: string;
-  deck: TeamDeckExpanded['deck'];
+  deck: DeckListItemDeck;
   onAdd: () => void;
   addDisabled?: boolean;
 }

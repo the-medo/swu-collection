@@ -52,7 +52,7 @@ export const StatSection: React.FC<StatSectionProps> = ({
         >
           <div
             className={cn(
-              'bg-background rounded-lg p-2 flex items-center min-w-[90px] w-full h-full',
+              'bg-background rounded-lg p-2 flex items-center min-w-[100px] w-full h-full',
               {
                 'flex-col': percentageVariant === 'vertical',
                 'flex-row gap-4 min-w-[160px]': percentageVariant === 'horizontal',

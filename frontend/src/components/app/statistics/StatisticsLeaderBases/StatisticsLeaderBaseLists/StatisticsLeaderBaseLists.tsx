@@ -1,11 +1,15 @@
 import * as React from 'react';
 import { StatisticsHistoryData } from '@/components/app/statistics/useGameResults.ts';
-import { useMemo } from 'react';
-import { calculateDeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
+import { useMemo, useState } from 'react';
+import {
+  calculateDeckStatistics,
+  matchesDeckQuickFilter,
+} from '@/components/app/statistics/lib/deckLib.ts';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import LeaderBaseInfoThumbnail, {
   LeaderBaseInfoThumbnailProps,
 } from '@/components/app/statistics/StatisticsDashboard/DashboardLeaderBase/LeaderBaseInfoThumbnail.tsx';
+import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInput.tsx';
 
 interface StatisticsLeaderBaseListsProps {
   teamId?: string;
@@ -18,6 +22,8 @@ const StatisticsLeaderBaseLists: React.FC<StatisticsLeaderBaseListsProps> = ({
   byLeaderBase,
   byDeckId,
 }) => {
+  const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined);
+
   const recentCombinations = useMemo(() => {
     if (!byLeaderBase || !byLeaderBase.lastPlayed) return [];
 
@@ -45,34 +51,68 @@ const StatisticsLeaderBaseLists: React.FC<StatisticsLeaderBaseListsProps> = ({
       // as it calculates the same stats (winrate, wins, losses)
       return { leaderBaseStatistics: calculateDeckStatistics(key, matches), deckStatistics };
     });
-  }, [byLeaderBase]);
+  }, [byDeckId, byLeaderBase]);
+
+  const filteredCombinations = useMemo(() => {
+    return recentCombinations.filter(combo =>
+      matchesDeckQuickFilter(
+        {
+          deckName: undefined,
+          leaderCardId: combo.leaderBaseStatistics.leaderCardId,
+          baseCardKey: combo.leaderBaseStatistics.baseCardKey,
+        },
+        quickFilter,
+      ),
+    );
+  }, [quickFilter, recentCombinations]);
+
+  const hasQuickFilter = !!quickFilter?.trim();
 
   const { itemsToShow, observerTarget } = useInfiniteScroll({
-    totalItems: recentCombinations?.length ?? 0,
+    totalItems: filteredCombinations.length,
     initialItemsToLoad: 20,
     itemsPerBatch: 20,
     threshold: 400,
   });
 
   const visibleCombinations = useMemo(() => {
-    if (!recentCombinations) return [];
-    return recentCombinations.slice(0, itemsToShow);
-  }, [recentCombinations, itemsToShow]);
+    return filteredCombinations.slice(0, itemsToShow);
+  }, [filteredCombinations, itemsToShow]);
 
-  if (visibleCombinations.length === 0) return null;
+  if (recentCombinations.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-2">
-      {visibleCombinations.map(combo => (
-        <LeaderBaseInfoThumbnail
-          key={combo.leaderBaseStatistics.deckId}
-          teamId={teamId}
-          statistics={combo.leaderBaseStatistics}
-          deckStatistics={combo.deckStatistics}
-          statSectionVariant="horizontal"
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-medium whitespace-nowrap">Quick filter:</span>
+        <DebouncedInput
+          type="text"
+          value={quickFilter}
+          onChange={setQuickFilter}
+          width="full"
+          placeholder="Leader or base"
         />
-      ))}
-      <div ref={observerTarget} className="h-4" />
+      </div>
+      {visibleCombinations.length === 0 ? (
+        <p className="text-sm text-muted-foreground py-2">
+          {hasQuickFilter
+            ? 'No leader/base combinations match this quick filter.'
+            : 'No leader/base combinations to show.'}
+        </p>
+      ) : (
+        <>
+          {visibleCombinations.map(combo => (
+            <LeaderBaseInfoThumbnail
+              key={combo.leaderBaseStatistics.deckId}
+              teamId={teamId}
+              statistics={combo.leaderBaseStatistics}
+              deckStatistics={combo.deckStatistics}
+              statSectionVariant="horizontal"
+            />
+          ))}
+          <div ref={observerTarget} className="h-4" />
+        </>
+      )}
     </div>
   );
 };

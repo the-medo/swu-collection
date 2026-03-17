@@ -117,7 +117,7 @@ export function useCollectionCardObjectsTableColumns({
             Cost
           </div>
         ),
-        size: 16,
+        size: 20,
         cell: ({ getValue }) => {
           const cardId = getValue() as string;
 

@@ -50,3 +50,22 @@ export const calculateDeckStatistics = (deckId: string, matches: MatchResult[]):
     matches,
   };
 };
+
+export const matchesDeckQuickFilter = (
+  deck: Pick<DeckStatistics, 'deckName' | 'leaderCardId' | 'baseCardKey'>,
+  quickFilter?: string,
+) => {
+  const terms = quickFilter
+    ?.trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!terms || terms.length === 0) return true;
+
+  const searchableValues = [deck.deckName, deck.leaderCardId, deck.baseCardKey].map(value =>
+    value?.toLowerCase() ?? '',
+  );
+
+  return terms.every(term => searchableValues.some(value => value.includes(term)));
+};

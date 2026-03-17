@@ -11,12 +11,14 @@ interface CostCellProps {
 const CostCell: React.FC<CostCellProps> = ({ cardKey }) => {
   const card = useCCCard(cardKey);
 
-  if (!card) return <Skeleton className="w-16 h-4 rounded-md" />;
+  if (!card) return <Skeleton className="w-20 h-4 rounded-md" />;
 
   return (
-    <div className="flex gap-1 w-16">
+    <div className="flex gap-1 w-20">
       {card?.cost !== null ? <CostIcon cost={card?.cost ?? 0} size="small" /> : null}
-      {card?.aspects.map((a, i) => <AspectIcon key={`${a}${i}`} aspect={a} size="small" />)}
+      {card?.aspects.map((a, i) => (
+        <AspectIcon key={`${a}${i}`} aspect={a} size="small" />
+      ))}
     </div>
   );
 };

@@ -13,7 +13,7 @@ type CardIdWithVariants = {
 const params = processArguments();
 
 // const variantsToCheck = ['Standard', 'Standard Foil', 'Hyperspace', 'Hyperspace Foil'];
-const variantsToCheck = ['Standard', 'Hyperspace'];
+const variantsToCheck = ['Hyperspace Foil'];
 
 async function checkVariants() {
   try {

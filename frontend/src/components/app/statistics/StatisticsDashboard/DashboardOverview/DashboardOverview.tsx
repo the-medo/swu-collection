@@ -82,7 +82,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ showWinLose = tru
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-2 py-2">
+    <div className="flex flex-col items-center h-full gap-2 py-2">
       <div className="flex gap-4">
         <StatSection
           label="Games"

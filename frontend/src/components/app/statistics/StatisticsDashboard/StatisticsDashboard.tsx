@@ -52,20 +52,20 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
           <h3 className="text-lg font-semibold mb-4">Activity</h3>
           <DashboardCalendar matchesByDate={gameResultData?.matches.byDate} />
           <div className="flex">
-            <div className="p-2 w-full md:w-[250px]">
+            <div className="p-2 w-full md:min-w-[270px]">
               <h3 className="text-lg font-semibold">Today</h3>
               <DashboardOverview matches={todayMatches} showWinLose={showWinLose} />
             </div>
-            <div className="p-2 w-full md:w-[250px]">
+            <div className="p-2 w-full md:min-w-[270px]">
               <h3 className="text-lg font-semibold mb-4">Last 7 days</h3>
               <DashboardOverview matches={last7DaysMatches} showWinLose={showWinLose} />
             </div>
-            {allMatches.length !== last7DaysMatches.length && (
-              <div className="p-2 w-full md:w-[250px]">
-                <h3 className="text-lg font-semibold mb-4">All</h3>
-                <DashboardOverview matches={allMatches} showWinLose={showWinLose} />
-              </div>
-            )}
+            {/*{allMatches.length !== last7DaysMatches.length && (*/}
+            <div className="p-2 w-full md:min-w-[270px]">
+              <h3 className="text-lg font-semibold mb-4">All</h3>
+              <DashboardOverview matches={allMatches} showWinLose={showWinLose} />
+            </div>
+            {/*)}*/}
           </div>
         </Card>
         {visibleMatches.map(match => (

@@ -43,6 +43,7 @@ const CollectionLayoutTableImage: React.FC<CollectionLayoutTableImageProps> = ({
 
   return (
     <DataTable
+      className=" xl:w-[calc(100vw-700px)] overflow-x-auto"
       columns={columns}
       data={visibleCardKeys}
       loading={loading}
