@@ -11,6 +11,7 @@ import { emptyCardStatTableRow } from '@/components/app/statistics/components/Su
 import { GameResultsProvider } from '@/components/app/statistics/GameResultsContext.tsx';
 import { MatchType } from '@/components/app/statistics/components/StatisticsFilters/MatchTypeSelector.tsx';
 import { matchResultStatsTableSortColumns } from '@/components/app/statistics/common/MatchResultStatsTable/matchResultStatsTableLib.ts';
+import { metaInfoArray } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 
 const statisticsSearchParams = z.object({
   sDeckId: z.string().optional(),
@@ -23,6 +24,8 @@ const statisticsSearchParams = z.object({
   sCardMetricSort: z.enum(['asc', 'desc']).optional(),
   sMatchResultStatsColumn: z.enum(matchResultStatsTableSortColumns).optional(),
   sMatchResultStatsSort: z.enum(['asc', 'desc']).optional(),
+  sMetaInfo: z.enum([...metaInfoArray]).optional(),
+  sMetaViewMode: z.enum(['chart', 'table']).optional(),
 
   sMinMatches: z.coerce.number().optional(),
   sMinGames: z.coerce.number().optional(),
