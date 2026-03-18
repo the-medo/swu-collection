@@ -54,7 +54,7 @@ const baseTabs: TabConfig[] = [
   { key: 'decks', label: 'Decks', segment: 'decks' },
   { key: 'leader-and-base', label: 'Leader & Bases', segment: 'leader-and-base' },
   { key: 'matchups', label: 'Matchups', segment: 'matchups' },
-  { key: 'meta', label: 'Meta', segment: 'meta' },
+  { key: 'meta', label: 'Opponent Meta', segment: 'meta' },
 ];
 
 const membersTab: TabConfig = { key: 'members', label: 'Members', segment: 'members' };
