@@ -8,16 +8,20 @@ import { useDeckColors } from '@/hooks/useDeckColors';
 import { hexToRgb } from '@/lib/hexToRgb';
 import { aspectColors } from '../../../../../../../shared/lib/aspectColors.ts';
 import {
+  createDeckQrCodeDataUrl,
   DeckCardVariantMap,
   exportCanvasBlob,
   pickClipboardMime,
 } from '@/components/app/decks/DeckContents/DeckImage/deckImageLib.ts';
 import { useDeckImageVariants } from '@/components/app/decks/DeckContents/DeckImage/DeckImageCustomization/useDeckImageVariants.ts';
+import { cn } from '@/lib/utils.ts';
 
 interface DeckImageProps {
   deckId: string;
   deckCardVariants?: DeckCardVariantMap;
+  view?: 'full' | 'small';
   showNoisyBackground?: boolean;
+  showQr?: boolean;
   exportWidth?: number;
 }
 
@@ -36,7 +40,9 @@ const DeckImage = forwardRef<
     {
       deckId,
       deckCardVariants,
+      view = 'full',
       showNoisyBackground = true,
+      showQr = true,
       exportWidth = DECK_IMAGE_CANVAS_WIDTH_SCALED_DOWN,
     },
     ref,
@@ -55,6 +61,7 @@ const DeckImage = forwardRef<
     const [error, setError] = useState<string | null>(null);
     const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
     const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
+    const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
     const [exportUrl, setExportUrl] = useState<string | null>(null);
 
     // Get deck colors using the hook
@@ -152,7 +159,7 @@ const DeckImage = forwardRef<
           console.error(`Failed to load image: ${url}`, e);
           reject(new Error(`Failed to load image: ${url}`));
         };
-        img.src = `${url}?v=2`;
+        img.src = url.startsWith('data:') ? url : `${url}?v=2`;
       });
     };
 
@@ -167,6 +174,7 @@ const DeckImage = forwardRef<
           setError(null);
           setBackgroundImage(null);
           setLogoImage(null);
+          setQrCodeDataUrl(null);
 
           const allImgs = new Set<string>();
 
@@ -177,15 +185,29 @@ const DeckImage = forwardRef<
           deckCardsForLayout.cardsByBoard[1].forEach(c => allImgs.add(c.cardId));
           deckCardsForLayout.cardsByBoard[2].forEach(c => allImgs.add(c.cardId));
 
-          let totalImageCount = allImgs.size + 2; // +1 for background image, +1 for logo image
-
-          if (totalImageCount === 1) {
-            // Only background image, no cards
+          if (allImgs.size === 0) {
             setError('No cards to display');
             setLoadingImages(false);
             return;
           }
 
+          let nextQrCodeDataUrl: string | null = null;
+          if (showQr) {
+            try {
+              const deckShareUrl =
+                typeof window === 'undefined'
+                  ? `https://swubase.com/decks/${deckId}`
+                  : `${window.location.origin}/decks/${deckId}`;
+              nextQrCodeDataUrl = await createDeckQrCodeDataUrl(deckShareUrl, { width: 512 });
+            } catch (err) {
+              console.error('Failed to generate deck QR code:', err);
+            }
+          }
+
+          setQrCodeDataUrl(nextQrCodeDataUrl);
+
+          const totalImageCount =
+            allImgs.size + 1 + (showNoisyBackground ? 1 : 0) + (nextQrCodeDataUrl ? 1 : 0);
           setImagesToLoad(totalImageCount);
 
           // Load all images
@@ -211,6 +233,14 @@ const DeckImage = forwardRef<
           } catch (err) {
             console.error('Failed to load logo image:', err);
             // Continue even if logo image fails to load
+          }
+
+          if (nextQrCodeDataUrl) {
+            try {
+              await loadImage(nextQrCodeDataUrl);
+            } catch (err) {
+              console.error('Failed to load QR code image:', err);
+            }
           }
 
           // Load leader images
@@ -267,7 +297,15 @@ const DeckImage = forwardRef<
       };
 
       preloadAllImages();
-    }, [isLoading, deckMeta, deckCardsForLayout, finalVariantMap, showNoisyBackground]);
+    }, [
+      isLoading,
+      deckId,
+      deckMeta,
+      deckCardsForLayout,
+      finalVariantMap,
+      showNoisyBackground,
+      showQr,
+    ]);
 
     // Draw the canvas once all images are loaded
     useEffect(() => {
@@ -276,6 +314,7 @@ const DeckImage = forwardRef<
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
+      const qrImage = qrCodeDataUrl ? imageCache.current[qrCodeDataUrl] : null;
 
       // Function to draw a card with its image and optionally quantity
       const drawCard = async (
@@ -590,24 +629,45 @@ const DeckImage = forwardRef<
             Math.ceil(sideboardCards.length / maxCardsPerRow) * (cardHeight + padding) +
             padding * 7;
 
-          // Draw logo to the left of sideboard box if available
-          if (logoImage) {
-            const logoSize = 200; // 200x200 px as requested
-            const logoX = rightX / 2 - 100; // Position to the left of sideboard box
-            const logoY = Math.max(
-              920,
-              sideboardCards.length > 0
-                ? rightY - padding + sideboardHeight / 2 - logoSize / 2
-                : rightY - logoSize - 150,
-            ); // Vertically center with sideboard box
-            ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+          const brandingWidth = 340;
+          const logoSize = 150;
+          const qrOuterSize = qrImage ? 240 : 0;
+          const brandingHeight = qrImage ? 460 : 220;
+          const brandingX = padding + 55;
+          const brandingY = Math.max(
+            leftY + 80,
+            sideboardCards.length > 0
+              ? rightY - padding + sideboardHeight / 2 - brandingHeight / 2
+              : rightY - brandingHeight - 110,
+          );
 
-            // Add water mark or signature at the bottom
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.font = '30px Arial';
-            ctx.textAlign = 'right';
-            ctx.fillText('swubase.com', logoX + 190, logoY + 230);
+          if (logoImage) {
+            const logoX = brandingX + (brandingWidth - logoSize) / 2;
+            ctx.drawImage(logoImage, logoX, brandingY, logoSize, logoSize);
           }
+
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+          ctx.font = '30px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('swubase.com', brandingX + brandingWidth / 2, brandingY + logoSize + 40);
+
+          if (qrImage) {
+            const qrBoxX = brandingX + (brandingWidth - qrOuterSize) / 2;
+            const qrBoxY = brandingY + logoSize + 72;
+            const qrPadding = 18;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(qrBoxX, qrBoxY, qrOuterSize, qrOuterSize);
+            ctx.drawImage(
+              qrImage,
+              qrBoxX + qrPadding,
+              qrBoxY + qrPadding,
+              qrOuterSize - qrPadding * 2,
+              qrOuterSize - qrPadding * 2,
+            );
+          }
+
+          bottomPoint = Math.max(bottomPoint, brandingY + brandingHeight);
 
           if (sideboardCards.length > 0) {
             // Draw sideboard background with slight transparency
@@ -671,7 +731,15 @@ const DeckImage = forwardRef<
       };
 
       renderDeckImage(false);
-    }, [imagesLoaded, deckMeta, deckCardsForLayout, finalVariantMap, exportWidth, backgroundImage]);
+    }, [
+      imagesLoaded,
+      deckMeta,
+      deckCardsForLayout,
+      finalVariantMap,
+      exportWidth,
+      backgroundImage,
+      qrCodeDataUrl,
+    ]);
 
     // Loading state
     if (isLoading) {
@@ -717,7 +785,7 @@ const DeckImage = forwardRef<
     }
 
     return (
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex w-full flex-col items-start gap-4 pb-2">
         <canvas
           ref={canvasRef}
           width={canvasWidth}
@@ -725,7 +793,15 @@ const DeckImage = forwardRef<
           className={exportUrl ? 'hidden' : ''}
         />
         {exportUrl ? (
-          <img src={exportUrl} alt="Deck image" className="max-w-full h-auto" />
+          <img
+            src={exportUrl}
+            alt="Deck image"
+            className={cn({
+              'h-auto max-w-full': view === 'full',
+              'max-h-[85vh] min-h-[500px] h-auto w-auto max-w-full rounded-md object-contain shadow-xl':
+                view === 'small',
+            })}
+          />
         ) : (
           <div className="text-sm text-muted-foreground">Preparing preview…</div>
         )}

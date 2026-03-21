@@ -8,6 +8,7 @@ export enum DeckImagePresetVariant {
 
 export type DeckImagePresets = {
   showNoisyBackground?: boolean;
+  showQr?: boolean;
   showcaseLeader?: boolean;
   hyperspaceBase?: boolean;
   defaultVariantName?: DeckImagePresetVariant;

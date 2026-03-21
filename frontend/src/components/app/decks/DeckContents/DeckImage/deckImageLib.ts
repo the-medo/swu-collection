@@ -1,3 +1,4 @@
+import * as QRCode from 'qrcode';
 import { DECK_IMAGE_CANVAS_WIDTH_DEFAULT } from '@/components/app/decks/DeckContents/DeckImage/DeckImage.tsx';
 
 export type DeckCardVariantMap = Record<string, string | undefined>;
@@ -79,4 +80,21 @@ export function pickClipboardMime(): 'image/png' | 'image/jpeg' {
     }
   } catch {}
   return 'image/png';
+}
+
+export async function createDeckQrCodeDataUrl(
+  url: string,
+  options?: {
+    width?: number;
+  },
+) {
+  return QRCode.toDataURL(url, {
+    errorCorrectionLevel: 'H',
+    margin: 2,
+    width: options?.width ?? 512,
+    color: {
+      dark: '#000000',
+      light: '#FFFFFF',
+    },
+  });
 }

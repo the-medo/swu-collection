@@ -25,6 +25,7 @@ export interface UserSettings {
   cpKeyboardShortcuts: boolean; // default: true
   // DeckImagePresets
   deckImage_showNoisyBackground: DeckImagePresets['showNoisyBackground'];
+  deckImage_showQr: DeckImagePresets['showQr'];
   deckImage_showcaseLeader: DeckImagePresets['showcaseLeader'];
   deckImage_hyperspaceBase: DeckImagePresets['hyperspaceBase'];
   deckImage_defaultVariantName: DeckImagePresets['defaultVariantName'];
@@ -51,6 +52,7 @@ export const userSettingsSchema = z.object({
   cpKeyboardShortcuts: booleanPreprocessor.default(true),
   // DeckImagePresets
   deckImage_showNoisyBackground: booleanPreprocessor.default(true),
+  deckImage_showQr: booleanPreprocessor.default(true),
   deckImage_showcaseLeader: booleanPreprocessor.default(false),
   deckImage_hyperspaceBase: booleanPreprocessor.default(false),
   deckImage_defaultVariantName: z
