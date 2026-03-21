@@ -22,6 +22,11 @@ import DeckCollection from '@/components/app/decks/DeckContents/DeckCollection/D
 import { useCardPoolDeckDetailStoreActions } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
 import DeckPricing from '@/components/app/decks/DeckContents/DeckPricing/DeckPricing.tsx';
 import DeckTitleBarCompact from '@/components/app/decks/DeckContents/DeckTitlebarCompact/DeckTitleBarCompact.tsx';
+import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts';
+import { aspectArray } from '../../../../../../types/iterableEnumInfo.ts';
+import { SwuAspect, SwuSet } from '../../../../../../types/enums.ts';
+import { setRestrictionByFormat } from '../../../../../../types/Format.ts';
+import { setArray } from '../../../../../../lib/swu-resources/set-info.ts';
 
 interface DeckContentsProps {
   deckId: string;
@@ -39,8 +44,33 @@ const DeckContents: React.FC<DeckContentsProps> = ({
   compact,
 }) => {
   const { cardPoolId, owned, editable } = useDeckInfo(deckId);
+  const { deckMeta } = useDeckData(deckId);
   const [tabsValue, setTabsValue] = useState('decklist');
   const { setDeckView } = useCardPoolDeckDetailStoreActions();
+
+  const deckbuilderSearch = React.useMemo(() => {
+    const aspectSet = new Set<SwuAspect>();
+
+    [deckMeta.leader1, deckMeta.leader2, deckMeta.base].forEach(card => {
+      card?.aspects.forEach(aspect => {
+        aspectSet.add(aspect);
+      });
+    });
+
+    const aspects = aspectArray.filter(aspect => aspectSet.has(aspect));
+    const restrictedSets = setRestrictionByFormat[deckMeta.format];
+    const sets = restrictedSets
+      ? setArray.filter(set => restrictedSets[set.code as SwuSet]).map(set => set.code as SwuSet)
+      : undefined;
+
+    return {
+      deckbuilder: true,
+      sort: 'relevance' as const,
+      order: 'asc' as const,
+      aspects: aspects.length > 0 ? aspects : undefined,
+      sets: sets && sets.length > 0 ? sets : undefined,
+    };
+  }, [deckMeta.base, deckMeta.format, deckMeta.leader1, deckMeta.leader2]);
 
   return (
     <>
@@ -60,7 +90,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
               </div>
             )}
             {editable && (
-              <Link to="/decks/$deckId/edit" params={{ deckId }} search={{ deckbuilder: true }}>
+              <Link to="/decks/$deckId/edit" params={{ deckId }} search={deckbuilderSearch}>
                 <DeckGradientButton deckId={deckId} variant="outline" size="lg">
                   <Hammer className="mr-4" />
                   <h4 className="mb-0!">Deckbuilder</h4>

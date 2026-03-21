@@ -1,3 +1,6 @@
+import { rotationBlocks } from '../lib/swu-resources/set-info.ts';
+import type { SwuSet } from './enums.ts';
+
 export type Format = {
   id: number;
   name: string;
@@ -65,3 +68,13 @@ export const formatDataById: Record<number, Format> = {};
 formatData.forEach(format => {
   formatDataById[format.id] = format;
 });
+
+export const premierSetMap = {
+  ...rotationBlocks[2].setMap,
+  ...rotationBlocks[3].setMap,
+};
+
+export const setRestrictionByFormat: Record<number, Partial<Record<SwuSet, true | undefined>>> = {
+  1: premierSetMap,
+  7: premierSetMap,
+};
