@@ -97,7 +97,7 @@ const defaultState: AdvancedCardSearchStore = {
 
   filtersExpanded: true,
   resultsLayout: 'imageMedium',
-  sortField: 'name',
+  sortField: 'relevance',
   sortOrder: 'asc',
 };
 
@@ -261,7 +261,9 @@ export const useApplyAdvancedCardSearchDefaults = (
         ? parseRangeString(upgradePower)
         : (defaults.upgradePower ?? state.upgradePower),
       upgradeHp: upgradeHp ? parseRangeString(upgradeHp) : (defaults.upgradeHp ?? state.upgradeHp),
-      resultsLayout: (resultsLayout ?? defaults.resultsLayout ?? state.resultsLayout) as CardLayoutType,
+      resultsLayout: (resultsLayout ??
+        defaults.resultsLayout ??
+        state.resultsLayout) as CardLayoutType,
       sortField: (sort ?? defaults.sortField ?? state.sortField) as SortField,
       sortOrder: (order ?? defaults.sortOrder ?? state.sortOrder) as SortOrder,
     }));
@@ -434,10 +436,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
   ].filter(Boolean).length;
 
   const handleSearch = useCallback(
-    async (
-      cardListData: CardListResponse,
-      searchContext?: AdvancedCardSearchContextConfig,
-    ) => {
+    async (cardListData: CardListResponse, searchContext?: AdvancedCardSearchContextConfig) => {
       setIsSearching(true);
 
       try {

@@ -60,6 +60,10 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
         Leader: true,
         Base: true,
       },
+      defaultValues: {
+        sortField: 'relevance',
+        sortOrder: 'asc',
+      },
     }),
     [],
   );

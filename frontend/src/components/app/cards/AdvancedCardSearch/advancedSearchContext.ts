@@ -8,7 +8,7 @@ export type AdvancedSearchResultsLayout =
   | 'tableImage'
   | 'tableSmall';
 
-export type AdvancedSearchSortField = 'name' | 'cardNumber' | 'cost' | 'type' | 'rarity';
+export type AdvancedSearchSortField = 'name' | 'cardNumber' | 'cost' | 'type' | 'rarity' | 'relevance';
 export type AdvancedSearchSortOrder = 'asc' | 'desc';
 export type AdvancedSearchStringLookup = Record<string, true>;
 

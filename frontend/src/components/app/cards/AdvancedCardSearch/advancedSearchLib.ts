@@ -32,6 +32,6 @@ export const cardSearchParams = z.object({
   resultsLayout: z
     .enum(['imageBig', 'imageMedium', 'imageSmall', 'tableImage', 'tableSmall'])
     .optional(),
-  sort: z.enum(['name', 'cardNumber', 'cost', 'type', 'rarity']).optional(),
+  sort: z.enum(['name', 'cardNumber', 'cost', 'type', 'rarity', 'relevance']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
 });

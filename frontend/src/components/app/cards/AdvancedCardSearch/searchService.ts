@@ -1,6 +1,10 @@
 import { SwuAspect, SwuArena, SwuRarity, SwuSet } from '../../../../../../types/enums';
 import { RangeFilterType } from '../../global/RangeFilter/RangeFilter';
-import { CardList } from '../../../../../../lib/swu-resources/types.ts';
+import {
+  CardDataWithVariants,
+  CardList,
+  CardListVariants,
+} from '../../../../../../lib/swu-resources/types.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
 
@@ -32,6 +36,100 @@ export const splitToSearchWords = (text: string): string[] => {
     .filter(word => word.length > 0);
 };
 
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const containsWholeWordPhrase = (targetText: string, normalizedSearch: string): boolean => {
+  if (!targetText || !normalizedSearch) return false;
+
+  const pattern = new RegExp(`(?:^|\\s)${escapeRegExp(normalizedSearch)}(?:\\s|$)`);
+  return pattern.test(targetText);
+};
+
+const getFieldNameMatchTier = (
+  text: string | undefined,
+  normalizedSearch: string,
+  searchWords: string[],
+): number => {
+  if (!text || !normalizedSearch) return 0;
+
+  const normalizedText = normalizeText(text);
+  if (!normalizedText) return 0;
+
+  if (normalizedText === normalizedSearch) return 5;
+  if (normalizedText.startsWith(normalizedSearch)) return 4;
+  if (containsWholeWordPhrase(normalizedText, normalizedSearch)) return 3;
+  if (normalizedText.includes(normalizedSearch)) return 2;
+  if (searchWords.length > 1 && containsAllWords(normalizedText, searchWords)) return 1;
+
+  return 0;
+};
+
+const getMatchTierScore = (tier: number, scores: Partial<Record<number, number>>): number => {
+  return scores[tier] ?? 0;
+};
+
+type SearchableCardNameData = Pick<
+  CardDataWithVariants<CardListVariants>,
+  'name' | 'title' | 'subtitle'
+>;
+
+/**
+ * Score card-name matches so exact and starts-with title matches outrank subtitle-only matches.
+ */
+export function getCardNameRelevanceScore(
+  card: SearchableCardNameData | undefined,
+  searchText: string,
+): number {
+  if (!card) return 0;
+
+  const searchWords = splitToSearchWords(searchText);
+  if (searchWords.length === 0) return 0;
+
+  const normalizedSearch = searchWords.join(' ');
+  const title = card.title || card.name;
+  const fullName = card.name;
+  const subtitle = card.subtitle;
+
+  const titleMatchTier = getFieldNameMatchTier(title, normalizedSearch, searchWords);
+  const fullNameMatchTier =
+    normalizeText(fullName) !== normalizeText(title)
+      ? getFieldNameMatchTier(fullName, normalizedSearch, searchWords)
+      : 0;
+  const subtitleMatchTier = getFieldNameMatchTier(subtitle, normalizedSearch, searchWords);
+
+  const titleScore = getMatchTierScore(titleMatchTier, {
+    1: 650,
+    2: 700,
+    3: 800,
+    4: 900,
+    5: 1000,
+  });
+
+  const fullNameScore =
+    fullNameMatchTier >= 4
+      ? getMatchTierScore(fullNameMatchTier, {
+          4: 875,
+          5: 975,
+        })
+      : searchWords.length > 1
+        ? getMatchTierScore(fullNameMatchTier, {
+            1: 625,
+            2: 675,
+            3: 775,
+          })
+        : 0;
+
+  const subtitleScore = getMatchTierScore(subtitleMatchTier, {
+    1: 250,
+    2: 275,
+    3: 350,
+    4: 425,
+    5: 500,
+  });
+
+  return Math.max(titleScore, fullNameScore, subtitleScore);
+}
+
 /**
  * Checks if all words in the search text are present in the target text.
  * Both texts are normalized before comparison.
@@ -55,13 +153,53 @@ export function containsAllWords(targetText: string, searchText: string | string
  * Finds first 10 results based on search string, using advanced search
  * @param cardList
  * @param searchText
+ * @param options
  */
 export function searchForCommandOptions(
   cardList: CardListResponse | undefined,
   searchText: string,
+  options?: {
+    rankByRelevance?: boolean;
+  },
 ) {
   if (!cardList) return [];
   const searchWords = splitToSearchWords(searchText);
+
+  if (options?.rankByRelevance && searchWords.length > 0) {
+    return cardList.cardIds
+      .flatMap(cardId => {
+        const card = cardList.cards[cardId];
+        if (!card || !containsAllWords(card.name, searchWords)) {
+          return [];
+        }
+
+        const variantIds = Object.keys(card.variants);
+        if (variantIds.length === 0) return [];
+
+        return [
+          {
+            cardId,
+            variantIds,
+            defaultVariant: selectDefaultVariant(card) ?? '',
+            relevance: getCardNameRelevanceScore(card, searchText),
+            sortName: card.name,
+            sortTitleLength: (card.title || card.name).length,
+          },
+        ];
+      })
+      .sort((a, b) => {
+        if (b.relevance !== a.relevance) return b.relevance - a.relevance;
+        if (a.sortTitleLength !== b.sortTitleLength) return a.sortTitleLength - b.sortTitleLength;
+        return a.sortName.localeCompare(b.sortName);
+      })
+      .slice(0, 10)
+      .map(({ cardId, variantIds, defaultVariant }) => ({
+        cardId,
+        variantIds,
+        defaultVariant,
+      }));
+  }
+
   const filteredOptions: { cardId: string; variantIds: string[]; defaultVariant: string }[] = [];
   cardList.cardIds?.find(i => {
     const card = cardList.cards[i];

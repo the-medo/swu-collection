@@ -17,6 +17,7 @@ export interface SortMenuProps {
 
 const SortMenu: React.FC<SortMenuProps> = ({ sortField, sortOrder, onChange }) => {
   const options: { id: SortField; label: string }[] = [
+    { id: 'relevance', label: 'Relevance' },
     { id: 'name', label: 'Name' },
     { id: 'type', label: 'Type' },
     { id: 'cost', label: 'Cost' },

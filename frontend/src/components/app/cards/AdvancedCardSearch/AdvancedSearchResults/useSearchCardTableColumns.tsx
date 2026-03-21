@@ -16,7 +16,7 @@ export type SearchCardData = {
   cardId: string;
 };
 
-export type SortField = 'name' | 'cardNumber' | 'cost' | 'type' | 'rarity';
+export type SortField = 'name' | 'cardNumber' | 'cost' | 'type' | 'rarity' | 'relevance';
 export type SortOrder = 'asc' | 'desc';
 
 export type SearchCardTableColumnsProps = {
