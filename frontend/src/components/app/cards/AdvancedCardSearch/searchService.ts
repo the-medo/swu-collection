@@ -88,6 +88,7 @@ interface SearchFilters {
   sets?: SwuSet[];
   rarities?: SwuRarity[];
   cardTypes?: string[];
+  excludedCardTypes?: Record<string, true>;
   aspects?: SwuAspect[];
   aspectsExact?: boolean;
   arenas?: SwuArena[];
@@ -152,6 +153,10 @@ export const filterCards = async (
           }
         }
 
+        if (filters.excludedCardTypes?.[card.type]) {
+          return false;
+        }
+
         // Check card type filter
         if (filters.cardTypes && filters.cardTypes.length > 0) {
           if (!filters.cardTypes.includes(card.type)) {
@@ -200,7 +205,7 @@ export const filterCards = async (
 
         // Check arenas filter using the optimized arenaMap
         if (filters.arenas && filters.arenas.length > 0) {
-          const hasRequiredArena = filters.arenas.some(arena => card.arenaMap[arena] === true);
+          const hasRequiredArena = filters.arenas.some(arena => card.arenaMap?.[arena] === true);
 
           if (!hasRequiredArena) {
             return false;

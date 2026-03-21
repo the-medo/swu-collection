@@ -5,19 +5,20 @@ import { RangeFilterType } from '@/components/app/global/RangeFilter/RangeFilter
 import { filterCards } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Route as RouteCardSearch, ZAdvancedSearchParams } from '@/routes/cards/search.tsx';
 import { Route as RouteDeckbuilder } from '@/routes/decks/$deckId/edit.tsx';
 import { CardLayoutType } from './AdvancedSearchResults/SearchCardLayout';
 import { SortField, SortOrder } from './AdvancedSearchResults/useSearchCardTableColumns';
+import { AdvancedCardSearchContextConfig } from './advancedSearchContext.ts';
 
 export enum SearchFrom {
   CARD_SEARCH = 'card-search',
   DECKBUILDER = 'deckbuilder',
 }
 
-const getSearchFromRoutes = (searchFrom: SearchFrom) => {
+export const getSearchFromRoutes = (searchFrom: SearchFrom) => {
   if (searchFrom === SearchFrom.CARD_SEARCH) return RouteCardSearch.fullPath;
   if (searchFrom === SearchFrom.DECKBUILDER) return RouteDeckbuilder.fullPath;
   throw new Error('Invalid searchFrom');
@@ -25,6 +26,7 @@ const getSearchFromRoutes = (searchFrom: SearchFrom) => {
 
 // Define the store state shape
 export interface AdvancedCardSearchStore {
+  activeSearchFrom: SearchFrom | null;
   searchInitialized: boolean;
 
   // Text search
@@ -66,6 +68,7 @@ export interface AdvancedCardSearchStore {
 
 // Default state values
 const defaultState: AdvancedCardSearchStore = {
+  activeSearchFrom: null,
   searchInitialized: false,
 
   name: '',
@@ -142,11 +145,15 @@ export const useInitializeStoreFromUrlParams = (
     hp,
     upgradePower,
     upgradeHp,
+    resultsLayout,
+    sort,
+    order,
   } = useSearch({ from: getSearchFromRoutes(searchFrom) });
 
-  const init = () =>
+  useEffect(() => {
     store.setState(state => ({
       ...state,
+      activeSearchFrom: searchFrom,
       searchInitialized: false,
       name: name ?? defaultState.name,
       text: text ?? defaultState.text,
@@ -164,10 +171,12 @@ export const useInitializeStoreFromUrlParams = (
       hp: parseRangeString(hp) ?? defaultState.hp,
       upgradePower: parseRangeString(upgradePower) ?? defaultState.upgradePower,
       upgradeHp: parseRangeString(upgradeHp) ?? defaultState.upgradeHp,
+      resultsLayout: (resultsLayout ?? defaultState.resultsLayout) as CardLayoutType,
+      sortField: (sort ?? defaultState.sortField) as SortField,
+      sortOrder: (order ?? defaultState.sortOrder) as SortOrder,
+      isSearching: state.activeSearchFrom === searchFrom ? state.isSearching : false,
+      searchResults: state.activeSearchFrom === searchFrom ? state.searchResults : [],
     }));
-
-  useEffect(() => {
-    init();
   }, [
     name,
     text,
@@ -185,6 +194,100 @@ export const useInitializeStoreFromUrlParams = (
     hp,
     upgradePower,
     upgradeHp,
+    resultsLayout,
+    sort,
+    order,
+    searchFrom,
+  ]);
+};
+
+export const useApplyAdvancedCardSearchDefaults = (
+  searchFrom: SearchFrom = SearchFrom.CARD_SEARCH,
+  searchContext?: AdvancedCardSearchContextConfig,
+) => {
+  const defaults = searchContext?.defaultValues;
+  const defaultsKeyRef = useRef<string | null>(null);
+
+  const {
+    name,
+    text,
+    sets,
+    rarities,
+    cardTypes,
+    aspects,
+    aspectsExact,
+    arenas,
+    traits,
+    keywords,
+    variants,
+    cost,
+    power,
+    hp,
+    upgradePower,
+    upgradeHp,
+    resultsLayout,
+    sort,
+    order,
+  } = useSearch({ from: getSearchFromRoutes(searchFrom) });
+
+  const defaultsKey = useMemo(
+    () => JSON.stringify({ searchFrom, defaults: defaults ?? null }),
+    [defaults, searchFrom],
+  );
+
+  useEffect(() => {
+    if (!defaults) return;
+    if (defaultsKeyRef.current === defaultsKey) return;
+
+    defaultsKeyRef.current = defaultsKey;
+
+    store.setState(state => ({
+      ...state,
+      name: name ?? defaults.name ?? state.name,
+      text: text ?? defaults.text ?? state.text,
+      sets: (sets ?? defaults.sets ?? state.sets) as SwuSet[],
+      rarities: (rarities ?? defaults.rarities ?? state.rarities) as SwuRarity[],
+      cardTypes: cardTypes ?? defaults.cardTypes ?? state.cardTypes,
+      aspects: (aspects ?? defaults.aspects ?? state.aspects) as SwuAspect[],
+      aspectsExact: (aspectsExact ?? defaults.aspectsExact ?? state.aspectsExact) as boolean,
+      arenas: (arenas ?? defaults.arenas ?? state.arenas) as SwuArena[],
+      traits: traits ?? defaults.traits ?? state.traits,
+      keywords: keywords ?? defaults.keywords ?? state.keywords,
+      variants: variants ?? defaults.variants ?? state.variants,
+      cost: cost ? parseRangeString(cost) : (defaults.cost ?? state.cost),
+      power: power ? parseRangeString(power) : (defaults.power ?? state.power),
+      hp: hp ? parseRangeString(hp) : (defaults.hp ?? state.hp),
+      upgradePower: upgradePower
+        ? parseRangeString(upgradePower)
+        : (defaults.upgradePower ?? state.upgradePower),
+      upgradeHp: upgradeHp ? parseRangeString(upgradeHp) : (defaults.upgradeHp ?? state.upgradeHp),
+      resultsLayout: (resultsLayout ?? defaults.resultsLayout ?? state.resultsLayout) as CardLayoutType,
+      sortField: (sort ?? defaults.sortField ?? state.sortField) as SortField,
+      sortOrder: (order ?? defaults.sortOrder ?? state.sortOrder) as SortOrder,
+    }));
+  }, [
+    aspects,
+    aspectsExact,
+    arenas,
+    cardTypes,
+    cost,
+    defaults,
+    defaultsKey,
+    hp,
+    keywords,
+    name,
+    order,
+    power,
+    rarities,
+    resultsLayout,
+    searchFrom,
+    sets,
+    sort,
+    text,
+    traits,
+    upgradeHp,
+    upgradePower,
+    variants,
   ]);
 };
 
@@ -254,6 +357,7 @@ const setSortOrder = (sortOrder: SortOrder) => store.setState(state => ({ ...sta
 const resetFilters = () =>
   store.setState(state => ({
     ...defaultState,
+    activeSearchFrom: state.activeSearchFrom,
     isSearching: state.isSearching,
     searchResults: state.searchResults,
     filtersExpanded: state.filtersExpanded,
@@ -330,7 +434,10 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
   ].filter(Boolean).length;
 
   const handleSearch = useCallback(
-    async (cardListData: CardListResponse) => {
+    async (
+      cardListData: CardListResponse,
+      searchContext?: AdvancedCardSearchContextConfig,
+    ) => {
       setIsSearching(true);
 
       try {
@@ -352,6 +459,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
           hp,
           upgradePower,
           upgradeHp,
+          excludedCardTypes: searchContext?.excludedCardTypes,
         });
 
         const searchParams: ZAdvancedSearchParams = {
@@ -372,6 +480,8 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
           upgradePower: stringifyRange(upgradePower),
           upgradeHp: stringifyRange(upgradeHp),
           resultsLayout: resultsLayout || 'imageBig',
+          sort: sortField || 'name',
+          order: sortOrder || 'asc',
         };
 
         (Object.keys(searchParams) as (keyof ZAdvancedSearchParams)[]).forEach(key => {
@@ -415,6 +525,9 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
       upgradePower,
       upgradeHp,
       resultsLayout,
+      sortField,
+      sortOrder,
+      navigate,
       searchParamsBasedOnRoute,
     ],
   );

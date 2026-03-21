@@ -20,6 +20,7 @@ import RarityMultiSelect from '@/components/app/global/RarityMultiSelect.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { KeyboardEventHandler, useCallback } from 'react';
+import { AdvancedSearchStringLookup } from '@/components/app/cards/AdvancedCardSearch/advancedSearchContext.ts';
 
 // Available card types
 const CARD_TYPES = ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'];
@@ -27,11 +28,13 @@ const CARD_TYPES = ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'];
 interface AdvancedSearchFiltersProps {
   onSearch: () => void;
   footerElement?: React.ReactNode;
+  availableCardTypes?: AdvancedSearchStringLookup;
 }
 
 const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   onSearch,
   footerElement,
+  availableCardTypes,
 }) => {
   const { open: sidebarOpen } = useSidebar();
   const { data: cardListData, isLoading: isLoadingCardList } = useCardList();
@@ -98,8 +101,12 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
         setName('');
       }
     },
-    [onSearch],
+    [onSearch, setName],
   );
+
+  const availableSearchCardTypes = availableCardTypes
+    ? Object.keys(availableCardTypes)
+    : CARD_TYPES;
 
   return (
     <div
@@ -194,7 +201,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               <GenericMultiSelect
                 label="Card Types"
                 placeholder="Select card types..."
-                options={CARD_TYPES}
+                options={availableSearchCardTypes}
                 value={cardTypes}
                 onChange={setCardTypes}
                 maxCount={3}

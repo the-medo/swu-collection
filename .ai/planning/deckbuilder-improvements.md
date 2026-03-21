@@ -220,8 +220,8 @@ Make exported images shareable in chat or social posts while still giving other 
 - Export preview fits better inside the dialog.
 - Downloaded and copied images include a QR that scans successfully and opens the deck page.
 
-## Open decisions before implementation
+## Implementation decisions
 
-- Should deckbuilder still show the card type filter with only `Unit`, `Event`, and `Upgrade`, or hide that filter entirely?
-- Should quick add keep clearing the search after selection, or should that become an explicit optional mode?
-- Should QR be always on, or should it be a later customization toggle if users ask for it?
+- Deckbuilder should keep the card type filter visible, but only with `Unit`, `Event`, and `Upgrade`, and leader/base cards should not appear in deckbuilder results.
+- Quick add should keep the current clear-on-select behavior.
+- QR should have a toggle, but it should be enabled by default.
