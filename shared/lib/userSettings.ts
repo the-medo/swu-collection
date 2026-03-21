@@ -4,6 +4,7 @@ import { z } from 'zod';
 import {
   type DeckImagePresets,
   DeckImagePresetVariant,
+  type DeckImageViewMode,
 } from '../../types/DeckImageCustomization.tsx';
 import { booleanPreprocessor } from './zod/booleanPreprocessor.ts';
 
@@ -30,6 +31,7 @@ export interface UserSettings {
   deckImage_hyperspaceBase: DeckImagePresets['hyperspaceBase'];
   deckImage_defaultVariantName: DeckImagePresets['defaultVariantName'];
   deckImage_groupBy: DeckImagePresets['groupBy'];
+  deckImage_imageViewMode: DeckImageViewMode;
   deckImage_cardVariants: string;
   deckImage_exportWidth: number;
 }
@@ -59,6 +61,7 @@ export const userSettingsSchema = z.object({
     .enum(DeckImagePresetVariant)
     .default(DeckImagePresetVariant.Standard),
   deckImage_groupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
+  deckImage_imageViewMode: z.union([z.literal('full'), z.literal('small')]).default('full'),
   deckImage_cardVariants: z.string().default('{}'),
   deckImage_exportWidth: z.coerce.number().default(2200),
 });

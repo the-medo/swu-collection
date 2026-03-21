@@ -44,7 +44,9 @@ export function exportCanvasBlob(
           // Some browsers may “succeed” but return PNG when unsupported; we still get a Blob.
           const blob = await makeBlob(canvas, mime as ExportFormat);
           if (blob && blob.size > 0) return blob;
-        } catch {}
+        } catch (error) {
+          void error;
+        }
       }
       // Last resort: PNG
       return makeBlob(canvas, 'image/png');
@@ -75,10 +77,12 @@ export function pickClipboardMime(): 'image/png' | 'image/jpeg' {
   // Chrome supports ClipboardItem.supports; Safari sometimes only accepts PNG
   try {
     // Prefer JPEG if supported and you want slightly smaller clipboard bytes:
-    if (typeof (window as any).ClipboardItem?.supports === 'function') {
-      if ((window as any).ClipboardItem.supports('image/jpeg')) return 'image/jpeg';
+    if (typeof ClipboardItem !== 'undefined' && typeof ClipboardItem.supports === 'function') {
+      if (ClipboardItem.supports('image/jpeg')) return 'image/jpeg';
     }
-  } catch {}
+  } catch (error) {
+    void error;
+  }
   return 'image/png';
 }
 
@@ -89,9 +93,10 @@ export async function createDeckQrCodeDataUrl(
   },
 ) {
   return QRCode.toDataURL(url, {
-    errorCorrectionLevel: 'H',
-    margin: 2,
-    width: options?.width ?? 512,
+    // Favor slightly larger modules over maximum redundancy so screenshots stay scannable.
+    errorCorrectionLevel: 'M',
+    margin: 1,
+    width: options?.width ?? 640,
     color: {
       dark: '#000000',
       light: '#FFFFFF',

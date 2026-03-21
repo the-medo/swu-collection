@@ -6,6 +6,8 @@ export enum DeckImagePresetVariant {
   StandardPrestige = 'Standard Prestige',
 }
 
+export type DeckImageViewMode = 'full' | 'small';
+
 export type DeckImagePresets = {
   showNoisyBackground?: boolean;
   showQr?: boolean;
@@ -13,4 +15,5 @@ export type DeckImagePresets = {
   hyperspaceBase?: boolean;
   defaultVariantName?: DeckImagePresetVariant;
   groupBy?: DeckGroupBy;
+  imageViewMode?: DeckImageViewMode;
 };

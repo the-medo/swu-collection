@@ -198,7 +198,7 @@ const DeckImage = forwardRef<
                 typeof window === 'undefined'
                   ? `https://swubase.com/decks/${deckId}`
                   : `${window.location.origin}/decks/${deckId}`;
-              nextQrCodeDataUrl = await createDeckQrCodeDataUrl(deckShareUrl, { width: 512 });
+              nextQrCodeDataUrl = await createDeckQrCodeDataUrl(deckShareUrl, { width: 640 });
             } catch (err) {
               console.error('Failed to generate deck QR code:', err);
             }
@@ -509,7 +509,7 @@ const DeckImage = forwardRef<
           bottomPoint = Math.max(bottomPoint, leftY);
 
           // Draw main deck section (right side)
-          let rightX = leftColumnWidth + padding * 6;
+          const rightX = leftColumnWidth + padding * 6;
           let rightY = titleHeight + padding * 2;
 
           // Process each card type group
@@ -528,7 +528,7 @@ const DeckImage = forwardRef<
               // Start processing a new set of groups that might fit in one or more rows
               const startY = rightY;
               let remainingSlotsInRow = maxCardsPerRow;
-              let groupsToProcess = [];
+              const groupsToProcess = [];
               let totalCardsToProcess = 0;
 
               // Try to fit as many small groups as possible in the current row(s)
@@ -629,10 +629,12 @@ const DeckImage = forwardRef<
             Math.ceil(sideboardCards.length / maxCardsPerRow) * (cardHeight + padding) +
             padding * 7;
 
-          const brandingWidth = 340;
+          const brandingWidth = 360;
           const logoSize = 150;
-          const qrOuterSize = qrImage ? 240 : 0;
-          const brandingHeight = qrImage ? 460 : 220;
+          const qrOuterSize = qrImage ? 280 : 0;
+          const qrPadding = qrImage ? 12 : 0;
+          const brandingBottomMargin = 28;
+          const brandingHeight = qrImage ? logoSize + 72 + qrOuterSize : logoSize + 72;
           const brandingX = padding + 55;
           const brandingY = Math.max(
             leftY + 80,
@@ -654,10 +656,11 @@ const DeckImage = forwardRef<
           if (qrImage) {
             const qrBoxX = brandingX + (brandingWidth - qrOuterSize) / 2;
             const qrBoxY = brandingY + logoSize + 72;
-            const qrPadding = 18;
 
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(qrBoxX, qrBoxY, qrOuterSize, qrOuterSize);
+            const previousSmoothing = ctx.imageSmoothingEnabled;
+            ctx.imageSmoothingEnabled = false;
             ctx.drawImage(
               qrImage,
               qrBoxX + qrPadding,
@@ -665,9 +668,10 @@ const DeckImage = forwardRef<
               qrOuterSize - qrPadding * 2,
               qrOuterSize - qrPadding * 2,
             );
+            ctx.imageSmoothingEnabled = previousSmoothing;
           }
 
-          bottomPoint = Math.max(bottomPoint, brandingY + brandingHeight);
+          bottomPoint = Math.max(bottomPoint, brandingY + brandingHeight + brandingBottomMargin);
 
           if (sideboardCards.length > 0) {
             // Draw sideboard background with slight transparency
@@ -703,7 +707,7 @@ const DeckImage = forwardRef<
             }
 
             const sideboardBottom = rightY + sideboardHeight;
-            bottomPoint = Math.max(bottomPoint, sideboardBottom) - 70;
+            bottomPoint = Math.max(bottomPoint, sideboardBottom - 70);
           }
 
           const actualHeight = Math.min(Math.max(bottomPoint, 1200), 8000); // Set reasonable min/max
@@ -739,6 +743,12 @@ const DeckImage = forwardRef<
       exportWidth,
       backgroundImage,
       qrCodeDataUrl,
+      leaderColor,
+      baseColor,
+      leaderVillainyHeroismAspect,
+      canvasWidth,
+      leftColumnWidth,
+      logoImage,
     ]);
 
     // Loading state
