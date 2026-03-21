@@ -27,9 +27,12 @@ export function useCardSearchCommandStore(id: string) {
   const open = useStore(store, state => state[id]?.open ?? false);
   const search = useStore(store, state => state[id]?.search ?? '');
 
-  let { data: cardList, isFetching } = useCardList();
+  const { data: cardList, isFetching } = useCardList();
 
-  const options = useMemo(() => searchForCommandOptions(cardList, search), [cardList, search]);
+  const options = useMemo(
+    () => searchForCommandOptions(cardList, search, { rankByRelevance: true }),
+    [cardList, search],
+  );
 
   return {
     open,
