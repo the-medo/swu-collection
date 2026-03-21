@@ -9,6 +9,7 @@ import {
   CardDataWithVariants,
   CardListVariants,
 } from '../../../../../../lib/swu-resources/types.ts';
+import DeckCardQuantitySelector from '@/components/app/decks/DeckContents/DeckCards/DeckCardQuantitySelector.tsx';
 
 interface DeckbuilderCardMenuProps {
   deckId: string;
@@ -30,6 +31,8 @@ const DeckbuilderCardMenu: React.FC<DeckbuilderCardMenuProps> = ({
   editable,
 }) => {
   const mutation = usePutDeckCard(deckId);
+  const shouldUseCompactQuantitySelector =
+    editable && deckCard.quantity <= 3 && deckCard.cardId !== 'swarming-vulture-droid';
 
   const quantityChangeHandler = useCallback(
     (quantity: number | undefined, board?: number) => {
@@ -52,14 +55,30 @@ const DeckbuilderCardMenu: React.FC<DeckbuilderCardMenuProps> = ({
         },
       );
     },
-    [deckCard],
+    [deckCard, mutation],
   );
 
   return (
     <>
       {(displayDropdown || displayQuantity) && (
-        <div className="flex gap-2 items-center" onClick={e => e.stopPropagation()}>
-          {displayQuantity && <span className="font-semibold">x{deckCard.quantity}</span>}
+        <div
+          className="flex w-full items-center gap-1"
+          onClick={e => e.stopPropagation()}
+          onMouseDown={e => e.stopPropagation()}
+        >
+          {displayQuantity &&
+            (shouldUseCompactQuantitySelector ? (
+              <div className="flex-1">
+                <DeckCardQuantitySelector
+                  value={deckCard.quantity}
+                  onChange={n => quantityChangeHandler(n, 1)}
+                  variant="compact"
+                  disabled={!editable}
+                />
+              </div>
+            ) : (
+              <span className="flex-1 text-center font-semibold">x{deckCard.quantity}</span>
+            ))}
           {displayDropdown && (
             <DeckCardDropdownMenu
               deckId={deckId}
