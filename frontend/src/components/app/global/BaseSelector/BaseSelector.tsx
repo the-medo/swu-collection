@@ -18,7 +18,10 @@ import {
 import { Input } from '@/components/ui/input.tsx';
 import { Switch } from '@/components/ui/switch.tsx';
 import { cn } from '@/lib/utils.ts';
-import { basicBases } from '../../../../../../shared/lib/basicBases.ts';
+import {
+  basicBases,
+  sortBasesBySpecialSortValues,
+} from '../../../../../../shared/lib/basicBases.ts';
 import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { aspectsForBases } from '@/components/app/global/MultiAspectFilter/multiAspectFilterLib.tsx';
 
@@ -84,7 +87,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
         return basicBases[card?.cardId ?? ''];
       },
     );
-  }, [search, allBasicBases]);
+  }, [cardList, search, allBasicBases]);
 
   const allBases = useMemo(() => {
     return Object.values(cardList?.cardsByCardType['Base'] ?? {}).filter(Boolean);
@@ -115,7 +118,8 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
             b.card?.text !== null
             ? -1
             : 0;
-        }),
+        })
+        .sort((a, b) => sortBasesBySpecialSortValues(a.card?.cardId, b.card?.cardId)),
     [cardList, filteringByAspects, filteringByBasicBases, search],
   );
 
