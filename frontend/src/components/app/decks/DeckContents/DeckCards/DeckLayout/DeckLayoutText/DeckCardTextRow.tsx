@@ -76,7 +76,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
         },
       );
     },
-    [deckCard],
+    [deckCard, mutation],
   );
 
   return (
@@ -156,7 +156,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
               ))}
             </div>
             {editable && (
-              <div className="hidden group-hover:flex gap-8 items-center w-full">
+              <div className="hidden group-hover:flex gap-4 items-center w-full">
                 <DeckCardBoardMoveButtons
                   deckId={deckId}
                   deckCard={deckCard}

@@ -242,7 +242,10 @@ export function LeftSidebar() {
 
   const { data: teams } = useTeams();
 
-  const groups = useMemo(() => getGroups(setOpenMobile, state, teams ?? []), [state, teams]);
+  const groups = useMemo(
+    () => getGroups(setOpenMobile, state, teams ?? []),
+    [setOpenMobile, state, teams],
+  );
 
   const swubaseLogo = theme === 'light' ? LogoLightTheme : LogoDarkTheme;
 
@@ -388,13 +391,14 @@ export function LeftSidebar() {
                                   </Link>
                                 </SidebarMenuSubButton>
                                 {'statisticsUrl' in subItem && subItem.statisticsUrl && (
-                                  <SidebarMenuAction title="Team statistics">
+                                  <SidebarMenuAction asChild title="Team statistics">
                                     <Link
                                       to={subItem.statisticsUrl}
                                       onClick={() => setOpenMobile(false)}
-                                      className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                                      className="text-muted-foreground hover:text-foreground transition-colors"
                                     >
                                       <ChartSpline className="h-3.5 w-3.5" />
+                                      <span className="sr-only">Team statistics</span>
                                     </Link>
                                   </SidebarMenuAction>
                                 )}

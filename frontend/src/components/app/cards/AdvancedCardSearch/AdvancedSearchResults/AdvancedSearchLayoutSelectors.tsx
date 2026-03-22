@@ -7,9 +7,7 @@ import { cn } from '@/lib/utils.ts';
 import SortMenu from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/SortMenu.tsx';
 import ResultsLayoutMenu from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/ResultsLayoutMenu.tsx';
 
-interface AdvancedSearchLayoutSelectorsProps {}
-
-const AdvancedSearchLayoutSelectors: React.FC<AdvancedSearchLayoutSelectorsProps> = ({}) => {
+const AdvancedSearchLayoutSelectors: React.FC = () => {
   const { resultsLayout, sortField, sortOrder, setSortField, setSortOrder, setResultsLayout } =
     useAdvancedCardSearchStore();
 
@@ -22,7 +20,7 @@ const AdvancedSearchLayoutSelectors: React.FC<AdvancedSearchLayoutSelectorsProps
         setSortOrder('asc');
       }
     },
-    [sortField, sortOrder],
+    [setSortField, setSortOrder, sortField, sortOrder],
   );
 
   return (

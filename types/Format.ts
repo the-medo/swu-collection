@@ -1,8 +1,17 @@
+import { rotationBlocks } from '../lib/swu-resources/set-info.ts';
+import type { SwuSet } from './enums.ts';
+import type { CardDataWithVariants, CardListVariants } from '../lib/swu-resources/types.ts';
+
 export type Format = {
   id: number;
   name: string;
   description: string;
   leaderCount: number;
+};
+
+export type FilterByFormat = {
+  title: string;
+  filterCallback: (card: CardDataWithVariants<CardListVariants>) => boolean;
 };
 
 export const formatData: Format[] = [
@@ -65,3 +74,25 @@ export const formatDataById: Record<number, Format> = {};
 formatData.forEach(format => {
   formatDataById[format.id] = format;
 });
+
+export const premierSetMap = {
+  ...rotationBlocks[2].setMap,
+  ...rotationBlocks[3].setMap,
+};
+
+export const setRestrictionByFormat: Record<number, Partial<Record<SwuSet, true | undefined>>> = {
+  1: premierSetMap,
+  7: premierSetMap,
+};
+
+export const cardFiltersByFormat: Record<string, FilterByFormat> = {
+  premier: {
+    title: 'Premier only',
+    filterCallback: (card: CardDataWithVariants<CardListVariants>) => !!premierSetMap[card?.set],
+  },
+};
+
+export const cardFilterByFormatId: Partial<Record<number, FilterByFormat>> = {
+  1: cardFiltersByFormat.premier,
+  7: cardFiltersByFormat.premier,
+};

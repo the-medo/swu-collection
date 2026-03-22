@@ -16,6 +16,7 @@ export const cardSearchParams = z.object({
   // Attribute filters
   aspects: z.array(z.enum(Object.values(SwuAspect) as [string, ...string[]])).optional(),
   aspectsExact: z.boolean().optional(),
+  includeNoAspect: z.boolean().optional(),
   arenas: z.array(z.enum(Object.values(SwuArena) as [string, ...string[]])).optional(),
   traits: z.array(z.string()).optional(),
   keywords: z.array(z.string()).optional(),
@@ -32,6 +33,6 @@ export const cardSearchParams = z.object({
   resultsLayout: z
     .enum(['imageBig', 'imageMedium', 'imageSmall', 'tableImage', 'tableSmall'])
     .optional(),
-  sort: z.enum(['name', 'cardNumber', 'cost', 'type', 'rarity']).optional(),
+  sort: z.enum(['name', 'cardNumber', 'cost', 'type', 'rarity', 'relevance']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
 });

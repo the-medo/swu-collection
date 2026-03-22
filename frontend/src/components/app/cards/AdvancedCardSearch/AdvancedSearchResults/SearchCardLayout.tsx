@@ -15,6 +15,7 @@ import {
   CardListVariants,
 } from '../../../../../../../lib/swu-resources/types.ts';
 import { openCardOnMiddleButton } from '@/lib/cards/openCardOnMiddleButton.ts';
+import { getCardNameRelevanceScore } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
 
 export type CardLayoutType =
   | 'imageBig'
@@ -40,7 +41,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
   cardSubcomponent,
 }) => {
   const { data: cardListData } = useCardList();
-  const { sortField, sortOrder, setSortField, setSortOrder } = useAdvancedCardSearchStore();
+  const { name, sortField, sortOrder, setSortField, setSortOrder } = useAdvancedCardSearchStore();
 
   // Sort cards based on sortField and sortOrder
   const sortedResults = useMemo(() => {
@@ -54,7 +55,17 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
 
       let comparison = 0;
 
-      if (sortField === 'name') {
+      if (sortField === 'relevance') {
+        const relevanceA = getCardNameRelevanceScore(cardA, name);
+        const relevanceB = getCardNameRelevanceScore(cardB, name);
+        comparison = relevanceB - relevanceA;
+
+        if (comparison !== 0) {
+          return sortOrder === 'asc' ? comparison : -comparison;
+        }
+
+        return cardA.name.localeCompare(cardB.name);
+      } else if (sortField === 'name') {
         comparison = cardA.name.localeCompare(cardB.name);
       } else if (sortField === 'type') {
         comparison = cardA.type.localeCompare(cardB.type);
@@ -84,7 +95,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
 
       return sortOrder === 'asc' ? comparison : -comparison;
     });
-  }, [cardListData, searchResults, sortField, sortOrder]);
+  }, [cardListData, name, searchResults, sortField, sortOrder]);
 
   // Configure infinite scrolling
   // Grid layouts need more initial items but smaller batches for smooth scrolling
@@ -119,7 +130,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
         setSortOrder('asc');
       }
     },
-    [sortField, sortOrder],
+    [setSortField, setSortOrder, sortField, sortOrder],
   );
 
   // Get columns for the table
@@ -146,6 +157,12 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
               if (!card) return null;
 
               const defaultVariant = selectDefaultVariant(card);
+              const cardWidthClass =
+                layoutType === 'imageBig'
+                  ? 'w-[300px]'
+                  : layoutType === 'imageMedium'
+                    ? 'w-[200px]'
+                    : 'w-[100px]';
 
               return (
                 <div
@@ -169,19 +186,18 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
                           : 'w100'
                     }
                     backSideButton={false}
-                  >
-                    {cardSubcomponent && (
-                      <div className="absolute top-0 -right-3 px-2 z-10 b-1 border-2 border-foreground/30 bg-background/80 rounded flex flex-col items-end">
-                        {cardSubcomponent(card) ?? null}
-                      </div>
-                    )}
-                  </CardImage>
+                  />
+                  {cardSubcomponent && (
+                    <div
+                      className={cn('mt-1 flex justify-center', cardWidthClass)}
+                      onClick={e => e.stopPropagation()}
+                      onMouseDown={e => e.stopPropagation()}
+                    >
+                      {cardSubcomponent(card) ?? null}
+                    </div>
+                  )}
                   <div
-                    className={cn('mt-1 text-sm font-medium text-center w-full', {
-                      'w-[300px]': layoutType === 'imageBig',
-                      'w-[200px]': layoutType === 'imageMedium',
-                      'w-[100px]': layoutType === 'imageSmall',
-                    })}
+                    className={cn('mt-1 text-sm font-medium text-center w-full', cardWidthClass)}
                     title={card.name}
                   >
                     {card.name}

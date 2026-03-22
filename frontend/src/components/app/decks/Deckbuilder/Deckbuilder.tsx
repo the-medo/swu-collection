@@ -1,6 +1,6 @@
 import AdvancedCardSearch from '@/components/app/cards/AdvancedCardSearch/AdvancedCardSearch.tsx';
 import DeckDetail from '@/components/app/decks/DeckDetail/DeckDetail.tsx';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import { SearchFrom } from '@/components/app/cards/AdvancedCardSearch/useAdvancedCardSearchStore.ts';
 import { Link } from '@tanstack/react-router';
@@ -14,6 +14,7 @@ import {
 import DeckbuilderCardMenu from '@/components/app/decks/Deckbuilder/DeckbuilderCardMenu.tsx';
 import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts';
 import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
+import { AdvancedCardSearchContextConfig } from '@/components/app/cards/AdvancedCardSearch/advancedSearchContext.ts';
 
 interface DeckbuilderProps {
   deckId: string;
@@ -21,6 +22,7 @@ interface DeckbuilderProps {
 
 const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
   const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
+  const initialSidebarOpen = useRef(sidebarOpen);
 
   const {
     deckCardsForLayout: { usedCardsInBoards },
@@ -28,17 +30,13 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
 
   const { editable } = useDeckInfo(deckId);
 
-  /**
-   *  sidebarOpen is not in dependencies:
-   *  - we take the first value from the store to know the initial state
-   *  - when component unmounts, we set the sidebar back to the initial state
-   *  */
   useEffect(() => {
+    const previousSidebarOpen = initialSidebarOpen.current;
     setSidebarOpen(false);
     return () => {
-      setSidebarOpen(sidebarOpen);
+      setSidebarOpen(previousSidebarOpen);
     };
-  }, []);
+  }, [setSidebarOpen]);
 
   const filtersFooterElement = useMemo(() => {
     return (
@@ -50,6 +48,21 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
       </Link>
     );
   }, [deckId]);
+
+  const searchContext = useMemo<AdvancedCardSearchContextConfig>(
+    () => ({
+      availableCardTypes: {
+        Unit: true,
+        Event: true,
+        Upgrade: true,
+      },
+      excludedCardTypes: {
+        Leader: true,
+        Base: true,
+      },
+    }),
+    [],
+  );
 
   const cardSubcomponent = useCallback(
     (card: CardDataWithVariants<CardListVariants> | undefined) => {
@@ -82,6 +95,7 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
       childrenTitleButtonText="Decklist"
       filtersFooterElement={filtersFooterElement}
       cardSubcomponent={cardSubcomponent}
+      searchContext={searchContext}
     >
       <div className="flex flex-1 flex-col">
         <DeckDetail adminEdit={true} deckId={deckId} deckbuilder={true} />

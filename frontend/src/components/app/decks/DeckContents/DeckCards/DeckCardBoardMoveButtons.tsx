@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { ChevronDown, ChevronsDown, ChevronsUp, ChevronUp } from 'lucide-react';
 import * as React from 'react';
 import { useCallback } from 'react';
+import DeckCardQuantitySelector from '@/components/app/decks/DeckContents/DeckCards/DeckCardQuantitySelector.tsx';
 
 interface DeckCardBoardMoveButtonsProps extends DeckCardTextRowProps {
   onChange: DeckCardQuantityChangeHandler;
@@ -34,10 +35,15 @@ const DeckCardBoardMoveButtons: React.FC<DeckCardBoardMoveButtonsProps> = ({
 
   return (
     <>
-      <span className="font-semibold">Move to:</span>
+      <div className="w-24 -ml-12 z-10">
+        <DeckCardQuantitySelector value={deckCard.quantity} onChange={onChange} variant="compact" />
+      </div>
       {deckCard.board !== 1 && (
         <div className="flex gap-1 items-center">
-          <span className="font-semibold">MD</span>
+          <div className="flex flex-col gap-0 font-semibold text-[10px]">
+            <span className="-mt-1">Main</span>
+            <span className="-mt-1">deck</span>
+          </div>
           <Button
             size="iconSmall"
             variant="outline"
@@ -62,7 +68,10 @@ const DeckCardBoardMoveButtons: React.FC<DeckCardBoardMoveButtonsProps> = ({
       )}
       {deckCard.board !== 2 && (
         <div className="flex gap-1 items-center">
-          <span className="font-semibold">SB</span>
+          <div className="flex flex-col gap-0 font-semibold text-[10px]">
+            <span className="-mt-1">Side</span>
+            <span className="-mt-1">board</span>
+          </div>
           <Button
             size="iconSmall"
             variant="outline"
@@ -70,6 +79,7 @@ const DeckCardBoardMoveButtons: React.FC<DeckCardBoardMoveButtonsProps> = ({
               e.stopPropagation();
               onMoveToDifferentBoard('all', 2);
             }}
+            title="Move all copies to sideboard"
           >
             {deckCard.board === 1 ? <ChevronsDown /> : <ChevronsUp />}
           </Button>
@@ -80,6 +90,7 @@ const DeckCardBoardMoveButtons: React.FC<DeckCardBoardMoveButtonsProps> = ({
               e.stopPropagation();
               onMoveToDifferentBoard('one', 2);
             }}
+            title="Move single copy to sideboard"
           >
             {deckCard.board === 1 ? <ChevronDown /> : <ChevronUp />}
           </Button>
@@ -87,7 +98,10 @@ const DeckCardBoardMoveButtons: React.FC<DeckCardBoardMoveButtonsProps> = ({
       )}
       {deckCard.board !== 3 && (
         <div className="flex gap-1 items-center">
-          <span className="font-semibold">MB</span>
+          <div className="flex flex-col gap-0 font-semibold text-[10px]">
+            <span className="-mt-1">Maybe</span>
+            <span className="-mt-1">board</span>
+          </div>
           <Button
             size="iconSmall"
             variant="outline"
@@ -95,6 +109,7 @@ const DeckCardBoardMoveButtons: React.FC<DeckCardBoardMoveButtonsProps> = ({
               e.stopPropagation();
               onMoveToDifferentBoard('all', 3);
             }}
+            title="Move all copies to maybeboard"
           >
             <ChevronsDown />
           </Button>
@@ -105,6 +120,7 @@ const DeckCardBoardMoveButtons: React.FC<DeckCardBoardMoveButtonsProps> = ({
               e.stopPropagation();
               onMoveToDifferentBoard('one', 3);
             }}
+            title="Move single copy to maybeboard"
           >
             <ChevronDown />
           </Button>

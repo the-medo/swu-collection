@@ -1,7 +1,7 @@
 import * as React from 'react';
 import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
 import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx';
-import { formatDataById } from '../../../../../../types/Format.ts';
+import { cardFilterByFormatId, formatDataById } from '../../../../../../types/Format.ts';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
 import { useCallback } from 'react';
 import { toast } from '@/hooks/use-toast.ts';
@@ -18,6 +18,7 @@ const DeckLeaderBase: React.FC<DeckLeaderBaseProps> = ({ deckId, size = 'w200' }
   const { data } = useGetDeck(deckId);
   const { format, editable } = useDeckInfo(deckId);
   const deckFormatInfo = formatDataById[format];
+  const cardFilter = cardFilterByFormatId[format];
 
   const putDeckMutation = usePutDeck(deckId);
   const updateDeck = useCallback(
@@ -34,7 +35,7 @@ const DeckLeaderBase: React.FC<DeckLeaderBaseProps> = ({ deckId, size = 'w200' }
         },
       });
     },
-    [],
+    [putDeckMutation],
   );
 
   return (
@@ -47,6 +48,7 @@ const DeckLeaderBase: React.FC<DeckLeaderBaseProps> = ({ deckId, size = 'w200' }
         }
         editable={editable}
         size={size}
+        filterByFormat={cardFilter}
       />
       {deckFormatInfo.leaderCount === 2 && (
         <LeaderSelector
@@ -57,6 +59,7 @@ const DeckLeaderBase: React.FC<DeckLeaderBaseProps> = ({ deckId, size = 'w200' }
           }
           editable={editable}
           size={size}
+          filterByFormat={cardFilter}
         />
       )}
       <BaseSelector
@@ -65,6 +68,7 @@ const DeckLeaderBase: React.FC<DeckLeaderBaseProps> = ({ deckId, size = 'w200' }
         onBaseSelected={(cardId: string | undefined) => updateDeck({ baseCardId: cardId ?? null })}
         editable={editable}
         size={size}
+        filterByFormat={cardFilter}
       />
     </>
   );

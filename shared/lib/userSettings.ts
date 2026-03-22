@@ -4,6 +4,7 @@ import { z } from 'zod';
 import {
   type DeckImagePresets,
   DeckImagePresetVariant,
+  type DeckImageViewMode,
 } from '../../types/DeckImageCustomization.tsx';
 import { booleanPreprocessor } from './zod/booleanPreprocessor.ts';
 
@@ -25,10 +26,12 @@ export interface UserSettings {
   cpKeyboardShortcuts: boolean; // default: true
   // DeckImagePresets
   deckImage_showNoisyBackground: DeckImagePresets['showNoisyBackground'];
+  deckImage_showQr: DeckImagePresets['showQr'];
   deckImage_showcaseLeader: DeckImagePresets['showcaseLeader'];
   deckImage_hyperspaceBase: DeckImagePresets['hyperspaceBase'];
   deckImage_defaultVariantName: DeckImagePresets['defaultVariantName'];
   deckImage_groupBy: DeckImagePresets['groupBy'];
+  deckImage_imageViewMode: DeckImageViewMode;
   deckImage_cardVariants: string;
   deckImage_exportWidth: number;
 }
@@ -51,12 +54,14 @@ export const userSettingsSchema = z.object({
   cpKeyboardShortcuts: booleanPreprocessor.default(true),
   // DeckImagePresets
   deckImage_showNoisyBackground: booleanPreprocessor.default(true),
+  deckImage_showQr: booleanPreprocessor.default(true),
   deckImage_showcaseLeader: booleanPreprocessor.default(false),
   deckImage_hyperspaceBase: booleanPreprocessor.default(false),
   deckImage_defaultVariantName: z
     .enum(DeckImagePresetVariant)
     .default(DeckImagePresetVariant.Standard),
   deckImage_groupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
+  deckImage_imageViewMode: z.union([z.literal('full'), z.literal('small')]).default('full'),
   deckImage_cardVariants: z.string().default('{}'),
   deckImage_exportWidth: z.coerce.number().default(2200),
 });

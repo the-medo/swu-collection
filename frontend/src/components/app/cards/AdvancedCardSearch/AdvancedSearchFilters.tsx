@@ -20,6 +20,7 @@ import RarityMultiSelect from '@/components/app/global/RarityMultiSelect.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { KeyboardEventHandler, useCallback } from 'react';
+import { AdvancedSearchStringLookup } from '@/components/app/cards/AdvancedCardSearch/advancedSearchContext.ts';
 
 // Available card types
 const CARD_TYPES = ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'];
@@ -27,11 +28,13 @@ const CARD_TYPES = ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'];
 interface AdvancedSearchFiltersProps {
   onSearch: () => void;
   footerElement?: React.ReactNode;
+  availableCardTypes?: AdvancedSearchStringLookup;
 }
 
 const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   onSearch,
   footerElement,
+  availableCardTypes,
 }) => {
   const { open: sidebarOpen } = useSidebar();
   const { data: cardListData, isLoading: isLoadingCardList } = useCardList();
@@ -45,6 +48,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     cardTypes,
     aspects,
     aspectsExact,
+    includeNoAspect,
     arenas,
     traits,
     keywords,
@@ -67,6 +71,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     setCardTypes,
     setAspects,
     setAspectsExact,
+    setIncludeNoAspect,
     setArenas,
     setTraits,
     setKeywords,
@@ -98,8 +103,12 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
         setName('');
       }
     },
-    [onSearch],
+    [onSearch, setName],
   );
+
+  const availableSearchCardTypes = availableCardTypes
+    ? Object.keys(availableCardTypes)
+    : CARD_TYPES;
 
   return (
     <div
@@ -178,23 +187,48 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                 showNoneOption={false}
                 className="justify-center"
               />
-              <div className="flex items-center justify-center space-x-2">
-                <Checkbox
-                  id={`aspectsExact`}
-                  checked={aspectsExact}
-                  onCheckedChange={() => setAspectsExact(!aspectsExact)}
-                  className={cn(
-                    'w-4 h-4',
-                    aspectsExact ? 'bg-primary text-primary-foreground' : 'bg-background',
-                  )}
-                />
-                <Label htmlFor={`aspectsExact`}>Exact aspects</Label>
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`aspectsExact`}
+                    checked={aspectsExact}
+                    onCheckedChange={() => setAspectsExact(!aspectsExact)}
+                    className={cn(
+                      'w-4 h-4',
+                      aspectsExact ? 'bg-primary text-primary-foreground' : 'bg-background',
+                    )}
+                  />
+                  <Label htmlFor={`aspectsExact`}>Exact aspects</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`includeNoAspect`}
+                    checked={includeNoAspect}
+                    onCheckedChange={() => setIncludeNoAspect(!includeNoAspect)}
+                    className={cn(
+                      'w-4 h-4',
+                      includeNoAspect ? 'bg-primary text-primary-foreground' : 'bg-background',
+                    )}
+                  />
+                  <Label htmlFor={`includeNoAspect`}>
+                    <span>No aspect</span>
+                    <span
+                      className={cn(
+                        'ml-1 text-[10px] cursor-help',
+                        aspectsExact && aspects.length > 0 ? 'visible' : 'invisible',
+                      )}
+                      title="Exact aspects setting takes precedence."
+                    >
+                      (ignored)
+                    </span>
+                  </Label>
+                </div>
               </div>
 
               <GenericMultiSelect
                 label="Card Types"
                 placeholder="Select card types..."
-                options={CARD_TYPES}
+                options={availableSearchCardTypes}
                 value={cardTypes}
                 onChange={setCardTypes}
                 maxCount={3}

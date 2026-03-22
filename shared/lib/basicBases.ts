@@ -2,17 +2,17 @@ import { SwuAspect, SwuSet } from '../../types/enums.ts';
 import type { CardList } from '../../lib/swu-resources/types.ts';
 
 export const basicBases: Record<string, true | undefined> = {
-  'capital-city': true, // vigilance
-  'command-center': true, // command
-  'catacombs-of-cadera': true, // aggression
-  'administrator-s-tower': true, // cunning
+  'shield-generator-complex': true, // vigilance
+  'theed-palace': true, // command
+  'massassi-temple': true, // aggression
+  'mos-eisley': true, // cunning
 };
 
 export const basicBaseForAspect: Record<SwuAspect | string, string> = {
-  [SwuAspect.VIGILANCE]: 'capital-city',
-  [SwuAspect.COMMAND]: 'command-center',
-  [SwuAspect.AGGRESSION]: 'catacombs-of-cadera',
-  [SwuAspect.CUNNING]: 'administrator-s-tower',
+  [SwuAspect.VIGILANCE]: 'shield-generator-complex',
+  [SwuAspect.COMMAND]: 'theed-palace',
+  [SwuAspect.AGGRESSION]: 'massassi-temple',
+  [SwuAspect.CUNNING]: 'mos-eisley',
   [SwuAspect.HEROISM]: '',
   [SwuAspect.VILLAINY]: '',
   ['Vigilance-Force']: 'nightsister-lair',
@@ -149,3 +149,14 @@ export const getBasicBaseIdsForSet = (set: SwuSet, cardList: CardList, single: b
   });
   return basicBaseIds;
 };
+
+export const specialBaseSortValues: Record<string, number | undefined> = {
+  'lake-country': -1,
+  'echo-caverns': -2,
+  'forward-command-post': -2,
+};
+
+export const sortBasesBySpecialSortValues = (
+  a: string | undefined = '',
+  b: string | undefined = '',
+): number => (specialBaseSortValues[b] ?? 0) - (specialBaseSortValues[a] ?? 0);

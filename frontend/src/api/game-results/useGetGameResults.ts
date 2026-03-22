@@ -5,34 +5,13 @@ import {
   storeGameResults,
   type GameResultStore,
 } from '@/dexie/gameResults';
+import {
+  getGameResultsLastUpdatedFromStorage,
+  setGameResultsLastUpdatedInStorage,
+} from '@/api/game-results/gameResultsCache.ts';
 import type { GameResult } from '../../../../server/db/schema/game_result';
 import { CardMetrics } from '../../../../shared/types/cardMetrics.ts';
 import { format, isBefore, startOfToday, subDays } from 'date-fns';
-
-const GAME_RESULTS_LAST_UPDATED_KEY = 'game-results-last-updated';
-
-interface GameResultsLastUpdated {
-  [scopeId: string]: string; // scopeId -> datetime ISO string
-}
-
-function getLastUpdatedFromStorage(): GameResultsLastUpdated {
-  try {
-    const stored = localStorage.getItem(GAME_RESULTS_LAST_UPDATED_KEY);
-    return stored ? JSON.parse(stored) : {};
-  } catch {
-    return {};
-  }
-}
-
-function setLastUpdatedInStorage(scopeId: string, datetime: string): void {
-  try {
-    const current = getLastUpdatedFromStorage();
-    current[scopeId] = datetime;
-    localStorage.setItem(GAME_RESULTS_LAST_UPDATED_KEY, JSON.stringify(current));
-  } catch {
-    // Ignore storage errors
-  }
-}
 
 interface UseGetGameResultsParams {
   dateFrom?: string;
@@ -69,7 +48,7 @@ export const useGetGameResults = (params: UseGetGameResultsParams = {}) => {
                 : undefined;
 
             // Get last updated timestamp from localStorage for this scope
-            const lastUpdatedMap = getLastUpdatedFromStorage();
+            const lastUpdatedMap = getGameResultsLastUpdatedFromStorage();
             const lastUpdated = lastUpdatedMap[scopeId];
             const isRange = dateFrom && dateTo;
 
@@ -109,7 +88,7 @@ export const useGetGameResults = (params: UseGetGameResultsParams = {}) => {
             }
 
             if (!isRange) {
-              setLastUpdatedInStorage(scopeId, currentUtcTime);
+              setGameResultsLastUpdatedInStorage(scopeId, currentUtcTime);
             }
 
             // Return game results from Dexie for the requested date range

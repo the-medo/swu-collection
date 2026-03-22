@@ -3,6 +3,7 @@ import { useCardList } from '@/api/lists/useCardList';
 import { useToast } from '@/hooks/use-toast';
 import {
   SearchFrom,
+  useApplyAdvancedCardSearchDefaults,
   useAdvancedCardSearchStore,
   useAdvancedCardSearchStoreActions,
   useInitializeStoreFromUrlParams,
@@ -15,6 +16,7 @@ import { Button } from '@/components/ui/button.tsx';
 import AdvancedSearchLayoutSelectors from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/AdvancedSearchLayoutSelectors.tsx';
 import * as React from 'react';
 import { SearchCardLayoutProps } from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/SearchCardLayout.tsx';
+import { AdvancedCardSearchContextConfig } from '@/components/app/cards/AdvancedCardSearch/advancedSearchContext.ts';
 
 interface AdvancedCardSearchProps {
   children?: React.ReactNode;
@@ -22,6 +24,7 @@ interface AdvancedCardSearchProps {
   childrenTitleButtonText?: string;
   searchFrom?: SearchFrom;
   cardSubcomponent?: SearchCardLayoutProps['cardSubcomponent'];
+  searchContext?: AdvancedCardSearchContextConfig;
 }
 
 const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
@@ -30,8 +33,10 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
   childrenTitleButtonText,
   searchFrom = SearchFrom.CARD_SEARCH,
   cardSubcomponent,
+  searchContext,
 }) => {
   useInitializeStoreFromUrlParams(searchFrom);
+  useApplyAdvancedCardSearchDefaults(searchFrom, searchContext);
   const { toast } = useToast();
   const { data: cardListData } = useCardList();
   const { searchInitialized, hasActiveFilters, handleSearch } =
@@ -50,17 +55,21 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
       return;
     }
     setResultsOrChildren('results');
-    void handleSearch(cardListData);
-  }, [cardListData, handleSearch]);
+    void handleSearch(cardListData, searchContext);
+  }, [cardListData, handleSearch, searchContext, toast]);
 
   useEffect(() => {
-    if (cardListData && !searchInitialized) {
-      if (hasActiveFilters) {
-        setSearchInitialized(true);
-        onSearch();
-      }
-    }
-  }, [hasActiveFilters, cardListData, searchInitialized, onSearch]);
+    if (!cardListData || searchInitialized || !hasActiveFilters) return;
+    setSearchInitialized(true);
+    void handleSearch(cardListData, searchContext);
+  }, [
+    cardListData,
+    handleSearch,
+    hasActiveFilters,
+    searchContext,
+    searchInitialized,
+    setSearchInitialized,
+  ]);
 
   if (!children) {
     return (
@@ -72,7 +81,10 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
             // sidebarOpen ? 'lg:flex-row' : 'md:flex-row',
           )}
         >
-          <AdvancedSearchFilters onSearch={onSearch} />
+          <AdvancedSearchFilters
+            onSearch={onSearch}
+            availableCardTypes={searchContext?.availableCardTypes}
+          />
           <AdvancedSearchResults hasActiveFilters={hasActiveFilters} />
         </div>
       </>
@@ -89,7 +101,11 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
           'min-h-[500px] @[580px]/main-body:min-h-screen',
         )}
       >
-        <AdvancedSearchFilters onSearch={onSearch} footerElement={filtersFooterElement} />
+        <AdvancedSearchFilters
+          onSearch={onSearch}
+          footerElement={filtersFooterElement}
+          availableCardTypes={searchContext?.availableCardTypes}
+        />
         <div className="flex flex-col @[1080px]/main-body:flex-row flex-1">
           <div className="flex flex-row gap-4 items-start flex-wrap p-2 @[1080px]/main-body:hidden">
             <Button

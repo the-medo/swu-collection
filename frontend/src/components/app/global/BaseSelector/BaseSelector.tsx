@@ -1,6 +1,6 @@
 import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
 import * as React from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage, { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
@@ -18,15 +18,21 @@ import {
 import { Input } from '@/components/ui/input.tsx';
 import { Switch } from '@/components/ui/switch.tsx';
 import { cn } from '@/lib/utils.ts';
-import { basicBases } from '../../../../../../shared/lib/basicBases.ts';
+import {
+  basicBases,
+  sortBasesBySpecialSortValues,
+} from '../../../../../../shared/lib/basicBases.ts';
 import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { aspectsForBases } from '@/components/app/global/MultiAspectFilter/multiAspectFilterLib.tsx';
+import type { FilterByFormat } from '../../../../../../types/Format.ts';
+import { DialogTitle } from '@/components/ui/dialog.tsx';
 
 type BaseSelectorProps = Pick<DialogProps, 'trigger'> & {
   baseCardId?: string;
   onBaseSelected?: (baseCardId: string | undefined) => void;
   editable?: boolean;
   size?: CardImageVariantProps['size'];
+  filterByFormat?: FilterByFormat;
 };
 
 const BaseSelector: React.FC<BaseSelectorProps> = ({
@@ -35,13 +41,21 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
   onBaseSelected,
   editable = true,
   size = 'w200',
+  filterByFormat,
 }) => {
   const [open, setOpen] = useState(false);
   const [allBasicBases, setAllBasicBases] = useState(false);
   const [localBaseCardId, setLocalBaseCardId] = useState<string | undefined>(baseCardId);
   const [search, setSearch] = useState<string>('');
   const [aspectFilter, setAspectFilter] = useState<SwuAspect[]>(aspectsForBases);
+  const [formatFilterEnabled, setFormatFilterEnabled] = useState(Boolean(filterByFormat));
+  const basicBasesSwitchId = useId();
+  const formatFilterSwitchId = useId();
   const { data: cardList } = useCardList();
+
+  useEffect(() => {
+    setFormatFilterEnabled(Boolean(filterByFormat));
+  }, [filterByFormat]);
 
   const baseSorter = useMemo(
     () =>
@@ -76,6 +90,14 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
     [search, allBasicBases],
   );
 
+  const filteringByFormat = useCallback(
+    (card: CardDataWithVariants<CardListVariants> | undefined) => {
+      if (!card || !filterByFormat || !formatFilterEnabled) return true;
+      return filterByFormat.filterCallback(card);
+    },
+    [filterByFormat, formatFilterEnabled],
+  );
+
   const oneBasicBaseOfEach = useMemo(() => {
     if (allBasicBases || search !== '') return [];
 
@@ -84,11 +106,11 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
         return basicBases[card?.cardId ?? ''];
       },
     );
-  }, [search, allBasicBases]);
+  }, [cardList, search, allBasicBases]);
 
   const allBases = useMemo(() => {
     return Object.values(cardList?.cardsByCardType['Base'] ?? {}).filter(Boolean);
-  }, [cardList?.cardsByCardType['Base']]);
+  }, [cardList?.cardsByCardType]);
 
   const bases = useMemo(
     () =>
@@ -96,6 +118,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
         .filter(filteringByBasicBases)
         .concat(oneBasicBaseOfEach)
         .filter(filteringByAspects)
+        .filter(filteringByFormat)
         .filter(l => search === '' || l?.name.toLowerCase().includes(search.toLowerCase()))
         .map(l => {
           const variantId = selectDefaultVariant(l!) ?? '';
@@ -115,8 +138,17 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
             b.card?.text !== null
             ? -1
             : 0;
-        }),
-    [cardList, filteringByAspects, filteringByBasicBases, search],
+        })
+        .sort((a, b) => sortBasesBySpecialSortValues(a.card?.cardId, b.card?.cardId)),
+    [
+      allBases,
+      baseSorter,
+      filteringByAspects,
+      filteringByBasicBases,
+      filteringByFormat,
+      oneBasicBaseOfEach,
+      search,
+    ],
   );
 
   const selectedBase = useMemo(() => {
@@ -125,7 +157,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
 
   const localSelectedBase = useMemo(() => {
     return allBases.find(base => base?.cardId === localBaseCardId);
-  }, [localBaseCardId]);
+  }, [allBases, localBaseCardId]);
 
   const localTrigger = useMemo(() => {
     if (!selectedBase) {
@@ -151,32 +183,62 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
     );
   }, [selectedBase, size, editable]);
 
-  const headerDescription = useMemo(() => {
+  const header = useMemo(() => {
     return (
-      <div className="flex flex-wrap gap-2 items-center">
-        <div className="flex grow min-w-[200px]">
-          <Input
-            icon={Search}
-            placeholder="Search"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
+      <>
+        <DialogTitle>Select a base</DialogTitle>
+        <div className="text-sm text-muted-foreground">
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex grow min-w-[200px]">
+              <Input
+                icon={Search}
+                placeholder="Search"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
+            <MultiAspectFilter
+              value={aspectFilter}
+              onChange={setAspectFilter}
+              multiSelect={true}
+              availableAspects={aspectsForBases}
+            />
+            <div className="flex flex-row items-center gap-2">
+              <label htmlFor={basicBasesSwitchId} className="font-semibold">
+                Display all basic bases
+              </label>
+              <Switch
+                id={basicBasesSwitchId}
+                checked={allBasicBases}
+                onCheckedChange={checked => setAllBasicBases(Boolean(checked))}
+              />
+            </div>
+            {filterByFormat && (
+              <div className="flex items-center gap-2">
+                <label htmlFor={formatFilterSwitchId} className="text-sm font-medium">
+                  {filterByFormat.title}
+                </label>
+                <Switch
+                  id={formatFilterSwitchId}
+                  checked={formatFilterEnabled}
+                  onCheckedChange={checked => setFormatFilterEnabled(Boolean(checked))}
+                />
+              </div>
+            )}
+          </div>
         </div>
-        <MultiAspectFilter
-          value={aspectFilter}
-          onChange={setAspectFilter}
-          multiSelect={true}
-          availableAspects={aspectsForBases}
-        />
-        <div className="flex flex-row items-center gap-2">
-          <label htmlFor="switch-1" className="font-semibold">
-            Display all basic bases
-          </label>
-          <Switch id="switch-1" checked={allBasicBases} onCheckedChange={setAllBasicBases} />
-        </div>
-      </div>
+      </>
     );
-  }, [search, aspectFilter, allBasicBases]);
+  }, [
+    filterByFormat,
+    setFormatFilterEnabled,
+    formatFilterEnabled,
+    formatFilterSwitchId,
+    search,
+    aspectFilter,
+    allBasicBases,
+    basicBasesSwitchId,
+  ]);
 
   const handleSave = useCallback(
     (baseCardId: string | undefined) => {
@@ -216,15 +278,14 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
         <Button onClick={() => handleSave(localSelectedBase?.cardId)}>Save</Button>
       </div>
     );
-  }, [onBaseSelected, localSelectedBase]);
+  }, [handleSave, localSelectedBase]);
 
   if (!editable) return trigger ?? localTrigger;
 
   return (
     <Dialog
       trigger={trigger ?? localTrigger}
-      header={`Select a base`}
-      headerDescription={headerDescription}
+      header={header}
       footer={footer}
       open={open}
       onOpenChange={setOpen}

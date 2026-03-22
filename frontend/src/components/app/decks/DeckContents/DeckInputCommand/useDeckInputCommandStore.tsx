@@ -32,9 +32,12 @@ export function useDeckInputCommandStore() {
   const amount = useStore(store, state => state.amount);
   const board = useStore(store, state => state.board);
 
-  let { data: cardList, isFetching } = useCardList();
+  const { data: cardList, isFetching } = useCardList();
 
-  const options = useMemo(() => searchForCommandOptions(cardList, search), [cardList, search]);
+  const options = useMemo(
+    () => searchForCommandOptions(cardList, search, { rankByRelevance: true }),
+    [cardList, search],
+  );
 
   return {
     open,

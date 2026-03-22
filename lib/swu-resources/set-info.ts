@@ -144,6 +144,7 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     expansionId: 103,
     hexColor: '#89684e',
     rotationBlockId: 1, // eternal only
+    releaseDate: '2026-05-04',
   },
 } as const;
 

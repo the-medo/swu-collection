@@ -55,25 +55,25 @@ const DeckInputCommand: React.FC<DeckInputCommandProps> = ({ deckId }) => {
   );
 
   return (
-    <div className="flex flex-wrap gap-2 items-center max-lg:justify-center">
-      <div className="flex gap-2 items-center">
-        <div className="w-20">
+    <div className="flex flex-wrap gap-1 items-center max-lg:justify-center rounded bg-background/50 p-1">
+      <div className="flex gap-1 max-h-8 items-center">
+        <div className="w-fit flex flex-col">
           <Input
             ref={amountInputRef}
             id="amount-input"
             name="amount-input"
             placeholder=""
-            className="h-11"
+            className="h-8 w-14"
             type="number"
             value={amount}
             onChange={e => setAmount(Number(e.target.value) || undefined)}
           />
         </div>
         <Popover open={open}>
-          <Command className="border w-full max-w-[350px]" shouldFilter={false}>
+          <Command className="border w-full max-w-[300px] h-8" shouldFilter={false}>
             <PopoverTrigger asChild>
               {isFetching ? (
-                <Skeleton className={`h-11 w-full max-w-[350px]`} />
+                <Skeleton className={`h-7 w-full max-w-[300px]`} />
               ) : (
                 <CommandInput
                   placeholder="Card name..."
@@ -122,11 +122,11 @@ const DeckInputCommand: React.FC<DeckInputCommandProps> = ({ deckId }) => {
                         cardVariantId={i.defaultVariant}
                         backSideButton={false}
                       />
-                      <div className="flex flex-col gap-2 w-full">
+                      <div className="flex flex-col gap-1 w-full">
                         <span className="font-medium">{card?.name}</span>
-                        <div className="flex gap-2 w-full justify-between">
+                        <div className="flex gap-1 w-full justify-between">
                           <span>{card?.type}</span>
-                          <div className="flex gap-2">
+                          <div className="flex gap-1">
                             {card?.cost !== null ? (
                               <CostIcon cost={card?.cost ?? 0} size="medium" />
                             ) : null}

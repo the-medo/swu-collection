@@ -16,7 +16,7 @@ export type SearchCardData = {
   cardId: string;
 };
 
-export type SortField = 'name' | 'cardNumber' | 'cost' | 'type' | 'rarity';
+export type SortField = 'name' | 'cardNumber' | 'cost' | 'type' | 'rarity' | 'relevance';
 export type SortOrder = 'asc' | 'desc';
 
 export type SearchCardTableColumnsProps = {
@@ -264,16 +264,24 @@ export function useSearchCardTableColumns({
       definitions.push({
         id: 'cardSubcomponent',
         header: '',
-        size: 75,
+        size: 32,
         cell: ({ row }) => {
           const cardId = row.original.cardId;
           const card = cardListData?.cards[cardId];
           if (!card) return null;
-          return cardSubcomponent(card);
+          return (
+            <div
+              className="flex items-center justify-end"
+              onClick={e => e.stopPropagation()}
+              onMouseDown={e => e.stopPropagation()}
+            >
+              {cardSubcomponent(card)}
+            </div>
+          );
         },
       });
     }
 
     return definitions;
-  }, [cardListData, onSort, showImage, sortField, sortOrder, cardSubcomponent]);
+  }, [cardListData, cardSubcomponent, layoutType, onSort, showImage, sortField, sortOrder]);
 }
