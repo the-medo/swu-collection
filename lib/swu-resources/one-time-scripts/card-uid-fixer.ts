@@ -1,6 +1,6 @@
 import path from 'path';
 import fs, { promises as fsPromises } from 'fs';
-import type { CardList } from './types.ts';
+import type { CardList } from '../types.ts';
 
 /**
  * One-time script to add `cardUid` to non-token card objects in card-list.json

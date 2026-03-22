@@ -1,8 +1,8 @@
 import path from 'path';
 import fs, { promises as fsPromises } from 'fs';
-import type { CardDataWithVariants, CardList, CardListVariants } from './types.ts';
-import type { SwuSet } from '../../types/enums.ts';
-import { setInfo } from './set-info.ts';
+import type { CardDataWithVariants, CardList, CardListVariants } from '../types.ts';
+import type { SwuSet } from '../../../types/enums.ts';
+import { setInfo } from '../set-info.ts';
 
 /**
  * this should be just one-time script to add "set" field to card-list.json for all cards
