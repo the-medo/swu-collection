@@ -12,6 +12,7 @@ import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatist
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { useTournamentMetaStore } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { cardFilterByFormatId } from '../../../../../../types/Format.ts';
 
 interface LeaderCardStatsProps {
   metaId?: number;
@@ -27,7 +28,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
   className,
 }) => {
   const { decks } = useTournamentMetaStore();
-  const { csLeaderId } = useSearch({ strict: false });
+  const { csLeaderId, formatId } = useSearch({ strict: false });
   const navigate = useNavigate();
 
   const cardStatParams = useMemo(
@@ -179,6 +180,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
             });
           }}
           size="w300"
+          filterByFormat={formatId ? cardFilterByFormatId[formatId] : undefined}
         />
         <Link
           to="."

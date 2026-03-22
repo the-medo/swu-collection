@@ -16,7 +16,7 @@ import { usePostDeck } from '@/api/decks/usePostDeck.ts';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
 import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx';
-import { formatDataById } from '../../../../../../types/Format.ts';
+import { cardFilterByFormatId, formatDataById } from '../../../../../../types/Format.ts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { ImportNewDeck } from '@/components/app/dialogs/NewDeckDialog/ImportNewDeck.tsx';
 
@@ -108,34 +108,41 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({ trigger, triggerDisabled 
               />
               <form.Field
                 name="format"
-                children={field => (
-                  <div className="flex flex-col gap-2">
-                    <FormatSelect
-                      value={field.state.value}
-                      allowEmpty={false}
-                      onChange={e => field.handleChange(e ?? 1)}
-                    />
-                    <div className="flex flex-wrap gap-2 w-full justify-center items-center">
-                      <LeaderSelector
-                        trigger={null}
-                        leaderCardId={selectedLeader1}
-                        onLeaderSelected={setSelectedLeader1}
+                children={field => {
+                  const selectedFormatFilter = cardFilterByFormatId[Number(field.state.value)];
+
+                  return (
+                    <div className="flex flex-col gap-2">
+                      <FormatSelect
+                        value={field.state.value}
+                        allowEmpty={false}
+                        onChange={e => field.handleChange(e ?? 1)}
                       />
-                      {formatDataById[Number(field.state.value)]?.leaderCount === 2 && (
+                      <div className="flex flex-wrap gap-2 w-full justify-center items-center">
                         <LeaderSelector
                           trigger={null}
-                          leaderCardId={selectedLeader2}
-                          onLeaderSelected={setSelectedLeader2}
+                          leaderCardId={selectedLeader1}
+                          onLeaderSelected={setSelectedLeader1}
+                          filterByFormat={selectedFormatFilter}
                         />
-                      )}
-                      <BaseSelector
-                        trigger={null}
-                        baseCardId={selectedBase}
-                        onBaseSelected={setSelectedBase}
-                      />
+                        {formatDataById[Number(field.state.value)]?.leaderCount === 2 && (
+                          <LeaderSelector
+                            trigger={null}
+                            leaderCardId={selectedLeader2}
+                            onLeaderSelected={setSelectedLeader2}
+                            filterByFormat={selectedFormatFilter}
+                          />
+                        )}
+                        <BaseSelector
+                          trigger={null}
+                          baseCardId={selectedBase}
+                          onBaseSelected={setSelectedBase}
+                          filterByFormat={selectedFormatFilter}
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                }}
               />
               <form.Field
                 name="description"

@@ -1,5 +1,5 @@
 import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage, { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
@@ -16,14 +16,18 @@ import {
   CardListVariants,
 } from '../../../../../../lib/swu-resources/types.ts';
 import { Input } from '@/components/ui/input.tsx';
+import { Switch } from '@/components/ui/switch.tsx';
 import { cn } from '@/lib/utils.ts';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
+import type { FilterByFormat } from '../../../../../../types/Format.ts';
+import { DialogTitle } from '@/components/ui/dialog.tsx';
 
 type LeaderSelectorProps = Pick<DialogProps, 'trigger'> & {
   leaderCardId?: string;
   onLeaderSelected?: (leaderCardId: string | undefined) => void;
   editable?: boolean;
   size?: CardImageVariantProps['size'];
+  filterByFormat?: FilterByFormat;
 };
 
 const LeaderSelector: React.FC<LeaderSelectorProps> = ({
@@ -32,13 +36,20 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   onLeaderSelected,
   editable = true,
   size = 'w200',
+  filterByFormat,
 }) => {
   const { isMobile } = useSidebar();
   const [open, setOpen] = useState(false);
   const [localLeaderCardId, setLocalLeaderCardId] = useState<string | undefined>(leaderCardId);
   const [search, setSearch] = useState<string>('');
   const [aspectFilter, setAspectFilter] = useState<SwuAspect[]>(aspectArray);
+  const [formatFilterEnabled, setFormatFilterEnabled] = useState(Boolean(filterByFormat));
+  const formatFilterSwitchId = useId();
   const { data: cardList } = useCardList();
+
+  useEffect(() => {
+    setFormatFilterEnabled(Boolean(filterByFormat));
+  }, [filterByFormat]);
 
   const leaderSorter = useMemo(
     () =>
@@ -82,6 +93,14 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
     };
   };
 
+  const filteringByFormat = useCallback(
+    (card: CardDataWithVariants<CardListVariants> | undefined) => {
+      if (!card || !filterByFormat || !formatFilterEnabled) return true;
+      return filterByFormat.filterCallback(card);
+    },
+    [filterByFormat, formatFilterEnabled],
+  );
+
   const allLeaders = useMemo(
     () =>
       Object.values(cardList?.cardsByCardType['Leader'] ?? {})
@@ -95,13 +114,14 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       Object.values(cardList?.cardsByCardType['Leader'] ?? {})
         .filter(Boolean)
         .filter(filteringByAspects)
+        .filter(filteringByFormat)
         .filter(l => search === '' || l?.name.toLowerCase().includes(search.toLowerCase()))
         .map(cardTransformer)
         .sort((a, b) => {
           if (!leaderSorter) return 0;
           return leaderSorter(a.fakeCollectionCardForSorting, b.fakeCollectionCardForSorting);
         }),
-    [allLeaders, filteringByAspects, search],
+    [cardList, filteringByAspects, filteringByFormat, leaderSorter, search],
   );
 
   const selectedLeader = useMemo(() => {
@@ -137,26 +157,50 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
     );
   }, [selectedLeader, size, editable]);
 
-  const headerDescription = useMemo(() => {
+  const header = useMemo(() => {
     return (
-      <div className="flex flex-wrap gap-2 items-center">
-        <div className="flex grow min-w-[200px]">
-          <Input
-            icon={Search}
-            placeholder="Search"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
+      <>
+        <DialogTitle>Select a leader</DialogTitle>
+        <div className="text-sm text-muted-foreground">
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex grow min-w-[200px]">
+              <Input
+                icon={Search}
+                placeholder="Search"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
+            <MultiAspectFilter
+              value={aspectFilter}
+              onChange={setAspectFilter}
+              multiSelect={true}
+              showLabel={!isMobile}
+            />
+            {filterByFormat && (
+              <div className="flex items-center gap-2">
+                <label htmlFor={formatFilterSwitchId} className="text-sm font-medium">
+                  {filterByFormat.title}
+                </label>
+                <Switch
+                  id={formatFilterSwitchId}
+                  checked={formatFilterEnabled}
+                  onCheckedChange={checked => setFormatFilterEnabled(Boolean(checked))}
+                />
+              </div>
+            )}
+          </div>
         </div>
-        <MultiAspectFilter
-          value={aspectFilter}
-          onChange={setAspectFilter}
-          multiSelect={true}
-          showLabel={!isMobile}
-        />
-      </div>
+      </>
     );
-  }, [search, aspectFilter]);
+  }, [
+    filterByFormat,
+    formatFilterEnabled,
+    formatFilterSwitchId,
+    search,
+    aspectFilter,
+    isMobile,
+  ]);
 
   const handleSave = useCallback(
     (leaderCardId: string | undefined) => {
@@ -196,15 +240,14 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
         <Button onClick={() => handleSave(localSelectedLeader?.card?.cardId)}>Save</Button>
       </div>
     );
-  }, [onLeaderSelected, localSelectedLeader]);
+  }, [handleSave, localSelectedLeader]);
 
   if (!editable) return trigger ?? localTrigger;
 
   return (
     <Dialog
       trigger={trigger ?? localTrigger}
-      header={`Select a leader`}
-      headerDescription={headerDescription}
+      header={header}
       footer={footer}
       open={open}
       onOpenChange={setOpen}

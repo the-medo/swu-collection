@@ -8,6 +8,7 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { baseSpecialNames, basicBaseForAspect } from '../../../../../../shared/lib/basicBases.ts';
 import { SwuAspect } from '../../../../../../types/enums.ts';
 import { CardImageVariantProps } from '@/components/app/global/CardImage.tsx';
+import { cardFilterByFormatId } from '../../../../../../types/Format.ts';
 
 interface LeaderBaseStatSelectorProps {
   className?: string;
@@ -20,7 +21,7 @@ const LeaderBaseStatSelector: React.FC<LeaderBaseStatSelectorProps> = ({
   type = 'main',
   size = 'w300',
 }) => {
-  const { csLeaderId, csBaseId, csLeaderId2, csBaseId2 } = useSearch({ strict: false });
+  const { csLeaderId, csBaseId, csLeaderId2, csBaseId2, formatId } = useSearch({ strict: false });
   const navigate = useNavigate();
   const { data: cardListData } = useCardList();
 
@@ -64,6 +65,7 @@ const LeaderBaseStatSelector: React.FC<LeaderBaseStatSelectorProps> = ({
             });
           }}
           size={size}
+          filterByFormat={formatId ? cardFilterByFormatId[formatId] : undefined}
         />
         <Link
           to="."
@@ -82,6 +84,7 @@ const LeaderBaseStatSelector: React.FC<LeaderBaseStatSelectorProps> = ({
           baseCardId={basicBaseForAspect[baseId as SwuAspect] ?? baseId}
           onBaseSelected={onBaseSelected}
           size={size}
+          filterByFormat={formatId ? cardFilterByFormatId[formatId] : undefined}
         />
         <Link
           to="."
