@@ -20,6 +20,7 @@ export interface AdvancedCardSearchDefaultValues {
   cardTypes?: string[];
   aspects?: SwuAspect[];
   aspectsExact?: boolean;
+  includeNoAspect?: boolean;
   arenas?: SwuArena[];
   traits?: string[];
   keywords?: string[];

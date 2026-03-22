@@ -229,6 +229,7 @@ interface SearchFilters {
   excludedCardTypes?: Record<string, true>;
   aspects?: SwuAspect[];
   aspectsExact?: boolean;
+  includeNoAspect?: boolean;
   arenas?: SwuArena[];
   traits?: string[];
   keywords?: string[];
@@ -304,38 +305,48 @@ export const filterCards = async (
 
         // Check aspects filter - similar to LeaderSelector approach
         if (filters.aspects && filters.aspects.length > 0) {
-          if (card.aspects.length === 0) return false;
+          if (card.aspects.length === 0) {
+            if (!(filters.includeNoAspect ?? true) || filters.aspectsExact) {
+              return false;
+            }
+          } else {
+            if (filters.aspectsExact) {
+              const notFoundAspects2 = filters.aspects.filter(
+                filterAspect => !card.aspects!.includes(filterAspect),
+              );
+              if (notFoundAspects2.length > 0) return false;
+            }
 
-          if (filters.aspectsExact) {
-            const notFoundAspects2 = filters.aspects.filter(
-              filterAspect => !card.aspects!.includes(filterAspect),
+            // Find aspects from the card that aren't in the filter
+            const notFoundAspects = card.aspects.filter(
+              cardAspect => !filters.aspects!.includes(cardAspect),
             );
-            if (notFoundAspects2.length > 0) return false;
-          }
+            // If any aspect is missing, fail the filter unless it's the specific Heroism/Villainy exception
+            if (notFoundAspects.length > 0) {
+              // Special handling for Heroism + Villainy (like Chancellor Palpatine)
+              if (notFoundAspects.length === 1) {
+                const notFoundAspect = notFoundAspects[0];
 
-          // Find aspects from the card that aren't in the filter
-          const notFoundAspects = card.aspects.filter(
-            cardAspect => !filters.aspects!.includes(cardAspect),
-          );
-          // If any aspect is missing, fail the filter unless it's the specific Heroism/Villainy exception
-          if (notFoundAspects.length > 0) {
-            // Special handling for Heroism + Villainy (like Chancellor Palpatine)
-            if (notFoundAspects.length === 1) {
-              const notFoundAspect = notFoundAspects[0];
-
-              if (
-                (notFoundAspect === SwuAspect.HEROISM &&
-                  card.aspects.includes(SwuAspect.VILLAINY) &&
-                  filters.aspects.includes(SwuAspect.VILLAINY)) ||
-                (notFoundAspect === SwuAspect.VILLAINY &&
-                  card.aspects.includes(SwuAspect.HEROISM) &&
-                  filters.aspects.includes(SwuAspect.HEROISM))
-              ) {
-                // This is fine - special case for Heroism/Villainy
+                if (
+                  (notFoundAspect === SwuAspect.HEROISM &&
+                    card.aspects.includes(SwuAspect.VILLAINY) &&
+                    filters.aspects.includes(SwuAspect.VILLAINY)) ||
+                  (notFoundAspect === SwuAspect.VILLAINY &&
+                    card.aspects.includes(SwuAspect.HEROISM) &&
+                    filters.aspects.includes(SwuAspect.HEROISM))
+                ) {
+                  // This is fine - special case for Heroism/Villainy
+                } else {
+                  return false;
+                }
               } else {
                 return false;
               }
-            } else {
+            }
+          }
+        } else if (filters.aspects && filters.aspects.length === 0) {
+          if (filters.includeNoAspect && filters.aspectsExact) {
+            if (card.aspects.length > 0) {
               return false;
             }
           }
