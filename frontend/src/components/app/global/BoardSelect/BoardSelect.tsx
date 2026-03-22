@@ -28,8 +28,7 @@ const BoardSelect: React.FC<BoardSelectProps> = ({ deckId, value, onChange }) =>
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <div className="flex gap-2 items-center">
-          <span className="text-sm font-semibold"></span>
-          <Button variant="outline" className="w-[70px] text-xs justify-between">
+          <Button variant="outline" className=" h-8 w-[70px] text-xs justify-between">
             {boardObj[value].shortName}
           </Button>
         </div>
