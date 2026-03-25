@@ -7,9 +7,11 @@ import {
   index,
   unique,
   jsonb,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
-import type { InferSelectModel } from 'drizzle-orm';
+import { deck } from './deck.ts';
+import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 
 export const integration = pgTable('integration', {
   id: smallint('id').primaryKey(),
@@ -82,11 +84,46 @@ export const integrationGameData = pgTable(
   },
 );
 
+export const karabastLobbyMatch = pgTable(
+  'karabast_lobby_match',
+  {
+    matchId: uuid('match_id').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    lobbyId: text('lobby_id').notNull(),
+    deckId: uuid('deck_id').references(() => deck.id, { onDelete: 'set null' }),
+    opponentLeaderCardId: text('opponent_leader_card_id'),
+    opponentBaseCardKey: text('opponent_base_card_key'),
+    lookupKey: text('lookup_key').notNull(),
+    createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
+  },
+  table => {
+    return {
+      karabastLobbyMatchPk: primaryKey({
+        columns: [table.matchId, table.userId],
+        name: 'karabast_lobby_match_pkey',
+      }),
+      karabastLobbyMatchLookupKeyUnique: unique().on(table.lookupKey),
+      idxKarabastLobbyMatchLobbyId: index('idx_karabast_lobby_match_lobby_id').on(table.lobbyId),
+      idxKarabastLobbyMatchLobbyUser: index('idx_karabast_lobby_match_lobby_user').on(
+        table.lobbyId,
+        table.userId,
+      ),
+      idxKarabastLobbyMatchMatchId: index('idx_karabast_lobby_match_match_id').on(table.matchId),
+    };
+  },
+);
+
 export const integrationSchema = {
   integration,
   userIntegration,
   integrationGameData,
+  karabastLobbyMatch,
 };
 
 export type UserIntegration = InferSelectModel<typeof userIntegration>;
 export type IntegrationGameData = InferSelectModel<typeof integrationGameData>;
+export type KarabastLobbyMatch = InferSelectModel<typeof karabastLobbyMatch>;
+export type NewKarabastLobbyMatch = InferInsertModel<typeof karabastLobbyMatch>;
