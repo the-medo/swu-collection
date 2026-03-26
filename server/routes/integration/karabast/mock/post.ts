@@ -5,7 +5,6 @@ import type { AuthExtension } from '../../../../auth/auth.ts';
 import { db } from '../../../../db';
 import { deck } from '../../../../db/schema/deck.ts';
 import { deckCard } from '../../../../db/schema/deck_card.ts';
-import { user as userTable } from '../../../../db/schema/auth-schema.ts';
 import { eq, sql } from 'drizzle-orm';
 import { upsertGameResults } from '../../../../lib/game-results/upsertGameResults.ts';
 import { baseSpecialNames } from '../../../../../shared/lib/basicBases.ts';

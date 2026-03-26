@@ -11,6 +11,7 @@ import {
 } from '../../../../db/schema/integration.ts';
 import { eq, and } from 'drizzle-orm';
 import { IntegrationType } from '../../../../../shared/types/integration.ts';
+import { resolveKarabastLobbyMatchIds } from '../../../../lib/game-results/resolveKarabastLobbyMatchIds.ts';
 import { transformKarabastGameDataToGameResults } from '../../../../lib/game-results/transformKarabastGameDataToGameResults.ts';
 import { upsertGameResults } from '../../../../lib/game-results/upsertGameResults.ts';
 
@@ -116,7 +117,11 @@ export const karabastGameResultPostRoute = new Hono<AuthExtension>().post(
       .returning();
 
     if (insertedRecord) {
-      const results = await transformKarabastGameDataToGameResults(insertedRecord);
+      const resolvedMatchIds = await resolveKarabastLobbyMatchIds(insertedRecord);
+      const results = await transformKarabastGameDataToGameResults(
+        insertedRecord,
+        resolvedMatchIds,
+      );
       await upsertGameResults(results);
     }
 
