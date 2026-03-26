@@ -50,7 +50,7 @@ export const gameResult = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     deckId: uuid('deck_id').references(() => deck.id, { onDelete: 'set null' }),
-    matchId: text('match_id'), // Karabast lobby_id OR generated OR null
+    matchId: text('match_id'), // Karabast resolved match_id OR generated OR null
     gameId: text('game_id').notNull(), // Karabast gameId OR generated uuid/string for manual
     gameNumber: smallint('game_number'), // 1|2|3 (nullable for manual / unknown)
     format: text('format'),
@@ -101,6 +101,7 @@ export type GameResultDeckInfo = {
 };
 
 export type GameResultOtherData = {
+  karabastLobbyId?: string;
   roundNumber?: number;
   startedAt?: string;
   finishedAt?: string;

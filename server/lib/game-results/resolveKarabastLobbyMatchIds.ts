@@ -1,13 +1,12 @@
 import { inArray, sql } from 'drizzle-orm';
 import { cardUidToCardId } from '../../../shared/lib/cardUidToCardId.ts';
-import { isUuid } from '../../../shared/lib/zod/uuid.ts';
 import { db } from '../../db';
 import {
   karabastLobbyMatch,
   type IntegrationGameData,
   type NewKarabastLobbyMatch,
 } from '../../db/schema/integration.ts';
-import type { IntegrationGameDataContent } from './transformKarabastGameDataToGameResults.ts';
+import { normalizeKarabastDeckId, type IntegrationGameDataContent } from './karabastGameData.ts';
 
 const KARABAST_LOBBY_MATCH_LOCK_NAMESPACE = 28461;
 
@@ -21,14 +20,6 @@ export type KarabastLobbyMatchIdentity = {
   opponentLeaderCardId: string | null;
   opponentBaseCardKey: string | null;
   lookupKey: string;
-};
-
-export const normalizeKarabastDeckId = (deckId?: string | null): string | null => {
-  if (!isUuid(deckId)) {
-    return null;
-  }
-
-  return deckId;
 };
 
 export const buildKarabastLobbyMatchLookupKey = (

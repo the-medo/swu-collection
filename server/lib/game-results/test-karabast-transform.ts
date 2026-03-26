@@ -32,7 +32,7 @@ const testTransform = async () => {
 
     console.log('Record found. Transforming...');
 
-    const results = transformKarabastGameDataToGameResults(record);
+    const results = await transformKarabastGameDataToGameResults(record);
 
     console.log('Transformation results:');
     console.log(JSON.stringify(results, null, 2));
