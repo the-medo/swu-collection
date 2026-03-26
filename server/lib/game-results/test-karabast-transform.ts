@@ -1,6 +1,7 @@
 import { db } from '../../db';
 import { integrationGameData } from '../../db/schema/integration.ts';
 import { eq } from 'drizzle-orm';
+import { resolveKarabastLobbyMatchIds } from './resolveKarabastLobbyMatchIds.ts';
 import { transformKarabastGameDataToGameResults } from './transformKarabastGameDataToGameResults.ts';
 import { upsertGameResults } from './upsertGameResults.ts';
 
@@ -32,8 +33,11 @@ const testTransform = async () => {
 
     console.log('Record found. Transforming...');
 
-    const results = transformKarabastGameDataToGameResults(record);
+    const resolvedMatchIds = await resolveKarabastLobbyMatchIds(record);
+    const results = await transformKarabastGameDataToGameResults(record, resolvedMatchIds);
 
+    console.log('Resolved match IDs:');
+    console.log(JSON.stringify(resolvedMatchIds, null, 2));
     console.log('Transformation results:');
     console.log(JSON.stringify(results, null, 2));
 
@@ -50,4 +54,6 @@ const testTransform = async () => {
   }
 };
 
-testTransform();
+if (import.meta.main) {
+  testTransform();
+}

@@ -3,8 +3,8 @@ import { db } from '../../../../db';
 import { type TeamDeck, teamDeck } from '../../../../db/schema/team_deck.ts';
 import { desc, eq } from 'drizzle-orm';
 import type { AuthExtension } from '../../../../auth/auth.ts';
-import { z } from 'zod';
 import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
+import { uuidSchema } from '../../../../../shared/lib/zod/uuid.ts';
 
 export type TeamDeckShortened = Omit<TeamDeck, 'teamId'>;
 
@@ -12,7 +12,7 @@ export const teamsIdDeckMapGetRoute = new Hono<AuthExtension>().get('/', async c
   const user = c.get('user');
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-  const teamId = z.string().uuid().parse(c.req.param('id'));
+  const teamId = uuidSchema.parse(c.req.param('id'));
 
   const membership = await getTeamMembership(teamId, user.id);
   if (!membership) {

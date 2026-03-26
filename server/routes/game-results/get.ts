@@ -9,9 +9,7 @@ import { eq, and, lte, desc, gt, inArray, getTableColumns } from 'drizzle-orm';
 import { team as teamTable } from '../../db/schema/team.ts';
 import { getTeamMembership } from '../../lib/getTeamMembership.ts';
 import { teamDeck } from '../../db/schema/team_deck.ts';
-
-const isUuid = (value: string) =>
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+import { isUuid } from '../../../shared/lib/zod/uuid.ts';
 
 const schema = z.object({
   datetimeFrom: z.string().optional(),

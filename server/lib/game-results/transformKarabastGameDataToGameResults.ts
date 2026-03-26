@@ -1,47 +1,11 @@
-import { type IntegrationGameData, userIntegration } from '../../db/schema/integration.ts';
+import { type IntegrationGameData } from '../../db/schema/integration.ts';
 import type { GameResult, GameResultDeckInfo } from '../../db/schema/game_result.ts';
 import { cardUidToCardId } from '../../../shared/lib/cardUidToCardId.ts';
 import type { CardMetrics } from '../../../shared/types/cardMetrics.ts';
 import { db } from '../../db';
 import { deck } from '../../db/schema/deck.ts';
 import { eq } from 'drizzle-orm';
-
-export type IntegrationGameDataContent = {
-  format?: string;
-  gameId?: string;
-  lobbyId?: string;
-  players?: {
-    data?: {
-      id?: string;
-      base?: string;
-      deck?: {
-        id?: string;
-        name?: string;
-        deckSource?: string;
-        base?: {
-          id?: string;
-          cost?: number | null;
-          count?: number;
-          internalName?: string;
-        };
-        leader?: {
-          id?: string;
-          cost?: number | null;
-          count?: number;
-          internalName?: string;
-        };
-      };
-      leader?: string;
-      isWinner?: boolean;
-      accessToken?: string | null;
-    };
-    cardMetrics?: CardMetrics;
-  }[];
-  startedAt?: string;
-  finishedAt?: string;
-  roundNumber?: number;
-  sequenceNumber?: number;
-};
+import { normalizeKarabastDeckId, type IntegrationGameDataContent } from './karabastGameData.ts';
 
 /**
  * Transforms data from the integrationGameData into game result table.
@@ -50,6 +14,7 @@ export type IntegrationGameDataContent = {
  */
 export const transformKarabastGameDataToGameResults = async (
   integrationData: IntegrationGameData,
+  resolvedMatchIds?: Record<number, string>,
 ): Promise<GameResult[]> => {
   const data = integrationData.data as IntegrationGameDataContent; // The Karabast payload
   const players = data.players || [];
@@ -81,7 +46,7 @@ export const transformKarabastGameDataToGameResults = async (
 
     const opponentIndex = index === 0 ? 1 : 0;
     const opponent = players[opponentIndex];
-    const deckId = player.data?.deck?.id;
+    const deckId = normalizeKarabastDeckId(player.data?.deck?.id);
 
     let deckInfo: GameResultDeckInfo = {};
     if (deckId) {
@@ -100,9 +65,10 @@ export const transformKarabastGameDataToGameResults = async (
 
     const result: GameResult = {
       userId: userId,
-      deckId: player.data?.deck?.id,
+      deckId,
       gameId: integrationData.gameId,
-      matchId: integrationData.lobbyId,
+      // Keep the old lobbyId fallback until the route is wired to pass resolved match IDs.
+      matchId: resolvedMatchIds?.[index] ?? integrationData.lobbyId,
       gameNumber: data.sequenceNumber || null,
       format: data.format || null, //this is karabast format string
 
@@ -120,6 +86,7 @@ export const transformKarabastGameDataToGameResults = async (
       roundMetrics: {},
 
       otherData: {
+        karabastLobbyId: integrationData.lobbyId,
         roundNumber: data.roundNumber,
         startedAt: data.startedAt,
         finishedAt: data.finishedAt,
