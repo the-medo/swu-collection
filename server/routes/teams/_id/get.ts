@@ -6,9 +6,7 @@ import { eq, and, inArray, desc } from 'drizzle-orm';
 import type { AuthExtension } from '../../../auth/auth.ts';
 import { z } from 'zod';
 import { getTeamMembership } from '../../../lib/getTeamMembership.ts';
-
-const isUuid = (value: string) =>
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+import { isUuid } from '../../../../shared/lib/zod/uuid.ts';
 
 export const teamsIdGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const idOrShortcut = z.string().parse(c.req.param('id'));

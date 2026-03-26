@@ -12,7 +12,7 @@ import { selectUser } from '../../../user.ts';
 import { getTeamMembership } from '../../../../lib/getTeamMembership.ts';
 import { withPagination } from '../../../../lib/withPagination.ts';
 import type { User } from '../../../../../types/User.ts';
-import { allBasesBySpecialName } from '../../../../../shared/lib/basicBases.ts';
+import { uuidSchema } from '../../../../../shared/lib/zod/uuid.ts';
 
 const zQuery = z.object({
   limit: z.coerce.number().int().positive().max(100).default(20),
@@ -39,7 +39,7 @@ export const teamsIdDecksGetRoute = new Hono<AuthExtension>().get(
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const teamId = z.string().uuid().parse(c.req.param('id'));
+    const teamId = uuidSchema.parse(c.req.param('id'));
 
     const membership = await getTeamMembership(teamId, user.id);
     if (!membership) {
