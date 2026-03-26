@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { ClipboardCopy, SquareArrowUpRight } from 'lucide-react';
+import { ClipboardCopy, Link, SquareArrowUpRight } from 'lucide-react';
 import { DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import DeckCardQuantitySelector from '@/components/app/decks/DeckContents/DeckCards/DeckCardQuantitySelector.tsx';
 import { DeckCardDropdownMenuProps } from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 import { useNavigate } from '@tanstack/react-router';
 import { useToast } from '@/hooks/use-toast.ts';
+import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { getCardImageUrl } from '@/components/app/global/cardImageLib.ts';
 
 type DeckCardActionsDisplay = 'dropdown-menu' | 'card-detail-modal';
 
@@ -21,6 +23,22 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
 }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const defaultVariantId = card ? selectDefaultVariant(card) : undefined;
+  const imageUrl = getCardImageUrl(card?.variants[defaultVariantId ?? '']?.image.front);
+
+  const handleCopyText = async (text: string, title: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({ title });
+    } catch (error) {
+      console.error('Failed to copy text to clipboard', error);
+      toast({
+        title: 'Clipboard copy failed',
+        description: 'Your browser blocked access to the clipboard.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <>
@@ -40,10 +58,7 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
         <DropdownMenuItem
           className="cursor-pointer"
           onSelect={() => {
-            navigator.clipboard.writeText(card?.name || '');
-            toast({
-              title: `Card name copied to clipboard`,
-            });
+            void handleCopyText(card?.name || '', 'Card name copied to clipboard');
           }}
         >
           <ClipboardCopy />
@@ -52,14 +67,21 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
         <DropdownMenuItem
           className="cursor-pointer"
           onSelect={() => {
-            navigator.clipboard.writeText(card?.cardId || '');
-            toast({
-              title: `Card ID copied to clipboard`,
-            });
+            void handleCopyText(card?.cardId || '', 'Card ID copied to clipboard');
           }}
         >
           <ClipboardCopy />
           Copy card ID
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          disabled={!imageUrl}
+          onSelect={() => {
+            void handleCopyText(imageUrl || '', 'Card image URL copied to clipboard');
+          }}
+        >
+          <Link />
+          Copy image URL
         </DropdownMenuItem>
       </div>
       <div className="p-2 pl-4">

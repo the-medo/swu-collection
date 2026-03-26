@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
+import { getCardImageUrl } from '@/components/app/global/cardImageLib.ts';
 
 // Base aspect ratio: 300:418 (~0.7177)
 export const cardImageVariants = cva('', {
@@ -129,7 +130,7 @@ const CardImage: React.FC<CardImageProps> = ({
     >
       <img
         className={cn(classes, ' absolute top-[50%] left-0 transform -translate-y-1/2')}
-        src={'https://images.swubase.com/cards/' + (backSide ? img.back : img.front)}
+        src={getCardImageUrl(backSide ? img.back : img.front)}
         alt={`card-${card?.cardId}`}
       />
       {foil && (
