@@ -50,7 +50,7 @@ export function parseCardmarketHtml(
       const nameDirty = linkElement.textContent || '';
       const name = cleanCardName(nameDirty);
 
-      const cardNumberContainer = row.querySelector('.col-number > div > span:last-child');
+      const cardNumberContainer = row.querySelector('div[data-testid="number"]'); //.querySelector('.col-number > div > span:last-child');
       const cardNumber = cardNumberContainer ? cardNumberContainer.textContent?.trim() || '' : '';
 
       let probableCardId: string | undefined = transformToId(name);
