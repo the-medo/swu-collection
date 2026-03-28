@@ -25,7 +25,7 @@ export function PQWeekTools() {
       type: 'pq',
       format: format !== null ? format : undefined,
       meta: meta !== null ? meta : undefined,
-      limit: 200,
+      limit: 500,
     },
     false,
   ); // disabled by default, we'll trigger it manually
