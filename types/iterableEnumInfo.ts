@@ -122,6 +122,9 @@ export const deckLayoutObj: Record<DeckLayout, { title: string }> = {
   [DeckLayout.TEXT_CONDENSED]: {
     title: 'Text Condensed',
   },
+  [DeckLayout.WITH_WORDING]: {
+    title: 'With Card Text',
+  },
   [DeckLayout.VISUAL_GRID]: {
     title: 'Grid',
   },
