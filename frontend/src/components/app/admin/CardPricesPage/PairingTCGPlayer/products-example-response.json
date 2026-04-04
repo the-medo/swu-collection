@@ -1,0 +1,206 @@
+{
+  "totalItems": 40,
+  "success": true,
+  "errors": [],
+  "results": [
+    {
+      "productId": 623345,
+      "name": "Swarming Vulture Droid (Foil)",
+      "cleanName": "Swarming Vulture Droid Foil",
+      "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/623345_200w.jpg",
+      "categoryId": 79,
+      "groupId": 24171,
+      "url": "https://www.tcgplayer.com/product/623345/star-wars-unlimited-jump-to-lightspeed-weekly-play-promos-swarming-vulture-droid-foil",
+      "modifiedOn": "2025-03-17T12:52:19.837",
+      "imageCount": 1,
+      "presaleInfo": {
+        "isPresale": false,
+        "releasedOn": null,
+        "note": null
+      },
+      "extendedData": [
+        {
+          "name": "Rarity",
+          "displayName": "Rarity",
+          "value": "Common"
+        },
+        {
+          "name": "Number",
+          "displayName": "Number",
+          "value": "40"
+        },
+        {
+          "name": "Description",
+          "displayName": "Description",
+          "value": "A deck can have up to 15 copies of this card. This unit gets +1/+0 for each other friendly Swarming Vulture Droid."
+        },
+        {
+          "name": "CardType",
+          "displayName": "Card Type",
+          "value": "Unit"
+        },
+        {
+          "name": "Traits",
+          "displayName": "Traits",
+          "value": "Droid;Fighter;Separatist;Vehicle"
+        },
+        {
+          "name": "Cost",
+          "displayName": "Cost",
+          "value": "2"
+        },
+        {
+          "name": "Power",
+          "displayName": "Power",
+          "value": "2"
+        },
+        {
+          "name": "HP",
+          "displayName": "HP",
+          "value": "2"
+        },
+        {
+          "name": "Arena Type",
+          "displayName": "Arena Type",
+          "value": "Space"
+        }
+      ]
+    },
+    {
+      "productId": 623346,
+      "name": "Millennium Falcon - Get Out And Push (Foil)",
+      "cleanName": "Millennium Falcon Get Out And Push Foil",
+      "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/623346_200w.jpg",
+      "categoryId": 79,
+      "groupId": 24171,
+      "url": "https://www.tcgplayer.com/product/623346/star-wars-unlimited-jump-to-lightspeed-weekly-play-promos-millennium-falcon-get-out-and-push-foil",
+      "modifiedOn": "2025-03-17T12:53:56.883",
+      "imageCount": 1,
+      "presaleInfo": {
+        "isPresale": false,
+        "releasedOn": null,
+        "note": null
+      },
+      "extendedData": [
+        {
+          "name": "Rarity",
+          "displayName": "Rarity",
+          "value": "Special"
+        },
+        {
+          "name": "Number",
+          "displayName": "Number",
+          "value": "39"
+        },
+        {
+          "name": "Description",
+          "displayName": "Description",
+          "value": "You may play or deploy 1 additional Pilot on this unit. This unit gets +1/+0 for each Pilot on it."
+        },
+        {
+          "name": "Aspect",
+          "displayName": "Aspect",
+          "value": "Heroism"
+        },
+        {
+          "name": "CardType",
+          "displayName": "Card Type",
+          "value": "Unit"
+        },
+        {
+          "name": "Traits",
+          "displayName": "Traits",
+          "value": "Rebel;Transport;Vehicle"
+        },
+        {
+          "name": "Cost",
+          "displayName": "Cost",
+          "value": "3"
+        },
+        {
+          "name": "Power",
+          "displayName": "Power",
+          "value": "3"
+        },
+        {
+          "name": "HP",
+          "displayName": "HP",
+          "value": "3"
+        },
+        {
+          "name": "Arena Type",
+          "displayName": "Arena Type",
+          "value": "Space"
+        }
+      ]
+    },
+    {
+      "productId": 623348,
+      "name": "Han Solo - Has His Moments (Foil)",
+      "cleanName": "Han Solo Has His Moments Foil",
+      "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/623348_200w.jpg",
+      "categoryId": 79,
+      "groupId": 24171,
+      "url": "https://www.tcgplayer.com/product/623348/star-wars-unlimited-jump-to-lightspeed-weekly-play-promos-han-solo-has-his-moments-foil",
+      "modifiedOn": "2025-03-17T12:55:32.43",
+      "imageCount": 1,
+      "presaleInfo": {
+        "isPresale": false,
+        "releasedOn": null,
+        "note": null
+      },
+      "extendedData": [
+        {
+          "name": "Rarity",
+          "displayName": "Rarity",
+          "value": "Legendary"
+        },
+        {
+          "name": "Number",
+          "displayName": "Number",
+          "value": "37"
+        },
+        {
+          "name": "Description",
+          "displayName": "Description",
+          "value": "Ambush<br> Piloting  [2, Cunning, Heroism]  <strong>When played as an upgrade:</strong> You may attack with attached unit. If it's the Millennium Falcon, it deals its combat damage before the defender."
+        },
+        {
+          "name": "Aspect",
+          "displayName": "Aspect",
+          "value": "Cunning;Heroism"
+        },
+        {
+          "name": "CardType",
+          "displayName": "Card Type",
+          "value": "Unit"
+        },
+        {
+          "name": "Traits",
+          "displayName": "Traits",
+          "value": "Rebel;Pilot"
+        },
+        {
+          "name": "Cost",
+          "displayName": "Cost",
+          "value": "5"
+        },
+        {
+          "name": "Power",
+          "displayName": "Power",
+          "value": "4(+2)"
+        },
+        {
+          "name": "HP",
+          "displayName": "HP",
+          "value": "4(+2)"
+        },
+        {
+          "name": "Arena Type",
+          "displayName": "Arena Type",
+          "value": "Ground"
+        }
+      ]
+    }
+  ]
+}

@@ -20,6 +20,7 @@ const DeckLayoutMenu: React.FC<DeckLayoutMenuProps> = ({ compact }) => {
   const { data: layout } = useGetUserSetting('deckLayout');
   const { mutate: setLayout } = useSetUserSetting('deckLayout');
   const [hoveredLayout, setHoveredLayout] = React.useState<string | null>(null);
+  const [previewFailed, setPreviewFailed] = React.useState(false);
 
   const layoutOptions = [
     { id: DeckLayout.TEXT, label: 'Text', icon: <FileText className="h-4 w-4 mr-2" /> },
@@ -44,7 +45,17 @@ const DeckLayoutMenu: React.FC<DeckLayoutMenuProps> = ({ compact }) => {
       label: 'Stacks - Split',
       icon: <LayoutList className="h-4 w-4 mr-2" />,
     },
+    {
+      id: DeckLayout.WITH_WORDING,
+      label: 'With wording',
+      icon: <FileText className="h-4 w-4 mr-2" />,
+    },
   ];
+  const activeLayout = hoveredLayout || layout;
+
+  React.useEffect(() => {
+    setPreviewFailed(false);
+  }, [activeLayout]);
 
   return (
     <NavigationMenuItem>
@@ -58,12 +69,26 @@ const DeckLayoutMenu: React.FC<DeckLayoutMenuProps> = ({ compact }) => {
       <NavigationMenuContent>
         <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-[220px] md:w-[440px]">
           <div className="col-span-1 hidden md:block">
-            {hoveredLayout || layout ? (
+            {activeLayout === DeckLayout.WITH_WORDING ? (
+              <div className="w-full h-[200px] rounded-md border-2 bg-muted/30 flex items-center justify-center p-4 text-center">
+                <div className="space-y-2">
+                  <div className="text-sm font-semibold">With Wording</div>
+                  <div className="text-xs text-muted-foreground">
+                    Read-only grouped tables with small card art and full card wording.
+                  </div>
+                </div>
+              </div>
+            ) : activeLayout && !previewFailed ? (
               <img
-                src={`https://images.swubase.com/thumbnails/deck-layout-thumbnails/deck-layout-${hoveredLayout || layout}.png`}
-                alt={`${hoveredLayout || layout} layout preview`}
+                src={`https://images.swubase.com/thumbnails/deck-layout-thumbnails/deck-layout-${activeLayout}.png`}
+                alt={`${activeLayout} layout preview`}
                 className="w-full h-[200px] rounded-md object-contain border-2"
+                onError={() => setPreviewFailed(true)}
               />
+            ) : activeLayout ? (
+              <div className="w-full h-[200px] rounded-md border-2 bg-muted/30 flex items-center justify-center p-4 text-center text-xs text-muted-foreground">
+                Preview unavailable for this layout.
+              </div>
             ) : (
               <Skeleton className="w-full h-[200px] rounded-md" />
             )}

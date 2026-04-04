@@ -9,8 +9,9 @@ import { Button } from '@/components/ui/button.tsx';
 import { Info, X } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
 import * as React from 'react';
-import { formatData } from '../../../../../../types/Format.ts';
+import { formatData, type FormatFilter } from '../../../../../../types/Format.ts';
 import { cn } from '@/lib/utils.ts';
+import { useMemo } from 'react';
 
 interface FormatSelectProps {
   value: number | null;
@@ -18,6 +19,7 @@ interface FormatSelectProps {
   allowEmpty?: boolean;
   className?: string;
   showInfoTooltip?: boolean;
+  formatFilter?: FormatFilter | false;
 }
 
 const FormatSelect: React.FC<FormatSelectProps> = ({
@@ -26,6 +28,7 @@ const FormatSelect: React.FC<FormatSelectProps> = ({
   allowEmpty = true,
   className = '',
   showInfoTooltip = true,
+  formatFilter = false,
 }) => {
   const stringValue = value ? value.toString() : '';
 
@@ -37,6 +40,11 @@ const FormatSelect: React.FC<FormatSelectProps> = ({
     }
   };
 
+  const filteredFormats = useMemo(() => {
+    if (formatFilter === false) return formatData;
+    return formatData.filter(formatFilter);
+  }, [formatFilter]);
+
   return (
     <div className={cn(`flex flex-row gap-2 items-center`, className)}>
       <Select value={stringValue} onValueChange={handleChange}>
@@ -45,7 +53,7 @@ const FormatSelect: React.FC<FormatSelectProps> = ({
         </SelectTrigger>
         <SelectContent>
           {allowEmpty && <SelectItem value="-all-">No format</SelectItem>}
-          {formatData.map(format => (
+          {filteredFormats.map(format => (
             <SelectItem key={format.id} value={format.id.toString()}>
               {format.name}
             </SelectItem>
@@ -68,12 +76,12 @@ const FormatSelect: React.FC<FormatSelectProps> = ({
             <h4 className="font-bold">Format Information</h4>
             {value !== null ? (
               <div>
-                <h5 className="font-semibold">{formatData.find(f => f.id === value)?.name}</h5>
-                <p>{formatData.find(f => f.id === value)?.description}</p>
+                <h5 className="font-semibold">{filteredFormats.find(f => f.id === value)?.name}</h5>
+                <p>{filteredFormats.find(f => f.id === value)?.description}</p>
               </div>
             ) : (
               <div className="space-y-2">
-                {formatData.map(format => (
+                {filteredFormats.map(format => (
                   <div key={format.id} className="border-b pb-2 last:border-0">
                     <h5 className="font-semibold">{format.name}</h5>
                     <p>{format.description}</p>

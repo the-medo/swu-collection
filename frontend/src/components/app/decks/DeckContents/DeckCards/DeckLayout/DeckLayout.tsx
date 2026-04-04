@@ -1,5 +1,6 @@
 import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import DeckLayoutText from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutText/DeckLayoutText.tsx';
+import DeckLayoutWithWording from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutWithWording/DeckLayoutWithWording.tsx';
 import DeckLayoutVisualGrid from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutVisualGrid/DeckLayoutVisualGrid.tsx';
 import DeckLayoutVisualStacks from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutVisualGrid/DeckLayoutVisualStacks.tsx';
 import { DeckLayout as DeckLayoutEnum } from '../../../../../../../../types/enums.ts';
@@ -39,6 +40,15 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({
           deckCardsForLayout={deckCardsForLayout}
           highlightedCardId={highlightedCardId}
           displayDropdown={!compact}
+        />
+      );
+    case DeckLayoutEnum.WITH_WORDING:
+      return (
+        <DeckLayoutWithWording
+          deckId={deckId}
+          deckCardsForLayout={deckCardsForLayout}
+          highlightedCardId={highlightedCardId}
+          compact={compact}
         />
       );
     case DeckLayoutEnum.VISUAL_GRID_OVERLAP:

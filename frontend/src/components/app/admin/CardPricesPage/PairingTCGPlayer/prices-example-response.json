@@ -1,0 +1,60 @@
+{
+  "success": true,
+  "errors": [],
+  "results": [
+    {
+      "productId": 623345,
+      "lowPrice": 0.49,
+      "midPrice": 0.91,
+      "highPrice": 75,
+      "marketPrice": 0.71,
+      "directLowPrice": null,
+      "subTypeName": "Normal"
+    },
+    {
+      "productId": 623346,
+      "lowPrice": 0.2,
+      "midPrice": 0.5,
+      "highPrice": 3.99,
+      "marketPrice": 0.32,
+      "directLowPrice": null,
+      "subTypeName": "Normal"
+    },
+    {
+      "productId": 623348,
+      "lowPrice": 6.5,
+      "midPrice": 9.8,
+      "highPrice": 38.5,
+      "marketPrice": 8.62,
+      "directLowPrice": null,
+      "subTypeName": "Foil"
+    },
+    {
+      "productId": 623349,
+      "lowPrice": 0.19,
+      "midPrice": 0.39,
+      "highPrice": 3.25,
+      "marketPrice": 0.43,
+      "directLowPrice": null,
+      "subTypeName": "Foil"
+    },
+    {
+      "productId": 623358,
+      "lowPrice": 1.14,
+      "midPrice": 3.06,
+      "highPrice": 40,
+      "marketPrice": 2.94,
+      "directLowPrice": null,
+      "subTypeName": "Foil"
+    },
+    {
+      "productId": 623360,
+      "lowPrice": 0.2,
+      "midPrice": 0.38,
+      "highPrice": 2,
+      "marketPrice": 0.37,
+      "directLowPrice": null,
+      "subTypeName": "Foil"
+    }
+  ]
+}

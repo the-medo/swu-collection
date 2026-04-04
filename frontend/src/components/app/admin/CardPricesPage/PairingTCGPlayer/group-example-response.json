@@ -1,0 +1,52 @@
+{
+  "totalItems": 23,
+  "success": true,
+  "errors": [],
+  "results": [
+    {
+      "groupId": 24387,
+      "name": "Secrets of Power",
+      "abbreviation": "SEC",
+      "isSupplemental": false,
+      "publishedOn": "2025-11-07T00:00:00",
+      "modifiedOn": "2025-11-18T13:33:12.82",
+      "categoryId": 79
+    },
+    {
+      "groupId": 24515,
+      "name": "Secrets of Power - Weekly Play Promos",
+      "abbreviation": "SECWPP",
+      "isSupplemental": false,
+      "publishedOn": "2025-11-07T00:00:00",
+      "modifiedOn": "2025-12-10T15:18:52.383",
+      "categoryId": 79
+    },
+    {
+      "groupId": 24547,
+      "name": "2025 Gift Box",
+      "abbreviation": "GFT",
+      "isSupplemental": false,
+      "publishedOn": "2025-10-31T00:00:00",
+      "modifiedOn": "2025-12-05T17:27:55.62",
+      "categoryId": 79
+    },
+    {
+      "groupId": 24386,
+      "name": "Intro Battle: Hoth",
+      "abbreviation": "IBH",
+      "isSupplemental": false,
+      "publishedOn": "2025-10-03T00:00:00",
+      "modifiedOn": "2025-10-21T19:06:08.863",
+      "categoryId": 79
+    },
+    {
+      "groupId": 24385,
+      "name": "2025 Convention Exclusive",
+      "abbreviation": "CE2025",
+      "isSupplemental": false,
+      "publishedOn": "2025-07-24T00:00:00",
+      "modifiedOn": "2025-12-03T14:01:34.263",
+      "categoryId": 79
+    }
+  ]
+}

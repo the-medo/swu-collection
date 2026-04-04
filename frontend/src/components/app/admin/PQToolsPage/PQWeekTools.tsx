@@ -10,6 +10,7 @@ import { PQWeeklyTournamentGroups } from './PQWeeklyTournamentGroups.tsx';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector.tsx';
 import { TournamentData } from '../../../../../../types/Tournament.ts';
+import { metaFormatFilter } from '../../../../../../types/Format.ts';
 
 export function PQWeekTools() {
   const [format, setFormat] = useState<number | null>(1);
@@ -64,6 +65,7 @@ export function PQWeekTools() {
             onChange={setFormat}
             allowEmpty={true}
             className="w-[180px]"
+            formatFilter={metaFormatFilter}
           />
         </div>
         <div className="w-[500px]">
