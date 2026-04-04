@@ -25,6 +25,7 @@ import { gameResultRoute } from './routes/game-results.ts';
 import { teamsRoute } from './routes/teams.ts';
 import { userSetupRoute } from './routes/user-setup.ts';
 import { wsRoute } from './routes/ws.ts';
+import { applicationConfigurationRoute } from './routes/application-configuration.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
 import { timeout } from 'hono/timeout';
@@ -136,6 +137,7 @@ const apiRoutes = app
   .route('/game-results', gameResultRoute)
   .route('/teams', teamsRoute)
   .route('/user-setup', userSetupRoute)
+  .route('/application-configuration', applicationConfigurationRoute)
   .route('/ws', wsRoute);
 
 // Read the index.html template once at startup
