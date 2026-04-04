@@ -316,6 +316,13 @@
       "when": 1774482567424,
       "tag": "0044_fixed_ozymandias",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1775342307345,
+      "tag": "0045_conscious_eternity",
+      "breakpoints": true
     }
   ]
 }
