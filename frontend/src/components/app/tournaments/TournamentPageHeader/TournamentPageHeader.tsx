@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { usePermissions } from '@/hooks/usePermissions.ts';
-import { formatData, formatDataById } from '../../../../../../types/Format.ts';
+import { formatData, formatDataById, metaFormatFilter } from '../../../../../../types/Format.ts';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector.tsx';
 import { useGetMetas } from '@/api/meta';
@@ -128,6 +128,7 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
                   allowEmpty={false}
                   showInfoTooltip={false}
                   className="w-full"
+                  formatFilter={metaFormatFilter}
                 />
               </div>
 
@@ -169,6 +170,7 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
           allowEmpty={false}
           showInfoTooltip={false}
           className="w-full"
+          formatFilter={metaFormatFilter}
         />
       </div>
 

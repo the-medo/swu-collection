@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useGetMetas } from '@/api/meta';
 import { useCallback, useMemo } from 'react';
-import { formatData, formatDataById } from '../../../../../../types/Format.ts';
+import { formatData, formatDataById, metaFormatFilter } from '../../../../../../types/Format.ts';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector.tsx';
@@ -164,6 +164,7 @@ function MetaPage() {
                       allowEmpty={false}
                       showInfoTooltip={false}
                       className="w-full"
+                      formatFilter={metaFormatFilter}
                     />
                   </div>
 
@@ -204,6 +205,7 @@ function MetaPage() {
                 allowEmpty={false}
                 showInfoTooltip={false}
                 className="w-full"
+                formatFilter={metaFormatFilter}
               />
             </div>
 
