@@ -180,3 +180,6 @@ dist
 /lib/swu-resources/url.txt
 http-client.http
 http-client.private.env.json
+
+pg-dump.dmp
+frontend/src/assets/other/*
