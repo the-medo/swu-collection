@@ -3,6 +3,7 @@ import { CardList, CardVariant } from '../../../../../../../lib/swu-resources/ty
 import { transformToId } from '../../../../../../../lib/swu-resources/lib/transformToId.ts';
 import { ParsedCardData } from './parseCardmarketHtml.ts';
 import { TCGCSV_SWU_ID } from '../../../../../../../shared/consts/constants.ts';
+import { tcgcsvHeaders } from '../../../../../../../server/lib/card-prices/fetch-and-upload-tcgplayer-prices.ts';
 
 type TcgplayerProduct = {
   productId: number;
@@ -28,7 +29,7 @@ export async function parseTCGPlayerData(
 ): Promise<ParsedCardData[]> {
   try {
     const url = `https://tcgcsv.com/tcgplayer/${TCGCSV_SWU_ID}/${tcgPlayerGroupId}/products`;
-    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    const res = await fetch(url, { headers: tcgcsvHeaders });
     if (!res.ok) {
       throw new Error(`Request failed with status ${res.status}`);
     }
