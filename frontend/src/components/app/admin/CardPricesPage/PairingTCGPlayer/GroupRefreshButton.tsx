@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import {
+  TCGCSV_HEADERS,
   TCGCSV_GROUPS_LOCAL_STORAGE_KEY,
   TCGCSV_SWU_ID,
 } from '../../../../../../../shared/consts/constants.ts';
-import { tcgcsvHeaders } from '../../../../../../../server/lib/card-prices/fetch-and-upload-tcgplayer-prices.ts';
 
 const GroupRefreshButton: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -17,7 +17,7 @@ const GroupRefreshButton: React.FC = () => {
 
       const url = `https://tcgcsv.com/tcgplayer/${TCGCSV_SWU_ID}/groups`;
       const res = await fetch(url, {
-        headers: tcgcsvHeaders,
+        headers: TCGCSV_HEADERS,
       });
 
       if (!res.ok) {
