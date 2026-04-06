@@ -1,5 +1,5 @@
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
-import { TCGCSV_SWU_ID } from '../../../shared/consts/constants.ts';
+import { TCGCSV_HEADERS, TCGCSV_SWU_ID } from '../../../shared/consts/constants.ts';
 
 // Initialize the S3 client
 const bucketName = 'swu-images';
@@ -62,8 +62,6 @@ export interface TcgParsedPricingObject {
 
 type ParsedData = Record<string, TcgParsedPricingObject>;
 
-export const tcgcsvHeaders = { Accept: 'application/json', 'User-Agent': 'swubase/1.0.0' };
-
 async function fileExistsInBucket(key: string): Promise<boolean> {
   try {
     const head = new HeadObjectCommand({ Bucket: bucketName, Key: key });
@@ -87,7 +85,7 @@ async function uploadToBucket(key: string, data: string, contentType = 'applicat
 
 async function fetchGroups(): Promise<TcgGroupsResponse> {
   const url = `https://tcgcsv.com/tcgplayer/${TCGCSV_SWU_ID}/groups`;
-  const res = await fetch(url, { headers: tcgcsvHeaders });
+  const res = await fetch(url, { headers: TCGCSV_HEADERS });
   if (!res.ok) {
     throw new Error(`Failed to fetch TCGplayer groups: ${res.status} ${res.statusText}`);
   }
@@ -96,7 +94,7 @@ async function fetchGroups(): Promise<TcgGroupsResponse> {
 
 async function fetchGroupPrices(groupId: number): Promise<TcgPricesResponse> {
   const url = `https://tcgcsv.com/tcgplayer/${TCGCSV_SWU_ID}/${groupId}/prices`;
-  const res = await fetch(url, { headers: tcgcsvHeaders });
+  const res = await fetch(url, { headers: TCGCSV_HEADERS });
   if (!res.ok) {
     throw new Error(
       `Failed to fetch TCGplayer prices for group ${groupId}: ${res.status} ${res.statusText}`,
