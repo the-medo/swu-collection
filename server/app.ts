@@ -3,7 +3,7 @@ import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
 import { collectionRoute } from './routes/collection.ts';
 import { deckRoute } from './routes/deck.ts';
-import { serveStatic, upgradeWebSocket, websocket } from 'hono/bun';
+import { serveStatic, websocket } from 'hono/bun';
 import { authRoute } from './routes/auth.ts';
 import { auth, type AuthExtension } from './auth/auth.ts';
 import { cardsRoute } from './routes/cards.ts';
@@ -31,6 +31,7 @@ import { timeout } from 'hono/timeout';
 import fs from 'fs';
 import path from 'path';
 import * as Sentry from '@sentry/bun';
+import { isAllowedApiOrigin, normalizeOrigin } from './lib/utils/cors.ts';
 
 Sentry.init({
   environment: process.env.ENVIRONMENT,
@@ -56,6 +57,14 @@ const app = new Hono<AuthExtension>().onError((err, c) => {
 });
 
 app.use('*', logger());
+app.use(
+  '/api/*',
+  cors({
+    origin: (origin, c) =>
+      isAllowedApiOrigin(c.req.path, origin) ? normalizeOrigin(origin) : null,
+  }),
+);
+
 app.use('*', async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
@@ -105,13 +114,6 @@ app.use('*', async (c, next) => {
 
 app.use('/api/admin/special-actions/update-deck-information', timeout(180000));
 app.use('/api/tournament/:id/export-to-blob', timeout(180000));
-app.use(
-  '/api/deck/:id/json',
-  cors({
-    origin: ['https://karabast.net', 'https://www.karabast.net', 'http://localhost:3000'],
-    allowMethods: ['GET'],
-  }),
-);
 
 const apiRoutes = app
   .basePath('/api')
@@ -195,7 +197,7 @@ app.get('*', async (c, next) => {
 // Try to serve static files from dist directory first (production)
 app.get('*', async (c, next) => {
   try {
-    return await serveStatic({ root: './frontend/dist' })(c);
+    return await serveStatic({ root: './frontend/dist' })(c, next);
   } catch (error) {
     // If file not found in dist, continue to next middleware
     return next();
@@ -215,7 +217,7 @@ app.get('*', async (c, next) => {
   // Only try to serve files with extensions (not routes)
   if (pathname.includes('.')) {
     try {
-      return await serveStatic({ root: './frontend' })(c);
+      return await serveStatic({ root: './frontend' })(c, next);
     } catch (error) {
       // If file not found, continue to next middleware
       return next();
