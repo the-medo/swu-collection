@@ -33,18 +33,18 @@ Migration process:
 ## Backend Implementation
 Add a top-level `tournament-weekends` Hono route:
 - Public/optional-auth reads:
-    - `GET /api/tournament-weekends/live`
-    - `GET /api/tournament-weekends/:id`
-    - `POST /api/tournament-weekends/:id/resources` for logged-in stream/VOD submissions.
-    - `GET/POST/DELETE /api/player-watch` for logged-in watchlist management.
+  - `GET /api/tournament-weekends` list newest first.
+  - `GET /api/tournament-weekends/live` - this will return only ID of the currently LIVE tournament weekend
+  - `GET /api/tournament-weekends/:id/detail`
+  - `POST /api/tournament-weekends/:id/resources` for logged-in stream/VOD submissions.
+  - `GET/POST/DELETE /api/player-watch` for logged-in watchlist management.
 - Admin-protected mutations:
-    - `GET /api/tournament-weekends` list newest first.
-    - `POST /api/tournament-weekends` create weekend from name + Saturday date and auto-fill all tournaments whose `date`/`days` overlap that Saturday-Sunday.
-    - `PATCH /api/tournament-weekends/:id` edit name/date and toggle `is_live` transactionally.
-    - `POST/DELETE /api/tournament-weekends/:id/tournament-groups` manage attached groups.
-    - `POST /api/tournament-weekends/:id/refresh-tournaments` reconcile missing/extraneous weekend tournament rows.
-    - `POST /api/tournament-weekends/:id/check` manually run checks for all unfinished tournaments with Melee ids.
-    - `PATCH /api/tournament-weekends/:id/resources/:resourceId` approve/reject submitted links.
+  - `POST /api/tournament-weekends` create weekend from name + Saturday date and auto-fill all tournaments whose `date`/`days` overlap that Saturday-Sunday.
+  - `PATCH /api/tournament-weekends/:id` edit name/date and toggle `is_live` transactionally.
+  - `POST/DELETE /api/tournament-weekends/:id/tournament-groups` manage attached groups.
+  - `POST /api/tournament-weekends/:id/refresh-tournaments` reconcile missing/extraneous weekend tournament rows.
+  - `POST /api/tournament-weekends/:id/check` manually run checks for all unfinished tournaments with Melee ids.
+  - `PATCH /api/tournament-weekends/:id/resources/:resourceId` approve/reject submitted links.
 
 Add `server/lib/live-tournaments`:
 - `liveTournamentCheck({ weekendId, tournamentId })`: fetch Melee tournament detail, update `exact_start`, `status`, attendance/player count if available, `has_decklists`, `last_updated_at`, and weekend counters.
