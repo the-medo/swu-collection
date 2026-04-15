@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, text, timestamp, uniqueIndex, index } from 'drizzle-orm/pg-core';
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 
 export const entityResource = pgTable(
@@ -22,6 +22,9 @@ export const entityResource = pgTable(
         table.resourceType,
         table.resourceUrl,
       ),
+      entityTypeIdx: index('er_type_idx').on(table.entityType),
+      entityIdIdx: index('er_id_idx').on(table.entityId),
+      resourceTypeIdx: index('er_resource_type_idx').on(table.resourceType),
     };
   },
 );
