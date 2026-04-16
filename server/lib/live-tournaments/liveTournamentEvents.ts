@@ -9,3 +9,10 @@ export async function publishLiveTournamentProgressChecked(
 ) {
   // TODO: Publish standings/match updates through the live tournament websocket room.
 }
+
+export async function publishTournamentImportFinished(_result: {
+  tournamentId: string;
+  importedAt: string;
+}) {
+  // TODO: Publish tournament_import.finished through the live tournament websocket room.
+}

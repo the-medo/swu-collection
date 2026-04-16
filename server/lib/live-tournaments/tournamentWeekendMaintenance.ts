@@ -1,5 +1,5 @@
 import { and, count, eq, inArray, sql } from 'drizzle-orm';
-import { addDays, format, isSaturday, isValid, parseISO } from 'date-fns';
+import { addDays, format, isSaturday } from 'date-fns';
 import { db } from '../../db';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import {
@@ -34,7 +34,7 @@ export function getTournamentWeekendWindow(saturdayDate: string) {
   };
 }
 
-async function findOverlappingTournamentIds(saturdayDate: string) {
+export async function findOverlappingTournamentIds(saturdayDate: string) {
   const { startDate, endDate } = getTournamentWeekendWindow(saturdayDate);
 
   const rows = await db
@@ -46,6 +46,55 @@ async function findOverlappingTournamentIds(saturdayDate: string) {
     );
 
   return rows.map(row => row.id);
+}
+
+export async function getLiveTournamentWeekend() {
+  return (
+    await db.select().from(tournamentWeekend).where(eq(tournamentWeekend.isLive, true)).limit(1)
+  )[0];
+}
+
+export async function getTournamentWeekendTournamentReconciliation(
+  weekendId: string,
+  saturdayDate: string,
+) {
+  const expectedTournamentIds = await findOverlappingTournamentIds(saturdayDate);
+  const existingRows = await db
+    .select({ tournamentId: tournamentWeekendTournament.tournamentId })
+    .from(tournamentWeekendTournament)
+    .where(eq(tournamentWeekendTournament.tournamentWeekendId, weekendId));
+
+  const expectedIds = new Set(expectedTournamentIds);
+  const existingTournamentIds = existingRows.map(row => row.tournamentId);
+  const existingIds = new Set(existingTournamentIds);
+
+  const missingTournamentIds = expectedTournamentIds.filter(id => !existingIds.has(id));
+  const extraneousTournamentIds = existingTournamentIds.filter(id => !expectedIds.has(id));
+
+  return {
+    weekendId,
+    saturdayDate,
+    expectedTournamentIds,
+    existingTournamentIds,
+    missingTournamentIds,
+    extraneousTournamentIds,
+    hasMismatch: missingTournamentIds.length > 0 || extraneousTournamentIds.length > 0,
+  };
+}
+
+export async function getLiveTournamentWeekendReconciliation() {
+  const weekend = await getLiveTournamentWeekend();
+  if (!weekend) return null;
+
+  const reconciliation = await getTournamentWeekendTournamentReconciliation(
+    weekend.id,
+    weekend.date,
+  );
+
+  return {
+    weekend,
+    reconciliation,
+  };
 }
 
 export async function syncTournamentWeekendTournaments(weekendId: string, saturdayDate: string) {

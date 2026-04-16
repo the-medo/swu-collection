@@ -1,4 +1,4 @@
-import { and, eq, isNotNull, ne, sql } from 'drizzle-orm';
+import { and, eq, isNotNull, ne, or, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import {
@@ -6,7 +6,21 @@ import {
   tournamentWeekendTournament,
 } from '../../db/schema/tournament_weekend.ts';
 import { liveTournamentCheck } from './liveTournamentCheck.ts';
+import { getLiveTournamentWeekend } from './tournamentWeekendMaintenance.ts';
 import type { LiveTournamentCheckResult } from './types.ts';
+
+const serializeError = (error: unknown) => {
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      stack: error.stack,
+    };
+  }
+
+  return {
+    message: String(error),
+  };
+};
 
 export async function checkTournamentWeekend(weekendId: string) {
   const weekend = (
@@ -32,25 +46,58 @@ export async function checkTournamentWeekend(weekendId: string) {
     .where(
       and(
         eq(tournamentWeekendTournament.tournamentWeekendId, weekendId),
-        ne(tournamentWeekendTournament.status, 'finished'),
+        or(
+          ne(tournamentWeekendTournament.status, 'finished'),
+          eq(tournamentWeekendTournament.hasDecklists, false),
+        ),
         isNotNull(tournamentTable.meleeId),
         sql`${tournamentTable.meleeId} <> ''`,
       ),
     );
 
   const results: LiveTournamentCheckResult[] = [];
+  const errors: {
+    tournamentId: string;
+    meleeId: string | null;
+    status: string;
+    error: { message: string; stack?: string };
+  }[] = [];
+
   for (const eligibleTournament of eligibleTournaments) {
-    results.push(
-      await liveTournamentCheck({
-        weekendId,
+    try {
+      results.push(
+        await liveTournamentCheck({
+          weekendId,
+          tournamentId: eligibleTournament.tournamentId,
+        }),
+      );
+    } catch (error) {
+      errors.push({
         tournamentId: eligibleTournament.tournamentId,
-      }),
-    );
+        meleeId: eligibleTournament.meleeId,
+        status: eligibleTournament.status,
+        error: serializeError(error),
+      });
+    }
   }
 
   return {
     eligibleTournamentCount: eligibleTournaments.length,
     eligibleTournaments,
     results,
+    errors,
+  };
+}
+
+export async function checkLiveTournamentWeekend() {
+  const weekend = await getLiveTournamentWeekend();
+  if (!weekend) return null;
+
+  const result = await checkTournamentWeekend(weekend.id);
+  if (!result) return null;
+
+  return {
+    weekend,
+    ...result,
   };
 }

@@ -3,13 +3,25 @@ export {
   parseLiveTournamentAdditionalData,
   serializeLiveTournamentAdditionalData,
 } from './additionalData.ts';
-export { checkTournamentWeekend } from './checkTournamentWeekend.ts';
+export { checkLiveTournamentWeekend, checkTournamentWeekend } from './checkTournamentWeekend.ts';
 export { liveTournamentCheck } from './liveTournamentCheck.ts';
 export {
   deriveBracket,
   deriveUndefeatedPlayers,
   liveTournamentProgressCheck,
 } from './liveTournamentProgressCheck.ts';
+export {
+  findOverlappingTournamentIds,
+  getLiveTournamentWeekend,
+  getLiveTournamentWeekendReconciliation,
+  getTournamentWeekendTournamentReconciliation,
+  recomputeTournamentWeekendCounters,
+  syncTournamentWeekendTournaments,
+} from './tournamentWeekendMaintenance.ts';
+export {
+  processNextTournamentImport,
+  type TournamentImportQueueResult,
+} from './tournamentImportQueue.ts';
 export {
   fetchLiveTournamentDetailFromMelee,
   fetchLiveTournamentProgressFromMelee,

@@ -150,9 +150,15 @@ Current shared pieces:
 
 This keeps the finished import behavior close to what already existed while avoiding a second implementation of the raw Melee round match request.
 
-## Cron Plan
+## Cron Scripts
 
-The cron files/scripts are not created yet. These are the intended jobs.
+The live flow has three standalone Bun cron entry points:
+
+- `server/crons/reconcile-live-tournament-weekend.ts`
+- `server/crons/check-live-tournaments.ts`
+- `server/crons/process-tournament-import.ts`
+
+Their Sentry monitor slugs are registered in `server/crons/cron-sentry/sentry-init.ts`.
 
 ### Hourly Weekend Reconcile
 
@@ -164,9 +170,8 @@ Flow:
 2. Compute the Saturday-Sunday tournament window with `getTournamentWeekendWindow`.
 3. Compare existing `tournament_weekend_tournament` rows with tournaments whose `date` and `days` overlap the weekend.
 4. Report mismatches to Sentry with enough data to fix them.
-5. Optionally call `syncTournamentWeekendTournaments` only if the admin wants automatic reconciliation.
 
-This job should be conservative. Reconcile can delete extraneous rows, and live rows may contain useful progress data.
+This job is intentionally read-only. Reconcile can delete extraneous rows, and live rows may contain useful progress data, so automatic mutation remains an explicit admin action through `syncTournamentWeekendTournaments`.
 
 ### Every 3 Minutes: Live Tournament Check
 
@@ -182,7 +187,7 @@ Flow:
 6. Capture individual tournament failures without stopping the whole weekend check.
 7. Report failures to Sentry with `weekendId`, `tournamentId`, and `meleeId`.
 
-Important selection detail: the first implementation can check unfinished tournaments only, but that can miss a tournament whose Melee status flips to finished before decklists are visible. A safer bounded policy is to keep checking finished rows with `has_decklists = false` while their weekend is live, or for a fixed time window after `last_updated_at`.
+Important selection detail: the script checks unfinished tournaments and finished tournaments where `has_decklists = false`. That avoids missing a pending import when Melee marks the tournament finished before decklists are visible.
 
 ### Every Minute: Tournament Import Queue
 
@@ -199,7 +204,7 @@ Flow:
 7. Update tournament group statistics for every group containing this tournament.
 8. Generate deck thumbnails for the tournament.
 9. Mark the import row `finished` and set `finished_at`.
-10. Publish a future WebSocket event like `tournament_import.finished`.
+10. Publish a no-op `tournament_import.finished` event hook that the future WebSocket implementation can fill in.
 
 Failure flow:
 
@@ -217,7 +222,7 @@ Melee auth can expire. The live and import helpers rely on `TOURNAMENT_COOKIE` a
 
 Status strings are not a typed API contract. The status mapper is intentionally broad, but unknown status text will become `unknown`. Unknown statuses should be logged once real data is seen.
 
-Decklists may appear after the tournament status becomes finished. If the live check cron filters out all finished rows, a pending import can be missed. The cron should continue checking finished rows without decklists for a bounded period.
+Decklists may appear after the tournament status becomes finished. The live check cron keeps checking finished rows while `has_decklists = false`, but a long-running live weekend could still benefit from a bounded cutoff later.
 
 Round ids and round numbers are different. Melee endpoints use round ids, while display and database rows use round numbers. Top cut numbering is derived from View button order.
 
