@@ -74,6 +74,9 @@ Add WebSocket route:
 - Message types: `live_weekend.summary`, `live_tournament.updated`, `live_tournament.standings_updated`, `live_tournament.matches_updated`, `live_resource.approved`, `tournament_import.finished`.
 
 ## Frontend Implementation
+Create frontend API hooks:
+- go through the new endpoints and create their respective FE api hooks
+
 Homepage:
 - Update the root route to resolve mode in this order: `homeMode` search param, user setting if not `default`, application configuration, then fallback `snapshot`.
 - Render existing `DailySnapshots` for `snapshot`.
