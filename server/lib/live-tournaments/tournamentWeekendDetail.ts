@@ -34,7 +34,15 @@ const groupBy = <T, K extends string | number>(items: T[], getKey: (item: T) => 
   return grouped;
 };
 
-export async function getTournamentWeekendDetail(weekendId: string, userId?: string) {
+export type TournamentWeekendDetailOptions = {
+  includeUnapprovedResources?: boolean;
+};
+
+export async function getTournamentWeekendDetail(
+  weekendId: string,
+  userId?: string,
+  options: TournamentWeekendDetailOptions = {},
+) {
   const weekend = (
     await db.select().from(tournamentWeekend).where(eq(tournamentWeekend.id, weekendId)).limit(1)
   )[0];
@@ -95,10 +103,12 @@ export async function getTournamentWeekendDetail(weekendId: string, userId?: str
           .select()
           .from(tournamentWeekendResource)
           .where(
-            and(
-              inArray(tournamentWeekendResource.tournamentId, tournamentIds),
-              eq(tournamentWeekendResource.approved, true),
-            ),
+            options.includeUnapprovedResources
+              ? inArray(tournamentWeekendResource.tournamentId, tournamentIds)
+              : and(
+                  inArray(tournamentWeekendResource.tournamentId, tournamentIds),
+                  eq(tournamentWeekendResource.approved, true),
+                ),
           )
           .orderBy(asc(tournamentWeekendResource.createdAt))
       : [];

@@ -6,6 +6,7 @@ import { MetaTable } from './MetaTable';
 import { SetsPage } from './SetsPage';
 import { ThumbnailsPage } from '@/components/app/admin/ThumbnailsPage.tsx';
 import { TournamentGroupsPage } from '@/components/app/admin/TournamentGroupsPage';
+import { TournamentWeekendsPage } from '@/components/app/admin/TournamentWeekendsPage';
 import { PQToolsPage } from '@/components/app/admin/PQToolsPage/PQToolsPage.tsx';
 import { SpecialActionsPage } from '@/components/app/admin/SpecialActionsPage';
 import { CardPricePairingAdministrationPage } from '@/components/app/admin/CardPricesPage/CardPricePairingAdministrationPage.tsx';
@@ -42,6 +43,7 @@ export function AdminPage() {
             <TabsTrigger value="metas">Metas</TabsTrigger>
             <TabsTrigger value="sets">Sets</TabsTrigger>
             <TabsTrigger value="tournament-groups">Tournament Groups</TabsTrigger>
+            <TabsTrigger value="tournament-weekends">Tournament Weekends</TabsTrigger>
             <TabsTrigger value="deck-thumbnails">SSR Thumbnails</TabsTrigger>
             <TabsTrigger value="pq-tools">PQ Tools</TabsTrigger>
             <TabsTrigger value="special-actions">Special Actions</TabsTrigger>
@@ -67,6 +69,13 @@ export function AdminPage() {
             <Card>
               <CardContent className="p-4">
                 <TournamentGroupsPage />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="tournament-weekends">
+            <Card>
+              <CardContent className="p-4">
+                <TournamentWeekendsPage />
               </CardContent>
             </Card>
           </TabsContent>
