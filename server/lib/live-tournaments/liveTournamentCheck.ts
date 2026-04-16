@@ -5,6 +5,7 @@ import {
   tournamentImport,
   tournamentWeekendTournament,
 } from '../../db/schema/tournament_weekend.ts';
+import { mergeLiveTournamentAdditionalData } from './additionalData.ts';
 import { publishLiveTournamentChecked } from './liveTournamentEvents.ts';
 import { liveTournamentProgressCheck } from './liveTournamentProgressCheck.ts';
 import { fetchLiveTournamentDetailFromMelee } from './melee.ts';
@@ -54,7 +55,10 @@ export async function liveTournamentCheck(
     meleeId,
     tournament: row.tournament,
   });
-  const additionalData = detail.additionalData ? JSON.stringify(detail.additionalData) : null;
+  const additionalData = mergeLiveTournamentAdditionalData(
+    row.weekendTournament.additionalData,
+    detail.additionalData,
+  );
 
   if (detail.playerCount !== null) {
     await db

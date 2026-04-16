@@ -16,7 +16,8 @@ export async function runTournamentFix(tournamentId: string) {
   console.log('Melee tournament id: ', meleeTournamentId);
   if (!meleeTournamentId) throw new Error('Melee tournament ID is empty');
 
-  const roundId = await fetchTournamentView(meleeTournamentId);
+  const tournamentView = await fetchTournamentView(meleeTournamentId);
+  const roundId = tournamentView?.finalRoundId;
   console.log('Round id: ', roundId);
   if (!roundId) throw new Error('Round ID is empty');
 

@@ -7,6 +7,7 @@ import {
   tournamentWeekendMatch,
   tournamentWeekendTournament,
 } from '../../db/schema/tournament_weekend.ts';
+import { mergeLiveTournamentAdditionalData } from './additionalData.ts';
 import { publishLiveTournamentProgressChecked } from './liveTournamentEvents.ts';
 import { fetchLiveTournamentProgressFromMelee } from './melee.ts';
 import type {
@@ -208,7 +209,10 @@ export async function liveTournamentProgressCheck(
 
   const undefeatedPlayers = deriveUndefeatedPlayers(progress.roundNumber, progress.standings);
   const bracket = deriveBracket(progress.matches);
-  const additionalData = row.weekendTournament.additionalData;
+  const additionalData = mergeLiveTournamentAdditionalData(
+    row.weekendTournament.additionalData,
+    progress.additionalData,
+  );
 
   await db
     .update(tournamentWeekendTournament)

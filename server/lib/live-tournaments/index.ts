@@ -1,4 +1,5 @@
 export {
+  mergeLiveTournamentAdditionalData,
   parseLiveTournamentAdditionalData,
   serializeLiveTournamentAdditionalData,
 } from './additionalData.ts';
@@ -23,5 +24,6 @@ export type {
   LiveTournamentCheckInput,
   LiveTournamentCheckResult,
   LiveTournamentProgressCheckResult,
+  LiveTournamentRound,
   LiveTournamentStatus,
 } from './types.ts';

@@ -98,3 +98,11 @@ export type LiveTournamentProgressCheckResult =
       undefeatedPlayers: LiveMeleeStanding[];
       bracket: LiveTournamentBracketRound[];
     };
+
+export type LiveTournamentRound = {
+  number: number;
+  id: number;
+  name: string;
+  started: boolean;
+  completed: boolean;
+};

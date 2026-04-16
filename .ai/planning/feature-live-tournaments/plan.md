@@ -55,11 +55,18 @@ Add `server/lib/live-tournaments`:
 - Derive bracket display from live matches whose round name is Quarterfinals, Semifinals, or Finals.
 - Publish WebSocket events after any persisted live update.
 
+Implement `melee` part of the scripts. 
+- more info and examples for endpoints are here in the melee folder: [melee](melee)
+- implement missing parts in the `liveTournamentCheck` and `liveTournamentProgressCheck`
+- keep in mind that the existing `tournamentImportLib.ts` and related files are very important to importing tournament AFTER it is finished - do not make mistakes there! That being said, they could be slightly extended, to not repeat the code
+- create new `live-flow.md` file, where:
+  - you thoroughly describe, how the import works, what is called when, and try to pinpoint some problems that can happen
+  - you will also write a `cron` part, with descriptions how the crons files/scripts gonna work (even though they are not created yet - they will be created in the next step)
+
 Add standalone cron scripts:
 - Hourly reconcile script: verify active weekend membership matches overlapping tournaments and report mismatches to Sentry.
 - Every 3 minutes: check unfinished active-weekend tournaments with Melee ids.
 - Every minute: process one pending `tournament_import`, call existing `runTournamentImport`, mark `tournament.imported`, recompute statistics, update tournament group stats, and generate thumbnails.
-- Register Sentry monitor slugs for the three new cron scripts.
 
 Add WebSocket route:
 - `GET /api/ws/live-tournaments/:weekendId`
