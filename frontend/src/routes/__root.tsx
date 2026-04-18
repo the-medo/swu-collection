@@ -20,6 +20,7 @@ const globalSearchParams = z.object({
   // global filters
   formatId: z.number().int().positive().optional(),
   metaId: z.number().int().positive().optional(),
+  homeMode: z.enum(['snapshot', 'live']).optional(),
 
   // Card detail dialog
   modalCardId: z.string().optional(),

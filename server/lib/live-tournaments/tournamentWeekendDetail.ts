@@ -6,6 +6,7 @@ import { meta as metaTable } from '../../db/schema/meta.ts';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import { tournamentDeck as tournamentDeckTable } from '../../db/schema/tournament_deck.ts';
 import { tournamentGroup as tournamentGroupTable } from '../../db/schema/tournament_group.ts';
+import { tournamentGroupLeaderBase as tournamentGroupLeaderBaseTable } from '../../db/schema/tournament_group_leader_base.ts';
 import { tournamentType as tournamentTypeTable } from '../../db/schema/tournament_type.ts';
 import {
   player as playerTable,
@@ -67,6 +68,19 @@ export async function getTournamentWeekendDetail(
     .leftJoin(metaTable, eq(tournamentWeekendTournamentGroup.metaId, metaTable.id))
     .where(eq(tournamentWeekendTournamentGroup.tournamentWeekendId, weekendId))
     .orderBy(asc(tournamentGroupTable.position), asc(tournamentGroupTable.name));
+
+  const tournamentGroupIds = tournamentGroups.map(row => row.tournamentGroup.id);
+  const tournamentGroupLeaderBase =
+    tournamentGroupIds.length > 0
+      ? await db
+          .select()
+          .from(tournamentGroupLeaderBaseTable)
+          .where(inArray(tournamentGroupLeaderBaseTable.tournamentGroupId, tournamentGroupIds))
+      : [];
+  const leaderBaseByTournamentGroupId = groupBy(
+    tournamentGroupLeaderBase,
+    row => row.tournamentGroupId,
+  );
 
   const tournaments = await db
     .select({
@@ -214,7 +228,10 @@ export async function getTournamentWeekendDetail(
 
   return {
     weekend,
-    tournamentGroups,
+    tournamentGroups: tournamentGroups.map(row => ({
+      ...row,
+      leaderBase: leaderBaseByTournamentGroupId.get(row.tournamentGroup.id) ?? [],
+    })),
     tournaments: tournaments.map(row => ({
       ...row,
       resources: resourcesByTournamentId.get(row.tournament.id) ?? [],

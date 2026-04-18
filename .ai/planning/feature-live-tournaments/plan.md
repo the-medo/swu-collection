@@ -99,7 +99,6 @@ Admin UI:
 - Reuse existing format/meta/tournament group selectors and table/card primitives.
 
 Client data:
-- Add API hooks for application configuration, tournament weekends, resources, player watch, and admin mutations.
 - Add `useLiveTournamentSocket(weekendId)` that connects only for logged-in users and patches/invalidate TanStack Query cache from WebSocket messages.
 - Use query refetch fallback for guests and for socket disconnects.
 

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const applicationConfigurationSchema = z
   .object({
-    liveTournamentMode: z.boolean().default(false),
+    homepageMode: z.enum(['snapshot', 'live']).default('snapshot'),
   })
   .strict();
 

@@ -11,9 +11,15 @@ export async function getApplicationConfiguration(): Promise<ApplicationConfigur
   const defaultConfiguration = getDefaultApplicationConfiguration();
   const storedConfiguration = await db.select().from(applicationConfigurationTable);
   const mergedConfiguration = { ...defaultConfiguration } as Record<string, unknown>;
+  let legacyLiveTournamentMode: boolean | null = null;
 
   for (const entry of storedConfiguration) {
     const key = entry.key as keyof ApplicationConfiguration;
+
+    if (entry.key === 'liveTournamentMode' || entry.key === 'live_tournament_mode') {
+      legacyLiveTournamentMode = entry.value === 'true';
+      continue;
+    }
 
     if (!(key in defaultConfiguration)) {
       continue;
@@ -32,6 +38,13 @@ export async function getApplicationConfiguration(): Promise<ApplicationConfigur
     }
 
     mergedConfiguration[key] = entry.value;
+  }
+
+  if (
+    legacyLiveTournamentMode !== null &&
+    !storedConfiguration.some(entry => entry.key === 'homepageMode')
+  ) {
+    mergedConfiguration.homepageMode = legacyLiveTournamentMode ? 'live' : 'snapshot';
   }
 
   return mergedConfiguration as ApplicationConfiguration;

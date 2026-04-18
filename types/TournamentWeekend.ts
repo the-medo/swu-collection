@@ -2,6 +2,7 @@ import type { Deck } from '../server/db/schema/deck.ts';
 import type { Meta } from '../server/db/schema/meta.ts';
 import type { TournamentDeck } from '../server/db/schema/tournament_deck.ts';
 import type { TournamentGroup } from '../server/db/schema/tournament_group.ts';
+import type { TournamentGroupLeaderBase } from '../server/db/schema/tournament_group_leader_base.ts';
 import type {
   Player,
   PlayerWatch,
@@ -120,6 +121,7 @@ export type LiveTournamentWeekendGroupEntry = {
   tournamentGroup: TournamentGroup;
   format: LiveTournamentFormat | null;
   meta: Meta | null;
+  leaderBase: TournamentGroupLeaderBase[];
 };
 
 export type LiveTournamentWeekendTournamentEntry = {
