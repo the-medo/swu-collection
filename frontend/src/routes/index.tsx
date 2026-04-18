@@ -2,13 +2,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useGetApplicationConfiguration } from '@/api/application-configuration';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import DailySnapshots from '@/components/app/daily-snapshots/DailySnapshots.tsx';
+import { HomepageHeader } from '@/components/app/home/HomepageHeader.tsx';
 import { HomepageModeSwitcher } from '@/components/app/home/HomepageModeSwitcher.tsx';
 import LiveTournamentHome from '@/components/app/home/LiveTournamentHome.tsx';
-import type {
-  HomepageMode,
-  HomepageModeSource,
-  UserHomepageMode,
-} from '@/components/app/home/homepageTypes.ts';
+import type { HomepageMode, UserHomepageMode } from '@/components/app/home/homepageTypes.ts';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -28,12 +25,9 @@ function Index() {
 
   return (
     <>
-      <HomepageModeSwitcher
-        activeMode={modeResolution.mode}
-        modeSource={modeResolution.source}
-        userPreference={userHomepageMode}
-      />
-      {modeResolution.mode === 'live' ? <LiveTournamentHome /> : <DailySnapshots />}
+      <HomepageHeader />
+      <HomepageModeSwitcher activeMode={modeResolution} />
+      {modeResolution === 'live' ? <LiveTournamentHome /> : <DailySnapshots />}
     </>
   );
 }
@@ -46,18 +40,18 @@ function resolveHomepageMode({
   searchMode?: HomepageMode;
   userMode: UserHomepageMode;
   applicationMode?: HomepageMode;
-}): { mode: HomepageMode; source: HomepageModeSource } {
+}): HomepageMode {
   if (searchMode) {
-    return { mode: searchMode, source: 'search' };
+    return searchMode;
   }
 
   if (userMode !== 'default') {
-    return { mode: userMode, source: 'user' };
+    return userMode;
   }
 
   if (applicationMode) {
-    return { mode: applicationMode, source: 'application' };
+    return applicationMode;
   }
 
-  return { mode: 'snapshot', source: 'fallback' };
+  return 'snapshot';
 }
