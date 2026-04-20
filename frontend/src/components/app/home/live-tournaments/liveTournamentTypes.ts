@@ -1,5 +1,6 @@
 export type {
   LiveTournamentMatchEntry,
+  LiveTournamentPlayerEntry,
   LiveTournamentWeekendDetail,
   LiveTournamentWeekendTournamentEntry,
   TournamentWeekendResourceType,

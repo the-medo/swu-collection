@@ -9,6 +9,7 @@ import type {
   TournamentStanding,
   TournamentWeekend,
   TournamentWeekendMatch,
+  TournamentWeekendPlayer,
   TournamentWeekendResource,
   TournamentWeekendTournament,
   TournamentWeekendTournamentGroup,
@@ -105,10 +106,17 @@ export type LiveTournamentStandingEntry = {
   player: Player;
 };
 
+export type LiveTournamentPlayerEntry = {
+  tournamentPlayer: TournamentWeekendPlayer;
+  player: Player;
+};
+
 export type LiveTournamentMatchEntry = {
   match: TournamentWeekendMatch;
   player1: Player | null;
   player2: Player | null;
+  tournamentPlayer1: TournamentWeekendPlayer | null;
+  tournamentPlayer2: TournamentWeekendPlayer | null;
 };
 
 export type LiveTournamentWinningDeck = {
@@ -133,11 +141,13 @@ export type LiveTournamentWeekendTournamentEntry = {
   resources: TournamentWeekendResource[];
   standings: LiveTournamentStandingEntry[];
   matches: LiveTournamentMatchEntry[];
+  players: LiveTournamentPlayerEntry[];
 };
 
 export type LiveTournamentWatchedPlayer = PlayerWatchEntry & {
   standings: LiveTournamentStandingEntry[];
   matches: LiveTournamentMatchEntry[];
+  tournamentPlayers: LiveTournamentPlayerEntry[];
 };
 
 export type LiveTournamentWeekendDetail = {

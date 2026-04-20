@@ -14,6 +14,7 @@ import {
   tournamentStanding as tournamentStandingTable,
   tournamentWeekend,
   tournamentWeekendMatch,
+  tournamentWeekendPlayer,
   tournamentWeekendResource,
   tournamentWeekendTournament,
   tournamentWeekendTournamentGroup,
@@ -179,6 +180,23 @@ export async function getTournamentWeekendDetail(
           )
       : [];
 
+  const tournamentPlayers =
+    tournamentIds.length > 0
+      ? await db
+          .select({
+            tournamentPlayer: tournamentWeekendPlayer,
+            player: playerTable,
+          })
+          .from(tournamentWeekendPlayer)
+          .innerJoin(playerTable, eq(tournamentWeekendPlayer.playerId, playerTable.id))
+          .where(inArray(tournamentWeekendPlayer.tournamentId, tournamentIds))
+          .orderBy(
+            asc(tournamentWeekendPlayer.tournamentId),
+            asc(playerTable.displayName),
+            asc(tournamentWeekendPlayer.playerId),
+          )
+      : [];
+
   const matchPlayerIds = [
     ...new Set(
       matches.flatMap(match => [match.playerId1, match.playerId2]).filter(id => id !== null),
@@ -194,16 +212,34 @@ export async function getTournamentWeekendDetail(
   for (const row of standings) {
     playersById.set(row.player.id, row.player);
   }
+  for (const row of tournamentPlayers) {
+    playersById.set(row.player.id, row.player);
+  }
+
+  const tournamentPlayerByKey = new Map(
+    tournamentPlayers.map(row => [
+      `${row.tournamentPlayer.tournamentId}:${row.tournamentPlayer.playerId}`,
+      row.tournamentPlayer,
+    ]),
+  );
+  const getTournamentPlayer = (tournamentId: string, playerId: number | null) =>
+    playerId === null ? null : (tournamentPlayerByKey.get(`${tournamentId}:${playerId}`) ?? null);
 
   const matchesWithPlayers = matches.map(match => ({
     match,
     player1: playersById.get(match.playerId1) ?? null,
     player2: match.playerId2 ? (playersById.get(match.playerId2) ?? null) : null,
+    tournamentPlayer1: getTournamentPlayer(match.tournamentId, match.playerId1),
+    tournamentPlayer2: getTournamentPlayer(match.tournamentId, match.playerId2),
   }));
 
   const resourcesByTournamentId = groupBy(resources, resource => resource.tournamentId);
   const standingsByTournamentId = groupBy(standings, row => row.standing.tournamentId);
   const matchesByTournamentId = groupBy(matchesWithPlayers, row => row.match.tournamentId);
+  const tournamentPlayersByTournamentId = groupBy(
+    tournamentPlayers,
+    row => row.tournamentPlayer.tournamentId,
+  );
 
   const watchlist = userId
     ? await db
@@ -224,6 +260,9 @@ export async function getTournamentWeekendDetail(
     matches: matchesWithPlayers.filter(
       match => match.match.playerId1 === row.player.id || match.match.playerId2 === row.player.id,
     ),
+    tournamentPlayers: tournamentPlayers.filter(
+      tournamentPlayer => tournamentPlayer.player.id === row.player.id,
+    ),
   }));
 
   return {
@@ -237,6 +276,7 @@ export async function getTournamentWeekendDetail(
       resources: resourcesByTournamentId.get(row.tournament.id) ?? [],
       standings: standingsByTournamentId.get(row.tournament.id) ?? [],
       matches: matchesByTournamentId.get(row.tournament.id) ?? [],
+      players: tournamentPlayersByTournamentId.get(row.tournament.id) ?? [],
     })),
     resources,
     watchlist,

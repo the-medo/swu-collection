@@ -5,6 +5,7 @@ import {
   player as playerTable,
   tournamentStanding,
   tournamentWeekendMatch,
+  tournamentWeekendPlayer,
   tournamentWeekendTournament,
 } from '../../db/schema/tournament_weekend.ts';
 import { mergeLiveTournamentAdditionalData } from './additionalData.ts';
@@ -47,6 +48,39 @@ const uniquePlayers = (
   });
 
   return [...playersById.values()];
+};
+
+const matchLeaderBaseByPlayerId = (matches: LiveMeleeMatch[]) => {
+  const leaderBaseByPlayerId = new Map<
+    number,
+    {
+      leaderCardId: string | null;
+      baseCardKey: string | null;
+    }
+  >();
+
+  const setLeaderBase = (
+    playerId: number,
+    leaderCardId: string | null,
+    baseCardKey: string | null,
+  ) => {
+    const existing = leaderBaseByPlayerId.get(playerId);
+
+    leaderBaseByPlayerId.set(playerId, {
+      leaderCardId: leaderCardId ?? existing?.leaderCardId ?? null,
+      baseCardKey: baseCardKey ?? existing?.baseCardKey ?? null,
+    });
+  };
+
+  for (const match of matches) {
+    setLeaderBase(match.player1.id, match.leaderCardId1, match.baseCardKey1);
+
+    if (match.player2) {
+      setLeaderBase(match.player2.id, match.leaderCardId2, match.baseCardKey2);
+    }
+  }
+
+  return leaderBaseByPlayerId;
 };
 
 const getImportedRoundMatchCounts = async (tournamentId: string) => {
@@ -149,6 +183,33 @@ export async function liveTournamentProgressCheck(
         target: playerTable.id,
         set: {
           displayName: sql`excluded.display_name`,
+          updatedAt: sql`NOW()`,
+        },
+      });
+  }
+
+  if (players.length > 0) {
+    const leaderBaseByPlayerId = matchLeaderBaseByPlayerId(progress.matches);
+
+    await db
+      .insert(tournamentWeekendPlayer)
+      .values(
+        players.map(player => {
+          const leaderBase = leaderBaseByPlayerId.get(player.id);
+
+          return {
+            tournamentId: input.tournamentId,
+            playerId: player.id,
+            leaderCardId: leaderBase?.leaderCardId ?? null,
+            baseCardKey: leaderBase?.baseCardKey ?? null,
+          };
+        }),
+      )
+      .onConflictDoUpdate({
+        target: [tournamentWeekendPlayer.tournamentId, tournamentWeekendPlayer.playerId],
+        set: {
+          leaderCardId: sql`COALESCE(excluded.leader_card_id, ${tournamentWeekendPlayer.leaderCardId})`,
+          baseCardKey: sql`COALESCE(excluded.base_card_key, ${tournamentWeekendPlayer.baseCardKey})`,
           updatedAt: sql`NOW()`,
         },
       });

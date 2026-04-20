@@ -127,11 +127,13 @@ When Melee includes a competitor decklist name in the match response, the live p
 `${leaderCardName} - ${baseCardName}`;
 ```
 
-Both names are converted through `transformToId` and must exist in `cardList`. The leader id is saved directly as `leader_card_id_1` or `leader_card_id_2`. The base card id is converted to the stored base key through `getBaseKey`, so basic bases can be grouped by their shared special key from `baseSpecialNames`.
+Both names are converted through `transformToId` and must exist in `cardList`. The leader id is saved directly to `tournament_weekend_player.leader_card_id`. The base card id is converted to the stored base key through `getBaseKey`, so basic bases can be grouped by their shared special key from `baseSpecialNames`.
 
-Because Melee usually keeps decklists hidden until late in the tournament, empty decklist names are normal. The match upsert preserves an already-known leader/base value when a later response omits decklist data.
+Because Melee usually keeps decklists hidden until late in the tournament, empty decklist names are normal. The player upsert preserves an already-known leader/base value when a later response omits decklist data.
 
-Leader/base data is moving out of `tournament_weekend_match` into `tournament_weekend_player`. The new table is keyed by `tournament_id` and `player_id`, and will hold the player's leader, base key, match score, and game score for the live weekend view. This keeps per-player identity and aggregate score data separate from per-round match rows.
+Leader/base data lives in `tournament_weekend_player`, not `tournament_weekend_match`. The new table is keyed by `tournament_id` and `player_id`, and will hold the player's leader, base key, match score, and game score for the live weekend view. This keeps per-player identity and aggregate score data separate from per-round match rows.
+
+During live progress import, every player seen in standings or matches is upserted into `tournament_weekend_player`. Leader/base values parsed from match `DecklistName` fields are written there with null-safe conflict updates, so a later empty Melee response does not erase previously detected deck information. Weekend detail endpoints return those rows under each tournament's `players` array and attach the matching rows to match entries as `tournamentPlayer1` and `tournamentPlayer2`.
 
 ## Finished Tournament Import Flow
 
