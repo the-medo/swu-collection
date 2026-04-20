@@ -1,4 +1,4 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { and, count, eq, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import {
@@ -47,6 +47,19 @@ const uniquePlayers = (
   });
 
   return [...playersById.values()];
+};
+
+const getImportedRoundMatchCounts = async (tournamentId: string) => {
+  const rows = await db
+    .select({
+      roundNumber: tournamentWeekendMatch.roundNumber,
+      matchCount: count(),
+    })
+    .from(tournamentWeekendMatch)
+    .where(eq(tournamentWeekendMatch.tournamentId, tournamentId))
+    .groupBy(tournamentWeekendMatch.roundNumber);
+
+  return new Map(rows.map(row => [row.roundNumber, row.matchCount]));
 };
 
 export function deriveUndefeatedPlayers(
@@ -122,7 +135,10 @@ export async function liveTournamentProgressCheck(
     };
   }
 
-  const progress = await fetchLiveTournamentProgressFromMelee({ meleeId });
+  const progress = await fetchLiveTournamentProgressFromMelee({
+    meleeId,
+    importedRoundMatchCounts: await getImportedRoundMatchCounts(input.tournamentId),
+  });
   const players = uniquePlayers(progress.standings, progress.matches);
 
   if (players.length > 0) {

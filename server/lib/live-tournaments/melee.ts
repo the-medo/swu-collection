@@ -19,8 +19,6 @@ import type {
 import { parseMeleeDecklistLeaderBase } from './meleeDecklists.ts';
 import { tournamentExpectsMeleeDecklists } from './tournamentFormat.ts';
 
-const topCutRoundNames = new Set(['Quarterfinals', 'Semifinals', 'Finals']);
-
 const numberOrNull = (value: unknown) => {
   const numberValue = typeof value === 'number' ? value : Number.parseInt(String(value ?? ''), 10);
   return Number.isFinite(numberValue) ? numberValue : null;
@@ -225,17 +223,23 @@ const currentRoundFromView = (rounds: TournamentViewRound[]) => {
   );
 };
 
-const roundsForMatchFetch = (rounds: TournamentViewRound[], currentRound: TournamentViewRound) => {
-  const roundsById = new Map<number, TournamentViewRound>();
+const getImportedRoundMatchCount = (
+  importedRoundMatchCounts: Map<number, number> | undefined,
+  roundNumber: number,
+) => importedRoundMatchCounts?.get(roundNumber) ?? 0;
 
-  for (const round of rounds) {
-    if (round.id === currentRound.id || (round.started && topCutRoundNames.has(round.name))) {
-      roundsById.set(round.id, round);
-    }
-  }
+const isImportedCompletedRound = (
+  round: TournamentViewRound,
+  importedRoundMatchCounts: Map<number, number> | undefined,
+) => round.completed && getImportedRoundMatchCount(importedRoundMatchCounts, round.number) > 0;
 
-  return [...roundsById.values()].sort((a, b) => a.number - b.number);
-};
+const roundsForMatchFetch = (
+  rounds: TournamentViewRound[],
+  importedRoundMatchCounts: Map<number, number> | undefined,
+) =>
+  rounds
+    .filter(round => round.started && !isImportedCompletedRound(round, importedRoundMatchCounts))
+    .sort((a, b) => a.number - b.number);
 
 export async function fetchLiveTournamentDetailFromMelee(params: {
   meleeId: string;
@@ -266,6 +270,7 @@ export async function fetchLiveTournamentDetailFromMelee(params: {
 
 export async function fetchLiveTournamentProgressFromMelee(params: {
   meleeId: string;
+  importedRoundMatchCounts?: Map<number, number>;
 }): Promise<LiveMeleeTournamentProgress> {
   const tournamentView = await fetchTournamentView(params.meleeId);
   const rounds = tournamentView?.rounds ?? [];
@@ -280,7 +285,10 @@ export async function fetchLiveTournamentProgressFromMelee(params: {
     .map(parseStanding)
     .filter((standing): standing is LiveMeleeStanding => standing !== null);
 
-  const matchRounds = roundsForMatchFetch(rounds, currentRound);
+  const matchRounds = roundsForMatchFetch(rounds, params.importedRoundMatchCounts);
+  const skippedCompletedMatchRounds = rounds.filter(round =>
+    isImportedCompletedRound(round, params.importedRoundMatchCounts),
+  );
   const rawMatchesByRoundId = new Map<number, any[]>();
   const matches: LiveMeleeMatch[] = [];
 
@@ -296,14 +304,23 @@ export async function fetchLiveTournamentProgressFromMelee(params: {
     }
   }
 
-  const currentRoundMatches = rawMatchesByRoundId.get(currentRound.id) ?? [];
+  const currentRoundMatches = rawMatchesByRoundId.get(currentRound.id);
+  const currentRoundImportedMatchCount = getImportedRoundMatchCount(
+    params.importedRoundMatchCounts,
+    currentRound.number,
+  );
+  const currentRoundMatchesTotal =
+    currentRoundMatches?.length ?? (currentRound.completed ? currentRoundImportedMatchCount : 0);
+  const currentRoundMatchesRemaining = currentRoundMatches
+    ? currentRoundMatches.filter(match => !hasMatchResult(match)).length
+    : 0;
 
   return {
     meleeId: params.meleeId,
     roundNumber: currentRound.number,
     roundName: currentRound.name,
-    matchesTotal: currentRoundMatches.length,
-    matchesRemaining: currentRoundMatches.filter(match => !hasMatchResult(match)).length,
+    matchesTotal: currentRoundMatchesTotal,
+    matchesRemaining: currentRoundMatchesRemaining,
     standings,
     matches,
     additionalData: {
@@ -313,6 +330,7 @@ export async function fetchLiveTournamentProgressFromMelee(params: {
       liveCurrentRoundId: currentRound.id,
       liveStandingRoundId: currentRound.id,
       liveMatchRoundIds: matchRounds.map(round => round.id),
+      liveSkippedCompletedMatchRoundIds: skippedCompletedMatchRounds.map(round => round.id),
     },
   };
 }

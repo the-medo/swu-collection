@@ -117,7 +117,9 @@ The current round is selected as:
 2. Otherwise latest started or completed round.
 3. Otherwise the first round in the View page.
 
-Standings are fetched for the current round. Matches are fetched for the current round and for already-started top cut rounds, so bracket data can be refreshed while a cut is in progress.
+Standings are fetched for the current round. Matches are fetched for every started round that still needs importing. A round needs importing when Melee has started it and either it is still running or there are no local `tournament_weekend_match` rows for that completed round yet.
+
+Completed rounds that already have local match rows are skipped. For example, if round 7 is running and rounds 1-6 are completed with stored matches, only round 7 is fetched again.
 
 When Melee includes a competitor decklist name in the match response, the live parser extracts leader and base without fetching the full decklist. The expected name shape is:
 
