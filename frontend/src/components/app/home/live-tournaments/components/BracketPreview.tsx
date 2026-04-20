@@ -1,12 +1,39 @@
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible.tsx';
+import { cn } from '@/lib/utils.ts';
 import type { BracketRound } from '../liveTournamentUtils.ts';
 
 export function BracketPreview({ rounds }: { rounds: BracketRound[] }) {
+  const [open, setOpen] = useState(false);
+
   if (rounds.length === 0) return null;
 
+  const matchCount = rounds.reduce((total, round) => total + round.matches.length, 0);
+
   return (
-    <div className="space-y-2">
-      <div className="text-xs font-medium uppercase text-muted-foreground">Top cut</div>
-      <div className="grid gap-2">
+    <Collapsible open={open} onOpenChange={setOpen} className="space-y-2">
+      <CollapsibleTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="xs"
+          className="h-7 justify-start px-2 text-xs font-medium uppercase text-muted-foreground"
+        >
+          Top cut
+          <Badge variant="outline" className="rounded-md">
+            {matchCount}
+          </Badge>
+          <ChevronDown className={cn('h-3 w-3 transition-transform', open && 'rotate-180')} />
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="grid gap-2">
         {rounds.map(round => (
           <div key={round.roundName} className="rounded-md border bg-background p-2">
             <div className="mb-2 text-sm font-medium">{round.roundName}</div>
@@ -33,7 +60,7 @@ export function BracketPreview({ rounds }: { rounds: BracketRound[] }) {
             </div>
           </div>
         ))}
-      </div>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

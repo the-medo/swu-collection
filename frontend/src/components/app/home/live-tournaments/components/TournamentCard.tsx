@@ -1,86 +1,145 @@
+import { Trophy } from 'lucide-react';
+import Flag from '@/components/app/global/Flag.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
+import { cn } from '@/lib/utils.ts';
 import type { LiveTournamentWeekendTournamentEntry } from '../liveTournamentTypes.ts';
 import {
   formatDateTime,
   getBracketRounds,
-  getMatchProgress,
   getMeleeUrl,
   getPlayerCount,
   getRoundLabel,
   getUndefeatedPlayers,
 } from '../liveTournamentUtils.ts';
+import { formatDataById } from '../../../../../../../types/Format.ts';
+import type { CountryCode } from '../../../../../../../server/db/lists.ts';
 import { BracketPreview } from './BracketPreview.tsx';
-import { ExternalButton } from './ExternalButton.tsx';
 import { LiveStatusBadge } from './LiveStatusBadge.tsx';
-import { ResourceLinkList } from './ResourceLinkList.tsx';
-import { StreamSubmissionPrompt } from './StreamSubmissionPrompt.tsx';
-import { WinningDeck } from './WinningDeck.tsx';
+import { TournamentCardActionsMenu } from './TournamentCardActionsMenu.tsx';
+import { WinnerDeckDecoration } from './WinnerDeckDecoration.tsx';
+
+function getMatchesRemainingLabel(entry: LiveTournamentWeekendTournamentEntry) {
+  const remaining = entry.weekendTournament.matchesRemaining;
+  const total = entry.weekendTournament.matchesTotal;
+
+  if (remaining === null || remaining === undefined) return null;
+
+  const matchWord = remaining === 1 ? 'match' : 'matches';
+  if (total === null || total === undefined) return `${remaining} ${matchWord} remaining`;
+
+  return `${remaining} out of ${total} ${matchWord} remaining`;
+}
+
+function getRunningProgressLabel(entry: LiveTournamentWeekendTournamentEntry) {
+  const roundLabel = getRoundLabel(entry);
+  const matchesRemainingLabel = getMatchesRemainingLabel(entry);
+
+  if (roundLabel && matchesRemainingLabel) return `${roundLabel} - ${matchesRemainingLabel}`;
+  return roundLabel ?? matchesRemainingLabel;
+}
+
+function getChampionName(entry: LiveTournamentWeekendTournamentEntry) {
+  const meleePlayerUsername = entry.winningDeck?.tournamentDeck.meleePlayerUsername?.trim();
+
+  if (meleePlayerUsername) return meleePlayerUsername;
+
+  return entry.standings.find(row => row.standing.rank === 1)?.player.displayName ?? 'Champion';
+}
+
+function TournamentInfoRow({
+  entry,
+  meleeUrl,
+  showProgress,
+}: {
+  entry: LiveTournamentWeekendTournamentEntry;
+  meleeUrl: string | null;
+  showProgress: boolean;
+}) {
+  const countryCode = entry.tournament.location as CountryCode | undefined;
+  const formatLabel = formatDataById[entry.tournament.format]?.name ?? 'Unknown format';
+  const progressLabel = showProgress ? getRunningProgressLabel(entry) : null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+      <span className="inline-flex items-center gap-1.5">
+        {countryCode && <Flag countryCode={countryCode} className="h-3 w-5 rounded-sm" />}
+        <span>{entry.tournament.location || 'Country unknown'}</span>
+        <span>-</span>
+        <span>{getPlayerCount(entry)}</span>
+      </span>
+      <span>{formatLabel}</span>
+      {meleeUrl ? (
+        <a
+          href={meleeUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="font-medium text-primary hover:underline"
+        >
+          Open melee
+        </a>
+      ) : (
+        <span>Melee missing</span>
+      )}
+      {progressLabel && <span>{progressLabel}</span>}
+    </div>
+  );
+}
+
+function ChampionCallout({ entry }: { entry: LiveTournamentWeekendTournamentEntry }) {
+  return (
+    <div className="relative z-20 flex w-full max-w-full items-center justify-center gap-2 px-3 py-2">
+      <Trophy className="h-5 w-5 shrink-0 text-amber-500" />
+      <div className="min-w-0">
+        <div className="truncate text-xl font-bold leading-tight">{getChampionName(entry)}</div>
+      </div>
+    </div>
+  );
+}
 
 export function TournamentCard({
   entry,
-  weekendId,
-  promptForStream = false,
 }: {
   entry: LiveTournamentWeekendTournamentEntry;
   weekendId: string;
   promptForStream?: boolean;
 }) {
   const meleeUrl = getMeleeUrl(entry.tournament.meleeId);
-  const roundLabel = getRoundLabel(entry);
-  const matchProgress = getMatchProgress(entry);
   const startTime = formatDateTime(entry.weekendTournament.exactStart);
-  const updatedAt = formatDateTime(entry.weekendTournament.lastUpdatedAt);
   const undefeatedPlayers = getUndefeatedPlayers(entry);
   const bracketRounds = getBracketRounds(entry);
-  const hasStreams = entry.resources.length > 0;
+  const isUpcoming = entry.weekendTournament.status === 'upcoming';
+  const isRunning = entry.weekendTournament.status === 'running';
+  const isFinished = entry.weekendTournament.status === 'finished';
 
   return (
-    <article className="space-y-3 rounded-md border bg-background p-3 shadow-xs">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
+    <article
+      className={cn(
+        'relative isolate overflow-hidden rounded-md border bg-background p-3 shadow-xs',
+        'space-y-3',
+      )}
+    >
+      {isFinished && <WinnerDeckDecoration entry={entry} />}
+
+      <div className="relative z-20 flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="truncate text-base font-semibold">{entry.tournament.name}</h3>
-            <LiveStatusBadge status={entry.weekendTournament.status} />
+            <h5 className="truncate text-sm font-semibold leading-tight">
+              {entry.tournament.name}
+            </h5>
+            {!isFinished && <LiveStatusBadge status={entry.weekendTournament.status} />}
+            {isUpcoming && startTime && (
+              <span className="text-xs text-muted-foreground">{startTime}</span>
+            )}
           </div>
-          <p className="text-xs text-muted-foreground">
-            {entry.tournament.location || 'Country unknown'} - {getPlayerCount(entry)}
-          </p>
+          <TournamentInfoRow entry={entry} meleeUrl={meleeUrl} showProgress={isRunning} />
         </div>
-        <div className="flex flex-wrap gap-2">
-          {meleeUrl && <ExternalButton href={meleeUrl}>Melee</ExternalButton>}
-          <ResourceLinkList resources={entry.resources} />
-        </div>
+        <TournamentCardActionsMenu meleeUrl={meleeUrl} tournamentId={entry.tournament.id} />
       </div>
 
-      <div className="grid gap-2 text-sm sm:grid-cols-2">
-        {roundLabel && (
-          <div>
-            <div className="text-xs text-muted-foreground">Round</div>
-            <div>{roundLabel}</div>
-          </div>
-        )}
-        {matchProgress && (
-          <div>
-            <div className="text-xs text-muted-foreground">Matches</div>
-            <div>{matchProgress}</div>
-          </div>
-        )}
-        {startTime && (
-          <div>
-            <div className="text-xs text-muted-foreground">Start</div>
-            <div>{startTime}</div>
-          </div>
-        )}
-        {updatedAt && (
-          <div>
-            <div className="text-xs text-muted-foreground">Updated</div>
-            <div>{updatedAt}</div>
-          </div>
-        )}
-      </div>
+      {isFinished && <ChampionCallout entry={entry} />}
 
-      {undefeatedPlayers.length > 0 && (
-        <div className="space-y-1">
+      {!isFinished && undefeatedPlayers.length > 0 && (
+        <div className="relative z-20 flex flex-wrap items-center gap-2">
           <div className="text-xs font-medium uppercase text-muted-foreground">Undefeated</div>
           <div className="flex flex-wrap gap-1.5">
             {undefeatedPlayers.slice(0, 12).map(row => (
@@ -97,19 +156,9 @@ export function TournamentCard({
         </div>
       )}
 
-      <BracketPreview rounds={bracketRounds} />
-
-      {entry.weekendTournament.status === 'finished' && <WinningDeck entry={entry} />}
-
-      {!meleeUrl && (
-        <p className="text-xs text-muted-foreground">
-          Melee link missing. Send the tournament link so live data can be checked.
-        </p>
-      )}
-
-      {promptForStream && !hasStreams && (
-        <StreamSubmissionPrompt weekendId={weekendId} tournamentId={entry.tournament.id} />
-      )}
+      <div className="relative z-20">
+        <BracketPreview rounds={bracketRounds} />
+      </div>
     </article>
   );
 }
