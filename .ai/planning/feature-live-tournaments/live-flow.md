@@ -131,6 +131,8 @@ Both names are converted through `transformToId` and must exist in `cardList`. T
 
 Because Melee usually keeps decklists hidden until late in the tournament, empty decklist names are normal. The match upsert preserves an already-known leader/base value when a later response omits decklist data.
 
+Leader/base data is moving out of `tournament_weekend_match` into `tournament_weekend_player`. The new table is keyed by `tournament_id` and `player_id`, and will hold the player's leader, base key, match score, and game score for the live weekend view. This keeps per-player identity and aggregate score data separate from per-round match rows.
+
 ## Finished Tournament Import Flow
 
 The finished import remains in `runTournamentImport`. Live code should not duplicate this workflow or write final deck data directly.

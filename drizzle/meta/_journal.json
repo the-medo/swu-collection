@@ -330,6 +330,13 @@
       "when": 1776270684458,
       "tag": "0046_grey_machine_man",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1776714451188,
+      "tag": "0047_loose_sentry",
+      "breakpoints": true
     }
   ]
 }

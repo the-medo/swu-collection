@@ -197,10 +197,6 @@ export const tournamentWeekendMatch = pgTable(
     matchKey: varchar('match_key', { length: 255 }).notNull(),
     playerId1: integer('player_id_1').notNull(),
     playerId2: integer('player_id_2'),
-    leaderCardId1: varchar('leader_card_id_1', { length: 255 }),
-    baseCardKey1: varchar('base_card_key_1', { length: 255 }),
-    leaderCardId2: varchar('leader_card_id_2', { length: 255 }),
-    baseCardKey2: varchar('base_card_key_2', { length: 255 }),
     player1GameWin: integer('player_1_game_win'),
     player2GameWin: integer('player_2_game_win'),
     createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
@@ -230,6 +226,39 @@ export const tournamentWeekendMatch = pgTable(
       columns: [table.playerId2],
       foreignColumns: [player.id],
     }).onDelete('set null'),
+  }),
+);
+
+export const tournamentWeekendPlayer = pgTable(
+  'tournament_weekend_player',
+  {
+    tournamentId: uuid('tournament_id').notNull(),
+    playerId: integer('player_id').notNull(),
+    leaderCardId: varchar('leader_card_id', { length: 255 }),
+    baseCardKey: varchar('base_card_key', { length: 255 }),
+    matchScore: varchar('match_score', { length: 20 }),
+    gameScore: varchar('game_score', { length: 20 }),
+    createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
+  },
+  table => ({
+    pk: primaryKey({
+      name: 'twp_pk',
+      columns: [table.tournamentId, table.playerId],
+    }),
+    tournamentIdx: index('twp_tournament_idx').on(table.tournamentId),
+    playerIdx: index('twp_player_idx').on(table.playerId),
+    leaderBaseIdx: index('twp_leader_base_idx').on(table.leaderCardId, table.baseCardKey),
+    tournamentFk: foreignKey({
+      name: 'twp_tournament_fk',
+      columns: [table.tournamentId],
+      foreignColumns: [tournament.id],
+    }).onDelete('cascade'),
+    playerFk: foreignKey({
+      name: 'twp_player_fk',
+      columns: [table.playerId],
+      foreignColumns: [player.id],
+    }).onDelete('cascade'),
   }),
 );
 
@@ -367,6 +396,7 @@ export const playerRelations = relations(player, ({ one, many }) => ({
     references: [user.id],
   }),
   standings: many(tournamentStanding),
+  weekendPlayers: many(tournamentWeekendPlayer),
   watches: many(playerWatch),
 }));
 
@@ -395,6 +425,17 @@ export const tournamentWeekendMatchRelations = relations(tournamentWeekendMatch,
     fields: [tournamentWeekendMatch.playerId2],
     references: [player.id],
     relationName: 'tournament_weekend_match_player_2',
+  }),
+}));
+
+export const tournamentWeekendPlayerRelations = relations(tournamentWeekendPlayer, ({ one }) => ({
+  tournament: one(tournament, {
+    fields: [tournamentWeekendPlayer.tournamentId],
+    references: [tournament.id],
+  }),
+  player: one(player, {
+    fields: [tournamentWeekendPlayer.playerId],
+    references: [player.id],
   }),
 }));
 
@@ -437,6 +478,7 @@ export const tournamentWeekendSchema = {
   player,
   tournamentStanding,
   tournamentWeekendMatch,
+  tournamentWeekendPlayer,
   tournamentWeekendResource,
   playerWatch,
   tournamentImport,
@@ -454,6 +496,8 @@ export type TournamentStanding = InferSelectModel<typeof tournamentStanding>;
 export type TournamentStandingInsert = InferInsertModel<typeof tournamentStanding>;
 export type TournamentWeekendMatch = InferSelectModel<typeof tournamentWeekendMatch>;
 export type TournamentWeekendMatchInsert = InferInsertModel<typeof tournamentWeekendMatch>;
+export type TournamentWeekendPlayer = InferSelectModel<typeof tournamentWeekendPlayer>;
+export type TournamentWeekendPlayerInsert = InferInsertModel<typeof tournamentWeekendPlayer>;
 export type TournamentWeekendResource = InferSelectModel<typeof tournamentWeekendResource>;
 export type TournamentWeekendResourceInsert = InferInsertModel<typeof tournamentWeekendResource>;
 export type PlayerWatch = InferSelectModel<typeof playerWatch>;
