@@ -16,6 +16,7 @@ import type {
   LiveMeleeTournamentProgress,
   LiveTournamentStatus,
 } from './types.ts';
+import { parseMeleeDecklistLeaderBase } from './meleeDecklists.ts';
 import { tournamentExpectsMeleeDecklists } from './tournamentFormat.ts';
 
 const topCutRoundNames = new Set(['Quarterfinals', 'Semifinals', 'Finals']);
@@ -156,6 +157,18 @@ const hasMatchResult = (match: any) => {
 const competitorGameWins = (competitor: any) =>
   numberOrNull(competitor?.GameWinsAndGameByes) ?? numberOrNull(competitor?.GameWins);
 
+const getCompetitorLeaderBase = (competitor: any, player: LiveMeleePlayer | null) => {
+  const decklists = Array.isArray(competitor?.Decklists) ? competitor.Decklists : [];
+  const playerDecklist =
+    decklists.find(
+      (decklist: any) =>
+        numberOrNull(decklist?.PlayerId) === player?.id &&
+        stringOrNull(decklist?.DecklistName)?.trim(),
+    ) ?? decklists.find((decklist: any) => stringOrNull(decklist?.DecklistName)?.trim());
+
+  return parseMeleeDecklistLeaderBase(playerDecklist?.DecklistName);
+};
+
 const matchUpdatedAt = (match: any) => {
   if (!hasMatchResult(match)) return null;
 
@@ -177,6 +190,8 @@ const parseMatch = (match: any, round: TournamentViewRound): LiveMeleeMatch | nu
   if (!player1) return null;
 
   const player2 = competitors.length > 1 ? getPlayerFromCompetitor(competitors[1]) : null;
+  const player1LeaderBase = getCompetitorLeaderBase(competitors[0], player1);
+  const player2LeaderBase = getCompetitorLeaderBase(competitors[1], player2);
 
   return {
     matchKey: matchKey(match, round, player1),
@@ -188,10 +203,10 @@ const parseMatch = (match: any, round: TournamentViewRound): LiveMeleeMatch | nu
       `Round ${round.number}`,
     player1,
     player2,
-    leaderCardId1: null,
-    baseCardKey1: null,
-    leaderCardId2: null,
-    baseCardKey2: null,
+    leaderCardId1: player1LeaderBase?.leaderCardId ?? null,
+    baseCardKey1: player1LeaderBase?.baseCardKey ?? null,
+    leaderCardId2: player2LeaderBase?.leaderCardId ?? null,
+    baseCardKey2: player2LeaderBase?.baseCardKey ?? null,
     player1GameWin: competitorGameWins(competitors[0]),
     player2GameWin: player2 ? competitorGameWins(competitors[1]) : null,
     updatedAt: matchUpdatedAt(match),

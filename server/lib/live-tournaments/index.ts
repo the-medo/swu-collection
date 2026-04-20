@@ -27,6 +27,7 @@ export {
   fetchLiveTournamentDetailFromMelee,
   fetchLiveTournamentProgressFromMelee,
 } from './melee.ts';
+export { parseMeleeDecklistLeaderBase, type MeleeDecklistLeaderBase } from './meleeDecklists.ts';
 export type {
   LiveMeleeMatch,
   LiveMeleePlayer,

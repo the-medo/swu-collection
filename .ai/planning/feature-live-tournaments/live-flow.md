@@ -25,7 +25,7 @@ It does this:
    - merged `additional_data`
    - `last_updated_at`
 7. If the tournament is running, call `liveTournamentProgressCheck`.
-8. If the tournament is finished, the format expects Melee decklists, and any progress field is missing, call `liveTournamentProgressCheck` once to backfill the final live snapshot.
+8. If the tournament is finished, the format expects Melee decklists, and decklists are detected or any progress field is missing, call `liveTournamentProgressCheck` to backfill the final live snapshot and capture leader/base data exposed in match rows.
 9. If the tournament is finished, the format expects Melee decklists, decklists are detected, and `tournament.imported = false`, insert a pending `tournament_import` row with `onConflictDoNothing`.
 10. Recompute weekend status counters.
 11. Publish a live tournament event. The current event publisher is still a no-op until the WebSocket route is implemented.
@@ -63,7 +63,7 @@ When the mapped status is `finished` and the tournament format expects decklists
 
 ### Entry point
 
-`liveTournamentProgressCheck({ weekendId, tournamentId })` runs after a tournament detail check says the tournament is running, when a finished decklist-expected tournament is missing its final progress fields, or when called manually.
+`liveTournamentProgressCheck({ weekendId, tournamentId })` runs after a tournament detail check says the tournament is running, when a finished decklist-expected tournament has newly detected decklists, when a finished decklist-expected tournament is missing its final progress fields, or when called manually.
 
 It does this:
 
@@ -118,6 +118,16 @@ The current round is selected as:
 3. Otherwise the first round in the View page.
 
 Standings are fetched for the current round. Matches are fetched for the current round and for already-started top cut rounds, so bracket data can be refreshed while a cut is in progress.
+
+When Melee includes a competitor decklist name in the match response, the live parser extracts leader and base without fetching the full decklist. The expected name shape is:
+
+```ts
+`${leaderCardName} - ${baseCardName}`;
+```
+
+Both names are converted through `transformToId` and must exist in `cardList`. The leader id is saved directly as `leader_card_id_1` or `leader_card_id_2`. The base card id is converted to the stored base key through `getBaseKey`, so basic bases can be grouped by their shared special key from `baseSpecialNames`.
+
+Because Melee usually keeps decklists hidden until late in the tournament, empty decklist names are normal. The match upsert preserves an already-known leader/base value when a later response omits decklist data.
 
 ## Finished Tournament Import Flow
 
@@ -194,7 +204,7 @@ Flow:
 1. Find the active weekend.
 2. Select weekend tournaments with non-empty Melee ids that still need checking.
 3. Call `liveTournamentCheck` for each selected tournament.
-4. Let `liveTournamentCheck` call `liveTournamentProgressCheck` for running tournaments and finished decklist-expected tournaments with missing progress fields.
+4. Let `liveTournamentCheck` call `liveTournamentProgressCheck` for running tournaments, finished decklist-expected tournaments with newly detected decklists, and finished decklist-expected tournaments with missing progress fields.
 5. Let `liveTournamentCheck` enqueue `tournament_import` when a tournament is finished, the format expects decklists, decklists are detected, and `tournament.imported = false`.
 6. Capture individual tournament failures without stopping the whole weekend check.
 7. Report failures to Sentry with `weekendId`, `tournamentId`, and `meleeId`.

@@ -123,7 +123,7 @@ export async function liveTournamentCheck(
     detail.status === 'running' ||
     (detail.status === 'finished' &&
       expectsDecklists &&
-      hasMissingProgressFields(row.weekendTournament))
+      (detail.hasDecklists || hasMissingProgressFields(row.weekendTournament)))
   ) {
     progress = await liveTournamentProgressCheck(input);
   }
