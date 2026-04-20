@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils.ts';
-import { TournamentCard } from '../components.tsx';
+import { TournamentCard } from '../components';
 import type { LiveTournamentWeekendTournamentEntry } from '../liveTournamentTypes.ts';
 
 type StatusTileTone = 'running' | 'finished' | 'upcoming';

@@ -5,7 +5,7 @@ import { useUser } from '@/hooks/useUser.ts';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
-import { LiveSectionHeader } from '../components.tsx';
+import { LiveSectionHeader } from '../components';
 import type { LiveTournamentWeekendDetail } from '../liveTournamentTypes.ts';
 
 export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeekendDetail }) {

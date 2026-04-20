@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { ResponsivePie } from '@nivo/pie';
 import { useChartColorsAndGradients } from '@/components/app/tournaments/TournamentMeta/useChartColorsAndGradients.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
-import { LiveSectionHeader } from '../components.tsx';
+import { LiveSectionHeader } from '../components';
 import type { LiveTournamentWeekendDetail } from '../liveTournamentTypes.ts';
 
 type MetaPieItem = {

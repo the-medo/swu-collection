@@ -1,5 +1,5 @@
 import { Radio } from 'lucide-react';
-import { LiveSectionHeader } from '../components.tsx';
+import { LiveSectionHeader } from '../components';
 import type { LiveTournamentWeekendDetail } from '../liveTournamentTypes.ts';
 import { getHostName } from '../liveTournamentUtils.ts';
 
