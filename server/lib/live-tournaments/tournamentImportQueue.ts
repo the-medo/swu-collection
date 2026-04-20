@@ -60,6 +60,7 @@ export type TournamentImportQueueResult =
   | {
       type: 'skipped';
       reason: string;
+      tournamentId?: string;
     }
   | {
       type: 'processed';
@@ -91,6 +92,24 @@ export async function processNextTournamentImport(): Promise<TournamentImportQue
 
     if (!tournament) {
       throw new Error(`Tournament ${claimedImport.tournamentId} not found.`);
+    }
+
+    if (tournament.imported) {
+      await db
+        .update(tournamentImport)
+        .set({
+          status: 'finished',
+          lastError: null,
+          finishedAt: sql`NOW()`,
+          updatedAt: sql`NOW()`,
+        })
+        .where(eq(tournamentImport.tournamentId, claimedImport.tournamentId));
+
+      return {
+        type: 'skipped',
+        tournamentId: claimedImport.tournamentId,
+        reason: 'Tournament has already been imported.',
+      };
     }
 
     await runTournamentImport(claimedImport.tournamentId);

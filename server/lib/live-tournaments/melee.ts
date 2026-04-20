@@ -16,6 +16,7 @@ import type {
   LiveMeleeTournamentProgress,
   LiveTournamentStatus,
 } from './types.ts';
+import { tournamentExpectsMeleeDecklists } from './tournamentFormat.ts';
 
 const topCutRoundNames = new Set(['Quarterfinals', 'Semifinals', 'Finals']);
 
@@ -227,7 +228,11 @@ export async function fetchLiveTournamentDetailFromMelee(params: {
 }): Promise<LiveMeleeTournamentDetail> {
   const detail = await fetchTournamentDetails(params.meleeId);
   const status = mapMeleeStatus(detail.Status);
-  const view = status === 'finished' ? await fetchTournamentView(params.meleeId) : undefined;
+  const expectsDecklists = tournamentExpectsMeleeDecklists(params.tournament);
+  const view =
+    status === 'finished' && expectsDecklists
+      ? await fetchTournamentView(params.meleeId)
+      : undefined;
   const playerCount =
     numberOrNull(detail.ParticipationCount) ??
     numberOrNull(detail.ParticipatorCount) ??
@@ -239,7 +244,7 @@ export async function fetchLiveTournamentDetailFromMelee(params: {
     status,
     exactStart: stringOrNull(detail.StartDate),
     playerCount,
-    hasDecklists: await detectDecklistsFromTournamentView(view),
+    hasDecklists: expectsDecklists ? await detectDecklistsFromTournamentView(view) : false,
     additionalData: sanitizeTournamentDetail(detail),
   };
 }

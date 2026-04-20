@@ -9,8 +9,20 @@ import { mergeLiveTournamentAdditionalData } from './additionalData.ts';
 import { publishLiveTournamentChecked } from './liveTournamentEvents.ts';
 import { liveTournamentProgressCheck } from './liveTournamentProgressCheck.ts';
 import { fetchLiveTournamentDetailFromMelee } from './melee.ts';
+import { tournamentExpectsMeleeDecklists } from './tournamentFormat.ts';
 import { recomputeTournamentWeekendCounters } from './tournamentWeekendMaintenance.ts';
 import type { LiveTournamentCheckInput, LiveTournamentCheckResult } from './types.ts';
+
+const hasMissingProgressFields = (weekendTournament: {
+  roundNumber: number | null;
+  roundName: string | null;
+  matchesTotal: number | null;
+  matchesRemaining: number | null;
+}) =>
+  weekendTournament.roundNumber === null ||
+  weekendTournament.roundName === null ||
+  weekendTournament.matchesTotal === null ||
+  weekendTournament.matchesRemaining === null;
 
 export async function liveTournamentCheck(
   input: LiveTournamentCheckInput,
@@ -55,6 +67,7 @@ export async function liveTournamentCheck(
     meleeId,
     tournament: row.tournament,
   });
+  const expectsDecklists = tournamentExpectsMeleeDecklists(row.tournament);
   const additionalData = mergeLiveTournamentAdditionalData(
     row.weekendTournament.additionalData,
     detail.additionalData,
@@ -87,13 +100,13 @@ export async function liveTournamentCheck(
       ),
     );
 
-  let progress = null;
-  if (detail.status === 'running') {
-    progress = await liveTournamentProgressCheck(input);
-  }
-
   let queuedImport = false;
-  if (detail.status === 'finished' && detail.hasDecklists) {
+  if (
+    detail.status === 'finished' &&
+    expectsDecklists &&
+    detail.hasDecklists &&
+    !row.tournament.imported
+  ) {
     const inserted = await db
       .insert(tournamentImport)
       .values({
@@ -103,6 +116,16 @@ export async function liveTournamentCheck(
       .returning({ tournamentId: tournamentImport.tournamentId });
 
     queuedImport = inserted.length > 0;
+  }
+
+  let progress = null;
+  if (
+    detail.status === 'running' ||
+    (detail.status === 'finished' &&
+      expectsDecklists &&
+      hasMissingProgressFields(row.weekendTournament))
+  ) {
+    progress = await liveTournamentProgressCheck(input);
   }
 
   await recomputeTournamentWeekendCounters(input.weekendId);

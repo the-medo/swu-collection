@@ -1,4 +1,4 @@
-import { and, eq, isNotNull, ne, or, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNotNull, isNull, ne, or, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import {
@@ -6,6 +6,7 @@ import {
   tournamentWeekendTournament,
 } from '../../db/schema/tournament_weekend.ts';
 import { liveTournamentCheck } from './liveTournamentCheck.ts';
+import { meleeDecklistFormatIds } from './tournamentFormat.ts';
 import { getLiveTournamentWeekend } from './tournamentWeekendMaintenance.ts';
 import type { LiveTournamentCheckResult } from './types.ts';
 
@@ -48,7 +49,16 @@ export async function checkTournamentWeekend(weekendId: string) {
         eq(tournamentWeekendTournament.tournamentWeekendId, weekendId),
         or(
           ne(tournamentWeekendTournament.status, 'finished'),
-          eq(tournamentWeekendTournament.hasDecklists, false),
+          and(
+            inArray(tournamentTable.format, [...meleeDecklistFormatIds]),
+            or(
+              eq(tournamentWeekendTournament.hasDecklists, false),
+              isNull(tournamentWeekendTournament.roundNumber),
+              isNull(tournamentWeekendTournament.roundName),
+              isNull(tournamentWeekendTournament.matchesTotal),
+              isNull(tournamentWeekendTournament.matchesRemaining),
+            ),
+          ),
         ),
         isNotNull(tournamentTable.meleeId),
         sql`${tournamentTable.meleeId} <> ''`,

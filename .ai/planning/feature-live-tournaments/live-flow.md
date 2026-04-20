@@ -25,9 +25,21 @@ It does this:
    - merged `additional_data`
    - `last_updated_at`
 7. If the tournament is running, call `liveTournamentProgressCheck`.
-8. If the tournament is finished and decklists are detected, insert a pending `tournament_import` row with `onConflictDoNothing`.
-9. Recompute weekend status counters.
-10. Publish a live tournament event. The current event publisher is still a no-op until the WebSocket route is implemented.
+8. If the tournament is finished, the format expects Melee decklists, and any progress field is missing, call `liveTournamentProgressCheck` once to backfill the final live snapshot.
+9. If the tournament is finished, the format expects Melee decklists, decklists are detected, and `tournament.imported = false`, insert a pending `tournament_import` row with `onConflictDoNothing`.
+10. Recompute weekend status counters.
+11. Publish a live tournament event. The current event publisher is still a no-op until the WebSocket route is implemented.
+
+### Format gate for decklists
+
+The live flow only expects Melee decklists for these constructed tournament formats:
+
+- `Premier`
+- `Eternal`
+
+Those are represented by `meleeDecklistFormatIds` in `server/lib/live-tournaments/tournamentFormat.ts`.
+
+Limited formats, such as `Sealed play`, do not need the finished-tournament decklist/progress path. They can still run live progress checks while their status is `running`, but once they are `finished`, the cron should not keep polling them just because `has_decklists = false` or final progress fields are empty.
 
 ### Melee detail check
 
@@ -45,13 +57,13 @@ The detail response is used as follows:
   - `BrandImageSource`
   - `OrganizationId`
 
-When the mapped status is `finished`, the checker also calls `fetchTournamentView`, then fetches the final round standings to detect decklists. It first checks `standing.Decklists`, then checks the first few player hover details through `GetPlayerDetails`, matching the existing finished import fallback.
+When the mapped status is `finished` and the tournament format expects decklists, the checker also calls `fetchTournamentView`, then fetches the final round standings to detect decklists. It first checks `standing.Decklists`, then checks the first few player hover details through `GetPlayerDetails`, matching the existing finished import fallback.
 
 ## Current Progress Flow
 
 ### Entry point
 
-`liveTournamentProgressCheck({ weekendId, tournamentId })` runs only after a tournament detail check says the tournament is running, or when called manually.
+`liveTournamentProgressCheck({ weekendId, tournamentId })` runs after a tournament detail check says the tournament is running, when a finished decklist-expected tournament is missing its final progress fields, or when called manually.
 
 It does this:
 
@@ -182,12 +194,12 @@ Flow:
 1. Find the active weekend.
 2. Select weekend tournaments with non-empty Melee ids that still need checking.
 3. Call `liveTournamentCheck` for each selected tournament.
-4. Let `liveTournamentCheck` call `liveTournamentProgressCheck` for running tournaments.
-5. Let `liveTournamentCheck` enqueue `tournament_import` when a tournament is finished and decklists are detected.
+4. Let `liveTournamentCheck` call `liveTournamentProgressCheck` for running tournaments and finished decklist-expected tournaments with missing progress fields.
+5. Let `liveTournamentCheck` enqueue `tournament_import` when a tournament is finished, the format expects decklists, decklists are detected, and `tournament.imported = false`.
 6. Capture individual tournament failures without stopping the whole weekend check.
 7. Report failures to Sentry with `weekendId`, `tournamentId`, and `meleeId`.
 
-Important selection detail: the script checks unfinished tournaments and finished tournaments where `has_decklists = false`. That avoids missing a pending import when Melee marks the tournament finished before decklists are visible.
+Important selection detail: the script checks unfinished tournaments regardless of format. For finished tournaments, it only keeps selecting formats that expect Melee decklists, and only when `has_decklists = false` or a progress field is missing (`round_number`, `round_name`, `matches_total`, or `matches_remaining`). That avoids missing a pending import when Melee marks a constructed tournament finished before decklists are visible, and it lets an older detail-only check be backfilled later without repeatedly polling finished limited tournaments.
 
 ### Every Minute: Tournament Import Queue
 
@@ -197,14 +209,15 @@ Flow:
 
 1. Pick one `tournament_import` row with `status = pending`.
 2. Mark it `running`, increment `attempts`, set `started_at`, clear old `last_error`, and set `updated_at`.
-3. Run `runTournamentImport(tournamentId)`.
-4. Mark `tournament.imported = true`.
-5. Run tournament card statistics.
-6. If the tournament has a meta, run meta statistics.
-7. Update tournament group statistics for every group containing this tournament.
-8. Generate deck thumbnails for the tournament.
-9. Mark the import row `finished` and set `finished_at`.
-10. Publish a no-op `tournament_import.finished` event hook that the future WebSocket implementation can fill in.
+3. If `tournament.imported = true`, mark the queue row `finished` and skip the destructive import.
+4. Run `runTournamentImport(tournamentId)`.
+5. Mark `tournament.imported = true`.
+6. Run tournament card statistics.
+7. If the tournament has a meta, run meta statistics.
+8. Update tournament group statistics for every group containing this tournament.
+9. Generate deck thumbnails for the tournament.
+10. Mark the import row `finished` and set `finished_at`.
+11. Publish a no-op `tournament_import.finished` event hook that the future WebSocket implementation can fill in.
 
 Failure flow:
 
@@ -222,7 +235,7 @@ Melee auth can expire. The live and import helpers rely on `TOURNAMENT_COOKIE` a
 
 Status strings are not a typed API contract. The status mapper is intentionally broad, but unknown status text will become `unknown`. Unknown statuses should be logged once real data is seen.
 
-Decklists may appear after the tournament status becomes finished. The live check cron keeps checking finished rows while `has_decklists = false`, but a long-running live weekend could still benefit from a bounded cutoff later.
+Decklists may appear after the tournament status becomes finished. For formats that expect decklists, the live check cron keeps checking finished rows while `has_decklists = false` or progress fields are missing, but a long-running live weekend could still benefit from a bounded cutoff later.
 
 Round ids and round numbers are different. Melee endpoints use round ids, while display and database rows use round numbers. Top cut numbering is derived from View button order.
 
