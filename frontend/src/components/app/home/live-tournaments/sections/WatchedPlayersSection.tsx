@@ -34,7 +34,7 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
   };
 
   return (
-    <section className="flex h-full w-full flex-col gap-3">
+    <section className="flex w-full flex-col gap-3">
       <LiveSectionHeader title="Watched Players" count={activeWatchedPlayers.length} />
 
       {!user ? (

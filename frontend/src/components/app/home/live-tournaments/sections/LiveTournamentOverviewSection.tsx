@@ -33,6 +33,24 @@ function StatusCountTile({
   );
 }
 
+export function LiveTournamentStatusTilesSection({
+  runningCount,
+  finishedCount,
+  upcomingCount,
+}: {
+  runningCount: number;
+  finishedCount: number;
+  upcomingCount: number;
+}) {
+  return (
+    <section className="grid h-full w-full gap-3 sm:grid-cols-3">
+      <StatusCountTile label="In Progress" value={runningCount} tone="running" />
+      <StatusCountTile label="Finished" value={finishedCount} tone="finished" />
+      <StatusCountTile label="Upcoming" value={upcomingCount} tone="upcoming" />
+    </section>
+  );
+}
+
 function TournamentColumn({
   title,
   tournaments,
@@ -77,48 +95,30 @@ export function LiveTournamentOverviewSection({
   running,
   finished,
   upcoming,
-  runningCount,
-  finishedCount,
-  upcomingCount,
   weekendId,
 }: {
   running: LiveTournamentWeekendTournamentEntry[];
   finished: LiveTournamentWeekendTournamentEntry[];
   upcoming: LiveTournamentWeekendTournamentEntry[];
-  runningCount: number;
-  finishedCount: number;
-  upcomingCount: number;
   weekendId: string;
 }) {
   return (
-    <section className="flex h-full min-h-[48rem] w-full flex-col gap-4">
-      <div className="grid gap-3 sm:grid-cols-3">
-        <StatusCountTile label="In Progress" value={runningCount} tone="running" />
-        <StatusCountTile label="Finished" value={finishedCount} tone="finished" />
-        <StatusCountTile label="Upcoming" value={upcomingCount} tone="upcoming" />
-      </div>
+    <section className="grid h-full min-h-[40rem] w-full gap-4 lg:grid-cols-2">
+      <TournamentColumn
+        title="Running"
+        tournaments={running}
+        weekendId={weekendId}
+        promptForStream
+      />
 
-      <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-2">
+      <div className="grid content-start gap-4">
+        <TournamentColumn title="Recently Finished" tournaments={finished} weekendId={weekendId} />
         <TournamentColumn
-          title="Running"
-          tournaments={running}
+          title="Upcoming"
+          tournaments={upcoming}
           weekendId={weekendId}
           promptForStream
         />
-
-        <div className="grid content-start gap-4">
-          <TournamentColumn
-            title="Recently Finished"
-            tournaments={finished}
-            weekendId={weekendId}
-          />
-          <TournamentColumn
-            title="Upcoming"
-            tournaments={upcoming}
-            weekendId={weekendId}
-            promptForStream
-          />
-        </div>
       </div>
     </section>
   );

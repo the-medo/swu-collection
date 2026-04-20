@@ -12,7 +12,7 @@ export function StreamsSection({ detail }: { detail: LiveTournamentWeekendDetail
   const resources = preparedResources.length > 0 ? preparedResources : detail.resources;
 
   return (
-    <section className="flex h-full w-full flex-col gap-3">
+    <section className="flex w-full flex-col gap-3">
       <LiveSectionHeader title="Streams" count={resources.length} />
       {resources.length === 0 ? (
         <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">

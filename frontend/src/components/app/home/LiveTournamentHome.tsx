@@ -10,12 +10,12 @@ import GridSection, {
 import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
 import {
   LiveTournamentOverviewSection,
-  StreamsSection,
-  WatchedPlayersSection,
+  LiveTournamentStatusTilesSection,
+  PlayersAndStreamsSection,
   WeekendMetaSection,
 } from './live-tournaments/sections';
 
-type LiveSectionKey = 'overview' | 'watched-players' | 'streams' | 'meta';
+type LiveSectionKey = 'status-tiles' | 'overview' | 'players-streams' | 'meta';
 
 const gridArea = (
   rowFrom: number,
@@ -28,36 +28,44 @@ const gridArea = (
 });
 
 const liveSectionSizing: Record<LiveSectionKey, SectionCardSizing> = {
-  overview: {
+  'status-tiles': {
     1: gridArea(1, 1, 1, 1),
     2: gridArea(1, 1, 1, 2),
-    3: gridArea(1, 3, 1, 2),
-    4: gridArea(1, 3, 1, 2),
+    3: gridArea(1, 1, 1, 2),
+    4: gridArea(1, 1, 1, 2),
   },
-  'watched-players': {
+  overview: {
     1: gridArea(2, 2, 1, 1),
-    2: gridArea(2, 2, 1, 1),
-    3: gridArea(1, 1, 3, 3),
-    4: gridArea(1, 1, 3, 3),
+    2: gridArea(2, 2, 1, 2),
+    3: gridArea(2, 3, 1, 2),
+    4: gridArea(2, 3, 1, 2),
   },
-  streams: {
+  'players-streams': {
     1: gridArea(3, 3, 1, 1),
-    2: gridArea(2, 2, 2, 2),
-    3: gridArea(2, 2, 3, 3),
-    4: gridArea(2, 2, 3, 3),
+    2: gridArea(3, 3, 1, 2),
+    3: gridArea(1, 2, 3, 3),
+    4: gridArea(1, 2, 3, 3),
   },
   meta: {
     1: gridArea(4, 4, 1, 1),
-    2: gridArea(3, 3, 1, 2),
+    2: gridArea(4, 4, 1, 2),
     3: gridArea(3, 3, 3, 3),
     4: gridArea(3, 3, 3, 3),
   },
 };
 
-function LiveGridSection({ section, children }: { section: LiveSectionKey; children: ReactNode }) {
+function LiveGridSection({
+  section,
+  children,
+  framed = true,
+}: {
+  section: LiveSectionKey;
+  children: ReactNode;
+  framed?: boolean;
+}) {
   return (
     <GridSection id={`live-${section}`} sizing={liveSectionSizing[section]}>
-      <GridSectionContent>{children}</GridSectionContent>
+      {framed ? <GridSectionContent>{children}</GridSectionContent> : children}
     </GridSection>
   );
 }
@@ -124,25 +132,26 @@ export default function LiveTournamentHome() {
           </div>
         )}
 
-        <div className="grid grid-flow-dense grid-cols-1 gap-4 auto-rows-[minmax(12rem,auto)] md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-flow-dense auto-rows-auto grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <LiveGridSection section="status-tiles" framed={false}>
+            <LiveTournamentStatusTilesSection
+              runningCount={detail.weekend.tournamentsRunning}
+              finishedCount={detail.weekend.tournamentsFinished}
+              upcomingCount={detail.weekend.tournamentsUpcoming + detail.weekend.tournamentsUnknown}
+            />
+          </LiveGridSection>
+
           <LiveGridSection section="overview">
             <LiveTournamentOverviewSection
               running={groupedTournaments.running}
               finished={groupedTournaments.finished}
               upcoming={groupedTournaments.upcoming}
-              runningCount={detail.weekend.tournamentsRunning}
-              finishedCount={detail.weekend.tournamentsFinished}
-              upcomingCount={detail.weekend.tournamentsUpcoming + detail.weekend.tournamentsUnknown}
               weekendId={detail.weekend.id}
             />
           </LiveGridSection>
 
-          <LiveGridSection section="watched-players">
-            <WatchedPlayersSection detail={detail} />
-          </LiveGridSection>
-
-          <LiveGridSection section="streams">
-            <StreamsSection detail={detail} />
+          <LiveGridSection section="players-streams">
+            <PlayersAndStreamsSection detail={detail} />
           </LiveGridSection>
 
           <LiveGridSection section="meta">
