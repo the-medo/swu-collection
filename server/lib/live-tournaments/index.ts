@@ -23,6 +23,7 @@ export {
   type TournamentImportQueueResult,
 } from './tournamentImportQueue.ts';
 export { meleeDecklistFormatIds, tournamentExpectsMeleeDecklists } from './tournamentFormat.ts';
+export { recomputeTournamentWeekendPlayerScores } from './tournamentWeekendPlayerScores.ts';
 export {
   fetchLiveTournamentDetailFromMelee,
   fetchLiveTournamentProgressFromMelee,

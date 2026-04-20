@@ -11,6 +11,7 @@ import {
 import { mergeLiveTournamentAdditionalData } from './additionalData.ts';
 import { publishLiveTournamentProgressChecked } from './liveTournamentEvents.ts';
 import { fetchLiveTournamentProgressFromMelee } from './melee.ts';
+import { recomputeTournamentWeekendPlayerScores } from './tournamentWeekendPlayerScores.ts';
 import type {
   LiveMeleeMatch,
   LiveMeleePlayer,
@@ -275,6 +276,8 @@ export async function liveTournamentProgressCheck(
         },
       });
   }
+
+  await recomputeTournamentWeekendPlayerScores(input.tournamentId);
 
   const undefeatedPlayers = deriveUndefeatedPlayers(progress.roundNumber, progress.standings);
   const bracket = deriveBracket(progress.matches);

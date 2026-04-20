@@ -71,18 +71,20 @@ It does this:
 2. Skip if either the row or Melee id is missing.
 3. Call `fetchLiveTournamentProgressFromMelee`.
 4. Upsert all players seen in standings and matches into `player`.
-5. Upsert standings into `tournament_standing` for the current live round.
-6. Upsert live matches into `tournament_weekend_match`.
-7. Update the weekend tournament row with:
+5. Upsert tournament-player rows into `tournament_weekend_player`, preserving any already-known leader/base values.
+6. Upsert standings into `tournament_standing` for the current live round.
+7. Upsert live matches into `tournament_weekend_match`.
+8. Recompute each tournament player's `match_score` and `game_score` from stored live match rows.
+9. Update the weekend tournament row with:
    - `round_number`
    - `round_name`
    - `matches_total`
    - `matches_remaining`
    - merged `additional_data`
    - `last_updated_at`
-8. Derive undefeated players for round 4+ from standings where match losses are zero.
-9. Derive bracket rounds from live match objects whose round name is `Quarterfinals`, `Semifinals`, or `Finals`.
-10. Publish a progress event. This is also currently a no-op until WebSockets are added.
+10. Derive undefeated players for round 4+ from standings where match losses are zero.
+11. Derive bracket rounds from live match objects whose round name is `Quarterfinals`, `Semifinals`, or `Finals`.
+12. Publish a progress event. This is also currently a no-op until WebSockets are added.
 
 ### Melee progress calls
 
@@ -134,6 +136,10 @@ Because Melee usually keeps decklists hidden until late in the tournament, empty
 Leader/base data lives in `tournament_weekend_player`, not `tournament_weekend_match`. The new table is keyed by `tournament_id` and `player_id`, and will hold the player's leader, base key, match score, and game score for the live weekend view. This keeps per-player identity and aggregate score data separate from per-round match rows.
 
 During live progress import, every player seen in standings or matches is upserted into `tournament_weekend_player`. Leader/base values parsed from match `DecklistName` fields are written there with null-safe conflict updates, so a later empty Melee response does not erase previously detected deck information. Weekend detail endpoints return those rows under each tournament's `players` array and attach the matching rows to match entries as `tournamentPlayer1` and `tournamentPlayer2`.
+
+After match rows are upserted, `recomputeTournamentWeekendPlayerScores` recalculates `tournament_weekend_player.match_score` and `game_score` for that tournament. The score pass reads all local `tournament_weekend_match` rows, groups by `tournament_id` and `player_id`, and writes strings like `7-0-1` for matches and `13-3` for games.
+
+Two-player matches count only when the live match row has `updated_at` and both game-win columns populated. This avoids treating in-progress `0-0` rows as draws. A bye (`player_id_2 IS NULL`) counts as a match win for player 1 and uses stored game wins/losses, with missing values treated as `0`.
 
 ## Finished Tournament Import Flow
 
