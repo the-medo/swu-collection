@@ -88,7 +88,7 @@ function TournamentInfoRow({
 
 function ChampionCallout({ entry }: { entry: LiveTournamentWeekendTournamentEntry }) {
   return (
-    <div className="relative z-20 flex w-full max-w-full items-center justify-center gap-2 px-3 py-2">
+    <div className="relative z-20 flex w-full max-w-full items-center gap-2 px-3 py-2">
       <Trophy className="h-5 w-5 shrink-0 text-amber-500" />
       <div className="min-w-0">
         <div className="truncate text-xl font-bold leading-tight">{getChampionName(entry)}</div>
@@ -115,18 +115,20 @@ export function TournamentCard({
   return (
     <article
       className={cn(
-        'relative isolate overflow-hidden rounded-md border bg-background p-3 shadow-xs',
+        'relative isolate overflow-hidden rounded-md border bg-background p-3 shadow-xs min-w-[290px] xl:min-w-[340px]',
         'space-y-3',
       )}
     >
       {isFinished && <WinnerDeckDecoration entry={entry} />}
 
       <div className="relative z-20 flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
+        <div
+          className={cn('min-w-0 flex-1', {
+            'max-w-[calc(100%-150px)]': isFinished && entry.winningDeck,
+          })}
+        >
           <div className="flex flex-wrap items-center gap-2">
-            <h5 className="truncate text-sm font-semibold leading-tight">
-              {entry.tournament.name}
-            </h5>
+            <h6 className="font-semibold leading-tight">{entry.tournament.name}</h6>
             {!isFinished && <LiveStatusBadge status={entry.weekendTournament.status} />}
             {isUpcoming && startTime && (
               <span className="text-xs text-muted-foreground">{startTime}</span>
@@ -143,14 +145,14 @@ export function TournamentCard({
         <div className="relative z-20 flex flex-wrap items-center gap-2">
           <div className="text-xs font-medium uppercase text-muted-foreground">Undefeated</div>
           <div className="flex flex-wrap gap-1.5">
-            {undefeatedPlayers.slice(0, 12).map(row => (
+            {undefeatedPlayers.slice(0, 3).map(row => (
               <Badge key={row.player.id} variant="outline" className="rounded-md">
                 {row.player.displayName} {row.standing.matchRecord}
               </Badge>
             ))}
-            {undefeatedPlayers.length > 12 && (
+            {undefeatedPlayers.length > 3 && (
               <Badge variant="outline" className="rounded-md">
-                +{undefeatedPlayers.length - 12}
+                +{undefeatedPlayers.length - 3}
               </Badge>
             )}
           </div>

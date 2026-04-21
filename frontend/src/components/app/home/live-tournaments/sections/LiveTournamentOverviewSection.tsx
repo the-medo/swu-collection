@@ -1,8 +1,11 @@
+import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils.ts';
+import { Button } from '@/components/ui/button.tsx';
 import { TournamentCard } from '../components';
 import type { LiveTournamentWeekendTournamentEntry } from '../liveTournamentTypes.ts';
 
 type StatusTileTone = 'running' | 'finished' | 'upcoming';
+const TOURNAMENT_COLUMN_DEFAULT_LIMIT = 10;
 
 const statusTileToneClass: Record<StatusTileTone, string> = {
   running: 'from-emerald-600/45 via-emerald-500/35 to-emerald-400/15',
@@ -62,6 +65,15 @@ function TournamentColumn({
   weekendId: string;
   promptForStream?: boolean;
 }) {
+  const [showAll, setShowAll] = useState(false);
+  const shouldLimit = tournaments.length > TOURNAMENT_COLUMN_DEFAULT_LIMIT;
+
+  const visibleTournaments = useMemo(() => {
+    return shouldLimit && !showAll
+      ? tournaments.slice(0, TOURNAMENT_COLUMN_DEFAULT_LIMIT)
+      : tournaments;
+  }, [shouldLimit, showAll, tournaments]);
+
   return (
     <section className="flex min-h-0 flex-col gap-3">
       <div className="flex items-center justify-between gap-2 border-b pb-1">
@@ -76,16 +88,29 @@ function TournamentColumn({
           Nothing here right now.
         </div>
       ) : (
-        <div className="grid gap-3">
-          {tournaments.map(entry => (
-            <TournamentCard
-              key={entry.tournament.id}
-              entry={entry}
-              weekendId={weekendId}
-              promptForStream={promptForStream}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-3">
+            {visibleTournaments.map(entry => (
+              <TournamentCard
+                key={entry.tournament.id}
+                entry={entry}
+                weekendId={weekendId}
+                promptForStream={promptForStream}
+              />
+            ))}
+          </div>
+          {shouldLimit && !showAll && (
+            <Button
+              type="button"
+              variant="outline"
+              size="xs"
+              className="self-start"
+              onClick={() => setShowAll(true)}
+            >
+              Show all ({tournaments.length})
+            </Button>
+          )}
+        </>
       )}
     </section>
   );
@@ -103,22 +128,24 @@ export function LiveTournamentOverviewSection({
   weekendId: string;
 }) {
   return (
-    <section className="grid h-full min-h-[40rem] w-full gap-4 lg:grid-cols-2">
-      <TournamentColumn
-        title="Running"
-        tournaments={running}
-        weekendId={weekendId}
-        promptForStream
-      />
-
+    <section className="grid h-full min-h-[40rem] w-full gap-4 md:grid-cols-2">
       <div className="grid content-start gap-4">
-        <TournamentColumn title="Recently Finished" tournaments={finished} weekendId={weekendId} />
+        <TournamentColumn
+          title="In Progress"
+          tournaments={running}
+          weekendId={weekendId}
+          promptForStream
+        />
         <TournamentColumn
           title="Upcoming"
           tournaments={upcoming}
           weekendId={weekendId}
           promptForStream
         />
+      </div>
+
+      <div className="grid content-start gap-4">
+        <TournamentColumn title="Finished" tournaments={finished} weekendId={weekendId} />
       </div>
     </section>
   );

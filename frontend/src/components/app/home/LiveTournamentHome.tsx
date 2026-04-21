@@ -80,8 +80,20 @@ export default function LiveTournamentHome() {
   const groupedTournaments = useMemo(() => {
     const tournaments = detail?.tournaments ?? [];
     return {
-      running: tournaments.filter(entry => entry.weekendTournament.status === 'running'),
-      finished: tournaments.filter(entry => entry.weekendTournament.status === 'finished'),
+      running: tournaments
+        .filter(entry => entry.weekendTournament.status === 'running')
+        .sort((a, b) =>
+          (a.weekendTournament.exactStart ?? '').localeCompare(
+            b.weekendTournament.exactStart ?? '',
+          ),
+        ),
+      finished: tournaments
+        .filter(entry => entry.weekendTournament.status === 'finished')
+        .sort((a, b) =>
+          (b.weekendTournament.lastUpdatedAt ?? '').localeCompare(
+            a.weekendTournament.lastUpdatedAt ?? '',
+          ),
+        ),
       upcoming: tournaments.filter(
         entry =>
           entry.weekendTournament.status === 'upcoming' ||
@@ -132,7 +144,7 @@ export default function LiveTournamentHome() {
           </div>
         )}
 
-        <div className="grid grid-flow-dense auto-rows-auto grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-flow-dense auto-rows-auto grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-[minmax(300px,1fr)_minmax(300px,1fr)_250px] xl:grid-cols-[minmax(300px,1fr)_minmax(300px,1fr)_350px]">
           <LiveGridSection section="status-tiles" framed={false}>
             <LiveTournamentStatusTilesSection
               runningCount={detail.weekend.tournamentsRunning}
