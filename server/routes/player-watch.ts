@@ -19,36 +19,18 @@ const zPlayerWatchDeleteQuery = z.object({
   playerId: z.coerce.number().int().positive(),
 });
 
+const playerNotFoundMessage =
+  'Player not found in our system yet. Please use the exact Melee display name. If the player still does not appear, they need to play their first PQ since this feature was added.';
+
 async function resolvePlayer(data: z.infer<typeof zPlayerWatchMutationBody>) {
   if (data.playerId !== undefined) {
     const existing = (
       await db.select().from(playerTable).where(eq(playerTable.id, data.playerId)).limit(1)
     )[0];
 
-    if (existing && !data.displayName) {
+    if (existing) {
       return existing;
     }
-
-    const displayName =
-      data.displayName ?? existing?.displayName ?? `Melee Player ${data.playerId}`;
-
-    return (
-      await db
-        .insert(playerTable)
-        .values({
-          id: data.playerId,
-          displayName,
-          updatedAt: sql`NOW()`,
-        })
-        .onConflictDoUpdate({
-          target: playerTable.id,
-          set: {
-            displayName,
-            updatedAt: sql`NOW()`,
-          },
-        })
-        .returning()
-    )[0];
   }
 
   if (!data.displayName) {
@@ -93,7 +75,7 @@ export const playerWatchRoute = new Hono<AuthExtension>()
     const player = await resolvePlayer(data);
 
     if (!player) {
-      return c.json({ message: 'Player not found' }, 404);
+      return c.json({ message: playerNotFoundMessage }, 404);
     }
 
     await db

@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import CollectionAndWantlistSettings from '@/components/app/pages/settings/CollectionAndWantlistSettings.tsx';
 import UserSettings from '@/components/app/pages/settings/UserSettings.tsx';
+import WatchedPlayersSettings from '@/components/app/pages/settings/WatchedPlayersSettings.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { Route } from '@/routes/_authenticated/settings';
@@ -31,6 +32,9 @@ export function SettingsPage() {
             <TabsTrigger value="display-name" className="flex-1 sm:flex-none">
               Display name
             </TabsTrigger>
+            <TabsTrigger value="watched-players" className="flex-1 sm:flex-none">
+              Watched players
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="collections-and-wantlists">
@@ -44,6 +48,13 @@ export function SettingsPage() {
             <Card>
               <CardContent className="p-4">
                 <UserSettings />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="watched-players">
+            <Card>
+              <CardContent className="p-4">
+                <WatchedPlayersSettings />
               </CardContent>
             </Card>
           </TabsContent>

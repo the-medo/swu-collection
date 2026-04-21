@@ -5,6 +5,7 @@ import { z } from 'zod';
 export const settingsPages: [string, ...string[]] = [
   'collections-and-wantlists',
   'display-name',
+  'watched-players',
 ] as const;
 
 const searchParams = z.object({
