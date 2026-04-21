@@ -3,8 +3,14 @@ import type {
   LiveTournamentWeekendTournamentEntry,
 } from './liveTournamentTypes.ts';
 
-const topCutRoundNames = new Set(['Quarterfinals', 'Semifinals', 'Finals']);
-const topCutRoundOrder = ['Quarterfinals', 'Semifinals', 'Finals'];
+export const topEightBracketRoundOrder = ['Quarterfinals', 'Semifinals', 'Finals'] as const;
+const topCutRoundNames = new Set(topEightBracketRoundOrder);
+export const topEightBracketMatchCountByRound: Record<(typeof topEightBracketRoundOrder)[number], number> =
+  {
+    Quarterfinals: 4,
+    Semifinals: 2,
+    Finals: 1,
+  };
 
 export type BracketRound = {
   roundName: string;
@@ -93,8 +99,36 @@ export function getBracketRounds(entry: LiveTournamentWeekendTournamentEntry): B
   });
 
   return [...roundsByName.entries()]
-    .map(([roundName, matches]) => ({ roundName, matches }))
-    .sort((a, b) => topCutRoundOrder.indexOf(a.roundName) - topCutRoundOrder.indexOf(b.roundName));
+    .map(([roundName, matches]) => {
+      const maxMatches =
+        topEightBracketMatchCountByRound[
+          roundName as keyof typeof topEightBracketMatchCountByRound
+        ] ?? matches.length;
+
+      return {
+        roundName,
+        matches: matches.slice(0, maxMatches),
+      };
+    })
+    .sort(
+      (a, b) =>
+        topEightBracketRoundOrder.indexOf(
+          a.roundName as (typeof topEightBracketRoundOrder)[number],
+        ) -
+        topEightBracketRoundOrder.indexOf(
+          b.roundName as (typeof topEightBracketRoundOrder)[number],
+        ),
+    );
+}
+
+export function getLiveMatchWinnerSide(match: LiveTournamentMatchEntry) {
+  const player1Wins = match.match.player1GameWin;
+  const player2Wins = match.match.player2GameWin;
+
+  if (player1Wins === null || player2Wins === null) return null;
+  if (player1Wins === player2Wins) return null;
+
+  return player1Wins > player2Wins ? 'player1' : 'player2';
 }
 
 function getMatchLosses(matchRecord: string) {

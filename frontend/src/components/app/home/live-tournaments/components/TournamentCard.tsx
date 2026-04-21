@@ -1,4 +1,4 @@
-import { Trophy } from 'lucide-react';
+import { ExternalLink, Trophy } from 'lucide-react';
 import Flag from '@/components/app/global/Flag.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import { cn } from '@/lib/utils.ts';
@@ -27,7 +27,7 @@ function getMatchesRemainingLabel(entry: LiveTournamentWeekendTournamentEntry) {
   const matchWord = remaining === 1 ? 'match' : 'matches';
   if (total === null || total === undefined) return `${remaining} ${matchWord} remaining`;
 
-  return `${remaining} out of ${total} ${matchWord} remaining`;
+  return `${remaining}/${total} ${matchWord} remaining`;
 }
 
 function getRunningProgressLabel(entry: LiveTournamentWeekendTournamentEntry) {
@@ -73,9 +73,10 @@ function TournamentInfoRow({
           href={meleeUrl}
           target="_blank"
           rel="noreferrer"
-          className="font-medium text-primary hover:underline"
+          className="flex gap-1 items-center underline"
         >
-          Open melee
+          Melee
+          <ExternalLink className="size-3" />
         </a>
       ) : (
         <span>Melee missing</span>
