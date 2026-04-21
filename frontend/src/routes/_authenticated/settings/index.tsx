@@ -1,16 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router';
-import UserSettings from '@/components/app/pages/settings/UserSettings.tsx';
-import CollectionAndWantlistSettings from '@/components/app/pages/settings/CollectionAndWantlistSettings.tsx';
+import { SettingsPage } from '@/components/app/pages/settings/SettingsPage.tsx';
+import { z } from 'zod';
 
-export const Route = createFileRoute('/_authenticated/settings/')({
-  component: RouteComponent,
+export const settingsPages: [string, ...string[]] = [
+  'collections-and-wantlists',
+  'display-name',
+] as const;
+
+const searchParams = z.object({
+  page: z.enum([...settingsPages]).default('collections-and-wantlists'),
 });
 
-function RouteComponent() {
-  return (
-    <div className="p-2 flex flex-col gap-16">
-      <UserSettings />
-      <CollectionAndWantlistSettings />
-    </div>
-  );
-}
+export const Route = createFileRoute('/_authenticated/settings/')({
+  component: SettingsPage,
+  validateSearch: searchParams,
+});

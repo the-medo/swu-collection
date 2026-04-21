@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input.tsx';
 import { useForm } from '@tanstack/react-form';
 import { Button } from '@/components/ui/button.tsx';
 import { generateDisplayName } from '../../../../../../server/auth/generateDisplayName.ts';
-import { Helmet } from 'react-helmet-async';
 
 export interface UserSettingsProps {}
 
@@ -42,51 +41,46 @@ const UserSettings: React.FC<UserSettingsProps> = ({}) => {
   });
 
   return (
-    <>
-      <Helmet title="User settings | SWUBase" />
-      <div className="flex flex-col gap-4">
-        <h2 className="text-2xl">User settings</h2>
-
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            e.stopPropagation();
-            void form.handleSubmit();
-          }}
-        >
-          <form.Field
-            name="displayName"
-            children={field => (
-              <div className="flex flex-col gap-2">
-                <Label htmlFor={field.name}>Display name</Label>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <div className="w-[300px] max-sm:w-full">
-                    <Input
-                      type="text"
-                      id={field.name}
-                      placeholder="Display name"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={e => field.handleChange(e.target.value)}
-                    />
-                  </div>
-                  <Button type="submit" disabled={field.getMeta().isPristine}>
-                    Save
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    type="button"
-                    onClick={() => form.setFieldValue('displayName', generateDisplayName())}
-                  >
-                    Generate random display name
-                  </Button>
+    <div className="flex flex-col gap-4">
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
+        <form.Field
+          name="displayName"
+          children={field => (
+            <div className="flex flex-col gap-2">
+              <Label htmlFor={field.name}>Display name</Label>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="w-[300px] max-sm:w-full">
+                  <Input
+                    type="text"
+                    id={field.name}
+                    placeholder="Display name"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={e => field.handleChange(e.target.value)}
+                  />
                 </div>
+                <Button type="submit" disabled={field.getMeta().isPristine}>
+                  Save
+                </Button>
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => form.setFieldValue('displayName', generateDisplayName())}
+                >
+                  Generate random display name
+                </Button>
               </div>
-            )}
-          />
-        </form>
-      </div>
-    </>
+            </div>
+          )}
+        />
+      </form>
+    </div>
   );
 };
 
