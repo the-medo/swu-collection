@@ -2,7 +2,6 @@ import { and, count, eq, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import {
-  player as playerTable,
   tournamentStanding,
   tournamentWeekendMatch,
   tournamentWeekendPlayer,
@@ -20,6 +19,7 @@ import type {
   LiveTournamentCheckInput,
   LiveTournamentProgressCheckResult,
 } from './types.ts';
+import { upsertPlayers } from './upsertPlayers.ts';
 
 const topCutRoundNames = new Set(['Quarterfinals', 'Semifinals', 'Finals']);
 
@@ -177,16 +177,7 @@ export async function liveTournamentProgressCheck(
   const players = uniquePlayers(progress.standings, progress.matches);
 
   if (players.length > 0) {
-    await db
-      .insert(playerTable)
-      .values(players)
-      .onConflictDoUpdate({
-        target: playerTable.id,
-        set: {
-          displayName: sql`excluded.display_name`,
-          updatedAt: sql`NOW()`,
-        },
-      });
+    await upsertPlayers(players);
   }
 
   if (players.length > 0) {
