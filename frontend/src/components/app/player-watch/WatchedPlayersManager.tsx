@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useId, useMemo, useState } from 'react';
-import { Check, Loader2, Trash2 } from 'lucide-react';
+import { Loader2, Trash2 } from 'lucide-react';
 import {
   useDeletePlayerWatch,
   useGetPlayerWatch,
@@ -29,7 +29,7 @@ import { useUser } from '@/hooks/useUser.ts';
 
 const SEARCH_DEBOUNCE_DELAY = 500;
 
-export function WatchedPlayersManager() {
+export function WatchedPlayersManager({ showDescription = false }: { showDescription?: boolean }) {
   const user = useUser();
   const inputId = useId();
   const [watchValue, setWatchValue] = useState('');
@@ -102,23 +102,25 @@ export function WatchedPlayersManager() {
 
   return (
     <div className="space-y-4">
-      <Alert variant="info">
-        <AlertTitle>What this does</AlertTitle>
-        <AlertDescription className="space-y-2">
-          <p>
-            Watched players are shown on the Live homepage in the Watched Players section whenever
-            they appear in the currently active live tournament weekend.
-          </p>
-          <p>
-            Use the player&apos;s exact Melee display name when adding them here. Matching is exact,
-            so nicknames or partial names will not work.
-          </p>
-          <p>
-            Some players may not be available yet. If a player is not found, it means they are not
-            in our system yet and need to play their first PQ since this feature was added.
-          </p>
-        </AlertDescription>
-      </Alert>
+      {showDescription && (
+        <Alert variant="info">
+          <AlertTitle>What this does</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>
+              Watched players are shown on the Live homepage in the Watched Players section whenever
+              they appear in the currently active live tournament weekend.
+            </p>
+            <p>
+              Use the player&apos;s exact Melee display name when adding them here. Matching is
+              exact, so nicknames or partial names will not work.
+            </p>
+            <p>
+              Some players may not be available yet. If a player is not found, it means they are not
+              in our system yet and need to play their first PQ since this feature was added.
+            </p>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-md border p-4">
         <div className="flex flex-col gap-2">
@@ -155,12 +157,10 @@ export function WatchedPlayersManager() {
                             <div className="flex min-w-0 flex-col">
                               <span className="font-medium">{player.displayName}</span>
                             </div>
-                            {player.isWatched ? (
+                            {player.isWatched && (
                               <span className="ml-auto text-xs text-muted-foreground">
                                 Already watched
                               </span>
-                            ) : (
-                              <Check className="ml-auto h-4 w-4 text-muted-foreground" />
                             )}
                           </CommandItem>
                         ))}

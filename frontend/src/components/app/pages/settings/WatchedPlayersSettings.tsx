@@ -4,7 +4,7 @@ export default function WatchedPlayersSettings() {
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl">Watched players</h2>
-      <WatchedPlayersManager />
+      <WatchedPlayersManager showDescription />
     </div>
   );
 }

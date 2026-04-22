@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import SectionHeader from '@/components/app/daily-snapshots/sections/components/SectionHeader.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 
@@ -5,10 +6,12 @@ export function LiveSectionHeader({
   title,
   detail,
   count,
+  action,
 }: {
   title: string;
   detail?: string;
   count?: number;
+  action?: ReactNode;
 }) {
   return (
     <SectionHeader
@@ -19,11 +22,11 @@ export function LiveSectionHeader({
         </div>
       }
       dropdownMenu={
-        count !== undefined ? (
+        action ?? (count !== undefined ? (
           <Badge variant="outline" className="rounded-md">
             {count}
           </Badge>
-        ) : undefined
+        ) : undefined)
       }
     />
   );

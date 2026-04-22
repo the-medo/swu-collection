@@ -81,6 +81,15 @@ function getRoundNameMap(entry: LiveTournamentWeekendTournamentEntry) {
   return roundNameByNumber;
 }
 
+export function getRoundName(
+  entry: LiveTournamentWeekendTournamentEntry,
+  roundNumber: number | null | undefined,
+) {
+  if (roundNumber === null || roundNumber === undefined) return null;
+
+  return getRoundNameMap(entry).get(roundNumber) ?? `Round ${roundNumber}`;
+}
+
 export function getBracketRounds(entry: LiveTournamentWeekendTournamentEntry): BracketRound[] {
   const roundNameByNumber = getRoundNameMap(entry);
   const roundsByName = new Map<string, LiveTournamentMatchEntry[]>();
@@ -145,8 +154,7 @@ export function getUndefeatedPlayers(entry: LiveTournamentWeekendTournamentEntry
 
 export function getRoundLabel(entry: LiveTournamentWeekendTournamentEntry) {
   if (entry.weekendTournament.roundName) return entry.weekendTournament.roundName;
-  if (entry.weekendTournament.roundNumber) return `Round ${entry.weekendTournament.roundNumber}`;
-  return null;
+  return getRoundName(entry, entry.weekendTournament.roundNumber);
 }
 
 export function getMatchProgress(entry: LiveTournamentWeekendTournamentEntry) {
