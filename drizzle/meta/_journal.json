@@ -344,6 +344,13 @@
       "when": 1776887897891,
       "tag": "0048_player_display_name_pk",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1776894105268,
+      "tag": "0049_dashing_outlaw_kid",
+      "breakpoints": true
     }
   ]
 }

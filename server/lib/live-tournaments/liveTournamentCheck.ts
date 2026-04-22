@@ -27,6 +27,7 @@ const hasMissingProgressFields = (weekendTournament: {
 export async function liveTournamentCheck(
   input: LiveTournamentCheckInput,
 ): Promise<LiveTournamentCheckResult> {
+  console.log(`[liveTournamentCheck] checking ${input.tournamentId}`);
   const row = (
     await db
       .select({
@@ -121,11 +122,24 @@ export async function liveTournamentCheck(
   let progress = null;
   if (
     detail.status === 'running' ||
+    !row.weekendTournament.wasCheckedFinished ||
     (detail.status === 'finished' &&
       expectsDecklists &&
       (detail.hasDecklists || hasMissingProgressFields(row.weekendTournament)))
   ) {
     progress = await liveTournamentProgressCheck(input);
+    if (detail.status === 'finished') {
+      db.update(tournamentWeekendTournament)
+        .set({
+          wasCheckedFinished: true,
+        })
+        .where(
+          and(
+            eq(tournamentWeekendTournament.tournamentWeekendId, input.weekendId),
+            eq(tournamentWeekendTournament.tournamentId, input.tournamentId),
+          ),
+        );
+    }
   }
 
   await recomputeTournamentWeekendCounters(input.weekendId);
