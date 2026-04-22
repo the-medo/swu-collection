@@ -14,16 +14,17 @@ type DisplayRound = {
 
 function findMatchContainingPlayer(
   matches: LiveTournamentMatchEntry[],
-  playerId: number | null | undefined,
+  playerDisplayName: string | null | undefined,
   usedMatchIds: Set<string>,
 ) {
-  if (!playerId) return null;
+  if (!playerDisplayName) return null;
 
   return (
     matches.find(
       match =>
         !usedMatchIds.has(match.match.id) &&
-        (match.match.playerId1 === playerId || match.match.playerId2 === playerId),
+        (match.match.playerDisplayName1 === playerDisplayName ||
+          match.match.playerDisplayName2 === playerDisplayName),
     ) ?? null
   );
 }
@@ -52,7 +53,11 @@ function orderSemifinals(
   const usedMatchIds = new Set<string>();
 
   if (finalMatch) {
-    const firstMatch = findMatchContainingPlayer(matches, finalMatch.match.playerId1, usedMatchIds);
+    const firstMatch = findMatchContainingPlayer(
+      matches,
+      finalMatch.match.playerDisplayName1,
+      usedMatchIds,
+    );
     if (firstMatch) {
       orderedMatches[0] = firstMatch;
       usedMatchIds.add(firstMatch.match.id);
@@ -60,7 +65,7 @@ function orderSemifinals(
 
     const secondMatch = findMatchContainingPlayer(
       matches,
-      finalMatch.match.playerId2,
+      finalMatch.match.playerDisplayName2,
       usedMatchIds,
     );
     if (secondMatch) {
@@ -84,13 +89,21 @@ function orderQuarterfinals(
     if (!semifinal) return;
 
     const slotStart = semifinalIndex * 2;
-    const firstMatch = findMatchContainingPlayer(matches, semifinal.match.playerId1, usedMatchIds);
+    const firstMatch = findMatchContainingPlayer(
+      matches,
+      semifinal.match.playerDisplayName1,
+      usedMatchIds,
+    );
     if (firstMatch) {
       orderedMatches[slotStart] = firstMatch;
       usedMatchIds.add(firstMatch.match.id);
     }
 
-    const secondMatch = findMatchContainingPlayer(matches, semifinal.match.playerId2, usedMatchIds);
+    const secondMatch = findMatchContainingPlayer(
+      matches,
+      semifinal.match.playerDisplayName2,
+      usedMatchIds,
+    );
     if (secondMatch) {
       orderedMatches[slotStart + 1] = secondMatch;
       usedMatchIds.add(secondMatch.match.id);
@@ -122,7 +135,9 @@ function buildDisplayRounds(rounds: BracketRound[]): DisplayRound[] {
 }
 
 export function LiveBracketRounds({ rounds }: { rounds: BracketRound[] }) {
-  const [highlightedPlayerId, setHighlightedPlayerId] = useState<number | null>(null);
+  const [highlightedPlayerDisplayName, setHighlightedPlayerDisplayName] = useState<string | null>(
+    null,
+  );
   const displayRounds = useMemo(() => buildDisplayRounds(rounds), [rounds]);
 
   return (
@@ -134,8 +149,8 @@ export function LiveBracketRounds({ rounds }: { rounds: BracketRound[] }) {
             roundName={round.roundName}
             matches={round.matches}
             roundIndex={roundIndex}
-            highlightedPlayerId={highlightedPlayerId}
-            setHighlightedPlayerId={setHighlightedPlayerId}
+            highlightedPlayerDisplayName={highlightedPlayerDisplayName}
+            setHighlightedPlayerDisplayName={setHighlightedPlayerDisplayName}
           />
         ))}
       </div>

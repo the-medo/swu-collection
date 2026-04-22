@@ -39,8 +39,8 @@ export function WatchedPlayersManager() {
   const removeWatch = useDeletePlayerWatch();
   const watchlist = watchlistQuery.data?.data ?? [];
   const normalizedWatchValue = watchValue.trim();
-  const watchedPlayerIds = useMemo(
-    () => new Set(watchlist.map(entry => entry.player.id)),
+  const watchedPlayerDisplayNames = useMemo(
+    () => new Set(watchlist.map(entry => entry.player.displayName)),
     [watchlist],
   );
   const isDebouncingSearch =
@@ -50,9 +50,9 @@ export function WatchedPlayersManager() {
     () =>
       (playerSearchQuery.data?.data ?? []).map(player => ({
         ...player,
-        isWatched: watchedPlayerIds.has(player.id),
+        isWatched: watchedPlayerDisplayNames.has(player.displayName),
       })),
-    [playerSearchQuery.data?.data, watchedPlayerIds],
+    [playerSearchQuery.data?.data, watchedPlayerDisplayNames],
   );
   const mutationError = addWatch.error?.message ?? removeWatch.error?.message;
 
@@ -80,9 +80,9 @@ export function WatchedPlayersManager() {
     );
   };
 
-  const handlePlayerSelect = (playerId: number) => {
+  const handlePlayerSelect = (displayName: string) => {
     addWatch.mutate(
-      { playerId },
+      { displayName },
       {
         onSuccess: () => {
           setWatchValue('');
@@ -147,16 +147,13 @@ export function WatchedPlayersManager() {
                       <CommandGroup heading="Matching players">
                         {playerOptions.map(player => (
                           <CommandItem
-                            key={player.id}
-                            value={`${player.displayName}-${player.id}`}
+                            key={player.displayName}
+                            value={player.displayName}
                             disabled={player.isWatched || addWatch.isPending}
-                            onSelect={() => handlePlayerSelect(player.id)}
+                            onSelect={() => handlePlayerSelect(player.displayName)}
                           >
                             <div className="flex min-w-0 flex-col">
                               <span className="font-medium">{player.displayName}</span>
-                              <span className="text-xs text-muted-foreground">
-                                Melee ID {player.id}
-                              </span>
                             </div>
                             {player.isWatched ? (
                               <span className="ml-auto text-xs text-muted-foreground">
@@ -197,14 +194,13 @@ export function WatchedPlayersManager() {
           <TableHeader>
             <TableRow>
               <TableHead>Melee display name</TableHead>
-              <TableHead className="w-32">Melee ID</TableHead>
               <TableHead className="w-24 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {watchlistQuery.isLoading ? (
               <TableRow>
-                <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={2} className="h-24 text-center text-muted-foreground">
                   <span className="inline-flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Loading watched players...
@@ -213,28 +209,27 @@ export function WatchedPlayersManager() {
               </TableRow>
             ) : watchlistQuery.isError ? (
               <TableRow>
-                <TableCell colSpan={3} className="h-24 text-center text-destructive">
+                <TableCell colSpan={2} className="h-24 text-center text-destructive">
                   {watchlistQuery.error?.message ?? 'Failed to load watched players.'}
                 </TableCell>
               </TableRow>
             ) : watchlist.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={2} className="h-24 text-center text-muted-foreground">
                   No watched players yet.
                 </TableCell>
               </TableRow>
             ) : (
               watchlist.map(entry => (
-                <TableRow key={entry.player.id}>
+                <TableRow key={entry.player.displayName}>
                   <TableCell className="font-medium">{entry.player.displayName}</TableCell>
-                  <TableCell>{entry.player.id}</TableCell>
                   <TableCell className="text-right">
                     <Button
                       type="button"
                       size="iconSmall"
                       variant="ghost"
                       aria-label={`Remove ${entry.player.displayName}`}
-                      onClick={() => removeWatch.mutate(entry.player.id)}
+                      onClick={() => removeWatch.mutate(entry.player.displayName)}
                       disabled={removeWatch.isPending}
                     >
                       <Trash2 className="h-3 w-3" />

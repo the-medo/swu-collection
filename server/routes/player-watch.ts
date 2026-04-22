@@ -6,17 +6,12 @@ import type { AuthExtension } from '../auth/auth.ts';
 import { db } from '../db';
 import { player as playerTable, playerWatch } from '../db/schema/tournament_weekend.ts';
 
-const zPlayerWatchMutationBody = z
-  .object({
-    playerId: z.coerce.number().int().positive().optional(),
-    displayName: z.string().trim().min(1).max(255).optional(),
-  })
-  .refine(data => data.playerId !== undefined || data.displayName !== undefined, {
-    message: 'Either playerId or displayName is required.',
-  });
+const zPlayerWatchMutationBody = z.object({
+  displayName: z.string().trim().min(1).max(255),
+});
 
 const zPlayerWatchDeleteQuery = z.object({
-  playerId: z.coerce.number().int().positive(),
+  displayName: z.string().trim().min(1).max(255),
 });
 
 const zPlayerSearchQuery = z.object({
@@ -27,26 +22,12 @@ const playerNotFoundMessage =
   'Player not found in our system yet. Please use the exact Melee display name. If the player still does not appear, they need to play their first PQ since this feature was added.';
 const playerSearchLimit = 10;
 
-async function resolvePlayer(data: z.infer<typeof zPlayerWatchMutationBody>) {
-  if (data.playerId !== undefined) {
-    const existing = (
-      await db.select().from(playerTable).where(eq(playerTable.id, data.playerId)).limit(1)
-    )[0];
-
-    if (existing) {
-      return existing;
-    }
-  }
-
-  if (!data.displayName) {
-    return undefined;
-  }
-
+async function resolvePlayer(displayName: string) {
   return (
     await db
       .select()
       .from(playerTable)
-      .where(sql`lower(${playerTable.displayName}) = lower(${data.displayName})`)
+      .where(sql`lower(${playerTable.displayName}) = lower(${displayName})`)
       .limit(1)
   )[0];
 }
@@ -57,7 +38,6 @@ export const playerWatchRoute = new Hono<AuthExtension>()
 
     let query = db
       .select({
-        id: playerTable.id,
         displayName: playerTable.displayName,
       })
       .from(playerTable)
@@ -83,7 +63,7 @@ export const playerWatchRoute = new Hono<AuthExtension>()
         player: playerTable,
       })
       .from(playerWatch)
-      .innerJoin(playerTable, eq(playerWatch.playerId, playerTable.id))
+      .innerJoin(playerTable, eq(playerWatch.playerDisplayName, playerTable.displayName))
       .where(eq(playerWatch.userId, user.id))
       .orderBy(asc(playerTable.displayName));
 
@@ -96,7 +76,7 @@ export const playerWatchRoute = new Hono<AuthExtension>()
     }
 
     const data = c.req.valid('json');
-    const player = await resolvePlayer(data);
+    const player = await resolvePlayer(data.displayName);
 
     if (!player) {
       return c.json({ message: playerNotFoundMessage }, 404);
@@ -106,7 +86,7 @@ export const playerWatchRoute = new Hono<AuthExtension>()
       .insert(playerWatch)
       .values({
         userId: user.id,
-        playerId: player.id,
+        playerDisplayName: player.displayName,
       })
       .onConflictDoNothing();
 
@@ -114,7 +94,12 @@ export const playerWatchRoute = new Hono<AuthExtension>()
       await db
         .select()
         .from(playerWatch)
-        .where(and(eq(playerWatch.userId, user.id), eq(playerWatch.playerId, player.id)))
+        .where(
+          and(
+            eq(playerWatch.userId, user.id),
+            eq(playerWatch.playerDisplayName, player.displayName),
+          ),
+        )
         .limit(1)
     )[0];
 
@@ -126,11 +111,11 @@ export const playerWatchRoute = new Hono<AuthExtension>()
       return c.json({ message: 'Unauthorized' }, 401);
     }
 
-    const { playerId } = c.req.valid('query');
+    const { displayName } = c.req.valid('query');
 
     await db
       .delete(playerWatch)
-      .where(and(eq(playerWatch.userId, user.id), eq(playerWatch.playerId, playerId)));
+      .where(and(eq(playerWatch.userId, user.id), eq(playerWatch.playerDisplayName, displayName)));
 
     return c.body(null, 204);
   });

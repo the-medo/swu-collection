@@ -46,17 +46,17 @@ const stringOrNull = (value: unknown) => {
 function parseStandingPlayer(standing: any): UpsertPlayerInput | null {
   const meleePlayer = standing?.Team?.Players?.[0];
   const id = numberOrNull(meleePlayer?.ID);
+  const displayName =
+    stringOrNull(meleePlayer?.DisplayName) ??
+    stringOrNull(meleePlayer?.Username) ??
+    (id === null ? null : `Melee Player ${id}`);
 
-  if (id === null) {
+  if (!displayName) {
     return null;
   }
 
   return {
-    id,
-    displayName:
-      stringOrNull(meleePlayer?.DisplayName) ??
-      stringOrNull(meleePlayer?.Username) ??
-      `Melee Player ${id}`,
+    displayName,
   };
 }
 
@@ -90,7 +90,7 @@ async function main() {
   let standingsRowsFetched = 0;
 
   for (const [index, tournament] of tournaments.entries()) {
-    const playersById = new Map<number, UpsertPlayerInput>();
+    const playersByDisplayName = new Map<string, UpsertPlayerInput>();
     const meleeId = tournament.meleeId;
     if (!meleeId) {
       tournamentsWithoutFinalRound++;
@@ -115,7 +115,7 @@ async function main() {
       }
 
       const standings = await fetchRoundStandings(finalRoundId);
-      const beforeCount = playersById.size;
+      const beforeCount = playersByDisplayName.size;
 
       standingsRowsFetched += standings.length;
       tournamentsWithFinalRound++;
@@ -125,10 +125,10 @@ async function main() {
         if (!player) {
           continue;
         }
-        playersById.set(player.id, player);
+        playersByDisplayName.set(player.displayName, player);
       }
 
-      const addedCount = playersById.size - beforeCount;
+      const addedCount = playersByDisplayName.size - beforeCount;
       console.log(
         `[backfill-melee-players] Collected ${standings.length} standings rows, ${addedCount} new unique players.`,
       );
@@ -146,8 +146,8 @@ async function main() {
         `[backfill-melee-players] Failed for ${tournament.name} [${meleeId}]: ${message}`,
       );
     }
-    console.log(`[backfill-melee-players] Upserting ${playersById.size} players...`);
-    await upsertPlayers([...playersById.values()]);
+    console.log(`[backfill-melee-players] Upserting ${playersByDisplayName.size} players...`);
+    await upsertPlayers([...playersByDisplayName.values()]);
   }
 
   console.log('[backfill-melee-players] Summary:', {

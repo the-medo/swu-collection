@@ -37,11 +37,10 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
       ) : (
         <div className="grid gap-2">
           {activeWatchedPlayers.map(entry => (
-            <div key={entry.player.id} className="rounded-md border bg-background p-3">
+            <div key={entry.player.displayName} className="rounded-md border bg-background p-3">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <div className="font-medium">{entry.player.displayName}</div>
-                  <div className="text-xs text-muted-foreground">Melee ID {entry.player.id}</div>
                 </div>
               </div>
               <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
@@ -72,7 +71,7 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
           </div>
           <div className="flex flex-wrap gap-1.5">
             {detail.watchlist.map(entry => (
-              <Badge key={entry.player.id} variant="outline" className="rounded-md">
+              <Badge key={entry.player.displayName} variant="outline" className="rounded-md">
                 {entry.player.displayName}
               </Badge>
             ))}

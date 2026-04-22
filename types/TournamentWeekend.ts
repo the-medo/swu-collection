@@ -58,8 +58,7 @@ export type TournamentWeekendResourceUpdateRequest = {
 };
 
 export type PlayerWatchMutationRequest = {
-  playerId?: number;
-  displayName?: string;
+  displayName: string;
 };
 
 export type TournamentWeekendSyncResult = {
@@ -93,7 +92,7 @@ export type PlayerWatchEntry = {
   player: Player;
 };
 
-export type PlayerSearchResult = Pick<Player, 'id' | 'displayName'>;
+export type PlayerSearchResult = Pick<Player, 'displayName'>;
 
 export type PlayerSearchResponse = {
   data: PlayerSearchResult[];
@@ -162,7 +161,7 @@ export type LiveTournamentWeekendDetail = {
   tournaments: LiveTournamentWeekendTournamentEntry[];
   resources: TournamentWeekendResource[];
   watchlist: PlayerWatchEntry[];
-  watchedPlayerIds: number[];
+  watchedPlayerDisplayNames: string[];
   watchedPlayers: LiveTournamentWatchedPlayer[];
 };
 

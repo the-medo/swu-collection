@@ -7,13 +7,13 @@ const BASE_MATCH_HEIGHT = 180;
 export function LiveBracketMatch({
   match,
   roundIndex,
-  highlightedPlayerId,
-  setHighlightedPlayerId,
+  highlightedPlayerDisplayName,
+  setHighlightedPlayerDisplayName,
 }: {
   match: LiveTournamentMatchEntry | null;
   roundIndex: number;
-  highlightedPlayerId: number | null;
-  setHighlightedPlayerId: (playerId: number | null) => void;
+  highlightedPlayerDisplayName: string | null;
+  setHighlightedPlayerDisplayName: (playerDisplayName: string | null) => void;
 }) {
   const winnerSide = match ? getLiveMatchWinnerSide(match) : null;
   const matchHeight = BASE_MATCH_HEIGHT * 2 ** roundIndex;
@@ -28,9 +28,11 @@ export function LiveBracketMatch({
             gameWins={match?.match.player1GameWin ?? null}
             isWinner={winnerSide === 'player1'}
             isLoser={winnerSide === 'player2'}
-            isHighlighted={highlightedPlayerId === (match?.player1?.id ?? null)}
-            onMouseEnter={() => setHighlightedPlayerId(match?.player1?.id ?? null)}
-            onMouseLeave={() => setHighlightedPlayerId(null)}
+            isHighlighted={highlightedPlayerDisplayName === (match?.player1?.displayName ?? null)}
+            onMouseEnter={() =>
+              setHighlightedPlayerDisplayName(match?.player1?.displayName ?? null)
+            }
+            onMouseLeave={() => setHighlightedPlayerDisplayName(null)}
           />
           <LiveBracketPlayer
             player={match?.player2 ?? null}
@@ -38,9 +40,11 @@ export function LiveBracketMatch({
             gameWins={match?.match.player2GameWin ?? null}
             isWinner={winnerSide === 'player2'}
             isLoser={winnerSide === 'player1'}
-            isHighlighted={highlightedPlayerId === (match?.player2?.id ?? null)}
-            onMouseEnter={() => setHighlightedPlayerId(match?.player2?.id ?? null)}
-            onMouseLeave={() => setHighlightedPlayerId(null)}
+            isHighlighted={highlightedPlayerDisplayName === (match?.player2?.displayName ?? null)}
+            onMouseEnter={() =>
+              setHighlightedPlayerDisplayName(match?.player2?.displayName ?? null)
+            }
+            onMouseLeave={() => setHighlightedPlayerDisplayName(null)}
           />
         </div>
       </div>

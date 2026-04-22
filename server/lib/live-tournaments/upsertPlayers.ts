@@ -3,20 +3,19 @@ import { db } from '../../db';
 import { player as playerTable } from '../../db/schema/tournament_weekend.ts';
 
 export type UpsertPlayerInput = {
-  id: number;
   displayName: string;
 };
 
 const PLAYER_UPSERT_BATCH_SIZE = 500;
 
 function dedupePlayers(players: UpsertPlayerInput[]) {
-  const playersById = new Map<number, UpsertPlayerInput>();
+  const playersByDisplayName = new Map<string, UpsertPlayerInput>();
 
   for (const player of players) {
-    playersById.set(player.id, player);
+    playersByDisplayName.set(player.displayName, player);
   }
 
-  return [...playersById.values()];
+  return [...playersByDisplayName.values()];
 }
 
 export async function upsertPlayers(players: UpsertPlayerInput[]) {
@@ -33,9 +32,8 @@ export async function upsertPlayers(players: UpsertPlayerInput[]) {
       .insert(playerTable)
       .values(batch)
       .onConflictDoUpdate({
-        target: playerTable.id,
+        target: playerTable.displayName,
         set: {
-          displayName: sql`excluded.display_name`,
           updatedAt: sql`NOW()`,
         },
       });

@@ -138,14 +138,12 @@ export const tournamentWeekendTournament = pgTable(
 export const player = pgTable(
   'player',
   {
-    id: integer('id').primaryKey(),
-    displayName: varchar('display_name', { length: 255 }).notNull(),
+    displayName: varchar('display_name', { length: 255 }).notNull().primaryKey(),
     userId: text('user_id'),
     createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
   },
   table => ({
-    displayNameIdx: index('player_display_idx').on(table.displayName),
     userIdx: index('player_user_idx').on(table.userId),
     userFk: foreignKey({
       name: 'player_user_fk',
@@ -159,7 +157,7 @@ export const tournamentStanding = pgTable(
   'tournament_standing',
   {
     tournamentId: uuid('tournament_id').notNull(),
-    playerId: integer('player_id').notNull(),
+    playerDisplayName: varchar('player_display_name', { length: 255 }).notNull(),
     roundNumber: integer('round_number').notNull(),
     rank: integer('rank').notNull(),
     points: integer('points').notNull(),
@@ -171,10 +169,10 @@ export const tournamentStanding = pgTable(
   table => ({
     pk: primaryKey({
       name: 'ts_pk',
-      columns: [table.tournamentId, table.roundNumber, table.playerId],
+      columns: [table.tournamentId, table.roundNumber, table.playerDisplayName],
     }),
     tournamentRoundIdx: index('ts_tournament_round_idx').on(table.tournamentId, table.roundNumber),
-    playerIdx: index('ts_player_idx').on(table.playerId),
+    playerIdx: index('ts_player_idx').on(table.playerDisplayName),
     tournamentFk: foreignKey({
       name: 'ts_tournament_fk',
       columns: [table.tournamentId],
@@ -182,8 +180,8 @@ export const tournamentStanding = pgTable(
     }).onDelete('cascade'),
     playerFk: foreignKey({
       name: 'ts_player_fk',
-      columns: [table.playerId],
-      foreignColumns: [player.id],
+      columns: [table.playerDisplayName],
+      foreignColumns: [player.displayName],
     }).onDelete('cascade'),
   }),
 );
@@ -195,8 +193,8 @@ export const tournamentWeekendMatch = pgTable(
     tournamentId: uuid('tournament_id').notNull(),
     roundNumber: integer('round_number').notNull(),
     matchKey: varchar('match_key', { length: 255 }).notNull(),
-    playerId1: integer('player_id_1').notNull(),
-    playerId2: integer('player_id_2'),
+    playerDisplayName1: varchar('player_display_name_1', { length: 255 }).notNull(),
+    playerDisplayName2: varchar('player_display_name_2', { length: 255 }),
     player1GameWin: integer('player_1_game_win'),
     player2GameWin: integer('player_2_game_win'),
     createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
@@ -209,8 +207,8 @@ export const tournamentWeekendMatch = pgTable(
       table.roundNumber,
       table.matchKey,
     ),
-    player1Idx: index('twm_player1_idx').on(table.playerId1),
-    player2Idx: index('twm_player2_idx').on(table.playerId2),
+    player1Idx: index('twm_player1_idx').on(table.playerDisplayName1),
+    player2Idx: index('twm_player2_idx').on(table.playerDisplayName2),
     tournamentFk: foreignKey({
       name: 'twm_tournament_fk',
       columns: [table.tournamentId],
@@ -218,13 +216,13 @@ export const tournamentWeekendMatch = pgTable(
     }).onDelete('cascade'),
     player1Fk: foreignKey({
       name: 'twm_player1_fk',
-      columns: [table.playerId1],
-      foreignColumns: [player.id],
+      columns: [table.playerDisplayName1],
+      foreignColumns: [player.displayName],
     }).onDelete('cascade'),
     player2Fk: foreignKey({
       name: 'twm_player2_fk',
-      columns: [table.playerId2],
-      foreignColumns: [player.id],
+      columns: [table.playerDisplayName2],
+      foreignColumns: [player.displayName],
     }).onDelete('set null'),
   }),
 );
@@ -233,7 +231,7 @@ export const tournamentWeekendPlayer = pgTable(
   'tournament_weekend_player',
   {
     tournamentId: uuid('tournament_id').notNull(),
-    playerId: integer('player_id').notNull(),
+    playerDisplayName: varchar('player_display_name', { length: 255 }).notNull(),
     leaderCardId: varchar('leader_card_id', { length: 255 }),
     baseCardKey: varchar('base_card_key', { length: 255 }),
     matchScore: varchar('match_score', { length: 20 }),
@@ -244,10 +242,10 @@ export const tournamentWeekendPlayer = pgTable(
   table => ({
     pk: primaryKey({
       name: 'twp_pk',
-      columns: [table.tournamentId, table.playerId],
+      columns: [table.tournamentId, table.playerDisplayName],
     }),
     tournamentIdx: index('twp_tournament_idx').on(table.tournamentId),
-    playerIdx: index('twp_player_idx').on(table.playerId),
+    playerIdx: index('twp_player_idx').on(table.playerDisplayName),
     leaderBaseIdx: index('twp_leader_base_idx').on(table.leaderCardId, table.baseCardKey),
     tournamentFk: foreignKey({
       name: 'twp_tournament_fk',
@@ -256,8 +254,8 @@ export const tournamentWeekendPlayer = pgTable(
     }).onDelete('cascade'),
     playerFk: foreignKey({
       name: 'twp_player_fk',
-      columns: [table.playerId],
-      foreignColumns: [player.id],
+      columns: [table.playerDisplayName],
+      foreignColumns: [player.displayName],
     }).onDelete('cascade'),
   }),
 );
@@ -303,16 +301,16 @@ export const playerWatch = pgTable(
   'player_watch',
   {
     userId: text('user_id').notNull(),
-    playerId: integer('player_id').notNull(),
+    playerDisplayName: varchar('player_display_name', { length: 255 }).notNull(),
     createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
   },
   table => ({
     pk: primaryKey({
       name: 'pw_pk',
-      columns: [table.userId, table.playerId],
+      columns: [table.userId, table.playerDisplayName],
     }),
     userIdx: index('pw_user_idx').on(table.userId),
-    playerIdx: index('pw_player_idx').on(table.playerId),
+    playerIdx: index('pw_player_idx').on(table.playerDisplayName),
     userFk: foreignKey({
       name: 'pw_user_fk',
       columns: [table.userId],
@@ -320,8 +318,8 @@ export const playerWatch = pgTable(
     }).onDelete('cascade'),
     playerFk: foreignKey({
       name: 'pw_player_fk',
-      columns: [table.playerId],
-      foreignColumns: [player.id],
+      columns: [table.playerDisplayName],
+      foreignColumns: [player.displayName],
     }).onDelete('cascade'),
   }),
 );
@@ -406,8 +404,8 @@ export const tournamentStandingRelations = relations(tournamentStanding, ({ one 
     references: [tournament.id],
   }),
   player: one(player, {
-    fields: [tournamentStanding.playerId],
-    references: [player.id],
+    fields: [tournamentStanding.playerDisplayName],
+    references: [player.displayName],
   }),
 }));
 
@@ -417,13 +415,13 @@ export const tournamentWeekendMatchRelations = relations(tournamentWeekendMatch,
     references: [tournament.id],
   }),
   player1: one(player, {
-    fields: [tournamentWeekendMatch.playerId1],
-    references: [player.id],
+    fields: [tournamentWeekendMatch.playerDisplayName1],
+    references: [player.displayName],
     relationName: 'tournament_weekend_match_player_1',
   }),
   player2: one(player, {
-    fields: [tournamentWeekendMatch.playerId2],
-    references: [player.id],
+    fields: [tournamentWeekendMatch.playerDisplayName2],
+    references: [player.displayName],
     relationName: 'tournament_weekend_match_player_2',
   }),
 }));
@@ -434,8 +432,8 @@ export const tournamentWeekendPlayerRelations = relations(tournamentWeekendPlaye
     references: [tournament.id],
   }),
   player: one(player, {
-    fields: [tournamentWeekendPlayer.playerId],
-    references: [player.id],
+    fields: [tournamentWeekendPlayer.playerDisplayName],
+    references: [player.displayName],
   }),
 }));
 
@@ -459,8 +457,8 @@ export const playerWatchRelations = relations(playerWatch, ({ one }) => ({
     references: [user.id],
   }),
   player: one(player, {
-    fields: [playerWatch.playerId],
-    references: [player.id],
+    fields: [playerWatch.playerDisplayName],
+    references: [player.displayName],
   }),
 }));
 

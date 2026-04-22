@@ -136,7 +136,10 @@ export async function getTournamentWeekendDetail(
             player: playerTable,
           })
           .from(tournamentStandingTable)
-          .innerJoin(playerTable, eq(tournamentStandingTable.playerId, playerTable.id))
+          .innerJoin(
+            playerTable,
+            eq(tournamentStandingTable.playerDisplayName, playerTable.displayName),
+          )
           .where(inArray(tournamentStandingTable.tournamentId, tournamentIds))
           .orderBy(
             asc(tournamentStandingTable.tournamentId),
@@ -188,49 +191,63 @@ export async function getTournamentWeekendDetail(
             player: playerTable,
           })
           .from(tournamentWeekendPlayer)
-          .innerJoin(playerTable, eq(tournamentWeekendPlayer.playerId, playerTable.id))
+          .innerJoin(
+            playerTable,
+            eq(tournamentWeekendPlayer.playerDisplayName, playerTable.displayName),
+          )
           .where(inArray(tournamentWeekendPlayer.tournamentId, tournamentIds))
           .orderBy(
             asc(tournamentWeekendPlayer.tournamentId),
             asc(playerTable.displayName),
-            asc(tournamentWeekendPlayer.playerId),
+            asc(tournamentWeekendPlayer.playerDisplayName),
           )
       : [];
 
-  const matchPlayerIds = [
+  const matchPlayerDisplayNames = [
     ...new Set(
-      matches.flatMap(match => [match.playerId1, match.playerId2]).filter(id => id !== null),
+      matches
+        .flatMap(match => [match.playerDisplayName1, match.playerDisplayName2])
+        .filter((displayName): displayName is string => displayName !== null),
     ),
   ];
 
   const matchPlayers =
-    matchPlayerIds.length > 0
-      ? await db.select().from(playerTable).where(inArray(playerTable.id, matchPlayerIds))
+    matchPlayerDisplayNames.length > 0
+      ? await db
+          .select()
+          .from(playerTable)
+          .where(inArray(playerTable.displayName, matchPlayerDisplayNames))
       : [];
 
-  const playersById = new Map(matchPlayers.map(player => [player.id, player]));
+  const playersByDisplayName = new Map(
+    matchPlayers.map(player => [player.displayName, player] as const),
+  );
   for (const row of standings) {
-    playersById.set(row.player.id, row.player);
+    playersByDisplayName.set(row.player.displayName, row.player);
   }
   for (const row of tournamentPlayers) {
-    playersById.set(row.player.id, row.player);
+    playersByDisplayName.set(row.player.displayName, row.player);
   }
 
   const tournamentPlayerByKey = new Map(
     tournamentPlayers.map(row => [
-      `${row.tournamentPlayer.tournamentId}:${row.tournamentPlayer.playerId}`,
+      `${row.tournamentPlayer.tournamentId}:${row.tournamentPlayer.playerDisplayName}`,
       row.tournamentPlayer,
     ]),
   );
-  const getTournamentPlayer = (tournamentId: string, playerId: number | null) =>
-    playerId === null ? null : (tournamentPlayerByKey.get(`${tournamentId}:${playerId}`) ?? null);
+  const getTournamentPlayer = (tournamentId: string, playerDisplayName: string | null) =>
+    playerDisplayName === null
+      ? null
+      : (tournamentPlayerByKey.get(`${tournamentId}:${playerDisplayName}`) ?? null);
 
   const matchesWithPlayers = matches.map(match => ({
     match,
-    player1: playersById.get(match.playerId1) ?? null,
-    player2: match.playerId2 ? (playersById.get(match.playerId2) ?? null) : null,
-    tournamentPlayer1: getTournamentPlayer(match.tournamentId, match.playerId1),
-    tournamentPlayer2: getTournamentPlayer(match.tournamentId, match.playerId2),
+    player1: playersByDisplayName.get(match.playerDisplayName1) ?? null,
+    player2: match.playerDisplayName2
+      ? (playersByDisplayName.get(match.playerDisplayName2) ?? null)
+      : null,
+    tournamentPlayer1: getTournamentPlayer(match.tournamentId, match.playerDisplayName1),
+    tournamentPlayer2: getTournamentPlayer(match.tournamentId, match.playerDisplayName2),
   }));
 
   const resourcesByTournamentId = groupBy(resources, resource => resource.tournamentId);
@@ -248,20 +265,24 @@ export async function getTournamentWeekendDetail(
           player: playerTable,
         })
         .from(playerWatchTable)
-        .innerJoin(playerTable, eq(playerWatchTable.playerId, playerTable.id))
+        .innerJoin(playerTable, eq(playerWatchTable.playerDisplayName, playerTable.displayName))
         .where(eq(playerWatchTable.userId, userId))
         .orderBy(asc(playerTable.displayName))
     : [];
 
-  const watchedPlayerIds = new Set(watchlist.map(row => row.player.id));
+  const watchedPlayerDisplayNames = new Set(watchlist.map(row => row.player.displayName));
   const watchedPlayers = watchlist.map(row => ({
     ...row,
-    standings: allStandings.filter(standing => standing.player.id === row.player.id),
+    standings: allStandings.filter(
+      standing => standing.player.displayName === row.player.displayName,
+    ),
     matches: matchesWithPlayers.filter(
-      match => match.match.playerId1 === row.player.id || match.match.playerId2 === row.player.id,
+      match =>
+        match.match.playerDisplayName1 === row.player.displayName ||
+        match.match.playerDisplayName2 === row.player.displayName,
     ),
     tournamentPlayers: tournamentPlayers.filter(
-      tournamentPlayer => tournamentPlayer.player.id === row.player.id,
+      tournamentPlayer => tournamentPlayer.player.displayName === row.player.displayName,
     ),
   }));
 
@@ -280,7 +301,7 @@ export async function getTournamentWeekendDetail(
     })),
     resources,
     watchlist,
-    watchedPlayerIds: [...watchedPlayerIds],
+    watchedPlayerDisplayNames: [...watchedPlayerDisplayNames],
     watchedPlayers,
   };
 }

@@ -32,28 +32,34 @@ const uniquePlayers = (
   standings: LiveMeleeStanding[],
   matches: LiveMeleeMatch[],
 ): LiveMeleePlayer[] => {
-  const playersById = new Map<number, LiveMeleePlayer>();
+  const playersByDisplayName = new Map<string, LiveMeleePlayer>();
+
+  const setPlayer = (player: LiveMeleePlayer) => {
+    const existing = playersByDisplayName.get(player.displayName);
+
+    playersByDisplayName.set(player.displayName, {
+      displayName: player.displayName,
+      meleePlayerId: player.meleePlayerId ?? existing?.meleePlayerId ?? null,
+    });
+  };
 
   standings.forEach(standing => {
-    playersById.set(standing.id, {
-      id: standing.id,
-      displayName: standing.displayName,
-    });
+    setPlayer(standing);
   });
 
   matches.forEach(match => {
-    playersById.set(match.player1.id, match.player1);
+    setPlayer(match.player1);
     if (match.player2) {
-      playersById.set(match.player2.id, match.player2);
+      setPlayer(match.player2);
     }
   });
 
-  return [...playersById.values()];
+  return [...playersByDisplayName.values()];
 };
 
-const matchLeaderBaseByPlayerId = (matches: LiveMeleeMatch[]) => {
-  const leaderBaseByPlayerId = new Map<
-    number,
+const matchLeaderBaseByPlayerDisplayName = (matches: LiveMeleeMatch[]) => {
+  const leaderBaseByPlayerDisplayName = new Map<
+    string,
     {
       leaderCardId: string | null;
       baseCardKey: string | null;
@@ -61,27 +67,27 @@ const matchLeaderBaseByPlayerId = (matches: LiveMeleeMatch[]) => {
   >();
 
   const setLeaderBase = (
-    playerId: number,
+    playerDisplayName: string,
     leaderCardId: string | null,
     baseCardKey: string | null,
   ) => {
-    const existing = leaderBaseByPlayerId.get(playerId);
+    const existing = leaderBaseByPlayerDisplayName.get(playerDisplayName);
 
-    leaderBaseByPlayerId.set(playerId, {
+    leaderBaseByPlayerDisplayName.set(playerDisplayName, {
       leaderCardId: leaderCardId ?? existing?.leaderCardId ?? null,
       baseCardKey: baseCardKey ?? existing?.baseCardKey ?? null,
     });
   };
 
   for (const match of matches) {
-    setLeaderBase(match.player1.id, match.leaderCardId1, match.baseCardKey1);
+    setLeaderBase(match.player1.displayName, match.leaderCardId1, match.baseCardKey1);
 
     if (match.player2) {
-      setLeaderBase(match.player2.id, match.leaderCardId2, match.baseCardKey2);
+      setLeaderBase(match.player2.displayName, match.leaderCardId2, match.baseCardKey2);
     }
   }
 
-  return leaderBaseByPlayerId;
+  return leaderBaseByPlayerDisplayName;
 };
 
 const getImportedRoundMatchCounts = async (tournamentId: string) => {
@@ -181,24 +187,24 @@ export async function liveTournamentProgressCheck(
   }
 
   if (players.length > 0) {
-    const leaderBaseByPlayerId = matchLeaderBaseByPlayerId(progress.matches);
+    const leaderBaseByPlayerDisplayName = matchLeaderBaseByPlayerDisplayName(progress.matches);
 
     await db
       .insert(tournamentWeekendPlayer)
       .values(
         players.map(player => {
-          const leaderBase = leaderBaseByPlayerId.get(player.id);
+          const leaderBase = leaderBaseByPlayerDisplayName.get(player.displayName);
 
           return {
             tournamentId: input.tournamentId,
-            playerId: player.id,
+            playerDisplayName: player.displayName,
             leaderCardId: leaderBase?.leaderCardId ?? null,
             baseCardKey: leaderBase?.baseCardKey ?? null,
           };
         }),
       )
       .onConflictDoUpdate({
-        target: [tournamentWeekendPlayer.tournamentId, tournamentWeekendPlayer.playerId],
+        target: [tournamentWeekendPlayer.tournamentId, tournamentWeekendPlayer.playerDisplayName],
         set: {
           leaderCardId: sql`COALESCE(excluded.leader_card_id, ${tournamentWeekendPlayer.leaderCardId})`,
           baseCardKey: sql`COALESCE(excluded.base_card_key, ${tournamentWeekendPlayer.baseCardKey})`,
@@ -213,7 +219,7 @@ export async function liveTournamentProgressCheck(
       .values(
         progress.standings.map(standing => ({
           tournamentId: input.tournamentId,
-          playerId: standing.id,
+          playerDisplayName: standing.displayName,
           roundNumber: progress.roundNumber,
           rank: standing.rank,
           points: standing.points,
@@ -225,7 +231,7 @@ export async function liveTournamentProgressCheck(
         target: [
           tournamentStanding.tournamentId,
           tournamentStanding.roundNumber,
-          tournamentStanding.playerId,
+          tournamentStanding.playerDisplayName,
         ],
         set: {
           rank: sql`excluded.rank`,
@@ -245,8 +251,8 @@ export async function liveTournamentProgressCheck(
           tournamentId: input.tournamentId,
           roundNumber: match.roundNumber,
           matchKey: match.matchKey,
-          playerId1: match.player1.id,
-          playerId2: match.player2?.id ?? null,
+          playerDisplayName1: match.player1.displayName,
+          playerDisplayName2: match.player2?.displayName ?? null,
           player1GameWin: match.player1GameWin,
           player2GameWin: match.player2GameWin,
           updatedAt: match.updatedAt,
@@ -259,8 +265,8 @@ export async function liveTournamentProgressCheck(
           tournamentWeekendMatch.matchKey,
         ],
         set: {
-          playerId1: sql`excluded.player_id_1`,
-          playerId2: sql`excluded.player_id_2`,
+          playerDisplayName1: sql`excluded.player_display_name_1`,
+          playerDisplayName2: sql`excluded.player_display_name_2`,
           player1GameWin: sql`excluded.player_1_game_win`,
           player2GameWin: sql`excluded.player_2_game_win`,
           updatedAt: sql`excluded.updated_at`,

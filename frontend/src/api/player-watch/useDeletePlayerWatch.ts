@@ -8,10 +8,10 @@ import { playerWatchQueryKeys } from './queryKeys';
 export const useDeletePlayerWatch = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<boolean, ErrorWithStatus, number>({
-    mutationFn: async playerId => {
+  return useMutation<boolean, ErrorWithStatus, string>({
+    mutationFn: async displayName => {
       const response = await api['player-watch'].$delete({
-        query: { playerId: playerId.toString() },
+        query: { displayName },
       });
 
       if (!response.ok) {

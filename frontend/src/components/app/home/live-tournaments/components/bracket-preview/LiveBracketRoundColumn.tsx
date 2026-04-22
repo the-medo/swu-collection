@@ -5,14 +5,14 @@ export function LiveBracketRoundColumn({
   roundName,
   matches,
   roundIndex,
-  highlightedPlayerId,
-  setHighlightedPlayerId,
+  highlightedPlayerDisplayName,
+  setHighlightedPlayerDisplayName,
 }: {
   roundName: string;
   matches: (LiveTournamentMatchEntry | null)[];
   roundIndex: number;
-  highlightedPlayerId: number | null;
-  setHighlightedPlayerId: (playerId: number | null) => void;
+  highlightedPlayerDisplayName: string | null;
+  setHighlightedPlayerDisplayName: (playerDisplayName: string | null) => void;
 }) {
   return (
     <div className="flex w-[350px] flex-col">
@@ -22,8 +22,8 @@ export function LiveBracketRoundColumn({
             key={match?.match.id ?? `${roundName}-${matchIndex}`}
             match={match}
             roundIndex={roundIndex}
-            highlightedPlayerId={highlightedPlayerId}
-            setHighlightedPlayerId={setHighlightedPlayerId}
+            highlightedPlayerDisplayName={highlightedPlayerDisplayName}
+            setHighlightedPlayerDisplayName={setHighlightedPlayerDisplayName}
           />
         ))}
       </div>

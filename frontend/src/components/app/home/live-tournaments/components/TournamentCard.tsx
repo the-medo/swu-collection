@@ -146,7 +146,7 @@ export function TournamentCard({
           <div className="text-xs font-medium uppercase text-muted-foreground">Undefeated</div>
           <div className="flex flex-wrap gap-1.5">
             {undefeatedPlayers.slice(0, 3).map(row => (
-              <Badge key={row.player.id} variant="outline" className="rounded-md">
+              <Badge key={row.player.displayName} variant="outline" className="rounded-md">
                 {row.player.displayName} {row.standing.matchRecord}
               </Badge>
             ))}

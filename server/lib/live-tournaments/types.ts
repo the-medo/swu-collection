@@ -18,8 +18,8 @@ export type LiveMeleeTournamentDetail = {
 };
 
 export type LiveMeleePlayer = {
-  id: number;
   displayName: string;
+  meleePlayerId: number | null;
 };
 
 export type LiveMeleeStanding = LiveMeleePlayer & {

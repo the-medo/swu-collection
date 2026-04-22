@@ -109,13 +109,17 @@ async function detectDecklistsFromTournamentView(
 
 const getPlayerFromCompetitor = (competitor: any): LiveMeleePlayer | null => {
   const player = competitor?.Team?.Players?.[0];
-  const id = numberOrNull(player?.ID);
-  if (id === null) return null;
+  const meleePlayerId = numberOrNull(player?.ID);
+  const displayName =
+    stringOrNull(player?.DisplayName) ??
+    stringOrNull(player?.Username) ??
+    (meleePlayerId === null ? null : `Melee Player ${meleePlayerId}`);
+
+  if (!displayName) return null;
 
   return {
-    id,
-    displayName:
-      stringOrNull(player?.DisplayName) ?? stringOrNull(player?.Username) ?? `Melee Player ${id}`,
+    displayName,
+    meleePlayerId,
   };
 };
 
@@ -160,7 +164,8 @@ const getCompetitorLeaderBase = (competitor: any, player: LiveMeleePlayer | null
   const playerDecklist =
     decklists.find(
       (decklist: any) =>
-        numberOrNull(decklist?.PlayerId) === player?.id &&
+        player?.meleePlayerId !== null &&
+        numberOrNull(decklist?.PlayerId) === player?.meleePlayerId &&
         stringOrNull(decklist?.DecklistName)?.trim(),
     ) ?? decklists.find((decklist: any) => stringOrNull(decklist?.DecklistName)?.trim());
 
@@ -180,7 +185,7 @@ const matchUpdatedAt = (match: any) => {
 
 const matchKey = (match: any, round: TournamentViewRound, player1: LiveMeleePlayer) =>
   stringOrNull(match?.Guid) ??
-  `round-${round.id}-table-${stringOrNull(match?.TableNumberDescription) ?? match?.TableNumber ?? match?.SortOrder ?? player1.id}`;
+  `round-${round.id}-table-${stringOrNull(match?.TableNumberDescription) ?? match?.TableNumber ?? match?.SortOrder ?? player1.displayName}`;
 
 const parseMatch = (match: any, round: TournamentViewRound): LiveMeleeMatch | null => {
   const competitors = Array.isArray(match?.Competitors) ? match.Competitors : [];
