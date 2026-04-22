@@ -93,6 +93,12 @@ export type PlayerWatchEntry = {
   player: Player;
 };
 
+export type PlayerSearchResult = Pick<Player, 'id' | 'displayName'>;
+
+export type PlayerSearchResponse = {
+  data: PlayerSearchResult[];
+};
+
 export type PlayerWatchListResponse = {
   data: PlayerWatchEntry[];
 };

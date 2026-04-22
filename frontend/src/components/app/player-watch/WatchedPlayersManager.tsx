@@ -1,9 +1,21 @@
-import { type FormEvent, useId, useState } from 'react';
-import { Loader2, Trash2 } from 'lucide-react';
-import { useDeletePlayerWatch, useGetPlayerWatch, usePostPlayerWatch } from '@/api/player-watch';
+import { type FormEvent, useEffect, useId, useMemo, useState } from 'react';
+import { Check, Loader2, Trash2 } from 'lucide-react';
+import {
+  useDeletePlayerWatch,
+  useGetPlayerWatch,
+  useGetPlayers,
+  usePostPlayerWatch,
+} from '@/api/player-watch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Input } from '@/components/ui/input.tsx';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import {
   Table,
@@ -15,26 +27,67 @@ import {
 } from '@/components/ui/table.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 
+const SEARCH_DEBOUNCE_DELAY = 500;
+
 export function WatchedPlayersManager() {
   const user = useUser();
   const inputId = useId();
   const [watchValue, setWatchValue] = useState('');
+  const [debouncedWatchValue, setDebouncedWatchValue] = useState('');
   const watchlistQuery = useGetPlayerWatch(Boolean(user));
   const addWatch = usePostPlayerWatch();
   const removeWatch = useDeletePlayerWatch();
   const watchlist = watchlistQuery.data?.data ?? [];
+  const normalizedWatchValue = watchValue.trim();
+  const watchedPlayerIds = useMemo(
+    () => new Set(watchlist.map(entry => entry.player.id)),
+    [watchlist],
+  );
+  const isDebouncingSearch =
+    normalizedWatchValue.length > 0 && normalizedWatchValue !== debouncedWatchValue;
+  const playerSearchQuery = useGetPlayers(debouncedWatchValue, Boolean(user));
+  const playerOptions = useMemo(
+    () =>
+      (playerSearchQuery.data?.data ?? []).map(player => ({
+        ...player,
+        isWatched: watchedPlayerIds.has(player.id),
+      })),
+    [playerSearchQuery.data?.data, watchedPlayerIds],
+  );
   const mutationError = addWatch.error?.message ?? removeWatch.error?.message;
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedWatchValue(normalizedWatchValue);
+    }, SEARCH_DEBOUNCE_DELAY);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [normalizedWatchValue]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const displayName = watchValue.trim();
+    const displayName = normalizedWatchValue;
     if (!displayName) return;
 
     addWatch.mutate(
       { displayName },
       {
         onSuccess: () => setWatchValue(''),
+      },
+    );
+  };
+
+  const handlePlayerSelect = (playerId: number) => {
+    addWatch.mutate(
+      { playerId },
+      {
+        onSuccess: () => {
+          setWatchValue('');
+          setDebouncedWatchValue('');
+        },
       },
     );
   };
@@ -70,20 +123,64 @@ export function WatchedPlayersManager() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-md border p-4">
         <div className="flex flex-col gap-2">
           <Label htmlFor={inputId}>Exact Melee display name</Label>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-            <Input
-              id={inputId}
-              value={watchValue}
-              onChange={event => setWatchValue(event.target.value)}
-              placeholder="Exact Melee display name"
-              className="sm:max-w-md"
-            />
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+            <div className="w-full sm:max-w-md">
+              <Command className="rounded-md border" shouldFilter={false}>
+                <CommandInput
+                  id={inputId}
+                  value={watchValue}
+                  onValueChange={setWatchValue}
+                  placeholder="Search or enter exact Melee display name"
+                />
+                {normalizedWatchValue.length > 0 && (
+                  <CommandList className="border-t">
+                    {isDebouncingSearch || playerSearchQuery.isFetching ? (
+                      <div className="flex items-center gap-2 px-3 py-4 text-sm text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Searching players...
+                      </div>
+                    ) : playerSearchQuery.isError ? (
+                      <div className="px-3 py-4 text-sm text-destructive">
+                        {playerSearchQuery.error?.message ?? 'Failed to search players.'}
+                      </div>
+                    ) : playerOptions.length > 0 ? (
+                      <CommandGroup heading="Matching players">
+                        {playerOptions.map(player => (
+                          <CommandItem
+                            key={player.id}
+                            value={`${player.displayName}-${player.id}`}
+                            disabled={player.isWatched || addWatch.isPending}
+                            onSelect={() => handlePlayerSelect(player.id)}
+                          >
+                            <div className="flex min-w-0 flex-col">
+                              <span className="font-medium">{player.displayName}</span>
+                              <span className="text-xs text-muted-foreground">
+                                Melee ID {player.id}
+                              </span>
+                            </div>
+                            {player.isWatched ? (
+                              <span className="ml-auto text-xs text-muted-foreground">
+                                Already watched
+                              </span>
+                            ) : (
+                              <Check className="ml-auto h-4 w-4 text-muted-foreground" />
+                            )}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    ) : (
+                      <CommandEmpty>No matching players found.</CommandEmpty>
+                    )}
+                  </CommandList>
+                )}
+              </Command>
+            </div>
             <Button
               type="submit"
-              disabled={addWatch.isPending || watchValue.trim().length === 0}
-              className="sm:self-end"
+              disabled={addWatch.isPending || normalizedWatchValue.length === 0}
+              className="sm:self-start"
             >
-              Add player
+              Add exact name
             </Button>
           </div>
         </div>

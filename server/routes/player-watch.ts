@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { and, asc, eq, sql } from 'drizzle-orm';
+import { and, asc, eq, ilike, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import type { AuthExtension } from '../auth/auth.ts';
 import { db } from '../db';
@@ -19,8 +19,13 @@ const zPlayerWatchDeleteQuery = z.object({
   playerId: z.coerce.number().int().positive(),
 });
 
+const zPlayerSearchQuery = z.object({
+  search: z.string().trim().max(255).default(''),
+});
+
 const playerNotFoundMessage =
   'Player not found in our system yet. Please use the exact Melee display name. If the player still does not appear, they need to play their first PQ since this feature was added.';
+const playerSearchLimit = 10;
 
 async function resolvePlayer(data: z.infer<typeof zPlayerWatchMutationBody>) {
   if (data.playerId !== undefined) {
@@ -47,6 +52,25 @@ async function resolvePlayer(data: z.infer<typeof zPlayerWatchMutationBody>) {
 }
 
 export const playerWatchRoute = new Hono<AuthExtension>()
+  .get('/players', zValidator('query', zPlayerSearchQuery), async c => {
+    const { search } = c.req.valid('query');
+
+    let query = db
+      .select({
+        id: playerTable.id,
+        displayName: playerTable.displayName,
+      })
+      .from(playerTable)
+      .$dynamic();
+
+    if (search) {
+      query = query.where(ilike(playerTable.displayName, `%${search}%`));
+    }
+
+    const players = await query.orderBy(asc(playerTable.displayName)).limit(playerSearchLimit);
+
+    return c.json({ data: players });
+  })
   .get('/', async c => {
     const user = c.get('user');
     if (!user) {
