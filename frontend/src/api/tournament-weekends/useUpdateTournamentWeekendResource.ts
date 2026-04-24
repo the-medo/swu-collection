@@ -36,6 +36,9 @@ export const useUpdateTournamentWeekendResource = (weekendId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.detail(weekendId) });
       queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.live() });
+      queryClient.invalidateQueries({
+        queryKey: tournamentWeekendQueryKeys.resourceList(weekendId),
+      });
     },
   });
 };

@@ -4,7 +4,7 @@ import type {
 } from './liveTournamentTypes.ts';
 
 export const topEightBracketRoundOrder = ['Quarterfinals', 'Semifinals', 'Finals'] as const;
-const topCutRoundNames = new Set(topEightBracketRoundOrder);
+const topCutRoundNames = new Set<string>(topEightBracketRoundOrder);
 export const topEightBracketMatchCountByRound: Record<(typeof topEightBracketRoundOrder)[number], number> =
   {
     Quarterfinals: 4,
@@ -40,6 +40,56 @@ export function getHostName(url: string) {
   } catch {
     return url;
   }
+}
+
+const YOUTUBE_VIDEO_ID_REGEX = /^[A-Za-z0-9_-]{11}$/;
+
+export function getYoutubeVideoId(url: string) {
+  try {
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname.toLowerCase();
+
+    if (hostname === 'youtu.be') {
+      const videoId = parsedUrl.pathname.split('/').filter(Boolean)[0] ?? null;
+      return videoId && YOUTUBE_VIDEO_ID_REGEX.test(videoId) ? videoId : null;
+    }
+
+    if (
+      hostname !== 'youtube.com' &&
+      hostname !== 'www.youtube.com' &&
+      hostname !== 'm.youtube.com'
+    ) {
+      return null;
+    }
+
+    const directVideoId = parsedUrl.searchParams.get('v');
+    if (directVideoId && YOUTUBE_VIDEO_ID_REGEX.test(directVideoId)) {
+      return directVideoId;
+    }
+
+    const pathSegments = parsedUrl.pathname.split('/').filter(Boolean);
+    if (pathSegments.length < 2) return null;
+
+    const [, candidateId] = pathSegments;
+    if (
+      (pathSegments[0] === 'embed' ||
+        pathSegments[0] === 'live' ||
+        pathSegments[0] === 'shorts') &&
+      candidateId &&
+      YOUTUBE_VIDEO_ID_REGEX.test(candidateId)
+    ) {
+      return candidateId;
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function getYoutubeEmbedUrl(url: string) {
+  const videoId = getYoutubeVideoId(url);
+  return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}?rel=0` : null;
 }
 
 function parseAdditionalData(value: string | null | undefined): Record<string, unknown> {

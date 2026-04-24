@@ -58,12 +58,12 @@ function TournamentColumn({
   title,
   tournaments,
   weekendId,
-  promptForStream = false,
+  weekendTournaments,
 }: {
   title: string;
   tournaments: LiveTournamentWeekendTournamentEntry[];
   weekendId: string;
-  promptForStream?: boolean;
+  weekendTournaments: LiveTournamentWeekendTournamentEntry[];
 }) {
   const [showAll, setShowAll] = useState(false);
   const shouldLimit = tournaments.length > TOURNAMENT_COLUMN_DEFAULT_LIMIT;
@@ -95,7 +95,7 @@ function TournamentColumn({
                 key={entry.tournament.id}
                 entry={entry}
                 weekendId={weekendId}
-                promptForStream={promptForStream}
+                weekendTournaments={weekendTournaments}
               />
             ))}
           </div>
@@ -127,6 +127,11 @@ export function LiveTournamentOverviewSection({
   upcoming: LiveTournamentWeekendTournamentEntry[];
   weekendId: string;
 }) {
+  const weekendTournaments = useMemo(
+    () => [...running, ...finished, ...upcoming],
+    [running, finished, upcoming],
+  );
+
   return (
     <section className="grid h-full min-h-[40rem] w-full gap-4 md:grid-cols-2">
       <div className="grid content-start gap-4">
@@ -134,18 +139,23 @@ export function LiveTournamentOverviewSection({
           title="In Progress"
           tournaments={running}
           weekendId={weekendId}
-          promptForStream
+          weekendTournaments={weekendTournaments}
         />
         <TournamentColumn
           title="Upcoming"
           tournaments={upcoming}
           weekendId={weekendId}
-          promptForStream
+          weekendTournaments={weekendTournaments}
         />
       </div>
 
       <div className="grid content-start gap-4">
-        <TournamentColumn title="Finished" tournaments={finished} weekendId={weekendId} />
+        <TournamentColumn
+          title="Finished"
+          tournaments={finished}
+          weekendId={weekendId}
+          weekendTournaments={weekendTournaments}
+        />
       </div>
     </section>
   );

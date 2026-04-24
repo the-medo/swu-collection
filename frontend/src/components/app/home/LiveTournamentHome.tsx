@@ -1,7 +1,11 @@
 import { type ReactNode, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Loader2 } from 'lucide-react';
-import { useLiveTournamentWeekend } from '@/api/tournament-weekends';
+import {
+  useGetTournamentWeekendResources,
+  useLiveTournamentWeekend,
+} from '@/api/tournament-weekends';
+import { useRole } from '@/hooks/useRole.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import GridSection, {
   type GridCardSizing,
@@ -72,10 +76,18 @@ function LiveGridSection({
 
 export default function LiveTournamentHome() {
   const user = useUser();
+  const hasRole = useRole();
+  const isAdmin = hasRole('admin');
   const { data, isLoading, isError, error, isFetching } = useLiveTournamentWeekend({
     refetchInterval: user ? false : 60 * 1000,
   });
   const detail = data?.data ?? null;
+  const { data: pendingResourcesData } = useGetTournamentWeekendResources(
+    detail?.weekend.id,
+    'pending',
+    isAdmin && !!detail?.weekend.id,
+  );
+  const pendingResources = pendingResourcesData?.data ?? [];
 
   const groupedTournaments = useMemo(() => {
     const tournaments = detail?.tournaments ?? [];
@@ -163,7 +175,10 @@ export default function LiveTournamentHome() {
           </LiveGridSection>
 
           <LiveGridSection section="players-streams">
-            <PlayersAndStreamsSection detail={detail} />
+            <PlayersAndStreamsSection
+              detail={detail}
+              pendingResourceCount={isAdmin ? pendingResources.length : 0}
+            />
           </LiveGridSection>
 
           <LiveGridSection section="meta">

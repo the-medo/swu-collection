@@ -43,7 +43,7 @@ export type TournamentWeekendGroupCreateRequest = {
   metaId?: number | null;
 };
 
-export type TournamentWeekendResourceType = 'stream' | 'video' | 'vod';
+export type TournamentWeekendResourceType = 'stream' | 'video' | 'vod' | 'melee';
 
 export type TournamentWeekendResourceCreateRequest = {
   tournamentId: string;
@@ -85,6 +85,23 @@ export type TournamentWeekendGroupMutationResponse = {
 
 export type TournamentWeekendResourceMutationResponse = {
   data: TournamentWeekendResource;
+};
+
+export type TournamentWeekendResourceListStatus = 'all' | 'pending' | 'approved';
+
+export type TournamentWeekendResourceTournamentSummary = Pick<
+  TournamentStringDate,
+  'id' | 'name' | 'location' | 'meleeId'
+>;
+
+export type TournamentWeekendResourceListItem = {
+  resource: TournamentWeekendResource;
+  tournament: TournamentWeekendResourceTournamentSummary;
+  submitterName: string | null;
+};
+
+export type TournamentWeekendResourceListResponse = {
+  data: TournamentWeekendResourceListItem[];
 };
 
 export type PlayerWatchEntry = {

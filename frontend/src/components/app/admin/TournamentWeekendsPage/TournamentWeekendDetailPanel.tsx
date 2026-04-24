@@ -41,7 +41,7 @@ export function TournamentWeekendDetailPanel({ weekend }: { weekend: TournamentW
       />
       <TournamentWeekendGroupManager weekendId={detail.weekend.id} detail={detail} />
       <WeekendTournamentsTable tournaments={detail.tournaments} />
-      <ResourceApproval weekendId={detail.weekend.id} detail={detail} />
+      <ResourceApproval weekendId={detail.weekend.id} />
     </div>
   );
 }

@@ -8,38 +8,42 @@ import {
   tournamentWeekendResource,
   tournamentWeekendTournament,
 } from '../../../../db/schema/tournament_weekend.ts';
-
-const isAllowedStreamUrl = (value: string) => {
-  try {
-    const url = new URL(value);
-    if (url.protocol !== 'https:' && url.protocol !== 'http:') {
-      return false;
-    }
-
-    const hostname = url.hostname.toLowerCase();
-    return (
-      hostname === 'youtu.be' ||
-      hostname === 'youtube.com' ||
-      hostname.endsWith('.youtube.com') ||
-      hostname === 'twitch.tv' ||
-      hostname.endsWith('.twitch.tv')
-    );
-  } catch {
-    return false;
-  }
-};
+import {
+  getCanonicalMeleeTournamentUrl,
+  getCanonicalYoutubeUrl,
+  normalizeTournamentWeekendResourceUrl,
+} from '../../../../lib/live-tournaments/resourceUrls.ts';
 
 const zTournamentWeekendResourceCreateRequest = z.object({
   tournamentId: z.guid(),
-  resourceType: z.enum(['stream', 'video', 'vod']).default('stream'),
-  resourceUrl: z
-    .string()
-    .trim()
-    .min(1)
-    .max(2048)
-    .refine(isAllowedStreamUrl, 'Only YouTube and Twitch links are allowed.'),
+  resourceType: z.enum(['stream', 'video', 'vod', 'melee']).default('stream'),
+  resourceUrl: z.string().trim().min(1).max(2048),
   title: z.string().trim().max(255).optional(),
   description: z.string().trim().max(2000).optional(),
+}).superRefine((value, ctx) => {
+  if (value.resourceType === 'stream' && !getCanonicalYoutubeUrl(value.resourceUrl)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['resourceUrl'],
+      message: 'Only YouTube links are allowed.',
+    });
+  }
+
+  if (value.resourceType === 'melee' && !getCanonicalMeleeTournamentUrl(value.resourceUrl)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['resourceUrl'],
+      message: 'Enter a valid Melee tournament ID or tournament URL.',
+    });
+  }
+
+  if (value.resourceType === 'video' || value.resourceType === 'vod') {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['resourceType'],
+      message: 'Only stream and melee submissions are supported.',
+    });
+  }
 });
 
 export const tournamentWeekendIdResourcesPostRoute = new Hono<AuthExtension>().post(
@@ -53,6 +57,15 @@ export const tournamentWeekendIdResourcesPostRoute = new Hono<AuthExtension>().p
     }
 
     const data = c.req.valid('json');
+    const normalizedResourceUrl = normalizeTournamentWeekendResourceUrl(
+      data.resourceType,
+      data.resourceUrl,
+    );
+
+    if (!normalizedResourceUrl) {
+      return c.json({ message: 'Resource URL was not accepted' }, 400);
+    }
+
     const weekendTournament = (
       await db
         .select({ tournamentId: tournamentWeekendTournament.tournamentId })
@@ -77,7 +90,7 @@ export const tournamentWeekendIdResourcesPostRoute = new Hono<AuthExtension>().p
           tournamentId: data.tournamentId,
           userId: user.id,
           resourceType: data.resourceType,
-          resourceUrl: data.resourceUrl,
+          resourceUrl: normalizedResourceUrl,
           title: data.title ?? null,
           description: data.description ?? null,
           approved: false,
@@ -91,6 +104,7 @@ export const tournamentWeekendIdResourcesPostRoute = new Hono<AuthExtension>().p
           ],
           set: {
             userId: user.id,
+            resourceUrl: normalizedResourceUrl,
             title: data.title ?? null,
             description: data.description ?? null,
             updatedAt: sql`NOW()`,

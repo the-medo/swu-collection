@@ -40,19 +40,19 @@ export function StreamSubmissionPrompt({
   if (!user) {
     return (
       <p className="text-xs text-muted-foreground">
-        Stream link missing. Sign in to submit a YouTube or Twitch link.
+        Stream link missing. Sign in to submit a YouTube link.
       </p>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <Input
-        value={resourceUrl}
-        onChange={event => setResourceUrl(event.target.value)}
-        placeholder="YouTube or Twitch stream"
-        className="h-8 text-xs"
-      />
+        <Input
+          value={resourceUrl}
+          onChange={event => setResourceUrl(event.target.value)}
+          placeholder="YouTube stream"
+          className="h-8 text-xs"
+        />
       <div className="flex flex-wrap items-center gap-2">
         <Button size="xs" type="submit" disabled={createResource.isPending}>
           Submit stream

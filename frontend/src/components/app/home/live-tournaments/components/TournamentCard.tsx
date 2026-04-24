@@ -99,10 +99,12 @@ function ChampionCallout({ entry }: { entry: LiveTournamentWeekendTournamentEntr
 
 export function TournamentCard({
   entry,
+  weekendId,
+  weekendTournaments,
 }: {
   entry: LiveTournamentWeekendTournamentEntry;
   weekendId: string;
-  promptForStream?: boolean;
+  weekendTournaments: LiveTournamentWeekendTournamentEntry[];
 }) {
   const meleeUrl = getMeleeUrl(entry.tournament.meleeId);
   const startTime = formatDateTime(entry.weekendTournament.exactStart);
@@ -136,7 +138,12 @@ export function TournamentCard({
           </div>
           <TournamentInfoRow entry={entry} meleeUrl={meleeUrl} showProgress={isRunning} />
         </div>
-        <TournamentCardActionsMenu meleeUrl={meleeUrl} tournamentId={entry.tournament.id} />
+        <TournamentCardActionsMenu
+          meleeUrl={meleeUrl}
+          tournamentId={entry.tournament.id}
+          weekendId={weekendId}
+          weekendTournaments={weekendTournaments}
+        />
       </div>
 
       {isFinished && <ChampionCallout entry={entry} />}
