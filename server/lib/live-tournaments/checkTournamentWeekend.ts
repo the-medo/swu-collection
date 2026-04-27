@@ -47,6 +47,7 @@ export async function checkTournamentWeekend(weekendId: string) {
     .where(
       and(
         eq(tournamentWeekendTournament.tournamentWeekendId, weekendId),
+        eq(tournamentWeekendTournament.isLiveCheckEnabled, true),
         or(
           ne(tournamentWeekendTournament.status, 'finished'),
           and(

@@ -140,7 +140,9 @@ export function TournamentCard({
         </div>
         <TournamentCardActionsMenu
           meleeUrl={meleeUrl}
+          isLiveCheckEnabled={entry.weekendTournament.isLiveCheckEnabled}
           tournamentId={entry.tournament.id}
+          tournamentName={entry.tournament.name}
           weekendId={weekendId}
           weekendTournaments={weekendTournaments}
         />

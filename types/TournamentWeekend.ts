@@ -57,6 +57,10 @@ export type TournamentWeekendResourceUpdateRequest = {
   approved: boolean;
 };
 
+export type TournamentWeekendTournamentUpdateRequest = Partial<{
+  isLiveCheckEnabled: boolean;
+}>;
+
 export type PlayerWatchMutationRequest = {
   displayName: string;
 };
@@ -85,6 +89,10 @@ export type TournamentWeekendGroupMutationResponse = {
 
 export type TournamentWeekendResourceMutationResponse = {
   data: TournamentWeekendResource;
+};
+
+export type TournamentWeekendTournamentMutationResponse = {
+  data: TournamentWeekendTournament;
 };
 
 export type TournamentWeekendResourceListStatus = 'all' | 'pending' | 'approved';

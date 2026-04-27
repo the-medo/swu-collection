@@ -1,10 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog.tsx';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog.tsx';
 import type { TournamentWeekendResource } from '../liveTournamentTypes.ts';
 import { TournamentWeekendStreamCard } from './TournamentWeekendStreamCard.tsx';
 

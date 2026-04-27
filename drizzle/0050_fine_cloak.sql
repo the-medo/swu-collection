@@ -1,0 +1,1 @@
+ALTER TABLE "tournament_weekend_tournament" ADD COLUMN "is_live_check_enabled" boolean DEFAULT true NOT NULL;

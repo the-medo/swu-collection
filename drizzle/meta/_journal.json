@@ -351,6 +351,13 @@
       "when": 1776894105268,
       "tag": "0049_dashing_outlaw_kid",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1777326615024,
+      "tag": "0050_fine_cloak",
+      "breakpoints": true
     }
   ]
 }

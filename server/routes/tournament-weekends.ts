@@ -11,6 +11,7 @@ import { tournamentWeekendIdTournamentGroupsPostRoute } from './tournament-weeke
 import { tournamentWeekendIdTournamentGroupsDeleteRoute } from './tournament-weekends/_id/tournament-groups/delete.ts';
 import { tournamentWeekendIdRefreshTournamentsPostRoute } from './tournament-weekends/_id/refresh-tournaments/post.ts';
 import { tournamentWeekendIdCheckPostRoute } from './tournament-weekends/_id/check/post.ts';
+import { tournamentWeekendIdTournamentTournamentIdPatchRoute } from './tournament-weekends/_id/tournament/_tournamentId/patch.ts';
 import { tournamentWeekendIdGetRoute } from './tournament-weekends/_id/get.ts';
 import { tournamentWeekendIdPatchRoute } from './tournament-weekends/_id/patch.ts';
 
@@ -20,6 +21,7 @@ export const tournamentWeekendsRoute = new Hono<AuthExtension>()
   .route('/live', tournamentWeekendsLiveGetRoute)
   .route('/:id/tournament-groups', tournamentWeekendIdTournamentGroupsPostRoute)
   .route('/:id/tournament-groups', tournamentWeekendIdTournamentGroupsDeleteRoute)
+  .route('/:id/tournament/:tournamentId', tournamentWeekendIdTournamentTournamentIdPatchRoute)
   .route('/:id/refresh-tournaments', tournamentWeekendIdRefreshTournamentsPostRoute)
   .route('/:id/check', tournamentWeekendIdCheckPostRoute)
   .route('/:id/resources/:resourceId', tournamentWeekendIdResourcesResourceIdDeleteRoute)

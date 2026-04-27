@@ -113,6 +113,7 @@ export const tournamentWeekendTournament = pgTable(
     createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
     wasCheckedFinished: boolean('was_checked_finished').notNull().default(false),
+    isLiveCheckEnabled: boolean('is_live_check_enabled').notNull().default(true),
   },
   table => ({
     pk: primaryKey({

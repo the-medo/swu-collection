@@ -12,3 +12,4 @@ export * from './useLiveTournamentWeekend';
 export * from './useRefreshTournamentWeekendTournaments';
 export * from './useUpdateTournamentWeekend';
 export * from './useUpdateTournamentWeekendResource';
+export * from './useUpdateTournamentWeekendTournament';
