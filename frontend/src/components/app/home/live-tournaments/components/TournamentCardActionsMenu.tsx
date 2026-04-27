@@ -95,7 +95,7 @@ export function TournamentCardActionsMenu({
                 disabled={updateTournament.isPending}
                 onCheckedChange={toggleLiveChecks}
               >
-                Live checks enabled
+                Live checks {isLiveCheckEnabled ? 'enabled' : 'disabled'}
               </DropdownMenuCheckboxItem>
             </>
           )}
