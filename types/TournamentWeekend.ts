@@ -194,6 +194,109 @@ export type LiveTournamentWeekendResponse = {
   data: LiveTournamentWeekendDetail | null;
 };
 
+export type LiveTournamentHomeWeekendTournament = Pick<
+  TournamentWeekendTournament,
+  | 'tournamentWeekendId'
+  | 'tournamentId'
+  | 'status'
+  | 'hasDecklists'
+  | 'additionalData'
+  | 'roundNumber'
+  | 'roundName'
+  | 'matchesTotal'
+  | 'matchesRemaining'
+  | 'exactStart'
+  | 'lastUpdatedAt'
+  | 'isLiveCheckEnabled'
+>;
+
+export type LiveTournamentHomeTournament = Pick<
+  TournamentStringDate,
+  | 'id'
+  | 'type'
+  | 'location'
+  | 'continent'
+  | 'name'
+  | 'attendance'
+  | 'meleeId'
+  | 'format'
+  | 'days'
+  | 'dayTwoPlayerCount'
+  | 'date'
+  | 'imported'
+> & {
+  meta: number | null;
+  bracketInfo: string | null;
+};
+
+export type LiveTournamentHomeStandingSummary = Pick<
+  TournamentStanding,
+  | 'tournamentId'
+  | 'playerDisplayName'
+  | 'roundNumber'
+  | 'rank'
+  | 'points'
+  | 'gameRecord'
+  | 'matchRecord'
+  | 'updatedAt'
+>;
+
+export type LiveTournamentHomeWatchEntry = {
+  watch: PlayerWatch;
+  displayName: string;
+};
+
+export type LiveTournamentHomeWatchedStanding = LiveTournamentHomeStandingSummary;
+
+export type LiveTournamentHomeWatchedMatch = {
+  tournamentId: string;
+  roundNumber: number;
+  matchKey: string;
+  playerDisplayName: string;
+  opponentDisplayName: string | null;
+  playerGameWins: number | null;
+  opponentGameWins: number | null;
+  outcome: 'win' | 'loss' | null;
+  updatedAt: string | null;
+  createdAt: string;
+};
+
+export type LiveTournamentHomeWatchedTournament = {
+  tournamentId: string;
+  standing: LiveTournamentHomeWatchedStanding | null;
+  latestMatch: LiveTournamentHomeWatchedMatch | null;
+};
+
+export type LiveTournamentHomeWatchedPlayer = {
+  displayName: string;
+  watch: PlayerWatch;
+  tournaments: LiveTournamentHomeWatchedTournament[];
+};
+
+export type LiveTournamentHomeTournamentEntry = {
+  weekendTournament: LiveTournamentHomeWeekendTournament;
+  tournament: LiveTournamentHomeTournament;
+  tournamentType: TournamentType;
+  winningDeck: LiveTournamentWinningDeck | null;
+  championStanding: LiveTournamentHomeStandingSummary | null;
+  undefeatedPlayers: LiveTournamentHomeStandingSummary[];
+  hasBracketMatches: boolean;
+};
+
+export type LiveTournamentHomeDetail = {
+  weekend: TournamentWeekend;
+  tournamentGroups: LiveTournamentWeekendGroupEntry[];
+  tournaments: LiveTournamentHomeTournamentEntry[];
+  resources: TournamentWeekendResource[];
+  watchlist: LiveTournamentHomeWatchEntry[];
+  watchedPlayerDisplayNames: string[];
+  watchedPlayers: LiveTournamentHomeWatchedPlayer[];
+};
+
+export type LiveTournamentHomeResponse = {
+  data: LiveTournamentHomeDetail | null;
+};
+
 export type TournamentWeekendDetailResponse = {
   data: LiveTournamentWeekendDetail;
 };

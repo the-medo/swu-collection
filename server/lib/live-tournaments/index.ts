@@ -5,6 +5,7 @@ export {
 } from './additionalData.ts';
 export { checkLiveTournamentWeekend, checkTournamentWeekend } from './checkTournamentWeekend.ts';
 export { liveTournamentCheck } from './liveTournamentCheck.ts';
+export { getLiveTournamentHome } from './tournamentWeekendLiveHome.ts';
 export {
   deriveBracket,
   deriveUndefeatedPlayers,
