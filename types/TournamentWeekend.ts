@@ -283,6 +283,48 @@ export type LiveTournamentHomeTournamentEntry = {
   hasBracketMatches: boolean;
 };
 
+export type LiveTournamentBracketPlayer = Pick<Player, 'displayName'>;
+
+export type LiveTournamentBracketTournamentPlayer = Pick<
+  TournamentWeekendPlayer,
+  'tournamentId' | 'playerDisplayName' | 'leaderCardId' | 'baseCardKey'
+>;
+
+export type LiveTournamentBracketMatch = {
+  match: Pick<
+    TournamentWeekendMatch,
+    | 'id'
+    | 'tournamentId'
+    | 'roundNumber'
+    | 'matchKey'
+    | 'playerDisplayName1'
+    | 'playerDisplayName2'
+    | 'player1GameWin'
+    | 'player2GameWin'
+    | 'createdAt'
+    | 'updatedAt'
+  >;
+  player1: LiveTournamentBracketPlayer;
+  player2: LiveTournamentBracketPlayer | null;
+  tournamentPlayer1: LiveTournamentBracketTournamentPlayer | null;
+  tournamentPlayer2: LiveTournamentBracketTournamentPlayer | null;
+};
+
+export type LiveTournamentBracketRound = {
+  roundName: string;
+  matches: LiveTournamentBracketMatch[];
+};
+
+export type LiveTournamentBracketDetail = {
+  weekendId: string;
+  tournamentId: string;
+  rounds: LiveTournamentBracketRound[];
+};
+
+export type LiveTournamentBracketResponse = {
+  data: LiveTournamentBracketDetail;
+};
+
 export type LiveTournamentHomeDetail = {
   weekend: TournamentWeekend;
   tournamentGroups: LiveTournamentWeekendGroupEntry[];
@@ -293,8 +335,61 @@ export type LiveTournamentHomeDetail = {
   watchedPlayers: LiveTournamentHomeWatchedPlayer[];
 };
 
+export type LiveTournamentHomeMeta = {
+  generatedAt: string;
+  version: number;
+};
+
 export type LiveTournamentHomeResponse = {
   data: LiveTournamentHomeDetail | null;
+  meta: LiveTournamentHomeMeta;
+};
+
+export type LiveTournamentHomePatch =
+  | {
+      kind: 'weekend_replace';
+      detail: LiveTournamentHomeDetail | null;
+    }
+  | {
+      kind: 'weekend_summary';
+      weekend: TournamentWeekend;
+    }
+  | {
+      kind: 'tournament_summary';
+      tournament: LiveTournamentHomeTournamentEntry;
+    }
+  | {
+      kind: 'resources';
+      resources: TournamentWeekendResource[];
+      deletedResourceIds?: string[];
+    }
+  | {
+      kind: 'watched_players';
+      watchlist: LiveTournamentHomeWatchEntry[];
+      watchedPlayers: LiveTournamentHomeWatchedPlayer[];
+      watchedPlayerDisplayNames: string[];
+    }
+  | {
+      kind: 'meta_groups';
+      tournamentGroups: LiveTournamentWeekendGroupEntry[];
+    };
+
+export type LiveTournamentHomePatchEvent = {
+  type:
+    | 'live_weekend.replaced'
+    | 'live_weekend.summary_updated'
+    | 'live_tournament.updated'
+    | 'live_tournament.progress_updated'
+    | 'live_resource.upserted'
+    | 'live_resource.deleted'
+    | 'player_watch.updated'
+    | 'tournament_import.finished';
+  data: {
+    weekendId: string;
+    version: number;
+    patch: LiveTournamentHomePatch;
+  };
+  at: string;
 };
 
 export type TournamentWeekendDetailResponse = {

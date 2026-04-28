@@ -11,6 +11,7 @@ import {
   zSaturdayDateMessage,
 } from '../../../lib/live-tournaments/tournamentWeekendMaintenance.ts';
 import { requireAdmin } from '../../../auth/requireAdmin.ts';
+import { createLiveWeekendReplacePatchEvent } from '../../../lib/live-tournaments/liveTournamentHomeCache.ts';
 
 const zTournamentWeekendUpdateRequest = z
   .object({
@@ -67,6 +68,8 @@ export const tournamentWeekendIdPatchRoute = new Hono<AuthExtension>().patch(
     const refreshedWeekend = (
       await db.select().from(tournamentWeekend).where(eq(tournamentWeekend.id, weekendId)).limit(1)
     )[0];
+
+    await createLiveWeekendReplacePatchEvent(weekendId);
 
     return c.json({
       data: {

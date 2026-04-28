@@ -11,6 +11,10 @@ import {
 } from '../../../../../db/schema/tournament_weekend.ts';
 import { requireAdmin } from '../../../../../auth/requireAdmin.ts';
 import { extractMeleeTournamentId } from '../../../../../lib/live-tournaments/resourceUrls.ts';
+import {
+  createLiveResourcesPatchEvent,
+  createLiveTournamentSummaryPatchEvent,
+} from '../../../../../lib/live-tournaments/liveTournamentHomeCache.ts';
 
 const zTournamentWeekendResourceUpdateRequest = z.object({
   approved: z.boolean(),
@@ -107,6 +111,18 @@ export const tournamentWeekendIdResourcesResourceIdPatchRoute = new Hono<AuthExt
           .returning()
       )[0];
     });
+
+    if (resource.approved || existingResource.resource.approved) {
+      await createLiveResourcesPatchEvent('live_resource.upserted', weekendId);
+    }
+
+    if (existingResource.resource.resourceType === 'melee') {
+      await createLiveTournamentSummaryPatchEvent(
+        'live_tournament.updated',
+        weekendId,
+        existingResource.tournament.id,
+      );
+    }
 
     return c.json({ data: resource });
   },

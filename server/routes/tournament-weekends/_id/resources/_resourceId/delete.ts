@@ -10,6 +10,10 @@ import {
   tournamentWeekendTournament,
 } from '../../../../../db/schema/tournament_weekend.ts';
 import { extractMeleeTournamentId } from '../../../../../lib/live-tournaments/resourceUrls.ts';
+import {
+  createLiveResourcesPatchEvent,
+  createLiveTournamentSummaryPatchEvent,
+} from '../../../../../lib/live-tournaments/liveTournamentHomeCache.ts';
 
 export const tournamentWeekendIdResourcesResourceIdDeleteRoute = new Hono<AuthExtension>().delete(
   '/',
@@ -65,8 +69,22 @@ export const tournamentWeekendIdResourcesResourceIdDeleteRoute = new Hono<AuthEx
           .where(eq(tournamentTable.id, existingResource.tournament.id));
       }
 
-      await tx.delete(tournamentWeekendResource).where(eq(tournamentWeekendResource.id, resourceId));
+      await tx
+        .delete(tournamentWeekendResource)
+        .where(eq(tournamentWeekendResource.id, resourceId));
     });
+
+    if (existingResource.resource.approved) {
+      await createLiveResourcesPatchEvent('live_resource.deleted', weekendId, [resourceId]);
+    }
+
+    if (existingResource.resource.resourceType === 'melee') {
+      await createLiveTournamentSummaryPatchEvent(
+        'live_tournament.updated',
+        weekendId,
+        existingResource.tournament.id,
+      );
+    }
 
     return c.body(null, 204);
   },

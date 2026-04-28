@@ -6,6 +6,7 @@ import type { AuthExtension } from '../../../../../auth/auth.ts';
 import { requireAdmin } from '../../../../../auth/requireAdmin.ts';
 import { db } from '../../../../../db';
 import { tournamentWeekendTournament } from '../../../../../db/schema/tournament_weekend.ts';
+import { createLiveTournamentSummaryPatchEvent } from '../../../../../lib/live-tournaments/liveTournamentHomeCache.ts';
 
 const zTournamentWeekendTournamentUpdateRequest = z
   .object({
@@ -45,6 +46,8 @@ export const tournamentWeekendIdTournamentTournamentIdPatchRoute = new Hono<Auth
     if (!updatedTournament) {
       return c.json({ message: 'Tournament weekend tournament not found' }, 404);
     }
+
+    await createLiveTournamentSummaryPatchEvent('live_tournament.updated', weekendId, tournamentId);
 
     return c.json({ data: updatedTournament });
   },

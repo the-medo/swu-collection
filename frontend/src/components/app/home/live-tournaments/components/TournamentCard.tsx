@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils.ts';
 import type { LiveTournamentWeekendTournamentEntry } from '../liveTournamentTypes.ts';
 import {
   formatDateTime,
-  getBracketRounds,
   getMeleeUrl,
   getPlayerCount,
   getRoundLabel,
@@ -43,7 +42,7 @@ function getChampionName(entry: LiveTournamentWeekendTournamentEntry) {
 
   if (meleePlayerUsername) return meleePlayerUsername;
 
-  return entry.standings.find(row => row.standing.rank === 1)?.player.displayName ?? 'Champion';
+  return entry.championStanding?.playerDisplayName ?? 'Champion';
 }
 
 function TournamentInfoRow({
@@ -109,7 +108,6 @@ export function TournamentCard({
   const meleeUrl = getMeleeUrl(entry.tournament.meleeId);
   const startTime = formatDateTime(entry.weekendTournament.exactStart);
   const undefeatedPlayers = getUndefeatedPlayers(entry);
-  const bracketRounds = getBracketRounds(entry);
   const isUpcoming = entry.weekendTournament.status === 'upcoming';
   const isRunning = entry.weekendTournament.status === 'running';
   const isFinished = entry.weekendTournament.status === 'finished';
@@ -155,8 +153,8 @@ export function TournamentCard({
           <div className="text-xs font-medium uppercase text-muted-foreground">Undefeated</div>
           <div className="flex flex-wrap gap-1.5">
             {undefeatedPlayers.slice(0, 3).map(row => (
-              <Badge key={row.player.displayName} variant="outline" className="rounded-md">
-                {row.player.displayName} {row.standing.matchRecord}
+              <Badge key={row.playerDisplayName} variant="outline" className="rounded-md">
+                {row.playerDisplayName} {row.matchRecord}
               </Badge>
             ))}
             {undefeatedPlayers.length > 3 && (
@@ -169,7 +167,11 @@ export function TournamentCard({
       )}
 
       <div className="relative z-20">
-        <BracketPreview rounds={bracketRounds} />
+        <BracketPreview
+          weekendId={weekendId}
+          tournamentId={entry.tournament.id}
+          hasBracketMatches={entry.hasBracketMatches}
+        />
       </div>
     </article>
   );

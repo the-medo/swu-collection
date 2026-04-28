@@ -1,8 +1,8 @@
 export type {
-  LiveTournamentMatchEntry,
-  LiveTournamentPlayerEntry,
-  LiveTournamentWeekendDetail,
-  LiveTournamentWeekendTournamentEntry,
+  LiveTournamentBracketMatch as LiveTournamentMatchEntry,
+  LiveTournamentBracketRound,
+  LiveTournamentHomeDetail as LiveTournamentWeekendDetail,
+  LiveTournamentHomeTournamentEntry as LiveTournamentWeekendTournamentEntry,
   TournamentWeekendResourceListItem,
   TournamentWeekendResourceListStatus,
   TournamentWeekendResourceListResponse,

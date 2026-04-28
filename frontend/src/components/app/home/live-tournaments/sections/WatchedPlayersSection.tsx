@@ -14,91 +14,17 @@ import { useUser } from '@/hooks/useUser.ts';
 import { cn } from '@/lib/utils.ts';
 import { LiveSectionHeader } from '../components';
 import type { CountryCode } from '../../../../../../../server/db/lists.ts';
-import type {
-  LiveTournamentMatchEntry,
-  LiveTournamentWeekendDetail,
-} from '../liveTournamentTypes.ts';
-import { getLiveMatchWinnerSide, getRoundLabel } from '../liveTournamentUtils.ts';
-import { LiveTournamentStandingEntry } from '../../../../../../../types/TournamentWeekend.ts';
+import type { LiveTournamentWeekendDetail } from '../liveTournamentTypes.ts';
+import { getRoundLabel } from '../liveTournamentUtils.ts';
+import type { LiveTournamentHomeWatchedMatch } from '../../../../../../../types/TournamentWeekend.ts';
 
-type WatchedPlayerEntry = LiveTournamentWeekendDetail['watchedPlayers'][number];
-
-function getLatestStanding(
-  entry: WatchedPlayerEntry,
-  tournamentId: string,
-): LiveTournamentStandingEntry | null {
-  let latestStanding: LiveTournamentStandingEntry | null = null;
-
-  for (const standing of entry.standings) {
-    if (standing.standing.tournamentId !== tournamentId) continue;
-
-    if (
-      latestStanding === null ||
-      standing.standing.roundNumber > latestStanding.standing.roundNumber
-    ) {
-      latestStanding = standing;
-    }
-  }
-
-  return latestStanding;
-}
-
-function getMatchTimestamp(match: LiveTournamentMatchEntry) {
-  const value = match.match.updatedAt ?? match.match.createdAt;
-  const timestamp = Date.parse(value);
-
-  return Number.isNaN(timestamp) ? 0 : timestamp;
-}
-
-function getLatestMatch(
-  entry: WatchedPlayerEntry,
-  tournamentId: string,
-): LiveTournamentMatchEntry | null {
-  let latestMatch: LiveTournamentMatchEntry | null = null;
-
-  for (const match of entry.matches) {
-    if (match.match.tournamentId !== tournamentId) continue;
-    const matchTimestamp = getMatchTimestamp(match);
-    const latestMatchTimestamp = latestMatch ? getMatchTimestamp(latestMatch) : -1;
-
-    if (
-      latestMatch === null ||
-      match.match.roundNumber > latestMatch.match.roundNumber ||
-      (match.match.roundNumber === latestMatch.match.roundNumber &&
-        matchTimestamp > latestMatchTimestamp) ||
-      (match.match.roundNumber === latestMatch.match.roundNumber &&
-        matchTimestamp === latestMatchTimestamp &&
-        match.match.matchKey.localeCompare(latestMatch.match.matchKey) > 0)
-    ) {
-      latestMatch = match;
-    }
-  }
-
-  return latestMatch;
-}
-
-function getLatestMatchSummary(playerDisplayName: string, latestMatch: LiveTournamentMatchEntry) {
-  const playerSide =
-    latestMatch.match.playerDisplayName1 === playerDisplayName ? 'player1' : 'player2';
-  const isPlayer1 = playerSide === 'player1';
-  const opponentName = isPlayer1
-    ? (latestMatch.player2?.displayName ?? latestMatch.match.playerDisplayName2 ?? 'TBD')
-    : (latestMatch.player1?.displayName ?? latestMatch.match.playerDisplayName1);
-  const playerWins = isPlayer1
-    ? latestMatch.match.player1GameWin
-    : latestMatch.match.player2GameWin;
-  const opponentWins = isPlayer1
-    ? latestMatch.match.player2GameWin
-    : latestMatch.match.player1GameWin;
-  const winnerSide = getLiveMatchWinnerSide(latestMatch);
-  const outcome = winnerSide === null ? null : winnerSide === playerSide ? 'win' : 'loss';
-
+function getLatestMatchSummary(latestMatch: LiveTournamentHomeWatchedMatch) {
   return {
     resultLabel:
-      playerWins !== null && opponentWins !== null
-        ? `${playerWins}:${opponentWins} ${opponentName}`
-        : `vs ${opponentName}`,
-    outcome,
+      latestMatch.playerGameWins !== null && latestMatch.opponentGameWins !== null
+        ? `${latestMatch.playerGameWins}:${latestMatch.opponentGameWins} ${latestMatch.opponentDisplayName ?? 'TBD'}`
+        : `vs ${latestMatch.opponentDisplayName ?? 'TBD'}`,
+    outcome: latestMatch.outcome,
   };
 }
 
@@ -109,14 +35,17 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
       detail.tournaments.flatMap(tournament => {
         const players = detail.watchedPlayers
           .flatMap(entry => {
-            const standing = getLatestStanding(entry, tournament.tournament.id);
-            const latestMatch = getLatestMatch(entry, tournament.tournament.id);
+            const watchedTournament = entry.tournaments.find(
+              watchedEntry => watchedEntry.tournamentId === tournament.tournament.id,
+            );
+            const standing = watchedTournament?.standing ?? null;
+            const latestMatch = watchedTournament?.latestMatch ?? null;
 
             if (standing === null && latestMatch === null) return [];
 
             return [
               {
-                displayName: entry.player.displayName,
+                displayName: entry.displayName,
                 standing,
                 latestMatch,
               },
@@ -124,14 +53,14 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
           })
           .sort((left, right) => {
             if (left.standing && right.standing) {
-              return left.standing.standing.rank - right.standing.standing.rank;
+              return left.standing.rank - right.standing.rank;
             }
 
             if (left.standing) return -1;
             if (right.standing) return 1;
 
-            const leftLatestRound = left.latestMatch?.match.roundNumber ?? -1;
-            const rightLatestRound = right.latestMatch?.match.roundNumber ?? -1;
+            const leftLatestRound = left.latestMatch?.roundNumber ?? -1;
+            const rightLatestRound = right.latestMatch?.roundNumber ?? -1;
 
             if (leftLatestRound !== rightLatestRound) {
               return rightLatestRound - leftLatestRound;
@@ -211,7 +140,7 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
                   <div className="divide-y">
                     {group.players.map(player => {
                       const latestMatchSummary = player.latestMatch
-                        ? getLatestMatchSummary(player.displayName, player.latestMatch)
+                        ? getLatestMatchSummary(player.latestMatch)
                         : null;
 
                       return (
@@ -231,8 +160,7 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
 
                               {player.standing && (
                                 <div className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                                  #{player.standing.standing.rank} -{' '}
-                                  {player.standing.standing.matchRecord}
+                                  #{player.standing.rank} - {player.standing.matchRecord}
                                 </div>
                               )}
                             </div>

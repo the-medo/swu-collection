@@ -13,38 +13,41 @@ import {
   getCanonicalYoutubeUrl,
   normalizeTournamentWeekendResourceUrl,
 } from '../../../../lib/live-tournaments/resourceUrls.ts';
+import { createLiveResourcesPatchEvent } from '../../../../lib/live-tournaments/liveTournamentHomeCache.ts';
 
-const zTournamentWeekendResourceCreateRequest = z.object({
-  tournamentId: z.guid(),
-  resourceType: z.enum(['stream', 'video', 'vod', 'melee']).default('stream'),
-  resourceUrl: z.string().trim().min(1).max(2048),
-  title: z.string().trim().max(255).optional(),
-  description: z.string().trim().max(2000).optional(),
-}).superRefine((value, ctx) => {
-  if (value.resourceType === 'stream' && !getCanonicalYoutubeUrl(value.resourceUrl)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['resourceUrl'],
-      message: 'Only YouTube links are allowed.',
-    });
-  }
+const zTournamentWeekendResourceCreateRequest = z
+  .object({
+    tournamentId: z.guid(),
+    resourceType: z.enum(['stream', 'video', 'vod', 'melee']).default('stream'),
+    resourceUrl: z.string().trim().min(1).max(2048),
+    title: z.string().trim().max(255).optional(),
+    description: z.string().trim().max(2000).optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.resourceType === 'stream' && !getCanonicalYoutubeUrl(value.resourceUrl)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['resourceUrl'],
+        message: 'Only YouTube links are allowed.',
+      });
+    }
 
-  if (value.resourceType === 'melee' && !getCanonicalMeleeTournamentUrl(value.resourceUrl)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['resourceUrl'],
-      message: 'Enter a valid Melee tournament ID or tournament URL.',
-    });
-  }
+    if (value.resourceType === 'melee' && !getCanonicalMeleeTournamentUrl(value.resourceUrl)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['resourceUrl'],
+        message: 'Enter a valid Melee tournament ID or tournament URL.',
+      });
+    }
 
-  if (value.resourceType === 'video' || value.resourceType === 'vod') {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['resourceType'],
-      message: 'Only stream and melee submissions are supported.',
-    });
-  }
-});
+    if (value.resourceType === 'video' || value.resourceType === 'vod') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['resourceType'],
+        message: 'Only stream and melee submissions are supported.',
+      });
+    }
+  });
 
 export const tournamentWeekendIdResourcesPostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -112,6 +115,10 @@ export const tournamentWeekendIdResourcesPostRoute = new Hono<AuthExtension>().p
         })
         .returning()
     )[0];
+
+    if (resource.approved) {
+      await createLiveResourcesPatchEvent('live_resource.upserted', weekendId);
+    }
 
     return c.json({ data: resource }, 201);
   },

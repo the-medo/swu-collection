@@ -1,18 +1,53 @@
 import type { LiveTournamentCheckResult, LiveTournamentProgressCheckResult } from './types.ts';
+import { db } from '../../db';
+import { tournamentWeekendTournament } from '../../db/schema/tournament_weekend.ts';
+import { eq } from 'drizzle-orm';
+import {
+  createLiveTournamentSummaryPatchEvent,
+  createLiveWeekendSummaryPatchEvent,
+} from './liveTournamentHomeCache.ts';
 
-export async function publishLiveTournamentChecked(_result: LiveTournamentCheckResult) {
-  // TODO: Publish this through the live tournament websocket room once that route exists.
+export async function publishLiveTournamentChecked(result: LiveTournamentCheckResult) {
+  if (result.type !== 'checked') return null;
+
+  return Promise.all([
+    createLiveWeekendSummaryPatchEvent(result.weekendId),
+    createLiveTournamentSummaryPatchEvent(
+      'live_tournament.updated',
+      result.weekendId,
+      result.tournamentId,
+    ),
+  ]);
 }
 
 export async function publishLiveTournamentProgressChecked(
-  _result: LiveTournamentProgressCheckResult,
+  result: LiveTournamentProgressCheckResult,
 ) {
-  // TODO: Publish standings/match updates through the live tournament websocket room.
+  if (result.type !== 'checked') return null;
+
+  return createLiveTournamentSummaryPatchEvent(
+    'live_tournament.progress_updated',
+    result.weekendId,
+    result.tournamentId,
+  );
 }
 
-export async function publishTournamentImportFinished(_result: {
+export async function publishTournamentImportFinished(result: {
   tournamentId: string;
   importedAt: string;
 }) {
-  // TODO: Publish tournament_import.finished through the live tournament websocket room.
+  const weekendRows = await db
+    .select({ weekendId: tournamentWeekendTournament.tournamentWeekendId })
+    .from(tournamentWeekendTournament)
+    .where(eq(tournamentWeekendTournament.tournamentId, result.tournamentId));
+
+  return Promise.all(
+    weekendRows.map(row =>
+      createLiveTournamentSummaryPatchEvent(
+        'tournament_import.finished',
+        row.weekendId,
+        result.tournamentId,
+      ),
+    ),
+  );
 }

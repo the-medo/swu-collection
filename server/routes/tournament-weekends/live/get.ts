@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import type { AuthExtension } from '../../../auth/auth.ts';
 import { db } from '../../../db';
 import { tournamentWeekend } from '../../../db/schema/tournament_weekend.ts';
-import { getLiveTournamentHome } from '../../../lib/live-tournaments/tournamentWeekendLiveHome.ts';
+import { getCachedLiveTournamentHomeResponse } from '../../../lib/live-tournaments/liveTournamentHomeCache.ts';
 
 export const tournamentWeekendsLiveGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const liveWeekend = (
@@ -15,11 +15,17 @@ export const tournamentWeekendsLiveGetRoute = new Hono<AuthExtension>().get('/',
   )[0];
 
   if (!liveWeekend) {
-    return c.json({ data: null });
+    return c.json({
+      data: null,
+      meta: {
+        generatedAt: new Date().toISOString(),
+        version: 0,
+      },
+    });
   }
 
   const user = c.get('user');
-  const data = await getLiveTournamentHome(liveWeekend.id, user?.id);
+  const response = await getCachedLiveTournamentHomeResponse(liveWeekend.id, user?.id);
 
-  return c.json({ data });
+  return c.json(response);
 });

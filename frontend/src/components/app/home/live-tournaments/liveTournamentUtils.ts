@@ -1,21 +1,21 @@
 import type {
+  LiveTournamentBracketRound,
   LiveTournamentMatchEntry,
   LiveTournamentWeekendTournamentEntry,
 } from './liveTournamentTypes.ts';
 
 export const topEightBracketRoundOrder = ['Quarterfinals', 'Semifinals', 'Finals'] as const;
 const topCutRoundNames = new Set<string>(topEightBracketRoundOrder);
-export const topEightBracketMatchCountByRound: Record<(typeof topEightBracketRoundOrder)[number], number> =
-  {
-    Quarterfinals: 4,
-    Semifinals: 2,
-    Finals: 1,
-  };
-
-export type BracketRound = {
-  roundName: string;
-  matches: LiveTournamentMatchEntry[];
+export const topEightBracketMatchCountByRound: Record<
+  (typeof topEightBracketRoundOrder)[number],
+  number
+> = {
+  Quarterfinals: 4,
+  Semifinals: 2,
+  Finals: 1,
 };
+
+export type BracketRound = LiveTournamentBracketRound;
 
 export function formatDateTime(value: string | Date | null | undefined) {
   if (!value) return null;
@@ -72,9 +72,7 @@ export function getYoutubeVideoId(url: string) {
 
     const [, candidateId] = pathSegments;
     if (
-      (pathSegments[0] === 'embed' ||
-        pathSegments[0] === 'live' ||
-        pathSegments[0] === 'shorts') &&
+      (pathSegments[0] === 'embed' || pathSegments[0] === 'live' || pathSegments[0] === 'shorts') &&
       candidateId &&
       YOUTUBE_VIDEO_ID_REGEX.test(candidateId)
     ) {
@@ -140,46 +138,6 @@ export function getRoundName(
   return getRoundNameMap(entry).get(roundNumber) ?? `Round ${roundNumber}`;
 }
 
-export function getBracketRounds(entry: LiveTournamentWeekendTournamentEntry): BracketRound[] {
-  const roundNameByNumber = getRoundNameMap(entry);
-  const roundsByName = new Map<string, LiveTournamentMatchEntry[]>();
-
-  entry.matches.forEach(match => {
-    const roundName = roundNameByNumber.get(match.match.roundNumber);
-    if (!roundName || !topCutRoundNames.has(roundName)) return;
-
-    const existing = roundsByName.get(roundName);
-    if (existing) {
-      existing.push(match);
-      return;
-    }
-
-    roundsByName.set(roundName, [match]);
-  });
-
-  return [...roundsByName.entries()]
-    .map(([roundName, matches]) => {
-      const maxMatches =
-        topEightBracketMatchCountByRound[
-          roundName as keyof typeof topEightBracketMatchCountByRound
-        ] ?? matches.length;
-
-      return {
-        roundName,
-        matches: matches.slice(0, maxMatches),
-      };
-    })
-    .sort(
-      (a, b) =>
-        topEightBracketRoundOrder.indexOf(
-          a.roundName as (typeof topEightBracketRoundOrder)[number],
-        ) -
-        topEightBracketRoundOrder.indexOf(
-          b.roundName as (typeof topEightBracketRoundOrder)[number],
-        ),
-    );
-}
-
 export function getLiveMatchWinnerSide(match: LiveTournamentMatchEntry) {
   const player1Wins = match.match.player1GameWin;
   const player2Wins = match.match.player2GameWin;
@@ -196,10 +154,7 @@ function getMatchLosses(matchRecord: string) {
 }
 
 export function getUndefeatedPlayers(entry: LiveTournamentWeekendTournamentEntry) {
-  const roundNumber = entry.weekendTournament.roundNumber ?? 0;
-  if (roundNumber < 4) return [];
-
-  return entry.standings.filter(row => getMatchLosses(row.standing.matchRecord) === 0);
+  return entry.undefeatedPlayers.filter(row => getMatchLosses(row.matchRecord) === 0);
 }
 
 export function getRoundLabel(entry: LiveTournamentWeekendTournamentEntry) {

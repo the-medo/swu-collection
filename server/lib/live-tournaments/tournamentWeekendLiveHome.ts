@@ -13,11 +13,13 @@ import {
   tournamentStanding as tournamentStandingTable,
   tournamentWeekend,
   tournamentWeekendMatch,
+  tournamentWeekendPlayer,
   tournamentWeekendResource,
   tournamentWeekendTournament,
   tournamentWeekendTournamentGroup,
 } from '../../db/schema/tournament_weekend.ts';
 import type {
+  LiveTournamentBracketDetail,
   LiveTournamentHomeDetail,
   LiveTournamentHomeStandingSummary,
   LiveTournamentHomeTournament,
@@ -26,7 +28,14 @@ import type {
   LiveTournamentWinningDeck,
 } from '../../../types/TournamentWeekend.ts';
 
-const topCutRoundNames = new Set(['Quarterfinals', 'Semifinals', 'Finals']);
+const topEightBracketRoundOrder = ['Quarterfinals', 'Semifinals', 'Finals'] as const;
+const topCutRoundNames = new Set<string>(topEightBracketRoundOrder);
+const topEightBracketMatchCountByRound: Record<(typeof topEightBracketRoundOrder)[number], number> =
+  {
+    Quarterfinals: 4,
+    Semifinals: 2,
+    Finals: 1,
+  };
 
 const groupBy = <T, K extends string | number>(items: T[], getKey: (item: T) => K) => {
   const grouped = new Map<K, T[]>();
@@ -519,5 +528,169 @@ export async function getLiveTournamentHome(
     watchlist: watchedData.watchlist,
     watchedPlayerDisplayNames: watchedData.watchedPlayerDisplayNames,
     watchedPlayers: watchedData.watchedPlayers,
+  };
+}
+
+export async function getLiveTournamentHomeTournamentSummary(
+  weekendId: string,
+  tournamentId: string,
+) {
+  const detail = await getLiveTournamentHome(weekendId);
+  return detail?.tournaments.find(entry => entry.tournament.id === tournamentId) ?? null;
+}
+
+export async function getLiveTournamentHomeResources(weekendId: string) {
+  const detail = await getLiveTournamentHome(weekendId);
+  return detail?.resources ?? [];
+}
+
+export async function getLiveTournamentHomeMetaGroups(weekendId: string) {
+  const detail = await getLiveTournamentHome(weekendId);
+  return detail?.tournamentGroups ?? [];
+}
+
+export async function getLiveTournamentHomeWatchedPlayers(weekendId: string, userId: string) {
+  const detail = await getLiveTournamentHome(weekendId, userId);
+
+  return {
+    watchlist: detail?.watchlist ?? [],
+    watchedPlayerDisplayNames: detail?.watchedPlayerDisplayNames ?? [],
+    watchedPlayers: detail?.watchedPlayers ?? [],
+  };
+}
+
+export async function getLiveTournamentBracket(
+  weekendId: string,
+  tournamentId: string,
+): Promise<LiveTournamentBracketDetail | null> {
+  const row = (
+    await db
+      .select({
+        weekendTournament: tournamentWeekendTournament,
+      })
+      .from(tournamentWeekendTournament)
+      .where(
+        and(
+          eq(tournamentWeekendTournament.tournamentWeekendId, weekendId),
+          eq(tournamentWeekendTournament.tournamentId, tournamentId),
+        ),
+      )
+      .limit(1)
+  )[0];
+
+  if (!row) {
+    return null;
+  }
+
+  const roundNameByNumber = getRoundNameMap(row.weekendTournament);
+  const topCutRoundNumbers = [...roundNameByNumber.entries()]
+    .filter(([, roundName]) => topCutRoundNames.has(roundName))
+    .map(([roundNumber]) => roundNumber);
+
+  if (topCutRoundNumbers.length === 0) {
+    return {
+      weekendId,
+      tournamentId,
+      rounds: [],
+    };
+  }
+
+  const matches = await db
+    .select({
+      id: tournamentWeekendMatch.id,
+      tournamentId: tournamentWeekendMatch.tournamentId,
+      roundNumber: tournamentWeekendMatch.roundNumber,
+      matchKey: tournamentWeekendMatch.matchKey,
+      playerDisplayName1: tournamentWeekendMatch.playerDisplayName1,
+      playerDisplayName2: tournamentWeekendMatch.playerDisplayName2,
+      player1GameWin: tournamentWeekendMatch.player1GameWin,
+      player2GameWin: tournamentWeekendMatch.player2GameWin,
+      createdAt: tournamentWeekendMatch.createdAt,
+      updatedAt: tournamentWeekendMatch.updatedAt,
+    })
+    .from(tournamentWeekendMatch)
+    .where(
+      and(
+        eq(tournamentWeekendMatch.tournamentId, tournamentId),
+        inArray(tournamentWeekendMatch.roundNumber, topCutRoundNumbers),
+      ),
+    )
+    .orderBy(asc(tournamentWeekendMatch.roundNumber), asc(tournamentWeekendMatch.matchKey));
+
+  const playerDisplayNames = [
+    ...new Set(
+      matches
+        .flatMap(match => [match.playerDisplayName1, match.playerDisplayName2])
+        .filter((displayName): displayName is string => displayName !== null),
+    ),
+  ];
+
+  const tournamentPlayers =
+    playerDisplayNames.length > 0
+      ? await db
+          .select({
+            tournamentId: tournamentWeekendPlayer.tournamentId,
+            playerDisplayName: tournamentWeekendPlayer.playerDisplayName,
+            leaderCardId: tournamentWeekendPlayer.leaderCardId,
+            baseCardKey: tournamentWeekendPlayer.baseCardKey,
+          })
+          .from(tournamentWeekendPlayer)
+          .where(
+            and(
+              eq(tournamentWeekendPlayer.tournamentId, tournamentId),
+              inArray(tournamentWeekendPlayer.playerDisplayName, playerDisplayNames),
+            ),
+          )
+      : [];
+  const tournamentPlayerByDisplayName = new Map(
+    tournamentPlayers.map(row => [row.playerDisplayName, row]),
+  );
+
+  const roundsByName = new Map<
+    (typeof topEightBracketRoundOrder)[number],
+    LiveTournamentBracketDetail['rounds'][number]['matches']
+  >();
+
+  for (const match of matches) {
+    const roundName = roundNameByNumber.get(match.roundNumber);
+    if (!roundName || !topCutRoundNames.has(roundName)) continue;
+
+    const typedRoundName = roundName as (typeof topEightBracketRoundOrder)[number];
+    const existing = roundsByName.get(typedRoundName);
+    const matchEntry = {
+      match,
+      player1: { displayName: match.playerDisplayName1 },
+      player2: match.playerDisplayName2 ? { displayName: match.playerDisplayName2 } : null,
+      tournamentPlayer1: tournamentPlayerByDisplayName.get(match.playerDisplayName1) ?? null,
+      tournamentPlayer2: match.playerDisplayName2
+        ? (tournamentPlayerByDisplayName.get(match.playerDisplayName2) ?? null)
+        : null,
+    };
+
+    if (existing) {
+      existing.push(matchEntry);
+      continue;
+    }
+
+    roundsByName.set(typedRoundName, [matchEntry]);
+  }
+
+  return {
+    weekendId,
+    tournamentId,
+    rounds: [...roundsByName.entries()]
+      .map(([roundName, roundMatches]) => ({
+        roundName,
+        matches: roundMatches.slice(0, topEightBracketMatchCountByRound[roundName]),
+      }))
+      .sort(
+        (a, b) =>
+          topEightBracketRoundOrder.indexOf(
+            a.roundName as (typeof topEightBracketRoundOrder)[number],
+          ) -
+          topEightBracketRoundOrder.indexOf(
+            b.roundName as (typeof topEightBracketRoundOrder)[number],
+          ),
+      ),
   };
 }

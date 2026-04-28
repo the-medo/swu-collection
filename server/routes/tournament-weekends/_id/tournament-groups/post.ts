@@ -11,6 +11,7 @@ import {
   tournamentWeekendTournamentGroup,
 } from '../../../../db/schema/tournament_weekend.ts';
 import { requireAdmin } from '../../../../auth/requireAdmin.ts';
+import { createLiveMetaGroupsPatchEvent } from '../../../../lib/live-tournaments/liveTournamentHomeCache.ts';
 
 const zTournamentWeekendGroupCreateRequest = z.object({
   tournamentGroupId: z.guid(),
@@ -79,6 +80,8 @@ export const tournamentWeekendIdTournamentGroupsPostRoute = new Hono<AuthExtensi
       .update(tournamentWeekend)
       .set({ updatedAt: sql`NOW()` })
       .where(eq(tournamentWeekend.id, weekendId));
+
+    await createLiveMetaGroupsPatchEvent(weekendId);
 
     return c.json({ data: weekendGroup }, 201);
   },

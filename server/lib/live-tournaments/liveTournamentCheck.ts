@@ -129,7 +129,8 @@ export async function liveTournamentCheck(
   ) {
     progress = await liveTournamentProgressCheck(input);
     if (detail.status === 'finished') {
-      db.update(tournamentWeekendTournament)
+      await db
+        .update(tournamentWeekendTournament)
         .set({
           wasCheckedFinished: true,
         })

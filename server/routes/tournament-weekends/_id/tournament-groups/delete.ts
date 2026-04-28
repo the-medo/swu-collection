@@ -9,6 +9,7 @@ import {
   tournamentWeekendTournamentGroup,
 } from '../../../../db/schema/tournament_weekend.ts';
 import { requireAdmin } from '../../../../auth/requireAdmin.ts';
+import { createLiveMetaGroupsPatchEvent } from '../../../../lib/live-tournaments/liveTournamentHomeCache.ts';
 
 const zTournamentWeekendGroupDeleteQuery = z.object({
   tournamentGroupId: z.guid(),
@@ -37,6 +38,8 @@ export const tournamentWeekendIdTournamentGroupsDeleteRoute = new Hono<AuthExten
       .update(tournamentWeekend)
       .set({ updatedAt: sql`NOW()` })
       .where(eq(tournamentWeekend.id, weekendId));
+
+    await createLiveMetaGroupsPatchEvent(weekendId);
 
     return c.body(null, 204);
   },

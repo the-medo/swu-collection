@@ -5,6 +5,8 @@ import { z } from 'zod';
 import type { AuthExtension } from '../auth/auth.ts';
 import { db } from '../db';
 import { player as playerTable, playerWatch } from '../db/schema/tournament_weekend.ts';
+import { createLiveWatchedPlayersPatchEvent } from '../lib/live-tournaments/liveTournamentHomeCache.ts';
+import { getLiveTournamentWeekend } from '../lib/live-tournaments/tournamentWeekendMaintenance.ts';
 
 const zPlayerWatchMutationBody = z.object({
   displayName: z.string().trim().min(1).max(255),
@@ -103,6 +105,11 @@ export const playerWatchRoute = new Hono<AuthExtension>()
         .limit(1)
     )[0];
 
+    const liveWeekend = await getLiveTournamentWeekend();
+    if (liveWeekend) {
+      await createLiveWatchedPlayersPatchEvent(liveWeekend.id, user.id);
+    }
+
     return c.json({ data: { watch, player } }, 201);
   })
   .delete('/', zValidator('query', zPlayerWatchDeleteQuery), async c => {
@@ -116,6 +123,11 @@ export const playerWatchRoute = new Hono<AuthExtension>()
     await db
       .delete(playerWatch)
       .where(and(eq(playerWatch.userId, user.id), eq(playerWatch.playerDisplayName, displayName)));
+
+    const liveWeekend = await getLiveTournamentWeekend();
+    if (liveWeekend) {
+      await createLiveWatchedPlayersPatchEvent(liveWeekend.id, user.id);
+    }
 
     return c.body(null, 204);
   });

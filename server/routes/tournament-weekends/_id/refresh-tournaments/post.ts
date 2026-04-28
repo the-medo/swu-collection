@@ -6,6 +6,7 @@ import { db } from '../../../../db';
 import { tournamentWeekend } from '../../../../db/schema/tournament_weekend.ts';
 import { syncTournamentWeekendTournaments } from '../../../../lib/live-tournaments/tournamentWeekendMaintenance.ts';
 import { requireAdmin } from '../../../../auth/requireAdmin.ts';
+import { createLiveWeekendReplacePatchEvent } from '../../../../lib/live-tournaments/liveTournamentHomeCache.ts';
 
 export const tournamentWeekendIdRefreshTournamentsPostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -26,6 +27,8 @@ export const tournamentWeekendIdRefreshTournamentsPostRoute = new Hono<AuthExten
     const refreshedWeekend = (
       await db.select().from(tournamentWeekend).where(eq(tournamentWeekend.id, weekendId)).limit(1)
     )[0];
+
+    await createLiveWeekendReplacePatchEvent(weekendId);
 
     return c.json({
       data: {

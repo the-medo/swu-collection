@@ -8,6 +8,7 @@ export * from './useDeleteTournamentWeekendResource';
 export * from './useGetTournamentWeekend';
 export * from './useGetTournamentWeekendResources';
 export * from './useGetTournamentWeekends';
+export * from './useLiveTournamentBracket';
 export * from './useLiveTournamentWeekend';
 export * from './useRefreshTournamentWeekendTournaments';
 export * from './useUpdateTournamentWeekend';
