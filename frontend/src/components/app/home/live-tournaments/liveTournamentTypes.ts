@@ -1,6 +1,8 @@
 export type {
+  LiveTournamentBracketDeckSummary,
   LiveTournamentBracketMatch as LiveTournamentMatchEntry,
   LiveTournamentBracketRound,
+  LiveTournamentBracketStanding,
   LiveTournamentHomeDetail as LiveTournamentWeekendDetail,
   LiveTournamentHomeTournamentEntry as LiveTournamentWeekendTournamentEntry,
   TournamentWeekendResourceListItem,

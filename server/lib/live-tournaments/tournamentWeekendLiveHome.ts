@@ -1,4 +1,4 @@
-import { and, asc, count, eq, inArray, or, sql, type SQL } from 'drizzle-orm';
+import { and, asc, count, eq, inArray, lte, or, sql, type SQL } from 'drizzle-orm';
 import { db } from '../../db';
 import { deck as deckTable } from '../../db/schema/deck.ts';
 import { format as formatTable } from '../../db/schema/format.ts';
@@ -19,7 +19,9 @@ import {
   tournamentWeekendTournamentGroup,
 } from '../../db/schema/tournament_weekend.ts';
 import type {
+  LiveTournamentBracketDeckSummary,
   LiveTournamentBracketDetail,
+  LiveTournamentBracketStanding,
   LiveTournamentHomeDetail,
   LiveTournamentHomeStandingSummary,
   LiveTournamentHomeTournament,
@@ -131,6 +133,9 @@ const mapTournament = (row: typeof tournamentTable.$inferSelect): LiveTournament
 
 const standingKey = (playerDisplayName: string, tournamentId: string) =>
   `${playerDisplayName}:${tournamentId}`;
+
+const normalizeDisplayName = (value: string | null | undefined) =>
+  value?.trim().toLowerCase() ?? '';
 
 const isNewerWatchedMatch = (
   candidate: LiveTournamentHomeWatchedMatch,
@@ -587,41 +592,76 @@ export async function getLiveTournamentBracket(
     .filter(([, roundName]) => topCutRoundNames.has(roundName))
     .map(([roundNumber]) => roundNumber);
 
-  if (topCutRoundNumbers.length === 0) {
-    return {
-      weekendId,
-      tournamentId,
-      rounds: [],
-    };
-  }
+  const maxStandingRound = (
+    await db
+      .select({
+        roundNumber: sql<number | null>`MAX(${tournamentStandingTable.roundNumber})`,
+      })
+      .from(tournamentStandingTable)
+      .where(eq(tournamentStandingTable.tournamentId, tournamentId))
+  )[0]?.roundNumber;
+  const displayRound =
+    row.weekendTournament.roundNumber ??
+    (maxStandingRound == null ? null : Number(maxStandingRound));
 
-  const matches = await db
-    .select({
-      id: tournamentWeekendMatch.id,
-      tournamentId: tournamentWeekendMatch.tournamentId,
-      roundNumber: tournamentWeekendMatch.roundNumber,
-      matchKey: tournamentWeekendMatch.matchKey,
-      playerDisplayName1: tournamentWeekendMatch.playerDisplayName1,
-      playerDisplayName2: tournamentWeekendMatch.playerDisplayName2,
-      player1GameWin: tournamentWeekendMatch.player1GameWin,
-      player2GameWin: tournamentWeekendMatch.player2GameWin,
-      createdAt: tournamentWeekendMatch.createdAt,
-      updatedAt: tournamentWeekendMatch.updatedAt,
-    })
-    .from(tournamentWeekendMatch)
-    .where(
-      and(
-        eq(tournamentWeekendMatch.tournamentId, tournamentId),
-        inArray(tournamentWeekendMatch.roundNumber, topCutRoundNumbers),
-      ),
-    )
-    .orderBy(asc(tournamentWeekendMatch.roundNumber), asc(tournamentWeekendMatch.matchKey));
+  const topStandingsRows =
+    displayRound === null
+      ? []
+      : await db
+          .select({
+            tournamentId: tournamentStandingTable.tournamentId,
+            playerDisplayName: tournamentStandingTable.playerDisplayName,
+            roundNumber: tournamentStandingTable.roundNumber,
+            rank: tournamentStandingTable.rank,
+            points: tournamentStandingTable.points,
+            gameRecord: tournamentStandingTable.gameRecord,
+            matchRecord: tournamentStandingTable.matchRecord,
+            updatedAt: tournamentStandingTable.updatedAt,
+          })
+          .from(tournamentStandingTable)
+          .where(
+            and(
+              eq(tournamentStandingTable.tournamentId, tournamentId),
+              eq(tournamentStandingTable.roundNumber, displayRound),
+            ),
+          )
+          .orderBy(
+            asc(tournamentStandingTable.rank),
+            asc(tournamentStandingTable.playerDisplayName),
+          )
+          .limit(8);
+
+  const matches =
+    topCutRoundNumbers.length === 0
+      ? []
+      : await db
+          .select({
+            id: tournamentWeekendMatch.id,
+            tournamentId: tournamentWeekendMatch.tournamentId,
+            roundNumber: tournamentWeekendMatch.roundNumber,
+            matchKey: tournamentWeekendMatch.matchKey,
+            playerDisplayName1: tournamentWeekendMatch.playerDisplayName1,
+            playerDisplayName2: tournamentWeekendMatch.playerDisplayName2,
+            player1GameWin: tournamentWeekendMatch.player1GameWin,
+            player2GameWin: tournamentWeekendMatch.player2GameWin,
+            createdAt: tournamentWeekendMatch.createdAt,
+            updatedAt: tournamentWeekendMatch.updatedAt,
+          })
+          .from(tournamentWeekendMatch)
+          .where(
+            and(
+              eq(tournamentWeekendMatch.tournamentId, tournamentId),
+              inArray(tournamentWeekendMatch.roundNumber, topCutRoundNumbers),
+            ),
+          )
+          .orderBy(asc(tournamentWeekendMatch.roundNumber), asc(tournamentWeekendMatch.matchKey));
 
   const playerDisplayNames = [
     ...new Set(
-      matches
-        .flatMap(match => [match.playerDisplayName1, match.playerDisplayName2])
-        .filter((displayName): displayName is string => displayName !== null),
+      [
+        ...matches.flatMap(match => [match.playerDisplayName1, match.playerDisplayName2]),
+        ...topStandingsRows.map(standing => standing.playerDisplayName),
+      ].filter((displayName): displayName is string => displayName !== null),
     ),
   ];
 
@@ -646,6 +686,59 @@ export async function getLiveTournamentBracket(
     tournamentPlayers.map(row => [row.playerDisplayName, row]),
   );
 
+  const deckRows = await db
+    .select({
+      id: deckTable.id,
+      name: deckTable.name,
+      leaderCardId1: deckTable.leaderCardId1,
+      baseCardId: deckTable.baseCardId,
+      placement: tournamentDeckTable.placement,
+      meleePlayerUsername: tournamentDeckTable.meleePlayerUsername,
+    })
+    .from(tournamentDeckTable)
+    .innerJoin(deckTable, eq(tournamentDeckTable.deckId, deckTable.id))
+    .where(
+      and(
+        eq(tournamentDeckTable.tournamentId, tournamentId),
+        playerDisplayNames.length > 0
+          ? or(
+              inArray(tournamentDeckTable.meleePlayerUsername, playerDisplayNames),
+              lte(tournamentDeckTable.placement, 8),
+            )
+          : lte(tournamentDeckTable.placement, 8),
+      ),
+    )
+    .orderBy(asc(tournamentDeckTable.placement), asc(tournamentDeckTable.meleePlayerUsername));
+  const deckByDisplayName = new Map<string, LiveTournamentBracketDeckSummary>();
+  const normalizedDeckByDisplayName = new Map<string, LiveTournamentBracketDeckSummary>();
+
+  for (const deckRow of deckRows) {
+    if (!deckRow.meleePlayerUsername) continue;
+
+    deckByDisplayName.set(deckRow.meleePlayerUsername, deckRow);
+
+    const normalizedName = normalizeDisplayName(deckRow.meleePlayerUsername);
+    if (normalizedName && !normalizedDeckByDisplayName.has(normalizedName)) {
+      normalizedDeckByDisplayName.set(normalizedName, deckRow);
+    }
+  }
+
+  const getDeckForPlayer = (playerDisplayName: string | null | undefined) => {
+    if (!playerDisplayName) return null;
+    return (
+      deckByDisplayName.get(playerDisplayName) ??
+      normalizedDeckByDisplayName.get(normalizeDisplayName(playerDisplayName)) ??
+      null
+    );
+  };
+
+  const topStandings: LiveTournamentBracketStanding[] = topStandingsRows.map(standing => ({
+    standing,
+    player: { displayName: standing.playerDisplayName },
+    tournamentPlayer: tournamentPlayerByDisplayName.get(standing.playerDisplayName) ?? null,
+    deck: getDeckForPlayer(standing.playerDisplayName),
+  }));
+
   const roundsByName = new Map<
     (typeof topEightBracketRoundOrder)[number],
     LiveTournamentBracketDetail['rounds'][number]['matches']
@@ -665,6 +758,8 @@ export async function getLiveTournamentBracket(
       tournamentPlayer2: match.playerDisplayName2
         ? (tournamentPlayerByDisplayName.get(match.playerDisplayName2) ?? null)
         : null,
+      deck1: getDeckForPlayer(match.playerDisplayName1),
+      deck2: getDeckForPlayer(match.playerDisplayName2),
     };
 
     if (existing) {
@@ -692,5 +787,6 @@ export async function getLiveTournamentBracket(
             b.roundName as (typeof topEightBracketRoundOrder)[number],
           ),
       ),
+    topStandings,
   };
 }

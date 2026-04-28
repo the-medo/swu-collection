@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import type { LiveTournamentMatchEntry } from '../../liveTournamentTypes.ts';
 import {
   type BracketRound,
@@ -134,10 +134,19 @@ function buildDisplayRounds(rounds: BracketRound[]): DisplayRound[] {
   }));
 }
 
-export function LiveBracketRounds({ rounds }: { rounds: BracketRound[] }) {
-  const [highlightedPlayerDisplayName, setHighlightedPlayerDisplayName] = useState<string | null>(
-    null,
-  );
+export function LiveBracketRounds({
+  rounds,
+  highlightedPlayerDisplayName,
+  selectedDeckId,
+  setHighlightedPlayerDisplayName,
+  setSelectedDeckId,
+}: {
+  rounds: BracketRound[];
+  highlightedPlayerDisplayName: string | null;
+  selectedDeckId: string | undefined;
+  setHighlightedPlayerDisplayName: (playerDisplayName: string | null) => void;
+  setSelectedDeckId: (deckId: string | undefined) => void;
+}) {
   const displayRounds = useMemo(() => buildDisplayRounds(rounds), [rounds]);
 
   return (
@@ -150,7 +159,9 @@ export function LiveBracketRounds({ rounds }: { rounds: BracketRound[] }) {
             matches={round.matches}
             roundIndex={roundIndex}
             highlightedPlayerDisplayName={highlightedPlayerDisplayName}
+            selectedDeckId={selectedDeckId}
             setHighlightedPlayerDisplayName={setHighlightedPlayerDisplayName}
+            setSelectedDeckId={setSelectedDeckId}
           />
         ))}
       </div>

@@ -290,6 +290,29 @@ export type LiveTournamentBracketTournamentPlayer = Pick<
   'tournamentId' | 'playerDisplayName' | 'leaderCardId' | 'baseCardKey'
 >;
 
+export type LiveTournamentBracketDeckSummary = Pick<
+  Deck,
+  'id' | 'name' | 'leaderCardId1' | 'baseCardId'
+> &
+  Pick<TournamentDeck, 'placement' | 'meleePlayerUsername'>;
+
+export type LiveTournamentBracketStanding = {
+  standing: Pick<
+    TournamentStanding,
+    | 'tournamentId'
+    | 'playerDisplayName'
+    | 'roundNumber'
+    | 'rank'
+    | 'points'
+    | 'gameRecord'
+    | 'matchRecord'
+    | 'updatedAt'
+  >;
+  player: LiveTournamentBracketPlayer;
+  tournamentPlayer: LiveTournamentBracketTournamentPlayer | null;
+  deck: LiveTournamentBracketDeckSummary | null;
+};
+
 export type LiveTournamentBracketMatch = {
   match: Pick<
     TournamentWeekendMatch,
@@ -308,6 +331,8 @@ export type LiveTournamentBracketMatch = {
   player2: LiveTournamentBracketPlayer | null;
   tournamentPlayer1: LiveTournamentBracketTournamentPlayer | null;
   tournamentPlayer2: LiveTournamentBracketTournamentPlayer | null;
+  deck1: LiveTournamentBracketDeckSummary | null;
+  deck2: LiveTournamentBracketDeckSummary | null;
 };
 
 export type LiveTournamentBracketRound = {
@@ -319,6 +344,7 @@ export type LiveTournamentBracketDetail = {
   weekendId: string;
   tournamentId: string;
   rounds: LiveTournamentBracketRound[];
+  topStandings: LiveTournamentBracketStanding[];
 };
 
 export type LiveTournamentBracketResponse = {

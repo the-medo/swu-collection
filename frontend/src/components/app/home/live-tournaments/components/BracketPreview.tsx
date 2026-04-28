@@ -10,6 +10,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog.tsx';
 import { LiveBracketRounds } from './bracket-preview/LiveBracketRounds.tsx';
+import { LiveBracketTopStandings } from './bracket-preview/LiveBracketTopStandings.tsx';
+import DeckViewer from '@/components/app/tournaments/TournamentTopBracket/components/DeckViewer.tsx';
 
 export function BracketPreview({
   weekendId,
@@ -21,13 +23,27 @@ export function BracketPreview({
   hasBracketMatches: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const [highlightedPlayerDisplayName, setHighlightedPlayerDisplayName] = useState<string | null>(
+    null,
+  );
+  const [selectedDeckId, setSelectedDeckId] = useState<string>();
   const bracketQuery = useLiveTournamentBracket(weekendId, tournamentId, open && hasBracketMatches);
   const rounds = bracketQuery.data?.data.rounds ?? [];
+  const topStandings = bracketQuery.data?.data.topStandings ?? [];
 
   if (!hasBracketMatches) return null;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={nextOpen => {
+        setOpen(nextOpen);
+        if (!nextOpen) {
+          setHighlightedPlayerDisplayName(null);
+          setSelectedDeckId(undefined);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           type="button"
@@ -39,7 +55,7 @@ export function BracketPreview({
           Top 8 bracket
         </Button>
       </DialogTrigger>
-      <DialogContent className=" max-w-[96vw] w-[1200px] p-4 sm:p-6">
+      <DialogContent className="flex max-h-[92vh] w-[min(98vw,1600px)] max-w-[98vw] flex-col overflow-hidden p-4 sm:p-6">
         <DialogHeader className="pr-8">
           <DialogTitle>Top 8 bracket</DialogTitle>
         </DialogHeader>
@@ -52,13 +68,38 @@ export function BracketPreview({
           <div className="rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
             {bracketQuery.error?.message ?? 'Failed to load bracket.'}
           </div>
-        ) : rounds.length === 0 ? (
-          <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-            No bracket matches are available yet.
-          </div>
         ) : (
-          <div className="max-h-[85vh] overflow-x-auto overflow-y-auto pb-1 scale-70 -m-[10%] xl:scale-80 xl:-m-[7%] 2xl:scale-90 2xl:-m-[4%]">
-            <LiveBracketRounds rounds={rounds} />
+          <div className="grid min-h-0 flex-1 gap-4 overflow-hidden lg:grid-cols-[minmax(0,1fr)_22rem]">
+            <div className="min-h-[360px] min-w-0 overflow-auto rounded-md border bg-card/60 p-3">
+              {selectedDeckId ? (
+                <DeckViewer
+                  selectedDeckId={selectedDeckId}
+                  setSelectedDeckId={setSelectedDeckId}
+                  compact={true}
+                />
+              ) : rounds.length === 0 ? (
+                <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+                  No bracket matches are available yet.
+                </div>
+              ) : (
+                <LiveBracketRounds
+                  rounds={rounds}
+                  highlightedPlayerDisplayName={highlightedPlayerDisplayName}
+                  selectedDeckId={selectedDeckId}
+                  setHighlightedPlayerDisplayName={setHighlightedPlayerDisplayName}
+                  setSelectedDeckId={setSelectedDeckId}
+                />
+              )}
+            </div>
+            <div className="min-h-0 overflow-y-auto">
+              <LiveBracketTopStandings
+                topStandings={topStandings}
+                highlightedPlayerDisplayName={highlightedPlayerDisplayName}
+                selectedDeckId={selectedDeckId}
+                setHighlightedPlayerDisplayName={setHighlightedPlayerDisplayName}
+                setSelectedDeckId={setSelectedDeckId}
+              />
+            </div>
           </div>
         )}
       </DialogContent>
