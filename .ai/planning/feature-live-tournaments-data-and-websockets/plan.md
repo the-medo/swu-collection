@@ -3,7 +3,7 @@
 ## Summary
 The current `GET /api/tournament-weekends/live` endpoint reuses the full tournament weekend detail graph. That is useful for admin/detail pages, but it is too heavy for the live homepage: standings, matches, players, and tournament players are repeatedly nested across every tournament and watched player. For a 32 tournament weekend this can reach megabytes, and the same oversized shape would be awkward to send or patch through websockets.
 
-Create a dedicated live-home read model, keep the existing admin/detail route available, cache the public live-home response until live data changes, and use websockets primarily as a query invalidation/update signal for logged-in users.
+Create a dedicated live-home read model, keep the existing admin/detail route available, cache the public live-home response until live data changes, and use websockets to send typed partial data updates so logged-in clients can patch their TanStack Query cache directly.
 
 ## Current Findings
 - `server/routes/tournament-weekends/live/get.ts` only finds the active weekend and calls `getTournamentWeekendDetail(liveWeekend.id, user?.id)`.
@@ -98,6 +98,8 @@ Update `types/TournamentWeekend.ts` or add a sibling type file with clearer publ
 - `LiveTournamentBracketResponse`
 - `LiveTournamentBracketMatch`
 - `LiveWatchedPlayerSummary`
+- `LiveTournamentHomePatchEvent`
+- `LiveTournamentHomePatch`
 
 Frontend hooks:
 - Change `useLiveTournamentWeekend` to return `LiveTournamentHomeResponse`.
@@ -131,7 +133,7 @@ Query keys:
 
 5. Preserve guest behavior.
    - Guests should continue to use periodic refetch.
-   - Logged-in users should eventually rely on websocket invalidation plus stale-time/refetch fallback.
+   - Logged-in users should rely on websocket patch events plus a low-frequency safety refetch after reconnects or missed versions.
 
 ## Caching Plan
 Use process-local cache first. Do not introduce Redis or a distributed cache unless deployment requires it later.
@@ -141,7 +143,7 @@ Cache entries:
 - `live-home:weekend:{weekendId}:user:{userId}` only for the personalized watch overlay, or keep the user overlay uncached if it is already cheap after narrowing queries
 - `live-bracket:weekend:{weekendId}:tournament:{tournamentId}` with a short TTL
 
-Invalidation triggers:
+Cache refresh/update triggers:
 - live tournament check completes
 - live tournament progress check completes
 - tournament import finishes
@@ -151,15 +153,17 @@ Invalidation triggers:
 - tournament weekend group add/remove changes meta chart data
 
 Recommended behavior:
-- Cache public live-home data until an invalidation bump occurs, with a safety TTL around 30 seconds.
-- Store a per-weekend `version` number in memory. Increment it on invalidation and include it in `meta.version`.
+- Cache public live-home data until a version bump occurs, with a safety TTL around 30 seconds.
+- Store a per-weekend `version` number in memory. Increment it whenever cached live data changes and include it in `meta.version`.
 - On a cache miss, build the lean DTO and cache `{ value, version, generatedAt, expiresAt }`.
 - If multiple requests miss at once, dedupe the in-flight build promise for the same cache key.
 - If there is no live weekend, cache `{ data: null }` briefly, such as 15 to 30 seconds.
+- When a live check/progress check/resource/import/watch mutation changes data, rebuild only the affected lean slice where possible, update the process-local cached object, increment the version, and broadcast the same slice as a websocket patch.
+- If a change is broad or awkward to express as a small patch, rebuild the full lean live-home DTO once on the backend, replace the process-local cached object, and broadcast a `live_weekend.replaced` payload with that lean DTO. This still avoids every browser doing its own HTTP refetch.
 
 Multi-instance note:
-- Process-local invalidation is enough for local/simple deployments.
-- If production runs multiple app instances, websocket and cache invalidation will need a shared pub/sub or shorter TTL safety net. Keep the API contract compatible with that later.
+- Process-local cache updates are enough for local/simple deployments.
+- If production runs multiple app instances, websocket patches and cache updates will need shared pub/sub or sticky sessions plus a TTL safety net. Keep the API contract compatible with that later.
 
 ## Websocket Plan
 Add live tournament sockets in the same style as `server/routes/ws/game-results.ts`.
@@ -185,45 +189,102 @@ Rooms:
 
 Event strategy:
 - Keep events small.
-- Prefer sending affected query keys and compact metadata, then let TanStack Query invalidate/refetch the lean endpoint.
-- Patch the cache directly only for tiny, obvious changes later.
+- Prefer sending the affected lean DTO slice and enough ids for the frontend to merge it into cached `LiveTournamentHomeResponse`.
+- Do not make every connected client refetch the whole live endpoint after normal live updates.
+- Use direct cache patching for expected frequent changes: tournament status/progress, current standings summaries, undefeated players, bracket availability, resources, watched player summaries, and finished import/winning deck summaries.
+- Use a full lean replacement event only for broad structural changes, such as changing the active weekend or reconciling weekend tournament membership.
+- Keep a `version` on events and responses. Clients can ignore stale events and schedule one HTTP resync if they detect a version gap.
 
 Suggested event envelope:
 
 ```ts
-type LiveTournamentSocketEvent = {
-  type:
-    | 'live_weekend.connected'
-    | 'live_weekend.invalidated'
-    | 'live_tournament.updated'
-    | 'live_tournament.progress_updated'
-    | 'live_resource.updated'
-    | 'player_watch.updated'
-    | 'tournament_import.finished';
-  data: {
-    weekendId: string;
-    tournamentId?: string;
-    userId?: string;
-    reason?: string;
-  };
-  queryKeys: readonly unknown[][];
-  at: string;
-};
+type LiveTournamentSocketEvent =
+  | {
+      type: 'live_weekend.connected';
+      data: {
+        weekendId: string;
+        version: number;
+      };
+      at: string;
+    }
+  | {
+      type:
+        | 'live_weekend.replaced'
+        | 'live_tournament.updated'
+        | 'live_tournament.progress_updated'
+        | 'live_resource.upserted'
+        | 'live_resource.deleted'
+        | 'player_watch.updated'
+        | 'tournament_import.finished';
+      data: {
+        weekendId: string;
+        version: number;
+        patch: LiveTournamentHomePatch;
+      };
+      at: string;
+    };
+
+type LiveTournamentHomePatch =
+  | {
+      kind: 'weekend_replace';
+      detail: LiveTournamentHome;
+    }
+  | {
+      kind: 'weekend_summary';
+      weekend: LiveWeekendSummary;
+    }
+  | {
+      kind: 'tournament_summary';
+      tournament: LiveWeekendTournamentSummary;
+    }
+  | {
+      kind: 'resources';
+      resources: TournamentWeekendResource[];
+      deletedResourceIds?: string[];
+    }
+  | {
+      kind: 'watched_players';
+      watchlist: PlayerWatchSummary[];
+      watchedPlayers: LiveWatchedPlayerSummary[];
+      watchedPlayerDisplayNames: string[];
+    }
+  | {
+      kind: 'meta_groups';
+      tournamentGroups: LiveWeekendMetaGroup[];
+    };
 ```
 
+Event types:
+- `live_weekend.connected`: confirms the socket is open and tells the client the current backend version.
+- `live_weekend.replaced`: carries the full lean live-home DTO when weekend membership, active weekend, or another broad structure changes.
+- `live_tournament.updated`: carries one updated `LiveWeekendTournamentSummary` after status/start/decklist/import fields change.
+- `live_tournament.progress_updated`: carries one updated `LiveWeekendTournamentSummary` after current round, match counters, current standings summaries, undefeated players, or bracket availability changes.
+- `live_resource.upserted` / `live_resource.deleted`: carries the approved resource list or resource delta for the live weekend.
+- `player_watch.updated`: sent to the user's room with the updated watchlist and watched player summaries.
+- `tournament_import.finished`: carries one updated tournament summary, especially `winningDeck` and champion fields.
+
+Patch helpers:
+- Add backend helpers that return individual lean slices, such as `getLiveTournamentHomeTournamentSummary(weekendId, tournamentId)`, `getLiveTournamentHomeResources(weekendId)`, and `getLiveTournamentHomeWatchedPlayers(weekendId, userId)`.
+- Add frontend helpers that apply patches immutably to the cached `LiveTournamentHomeResponse`.
+- Keep patch helpers deterministic and id-based: replace arrays by id, remove deleted ids, and leave unknown tournaments/resources unchanged unless the event is a full replacement.
+- Do not send raw DB mutation rows if the frontend expects a derived DTO. Send the same derived lean shapes used by the live endpoint.
+
 Event mappings:
-- `publishLiveTournamentChecked`: invalidate `live()` and `detail(weekendId)`; include tournament id and status.
-- `publishLiveTournamentProgressChecked`: invalidate `live()`, `liveBracket(weekendId, tournamentId)`, and `detail(weekendId)`.
-- `publishTournamentImportFinished`: invalidate `live()`, `detail(weekendId)`, tournament detail/deck queries if they exist.
-- resource approval/update: invalidate `live()`, `resources(weekendId, ...)`, and `detail(weekendId)`.
-- watchlist mutations: invalidate `live()` for that user and player watch queries.
+- `publishLiveTournamentChecked`: update backend cache for the weekend summary and affected tournament summary; broadcast `live_tournament.updated`.
+- `publishLiveTournamentProgressChecked`: update backend cache for the affected tournament summary; broadcast `live_tournament.progress_updated`. If bracket data is already cached/open, also broadcast a bracket patch or mark the bracket cache version stale.
+- `publishTournamentImportFinished`: update backend cache for the affected tournament summary with winning deck data; broadcast `tournament_import.finished`.
+- resource approval/update/delete: update backend cache resources; broadcast `live_resource.upserted` or `live_resource.deleted`.
+- watchlist mutations: rebuild the requesting user's watched-player overlay; send `player_watch.updated` to `live-user:{userId}`.
+- weekend reconcile/live toggle/group mutations: rebuild the full lean live-home DTO; broadcast `live_weekend.replaced` or `meta_groups` depending on how broad the change is.
 
 Frontend websocket hook:
 - Add `useLiveTournamentSocket(weekendId)` and call it from `LiveTournamentHome` only when logged in and a weekend id exists.
 - Build URL similarly to `getGameResultsWsUrl`, for example `getLiveTournamentWsUrl(weekendId)`.
 - Reconnect with bounded exponential backoff like `GameResultsProvider`.
-- On socket events, loop through `queryKeys` and call `queryClient.invalidateQueries({ queryKey })`.
-- Keep guest `refetchInterval`; for logged-in users, add a fallback refetch interval only when the socket is disconnected for a while.
+- On socket events, use `queryClient.setQueryData(tournamentWeekendQueryKeys.live(), updater)` and apply the received `LiveTournamentHomePatch`.
+- If an event version is older than the cached version, ignore it.
+- If an event version skips ahead by more than 1, schedule one debounced HTTP refetch of the live query because the client probably missed a patch while reconnecting.
+- Keep guest `refetchInterval`; for logged-in users, add a low-frequency fallback refetch only after socket reconnects, version gaps, or patch application errors.
 
 ## Implementation Order
 1. Baseline the current payload size for `/api/tournament-weekends/live`.
@@ -231,10 +292,10 @@ Frontend websocket hook:
 3. Switch `GET /api/tournament-weekends/live` to the lean read model.
 4. Update live homepage components and utilities to consume the lean shape.
 5. Add lazy bracket endpoint, hook, and dialog loading flow.
-6. Add process-local cache and invalidation helpers.
-7. Wire cache invalidation into live checks, progress checks, resource mutations, weekend mutations, group mutations, imports, and watchlist mutations.
+6. Add process-local cache and server-side patch/update helpers.
+7. Wire backend cache updates and patch payload creation into live checks, progress checks, resource mutations, weekend mutations, group mutations, imports, and watchlist mutations.
 8. Add websocket route, realtime room module, and event publishing.
-9. Add frontend live websocket hook and query invalidation behavior.
+9. Add frontend live websocket hook and direct TanStack Query patch application.
 10. Re-measure payload size and run validation.
 
 ## Validation
@@ -246,12 +307,14 @@ Automated checks:
   - current standing selection
   - top cut bracket filtering
   - watched player latest standing/latest match selection
-  - cache invalidation key generation
+  - backend patch payload generation
+  - frontend patch application helpers
 
 Manual scenarios:
 - Live homepage loads for guests and logged-in users.
 - Guest live homepage refetches periodically.
-- Logged-in live homepage connects to websocket and invalidates/refetches after a simulated live check event.
+- Logged-in live homepage connects to websocket and updates the cached tournament card after a simulated live check event without issuing a live-endpoint HTTP refetch.
+- A missed socket version gap causes exactly one debounced live-endpoint refetch.
 - A 32 tournament live weekend payload is much smaller than the current response.
 - Tournament cards still show status, country, player count, round, match progress, Melee link, undefeated badges, and champion fallback.
 - Opening a top 8 bracket dialog fetches bracket data lazily and renders leader/base art.
@@ -263,6 +326,7 @@ Manual scenarios:
 ## Risks And Notes
 - The full detail type is shared by public and admin code today. Split public DTOs carefully to avoid breaking admin screens mid-change.
 - User-specific watch data makes caching less straightforward. Keep the public portion cacheable and the watch overlay narrow.
-- Websocket payloads should not try to mirror the whole endpoint. Query invalidation is simpler and robust enough for v1.
-- If production runs more than one server process, process-local cache invalidation can briefly diverge. The TTL safety net limits the damage; shared pub/sub can be added later.
+- Websocket payloads should send derived lean DTO slices, not raw DB rows and not the whole old detail graph.
+- Patch merging can drift if client and server DTO assumptions diverge. Keep patch helpers typed, small, and tested.
+- If production runs more than one server process, process-local cache updates and websocket patches can briefly diverge. The TTL/version safety net limits the damage; shared pub/sub can be added later.
 - There is a small cleanup opportunity in `liveTournamentCheck`: the `wasCheckedFinished` update should be awaited when that implementation area is touched.
