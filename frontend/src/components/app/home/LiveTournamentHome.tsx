@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Loader2 } from 'lucide-react';
 import {
   useGetTournamentWeekendResources,
+  useLiveTournamentSocket,
   useLiveTournamentWeekend,
 } from '@/api/tournament-weekends';
 import { useRole } from '@/hooks/useRole.ts';
@@ -82,6 +83,7 @@ export default function LiveTournamentHome() {
     refetchInterval: user ? false : 60 * 1000,
   });
   const detail = data?.data ?? null;
+  useLiveTournamentSocket(detail?.weekend.id);
   const { data: pendingResourcesData } = useGetTournamentWeekendResources(
     detail?.weekend.id,
     'pending',

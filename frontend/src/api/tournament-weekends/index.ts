@@ -10,6 +10,7 @@ export * from './useGetTournamentWeekendResources';
 export * from './useGetTournamentWeekends';
 export * from './useLiveTournamentBracket';
 export * from './useLiveTournamentWeekend';
+export * from './useLiveTournamentSocket';
 export * from './useRefreshTournamentWeekendTournaments';
 export * from './useUpdateTournamentWeekend';
 export * from './useUpdateTournamentWeekendResource';

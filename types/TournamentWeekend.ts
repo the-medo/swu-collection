@@ -392,6 +392,20 @@ export type LiveTournamentHomePatchEvent = {
   at: string;
 };
 
+export type LiveTournamentHomeConnectedEvent = {
+  type: 'live_weekend.connected';
+  data: {
+    weekendId: string;
+    userId: string;
+    version: number;
+    at: string;
+  };
+};
+
+export type LiveTournamentHomeSocketEvent =
+  | LiveTournamentHomeConnectedEvent
+  | LiveTournamentHomePatchEvent;
+
 export type TournamentWeekendDetailResponse = {
   data: LiveTournamentWeekendDetail;
 };
