@@ -17,6 +17,16 @@ SWU Base is an all-in-one toolset for Star Wars: Unlimited players, providing co
 - **Backend**: Hono, PostgreSQL, Drizzle ORM
 - **Runtime**: Bun for both server and client
 
+## Screenshotter setup
+
+The server screenshotter uses Playwright Chromium. After installing root dependencies, install the browser binary with:
+
+```bash
+bun run screenshotter:install
+```
+
+The production Dockerfile installs Chromium and its system dependencies with Playwright's `--with-deps` option.
+
 ## Contribution
 We welcome contributions from the community! Whether it's fixing bugs, adding features, or improving documentation. See our [Contributing Guide](CONTRIBUTING.md) for more information.
 

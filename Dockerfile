@@ -35,5 +35,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 # Copy built application
 COPY --from=build /app /app
 
+# Install Playwright Chromium and its runtime dependencies for the server screenshotter
+RUN bunx playwright install --with-deps chromium
+
 EXPOSE 3010
 CMD [ "bun", "run", "start" ]
