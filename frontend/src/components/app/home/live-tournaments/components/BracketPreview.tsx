@@ -55,7 +55,7 @@ export function BracketPreview({
           Top 8 bracket
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex max-h-[92vh] w-[min(98vw,1600px)] max-w-[98vw] flex-col overflow-hidden p-4 sm:p-6">
+      <DialogContent className="flex max-h-[92vh] w-[min(98vw,1600px)] max-w-[98vw] flex-col overflow-x-hidden overflow-y-auto p-4 sm:p-6">
         <DialogHeader className="pr-8">
           <DialogTitle>Top 8 bracket</DialogTitle>
         </DialogHeader>
@@ -69,8 +69,8 @@ export function BracketPreview({
             {bracketQuery.error?.message ?? 'Failed to load bracket.'}
           </div>
         ) : (
-          <div className="grid min-h-0 flex-1 gap-4 overflow-hidden lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <div className="min-h-[360px] min-w-0 overflow-auto rounded-md border bg-card/60 p-3">
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
+            <div className="min-w-0 overflow-x-auto rounded-md border bg-card/60 p-3">
               {selectedDeckId ? (
                 <DeckViewer
                   selectedDeckId={selectedDeckId}
@@ -91,9 +91,10 @@ export function BracketPreview({
                 />
               )}
             </div>
-            <div className="min-h-0 overflow-y-auto">
+            <div className="min-w-0">
               <LiveBracketTopStandings
                 topStandings={topStandings}
+                rounds={rounds}
                 highlightedPlayerDisplayName={highlightedPlayerDisplayName}
                 selectedDeckId={selectedDeckId}
                 setHighlightedPlayerDisplayName={setHighlightedPlayerDisplayName}

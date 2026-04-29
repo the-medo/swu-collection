@@ -3,7 +3,6 @@ import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDeco
 import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import { cn } from '@/lib/utils.ts';
 import { basicBaseForAspect } from '../../../../../../../../shared/lib/basicBases.ts';
-import { extractDeckNameFromBrackets } from '@/components/app/tournaments/lib/extractDeckNameFromBrackets.ts';
 import type {
   LiveTournamentBracketDeckSummary,
   LiveTournamentMatchEntry,
@@ -23,9 +22,6 @@ type LiveTournamentPlayerCardProps = {
   tournamentPlayer: MatchTournamentPlayer;
   deck?: LiveTournamentBracketDeckSummary | null;
   gameWins?: number | null;
-  rank?: number | null;
-  matchRecord?: string | null;
-  points?: number | null;
   isWinner?: boolean;
   isLoser?: boolean;
   isHighlighted?: boolean;
@@ -41,9 +37,6 @@ export function LiveTournamentPlayerCard({
   tournamentPlayer,
   deck,
   gameWins,
-  rank,
-  matchRecord,
-  points,
   isWinner = false,
   isLoser = false,
   isHighlighted = false,
@@ -60,7 +53,6 @@ export function LiveTournamentPlayerCard({
     getCardIdFromKey(tournamentPlayer?.baseCardKey ?? undefined, cardListData?.cards);
   const leaderCard = leaderCardId ? cardListData?.cards[leaderCardId] : undefined;
   const baseCard = baseCardId ? cardListData?.cards[baseCardId] : undefined;
-  const deckName = deck?.name ? extractDeckNameFromBrackets(deck.name) : undefined;
   const isClickable = !!onClick;
   const isStanding = variant === 'standing';
   const Component = isClickable ? 'button' : 'div';
@@ -77,12 +69,6 @@ export function LiveTournamentPlayerCard({
       </div>
     );
   }
-
-  const secondaryParts = [
-    deckName,
-    matchRecord ? `${matchRecord}` : undefined,
-    points !== null && points !== undefined ? `${points} pts` : undefined,
-  ].filter(Boolean);
 
   return (
     <Component
@@ -106,13 +92,10 @@ export function LiveTournamentPlayerCard({
         </DeckBackgroundDecoration>
       )}
 
-      <div className="relative z-20 flex h-full items-center gap-2 pl-9">
-        {isStanding && rank ? (
-          <div className="flex h-8 min-w-8 items-center justify-center rounded-sm bg-muted/80 text-xs font-bold text-muted-foreground">
-            #{rank}
-          </div>
-        ) : null}
-        <div className={cn('min-w-0 flex-1', isStanding ? 'text-left' : 'text-right')}>
+      <div
+        className={cn('relative z-20 flex h-full items-center gap-2 pl-9', isStanding && 'pr-3')}
+      >
+        <div className="min-w-0 flex-1 text-right">
           <h6
             className={cn(
               'mb-0! truncate leading-tight',
@@ -121,11 +104,6 @@ export function LiveTournamentPlayerCard({
           >
             {playerDisplayName}
           </h6>
-          {secondaryParts.length > 0 && (
-            <div className="truncate text-xs text-muted-foreground">
-              {secondaryParts.join(' - ')}
-            </div>
-          )}
         </div>
         {gameWins !== undefined && (
           <div
