@@ -1,3 +1,4 @@
+export * from './captureScreenshots.ts';
 export * from './config.ts';
 export * from './persistScreenshots.ts';
 export * from './playwright.ts';

@@ -27,6 +27,18 @@ bun run screenshotter:install
 
 The production Dockerfile installs Chromium and its system dependencies with Playwright's `--with-deps` option.
 
+Run tournament screenshots with:
+
+```bash
+bun run screenshotter:tournament -- --tournament-id <uuid>
+```
+
+For local smoke checks without R2 upload:
+
+```bash
+bun run screenshotter:tournament -- --tournament-id <uuid> --skip-upload --output-dir .tmp/screenshots/<uuid>
+```
+
 ## Contribution
 We welcome contributions from the community! Whether it's fixing bugs, adding features, or improving documentation. See our [Contributing Guide](CONTRIBUTING.md) for more information.
 

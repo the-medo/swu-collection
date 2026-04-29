@@ -22,6 +22,13 @@ export const tournamentScreenshotTargets = {
 export type TournamentScreenshotTarget =
   (typeof tournamentScreenshotTargets)[keyof typeof tournamentScreenshotTargets];
 
+export const defaultTournamentScreenshotTargets: TournamentScreenshotTarget[] = [
+  tournamentScreenshotTargets.bracket,
+  tournamentScreenshotTargets.metaLeadersAndBaseAll,
+  tournamentScreenshotTargets.metaLeadersAndBaseTop8,
+  tournamentScreenshotTargets.winningDeck,
+];
+
 export type ScreenshotterTarget = TournamentScreenshotTarget | (string & {});
 
 export type ScreenshotterViewport = {

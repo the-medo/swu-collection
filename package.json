@@ -9,6 +9,8 @@
     "db-generate": "bun drizzle-kit generate",
     "db-migrate": "bun migrate.ts",
     "db-docker": "docker run -d --name swubase-postgres -e POSTGRES_PASSWORD=password -p 5442:5432 postgres:16-alpine",
+    "screenshotter": "bun server/screenshotter/runScreenshotter.ts",
+    "screenshotter:tournament": "bun server/screenshotter/runTournamentScreenshots.ts",
     "screenshotter:install": "bunx playwright install chromium"
   },
   "devDependencies": {

@@ -51,6 +51,11 @@ export type ScreenshotterPersistedResult = ScreenshotterResult & {
   persisted: boolean;
 };
 
+export type ScreenshotterOutputFile = {
+  target: ScreenshotterTarget | 'manifest';
+  path: string;
+};
+
 export type PersistScreenshotterManifestResult = {
   persisted: ScreenshotterPersistedResult[];
   skippedFailures: ScreenshotterResult[];
@@ -73,4 +78,20 @@ export type ScreenshotterTargetDefinition = {
   scope: ScreenshotterScope;
   url: string;
   selector: string;
+};
+
+export type CaptureScreenshotsOptions = {
+  scope: ScreenshotterScope;
+  targets?: ScreenshotterTarget[];
+  skipUpload?: boolean;
+  outputDir?: string;
+  persist?: boolean;
+  config?: ScreenshotterConfig;
+};
+
+export type CaptureScreenshotsResult = {
+  manifest: ScreenshotterManifest;
+  manifestUpload?: ScreenshotterUploadResult;
+  outputFiles: ScreenshotterOutputFile[];
+  persistence?: PersistScreenshotterManifestResult;
 };
