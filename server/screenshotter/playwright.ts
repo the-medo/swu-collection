@@ -69,7 +69,8 @@ export async function waitForFonts(page: Page) {
 
 export async function waitForImagesInLocator(locator: Locator, timeoutMs: number) {
   await locator.evaluate(async (element, timeout) => {
-    const images = Array.from(element.querySelectorAll('img'));
+    const images =
+      element instanceof HTMLImageElement ? [element] : Array.from(element.querySelectorAll('img'));
     if (images.length === 0) return;
 
     await Promise.race([
@@ -94,6 +95,84 @@ export async function waitForImagesInLocator(locator: Locator, timeoutMs: number
       ),
     ]);
   }, timeoutMs);
+}
+
+export async function waitForNoSkeletonsInLocator(locator: Locator, timeoutMs: number) {
+  await locator.evaluate(async (element, timeout) => {
+    const skeletonSelector = '.animate-pulse';
+
+    if (!element.querySelector(skeletonSelector)) return;
+
+    await new Promise<void>((resolve, reject) => {
+      let observer: MutationObserver;
+      const timeoutId = window.setTimeout(() => {
+        observer.disconnect();
+        reject(new Error('Timed out waiting for skeletons to disappear.'));
+      }, timeout);
+
+      observer = new MutationObserver(() => {
+        if (element.querySelector(skeletonSelector)) return;
+
+        window.clearTimeout(timeoutId);
+        observer.disconnect();
+        resolve();
+      });
+
+      observer.observe(element, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class'],
+      });
+    });
+  }, timeoutMs);
+}
+
+export async function waitForRenderedVisualInLocator(
+  locator: Locator,
+  timeoutMs: number,
+  minimumSize = 80,
+) {
+  await locator.evaluate(
+    async (element, { timeout, minimumSize }) => {
+      const hasRenderedVisual = () =>
+        Array.from(element.querySelectorAll('svg, canvas')).some(visual => {
+          const box = visual.getBoundingClientRect();
+          if (box.width < minimumSize || box.height < minimumSize) return false;
+
+          if (visual instanceof HTMLCanvasElement) {
+            return visual.width > 0 && visual.height > 0;
+          }
+
+          return visual.querySelectorAll('*').length > 3;
+        });
+
+      if (hasRenderedVisual()) return;
+
+      await new Promise<void>((resolve, reject) => {
+        let observer: MutationObserver;
+        const timeoutId = window.setTimeout(() => {
+          observer.disconnect();
+          reject(new Error('Timed out waiting for chart output.'));
+        }, timeout);
+
+        observer = new MutationObserver(() => {
+          if (!hasRenderedVisual()) return;
+
+          window.clearTimeout(timeoutId);
+          observer.disconnect();
+          resolve();
+        });
+
+        observer.observe(element, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+        });
+      });
+    },
+    { timeout: timeoutMs, minimumSize },
+  );
 }
 
 export async function waitForScreenshotTarget(

@@ -13,9 +13,10 @@ export type ScreenshotterScope = {
 };
 
 export const tournamentScreenshotTargets = {
-  bracket: 'tournament-bracket',
-  topPlacementDeck: 'top-placement-deck',
-  metaAnalysis: 'tournament-meta-analysis',
+  bracket: 'bracket',
+  metaLeadersAndBaseAll: 'meta-leaders-and-base-all',
+  metaLeadersAndBaseTop8: 'meta-leaders-and-base-top8',
+  winningDeck: 'winning-deck',
 } as const;
 
 export type TournamentScreenshotTarget =

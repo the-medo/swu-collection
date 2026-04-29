@@ -36,6 +36,17 @@ export type ScreenshotterUploadResult = {
   byteSize: number;
 };
 
+export type ScreenshotterCapturedImage = {
+  target: ScreenshotterTarget;
+  sourceUrl: string;
+  r2Key: string;
+  body: Buffer;
+  contentType: string;
+  byteSize: number;
+  width?: number;
+  height?: number;
+};
+
 export type ScreenshotterPersistedResult = ScreenshotterResult & {
   persisted: boolean;
 };
