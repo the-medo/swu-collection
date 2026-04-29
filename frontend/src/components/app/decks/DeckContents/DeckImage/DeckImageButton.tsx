@@ -41,6 +41,8 @@ const DeckImageButton: React.FC<DeckImageButtonProps> = ({ deckId }) => {
           variant="outline"
           size="default"
           className="border border-accent rounded-md"
+          data-screenshot-action="open-deck-image"
+          data-deck-id={deckId}
         >
           <Image className="h-4 w-4 mr-2" />
           Image

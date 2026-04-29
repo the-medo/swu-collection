@@ -133,6 +133,10 @@ const TournamentPlacements: React.FC<TournamentPlacementsProps> = ({
                 className={cn({
                   'bg-accent/50': deckIndex % 2 === 0,
                 })}
+                data-screenshot-target="top-placement-deck"
+                data-deck-id={deck.tournamentDeck.deckId}
+                data-placement={deck.tournamentDeck.placement ?? undefined}
+                data-player-username={username}
               >
                 <DeckPlacement
                   leaderCard1={leaderCard}
