@@ -1,10 +1,13 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog.tsx';
-import type { TournamentWeekendResource } from '../liveTournamentTypes.ts';
+import type {
+  LiveTournamentWeekendTournamentEntry,
+  TournamentWeekendResource,
+} from '../liveTournamentTypes.ts';
 import { TournamentWeekendStreamCard } from './TournamentWeekendStreamCard.tsx';
 
 type StreamEntry = {
   resource: TournamentWeekendResource;
-  tournamentName?: string;
+  tournament?: LiveTournamentWeekendTournamentEntry;
 };
 
 export function TournamentWeekendStreamsDialog({
@@ -25,11 +28,11 @@ export function TournamentWeekendStreamsDialog({
 
         <div className="max-h-[68vh] overflow-auto pr-1">
           <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
-            {resources.map(({ resource, tournamentName }) => (
+            {resources.map(({ resource, tournament }) => (
               <TournamentWeekendStreamCard
                 key={resource.id}
                 resource={resource}
-                tournamentName={tournamentName}
+                tournament={tournament}
               />
             ))}
           </div>
