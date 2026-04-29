@@ -1,5 +1,7 @@
 import { ExternalLink, Trophy } from 'lucide-react';
+import type { ReactNode } from 'react';
 import Flag from '@/components/app/global/Flag.tsx';
+import TournamentDetailDialogButton from '@/components/app/tournaments/TournamentDetailDialog/TournamentDetailDialogButton.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import { cn } from '@/lib/utils.ts';
 import type { LiveTournamentWeekendTournamentEntry } from '../liveTournamentTypes.ts';
@@ -85,13 +87,43 @@ function TournamentInfoRow({
   );
 }
 
-function ChampionCallout({ entry }: { entry: LiveTournamentWeekendTournamentEntry }) {
+function TournamentDetailActions({
+  entry,
+  weekendId,
+}: {
+  entry: LiveTournamentWeekendTournamentEntry;
+  weekendId: string;
+}) {
   return (
-    <div className="relative z-20 flex w-full max-w-full items-center gap-2 px-3 py-2">
-      <Trophy className="h-5 w-5 shrink-0 text-amber-500" />
-      <div className="min-w-0">
-        <div className="truncate text-xl font-bold leading-tight">{getChampionName(entry)}</div>
+    <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
+      <BracketPreview
+        weekendId={weekendId}
+        tournamentId={entry.tournament.id}
+        hasBracketMatches={entry.hasBracketMatches}
+      />
+      {entry.tournament.imported && (
+        <TournamentDetailDialogButton tournamentId={entry.tournament.id} />
+      )}
+    </div>
+  );
+}
+
+function ChampionCallout({
+  entry,
+  actions,
+}: {
+  entry: LiveTournamentWeekendTournamentEntry;
+  actions: ReactNode;
+}) {
+  return (
+    <div className="relative z-20 flex w-full max-w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 py-2">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <Trophy className="h-5 w-5 shrink-0 text-amber-500" />
+        <div className="min-w-0">
+          <div className="truncate text-xl font-bold leading-tight">{getChampionName(entry)}</div>
+        </div>
       </div>
+      {actions}
     </div>
   );
 }
@@ -146,7 +178,12 @@ export function TournamentCard({
         />
       </div>
 
-      {isFinished && <ChampionCallout entry={entry} />}
+      {isFinished && (
+        <ChampionCallout
+          entry={entry}
+          actions={<TournamentDetailActions entry={entry} weekendId={weekendId} />}
+        />
+      )}
 
       {!isFinished && undefeatedPlayers.length > 0 && (
         <div className="relative z-20 flex flex-wrap items-center gap-2">
@@ -166,13 +203,11 @@ export function TournamentCard({
         </div>
       )}
 
-      <div className="relative z-20">
-        <BracketPreview
-          weekendId={weekendId}
-          tournamentId={entry.tournament.id}
-          hasBracketMatches={entry.hasBracketMatches}
-        />
-      </div>
+      {!isFinished && (
+        <div className="relative z-20">
+          <TournamentDetailActions entry={entry} weekendId={weekendId} />
+        </div>
+      )}
     </article>
   );
 }

@@ -18,7 +18,7 @@ import { Helmet } from 'react-helmet-async';
 import { useMemo } from 'react';
 import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentDataLoader.tsx';
 import { usePutTournament } from '@/api/tournaments/usePutTournament.ts';
-import { TournamentTabsProps } from '@/components/app/tournaments/TournamentTabs/TournamentTabs.tsx';
+import type { TournamentTabsProps } from '@/components/app/tournaments/TournamentTabs/TournamentTabs.tsx';
 import MeleeButton from '@/components/app/tournaments/TournamentDetail/MeleeButton.tsx';
 
 interface TournamentDetailProps {
@@ -39,19 +39,9 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   const { data, isFetching, error } = useGetTournament(tournamentId);
   const hasPermission = usePermissions();
   const computeCardStats = useComputeCardStats();
-
-  // Handle 404 error
-  if (error?.status === 404) {
-    return (
-      <>
-        <Helmet title="Tournament not found | SWUBase" />
-        <Error404
-          title="Tournament not found"
-          description="The tournament you are looking for does not exist or has been deleted."
-        />
-      </>
-    );
-  }
+  const toggleImportedMutation = usePutTournament(tournamentId);
+  const loading = isFetching;
+  const tournament = data?.tournament;
 
   const canUpdate = hasPermission('tournament', 'update');
   const canDelete = hasPermission('tournament', 'delete');
@@ -64,7 +54,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
         title: 'Card statistics computed',
         description: 'Tournament card statistics have been recomputed successfully.',
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to compute tournament card statistics.',
@@ -72,8 +62,6 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
       });
     }
   };
-
-  const toggleImportedMutation = usePutTournament(tournamentId);
 
   const handleToggleImported = async () => {
     try {
@@ -86,7 +74,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
           : 'Tournament marked as imported',
         description: `Tournament "${tournament?.name}" has been ${tournament?.imported ? 'unmarked' : 'marked'} as imported.`,
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to update tournament imported status.',
@@ -94,9 +82,6 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
       });
     }
   };
-
-  const loading = isFetching;
-  const tournament = data?.tournament;
 
   // Generate title based on active tab
   const pageTitle = useMemo(() => {
@@ -125,6 +110,19 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
 
     return tabTitle ? `${tournament.name} - ${tabTitle} | SWUBase` : `${tournament.name} | SWUBase`;
   }, [activeTab, tournament?.name]);
+
+  // Handle 404 error
+  if (error?.status === 404) {
+    return (
+      <>
+        <Helmet title="Tournament not found | SWUBase" />
+        <Error404
+          title="Tournament not found"
+          description="The tournament you are looking for does not exist or has been deleted."
+        />
+      </>
+    );
+  }
 
   return (
     <>

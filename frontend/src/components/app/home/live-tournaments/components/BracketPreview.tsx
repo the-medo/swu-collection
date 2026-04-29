@@ -47,7 +47,7 @@ export function BracketPreview({
       <DialogTrigger asChild>
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           size="xs"
           className="h-7 justify-start px-2 text-xs font-medium uppercase text-muted-foreground"
         >

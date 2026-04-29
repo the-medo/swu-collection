@@ -32,7 +32,7 @@ const TournamentDetailSection: React.FC<TournamentDetailSectionProps> = ({ maTou
     <GridSection key="tournament-detail" sizing={size} id={`s-tournament-detail`} className="z-10">
       <GridSectionContent>
         <TournamentDetailContent
-          maTournamentId={maTournamentId}
+          tournamentId={maTournamentId}
           expanded={expanded}
           setExpanded={setExpanded}
         />
