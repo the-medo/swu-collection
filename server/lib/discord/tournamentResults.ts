@@ -8,14 +8,22 @@ import {
 import { db } from '../../db';
 import { screenshotter } from '../../db/schema/screenshotter.ts';
 import { tournament } from '../../db/schema/tournament.ts';
+import { sendDiscordChannelMessage } from './client.ts';
 import { getTournamentResultsDiscordConfig, joinDiscordAppUrl } from './config.ts';
+import {
+  claimNotificationForSend,
+  markNotificationFailed,
+  markNotificationSuccess,
+} from './notificationLog.ts';
 import {
   discordNotificationTypes,
   type DiscordCreateMessagePayload,
   type DiscordEmbed,
   type DiscordNotificationIdentity,
+  type SendTournamentResultsDiscordMessageOptions,
   type TournamentResultsDiscordConfig,
   type TournamentResultsDiscordMessageData,
+  type TournamentResultsDiscordResult,
   type TournamentResultsDiscordTournament,
   type TournamentResultsScreenshot,
 } from './types.ts';
@@ -40,6 +48,10 @@ export class TournamentResultsDiscordValidationError extends Error {
     super(message);
     this.name = 'TournamentResultsDiscordValidationError';
   }
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function isTournamentScreenshotTarget(target: string): target is TournamentScreenshotTarget {
@@ -245,4 +257,100 @@ export async function loadTournamentResultsDiscordMessageData({
     screenshots,
     payload,
   };
+}
+
+export async function sendTournamentResultsDiscordMessage({
+  tournamentId,
+  force = false,
+  dryRun = false,
+  config = getTournamentResultsDiscordConfig({ requireConfigured: true }),
+  fetchFn,
+}: SendTournamentResultsDiscordMessageOptions): Promise<TournamentResultsDiscordResult> {
+  const identity = getTournamentResultsDiscordNotificationIdentity(tournamentId);
+  const messageData = await loadTournamentResultsDiscordMessageData({ tournamentId, config });
+
+  if (messageData.screenshots.length === 0 && !config.allowTextOnly) {
+    return {
+      status: 'skipped',
+      tournamentId,
+      reason:
+        'No successful tournament screenshots are available and text-only messages are disabled.',
+    };
+  }
+
+  if (dryRun) {
+    return {
+      status: 'dry-run',
+      tournamentId,
+      payload: messageData.payload,
+      tournamentUrl: messageData.tournamentUrl,
+      screenshots: messageData.screenshots,
+    };
+  }
+
+  if (!config.channelId) {
+    throw new Error('DISCORD_TOURNAMENT_RESULTS_CHANNEL_ID is required to send Discord messages.');
+  }
+
+  const claim = await claimNotificationForSend({
+    ...identity,
+    discordChannelId: config.channelId,
+    payload: messageData.payload,
+    force,
+  });
+
+  if (!claim.claimed) {
+    return {
+      status: 'skipped',
+      tournamentId,
+      reason: claim.reason,
+      notification: claim.notification,
+    };
+  }
+
+  try {
+    const discordMessage = await sendDiscordChannelMessage({
+      channelId: config.channelId,
+      payload: messageData.payload,
+      config,
+      fetchFn,
+    });
+
+    const notification = await markNotificationSuccess({
+      notificationType: identity.notificationType,
+      scopeKey: identity.scopeKey,
+      discordMessageId: discordMessage.id,
+      payload: messageData.payload,
+      sentAt: discordMessage.timestamp ?? undefined,
+    });
+
+    return {
+      status: 'sent',
+      tournamentId,
+      discordMessageId: discordMessage.id,
+      channelId: config.channelId,
+      payload: messageData.payload,
+      tournamentUrl: messageData.tournamentUrl,
+      screenshots: messageData.screenshots,
+      notification: notification ?? claim.notification,
+    };
+  } catch (error) {
+    const message = getErrorMessage(error);
+    const notification = await markNotificationFailed({
+      notificationType: identity.notificationType,
+      scopeKey: identity.scopeKey,
+      error: message,
+      payload: messageData.payload,
+    });
+
+    return {
+      status: 'failed',
+      tournamentId,
+      error: message,
+      payload: messageData.payload,
+      tournamentUrl: messageData.tournamentUrl,
+      screenshots: messageData.screenshots,
+      notification: notification ?? claim.notification,
+    };
+  }
 }

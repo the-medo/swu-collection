@@ -98,6 +98,32 @@ export async function claimNotificationForSend({
   const existing = await getNotificationByScope({ notificationType, scopeKey });
 
   if (!force) {
+    if (existing?.status !== 'success' && existing?.status !== 'sending') {
+      const [updated] = await db
+        .update(discordNotification)
+        .set({
+          scopeType,
+          scopeId: scopeId ?? null,
+          discordChannelId,
+          status: 'sending',
+          discordMessageId: null,
+          error: null,
+          payload: toJsonPayload(payload) ?? null,
+          sentAt: null,
+          updatedAt: now,
+        })
+        .where(notificationScopeWhere({ notificationType, scopeKey }))
+        .returning();
+
+      if (updated) {
+        return {
+          claimed: true,
+          notification: updated,
+          forced: false,
+        };
+      }
+    }
+
     return {
       claimed: false,
       notification: existing,
@@ -114,8 +140,10 @@ export async function claimNotificationForSend({
       scopeId: scopeId ?? null,
       discordChannelId,
       status: 'sending',
+      discordMessageId: null,
       error: null,
       payload: toJsonPayload(payload) ?? null,
+      sentAt: null,
       updatedAt: now,
     })
     .where(notificationScopeWhere({ notificationType, scopeKey }))

@@ -82,6 +82,50 @@ export type TournamentResultsDiscordMessageData = {
   payload: DiscordCreateMessagePayload;
 };
 
+export type SendTournamentResultsDiscordMessageOptions = {
+  tournamentId: string;
+  force?: boolean;
+  dryRun?: boolean;
+  config?: TournamentResultsDiscordConfig;
+  fetchFn?: typeof fetch;
+};
+
+export type TournamentResultsDiscordResult =
+  | {
+      status: 'skipped';
+      tournamentId: string;
+      reason: string;
+      notification?: DiscordNotification;
+    }
+  | {
+      status: 'dry-run';
+      tournamentId: string;
+      payload: DiscordCreateMessagePayload;
+      tournamentUrl: string;
+      screenshots: TournamentResultsScreenshot[];
+    }
+  | {
+      status: 'sent';
+      tournamentId: string;
+      discordMessageId: string;
+      channelId: string;
+      payload: DiscordCreateMessagePayload;
+      tournamentUrl: string;
+      screenshots: TournamentResultsScreenshot[];
+      notification?: DiscordNotification;
+    }
+  | {
+      status: 'failed';
+      tournamentId: string;
+      error: string;
+      payload?: DiscordCreateMessagePayload;
+      tournamentUrl?: string;
+      screenshots?: TournamentResultsScreenshot[];
+      notification?: DiscordNotification;
+    };
+
+export type TournamentResultsDiscordAfterImportResult = TournamentResultsDiscordResult;
+
 export type DiscordNotificationIdentity = {
   notificationType: DiscordNotificationType | (string & {});
   scopeType: string;
