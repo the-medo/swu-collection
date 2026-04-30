@@ -15,6 +15,11 @@ import {
 import { db } from '../db';
 import { tournament } from '../db/schema/tournament.ts';
 import { getScreenshotterConfig } from './config.ts';
+import {
+  captureTargetsWithNodeWorker,
+  shouldUseNodeScreenshotterWorker,
+  type CapturedTargetResult,
+} from './nodeWorkerClient.ts';
 import { persistScreenshotterManifest } from './persistScreenshots.ts';
 import { closeScreenshotterPageSession, createScreenshotterPageSession } from './playwright.ts';
 import { uploadScreenshotToR2 } from './r2.ts';
@@ -263,6 +268,51 @@ async function captureTarget(
   throw new ScreenshotterValidationError(`Unsupported screenshotter scope type: ${scope.type}`);
 }
 
+async function captureTargetsInProcess(
+  scope: ScreenshotterScope,
+  targets: ScreenshotterTarget[],
+  config: ScreenshotterConfig,
+): Promise<CapturedTargetResult[]> {
+  const session = await createScreenshotterPageSession(config);
+  const captures: CapturedTargetResult[] = [];
+
+  try {
+    for (const target of targets) {
+      try {
+        const captured = await captureTarget(scope, target, config, session.page);
+        captures.push({ ok: true, captured });
+      } catch (error) {
+        captures.push({
+          target,
+          sourceUrl: getTargetSourceUrl(scope, target, config),
+          ok: false,
+          error: getErrorMessage(error),
+        });
+      }
+    }
+  } finally {
+    await closeScreenshotterPageSession(session);
+  }
+
+  return captures;
+}
+
+async function captureTargetsForRuntime(
+  scope: ScreenshotterScope,
+  targets: ScreenshotterTarget[],
+  config: ScreenshotterConfig,
+): Promise<CapturedTargetResult[]> {
+  if (shouldUseNodeScreenshotterWorker()) {
+    return captureTargetsWithNodeWorker({
+      scope,
+      targets,
+      config,
+    });
+  }
+
+  return captureTargetsInProcess(scope, targets, config);
+}
+
 export async function captureScreenshots({
   scope,
   targets,
@@ -287,48 +337,49 @@ export async function captureScreenshots({
     results: [],
   };
 
-  const session = await createScreenshotterPageSession(config);
+  const capturedTargetResults = await captureTargetsForRuntime(
+    normalizedScope,
+    resolvedTargets,
+    config,
+  );
 
-  try {
-    for (const target of resolvedTargets) {
-      try {
-        const captured = await captureTarget(normalizedScope, target, config, session.page);
-        const outputFile = await writeOutputFile(outputDir, captured);
-
-        if (outputFile) {
-          outputFiles.push(outputFile);
-        }
-
-        const result = toResultFromCapture(captured);
-
-        if (!skipUpload) {
-          const upload = await uploadScreenshotToR2(
-            {
-              key: captured.r2Key,
-              body: captured.body,
-              contentType: captured.contentType,
-            },
-            config,
-          );
-
-          result.url = upload.url;
-          result.r2Key = upload.r2Key;
-          result.byteSize = upload.byteSize;
-          result.contentType = upload.contentType;
-        }
-
-        manifest.results.push(result);
-      } catch (error) {
-        manifest.results.push({
-          target,
-          sourceUrl: getTargetSourceUrl(normalizedScope, target, config),
-          ok: false,
-          error: getErrorMessage(error),
-        });
-      }
+  for (const capturedTargetResult of capturedTargetResults) {
+    if (!capturedTargetResult.ok) {
+      manifest.results.push({
+        target: capturedTargetResult.target,
+        sourceUrl: capturedTargetResult.sourceUrl,
+        ok: false,
+        error: capturedTargetResult.error,
+      });
+      continue;
     }
-  } finally {
-    await closeScreenshotterPageSession(session);
+
+    const captured = capturedTargetResult.captured;
+    const outputFile = await writeOutputFile(outputDir, captured);
+
+    if (outputFile) {
+      outputFiles.push(outputFile);
+    }
+
+    const result = toResultFromCapture(captured);
+
+    if (!skipUpload) {
+      const upload = await uploadScreenshotToR2(
+        {
+          key: captured.r2Key,
+          body: captured.body,
+          contentType: captured.contentType,
+        },
+        config,
+      );
+
+      result.url = upload.url;
+      result.r2Key = upload.r2Key;
+      result.byteSize = upload.byteSize;
+      result.contentType = upload.contentType;
+    }
+
+    manifest.results.push(result);
   }
 
   const manifestOutputFile = await writeManifestOutputFile(outputDir, manifest);
