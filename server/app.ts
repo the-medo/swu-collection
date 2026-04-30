@@ -109,6 +109,7 @@ app.use('*', async (c, next) => {
 app.use('/api/admin/special-actions/update-deck-information', timeout(180000));
 app.use('/api/tournament/:id/export-to-blob', timeout(180000));
 app.use('/api/tournament/:id/screenshots', timeout(300000));
+app.use('/api/tournament/:id/discord-results', timeout(300000));
 app.use(
   '/api/deck/:id/json',
   cors({

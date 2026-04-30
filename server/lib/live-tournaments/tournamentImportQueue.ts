@@ -9,11 +9,11 @@ import {
 import { updateTournamentGroupsStatisticsForTournament } from '../card-statistics/update-tournament-group-statistics.ts';
 import { generateDeckThumbnails } from '../decks/generateDeckThumbnail.ts';
 import { runTournamentImport } from '../imports/tournamentImportWorkflow.ts';
-import { publishTournamentImportFinished } from './liveTournamentEvents.ts';
 import {
-  runTournamentScreenshotterAfterImport,
-  type ScreenshotterAfterImportResult,
-} from '../../screenshotter';
+  runTournamentImportedSideEffects,
+  type TournamentImportedSideEffectsResult,
+} from '../imports/tournamentImportedSideEffects.ts';
+import { publishTournamentImportFinished } from './liveTournamentEvents.ts';
 
 const maxStoredErrorLength = 8000;
 
@@ -73,7 +73,9 @@ export type TournamentImportQueueResult =
       computedMetaStatistics: boolean;
       thumbnailsGenerated: number;
       thumbnailErrors: number;
-      screenshotter: ScreenshotterAfterImportResult;
+      screenshotter: TournamentImportedSideEffectsResult['screenshotter'];
+      discord: TournamentImportedSideEffectsResult['discord'];
+      importedSideEffects: TournamentImportedSideEffectsResult;
     };
 
 export async function processNextTournamentImport(): Promise<TournamentImportQueueResult> {
@@ -140,7 +142,7 @@ export async function processNextTournamentImport(): Promise<TournamentImportQue
       force: false,
     });
 
-    const screenshotter = await runTournamentScreenshotterAfterImport(claimedImport.tournamentId);
+    const importedSideEffects = await runTournamentImportedSideEffects(claimedImport.tournamentId);
 
     await db
       .update(tournamentImport)
@@ -164,7 +166,9 @@ export async function processNextTournamentImport(): Promise<TournamentImportQue
       computedMetaStatistics: tournament.meta !== null,
       thumbnailsGenerated: thumbnails.results.length,
       thumbnailErrors: thumbnails.errors.length,
-      screenshotter,
+      screenshotter: importedSideEffects.screenshotter,
+      discord: importedSideEffects.discord,
+      importedSideEffects,
     };
   } catch (error) {
     await db

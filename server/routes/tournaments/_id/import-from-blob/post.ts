@@ -17,7 +17,7 @@ import {
 } from '../../../../lib/card-statistics';
 import { updateTournamentGroupsStatisticsForTournament } from '../../../../lib/card-statistics/update-tournament-group-statistics.ts';
 import { booleanPreprocessor } from '../../../../../shared/lib/zod/booleanPreprocessor.ts';
-import { runTournamentScreenshotterAfterImport } from '../../../../screenshotter';
+import { runTournamentImportedSideEffects } from '../../../../lib/imports/tournamentImportedSideEffects.ts';
 
 const bucketName = 'swu-images';
 const r2Endpoint = process.env.R2_ENDPOINT;
@@ -179,7 +179,7 @@ export const tournamentIdImportFromBlobPostRoute = new Hono<AuthExtension>().pos
       console.error('Error updating tournament group statistics:', error);
     }
 
-    void runTournamentScreenshotterAfterImport(paramTournamentId);
+    void runTournamentImportedSideEffects(paramTournamentId);
   }
 
   return c.json({

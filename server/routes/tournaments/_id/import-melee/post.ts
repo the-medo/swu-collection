@@ -13,7 +13,7 @@ import {
 } from '../../../../lib/card-statistics';
 import { updateTournamentGroupsStatisticsForTournament } from '../../../../lib/card-statistics/update-tournament-group-statistics.ts';
 import { generateDeckThumbnails } from '../../../../lib/decks/generateDeckThumbnail.ts';
-import { runTournamentScreenshotterAfterImport } from '../../../../screenshotter';
+import { runTournamentImportedSideEffects } from '../../../../lib/imports/tournamentImportedSideEffects.ts';
 
 export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -105,7 +105,7 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
         }
 
         if (markAsImported) {
-          await runTournamentScreenshotterAfterImport(paramTournamentId);
+          await runTournamentImportedSideEffects(paramTournamentId);
         }
       })
       .catch(error => {

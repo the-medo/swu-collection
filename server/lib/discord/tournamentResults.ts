@@ -28,9 +28,9 @@ import {
   type TournamentResultsScreenshot,
 } from './types.ts';
 
-const DISCORD_CONTENT_LIMIT = 2000;
 const DISCORD_EMBED_TITLE_LIMIT = 256;
 const MAX_DISCORD_EMBEDS = 10;
+const REGIONAL_INDICATOR_OFFSET = 127397;
 
 const targetLabels = {
   bracket: 'Bracket',
@@ -65,6 +65,24 @@ function truncateDiscordText(value: string, maxLength: number) {
   return `${value.slice(0, maxLength - 3)}...`;
 }
 
+function normalizeCountryCode(value: string) {
+  const candidate = value.split(',').at(-1)?.trim().toUpperCase();
+
+  if (!candidate) return undefined;
+
+  const normalized = candidate === 'UK' ? 'GB' : candidate;
+  return /^[A-Z]{2}$/.test(normalized) ? normalized : undefined;
+}
+
+export function countryCodeToFlagEmoji(value: string) {
+  const countryCode = normalizeCountryCode(value);
+  if (!countryCode) return undefined;
+
+  return [...countryCode]
+    .map(character => String.fromCodePoint(REGIONAL_INDICATOR_OFFSET + character.charCodeAt(0)))
+    .join('');
+}
+
 export function sanitizeDiscordMessageText(value: string) {
   return value
     .replace(/\\/g, '\\\\')
@@ -72,6 +90,13 @@ export function sanitizeDiscordMessageText(value: string) {
     .replace(/</g, '(')
     .replace(/>/g, ')')
     .replace(/@/g, 'at ');
+}
+
+function getTournamentDiscordDisplayName(tournament: TournamentResultsDiscordTournament) {
+  const safeName = sanitizeDiscordMessageText(tournament.name);
+  const flagEmoji = countryCodeToFlagEmoji(tournament.location);
+
+  return flagEmoji ? `${flagEmoji} ${safeName}` : safeName;
 }
 
 export function getTournamentResultsDiscordNotificationIdentity(
@@ -96,6 +121,7 @@ export async function loadTournamentResultsDiscordTournament(
     .select({
       id: tournament.id,
       name: tournament.name,
+      location: tournament.location,
       attendance: tournament.attendance,
       imported: tournament.imported,
     })
@@ -151,10 +177,6 @@ function buildEmbedDescription(
   return [`Players: ${tournament.attendance}`, `[Open tournament](${tournamentUrl})`].join('\n');
 }
 
-function buildTournamentMarker(tournamentId: string) {
-  return `SWU Base tournament:${tournamentId}`;
-}
-
 function buildScreenshotEmbed({
   screenshot,
   tournament,
@@ -166,10 +188,10 @@ function buildScreenshotEmbed({
   tournamentUrl: string;
   index: number;
 }): DiscordEmbed {
-  const safeName = sanitizeDiscordMessageText(tournament.name);
+  const displayName = getTournamentDiscordDisplayName(tournament);
   const title =
     index === 0
-      ? `${truncateDiscordText(safeName, DISCORD_EMBED_TITLE_LIMIT - ' results are in!'.length)} results are in!`
+      ? `${truncateDiscordText(displayName, DISCORD_EMBED_TITLE_LIMIT - ' results are in!'.length)} results are in!`
       : targetLabels[screenshot.target];
 
   return {
@@ -177,7 +199,6 @@ function buildScreenshotEmbed({
     url: tournamentUrl,
     description: index === 0 ? buildEmbedDescription(tournament, tournamentUrl) : undefined,
     image: { url: screenshot.url },
-    footer: { text: buildTournamentMarker(tournament.id) },
   };
 }
 
@@ -196,12 +217,9 @@ export function buildTournamentResultsDiscordPayload({
     throw new Error('DISCORD_TOURNAMENT_RESULTS_ROLE_ID is required to build Discord payload.');
   }
 
-  const safeTournamentName = sanitizeDiscordMessageText(tournament.name);
+  const displayName = getTournamentDiscordDisplayName(tournament);
   const roleMention = `<@&${config.roleId}>`;
-  const content = truncateDiscordText(
-    `${roleMention} ${safeTournamentName} results are in!`,
-    DISCORD_CONTENT_LIMIT,
-  );
+  const content = roleMention;
 
   const embeds =
     screenshots.length > 0
@@ -215,13 +233,9 @@ export function buildTournamentResultsDiscordPayload({
         )
       : [
           {
-            title: truncateDiscordText(
-              `${safeTournamentName} results are in!`,
-              DISCORD_EMBED_TITLE_LIMIT,
-            ),
+            title: truncateDiscordText(`${displayName} results are in!`, DISCORD_EMBED_TITLE_LIMIT),
             url: tournamentUrl,
             description: buildEmbedDescription(tournament, tournamentUrl),
-            footer: { text: buildTournamentMarker(tournament.id) },
           },
         ];
 
@@ -263,13 +277,18 @@ export async function sendTournamentResultsDiscordMessage({
   tournamentId,
   force = false,
   dryRun = false,
-  config = getTournamentResultsDiscordConfig({ requireConfigured: true }),
+  config,
   fetchFn,
 }: SendTournamentResultsDiscordMessageOptions): Promise<TournamentResultsDiscordResult> {
+  const resolvedConfig =
+    config ?? getTournamentResultsDiscordConfig({ requireConfigured: !dryRun });
   const identity = getTournamentResultsDiscordNotificationIdentity(tournamentId);
-  const messageData = await loadTournamentResultsDiscordMessageData({ tournamentId, config });
+  const messageData = await loadTournamentResultsDiscordMessageData({
+    tournamentId,
+    config: resolvedConfig,
+  });
 
-  if (messageData.screenshots.length === 0 && !config.allowTextOnly) {
+  if (messageData.screenshots.length === 0 && !resolvedConfig.allowTextOnly) {
     return {
       status: 'skipped',
       tournamentId,
@@ -288,13 +307,13 @@ export async function sendTournamentResultsDiscordMessage({
     };
   }
 
-  if (!config.channelId) {
+  if (!resolvedConfig.channelId) {
     throw new Error('DISCORD_TOURNAMENT_RESULTS_CHANNEL_ID is required to send Discord messages.');
   }
 
   const claim = await claimNotificationForSend({
     ...identity,
-    discordChannelId: config.channelId,
+    discordChannelId: resolvedConfig.channelId,
     payload: messageData.payload,
     force,
   });
@@ -310,9 +329,9 @@ export async function sendTournamentResultsDiscordMessage({
 
   try {
     const discordMessage = await sendDiscordChannelMessage({
-      channelId: config.channelId,
+      channelId: resolvedConfig.channelId,
       payload: messageData.payload,
-      config,
+      config: resolvedConfig,
       fetchFn,
     });
 
@@ -328,7 +347,7 @@ export async function sendTournamentResultsDiscordMessage({
       status: 'sent',
       tournamentId,
       discordMessageId: discordMessage.id,
-      channelId: config.channelId,
+      channelId: resolvedConfig.channelId,
       payload: messageData.payload,
       tournamentUrl: messageData.tournamentUrl,
       screenshots: messageData.screenshots,

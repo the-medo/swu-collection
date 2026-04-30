@@ -71,6 +71,7 @@ export type TournamentResultsScreenshot = {
 export type TournamentResultsDiscordTournament = {
   id: string;
   name: string;
+  location: string;
   attendance: number;
   imported: boolean;
 };
