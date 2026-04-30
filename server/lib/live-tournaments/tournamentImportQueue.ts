@@ -10,6 +10,10 @@ import { updateTournamentGroupsStatisticsForTournament } from '../card-statistic
 import { generateDeckThumbnails } from '../decks/generateDeckThumbnail.ts';
 import { runTournamentImport } from '../imports/tournamentImportWorkflow.ts';
 import { publishTournamentImportFinished } from './liveTournamentEvents.ts';
+import {
+  runTournamentScreenshotterAfterImport,
+  type ScreenshotterAfterImportResult,
+} from '../../screenshotter';
 
 const maxStoredErrorLength = 8000;
 
@@ -69,6 +73,7 @@ export type TournamentImportQueueResult =
       computedMetaStatistics: boolean;
       thumbnailsGenerated: number;
       thumbnailErrors: number;
+      screenshotter: ScreenshotterAfterImportResult;
     };
 
 export async function processNextTournamentImport(): Promise<TournamentImportQueueResult> {
@@ -135,6 +140,8 @@ export async function processNextTournamentImport(): Promise<TournamentImportQue
       force: false,
     });
 
+    const screenshotter = await runTournamentScreenshotterAfterImport(claimedImport.tournamentId);
+
     await db
       .update(tournamentImport)
       .set({
@@ -157,6 +164,7 @@ export async function processNextTournamentImport(): Promise<TournamentImportQue
       computedMetaStatistics: tournament.meta !== null,
       thumbnailsGenerated: thumbnails.results.length,
       thumbnailErrors: thumbnails.errors.length,
+      screenshotter,
     };
   } catch (error) {
     await db
