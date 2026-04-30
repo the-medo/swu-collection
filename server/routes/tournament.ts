@@ -11,6 +11,7 @@ import { tournamentIdDeleteRoute } from './tournaments/_id/delete.ts';
 import { tournamentIdImportMeleePostRoute } from './tournaments/_id/import-melee/post.ts';
 import { tournamentIdDecksGetRoute } from './tournaments/_id/decks/get.ts';
 import { tournamentIdMatchesGetRoute } from './tournaments/_id/matches/get.ts';
+import { tournamentIdScreenshotsPostRoute } from './tournaments/_id/screenshots/post.ts';
 import { tournamentIdImportMeleePatchRoute } from './tournaments/_id/import-melee/patch.ts';
 import { tournamentsThumbnailsPostRoute } from './tournaments/thumbnails/post.ts';
 import { tournamentsBulkPostRoute } from './tournaments/bulk/data/post.ts';
@@ -35,6 +36,7 @@ export const tournamentRoute = new Hono<AuthExtension>()
   .route('/:id/import-from-blob', tournamentIdImportFromBlobPostRoute)
   .route('/:id/decks', tournamentIdDecksGetRoute)
   .route('/:id/matches', tournamentIdMatchesGetRoute)
+  .route('/:id/screenshots', tournamentIdScreenshotsPostRoute)
   .route('/thumbnails', tournamentsThumbnailsPostRoute)
   .route('/bulk/data', tournamentsBulkPostRoute)
   .route('/bulk/pq-parse', tournamentBulkPqParsePostRoute);
