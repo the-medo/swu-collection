@@ -11,18 +11,22 @@ import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { useImportTournamentFromBlob } from '@/api/tournaments/useImportTournamentFromBlob.ts';
 import { useExportTournamentToBlob } from '@/api/tournaments/useExportTournamentToBlob.ts';
 
-interface Props extends Pick<DialogProps, 'trigger' | 'triggerDisabled'> {
+interface Props extends Pick<DialogProps, 'trigger' | 'triggerDisabled' | 'open' | 'onOpenChange'> {
   tournamentId: string;
 }
 
 const ImportExportTournamentBlobDialog: React.FC<Props> = ({
   trigger,
   triggerDisabled,
+  open,
+  onOpenChange,
   tournamentId,
 }) => {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const importMutation = useImportTournamentFromBlob(tournamentId);
   const exportMutation = useExportTournamentToBlob(tournamentId);
+  const dialogOpen = open ?? internalOpen;
+  const setDialogOpen = onOpenChange ?? setInternalOpen;
 
   const form = useForm({
     defaultValues: {
@@ -37,7 +41,7 @@ const ImportExportTournamentBlobDialog: React.FC<Props> = ({
             markAsImported: value.markAsImported,
           },
           {
-            onSuccess: () => setOpen(false),
+            onSuccess: () => setDialogOpen(false),
           },
         );
       }
@@ -45,7 +49,7 @@ const ImportExportTournamentBlobDialog: React.FC<Props> = ({
   });
 
   const handleExport = () => {
-    exportMutation.mutate(undefined as never, { onSuccess: () => setOpen(false) });
+    exportMutation.mutate(undefined as never, { onSuccess: () => setDialogOpen(false) });
   };
 
   return (
@@ -53,8 +57,8 @@ const ImportExportTournamentBlobDialog: React.FC<Props> = ({
       trigger={trigger}
       triggerDisabled={triggerDisabled}
       header="Import/Export Tournament Data to Blob"
-      open={open}
-      onOpenChange={setOpen}
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
     >
       <div className="space-y-4">
         <Alert variant="default">
@@ -124,7 +128,7 @@ const ImportExportTournamentBlobDialog: React.FC<Props> = ({
             )}
           />
           <div className="flex justify-between">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={importMutation.isPending}>

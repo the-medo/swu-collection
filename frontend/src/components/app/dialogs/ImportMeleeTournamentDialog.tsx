@@ -10,7 +10,10 @@ import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 
-type ImportMeleeTournamentDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
+type ImportMeleeTournamentDialogProps = Pick<
+  DialogProps,
+  'trigger' | 'triggerDisabled' | 'open' | 'onOpenChange'
+> & {
   tournamentId: string;
   meleeId?: string | null;
 };
@@ -18,11 +21,15 @@ type ImportMeleeTournamentDialogProps = Pick<DialogProps, 'trigger' | 'triggerDi
 const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = ({
   trigger,
   triggerDisabled,
+  open,
+  onOpenChange,
   tournamentId,
   meleeId,
 }) => {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const importMeleeMutation = useImportMeleeTournament(tournamentId);
+  const dialogOpen = open ?? internalOpen;
+  const setDialogOpen = onOpenChange ?? setInternalOpen;
 
   const form = useForm({
     defaultValues: {
@@ -46,7 +53,7 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
           },
           {
             onSuccess: () => {
-              setOpen(false);
+              setDialogOpen(false);
             },
           },
         );
@@ -59,8 +66,8 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
       trigger={trigger}
       triggerDisabled={triggerDisabled}
       header="Import Tournament Data from Melee.gg"
-      open={open}
-      onOpenChange={setOpen}
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
     >
       <div className="space-y-4">
         <Alert variant="default">
@@ -200,7 +207,7 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
           />
 
           <div className="flex justify-between">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel
             </Button>
             <Button
