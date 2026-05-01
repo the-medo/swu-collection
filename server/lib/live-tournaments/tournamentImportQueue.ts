@@ -73,6 +73,7 @@ export type TournamentImportQueueResult =
       computedMetaStatistics: boolean;
       thumbnailsGenerated: number;
       thumbnailErrors: number;
+      dailySnapshot: TournamentImportedSideEffectsResult['dailySnapshot'];
       screenshotter: TournamentImportedSideEffectsResult['screenshotter'];
       discord: TournamentImportedSideEffectsResult['discord'];
       importedSideEffects: TournamentImportedSideEffectsResult;
@@ -166,6 +167,7 @@ export async function processNextTournamentImport(): Promise<TournamentImportQue
       computedMetaStatistics: tournament.meta !== null,
       thumbnailsGenerated: thumbnails.results.length,
       thumbnailErrors: thumbnails.errors.length,
+      dailySnapshot: importedSideEffects.dailySnapshot,
       screenshotter: importedSideEffects.screenshotter,
       discord: importedSideEffects.discord,
       importedSideEffects,
