@@ -10,6 +10,7 @@ import {
   Edit,
   FileJson2,
   Loader2,
+  Send,
   ShieldCheck,
   Trash2,
 } from 'lucide-react';
@@ -39,6 +40,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { useGenerateTournamentScreenshots } from '@/api/tournaments/useGenerateTournamentScreenshots.ts';
+import { useSendTournamentDiscordResults } from '@/api/tournaments/useSendTournamentDiscordResults.ts';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -62,6 +64,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   const computeCardStats = useComputeCardStats();
   const toggleImportedMutation = usePutTournament(tournamentId);
   const generateScreenshots = useGenerateTournamentScreenshots(tournamentId);
+  const sendDiscordResults = useSendTournamentDiscordResults(tournamentId);
   const [adminDialog, setAdminDialog] = useState<AdminDialog>(null);
   const loading = isFetching;
   const tournament = data?.tournament;
@@ -118,6 +121,10 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
 
   const handleRunScreenshotter = () => {
     generateScreenshots.mutate({ force: true });
+  };
+
+  const handleSendDiscordResults = () => {
+    sendDiscordResults.mutate({});
   };
 
   // Generate title based on active tab
@@ -254,25 +261,46 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
                       )}
 
                       {canAccessAdmin && (
-                        <DropdownMenuItem
-                          className="cursor-pointer"
-                          disabled={!tournament.imported || generateScreenshots.isPending}
-                          title={
-                            tournament.imported
-                              ? undefined
-                              : 'Import tournament data before running the screenshotter'
-                          }
-                          onSelect={handleRunScreenshotter}
-                        >
-                          {generateScreenshots.isPending ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Camera className="h-4 w-4" />
-                          )}
-                          {generateScreenshots.isPending
-                            ? 'Running screenshotter'
-                            : 'Run screenshotter'}
-                        </DropdownMenuItem>
+                        <>
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            disabled={!tournament.imported || sendDiscordResults.isPending}
+                            title={
+                              tournament.imported
+                                ? undefined
+                                : 'Import tournament data before sending Discord results'
+                            }
+                            onSelect={handleSendDiscordResults}
+                          >
+                            {sendDiscordResults.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Send className="h-4 w-4" />
+                            )}
+                            {sendDiscordResults.isPending
+                              ? 'Sending Discord results'
+                              : 'Send Discord results'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            disabled={!tournament.imported || generateScreenshots.isPending}
+                            title={
+                              tournament.imported
+                                ? undefined
+                                : 'Import tournament data before running the screenshotter'
+                            }
+                            onSelect={handleRunScreenshotter}
+                          >
+                            {generateScreenshots.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Camera className="h-4 w-4" />
+                            )}
+                            {generateScreenshots.isPending
+                              ? 'Running screenshotter'
+                              : 'Run screenshotter'}
+                          </DropdownMenuItem>
+                        </>
                       )}
 
                       {showAdminTools && canDelete && <DropdownMenuSeparator />}
