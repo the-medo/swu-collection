@@ -1,8 +1,10 @@
 import type { TournamentScreenshotTarget } from '../../../types/Screenshotter.ts';
 import type { DiscordNotification } from '../../db/schema/discord_notification.ts';
+import type { TournamentWeekendResource } from '../../db/schema/tournament_weekend.ts';
 
 export const discordNotificationTypes = {
   tournamentResults: 'tournament-results',
+  tournamentStream: 'tournament-stream',
 } as const;
 
 export type DiscordNotificationType =
@@ -21,6 +23,13 @@ export type TournamentResultsDiscordConfig = DiscordConfig & {
   roleId?: string;
   appBaseUrl: string;
   allowTextOnly: boolean;
+};
+
+export type TournamentStreamsDiscordConfig = DiscordConfig & {
+  enabled: boolean;
+  channelId?: string;
+  roleId?: string;
+  appBaseUrl: string;
 };
 
 export type DiscordAllowedMentions = {
@@ -126,6 +135,69 @@ export type TournamentResultsDiscordResult =
     };
 
 export type TournamentResultsDiscordAfterImportResult = TournamentResultsDiscordResult;
+
+export type TournamentStreamDiscordTournament = {
+  id: string;
+  name: string;
+  location: string;
+};
+
+export type TournamentStreamDiscordResource = Pick<
+  TournamentWeekendResource,
+  'id' | 'tournamentId' | 'resourceType' | 'resourceUrl' | 'title' | 'description' | 'approved'
+>;
+
+export type TournamentStreamDiscordMessageData = {
+  tournament: TournamentStreamDiscordTournament;
+  resource: TournamentStreamDiscordResource;
+  tournamentUrl: string;
+  payload: DiscordCreateMessagePayload;
+};
+
+export type SendTournamentStreamDiscordMessageOptions = {
+  resourceId: string;
+  force?: boolean;
+  dryRun?: boolean;
+  config?: TournamentStreamsDiscordConfig;
+  fetchFn?: typeof fetch;
+};
+
+export type TournamentStreamDiscordResult =
+  | {
+      status: 'skipped';
+      resourceId: string;
+      tournamentId?: string;
+      reason: string;
+      notification?: DiscordNotification;
+    }
+  | {
+      status: 'dry-run';
+      resourceId: string;
+      tournamentId: string;
+      payload: DiscordCreateMessagePayload;
+      tournamentUrl: string;
+    }
+  | {
+      status: 'sent';
+      resourceId: string;
+      tournamentId: string;
+      discordMessageId: string;
+      channelId: string;
+      payload: DiscordCreateMessagePayload;
+      tournamentUrl: string;
+      notification?: DiscordNotification;
+    }
+  | {
+      status: 'failed';
+      resourceId: string;
+      tournamentId?: string;
+      error: string;
+      payload?: DiscordCreateMessagePayload;
+      tournamentUrl?: string;
+      notification?: DiscordNotification;
+    };
+
+export type TournamentStreamDiscordAfterApprovalResult = TournamentStreamDiscordResult;
 
 export type DiscordNotificationIdentity = {
   notificationType: DiscordNotificationType | (string & {});

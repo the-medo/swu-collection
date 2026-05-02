@@ -10,6 +10,7 @@ import { screenshotter } from '../../db/schema/screenshotter.ts';
 import { tournament } from '../../db/schema/tournament.ts';
 import { sendDiscordChannelMessage } from './client.ts';
 import { getTournamentResultsDiscordConfig, joinDiscordAppUrl } from './config.ts';
+import { getTournamentDiscordDisplayName, truncateDiscordText } from './tournamentDisplay.ts';
 import {
   claimNotificationForSend,
   markNotificationFailed,
@@ -30,7 +31,6 @@ import {
 
 const DISCORD_EMBED_TITLE_LIMIT = 256;
 const MAX_DISCORD_EMBEDS = 10;
-const REGIONAL_INDICATOR_OFFSET = 127397;
 
 const targetLabels = {
   bracket: 'Bracket',
@@ -56,47 +56,6 @@ function getErrorMessage(error: unknown) {
 
 function isTournamentScreenshotTarget(target: string): target is TournamentScreenshotTarget {
   return defaultTournamentScreenshotTargets.includes(target as TournamentScreenshotTarget);
-}
-
-function truncateDiscordText(value: string, maxLength: number) {
-  if (value.length <= maxLength) return value;
-  if (maxLength <= 3) return value.slice(0, maxLength);
-
-  return `${value.slice(0, maxLength - 3)}...`;
-}
-
-function normalizeCountryCode(value: string) {
-  const candidate = value.split(',').at(-1)?.trim().toUpperCase();
-
-  if (!candidate) return undefined;
-
-  const normalized = candidate === 'UK' ? 'GB' : candidate;
-  return /^[A-Z]{2}$/.test(normalized) ? normalized : undefined;
-}
-
-export function countryCodeToFlagEmoji(value: string) {
-  const countryCode = normalizeCountryCode(value);
-  if (!countryCode) return undefined;
-
-  return [...countryCode]
-    .map(character => String.fromCodePoint(REGIONAL_INDICATOR_OFFSET + character.charCodeAt(0)))
-    .join('');
-}
-
-export function sanitizeDiscordMessageText(value: string) {
-  return value
-    .replace(/\\/g, '\\\\')
-    .replace(/([`*_~|])/g, '\\$1')
-    .replace(/</g, '(')
-    .replace(/>/g, ')')
-    .replace(/@/g, 'at ');
-}
-
-function getTournamentDiscordDisplayName(tournament: TournamentResultsDiscordTournament) {
-  const safeName = sanitizeDiscordMessageText(tournament.name);
-  const flagEmoji = countryCodeToFlagEmoji(tournament.location);
-
-  return flagEmoji ? `${flagEmoji} ${safeName}` : safeName;
 }
 
 export function getTournamentResultsDiscordNotificationIdentity(

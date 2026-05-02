@@ -15,6 +15,7 @@ import {
   createLiveResourcesPatchEvent,
   createLiveTournamentSummaryPatchEvent,
 } from '../../../../../lib/live-tournaments/liveTournamentHomeCache.ts';
+import { runTournamentStreamDiscordAfterApproval } from '../../../../../lib/discord/tournamentStreams.ts';
 
 const zTournamentWeekendResourceUpdateRequest = z.object({
   approved: z.boolean(),
@@ -114,6 +115,14 @@ export const tournamentWeekendIdResourcesResourceIdPatchRoute = new Hono<AuthExt
 
     if (resource.approved || existingResource.resource.approved) {
       await createLiveResourcesPatchEvent('live_resource.upserted', weekendId);
+    }
+
+    if (
+      approved &&
+      !existingResource.resource.approved &&
+      existingResource.resource.resourceType === 'stream'
+    ) {
+      await runTournamentStreamDiscordAfterApproval(resource.id);
     }
 
     if (existingResource.resource.resourceType === 'melee') {

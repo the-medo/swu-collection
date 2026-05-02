@@ -138,7 +138,6 @@ export default function LiveTournamentHome() {
       <>
         <Helmet title="Live Tournaments | SWUBase" />
         <div className="space-y-3 p-2">
-          <h1 className="text-2xl font-semibold">Live Tournaments</h1>
           <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
             No live tournament weekend is active right now. Snapshot mode is still available.
           </div>
