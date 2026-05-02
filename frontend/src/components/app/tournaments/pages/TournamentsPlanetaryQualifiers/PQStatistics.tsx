@@ -111,7 +111,7 @@ const PQStatistics: React.FC<PQStatisticsProps> = ({
             ) : hasData ? (
               <div className="flex flex-1">
                 {maTournamentId ? (
-                  <TournamentDetailContent maTournamentId={maTournamentId} />
+                  <TournamentDetailContent tournamentId={maTournamentId} />
                 ) : (
                   <MetaPageContent
                     formatId={formatId}

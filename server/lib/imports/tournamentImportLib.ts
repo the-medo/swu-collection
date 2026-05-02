@@ -15,6 +15,28 @@ export type TIPlayerDataWithDecklists = {
 
 export type TIUserDecklistMap = Record<number, TIBasicDecklistInfo | undefined>;
 
+export type TournamentViewRound = {
+  number: number;
+  id: number;
+  name: string;
+  started: boolean;
+  completed: boolean;
+};
+
+export type TIMeleeTournamentDetail = {
+  ID?: number;
+  Name?: string;
+  BrandImageSource?: string;
+  StartDate?: string;
+  Status?: string;
+  OrganizationId?: number;
+  OrganizationName?: string;
+  Format?: string;
+  ParticipatorCount?: number;
+  ParticipationCount?: number;
+  [key: string]: unknown;
+};
+
 const basicHeaders = {
   cookie: process.env.TOURNAMENT_COOKIE ?? '',
   'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
@@ -42,7 +64,83 @@ const formPostHeaders = {
 export interface TournamentViewResult {
   finalRoundId: number | null;
   allRoundIds: number[];
+  rounds: TournamentViewRound[];
 }
+
+const parseBooleanAttribute = (value: string | null) => value?.toLowerCase() === 'true';
+
+const parseRoundNumber = (name: string) => {
+  const match = name.match(/^Round\s+(\d+)$/i);
+  if (!match) return null;
+
+  const roundNumber = Number.parseInt(match[1], 10);
+  return Number.isFinite(roundNumber) ? roundNumber : null;
+};
+
+const readRoundButtons = (
+  document: Document,
+  selector: string,
+  source: 'standings' | 'pairings',
+): TournamentViewRound[] => {
+  const rounds: TournamentViewRound[] = [];
+
+  document.querySelectorAll(selector).forEach((button, index) => {
+    const id = Number.parseInt(button.getAttribute('data-id') ?? '', 10);
+    if (!Number.isFinite(id)) return;
+
+    const name = button.getAttribute('data-name') ?? button.textContent?.trim() ?? '';
+    if (!name) return;
+
+    const completed =
+      source === 'standings'
+        ? parseBooleanAttribute(button.getAttribute('data-is-completed'))
+        : false;
+    const started =
+      source === 'pairings' ? parseBooleanAttribute(button.getAttribute('data-is-started')) : false;
+
+    rounds.push({
+      id,
+      name,
+      number: parseRoundNumber(name) ?? index + 1,
+      started: started || completed,
+      completed,
+    });
+  });
+
+  return rounds;
+};
+
+const mergeTournamentViewRounds = (
+  standingsRounds: TournamentViewRound[],
+  pairingsRounds: TournamentViewRound[],
+) => {
+  const orderSource = standingsRounds.length > 0 ? standingsRounds : pairingsRounds;
+  const numberById = new Map(orderSource.map(round => [round.id, round.number]));
+  const roundsById = new Map<number, TournamentViewRound>();
+
+  for (const round of [...standingsRounds, ...pairingsRounds]) {
+    const number = parseRoundNumber(round.name) ?? numberById.get(round.id) ?? round.number;
+    const existing = roundsById.get(round.id);
+
+    if (!existing) {
+      roundsById.set(round.id, {
+        ...round,
+        number,
+      });
+      continue;
+    }
+
+    roundsById.set(round.id, {
+      ...existing,
+      name: existing.name || round.name,
+      number: existing.number || number,
+      started: existing.started || round.started || round.completed,
+      completed: existing.completed || round.completed,
+    });
+  }
+
+  return [...roundsById.values()].sort((a, b) => a.number - b.number);
+};
 
 export async function fetchTournamentView(
   tournamentId: string | number,
@@ -66,33 +164,30 @@ export async function fetchTournamentView(
     const html = await response.text();
     const { document } = parseHTML(html);
 
-    // Get all round buttons
-    const allButtons = document.querySelectorAll(
+    const standingsRounds = readRoundButtons(
+      document,
       '#standings-round-selector-container button.round-selector',
+      'standings',
     );
-
-    // Get the last button for final round ID
-    const finalButton = document.querySelector(
-      '#standings-round-selector-container button.round-selector:last-of-type',
+    const pairingsRounds = readRoundButtons(
+      document,
+      '#pairings-round-selector-container button.round-selector',
+      'pairings',
     );
+    const rounds = mergeTournamentViewRounds(standingsRounds, pairingsRounds);
 
-    const finalRoundId = finalButton?.getAttribute('data-id') ?? null;
-
-    // Extract all round IDs
-    const allRoundIds: number[] = [];
-    allButtons.forEach(button => {
-      const roundId = button.getAttribute('data-id');
-      if (roundId) {
-        allRoundIds.push(parseInt(roundId));
-      }
-    });
+    const allRoundIds = (standingsRounds.length > 0 ? standingsRounds : rounds).map(
+      round => round.id,
+    );
+    const finalRoundId = standingsRounds.at(-1)?.id ?? rounds.at(-1)?.id ?? null;
 
     if (finalRoundId) {
       console.log('Final Round ID:', finalRoundId);
       console.log('All Round IDs:', allRoundIds);
       return {
-        finalRoundId: parseInt(finalRoundId),
+        finalRoundId,
         allRoundIds,
+        rounds,
       };
     }
 
@@ -100,6 +195,32 @@ export async function fetchTournamentView(
     return undefined;
   } catch (error) {
     console.error('Error fetching tournament view:', error);
+    throw error;
+  }
+}
+
+export async function fetchTournamentDetails(
+  tournamentId: string | number,
+): Promise<TIMeleeTournamentDetail> {
+  try {
+    await delay(500);
+    const url = `https://melee.gg/Tournament/GetTournamentDetails?id=${tournamentId}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        ...basicHeaders,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch tournament details: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching tournament details:', error);
     throw error;
   }
 }
@@ -257,32 +378,12 @@ export async function fetchDeckMatchesWithMeleeDeckIds(
 }
 
 /**
- * Fetches all matches for a specific round in a tournament.
- *
- * This function is an alternative to fetchDeckMatchesWithMeleeDeckIds when decklists
- * are not available. It fetches matches directly from the round endpoint and parses
- * them using the same logic.
- *
- * @param tournamentId - The ID of the tournament
- * @param roundId - The ID of the round to fetch matches from
- * @param playerInfo - A map of player usernames to their deck IDs and match data
- * @returns An array of TournamentMatchInsert objects
+ * Fetches raw Melee match rows for a round. This is shared by the finished
+ * tournament import and the live tournament checker.
  */
-export async function fetchMatchesFromRound(
-  tournamentId: string,
-  roundId: number,
-  playerInfo: Record<
-    string,
-    {
-      deckId: string;
-      meleeDeckId: string;
-      matches: TournamentMatchInsert[];
-    }
-  >,
-): Promise<TournamentMatchInsert[]> {
+export async function fetchRoundMatches(roundId: number): Promise<any[]> {
   let recordsTotal = -1;
   const matchesData = [];
-  console.log(`Fetching matches for round ${roundId} in tournament ${tournamentId}`);
   const url = `https://melee.gg/Match/GetRoundMatches/${roundId}`;
 
   try {
@@ -309,6 +410,41 @@ export async function fetchMatchesFromRound(
       start += 500;
     }
 
+    return matchesData;
+  } catch (error) {
+    console.error('Error fetching round matches:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches all matches for a specific round in a tournament.
+ *
+ * This function is an alternative to fetchDeckMatchesWithMeleeDeckIds when decklists
+ * are not available. It fetches matches directly from the round endpoint and parses
+ * them using the same logic.
+ *
+ * @param tournamentId - The ID of the tournament
+ * @param roundId - The ID of the round to fetch matches from
+ * @param playerInfo - A map of player usernames to their deck IDs and match data
+ * @returns An array of TournamentMatchInsert objects
+ */
+export async function fetchMatchesFromRound(
+  tournamentId: string,
+  roundId: number,
+  playerInfo: Record<
+    string,
+    {
+      deckId: string;
+      meleeDeckId: string;
+      matches: TournamentMatchInsert[];
+    }
+  >,
+): Promise<TournamentMatchInsert[]> {
+  console.log(`Fetching matches for round ${roundId} in tournament ${tournamentId}`);
+
+  try {
+    const matchesData = await fetchRoundMatches(roundId);
     const matches: TournamentMatchInsert[] = [];
 
     for (const match of matchesData) {

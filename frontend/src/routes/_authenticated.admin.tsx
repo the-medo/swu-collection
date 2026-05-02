@@ -6,6 +6,7 @@ export const adminPages: [string, ...string[]] = [
   'metas',
   'sets',
   'tournament-groups',
+  'tournament-weekends',
   'deck-thumbnails',
   'pq-tools',
   'special-actions',

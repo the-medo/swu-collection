@@ -9,6 +9,7 @@ import {
 import { booleanPreprocessor } from './zod/booleanPreprocessor.ts';
 
 export interface UserSettings {
+  homepageMode: 'default' | 'snapshot' | 'live';
   deckLayout: DeckLayout; // default: DeckLayout.TEXT
   deckGroupBy: DeckGroupBy; // default: DeckGroupBy.CARD_TYPE
   deckPrices: boolean; // default: false
@@ -37,6 +38,7 @@ export interface UserSettings {
 }
 
 export const userSettingsSchema = z.object({
+  homepageMode: z.enum(['default', 'snapshot', 'live']).default('default'),
   deckLayout: z.enum(DeckLayout).default(DeckLayout.TEXT),
   deckGroupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
   deckPrices: booleanPreprocessor.default(false),

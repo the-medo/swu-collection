@@ -8,7 +8,10 @@
     "auth-generate": "npx @better-auth/cli generate --config server/auth/auth.ts",
     "db-generate": "bun drizzle-kit generate",
     "db-migrate": "bun migrate.ts",
-    "db-docker": "docker run -d --name swubase-postgres -e POSTGRES_PASSWORD=password -p 5442:5432 postgres:16-alpine"
+    "db-docker": "docker run -d --name swubase-postgres -e POSTGRES_PASSWORD=password -p 5442:5432 postgres:16-alpine",
+    "screenshotter": "bun server/screenshotter/runScreenshotter.ts",
+    "screenshotter:tournament": "bun server/screenshotter/runTournamentScreenshots.ts",
+    "screenshotter:install": "bunx playwright install chromium"
   },
   "devDependencies": {
     "@better-auth/cli": "^1.3.34",
@@ -26,6 +29,7 @@
     "drizzle-orm": "^0.44.7",
     "hono": "^4.10.3",
     "linkedom": "^0.18.12",
+    "playwright": "^1.59.1",
     "postgres": "^3.4.5",
     "sharp": "^0.34.4",
     "zod": "^4.1.12"

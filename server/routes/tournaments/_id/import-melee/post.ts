@@ -13,6 +13,7 @@ import {
 } from '../../../../lib/card-statistics';
 import { updateTournamentGroupsStatisticsForTournament } from '../../../../lib/card-statistics/update-tournament-group-statistics.ts';
 import { generateDeckThumbnails } from '../../../../lib/decks/generateDeckThumbnail.ts';
+import { runTournamentImportedSideEffects } from '../../../../lib/imports/tournamentImportedSideEffects.ts';
 
 export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -63,45 +64,53 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
 
     const generateThumbnails = !minRound && !maxRound;
 
-    runTournamentImport(paramTournamentId, forcedRoundId, minRound, maxRound).then(async () => {
-      if (markAsImported) {
-        // Update tournament to set imported flag to true
-        await db
-          .update(tournamentTable)
-          .set({ imported: true, updatedAt: sql`NOW()` })
-          .where(and(condIsOwner, condTournamentId));
+    void runTournamentImport(paramTournamentId, forcedRoundId, minRound, maxRound)
+      .then(async () => {
+        if (markAsImported) {
+          // Update tournament to set imported flag to true
+          await db
+            .update(tournamentTable)
+            .set({ imported: true, updatedAt: sql`NOW()` })
+            .where(and(condIsOwner, condTournamentId));
 
-        // Compute tournament card statistics
-        await computeAndSaveTournamentStatistics(paramTournamentId);
+          // Compute tournament card statistics
+          await computeAndSaveTournamentStatistics(paramTournamentId);
 
-        // If tournament has a meta, compute meta card statistics
-        if (tournament.meta) {
-          await computeAndSaveMetaStatistics(tournament.meta);
+          // If tournament has a meta, compute meta card statistics
+          if (tournament.meta) {
+            await computeAndSaveMetaStatistics(tournament.meta);
+          }
+
+          // Update tournament group statistics for all groups that contain this tournament
+          try {
+            await updateTournamentGroupsStatisticsForTournament(paramTournamentId);
+          } catch (error) {
+            console.error('Error updating tournament group statistics:', error);
+            // Continue with the response even if statistics update fails
+          }
         }
 
-        // Update tournament group statistics for all groups that contain this tournament
-        try {
-          await updateTournamentGroupsStatisticsForTournament(paramTournamentId);
-        } catch (error) {
-          console.error('Error updating tournament group statistics:', error);
-          // Continue with the response even if statistics update fails
+        if (generateThumbnails) {
+          // Generate thumbnails for all unique leader/base combinations in the tournament
+          console.log(`Generating thumbnails for tournament: ${paramTournamentId}`);
+          const { results, errors } = await generateDeckThumbnails({
+            tournament_id: paramTournamentId,
+            force: false, // Don't force regeneration of existing thumbnails
+          });
+          console.log(
+            `Generated ${results.length} thumbnails for tournament: ${paramTournamentId}. ${errors.length} errors.`,
+          );
+        } else {
+          console.log('Generation of thumbnails skipped.');
         }
-      }
 
-      if (generateThumbnails) {
-        // Generate thumbnails for all unique leader/base combinations in the tournament
-        console.log(`Generating thumbnails for tournament: ${paramTournamentId}`);
-        const { results, errors } = await generateDeckThumbnails({
-          tournament_id: paramTournamentId,
-          force: false, // Don't force regeneration of existing thumbnails
-        });
-        console.log(
-          `Generated ${results.length} thumbnails for tournament: ${paramTournamentId}. ${errors.length} errors.`,
-        );
-      } else {
-        console.log('Generation of thumbnails skipped.');
-      }
-    });
+        if (markAsImported) {
+          await runTournamentImportedSideEffects(paramTournamentId);
+        }
+      })
+      .catch(error => {
+        console.error(`Import from Melee.gg failed for tournament ${paramTournamentId}:`, error);
+      });
 
     // Mock response - in a real implementation, this would fetch data from melee.gg
     // and process it to insert decks and matches

@@ -1,6 +1,6 @@
 import { api } from '@/lib/api.ts';
 import { saveUserSettings } from '../dexie/userSettings';
-import type { UserSettings } from '../../../shared/lib/userSettings';
+import { userSettingsSchema, type UserSettings } from '../../../shared/lib/userSettings';
 
 /**
  * Fetches user settings from the API and saves them to IndexedDB
@@ -16,7 +16,7 @@ export async function fetchAndSaveUserSettings(): Promise<UserSettings> {
     }
 
     // Parse the response
-    const userSettings = await response.json();
+    const userSettings = userSettingsSchema.parse(await response.json());
 
     // Save the settings to IndexedDB
     await saveUserSettings(userSettings);

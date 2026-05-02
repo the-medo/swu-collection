@@ -25,6 +25,9 @@ import { gameResultRoute } from './routes/game-results.ts';
 import { teamsRoute } from './routes/teams.ts';
 import { userSetupRoute } from './routes/user-setup.ts';
 import { wsRoute } from './routes/ws.ts';
+import { applicationConfigurationRoute } from './routes/application-configuration.ts';
+import { tournamentWeekendsRoute } from './routes/tournament-weekends.ts';
+import { playerWatchRoute } from './routes/player-watch.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
 import { timeout } from 'hono/timeout';
@@ -105,6 +108,8 @@ app.use('*', async (c, next) => {
 
 app.use('/api/admin/special-actions/update-deck-information', timeout(180000));
 app.use('/api/tournament/:id/export-to-blob', timeout(180000));
+app.use('/api/tournament/:id/screenshots', timeout(300000));
+app.use('/api/tournament/:id/discord-results', timeout(300000));
 app.use(
   '/api/deck/:id/json',
   cors({
@@ -136,6 +141,9 @@ const apiRoutes = app
   .route('/game-results', gameResultRoute)
   .route('/teams', teamsRoute)
   .route('/user-setup', userSetupRoute)
+  .route('/application-configuration', applicationConfigurationRoute)
+  .route('/tournament-weekends', tournamentWeekendsRoute)
+  .route('/player-watch', playerWatchRoute)
   .route('/ws', wsRoute);
 
 // Read the index.html template once at startup

@@ -25,7 +25,7 @@ export const userSettingsGetRoute = new Hono<AuthExtension>().get(
       .where(eq(userSettings.userId, user.id));
     
     // Merge default settings with user settings from database
-    const mergedSettings = { ...defaultSettings };
+    const mergedSettings: Record<string, unknown> = { ...defaultSettings };
     
     // Override defaults with values from database
     for (const setting of userSettingsFromDb) {

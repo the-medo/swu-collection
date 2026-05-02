@@ -77,7 +77,6 @@ const CollectionAndWantlistSettings: React.FC<CollectionAndWantlistSettingsProps
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-2xl">Collection and wantlist settings</h2>
       <div className="flex flex-col gap-2">
         <Label>Currency</Label>
         <CurrencySelector

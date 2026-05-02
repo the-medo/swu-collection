@@ -6,22 +6,29 @@ import TournamentForm from '@/components/app/tournaments/TournamentForm.tsx';
 import { ZTournamentUpdateRequest } from '../../../../../types/ZTournament.ts';
 import { TournamentStringDate } from '../../../../../types/Tournament.ts';
 
-type EditTournamentDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
+type EditTournamentDialogProps = Pick<
+  DialogProps,
+  'trigger' | 'triggerDisabled' | 'open' | 'onOpenChange'
+> & {
   tournament: TournamentStringDate;
 };
 
 const EditTournamentDialog: React.FC<EditTournamentDialogProps> = ({
   trigger,
   triggerDisabled,
+  open,
+  onOpenChange,
   tournament,
 }) => {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const putTournamentMutation = usePutTournament(tournament.id);
+  const dialogOpen = open ?? internalOpen;
+  const setDialogOpen = onOpenChange ?? setInternalOpen;
 
   const handleSubmit = (data: ZTournamentUpdateRequest) => {
     putTournamentMutation.mutate(data, {
       onSuccess: () => {
-        setOpen(false);
+        setDialogOpen(false);
       },
     });
   };
@@ -31,8 +38,8 @@ const EditTournamentDialog: React.FC<EditTournamentDialogProps> = ({
       trigger={trigger}
       triggerDisabled={triggerDisabled}
       header={`Edit Tournament: ${tournament.name}`}
-      open={open}
-      onOpenChange={setOpen}
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
       contentClassName="md:min-w-[600px]"
       size="medium"
     >

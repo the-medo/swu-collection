@@ -15,11 +15,13 @@ import { cardStatsTabsArray } from '@/components/app/card-stats/CardStatsTabs/Ca
 import { aspectTabOptions } from '@/components/app/card-stats/AspectCardStats/AspectCardStats.tsx';
 import { UserSettingsLoader } from '@/components/app/users/UserSettingsLoader.tsx';
 import { CardPoolType } from '../../../shared/types/cardPools.ts';
+import TournamentDetailDialog from '@/components/app/tournaments/TournamentDetailDialog/TournamentDetailDialog.tsx';
 
 const globalSearchParams = z.object({
   // global filters
   formatId: z.number().int().positive().optional(),
   metaId: z.number().int().positive().optional(),
+  homeMode: z.enum(['snapshot', 'live']).optional(),
 
   // Card detail dialog
   modalCardId: z.string().optional(),
@@ -27,6 +29,9 @@ const globalSearchParams = z.object({
   modalCardDecksId: z.string().optional(),
   modalCardDecksLeaderCardId: z.string().optional(),
   modalCardDecksBaseCardId: z.string().optional(),
+
+  // Tournament detail dialog
+  dialogTournamentId: z.string().optional(),
 
   // Deck filter params
   deckLeaders: z.array(z.string()).optional(),
@@ -108,6 +113,7 @@ export const Route = createRootRoute({
           <div className="flex flex-col w-full @container/main-body">
             <Outlet />
             <CardDetailDialog />
+            <TournamentDetailDialog />
           </div>
           <Footer />
           <SidebarTriggerButton />

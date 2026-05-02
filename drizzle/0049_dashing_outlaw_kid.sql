@@ -1,0 +1,1 @@
+ALTER TABLE "tournament_weekend_tournament" ADD COLUMN "was_checked_finished" boolean DEFAULT false NOT NULL;

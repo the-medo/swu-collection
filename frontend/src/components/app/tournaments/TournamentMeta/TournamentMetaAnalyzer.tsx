@@ -218,7 +218,13 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   ]);
 
   return (
-    <div className="space-y-2">
+    <div
+      className="space-y-2"
+      data-screenshot-target="tournament-meta-analysis"
+      data-meta-part={metaPart}
+      data-meta-info={metaInfo}
+      data-view-mode={viewMode}
+    >
       <div className="flex flex-row gap-2 flex-wrap justify-between">
         <MobileCard>
           <ViewModeSelector value={viewMode} onChange={setViewMode} />

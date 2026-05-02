@@ -10,18 +10,25 @@ import { useForm } from '@tanstack/react-form';
 import { TournamentStringDate } from '../../../../../types/Tournament.ts';
 import FormFieldError from '@/components/app/global/FormFieldError.tsx';
 
-type DeleteTournamentDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
+type DeleteTournamentDialogProps = Pick<
+  DialogProps,
+  'trigger' | 'triggerDisabled' | 'open' | 'onOpenChange'
+> & {
   tournament: TournamentStringDate;
 };
 
 const DeleteTournamentDialog: React.FC<DeleteTournamentDialogProps> = ({
   trigger,
   triggerDisabled,
+  open,
+  onOpenChange,
   tournament,
 }) => {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const deleteTournamentMutation = useDeleteTournament();
+  const dialogOpen = open ?? internalOpen;
+  const setDialogOpen = onOpenChange ?? setInternalOpen;
 
   const form = useForm({
     defaultValues: {
@@ -31,7 +38,7 @@ const DeleteTournamentDialog: React.FC<DeleteTournamentDialogProps> = ({
       if (value.confirmationText === 'DELETE') {
         deleteTournamentMutation.mutate(tournament.id, {
           onSuccess: () => {
-            setOpen(false);
+            setDialogOpen(false);
             navigate({ to: '/tournaments' });
           },
         });
@@ -44,8 +51,8 @@ const DeleteTournamentDialog: React.FC<DeleteTournamentDialogProps> = ({
       trigger={trigger}
       triggerDisabled={triggerDisabled}
       header={`Delete Tournament: ${tournament.name}`}
-      open={open}
-      onOpenChange={setOpen}
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
     >
       <div className="space-y-4">
         <div className="text-sm">
@@ -79,7 +86,7 @@ const DeleteTournamentDialog: React.FC<DeleteTournamentDialogProps> = ({
           />
 
           <div className="flex justify-between">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel
             </Button>
             <form.Subscribe

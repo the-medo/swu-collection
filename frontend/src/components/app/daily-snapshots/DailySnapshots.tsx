@@ -14,7 +14,6 @@ import GridSection, {
   SectionCardSizing,
 } from '@/components/app/global/GridSection/GridSection.tsx';
 import type { DailySnapshotSectionData } from '../../../../../types/DailySnapshots.ts';
-import SocialButtons from '@/components/app/global/SocialButtons.tsx';
 import FallbackPage from '@/components/app/daily-snapshots/FallbackPage.tsx';
 import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
 import TournamentDetailSection from '@/components/app/daily-snapshots/special-sections/TournamentDetailSection/TournamentDetailSection.tsx';
@@ -115,20 +114,6 @@ const DailySnapshots: React.FC = () => {
   return (
     <>
       <Helmet title="SWUBase | Star Wars: Unlimited Meta Analysis & Deckbuilding" />
-      {/* Spacer to prevent content from appearing under the fixed header */}
-      <div className="flex gap-4 justify-between" aria-hidden="true">
-        <div className="flex flex-1 flex-col" aria-hidden="true">
-          <h1 className="text-center font-medium text-foreground/80 mb-0">
-            <span className="font-normal">SWU</span>
-            <span className="font-bold">BASE</span>
-          </h1>
-          <h4 className="text-center font-medium  text-foreground/80">
-            Your Ultimate Star Wars: Unlimited Companion
-          </h4>
-        </div>
-
-        <SocialButtons location="header" />
-      </div>
       <div className="w-full mx-auto px-2 py-2" id="section-container">
         {isLoading && <div className="text-sm text-muted-foreground">Loading daily snapshot…</div>}
 

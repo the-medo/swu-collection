@@ -806,6 +806,9 @@ const DeckImage = forwardRef<
           <img
             src={exportUrl}
             alt="Deck image"
+            data-screenshot-target="deck-image-output"
+            data-deck-id={deckId}
+            data-deck-image-view={view}
             className={cn({
               'h-auto max-w-full': view === 'full',
               'max-h-[85vh] min-h-[500px] h-auto w-auto max-w-full rounded-md object-contain shadow-xl':

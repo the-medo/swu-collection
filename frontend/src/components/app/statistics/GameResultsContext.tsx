@@ -6,13 +6,14 @@ import {
 } from '@/components/app/statistics/useGameResults.ts';
 import { useSearch } from '@tanstack/react-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { useSession } from '@/lib/auth-client.ts';
+import { authClient, useSession } from '@/lib/auth-client.ts';
 import { getGameResultsWsUrl } from '@/lib/gameResultsWsUrl.ts';
 import { GameResult } from '../../../../../server/db/schema/game_result.ts';
 import { TeamMember } from '../../../../../server/db/schema/team_member.ts';
 import type { TeamDeckShortened } from '../../../../../server/routes/teams/_id/deck-map/get.ts';
 
 const GameResultsContext = createContext<StatisticsHistoryData | undefined>(undefined);
+const authCloseCodes = new Set([4401, 4403]);
 
 interface GameResultsProviderProps {
   teamId?: string;
@@ -63,6 +64,30 @@ export const GameResultsProvider: React.FC<GameResultsProviderProps> = ({ teamId
       }
     };
 
+    const hasActiveSession = async () => {
+      try {
+        const latestSession = await authClient.getSession();
+        if (!shouldReconnect) {
+          return false;
+        }
+
+        if (latestSession.data?.user.id === currentUserId) {
+          return true;
+        }
+
+        const status = latestSession.error?.status;
+        if (status !== undefined && status !== 401 && status !== 403) {
+          return true;
+        }
+      } catch {
+        return true;
+      }
+
+      shouldReconnect = false;
+      session.refetch();
+      return false;
+    };
+
     const scheduleReconnect = () => {
       if (!shouldReconnect) {
         return;
@@ -82,9 +107,11 @@ export const GameResultsProvider: React.FC<GameResultsProviderProps> = ({ teamId
         return;
       }
 
+      let opened = false;
       ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
+        opened = true;
         reconnectAttempt = 0;
       };
 
@@ -175,8 +202,19 @@ export const GameResultsProvider: React.FC<GameResultsProviderProps> = ({ teamId
         }
       };
 
-      ws.onclose = () => {
+      ws.onclose = async event => {
         ws = null;
+
+        if (authCloseCodes.has(event.code)) {
+          shouldReconnect = false;
+          session.refetch();
+          return;
+        }
+
+        if (!opened && !(await hasActiveSession())) {
+          return;
+        }
+
         scheduleReconnect();
       };
 

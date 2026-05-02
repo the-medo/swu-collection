@@ -2,7 +2,17 @@ import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
 import { Button } from '@/components/ui/button';
-import { Database, Edit, Trash2, ChartColumn, Check, FileJson2 } from 'lucide-react';
+import {
+  Camera,
+  ChartColumn,
+  ChevronDown,
+  Database,
+  Edit,
+  FileJson2,
+  Loader2,
+  ShieldCheck,
+  Trash2,
+} from 'lucide-react';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
 import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTournamentDialog.tsx';
@@ -13,13 +23,22 @@ import { TournamentTabs } from '../TournamentTabs';
 import NoTournamentData from '@/components/app/tournaments/components/NoTournamentData.tsx';
 import { useComputeCardStats } from '@/api/card-stats/useComputeCardStats.ts';
 import { toast } from '@/hooks/use-toast.ts';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import TournamentDataLoader from '@/components/app/tournaments/TournamentMeta/TournamentDataLoader.tsx';
 import { usePutTournament } from '@/api/tournaments/usePutTournament.ts';
-import { TournamentTabsProps } from '@/components/app/tournaments/TournamentTabs/TournamentTabs.tsx';
+import type { TournamentTabsProps } from '@/components/app/tournaments/TournamentTabs/TournamentTabs.tsx';
 import MeleeButton from '@/components/app/tournaments/TournamentDetail/MeleeButton.tsx';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.tsx';
+import { useGenerateTournamentScreenshots } from '@/api/tournaments/useGenerateTournamentScreenshots.ts';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -28,6 +47,8 @@ interface TournamentDetailProps {
   mode?: TournamentTabsProps['mode'];
   displayHeader?: boolean;
 }
+
+type AdminDialog = 'edit' | 'import-melee' | 'blob' | 'delete' | null;
 
 const TournamentDetail: React.FC<TournamentDetailProps> = ({
   tournamentId,
@@ -39,23 +60,25 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   const { data, isFetching, error } = useGetTournament(tournamentId);
   const hasPermission = usePermissions();
   const computeCardStats = useComputeCardStats();
-
-  // Handle 404 error
-  if (error?.status === 404) {
-    return (
-      <>
-        <Helmet title="Tournament not found | SWUBase" />
-        <Error404
-          title="Tournament not found"
-          description="The tournament you are looking for does not exist or has been deleted."
-        />
-      </>
-    );
-  }
+  const toggleImportedMutation = usePutTournament(tournamentId);
+  const generateScreenshots = useGenerateTournamentScreenshots(tournamentId);
+  const [adminDialog, setAdminDialog] = useState<AdminDialog>(null);
+  const loading = isFetching;
+  const tournament = data?.tournament;
 
   const canUpdate = hasPermission('tournament', 'update');
   const canDelete = hasPermission('tournament', 'delete');
+  const canImportTournament = hasPermission('tournament', 'import');
   const canComputeStats = hasPermission('statistics', 'compute');
+  const canAccessAdmin = hasPermission('admin', 'access');
+  const canRecomputeStats = canComputeStats && !!tournament?.imported;
+  const showAdminTools = canRecomputeStats || canAccessAdmin;
+  const showAdminMenu =
+    canUpdate || canDelete || canImportTournament || canRecomputeStats || canAccessAdmin;
+
+  const hiddenDialogTrigger = (
+    <button type="button" className="hidden" tabIndex={-1} aria-hidden="true" />
+  );
 
   const handleComputeStats = async () => {
     try {
@@ -64,7 +87,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
         title: 'Card statistics computed',
         description: 'Tournament card statistics have been recomputed successfully.',
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to compute tournament card statistics.',
@@ -72,8 +95,6 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
       });
     }
   };
-
-  const toggleImportedMutation = usePutTournament(tournamentId);
 
   const handleToggleImported = async () => {
     try {
@@ -86,7 +107,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
           : 'Tournament marked as imported',
         description: `Tournament "${tournament?.name}" has been ${tournament?.imported ? 'unmarked' : 'marked'} as imported.`,
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to update tournament imported status.',
@@ -95,8 +116,9 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
     }
   };
 
-  const loading = isFetching;
-  const tournament = data?.tournament;
+  const handleRunScreenshotter = () => {
+    generateScreenshots.mutate({ force: true });
+  };
 
   // Generate title based on active tab
   const pageTitle = useMemo(() => {
@@ -126,6 +148,19 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
     return tabTitle ? `${tournament.name} - ${tabTitle} | SWUBase` : `${tournament.name} | SWUBase`;
   }, [activeTab, tournament?.name]);
 
+  // Handle 404 error
+  if (error?.status === 404) {
+    return (
+      <>
+        <Helmet title="Tournament not found | SWUBase" />
+        <Error404
+          title="Tournament not found"
+          description="The tournament you are looking for does not exist or has been deleted."
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <Helmet titleTemplate={`%s - ${pageTitle}`} />
@@ -137,96 +172,159 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
 
             {!loading && tournament && (
               <div className="flex flex-wrap gap-2">
+                {tournament.meleeId && <MeleeButton meleeId={tournament.meleeId} />}
+
+                {showAdminMenu && (
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <Button type="button" size="sm" variant="outline">
+                        <ShieldCheck className="h-4 w-4" />
+                        Admin
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuLabel>Tournament admin</DropdownMenuLabel>
+                      {canUpdate && (
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onSelect={() => setAdminDialog('edit')}
+                        >
+                          <Edit className="h-4 w-4" />
+                          Edit tournament
+                        </DropdownMenuItem>
+                      )}
+
+                      {canUpdate && (
+                        <DropdownMenuCheckboxItem
+                          checked={tournament.imported}
+                          disabled={toggleImportedMutation.isPending}
+                          onCheckedChange={() => {
+                            void handleToggleImported();
+                          }}
+                        >
+                          Marked as imported
+                        </DropdownMenuCheckboxItem>
+                      )}
+
+                      {canUpdate && (canImportTournament || showAdminTools || canDelete) && (
+                        <DropdownMenuSeparator />
+                      )}
+
+                      {canImportTournament && (
+                        <>
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onSelect={() => setAdminDialog('import-melee')}
+                          >
+                            <Database className="h-4 w-4" />
+                            Import from Melee.gg
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onSelect={() => setAdminDialog('blob')}
+                          >
+                            <FileJson2 className="h-4 w-4" />
+                            Import/export blob
+                          </DropdownMenuItem>
+                        </>
+                      )}
+
+                      {canImportTournament && (showAdminTools || canDelete) && (
+                        <DropdownMenuSeparator />
+                      )}
+
+                      {canRecomputeStats && (
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          disabled={computeCardStats.isPending}
+                          onSelect={() => {
+                            void handleComputeStats();
+                          }}
+                        >
+                          {computeCardStats.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <ChartColumn className="h-4 w-4" />
+                          )}
+                          {computeCardStats.isPending
+                            ? 'Computing card stats'
+                            : 'Recompute card stats'}
+                        </DropdownMenuItem>
+                      )}
+
+                      {canAccessAdmin && (
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          disabled={!tournament.imported || generateScreenshots.isPending}
+                          title={
+                            tournament.imported
+                              ? undefined
+                              : 'Import tournament data before running the screenshotter'
+                          }
+                          onSelect={handleRunScreenshotter}
+                        >
+                          {generateScreenshots.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Camera className="h-4 w-4" />
+                          )}
+                          {generateScreenshots.isPending
+                            ? 'Running screenshotter'
+                            : 'Run screenshotter'}
+                        </DropdownMenuItem>
+                      )}
+
+                      {showAdminTools && canDelete && <DropdownMenuSeparator />}
+
+                      {canDelete && (
+                        <DropdownMenuItem
+                          className="cursor-pointer text-destructive focus:text-destructive"
+                          onSelect={() => setAdminDialog('delete')}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete tournament
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+
                 {canUpdate && (
                   <EditTournamentDialog
-                    trigger={
-                      <Button size="sm">
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </Button>
-                    }
+                    trigger={hiddenDialogTrigger}
                     tournament={tournament}
+                    open={adminDialog === 'edit'}
+                    onOpenChange={open => setAdminDialog(open ? 'edit' : null)}
                   />
                 )}
 
-                {tournament.meleeId && <MeleeButton meleeId={tournament.meleeId} />}
-                {canUpdate && (
+                {canImportTournament && (
                   <ImportMeleeTournamentDialog
-                    trigger={
-                      <Button size="sm" variant="outline">
-                        <Database className="h-4 w-4 mr-2" />
-                        Import from Melee.gg
-                      </Button>
-                    }
+                    trigger={hiddenDialogTrigger}
                     tournamentId={tournamentId}
                     meleeId={tournament.meleeId}
+                    open={adminDialog === 'import-melee'}
+                    onOpenChange={open => setAdminDialog(open ? 'import-melee' : null)}
                   />
                 )}
 
-                {canUpdate && (
+                {canImportTournament && (
                   <ImportExportTournamentBlobDialog
-                    trigger={
-                      <Button size="sm" variant="outline">
-                        <FileJson2 className="h-4 w-4" />
-                      </Button>
-                    }
+                    trigger={hiddenDialogTrigger}
                     tournamentId={tournamentId}
+                    open={adminDialog === 'blob'}
+                    onOpenChange={open => setAdminDialog(open ? 'blob' : null)}
                   />
                 )}
 
                 {canDelete && (
                   <DeleteTournamentDialog
-                    trigger={
-                      <Button size="sm" variant="destructive">
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </Button>
-                    }
+                    trigger={hiddenDialogTrigger}
                     tournament={tournament}
+                    open={adminDialog === 'delete'}
+                    onOpenChange={open => setAdminDialog(open ? 'delete' : null)}
                   />
-                )}
-
-                {canComputeStats && tournament.imported && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={handleComputeStats}
-                          disabled={computeCardStats.isPending}
-                        >
-                          <ChartColumn className="h-4 w-4" />
-                          {computeCardStats.isPending ? 'Computing...' : 'Recompute Card Stats'}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Recompute card statistics for this tournament</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-
-                {canUpdate && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={handleToggleImported}
-                          disabled={toggleImportedMutation.isPending}
-                        >
-                          <Check
-                            className={`h-4 w-4 ${tournament.imported ? 'text-green-500' : ''}`}
-                          />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{tournament.imported ? 'Mark as not imported' : 'Mark as imported'}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
                 )}
               </div>
             )}

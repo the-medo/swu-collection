@@ -21,27 +21,50 @@ import { useMemo } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 
 export interface TournamentDetailContentProps {
-  maTournamentId: string;
+  tournamentId?: string;
+  maTournamentId?: string;
   expanded?: boolean;
   setExpanded?: React.Dispatch<React.SetStateAction<boolean>>;
+  onClose?: () => void;
 }
 
 const TournamentDetailContent: React.FC<TournamentDetailContentProps> = ({
+  tournamentId,
   maTournamentId,
   expanded,
   setExpanded,
+  onClose,
 }) => {
   const navigate = useNavigate();
-  const { page } = useSearch({ strict: false });
-  const { data } = useGetTournament(maTournamentId);
+  const search = useSearch({ strict: false });
+  const resolvedTournamentId = tournamentId ?? maTournamentId;
+  const { data } = useGetTournament(resolvedTournamentId);
 
-  const activeTab = (page as string) || 'details';
+  const activeTab = (search.page as string) || 'details';
+
+  const closeDetail = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+
+    navigate({
+      to: '.',
+      search: prev => ({ ...prev, maTournamentId: undefined }),
+    });
+  };
 
   const tournamentDetailContent = useMemo(() => {
+    if (!resolvedTournamentId) return null;
+
     switch (activeTab) {
       case 'details':
         return (
-          <DetailAndBracketTab tournamentId={maTournamentId} displayDetail={false} compact={true} />
+          <DetailAndBracketTab
+            tournamentId={resolvedTournamentId}
+            displayDetail={false}
+            compact={true}
+          />
         );
       case 'meta':
         return <MetaAnalysisTab route={RootRoute} />;
@@ -50,16 +73,22 @@ const TournamentDetailContent: React.FC<TournamentDetailContentProps> = ({
       case 'decks':
         return <AllDecksTab compact={true} />;
       case 'card-stats':
-        return <CardStatsTab route={RootRoute} tournamentId={maTournamentId} />;
+        return <CardStatsTab route={RootRoute} tournamentId={resolvedTournamentId} />;
       default:
         return (
-          <DetailAndBracketTab tournamentId={maTournamentId} displayDetail={false} compact={true} />
+          <DetailAndBracketTab
+            tournamentId={resolvedTournamentId}
+            displayDetail={false}
+            compact={true}
+          />
         );
     }
-  }, [activeTab, maTournamentId]);
+  }, [activeTab, resolvedTournamentId]);
 
   const t = data?.tournament;
   const countryCode = t?.location as CountryCode;
+
+  if (!resolvedTournamentId) return null;
 
   return (
     <div className="h-full w-full flex flex-col gap-2 ">
@@ -85,16 +114,7 @@ const TournamentDetailContent: React.FC<TournamentDetailContentProps> = ({
         dropdownMenu={
           <div className="flex gap-2 mb-2">
             {data?.tournament.meleeId && <MeleeButton meleeId={data.tournament.meleeId} />}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                navigate({
-                  to: '.',
-                  search: prev => ({ ...prev, maTournamentId: undefined }),
-                })
-              }
-            >
+            <Button variant="outline" size="sm" onClick={closeDetail}>
               Close
               <X />
             </Button>
@@ -116,7 +136,7 @@ const TournamentDetailContent: React.FC<TournamentDetailContentProps> = ({
         id="section-tournament-detail"
       >
         <TournamentDetail
-          tournamentId={maTournamentId as string}
+          tournamentId={resolvedTournamentId}
           activeTab={activeTab}
           mode="search-params"
           displayHeader={false}
