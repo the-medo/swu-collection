@@ -119,16 +119,17 @@ export async function liveTournamentCheck(
     queuedImport = inserted.length > 0;
   }
 
-  let progress = null;
-  if (
+  const shouldCheckProgress =
     detail.status === 'running' ||
-    !row.weekendTournament.wasCheckedFinished ||
     (detail.status === 'finished' &&
-      expectsDecklists &&
-      (detail.hasDecklists || hasMissingProgressFields(row.weekendTournament)))
-  ) {
+      (!row.weekendTournament.wasCheckedFinished ||
+        (expectsDecklists &&
+          (detail.hasDecklists || hasMissingProgressFields(row.weekendTournament)))));
+
+  let progress = null;
+  if (shouldCheckProgress) {
     progress = await liveTournamentProgressCheck(input);
-    if (detail.status === 'finished') {
+    if (detail.status === 'finished' && progress.type === 'checked') {
       await db
         .update(tournamentWeekendTournament)
         .set({

@@ -9,7 +9,7 @@ import {
 } from '../../db/schema/tournament_weekend.ts';
 import { mergeLiveTournamentAdditionalData } from './additionalData.ts';
 import { publishLiveTournamentProgressChecked } from './liveTournamentEvents.ts';
-import { fetchLiveTournamentProgressFromMelee } from './melee.ts';
+import { MeleeRoundsUnavailableError, fetchLiveTournamentProgressFromMelee } from './melee.ts';
 import { recomputeTournamentWeekendPlayerScores } from './tournamentWeekendPlayerScores.ts';
 import type {
   LiveMeleeMatch,
@@ -176,10 +176,24 @@ export async function liveTournamentProgressCheck(
     };
   }
 
-  const progress = await fetchLiveTournamentProgressFromMelee({
-    meleeId,
-    importedRoundMatchCounts: await getImportedRoundMatchCounts(input.tournamentId),
-  });
+  let progress: Awaited<ReturnType<typeof fetchLiveTournamentProgressFromMelee>>;
+  try {
+    progress = await fetchLiveTournamentProgressFromMelee({
+      meleeId,
+      importedRoundMatchCounts: await getImportedRoundMatchCounts(input.tournamentId),
+    });
+  } catch (error) {
+    if (error instanceof MeleeRoundsUnavailableError) {
+      return {
+        type: 'skipped',
+        weekendId: input.weekendId,
+        tournamentId: input.tournamentId,
+        reason: error.message,
+      };
+    }
+
+    throw error;
+  }
   const players = uniquePlayers(progress.standings, progress.matches);
 
   if (players.length > 0) {

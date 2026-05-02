@@ -26,6 +26,13 @@ const numberOrNull = (value: unknown) => {
 
 const stringOrNull = (value: unknown) => (typeof value === 'string' && value !== '' ? value : null);
 
+export class MeleeRoundsUnavailableError extends Error {
+  constructor(readonly meleeId: string) {
+    super(`No Melee rounds found for tournament ${meleeId}`);
+    this.name = 'MeleeRoundsUnavailableError';
+  }
+}
+
 const sanitizeTournamentDetail = (detail: TIMeleeTournamentDetail) => {
   const {
     ID: _id,
@@ -282,7 +289,7 @@ export async function fetchLiveTournamentProgressFromMelee(params: {
   const currentRound = currentRoundFromView(rounds);
 
   if (!currentRound) {
-    throw new Error(`No Melee rounds found for tournament ${params.meleeId}`);
+    throw new MeleeRoundsUnavailableError(params.meleeId);
   }
 
   const rawStandings = await fetchRoundStandings(currentRound.id);
