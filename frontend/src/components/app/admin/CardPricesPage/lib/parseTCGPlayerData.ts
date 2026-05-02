@@ -2,7 +2,7 @@ import { SwuSet } from '../../../../../../../types/enums.ts';
 import { CardList, CardVariant } from '../../../../../../../lib/swu-resources/types.ts';
 import { transformToId } from '../../../../../../../lib/swu-resources/lib/transformToId.ts';
 import { ParsedCardData } from './parseCardmarketHtml.ts';
-import { TCGCSV_SWU_ID } from '../../../../../../../shared/consts/constants.ts';
+import { TCGCSV_HEADERS, TCGCSV_SWU_ID } from '../../../../../../../shared/consts/constants.ts';
 
 type TcgplayerProduct = {
   productId: number;
@@ -28,7 +28,7 @@ export async function parseTCGPlayerData(
 ): Promise<ParsedCardData[]> {
   try {
     const url = `https://tcgcsv.com/tcgplayer/${TCGCSV_SWU_ID}/${tcgPlayerGroupId}/products`;
-    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    const res = await fetch(url, { headers: TCGCSV_HEADERS });
     if (!res.ok) {
       throw new Error(`Request failed with status ${res.status}`);
     }
