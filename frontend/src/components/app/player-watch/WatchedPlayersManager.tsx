@@ -26,6 +26,7 @@ import {
   TableRow,
 } from '@/components/ui/table.tsx';
 import { useUser } from '@/hooks/useUser.ts';
+import SignIn from '@/components/app/auth/SignIn.tsx';
 
 const SEARCH_DEBOUNCE_DELAY = 500;
 
@@ -94,8 +95,8 @@ export function WatchedPlayersManager({ showDescription = false }: { showDescrip
 
   if (!user) {
     return (
-      <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-        Sign in to manage watched players.
+      <div className="p-4 text-sm text-muted-foreground justify-center flex items-center">
+        <SignIn />
       </div>
     );
   }

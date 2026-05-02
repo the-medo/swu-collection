@@ -18,6 +18,7 @@ import { BracketPreview } from './BracketPreview.tsx';
 import { LiveStatusBadge } from './LiveStatusBadge.tsx';
 import { TournamentCardActionsMenu } from './TournamentCardActionsMenu.tsx';
 import { WinnerDeckDecoration } from './WinnerDeckDecoration.tsx';
+import { Link } from '@tanstack/react-router';
 
 function getMatchesRemainingLabel(entry: LiveTournamentWeekendTournamentEntry) {
   const remaining = entry.weekendTournament.matchesRemaining;
@@ -159,8 +160,15 @@ export function TournamentCard({
             'max-w-[calc(100%-150px)]': isFinished && entry.winningDeck,
           })}
         >
-          <div className="flex flex-wrap items-center gap-2">
-            <h6 className="font-semibold leading-tight">{entry.tournament.name}</h6>
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <h6 className="font-semibold leading-tight mb-0!">{entry.tournament.name}</h6>
+            <Link
+              to="/tournaments/$tournamentId"
+              params={{ tournamentId: entry.tournament.id }}
+              target="_blank"
+            >
+              <ExternalLink className="mr-2 size-3" />
+            </Link>
             {!isFinished && <LiveStatusBadge status={entry.weekendTournament.status} />}
             {isUpcoming && startTime && (
               <span className="text-xs text-muted-foreground">{startTime}</span>

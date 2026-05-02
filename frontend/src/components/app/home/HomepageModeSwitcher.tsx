@@ -31,10 +31,10 @@ export function HomepageModeSwitcher({ activeMode }: HomepageModeSwitcherProps) 
         className="justify-center gap-2"
       >
         <ToggleGroupItem value="snapshot" className="px-4">
-          Snapshot
+          Two-week Meta
         </ToggleGroupItem>
         <ToggleGroupItem value="live" className="px-4">
-          Live
+          Live Weekend
         </ToggleGroupItem>
       </ToggleGroup>
     </div>

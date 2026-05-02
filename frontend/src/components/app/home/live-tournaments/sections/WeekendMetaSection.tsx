@@ -116,7 +116,7 @@ export function WeekendMetaSection({ detail }: { detail: LiveTournamentWeekendDe
       <LiveSectionHeader title="Meta" />
       {chartData.length === 0 || totalDecks === 0 ? (
         <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-          Meta data will appear after attached tournament groups have leader/base statistics.
+          No meta data yet
         </div>
       ) : (
         <div className="h-[320px] w-full">
