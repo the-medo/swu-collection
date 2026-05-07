@@ -1,4 +1,6 @@
 import { ExternalLink } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import type { ReactNode } from 'react';
 import Flag from '@/components/app/global/Flag.tsx';
 import { formatDataById } from '../../../../../../../types/Format.ts';
 import type { CountryCode } from '../../../../../../../server/db/lists.ts';
@@ -33,9 +35,13 @@ function TournamentStreamInfoRow({
 export function TournamentWeekendStreamCard({
   resource,
   tournament,
+  footerAction,
+  showWatchLink = true,
 }: {
   resource: TournamentWeekendResource;
   tournament?: LiveTournamentWeekendTournamentEntry;
+  footerAction?: ReactNode;
+  showWatchLink?: boolean;
 }) {
   const title = tournament?.tournament.name || resource.title || 'Tournament stream';
   const embedTitle = resource.title || `${title} stream`;
@@ -47,17 +53,33 @@ export function TournamentWeekendStreamCard({
           <div className="truncate font-medium leading-tight">{title}</div>
           {tournament && <TournamentStreamInfoRow tournament={tournament} />}
         </div>
-        <a
-          href={resource.resourceUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex shrink-0 items-center gap-1 text-xs underline"
-        >
-          YouTube
-          <ExternalLink className="h-3.5 w-3.5" />
-        </a>
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <a
+            href={resource.resourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-xs underline"
+          >
+            YouTube
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+          {showWatchLink && (
+            <Link
+              to="/"
+              search={previous => ({
+                ...previous,
+                homeMode: 'live',
+                streamId: resource.id,
+              })}
+              className="text-xs font-medium text-foreground underline"
+            >
+              Watch here
+            </Link>
+          )}
+        </div>
       </div>
       <YouTubeEmbed url={resource.resourceUrl} title={embedTitle} />
+      {footerAction && <div className="mt-3">{footerAction}</div>}
     </div>
   );
 }

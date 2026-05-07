@@ -1,6 +1,7 @@
 import { type ReactNode, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Loader2 } from 'lucide-react';
+import { useSearch } from '@tanstack/react-router';
 import {
   useGetTournamentWeekendResources,
   useLiveTournamentSocket,
@@ -16,6 +17,7 @@ import GridSectionContent from '@/components/app/global/GridSection/GridSectionC
 import {
   LiveTournamentOverviewSection,
   LiveTournamentStatusTilesSection,
+  LiveTournamentWatchMode,
   PlayersAndStreamsSection,
   WeekendMetaSection,
 } from './live-tournaments/sections';
@@ -78,6 +80,7 @@ function LiveGridSection({
 export default function LiveTournamentHome() {
   const user = useUser();
   const hasRole = useRole();
+  const { streamId } = useSearch({ strict: false });
   const isAdmin = hasRole('admin');
   const { data, isLoading, isError, error, isFetching } = useLiveTournamentWeekend({
     refetchInterval: user ? false : 60 * 1000,
@@ -157,35 +160,45 @@ export default function LiveTournamentHome() {
           </div>
         )}
 
-        <div className="grid grid-flow-dense auto-rows-auto grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-[minmax(300px,1fr)_minmax(300px,1fr)_250px] xl:grid-cols-[minmax(300px,1fr)_minmax(300px,1fr)_350px]">
-          <LiveGridSection section="status-tiles" framed={false}>
-            <LiveTournamentStatusTilesSection
-              runningCount={detail.weekend.tournamentsRunning}
-              finishedCount={detail.weekend.tournamentsFinished}
-              upcomingCount={detail.weekend.tournamentsUpcoming + detail.weekend.tournamentsUnknown}
-            />
-          </LiveGridSection>
+        {streamId ? (
+          <LiveTournamentWatchMode
+            detail={detail}
+            streamId={streamId}
+            running={groupedTournaments.running}
+          />
+        ) : (
+          <div className="grid grid-flow-dense auto-rows-auto grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-[minmax(300px,1fr)_minmax(300px,1fr)_250px] xl:grid-cols-[minmax(300px,1fr)_minmax(300px,1fr)_350px]">
+            <LiveGridSection section="status-tiles" framed={false}>
+              <LiveTournamentStatusTilesSection
+                runningCount={detail.weekend.tournamentsRunning}
+                finishedCount={detail.weekend.tournamentsFinished}
+                upcomingCount={
+                  detail.weekend.tournamentsUpcoming + detail.weekend.tournamentsUnknown
+                }
+              />
+            </LiveGridSection>
 
-          <LiveGridSection section="overview">
-            <LiveTournamentOverviewSection
-              running={groupedTournaments.running}
-              finished={groupedTournaments.finished}
-              upcoming={groupedTournaments.upcoming}
-              weekendId={detail.weekend.id}
-            />
-          </LiveGridSection>
+            <LiveGridSection section="overview">
+              <LiveTournamentOverviewSection
+                running={groupedTournaments.running}
+                finished={groupedTournaments.finished}
+                upcoming={groupedTournaments.upcoming}
+                weekendId={detail.weekend.id}
+              />
+            </LiveGridSection>
 
-          <LiveGridSection section="players-streams">
-            <PlayersAndStreamsSection
-              detail={detail}
-              pendingResourceCount={isAdmin ? pendingResources.length : 0}
-            />
-          </LiveGridSection>
+            <LiveGridSection section="players-streams">
+              <PlayersAndStreamsSection
+                detail={detail}
+                pendingResourceCount={isAdmin ? pendingResources.length : 0}
+              />
+            </LiveGridSection>
 
-          <LiveGridSection section="meta">
-            <WeekendMetaSection detail={detail} />
-          </LiveGridSection>
-        </div>
+            <LiveGridSection section="meta">
+              <WeekendMetaSection detail={detail} />
+            </LiveGridSection>
+          </div>
+        )}
       </div>
     </>
   );

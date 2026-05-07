@@ -12,21 +12,22 @@ export const Route = createFileRoute('/')({
 });
 
 function Index() {
-  const { homeMode } = Route.useSearch();
+  const { homeMode, streamId } = Route.useSearch();
   const { data: applicationConfiguration } = useGetApplicationConfiguration();
   const { data: userHomepageMode = 'default' } = useGetUserSetting('homepageMode');
   const appHomepageMode = applicationConfiguration?.homepageMode;
+  const isWatchMode = !!streamId;
 
   const modeResolution = resolveHomepageMode({
-    searchMode: homeMode,
+    searchMode: isWatchMode ? 'live' : homeMode,
     userMode: userHomepageMode,
     applicationMode: appHomepageMode,
   });
 
   return (
     <>
-      <HomepageHeader />
-      <HomepageModeSwitcher activeMode={modeResolution} />
+      {!isWatchMode && <HomepageHeader />}
+      {!isWatchMode && <HomepageModeSwitcher activeMode={modeResolution} />}
       {modeResolution === 'live' ? <LiveTournamentHome /> : <DailySnapshots />}
     </>
   );
