@@ -90,17 +90,34 @@ const matchLeaderBaseByPlayerDisplayName = (matches: LiveMeleeMatch[]) => {
   return leaderBaseByPlayerDisplayName;
 };
 
-const getImportedRoundMatchCounts = async (tournamentId: string) => {
+const getImportedRoundMatchStates = async (tournamentId: string) => {
   const rows = await db
     .select({
       roundNumber: tournamentWeekendMatch.roundNumber,
       matchCount: count(),
+      pendingResultCount: count(
+        sql`CASE WHEN ${tournamentWeekendMatch.updatedAt} IS NULL
+          OR ${tournamentWeekendMatch.player1GameWin} IS NULL
+          OR (
+            ${tournamentWeekendMatch.playerDisplayName2} IS NOT NULL
+            AND ${tournamentWeekendMatch.player2GameWin} IS NULL
+          )
+          THEN 1 END`,
+      ).mapWith(Number),
     })
     .from(tournamentWeekendMatch)
     .where(eq(tournamentWeekendMatch.tournamentId, tournamentId))
     .groupBy(tournamentWeekendMatch.roundNumber);
 
-  return new Map(rows.map(row => [row.roundNumber, row.matchCount]));
+  return new Map(
+    rows.map(row => [
+      row.roundNumber,
+      {
+        matchCount: Number(row.matchCount),
+        pendingResultCount: row.pendingResultCount,
+      },
+    ]),
+  );
 };
 
 export function deriveUndefeatedPlayers(
@@ -180,7 +197,7 @@ export async function liveTournamentProgressCheck(
   try {
     progress = await fetchLiveTournamentProgressFromMelee({
       meleeId,
-      importedRoundMatchCounts: await getImportedRoundMatchCounts(input.tournamentId),
+      importedRoundMatchStates: await getImportedRoundMatchStates(input.tournamentId),
     });
   } catch (error) {
     if (error instanceof MeleeRoundsUnavailableError) {

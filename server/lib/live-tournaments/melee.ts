@@ -19,6 +19,11 @@ import type {
 import { parseMeleeDecklistLeaderBase } from './meleeDecklists.ts';
 import { tournamentExpectsMeleeDecklists } from './tournamentFormat.ts';
 
+type ImportedRoundMatchState = {
+  matchCount: number;
+  pendingResultCount: number;
+};
+
 const numberOrNull = (value: unknown) => {
   const numberValue = typeof value === 'number' ? value : Number.parseInt(String(value ?? ''), 10);
   return Number.isFinite(numberValue) ? numberValue : null;
@@ -235,22 +240,31 @@ const currentRoundFromView = (rounds: TournamentViewRound[]) => {
   );
 };
 
-const getImportedRoundMatchCount = (
-  importedRoundMatchCounts: Map<number, number> | undefined,
+const emptyImportedRoundMatchState: ImportedRoundMatchState = {
+  matchCount: 0,
+  pendingResultCount: 0,
+};
+
+const getImportedRoundMatchState = (
+  importedRoundMatchStates: Map<number, ImportedRoundMatchState> | undefined,
   roundNumber: number,
-) => importedRoundMatchCounts?.get(roundNumber) ?? 0;
+) => importedRoundMatchStates?.get(roundNumber) ?? emptyImportedRoundMatchState;
 
 const isImportedCompletedRound = (
   round: TournamentViewRound,
-  importedRoundMatchCounts: Map<number, number> | undefined,
-) => round.completed && getImportedRoundMatchCount(importedRoundMatchCounts, round.number) > 0;
+  importedRoundMatchStates: Map<number, ImportedRoundMatchState> | undefined,
+) => {
+  const importedState = getImportedRoundMatchState(importedRoundMatchStates, round.number);
+
+  return round.completed && importedState.matchCount > 0 && importedState.pendingResultCount === 0;
+};
 
 const roundsForMatchFetch = (
   rounds: TournamentViewRound[],
-  importedRoundMatchCounts: Map<number, number> | undefined,
+  importedRoundMatchStates: Map<number, ImportedRoundMatchState> | undefined,
 ) =>
   rounds
-    .filter(round => round.started && !isImportedCompletedRound(round, importedRoundMatchCounts))
+    .filter(round => round.started && !isImportedCompletedRound(round, importedRoundMatchStates))
     .sort((a, b) => a.number - b.number);
 
 export async function fetchLiveTournamentDetailFromMelee(params: {
@@ -282,7 +296,7 @@ export async function fetchLiveTournamentDetailFromMelee(params: {
 
 export async function fetchLiveTournamentProgressFromMelee(params: {
   meleeId: string;
-  importedRoundMatchCounts?: Map<number, number>;
+  importedRoundMatchStates?: Map<number, ImportedRoundMatchState>;
 }): Promise<LiveMeleeTournamentProgress> {
   const tournamentView = await fetchTournamentView(params.meleeId);
   const rounds = tournamentView?.rounds ?? [];
@@ -297,9 +311,9 @@ export async function fetchLiveTournamentProgressFromMelee(params: {
     .map(parseStanding)
     .filter((standing): standing is LiveMeleeStanding => standing !== null);
 
-  const matchRounds = roundsForMatchFetch(rounds, params.importedRoundMatchCounts);
+  const matchRounds = roundsForMatchFetch(rounds, params.importedRoundMatchStates);
   const skippedCompletedMatchRounds = rounds.filter(round =>
-    isImportedCompletedRound(round, params.importedRoundMatchCounts),
+    isImportedCompletedRound(round, params.importedRoundMatchStates),
   );
   const rawMatchesByRoundId = new Map<number, any[]>();
   const matches: LiveMeleeMatch[] = [];
@@ -317,12 +331,13 @@ export async function fetchLiveTournamentProgressFromMelee(params: {
   }
 
   const currentRoundMatches = rawMatchesByRoundId.get(currentRound.id);
-  const currentRoundImportedMatchCount = getImportedRoundMatchCount(
-    params.importedRoundMatchCounts,
+  const currentRoundImportedMatchState = getImportedRoundMatchState(
+    params.importedRoundMatchStates,
     currentRound.number,
   );
   const currentRoundMatchesTotal =
-    currentRoundMatches?.length ?? (currentRound.completed ? currentRoundImportedMatchCount : 0);
+    currentRoundMatches?.length ??
+    (currentRound.completed ? currentRoundImportedMatchState.matchCount : 0);
   const currentRoundMatchesRemaining = currentRoundMatches
     ? currentRoundMatches.filter(match => !hasMatchResult(match)).length
     : 0;

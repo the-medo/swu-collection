@@ -1,6 +1,7 @@
 import { createRootRoute, HeadContent, Outlet } from '@tanstack/react-router';
+import { useEffect, useRef } from 'react';
 import { LeftSidebar } from '@/components/app/navigation/LeftSidebar/LeftSidebar.tsx';
-import { SidebarProvider } from '@/components/ui/sidebar.tsx';
+import { SidebarProvider, useSidebar } from '@/components/ui/sidebar.tsx';
 import { Toaster } from '@/components/ui/toaster.tsx';
 import { PriceFetcher } from '@/dexie';
 import { z } from 'zod';
@@ -22,6 +23,7 @@ const globalSearchParams = z.object({
   formatId: z.number().int().positive().optional(),
   metaId: z.number().int().positive().optional(),
   homeMode: z.enum(['snapshot', 'live']).optional(),
+  streamId: z.string().optional(),
 
   // Card detail dialog
   modalCardId: z.string().optional(),
@@ -103,21 +105,56 @@ const globalSearchParams = z.object({
 });
 export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 
+function RootShell() {
+  const { streamId } = Route.useSearch();
+  const { isMobile, setOpen, setOpenMobile } = useSidebar();
+  const collapsedForStreamId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!streamId) {
+      if (collapsedForStreamId.current && !isMobile) {
+        setOpen(true);
+      }
+
+      collapsedForStreamId.current = null;
+      return;
+    }
+
+    if (collapsedForStreamId.current === streamId) {
+      return;
+    }
+
+    if (isMobile) {
+      setOpenMobile(false);
+    } else {
+      setOpen(false);
+    }
+
+    collapsedForStreamId.current = streamId;
+  }, [isMobile, setOpen, setOpenMobile, streamId]);
+
+  return (
+    <>
+      <LeftSidebar />
+      <main className="w-full h-screen max-h-screen overflow-y-scroll p-2">
+        <div className="flex flex-col w-full @container/main-body">
+          <Outlet />
+          <CardDetailDialog />
+          <TournamentDetailDialog />
+        </div>
+        <Footer />
+        <SidebarTriggerButton />
+      </main>
+    </>
+  );
+}
+
 export const Route = createRootRoute({
   component: () => (
     <>
       <HeadContent />
       <SidebarProvider>
-        <LeftSidebar />
-        <main className="w-full h-screen max-h-screen overflow-y-scroll p-2">
-          <div className="flex flex-col w-full @container/main-body">
-            <Outlet />
-            <CardDetailDialog />
-            <TournamentDetailDialog />
-          </div>
-          <Footer />
-          <SidebarTriggerButton />
-        </main>
+        <RootShell />
       </SidebarProvider>
       <CookieConsent />
       <Toaster />

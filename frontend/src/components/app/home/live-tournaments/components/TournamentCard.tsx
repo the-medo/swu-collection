@@ -48,7 +48,7 @@ function getChampionName(entry: LiveTournamentWeekendTournamentEntry) {
   return entry.championStanding?.playerDisplayName ?? 'Champion';
 }
 
-function TournamentInfoRow({
+export function TournamentInfoRow({
   entry,
   meleeUrl,
   showProgress,
