@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table.tsx
 import { Copy } from 'lucide-react';
 import { DeckCard } from '../../../../../../../../../types/ZDeckCard.ts';
 import { selectDefaultVariant } from '../../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { useCallback } from 'react';
 
 interface DeckLayoutWithWordingProps {
   deckId: string;
@@ -177,7 +178,7 @@ const DeckLayoutWithWording: React.FC<DeckLayoutWithWordingProps> = ({
   const leader2 = deckInfo?.deck.leaderCardId2 ? usedCards[deckInfo.deck.leaderCardId2] : null;
   const base = deckInfo?.deck.baseCardId ? usedCards[deckInfo.deck.baseCardId] : null;
 
-  const loadImage = React.useCallback((src: string) => {
+  const loadImage = useCallback((src: string) => {
     return new Promise<HTMLImageElement>((resolve, reject) => {
       const image = new Image();
       image.decoding = 'sync';
@@ -187,7 +188,7 @@ const DeckLayoutWithWording: React.FC<DeckLayoutWithWordingProps> = ({
     });
   }, []);
 
-  const convertImageSrcToPngDataUrl = React.useCallback(
+  const convertImageSrcToPngDataUrl = useCallback(
     async (src: string) => {
       const cached = imageDataUrlCacheRef.current.get(src);
       if (cached) return cached;
@@ -234,93 +235,97 @@ const DeckLayoutWithWording: React.FC<DeckLayoutWithWordingProps> = ({
     [loadImage],
   );
 
-  const copyRichHtml = React.useCallback(async (element: HTMLElement) => {
-    const cloneWrapper = document.createElement('div');
-    cloneWrapper.contentEditable = 'true';
-    cloneWrapper.style.position = 'fixed';
-    cloneWrapper.style.left = '-99999px';
-    cloneWrapper.style.top = '0';
-    cloneWrapper.style.pointerEvents = 'none';
-    cloneWrapper.style.userSelect = 'text';
+  const copyRichHtml = useCallback(
+    async (element: HTMLElement) => {
+      const cloneWrapper = document.createElement('div');
+      cloneWrapper.contentEditable = 'true';
+      cloneWrapper.style.position = 'fixed';
+      cloneWrapper.style.left = '-99999px';
+      cloneWrapper.style.top = '0';
+      cloneWrapper.style.pointerEvents = 'none';
+      cloneWrapper.style.userSelect = 'text';
 
-    const clone = element.cloneNode(true) as HTMLElement;
-    clone.removeAttribute('id');
-    cloneWrapper.appendChild(clone);
-    document.body.appendChild(cloneWrapper);
+      const clone = element.cloneNode(true) as HTMLElement;
+      clone.removeAttribute('id');
+      cloneWrapper.appendChild(clone);
+      document.body.appendChild(cloneWrapper);
 
-    const originalImages = Array.from(element.querySelectorAll('img'));
-    const clonedImages = Array.from(clone.querySelectorAll('img'));
+      const originalImages = Array.from(element.querySelectorAll('img'));
+      const clonedImages = Array.from(clone.querySelectorAll('img'));
 
-    await Promise.all(
-      clonedImages.map(async (cloneImg, index) => {
-        const originalImg = originalImages[index];
-        const source = originalImg?.currentSrc || originalImg?.src || cloneImg.currentSrc || cloneImg.src;
-        if (!source) return;
+      await Promise.all(
+        clonedImages.map(async (cloneImg, index) => {
+          const originalImg = originalImages[index];
+          const source =
+            originalImg?.currentSrc || originalImg?.src || cloneImg.currentSrc || cloneImg.src;
+          if (!source) return;
 
-        try {
-          cloneImg.src = await convertImageSrcToPngDataUrl(source);
-          cloneImg.removeAttribute('srcset');
-          cloneImg.removeAttribute('sizes');
-        } catch (error) {
-          console.warn('Failed to convert image for rich copy:', error);
-        }
+          try {
+            cloneImg.src = await convertImageSrcToPngDataUrl(source);
+            cloneImg.removeAttribute('srcset');
+            cloneImg.removeAttribute('sizes');
+          } catch (error) {
+            console.warn('Failed to convert image for rich copy:', error);
+          }
 
-        const computedStyle = originalImg ? window.getComputedStyle(originalImg) : null;
-        const width = originalImg?.clientWidth || originalImg?.naturalWidth;
-        const height = originalImg?.clientHeight || originalImg?.naturalHeight;
+          const computedStyle = originalImg ? window.getComputedStyle(originalImg) : null;
+          const width = originalImg?.clientWidth || originalImg?.naturalWidth;
+          const height = originalImg?.clientHeight || originalImg?.naturalHeight;
 
-        if (width) cloneImg.style.width = `${width}px`;
-        if (height) cloneImg.style.height = `${height}px`;
-        if (computedStyle) {
-          cloneImg.style.objectFit = computedStyle.objectFit;
-          cloneImg.style.display = computedStyle.display;
-          cloneImg.style.borderRadius = computedStyle.borderRadius;
-        }
+          if (width) cloneImg.style.width = `${width}px`;
+          if (height) cloneImg.style.height = `${height}px`;
+          if (computedStyle) {
+            cloneImg.style.objectFit = computedStyle.objectFit;
+            cloneImg.style.display = computedStyle.display;
+            cloneImg.style.borderRadius = computedStyle.borderRadius;
+          }
 
-        if (!cloneImg.complete) {
-          await new Promise<void>(resolve => {
-            cloneImg.onload = () => resolve();
-            cloneImg.onerror = () => resolve();
-          });
-        }
-      }),
-    );
+          if (!cloneImg.complete) {
+            await new Promise<void>(resolve => {
+              cloneImg.onload = () => resolve();
+              cloneImg.onerror = () => resolve();
+            });
+          }
+        }),
+      );
 
-    const preparedHtml = clone.outerHTML;
-    const preparedText = clone.innerText;
+      const preparedHtml = clone.outerHTML;
+      const preparedText = clone.innerText;
 
-    const selection = window.getSelection();
-    const previousRanges: Range[] = [];
-    if (selection) {
-      for (let i = 0; i < selection.rangeCount; i++) {
-        previousRanges.push(selection.getRangeAt(i).cloneRange());
-      }
-    }
-
-    try {
-      cloneWrapper.focus();
+      const selection = window.getSelection();
+      const previousRanges: Range[] = [];
       if (selection) {
-        selection.removeAllRanges();
-        const range = document.createRange();
-        range.selectNodeContents(cloneWrapper);
-        selection.addRange(range);
+        for (let i = 0; i < selection.rangeCount; i++) {
+          previousRanges.push(selection.getRangeAt(i).cloneRange());
+        }
       }
 
-      return {
-        copied: document.execCommand('copy'),
-        html: preparedHtml,
-        text: preparedText,
-      };
-    } finally {
-      if (selection) {
-        selection.removeAllRanges();
-        previousRanges.forEach(range => selection.addRange(range));
-      }
-      document.body.removeChild(cloneWrapper);
-    }
-  }, [convertImageSrcToPngDataUrl]);
+      try {
+        cloneWrapper.focus();
+        if (selection) {
+          selection.removeAllRanges();
+          const range = document.createRange();
+          range.selectNodeContents(cloneWrapper);
+          selection.addRange(range);
+        }
 
-  const handleCopyToClipboard = React.useCallback(async () => {
+        return {
+          copied: document.execCommand('copy'),
+          html: preparedHtml,
+          text: preparedText,
+        };
+      } finally {
+        if (selection) {
+          selection.removeAllRanges();
+          previousRanges.forEach(range => selection.addRange(range));
+        }
+        document.body.removeChild(cloneWrapper);
+      }
+    },
+    [convertImageSrcToPngDataUrl],
+  );
+
+  const handleCopyToClipboard = useCallback(async () => {
     const element = contentRef.current ?? document.getElementById(contentId);
 
     if (!element) {

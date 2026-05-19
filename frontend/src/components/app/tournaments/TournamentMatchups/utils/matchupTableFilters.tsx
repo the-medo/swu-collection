@@ -6,6 +6,7 @@ import {
 } from '../../../../../../../types/TournamentMatchupFilters.ts';
 import { SwuAspect } from '../../../../../../../types/enums.ts';
 import type { MatchupKeyInfo } from '../types.ts';
+import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 
 export type MatchupTableFilterState = MatchupTableFilterConfig;
 
@@ -184,30 +185,13 @@ export const summarizeMatchupDimensionFilter = (
   filter: Partial<MatchupDimensionFilterConfig> | null | undefined,
 ) => {
   const normalized = normalizeMatchupDimensionFilterConfig(filter);
-  const parts: string[] = [];
 
-  if (normalized.text) parts.push(`Text: ${normalized.text}`);
-  if (normalized.aspects.length) parts.push(`Aspects: ${normalized.aspects.join(', ')}`);
-
-  return parts.join('; ') || 'No filters';
-};
-
-export const summarizeMatchupTableFilter = (filter: MatchupTableFilterInput | null | undefined) => {
-  const normalized = normalizeMatchupTableFilterConfig(filter);
-
-  if (!hasActiveMatchupTableFilters(normalized)) return 'No filters';
-
-  if (normalized.isMirrored) {
-    return `Rows and columns: ${summarizeMatchupDimensionFilter(normalized.rowFilters)}`;
-  }
-
-  const parts: string[] = [];
-  if (hasActiveMatchupDimensionFilter(normalized.rowFilters)) {
-    parts.push(`Rows: ${summarizeMatchupDimensionFilter(normalized.rowFilters)}`);
-  }
-  if (hasActiveMatchupDimensionFilter(normalized.columnFilters)) {
-    parts.push(`Columns: ${summarizeMatchupDimensionFilter(normalized.columnFilters)}`);
-  }
-
-  return parts.join(' | ');
+  return (
+    <div className="flex flex-row gap-2">
+      {normalized.text}
+      {(normalized.aspects ?? []).map(aspect => (
+        <AspectIcon aspect={aspect} size="small" />
+      ))}
+    </div>
+  );
 };

@@ -17,31 +17,15 @@ import { toast } from '@/hooks/use-toast.ts';
 import {
   hydrateSavedMatchupTableFilter,
   summarizeMatchupDimensionFilter,
-  summarizeMatchupTableFilter,
   type MatchupTableFilterState,
-} from '../utils/matchupTableFilters.ts';
+} from '../utils/matchupTableFilters.tsx';
 import type { SavedTournamentMatchupFilter } from '../../../../../../../types/TournamentMatchupFilters.ts';
+import { useCallback, useMemo, useState } from 'react';
 
 interface SavedMatchupFiltersPopoverProps {
   formatId?: number;
   onApply: (value: MatchupTableFilterState) => void;
 }
-
-const compactDate = (dateValue: string) => {
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return '';
-
-  return date.toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-};
-
-const getSavedFilterName = (
-  filter: SavedTournamentMatchupFilter,
-  hydratedFilter: MatchupTableFilterState,
-) => filter.name?.trim() || summarizeMatchupTableFilter(hydratedFilter);
 
 const SavedFilterRow = ({
   filter,
@@ -54,10 +38,9 @@ const SavedFilterRow = ({
 }) => {
   const { mutateAsync: deleteSavedFilter, isPending: isDeleting } =
     useDeleteTournamentMatchupFilter();
-  const hydratedFilter = React.useMemo(() => hydrateSavedMatchupTableFilter(filter), [filter]);
-  const updatedDate = compactDate(filter.updatedAt);
+  const hydratedFilter = useMemo(() => hydrateSavedMatchupTableFilter(filter), [filter]);
 
-  const deleteFilter = React.useCallback(
+  const deleteFilter = useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
 
@@ -83,33 +66,32 @@ const SavedFilterRow = ({
         onClick={() => onApply(hydratedFilter)}
       >
         <div className="min-w-0 space-y-1">
-          <div className="truncate text-sm font-medium">
-            {getSavedFilterName(filter, hydratedFilter)}
-          </div>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-col gap-1">
             {filter.isMirrored && (
               <Badge variant="secondary" size="small">
                 Locked
               </Badge>
             )}
-            <Badge variant="outline" size="small">
-              Rows
-            </Badge>
-            <span className="max-w-[180px] truncate text-[11px] text-muted-foreground">
-              {summarizeMatchupDimensionFilter(hydratedFilter.rowFilters)}
-            </span>
+            <div className="flex flex-wrap gap-1">
+              <Badge variant="outline" size="small">
+                Rows
+              </Badge>
+              <span className="max-w-[180px] truncate text-[11px] text-muted-foreground">
+                {summarizeMatchupDimensionFilter(hydratedFilter.rowFilters)}
+              </span>
+            </div>
+
             {!filter.isMirrored && (
-              <>
+              <div className="flex flex-wrap gap-1">
                 <Badge variant="outline" size="small">
                   Columns
                 </Badge>
                 <span className="max-w-[180px] truncate text-[11px] text-muted-foreground">
                   {summarizeMatchupDimensionFilter(hydratedFilter.columnFilters)}
                 </span>
-              </>
+              </div>
             )}
           </div>
-          {updatedDate && <div className="text-[10px] text-muted-foreground">{updatedDate}</div>}
         </div>
       </button>
       <Button
@@ -131,10 +113,10 @@ const SavedMatchupFiltersPopover: React.FC<SavedMatchupFiltersPopoverProps> = ({
   formatId,
   onApply,
 }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const savedFiltersQuery = useGetTournamentMatchupFilters(formatId, open && Boolean(formatId));
 
-  const applyFilter = React.useCallback(
+  const applyFilter = useCallback(
     (value: MatchupTableFilterState) => {
       onApply(value);
       setOpen(false);
@@ -157,7 +139,10 @@ const SavedMatchupFiltersPopover: React.FC<SavedMatchupFiltersPopoverProps> = ({
           <TooltipContent>Saved table filters</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <PopoverContent align="start" className="w-[min(92vw,380px)] p-3">
+      <PopoverContent
+        align="start"
+        className="max-h-[300px] w-[min(92vw,380px)] overflow-y-auto p-3"
+      >
         {!formatId ? (
           <div className="text-sm text-muted-foreground">Saved filters are unavailable.</div>
         ) : savedFiltersQuery.isLoading ? (

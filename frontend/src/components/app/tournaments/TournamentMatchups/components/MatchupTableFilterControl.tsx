@@ -16,19 +16,17 @@ import {
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import type { SwuAspect } from '../../../../../../../types/enums.ts';
-import {
-  matchupFilterNameMaxLength,
-  type MatchupDimensionFilterConfig,
-} from '../../../../../../../types/TournamentMatchupFilters.ts';
+import { type MatchupDimensionFilterConfig } from '../../../../../../../types/TournamentMatchupFilters.ts';
 import SavedMatchupFiltersPopover from './SavedMatchupFiltersPopover.tsx';
 import {
   createDefaultMatchupTableFilterState,
   hasActiveMatchupTableFilters,
   normalizeMatchupDimensionFilterConfig,
   normalizeMatchupTableFilterConfig,
-  summarizeMatchupTableFilter,
   type MatchupTableFilterState,
-} from '../utils/matchupTableFilters.ts';
+} from '../utils/matchupTableFilters.tsx';
+import { cn } from '@/lib/utils.ts';
+import { useCallback } from 'react';
 
 export interface MatchupTableFilterControlProps {
   value: MatchupTableFilterState;
@@ -107,13 +105,6 @@ const cloneDimensionFilter = (
   aspects: [...filter.aspects],
 });
 
-const getGeneratedFilterName = (filter: MatchupTableFilterState) => {
-  const summary = summarizeMatchupTableFilter(filter);
-  return summary.length > matchupFilterNameMaxLength
-    ? summary.slice(0, matchupFilterNameMaxLength)
-    : summary;
-};
-
 const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
   value,
   onChange,
@@ -122,13 +113,14 @@ const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
 }) => {
   const user = useUser();
   const saveMutation = useSaveTournamentMatchupFilter();
+  const [filterPopoverOpen, setFilterPopoverOpen] = React.useState(false);
   const normalizedValue = React.useMemo(() => normalizeMatchupTableFilterConfig(value), [value]);
   const hasActiveFilters = React.useMemo(
     () => hasActiveMatchupTableFilters(normalizedValue),
     [normalizedValue],
   );
 
-  const updateDimension = React.useCallback(
+  const updateDimension = useCallback(
     (dimension: FilterDimension, patch: Partial<MatchupDimensionFilterConfig>) => {
       const nextDimensionFilter = normalizeMatchupDimensionFilterConfig({
         ...normalizedValue[dimension],
@@ -158,7 +150,7 @@ const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
     [normalizedValue, onChange],
   );
 
-  const setMirrored = React.useCallback(
+  const setMirrored = useCallback(
     (isMirrored: boolean) => {
       const rowFilters = cloneDimensionFilter(normalizedValue.rowFilters);
 
@@ -176,22 +168,22 @@ const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
     [normalizedValue, onChange],
   );
 
-  const clearFilters = React.useCallback(() => {
+  const clearFilters = useCallback(() => {
     onChange(createDefaultMatchupTableFilterState());
   }, [onChange]);
 
-  const saveFilter = React.useCallback(async () => {
+  const saveFilter = useCallback(async () => {
     if (!formatId || !hasActiveFilters) return;
 
     try {
       await saveMutation.mutateAsync({
         format: formatId,
-        name: getGeneratedFilterName(normalizedValue),
         isMirrored: normalizedValue.isMirrored,
         rowFilters: normalizedValue.rowFilters,
         columnFilters: normalizedValue.isMirrored ? null : normalizedValue.columnFilters,
       });
       toast({ title: 'Saved matchup filter' });
+      setFilterPopoverOpen(false);
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -202,7 +194,105 @@ const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
   }, [formatId, hasActiveFilters, normalizedValue, saveMutation]);
 
   return (
-    <div className="flex min-h-10 min-w-[220px] items-center gap-1 rounded-md p-1">
+    <div className="flex flex-col min-h-10 min-w-[220px] gap-2 rounded-md p-1">
+      <div className="flex items-center justify-end gap-2">
+        <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
+          <TooltipProvider delayDuration={150}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant={active ? 'default' : 'ghost'}
+                    size="iconMedium"
+                    className={cn(iconButtonClassName, active && 'ring-3 ring-primary/40')}
+                  >
+                    <Filter className="h-4 w-4" />
+                    <span className="sr-only">Table filters</span>
+                  </Button>
+                </PopoverTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Table filters</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <PopoverContent align="start" className="w-[min(92vw,520px)] p-3">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="matchup-table-filter-lock" className="text-sm">
+                  Same filter for rows and columns
+                </Label>
+                <Switch
+                  id="matchup-table-filter-lock"
+                  checked={normalizedValue.isMirrored}
+                  onCheckedChange={setMirrored}
+                />
+              </div>
+
+              {normalizedValue.isMirrored ? (
+                <DimensionFilterPanel
+                  title="Rows and columns"
+                  value={normalizedValue.rowFilters}
+                  onTextChange={text => updateDimension('rowFilters', { text })}
+                  onAspectsChange={aspects => updateDimension('rowFilters', { aspects })}
+                />
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <DimensionFilterPanel
+                    title="Rows"
+                    value={normalizedValue.rowFilters}
+                    onTextChange={text => updateDimension('rowFilters', { text })}
+                    onAspectsChange={aspects => updateDimension('rowFilters', { aspects })}
+                  />
+                  <DimensionFilterPanel
+                    title="Columns"
+                    value={normalizedValue.columnFilters}
+                    onTextChange={text => updateDimension('columnFilters', { text })}
+                    onAspectsChange={aspects => updateDimension('columnFilters', { aspects })}
+                  />
+                </div>
+              )}
+
+              {user && formatId && (
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={!hasActiveFilters || saveMutation.isPending}
+                    onClick={saveFilter}
+                  >
+                    {saveMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
+                    Save for future use
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFilterPopoverOpen(false)}
+                  >
+                    <X className="h-4 w-4" />
+                    Close
+                  </Button>
+                </div>
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
+        {user && <SavedMatchupFiltersPopover formatId={formatId} onApply={onChange} />}
+        {active && (
+          <TooltipIconButton
+            label="Clear table filters"
+            className={iconButtonClassName}
+            onClick={clearFilters}
+          >
+            <X className="h-4 w-4" />
+          </TooltipIconButton>
+        )}
+      </div>
       <Input
         type="text"
         placeholder="Filter..."
@@ -210,92 +300,6 @@ const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
         onChange={event => updateDimension('rowFilters', { text: event.target.value })}
         className="h-8 min-w-0 flex-1 text-sm"
       />
-      <Popover>
-        <TooltipProvider delayDuration={150}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant={active ? 'secondary' : 'ghost'}
-                  size="iconMedium"
-                  className={iconButtonClassName}
-                >
-                  <Filter className="h-4 w-4" />
-                  <span className="sr-only">Table filters</span>
-                </Button>
-              </PopoverTrigger>
-            </TooltipTrigger>
-            <TooltipContent>Table filters</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <PopoverContent align="start" className="w-[min(92vw,520px)] p-3">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <Label htmlFor="matchup-table-filter-lock" className="text-sm">
-                Lock rows and columns
-              </Label>
-              <Switch
-                id="matchup-table-filter-lock"
-                checked={normalizedValue.isMirrored}
-                onCheckedChange={setMirrored}
-              />
-            </div>
-
-            {normalizedValue.isMirrored ? (
-              <DimensionFilterPanel
-                title="Rows and columns"
-                value={normalizedValue.rowFilters}
-                onTextChange={text => updateDimension('rowFilters', { text })}
-                onAspectsChange={aspects => updateDimension('rowFilters', { aspects })}
-              />
-            ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
-                <DimensionFilterPanel
-                  title="Rows"
-                  value={normalizedValue.rowFilters}
-                  onTextChange={text => updateDimension('rowFilters', { text })}
-                  onAspectsChange={aspects => updateDimension('rowFilters', { aspects })}
-                />
-                <DimensionFilterPanel
-                  title="Columns"
-                  value={normalizedValue.columnFilters}
-                  onTextChange={text => updateDimension('columnFilters', { text })}
-                  onAspectsChange={aspects => updateDimension('columnFilters', { aspects })}
-                />
-              </div>
-            )}
-
-            {user && formatId && (
-              <div className="flex justify-end">
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={!hasActiveFilters || saveMutation.isPending}
-                  onClick={saveFilter}
-                >
-                  {saveMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="h-4 w-4" />
-                  )}
-                  Save
-                </Button>
-              </div>
-            )}
-          </div>
-        </PopoverContent>
-      </Popover>
-      {user && <SavedMatchupFiltersPopover formatId={formatId} onApply={onChange} />}
-      {active && (
-        <TooltipIconButton
-          label="Clear table filters"
-          className={iconButtonClassName}
-          onClick={clearFilters}
-        >
-          <X className="h-4 w-4" />
-        </TooltipIconButton>
-      )}
     </div>
   );
 };

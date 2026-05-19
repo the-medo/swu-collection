@@ -7,7 +7,7 @@ import RowTotalCell from '@/components/app/tournaments/TournamentMatchups/compon
 import { cn } from '@/lib/utils.ts';
 import type { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import MatchupTableFilterControl from './MatchupTableFilterControl.tsx';
-import type { MatchupTableFilterState } from '../utils/matchupTableFilters.ts';
+import type { MatchupTableFilterState } from '../utils/matchupTableFilters.tsx';
 
 const MemoizedCell = React.memo(MatchupTableCell);
 
@@ -83,7 +83,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
           <td
             className={cn(
               'p-2 align-bottom border transition-colors',
-              hasActiveFilters && 'bg-accent/60 ring-1 ring-primary/40',
+              hasActiveFilters && 'bg-primary/30 ring-1 ring-primary/40',
             )}
           >
             <MatchupTableFilterControl

@@ -584,7 +584,7 @@ Implementation notes:
 Create helper file:
 
 ```txt
-frontend/src/components/app/tournaments/TournamentMatchups/utils/matchupTableFilters.ts
+frontend/src/components/app/tournaments/TournamentMatchups/utils/matchupTableFilters.tsx
 ```
 
 Responsibilities:
@@ -792,7 +792,7 @@ Frontend UI:
 - new `frontend/src/components/app/tournaments/TournamentMatchups/components/MatchupTableFilterControl.tsx`
 - optional new `frontend/src/components/app/tournaments/TournamentMatchups/components/MatchupTableFilterPanel.tsx`
 - optional new `frontend/src/components/app/tournaments/TournamentMatchups/components/SavedMatchupFiltersPopover.tsx`
-- new `frontend/src/components/app/tournaments/TournamentMatchups/utils/matchupTableFilters.ts`
+- new `frontend/src/components/app/tournaments/TournamentMatchups/utils/matchupTableFilters.tsx`
 
 ## Implementation Order
 

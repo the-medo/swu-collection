@@ -69,7 +69,7 @@ export function useFilteredMatches(
             ? deckByTournamentAndId.get(getTournamentDeckMapKey(match.tournamentId, match.p2DeckId))
             : null;
 
-          return hasPlacementAtMost(p1Deck, 8) || hasPlacementAtMost(p2Deck, 8);
+          return hasPlacementAtMost(p1Deck, 8) && hasPlacementAtMost(p2Deck, 8);
         });
       case 'custom':
         return matches.filter(match => {

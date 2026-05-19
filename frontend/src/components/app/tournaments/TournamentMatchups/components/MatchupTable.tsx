@@ -13,7 +13,7 @@ import {
   hasActiveMatchupTableFilters,
   normalizeMatchupTableFilterConfig,
   type MatchupTableFilterState,
-} from '../utils/matchupTableFilters.ts';
+} from '../utils/matchupTableFilters.tsx';
 
 export interface MatchupTableProps {
   matchupData: MatchupTableData;
