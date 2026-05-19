@@ -10,7 +10,11 @@ export interface MatchupTableCellProps {
   matchups: MatchupDataMap;
   displayMode: MatchupDisplayMode;
   columnIndex: number;
-  registerCellRef: (columnIndex: number, cellRef: HTMLTableCellElement | null) => void;
+  registerCellRef: (
+    columnIndex: number,
+    cellRef: HTMLTableCellElement | null,
+    oldCellRef?: HTMLTableCellElement | null,
+  ) => void;
   handleColumnEnter: (index: number) => void;
 }
 
@@ -56,7 +60,7 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
     return () => {
       // Unregister using the stored column index, passing null and the old cell reference
       if (currentCellRef) {
-        registerCellRef(currentColumnIndex, null);
+        registerCellRef(currentColumnIndex, null, currentCellRef);
       }
     };
   }, [columnIndex, registerCellRef]);

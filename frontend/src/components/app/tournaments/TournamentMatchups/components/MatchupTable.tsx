@@ -6,7 +6,14 @@ import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.t
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import { labelWidthBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import MatchupTableContent from './MatchupTableContent';
-import { filterMatchupKeys } from '../utils/matchupTableFilters.ts';
+import {
+  createDefaultMatchupTableFilterState,
+  filterMatchupKeys,
+  getEffectiveMatchupTableFilters,
+  hasActiveMatchupTableFilters,
+  normalizeMatchupTableFilterConfig,
+  type MatchupTableFilterState,
+} from '../utils/matchupTableFilters.ts';
 
 export interface MatchupTableProps {
   matchupData: MatchupTableData;
@@ -27,8 +34,12 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   labelRenderer,
   totalMatchesAnalyzed,
 }) => {
-  const [filterText, setFilterText] = useState<string>('');
-  const [debouncedFilterText, setDebouncedFilterText] = useState<string>('');
+  const [tableFilters, setTableFilters] = useState<MatchupTableFilterState>(() =>
+    createDefaultMatchupTableFilterState(),
+  );
+  const [debouncedTableFilters, setDebouncedTableFilters] = useState<MatchupTableFilterState>(() =>
+    createDefaultMatchupTableFilterState(),
+  );
   const [showAllData, setShowAllData] = useState<boolean>(false);
   const tableRef = useRef<HTMLTableElement | null>(null);
 
@@ -66,16 +77,16 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     [],
   );
 
-  // Debounce filter text changes
+  // Debounce the full table filter config so row and column filtering stay in sync.
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedFilterText(filterText);
+      setDebouncedTableFilters(normalizeMatchupTableFilterConfig(tableFilters));
     }, 75); // 75ms debounce
 
     return () => {
       clearTimeout(timer);
     };
-  }, [filterText]);
+  }, [tableFilters]);
 
   // Cleanup column cell references when component unmounts
   useEffect(() => {
@@ -116,37 +127,87 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     [metaInfo],
   );
 
-  // Filter keys based on the debounced filter text and limit to 30 if not showing all data
-  const filteredKeys = useMemo(() => {
-    let keys = matchupData.rowKeys;
+  const setVisibleFilterText = useCallback((text: string) => {
+    setTableFilters(prev => {
+      const rowFilters = { ...prev.rowFilters, text };
 
-    // Apply text filter if any
-    if (debouncedFilterText) {
-      return filterMatchupKeys(
-        keys,
-        { text: debouncedFilterText, aspects: [] },
+      return {
+        ...prev,
+        rowFilters,
+        columnFilters: prev.isMirrored ? rowFilters : prev.columnFilters,
+      };
+    });
+  }, []);
+
+  const resolveKeySearchText = useCallback(
+    (key: string) => {
+      const label = labelRenderer(key, metaInfo, 'text');
+      return typeof label === 'string' ? label : undefined;
+    },
+    [labelRenderer, metaInfo],
+  );
+
+  const effectiveTableFilters = useMemo(
+    () => getEffectiveMatchupTableFilters(debouncedTableFilters),
+    [debouncedTableFilters],
+  );
+
+  const hasActiveTableFilters = useMemo(
+    () => hasActiveMatchupTableFilters(debouncedTableFilters),
+    [debouncedTableFilters],
+  );
+  const hasPendingTableFilters = useMemo(
+    () => hasActiveMatchupTableFilters(tableFilters),
+    [tableFilters],
+  );
+
+  const filteredRowKeys = useMemo(
+    () =>
+      filterMatchupKeys(
+        matchupData.rowKeys,
+        effectiveTableFilters.rowFilters,
         matchupData.keyInfo,
-        key => {
-          const label = labelRenderer(key, metaInfo, 'text');
-          return typeof label === 'string' ? label : undefined;
-        },
-      );
+        resolveKeySearchText,
+      ),
+    [
+      effectiveTableFilters.rowFilters,
+      matchupData.keyInfo,
+      matchupData.rowKeys,
+      resolveKeySearchText,
+    ],
+  );
+
+  const filteredColKeys = useMemo(
+    () =>
+      filterMatchupKeys(
+        matchupData.colKeys,
+        effectiveTableFilters.columnFilters,
+        matchupData.keyInfo,
+        resolveKeySearchText,
+      ),
+    [
+      effectiveTableFilters.columnFilters,
+      matchupData.colKeys,
+      matchupData.keyInfo,
+      resolveKeySearchText,
+    ],
+  );
+
+  const visibleRowKeys = useMemo(() => {
+    if (!showAllData && !hasActiveTableFilters && filteredRowKeys.length > MAX_DISPLAY_ITEMS) {
+      return filteredRowKeys.slice(0, MAX_DISPLAY_ITEMS);
     }
 
-    // Limit rows if not showing all data
-    if (!showAllData && keys.length > MAX_DISPLAY_ITEMS) {
-      keys = keys.slice(0, MAX_DISPLAY_ITEMS);
+    return filteredRowKeys;
+  }, [filteredRowKeys, hasActiveTableFilters, showAllData]);
+
+  const visibleColKeys = useMemo(() => {
+    if (!showAllData && !hasActiveTableFilters && filteredColKeys.length > MAX_DISPLAY_ITEMS) {
+      return filteredColKeys.slice(0, MAX_DISPLAY_ITEMS);
     }
 
-    return keys;
-  }, [
-    debouncedFilterText,
-    labelRenderer,
-    matchupData.keyInfo,
-    matchupData.rowKeys,
-    metaInfo,
-    showAllData,
-  ]);
+    return filteredColKeys;
+  }, [filteredColKeys, hasActiveTableFilters, showAllData]);
 
   // Handler for column hover (works for both headers and data cells)
   const handleColumnEnter = useCallback((index: number) => {
@@ -180,41 +241,33 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     }
   }, []);
 
-  const hasActiveTextFilter = debouncedFilterText.length > 0;
-
-  // Limit columns if not showing all data
-  const limitedMatchupData = useMemo(() => {
-    if (!showAllData && !hasActiveTextFilter && matchupData.colKeys.length > MAX_DISPLAY_ITEMS) {
-      const colKeys = matchupData.colKeys.slice(0, MAX_DISPLAY_ITEMS);
-      return {
-        rowKeys: matchupData.rowKeys,
-        colKeys,
-        matchups: matchupData.matchups,
-        totalStats: matchupData.totalStats,
-        keyInfo: matchupData.keyInfo,
-      };
-    }
-    return matchupData;
-  }, [hasActiveTextFilter, matchupData, showAllData]);
+  const visibleMatchupData = useMemo(
+    () => ({
+      ...matchupData,
+      rowKeys: visibleRowKeys,
+      colKeys: visibleColKeys,
+    }),
+    [matchupData, visibleColKeys, visibleRowKeys],
+  );
 
   // Check if data is truncated
   const isDataTruncated =
-    !hasActiveTextFilter &&
-    (matchupData.rowKeys.length > MAX_DISPLAY_ITEMS ||
-      matchupData.colKeys.length > MAX_DISPLAY_ITEMS);
+    !hasActiveTableFilters &&
+    (filteredRowKeys.length > MAX_DISPLAY_ITEMS || filteredColKeys.length > MAX_DISPLAY_ITEMS);
 
   return (
     <div className="relative overflow-x-auto overflow-y-auto max-h-screen">
       <MatchupTableContent
         tableRef={tableRef}
-        matchupData={limitedMatchupData}
-        rowKeys={filteredKeys}
+        matchupData={visibleMatchupData}
+        rowKeys={visibleRowKeys}
+        colKeys={visibleColKeys}
         displayMode={displayMode}
         metaInfo={metaInfo}
         labelRenderer={labelRenderer}
         totalMatchesAnalyzed={totalMatchesAnalyzed}
-        filterText={filterText}
-        setFilterText={setFilterText}
+        filterText={tableFilters.rowFilters.text}
+        setFilterText={setVisibleFilterText}
         handleColumnEnter={handleColumnEnter}
         onRowClick={onRowClick}
         labelWidth={labelWidth}
@@ -223,7 +276,9 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         showAllData={showAllData}
         setShowAllData={setShowAllData}
         isDataTruncated={isDataTruncated}
-        originalDataLength={matchupData.colKeys.length}
+        hasActiveFilters={hasActiveTableFilters || hasPendingTableFilters}
+        originalRowCount={matchupData.rowKeys.length}
+        originalColCount={matchupData.colKeys.length}
         maxDisplayItems={MAX_DISPLAY_ITEMS}
       />
     </div>
