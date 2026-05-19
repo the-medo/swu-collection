@@ -127,16 +127,8 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     [metaInfo],
   );
 
-  const setVisibleFilterText = useCallback((text: string) => {
-    setTableFilters(prev => {
-      const rowFilters = { ...prev.rowFilters, text };
-
-      return {
-        ...prev,
-        rowFilters,
-        columnFilters: prev.isMirrored ? rowFilters : prev.columnFilters,
-      };
-    });
+  const handleTableFiltersChange = useCallback((value: MatchupTableFilterState) => {
+    setTableFilters(normalizeMatchupTableFilterConfig(value));
   }, []);
 
   const resolveKeySearchText = useCallback(
@@ -266,8 +258,8 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         metaInfo={metaInfo}
         labelRenderer={labelRenderer}
         totalMatchesAnalyzed={totalMatchesAnalyzed}
-        filterText={tableFilters.rowFilters.text}
-        setFilterText={setVisibleFilterText}
+        tableFilters={tableFilters}
+        onTableFiltersChange={handleTableFiltersChange}
         handleColumnEnter={handleColumnEnter}
         onRowClick={onRowClick}
         labelWidth={labelWidth}

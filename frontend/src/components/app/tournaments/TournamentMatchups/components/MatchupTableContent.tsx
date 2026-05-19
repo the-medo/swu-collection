@@ -5,8 +5,9 @@ import { MatchupTableCell } from './MatchupTableCell';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import RowTotalCell from '@/components/app/tournaments/TournamentMatchups/components/MatchupRowTotalCell.tsx';
 import { cn } from '@/lib/utils.ts';
-import { Input } from '@/components/ui/input.tsx';
 import type { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
+import MatchupTableFilterControl from './MatchupTableFilterControl.tsx';
+import type { MatchupTableFilterState } from '../utils/matchupTableFilters.ts';
 
 const MemoizedCell = React.memo(MatchupTableCell);
 
@@ -19,8 +20,8 @@ interface MatchupTableContentProps {
   metaInfo: MetaInfo;
   labelRenderer: ReturnType<typeof useLabel>;
   totalMatchesAnalyzed: number;
-  filterText: string;
-  setFilterText: (text: string) => void;
+  tableFilters: MatchupTableFilterState;
+  onTableFiltersChange: (value: MatchupTableFilterState) => void;
   handleColumnEnter: (index: number) => void;
   onRowClick: (key: string) => void;
   labelWidth: { width: string; minWidth: string };
@@ -48,8 +49,8 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
   metaInfo,
   labelRenderer,
   totalMatchesAnalyzed,
-  filterText,
-  setFilterText,
+  tableFilters,
+  onTableFiltersChange,
   handleColumnEnter,
   onRowClick,
   labelWidth,
@@ -77,21 +78,16 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
             <div>Total</div>
             <span className="text-[10px] font-semibold mb-4">{totalMatchesAnalyzed} mtch</span>
           </td>
-          <td className="p-2 align-bottom border">
-            {filterText && (
-              <div
-                className="text-[10px] text-muted-foreground cursor-pointer mt-1 text-right"
-                onClick={() => setFilterText('')}
-              >
-                Clear filter
-              </div>
+          <td
+            className={cn(
+              'p-2 align-bottom border transition-colors',
+              hasActiveFilters && 'bg-accent/60 ring-1 ring-primary/40',
             )}
-            <Input
-              type="text"
-              placeholder="Filter..."
-              value={filterText}
-              onChange={e => setFilterText(e.target.value)}
-              className="w-full text-sm p-1 rounded border"
+          >
+            <MatchupTableFilterControl
+              value={tableFilters}
+              onChange={onTableFiltersChange}
+              active={hasActiveFilters}
             />
           </td>
           {colKeys.map((key, colIndex) => (
