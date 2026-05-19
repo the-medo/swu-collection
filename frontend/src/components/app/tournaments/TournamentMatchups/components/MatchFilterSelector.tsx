@@ -31,7 +31,7 @@ export const MatchFilterSelector: React.FC<MatchFilterSelectorProps> = ({
     (v: string) => {
       // If v is empty (deselection), don't update the value
       if (v) {
-        onChange(v as any);
+        onChange(v as MatchFilter);
       }
     },
     [onChange],
@@ -60,7 +60,7 @@ export const MatchFilterSelector: React.FC<MatchFilterSelectorProps> = ({
     }
 
     const value = parseInt(e.target.value);
-    if (!isNaN(value)) {
+    if (!isNaN(value) && value >= 0) {
       onMinPointsChange(value);
     } else {
       onMinPointsChange(undefined);
@@ -103,6 +103,20 @@ export const MatchFilterSelector: React.FC<MatchFilterSelectorProps> = ({
             </TooltipContent>
           </Tooltip>
         )}
+        <Tooltip>
+          <TooltipTrigger>
+            <ToggleGroupItem value="top8" className="relative">
+              Top 8 matches
+              <Info size={14} className="ml-1 inline-block" />
+            </ToggleGroupItem>
+          </TooltipTrigger>
+          <TooltipContent className="flex flex-col gap-2 text-sm max-w-[400px]">
+            <h4 className="font-semibold">Top 8 Matches</h4>
+            <span>
+              Contains all matches where at least one player finished in the tournament top 8.
+            </span>
+          </TooltipContent>
+        </Tooltip>
         <Tooltip>
           <TooltipTrigger>
             <ToggleGroupItem value="custom" className="relative">

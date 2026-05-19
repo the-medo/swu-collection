@@ -4,14 +4,33 @@ import { TournamentInfoMap } from '@/components/app/tournaments/TournamentMeta/t
 import { TournamentMatch } from '../../../../../../../server/db/schema/tournament_match.ts';
 import { MatchFilter } from '../types';
 
+const hasPlacementAtMost = (deck: TournamentDeckResponse | undefined | null, placement: number) =>
+  deck?.tournamentDeck.placement != null && deck.tournamentDeck.placement <= placement;
+
+const getTournamentDeckMapKey = (tournamentId: string, deckId: string) =>
+  `${tournamentId}:${deckId}`;
+
 export function useFilteredMatches(
   matches: TournamentMatch[],
   matchFilter: MatchFilter,
   minRound: number | undefined,
   minPoints: number | undefined,
   tournaments: TournamentInfoMap,
-  decks: TournamentDeckResponse[]
+  decks: TournamentDeckResponse[],
 ) {
+  const deckByTournamentAndId = useMemo(() => {
+    const map = new Map<string, TournamentDeckResponse>();
+
+    decks.forEach(deck => {
+      map.set(
+        getTournamentDeckMapKey(deck.tournamentDeck.tournamentId, deck.tournamentDeck.deckId),
+        deck,
+      );
+    });
+
+    return map;
+  }, [decks]);
+
   // Get filtered matches based on match filter
   const filteredMatches = useMemo(() => {
     if (!matches.length) return [];
@@ -29,18 +48,28 @@ export function useFilteredMatches(
 
           // For day 2 filtering, we need to find matches where at least one player
           // made it to day 2 (has placement <= dayTwoPlayerCount)
-          const p1Deck = decks.find(d => d.deck?.id === match.p1DeckId);
-          const p2Deck = match.p2DeckId ? decks.find(d => d.deck?.id === match.p2DeckId) : null;
+          const p1Deck = deckByTournamentAndId.get(
+            getTournamentDeckMapKey(match.tournamentId, match.p1DeckId),
+          );
+          const p2Deck = match.p2DeckId
+            ? deckByTournamentAndId.get(getTournamentDeckMapKey(match.tournamentId, match.p2DeckId))
+            : null;
 
-          const p1InDay2 =
-            p1Deck?.tournamentDeck.placement &&
-            p1Deck?.tournamentDeck.placement <= tournament.tournament.dayTwoPlayerCount;
+          return (
+            hasPlacementAtMost(p1Deck, tournament.tournament.dayTwoPlayerCount) ||
+            hasPlacementAtMost(p2Deck, tournament.tournament.dayTwoPlayerCount)
+          );
+        });
+      case 'top8':
+        return matches.filter(match => {
+          const p1Deck = deckByTournamentAndId.get(
+            getTournamentDeckMapKey(match.tournamentId, match.p1DeckId),
+          );
+          const p2Deck = match.p2DeckId
+            ? deckByTournamentAndId.get(getTournamentDeckMapKey(match.tournamentId, match.p2DeckId))
+            : null;
 
-          const p2InDay2 =
-            p2Deck?.tournamentDeck.placement &&
-            p2Deck?.tournamentDeck.placement <= tournament.tournament.dayTwoPlayerCount;
-
-          return p1InDay2 || p2InDay2;
+          return hasPlacementAtMost(p1Deck, 8) || hasPlacementAtMost(p2Deck, 8);
         });
       case 'custom':
         return matches.filter(match => {
@@ -53,7 +82,7 @@ export function useFilteredMatches(
           // Check if either player has the minimum points
           // This is a simplification - adjust as needed
           const hasMinPoints =
-            match.p1Points >= effectiveMinPoints || 
+            match.p1Points >= effectiveMinPoints ||
             (match.p2Points !== null && match.p2Points >= effectiveMinPoints);
 
           return hasMinRound && hasMinPoints;
@@ -61,20 +90,24 @@ export function useFilteredMatches(
       default:
         return matches;
     }
-  }, [matches, matchFilter, minRound, minPoints, tournaments, decks]);
+  }, [matches, matchFilter, minRound, minPoints, tournaments, deckByTournamentAndId]);
 
   // We still need filtered decks for display purposes
   const filteredDecks = useMemo(() => {
     if (!decks.length) return [];
 
     // Get unique deck IDs from filtered matches
-    const deckIds = new Set<string>();
+    const deckKeys = new Set<string>();
     filteredMatches.forEach(match => {
-      deckIds.add(match.p1DeckId);
-      if (match.p2DeckId) deckIds.add(match.p2DeckId);
+      deckKeys.add(getTournamentDeckMapKey(match.tournamentId, match.p1DeckId));
+      if (match.p2DeckId) deckKeys.add(getTournamentDeckMapKey(match.tournamentId, match.p2DeckId));
     });
 
-    return decks.filter(deck => deckIds.has(deck.deck?.id || ''));
+    return decks.filter(deck =>
+      deckKeys.has(
+        getTournamentDeckMapKey(deck.tournamentDeck.tournamentId, deck.tournamentDeck.deckId),
+      ),
+    );
   }, [decks, filteredMatches]);
 
   return { filteredMatches, filteredDecks };

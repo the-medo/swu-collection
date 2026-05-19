@@ -1,4 +1,4 @@
-export type MatchFilter = 'all' | 'day2' | 'custom';
+export type MatchFilter = 'all' | 'day2' | 'top8' | 'custom';
 
 export type MatchupDisplayMode = 'winLoss' | 'winrate' | 'gameWinLoss' | 'gameWinrate';
 
