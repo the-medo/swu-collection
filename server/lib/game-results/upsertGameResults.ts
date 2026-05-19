@@ -23,14 +23,28 @@ export const upsertGameResults = async (results: GameResult[]) => {
     .where(and(inArray(teamMember.userId, distinctUserIds), eq(teamMember.autoAddDeck, true)));
 
   if (userTeamsWithAutoAddDeck.length > 0) {
-    const teamDecksToAdd: { teamId: string; deckId: string }[] = [];
+    const teamIdsByUserId = new Map<string, string[]>();
+    userTeamsWithAutoAddDeck.forEach(userTeam => {
+      const teamIds = teamIdsByUserId.get(userTeam.userId) ?? [];
+      teamIds.push(userTeam.teamId);
+      teamIdsByUserId.set(userTeam.userId, teamIds);
+    });
+
+    const teamDecksToAddByKey = new Map<string, { teamId: string; deckId: string }>();
     results.forEach(result => {
-      userTeamsWithAutoAddDeck.forEach(userTeam => {
-        if (userTeam.userId === result.userId) {
-          teamDecksToAdd.push({ teamId: userTeam.teamId, deckId: result.deckId });
-        }
+      const deckId = result.deckId;
+      if (!deckId) return;
+
+      const teamIds = teamIdsByUserId.get(result.userId) ?? [];
+      teamIds.forEach(teamId => {
+        teamDecksToAddByKey.set(`${teamId}:${deckId}`, {
+          teamId,
+          deckId,
+        });
       });
     });
+
+    const teamDecksToAdd = [...teamDecksToAddByKey.values()];
 
     if (teamDecksToAdd.length > 0) {
       await db.insert(teamDeck).values(teamDecksToAdd).onConflictDoNothing();

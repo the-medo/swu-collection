@@ -1,4 +1,4 @@
-import { inArray, sql } from 'drizzle-orm';
+import { and, eq, inArray, or, sql } from 'drizzle-orm';
 import { cardUidToCardId } from '../../../shared/lib/cardUidToCardId.ts';
 import { db } from '../../db';
 import {
@@ -20,6 +20,12 @@ export type KarabastLobbyMatchIdentity = {
   opponentLeaderCardId: string | null;
   opponentBaseCardKey: string | null;
   lookupKey: string;
+};
+
+type KarabastLobbyMatchResolutionRow = {
+  lookupKey: string;
+  matchId: string;
+  userId: string;
 };
 
 export const buildKarabastLobbyMatchLookupKey = (
@@ -74,8 +80,9 @@ export const getKarabastLobbyMatchIdentities = (
 
 const assertSingleResolvedMatchId = (
   identities: KarabastLobbyMatchIdentity[],
-  rows: { lookupKey: string; matchId: string }[],
+  rows: KarabastLobbyMatchResolutionRow[],
   lobbyId: string,
+  resolvedMatchId?: string,
 ) => {
   const matchIds = [...new Set(rows.map(row => row.matchId))];
 
@@ -86,16 +93,32 @@ const assertSingleResolvedMatchId = (
   }
 
   const rowsByLookupKey = new Map(rows.map(row => [row.lookupKey, row.matchId]));
+  const rowsByMatchUserKey = new Map(
+    rows.map(row => [`${row.matchId}:${row.userId}`, row.matchId]),
+  );
+  const resolvedMatchIdsByLookupKey = new Map<string, string>();
 
   identities.forEach(identity => {
-    if (!rowsByLookupKey.has(identity.lookupKey)) {
-      throw new Error(
-        `Missing Karabast match mapping for lobby ${lobbyId}, player index ${identity.playerIndex}`,
-      );
+    const lookupMatchId = rowsByLookupKey.get(identity.lookupKey);
+    if (lookupMatchId) {
+      resolvedMatchIdsByLookupKey.set(identity.lookupKey, lookupMatchId);
+      return;
     }
+
+    const matchUserMatchId = resolvedMatchId
+      ? rowsByMatchUserKey.get(`${resolvedMatchId}:${identity.userId}`)
+      : undefined;
+    if (matchUserMatchId) {
+      resolvedMatchIdsByLookupKey.set(identity.lookupKey, matchUserMatchId);
+      return;
+    }
+
+    throw new Error(
+      `Missing Karabast match mapping for lobby ${lobbyId}, player index ${identity.playerIndex}`,
+    );
   });
 
-  return rowsByLookupKey;
+  return resolvedMatchIdsByLookupKey;
 };
 
 export const resolveKarabastLobbyMatchIds = async (
@@ -108,6 +131,7 @@ export const resolveKarabastLobbyMatchIds = async (
   }
 
   const lookupKeys = identities.map(identity => identity.lookupKey);
+  const userIds = [...new Set(identities.map(identity => identity.userId))];
 
   return db.transaction(async tx => {
     // Serialize match resolution per lobby to keep both linked-player rows on the same match ID.
@@ -115,14 +139,25 @@ export const resolveKarabastLobbyMatchIds = async (
       sql`SELECT pg_advisory_xact_lock(${KARABAST_LOBBY_MATCH_LOCK_NAMESPACE}, hashtext(${integrationData.lobbyId}))`,
     );
 
-    const selectRows = async () => {
+    const selectRows = async (matchId?: string) => {
+      const whereClause = matchId
+        ? or(
+            inArray(karabastLobbyMatch.lookupKey, lookupKeys),
+            and(
+              eq(karabastLobbyMatch.matchId, matchId),
+              inArray(karabastLobbyMatch.userId, userIds),
+            ),
+          )
+        : inArray(karabastLobbyMatch.lookupKey, lookupKeys);
+
       return tx
         .select({
           lookupKey: karabastLobbyMatch.lookupKey,
           matchId: karabastLobbyMatch.matchId,
+          userId: karabastLobbyMatch.userId,
         })
         .from(karabastLobbyMatch)
-        .where(inArray(karabastLobbyMatch.lookupKey, lookupKeys));
+        .where(whereClause);
     };
 
     let rows = await selectRows();
@@ -153,15 +188,17 @@ export const resolveKarabastLobbyMatchIds = async (
       }));
 
     if (missingRows.length > 0) {
-      await tx
-        .insert(karabastLobbyMatch)
-        .values(missingRows)
-        .onConflictDoNothing({ target: [karabastLobbyMatch.lookupKey] });
+      await tx.insert(karabastLobbyMatch).values(missingRows).onConflictDoNothing();
 
-      rows = await selectRows();
+      rows = await selectRows(resolvedMatchId);
     }
 
-    const rowsByLookupKey = assertSingleResolvedMatchId(identities, rows, integrationData.lobbyId);
+    const rowsByLookupKey = assertSingleResolvedMatchId(
+      identities,
+      rows,
+      integrationData.lobbyId,
+      resolvedMatchId,
+    );
 
     const resolvedMatchIds: KarabastResolvedMatchIds = {};
     identities.forEach(identity => {
