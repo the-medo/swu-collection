@@ -22,6 +22,7 @@ interface MatchupTableContentProps {
   totalMatchesAnalyzed: number;
   tableFilters: MatchupTableFilterState;
   onTableFiltersChange: (value: MatchupTableFilterState) => void;
+  formatId?: number;
   handleColumnEnter: (index: number) => void;
   onRowClick: (key: string) => void;
   labelWidth: { width: string; minWidth: string };
@@ -51,6 +52,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
   totalMatchesAnalyzed,
   tableFilters,
   onTableFiltersChange,
+  formatId,
   handleColumnEnter,
   onRowClick,
   labelWidth,
@@ -87,6 +89,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
             <MatchupTableFilterControl
               value={tableFilters}
               onChange={onTableFiltersChange}
+              formatId={formatId}
               active={hasActiveFilters}
             />
           </td>

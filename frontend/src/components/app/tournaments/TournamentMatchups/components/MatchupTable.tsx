@@ -33,6 +33,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   metaInfo,
   labelRenderer,
   totalMatchesAnalyzed,
+  formatId,
 }) => {
   const [tableFilters, setTableFilters] = useState<MatchupTableFilterState>(() =>
     createDefaultMatchupTableFilterState(),
@@ -260,6 +261,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         totalMatchesAnalyzed={totalMatchesAnalyzed}
         tableFilters={tableFilters}
         onTableFiltersChange={handleTableFiltersChange}
+        formatId={formatId}
         handleColumnEnter={handleColumnEnter}
         onRowClick={onRowClick}
         labelWidth={labelWidth}

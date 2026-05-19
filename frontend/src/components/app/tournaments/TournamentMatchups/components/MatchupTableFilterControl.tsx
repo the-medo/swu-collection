@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Filter, X } from 'lucide-react';
+import { Filter, Loader2, Save, X } from 'lucide-react';
+import { useSaveTournamentMatchupFilter } from '@/api/tournament-matchup-filters';
 import MultiAspectFilter from '@/components/app/global/MultiAspectFilter/MultiAspectFilter.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
@@ -12,18 +13,27 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip.tsx';
+import { toast } from '@/hooks/use-toast.ts';
+import { useUser } from '@/hooks/useUser.ts';
 import type { SwuAspect } from '../../../../../../../types/enums.ts';
-import type { MatchupDimensionFilterConfig } from '../../../../../../../types/TournamentMatchupFilters.ts';
+import {
+  matchupFilterNameMaxLength,
+  type MatchupDimensionFilterConfig,
+} from '../../../../../../../types/TournamentMatchupFilters.ts';
+import SavedMatchupFiltersPopover from './SavedMatchupFiltersPopover.tsx';
 import {
   createDefaultMatchupTableFilterState,
+  hasActiveMatchupTableFilters,
   normalizeMatchupDimensionFilterConfig,
   normalizeMatchupTableFilterConfig,
+  summarizeMatchupTableFilter,
   type MatchupTableFilterState,
 } from '../utils/matchupTableFilters.ts';
 
 export interface MatchupTableFilterControlProps {
   value: MatchupTableFilterState;
   onChange: (value: MatchupTableFilterState) => void;
+  formatId?: number;
   active: boolean;
 }
 
@@ -97,12 +107,26 @@ const cloneDimensionFilter = (
   aspects: [...filter.aspects],
 });
 
+const getGeneratedFilterName = (filter: MatchupTableFilterState) => {
+  const summary = summarizeMatchupTableFilter(filter);
+  return summary.length > matchupFilterNameMaxLength
+    ? summary.slice(0, matchupFilterNameMaxLength)
+    : summary;
+};
+
 const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
   value,
   onChange,
+  formatId,
   active,
 }) => {
+  const user = useUser();
+  const saveMutation = useSaveTournamentMatchupFilter();
   const normalizedValue = React.useMemo(() => normalizeMatchupTableFilterConfig(value), [value]);
+  const hasActiveFilters = React.useMemo(
+    () => hasActiveMatchupTableFilters(normalizedValue),
+    [normalizedValue],
+  );
 
   const updateDimension = React.useCallback(
     (dimension: FilterDimension, patch: Partial<MatchupDimensionFilterConfig>) => {
@@ -155,6 +179,27 @@ const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
   const clearFilters = React.useCallback(() => {
     onChange(createDefaultMatchupTableFilterState());
   }, [onChange]);
+
+  const saveFilter = React.useCallback(async () => {
+    if (!formatId || !hasActiveFilters) return;
+
+    try {
+      await saveMutation.mutateAsync({
+        format: formatId,
+        name: getGeneratedFilterName(normalizedValue),
+        isMirrored: normalizedValue.isMirrored,
+        rowFilters: normalizedValue.rowFilters,
+        columnFilters: normalizedValue.isMirrored ? null : normalizedValue.columnFilters,
+      });
+      toast({ title: 'Saved matchup filter' });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Could not save matchup filter',
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }, [formatId, hasActiveFilters, normalizedValue, saveMutation]);
 
   return (
     <div className="flex min-h-10 min-w-[220px] items-center gap-1 rounded-md p-1">
@@ -220,9 +265,28 @@ const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
                 />
               </div>
             )}
+
+            {user && formatId && (
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={!hasActiveFilters || saveMutation.isPending}
+                  onClick={saveFilter}
+                >
+                  {saveMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                  Save
+                </Button>
+              </div>
+            )}
           </div>
         </PopoverContent>
       </Popover>
+      {user && <SavedMatchupFiltersPopover formatId={formatId} onApply={onChange} />}
       {active && (
         <TooltipIconButton
           label="Clear table filters"
