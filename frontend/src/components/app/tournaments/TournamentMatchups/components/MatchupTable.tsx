@@ -14,6 +14,7 @@ export interface MatchupTableProps {
   metaInfo: MetaInfo;
   labelRenderer: ReturnType<typeof useLabel>;
   totalMatchesAnalyzed: number;
+  formatId?: number;
 }
 
 // Maximum number of rows/columns to display when not showing all data
