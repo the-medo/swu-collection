@@ -15,6 +15,7 @@ import {
   transformCardPoolToCardPoolCards,
   filterLeadersFromCardPool,
 } from '../../lib/card-pools/generate-card-pool.ts';
+import { cardList } from '../../db/lists.ts';
 
 export const zCardPoolCreate = z.object({
   set: z.enum(SwuSet),
@@ -40,7 +41,7 @@ export const cardPoolsPostRoute = new Hono<AuthExtension>().post(
       const result = await db.transaction(async tx => {
         // Generate the card pool and seed cards
         const pool = body.custom ? [] : generateCardPool(body.set, body.type);
-        const leaders = filterLeadersFromCardPool(pool).join(',');
+        const leaders = filterLeadersFromCardPool(pool, cardList).join(',');
 
         const [created] = await tx
           .insert(cardPoolsTable)

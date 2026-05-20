@@ -6,13 +6,13 @@ import { z } from 'zod';
 import { eq, sql } from 'drizzle-orm';
 import { collection as collectionTable } from '../../../../db/schema/collection.ts';
 import { db } from '../../../../db';
-import { cardList } from '../../../../db/lists.ts';
 import {
   collectionCard as collectionCardTable,
   type InsertCollectionCard,
 } from '../../../../db/schema/collection_card.ts';
 import { batchArray } from '../../../../lib/utils/batch.ts';
 import { updateCollectionUpdatedAt } from '../../../../lib/updateCollectionUpdatedAt.ts';
+import { getMergedCardList } from '../../../../lib/cards/cardListProvider.ts';
 
 export const collectionIdImportPostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -29,7 +29,8 @@ export const collectionIdImportPostRoute = new Hono<AuthExtension>().post(
     if (!col) return c.json({ message: "Collection doesn't exist" }, 404);
     if (col.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
 
-    // Validate cardId and variantId
+    // Validate cardId and variantId against official + active preview cards.
+    const cardList = await getMergedCardList();
     const validCards = [];
     const invalidCards = [];
 

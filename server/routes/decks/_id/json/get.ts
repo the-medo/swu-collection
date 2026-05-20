@@ -10,7 +10,7 @@ import { db } from '../../../../db';
 import { selectUser } from '../../../user.ts';
 import { user as userTable } from '../../../../db/schema/auth-schema.ts';
 import { selectDeck } from '../../../deck.ts';
-import { cardList } from '../../../../db/lists.ts';
+import { getMergedCardList } from '../../../../lib/cards/cardListProvider.ts';
 import { createDeckJsonExport } from '../../../../lib/decks/deckExport.ts';
 import type { Deck } from '../../../../../types/Deck.ts';
 import type { User } from '../../../../../types/User.ts';
@@ -53,13 +53,11 @@ export const deckIdJsonGetRoute = new Hono<AuthExtension>().get('/', async c => 
   }
 
   // Fetch deck cards (from deck_card or from card pool, based on deck.cardPoolId)
+  const cardList = await getMergedCardList();
   let deckCards: DeckCard[];
 
   if (!deckData.deck.cardPoolId) {
-    const rows = await db
-      .select()
-      .from(deckCardTable)
-      .where(eq(deckCardTable.deckId, paramDeckId));
+    const rows = await db.select().from(deckCardTable).where(eq(deckCardTable.deckId, paramDeckId));
 
     if (!rows) {
       return c.json({ message: "Couldn't fetch deck cards" }, 500);
@@ -88,7 +86,7 @@ export const deckIdJsonGetRoute = new Hono<AuthExtension>().get('/', async c => 
         ),
       );
 
-    deckCards = transformCardPoolDeckCardsToDeckCards(poolRows, paramDeckId);
+    deckCards = transformCardPoolDeckCardsToDeckCards(poolRows, paramDeckId, cardList);
   }
 
   // Generate JSON export using the existing function

@@ -15,6 +15,7 @@ import {
   transformCardPoolToCardPoolCards,
 } from '../../../../lib/card-pools/generate-card-pool.ts';
 import { findInvalidCardIds } from '../../../../lib/card-pools/validate-card-ids.ts';
+import { getMergedCardList } from '../../../../lib/cards/cardListProvider.ts';
 
 const zParams = z.object({ id: z.uuid() });
 const zBody = z.object({
@@ -71,8 +72,10 @@ export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
           return { status: 'used' as const };
         }
 
-        // Validate card ids exist in cardList
-        const invalid = findInvalidCardIds(body.cards);
+        const mergedCardList = await getMergedCardList();
+
+        // Validate card ids exist in the merged card list (official + active preview)
+        const invalid = findInvalidCardIds(body.cards, mergedCardList);
         if (invalid.length > 0) {
           return { status: 'invalid_cards' as const, invalid };
         }
@@ -87,7 +90,7 @@ export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
         }
 
         // Update pool status, leaders, updated_at
-        const leaders = filterLeadersFromCardPool(body.cards);
+        const leaders = filterLeadersFromCardPool(body.cards, mergedCardList);
         const [updated] = await tx
           .update(cardPoolsTable)
           .set({ status: 'ready', updatedAt: new Date().toISOString(), leaders: leaders.join(',') })

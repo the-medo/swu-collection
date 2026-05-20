@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
-import { cardList } from '../../db/lists.ts';
+import { getMergedCardList } from '../cards/cardListProvider.ts';
 import { selectDefaultVariant } from '../cards/selectDefaultVariant.ts';
 import { and, eq, isNotNull } from 'drizzle-orm';
 import { db } from '../../db';
@@ -95,7 +95,7 @@ export async function generateDeckThumbnail(
     throw new Error('Leader ID and Base ID are required');
   }
 
-  // Get the leader and base cards from cardList
+  const cardList = await getMergedCardList();
   const leaderCard = cardList[leaderId];
   const baseCard = cardList[baseId];
 

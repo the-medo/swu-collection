@@ -1,5 +1,5 @@
 import type { DeckCard } from '../../../types/ZDeckCard.ts';
-import { cardList } from '../../db/lists.ts';
+import type { CardList } from '../../../lib/swu-resources/types.ts';
 
 type Location = 'deck' | 'pool' | 'trash' | (string & {});
 
@@ -18,12 +18,13 @@ export interface CardPoolDeckCardLike {
 export function transformCardPoolDeckCardsToDeckCards(
   rows: CardPoolDeckCardLike[],
   deckId: string,
+  cards: CardList,
 ): DeckCard[] {
   const mapKey = (cardId: string, board: number) => `${cardId}::${board}`;
   const aggregated = new Map<string, DeckCard>();
 
   for (const row of rows) {
-    if (cardList[row.cardId]?.type === 'Leader' || cardList[row.cardId]?.type === 'Base') continue;
+    if (cards[row.cardId]?.type === 'Leader' || cards[row.cardId]?.type === 'Base') continue;
     const board = row.location === 'deck' ? 1 : 2;
     const key = mapKey(row.cardId, board);
     const existing = aggregated.get(key);

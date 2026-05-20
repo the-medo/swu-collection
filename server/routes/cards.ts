@@ -1,14 +1,22 @@
 import { Hono } from 'hono';
-import { cardList } from '../db/lists.ts';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { fetchCardDecksData } from '../lib/cards/card-decks.ts';
+import {
+  buildCardListUpdateSection,
+  buildPreviewCardListUpdateSection,
+  getOfficialCardList,
+  getOfficialCardListVersion,
+} from '../lib/cards/cardListProvider.ts';
 import type { AuthExtension } from '../auth/auth.ts';
 
-// This timestamp will be regenerated whenever the server restarts
-export const cardListLastUpdated = new Date().toISOString();
+// Re-exported for backward compatibility with any code still importing from here.
+export const cardListLastUpdated = getOfficialCardListVersion();
 
 const clientVersionSchema = z.object({
+  officialLastUpdated: z.string().optional(),
+  previewLastUpdated: z.string().optional(),
+  // Legacy field: treated as officialLastUpdated when officialLastUpdated is absent.
   lastUpdated: z.string().optional(),
 });
 
@@ -26,7 +34,6 @@ export const cardsRoute = new Hono<AuthExtension>()
     const { tournamentId, tournamentGroupId, metaId, leaderCardId, baseCardId } =
       c.req.valid('query');
 
-    // Ensure at least one of tournamentId or metaId is provided
     if (!tournamentId && !tournamentGroupId && !metaId) {
       return c.json(
         { error: 'Either tournamentId, tournamentGroupId or metaId must be provided' },
@@ -51,34 +58,19 @@ export const cardsRoute = new Hono<AuthExtension>()
     }
   })
   .post('/', zValidator('json', clientVersionSchema), async c => {
-    const { lastUpdated } = c.req.valid('json');
+    const { officialLastUpdated, previewLastUpdated, lastUpdated } = c.req.valid('json');
 
-    if (!lastUpdated) {
-      // Client has no data, send full data
-      return c.json({
-        needsUpdate: true,
-        lastUpdated: cardListLastUpdated,
-        cards: cardList,
-      });
-    }
+    // Resolve effective official version from the client: prefer the new field, fall
+    // back to the legacy `lastUpdated` field so old clients keep working.
+    const effectiveOfficialLastUpdated = officialLastUpdated ?? lastUpdated;
+    const officialVersion = getOfficialCardListVersion();
 
-    // Compare timestamps
-    const clientDate = new Date(lastUpdated);
-    const serverDate = new Date(cardListLastUpdated);
-
-    if (clientDate < serverDate) {
-      // Client has outdated data, send full data
-      return c.json({
-        needsUpdate: true,
-        lastUpdated: cardListLastUpdated,
-        cards: cardList,
-      });
-    } else {
-      // Client has current data
-      return c.json({
-        needsUpdate: false,
-        lastUpdated: cardListLastUpdated,
-        cards: undefined,
-      });
-    }
+    return c.json({
+      official: buildCardListUpdateSection(
+        effectiveOfficialLastUpdated,
+        officialVersion,
+        getOfficialCardList(),
+      ),
+      preview: await buildPreviewCardListUpdateSection(previewLastUpdated),
+    });
   });

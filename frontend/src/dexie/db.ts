@@ -143,6 +143,27 @@ export class SwuBaseDB extends Dexie {
       gameResults:
         '[scopeId+id], [scopeId+updatedAt], [scopeId+deckId], [scopeId+format], [scopeId+leaderCardId], [scopeId+leaderCardId+baseCardKey]',
     });
+
+    // v9: split card-list cache into independent official and preview entries.
+    this.version(9)
+      .stores({
+        tournamentDecks: 'id',
+        tournamentMatches: 'id',
+        cardVariantPrices: 'id, cardId, variantId, sourceType, fetchedAt',
+        cardVariantPriceFetchList: 'id, cardId, variantId, addedAt',
+        userSettings: 'key',
+        dailySnapshots: 'date',
+        collections: 'id',
+        collectionCards: 'collectionId',
+        cardListCache: 'key',
+        gameResults:
+          '[scopeId+id], [scopeId+updatedAt], [scopeId+deckId], [scopeId+format], [scopeId+leaderCardId], [scopeId+leaderCardId+baseCardKey]',
+      })
+      .upgrade(async tx => {
+        const cardListCache = tx.table('cardListCache');
+        await cardListCache.delete('swubase-card-list');
+        await cardListCache.delete('swubase-card-list-version');
+      });
   }
 }
 

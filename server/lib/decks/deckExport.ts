@@ -194,24 +194,11 @@ export function createDeckTextExport(
 }
 
 /**
- * Helper function to format card ID to preferred format (e.g., SOR_092 instead of internal ID)
- * If the card ID is already in the preferred format, it's returned as is
+ * Helper function to format card ID to preferred format (e.g., SOR_092 instead of internal ID).
+ * For preview cards, uses karabast_id when present so Karabast can match the card.
  */
 function formatCardId(cardId: string, cardList: CardList): string {
-  const card = cardList[cardId];
-  if (!card) return cardId; // Return original if not found
-
-  // For each card, find the primary (Standard) variant and use its set code and card number
-  const primaryVariantId = selectDefaultVariant(card);
-  const primaryVariant = primaryVariantId ? card.variants[primaryVariantId] : undefined;
-
-  if (primaryVariant) {
-    const setCode = primaryVariant.set.toUpperCase();
-    const cardNumber = primaryVariant.cardNo.toString().padStart(3, '0');
-    return `${setCode}_${cardNumber}`;
-  }
-
-  return cardId; // Fallback to original ID
+  return formatCardIdFromCard(cardId, cardList[cardId]);
 }
 
 /**
@@ -223,28 +210,14 @@ export function formatCardIdFromCard(
 ): string {
   if (!card || !card.variants) return cardId;
 
-  // Find the primary variant
-  const variantIds = Object.keys(card.variants);
-  if (variantIds.length === 0) return cardId;
+  const karabastId = card.preview ? card.karabast_id?.trim() : undefined;
+  if (karabastId) return karabastId;
 
-  // Try to find standard variant first
-  let primaryVariantId = null;
-  for (const id of variantIds) {
-    const variant = card.variants[id];
-    if (variant && variant.variantName === 'Standard') {
-      primaryVariantId = id;
-      break;
-    }
-  }
-
-  // If no standard variant found, use the first one
-  if (!primaryVariantId) {
-    primaryVariantId = variantIds[0];
-  }
-
+  const primaryVariantId = selectDefaultVariant(card);
+  if (!primaryVariantId) return cardId;
   const primaryVariant = card.variants[primaryVariantId];
 
-  if (primaryVariant) {
+  if (primaryVariant && primaryVariant.cardNo > 0) {
     const setCode = primaryVariant.set.toUpperCase();
     const cardNumber = primaryVariant.cardNo.toString().padStart(3, '0');
     return `${setCode}_${cardNumber}`;

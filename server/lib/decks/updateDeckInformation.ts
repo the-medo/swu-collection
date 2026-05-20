@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../../db';
 import { deck } from '../../db/schema/deck.ts';
-import { cardList } from '../../db/lists.ts';
+import { getMergedCardList } from '../cards/cardListProvider.ts';
 import { SwuAspect } from '../../../types/enums.ts';
 import { deckInformation } from '../../db/schema/deck_information.ts';
 import { baseSpecialNames } from '../../../shared/lib/basicBases.ts';
@@ -14,7 +14,7 @@ export async function updateDeckInformation(deckId: string) {
   const deckData = (await db.select().from(deck).where(eq(deck.id, deckId)))[0];
   if (!deckData) return;
 
-  // Get card data from the in-memory store
+  const cardList = await getMergedCardList();
   const leader1 = deckData.leaderCardId1 ? cardList[deckData.leaderCardId1] : null;
   const leader2 = deckData.leaderCardId2 ? cardList[deckData.leaderCardId2] : null;
   const baseCard = deckData.baseCardId ? cardList[deckData.baseCardId] : null;

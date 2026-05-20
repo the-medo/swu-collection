@@ -1,0 +1,145 @@
+import { describe, expect, test } from 'bun:test';
+import { SwuArena, SwuAspect, SwuRarity, SwuSet } from '../../../types/enums.ts';
+import { normalizePreviewCardPayload } from './previewCardPayload.ts';
+import {
+  buildCardListUpdateSection,
+  isCardListVersionStale,
+  mergeCardLists,
+} from './cardListProvider.ts';
+import type { CardDataWithVariants, CardListVariants } from '../../../lib/swu-resources/types.ts';
+
+const basePayload = {
+  cardId: '',
+  updatedAt: '',
+  title: 'Sample Unit',
+  name: 'Sample Unit',
+  hp: 3,
+  power: 2,
+  upgradeHp: null,
+  upgradePower: null,
+  text: null,
+  rules: null,
+  deployBox: null,
+  epicAction: null,
+  front: {
+    horizontal: false,
+  },
+  back: null,
+  aspects: [SwuAspect.COMMAND],
+  type: 'Unit',
+  cost: 2,
+  traits: ['Trooper'],
+  keywords: [],
+  arenas: [SwuArena.GROUND],
+  rarity: SwuRarity.COMMON,
+  set: SwuSet.LAW,
+  karabast_id: 'preview-sample-unit',
+  variants: {
+    'sample-unit-preview-standard': {
+      variantId: 'sample-unit-preview-standard',
+      swuId: 0,
+      set: SwuSet.LAW,
+      fullSetName: 'A Lawless Time',
+      cardNo: 42,
+      baseSet: true,
+      hasNonfoil: true,
+      hasFoil: false,
+      variantName: 'Standard',
+      artist: '',
+      image: {
+        front: 'preview/sample-unit-front.webp',
+        back: null,
+      },
+      front: {
+        horizontal: false,
+      },
+    },
+  },
+};
+
+describe('preview card payload validation', () => {
+  test('normalizes admin-friendly blanks into active preview card data', () => {
+    const card = normalizePreviewCardPayload(basePayload);
+
+    expect(card.cardId).toBe('sample-unit');
+    expect(card.updatedAt.length).toBeGreaterThan(0);
+    expect(card.preview).toBe(true);
+    expect(card.previewStatus).toBe('active');
+    expect(card.karabast_id).toBe('preview-sample-unit');
+    expect(card.variants['sample-unit-preview-standard']?.preview).toBe(true);
+  });
+
+  test('rejects payloads without real variants', () => {
+    expect(() =>
+      normalizePreviewCardPayload({
+        ...basePayload,
+        variants: {},
+      }),
+    ).toThrow('Preview cards need at least one variant');
+  });
+});
+
+describe('preview card list merge', () => {
+  test('keeps official cards on cardId collision while preserving preview-only cards', () => {
+    const previewCard = normalizePreviewCardPayload(basePayload);
+    const officialCard = {
+      ...previewCard,
+      name: 'Official Sample Unit',
+      preview: false,
+    } as CardDataWithVariants<CardListVariants>;
+
+    const merged = mergeCardLists(
+      { 'sample-unit': officialCard },
+      {
+        'sample-unit': previewCard,
+        'preview-only': {
+          ...previewCard,
+          cardId: 'preview-only',
+          name: 'Preview Only',
+        },
+      },
+    );
+
+    expect(merged['sample-unit']?.name).toBe('Official Sample Unit');
+    expect(merged['preview-only']?.name).toBe('Preview Only');
+  });
+});
+
+describe('card list version comparison', () => {
+  test('marks missing, invalid, and older client versions as stale', () => {
+    const serverVersion = '2026-05-20T12:00:00.000Z';
+
+    expect(isCardListVersionStale(undefined, serverVersion)).toBe(true);
+    expect(isCardListVersionStale('not-a-date', serverVersion)).toBe(true);
+    expect(isCardListVersionStale('2026-05-20T11:59:59.999Z', serverVersion)).toBe(true);
+  });
+
+  test('keeps equal and newer client versions current', () => {
+    const serverVersion = '2026-05-20T12:00:00.000Z';
+
+    expect(isCardListVersionStale(serverVersion, serverVersion)).toBe(false);
+    expect(isCardListVersionStale('2026-05-20T12:00:00.001Z', serverVersion)).toBe(false);
+  });
+});
+
+describe('card list update response sections', () => {
+  test('includes cards only when a section is stale', () => {
+    const cards = {
+      'sample-unit': normalizePreviewCardPayload(basePayload),
+    };
+    const serverVersion = '2026-05-20T12:00:00.000Z';
+
+    expect(
+      buildCardListUpdateSection('2026-05-20T11:59:59.999Z', serverVersion, cards),
+    ).toEqual({
+      needsUpdate: true,
+      lastUpdated: serverVersion,
+      cards,
+    });
+
+    expect(buildCardListUpdateSection(serverVersion, serverVersion, cards)).toEqual({
+      needsUpdate: false,
+      lastUpdated: serverVersion,
+    });
+  });
+});

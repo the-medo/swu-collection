@@ -2,7 +2,7 @@ import type { SwuSet } from '../../../types/enums.ts';
 import { cardPoolInfo } from '../../../lib/swu-resources/card-pool-info.ts';
 import { CardPoolType } from '../../../shared/types/cardPools.ts';
 import { type CardPoolMap, getCardPoolMap } from './card-pool-map-by-set.ts';
-import { cardList } from '../../db/lists.ts';
+import type { CardList } from '../../../lib/swu-resources/types.ts';
 
 export type BoosterPack = string[];
 
@@ -70,8 +70,8 @@ export const generateCardPool = (s: SwuSet, type: CardPoolType, boosterCount: nu
   return finalPool;
 };
 
-export const filterLeadersFromCardPool = (cardPool: string[]) =>
-  cardPool.filter(cardId => cardList[cardId]?.type === 'Leader');
+export const filterLeadersFromCardPool = (cardPool: string[], cards: CardList) =>
+  cardPool.filter(cardId => cards[cardId]?.type === 'Leader');
 
 export const transformCardPoolToCardPoolCards = (cardPool: string[], cardPoolId: string) =>
   cardPool.map((cardId, i) => ({ cardPoolId, cardId, cardPoolNumber: i + 1 }));
