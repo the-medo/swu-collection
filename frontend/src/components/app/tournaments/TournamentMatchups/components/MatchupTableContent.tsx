@@ -36,8 +36,8 @@ interface MatchupTableContentProps {
   setShowAllData: (show: boolean) => void;
   isDataTruncated: boolean;
   hasActiveFilters: boolean;
-  originalRowCount: number;
-  originalColCount: number;
+  availableRowCount: number;
+  availableColCount: number;
   maxDisplayItems: number;
 }
 
@@ -62,8 +62,8 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
   setShowAllData,
   isDataTruncated,
   hasActiveFilters,
-  originalRowCount,
-  originalColCount,
+  availableRowCount,
+  availableColCount,
   maxDisplayItems,
 }) => {
   const tableColSpan = Math.max(2 + colKeys.length, 2);
@@ -149,7 +149,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
         )}
 
         {/* Show All Data button row */}
-        {isDataTruncated && !showAllData && !hasActiveFilters && (
+        {isDataTruncated && !showAllData && (
           <tr className="h-[40px] text-sm bg-accent/30">
             <td colSpan={2} className="p-2 border text-center font-semibold">
               Showing limited data ({rowKeys.length} rows, {colKeys.length} columns)
@@ -160,14 +160,14 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
               onClick={() => setShowAllData(true)}
             >
               <span className="font-semibold">
-                Click to show all data ({originalRowCount} rows, {originalColCount} columns)
+                Click to show all data ({availableRowCount} rows, {availableColCount} columns)
               </span>
             </td>
           </tr>
         )}
 
         {/* Show Less Data button row */}
-        {isDataTruncated && showAllData && !hasActiveFilters && (
+        {isDataTruncated && showAllData && (
           <tr className="h-[40px] text-sm bg-accent/30">
             <td colSpan={2} className="p-2 border text-center font-semibold">
               Showing all data ({rowKeys.length} rows, {colKeys.length} columns)
@@ -178,7 +178,8 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
               onClick={() => setShowAllData(false)}
             >
               <span className="font-semibold">
-                Click to show limited data ({maxDisplayItems} rows, {maxDisplayItems} columns)
+                Click to show limited data ({Math.min(availableRowCount, maxDisplayItems)} rows,{' '}
+                {Math.min(availableColCount, maxDisplayItems)} columns)
               </span>
             </td>
           </tr>

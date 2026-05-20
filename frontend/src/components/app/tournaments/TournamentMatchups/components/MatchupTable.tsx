@@ -10,6 +10,7 @@ import {
   createDefaultMatchupTableFilterState,
   filterMatchupKeys,
   getEffectiveMatchupTableFilters,
+  hasActiveMatchupDimensionFilter,
   hasActiveMatchupTableFilters,
   normalizeMatchupTableFilterConfig,
   type MatchupTableFilterState,
@@ -149,6 +150,14 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     () => hasActiveMatchupTableFilters(debouncedTableFilters),
     [debouncedTableFilters],
   );
+  const hasActiveRowFilters = useMemo(
+    () => hasActiveMatchupDimensionFilter(effectiveTableFilters.rowFilters),
+    [effectiveTableFilters.rowFilters],
+  );
+  const hasActiveColumnFilters = useMemo(
+    () => hasActiveMatchupDimensionFilter(effectiveTableFilters.columnFilters),
+    [effectiveTableFilters.columnFilters],
+  );
   const hasPendingTableFilters = useMemo(
     () => hasActiveMatchupTableFilters(tableFilters),
     [tableFilters],
@@ -187,20 +196,20 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   );
 
   const visibleRowKeys = useMemo(() => {
-    if (!showAllData && !hasActiveTableFilters && filteredRowKeys.length > MAX_DISPLAY_ITEMS) {
+    if (!showAllData && !hasActiveRowFilters && filteredRowKeys.length > MAX_DISPLAY_ITEMS) {
       return filteredRowKeys.slice(0, MAX_DISPLAY_ITEMS);
     }
 
     return filteredRowKeys;
-  }, [filteredRowKeys, hasActiveTableFilters, showAllData]);
+  }, [filteredRowKeys, hasActiveRowFilters, showAllData]);
 
   const visibleColKeys = useMemo(() => {
-    if (!showAllData && !hasActiveTableFilters && filteredColKeys.length > MAX_DISPLAY_ITEMS) {
+    if (!showAllData && !hasActiveColumnFilters && filteredColKeys.length > MAX_DISPLAY_ITEMS) {
       return filteredColKeys.slice(0, MAX_DISPLAY_ITEMS);
     }
 
     return filteredColKeys;
-  }, [filteredColKeys, hasActiveTableFilters, showAllData]);
+  }, [filteredColKeys, hasActiveColumnFilters, showAllData]);
 
   // Handler for column hover (works for both headers and data cells)
   const handleColumnEnter = useCallback((index: number) => {
@@ -245,8 +254,8 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
 
   // Check if data is truncated
   const isDataTruncated =
-    !hasActiveTableFilters &&
-    (filteredRowKeys.length > MAX_DISPLAY_ITEMS || filteredColKeys.length > MAX_DISPLAY_ITEMS);
+    (!hasActiveRowFilters && filteredRowKeys.length > MAX_DISPLAY_ITEMS) ||
+    (!hasActiveColumnFilters && filteredColKeys.length > MAX_DISPLAY_ITEMS);
 
   return (
     <div className="relative overflow-x-auto overflow-y-auto max-h-screen">
@@ -271,8 +280,8 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         setShowAllData={setShowAllData}
         isDataTruncated={isDataTruncated}
         hasActiveFilters={hasActiveTableFilters || hasPendingTableFilters}
-        originalRowCount={matchupData.rowKeys.length}
-        originalColCount={matchupData.colKeys.length}
+        availableRowCount={filteredRowKeys.length}
+        availableColCount={filteredColKeys.length}
         maxDisplayItems={MAX_DISPLAY_ITEMS}
       />
     </div>

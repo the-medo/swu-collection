@@ -72,6 +72,14 @@ export function useFilteredMatches(
           return hasPlacementAtMost(p1Deck, 8) && hasPlacementAtMost(p2Deck, 8);
         });
       case 'custom':
+        // Keep this no-op guard in sync with the supported custom criteria.
+        if (
+          (minRound === undefined || minRound <= 1) &&
+          (minPoints === undefined || minPoints <= 0)
+        ) {
+          return matches;
+        }
+
         return matches.filter(match => {
           // Use default values when undefined
           const effectiveMinRound = minRound ?? 1;
