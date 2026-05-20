@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 import { TournamentMatch } from '../../../../../../../server/db/schema/tournament_match.ts';
-import { MatchupDataMap, MatchupKeyInfo, MatchupTotalData } from '../types';
+import { MatchupDataMap, MatchupKeyInfo } from '../types';
 import { MetaInfo } from '../../TournamentMeta/MetaInfoSelector.tsx';
 import { getDeckKeys as getDeckKeyBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { getAspectsFromDeckInformation } from '@/components/app/tournaments/lib/getAspectsFromDeckInformation.ts';
@@ -112,32 +112,19 @@ export function useMatchupData(
       });
     });
 
-    // Calculate total match count and win/loss stats for each deck type
     const matchCounts = new Map<string, number>();
-    const totalStats = new Map<string, MatchupTotalData>();
 
-    // Count total matches and calculate total wins/losses for each deck type
     Array.from(deckKeys).forEach(key => {
       let totalMatches = 0;
-      let totalWins = 0;
-      let totalLosses = 0;
-      let totalGameWins = 0;
-      let totalGameLosses = 0;
 
-      // Sum up all wins and losses for this deck type
       Array.from(deckKeys).forEach(otherKey => {
         if (key !== otherKey) {
           const winsLosses = matchups[key][otherKey];
           totalMatches += winsLosses.wins + winsLosses.losses;
-          totalWins += winsLosses.wins;
-          totalLosses += winsLosses.losses;
-          totalGameWins += winsLosses.gameWins;
-          totalGameLosses += winsLosses.gameLosses;
         }
       });
 
       matchCounts.set(key, totalMatches);
-      totalStats.set(key, { totalWins, totalLosses, totalGameWins, totalGameLosses });
     });
 
     // Sort keys by total match count (descending)
@@ -149,7 +136,6 @@ export function useMatchupData(
       rowKeys: sortedKeys,
       colKeys: sortedKeys,
       matchups,
-      totalStats,
       keyInfo,
     };
   }, [filteredMatches, filteredDecks, cardListData, getDeckKeys]);

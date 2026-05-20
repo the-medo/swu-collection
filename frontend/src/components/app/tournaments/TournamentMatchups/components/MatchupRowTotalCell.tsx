@@ -1,79 +1,69 @@
 import {
+  MatchupDataMap,
   MatchupDisplayMode,
-  MatchupTotalData,
 } from '@/components/app/tournaments/TournamentMatchups/types.ts';
 import React, { useMemo } from 'react';
 import { cn } from '@/lib/utils.ts';
 import { getWinrateColorClass } from '@/components/app/tournaments/TournamentMatchups/utils/getWinrateColorClass.ts';
 
+const baseClassName = 'p-2 border text-center w-[70px] text-xs font-semibold';
+
 const RowTotalCell = React.memo(
   ({
     rowKey,
-    totalStats,
+    colKeys,
+    matchups,
     displayMode,
   }: {
     rowKey: string;
-    totalStats?: Map<string, MatchupTotalData>;
+    colKeys: string[];
+    matchups: MatchupDataMap;
     displayMode: MatchupDisplayMode;
   }) => {
     // Memoize the row's data calculation
     const rowData = useMemo(() => {
-      const stats = totalStats?.get(rowKey);
-      if (!stats)
-        return {
-          className: cn('p-2 border text-center w-[70px] text-xs font-semibold'),
-          content: '-',
-        };
-
-      // Calculate data for display
-      let displayWins, displayLosses, total;
-      const { totalWins, totalLosses, totalGameWins, totalGameLosses } = stats;
-
-      if (displayMode === 'winLoss' || displayMode === 'winrate') {
-        displayWins = totalWins;
-        displayLosses = totalLosses;
-        total = totalWins + totalLosses;
-
-        if (total === 0)
-          return {
-            className: cn('p-2 border text-center w-[70px] text-xs font-semibold'),
-            content: '-',
-          };
-
-        const winrate = (totalWins / total) * 100;
-        const colorClass = getWinrateColorClass(winrate);
-
-        return {
-          className: cn('p-2 border text-center w-[70px] text-xs font-semibold', colorClass),
-          content:
-            displayMode === 'winLoss'
-              ? `${Math.round(totalWins)}/${Math.round(totalLosses)}`
-              : `${winrate.toFixed(1)}%`,
-        };
-      } else {
-        // Game stats
-        displayWins = totalGameWins;
-        displayLosses = totalGameLosses;
-        total = totalGameWins + totalGameLosses;
-
-        if (total === 0)
-          return {
-            className: cn('p-2 border text-center w-[70px] text-xs font-semibold'),
-            content: '-',
-          };
-
-        const gameWinrate = (totalGameWins / total) * 100;
-        const colorClass = getWinrateColorClass(gameWinrate);
-
-        return {
-          className: cn('p-2 border text-center w-[70px] text-xs font-semibold', colorClass),
-          content:
-            displayMode === 'gameWinLoss'
-              ? `${Math.round(totalGameWins)}/${Math.round(totalGameLosses)}`
-              : `${gameWinrate.toFixed(1)}%`,
-        };
+      const rowMatchups = matchups[rowKey];
+      if (!rowMatchups) {
+        return { className: cn(baseClassName), content: '-' };
       }
-    }, [rowKey, totalStats, displayMode]);
+
+      const stats = colKeys.reduce(
+        (totals, colKey) => {
+          if (colKey === rowKey) return totals;
+
+          const matchup = rowMatchups[colKey];
+          if (!matchup) return totals;
+
+          totals.totalWins += matchup.wins;
+          totals.totalLosses += matchup.losses;
+          totals.totalGameWins += matchup.gameWins;
+          totals.totalGameLosses += matchup.gameLosses;
+
+          return totals;
+        },
+        { totalWins: 0, totalLosses: 0, totalGameWins: 0, totalGameLosses: 0 },
+      );
+
+      const isMatchMode = displayMode === 'winLoss' || displayMode === 'winrate';
+      const displayWins = isMatchMode ? stats.totalWins : stats.totalGameWins;
+      const displayLosses = isMatchMode ? stats.totalLosses : stats.totalGameLosses;
+      const total = displayWins + displayLosses;
+
+      if (total === 0) {
+        return { className: cn(baseClassName), content: '-' };
+      }
+
+      const winrate = (displayWins / total) * 100;
+      const colorClass = getWinrateColorClass(winrate);
+
+      return {
+        className: cn(baseClassName, colorClass),
+        content:
+          displayMode === 'winLoss' || displayMode === 'gameWinLoss'
+            ? `${Math.round(displayWins)}/${Math.round(displayLosses)}`
+            : `${winrate.toFixed(1)}%`,
+      };
+    }, [colKeys, displayMode, matchups, rowKey]);
 
     return <td className={rowData.className}>{rowData.content}</td>;
   },

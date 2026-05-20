@@ -16,7 +16,6 @@ export type MatchupTableData = {
   rowKeys: string[];
   colKeys: string[];
   matchups: MatchupDataMap;
-  totalStats?: Map<string, MatchupTotalData>;
   keyInfo: Record<string, MatchupKeyInfo>;
 };
 
@@ -25,13 +24,6 @@ export type MatchupData = {
   losses: number;
   gameWins: number;
   gameLosses: number;
-};
-
-export type MatchupTotalData = {
-  totalWins: number;
-  totalLosses: number;
-  totalGameWins: number;
-  totalGameLosses: number;
 };
 
 export type MatchupDataMap = Record<string, Record<string, MatchupData>>;

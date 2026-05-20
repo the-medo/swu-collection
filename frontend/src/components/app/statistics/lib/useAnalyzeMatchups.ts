@@ -7,7 +7,6 @@ import {
 import type {
   MatchupData,
   MatchupKeyInfo,
-  MatchupTotalData,
 } from '@/components/app/tournaments/TournamentMatchups/types.ts';
 import type { CardListResponse } from '@/api/lists/useCardList.ts';
 import { processBase } from '../../../../../../shared/lib/processBase.ts';
@@ -24,7 +23,6 @@ export type AnalyzedMatchups = {
   rowKeys: string[];
   colKeys: string[];
   matchups: AnalyzedMatchupsMatrix;
-  totalStats: Map<string, MatchupTotalData>;
   keyInfo: Record<string, MatchupKeyInfo>;
 };
 
@@ -121,28 +119,17 @@ export const useAnalyzeMatchups = (
       entry.gameTotal += wins + losses;
     });
 
-    // Calculate total match count and win/loss stats for each deck type
     const matchCounts = new Map<string, number>();
-    const totalStats: Map<string, MatchupTotalData> = new Map();
     const deckKeys = Object.keys(matrix);
 
     deckKeys.forEach(key => {
       let totalMatches = 0;
-      let totalWins = 0;
-      let totalLosses = 0;
-      let totalGameWins = 0;
-      let totalGameLosses = 0;
 
       Object.values(matrix[key]).forEach(winsLosses => {
         totalMatches += winsLosses.wins + winsLosses.losses;
-        totalWins += winsLosses.wins;
-        totalLosses += winsLosses.losses;
-        totalGameWins += winsLosses.gameWins;
-        totalGameLosses += winsLosses.gameLosses;
       });
 
       matchCounts.set(key, totalMatches);
-      totalStats.set(key, { totalWins, totalLosses, totalGameWins, totalGameLosses });
     });
 
     // Sort keys by total match count (descending)
@@ -157,7 +144,6 @@ export const useAnalyzeMatchups = (
       rowKeys: sortedRowKeys,
       colKeys: sortedColKeys,
       matchups: matrix,
-      totalStats,
       keyInfo,
     };
   }, [matches, cardListData]);

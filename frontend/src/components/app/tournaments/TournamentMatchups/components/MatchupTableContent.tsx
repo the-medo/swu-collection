@@ -122,7 +122,8 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
             <tr key={rowKey} className="h-[20px] text-sm hover:bg-accent hover:brightness-90">
               <RowTotalCell
                 rowKey={rowKey}
-                totalStats={matchupData.totalStats}
+                colKeys={colKeys}
+                matchups={matchupData.matchups}
                 displayMode={displayMode}
               />
               <td
