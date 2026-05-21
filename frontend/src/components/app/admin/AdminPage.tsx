@@ -11,6 +11,7 @@ import { PQToolsPage } from '@/components/app/admin/PQToolsPage/PQToolsPage.tsx'
 import { SpecialActionsPage } from '@/components/app/admin/SpecialActionsPage';
 import { CardPricePairingAdministrationPage } from '@/components/app/admin/CardPricesPage/CardPricePairingAdministrationPage.tsx';
 import VariantCheckerPage from '@/components/app/admin/VariantCheckerPage/VariantCheckerPage.tsx';
+import { PreviewCardsPage } from '@/components/app/admin/PreviewCardsPage.tsx';
 import { Helmet } from 'react-helmet-async';
 import { Route } from '@/routes/_authenticated.admin';
 
@@ -49,6 +50,7 @@ export function AdminPage() {
             <TabsTrigger value="special-actions">Special Actions</TabsTrigger>
             <TabsTrigger value="card-prices">Card Prices</TabsTrigger>
             <TabsTrigger value="variant-checker">Variant Checker</TabsTrigger>
+            <TabsTrigger value="preview-cards">Preview Cards</TabsTrigger>
           </TabsList>
 
           <TabsContent value="metas">
@@ -111,6 +113,13 @@ export function AdminPage() {
             <Card>
               <CardContent className="p-4">
                 <VariantCheckerPage />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="preview-cards">
+            <Card>
+              <CardContent className="p-4">
+                <PreviewCardsPage />
               </CardContent>
             </Card>
           </TabsContent>

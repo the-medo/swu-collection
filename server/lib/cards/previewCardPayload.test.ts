@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 import { SwuArena, SwuAspect, SwuRarity, SwuSet } from '../../../types/enums.ts';
-import { normalizePreviewCardPayload } from './previewCardPayload.ts';
+import {
+  createPreviewCardPayloadTemplate,
+  normalizePreviewCardPayload,
+} from './previewCardPayload.ts';
 import {
   buildCardListUpdateSection,
   isCardListVersionStale,
@@ -77,6 +80,14 @@ describe('preview card payload validation', () => {
       }),
     ).toThrow('Preview cards need at least one variant');
   });
+
+  test('predefined admin template carries preview defaults and a standard variant', () => {
+    const template = createPreviewCardPayloadTemplate();
+
+    expect(template.preview).toBe(true);
+    expect(template.previewStatus).toBe('active');
+    expect(Object.keys(template.variants)).toContain('example-card-preview-standard');
+  });
 });
 
 describe('preview card list merge', () => {
@@ -129,9 +140,7 @@ describe('card list update response sections', () => {
     };
     const serverVersion = '2026-05-20T12:00:00.000Z';
 
-    expect(
-      buildCardListUpdateSection('2026-05-20T11:59:59.999Z', serverVersion, cards),
-    ).toEqual({
+    expect(buildCardListUpdateSection('2026-05-20T11:59:59.999Z', serverVersion, cards)).toEqual({
       needsUpdate: true,
       lastUpdated: serverVersion,
       cards,

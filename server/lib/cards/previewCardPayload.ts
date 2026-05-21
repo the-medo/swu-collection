@@ -142,6 +142,64 @@ export type PreviewCardPayload = CardDataWithVariants<CardListVariants> & {
   karabast_id?: string;
 };
 
+export function createPreviewCardPayloadTemplate(): PreviewCardPayload {
+  const variantId = 'example-card-preview-standard';
+
+  return {
+    cardId: '',
+    cardUid: [],
+    updatedAt: '',
+    title: '',
+    subtitle: '',
+    name: '',
+    hp: null,
+    power: null,
+    upgradeHp: null,
+    upgradePower: null,
+    text: null,
+    rules: null,
+    deployBox: null,
+    epicAction: null,
+    front: {
+      horizontal: false,
+    },
+    back: null,
+    aspects: [],
+    type: 'Unit',
+    cost: null,
+    traits: [],
+    keywords: [],
+    arenas: [],
+    rarity: SwuRarity.COMMON,
+    set: SwuSet.LAW,
+    preview: true,
+    previewStatus: 'active',
+    karabast_id: '',
+    variants: {
+      [variantId]: {
+        variantId,
+        swuId: 0,
+        set: SwuSet.LAW,
+        fullSetName: setInfo[SwuSet.LAW].name,
+        cardNo: 0,
+        baseSet: true,
+        hasNonfoil: true,
+        hasFoil: false,
+        variantName: 'Standard',
+        artist: '',
+        preview: true,
+        image: {
+          front: 'preview/example-card-front.webp',
+          back: null,
+        },
+        front: {
+          horizontal: false,
+        },
+      },
+    },
+  };
+}
+
 export function normalizePreviewCardPayload(payload: unknown): PreviewCardPayload {
   const parsed = zPreviewCardPayload.parse(payload);
   const cardId = parsed.cardId.trim() || transformToId(parsed.name);
