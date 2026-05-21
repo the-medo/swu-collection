@@ -9,6 +9,7 @@ import {
   isCardListVersionStale,
   mergeCardLists,
 } from './cardListProvider.ts';
+import { buildPreviewVariantIdMap, replaceCardIdInCommaList } from './previewCardMigration.ts';
 import type { CardDataWithVariants, CardListVariants } from '../../../lib/swu-resources/types.ts';
 
 const basePayload = {
@@ -150,5 +151,35 @@ describe('card list update response sections', () => {
       needsUpdate: false,
       lastUpdated: serverVersion,
     });
+  });
+});
+
+describe('preview card migration helpers', () => {
+  test('maps preview variants to official variants by variant name', () => {
+    const previewCard = normalizePreviewCardPayload(basePayload);
+    const officialCard = {
+      ...previewCard,
+      preview: false,
+      variants: {
+        'sample-unit-standard': {
+          ...previewCard.variants['sample-unit-preview-standard']!,
+          variantId: 'sample-unit-standard',
+          preview: false,
+        },
+      },
+    } as CardDataWithVariants<CardListVariants>;
+
+    expect(buildPreviewVariantIdMap(previewCard, officialCard)).toEqual({
+      'sample-unit-preview-standard': 'sample-unit-standard',
+    });
+  });
+
+  test('replaces comma-separated card ids exactly and deduplicates destination ids', () => {
+    expect(replaceCardIdInCommaList('preview,other,official', 'preview', 'official')).toBe(
+      'official,other',
+    );
+    expect(replaceCardIdInCommaList('preview-extra,preview', 'preview', 'official')).toBe(
+      'preview-extra,official',
+    );
   });
 });

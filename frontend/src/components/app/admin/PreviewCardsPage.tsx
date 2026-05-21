@@ -26,6 +26,7 @@ import CardImage from '@/components/app/global/CardImage.tsx';
 import { toast } from '@/hooks/use-toast.ts';
 import {
   type AdminPreviewCardRow,
+  type PreviewCardMigrationSummary,
   type PreviewCardPayload,
   type PreviewCardStatus,
   useArchivePreviewCard,
@@ -45,6 +46,22 @@ function statusBadgeVariant(status: PreviewCardStatus) {
   if (status === 'active') return 'success';
   if (status === 'migrated') return 'secondary';
   return 'outline';
+}
+
+function formatMigrationSummary(summary: PreviewCardMigrationSummary): string {
+  const updates = [
+    { label: 'leaders', count: summary.deckLeader1Updated + summary.deckLeader2Updated },
+    { label: 'bases', count: summary.deckBaseUpdated },
+    { label: 'deck cards', count: summary.deckCardsMerged },
+    { label: 'card pool cards', count: summary.cardPoolCardsUpdated },
+    { label: 'card pool leaders', count: summary.cardPoolLeadersUpdated },
+    { label: 'collection cards', count: summary.collectionCardsMerged },
+  ]
+    .filter(update => update.count > 0)
+    .map(update => `${update.count} ${update.label}`)
+    .join(', ');
+
+  return updates || 'No saved references needed rewriting.';
 }
 
 export function PreviewCardsPage() {
@@ -175,12 +192,15 @@ export function PreviewCardsPage() {
   const handleMigrate = async () => {
     if (!selectedId || !officialCardId.trim()) return;
     try {
-      const row = await migratePreviewCard.mutateAsync({
+      const result = await migratePreviewCard.mutateAsync({
         id: selectedId,
         officialCardId: officialCardId.trim(),
       });
-      loadRow(row);
-      toast({ title: 'Preview card migrated' });
+      loadRow(result.data);
+      toast({
+        title: 'Preview card migrated',
+        description: formatMigrationSummary(result.migration),
+      });
     } catch (error) {
       toast({
         variant: 'destructive',

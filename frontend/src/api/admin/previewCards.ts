@@ -23,6 +23,27 @@ export type AdminPreviewCardRow = {
   validationError: string | null;
 };
 
+export type PreviewCardMigrationSummary = {
+  previewCardId: string;
+  fromCardId: string;
+  officialCardId: string;
+  sameCardId: boolean;
+  deckLeader1Updated: number;
+  deckLeader2Updated: number;
+  deckBaseUpdated: number;
+  deckCardsMerged: number;
+  cardPoolCardsUpdated: number;
+  cardPoolLeadersUpdated: number;
+  collectionCardsMerged: number;
+  deckInformationUpdated: number;
+  affectedDeckIds: string[];
+};
+
+export type MigratePreviewCardResponse = {
+  data: AdminPreviewCardRow;
+  migration: PreviewCardMigrationSummary;
+};
+
 export type PreviewCardsResponse = {
   data: AdminPreviewCardRow[];
   template: PreviewCardPayload;
@@ -132,7 +153,7 @@ export function useArchivePreviewCard() {
 export function useMigratePreviewCard() {
   const queryClient = useQueryClient();
 
-  return useMutation<AdminPreviewCardRow, Error, { id: string; officialCardId: string }>({
+  return useMutation<MigratePreviewCardResponse, Error, { id: string; officialCardId: string }>({
     mutationFn: async input => {
       const response = await api.admin['preview-cards'][':id'].migrate.$post({
         param: { id: input.id },
@@ -143,12 +164,19 @@ export function useMigratePreviewCard() {
         throw await readApiError(response, 'Failed to migrate preview card');
       }
 
-      const result = (await response.json()) as { data: AdminPreviewCardRow };
-      return result.data;
+      return (await response.json()) as MigratePreviewCardResponse;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: previewCardsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['cardList'] });
+      queryClient.invalidateQueries({ queryKey: ['deck'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['deck-content'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['card-pools'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['card-pool-cards'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['collection'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['collection-content'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
     },
   });
 }
