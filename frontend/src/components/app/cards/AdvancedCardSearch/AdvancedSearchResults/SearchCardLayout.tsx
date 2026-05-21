@@ -16,6 +16,7 @@ import {
 } from '../../../../../../../lib/swu-resources/types.ts';
 import { openCardOnMiddleButton } from '@/lib/cards/openCardOnMiddleButton.ts';
 import { getCardNameRelevanceScore } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
+import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
 
 export type CardLayoutType =
   | 'imageBig'
@@ -175,18 +176,23 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
                   }}
                   onMouseDown={openCardOnMiddleButton(cardId)}
                 >
-                  <CardImage
-                    card={card}
-                    cardVariantId={defaultVariant}
-                    size={
-                      layoutType === 'imageBig'
-                        ? 'w300'
-                        : layoutType === 'imageMedium'
-                          ? 'w200'
-                          : 'w100'
-                    }
-                    backSideButton={false}
-                  />
+                  <div className="relative">
+                    <CardImage
+                      card={card}
+                      cardVariantId={defaultVariant}
+                      size={
+                        layoutType === 'imageBig'
+                          ? 'w300'
+                          : layoutType === 'imageMedium'
+                            ? 'w200'
+                            : 'w100'
+                      }
+                      backSideButton={false}
+                    />
+                    {card.preview && (
+                      <PreviewCardBadge className="absolute left-1 top-1 shadow-sm" />
+                    )}
+                  </div>
                   {cardSubcomponent && (
                     <div
                       className={cn('mt-1 flex justify-center', cardWidthClass)}
@@ -197,10 +203,13 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
                     </div>
                   )}
                   <div
-                    className={cn('mt-1 text-sm font-medium text-center w-full', cardWidthClass)}
+                    className={cn(
+                      'mt-1 flex flex-wrap items-center justify-center gap-1 text-sm font-medium text-center w-full',
+                      cardWidthClass,
+                    )}
                     title={card.name}
                   >
-                    {card.name}
+                    <span className="min-w-0 truncate">{card.name}</span>
                   </div>
                 </div>
               );

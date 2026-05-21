@@ -10,6 +10,7 @@ import { Copy } from 'lucide-react';
 import { DeckCard } from '../../../../../../../../../types/ZDeckCard.ts';
 import { selectDefaultVariant } from '../../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { useCallback } from 'react';
+import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
 
 interface DeckLayoutWithWordingProps {
   deckId: string;
@@ -113,6 +114,7 @@ const DeckLayoutWithWordingRow: React.FC<DeckLayoutWithWordingRowProps> = ({
         <div className="flex flex-wrap items-baseline gap-x-1 gap-y-0.5 break-words">
           {prefix && <span className="text-sm font-medium text-muted-foreground">{prefix}</span>}
           <span className="font-semibold">{card?.name ?? 'Unknown card'}</span>
+          {card?.preview && <PreviewCardBadge />}
           {traitsLabel && <span className="text-sm text-muted-foreground">({traitsLabel})</span>}
         </div>
         {wording ? (

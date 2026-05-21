@@ -13,6 +13,7 @@ import { Helmet } from 'react-helmet-async';
 import { CardVariantPriceAdministration } from '../CardVariantPrice/CardVariantPriceAdministration';
 import { PriceBadge } from '@/components/app/card-prices';
 import { CardPriceSourceType } from '../../../../../../types/CardPrices.ts';
+import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
 
 interface CardDetailProps {
   cardId: string;
@@ -67,7 +68,10 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
       <Helmet title={`${card.name} | SWUBase`} />
       <div className="flex flex-col gap-4 p-2">
         <Link to={`/cards/detail/$cardId`} params={{ cardId }}>
-          <h2 className="text-xl font-bold">{card.name}</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-xl font-bold">{card.name}</h2>
+            {card.preview && <PreviewCardBadge size="default" />}
+          </div>
         </Link>
 
         <div className="grid grid-cols-1 md:grid-cols-[350px_1fr_300px] gap-4">
@@ -135,6 +139,10 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                     <Separator className="my-1" />
 
                     <PropertyRow label="Type" value={card.type} />
+                    {card.preview && <PropertyRow label="Status" value={<PreviewCardBadge />} />}
+                    {card.preview && card.karabast_id?.trim() && (
+                      <PropertyRow label="Karabast ID" value={card.karabast_id} />
+                    )}
                     <PropertyRow label="Rarity" value={card.rarity} />
                     {card.cost !== null && (
                       <PropertyRow label="Cost" value={card.cost.toString()} />
