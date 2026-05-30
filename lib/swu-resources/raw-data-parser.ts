@@ -14,7 +14,7 @@ const params = processArguments();
 
 const expansionsToProcess = params.expansions
   ? params.expansions.split(',').map(e => setInfo[e as SwuSet]?.expansionId ?? e)
-  : [103];
+  : [108];
 
 async function main() {
   try {

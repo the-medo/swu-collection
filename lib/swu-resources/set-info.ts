@@ -47,10 +47,11 @@ export const rotationBlocks: Record<number | string, RotationBlock> = {
   3: {
     id: 3,
     year: 2026,
-    name: 'Block 3 (LAW)',
+    name: 'Block 3 (LAW, ASH)',
     hexColor: '#4782c6',
     setMap: {
       [SwuSet.LAW]: true,
+      [SwuSet.ASH]: true,
     },
   },
 };
@@ -145,6 +146,16 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     hexColor: '#89684e',
     rotationBlockId: 1, // eternal only
     releaseDate: '2026-05-04',
+  },
+  [SwuSet.ASH]: {
+    code: SwuSet.ASH,
+    name: 'Ashes of Empire',
+    cardCount: 264,
+    sortValue: 10,
+    expansionId: 108,
+    hexColor: '#425563',
+    rotationBlockId: 3,
+    releaseDate: '2026-07-11',
   },
 } as const;
 
