@@ -7,6 +7,8 @@ import DisplayModeSelector from '@/components/app/tournaments/TournamentMatchups
 import MobileCard from '@/components/ui/mobile-card.tsx';
 import { MatchupDisplayMode } from '@/components/app/tournaments/TournamentMatchups/types.ts';
 import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useCardList } from '@/api/lists/useCardList.ts';
+import { formatData } from '../../../../../../../types/Format.ts';
 
 interface StatisticsMatchupsTableProps {
   matches: MatchResult[];
@@ -18,7 +20,8 @@ const StatisticsMatchupsTable: React.FC<StatisticsMatchupsTableProps> = ({ match
 
   const displayMode = (search.maDisplayMode as MatchupDisplayMode) || 'winLoss';
 
-  const data = useAnalyzeMatchups(matches);
+  const { data: cardListData } = useCardList();
+  const data = useAnalyzeMatchups(matches, cardListData);
   const labelRenderer = useLabel();
 
   const setDisplayMode = (value: MatchupDisplayMode) => {
@@ -41,6 +44,7 @@ const StatisticsMatchupsTable: React.FC<StatisticsMatchupsTableProps> = ({ match
         metaInfo="leadersAndBase"
         totalMatchesAnalyzed={matches.length}
         labelRenderer={labelRenderer}
+        formatId={search?.sFormatId ?? formatData[0]?.id}
       />
     </div>
   );

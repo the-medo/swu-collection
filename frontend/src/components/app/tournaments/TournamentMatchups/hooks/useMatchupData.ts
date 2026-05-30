@@ -1,14 +1,19 @@
 import { useMemo, useCallback } from 'react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 import { TournamentMatch } from '../../../../../../../server/db/schema/tournament_match.ts';
-import { MatchupDataMap, MatchupTotalData } from '../types';
+import { MatchupDataMap, MatchupKeyInfo } from '../types';
 import { MetaInfo } from '../../TournamentMeta/MetaInfoSelector.tsx';
 import { getDeckKeys as getDeckKeyBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { getAspectsFromDeckInformation } from '@/components/app/tournaments/lib/getAspectsFromDeckInformation.ts';
+import type { CardListResponse } from '@/api/lists/useCardList.ts';
+
+const getTournamentDeckMapKey = (tournamentId: string, deckId: string) =>
+  `${tournamentId}:${deckId}`;
 
 export function useMatchupData(
   filteredMatches: TournamentMatch[],
   filteredDecks: TournamentDeckResponse[],
-  cardListData: any,
+  cardListData: CardListResponse | undefined,
   metaInfo: MetaInfo,
 ) {
   // Helper function to get key for a deck based on meta info
@@ -20,33 +25,34 @@ export function useMatchupData(
   // Analyze matchups using actual match data
   return useMemo(() => {
     if (!filteredMatches.length || !cardListData)
-      return { rowKeys: [], colKeys: [], matchups: {} as MatchupDataMap };
+      return { rowKeys: [], colKeys: [], matchups: {} as MatchupDataMap, keyInfo: {} };
 
     // Get all unique deck keys
     const deckKeys = new Set<string>();
-    const deckMap = new Map<string, TournamentDeckResponse>(); // Map deck ID to deck object
+    const deckKeysByTournamentAndId = new Map<string, string[]>();
+    const keyInfo: Record<string, MatchupKeyInfo> = {};
 
-    // Build a map of deck IDs to deck objects for quick lookup
+    // Build tournament-scoped deck keys for quick lookup
     filteredDecks.forEach(deck => {
-      if (deck.deck?.id) {
-        deckMap.set(deck.deck.id, deck);
-      }
-    });
+      const deckMapKey = getTournamentDeckMapKey(
+        deck.tournamentDeck.tournamentId,
+        deck.tournamentDeck.deckId,
+      );
 
-    // Get all unique deck keys from the filtered matches
-    filteredMatches.forEach(match => {
-      const p1Deck = deckMap.get(match.p1DeckId);
-      const p2Deck = match.p2DeckId ? deckMap.get(match.p2DeckId) : undefined;
+      const keys = getDeckKeys(deck) ?? [];
+      deckKeysByTournamentAndId.set(deckMapKey, keys);
+      if (!keys.length) return;
 
-      if (p1Deck) {
-        const key = getDeckKeys(p1Deck);
-        if (key) key.forEach(k => deckKeys.add(k));
-      }
-
-      if (p2Deck) {
-        const key = getDeckKeys(p2Deck);
-        if (key) key.forEach(k => deckKeys.add(k));
-      }
+      // Keep full aspect profiles per contributing deck so later filters can test real decks,
+      // not a union of unrelated aspects across many decks with the same matchup key.
+      const sourceDeckAspects = deck.deckInformation
+        ? getAspectsFromDeckInformation(deck.deckInformation)
+        : [];
+      keys.forEach(key => {
+        deckKeys.add(key);
+        keyInfo[key] ??= { rawKey: key, sourceDeckAspects: [] };
+        keyInfo[key].sourceDeckAspects.push(sourceDeckAspects);
+      });
     });
 
     // Create a map to store matchup data
@@ -68,15 +74,12 @@ export function useMatchupData(
       // Skip BYE matches
       if (match.isBye || !match.p2DeckId) return;
 
-      const p1Deck = deckMap.get(match.p1DeckId);
-      const p2Deck = deckMap.get(match.p2DeckId);
+      const p1DeckMapKey = getTournamentDeckMapKey(match.tournamentId, match.p1DeckId);
+      const p2DeckMapKey = getTournamentDeckMapKey(match.tournamentId, match.p2DeckId);
+      const p1Keys = deckKeysByTournamentAndId.get(p1DeckMapKey) ?? [];
+      const p2Keys = deckKeysByTournamentAndId.get(p2DeckMapKey) ?? [];
 
-      if (!p1Deck || !p2Deck) return;
-
-      const p1Keys = getDeckKeys(p1Deck);
-      const p2Keys = getDeckKeys(p2Deck);
-
-      if (!p1Keys || !p2Keys) return; // Skip if keys are missing or it's a mirror match
+      if (!p1Keys.length || !p2Keys.length) return;
 
       p1Keys.forEach(p1Key => {
         p2Keys.forEach(p2Key => {
@@ -93,50 +96,35 @@ export function useMatchupData(
             matchups[p2Key][p1Key].wins += 1;
           }
 
-          // Draws are not counted in win/loss of matches, but in games it is 1-1
-          // We assume that players drew after 1-1 and not 0-0
-          if (match.gameDraw === 3) {
-            match.gameWin = 1;
-            match.gameLose = 1;
-          }
+          // Draws are not counted in win/loss of matches, but in games it is 1-1.
+          // We assume that players drew after 1-1 and not 0-0.
+          const gameWin = match.gameDraw === 3 ? 1 : match.gameWin;
+          const gameLose = match.gameDraw === 3 ? 1 : match.gameLose;
 
           // Track game wins and losses
-          if (match.gameWin > 0 || match.gameLose > 0) {
-            matchups[p1Key][p2Key].gameWins += match.gameWin;
-            matchups[p1Key][p2Key].gameLosses += match.gameLose;
-            matchups[p2Key][p1Key].gameWins += match.gameLose;
-            matchups[p2Key][p1Key].gameLosses += match.gameWin;
+          if (gameWin > 0 || gameLose > 0) {
+            matchups[p1Key][p2Key].gameWins += gameWin;
+            matchups[p1Key][p2Key].gameLosses += gameLose;
+            matchups[p2Key][p1Key].gameWins += gameLose;
+            matchups[p2Key][p1Key].gameLosses += gameWin;
           }
         });
       });
     });
 
-    // Calculate total match count and win/loss stats for each deck type
     const matchCounts = new Map<string, number>();
-    const totalStats = new Map<string, MatchupTotalData>();
 
-    // Count total matches and calculate total wins/losses for each deck type
     Array.from(deckKeys).forEach(key => {
       let totalMatches = 0;
-      let totalWins = 0;
-      let totalLosses = 0;
-      let totalGameWins = 0;
-      let totalGameLosses = 0;
 
-      // Sum up all wins and losses for this deck type
       Array.from(deckKeys).forEach(otherKey => {
         if (key !== otherKey) {
           const winsLosses = matchups[key][otherKey];
           totalMatches += winsLosses.wins + winsLosses.losses;
-          totalWins += winsLosses.wins;
-          totalLosses += winsLosses.losses;
-          totalGameWins += winsLosses.gameWins;
-          totalGameLosses += winsLosses.gameLosses;
         }
       });
 
       matchCounts.set(key, totalMatches);
-      totalStats.set(key, { totalWins, totalLosses, totalGameWins, totalGameLosses });
     });
 
     // Sort keys by total match count (descending)
@@ -148,7 +136,7 @@ export function useMatchupData(
       rowKeys: sortedKeys,
       colKeys: sortedKeys,
       matchups,
-      totalStats,
+      keyInfo,
     };
   }, [filteredMatches, filteredDecks, cardListData, getDeckKeys]);
 }

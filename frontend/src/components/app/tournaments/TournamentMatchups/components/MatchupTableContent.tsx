@@ -5,7 +5,9 @@ import { MatchupTableCell } from './MatchupTableCell';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import RowTotalCell from '@/components/app/tournaments/TournamentMatchups/components/MatchupRowTotalCell.tsx';
 import { cn } from '@/lib/utils.ts';
-import { Input } from '@/components/ui/input.tsx';
+import type { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
+import MatchupTableFilterControl from './MatchupTableFilterControl.tsx';
+import { filterableMetaInfoMap, MatchupTableFilterState } from '../utils/matchupTableFilters.tsx';
 
 const MemoizedCell = React.memo(MatchupTableCell);
 
@@ -13,21 +15,29 @@ interface MatchupTableContentProps {
   tableRef: RefObject<HTMLTableElement | null>;
   matchupData: MatchupTableData;
   rowKeys: string[];
+  colKeys: string[];
   displayMode: MatchupDisplayMode;
   metaInfo: MetaInfo;
-  labelRenderer: any;
+  labelRenderer: ReturnType<typeof useLabel>;
   totalMatchesAnalyzed: number;
-  filterText: string;
-  setFilterText: (text: string) => void;
+  tableFilters: MatchupTableFilterState;
+  onTableFiltersChange: (value: MatchupTableFilterState) => void;
+  formatId?: number;
   handleColumnEnter: (index: number) => void;
   onRowClick: (key: string) => void;
   labelWidth: { width: string; minWidth: string };
   labelHeight: { height: string };
-  registerCellRef: (columnIndex: number, cellRef: HTMLTableCellElement | null) => void;
+  registerCellRef: (
+    columnIndex: number,
+    cellRef: HTMLTableCellElement | null,
+    oldCellRef?: HTMLTableCellElement | null,
+  ) => void;
   showAllData: boolean;
   setShowAllData: (show: boolean) => void;
   isDataTruncated: boolean;
-  originalDataLength: number;
+  hasActiveFilters: boolean;
+  availableRowCount: number;
+  availableColCount: number;
   maxDisplayItems: number;
 }
 
@@ -35,12 +45,14 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
   tableRef,
   matchupData,
   rowKeys,
+  colKeys,
   displayMode,
   metaInfo,
   labelRenderer,
   totalMatchesAnalyzed,
-  filterText,
-  setFilterText,
+  tableFilters,
+  onTableFiltersChange,
+  formatId,
   handleColumnEnter,
   onRowClick,
   labelWidth,
@@ -49,9 +61,15 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
   showAllData,
   setShowAllData,
   isDataTruncated,
-  originalDataLength,
+  hasActiveFilters,
+  availableRowCount,
+  availableColCount,
   maxDisplayItems,
 }) => {
+  const displayFilters = filterableMetaInfoMap[metaInfo] ?? false;
+  const tableColSpan = Math.max(2 + colKeys.length, 2);
+  const dataColSpan = Math.max(colKeys.length, 1);
+
   return (
     <table
       ref={tableRef}
@@ -63,24 +81,21 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
             <div>Total</div>
             <span className="text-[10px] font-semibold mb-4">{totalMatchesAnalyzed} mtch</span>
           </td>
-          <td className="p-2 align-bottom border">
-            {filterText && (
-              <div
-                className="text-[10px] text-muted-foreground cursor-pointer mt-1 text-right"
-                onClick={() => setFilterText('')}
-              >
-                Clear filter
-              </div>
+          <td
+            className={cn(
+              'p-2 align-bottom border transition-colors',
+              hasActiveFilters && 'bg-primary/30 ring-1 ring-primary/40',
             )}
-            <Input
-              type="text"
-              placeholder="Filter..."
-              value={filterText}
-              onChange={e => setFilterText(e.target.value)}
-              className="w-full text-sm p-1 rounded border"
+          >
+            <MatchupTableFilterControl
+              value={tableFilters}
+              onChange={onTableFiltersChange}
+              formatId={formatId}
+              active={hasActiveFilters}
+              displayFilters={displayFilters}
             />
           </td>
-          {matchupData.colKeys.map((key, colIndex) => (
+          {colKeys.map((key, colIndex) => (
             <td
               key={key}
               data-column-index={colIndex + 2} // +2 because of the two initial columns
@@ -98,66 +113,76 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
         </tr>
       </thead>
       <tbody>
-        {rowKeys.map(rowKey => (
-          <tr key={rowKey} className="h-[20px] text-sm hover:bg-accent hover:brightness-90">
-            <RowTotalCell
-              rowKey={rowKey}
-              totalStats={matchupData.totalStats}
-              displayMode={displayMode}
-            />
-            <td
-              className="p-1 border cursor-pointer text-[13px]"
-              onClick={() => onRowClick(rowKey)}
-              style={labelWidth}
-            >
-              {labelRenderer(rowKey, metaInfo, 'compact')}
+        {rowKeys.length === 0 || colKeys.length === 0 ? (
+          <tr className="h-[48px] text-sm">
+            <td colSpan={tableColSpan} className="p-4 border text-center text-muted-foreground">
+              No matchup rows or columns match the current table filters.
             </td>
-            {matchupData.colKeys.map((colKey, colIndex) => (
-              <MemoizedCell
-                key={colKey}
+          </tr>
+        ) : (
+          rowKeys.map(rowKey => (
+            <tr key={rowKey} className="h-[20px] text-sm hover:bg-accent hover:brightness-90">
+              <RowTotalCell
                 rowKey={rowKey}
-                colKey={colKey}
+                colKeys={colKeys}
                 matchups={matchupData.matchups}
                 displayMode={displayMode}
-                columnIndex={colIndex + 2} // +2 because of the two initial columns
-                registerCellRef={registerCellRef}
-                handleColumnEnter={handleColumnEnter}
               />
-            ))}
-          </tr>
-        ))}
+              <td
+                className="p-1 border cursor-pointer text-[13px]"
+                onClick={() => onRowClick(rowKey)}
+                style={labelWidth}
+              >
+                {labelRenderer(rowKey, metaInfo, 'compact')}
+              </td>
+              {colKeys.map((colKey, colIndex) => (
+                <MemoizedCell
+                  key={colKey}
+                  rowKey={rowKey}
+                  colKey={colKey}
+                  matchups={matchupData.matchups}
+                  displayMode={displayMode}
+                  columnIndex={colIndex + 2} // +2 because of the two initial columns
+                  registerCellRef={registerCellRef}
+                  handleColumnEnter={handleColumnEnter}
+                />
+              ))}
+            </tr>
+          ))
+        )}
 
         {/* Show All Data button row */}
-        {isDataTruncated && !showAllData && !filterText && (
+        {isDataTruncated && !showAllData && (
           <tr className="h-[40px] text-sm bg-accent/30">
             <td colSpan={2} className="p-2 border text-center font-semibold">
-              Showing limited data ({rowKeys.length} rows, {matchupData.colKeys.length} columns)
+              Showing limited data ({rowKeys.length} rows, {colKeys.length} columns)
             </td>
             <td
-              colSpan={matchupData.colKeys.length}
+              colSpan={dataColSpan}
               className="p-2 border pl-12 cursor-pointer hover:bg-accent"
               onClick={() => setShowAllData(true)}
             >
               <span className="font-semibold">
-                Click to show all data ({originalDataLength} total rows and columns)
+                Click to show all data ({availableRowCount} rows, {availableColCount} columns)
               </span>
             </td>
           </tr>
         )}
 
         {/* Show Less Data button row */}
-        {isDataTruncated && showAllData && !filterText && (
+        {isDataTruncated && showAllData && (
           <tr className="h-[40px] text-sm bg-accent/30">
             <td colSpan={2} className="p-2 border text-center font-semibold">
-              Showing all data ({rowKeys.length} rows and columns)
+              Showing all data ({rowKeys.length} rows, {colKeys.length} columns)
             </td>
             <td
-              colSpan={matchupData.colKeys.length}
+              colSpan={dataColSpan}
               className="p-2 pl-12 border cursor-pointer hover:bg-accent"
               onClick={() => setShowAllData(false)}
             >
               <span className="font-semibold">
-                Click to show limited data ({maxDisplayItems} rows, {maxDisplayItems} columns)
+                Click to show limited data ({Math.min(availableRowCount, maxDisplayItems)} rows,{' '}
+                {Math.min(availableColCount, maxDisplayItems)} columns)
               </span>
             </td>
           </tr>

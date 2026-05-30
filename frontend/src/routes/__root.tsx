@@ -60,9 +60,9 @@ const globalSearchParams = z.object({
   maTournamentGroupId: z.string().optional(),
 
   // Matchup analysis params
-  maMatchFilter: z.enum(['all', 'day2', 'custom']).optional(),
+  maMatchFilter: z.enum(['all', 'day2', 'top8', 'custom']).optional(),
   maMinRound: z.coerce.number().int().positive().optional(),
-  maMinPoints: z.coerce.number().int().positive().optional(),
+  maMinPoints: z.coerce.number().int().nonnegative().optional(),
   maDisplayMode: z.enum(['winLoss', 'winrate', 'gameWinLoss', 'gameWinrate']).optional(),
 
   // Tournament decks

@@ -28,6 +28,7 @@ import { wsRoute } from './routes/ws.ts';
 import { applicationConfigurationRoute } from './routes/application-configuration.ts';
 import { tournamentWeekendsRoute } from './routes/tournament-weekends.ts';
 import { playerWatchRoute } from './routes/player-watch.ts';
+import { tournamentMatchupFiltersRoute } from './routes/tournament-matchup-filters.ts';
 import { matchRouteAndFetchMetaTags } from './lib/utils/routeMatcher';
 import { injectMetaTags } from './lib/utils/htmlTemplate';
 import { timeout } from 'hono/timeout';
@@ -143,6 +144,7 @@ const apiRoutes = app
   .route('/user-setup', userSetupRoute)
   .route('/application-configuration', applicationConfigurationRoute)
   .route('/tournament-weekends', tournamentWeekendsRoute)
+  .route('/tournament-matchup-filters', tournamentMatchupFiltersRoute)
   .route('/player-watch', playerWatchRoute)
   .route('/ws', wsRoute);
 

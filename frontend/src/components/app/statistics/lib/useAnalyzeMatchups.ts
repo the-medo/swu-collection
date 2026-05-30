@@ -1,13 +1,15 @@
 import { useMemo } from 'react';
-import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
+import type { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 import {
   getDeckKeyFromMatchResult,
   getOpponentDeckKeyFromMatchResult,
 } from '@/components/app/statistics/lib/lib.ts';
-import {
+import type {
   MatchupData,
-  MatchupTotalData,
+  MatchupKeyInfo,
 } from '@/components/app/tournaments/TournamentMatchups/types.ts';
+import type { CardListResponse } from '@/api/lists/useCardList.ts';
+import { processBase } from '../../../../../../shared/lib/processBase.ts';
 
 export type MatchupResult = MatchupData & {
   total: number;
@@ -21,17 +23,61 @@ export type AnalyzedMatchups = {
   rowKeys: string[];
   colKeys: string[];
   matchups: AnalyzedMatchupsMatrix;
-  totalStats: Map<string, MatchupTotalData>;
+  keyInfo: Record<string, MatchupKeyInfo>;
 };
 
-export const useAnalyzeMatchups = (matches: MatchResult[]): AnalyzedMatchups => {
+const getMatchResultDeckAspects = (
+  leaderCardId: string | undefined,
+  baseCardKey: string | undefined,
+  cardListData: CardListResponse | undefined,
+) => {
+  const cardList = cardListData?.cards;
+  if (!cardList) return [];
+
+  const leaderAspects = leaderCardId ? (cardList[leaderCardId]?.aspects ?? []) : [];
+  const baseAspects = baseCardKey ? processBase(baseCardKey, cardList).aspects : [];
+
+  return Array.from(new Set([...leaderAspects, ...baseAspects]));
+};
+
+const addKeyInfo = (
+  keyInfo: Record<string, MatchupKeyInfo>,
+  key: string,
+  leaderCardId: string | undefined,
+  baseCardKey: string | undefined,
+  cardListData: CardListResponse | undefined,
+) => {
+  const info = (keyInfo[key] ??= { rawKey: key, sourceDeckAspects: [] });
+  const sourceDeckAspects = getMatchResultDeckAspects(leaderCardId, baseCardKey, cardListData);
+
+  if (
+    sourceDeckAspects.length > 0 &&
+    !info.sourceDeckAspects.some(aspects => aspects.join('|') === sourceDeckAspects.join('|'))
+  ) {
+    info.sourceDeckAspects.push(sourceDeckAspects);
+  }
+};
+
+export const useAnalyzeMatchups = (
+  matches: MatchResult[],
+  cardListData?: CardListResponse,
+): AnalyzedMatchups => {
   return useMemo(() => {
     const matrix: AnalyzedMatchupsMatrix = {};
     const opponentDeckKeys: Record<string, number> = {};
+    const keyInfo: Record<string, MatchupKeyInfo> = {};
 
     matches.forEach(m => {
       const deckKey = getDeckKeyFromMatchResult(m); //this is matrix key (in AnalyzedMatchupsMatrix)
       const opponentDeckKey = getOpponentDeckKeyFromMatchResult(m); // this is the matchup result key (in AnalyzedMatchups)
+      addKeyInfo(keyInfo, deckKey, m.leaderCardId, m.baseCardKey, cardListData);
+      addKeyInfo(
+        keyInfo,
+        opponentDeckKey,
+        m.opponentLeaderCardId,
+        m.opponentBaseCardKey,
+        cardListData,
+      );
 
       if (!opponentDeckKeys[opponentDeckKey]) {
         opponentDeckKeys[opponentDeckKey] = 0;
@@ -73,28 +119,17 @@ export const useAnalyzeMatchups = (matches: MatchResult[]): AnalyzedMatchups => 
       entry.gameTotal += wins + losses;
     });
 
-    // Calculate total match count and win/loss stats for each deck type
     const matchCounts = new Map<string, number>();
-    const totalStats: Map<string, MatchupTotalData> = new Map();
     const deckKeys = Object.keys(matrix);
 
     deckKeys.forEach(key => {
       let totalMatches = 0;
-      let totalWins = 0;
-      let totalLosses = 0;
-      let totalGameWins = 0;
-      let totalGameLosses = 0;
 
       Object.values(matrix[key]).forEach(winsLosses => {
         totalMatches += winsLosses.wins + winsLosses.losses;
-        totalWins += winsLosses.wins;
-        totalLosses += winsLosses.losses;
-        totalGameWins += winsLosses.gameWins;
-        totalGameLosses += winsLosses.gameLosses;
       });
 
       matchCounts.set(key, totalMatches);
-      totalStats.set(key, { totalWins, totalLosses, totalGameWins, totalGameLosses });
     });
 
     // Sort keys by total match count (descending)
@@ -105,6 +140,11 @@ export const useAnalyzeMatchups = (matches: MatchResult[]): AnalyzedMatchups => 
       return opponentDeckKeys[b] - opponentDeckKeys[a];
     });
 
-    return { rowKeys: sortedRowKeys, colKeys: sortedColKeys, matchups: matrix, totalStats };
-  }, [matches]);
+    return {
+      rowKeys: sortedRowKeys,
+      colKeys: sortedColKeys,
+      matchups: matrix,
+      keyInfo,
+    };
+  }, [matches, cardListData]);
 };

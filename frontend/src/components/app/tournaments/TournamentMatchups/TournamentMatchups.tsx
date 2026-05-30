@@ -21,6 +21,21 @@ export interface TournamentMatchupsProps {
   matches: TournamentMatch[];
 }
 
+function resolveMatchupFilterFormat(
+  searchFormatId: number | undefined,
+  tournaments: TournamentInfoMap,
+): number | undefined {
+  if (searchFormatId !== undefined) return searchFormatId;
+
+  const tournamentFormats = new Set(
+    Object.values(tournaments).map(({ tournament }) => tournament.format),
+  );
+
+  if (tournamentFormats.size !== 1) return undefined;
+
+  return [...tournamentFormats][0];
+}
+
 const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tournaments, matches }) => {
   const search = useSearch({ strict: false });
   const navigate = useNavigate();
@@ -31,10 +46,15 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
   const minPoints = search.maMinPoints as number | undefined;
   const metaInfo = (search.maMetaInfo as MetaInfo) || 'leaders';
   const displayMode = (search.maDisplayMode as MatchupDisplayMode) || 'winLoss';
+  const searchFormatId = search.formatId as number | undefined;
 
   const hasDayTwo = useMemo(
     () => Object.values(tournaments).some(t => t.tournament.days > 1),
     [tournaments],
+  );
+  const matchupFilterFormatId = useMemo(
+    () => resolveMatchupFilterFormat(searchFormatId, tournaments),
+    [searchFormatId, tournaments],
   );
 
   // Functions to update URL parameters
@@ -116,6 +136,7 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
           metaInfo={metaInfo}
           labelRenderer={labelRenderer}
           totalMatchesAnalyzed={filteredMatches.length}
+          formatId={matchupFilterFormatId}
         />
       ) : (
         <p className="text-muted-foreground">No data available for the selected filters.</p>
