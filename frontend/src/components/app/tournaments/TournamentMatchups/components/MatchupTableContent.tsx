@@ -7,7 +7,7 @@ import RowTotalCell from '@/components/app/tournaments/TournamentMatchups/compon
 import { cn } from '@/lib/utils.ts';
 import type { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import MatchupTableFilterControl from './MatchupTableFilterControl.tsx';
-import type { MatchupTableFilterState } from '../utils/matchupTableFilters.tsx';
+import { filterableMetaInfoMap, MatchupTableFilterState } from '../utils/matchupTableFilters.tsx';
 
 const MemoizedCell = React.memo(MatchupTableCell);
 
@@ -66,6 +66,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
   availableColCount,
   maxDisplayItems,
 }) => {
+  const displayFilters = filterableMetaInfoMap[metaInfo] ?? false;
   const tableColSpan = Math.max(2 + colKeys.length, 2);
   const dataColSpan = Math.max(colKeys.length, 1);
 
@@ -91,6 +92,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
               onChange={onTableFiltersChange}
               formatId={formatId}
               active={hasActiveFilters}
+              displayFilters={displayFilters}
             />
           </td>
           {colKeys.map((key, colIndex) => (

@@ -14,6 +14,7 @@ import {
   hasActiveMatchupTableFilters,
   normalizeMatchupTableFilterConfig,
   type MatchupTableFilterState,
+  filterableMetaInfoMap,
 } from '../utils/matchupTableFilters.tsx';
 
 export interface MatchupTableProps {
@@ -36,6 +37,8 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   totalMatchesAnalyzed,
   formatId,
 }) => {
+  const displayFilters = filterableMetaInfoMap[metaInfo] ?? false;
+
   const [tableFilters, setTableFilters] = useState<MatchupTableFilterState>(() =>
     createDefaultMatchupTableFilterState(),
   );
@@ -129,9 +132,12 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
     [metaInfo],
   );
 
-  const handleTableFiltersChange = useCallback((value: MatchupTableFilterState) => {
-    setTableFilters(normalizeMatchupTableFilterConfig(value));
-  }, []);
+  const handleTableFiltersChange = useCallback(
+    (value: MatchupTableFilterState) => {
+      setTableFilters(normalizeMatchupTableFilterConfig(value));
+    },
+    [displayFilters],
+  );
 
   const resolveKeySearchText = useCallback(
     (key: string) => {
@@ -147,20 +153,20 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   );
 
   const hasActiveTableFilters = useMemo(
-    () => hasActiveMatchupTableFilters(debouncedTableFilters),
-    [debouncedTableFilters],
+    () => displayFilters && hasActiveMatchupTableFilters(debouncedTableFilters),
+    [debouncedTableFilters, displayFilters],
   );
   const hasActiveRowFilters = useMemo(
-    () => hasActiveMatchupDimensionFilter(effectiveTableFilters.rowFilters),
-    [effectiveTableFilters.rowFilters],
+    () => displayFilters && hasActiveMatchupDimensionFilter(effectiveTableFilters.rowFilters),
+    [effectiveTableFilters.rowFilters, displayFilters],
   );
   const hasActiveColumnFilters = useMemo(
-    () => hasActiveMatchupDimensionFilter(effectiveTableFilters.columnFilters),
-    [effectiveTableFilters.columnFilters],
+    () => displayFilters && hasActiveMatchupDimensionFilter(effectiveTableFilters.columnFilters),
+    [effectiveTableFilters.columnFilters, displayFilters],
   );
   const hasPendingTableFilters = useMemo(
-    () => hasActiveMatchupTableFilters(tableFilters),
-    [tableFilters],
+    () => displayFilters && hasActiveMatchupTableFilters(tableFilters),
+    [tableFilters, displayFilters],
   );
 
   const filteredRowKeys = useMemo(
@@ -170,12 +176,14 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         effectiveTableFilters.rowFilters,
         matchupData.keyInfo,
         resolveKeySearchText,
+        displayFilters,
       ),
     [
       effectiveTableFilters.rowFilters,
       matchupData.keyInfo,
       matchupData.rowKeys,
       resolveKeySearchText,
+      displayFilters,
     ],
   );
 
@@ -186,12 +194,14 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         effectiveTableFilters.columnFilters,
         matchupData.keyInfo,
         resolveKeySearchText,
+        displayFilters,
       ),
     [
       effectiveTableFilters.columnFilters,
       matchupData.colKeys,
       matchupData.keyInfo,
       resolveKeySearchText,
+      displayFilters,
     ],
   );
 

@@ -7,6 +7,7 @@ import {
 import { SwuAspect } from '../../../../../../../types/enums.ts';
 import type { MatchupKeyInfo } from '../types.ts';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
+import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 
 export type MatchupTableFilterState = MatchupTableFilterConfig;
 
@@ -21,6 +22,11 @@ export type MatchupKeySearchTextResolver = (
   key: string,
   info: MatchupKeyInfo | undefined,
 ) => string | null | undefined;
+
+export const filterableMetaInfoMap: Partial<Record<MetaInfo, true>> = {
+  leaders: true,
+  leadersAndBase: true,
+};
 
 const swuAspectValues = new Set<string>(Object.values(SwuAspect));
 
@@ -47,7 +53,7 @@ const cloneDimensionFilter = (
 export const normalizeMatchupDimensionFilterConfig = (
   filter: Partial<MatchupDimensionFilterConfig> | null | undefined,
 ): MatchupDimensionFilterConfig => {
-  const text = (filter?.text ?? '').trim().slice(0, matchupFilterTextMaxLength);
+  const text = (filter?.text ?? '').slice(0, matchupFilterTextMaxLength);
   const aspects = Array.isArray(filter?.aspects)
     ? filter.aspects.filter((aspect, index, allAspects) => {
         return swuAspectValues.has(aspect) && allAspects.indexOf(aspect) === index;
@@ -163,6 +169,7 @@ export const filterMatchupKeys = (
   filter: Partial<MatchupDimensionFilterConfig> | null | undefined,
   keyInfo: Record<string, MatchupKeyInfo>,
   resolveSearchText?: MatchupKeySearchTextResolver,
+  displayFilters: boolean = true,
 ) => {
   const normalized = normalizeMatchupDimensionFilterConfig(filter);
   const searchText = normalized.text.toLocaleLowerCase();
@@ -175,7 +182,7 @@ export const filterMatchupKeys = (
     const info = keyInfo[key];
     const textMatches =
       !searchText || getSearchText(key, info, resolveSearchText).includes(searchText);
-    const aspectsMatch = keyMatchesAspectFilter(key, info, normalized.aspects);
+    const aspectsMatch = !displayFilters || keyMatchesAspectFilter(key, info, normalized.aspects);
 
     return textMatches && aspectsMatch;
   });

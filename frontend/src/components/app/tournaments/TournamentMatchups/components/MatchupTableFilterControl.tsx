@@ -33,6 +33,7 @@ export interface MatchupTableFilterControlProps {
   onChange: (value: MatchupTableFilterState) => void;
   formatId?: number;
   active: boolean;
+  displayFilters?: boolean;
 }
 
 type FilterDimension = 'rowFilters' | 'columnFilters';
@@ -110,6 +111,7 @@ const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
   onChange,
   formatId,
   active,
+  displayFilters = false,
 }) => {
   const user = useUser();
   const saveMutation = useSaveTournamentMatchupFilter();
@@ -196,101 +198,105 @@ const MatchupTableFilterControl: React.FC<MatchupTableFilterControlProps> = ({
   return (
     <div className="flex flex-col min-h-10 min-w-[220px] gap-2 rounded-md p-1">
       <div className="flex items-center justify-end gap-2">
-        <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
-          <TooltipProvider delayDuration={150}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant={active ? 'default' : 'ghost'}
-                    size="iconMedium"
-                    className={cn(iconButtonClassName, active && 'ring-3 ring-primary/40')}
-                  >
-                    <Filter className="h-4 w-4" />
-                    <span className="sr-only">Table filters</span>
-                  </Button>
-                </PopoverTrigger>
-              </TooltipTrigger>
-              <TooltipContent>Table filters</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <PopoverContent align="start" className="w-[min(92vw,520px)] p-3">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="matchup-table-filter-lock" className="text-sm">
-                  Same filter for rows and columns
-                </Label>
-                <Switch
-                  id="matchup-table-filter-lock"
-                  checked={normalizedValue.isMirrored}
-                  onCheckedChange={setMirrored}
-                />
-              </div>
+        {displayFilters && (
+          <>
+            <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
+              <TooltipProvider delayDuration={150}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant={active ? 'default' : 'ghost'}
+                        size="iconMedium"
+                        className={cn(iconButtonClassName, active && 'ring-3 ring-primary/40')}
+                      >
+                        <Filter className="h-4 w-4" />
+                        <span className="sr-only">Table filters</span>
+                      </Button>
+                    </PopoverTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>Table filters</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <PopoverContent align="start" className="w-[min(92vw,520px)] p-3">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="matchup-table-filter-lock" className="text-sm">
+                      Same filter for rows and columns
+                    </Label>
+                    <Switch
+                      id="matchup-table-filter-lock"
+                      checked={normalizedValue.isMirrored}
+                      onCheckedChange={setMirrored}
+                    />
+                  </div>
 
-              {normalizedValue.isMirrored ? (
-                <DimensionFilterPanel
-                  title="Rows and columns"
-                  value={normalizedValue.rowFilters}
-                  onTextChange={text => updateDimension('rowFilters', { text })}
-                  onAspectsChange={aspects => updateDimension('rowFilters', { aspects })}
-                />
-              ) : (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <DimensionFilterPanel
-                    title="Rows"
-                    value={normalizedValue.rowFilters}
-                    onTextChange={text => updateDimension('rowFilters', { text })}
-                    onAspectsChange={aspects => updateDimension('rowFilters', { aspects })}
-                  />
-                  <DimensionFilterPanel
-                    title="Columns"
-                    value={normalizedValue.columnFilters}
-                    onTextChange={text => updateDimension('columnFilters', { text })}
-                    onAspectsChange={aspects => updateDimension('columnFilters', { aspects })}
-                  />
-                </div>
-              )}
+                  {normalizedValue.isMirrored ? (
+                    <DimensionFilterPanel
+                      title="Rows and columns"
+                      value={normalizedValue.rowFilters}
+                      onTextChange={text => updateDimension('rowFilters', { text })}
+                      onAspectsChange={aspects => updateDimension('rowFilters', { aspects })}
+                    />
+                  ) : (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <DimensionFilterPanel
+                        title="Rows"
+                        value={normalizedValue.rowFilters}
+                        onTextChange={text => updateDimension('rowFilters', { text })}
+                        onAspectsChange={aspects => updateDimension('rowFilters', { aspects })}
+                      />
+                      <DimensionFilterPanel
+                        title="Columns"
+                        value={normalizedValue.columnFilters}
+                        onTextChange={text => updateDimension('columnFilters', { text })}
+                        onAspectsChange={aspects => updateDimension('columnFilters', { aspects })}
+                      />
+                    </div>
+                  )}
 
-              {user && formatId && (
-                <div className="flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    disabled={!hasActiveFilters || saveMutation.isPending}
-                    onClick={saveFilter}
-                  >
-                    {saveMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Save className="h-4 w-4" />
-                    )}
-                    Save for future use
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setFilterPopoverOpen(false)}
-                  >
-                    <X className="h-4 w-4" />
-                    Close
-                  </Button>
+                  {user && formatId && (
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={!hasActiveFilters || saveMutation.isPending}
+                        onClick={saveFilter}
+                      >
+                        {saveMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4" />
+                        )}
+                        Save for future use
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setFilterPopoverOpen(false)}
+                      >
+                        <X className="h-4 w-4" />
+                        Close
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </PopoverContent>
-        </Popover>
-        {user && <SavedMatchupFiltersPopover formatId={formatId} onApply={onChange} />}
-        {active && (
-          <TooltipIconButton
-            label="Clear table filters"
-            className={iconButtonClassName}
-            onClick={clearFilters}
-          >
-            <X className="h-4 w-4" />
-          </TooltipIconButton>
+              </PopoverContent>
+            </Popover>
+            {user && <SavedMatchupFiltersPopover formatId={formatId} onApply={onChange} />}
+            {active && (
+              <TooltipIconButton
+                label="Clear table filters"
+                className={iconButtonClassName}
+                onClick={clearFilters}
+              >
+                <X className="h-4 w-4" />
+              </TooltipIconButton>
+            )}
+          </>
         )}
       </div>
       <Input
