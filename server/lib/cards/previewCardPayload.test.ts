@@ -87,6 +87,12 @@ describe('preview card payload validation', () => {
 
     expect(template.preview).toBe(true);
     expect(template.previewStatus).toBe('active');
+    expect(template.set).toBe(SwuSet.ASH);
+    expect(template.arenas).toContain(SwuArena.GROUND);
+    expect(template.variants['example-card-preview-standard']?.set).toBe(SwuSet.ASH);
+    expect(template.variants['example-card-preview-standard']?.fullSetName).toBe(
+      'Ashes of the Empire',
+    );
     expect(Object.keys(template.variants)).toContain('example-card-preview-standard');
   });
 });

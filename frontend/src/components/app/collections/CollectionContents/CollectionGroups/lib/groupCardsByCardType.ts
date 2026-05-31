@@ -61,12 +61,16 @@ export const groupCardsByCardType = <T extends CollectionCard | DeckCard = Colle
           groups.UnitGround?.cards.push(card);
         } else if (arena === 'Space') {
           groups.UnitSpace?.cards.push(card);
+        } else {
+          groups.Unknown?.cards.push(card);
         }
       } else if (groups[type]) {
         groups[type].cards.push(card);
       } else {
         groups.Unknown?.cards.push(card);
       }
+    } else {
+      groups.Unknown?.cards.push(card);
     }
   });
 
