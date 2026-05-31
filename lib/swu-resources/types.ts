@@ -100,8 +100,10 @@ export interface CardDataWithVariants<T = CardVariant[]> {
   variantMap?: Record<string, string | undefined> | undefined;
   preview?: boolean;
   previewStatus?: 'active';
-  // Intentionally snake_case: preview cards may need Karabast's temporary external ID.
+  // Intentionally snake_case: preview cards may need Karabast's temporary external IDs.
   karabast_id?: string;
+  // Scalar inbound Karabast ID that resolves to this SWUBase cardId.
+  karabast_id_to_swubase_id?: string;
 }
 
 export type CardListVariants = Record<string, CardVariant | undefined>;
