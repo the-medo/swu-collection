@@ -20,7 +20,6 @@ import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/De
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import DeckCardPriceBadge from './DeckCardPriceBadge.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
-import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
 
 export type DeckCardRowVariant = 'normal' | 'compact';
 
@@ -140,7 +139,6 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
           >
             {card?.name}
           </span>
-          {card?.preview && <PreviewCardBadge className={cn(editable && 'group-hover:hidden')} />}
           <div className="flex gap-2 justify-end">
             {displayDeckPrice && (
               <div className={cn(editable && 'group-hover:hidden')}>

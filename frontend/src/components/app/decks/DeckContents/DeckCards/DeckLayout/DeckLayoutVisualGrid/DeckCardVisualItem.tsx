@@ -17,7 +17,6 @@ import { cn } from '@/lib/utils.ts';
 import { DeckLayout } from '../../../../../../../../../types/enums.ts';
 import DeckCardPriceBadge from '../DeckLayoutText/DeckCardPriceBadge.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
-import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
 
 interface DeckCardVisualItemProps {
   deckId: string;
@@ -122,7 +121,6 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
         }}
       >
         <CardImage card={card} cardVariantId={defaultVariant} size="w200" backSideButton={false} />
-        {card?.preview && <PreviewCardBadge className="absolute bottom-1 left-1 z-10 shadow-sm" />}
       </div>
     </div>
   );

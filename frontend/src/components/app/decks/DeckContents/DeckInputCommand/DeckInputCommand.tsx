@@ -20,7 +20,6 @@ import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 import * as React from 'react';
 import { Input } from '@/components/ui/input.tsx';
 import BoardSelect from '@/components/app/global/BoardSelect/BoardSelect.tsx';
-import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
 
 interface DeckInputCommandProps {
   deckId: string;
@@ -126,7 +125,6 @@ const DeckInputCommand: React.FC<DeckInputCommandProps> = ({ deckId }) => {
                       <div className="flex flex-col gap-1 w-full">
                         <span className="flex flex-wrap items-center gap-1 font-medium">
                           <span>{card?.name}</span>
-                          {card?.preview && <PreviewCardBadge />}
                         </span>
                         <div className="flex gap-1 w-full justify-between">
                           <span>{card?.type}</span>

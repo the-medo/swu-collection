@@ -16,7 +16,6 @@ import {
 } from '../../../../../../../lib/swu-resources/types.ts';
 import { openCardOnMiddleButton } from '@/lib/cards/openCardOnMiddleButton.ts';
 import { getCardNameRelevanceScore } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
-import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
 
 export type CardLayoutType =
   | 'imageBig'
@@ -189,9 +188,6 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
                       }
                       backSideButton={false}
                     />
-                    {card.preview && (
-                      <PreviewCardBadge className="absolute left-1 top-1 shadow-sm" />
-                    )}
                   </div>
                   {cardSubcomponent && (
                     <div
