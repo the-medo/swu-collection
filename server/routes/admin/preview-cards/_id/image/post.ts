@@ -86,8 +86,8 @@ export const previewCardsIdImagePostRoute = new Hono<AuthExtension>().post(
         .webp({ quality: 80 })
         .toBuffer();
 
-      const filenameParts = [row.cardId, variantId, side, Date.now().toString()].filter(Boolean);
-      const filename = `${transformToId(filenameParts.join('-'))}.webp`;
+      const filenameVariantId = transformToId(variantId || row.cardId);
+      const filename = `${filenameVariantId}-${side}-${Date.now()}.webp`;
       const image = `preview/${filename}`;
       const key = `cards/${image}`;
 

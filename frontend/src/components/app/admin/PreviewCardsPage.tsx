@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Archive, Copy, Loader2, Plus, RefreshCcw, Save, Upload } from 'lucide-react';
+import { Archive, Copy, Loader2, Plus, RefreshCcw, Save, Sparkles, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
@@ -35,6 +35,7 @@ import {
   useSavePreviewCard,
   useUploadPreviewCardImage,
 } from '@/api/admin/previewCards.ts';
+import { transformToId } from '../../../../../lib/swu-resources/lib/transformToId.ts';
 
 const PREVIEW_STATUSES: PreviewCardStatus[] = ['active', 'archived', 'migrated'];
 
@@ -72,6 +73,8 @@ export function PreviewCardsPage() {
   const uploadPreviewCardImage = useUploadPreviewCardImage();
 
   const [selectedId, setSelectedId] = useState<string | undefined>();
+  const [prefillTitle, setPrefillTitle] = useState('');
+  const [prefillSubtitle, setPrefillSubtitle] = useState('');
   const [cardId, setCardId] = useState('');
   const [officialCardId, setOfficialCardId] = useState('');
   const [status, setStatus] = useState<PreviewCardStatus>('active');
@@ -110,6 +113,8 @@ export function PreviewCardsPage() {
 
   const loadRow = (row: AdminPreviewCardRow) => {
     setSelectedId(row.id);
+    setPrefillTitle(row.payload.title ?? '');
+    setPrefillSubtitle(row.payload.subtitle ?? '');
     setCardId(row.cardId);
     setOfficialCardId(row.officialCardId ?? '');
     setStatus(row.status);
@@ -121,6 +126,8 @@ export function PreviewCardsPage() {
 
   const startNew = (payload = template) => {
     setSelectedId(undefined);
+    setPrefillTitle(payload?.title ?? '');
+    setPrefillSubtitle(payload?.subtitle ?? '');
     setCardId('');
     setOfficialCardId('');
     setStatus('active');
@@ -133,12 +140,66 @@ export function PreviewCardsPage() {
 
   const duplicateRow = (row: AdminPreviewCardRow) => {
     setSelectedId(undefined);
+    setPrefillTitle(row.payload.title ?? '');
+    setPrefillSubtitle(row.payload.subtitle ?? '');
     setCardId('');
     setOfficialCardId('');
     setStatus('active');
     setEditorJson(stringifyPayload({ ...row.payload, cardId: '' }));
     setJsonError(null);
     setSelectedVariantId(Object.keys(row.payload.variants ?? {})[0] ?? '');
+  };
+
+  const handlePrefill = () => {
+    const title = prefillTitle.trim();
+    const subtitle = prefillSubtitle.trim();
+
+    if (!title) {
+      toast({
+        variant: 'destructive',
+        title: 'Title is required',
+      });
+      return;
+    }
+
+    const payload = parseEditorPayload();
+    if (!payload) return;
+
+    const name = subtitle ? `${title}, ${subtitle}` : title;
+    const nextCardId = transformToId(name);
+    const nextVariantId = `${nextCardId}-preview-standard`;
+    const draft = payload as any;
+    const oldVariants = draft.variants ?? {};
+    const oldVariantId =
+      selectedVariantId && oldVariants[selectedVariantId]
+        ? selectedVariantId
+        : Object.keys(oldVariants)[0];
+    const templateVariantId = Object.keys(template?.variants ?? {})[0];
+    const oldVariant =
+      (oldVariantId ? oldVariants[oldVariantId] : undefined) ??
+      (templateVariantId ? template?.variants[templateVariantId] : undefined);
+    const nextVariants = { ...oldVariants };
+
+    if (oldVariantId && oldVariantId !== nextVariantId) {
+      delete nextVariants[oldVariantId];
+    }
+
+    nextVariants[nextVariantId] = {
+      ...oldVariant,
+      variantId: nextVariantId,
+      preview: true,
+    };
+
+    draft.cardId = nextCardId;
+    draft.title = title;
+    draft.subtitle = subtitle || undefined;
+    draft.name = name;
+    draft.variants = nextVariants;
+
+    setCardId(nextCardId);
+    setSelectedVariantId(nextVariantId);
+    setEditorJson(stringifyPayload(draft));
+    setJsonError(null);
   };
 
   const parseEditorPayload = () => {
@@ -349,6 +410,29 @@ export function PreviewCardsPage() {
         </div>
 
         <div className="space-y-4">
+          <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+            <div className="space-y-2">
+              <Label htmlFor="preview-card-title">Title</Label>
+              <Input
+                id="preview-card-title"
+                value={prefillTitle}
+                onChange={event => setPrefillTitle(event.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="preview-card-subtitle">Subtitle (optional)</Label>
+              <Input
+                id="preview-card-subtitle"
+                value={prefillSubtitle}
+                onChange={event => setPrefillSubtitle(event.target.value)}
+              />
+            </div>
+            <Button className="self-end" variant="outline" onClick={handlePrefill}>
+              <Sparkles className="mr-2 h-4 w-4" />
+              Prefill
+            </Button>
+          </div>
+
           <div className="grid gap-3 md:grid-cols-[1fr_160px]">
             <div className="space-y-2">
               <Label htmlFor="preview-card-id">Card ID</Label>
