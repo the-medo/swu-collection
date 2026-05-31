@@ -13,6 +13,11 @@ import {
   downloadAsFile,
 } from '../../../../../../../../server/lib/decks/deckExport.ts';
 import { cn } from '@/lib/utils.ts';
+import {
+  collectDeckPreviewCards,
+  getPreviewDeckWarningText,
+} from '@/lib/cards/previewCardWarnings.ts';
+import { Alert, AlertDescription } from '@/components/ui/alert.tsx';
 
 interface ExportOptionsMenuProps {
   deckData: any;
@@ -28,6 +33,15 @@ const ExportOptionsMenu: React.FC<ExportOptionsMenuProps> = ({
   compact,
 }) => {
   const { toast } = useToast();
+  const previewWarning = React.useMemo(() => {
+    if (!deckData || !deckCardsData || !cardListData) return undefined;
+    return getPreviewDeckWarningText(
+      collectDeckPreviewCards(deckData.deck, deckCardsData.data, cardListData.cards),
+    );
+  }, [cardListData, deckCardsData, deckData]);
+
+  const successDescription = (message: string) =>
+    previewWarning ? `${message} ${previewWarning}` : message;
 
   const handleExportJSON = () => {
     if (!deckData || !deckCardsData || !cardListData) {
@@ -53,7 +67,7 @@ const ExportOptionsMenu: React.FC<ExportOptionsMenuProps> = ({
 
     toast({
       title: 'Deck exported as JSON',
-      description: `${deckData.deck.name} was exported successfully.`,
+      description: successDescription(`${deckData.deck.name} was exported successfully.`),
     });
   };
 
@@ -75,7 +89,7 @@ const ExportOptionsMenu: React.FC<ExportOptionsMenuProps> = ({
 
     toast({
       title: 'Deck exported as text',
-      description: `${deckData.deck.name} was exported successfully.`,
+      description: successDescription(`${deckData.deck.name} was exported successfully.`),
     });
   };
 
@@ -102,7 +116,7 @@ const ExportOptionsMenu: React.FC<ExportOptionsMenuProps> = ({
 
     toast({
       title: 'JSON copied to clipboard',
-      description: `${deckData.deck.name} was copied in JSON format.`,
+      description: successDescription(`${deckData.deck.name} was copied in JSON format.`),
     });
   };
 
@@ -122,7 +136,7 @@ const ExportOptionsMenu: React.FC<ExportOptionsMenuProps> = ({
 
     toast({
       title: 'Text copied to clipboard',
-      description: `${deckData.deck.name} was copied in text format.`,
+      description: successDescription(`${deckData.deck.name} was copied in text format.`),
     });
   };
 
@@ -133,7 +147,12 @@ const ExportOptionsMenu: React.FC<ExportOptionsMenuProps> = ({
         {!compact && 'Export'}
       </NavigationMenuTrigger>
       <NavigationMenuContent className="z-10">
-        <div className="p-2 w-[180px]">
+        <div className="p-2 w-[260px]">
+          {previewWarning && (
+            <Alert variant="warning" size="xs" className="mb-2">
+              <AlertDescription>{previewWarning}</AlertDescription>
+            </Alert>
+          )}
           <h4 className="mb-2 text-sm font-medium">Download</h4>
           <div className="space-y-1">
             <Button

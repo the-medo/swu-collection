@@ -11,6 +11,7 @@ import {
   CardDataWithVariants,
   CardListVariants,
 } from '../../../../../../../lib/swu-resources/types.ts';
+import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
 
 export type SearchCardData = {
   cardId: string;
@@ -86,7 +87,10 @@ export function useSearchCardTableColumns({
 
         return (
           <div>
-            <div className="font-medium">{card.name}</div>
+            <div className="flex flex-wrap items-center gap-1 font-medium">
+              <span>{card.name}</span>
+              {card.preview && <PreviewCardBadge />}
+            </div>
             {layoutType === 'tableImage' && (
               <div className="text-xs text-muted-foreground">
                 {card.traits.length > 0 ? card.traits.join(', ') : ''}

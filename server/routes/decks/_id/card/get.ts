@@ -9,6 +9,7 @@ import { db } from '../../../../db';
 import type { DeckCard } from '../../../../../types/ZDeckCard.ts';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { transformCardPoolDeckCardsToDeckCards } from '../../../../lib/decks/transformCardPoolDeckCards.ts';
+import { getMergedCardList } from '../../../../lib/cards/cardListProvider.ts';
 
 export const deckIdCardGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const paramDeckId = z.guid().parse(c.req.param('id'));
@@ -73,7 +74,11 @@ export const deckIdCardGetRoute = new Hono<AuthExtension>().get('/', async c => 
       ),
     );
 
-  const transformed = transformCardPoolDeckCardsToDeckCards(poolRows, paramDeckId);
+  const transformed = transformCardPoolDeckCardsToDeckCards(
+    poolRows,
+    paramDeckId,
+    await getMergedCardList(),
+  );
 
   return c.json({ data: transformed as unknown as DeckCard[] });
 });

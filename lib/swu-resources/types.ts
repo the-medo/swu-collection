@@ -59,6 +59,7 @@ export interface CardVariant {
   back?: {
     horizontal?: boolean;
   };
+  preview?: boolean;
 }
 
 export interface CardDataWithVariants<T = CardVariant[]> {
@@ -97,6 +98,10 @@ export interface CardDataWithVariants<T = CardVariant[]> {
   traitMap?: Record<string, boolean> | undefined;
   keywordMap?: Record<string, boolean> | undefined;
   variantMap?: Record<string, string | undefined> | undefined;
+  preview?: boolean;
+  previewStatus?: 'active';
+  // Intentionally snake_case: preview cards may need Karabast's temporary external ID.
+  karabast_id?: string;
 }
 
 export type CardListVariants = Record<string, CardVariant | undefined>;

@@ -379,6 +379,13 @@
       "when": 1779197335809,
       "tag": "0053_clear_wallflower",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1780171591858,
+      "tag": "0054_pink_jack_power",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type {
   CardDataWithVariants,
@@ -9,10 +9,14 @@ import type {
 import { SwuSet } from '../../../../types/enums.ts';
 import { setInfo } from '../../../../lib/swu-resources/set-info.ts';
 import {
-  getCardListData,
-  getCardListVersion,
-  setCardListData,
-  setCardListVersion,
+  getOfficialCardListData,
+  getOfficialCardListVersion,
+  setOfficialCardListData,
+  setOfficialCardListVersion,
+  getPreviewCardListData,
+  getPreviewCardListVersion,
+  setPreviewCardListData,
+  setPreviewCardListVersion,
 } from '@/dexie/cardList.ts';
 
 export type CardsBySetAndNumber = Partial<
@@ -36,37 +40,56 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
   return useQuery({
     queryKey: ['cardList'],
     queryFn: async () => {
-      const storedVersion = await getCardListVersion();
-      const storedData = await getCardListData();
+      const [storedOfficialVersion, storedOfficialData, storedPreviewVersion, storedPreviewData] =
+        await Promise.all([
+          getOfficialCardListVersion(),
+          getOfficialCardListData(),
+          getPreviewCardListVersion(),
+          getPreviewCardListData(),
+        ]);
 
-      let cardListData: CardList | undefined = undefined;
+      let officialCards: CardList | undefined = storedOfficialData;
+      let previewCards: CardList | undefined = storedPreviewData;
 
       try {
-        const versionResponse = await api.cards.$post({
-          json: { lastUpdated: storedVersion || undefined },
+        const response = await api.cards.$post({
+          json: {
+            officialLastUpdated: storedOfficialVersion || undefined,
+            previewLastUpdated: storedPreviewVersion || undefined,
+          },
         });
 
-        if (!versionResponse.ok) {
-          throw new Error('Failed to check version');
+        if (!response.ok) {
+          throw new Error('Failed to check card list version');
         }
 
-        const versionData = await versionResponse.json();
-        if (versionData.needsUpdate) {
-          if ('cards' in versionData) cardListData = versionData.cards as CardList;
-          if (cardListData) await setCardListData(cardListData);
-          await setCardListVersion(versionData.lastUpdated);
-        } else if (storedData) {
-          cardListData = storedData;
+        const data = await response.json();
+
+        if (data.official.needsUpdate) {
+          if ('cards' in data.official && data.official.cards) {
+            officialCards = data.official.cards as CardList;
+            await setOfficialCardListData(officialCards);
+            await setOfficialCardListVersion(data.official.lastUpdated);
+          }
+        }
+
+        if (data.preview.needsUpdate) {
+          if ('cards' in data.preview && data.preview.cards) {
+            previewCards = data.preview.cards as CardList;
+            await setPreviewCardListData(previewCards);
+            await setPreviewCardListVersion(data.preview.lastUpdated);
+          }
         }
       } catch (error) {
-        if (storedData) {
-          cardListData = storedData;
-        }
+        // Fall through using whatever we loaded from IndexedDB above.
       }
 
-      if (!cardListData) {
+      if (!officialCards) {
         throw new Error('Something went wrong');
       }
+
+      // Merge: official cards win on collision so preview cards cannot shadow official data.
+      const cardListData: CardList = { ...previewCards, ...officialCards };
 
       const cardIds = Object.keys(cardListData).sort((a, b) => a.localeCompare(b));
       const cardsByCardNo: CardsBySetAndNumber = {};
@@ -74,8 +97,6 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
       const allTraits = new Set<string>();
       const allKeywords = new Set<string>();
       const allVariants = new Set<string>();
-
-      const test: any = {};
 
       cardIds.forEach(cid => {
         const card = cardListData[cid];
@@ -139,6 +160,17 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
           if (!v) return;
           card.variantMap![v.variantName] = vid;
           allVariants.add(v.variantName);
+
+          // Preview sets are validated on the server, but unreleased cards should still
+          // be discoverable by card number before their official set sort window opens.
+          if (card.preview) {
+            if (validCardVariants[v.variantName]) {
+              if (!cardsByCardNo[v.set]) cardsByCardNo[v.set] = {};
+              cardsByCardNo[v.set]![v.cardNo] = { variant: v, cardId: cid };
+            }
+            return;
+          }
+
           if (
             v &&
             (v.baseSet || setInfo[v.set].sortValue >= setInfo[SwuSet.JTL].sortValue) &&
@@ -149,9 +181,6 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
               variant: v,
               cardId: cid,
             };
-          } else {
-            if (!test[v.set]) test[v.set] = {};
-            test[v.set]![v.variantName] = card.name;
           }
         });
       });
@@ -161,9 +190,9 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
         cardIds,
         cardsByCardNo,
         cardsByCardType,
-        allTraits: [...allTraits].sort((a, b) => a.localeCompare(b)),
-        allKeywords: [...allKeywords].sort((a, b) => a.localeCompare(b)),
-        allVariants: [...allVariants].sort((a, b) => a.localeCompare(b)),
+        allTraits: new Set([...allTraits].sort((a, b) => a.localeCompare(b))),
+        allKeywords: new Set([...allKeywords].sort((a, b) => a.localeCompare(b))),
+        allVariants: new Set([...allVariants].sort((a, b) => a.localeCompare(b))),
       };
     },
     staleTime: Infinity,
