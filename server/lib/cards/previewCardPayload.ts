@@ -89,6 +89,7 @@ export const zPreviewCardPayload = z
     previewStatus: z.literal('active').default('active'),
     // Intentionally snake_case because Karabast preview metadata uses this field name.
     karabast_id: z.string().optional(),
+    karabast_id_to_swubase_id: z.string().optional(),
   })
   .passthrough()
   .superRefine((payload, ctx) => {
@@ -140,6 +141,7 @@ export type PreviewCardPayload = CardDataWithVariants<CardListVariants> & {
   preview: true;
   previewStatus: 'active';
   karabast_id?: string;
+  karabast_id_to_swubase_id?: string;
 };
 
 export function createPreviewCardPayloadTemplate(): PreviewCardPayload {
@@ -175,6 +177,7 @@ export function createPreviewCardPayloadTemplate(): PreviewCardPayload {
     preview: true,
     previewStatus: 'active',
     karabast_id: '',
+    karabast_id_to_swubase_id: '',
     variants: {
       [variantId]: {
         variantId,

@@ -38,6 +38,7 @@ const basePayload = {
   rarity: SwuRarity.COMMON,
   set: SwuSet.LAW,
   karabast_id: 'preview-sample-unit',
+  karabast_id_to_swubase_id: 'karabast-preview-sample-unit',
   variants: {
     'sample-unit-preview-standard': {
       variantId: 'sample-unit-preview-standard',
@@ -70,7 +71,16 @@ describe('preview card payload validation', () => {
     expect(card.preview).toBe(true);
     expect(card.previewStatus).toBe('active');
     expect(card.karabast_id).toBe('preview-sample-unit');
+    expect(card.karabast_id_to_swubase_id).toBe('karabast-preview-sample-unit');
     expect(card.variants['sample-unit-preview-standard']?.preview).toBe(true);
+  });
+
+  test('accepts payloads without inbound Karabast mapping metadata', () => {
+    const { karabast_id_to_swubase_id: _karabastIdToSwubaseId, ...payload } = basePayload;
+
+    const card = normalizePreviewCardPayload(payload);
+
+    expect(card.karabast_id_to_swubase_id).toBeUndefined();
   });
 
   test('rejects payloads without real variants', () => {
@@ -87,6 +97,7 @@ describe('preview card payload validation', () => {
 
     expect(template.preview).toBe(true);
     expect(template.previewStatus).toBe('active');
+    expect(template.karabast_id_to_swubase_id).toBe('');
     expect(template.set).toBe(SwuSet.ASH);
     expect(template.arenas).toContain(SwuArena.GROUND);
     expect(template.variants['example-card-preview-standard']?.set).toBe(SwuSet.ASH);

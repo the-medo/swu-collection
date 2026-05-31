@@ -10,6 +10,7 @@ export type PreviewCardPayload = CardDataWithVariants<CardListVariants> & {
   preview: true;
   previewStatus: 'active';
   karabast_id?: string;
+  karabast_id_to_swubase_id?: string;
 };
 
 export type AdminPreviewCardRow = {

@@ -26,9 +26,15 @@ The JSON payload is shaped like `CardDataWithVariants<CardListVariants>`, with p
 - `preview: true`
 - `previewStatus: "active"`
 - `karabast_id?: string`
+- `karabast_id_to_swubase_id?: string`
 - variants may also contain `preview: true`
 
-`cardId` is the internal SWUBase slug, usually derived with `transformToId(payload.name)`. It is not `SET_###`. Set/card-number data belongs on the default/Standard variant, and `karabast_id` is external preview metadata used for Karabast exports when Karabast has its own temporary ID.
+`cardId` is the internal SWUBase slug, usually derived with `transformToId(payload.name)`. It is not `SET_###`. Set/card-number data belongs on the default/Standard variant.
+
+Karabast metadata has two directions:
+
+- `karabast_id` is outbound metadata. SWUBase uses it when exporting a preview card to Karabast.
+- `karabast_id_to_swubase_id` is inbound metadata. SWUBase uses it when Karabast sends a temporary preview ID back in game results and that ID should resolve to this preview card's SWUBase `cardId`.
 
 Preview payload validation lives in `server/lib/cards/previewCardPayload.ts`. It requires a usable `cardId` or `name`, at least one variant, known `SwuSet` values from `setInfo`, matching variant keys/`variantId`s, and the normal card-list fields that the UI expects. `cardNo: 0` is allowed for early spoilers where the printed number is unreadable.
 
@@ -159,6 +165,16 @@ Frontend export menus and deck pages use `frontend/src/lib/cards/previewCardWarn
 
 Karabast still needs to know the preview card on its side. `karabast_id` only helps SWUBase export the ID Karabast expects.
 
+Karabast game-result imports resolve inbound IDs separately. For `game_result.leader_card_id`, `game_result.base_card_key`, `game_result.opponent_leader_card_id`, `game_result.opponent_base_card_key`, and `cardMetrics` keys, SWUBase resolves IDs in this order:
+
+1. Official `cardUid` lookup.
+2. Active preview cards whose `karabast_id_to_swubase_id` matches the inbound Karabast ID.
+3. The trimmed inbound Karabast ID as fallback.
+
+Null, missing, or whitespace-only inbound IDs are dropped before this resolution order runs. Base fields still use SWUBase's special base keys, so an inbound preview mapping to a basic base card can resolve to values like `Vigilance` when the target column expects a base key. If duplicate active preview mappings exist, SWUBase logs a warning and uses the lexicographically lowest SWUBase `cardId` as the deterministic winner. Migrated and archived preview cards do not participate in inbound mapping.
+
+Separately from card-ID resolution, Karabast lobby-match deduplication automatically checks legacy raw-ID lookup aliases. This lets game results processed before `karabast_id_to_swubase_id` existed resolve to the same match IDs without admin action.
+
 ## Migration to Official Cards
 
 When official data arrives, the preferred path is that the official `cardId` matches the preview `cardId`. In that case, official data wins automatically in the merged list, and migration mainly marks the preview row as `migrated`.
@@ -182,8 +198,9 @@ The same file also contains a reconciliation runner. Without `--apply`, it repor
 
 1. Add the upcoming set to `SwuSet` and `setInfo` before publishing previews for it.
 2. Open Admin -> Preview Cards and start from the generated JSON template.
-3. Fill the card payload, including `karabast_id` when Karabast uses a temporary preview ID.
-4. Upload images if needed, then save the JSON after the returned paths are injected.
-5. Verify the card appears in search/deckbuilder and that deck export warnings make sense.
-6. When official data lands, migrate the preview row to the official card.
-7. Check the admin table for validation errors after card-list type or set metadata changes.
+3. Fill the card payload, including `karabast_id` when SWUBase needs to export Karabast's temporary preview ID.
+4. Fill `karabast_id_to_swubase_id` when Karabast sends a temporary preview ID in game-result data that does not resolve through official `cardUid`; this usually shows up as raw/unrecognized Karabast IDs in imported game-result rows.
+5. Upload images if needed, then save the JSON after the returned paths are injected.
+6. Verify the card appears in search/deckbuilder and that deck export warnings make sense.
+7. When official data lands, migrate the preview row to the official card.
+8. Check the admin table for validation errors after card-list type or set metadata changes.

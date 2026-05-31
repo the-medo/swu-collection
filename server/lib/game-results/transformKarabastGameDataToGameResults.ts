@@ -1,11 +1,14 @@
 import { type IntegrationGameData } from '../../db/schema/integration.ts';
 import type { GameResult, GameResultDeckInfo } from '../../db/schema/game_result.ts';
-import { cardUidToCardId } from '../../../shared/lib/cardUidToCardId.ts';
 import type { CardMetrics } from '../../../shared/types/cardMetrics.ts';
 import { db } from '../../db';
 import { deck } from '../../db/schema/deck.ts';
 import { eq } from 'drizzle-orm';
 import { normalizeKarabastDeckId, type IntegrationGameDataContent } from './karabastGameData.ts';
+import {
+  createKarabastCardIdResolver,
+  type KarabastCardIdResolver,
+} from './resolveKarabastCardId.ts';
 
 /**
  * Transforms data from the integrationGameData into game result table.
@@ -15,10 +18,14 @@ import { normalizeKarabastDeckId, type IntegrationGameDataContent } from './kara
 export const transformKarabastGameDataToGameResults = async (
   integrationData: IntegrationGameData,
   resolvedMatchIds?: Record<number, string>,
+  // When omitted, this function builds one from the DB-backed preview-card cache.
+  karabastCardIdResolver?: KarabastCardIdResolver,
 ): Promise<GameResult[]> => {
   const data = integrationData.data as IntegrationGameDataContent; // The Karabast payload
   const players = data.players || [];
   const gameResults: GameResult[] = [];
+  const resolveKarabastCardId =
+    karabastCardIdResolver ?? (await createKarabastCardIdResolver());
 
   const userIds = [integrationData.userId1, integrationData.userId2];
 
@@ -26,7 +33,7 @@ export const transformKarabastGameDataToGameResults = async (
     const out: typeof metrics = {};
 
     Object.entries(metrics).forEach(([uid, value]) => {
-      const cardId = cardUidToCardId(uid);
+      const cardId = resolveKarabastCardId(uid);
       if (!cardId) return;
 
       out[cardId] = value ?? {};
@@ -72,11 +79,11 @@ export const transformKarabastGameDataToGameResults = async (
       gameNumber: data.sequenceNumber || null,
       format: data.format || null, //this is karabast format string
 
-      leaderCardId: cardUidToCardId(player.data?.leader),
-      baseCardKey: cardUidToCardId(player.data?.base, true),
+      leaderCardId: resolveKarabastCardId(player.data?.leader),
+      baseCardKey: resolveKarabastCardId(player.data?.base, true),
 
-      opponentLeaderCardId: cardUidToCardId(opponent?.data?.leader),
-      opponentBaseCardKey: cardUidToCardId(opponent?.data?.base, true),
+      opponentLeaderCardId: resolveKarabastCardId(opponent?.data?.leader),
+      opponentBaseCardKey: resolveKarabastCardId(opponent?.data?.base, true),
 
       isWinner: player.data?.isWinner || false,
 

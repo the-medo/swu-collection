@@ -59,11 +59,12 @@ const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
   children,
 }) => {
   const leaderVariant = leaderCard?.variants[Object.keys(leaderCard?.variants)[0]];
-
+  console.log({ leaderVariant });
   if (!leaderVariant) return null;
 
   const isLeader = leaderCard.type === 'Leader';
   const imageName = isLeader ? leaderVariant.image.back : leaderVariant.image.front;
+  console.log({ imageName });
   if (!imageName) return null;
 
   const imageUrl = `https://images.swubase.com/cards/${imageName}`;
