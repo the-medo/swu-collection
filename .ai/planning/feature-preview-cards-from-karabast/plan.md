@@ -18,6 +18,7 @@ This field is different from the existing `karabast_id`:
 - Preview-card documentation is in `docs/preview-cards/preview-card-docs.md`.
 - Karabast game result imports currently resolve card IDs through `shared/lib/cardUidToCardId.ts`.
 - `cardUidToCardId()` checks official `cardsByUid` from `server/db/lists.ts`, applies the special base key mapping when requested, and falls back to the original UID.
+- `cardUidToCardId()` does not trim the incoming UID before checking `cardsByUid`.
 - `server/lib/game-results/transformKarabastGameDataToGameResults.ts` uses that resolver for the four `game_result` leader/base columns.
 - `server/lib/game-results/resolveKarabastLobbyMatchIds.ts` also uses the same resolver for opponent leader/base identity lookup keys. This is not the final `game_result` write, but should probably be kept consistent so preview-card IDs do not fragment Karabast match resolution.
 
@@ -26,6 +27,28 @@ This field is different from the existing `karabast_id`:
 - `cardMetrics` keys should also resolve through `karabast_id_to_swubase_id`, not only the four leader/base columns.
 - Duplicate active `karabast_id_to_swubase_id` values should warn for now, not fail validation or block preview-card saves.
 - Only active preview cards should participate in inbound Karabast mapping right now.
+
+## Resolved Matching Semantics
+
+- `karabast_id_to_swubase_id` is a scalar string stored on the preview card that should receive the inbound Karabast ID.
+- These semantics apply to all inbound Karabast card identifiers resolved by this feature:
+  - `leader_card_id`
+  - `base_card_key`
+  - `opponent_leader_card_id`
+  - `opponent_base_card_key`
+  - `cardMetrics` keys
+- Only rows with status `active` are included when building the inbound Karabast ID map.
+- The resolver builds a trimmed lookup UID for both official and preview matching. If the incoming UID is `null`, `undefined`, empty, or whitespace-only, it returns `null`.
+- Matching is case-sensitive after trimming, matching the existing exact-ID lookup behavior.
+- Empty, missing, or whitespace-only `karabast_id_to_swubase_id` values are ignored.
+- Active preview cards with non-empty inbound mappings but empty or whitespace-only `cardId` values are skipped with a warning.
+- Official `cardUid` resolution wins first.
+- Preview `karabast_id_to_swubase_id` resolution runs only when `cardsByUid` has no entry for the trimmed lookup UID.
+- When a preview mapping matches, the resolver resolves to that preview card's SWUBase `cardId` before any `baseSpecialNames` transformation.
+- Base resolution applies the existing special base key mapping after either an official or preview card ID is found, matching current official-base behavior. Raw fallback IDs are not transformed.
+- `cardMetrics` keys use the same resolver with `useSpecialBaseKey = false`, matching the current metrics behavior.
+- If duplicate active preview mappings exist, duplicates warn only as requested by the user. Because duplicate mappings are invalid admin data, the implementation still needs a stable fallback winner; use the lexicographically lowest SWUBase `cardId` of the preview-card candidates and log the duplicate inbound Karabast ID plus candidate card IDs.
+- If no official or active-preview mapping exists, non-empty unknown IDs fall back to the trimmed lookup UID.
 
 ## Implementation Plan
 
@@ -52,9 +75,11 @@ This field is different from the existing `karabast_id`:
 
    - The value stores the inbound Karabast ID/UID/internalName that Karabast sends for this card.
    - When an incoming Karabast card UID matches a card payload's `karabast_id_to_swubase_id`, the resolver returns that payload's SWUBase `cardId`.
+   - Official `cardsByUid` lookup wins; preview resolution only runs when `cardsByUid` has no entry for the trimmed lookup UID.
    - Trim both the incoming UID and the preview-card field before matching.
-   - Ignore empty strings.
-   - If duplicate preview-card mappings exist, prefer a deterministic behavior and surface enough logging to fix the data. Recommended behavior: first active merged-list entry wins according to object iteration, but log a warning for duplicates.
+   - Ignore empty, missing, or whitespace-only strings.
+   - Match case-sensitively after trimming.
+   - If duplicate preview-card mappings exist, warn without failing and use the lexicographically lowest SWUBase `cardId` of the preview-card candidates as a deterministic fallback winner.
 
 3. Add a preview-aware Karabast card resolver.
 
@@ -62,18 +87,19 @@ This field is different from the existing `karabast_id`:
 
    - Keep `shared/lib/cardUidToCardId.ts` as the official-list resolver, because it is synchronous and currently used in shared-ish code.
    - Add a server-side helper near the Karabast import flow, for example `server/lib/game-results/resolveKarabastCardId.ts`.
+   - The helper should support all inbound Karabast card ID resolution in this feature: the four leader/base columns and `cardMetrics` keys.
    - The helper should:
-     - First call the existing `cardUidToCardId(uid, useSpecialBaseKey)`.
-     - If the official resolver found a real official card ID, return it.
-     - If the official resolver only fell back to the original UID, then check active preview/merged cards for `karabast_id_to_swubase_id`.
+     - Return `null` for `null`, `undefined`, empty-string, or whitespace-only incoming IDs.
+     - Trim the incoming UID into a lookup UID.
+     - If `cardsByUid` has an entry for the lookup UID, return `cardUidToCardId(lookupUid, useSpecialBaseKey)` so official base IDs keep the existing `baseSpecialNames` behavior.
+     - If `cardsByUid` has no entry for the lookup UID, then check active preview cards for `karabast_id_to_swubase_id`.
      - If a mapping is found, return the matching preview card's `cardId`.
      - If `useSpecialBaseKey` is true, apply `baseSpecialNames` to the resolved preview card ID as well, matching current base behavior.
-     - If no mapping is found, keep the existing fallback behavior and return the original UID.
+     - If no mapping is found, return the trimmed lookup UID as the unknown-ID fallback.
 
    Important distinction:
 
-   - Because `cardUidToCardId()` currently returns the original UID as a fallback, the new helper needs to detect whether the official lookup actually matched.
-   - The cleanest approach is to add or expose a lower-level official lookup that can return `{ cardId, matchedOfficial }`, or to check `cardsByUid[uid]` directly in the new server helper.
+   - Because `cardUidToCardId()` currently returns the original UID as a fallback, the new helper needs to check `cardsByUid[lookupUid]` directly before deciding whether to run preview fallback logic.
 
 4. Build the preview mapping from active preview cards.
 
@@ -85,7 +111,11 @@ This field is different from the existing `karabast_id`:
    Recommended:
 
    - Use `getPreviewCardList()` for this specific fallback because the field is meant for preview-card metadata.
-   - Build a `Map<string, string>` from trimmed `karabast_id_to_swubase_id` to `card.cardId`.
+   - Preserve the active-only constraint explicitly: only active preview cards should be collected into the inbound map. `getPreviewCardList()` already enforces this today, and future callers should keep that contract.
+   - Build a `Map<string, string>` from trimmed `karabast_id_to_swubase_id` to trimmed `card.cardId`.
+   - Build the map by collecting pairs where the trimmed `karabast_id_to_swubase_id` and trimmed `cardId` are both non-empty. The stored map value is the trimmed SWUBase `cardId`; SWUBase card IDs must not intentionally depend on leading/trailing whitespace.
+   - If a preview card has a non-empty inbound mapping but an empty/whitespace-only `cardId`, skip that pair and log a warning with the inbound Karabast ID.
+   - Group collected pairs by trimmed inbound Karabast ID, sort each group by `cardId` ascending, warning with the duplicate inbound Karabast ID plus candidate card IDs for groups with multiple candidate card IDs, and insert only the first/lowest `cardId` for each inbound ID.
    - Build it once per transformation/resolution run instead of repeatedly per field.
    - Consider caching inside the helper only if needed; the preview card provider already has an in-memory cache, so a small map build per import is acceptable.
 
@@ -100,8 +130,8 @@ This field is different from the existing `karabast_id`:
      - `opponentLeaderCardId: cardUidToCardId(opponent?.data?.leader)`
      - `opponentBaseCardKey: cardUidToCardId(opponent?.data?.base, true)`
    - With the preview-aware resolver.
-   - Update `mapCardMetricsKeysToCardIds()` to use the same preview-aware resolver so preview-card metrics aggregate under SWUBase IDs instead of staying under raw Karabast IDs.
-   - Keep the existing behavior of dropping metric entries whose incoming key cannot produce any usable card ID.
+   - Update `mapCardMetricsKeysToCardIds()` to use the same preview-aware resolver with `useSpecialBaseKey = false` so preview-card metrics aggregate under SWUBase IDs instead of staying under raw Karabast IDs.
+   - Preserve the existing metrics fallback behavior for useful inputs: null, empty, or whitespace-only incoming keys are dropped, while other non-empty unknown keys continue to fall back to the trimmed lookup UID.
 
 6. Keep Karabast match identity resolution consistent.
 
@@ -131,7 +161,7 @@ This field is different from the existing `karabast_id`:
    - The new Karabast resolver returns official mappings before preview mappings.
    - The new Karabast resolver maps an unknown Karabast UID to a preview card's SWUBase `cardId` when `karabast_id_to_swubase_id` matches.
    - Base resolution still applies `baseSpecialNames` when `useSpecialBaseKey` is true.
-   - Fallback behavior remains unchanged for unknown IDs without a preview mapping.
+   - Unknown IDs without a preview mapping fall back to the trimmed lookup UID.
    - `cardMetrics` keys are resolved through the same preview-aware mapping.
    - Duplicate preview mappings emit a warning but do not throw.
 
