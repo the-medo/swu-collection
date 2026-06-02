@@ -1,13 +1,48 @@
-import { cardsBySetAndNumber } from '../../db/lists.ts';
 import type { SwuSet } from '../../../types/enums.ts';
 import type { DeckCard } from '../../../types/ZDeckCard.ts';
+import type { CardList } from '../../../lib/swu-resources/types.ts';
+import { transformToId } from '../../../lib/swu-resources/lib/transformToId.ts';
 
-const parseSwudbDeckCard = (cardData: any) => {
+type CardsBySetAndNumber = Partial<Record<SwuSet, Record<number, { cardId: string }>>>;
+
+const validVariantNames: Record<string, true | undefined> = {
+  Standard: true,
+  Hyperspace: true,
+  'Standard Foil': true,
+  'Hyperspace Foil': true,
+  Showcase: true,
+};
+
+const buildCardsBySetAndNumber = (cardList: CardList) => {
+  const cardsBySetAndNumber: CardsBySetAndNumber = {};
+
+  Object.entries(cardList).forEach(([cardId, card]) => {
+    if (!card) return;
+
+    Object.values(card.variants ?? {}).forEach(variant => {
+      if (!variant || !validVariantNames[variant.variantName]) return;
+      if (variant.cardNo <= 0) return;
+      if (!card.preview && !variant.baseSet) return;
+
+      if (!cardsBySetAndNumber[variant.set]) cardsBySetAndNumber[variant.set] = {};
+      cardsBySetAndNumber[variant.set]![variant.cardNo] = { cardId };
+    });
+  });
+
+  return cardsBySetAndNumber;
+};
+
+const parseSwudbDeckCard = (cardData: any, cardList: CardList, index: CardsBySetAndNumber) => {
   let error: string | false = false;
   const set = cardData.defaultExpansionAbbreviation?.toLowerCase() as SwuSet;
   const cardNo = Number(cardData.defaultCardNumber ?? '');
 
-  const cardId = cardsBySetAndNumber[set]?.[cardNo]?.cardId;
+  const swudbCardName = typeof cardData.cardName === 'string' ? cardData.cardName : undefined;
+  const transformedCardName = swudbCardName ? transformToId(swudbCardName) : undefined;
+  const cardId =
+    index[set]?.[cardNo]?.cardId ??
+    (transformedCardName && cardList[transformedCardName] ? transformedCardName : undefined);
+
   if (!cardId) {
     error = cardData.cardName ?? `Unknown card - ${set} ${cardNo}`;
   }
@@ -27,10 +62,17 @@ type ParsedSwuDeck = {
   errors: string[];
 };
 
-export const parseSwudbDeck = (deckData: any, swubaseDeckId: string): ParsedSwuDeck => {
-  const leader1 = parseSwudbDeckCard(deckData.leader);
-  const leader2 = deckData.secondLeader ? parseSwudbDeckCard(deckData.secondLeader) : undefined;
-  const base = parseSwudbDeckCard(deckData.base);
+export const parseSwudbDeck = (
+  deckData: any,
+  swubaseDeckId: string,
+  cardList: CardList,
+): ParsedSwuDeck => {
+  const index = buildCardsBySetAndNumber(cardList);
+  const parseCard = (cardData: any) => parseSwudbDeckCard(cardData, cardList, index);
+
+  const leader1 = parseCard(deckData.leader);
+  const leader2 = deckData.secondLeader ? parseCard(deckData.secondLeader) : undefined;
+  const base = parseCard(deckData.base);
   const format = deckData.deckFormat ?? 1;
 
   const errors: string[] = [];
@@ -42,7 +84,7 @@ export const parseSwudbDeck = (deckData: any, swubaseDeckId: string): ParsedSwuD
 
   deckData.shuffledDeck.forEach((extendedCardData: any) => {
     const { card, count, sideboardCount } = extendedCardData;
-    const parsedCard = parseSwudbDeckCard(card);
+    const parsedCard = parseCard(card);
     if (parsedCard.error) {
       errors.push(
         `[${count > 0 ? `MD ${count}x - ` : ''}${sideboardCount > 0 ? `SB ${sideboardCount}x - ` : ''} ${parsedCard.error}]`,
@@ -69,8 +111,6 @@ export const parseSwudbDeck = (deckData: any, swubaseDeckId: string): ParsedSwuD
       }
     }
   });
-
-  console.error(errors);
 
   return {
     leader1: leader1?.cardId,

@@ -7,6 +7,7 @@ import { db } from '../../../db';
 import { deck as deckTable } from '../../../db/schema/deck.ts';
 import { deckCard as deckCardTable } from '../../../db/schema/deck_card.ts';
 import { updateDeckInformation } from '../../../lib/decks/updateDeckInformation.ts';
+import { getMergedCardList } from '../../../lib/cards/cardListProvider.ts';
 
 export const decksImportSwudbPostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -31,7 +32,7 @@ export const decksImportSwudbPostRoute = new Hono<AuthExtension>().post(
     }
 
     const deck = (await deckResponse.json()) as any;
-    const parsedDeck = parseSwudbDeck(deck, 'asdf');
+    const parsedDeck = parseSwudbDeck(deck, 'asdf', await getMergedCardList());
 
     const deckName = `${deck.deckName} by ${deck.authorName}`;
 
