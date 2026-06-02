@@ -31,11 +31,6 @@ import {
   createDeckTextExport,
   downloadAsFile,
 } from '../../../../../../../../../server/lib/decks/deckExport.ts';
-import {
-  collectDeckPreviewCards,
-  getPreviewDeckWarningText,
-} from '@/lib/cards/previewCardWarnings.ts';
-import { Alert, AlertDescription } from '@/components/ui/alert.tsx';
 
 interface DeckMenuContentProps {
   deckId: string;
@@ -64,15 +59,6 @@ const DeckMenuContent: React.FC<DeckMenuContentProps> = ({ deckId }) => {
   );
 
   const isLimited = !!deckData?.deck.cardPoolId;
-  const previewWarning = useMemo(() => {
-    if (!deckData || !deckCardsData || !cardListData) return undefined;
-    return getPreviewDeckWarningText(
-      collectDeckPreviewCards(deckData.deck, deckCardsData.data, cardListData.cards),
-    );
-  }, [cardListData, deckCardsData, deckData]);
-
-  const successDescription = (message: string) =>
-    previewWarning ? `${message} ${previewWarning}` : message;
 
   // Export handlers (moved from ExportOptionsMenu)
   const handleExportJSON = () => {
@@ -95,7 +81,7 @@ const DeckMenuContent: React.FC<DeckMenuContentProps> = ({ deckId }) => {
     downloadAsFile(jsonString, `${safeFileName}.json`, 'application/json');
     toast({
       title: 'Deck exported as JSON',
-      description: successDescription(`${deckData.deck.name} was exported successfully.`),
+      description: `${deckData.deck.name} was exported successfully.`,
     });
   };
 
@@ -113,7 +99,7 @@ const DeckMenuContent: React.FC<DeckMenuContentProps> = ({ deckId }) => {
     downloadAsFile(textData, `${safeFileName}.txt`, 'text/plain');
     toast({
       title: 'Deck exported as text',
-      description: successDescription(`${deckData.deck.name} was exported successfully.`),
+      description: `${deckData.deck.name} was exported successfully.`,
     });
   };
 
@@ -136,7 +122,7 @@ const DeckMenuContent: React.FC<DeckMenuContentProps> = ({ deckId }) => {
     navigator.clipboard.writeText(jsonString);
     toast({
       title: 'JSON copied to clipboard',
-      description: successDescription(`${deckData.deck.name} was copied in JSON format.`),
+      description: `${deckData.deck.name} was copied in JSON format.`,
     });
   };
 
@@ -153,7 +139,7 @@ const DeckMenuContent: React.FC<DeckMenuContentProps> = ({ deckId }) => {
     navigator.clipboard.writeText(textData);
     toast({
       title: 'Text copied to clipboard',
-      description: successDescription(`${deckData.deck.name} was copied in text format.`),
+      description: `${deckData.deck.name} was copied in text format.`,
     });
   };
 
@@ -193,11 +179,6 @@ const DeckMenuContent: React.FC<DeckMenuContentProps> = ({ deckId }) => {
   return (
     <div className="p-2 grid grid-cols-1 gap-4 w-[300px]">
       <div className="col-span-1 grid grid-cols-1 gap-1">
-        {previewWarning && (
-          <Alert variant="warning" size="xs">
-            <AlertDescription>{previewWarning}</AlertDescription>
-          </Alert>
-        )}
         {/* Display collection info toggle */}
         <li
           onClick={toggleCollectionInfo}

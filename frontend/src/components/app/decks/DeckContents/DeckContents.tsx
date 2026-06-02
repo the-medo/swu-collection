@@ -27,11 +27,6 @@ import { aspectArray } from '../../../../../../types/iterableEnumInfo.ts';
 import { SwuAspect, SwuSet } from '../../../../../../types/enums.ts';
 import { setRestrictionByFormat } from '../../../../../../types/Format.ts';
 import { setArray } from '../../../../../../lib/swu-resources/set-info.ts';
-import { Alert, AlertDescription } from '@/components/ui/alert.tsx';
-import {
-  getPreviewDeckWarningText,
-  summarizePreviewCards,
-} from '@/lib/cards/previewCardWarnings.ts';
 
 interface DeckContentsProps {
   deckId: string;
@@ -49,14 +44,9 @@ const DeckContents: React.FC<DeckContentsProps> = ({
   compact,
 }) => {
   const { cardPoolId, owned, editable } = useDeckInfo(deckId);
-  const { deckMeta, deckCardsForLayout } = useDeckData(deckId);
+  const { deckMeta } = useDeckData(deckId);
   const [tabsValue, setTabsValue] = useState('decklist');
   const { setDeckView } = useCardPoolDeckDetailStoreActions();
-
-  const previewDeckWarning = React.useMemo(() => {
-    const previewSummary = summarizePreviewCards(Object.values(deckCardsForLayout.usedCards));
-    return getPreviewDeckWarningText(previewSummary);
-  }, [deckCardsForLayout.usedCards]);
 
   const deckbuilderSearch = React.useMemo(() => {
     const aspectSet = new Set<SwuAspect>();
@@ -203,11 +193,6 @@ const DeckContents: React.FC<DeckContentsProps> = ({
               <div className="flex flex-wrap gap-4 items-center max-lg:justify-center w-full">
                 <DeckBoardCardCounts deckId={deckId} />
               </div>
-            )}
-            {previewDeckWarning && (
-              <Alert variant="warning" size="xs">
-                <AlertDescription>{previewDeckWarning}</AlertDescription>
-              </Alert>
             )}
 
             {tabsValue === 'decklist' && (
