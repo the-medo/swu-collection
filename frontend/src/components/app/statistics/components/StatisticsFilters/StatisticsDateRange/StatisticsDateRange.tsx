@@ -18,7 +18,8 @@ type StatisticsDateRangeOption = {
 };
 
 const todayDate = format(new Date(), 'yyyy-MM-dd');
-const fromDateAshesOfTheEmpire = '2026-07-10'; // TODO - fix
+const fromDateHomelands = '2026-07-10'; // TODO - fix
+const fromDateAsh = format(subDays(new Date(setInfo[SwuSet.ASH].releaseDate), 7), 'yyyy-MM-dd');
 const fromDateLaw = format(subDays(new Date(setInfo[SwuSet.LAW].releaseDate), 7), 'yyyy-MM-dd');
 const fromDateSec = format(subDays(new Date(setInfo[SwuSet.SEC].releaseDate), 7), 'yyyy-MM-dd');
 
@@ -37,11 +38,18 @@ export const statisticsDateRangeOptions: Record<string, StatisticsDateRangeOptio
     toDate: todayDate,
     useToDate: false,
   },
+  setAsh: {
+    id: 'setAsh',
+    label: '[ASH] Ashes of the Empire',
+    fromDate: fromDateAsh,
+    toDate: fromDateHomelands,
+    useToDate: true,
+  },
   setLaw: {
     id: 'setLaw',
     label: '[LAW] A Lawless Time',
     fromDate: fromDateLaw,
-    toDate: fromDateAshesOfTheEmpire,
+    toDate: fromDateAsh,
     useToDate: true,
   },
   setSec: {

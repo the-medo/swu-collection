@@ -52,7 +52,7 @@ const generatePoolName = (type: CardPoolType, setAbbr: SwuSet, date: Date = new 
 const CreatePool: React.FC = () => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<CardPoolType>(CardPoolType.Sealed);
-  const [selectedSet, setSelectedSet] = useState<SwuSet>(SwuSet.SEC);
+  const [selectedSet, setSelectedSet] = useState<SwuSet>(SwuSet.ASH);
   const [visibility, setVisibility] = useState<Visibility>(Visibility.Public);
   const [userEditedName, setUserEditedName] = useState<boolean>(false);
   const [name, setName] = useState<string>(generatePoolName(selectedType, selectedSet, new Date()));
@@ -101,16 +101,16 @@ const CreatePool: React.FC = () => {
     [selectedSet, selectedType, visibility, name, description],
   );
 
-  const handleCreateCustom = useCallback(() => {
+  /*const handleCreateCustom = useCallback(() => {
     handleCreate(true);
-  }, [handleCreate]);
+  }, [handleCreate]);*/
 
   const handleCreateAutomatic = useCallback(() => {
     handleCreate(false);
   }, [handleCreate]);
 
   return (
-    <GridSection sizing={gridSizing}>
+    <GridSection id="create-pool-section" sizing={gridSizing}>
       <GridSectionContent>
         <SectionHeader
           headerAndTooltips={
