@@ -24,7 +24,7 @@ interface CollectionInputNumberStore {
 
 const defaultState: CollectionInputNumberStore = {
   search: '',
-  set: SwuSet.LAW,
+  set: SwuSet.ASH,
   selectedCardId: undefined,
   selectedVariantId: undefined,
   foil: false,
