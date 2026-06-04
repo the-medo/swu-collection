@@ -20,6 +20,7 @@ import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/De
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import DeckCardPriceBadge from './DeckCardPriceBadge.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import KarabastUnimplementedWarningIcon from '@/components/app/decks/KarabastUnimplementedWarningIcon.tsx';
 
 export type DeckCardRowVariant = 'normal' | 'compact';
 
@@ -54,6 +55,23 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
 
   const missingAmount = missingCardInBoards?.[deckCard.board] ?? 0;
   const compactMode = !displayDropdown;
+  const isKarabastUnimplemented = !!card?.karabast_unimplemented;
+  const cardNameMaxWidthClass =
+    !displayDeckPrice && !compactMode
+      ? isKarabastUnimplemented
+        ? 'max-w-[240px]'
+        : 'max-w-[220px]'
+      : displayDeckPrice && !compactMode
+        ? isKarabastUnimplemented
+          ? 'max-w-[230px]'
+          : 'max-w-[210px]'
+        : !displayDeckPrice && compactMode
+          ? isKarabastUnimplemented
+            ? 'max-w-[220px]'
+            : 'max-w-[200px]'
+          : isKarabastUnimplemented
+            ? 'max-w-[170px]'
+            : 'max-w-[150px]';
 
   const quantityChangeHandler = useCallback(
     (quantity: number | undefined, board?: number) => {
@@ -128,16 +146,20 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
           }}
         >
           <span
-            className={cn('truncate ellipsis overflow-hidden whitespace-nowrap', {
+            className={cn('flex min-w-0 items-center gap-1', cardNameMaxWidthClass, {
               'group-hover:hidden': editable,
-              'text-xs': variant === 'compact',
-              'max-w-[220px]': !displayDeckPrice && !compactMode,
-              'max-w-[210px]': displayDeckPrice && !compactMode,
-              'max-w-[200px]': !displayDeckPrice && compactMode,
-              'max-w-[150px]': displayDeckPrice && compactMode,
             })}
           >
-            {card?.name}
+            {isKarabastUnimplemented && (
+              <KarabastUnimplementedWarningIcon className="h-4 w-4" stopClickPropagation={true} />
+            )}
+            <span
+              className={cn('min-w-0 truncate ellipsis overflow-hidden whitespace-nowrap', {
+                'text-xs': variant === 'compact',
+              })}
+            >
+              {card?.name}
+            </span>
           </span>
           <div className="flex gap-2 justify-end">
             {displayDeckPrice && (

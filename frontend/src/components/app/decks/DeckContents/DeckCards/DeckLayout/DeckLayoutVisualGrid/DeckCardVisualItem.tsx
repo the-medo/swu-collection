@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils.ts';
 import { DeckLayout } from '../../../../../../../../../types/enums.ts';
 import DeckCardPriceBadge from '../DeckLayoutText/DeckCardPriceBadge.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import KarabastUnimplementedWarningIcon from '@/components/app/decks/KarabastUnimplementedWarningIcon.tsx';
 
 interface DeckCardVisualItemProps {
   deckId: string;
@@ -86,9 +87,12 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
       })}
       data-card-id={deckCard.cardId}
     >
-      {(displayDropdown || displayQuantity) && (
+      {(displayDropdown || displayQuantity || card?.karabast_unimplemented) && (
         <div className="absolute top-0 -right-3 px-2 z-10 b-1 border-2 border-foreground/30 bg-background/80 rounded flex flex-col items-end">
           <div className="flex gap-2 items-center">
+            {card?.karabast_unimplemented && (
+              <KarabastUnimplementedWarningIcon tooltipSide="left" />
+            )}
             {displayMissingCards && missingAmount > 0 && (
               <span className="text-red-500 text-xs">{deckCard.quantity - missingAmount}</span>
             )}
