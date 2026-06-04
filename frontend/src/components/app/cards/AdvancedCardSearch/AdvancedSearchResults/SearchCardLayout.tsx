@@ -17,6 +17,7 @@ import {
 import { openCardOnMiddleButton } from '@/lib/cards/openCardOnMiddleButton.ts';
 import { getCardNameRelevanceScore } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
 import { sortByAspectArrays } from '../../../../../../../shared/lib/aspectLib.ts';
+import KarabastUnimplementedWarningIcon from '@/components/app/decks/KarabastUnimplementedWarningIcon.tsx';
 
 export type CardLayoutType =
   | 'imageBig'
@@ -33,6 +34,7 @@ export interface CardLayoutProps {
 export interface SearchCardLayoutProps extends CardLayoutProps {
   layoutType: CardLayoutType;
   cardSubcomponent?: (card: CardDataWithVariants<CardListVariants> | undefined) => React.ReactNode;
+  showKarabastUnimplementedNameIcon?: boolean;
 }
 
 const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
@@ -40,6 +42,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
   onCardClick,
   layoutType,
   cardSubcomponent,
+  showKarabastUnimplementedNameIcon = false,
 }) => {
   const { data: cardListData } = useCardList();
   const { name, sortField, sortOrder, setSortField, setSortOrder } = useAdvancedCardSearchStore();
@@ -143,6 +146,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
     sortOrder,
     onSort: onSortChange,
     cardSubcomponent,
+    showKarabastUnimplementedNameIcon,
   });
 
   if (!cardListData) {
@@ -206,9 +210,16 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
                       'mt-1 flex flex-wrap items-center justify-center gap-1 text-sm font-medium text-center w-full',
                       cardWidthClass,
                     )}
-                    title={card.name}
                   >
-                    <span className="min-w-0 truncate">{card.name}</span>
+                    <span className="min-w-0 truncate" title={card.name}>
+                      {card.name}
+                    </span>
+                    {showKarabastUnimplementedNameIcon && card.karabast_unimplemented && (
+                      <KarabastUnimplementedWarningIcon
+                        className="h-4 w-4"
+                        stopClickPropagation={true}
+                      />
+                    )}
                   </div>
                 </div>
               );

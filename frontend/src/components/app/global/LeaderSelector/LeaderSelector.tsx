@@ -157,6 +157,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
           {selectedLeader.card?.karabast_unimplemented && (
             <KarabastUnimplementedWarningIcon
               className="absolute bottom-2 left-2 z-20"
+              size="large"
               tooltipSide="right"
             />
           )}
@@ -277,6 +278,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
                 {leader?.card?.karabast_unimplemented && (
                   <KarabastUnimplementedWarningIcon
                     className="absolute bottom-2 left-2 z-20"
+                    size="large"
                     stopClickPropagation={true}
                     tooltipSide="right"
                   />
