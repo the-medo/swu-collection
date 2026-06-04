@@ -10,7 +10,7 @@ The feature should:
 - store the latest raw rows and their best SWUBase `cardId` match
 - expose a transient `Record<cardId, true>` from the card-list API
 - add an optional `karabast_unimplemented` flag to cards in `useCardList`
-- show warnings in deck list layouts, leader/base selectors, and a deck-level summary alert
+- show warnings in text/image deck list layouts, leader/base selectors, and separate deck-card vs leader/base summary alerts
 - avoid any IndexedDB schema change and avoid persisting this transient flag in the cached official/preview card lists
 
 ## Repo Findings
@@ -87,7 +87,7 @@ karabast_unimplemented: Record<string, true>
 
 This should be returned on every card-list response, independent of whether `official.needsUpdate` or `preview.needsUpdate` is true. The client needs the latest transient state even when the long-lived card-list sections are unchanged.
 
-Because the current app uses `POST /api/cards`, implement this on the existing POST route rather than adding a new GET route unless we intentionally want a public GET alias.
+Confirmed product decision: implement this on the existing `POST /api/cards` route. Do not add a `GET /cards` alias for this feature.
 
 ## Backend Plan
 
@@ -197,9 +197,8 @@ for (const cardId of Object.keys(karabastUnimplemented)) {
    - Ensure the warning still renders when both `displayDropdown` and `displayQuantity` are false. The current badge block is conditional on those props, so the icon may need its own small overlay or the wrapper condition must include `card?.karabast_unimplemented`.
 
 7. Wording layout.
-   - The requirement names text and image layouts. The repo has a third `WITH_WORDING` layout.
-   - Recommended: add the same icon next to the card name in `DeckLayoutWithWordingRow` so the feature is consistent across all deck views.
-   - Note that this row component is also used for leader/base rows. Either accept that as useful consistency or add a prop to limit the icon to deck-card rows only.
+   - Leave `DeckLayoutWithWording` unchanged for this implementation.
+   - Do not add unimplemented warning icons to wording rows.
 
 8. Leader/Base selectors.
    - In `LeaderSelector` and `BaseSelector`, overlay the warning icon in the bottom-left corner of the `CardImage` for:
@@ -208,22 +207,30 @@ for (const cardId of Object.keys(karabastUnimplemented)) {
      - footer selected preview card
    - Because `CardImage` renders children inside a relative container, pass the overlay icon as children.
 
-9. Deck-level summary alert.
-   - In `useDeckData`, compute or expose a count of unimplemented cards in board 1 and board 2 only.
-   - Count quantity, not unique card IDs, unless product preference says otherwise. The requirement says "number of unimplemented cards", and deck counts normally mean copies.
-   - Suggested return field:
+9. Summary alerts.
+   - In `useDeckData`, compute two separate summaries:
+     - deck cards: unique unimplemented card IDs in board 1 and board 2 only
+     - leader/base: unique unimplemented card IDs among `leaderCardId1`, `leaderCardId2`, and `baseCardId`
+   - Exclude maybeboard (`board === 3`) from all summary alerts because maybeboard is not exported to or used in Karabast.
+   - Count unique different cards, not quantities/copies.
+   - Suggested return fields:
 
 ```ts
-karabastUnimplementedSummary: {
-  totalQuantity: number;
+karabastUnimplementedDeckCardsSummary: {
   uniqueCardIds: string[];
-}
+};
+karabastUnimplementedLeaderBaseSummary: {
+  uniqueCardIds: string[];
+};
 ```
 
-   - In `DeckContents`, render an `Alert variant="destructive"` or `warning` above `<DeckCards />` when totalQuantity > 0.
-   - The message should be concise, for example:
-     - `3 cards in this deck are not implemented in Karabast.`
-   - Include only main deck and sideboard. Exclude leaders, base, and maybeboard unless the open question below changes this.
+   - In `DeckContents`, render one `Alert variant="destructive"` or `warning` for deck cards when `karabastUnimplementedDeckCardsSummary.uniqueCardIds.length > 0`.
+   - Render a separate alert for leader/base when `karabastUnimplementedLeaderBaseSummary.uniqueCardIds.length > 0`.
+   - If both summaries are non-empty, display both alerts.
+   - The deck-card alert message must make clear it counts different cards, for example:
+     - `3 different main deck/sideboard cards are not implemented in Karabast.`
+   - The leader/base alert should be separate, for example:
+     - `1 leader/base card is not implemented in Karabast.`
 
 ## Testing And Validation
 
@@ -258,9 +265,11 @@ bun run build
   - flags appear without writing to IndexedDB
   - text layout icon placement
   - visual layout icon near quantity
-  - wording layout icon, if implemented
+  - wording layout remains unchanged
   - leader/base selector overlays
-  - deck summary alert counts only boards 1 and 2
+  - deck-card summary alert counts unique different cards from boards 1 and 2 only
+  - leader/base summary alert is separate from the deck-card summary alert
+  - maybeboard does not affect either summary alert
 
 Operational:
 
@@ -274,7 +283,7 @@ Operational:
 
 1. Implement backend schema, migration, provider/cache, API field, cron library, cron script.
 2. Add backend mapping/cache tests.
-3. Implement frontend type, `useCardList` transient flag application, warning icon component, deck layouts, selectors, summary alert.
+3. Implement frontend type, `useCardList` transient flag application, warning icon component, text/image deck layouts, selectors, and the two summary alerts.
 4. Run backend tests and frontend build.
 5. Run the cron once in local/staging.
 6. Configure Coolify to run the cron every 60 minutes.
@@ -291,15 +300,17 @@ Validated with Claude Code `2.1.123` after the first draft. Its findings were in
 - `useCardList` needs periodic refetch behavior because `staleTime: Infinity` would keep transient status stale in open sessions
 - `DeckCardVisualItem` needs to render the warning even when quantity/dropdown chrome is hidden
 
-## Open Questions / Product Decisions
+## Product Decisions
 
-- The description says `GET /cards`, but the repo currently uses `POST /api/cards` for version-aware card-list loading. Should this feature only extend the existing POST route, or do you also want a GET alias?
-- Should the deck-level summary count unimplemented copies or unique unimplemented card titles? I recommend counting copies and optionally listing unique card names in tooltip/details.
-- Should leaders and bases be included in the top deck-level alert? The current requirement says only main deck and sideboard, so the plan excludes leader/base, while still showing per-card overlays in selectors.
-- Should maybeboard be completely excluded from the alert? The current requirement says main deck and sideboard only, so the plan excludes it.
-- Should transformed-title fallback accept a `cardId` even if it is not currently in the merged card list? I recommend storing `null` unless the transformed ID exists, to avoid marking non-existent cards from name collisions or punctuation differences.
-- Should unmatched Karabast rows be surfaced in an admin/debug page later? Not needed for the first implementation, but useful to improve mappings during spoiler season.
-- In wording layout, should leader/base rows show the unimplemented icon too? I recommend yes for consistency, but it is technically beyond the explicit selector-overlay requirement.
+- Extend `POST /api/cards`; the earlier `GET /cards` wording was shorthand and no GET alias is needed.
+- Summary alerts count unique different cards, not quantities/copies.
+- Use two separate alerts when needed:
+  - one for unimplemented main deck/sideboard cards
+  - one for unimplemented leader/base cards
+- Exclude maybeboard from summary alerts.
+- For transformed-title fallback, store `card_id = null` unless the transformed card ID exists in the merged card list.
+- Keep unmatched rows in the database with `NULL` `card_id`; do not return them from `/api/cards` and do not build an admin/debug surface for them in this implementation.
+- Leave wording layout unchanged.
 
 ## Known Risks
 
