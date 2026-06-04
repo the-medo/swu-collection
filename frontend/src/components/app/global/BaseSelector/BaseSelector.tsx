@@ -183,6 +183,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
           {selectedBase.karabast_unimplemented && (
             <KarabastUnimplementedWarningIcon
               className="absolute bottom-2 left-2 z-20"
+              size="large"
               tooltipSide="right"
             />
           )}
@@ -325,6 +326,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
                 {base?.card?.karabast_unimplemented && (
                   <KarabastUnimplementedWarningIcon
                     className="absolute bottom-2 left-2 z-20"
+                    size="large"
                     stopClickPropagation={true}
                     tooltipSide="right"
                   />

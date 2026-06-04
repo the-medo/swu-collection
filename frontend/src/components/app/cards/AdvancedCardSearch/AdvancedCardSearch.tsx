@@ -44,6 +44,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
   const { setSearchInitialized } = useAdvancedCardSearchStoreActions();
 
   const [resultsOrChildren, setResultsOrChildren] = useState<'results' | 'children'>('results');
+  const showKarabastUnimplementedNameIcon = searchFrom === SearchFrom.DECKBUILDER;
 
   const onSearch = useCallback(() => {
     if (!cardListData) {
@@ -85,7 +86,10 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
             onSearch={onSearch}
             availableCardTypes={searchContext?.availableCardTypes}
           />
-          <AdvancedSearchResults hasActiveFilters={hasActiveFilters} />
+          <AdvancedSearchResults
+            hasActiveFilters={hasActiveFilters}
+            showKarabastUnimplementedNameIcon={showKarabastUnimplementedNameIcon}
+          />
         </div>
       </>
     );
@@ -138,6 +142,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
                 title: 'hidden @[1080px]/main-body:flex',
               }}
               cardSubcomponent={cardSubcomponent}
+              showKarabastUnimplementedNameIcon={showKarabastUnimplementedNameIcon}
             />
           </div>
           <div

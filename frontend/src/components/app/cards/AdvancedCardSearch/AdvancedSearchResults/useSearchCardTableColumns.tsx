@@ -11,6 +11,7 @@ import {
   CardDataWithVariants,
   CardListVariants,
 } from '../../../../../../../lib/swu-resources/types.ts';
+import KarabastUnimplementedWarningIcon from '@/components/app/decks/KarabastUnimplementedWarningIcon.tsx';
 
 export type SearchCardData = {
   cardId: string;
@@ -25,6 +26,7 @@ export type SearchCardTableColumnsProps = {
   sortOrder?: SortOrder;
   onSort?: (field: SortField) => void;
   cardSubcomponent?: (card: CardDataWithVariants<CardListVariants> | undefined) => React.ReactNode;
+  showKarabastUnimplementedNameIcon?: boolean;
 };
 
 export function useSearchCardTableColumns({
@@ -33,6 +35,7 @@ export function useSearchCardTableColumns({
   sortOrder = 'asc',
   onSort,
   cardSubcomponent,
+  showKarabastUnimplementedNameIcon = false,
 }: SearchCardTableColumnsProps): ColumnDef<SearchCardData>[] {
   const { data: cardListData } = useCardList();
   const showImage = layoutType === 'tableImage';
@@ -88,6 +91,9 @@ export function useSearchCardTableColumns({
           <div>
             <div className="flex flex-wrap items-center gap-1 font-medium">
               <span>{card.name}</span>
+              {showKarabastUnimplementedNameIcon && card.karabast_unimplemented && (
+                <KarabastUnimplementedWarningIcon className="h-4 w-4" stopClickPropagation={true} />
+              )}
             </div>
             {layoutType === 'tableImage' && (
               <div className="text-xs text-muted-foreground">
@@ -285,5 +291,14 @@ export function useSearchCardTableColumns({
     }
 
     return definitions;
-  }, [cardListData, cardSubcomponent, layoutType, onSort, showImage, sortField, sortOrder]);
+  }, [
+    cardListData,
+    cardSubcomponent,
+    layoutType,
+    onSort,
+    showImage,
+    showKarabastUnimplementedNameIcon,
+    sortField,
+    sortOrder,
+  ]);
 }
