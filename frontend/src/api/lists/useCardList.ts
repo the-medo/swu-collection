@@ -91,6 +91,8 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
       // Merge: official cards win on collision so preview cards cannot shadow official data.
       const cardListData: CardList = { ...previewCards, ...officialCards };
 
+      //TODO: here add `karabast_unimplemented` property to the cards that are not implemented
+
       const cardIds = Object.keys(cardListData).sort((a, b) => a.localeCompare(b));
       const cardsByCardNo: CardsBySetAndNumber = {};
       const cardsByCardType: CardsByCardType = {};
