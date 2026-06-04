@@ -95,7 +95,7 @@ export function buildKarabastUnimplementedMappingContext(
         setPreferredCardId(setNumberCardIds, key, cardId, cards, 'set/number');
       });
 
-      card.cardUid?.forEach(uid => {
+      ((typeof card.cardUid === 'string' ? [card.cardUid] : card.cardUid) ?? []).forEach(uid => {
         const lookupUid = uid.trim();
         if (!lookupUid) return;
 

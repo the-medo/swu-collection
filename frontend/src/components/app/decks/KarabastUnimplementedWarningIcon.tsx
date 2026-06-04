@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TriangleAlert } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { cn } from '@/lib/utils.ts';
 
@@ -27,12 +27,13 @@ const KarabastUnimplementedWarningIcon: React.FC<KarabastUnimplementedWarningIco
       aria-label={LABEL}
       role="img"
       onClick={handleClick}
+      onDoubleClick={handleClick}
       className={cn(
         'inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-sm',
         className,
       )}
     >
-      <TriangleAlert className="h-3.5 w-3.5" aria-hidden="true" />
+      <X className="h-3.5 w-3.5" aria-hidden="true" />
     </span>
   );
 
