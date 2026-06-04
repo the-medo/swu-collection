@@ -82,7 +82,7 @@ This configuration key is internal tracking for the cron. It does not need to be
 Extend `POST /api/cards` response with a top-level field:
 
 ```ts
-karabast_unimplemented: Record<string, true>
+karabast_unimplemented: Record<string, true>;
 ```
 
 This should be returned on every card-list response, independent of whether `official.needsUpdate` or `preview.needsUpdate` is true. The client needs the latest transient state even when the long-lived card-list sections are unchanged.
@@ -173,12 +173,12 @@ for (const cardId of Object.keys(karabastUnimplemented)) {
 }
 ```
 
-   - If the API call fails and IndexedDB fallback is used, the flag map will be empty/stale-missing for that session. That is acceptable unless we decide to persist a separate transient cache, which the requirement currently rules out.
+- If the API call fails and IndexedDB fallback is used, the flag map will be empty/stale-missing for that session. That is acceptable unless we decide to persist a separate transient cache, which the requirement currently rules out.
 
-3. Consider frontend refetch behavior.
-   - `useCardList` currently has `staleTime: Infinity`, which would leave already-open sessions with stale unimplemented status until a full reload.
-   - Implement a periodic refresh for `['cardList']`, preferably `staleTime: 15 * 60 * 1000` plus `refetchInterval: 15 * 60 * 1000`.
-   - This does not require a new IndexedDB schema and does not usually refetch the full card payload from the network: the client still posts official/preview versions, so unchanged sections return `needsUpdate: false` while the top-level `karabast_unimplemented` map refreshes.
+3. Keep existing card-list query refresh behavior.
+   - Keep `useCardList` at `staleTime: Infinity`.
+   - Do not add a `refetchInterval` for `['cardList']`.
+   - Already-open sessions may keep stale unimplemented status until a reload or explicit query invalidation. This is an accepted product tradeoff for now.
 
 4. Add a reusable UI warning indicator.
    - New component suggestion:
@@ -224,13 +224,13 @@ karabastUnimplementedLeaderBaseSummary: {
 };
 ```
 
-   - In `DeckContents`, render one `Alert variant="destructive"` or `warning` for deck cards when `karabastUnimplementedDeckCardsSummary.uniqueCardIds.length > 0`.
-   - Render a separate alert for leader/base when `karabastUnimplementedLeaderBaseSummary.uniqueCardIds.length > 0`.
-   - If both summaries are non-empty, display both alerts.
-   - The deck-card alert message must make clear it counts different cards, for example:
-     - `3 different main deck/sideboard cards are not implemented in Karabast.`
-   - The leader/base alert should be separate, for example:
-     - `1 leader/base card is not implemented in Karabast.`
+- In `DeckContents`, render one `Alert variant="destructive"` or `warning` for deck cards when `karabastUnimplementedDeckCardsSummary.uniqueCardIds.length > 0`.
+- Render a separate alert for leader/base when `karabastUnimplementedLeaderBaseSummary.uniqueCardIds.length > 0`.
+- If both summaries are non-empty, display both alerts.
+- The deck-card alert message must make clear it counts different cards, for example:
+  - `3 different main deck/sideboard cards are not implemented in Karabast.`
+- The leader/base alert should be separate, for example:
+  - `1 leader/base card is not implemented in Karabast.`
 
 ## Testing And Validation
 
@@ -297,7 +297,6 @@ Validated with Claude Code `2.1.123` after the first draft. Its findings were in
 - duplicate `titleAndSubtitle` rows must not fail the cron refresh
 - the external fetch needs an explicit timeout
 - the Hono route response must include the new field so frontend RPC types update
-- `useCardList` needs periodic refetch behavior because `staleTime: Infinity` would keep transient status stale in open sessions
 - `DeckCardVisualItem` needs to render the warning even when quantity/dropdown chrome is hidden
 
 ## Product Decisions
@@ -317,5 +316,5 @@ Validated with Claude Code `2.1.123` after the first draft. Its findings were in
 - External response shape may change. Zod validation and "do not clear DB on failure" protects users from losing the last known-good list.
 - New SWU sets must exist in `SwuSet` / `setInfo` for set-number mapping and preview card handling to work cleanly.
 - `titleAndSubtitle` to `transformToId` should match official IDs when Karabast formats title/subtitle exactly like SWUBase does, but any punctuation, spacing, or subtitle divergence can make this fallback miss. It should remain the last fallback.
-- The backend cache can refresh every 15 minutes, and the frontend should refetch the card-list query on the same cadence; otherwise already-open sessions can still hide updates.
+- The backend cache can refresh every 15 minutes, but `useCardList` intentionally does not poll. Already-open sessions can keep stale unimplemented status until reload or explicit query invalidation.
 - If official and preview cards share a `cardId`, official cards win during merge; this matches existing app behavior.
