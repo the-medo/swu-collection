@@ -14,12 +14,14 @@ interface AdvancedSearchResultsProps {
     title?: string;
   };
   cardSubcomponent?: SearchCardLayoutProps['cardSubcomponent'];
+  showKarabastUnimplementedNameIcon?: boolean;
 }
 
 const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
   hasActiveFilters,
   classNames,
   cardSubcomponent,
+  showKarabastUnimplementedNameIcon = false,
 }) => {
   const navigate = useNavigate();
   const { isLoading: isLoadingCardList } = useCardList();
@@ -79,6 +81,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
                 onCardClick={handleViewCard}
                 layoutType={resultsLayout}
                 cardSubcomponent={cardSubcomponent}
+                showKarabastUnimplementedNameIcon={showKarabastUnimplementedNameIcon}
               />
             </ScrollArea>
           </>
