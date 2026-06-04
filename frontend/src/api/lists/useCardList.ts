@@ -50,6 +50,7 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
 
       let officialCards: CardList | undefined = storedOfficialData;
       let previewCards: CardList | undefined = storedPreviewData;
+      let karabastUnimplemented: Record<string, true> = {};
 
       try {
         const response = await api.cards.$post({
@@ -64,6 +65,7 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
         }
 
         const data = await response.json();
+        karabastUnimplemented = data.karabast_unimplemented ?? {};
 
         if (data.official.needsUpdate) {
           if ('cards' in data.official && data.official.cards) {
@@ -91,7 +93,12 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
       // Merge: official cards win on collision so preview cards cannot shadow official data.
       const cardListData: CardList = { ...previewCards, ...officialCards };
 
-      //TODO: here add `karabast_unimplemented` property to the cards that are not implemented
+      Object.keys(karabastUnimplemented).forEach(cardId => {
+        const card = cardListData[cardId];
+        if (card) {
+          cardListData[cardId] = { ...card, karabast_unimplemented: true };
+        }
+      });
 
       const cardIds = Object.keys(cardListData).sort((a, b) => a.localeCompare(b));
       const cardsByCardNo: CardsBySetAndNumber = {};

@@ -104,6 +104,8 @@ export interface CardDataWithVariants<T = CardVariant[]> {
   karabast_id?: string;
   // Scalar inbound Karabast ID that resolves to this SWUBase cardId.
   karabast_id_to_swubase_id?: string;
+  // Transient API flag; do not persist in the cached official/preview card lists.
+  karabast_unimplemented?: true;
 }
 
 export type CardListVariants = Record<string, CardVariant | undefined>;
