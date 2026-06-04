@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils.ts';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import type { FilterByFormat } from '../../../../../../types/Format.ts';
 import { DialogTitle } from '@/components/ui/dialog.tsx';
+import KarabastUnimplementedWarningIcon from '@/components/app/decks/KarabastUnimplementedWarningIcon.tsx';
 
 type LeaderSelectorProps = Pick<DialogProps, 'trigger'> & {
   leaderCardId?: string;
@@ -152,7 +153,14 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
           forceHorizontal={true}
           backSideButton={'mid'}
           size={size}
-        />
+        >
+          {selectedLeader.card?.karabast_unimplemented && (
+            <KarabastUnimplementedWarningIcon
+              className="absolute bottom-2 left-2 z-20"
+              tooltipSide="right"
+            />
+          )}
+        </CardImage>
       </div>
     );
   }, [selectedLeader, size, editable]);
@@ -193,14 +201,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
         </div>
       </>
     );
-  }, [
-    filterByFormat,
-    formatFilterEnabled,
-    formatFilterSwitchId,
-    search,
-    aspectFilter,
-    isMobile,
-  ]);
+  }, [filterByFormat, formatFilterEnabled, formatFilterSwitchId, search, aspectFilter, isMobile]);
 
   const handleSave = useCallback(
     (leaderCardId: string | undefined) => {
@@ -224,7 +225,14 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
             forceHorizontal={true}
             size="w100"
             backSideButton={false}
-          />
+          >
+            {localSelectedLeader?.card?.karabast_unimplemented && (
+              <KarabastUnimplementedWarningIcon
+                className="absolute bottom-1 left-1 z-20 h-4 w-4"
+                tooltipSide="right"
+              />
+            )}
+          </CardImage>
 
           {localSelectedLeader ? (
             <>
@@ -268,7 +276,15 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
                 cardVariantId={leader.variantId}
                 forceHorizontal={true}
                 size="w300"
-              />
+              >
+                {leader?.card?.karabast_unimplemented && (
+                  <KarabastUnimplementedWarningIcon
+                    className="absolute bottom-2 left-2 z-20"
+                    stopClickPropagation={true}
+                    tooltipSide="right"
+                  />
+                )}
+              </CardImage>
             </div>
           ))}
           {leaders.length === 0 && (

@@ -20,6 +20,10 @@ import { groupCardsBySet } from '@/components/app/decks/DeckContents/DeckCards/l
 
 const emptyLeaderAndBaseCards = [undefined, undefined];
 
+export type KarabastUnimplementedSummary = {
+  uniqueCardIds: string[];
+};
+
 /**
  * Hook to get all deck data including leader, base, cards, and user info
  */
@@ -115,19 +119,58 @@ export function useDeckData(
       usedCards,
       usedCardsInBoards,
     };
-  }, [cardList, deckCards, groupBy]);
+  }, [cardList, deckCards, deckMeta, groupBy]);
 
   const [leaderCard, baseCard] = useMemo(() => {
     if (!cardList || !deckInfo?.deck.leaderCardId1 || !deckInfo?.deck.baseCardId)
       return emptyLeaderAndBaseCards;
     return [cardList.cards[deckInfo.deck.leaderCardId1], cardList.cards[deckInfo.deck.baseCardId]];
-  }, [cardList, deckInfo?.deck.leaderCardId1]);
+  }, [cardList, deckInfo?.deck.baseCardId, deckInfo?.deck.leaderCardId1]);
+
+  const karabastUnimplementedDeckCardsSummary = useMemo<KarabastUnimplementedSummary>(() => {
+    const uniqueCardIds = new Set<string>();
+
+    deckCards
+      .filter(deckCard => deckCard.quantity > 0 && (deckCard.board === 1 || deckCard.board === 2))
+      .forEach(deckCard => {
+        if (cardList?.cards[deckCard.cardId]?.karabast_unimplemented) {
+          uniqueCardIds.add(deckCard.cardId);
+        }
+      });
+
+    return {
+      uniqueCardIds: [...uniqueCardIds].sort((a, b) => a.localeCompare(b)),
+    };
+  }, [cardList, deckCards]);
+
+  const karabastUnimplementedLeaderBaseSummary = useMemo<KarabastUnimplementedSummary>(() => {
+    const uniqueCardIds = new Set<string>();
+
+    [deckInfo?.deck.leaderCardId1, deckInfo?.deck.leaderCardId2, deckInfo?.deck.baseCardId].forEach(
+      cardId => {
+        if (cardId && cardList?.cards[cardId]?.karabast_unimplemented) {
+          uniqueCardIds.add(cardId);
+        }
+      },
+    );
+
+    return {
+      uniqueCardIds: [...uniqueCardIds].sort((a, b) => a.localeCompare(b)),
+    };
+  }, [
+    cardList,
+    deckInfo?.deck.baseCardId,
+    deckInfo?.deck.leaderCardId1,
+    deckInfo?.deck.leaderCardId2,
+  ]);
 
   return {
     deckCardsForLayout,
     deckMeta,
     leaderCard,
     baseCard,
+    karabastUnimplementedDeckCardsSummary,
+    karabastUnimplementedLeaderBaseSummary,
     isLoading: !deckInfo || !cardList || !deckCardsData,
   };
 }
