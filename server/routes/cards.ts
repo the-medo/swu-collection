@@ -8,6 +8,8 @@ import {
   getOfficialCardList,
   getOfficialCardListVersion,
 } from '../lib/cards/cardListProvider.ts';
+import { getKarabastUnimplementedMap } from '../lib/karabast/unimplementedCardsCache.ts';
+import type { KarabastUnimplementedMap } from '../lib/karabast/unimplementedCards.ts';
 import type { AuthExtension } from '../auth/auth.ts';
 
 // Re-exported for backward compatibility with any code still importing from here.
@@ -27,6 +29,15 @@ const cardDecksQuerySchema = z.object({
   leaderCardId: z.string().optional(),
   baseCardId: z.string().optional(),
 });
+
+async function getKarabastUnimplementedMapForResponse(): Promise<KarabastUnimplementedMap> {
+  try {
+    return await getKarabastUnimplementedMap();
+  } catch (error) {
+    console.error('Error fetching Karabast unimplemented card map:', error);
+    return {};
+  }
+}
 
 export const cardsRoute = new Hono<AuthExtension>()
   .get('/:id/decks', zValidator('query', cardDecksQuerySchema), async c => {
@@ -64,6 +75,10 @@ export const cardsRoute = new Hono<AuthExtension>()
     // back to the legacy `lastUpdated` field so old clients keep working.
     const effectiveOfficialLastUpdated = officialLastUpdated ?? lastUpdated;
     const officialVersion = getOfficialCardListVersion();
+    const [preview, karabastUnimplemented] = await Promise.all([
+      buildPreviewCardListUpdateSection(previewLastUpdated),
+      getKarabastUnimplementedMapForResponse(),
+    ]);
 
     return c.json({
       official: buildCardListUpdateSection(
@@ -71,6 +86,7 @@ export const cardsRoute = new Hono<AuthExtension>()
         officialVersion,
         getOfficialCardList(),
       ),
-      preview: await buildPreviewCardListUpdateSection(previewLastUpdated),
+      preview,
+      karabast_unimplemented: karabastUnimplemented,
     });
   });
