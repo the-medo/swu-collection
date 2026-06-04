@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from '@tanstack/react-router';
-import { Plus, Trash2 } from 'lucide-react';
+import { GitBranch, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { getFormatName } from '@/components/app/decks/DeckTable/deckTableLib.tsx';
 import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
@@ -19,7 +19,9 @@ interface TeamDeckVariantProps {
   teamId: string;
   teamDeck: TeamDeckExpanded;
   onRemove: () => void;
+  onBranch: () => void;
   removeDisabled?: boolean;
+  branchDisabled?: boolean;
 }
 
 interface AddDeckVariantProps {
@@ -42,6 +44,7 @@ const DeckListItem: React.FC<DeckListItemProps> = props => {
 
   if (variant === 'team-deck') {
     const { teamDeck, onRemove, removeDisabled } = props;
+    const { onBranch, branchDisabled } = props;
     const userName = teamDeck.user.displayName ?? teamDeck.user.name;
     return (
       <div className="flex items-center gap-3 p-3 rounded-lg border relative overflow-hidden min-h-14">
@@ -74,6 +77,16 @@ const DeckListItem: React.FC<DeckListItemProps> = props => {
           </span>
         </div>
         <CopyLinkButton deckId={deck.id} isPublic={true} compact={true} size="iconMedium" />
+        <Button
+          variant="ghost"
+          size="iconMedium"
+          className="relative z-10"
+          onClick={onBranch}
+          disabled={branchDisabled}
+          title="Branch deck"
+        >
+          <GitBranch className="h-4 w-4" />
+        </Button>
         <Button
           variant="ghost"
           size="iconMedium"

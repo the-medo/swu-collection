@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { and, eq, getTableColumns, gte, or } from 'drizzle-orm';
+import { and, eq, getTableColumns } from 'drizzle-orm';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
 import { cardPoolDeckCards } from '../../../../db/schema/card_pool_deck.ts';
@@ -10,28 +10,22 @@ import type { DeckCard } from '../../../../../types/ZDeckCard.ts';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { transformCardPoolDeckCardsToDeckCards } from '../../../../lib/decks/transformCardPoolDeckCards.ts';
 import { getMergedCardList } from '../../../../lib/cards/cardListProvider.ts';
+import { canViewDeck, isAdminUser } from '../../../../lib/decks/deckBranchAccess.ts';
 
 export const deckIdCardGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const paramDeckId = z.guid().parse(c.req.param('id'));
   const user = c.get('user');
-
-  const isPublicOrUnlisted = gte(deckTable.public, 1);
-  const isOwner = user ? eq(deckTable.userId, user.id) : null;
+  const isAdmin = await isAdminUser(user?.id);
 
   // First, get deck to know if it has a cardPoolId and ensure access rights
   const deckRow = (
     await db
-      .select({ id: deckTable.id, cardPoolId: deckTable.cardPoolId })
+      .select()
       .from(deckTable)
-      .where(
-        and(
-          eq(deckTable.id, paramDeckId),
-          isOwner ? or(isOwner, isPublicOrUnlisted) : isPublicOrUnlisted,
-        ),
-      )
+      .where(eq(deckTable.id, paramDeckId))
   )[0];
 
-  if (!deckRow) {
+  if (!deckRow || !(await canViewDeck(deckRow, user?.id, isAdmin))) {
     return c.json({ message: "Deck doesn't exist or you don't have access to it" }, 404);
   }
 
@@ -42,12 +36,7 @@ export const deckIdCardGetRoute = new Hono<AuthExtension>().get('/', async c => 
       .select(columns)
       .from(deckCardTable)
       .innerJoin(deckTable, eq(deckCardTable.deckId, deckTable.id))
-      .where(
-        and(
-          eq(deckTable.id, paramDeckId),
-          isOwner ? or(isOwner, isPublicOrUnlisted) : isPublicOrUnlisted,
-        ),
-      )) as unknown as DeckCard[];
+      .where(eq(deckTable.id, paramDeckId))) as unknown as DeckCard[];
 
     return c.json({ data: deckContents });
   }
@@ -67,12 +56,7 @@ export const deckIdCardGetRoute = new Hono<AuthExtension>().get('/', async c => 
         eq(cardPoolCards.cardPoolNumber, cardPoolDeckCards.cardPoolNumber),
       ),
     )
-    .where(
-      and(
-        eq(deckTable.id, paramDeckId),
-        isOwner ? or(isOwner, isPublicOrUnlisted) : isPublicOrUnlisted,
-      ),
-    );
+    .where(eq(deckTable.id, paramDeckId));
 
   const transformed = transformCardPoolDeckCardsToDeckCards(
     poolRows,

@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as Statistics2RouteImport } from './routes/statistics2'
+import { Route as ReviewMocksRouteImport } from './routes/review-mocks'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -95,6 +96,11 @@ const TermsRoute = TermsRouteImport.update({
 const Statistics2Route = Statistics2RouteImport.update({
   id: '/statistics2',
   path: '/statistics2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewMocksRoute = ReviewMocksRouteImport.update({
+  id: '/review-mocks',
+  path: '/review-mocks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -449,6 +455,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacy': typeof PrivacyRoute
+  '/review-mocks': typeof ReviewMocksRoute
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -515,6 +522,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacy': typeof PrivacyRoute
+  '/review-mocks': typeof ReviewMocksRoute
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -581,6 +589,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/privacy': typeof PrivacyRoute
+  '/review-mocks': typeof ReviewMocksRoute
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -651,6 +660,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/privacy'
+    | '/review-mocks'
     | '/statistics2'
     | '/terms'
     | '/admin'
@@ -717,6 +727,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/privacy'
+    | '/review-mocks'
     | '/statistics2'
     | '/terms'
     | '/admin'
@@ -782,6 +793,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/privacy'
+    | '/review-mocks'
     | '/statistics2'
     | '/terms'
     | '/_authenticated/admin'
@@ -852,6 +864,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
   PrivacyRoute: typeof PrivacyRoute
+  ReviewMocksRoute: typeof ReviewMocksRoute
   Statistics2Route: typeof Statistics2Route
   TermsRoute: typeof TermsRoute
   CardsSearchRoute: typeof CardsSearchRoute
@@ -918,6 +931,13 @@ declare module '@tanstack/react-router' {
       path: '/statistics2'
       fullPath: '/statistics2'
       preLoaderRoute: typeof Statistics2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/review-mocks': {
+      id: '/review-mocks'
+      path: '/review-mocks'
+      fullPath: '/review-mocks'
+      preLoaderRoute: typeof ReviewMocksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -1486,6 +1506,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
   PrivacyRoute: PrivacyRoute,
+  ReviewMocksRoute: ReviewMocksRoute,
   Statistics2Route: Statistics2Route,
   TermsRoute: TermsRoute,
   CardsSearchRoute: CardsSearchRoute,

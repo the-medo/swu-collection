@@ -9,6 +9,7 @@ import DeckContents from '../DeckContents/DeckContents';
 import { useSetDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { Helmet } from 'react-helmet-async';
 import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
+import DeckBranchBanner from '@/components/app/decks/DeckBranchBanner.tsx';
 
 interface DeckDetailProps {
   adminEdit?: boolean;
@@ -71,6 +72,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder 
           </div>
         )}
       </div>
+      {data?.branchContext && <DeckBranchBanner deckData={data} />}
       <div className="flex flex-row gap-4 text-sm italic mb-2">{data?.deck.description}</div>
       <div className="flex grow flex-col gap-0">
         <DeckContents deckId={deckId} />

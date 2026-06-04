@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { auth, type AuthExtension } from '../../../../auth/auth.ts';
+import type { AuthExtension } from '../../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { zDeckCardCreateRequest } from '../../../../../types/ZDeckCard.ts';
 import { z } from 'zod';
@@ -7,6 +7,7 @@ import { eq, sql } from 'drizzle-orm';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { db } from '../../../../db';
 import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
+import { assertDeckEditable, isAdminUser } from '../../../../lib/decks/deckBranchAccess.ts';
 
 export const deckIdCardPostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -17,21 +18,9 @@ export const deckIdCardPostRoute = new Hono<AuthExtension>().post(
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const isAdmin = await auth.api.userHasPermission({
-      body: {
-        userId: user.id,
-        permission: {
-          admin: ['access'],
-        },
-      },
-    });
-
-    const deckId = eq(deckTable.id, paramDeckId);
-
-    const deck = (await db.select().from(deckTable).where(deckId))[0];
-    if (!deck) return c.json({ message: "Deck doesn't exist" }, 500);
-    if (deck.userId !== user.id && !isAdmin.success)
-      return c.json({ message: 'Unauthorized' }, 401);
+    const isAdmin = await isAdminUser(user.id);
+    const editable = await assertDeckEditable(paramDeckId, user.id, isAdmin);
+    if (!editable.ok) return c.json({ message: editable.message }, editable.status);
 
     const newDeckCard = await db
       .insert(deckCardTable)

@@ -8,15 +8,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { MoreHorizontal } from 'lucide-react';
+import { GitBranch, GitPullRequest, MoreHorizontal } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
-import { useUser } from '@/hooks/useUser.ts';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { getFormatName, UserDeckData } from './deckTableLib.tsx';
-import { useCountryList } from '@/api/lists/useCountryList.ts';
-import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
@@ -38,9 +35,6 @@ export function useDeckTableColumns({
   showOwner,
   showPublic,
 }: DeckTableColumnsProps): ExtendedColumnDef<UserDeckData>[] {
-  const user = useUser();
-  const { data: currencyData } = useCurrencyList();
-  const { data: countryData } = useCountryList();
   const { data: cardList } = useCardList();
   const putDeckMutation = usePutDeck(undefined);
 
@@ -136,6 +130,40 @@ export function useDeckTableColumns({
                   )}
                 >
                   {row.original.deck.description}
+                </span>
+              )}
+              {(row.original.branchContext ||
+                (row.original.openChangeRequestCount ?? 0) > 0 ||
+                (row.original.openBranchCount ?? 0) > 0) && (
+                <span
+                  className={cn('mt-1 flex flex-wrap gap-1', {
+                    'justify-center': view === 'box',
+                  })}
+                >
+                  {row.original.branchContext && (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-transparent bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">
+                      <GitBranch className="h-3 w-3" />
+                      Branch
+                      <span className="font-normal text-muted-foreground">
+                        {row.original.branchContext.team.name}
+                      </span>
+                    </span>
+                  )}
+                  {(row.original.openChangeRequestCount ?? 0) > 0 ? (
+                    <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold text-foreground">
+                      <GitPullRequest className="h-3 w-3" />
+                      {row.original.openChangeRequestCount}{' '}
+                      {row.original.openChangeRequestCount === 1
+                        ? 'change request'
+                        : 'change requests'}
+                    </span>
+                  ) : (row.original.openBranchCount ?? 0) > 0 ? (
+                    <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+                      <GitPullRequest className="h-3 w-3" />
+                      {row.original.openBranchCount}{' '}
+                      {row.original.openBranchCount === 1 ? 'branch' : 'branches'}
+                    </span>
+                  ) : null}
                 </span>
               )}
             </Button>
@@ -272,5 +300,12 @@ export function useDeckTableColumns({
     });
 
     return definitions;
-  }, [cardList, countryData, currencyData, putDeckMutation, user, view, isCompactBoxView]);
+  }, [
+    cardList,
+    putDeckMutation,
+    view,
+    isCompactBoxView,
+    showOwner,
+    showPublic,
+  ]);
 }

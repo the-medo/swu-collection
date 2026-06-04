@@ -11,6 +11,7 @@ import FavoriteButton from './components/FavoriteButton';
 import CopyLinkButton from './components/CopyLinkButton';
 import ComparerButton from './components/ComparerButton';
 import DuplicateButton from './components/DuplicateButton';
+import DeckBranchesMenu from './components/DeckBranchesMenu';
 import ExportOptionsMenu from './components/ExportOptionsMenu';
 import AdminEditButton from './components/AdminEditButton';
 import AdminMockGameDataButton from './components/AdminMockGameDataButton';
@@ -45,6 +46,7 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
         <CopyLinkButton deckId={deckId} isPublic={!!deckData?.deck.public} inNavigation={true} />
         <ComparerButton deckId={deckId} additionalData={additionalData} />
         <DuplicateButton deckId={deckId} isLimited={!!deckData?.deck.cardPoolId} />
+        <DeckBranchesMenu deckId={deckId} />
         <PriceSourceSelector showPricesOption={true} />
         <ExportOptionsMenu
           deckData={deckData}
