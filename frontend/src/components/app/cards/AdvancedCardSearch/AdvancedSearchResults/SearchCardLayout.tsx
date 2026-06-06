@@ -16,6 +16,7 @@ import {
 } from '../../../../../../../lib/swu-resources/types.ts';
 import { openCardOnMiddleButton } from '@/lib/cards/openCardOnMiddleButton.ts';
 import { getCardNameRelevanceScore } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
+import { sortByAspectArrays } from '../../../../../../../shared/lib/aspectLib.ts';
 
 export type CardLayoutType =
   | 'imageBig'
@@ -91,6 +92,8 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
         const costA = cardA.cost !== null ? cardA.cost : Infinity;
         const costB = cardB.cost !== null ? cardB.cost : Infinity;
         comparison = costA - costB;
+      } else if (sortField === 'aspect') {
+        comparison = sortByAspectArrays(cardA.aspects, cardB.aspects);
       }
 
       return sortOrder === 'asc' ? comparison : -comparison;

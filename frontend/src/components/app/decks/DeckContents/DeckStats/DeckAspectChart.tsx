@@ -3,7 +3,7 @@ import { ResponsivePie } from '@nivo/pie';
 import { DeckCardsForLayout } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { SwuAspect } from '../../../../../../../types/enums.ts';
-import { aspectColors } from '../../../../../../../shared/lib/aspectColors.ts';
+import { aspectLib } from '../../../../../../../shared/lib/aspectLib.ts';
 import { getGenericPieChartTooltip } from '@/components/app/global/GenericPieChartTooltip/GenericPieChartTooltip.tsx';
 
 interface AspectData {
@@ -79,7 +79,7 @@ const DeckAspectChart: React.FC<DeckAspectChartProps> = ({ deckCardsForLayout, o
         id: aspect,
         label: aspect,
         value: count,
-        color: aspect !== 'No Aspect' ? aspectColors[aspect as SwuAspect] : '#888888',
+        color: aspect !== 'No Aspect' ? aspectLib[aspect as SwuAspect] : '#888888',
       }));
   }, [mainboardCards, cardListData]);
 

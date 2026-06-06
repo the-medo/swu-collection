@@ -6,7 +6,7 @@ import { formatDataById } from '../../../../../../../types/Format.ts';
 import { SwuAspect } from '../../../../../../../types/enums.ts';
 import { useDeckColors } from '@/hooks/useDeckColors';
 import { hexToRgb } from '@/lib/hexToRgb';
-import { aspectColors } from '../../../../../../../shared/lib/aspectColors.ts';
+import { aspectLib } from '../../../../../../../shared/lib/aspectLib.ts';
 import {
   createDeckQrCodeDataUrl,
   DeckCardVariantMap,
@@ -436,8 +436,8 @@ const DeckImage = forwardRef<
           }
 
           // Apply villainy/heroism aspect overlay with 10% transparency if available
-          if (leaderVillainyHeroismAspect && aspectColors[leaderVillainyHeroismAspect]) {
-            const color = aspectColors[leaderVillainyHeroismAspect];
+          if (leaderVillainyHeroismAspect && aspectLib[leaderVillainyHeroismAspect]) {
+            const color = aspectLib[leaderVillainyHeroismAspect];
             // Convert hex to rgba with 10% transparency (alpha 0.1)
             const { r, g, b } = hexToRgb(color);
             ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.1)`;

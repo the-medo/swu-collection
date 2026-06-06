@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { getAspectGradient } from '../../../../../shared/lib/aspectColors.ts';
+import { getAspectGradient } from '../../../../../shared/lib/aspectLib.ts';
 import { SwuAspect } from '../../../../../types/enums.ts';
 import {
   CARD_AVATAR_CROP,

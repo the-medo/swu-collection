@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { isAspect } from '@/lib/cards/isAspect.ts';
 import { baseSpecialNameValues } from '../../../../../../shared/lib/basicBases.ts';
-import { aspectColors } from '../../../../../../shared/lib/aspectColors.ts';
+import { aspectLib } from '../../../../../../shared/lib/aspectLib.ts';
 import { rotationBlocks, setInfo } from '../../../../../../lib/swu-resources/set-info.ts';
 
 const getGradientDef = (id: string, colors: any[]) => ({
@@ -96,7 +96,7 @@ export const useChartColorsAndGradients = () => {
 
       return getGradientDef(
         value ?? 'unknown',
-        [...aspects].map((a, i) => ({ offset: i * 80, color: aspectColors[a] })),
+        [...aspects].map((a, i) => ({ offset: i * 80, color: aspectLib[a] })),
       );
     },
     [cardListData],

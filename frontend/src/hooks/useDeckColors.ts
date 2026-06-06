@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData';
 import { hexToRgb } from '@/lib/hexToRgb';
 import { SwuAspect } from '../../../types/enums.ts';
-import { aspectColors } from '../../../shared/lib/aspectColors.ts';
+import { aspectLib } from '../../../shared/lib/aspectLib.ts';
 
 type ColorType = 'hex' | 'rgb';
 
@@ -48,13 +48,13 @@ export const useDeckColors = (deckId: string, type: ColorType = 'rgb') => {
     };
 
     // If no leader color aspect, return defaults
-    if (!leaderColorAspect || !aspectColors[leaderColorAspect]) {
+    if (!leaderColorAspect || !aspectLib[leaderColorAspect]) {
       return type === 'hex' ? defaultHexReturn : defaultRgbReturn;
     }
 
     // Get hex colors
-    const leaderHexColor = aspectColors[leaderColorAspect];
-    const baseHexColor = baseColorAspect ? aspectColors[baseColorAspect] : null;
+    const leaderHexColor = aspectLib[leaderColorAspect];
+    const baseHexColor = baseColorAspect ? aspectLib[baseColorAspect] : null;
 
     // Convert to RGB
     const leaderRgb = hexToRgb(leaderHexColor);
