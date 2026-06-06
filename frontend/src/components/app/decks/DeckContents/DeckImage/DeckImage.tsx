@@ -3,7 +3,7 @@ import { useDeckData } from './../useDeckData';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { formatDataById } from '../../../../../../../types/Format.ts';
-import { SwuAspect } from '../../../../../../../types/enums.ts';
+import { DeckGroupBy, SwuAspect } from '../../../../../../../types/enums.ts';
 import { useDeckColors } from '@/hooks/useDeckColors';
 import { hexToRgb } from '@/lib/hexToRgb';
 import { aspectLib } from '../../../../../../../shared/lib/aspectLib.ts';
@@ -15,6 +15,7 @@ import {
 } from '@/components/app/decks/DeckContents/DeckImage/deckImageLib.ts';
 import { useDeckImageVariants } from '@/components/app/decks/DeckContents/DeckImage/DeckImageCustomization/useDeckImageVariants.ts';
 import { cn } from '@/lib/utils.ts';
+import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
 interface DeckImageProps {
   deckId: string;
@@ -32,6 +33,16 @@ export const DECK_IMAGE_BACKGROUND_URL =
   'https://images.swubase.com/thumbnails/empty-deck-background-2800x2100.png';
 export const DECK_IMAGE_LOGO_URL = 'https://images.swubase.com/logo-light.svg';
 
+const SWU_ASPECTS = Object.values(SwuAspect);
+const getAspectIconUrl = (aspect: string) =>
+  `https://images.swubase.com/icons/${aspect.toLowerCase()}.webp`;
+const isAspectGroupBy = (groupBy: DeckGroupBy | undefined) =>
+  groupBy === DeckGroupBy.ASPECT || groupBy === DeckGroupBy.ASPECT_DETAILED;
+const getAspectsFromGroupLabel = (label: string | undefined): SwuAspect[] =>
+  (label ?? '')
+    .split(', ')
+    .filter((aspect): aspect is SwuAspect => SWU_ASPECTS.includes(aspect as SwuAspect));
+
 const DeckImage = forwardRef<
   { handleDownload: () => void; handleCopyToClipboard: () => void },
   DeckImageProps
@@ -48,6 +59,7 @@ const DeckImage = forwardRef<
     ref,
   ) => {
     const { finalVariantMap } = useDeckImageVariants(deckCardVariants);
+    const { data: groupBy } = useGetUserSetting('deckImage_groupBy');
 
     const { leaderCard, deckCardsForLayout, deckMeta, isLoading } = useDeckData(
       deckId,
@@ -185,6 +197,17 @@ const DeckImage = forwardRef<
           deckCardsForLayout.cardsByBoard[1].forEach(c => allImgs.add(c.cardId));
           deckCardsForLayout.cardsByBoard[2].forEach(c => allImgs.add(c.cardId));
 
+          const aspectIconUrls = new Set<string>();
+          if (isAspectGroupBy(groupBy)) {
+            deckCardsForLayout.mainboardGroups?.sortedIds.forEach(groupName => {
+              const group = deckCardsForLayout.mainboardGroups?.groups[groupName];
+              if (!group || group.cards.length === 0) return;
+              getAspectsFromGroupLabel(group.label).forEach(aspect =>
+                aspectIconUrls.add(getAspectIconUrl(aspect)),
+              );
+            });
+          }
+
           if (allImgs.size === 0) {
             setError('No cards to display');
             setLoadingImages(false);
@@ -207,7 +230,11 @@ const DeckImage = forwardRef<
           setQrCodeDataUrl(nextQrCodeDataUrl);
 
           const totalImageCount =
-            allImgs.size + 1 + (showNoisyBackground ? 1 : 0) + (nextQrCodeDataUrl ? 1 : 0);
+            allImgs.size +
+            aspectIconUrls.size +
+            1 +
+            (showNoisyBackground ? 1 : 0) +
+            (nextQrCodeDataUrl ? 1 : 0);
           setImagesToLoad(totalImageCount);
 
           // Load all images
@@ -241,6 +268,10 @@ const DeckImage = forwardRef<
             } catch (err) {
               console.error('Failed to load QR code image:', err);
             }
+          }
+
+          for (const aspectIconUrl of aspectIconUrls) {
+            if (!imageCache.current[aspectIconUrl]) promises.push(loadImage(aspectIconUrl));
           }
 
           // Load leader images
@@ -303,6 +334,7 @@ const DeckImage = forwardRef<
       deckMeta,
       deckCardsForLayout,
       finalVariantMap,
+      groupBy,
       showNoisyBackground,
       showQr,
     ]);
@@ -372,6 +404,57 @@ const DeckImage = forwardRef<
         } catch (err) {
           console.error(`Error drawing card ${cardId}:`, err);
         }
+      };
+
+      const drawGroupHeader = async (
+        label: string,
+        quantity: number,
+        x: number,
+        y: number,
+        maxWidth: number,
+      ) => {
+        const aspects = isAspectGroupBy(groupBy) ? getAspectsFromGroupLabel(label) : [];
+
+        if (aspects.length === 0) {
+          ctx.fillText(`${label} (${quantity})`, x, y);
+          return;
+        }
+
+        const countLabel = `(${quantity})`;
+        const iconGap = 6;
+        const countGap = 10;
+
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 36px Arial';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+
+        const countWidth = ctx.measureText(countLabel).width;
+        const iconAreaWidth =
+          maxWidth - countWidth - countGap - iconGap * Math.max(aspects.length - 1, 0);
+        const iconSize = Math.max(20, Math.min(40, iconAreaWidth / aspects.length));
+        const iconY = y - 14 - iconSize / 2;
+        const textY = y - 14;
+        let iconX = x;
+
+        for (const aspect of aspects) {
+          const iconUrl = getAspectIconUrl(aspect);
+          let icon = imageCache.current[iconUrl];
+          if (!icon) {
+            await loadImage(iconUrl);
+            icon = imageCache.current[iconUrl];
+          }
+
+          if (icon) {
+            ctx.drawImage(icon, iconX, iconY, iconSize, iconSize);
+          }
+
+          iconX += iconSize + iconGap;
+        }
+
+        ctx.fillText(countLabel, iconX - iconGap + countGap, textY);
+        ctx.restore();
       };
 
       const renderDeckImage = async (final: boolean) => {
@@ -567,17 +650,14 @@ const DeckImage = forwardRef<
               let cardPositionInRow = 0;
 
               for (const group of groupsToProcess) {
-                // Draw group header
-                ctx.fillText(
-                  `${group.label} (${group.cards.reduce((sum, card) => sum + card.quantity, 0)})`,
-                  headerX,
-                  rightY,
-                );
-
                 // Calculate where the next header should go
                 const groupCardCount = group.cards.length;
                 const cardsInThisRow = Math.min(groupCardCount, maxCardsPerRow - cardPositionInRow);
                 const headerWidth = cardsInThisRow * (cardWidth + padding / 2);
+                const groupQuantity = group.cards.reduce((sum, card) => sum + card.quantity, 0);
+
+                // Draw group header
+                await drawGroupHeader(group.label, groupQuantity, headerX, rightY, headerWidth);
 
                 // Add some spacing between headers in the same row
                 headerX += headerWidth;
@@ -745,6 +825,7 @@ const DeckImage = forwardRef<
       qrCodeDataUrl,
       leaderColor,
       baseColor,
+      groupBy,
       leaderVillainyHeroismAspect,
       canvasWidth,
       leftColumnWidth,
