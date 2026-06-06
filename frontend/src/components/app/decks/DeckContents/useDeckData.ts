@@ -11,6 +11,7 @@ import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { DeckCard } from '../../../../../../types/ZDeckCard.ts';
 import { groupCardsByCost } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByCost.ts';
 import { groupCardsByAspect } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByAspect.ts';
+import { groupCardsByAspectDetailed } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByAspectDetailed.ts';
 import { groupCardsByTrait } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByTrait.ts';
 import { groupCardsByKeywords } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByKeywords.ts';
 import { DeckGroupBy } from '../../../../../../types/enums.ts';
@@ -93,6 +94,9 @@ export function useDeckData(
         case DeckGroupBy.ASPECT:
           mainboardGroups = groupCardsByAspect(cardList.cards, cardsByBoard[1]);
           break;
+        case DeckGroupBy.ASPECT_DETAILED:
+          mainboardGroups = groupCardsByAspectDetailed(cardList.cards, cardsByBoard[1]);
+          break;
         case DeckGroupBy.TRAIT:
           mainboardGroups = groupCardsByTrait(cardList.cards, cardsByBoard[1]);
           break;
@@ -115,13 +119,14 @@ export function useDeckData(
       usedCards,
       usedCardsInBoards,
     };
-  }, [cardList, deckCards, groupBy]);
+  }, [cardList, deckCards, deckMeta.base, deckMeta.leader1, deckMeta.leader2, groupBy]);
 
+  const leaderCardId = deckInfo?.deck.leaderCardId1;
+  const baseCardId = deckInfo?.deck.baseCardId;
   const [leaderCard, baseCard] = useMemo(() => {
-    if (!cardList || !deckInfo?.deck.leaderCardId1 || !deckInfo?.deck.baseCardId)
-      return emptyLeaderAndBaseCards;
-    return [cardList.cards[deckInfo.deck.leaderCardId1], cardList.cards[deckInfo.deck.baseCardId]];
-  }, [cardList, deckInfo?.deck.leaderCardId1]);
+    if (!cardList || !leaderCardId || !baseCardId) return emptyLeaderAndBaseCards;
+    return [cardList.cards[leaderCardId], cardList.cards[baseCardId]];
+  }, [cardList, leaderCardId, baseCardId]);
 
   return {
     deckCardsForLayout,

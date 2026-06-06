@@ -71,6 +71,7 @@ export enum DeckGroupBy {
   CARD_TYPE = 'card-type',
   COST = 'cost',
   ASPECT = 'aspect',
+  ASPECT_DETAILED = 'aspect-detailed',
   TRAIT = 'trait',
   KEYWORDS = 'keywords',
   SET = 'set',

@@ -7,8 +7,10 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { groupCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCardType.ts';
 import { groupCardsByCost } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByCost.ts';
 import { groupCardsByAspect } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByAspect.ts';
+import { groupCardsByAspectDetailed } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByAspectDetailed.ts';
 import { groupCardsByTrait } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByTrait.ts';
 import { groupCardsByKeywords } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByKeywords.ts';
+import { groupCardsBySet } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsBySet.ts';
 import { CardComparisonData } from '../types.ts';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
@@ -103,7 +105,7 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
     });
 
     return comparisonMap;
-  }, [mainDeckId, mainDeckCards, otherDeckEntries, cardListData]);
+  }, [mainDeckCards, otherDeckEntries, cardListData]);
 
   // Convert map to array for rendering
   const cardComparisons = useMemo(() => {
@@ -148,6 +150,10 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
         mainDeckGroups = groupCardsByAspect(cardListData.cards, mainDeckCards);
         sideboardGroups = groupCardsByAspect(cardListData.cards, sideboardCards);
         break;
+      case DeckGroupBy.ASPECT_DETAILED:
+        mainDeckGroups = groupCardsByAspectDetailed(cardListData.cards, mainDeckCards);
+        sideboardGroups = groupCardsByAspectDetailed(cardListData.cards, sideboardCards);
+        break;
       case DeckGroupBy.TRAIT:
         mainDeckGroups = groupCardsByTrait(cardListData.cards, mainDeckCards);
         sideboardGroups = groupCardsByTrait(cardListData.cards, sideboardCards);
@@ -155,6 +161,10 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
       case DeckGroupBy.KEYWORDS:
         mainDeckGroups = groupCardsByKeywords(cardListData.cards, mainDeckCards);
         sideboardGroups = groupCardsByKeywords(cardListData.cards, sideboardCards);
+        break;
+      case DeckGroupBy.SET:
+        mainDeckGroups = groupCardsBySet(cardListData.cards, mainDeckCards);
+        sideboardGroups = groupCardsBySet(cardListData.cards, sideboardCards);
         break;
       case DeckGroupBy.CARD_TYPE:
       default:
@@ -275,7 +285,7 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
       groupTotals: groupTotalsResult,
       deckTotals: deckTotalsResult,
     };
-  }, [groupedCards, cardComparisons, mainDeckId, otherDeckEntries, cardListData]);
+  }, [groupedCards, cardComparisons, otherDeckEntries, cardListData]);
 
   // Render based on view mode
   if (settings.viewMode === ViewMode.ROW_DECK) {
