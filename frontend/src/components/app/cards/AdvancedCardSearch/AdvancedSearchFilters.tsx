@@ -169,13 +169,6 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               <div className="px-28">
                 <Separator />
               </div>
-              <SetMultiSelect
-                value={sets}
-                defaultValue={sets}
-                onChange={setSets}
-                showFullName={true}
-              />
-              <RarityMultiSelect value={rarities} defaultValue={rarities} onChange={setRarities} />
 
               <MultiAspectFilter
                 value={aspects}
@@ -245,16 +238,9 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                   </div>
                 ))}
               </div>
-
               <RangeFilter label="Cost" value={cost} onChange={setCostRange} />
               <RangeFilter label="Power" value={power} onChange={setPowerRange} />
               <RangeFilter label="HP" value={hp} onChange={setHpRange} />
-              <RangeFilter
-                label="Upgrade Power"
-                value={upgradePower}
-                onChange={setUpgradePowerRange}
-              />
-              <RangeFilter label="Upgrade HP" value={upgradeHp} onChange={setUpgradeHpRange} />
               {cardListData ? (
                 <GenericMultiSelect
                   label="Traits"
@@ -279,6 +265,22 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               ) : (
                 <div className="text-center py-2">Loading keywords...</div>
               )}
+
+              <SetMultiSelect
+                value={sets}
+                defaultValue={sets}
+                onChange={setSets}
+                showFullName={true}
+              />
+              <RarityMultiSelect value={rarities} defaultValue={rarities} onChange={setRarities} />
+
+              <RangeFilter
+                label="Upgrade Power"
+                value={upgradePower}
+                onChange={setUpgradePowerRange}
+              />
+              <RangeFilter label="Upgrade HP" value={upgradeHp} onChange={setUpgradeHpRange} />
+
               {cardListData ? (
                 <GenericMultiSelect
                   label="Variants"
@@ -297,7 +299,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
           <div className="mt-4 pt-2 border-t flex-1 justify-between">
             <div className="p-2 rounded-md bg-accent/50 dark:bg-primary/10">
               <div className="flex justify-between items-center">
-                <h4 className="text-sm font-medium mt-2">Applied: {activeFiltersCount}</h4>
+                <span className="text-xs font-medium">Applied: {activeFiltersCount}</span>
                 <div className="flex items-center gap-2">
                   {activeFiltersCount > 0 && (
                     <Button variant="secondary" onClick={resetFilters}>
