@@ -32,6 +32,7 @@ export interface AdvancedCardSearchStore {
   // Text search
   name: string;
   text: string;
+  artist: string;
 
   // Set and Rarity filters
   sets: SwuSet[];
@@ -74,6 +75,7 @@ const defaultState: AdvancedCardSearchStore = {
 
   name: '',
   text: '',
+  artist: '',
 
   sets: [],
   rarities: [],
@@ -133,6 +135,7 @@ export const useInitializeStoreFromUrlParams = (
   const {
     name,
     text,
+    artist,
     sets,
     rarities,
     cardTypes,
@@ -160,6 +163,7 @@ export const useInitializeStoreFromUrlParams = (
       searchInitialized: false,
       name: name ?? defaultState.name,
       text: text ?? defaultState.text,
+      artist: artist ?? defaultState.artist,
       sets: (sets ?? defaultState.sets) as SwuSet[],
       rarities: (rarities ?? defaultState.rarities) as SwuRarity[],
       cardTypes: cardTypes ?? defaultState.cardTypes,
@@ -184,6 +188,7 @@ export const useInitializeStoreFromUrlParams = (
   }, [
     name,
     text,
+    artist,
     sets,
     rarities,
     cardTypes,
@@ -216,6 +221,7 @@ export const useApplyAdvancedCardSearchDefaults = (
   const {
     name,
     text,
+    artist,
     sets,
     rarities,
     cardTypes,
@@ -251,6 +257,7 @@ export const useApplyAdvancedCardSearchDefaults = (
       ...state,
       name: name ?? defaults.name ?? state.name,
       text: text ?? defaults.text ?? state.text,
+      artist: artist ?? defaults.artist ?? state.artist,
       sets: (sets ?? defaults.sets ?? state.sets) as SwuSet[],
       rarities: (rarities ?? defaults.rarities ?? state.rarities) as SwuRarity[],
       cardTypes: cardTypes ?? defaults.cardTypes ?? state.cardTypes,
@@ -281,6 +288,7 @@ export const useApplyAdvancedCardSearchDefaults = (
     aspectsExact,
     includeNoAspect,
     arenas,
+    artist,
     cardTypes,
     cost,
     defaults,
@@ -311,6 +319,8 @@ const setSearchInitialized = (searchInitialized: boolean) =>
 const setName = (name: string) => store.setState(state => ({ ...state, name }));
 
 const setText = (text: string) => store.setState(state => ({ ...state, text }));
+
+const setArtist = (artist: string) => store.setState(state => ({ ...state, artist }));
 
 // Sets and Rarities filters
 const setSets = (sets: SwuSet[]) => store.setState(state => ({ ...state, sets }));
@@ -401,6 +411,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
   // Extract all the parts of the state we need
   const name = useStore(store, state => state.name);
   const text = useStore(store, state => state.text);
+  const artist = useStore(store, state => state.artist);
 
   const sets = useStore(store, state => state.sets);
   const rarities = useStore(store, state => state.rarities);
@@ -433,6 +444,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
   const activeFiltersCount = [
     name !== '',
     text !== '',
+    artist !== '',
     sets.length > 0,
     rarities.length > 0,
     cardTypes.length > 0,
@@ -459,6 +471,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
         const results = await filterCards(cardListData.cards, cardListData.cardIds, {
           name,
           text,
+          artist,
           sets,
           rarities,
           cardTypes,
@@ -480,6 +493,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
         const searchParams: ZAdvancedSearchParams = {
           name: name || undefined,
           text: text || undefined,
+          artist: artist || undefined,
           sets: sets.length ? sets : undefined,
           rarities: rarities.length ? rarities : undefined,
           cardTypes: cardTypes.length ? cardTypes : undefined,
@@ -526,6 +540,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
     [
       name,
       text,
+      artist,
       sets,
       rarities,
       cardTypes,
@@ -552,6 +567,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
   const hasActiveFilters =
     name !== '' ||
     text !== '' ||
+    artist !== '' ||
     sets.length > 0 ||
     rarities.length > 0 ||
     cardTypes.length > 0 ||
@@ -579,6 +595,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
     // Text search
     name,
     text,
+    artist,
 
     // Set and Rarity filters
     sets,
@@ -619,6 +636,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
     // Actions
     setName,
     setText,
+    setArtist,
     setSets,
     setRarities,
     setCardTypes,
@@ -650,6 +668,7 @@ export function useAdvancedCardSearchStoreActions() {
     // Text filters
     setName,
     setText,
+    setArtist,
 
     // Set and Rarity filters
     setSets,

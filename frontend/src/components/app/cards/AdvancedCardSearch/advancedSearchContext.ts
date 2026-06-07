@@ -22,6 +22,7 @@ export type AdvancedSearchStringLookup = Record<string, true>;
 export interface AdvancedCardSearchDefaultValues {
   name?: string;
   text?: string;
+  artist?: string;
   sets?: SwuSet[];
   rarities?: SwuRarity[];
   cardTypes?: string[];

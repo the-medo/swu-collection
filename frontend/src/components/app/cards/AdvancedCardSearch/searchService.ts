@@ -223,6 +223,7 @@ export function searchForCommandOptions(
 interface SearchFilters {
   name?: string;
   text?: string;
+  artist?: string;
   sets?: SwuSet[];
   rarities?: SwuRarity[];
   cardTypes?: string[];
@@ -269,6 +270,16 @@ export const filterCards = async (
             .join(' ');
 
           if (!containsAllWords(cardText, filters.text)) {
+            return false;
+          }
+        }
+
+        if (filters.artist) {
+          const hasMatchingArtist = Object.values(card.variants).some(
+            variant => variant?.artist && containsAllWords(variant.artist, filters.artist!),
+          );
+
+          if (!hasMatchingArtist) {
             return false;
           }
         }

@@ -5,6 +5,7 @@ export const cardSearchParams = z.object({
   // Text search
   name: z.string().optional(),
   text: z.string().optional(),
+  artist: z.string().optional(),
 
   // Set and Rarity filters
   sets: z.array(z.enum(Object.values(SwuSet) as [string, ...string[]])).optional(),

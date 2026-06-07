@@ -43,6 +43,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   const {
     name,
     text,
+    artist,
     sets,
     rarities,
     cardTypes,
@@ -66,6 +67,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   const {
     setName,
     setText,
+    setArtist,
     setSets,
     setRarities,
     setCardTypes,
@@ -94,16 +96,17 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     }
   };
 
-  // Handle Enter key press in input fields
-  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
-    e => {
-      if (e.key === 'Enter') {
-        onSearch();
-      } else if (e.key === 'Escape') {
-        setName('');
-      }
-    },
-    [onSearch, setName],
+  // Handle Enter/Escape in text inputs
+  const createTextInputKeyDownHandler = useCallback(
+    (clearValue: () => void): KeyboardEventHandler<HTMLInputElement> =>
+      e => {
+        if (e.key === 'Enter') {
+          onSearch();
+        } else if (e.key === 'Escape') {
+          clearValue();
+        }
+      },
+    [onSearch],
   );
 
   const availableSearchCardTypes = availableCardTypes
@@ -157,14 +160,14 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                 placeholder="Search by card name..."
                 value={name}
                 onChange={e => setName(e.target.value)}
-                onKeyDown={handleKeyDown}
+                onKeyDown={createTextInputKeyDownHandler(() => setName(''))}
               />
               <Input
                 id="text-search"
                 placeholder="Search in card text, rules, deploy/epic text..."
                 value={text}
                 onChange={e => setText(e.target.value)}
-                onKeyDown={handleKeyDown}
+                onKeyDown={createTextInputKeyDownHandler(() => setText(''))}
               />
               <div className="px-28">
                 <Separator />
@@ -293,6 +296,13 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               ) : (
                 <div className="text-center py-2">Loading variants...</div>
               )}
+              <Input
+                id="artist-search"
+                placeholder="Search by artist..."
+                value={artist}
+                onChange={e => setArtist(e.target.value)}
+                onKeyDown={createTextInputKeyDownHandler(() => setArtist(''))}
+              />
             </div>
           </ScrollArea>
 
