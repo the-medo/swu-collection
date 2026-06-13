@@ -3,6 +3,9 @@ import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.t
 import { getDeckLeadersAndBaseKey } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { cn } from '@/lib/utils.ts';
+import { Link } from '@tanstack/react-router';
+import * as React from 'react';
+import { ExternalLink } from 'lucide-react';
 
 interface DeckMatchesProps {
   deckId: string;
@@ -16,14 +19,32 @@ const DeckMatches: React.FC<DeckMatchesProps> = ({ deckId, setDeckId }) => {
 
   if (!tournamentData || !tournamentData.data) return null;
 
+  const tournament = tournamentData?.data.tournament;
   const tournamentDeck = tournamentData?.data.tournamentDeck;
   const playerName = tournamentDeck.meleePlayerUsername;
 
   return (
     <>
       <table>
+        {tournament && (
+          <thead>
+            <td colSpan={5} className="p-1 font-semibold text-xs bg-primary/10">
+              <div className=" flex justify-between">
+                <Link
+                  to="/tournaments/$tournamentId"
+                  params={{ tournamentId: tournament.id }}
+                  className="flex gap-1 items-center"
+                >
+                  <ExternalLink className="size-3" />
+                  {tournament.name}
+                </Link>
+                <span>({tournament.attendance} players)</span>
+              </div>
+            </td>
+          </thead>
+        )}
         <thead>
-          <td colSpan={5} className="font-semibold">
+          <td colSpan={5} className="p-1 font-semibold text-xs">
             Player: {playerName} #{tournamentDeck.placement} ({tournamentDeck.recordWin}-
             {tournamentDeck.recordLose}-{tournamentDeck.recordDraw})
           </td>
