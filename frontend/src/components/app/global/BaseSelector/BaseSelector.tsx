@@ -254,28 +254,25 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
 
   const footer = useMemo(() => {
     return (
-      <div className="flex flex-wrap gap-2 w-full justify-between items-center">
-        <div className="flex flex-wrap gap-2 items-center">
-          <CardImage
-            card={localSelectedBase}
-            cardVariantId={localSelectedBase ? selectDefaultVariant(localSelectedBase) : undefined}
-            forceHorizontal={true}
-            size="w100"
-            backSideButton={false}
-          />
-
-          {localSelectedBase ? (
-            <>
-              <h4>{localSelectedBase?.name} </h4>
+      <div className="flex gap-2 w-full justify-end items-center">
+        <CardImage
+          card={localSelectedBase}
+          cardVariantId={localSelectedBase ? selectDefaultVariant(localSelectedBase) : undefined}
+          forceHorizontal={true}
+          size="w100"
+          backSideButton={false}
+        />
+        <div className="flex flex-col gap-2 items-end">
+          <h6 className="mb-0!">{localSelectedBase?.title ?? 'No selected base'} </h6>
+          <div className="flex gap-2 items-center">
+            {localSelectedBase && (
               <Button onClick={() => setLocalBaseCardId(undefined)} variant="outline">
                 Clear
               </Button>
-            </>
-          ) : (
-            <h4>No selected base</h4>
-          )}
+            )}
+            <Button onClick={() => handleSave(localSelectedBase?.cardId)}>Save</Button>
+          </div>
         </div>
-        <Button onClick={() => handleSave(localSelectedBase?.cardId)}>Save</Button>
       </div>
     );
   }, [handleSave, localSelectedBase]);
@@ -289,7 +286,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
       footer={footer}
       open={open}
       onOpenChange={setOpen}
-      contentClassName={`md:max-w-[90%] min-h-[90%]`}
+      contentClassName={`md:max-w-[90%]`}
       size="large"
     >
       <div className="flex flex-col gap-2">
