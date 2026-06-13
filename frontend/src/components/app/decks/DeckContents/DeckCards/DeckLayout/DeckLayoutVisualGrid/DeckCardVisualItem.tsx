@@ -75,6 +75,8 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
     [deckCard],
   );
 
+  const size = deckLayout === DeckLayout.VISUAL_GRID_SMALL ? 'w100' : 'w200';
+
   return (
     <div
       className={cn('relative inline-block align-middle mr-px rounded-[4.75%/3.5%] isolate group', {
@@ -120,7 +122,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
           });
         }}
       >
-        <CardImage card={card} cardVariantId={defaultVariant} size="w200" backSideButton={false} />
+        <CardImage card={card} cardVariantId={defaultVariant} size={size} backSideButton={false} />
       </div>
     </div>
   );

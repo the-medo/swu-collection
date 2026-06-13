@@ -5,7 +5,13 @@ import { cn } from '@/lib/utils.ts';
 import { DeckLayout } from '../../../../../../../../../types/enums.ts';
 import { useDeckCollection } from '@/components/app/decks/DeckContents/DeckCollection/useDeckCollection.ts';
 
-export type DeckLayoutVisualGridVariant = 'overlap' | 'no-overlap';
+export type DeckLayoutVisualGridVariant = 'overlap' | 'default' | 'small';
+
+const layoutMap: Record<DeckLayoutVisualGridVariant, DeckLayout> = {
+  default: DeckLayout.VISUAL_GRID,
+  overlap: DeckLayout.VISUAL_GRID_OVERLAP,
+  small: DeckLayout.VISUAL_GRID_SMALL,
+};
 
 interface DeckLayoutVisualGridProps {
   variant: DeckLayoutVisualGridVariant;
@@ -21,8 +27,7 @@ const DeckLayoutVisualGrid: React.FC<DeckLayoutVisualGridProps> = ({
   highlightedCardId,
 }) => {
   const { data: d } = useDeckCollection(deckId);
-  const deckLayout =
-    variant === 'overlap' ? DeckLayout.VISUAL_GRID_OVERLAP : DeckLayout.VISUAL_GRID;
+  const deckLayout = layoutMap[variant];
 
   return (
     <div className="flex flex-wrap">

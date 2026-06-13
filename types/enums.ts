@@ -62,6 +62,7 @@ export enum DeckLayout {
   TEXT_CONDENSED = 'text-condensed',
   WITH_WORDING = 'with-wording',
   VISUAL_GRID = 'visual-grid',
+  VISUAL_GRID_SMALL = 'visual-grid-small',
   VISUAL_GRID_OVERLAP = 'visual-grid-overlap',
   VISUAL_STACKS = 'visual-stacks',
   VISUAL_STACKS_SPLIT = 'visual-stacks-split',

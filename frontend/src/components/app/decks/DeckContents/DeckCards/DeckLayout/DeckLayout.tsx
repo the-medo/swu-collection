@@ -63,7 +63,16 @@ const DeckLayout: React.FC<DeckLayoutProps> = ({
     case DeckLayoutEnum.VISUAL_GRID:
       return (
         <DeckLayoutVisualGrid
-          variant="no-overlap"
+          variant="default"
+          deckId={deckId}
+          deckCardsForLayout={deckCardsForLayout}
+          highlightedCardId={highlightedCardId}
+        />
+      );
+    case DeckLayoutEnum.VISUAL_GRID_SMALL:
+      return (
+        <DeckLayoutVisualGrid
+          variant="small"
           deckId={deckId}
           deckCardsForLayout={deckCardsForLayout}
           highlightedCardId={highlightedCardId}
