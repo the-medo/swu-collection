@@ -7,6 +7,7 @@ import {
 } from '../../../../../../lib/swu-resources/types.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
+import type { CardUniquenessFilter } from './advancedSearchLib.ts';
 
 /**
  * Normalize text for searching by:
@@ -226,6 +227,7 @@ interface SearchFilters {
   artist?: string;
   sets?: SwuSet[];
   rarities?: SwuRarity[];
+  uniqueness?: CardUniquenessFilter;
   cardTypes?: string[];
   excludedCardTypes?: Record<string, true>;
   aspects?: SwuAspect[];
@@ -299,6 +301,19 @@ export const filterCards = async (
         // Check rarity filter
         if (filters.rarities && filters.rarities.length > 0) {
           if (!filters.rarities.includes(card.rarity)) {
+            return false;
+          }
+        }
+
+        if (filters.uniqueness && filters.uniqueness !== 'both') {
+          const hasSubtitle =
+            card.subtitle !== null && card.subtitle !== undefined && card.subtitle !== '';
+
+          if (filters.uniqueness === 'unique' && !hasSubtitle) {
+            return false;
+          }
+
+          if (filters.uniqueness === 'not-unique' && hasSubtitle) {
             return false;
           }
         }

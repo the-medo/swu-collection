@@ -1,5 +1,6 @@
 import { RangeFilterType } from '@/components/app/global/RangeFilter/RangeFilter.tsx';
 import { SwuAspect, SwuArena, SwuRarity, SwuSet } from '../../../../../../types/enums.ts';
+import type { CardUniquenessFilter } from './advancedSearchLib.ts';
 
 export type AdvancedSearchResultsLayout =
   | 'imageBig'
@@ -25,6 +26,7 @@ export interface AdvancedCardSearchDefaultValues {
   artist?: string;
   sets?: SwuSet[];
   rarities?: SwuRarity[];
+  uniqueness?: CardUniquenessFilter;
   cardTypes?: string[];
   aspects?: SwuAspect[];
   aspectsExact?: boolean;

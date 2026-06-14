@@ -21,9 +21,17 @@ import { Separator } from '@/components/ui/separator.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { KeyboardEventHandler, useCallback } from 'react';
 import { AdvancedSearchStringLookup } from '@/components/app/cards/AdvancedCardSearch/advancedSearchContext.ts';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx';
+import type { CardUniquenessFilter } from './advancedSearchLib.ts';
 
 // Available card types
 const CARD_TYPES = ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'];
+
+const UNIQUENESS_OPTIONS: { value: CardUniquenessFilter; label: string }[] = [
+  { value: 'both', label: 'Both' },
+  { value: 'unique', label: 'Unique' },
+  { value: 'not-unique', label: 'Not unique' },
+];
 
 interface AdvancedSearchFiltersProps {
   onSearch: () => void;
@@ -46,6 +54,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     artist,
     sets,
     rarities,
+    uniqueness,
     cardTypes,
     aspects,
     aspectsExact,
@@ -70,6 +79,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     setArtist,
     setSets,
     setRarities,
+    setUniqueness,
     setCardTypes,
     setAspects,
     setAspectsExact,
@@ -276,6 +286,19 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                 showFullName={true}
               />
               <RarityMultiSelect value={rarities} defaultValue={rarities} onChange={setRarities} />
+              <RadioGroup
+                value={uniqueness}
+                onValueChange={value => setUniqueness(value as CardUniquenessFilter)}
+                aria-label="Card uniqueness"
+                className="grid grid-cols-3 gap-2 py-1"
+              >
+                {UNIQUENESS_OPTIONS.map(option => (
+                  <div key={option.value} className="flex items-center justify-center space-x-2">
+                    <RadioGroupItem value={option.value} id={`uniqueness-${option.value}`} />
+                    <Label htmlFor={`uniqueness-${option.value}`}>{option.label}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
 
               <RangeFilter
                 label="Upgrade Power"
