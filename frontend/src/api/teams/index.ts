@@ -3,6 +3,7 @@ export * from './useTeams.ts';
 export * from './useTeam.ts';
 export * from './useCreateTeam.ts';
 export * from './useUpdateTeam.ts';
+export * from './useDeleteTeam.ts';
 export * from './useUploadTeamLogo.ts';
 export * from './useTeamMembers.ts';
 export * from './useSubmitJoinRequest.ts';

@@ -4,6 +4,7 @@ import { teamsPostRoute } from './teams/post.ts';
 import { teamsGetRoute } from './teams/get.ts';
 import { teamsIdGetRoute } from './teams/_id/get.ts';
 import { teamsIdPatchRoute } from './teams/_id/patch.ts';
+import { teamsIdDeleteRoute } from './teams/_id/delete.ts';
 import { teamsIdLogoPostRoute } from './teams/_id/logo/post.ts';
 import { teamsIdMembersGetRoute } from './teams/_id/members/get.ts';
 import { teamsIdMembersUserIdPatchRoute } from './teams/_id/members/_userId/patch.ts';
@@ -22,6 +23,7 @@ export const teamsRoute = new Hono<AuthExtension>()
   .route('/', teamsGetRoute)
   .route('/:id', teamsIdGetRoute)
   .route('/:id', teamsIdPatchRoute)
+  .route('/:id', teamsIdDeleteRoute)
   .route('/:id/logo', teamsIdLogoPostRoute)
   .route('/:id/members', teamsIdMembersGetRoute)
   .route('/:id/members/:userId', teamsIdMembersUserIdPatchRoute)
