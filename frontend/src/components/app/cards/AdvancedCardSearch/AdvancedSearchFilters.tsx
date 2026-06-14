@@ -21,9 +21,17 @@ import { Separator } from '@/components/ui/separator.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { KeyboardEventHandler, useCallback } from 'react';
 import { AdvancedSearchStringLookup } from '@/components/app/cards/AdvancedCardSearch/advancedSearchContext.ts';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx';
+import type { CardUniquenessFilter } from './advancedSearchLib.ts';
 
 // Available card types
 const CARD_TYPES = ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'];
+
+const UNIQUENESS_OPTIONS: { value: CardUniquenessFilter; label: string }[] = [
+  { value: 'both', label: 'Both' },
+  { value: 'unique', label: 'Unique' },
+  { value: 'not-unique', label: 'Not unique' },
+];
 
 interface AdvancedSearchFiltersProps {
   onSearch: () => void;
@@ -43,8 +51,10 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   const {
     name,
     text,
+    artist,
     sets,
     rarities,
+    uniqueness,
     cardTypes,
     aspects,
     aspectsExact,
@@ -66,8 +76,10 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   const {
     setName,
     setText,
+    setArtist,
     setSets,
     setRarities,
+    setUniqueness,
     setCardTypes,
     setAspects,
     setAspectsExact,
@@ -94,16 +106,17 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     }
   };
 
-  // Handle Enter key press in input fields
-  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
-    e => {
-      if (e.key === 'Enter') {
-        onSearch();
-      } else if (e.key === 'Escape') {
-        setName('');
-      }
-    },
-    [onSearch, setName],
+  // Handle Enter/Escape in text inputs
+  const createTextInputKeyDownHandler = useCallback(
+    (clearValue: () => void): KeyboardEventHandler<HTMLInputElement> =>
+      e => {
+        if (e.key === 'Enter') {
+          onSearch();
+        } else if (e.key === 'Escape') {
+          clearValue();
+        }
+      },
+    [onSearch],
   );
 
   const availableSearchCardTypes = availableCardTypes
@@ -157,25 +170,18 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                 placeholder="Search by card name..."
                 value={name}
                 onChange={e => setName(e.target.value)}
-                onKeyDown={handleKeyDown}
+                onKeyDown={createTextInputKeyDownHandler(() => setName(''))}
               />
               <Input
                 id="text-search"
                 placeholder="Search in card text, rules, deploy/epic text..."
                 value={text}
                 onChange={e => setText(e.target.value)}
-                onKeyDown={handleKeyDown}
+                onKeyDown={createTextInputKeyDownHandler(() => setText(''))}
               />
               <div className="px-28">
                 <Separator />
               </div>
-              <SetMultiSelect
-                value={sets}
-                defaultValue={sets}
-                onChange={setSets}
-                showFullName={true}
-              />
-              <RarityMultiSelect value={rarities} defaultValue={rarities} onChange={setRarities} />
 
               <MultiAspectFilter
                 value={aspects}
@@ -245,16 +251,9 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                   </div>
                 ))}
               </div>
-
               <RangeFilter label="Cost" value={cost} onChange={setCostRange} />
               <RangeFilter label="Power" value={power} onChange={setPowerRange} />
               <RangeFilter label="HP" value={hp} onChange={setHpRange} />
-              <RangeFilter
-                label="Upgrade Power"
-                value={upgradePower}
-                onChange={setUpgradePowerRange}
-              />
-              <RangeFilter label="Upgrade HP" value={upgradeHp} onChange={setUpgradeHpRange} />
               {cardListData ? (
                 <GenericMultiSelect
                   label="Traits"
@@ -279,6 +278,35 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               ) : (
                 <div className="text-center py-2">Loading keywords...</div>
               )}
+
+              <SetMultiSelect
+                value={sets}
+                defaultValue={sets}
+                onChange={setSets}
+                showFullName={true}
+              />
+              <RarityMultiSelect value={rarities} defaultValue={rarities} onChange={setRarities} />
+              <RadioGroup
+                value={uniqueness}
+                onValueChange={value => setUniqueness(value as CardUniquenessFilter)}
+                aria-label="Card uniqueness"
+                className="grid grid-cols-3 gap-2 py-1"
+              >
+                {UNIQUENESS_OPTIONS.map(option => (
+                  <div key={option.value} className="flex items-center justify-center space-x-2">
+                    <RadioGroupItem value={option.value} id={`uniqueness-${option.value}`} />
+                    <Label htmlFor={`uniqueness-${option.value}`}>{option.label}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+
+              <RangeFilter
+                label="Upgrade Power"
+                value={upgradePower}
+                onChange={setUpgradePowerRange}
+              />
+              <RangeFilter label="Upgrade HP" value={upgradeHp} onChange={setUpgradeHpRange} />
+
               {cardListData ? (
                 <GenericMultiSelect
                   label="Variants"
@@ -291,13 +319,20 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               ) : (
                 <div className="text-center py-2">Loading variants...</div>
               )}
+              <Input
+                id="artist-search"
+                placeholder="Search by artist..."
+                value={artist}
+                onChange={e => setArtist(e.target.value)}
+                onKeyDown={createTextInputKeyDownHandler(() => setArtist(''))}
+              />
             </div>
           </ScrollArea>
 
           <div className="mt-4 pt-2 border-t flex-1 justify-between">
             <div className="p-2 rounded-md bg-accent/50 dark:bg-primary/10">
               <div className="flex justify-between items-center">
-                <h4 className="text-sm font-medium mt-2">Applied: {activeFiltersCount}</h4>
+                <span className="text-xs font-medium">Applied: {activeFiltersCount}</span>
                 <div className="flex items-center gap-2">
                   {activeFiltersCount > 0 && (
                     <Button variant="secondary" onClick={resetFilters}>

@@ -7,6 +7,7 @@ import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts'
 import { useEffect } from 'react';
 import { selectDefaultVariant } from '../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
+import { DeckImagePresetVariant } from '../../../../../../../../types/DeckImageCustomization.tsx';
 
 interface DeckImageCustomizationProps {
   deckId: string;
@@ -14,6 +15,23 @@ interface DeckImageCustomizationProps {
   deckCardVariants: DeckCardVariantMap | undefined;
   setDeckCardVariants: React.Dispatch<React.SetStateAction<DeckCardVariantMap | undefined>>;
 }
+
+const selectDeckImageDefaultVariant = (
+  card: Parameters<typeof selectDefaultVariant>[0],
+  defaultVariantName?: string,
+) => {
+  const selectedVariant = selectDefaultVariant(card, defaultVariantName);
+
+  if (
+    defaultVariantName === DeckImagePresetVariant.StandardPrestige &&
+    selectedVariant &&
+    card.variants[selectedVariant]?.variantName !== DeckImagePresetVariant.StandardPrestige
+  ) {
+    return selectDefaultVariant(card, DeckImagePresetVariant.Hyperspace);
+  }
+
+  return selectedVariant;
+};
 
 const DeckImageCustomization: React.FC<DeckImageCustomizationProps> = ({
   deckId,
@@ -40,7 +58,7 @@ const DeckImageCustomization: React.FC<DeckImageCustomizationProps> = ({
     );
 
     setDeckCardVariants(baseMap);
-  }, [deckCardsForLayout.usedCards]);
+  }, [deckCardsForLayout.usedCards, isLoading, setDeckCardVariants]);
 
   useEffect(() => {
     setDeckCardVariants(prev => {
@@ -59,7 +77,7 @@ const DeckImageCustomization: React.FC<DeckImageCustomizationProps> = ({
       }
       return newMap;
     });
-  }, [showcaseLeader, leader1, leader2]);
+  }, [showcaseLeader, leader1, leader2, setDeckCardVariants]);
 
   useEffect(() => {
     setDeckCardVariants(prev => {
@@ -72,7 +90,7 @@ const DeckImageCustomization: React.FC<DeckImageCustomizationProps> = ({
       }
       return newMap;
     });
-  }, [hyperspaceBase, base]);
+  }, [hyperspaceBase, base, setDeckCardVariants]);
 
   useEffect(() => {
     setDeckCardVariants(prev => {
@@ -80,12 +98,12 @@ const DeckImageCustomization: React.FC<DeckImageCustomizationProps> = ({
 
       Object.entries(deckCardsForLayout.usedCards).forEach(([k, card]) => {
         if (!card || card.type === 'Leader' || card.type === 'Base') return;
-        newMap[k] = selectDefaultVariant(card, defaultVariantName);
+        newMap[k] = selectDeckImageDefaultVariant(card, defaultVariantName);
       });
 
       return newMap;
     });
-  }, [defaultVariantName]);
+  }, [defaultVariantName, deckCardsForLayout.usedCards, setDeckCardVariants]);
 
   if (!open) return null;
   return (

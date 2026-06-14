@@ -31,6 +31,11 @@ const DeckLayoutMenu: React.FC<DeckLayoutMenuProps> = ({ compact }) => {
     },
     { id: DeckLayout.VISUAL_GRID, label: 'Grid', icon: <LayoutGrid className="h-4 w-4 mr-2" /> },
     {
+      id: DeckLayout.VISUAL_GRID_SMALL,
+      label: 'Grid - Small',
+      icon: <LayoutGrid className="h-4 w-4 mr-2" />,
+    },
+    {
       id: DeckLayout.VISUAL_GRID_OVERLAP,
       label: 'Grid - Overlap',
       icon: <LayoutGrid className="h-4 w-4 mr-2" />,

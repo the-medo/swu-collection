@@ -23,6 +23,7 @@ const SortMenu: React.FC<SortMenuProps> = ({ sortField, sortOrder, onChange }) =
     { id: 'cost', label: 'Cost' },
     { id: 'rarity', label: 'Rarity' },
     { id: 'cardNumber', label: 'Number' },
+    { id: 'aspect', label: 'Aspects' },
   ];
 
   const getSortIcon = (field: SortField) => {

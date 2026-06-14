@@ -23,6 +23,7 @@ const GroupByMenu: React.FC<GroupByMenuProps> = ({ compact }) => {
     { id: DeckGroupBy.CARD_TYPE, label: 'Card Type' },
     { id: DeckGroupBy.COST, label: 'Cost' },
     { id: DeckGroupBy.ASPECT, label: 'Aspect' },
+    { id: DeckGroupBy.ASPECT_DETAILED, label: 'Aspect - detailed' },
     { id: DeckGroupBy.TRAIT, label: 'Trait' },
     { id: DeckGroupBy.KEYWORDS, label: 'Keywords' },
     { id: DeckGroupBy.SET, label: 'Set' },

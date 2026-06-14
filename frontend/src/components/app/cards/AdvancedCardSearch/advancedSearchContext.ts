@@ -1,5 +1,6 @@
 import { RangeFilterType } from '@/components/app/global/RangeFilter/RangeFilter.tsx';
 import { SwuAspect, SwuArena, SwuRarity, SwuSet } from '../../../../../../types/enums.ts';
+import type { CardUniquenessFilter } from './advancedSearchLib.ts';
 
 export type AdvancedSearchResultsLayout =
   | 'imageBig'
@@ -8,15 +9,24 @@ export type AdvancedSearchResultsLayout =
   | 'tableImage'
   | 'tableSmall';
 
-export type AdvancedSearchSortField = 'name' | 'cardNumber' | 'cost' | 'type' | 'rarity' | 'relevance';
+export type AdvancedSearchSortField =
+  | 'name'
+  | 'cardNumber'
+  | 'cost'
+  | 'type'
+  | 'rarity'
+  | 'aspect'
+  | 'relevance';
 export type AdvancedSearchSortOrder = 'asc' | 'desc';
 export type AdvancedSearchStringLookup = Record<string, true>;
 
 export interface AdvancedCardSearchDefaultValues {
   name?: string;
   text?: string;
+  artist?: string;
   sets?: SwuSet[];
   rarities?: SwuRarity[];
+  uniqueness?: CardUniquenessFilter;
   cardTypes?: string[];
   aspects?: SwuAspect[];
   aspectsExact?: boolean;

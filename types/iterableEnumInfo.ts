@@ -151,6 +151,9 @@ export const deckGroupByObj: Record<DeckGroupBy, { title: string }> = {
   [DeckGroupBy.ASPECT]: {
     title: 'Aspect',
   },
+  [DeckGroupBy.ASPECT_DETAILED]: {
+    title: 'Aspect - detailed',
+  },
   [DeckGroupBy.TRAIT]: {
     title: 'Trait',
   },

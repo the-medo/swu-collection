@@ -193,14 +193,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
         </div>
       </>
     );
-  }, [
-    filterByFormat,
-    formatFilterEnabled,
-    formatFilterSwitchId,
-    search,
-    aspectFilter,
-    isMobile,
-  ]);
+  }, [filterByFormat, formatFilterEnabled, formatFilterSwitchId, search, aspectFilter, isMobile]);
 
   const handleSave = useCallback(
     (leaderCardId: string | undefined) => {
@@ -216,28 +209,25 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
 
   const footer = useMemo(() => {
     return (
-      <div className="flex flex-wrap gap-2 w-full justify-between items-center">
-        <div className="flex flex-wrap gap-2 items-center">
-          <CardImage
-            card={localSelectedLeader?.card}
-            cardVariantId={localSelectedLeader?.variantId}
-            forceHorizontal={true}
-            size="w100"
-            backSideButton={false}
-          />
-
-          {localSelectedLeader ? (
-            <>
-              <h4>{localSelectedLeader?.card?.name} </h4>
+      <div className="flex gap-2 w-full justify-end items-center">
+        <CardImage
+          card={localSelectedLeader?.card}
+          cardVariantId={localSelectedLeader?.variantId}
+          forceHorizontal={true}
+          size="w100"
+          backSideButton={false}
+        />
+        <div className="flex flex-col gap-2 items-end">
+          <h6 className="mb-0!">{localSelectedLeader?.card?.title ?? 'No selected leader'} </h6>
+          <div className="flex gap-2 items-center">
+            {localSelectedLeader && (
               <Button onClick={() => setLocalLeaderCardId(undefined)} variant="outline">
                 Clear
               </Button>
-            </>
-          ) : (
-            <h4>No selected leader</h4>
-          )}
+            )}
+            <Button onClick={() => handleSave(localSelectedLeader?.card?.cardId)}>Save</Button>
+          </div>
         </div>
-        <Button onClick={() => handleSave(localSelectedLeader?.card?.cardId)}>Save</Button>
       </div>
     );
   }, [handleSave, localSelectedLeader]);

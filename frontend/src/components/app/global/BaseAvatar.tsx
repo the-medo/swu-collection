@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { SwuAspect } from '../../../../../types/enums.ts';
-import { getAspectGradient } from '../../../../../shared/lib/aspectColors.ts';
+import { getAspectGradient } from '../../../../../shared/lib/aspectLib.ts';
 import { processBase } from '../../../../../shared/lib/processBase.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';

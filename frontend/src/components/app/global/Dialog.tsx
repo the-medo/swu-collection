@@ -16,12 +16,12 @@ import { cn } from '@/lib/utils.ts';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
-const dialogVariants = cva('max-w-[100vw] lg:max-w-[90vw] max-h-screen lg:max-h-[90vh] ', {
+const dialogVariants = cva('max-w-[100vw] lg:max-w-[90vw] max-h-[calc(100vh-120px)] ', {
   variants: {
     size: {
       default: 'lg:max-w-[425px]',
       medium: 'lg:max-w-[800px]',
-      large: 'lg:max-w-[95%] h-screen md:min-h-[80%] md:max-h-[90%]',
+      large: 'lg:max-w-[95%] md:min-h-[80vh]',
     },
   },
   defaultVariants: {

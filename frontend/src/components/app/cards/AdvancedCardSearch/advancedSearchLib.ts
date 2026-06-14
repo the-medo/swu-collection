@@ -1,14 +1,19 @@
 import { z } from 'zod';
 import { SwuArena, SwuAspect, SwuRarity, SwuSet } from '../../../../../../types/enums.ts';
 
+export const cardUniquenessFilterValues = ['both', 'unique', 'not-unique'] as const;
+export type CardUniquenessFilter = (typeof cardUniquenessFilterValues)[number];
+
 export const cardSearchParams = z.object({
   // Text search
   name: z.string().optional(),
   text: z.string().optional(),
+  artist: z.string().optional(),
 
   // Set and Rarity filters
   sets: z.array(z.enum(Object.values(SwuSet) as [string, ...string[]])).optional(),
   rarities: z.array(z.enum(Object.values(SwuRarity) as [string, ...string[]])).optional(),
+  uniqueness: z.enum(cardUniquenessFilterValues).optional(),
 
   // Type filters
   cardTypes: z.array(z.string()).optional(),
@@ -33,6 +38,6 @@ export const cardSearchParams = z.object({
   resultsLayout: z
     .enum(['imageBig', 'imageMedium', 'imageSmall', 'tableImage', 'tableSmall'])
     .optional(),
-  sort: z.enum(['name', 'cardNumber', 'cost', 'type', 'rarity', 'relevance']).optional(),
+  sort: z.enum(['name', 'cardNumber', 'cost', 'type', 'rarity', 'aspect', 'relevance']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
 });

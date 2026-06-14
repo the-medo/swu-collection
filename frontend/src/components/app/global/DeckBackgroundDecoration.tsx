@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils.ts';
 import { PropsWithChildren } from 'react';
 import { CardDataWithVariants, CardListVariants } from '../../../../../lib/swu-resources/types.ts';
-import { aspectColors } from '../../../../../shared/lib/aspectColors.ts';
+import { aspectLib } from '../../../../../shared/lib/aspectLib.ts';
 
 const positionClasses = {
   'top-left': 'top-0 left-0',
@@ -70,7 +70,7 @@ const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
   const imageUrl = `https://images.swubase.com/cards/${imageName}`;
 
   const baseAspect = baseCard?.aspects[0];
-  let baseColor = baseAspect ? aspectColors[baseAspect] : 'gray';
+  let baseColor = baseAspect ? aspectLib[baseAspect] : 'gray';
 
   return (
     <>

@@ -7,6 +7,7 @@ import {
 } from '../../../../../../lib/swu-resources/types.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
+import type { CardUniquenessFilter } from './advancedSearchLib.ts';
 
 /**
  * Normalize text for searching by:
@@ -223,8 +224,10 @@ export function searchForCommandOptions(
 interface SearchFilters {
   name?: string;
   text?: string;
+  artist?: string;
   sets?: SwuSet[];
   rarities?: SwuRarity[];
+  uniqueness?: CardUniquenessFilter;
   cardTypes?: string[];
   excludedCardTypes?: Record<string, true>;
   aspects?: SwuAspect[];
@@ -273,6 +276,16 @@ export const filterCards = async (
           }
         }
 
+        if (filters.artist) {
+          const hasMatchingArtist = Object.values(card.variants).some(
+            variant => variant?.artist && containsAllWords(variant.artist, filters.artist!),
+          );
+
+          if (!hasMatchingArtist) {
+            return false;
+          }
+        }
+
         // Check sets filter
         if (filters.sets && filters.sets.length > 0) {
           // Check if any variant of this card is from one of the filtered sets
@@ -288,6 +301,19 @@ export const filterCards = async (
         // Check rarity filter
         if (filters.rarities && filters.rarities.length > 0) {
           if (!filters.rarities.includes(card.rarity)) {
+            return false;
+          }
+        }
+
+        if (filters.uniqueness && filters.uniqueness !== 'both') {
+          const hasSubtitle =
+            card.subtitle !== null && card.subtitle !== undefined && card.subtitle !== '';
+
+          if (filters.uniqueness === 'unique' && !hasSubtitle) {
+            return false;
+          }
+
+          if (filters.uniqueness === 'not-unique' && hasSubtitle) {
             return false;
           }
         }
