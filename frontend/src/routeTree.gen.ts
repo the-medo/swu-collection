@@ -8,12 +8,9 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as Statistics2RouteImport } from './routes/statistics2'
-import { Route as ReviewMocksRouteImport } from './routes/review-mocks'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -78,16 +75,6 @@ import { Route as TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRouteImport }
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutDecksIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/decks/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/dashboard/index'
 
-const StatisticsRouteImport = createFileRoute('/statistics')()
-const TeamsTeamIdStatisticsRouteImport = createFileRoute(
-  '/teams/$teamId/statistics',
-)()
-
-const StatisticsRoute = StatisticsRouteImport.update({
-  id: '/statistics',
-  path: '/statistics',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -96,11 +83,6 @@ const TermsRoute = TermsRouteImport.update({
 const Statistics2Route = Statistics2RouteImport.update({
   id: '/statistics2',
   path: '/statistics2',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReviewMocksRoute = ReviewMocksRouteImport.update({
-  id: '/review-mocks',
-  path: '/review-mocks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -226,11 +208,6 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
-} as any)
-const TeamsTeamIdStatisticsRoute = TeamsTeamIdStatisticsRouteImport.update({
-  id: '/teams/$teamId/statistics',
-  path: '/teams/$teamId/statistics',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const WantlistsWantlistIdIndexRoute =
   WantlistsWantlistIdIndexRouteImport.update({
@@ -455,7 +432,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacy': typeof PrivacyRoute
-  '/review-mocks': typeof ReviewMocksRoute
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -522,7 +498,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacy': typeof PrivacyRoute
-  '/review-mocks': typeof ReviewMocksRoute
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -589,7 +564,6 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/privacy': typeof PrivacyRoute
-  '/review-mocks': typeof ReviewMocksRoute
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -601,7 +575,6 @@ export interface FileRoutesById {
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
   '/lists/your': typeof ListsYourRoute
-  '/statistics': typeof StatisticsRouteWithChildren
   '/statistics/_statisticsLayout': typeof StatisticsStatisticsLayoutRouteWithChildren
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
@@ -634,7 +607,6 @@ export interface FileRoutesById {
   '/tournaments/planetary-qualifiers/': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
-  '/teams/$teamId/statistics': typeof TeamsTeamIdStatisticsRouteWithChildren
   '/teams/$teamId/statistics/_statisticsLayout': typeof TeamsTeamIdStatisticsStatisticsLayoutRouteWithChildren
   '/limited/deck/$deckId/': typeof LimitedDeckDeckIdIndexRoute
   '/statistics/_statisticsLayout/dashboard/': typeof StatisticsStatisticsLayoutDashboardIndexRoute
@@ -660,7 +632,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/privacy'
-    | '/review-mocks'
     | '/statistics2'
     | '/terms'
     | '/admin'
@@ -727,7 +698,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/privacy'
-    | '/review-mocks'
     | '/statistics2'
     | '/terms'
     | '/admin'
@@ -793,7 +763,6 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/privacy'
-    | '/review-mocks'
     | '/statistics2'
     | '/terms'
     | '/_authenticated/admin'
@@ -805,7 +774,6 @@ export interface FileRouteTypes {
     | '/decks/tournament'
     | '/decks/your'
     | '/lists/your'
-    | '/statistics'
     | '/statistics/_statisticsLayout'
     | '/wantlists/public'
     | '/wantlists/your'
@@ -838,7 +806,6 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers/'
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
-    | '/teams/$teamId/statistics'
     | '/teams/$teamId/statistics/_statisticsLayout'
     | '/limited/deck/$deckId/'
     | '/statistics/_statisticsLayout/dashboard/'
@@ -864,7 +831,6 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
   PrivacyRoute: typeof PrivacyRoute
-  ReviewMocksRoute: typeof ReviewMocksRoute
   Statistics2Route: typeof Statistics2Route
   TermsRoute: typeof TermsRoute
   CardsSearchRoute: typeof CardsSearchRoute
@@ -875,7 +841,6 @@ export interface RootRouteChildren {
   DecksTournamentRoute: typeof DecksTournamentRoute
   DecksYourRoute: typeof DecksYourRoute
   ListsYourRoute: typeof ListsYourRoute
-  StatisticsRoute: typeof StatisticsRouteWithChildren
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
@@ -905,20 +870,12 @@ export interface RootRouteChildren {
   TournamentsPlanetaryQualifiersIndexRoute: typeof TournamentsPlanetaryQualifiersIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
-  TeamsTeamIdStatisticsRoute: typeof TeamsTeamIdStatisticsRouteWithChildren
   LimitedDeckDeckIdIndexRoute: typeof LimitedDeckDeckIdIndexRoute
   LimitedPoolPoolIdDetailIndexRoute: typeof LimitedPoolPoolIdDetailIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/statistics': {
-      id: '/statistics'
-      path: '/statistics'
-      fullPath: '/statistics'
-      preLoaderRoute: typeof StatisticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -931,13 +888,6 @@ declare module '@tanstack/react-router' {
       path: '/statistics2'
       fullPath: '/statistics2'
       preLoaderRoute: typeof Statistics2RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/review-mocks': {
-      id: '/review-mocks'
-      path: '/review-mocks'
-      fullPath: '/review-mocks'
-      preLoaderRoute: typeof ReviewMocksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -1047,7 +997,7 @@ declare module '@tanstack/react-router' {
     }
     '/statistics/_statisticsLayout': {
       id: '/statistics/_statisticsLayout'
-      path: '/statistics'
+      path: ''
       fullPath: '/statistics'
       preLoaderRoute: typeof StatisticsStatisticsLayoutRouteImport
       parentRoute: typeof StatisticsRoute
@@ -1114,13 +1064,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
-    }
-    '/teams/$teamId/statistics': {
-      id: '/teams/$teamId/statistics'
-      path: '/teams/$teamId/statistics'
-      fullPath: '/teams/$teamId/statistics'
-      preLoaderRoute: typeof TeamsTeamIdStatisticsRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/wantlists/$wantlistId/': {
       id: '/wantlists/$wantlistId/'
@@ -1320,7 +1263,7 @@ declare module '@tanstack/react-router' {
     }
     '/teams/$teamId/statistics/_statisticsLayout': {
       id: '/teams/$teamId/statistics/_statisticsLayout'
-      path: '/teams/$teamId/statistics'
+      path: ''
       fullPath: '/teams/$teamId/statistics'
       preLoaderRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutRouteImport
       parentRoute: typeof TeamsTeamIdStatisticsRoute
@@ -1408,105 +1351,11 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
-interface StatisticsStatisticsLayoutRouteChildren {
-  StatisticsStatisticsLayoutDashboardIndexRoute: typeof StatisticsStatisticsLayoutDashboardIndexRoute
-  StatisticsStatisticsLayoutDecksIndexRoute: typeof StatisticsStatisticsLayoutDecksIndexRoute
-  StatisticsStatisticsLayoutHistoryIndexRoute: typeof StatisticsStatisticsLayoutHistoryIndexRoute
-  StatisticsStatisticsLayoutLeaderAndBaseIndexRoute: typeof StatisticsStatisticsLayoutLeaderAndBaseIndexRoute
-  StatisticsStatisticsLayoutMatchupsIndexRoute: typeof StatisticsStatisticsLayoutMatchupsIndexRoute
-  StatisticsStatisticsLayoutMetaIndexRoute: typeof StatisticsStatisticsLayoutMetaIndexRoute
-}
-
-const StatisticsStatisticsLayoutRouteChildren: StatisticsStatisticsLayoutRouteChildren =
-  {
-    StatisticsStatisticsLayoutDashboardIndexRoute:
-      StatisticsStatisticsLayoutDashboardIndexRoute,
-    StatisticsStatisticsLayoutDecksIndexRoute:
-      StatisticsStatisticsLayoutDecksIndexRoute,
-    StatisticsStatisticsLayoutHistoryIndexRoute:
-      StatisticsStatisticsLayoutHistoryIndexRoute,
-    StatisticsStatisticsLayoutLeaderAndBaseIndexRoute:
-      StatisticsStatisticsLayoutLeaderAndBaseIndexRoute,
-    StatisticsStatisticsLayoutMatchupsIndexRoute:
-      StatisticsStatisticsLayoutMatchupsIndexRoute,
-    StatisticsStatisticsLayoutMetaIndexRoute:
-      StatisticsStatisticsLayoutMetaIndexRoute,
-  }
-
-const StatisticsStatisticsLayoutRouteWithChildren =
-  StatisticsStatisticsLayoutRoute._addFileChildren(
-    StatisticsStatisticsLayoutRouteChildren,
-  )
-
-interface StatisticsRouteChildren {
-  StatisticsStatisticsLayoutRoute: typeof StatisticsStatisticsLayoutRouteWithChildren
-  StatisticsIndexRoute: typeof StatisticsIndexRoute
-}
-
-const StatisticsRouteChildren: StatisticsRouteChildren = {
-  StatisticsStatisticsLayoutRoute: StatisticsStatisticsLayoutRouteWithChildren,
-  StatisticsIndexRoute: StatisticsIndexRoute,
-}
-
-const StatisticsRouteWithChildren = StatisticsRoute._addFileChildren(
-  StatisticsRouteChildren,
-)
-
-interface TeamsTeamIdStatisticsStatisticsLayoutRouteChildren {
-  TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRoute
-  TeamsTeamIdStatisticsStatisticsLayoutDecksIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutDecksIndexRoute
-  TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRoute
-  TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRoute
-  TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute
-  TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute
-  TeamsTeamIdStatisticsStatisticsLayoutMetaIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutMetaIndexRoute
-}
-
-const TeamsTeamIdStatisticsStatisticsLayoutRouteChildren: TeamsTeamIdStatisticsStatisticsLayoutRouteChildren =
-  {
-    TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRoute:
-      TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRoute,
-    TeamsTeamIdStatisticsStatisticsLayoutDecksIndexRoute:
-      TeamsTeamIdStatisticsStatisticsLayoutDecksIndexRoute,
-    TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRoute:
-      TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRoute,
-    TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRoute:
-      TeamsTeamIdStatisticsStatisticsLayoutLeaderAndBaseIndexRoute,
-    TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute:
-      TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRoute,
-    TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute:
-      TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRoute,
-    TeamsTeamIdStatisticsStatisticsLayoutMetaIndexRoute:
-      TeamsTeamIdStatisticsStatisticsLayoutMetaIndexRoute,
-  }
-
-const TeamsTeamIdStatisticsStatisticsLayoutRouteWithChildren =
-  TeamsTeamIdStatisticsStatisticsLayoutRoute._addFileChildren(
-    TeamsTeamIdStatisticsStatisticsLayoutRouteChildren,
-  )
-
-interface TeamsTeamIdStatisticsRouteChildren {
-  TeamsTeamIdStatisticsStatisticsLayoutRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutRouteWithChildren
-  TeamsTeamIdStatisticsIndexRoute: typeof TeamsTeamIdStatisticsIndexRoute
-}
-
-const TeamsTeamIdStatisticsRouteChildren: TeamsTeamIdStatisticsRouteChildren = {
-  TeamsTeamIdStatisticsStatisticsLayoutRoute:
-    TeamsTeamIdStatisticsStatisticsLayoutRouteWithChildren,
-  TeamsTeamIdStatisticsIndexRoute: TeamsTeamIdStatisticsIndexRoute,
-}
-
-const TeamsTeamIdStatisticsRouteWithChildren =
-  TeamsTeamIdStatisticsRoute._addFileChildren(
-    TeamsTeamIdStatisticsRouteChildren,
-  )
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
   PrivacyRoute: PrivacyRoute,
-  ReviewMocksRoute: ReviewMocksRoute,
   Statistics2Route: Statistics2Route,
   TermsRoute: TermsRoute,
   CardsSearchRoute: CardsSearchRoute,
@@ -1517,7 +1366,6 @@ const rootRouteChildren: RootRouteChildren = {
   DecksTournamentRoute: DecksTournamentRoute,
   DecksYourRoute: DecksYourRoute,
   ListsYourRoute: ListsYourRoute,
-  StatisticsRoute: StatisticsRouteWithChildren,
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
   ComparerIndexRoute: ComparerIndexRoute,
@@ -1548,7 +1396,6 @@ const rootRouteChildren: RootRouteChildren = {
     TournamentsPlanetaryQualifiersIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
-  TeamsTeamIdStatisticsRoute: TeamsTeamIdStatisticsRouteWithChildren,
   LimitedDeckDeckIdIndexRoute: LimitedDeckDeckIdIndexRoute,
   LimitedPoolPoolIdDetailIndexRoute: LimitedPoolPoolIdDetailIndexRoute,
 }
