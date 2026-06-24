@@ -7,8 +7,6 @@ import {
   ChevronsRight,
   Clock,
   ExternalLink,
-  GitMerge,
-  GitPullRequest,
   Inbox,
   MessageSquare,
   Minus,
@@ -18,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import { DeckMerge, DeckPullRequest } from '@/components/app/decks/deckWorkflowIcons.ts';
 
 export const Route = createFileRoute('/review-mocks')({
   component: ReviewMocksPage,
@@ -89,7 +88,7 @@ const concepts = [
   {
     id: 2,
     name: 'Three Column Merge Board',
-    premise: 'Best for Git-style base/current/proposed conflict review.',
+    premise: 'Best for deck base/current/proposed conflict review.',
   },
   {
     id: 3,
@@ -142,7 +141,7 @@ const leaderBaseMocks = [
   { id: 6, name: 'Split Identity Board', note: 'Leader and base are separate lanes with matching rhythm.' },
   { id: 7, name: 'Gradient Shelf', note: 'Aspect gradient shelf with card art standing on the rail.' },
   { id: 8, name: 'Review Tokens', note: 'Card art plus strong current/proposal status tokens.' },
-  { id: 9, name: 'Mini PR Header', note: 'Feels like a GitHub compare header for deck identity.' },
+  { id: 9, name: 'Mini PR Header', note: 'Compare header for deck identity changes.' },
   { id: 10, name: 'Stacked Identity', note: 'Uses the same stack metaphor as the deck list.' },
   { id: 11, name: 'Bento Identity', note: 'Asymmetric bento layout: leader larger than base summary.' },
   { id: 12, name: 'Timeline Swap', note: 'Current to proposed runs vertically for quick reading.' },
@@ -494,7 +493,7 @@ function IntroPanel() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-3xl">
           <div className="mb-2 flex items-center gap-2">
-            <GitPullRequest className="h-5 w-5 text-muted-foreground" />
+            <DeckPullRequest className="h-5 w-5 text-muted-foreground" />
             <h2 className="text-lg font-semibold">Review scenario</h2>
           </div>
           <p className="text-sm leading-6 text-muted-foreground">
@@ -771,7 +770,7 @@ function MockActionBarChip() {
     <MockDeckFrame
       titleExtra={
         <Badge variant="outline" className="gap-1">
-          <GitPullRequest className="h-3 w-3" /> 2 branches
+          <DeckPullRequest className="h-3 w-3" /> 2 branches
         </Badge>
       }
     >
@@ -779,7 +778,7 @@ function MockActionBarChip() {
         <Button variant="outline" size="sm">Copy link</Button>
         <Button variant="outline" size="sm">Duplicate</Button>
         <Button size="sm">
-          <GitPullRequest className="h-4 w-4" /> Review branches
+          <DeckPullRequest className="h-4 w-4" /> Review branches
         </Button>
       </div>
     </MockDeckFrame>
@@ -791,7 +790,7 @@ function MockDecklistSideRail() {
     <MockDeckFrame
       rail={
         <div className="absolute bottom-3 right-3 top-[108px] flex w-12 flex-col items-center rounded-md border bg-background/95 py-2 shadow-sm">
-          <GitPullRequest className="h-4 w-4" />
+          <DeckPullRequest className="h-4 w-4" />
           <div className="mt-1 text-sm font-semibold">2</div>
           <div className="mt-2 h-px w-7 bg-border" />
           <Button variant="ghost" size="iconMedium" className="mt-1">
@@ -822,7 +821,7 @@ function MockInlineTitleBadge() {
     <MockDeckFrame
       titleExtra={
         <button className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold hover:bg-muted">
-          <GitPullRequest className="h-3 w-3" />
+          <DeckPullRequest className="h-3 w-3" />
           2 open
         </button>
       }
@@ -836,7 +835,7 @@ function MockFloatingTray() {
       footer={
         <div className="absolute bottom-3 right-3 rounded-md border bg-background/95 p-2 shadow-lg">
           <div className="mb-1 flex items-center gap-2 text-xs font-semibold">
-            <GitPullRequest className="h-3.5 w-3.5" /> Branches
+            <DeckPullRequest className="h-3.5 w-3.5" /> Branches
             <Badge variant="secondary">2</Badge>
           </div>
           <div className="flex gap-1">
@@ -929,7 +928,7 @@ function MockReviewDrawerStub() {
       rail={
         <div className="absolute bottom-0 right-0 top-0 flex w-9 items-center justify-center border-l bg-muted/40">
           <div className="flex -rotate-90 items-center gap-2 whitespace-nowrap text-xs font-semibold">
-            <GitPullRequest className="h-3.5 w-3.5" />
+            <DeckPullRequest className="h-3.5 w-3.5" />
             2 branches
           </div>
         </div>
@@ -1213,7 +1212,7 @@ function MockPrHeader() {
     <div className="p-3">
       <div className="rounded-md border bg-background/70 p-3">
         <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
-          <GitPullRequest className="h-4 w-4" />
+          <DeckPullRequest className="h-4 w-4" />
           Identity changed
           <Badge variant="outline">2 fields</Badge>
         </div>
@@ -1449,7 +1448,7 @@ function ReviewerQueue() {
             <div className="text-xs text-muted-foreground">Scan first, open detailed review only if needed.</div>
           </div>
           <Button size="sm">
-            <GitMerge className="h-4 w-4" />
+            <DeckMerge className="h-4 w-4" />
             Merge
           </Button>
         </div>

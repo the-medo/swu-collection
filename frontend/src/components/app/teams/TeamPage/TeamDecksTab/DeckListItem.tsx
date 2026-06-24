@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from '@tanstack/react-router';
-import { GitBranch, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { getFormatName } from '@/components/app/decks/DeckTable/deckTableLib.tsx';
 import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
@@ -8,6 +8,7 @@ import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import type { TeamDeckExpanded } from '../../../../../../../server/routes/teams/_id/decks/get.ts';
 import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/components/CopyLinkButton.tsx';
+import { DeckBranch } from '@/components/app/decks/deckWorkflowIcons.ts';
 
 type DeckListItemDeck = Pick<
   TeamDeckExpanded['deck'],
@@ -85,7 +86,7 @@ const DeckListItem: React.FC<DeckListItemProps> = props => {
           disabled={branchDisabled}
           title="Branch deck"
         >
-          <GitBranch className="h-4 w-4" />
+          <DeckBranch className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"

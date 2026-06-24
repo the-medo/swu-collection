@@ -8,7 +8,8 @@ import {
 } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
 import { useGetDecks } from '@/api/decks/useGetDecks.ts';
 import { Button } from '@/components/ui/button.tsx';
-import { GitBranch, GitPullRequest, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { DeckBranch, DeckPullRequest } from '@/components/app/decks/deckWorkflowIcons.ts';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
 import {
   Select,
@@ -97,11 +98,11 @@ const UserDecks: React.FC<UserDecksProps> = ({ userId, loading = false }) => {
               All decks
             </ToggleGroupItem>
             <ToggleGroupItem value="branches" aria-label="Show branch decks">
-              <GitBranch className="mr-1 h-3.5 w-3.5" />
+              <DeckBranch className="mr-1 h-3.5 w-3.5" />
               My branches
             </ToggleGroupItem>
             <ToggleGroupItem value="branched" aria-label="Show decks with open branches">
-              <GitPullRequest className="mr-1 h-3.5 w-3.5" />
+              <DeckPullRequest className="mr-1 h-3.5 w-3.5" />
               Open branches
             </ToggleGroupItem>
           </ToggleGroup>

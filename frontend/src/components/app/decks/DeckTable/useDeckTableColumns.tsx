@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { GitBranch, GitPullRequest, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
@@ -21,6 +21,7 @@ import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table
 import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
 import { EntityPriceBadge } from '@/components/app/card-prices/EntityPriceBadge.tsx';
 import { getPriceSourceSortValue } from '../../../../../../shared/lib/card-prices/source-type-sorters.ts';
+import { DeckBranch, DeckPullRequest } from '@/components/app/decks/deckWorkflowIcons.ts';
 
 interface DeckTableColumnsProps {
   view?: DataTableViewMode;
@@ -142,7 +143,7 @@ export function useDeckTableColumns({
                 >
                   {row.original.branchContext && (
                     <span className="inline-flex items-center gap-1 rounded-full border border-transparent bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">
-                      <GitBranch className="h-3 w-3" />
+                      <DeckBranch className="h-3 w-3" />
                       Branch
                       <span className="font-normal text-muted-foreground">
                         {row.original.branchContext.team.name}
@@ -151,7 +152,7 @@ export function useDeckTableColumns({
                   )}
                   {(row.original.openChangeRequestCount ?? 0) > 0 ? (
                     <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold text-foreground">
-                      <GitPullRequest className="h-3 w-3" />
+                      <DeckPullRequest className="h-3 w-3" />
                       {row.original.openChangeRequestCount}{' '}
                       {row.original.openChangeRequestCount === 1
                         ? 'change request'
@@ -159,7 +160,7 @@ export function useDeckTableColumns({
                     </span>
                   ) : (row.original.openBranchCount ?? 0) > 0 ? (
                     <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold text-muted-foreground">
-                      <GitPullRequest className="h-3 w-3" />
+                      <DeckPullRequest className="h-3 w-3" />
                       {row.original.openBranchCount}{' '}
                       {row.original.openBranchCount === 1 ? 'branch' : 'branches'}
                     </span>

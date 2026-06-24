@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from '@tanstack/react-router';
-import { GitBranch, GitPullRequest, ExternalLink, Loader2 } from 'lucide-react';
+import { ExternalLink, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
@@ -9,6 +9,7 @@ import Dialog from '@/components/app/global/Dialog.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import { useSubmitDeckChangeRequest } from '@/api/teams';
 import type { DeckData } from '../../../../../types/Deck.ts';
+import { DeckBranch, DeckPullRequest } from '@/components/app/decks/deckWorkflowIcons.ts';
 
 type DeckBranchBannerProps = {
   deckData: DeckData;
@@ -41,7 +42,7 @@ const DeckBranchBanner: React.FC<DeckBranchBannerProps> = ({ deckData }) => {
     <div className="flex flex-col gap-3 rounded-md border bg-muted/40 p-3 text-sm md:flex-row md:items-center md:justify-between">
       <div className="flex min-w-0 items-start gap-3">
         <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border bg-background">
-          <GitBranch className="h-4 w-4" />
+          <DeckBranch className="h-4 w-4" />
         </div>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -58,7 +59,7 @@ const DeckBranchBanner: React.FC<DeckBranchBannerProps> = ({ deckData }) => {
             </Badge>
             {branchContext.changeRequest && (
               <Badge variant="outline">
-                <GitPullRequest className="mr-1 h-3 w-3" />
+                <DeckPullRequest className="mr-1 h-3 w-3" />
                 request {branchContext.changeRequest.status}
               </Badge>
             )}
@@ -86,7 +87,7 @@ const DeckBranchBanner: React.FC<DeckBranchBannerProps> = ({ deckData }) => {
             headerDescription="Ask the original deck creator to review and merge this branch."
             trigger={
               <Button size="sm">
-                <GitPullRequest className="h-4 w-4" />
+                <DeckPullRequest className="h-4 w-4" />
                 Submit
               </Button>
             }

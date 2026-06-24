@@ -7,12 +7,13 @@ import {
 } from '@/components/ui/navigation-menu.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { GitBranch, GitPullRequest, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useDeckBranches } from '@/api/decks/useDeckBranches.ts';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { RequestReviewDialog } from '@/components/app/teams/TeamPage/TeamChangeRequestsTab.tsx';
 import type { Deck } from '../../../../../../../../types/Deck.ts';
 import type { DeckChangeRequestListItem } from '../../../../../../../../types/ZDeckBranch.ts';
+import { DeckBranch, DeckPullRequest } from '@/components/app/decks/deckWorkflowIcons.ts';
 
 type DeckBranchesMenuProps = {
   deckId: string;
@@ -38,7 +39,7 @@ const DeckBranchesMenu: React.FC<DeckBranchesMenuProps> = ({ deckId }) => {
     <>
     <NavigationMenuItem>
       <NavigationMenuTrigger className="justify-start border">
-        <GitPullRequest className="h-4 w-4" />
+        <DeckPullRequest className="h-4 w-4" />
         <span>Branches</span>
         {openChangeRequestCount > 0 && (
           <Badge variant="secondary" className="ml-1 h-5 px-1.5">
@@ -155,20 +156,20 @@ function BranchRow({ row, baseDeck, primaryAction, onReview }: BranchRowProps) {
       <div className="mt-2 flex gap-2">
         {requestRow ? (
           <Button onClick={() => onReview(requestRow)} size="sm">
-            <GitPullRequest className="h-4 w-4" />
+            <DeckPullRequest className="h-4 w-4" />
             Review
           </Button>
         ) : (
           <Button asChild variant="outline" size="sm">
             <Link to="/teams/$teamId" params={{ teamId: row.team.shortcut ?? row.team.id }}>
-              <GitPullRequest className="h-4 w-4" />
+              <DeckPullRequest className="h-4 w-4" />
               {primaryAction}
             </Link>
           </Button>
         )}
         <Button asChild variant="ghost" size="sm">
           <Link to="/decks/$deckId" params={{ deckId: row.branchDeck.id }}>
-            <GitBranch className="h-4 w-4" />
+            <DeckBranch className="h-4 w-4" />
             Branch
           </Link>
         </Button>

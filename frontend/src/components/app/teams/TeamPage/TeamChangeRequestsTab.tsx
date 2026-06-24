@@ -2,9 +2,6 @@ import * as React from 'react';
 import {
   AlertTriangle,
   CheckCircle2,
-  GitCompare,
-  GitMerge,
-  GitPullRequest,
   Loader2,
   MessageSquare,
   X,
@@ -36,6 +33,7 @@ import type {
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { aspectLib } from '../../../../../../shared/lib/aspectLib.ts';
 import type { SwuAspect } from '../../../../../../types/enums.ts';
+import { DeckCompare, DeckMerge, DeckPullRequest } from '@/components/app/decks/deckWorkflowIcons.ts';
 
 type TeamChangeRequestsTabProps = {
   teamId: string;
@@ -1330,7 +1328,7 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
       header={
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <GitPullRequest className="h-5 w-5 text-muted-foreground" />
+            <DeckPullRequest className="h-5 w-5 text-muted-foreground" />
             <DialogTitleText>{request.title}</DialogTitleText>
             <Badge variant={request.status === 'open' ? 'secondary' : 'outline'}>{request.status}</Badge>
           </div>
@@ -1342,7 +1340,7 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
       trigger={
         trigger ?? (
         <Button variant="outline" size="sm">
-          <GitCompare className="h-4 w-4" />
+          <DeckCompare className="h-4 w-4" />
           Review
         </Button>
         )
@@ -1373,7 +1371,7 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
               {mergeMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <GitMerge className="h-4 w-4" />
+                <DeckMerge className="h-4 w-4" />
               )}
               Merge
             </Button>
@@ -1565,7 +1563,7 @@ const TeamChangeRequestsTab: React.FC<TeamChangeRequestsTabProps> = ({ teamId })
   if (requests.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-md border py-12 text-center">
-        <GitPullRequest className="h-10 w-10 text-muted-foreground" />
+        <DeckPullRequest className="h-10 w-10 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">No deck change requests yet.</p>
       </div>
     );
@@ -1575,7 +1573,7 @@ const TeamChangeRequestsTab: React.FC<TeamChangeRequestsTabProps> = ({ teamId })
     <div className="flex flex-col gap-2 py-4">
       {requests.map(row => (
         <div key={row.changeRequest.id} className="flex items-center gap-3 rounded-md border p-3">
-          <GitPullRequest className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <DeckPullRequest className="h-4 w-4 shrink-0 text-muted-foreground" />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-medium">{row.changeRequest.title}</span>
