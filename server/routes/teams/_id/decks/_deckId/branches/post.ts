@@ -57,7 +57,7 @@ export const teamsIdDecksDeckIdBranchesPostRoute = new Hono<AuthExtension>().pos
           leaderCardId1: sourceDeck.leaderCardId1,
           leaderCardId2: sourceDeck.leaderCardId2,
           baseCardId: sourceDeck.baseCardId,
-          public: 0,
+          public: 2,
           cardPoolId: null,
         })
         .returning();

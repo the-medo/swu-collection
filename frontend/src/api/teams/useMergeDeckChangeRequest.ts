@@ -10,11 +10,12 @@ export const useMergeDeckChangeRequest = (teamId: string | undefined) => {
     mutationFn: async ({
       requestId,
       resolutions,
+      mergeDeckFields,
     }: ZDeckChangeRequestMergeRequest & { requestId: string }) => {
       if (!teamId) throw new Error('Team id is required');
       const response = await api.teams[':id']['change-requests'][':requestId'].merge.$post({
         param: { id: teamId, requestId },
-        json: { resolutions },
+        json: { resolutions, mergeDeckFields },
       });
       const body = await response.json();
       if (!response.ok) {

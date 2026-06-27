@@ -61,6 +61,20 @@ describe('deck branch diff', () => {
     expect(conflicts).toHaveLength(0);
   });
 
+  test('ignores visibility and format changes in review diffs', () => {
+    const before = snapshot();
+    const after = snapshot({
+      deck: { ...before.deck, public: 0, format: 2 },
+    });
+
+    const diff = diffDeckSnapshots(before, after);
+    const conflicts = findDeckMergeConflicts(before, before, after);
+
+    expect(diff.summary.fieldsChanged).toBe(0);
+    expect(diff.fields).toHaveLength(0);
+    expect(conflicts).toHaveLength(0);
+  });
+
   test('detects card conflicts when owner and branch change the same card differently', () => {
     const base = snapshot();
     const current = snapshot({
@@ -93,7 +107,7 @@ describe('deck branch diff', () => {
       deck: { ...base.deck, description: 'Owner note' },
     });
     const branch = snapshot({
-      deck: { ...base.deck, name: 'Branch name' },
+      deck: { ...base.deck, leaderCardId1: 'leader-branch' },
       cards: [
         ...base.cards,
         { cardId: 'upgrade-a', board: 1, quantity: 1, note: '' },
@@ -105,8 +119,46 @@ describe('deck branch diff', () => {
 
     expect(conflicts).toHaveLength(0);
     expect(merged.deck.description).toBe('Owner note');
-    expect(merged.deck.name).toBe('Branch name');
+    expect(merged.deck.leaderCardId1).toBe('leader-branch');
     expect(merged.cards.some(card => card.cardId === 'upgrade-a')).toBe(true);
+  });
+
+  test('does not merge deck visibility, format, name, or description by default', () => {
+    const base = snapshot();
+    const branch = snapshot({
+      deck: {
+        ...base.deck,
+        name: 'Branch name',
+        description: 'Branch description',
+        format: 2,
+        public: 0,
+      },
+    });
+
+    const merged = buildMergedDeckSnapshot(base, base, branch);
+
+    expect(merged.deck.name).toBe(base.deck.name);
+    expect(merged.deck.description).toBe(base.deck.description);
+    expect(merged.deck.format).toBe(base.deck.format);
+    expect(merged.deck.public).toBe(base.deck.public);
+  });
+
+  test('merges selected deck name and description fields', () => {
+    const base = snapshot();
+    const branch = snapshot({
+      deck: {
+        ...base.deck,
+        name: 'Branch name',
+        description: 'Branch description',
+      },
+    });
+
+    const merged = buildMergedDeckSnapshot(base, base, branch, [], {
+      mergeDeckFields: { name: true, description: true },
+    });
+
+    expect(merged.deck.name).toBe('Branch name');
+    expect(merged.deck.description).toBe('Branch description');
   });
 
   test('preserves current deck notes when merging quantity changes', () => {

@@ -260,7 +260,7 @@ async function ensureChangeRequest(teamId: string, baseDeckId: string, memberId:
       leaderCardId1: 'iden-versio--inferno-squad-commander',
       leaderCardId2: baseSnapshot.deck.leaderCardId2,
       baseCardId: 'energy-conversion-lab',
-      public: 0,
+      public: 2,
       cardPoolId: null,
       updatedAt: new Date(),
     })

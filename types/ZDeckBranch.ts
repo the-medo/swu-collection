@@ -48,6 +48,13 @@ export const zDeckChangeRequestMergeRequest = z.object({
     .array(z.discriminatedUnion('type', [zDeckFieldConflictResolution, zDeckCardConflictResolution]))
     .optional()
     .default([]),
+  mergeDeckFields: z
+    .object({
+      name: z.boolean().optional().default(false),
+      description: z.boolean().optional().default(false),
+    })
+    .optional()
+    .default({ name: false, description: false }),
 });
 
 export const zDeckChangeRequestCommentRequest = z.object({

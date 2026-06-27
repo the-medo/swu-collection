@@ -9,6 +9,7 @@ import {
 import { Link } from '@tanstack/react-router';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import Dialog from '@/components/app/global/Dialog.tsx';
@@ -43,8 +44,12 @@ type DeckConflict = DeckDiffResponse['conflicts'][number];
 const overallReviewCommentKey = '__overall__';
 const identityFields = ['leaderCardId1', 'leaderCardId2', 'baseCardId'] as const;
 const deckPreviewFields = ['name', 'description'] as const;
+const ignoredDeckReviewFields = ['public', 'format'] as const;
+const defaultMergeDeckFields = { name: false, description: false };
 
 type IdentityField = (typeof identityFields)[number];
+type OptionalDeckMergeField = (typeof deckPreviewFields)[number];
+type OptionalDeckMergeFieldState = Record<OptionalDeckMergeField, boolean>;
 type IdentityEntry = {
   field: IdentityField;
   key: string;
@@ -97,6 +102,19 @@ const identityLabel = (field: IdentityField) => {
 };
 
 const isDeckPreviewField = (field: string) => (deckPreviewFields as readonly string[]).includes(field);
+const isOptionalDeckMergeField = (field: string): field is OptionalDeckMergeField =>
+  (deckPreviewFields as readonly string[]).includes(field);
+const isIgnoredDeckReviewField = (field: string) =>
+  (ignoredDeckReviewFields as readonly string[]).includes(field);
+
+const isActiveMergeConflict = (
+  conflict: DeckConflict,
+  mergeDeckFields: OptionalDeckMergeFieldState,
+) => {
+  if (conflict.type === 'card') return true;
+  if ((identityFields as readonly string[]).includes(conflict.field)) return true;
+  return isOptionalDeckMergeField(conflict.field) && mergeDeckFields[conflict.field];
+};
 
 const inlineFieldValue = (value: unknown) => {
   if (value === null || value === undefined || value === '') return 'empty';
@@ -139,23 +157,28 @@ const buildIdentityEntries = (diffData: DeckDiffResponse): IdentityEntry[] => {
 const conflictKey = (conflict: DeckConflict) =>
   conflict.type === 'field' ? `field:${conflict.field}` : `card:${conflict.key}`;
 
-const buildReviewChanges = (diffData: DeckDiffResponse): ReviewChange[] => {
-  const conflicts = new Map(diffData.conflicts.map(conflict => [conflictKey(conflict), conflict]));
-  const fieldChanges: ReviewChange[] = diffData.proposedDiff.fields.map((change: DeckFieldChange) => {
-    const key = `field:${change.field}`;
-    return {
-      key,
-      type: 'field',
-      title: fieldLabel(change.field),
-      subtitle: 'Deck detail',
-      badge: 'field',
-      beforeLabel: 'Before',
-      afterLabel: 'After',
-      before: change.before,
-      after: change.after,
-      conflict: conflicts.get(key),
-    };
-  });
+const buildReviewChanges = (
+  diffData: DeckDiffResponse,
+  activeConflicts: DeckConflict[] = diffData.conflicts,
+): ReviewChange[] => {
+  const conflicts = new Map(activeConflicts.map(conflict => [conflictKey(conflict), conflict]));
+  const fieldChanges: ReviewChange[] = diffData.proposedDiff.fields
+    .filter(change => !isIgnoredDeckReviewField(change.field))
+    .map((change: DeckFieldChange) => {
+      const key = `field:${change.field}`;
+      return {
+        key,
+        type: 'field',
+        title: fieldLabel(change.field),
+        subtitle: 'Deck detail',
+        badge: 'field',
+        beforeLabel: 'Before',
+        afterLabel: 'After',
+        before: change.before,
+        after: change.after,
+        conflict: conflicts.get(key),
+      };
+    });
   const cardChanges: ReviewChange[] = diffData.proposedDiff.cards.map((change: DeckCardChange) => {
     const key = `card:${change.key}`;
     return {
@@ -273,19 +296,21 @@ const StackedDeckReview: React.FC<{
   selectedCardKey: string | undefined;
   selectedIdentityKey: string | undefined;
   selectedIdentityCardKey: string | undefined;
-  selectedChangeKey: string | undefined;
   onSelectCard: (entry: StackEntry) => void;
   onSelectIdentityCard: (preview: IdentityCardPreview) => void;
-  onSelectFieldChange: (change: DeckFieldChange) => void;
+  mergeDeckFields: OptionalDeckMergeFieldState;
+  canToggleMergeDeckFields: boolean;
+  onToggleMergeDeckField: (field: OptionalDeckMergeField, checked: boolean) => void;
 }> = ({
   diffData,
   selectedCardKey,
   selectedIdentityKey,
   selectedIdentityCardKey,
-  selectedChangeKey,
   onSelectCard,
   onSelectIdentityCard,
-  onSelectFieldChange,
+  mergeDeckFields,
+  canToggleMergeDeckFields,
+  onToggleMergeDeckField,
 }) => {
   return (
     <StackedDeckPanel
@@ -295,10 +320,11 @@ const StackedDeckReview: React.FC<{
       selectedCardKey={selectedCardKey}
       selectedIdentityKey={selectedIdentityKey}
       selectedIdentityCardKey={selectedIdentityCardKey}
-      selectedChangeKey={selectedChangeKey}
       onSelectCard={onSelectCard}
       onSelectIdentityCard={onSelectIdentityCard}
-      onSelectFieldChange={onSelectFieldChange}
+      mergeDeckFields={mergeDeckFields}
+      canToggleMergeDeckFields={canToggleMergeDeckFields}
+      onToggleMergeDeckField={onToggleMergeDeckField}
     />
   );
 };
@@ -310,10 +336,11 @@ const StackedDeckPanel: React.FC<{
   selectedCardKey: string | undefined;
   selectedIdentityKey: string | undefined;
   selectedIdentityCardKey: string | undefined;
-  selectedChangeKey: string | undefined;
   onSelectCard: (entry: StackEntry) => void;
   onSelectIdentityCard: (preview: IdentityCardPreview) => void;
-  onSelectFieldChange: (change: DeckFieldChange) => void;
+  mergeDeckFields: OptionalDeckMergeFieldState;
+  canToggleMergeDeckFields: boolean;
+  onToggleMergeDeckField: (field: OptionalDeckMergeField, checked: boolean) => void;
 }> = ({
   diffData,
   snapshotCards,
@@ -321,10 +348,11 @@ const StackedDeckPanel: React.FC<{
   selectedCardKey,
   selectedIdentityKey,
   selectedIdentityCardKey,
-  selectedChangeKey,
   onSelectCard,
   onSelectIdentityCard,
-  onSelectFieldChange,
+  mergeDeckFields,
+  canToggleMergeDeckFields,
+  onToggleMergeDeckField,
 }) => {
   const { data: cardList } = useCardList();
   const identityEntries = React.useMemo(() => buildIdentityEntries(diffData), [diffData]);
@@ -448,8 +476,9 @@ const StackedDeckPanel: React.FC<{
         <div className="grid gap-0">
           <DeckDetailStrip
             changes={deckDetailChanges}
-            selectedChangeKey={selectedChangeKey}
-            onSelectChange={onSelectFieldChange}
+            mergeDeckFields={mergeDeckFields}
+            canToggleMergeDeckFields={canToggleMergeDeckFields}
+            onToggleMergeDeckField={onToggleMergeDeckField}
           />
           <DeckIdentityStrip
             entries={identityEntries}
@@ -475,9 +504,15 @@ const StackedDeckPanel: React.FC<{
 
 const DeckDetailStrip: React.FC<{
   changes: DeckFieldChange[];
-  selectedChangeKey: string | undefined;
-  onSelectChange: (change: DeckFieldChange) => void;
-}> = ({ changes, selectedChangeKey, onSelectChange }) => {
+  mergeDeckFields: OptionalDeckMergeFieldState;
+  canToggleMergeDeckFields: boolean;
+  onToggleMergeDeckField: (field: OptionalDeckMergeField, checked: boolean) => void;
+}> = ({
+  changes,
+  mergeDeckFields,
+  canToggleMergeDeckFields,
+  onToggleMergeDeckField,
+}) => {
   if (changes.length === 0) return null;
 
   return (
@@ -485,32 +520,46 @@ const DeckDetailStrip: React.FC<{
       <div className="grid gap-2">
         {changes.map(change => {
           const key = `field:${change.field}`;
-          const selected = selectedChangeKey === key;
+          const mergeField = isOptionalDeckMergeField(change.field) ? change.field : undefined;
+          const checked = mergeField ? mergeDeckFields[mergeField] : false;
 
           return (
-            <button
-              key={key}
-              type="button"
-              className={`grid w-full min-w-0 gap-1 rounded-md px-2 py-1.5 text-left transition hover:bg-background/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary sm:grid-cols-[88px_minmax(0,1fr)] ${
-                selected ? 'bg-background/55 outline outline-2 outline-primary outline-offset-1' : ''
-              }`}
-              onClick={() => onSelectChange(change)}
-            >
-              <span className="text-[11px] font-semibold uppercase text-muted-foreground">
-                {fieldLabel(change.field)}
-              </span>
-              <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1 text-sm leading-5">
-                <span className="min-w-0 max-w-full break-words text-muted-foreground line-through">
-                  {inlineFieldValue(change.before)}
+            <div key={key} className="rounded-md px-2 py-1.5">
+              <div className="grid w-full min-w-0 gap-1 text-left sm:grid-cols-[88px_minmax(0,1fr)]">
+                <span className="text-[11px] font-semibold uppercase text-muted-foreground">
+                  {fieldLabel(change.field)}
                 </span>
-                <span className="shrink-0 text-muted-foreground" aria-hidden="true">
-                  →
+                <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1 text-sm leading-5">
+                  <span
+                    className={`min-w-0 max-w-full break-words ${
+                      checked ? 'text-muted-foreground line-through' : 'font-medium text-foreground'
+                    }`}
+                  >
+                    {inlineFieldValue(change.before)}
+                  </span>
+                  <span className="shrink-0 text-muted-foreground" aria-hidden="true">
+                    →
+                  </span>
+                  <span
+                    className={`min-w-0 max-w-full break-words ${
+                      checked ? 'font-medium text-foreground' : 'text-muted-foreground line-through'
+                    }`}
+                  >
+                    {inlineFieldValue(change.after)}
+                  </span>
                 </span>
-                <span className="min-w-0 max-w-full break-words font-medium text-amber-100">
-                  {inlineFieldValue(change.after)}
-                </span>
-              </span>
-            </button>
+              </div>
+              {mergeField && (
+                <label className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <Checkbox
+                    checked={checked}
+                    disabled={!canToggleMergeDeckFields}
+                    onCheckedChange={value => onToggleMergeDeckField(mergeField, value === true)}
+                  />
+                  <span>Merge {fieldLabel(change.field).toLowerCase()} into base deck</span>
+                </label>
+              )}
+            </div>
           );
         })}
       </div>
@@ -1187,6 +1236,8 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
   const open = controlledOpen ?? uncontrolledOpen;
   const setOpen = controlledOnOpenChange ?? setUncontrolledOpen;
   const [resolutions, setResolutions] = React.useState<Record<string, 'current' | 'proposed'>>({});
+  const [mergeDeckFields, setMergeDeckFields] =
+    React.useState<OptionalDeckMergeFieldState>(defaultMergeDeckFields);
   const [reviewFeedbackDraft, setReviewFeedbackDraft] = React.useState('');
   const [selectedChangeKey, setSelectedChangeKey] = React.useState<string>();
   const [selectedCard, setSelectedCard] = React.useState<StackEntry>();
@@ -1205,12 +1256,22 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
   const canMerge = request.status === 'open' && user?.id === baseDeck?.userId;
   const canComment = request.status === 'open';
   const conflicts = diffData?.conflicts ?? [];
-  const changes = React.useMemo(() => (diffData ? buildReviewChanges(diffData) : []), [diffData]);
+  const activeConflicts = React.useMemo(
+    () => conflicts.filter(conflict => isActiveMergeConflict(conflict, mergeDeckFields)),
+    [conflicts, mergeDeckFields],
+  );
+  const changes = React.useMemo(
+    () => (diffData ? buildReviewChanges(diffData, activeConflicts) : []),
+    [activeConflicts, diffData],
+  );
   const selectedChange = changes.find(change => change.key === selectedChangeKey);
   const selectedFieldChange = selectedChange?.type === 'field' ? selectedChange : undefined;
   const visibleFieldChanges =
     diffData?.proposedDiff.fields.filter(
-      field => !(identityFields as readonly string[]).includes(field.field) && !isDeckPreviewField(field.field),
+      field =>
+        !(identityFields as readonly string[]).includes(field.field) &&
+        !isDeckPreviewField(field.field) &&
+        !isIgnoredDeckReviewField(field.field),
     ) ?? [];
   const stackEntries = React.useMemo(
     () => (diffData ? buildStackEntries(diffData.snapshots.branch.cards, diffData.proposedDiff.cards) : []),
@@ -1223,7 +1284,7 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
       : undefined);
   const selectedDrawerKey =
     selectedIdentityCard?.key ?? selectedIdentity?.key ?? selectedCardForInspector?.key ?? selectedFieldChange?.key;
-  const allConflictsResolved = conflicts.every((conflict: DeckConflict) => {
+  const allConflictsResolved = activeConflicts.every((conflict: DeckConflict) => {
     return !!resolutions[conflictKey(conflict)];
   });
   const changeKeySignature = changes.map(change => change.key).join('|');
@@ -1235,6 +1296,8 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
       setSelectedCard(undefined);
       setSelectedIdentity(undefined);
       setSelectedIdentityCard(undefined);
+      setMergeDeckFields({ ...defaultMergeDeckFields });
+      setResolutions({});
     }
   }, [open]);
 
@@ -1254,7 +1317,7 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
   }, []);
 
   const merge = () => {
-    const payload: ZDeckChangeRequestMergeRequest['resolutions'] = conflicts
+    const payload: ZDeckChangeRequestMergeRequest['resolutions'] = activeConflicts
       .map((conflict: DeckConflict) => {
         const key = conflictKey(conflict);
         const choice = resolutions[key];
@@ -1275,7 +1338,7 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
         Boolean(resolution),
       );
 
-    mergeMutation.mutate({ requestId: request.id, resolutions: payload });
+    mergeMutation.mutate({ requestId: request.id, resolutions: payload, mergeDeckFields });
   };
 
   const saveReviewFeedback = () => {
@@ -1310,12 +1373,12 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
   };
 
   const totalChanged =
-    (diffData?.proposedDiff.summary.fieldsChanged ?? 0) +
+    (diffData?.proposedDiff.fields.filter(field => !isIgnoredDeckReviewField(field.field)).length ?? 0) +
     (diffData?.proposedDiff.summary.cardsAdded ?? 0) +
     (diffData?.proposedDiff.summary.cardsChanged ?? 0) +
     (diffData?.proposedDiff.summary.cardsRemoved ?? 0);
   const ownerTouchedBase =
-    (diffData?.ownerDiff.summary.fieldsChanged ?? 0) +
+    (diffData?.ownerDiff.fields.filter(field => !isIgnoredDeckReviewField(field.field)).length ?? 0) +
     (diffData?.ownerDiff.summary.cardsAdded ?? 0) +
     (diffData?.ownerDiff.summary.cardsChanged ?? 0) +
     (diffData?.ownerDiff.summary.cardsRemoved ?? 0);
@@ -1356,7 +1419,7 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
             Send back
           </Button>
           <div className="flex items-center gap-2">
-            {conflicts.length > 0 && !allConflictsResolved && (
+            {activeConflicts.length > 0 && !allConflictsResolved && (
               <span className="text-sm text-muted-foreground">Resolve conflicts</span>
             )}
             <Button
@@ -1365,7 +1428,7 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
                 !canMerge ||
                 mergeMutation.isPending ||
                 isLoading ||
-                (conflicts.length > 0 && !allConflictsResolved)
+                (activeConflicts.length > 0 && !allConflictsResolved)
               }
             >
               {mergeMutation.isPending ? (
@@ -1389,7 +1452,7 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
           <div className="flex flex-wrap items-start justify-between gap-3 rounded-md border bg-muted/20 p-3">
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-start gap-2">
-                {conflicts.length > 0 ? (
+                {activeConflicts.length > 0 ? (
                   <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-500" />
                 ) : (
                   <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-500" />
@@ -1397,7 +1460,7 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
                 <div>
                   <div className="text-sm font-semibold">Merge check</div>
                   <div className="text-xs text-muted-foreground">
-                    {conflicts.length > 0 ? 'Blocked by conflicts' : 'No conflicts'}
+                    {activeConflicts.length > 0 ? 'Blocked by conflicts' : 'No conflicts'}
                   </div>
                 </div>
               </div>
@@ -1410,8 +1473,8 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline">{totalChanged} changes</Badge>
               <Badge variant="outline">{diffData.reviewComments.length} comments</Badge>
-              <Badge variant={conflicts.length > 0 ? 'destructive' : 'outline'}>
-                {conflicts.length} conflicts
+              <Badge variant={activeConflicts.length > 0 ? 'destructive' : 'outline'}>
+                {activeConflicts.length} conflicts
               </Badge>
               {ownerTouchedBase > 0 && <Badge variant="secondary">{ownerTouchedBase} base edits</Badge>}
             </div>
@@ -1430,7 +1493,10 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
                   <h3 className="text-base font-semibold">Changes</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">{diffData.proposedDiff.summary.fieldsChanged} fields</Badge>
+                  <Badge variant="outline">
+                    {diffData.proposedDiff.fields.filter(field => !isIgnoredDeckReviewField(field.field)).length}{' '}
+                    fields
+                  </Badge>
                   <Badge variant="outline">{diffData.proposedDiff.summary.cardsAdded} added</Badge>
                   <Badge variant="outline">{diffData.proposedDiff.summary.cardsChanged} changed</Badge>
                   <Badge variant="outline">{diffData.proposedDiff.summary.cardsRemoved} removed</Badge>
@@ -1447,7 +1513,6 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
                     selectedCardKey={selectedCardForInspector?.key}
                     selectedIdentityKey={selectedIdentity?.key}
                     selectedIdentityCardKey={selectedIdentityCard?.key}
-                    selectedChangeKey={selectedChangeKey}
                     onSelectCard={entry => {
                       if (selectedCardForInspector?.key === entry.key) {
                         clearSelection();
@@ -1468,17 +1533,11 @@ export const RequestReviewDialog: React.FC<RequestReviewDialogProps> = ({
                       setSelectedCard(undefined);
                       setSelectedChangeKey(preview.change ? `field:${preview.field}` : undefined);
                     }}
-                    onSelectFieldChange={field => {
-                      const key = `field:${field.field}`;
-                      if (selectedChangeKey === key) {
-                        clearSelection();
-                        return;
-                      }
-                      setSelectedCard(undefined);
-                      setSelectedIdentity(undefined);
-                      setSelectedIdentityCard(undefined);
-                      setSelectedChangeKey(key);
-                    }}
+                    mergeDeckFields={mergeDeckFields}
+                    canToggleMergeDeckFields={canMerge}
+                    onToggleMergeDeckField={(field, checked) =>
+                      setMergeDeckFields(previous => ({ ...previous, [field]: checked }))
+                    }
                   />
                   {visibleFieldChanges.length > 0 && (
                     <div className="rounded-md border bg-muted/10 p-3">

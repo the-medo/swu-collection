@@ -33,7 +33,7 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
     // Get the current deck data to check if leader or base card has changed
     const currentDeck = editable.deck;
     const branchContext = await getDeckBranchContext(paramDeckId);
-    const updateData = branchContext ? { ...data, public: 0 } : data;
+    const updateData = branchContext ? { ...data, public: 2 } : data;
 
     // Check if leader or base card is being updated
     const isLeaderUpdated =

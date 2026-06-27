@@ -17,6 +17,8 @@ import {
   buildMergedDeckSnapshot,
   diffDeckSnapshots,
   findDeckMergeConflicts,
+  shouldMergeDeckField,
+  type DeckMergeFieldPolicy,
 } from '../../../../../../lib/decks/deckBranchDiff.ts';
 import { isAdminUser } from '../../../../../../lib/decks/deckBranchAccess.ts';
 import { updateDeckInformation } from '../../../../../../lib/decks/updateDeckInformation.ts';
@@ -71,6 +73,10 @@ export const teamsIdChangeRequestsRequestIdMergePostRoute = new Hono<AuthExtensi
       currentBaseSnapshot,
       branchSnapshot,
     );
+    const mergeDeckFields: DeckMergeFieldPolicy = {
+      name: data.mergeDeckFields.name === true,
+      description: data.mergeDeckFields.description === true,
+    };
     const resolvedKeys = new Set(
       data.resolutions.map(resolution =>
         resolution.type === 'field' ? `field:${resolution.field}` : `card:${resolution.key}`,
@@ -78,7 +84,8 @@ export const teamsIdChangeRequestsRequestIdMergePostRoute = new Hono<AuthExtensi
     );
     const unresolvedConflicts = conflicts.filter(conflict =>
       conflict.type === 'field'
-        ? !resolvedKeys.has(`field:${conflict.field}`)
+        ? shouldMergeDeckField(conflict.field, mergeDeckFields) &&
+          !resolvedKeys.has(`field:${conflict.field}`)
         : !resolvedKeys.has(`card:${conflict.key}`),
     );
 
@@ -101,6 +108,7 @@ export const teamsIdChangeRequestsRequestIdMergePostRoute = new Hono<AuthExtensi
       currentBaseSnapshot,
       branchSnapshot,
       data.resolutions,
+      { mergeDeckFields },
     );
     const leaderOrBaseChanged =
       currentBaseSnapshot.deck.leaderCardId1 !== mergedSnapshot.deck.leaderCardId1 ||
@@ -125,7 +133,7 @@ export const teamsIdChangeRequestsRequestIdMergePostRoute = new Hono<AuthExtensi
         changeRequestId: requestId,
         actorUserId: user.id,
         type: 'merged',
-        payload: { resolutions: data.resolutions },
+        payload: { resolutions: data.resolutions, mergeDeckFields: data.mergeDeckFields },
       });
     });
 

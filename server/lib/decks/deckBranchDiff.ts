@@ -36,6 +36,27 @@ export type DeckDiff = {
   };
 };
 
+export type DeckMergeFieldPolicy = Partial<Record<DeckSnapshotField, boolean>>;
+
+export const reviewedDeckSnapshotFields = deckSnapshotFields.filter(
+  field => field !== 'public' && field !== 'format',
+);
+
+export const defaultDeckMergeFieldPolicy: Record<DeckSnapshotField, boolean> = {
+  name: false,
+  description: false,
+  format: false,
+  public: false,
+  leaderCardId1: true,
+  leaderCardId2: true,
+  baseCardId: true,
+};
+
+export const shouldMergeDeckField = (
+  field: DeckSnapshotField,
+  mergeDeckFields: DeckMergeFieldPolicy = {},
+) => mergeDeckFields[field] ?? defaultDeckMergeFieldPolicy[field];
+
 export type DeckMergeConflict =
   | {
       type: 'field';
@@ -78,7 +99,7 @@ export function diffDeckSnapshots(beforeSnapshot: DeckSnapshot, afterSnapshot: D
   const after = normalizeDeckSnapshot(afterSnapshot);
 
   const fields: DeckFieldChange[] = [];
-  deckSnapshotFields.forEach(field => {
+  reviewedDeckSnapshotFields.forEach(field => {
     if (!sameValue(before.deck[field], after.deck[field])) {
       fields.push({
         type: 'field',
@@ -135,7 +156,7 @@ export function findDeckMergeConflicts(
 
   const conflicts: DeckMergeConflict[] = [];
 
-  deckSnapshotFields.forEach(field => {
+  reviewedDeckSnapshotFields.forEach(field => {
     const baseValue = base.deck[field];
     const currentValue = current.deck[field];
     const proposedValue = branch.deck[field];
@@ -186,6 +207,7 @@ export function buildMergedDeckSnapshot(
   currentBaseSnapshot: DeckSnapshot,
   branchSnapshot: DeckSnapshot,
   resolutions: ZDeckChangeRequestMergeRequest['resolutions'] = [],
+  options: { mergeDeckFields?: DeckMergeFieldPolicy } = {},
 ): DeckSnapshot {
   const base = normalizeDeckSnapshot(baseSnapshot);
   const current = normalizeDeckSnapshot(currentBaseSnapshot);
@@ -201,6 +223,8 @@ export function buildMergedDeckSnapshot(
   });
 
   deckSnapshotFields.forEach(field => {
+    if (!shouldMergeDeckField(field, options.mergeDeckFields)) return;
+
     const resolutionKey = `field:${field}`;
     if (resolutionMap.has(resolutionKey)) {
       merged.deck[field] = resolutionMap.get(resolutionKey) as never;
