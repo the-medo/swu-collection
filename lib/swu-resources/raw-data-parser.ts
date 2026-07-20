@@ -87,8 +87,9 @@ async function main() {
   }
 }
 
-if (params.help || params.h) {
-  console.log(`
+if (import.meta.main) {
+  if (params.help || params.h) {
+    console.log(`
   Usage: bun ./raw-data-parser.ts [options]
   
   Options:
@@ -108,7 +109,8 @@ if (params.help || params.h) {
     bun ./lib/swu-resources/raw-data-parser.ts --expansions=sor,shd,twi
     bun ./lib/swu-resources/raw-data-parser.ts --start=50
   `);
-  process.exit(0);
-}
+    process.exit(0);
+  }
 
-main();
+  main();
+}

@@ -7,6 +7,25 @@ import { pngImagePath, webpImagePath } from '../raw-data-parser.ts';
 
 const MAX_WEBP_DIMENSION = 419;
 
+const curlExitHints: Record<number, string> = {
+  6: 'Could not resolve the host.',
+  7: 'Could not connect to the host.',
+  22: 'The server returned an HTTP error response.',
+  23: 'Could not write the downloaded file.',
+  28: 'The request timed out.',
+  35: 'The TLS/SSL connection failed.',
+  56: 'The connection was reset or closed before the download finished.',
+  60: 'The TLS certificate could not be verified.',
+};
+
+function formatError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+async function streamToText(stream: ReadableStream<Uint8Array> | null): Promise<string> {
+  return stream ? (await new Response(stream).text()).trim() : '';
+}
+
 export async function downloadAndTransformImage(
   url: string,
   filename: string,
@@ -26,18 +45,50 @@ export async function downloadAndTransformImage(
 
       await mkdir(pngImagePath, { recursive: true });
 
-      const process = await Bun.spawn(['curl', '-sL', myUrl.toString(), '-o', pngImageFilename], {
-        stdout: 'pipe',
-        stderr: 'pipe',
-      });
-      const exitCode = await process.exited;
+      const curlProcess = Bun.spawn(
+        [
+          'curl',
+          '--location',
+          '--silent',
+          '--show-error',
+          '--fail',
+          '--retry',
+          '3',
+          '--retry-delay',
+          '1',
+          '--retry-all-errors',
+          '--write-out',
+          '\nHTTP status: %{http_code}\nRemote IP: %{remote_ip}\nCurl error: %{errormsg}',
+          myUrl.toString(),
+          '--output',
+          pngImageFilename,
+        ],
+        {
+          stdout: 'pipe',
+          stderr: 'pipe',
+        },
+      );
+      const [exitCode, stdoutOutput, stderrOutput] = await Promise.all([
+        curlProcess.exited,
+        streamToText(curlProcess.stdout),
+        streamToText(curlProcess.stderr),
+      ]);
 
       if (exitCode !== 0) {
-        const errorOutput = process.stderr
-          ? ((await new Response(process.stderr).text()).trim() || 'Unknown error')
-          : 'Unknown error';
-        console.error('Error downloading image:', errorOutput);
-        return { horizontal };
+        if (fs.existsSync(pngImageFilename)) {
+          fs.rmSync(pngImageFilename, { force: true });
+        }
+
+        const details = [stderrOutput, stdoutOutput].filter(Boolean).join('\n');
+        const hint = curlExitHints[exitCode];
+        throw new Error(
+          [
+            `Download failed for ${myUrl.toString()}`,
+            `Output: ${pngImageFilename}`,
+            `curl exit code: ${exitCode}${hint ? ` (${hint})` : ''}`,
+            details || 'curl did not return any diagnostic output.',
+          ].join('\n'),
+        );
       }
 
       console.log(`Image downloaded successfully to ${pngImageFilename}`);
@@ -59,7 +110,7 @@ export async function downloadAndTransformImage(
 
     console.log(`Image transformed successfully to ${webpImageFilename}`);
   } catch (error) {
-    console.error('Error downloading and transforming image:', error);
+    throw new Error(`Error downloading and transforming image ${url}: ${formatError(error)}`);
   }
 
   return { horizontal };
