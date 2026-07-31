@@ -27,6 +27,7 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
   meleeId,
 }) => {
   const [internalOpen, setInternalOpen] = useState(false);
+  const [roundsError, setRoundsError] = useState<string | null>(null);
   const importMeleeMutation = useImportMeleeTournament(tournamentId);
   const dialogOpen = open ?? internalOpen;
   const setDialogOpen = onOpenChange ?? setInternalOpen;
@@ -37,19 +38,28 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
       forcedRoundId: '',
       isFix: false,
       markAsImported: true,
-      minRound: 0,
-      maxRound: 0,
+      rounds: '',
     },
     onSubmit: async ({ value }) => {
       if (value.meleeId) {
+        const roundInput = value.rounds.trim();
+        const roundValues = roundInput ? roundInput.split(',').map(round => round.trim()) : [];
+
+        if (roundValues.some(round => !/^[1-9]\d*$/.test(round))) {
+          setRoundsError('Use positive round numbers separated by commas.');
+          return;
+        }
+
+        setRoundsError(null);
+        const rounds = roundValues.map(Number);
+
         importMeleeMutation.mutate(
           {
             meleeId: value.meleeId,
             isFix: value.isFix,
             forcedRoundId: value.forcedRoundId,
             markAsImported: value.markAsImported,
-            minRound: value.minRound,
-            maxRound: value.maxRound,
+            rounds: rounds.length > 0 ? [...new Set(rounds)] : undefined,
           },
           {
             onSuccess: () => {
@@ -146,43 +156,29 @@ const ImportMeleeTournamentDialog: React.FC<ImportMeleeTournamentDialogProps> = 
           />
 
           <div className="space-y-2">
-            <Label>Rounds to import</Label>
-            <div className="flex gap-4">
-              <form.Field
-                name="minRound"
-                children={field => (
-                  <div className="flex-1">
-                    <Input
-                      id={field.name}
-                      type="number"
-                      placeholder="Min"
-                      value={field.state.value !== undefined ? String(field.state.value) : ''}
-                      onBlur={field.handleBlur}
-                      onChange={e =>
-                        field.handleChange(e.target.value ? parseInt(e.target.value, 10) : 0)
-                      }
-                    />
-                  </div>
-                )}
-              />
-              <form.Field
-                name="maxRound"
-                children={field => (
-                  <div className="flex-1">
-                    <Input
-                      id={field.name}
-                      type="number"
-                      placeholder="Max"
-                      value={field.state.value !== undefined ? String(field.state.value) : ''}
-                      onBlur={field.handleBlur}
-                      onChange={e =>
-                        field.handleChange(e.target.value ? parseInt(e.target.value, 10) : 0)
-                      }
-                    />
-                  </div>
-                )}
-              />
-            </div>
+            <form.Field
+              name="rounds"
+              children={field => (
+                <>
+                  <Label htmlFor={field.name}>Rounds to import</Label>
+                  <Input
+                    id={field.name}
+                    placeholder="4, 5, 6, 7, 8, 12, 13, 14, 15, 16"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={e => {
+                      setRoundsError(null);
+                      field.handleChange(e.target.value);
+                    }}
+                    aria-invalid={!!roundsError}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Enter comma-separated round numbers. Leave empty to import every round.
+                  </p>
+                  {roundsError && <p className="text-xs text-destructive">{roundsError}</p>}
+                </>
+              )}
+            />
           </div>
 
           <form.Field

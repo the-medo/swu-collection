@@ -9,11 +9,22 @@ export type TIBasicDecklistInfo = {
   name?: string;
 };
 
+export type TIMeleeDecklistReference = TIBasicDecklistInfo & {
+  DecklistId?: string;
+  DecklistName?: string;
+  Format?: string;
+};
+
+export type TINormalizedDecklistInfo = {
+  DecklistId?: string;
+  DecklistName?: string;
+};
+
 export type TIPlayerDataWithDecklists = {
   decklists: TIBasicDecklistInfo[];
 };
 
-export type TIUserDecklistMap = Record<number, TIBasicDecklistInfo | undefined>;
+export type TIUserDecklistMap = Record<number, TINormalizedDecklistInfo | undefined>;
 
 export type TournamentViewRound = {
   number: number;
@@ -553,7 +564,7 @@ export async function fetchMatchesFromRound(
   }
 }
 
-export async function fetchDecklistView(decklistId: string) {
+async function fetchDecklistPage(decklistId: string): Promise<Document | undefined> {
   const url = `https://melee.gg/Decklist/View/${decklistId}`;
 
   try {
@@ -567,21 +578,74 @@ export async function fetchDecklistView(decklistId: string) {
 
     if (!response.ok) {
       console.warn(`Failed to fetch deck view: ${response.status} ${response.statusText}`);
-      return '';
+      return undefined;
     }
 
     const html = await response.text();
     const { document } = parseHTML(html);
+
+    return document;
+  } catch (error) {
+    console.error('Error fetching decklist view:', error);
+    throw error;
+  }
+}
+
+export const toNormalizedDecklistInfo = (
+  decklist: TIMeleeDecklistReference | undefined,
+): TINormalizedDecklistInfo | undefined => {
+  if (!decklist) return undefined;
+
+  return {
+    DecklistId: decklist.DecklistId ?? decklist.id,
+    DecklistName: decklist.DecklistName ?? decklist.name,
+  };
+};
+
+const decklistIsPremier = (document: Document) =>
+  Array.from(document.querySelectorAll('.decklist-details-row .text-nowrap')).some(
+    element => element.textContent?.trim() === 'Premier',
+  );
+
+export async function findPremierDecklist<T extends TIMeleeDecklistReference>(
+  decklists: T[] | undefined,
+): Promise<T | undefined> {
+  for (const decklist of decklists ?? []) {
+    if (decklist.Format === 'Premier') {
+      return decklist;
+    }
+
+    if (decklist.Format !== undefined) {
+      continue;
+    }
+
+    const decklistId = decklist.DecklistId ?? decklist.id;
+    if (!decklistId) continue;
+
+    const document = await fetchDecklistPage(decklistId);
+    if (document && decklistIsPremier(document)) {
+      return decklist;
+    }
+  }
+
+  return undefined;
+}
+
+export async function fetchDecklistView(decklistId: string) {
+  const document = await fetchDecklistPage(decklistId);
+  if (!document) return '';
+
+  try {
     const decklist = document.querySelector('pre#decklist-swu-text')?.textContent;
 
     if (!decklist) {
-      console.warn(`decklist-swu-text not found in ${url}`);
+      console.warn(`decklist-swu-text not found in https://melee.gg/Decklist/View/${decklistId}`);
       return '';
     }
 
     return decklist;
   } catch (error) {
-    console.error('Error fetching round standings:', error);
+    console.error('Error parsing decklist view:', error);
     throw error;
   }
 }
@@ -605,25 +669,20 @@ export const parseStandingsToTournamentDeck = (
   tournament: Tournament,
   availableDecks: TournamentDeck[],
   additionalInfo: ParseStandingsAdditionalInfo,
-  userDecklistMap: TIUserDecklistMap | undefined, // in case of decklist only on "hover", we fetched data beforehand
+  userDecklistMap: TIUserDecklistMap | undefined,
 ): ParsedStanding | undefined => {
-  let decklistInfo = standing.Decklists[0];
-
   const placement = standing.Rank - additionalInfo.skippedStandings.length;
   const meleePlayerUsername = standing.Team.Players[0].DisplayName;
   const meleeUserId = standing.Team.Players[0].ID;
+  const decklistInfo = userDecklistMap?.[meleeUserId];
 
-  if (!decklistInfo && userDecklistMap) {
-    if (userDecklistMap[meleeUserId]) {
-      const dl = userDecklistMap[meleeUserId];
-      decklistInfo = { DecklistId: dl.id, DecklistName: dl.name };
-      console.log(`Found user decklist for ${meleePlayerUsername} in userDecklistMap`);
-    } else {
-      console.log(`No decklist info found for ${meleePlayerUsername} in userDecklistMap`);
-    }
+  if (decklistInfo) {
+    console.log(`Found Premier decklist for ${meleePlayerUsername}`);
+  } else {
+    console.log(`No Premier decklist found for ${meleePlayerUsername}`);
   }
 
-  const meleeDecklistGuid = decklistInfo?.DecklistId;
+  const meleeDecklistGuid = decklistInfo?.DecklistId ?? null;
 
   const exists = availableDecks.find(d => d.meleeDecklistGuid === meleeDecklistGuid);
   const decklistName = `#${placement} ${tournament.name} - ${meleePlayerUsername} [${decklistInfo?.DecklistName}]`;
@@ -655,18 +714,18 @@ export const parseStandingsToTournamentDeck = (
   return result;
 };
 
-export const parseStandingsToTournamentDeck2 = (
+export const parseStandingsToTournamentDeck2 = async (
   standing: any,
   tournament: Tournament,
   availableDecks: TournamentDeck[],
-): {
+): Promise<{
   meleeDecklistGuid?: string;
   meleePlayerUsername?: string;
   oldUsername?: string;
   exists: boolean;
   realDecklistId?: string;
-} => {
-  const decklistInfo = standing.Decklists[0];
+}> => {
+  const decklistInfo = toNormalizedDecklistInfo(await findPremierDecklist(standing.Decklists));
   const meleeDecklistGuid = decklistInfo?.DecklistId;
   const meleePlayerUsername = standing.Team.Players[0].DisplayName;
   const oldUsername = standing.Team.Players[0].Username;

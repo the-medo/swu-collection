@@ -29,9 +29,10 @@ export async function runTournamentFix(tournamentId: string) {
     .from(tournamentDeck)
     .where(eq(tournamentDeck.tournamentId, t.id));
 
-  const parsedStandings = roundStandings.map(s =>
-    parseStandingsToTournamentDeck2(s, t, tournamentDecks),
-  );
+  const parsedStandings = [];
+  for (const standing of roundStandings) {
+    parsedStandings.push(await parseStandingsToTournamentDeck2(standing, t, tournamentDecks));
+  }
 
   const playerInfo: Record<
     string,

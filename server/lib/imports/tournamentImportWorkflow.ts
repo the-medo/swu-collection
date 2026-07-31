@@ -1,6 +1,6 @@
 import { db } from '../../db';
 import { tournament } from '../../db/schema/tournament.ts';
-import { and, eq, sql, gte, lte } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import {
   fetchDecklistView,
   fetchDeckMatchesWithMeleeDeckIds,
@@ -8,8 +8,10 @@ import {
   fetchPlayerDetails,
   fetchRoundStandings,
   fetchTournamentView,
+  findPremierDecklist,
   type ParseStandingsAdditionalInfo,
   parseStandingsToTournamentDeck,
+  toNormalizedDecklistInfo,
   type TIUserDecklistMap,
 } from './tournamentImportLib.ts';
 import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
@@ -25,8 +27,7 @@ import { batchArray } from '../utils/batch.ts';
 export async function runTournamentImport(
   tournamentId: string,
   forcedRoundId: string | undefined = '',
-  minRound: number | undefined = undefined,
-  maxRound: number | undefined = undefined,
+  rounds: number[] | undefined = undefined,
 ) {
   // let hoverForDecklists = decklistsOnHoverOnly;
   const t = (await db.select().from(tournament).where(eq(tournament.id, tournamentId)))[0];
@@ -35,8 +36,10 @@ export async function runTournamentImport(
   console.log('Melee tournament id: ', meleeTournamentId);
   if (!meleeTournamentId) throw new Error('Melee tournament ID is empty');
 
+  const selectedRoundNumbers = [...new Set(rounds ?? [])].sort((a, b) => a - b);
+  const selectedRounds = new Set(selectedRoundNumbers);
+  const isPartialRoundImport = selectedRounds.size > 0;
   let roundId: number | undefined;
-  let allRoundIds: number[];
 
   const tournamentView = await fetchTournamentView(meleeTournamentId);
   if (forcedRoundId && forcedRoundId !== '') {
@@ -46,41 +49,81 @@ export async function runTournamentImport(
     roundId = tournamentView?.finalRoundId ?? undefined;
     console.log('Round id: ', roundId);
   }
-  allRoundIds = tournamentView?.allRoundIds ?? [];
+  const allRoundIds = tournamentView?.allRoundIds ?? [];
+  const roundIdsToFetch = isPartialRoundImport
+    ? (tournamentView?.rounds ?? [])
+        .filter(round => selectedRounds.has(round.number))
+        .map(round => round.id)
+    : allRoundIds;
   console.log('All Round IDs: ', allRoundIds);
+  if (isPartialRoundImport) {
+    console.log('Selected round numbers: ', selectedRoundNumbers);
+  }
 
   if (!roundId) throw new Error('Round ID is empty');
 
-  const roundStandings = await fetchRoundStandings(roundId);
+  let roundStandings = await fetchRoundStandings(roundId);
+  if (roundStandings.length === 0) {
+    const tournamentRounds = tournamentView?.rounds ?? [];
+    const selectedRoundIndex = tournamentRounds.findIndex(round => round.id === roundId);
+    const fallbackRounds =
+      selectedRoundIndex >= 0
+        ? tournamentRounds.slice(0, selectedRoundIndex).reverse()
+        : [...tournamentRounds].reverse();
+
+    for (const fallbackRound of fallbackRounds) {
+      const fallbackStandings = await fetchRoundStandings(fallbackRound.id);
+      if (fallbackStandings.length === 0) continue;
+
+      console.warn(
+        `No standings found for round ${roundId}; using ${fallbackRound.name} (${fallbackRound.id}) instead.`,
+      );
+      roundId = fallbackRound.id;
+      roundStandings = fallbackStandings;
+      break;
+    }
+  }
+
+  if (roundStandings.length === 0) {
+    throw new Error(`No standings found for tournament ${meleeTournamentId}`);
+  }
+
   console.log('Standing count: ', roundStandings.length);
-  const standingsWithDecklistInfo = roundStandings.filter(s => s.Decklists?.length > 0);
-
   let userDecklistMap: TIUserDecklistMap = {};
+  let decklistFound = false;
 
-  if (standingsWithDecklistInfo.length === 0) {
-    console.log('No standings with decklist info, will try to do decklists on hover');
+  for (const standing of roundStandings) {
+    const meleeUserId = standing.Team.Players[0].ID;
+    if (!meleeUserId) continue;
 
-    let i = 0;
-    let decklistFound = false;
+    const decklist = toNormalizedDecklistInfo(await findPremierDecklist(standing.Decklists));
+    if (decklist?.DecklistId) {
+      userDecklistMap[meleeUserId] = decklist;
+      decklistFound = true;
+    }
+  }
 
-    for (const standing of roundStandings) {
-      i++;
-      if (i > 8 && !decklistFound) {
-        console.log('No decklist found after 8 standings, skipping decklist search');
-        break;
-      }
+  if (!decklistFound) {
+    console.log('No Premier decklists found in standings, will try decklists on hover');
+  }
 
-      const meleeUserId = standing.Team.Players[0].ID;
-      if (meleeUserId) {
-        const playerData = await fetchPlayerDetails(meleeUserId);
-        if (playerData) {
-          userDecklistMap[meleeUserId] = playerData?.decklists?.[0];
-          if (userDecklistMap[meleeUserId]) decklistFound = true;
-          console.log('Decklist: ', userDecklistMap[meleeUserId]);
-        }
-      } else {
-        console.log(`No user ID found in standing, skipping`);
-      }
+  let checkedHoverDecklists = 0;
+  for (const standing of roundStandings) {
+    const meleeUserId = standing.Team.Players[0].ID;
+    if (!meleeUserId || userDecklistMap[meleeUserId]) continue;
+
+    checkedHoverDecklists++;
+    if (checkedHoverDecklists > 8 && !decklistFound) {
+      console.log('No Premier decklist found after 8 standings, skipping decklist search');
+      break;
+    }
+
+    const playerData = await fetchPlayerDetails(meleeUserId);
+    const decklist = toNormalizedDecklistInfo(await findPremierDecklist(playerData?.decklists));
+    if (decklist?.DecklistId) {
+      userDecklistMap[meleeUserId] = decklist;
+      decklistFound = true;
+      console.log('Premier decklist: ', decklist);
     }
   }
 
@@ -124,8 +167,7 @@ export async function runTournamentImport(
 
   console.log('==================================');
 
-  const deleteExistingDecks = !minRound && !maxRound;
-  const importDeckCards = !minRound && !maxRound;
+  const deleteExistingDecks = !isPartialRoundImport;
   let totalMatches = 0;
 
   for (const d of parsedStandings) {
@@ -224,7 +266,7 @@ export async function runTournamentImport(
     } else if (!d.tournamentDeck.meleeDecklistGuid || d.tournamentDeck.meleeDecklistGuid === '') {
       console.warn('Melee decklist GUID is empty');
     } else {
-      if (importDeckCards) {
+      if (!isPartialRoundImport || !d.exists) {
         const decklistText = await fetchDecklistView(d.tournamentDeck.meleeDecklistGuid);
         if (decklistText && decklistText !== '') {
           const cards = parseTextToSwubase(decklistText, cardList, d.tournamentDeck.deckId);
@@ -251,7 +293,7 @@ export async function runTournamentImport(
         }
       }
 
-      if (d.tournamentDeck.meleePlayerUsername) {
+      if (!isPartialRoundImport && d.tournamentDeck.meleePlayerUsername) {
         //if username exists in playerInfo (player could change it in the meantime probably?)
         if (playerInfo[d.tournamentDeck.meleePlayerUsername]) {
           playerInfo[d.tournamentDeck.meleePlayerUsername].matches =
@@ -286,7 +328,7 @@ export async function runTournamentImport(
 
   if (totalMatches === 0) {
     console.log('No matches found at all. Trying to fetch matches from API.');
-    for (const rid of allRoundIds) {
+    for (const rid of roundIdsToFetch) {
       const roundMatches = await fetchMatchesFromRound(tournamentId, rid, playerInfo);
       roundMatches.forEach(m => {
         if (playerInfo[m.p1Username]) {
@@ -337,8 +379,7 @@ export async function runTournamentImport(
             : null,
         };
 
-        if (minRound && newMatch.round < minRound) return;
-        if (maxRound && newMatch.round > maxRound) return;
+        if (isPartialRoundImport && !selectedRounds.has(newMatch.round)) return;
         matchesWithSwubaseDeckIds.push(newMatch);
       } else {
         console.error('playerInfo[match.p1Username] - ', match.p1Username, ' - doesnt exist!');
@@ -348,22 +389,18 @@ export async function runTournamentImport(
 
   console.log('Inserting matches with Swubase deck IDs...');
 
-  // Delete tournament matches, conditionally filtering by round if minRound or maxRound are provided
-  if (minRound !== undefined || maxRound !== undefined) {
-    let conditions = [eq(tournamentMatch.tournamentId, t.id)];
-
-    if (minRound !== undefined) {
-      conditions.push(gte(tournamentMatch.round, minRound));
-    }
-
-    if (maxRound !== undefined) {
-      conditions.push(lte(tournamentMatch.round, maxRound));
-    }
-
+  if (isPartialRoundImport) {
     console.log(
-      `Deleting matches for tournament ${t.id} with round constraints: minRound=${minRound}, maxRound=${maxRound}`,
+      `Deleting matches for tournament ${t.id} in rounds: ${selectedRoundNumbers.join(', ')}`,
     );
-    await db.delete(tournamentMatch).where(and(...conditions));
+    await db
+      .delete(tournamentMatch)
+      .where(
+        and(
+          eq(tournamentMatch.tournamentId, t.id),
+          inArray(tournamentMatch.round, selectedRoundNumbers),
+        ),
+      );
   } else {
     console.log(`Deleting all matches for tournament ${t.id}`);
     await db.delete(tournamentMatch).where(eq(tournamentMatch.tournamentId, t.id));

@@ -20,7 +20,7 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
   zValidator('json', zTournamentImportMeleeRequest),
   async c => {
     const paramTournamentId = z.guid().parse(c.req.param('id'));
-    const { meleeId, forcedRoundId, markAsImported, minRound, maxRound } = c.req.valid('json');
+    const { meleeId, forcedRoundId, markAsImported, rounds } = c.req.valid('json');
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
@@ -62,9 +62,10 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
     // Update the tournament with the meleeId
     await db.update(tournamentTable).set({ meleeId }).where(and(condIsOwner, condTournamentId));
 
-    const generateThumbnails = !minRound && !maxRound;
+    const selectedRounds = rounds && rounds.length > 0 ? rounds : undefined;
+    const generateThumbnails = !selectedRounds;
 
-    void runTournamentImport(paramTournamentId, forcedRoundId, minRound, maxRound)
+    void runTournamentImport(paramTournamentId, forcedRoundId, selectedRounds)
       .then(async () => {
         if (markAsImported) {
           // Update tournament to set imported flag to true
@@ -120,8 +121,7 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
       data: {
         tournamentId: paramTournamentId,
         meleeId,
-        minRound,
-        maxRound,
+        rounds: selectedRounds,
         status: 'processing',
       },
     });
