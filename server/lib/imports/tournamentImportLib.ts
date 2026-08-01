@@ -602,16 +602,21 @@ export const toNormalizedDecklistInfo = (
   };
 };
 
-const decklistIsPremier = (document: Document) =>
+const decklistHasFormat = (document: Document, format: string) =>
   Array.from(document.querySelectorAll('.decklist-details-row .text-nowrap')).some(
-    element => element.textContent?.trim() === 'Premier',
+    element => element.textContent?.trim() === format,
   );
 
-export async function findPremierDecklist<T extends TIMeleeDecklistReference>(
+export async function findDecklistForFormat<T extends TIMeleeDecklistReference>(
   decklists: T[] | undefined,
+  requiredFormat?: string,
 ): Promise<T | undefined> {
+  if (!requiredFormat) {
+    return decklists?.[0];
+  }
+
   for (const decklist of decklists ?? []) {
-    if (decklist.Format === 'Premier') {
+    if (decklist.Format === requiredFormat) {
       return decklist;
     }
 
@@ -623,13 +628,17 @@ export async function findPremierDecklist<T extends TIMeleeDecklistReference>(
     if (!decklistId) continue;
 
     const document = await fetchDecklistPage(decklistId);
-    if (document && decklistIsPremier(document)) {
+    if (document && decklistHasFormat(document, requiredFormat)) {
       return decklist;
     }
   }
 
   return undefined;
 }
+
+export const findPremierDecklist = <T extends TIMeleeDecklistReference>(
+  decklists: T[] | undefined,
+) => findDecklistForFormat(decklists, 'Premier');
 
 export async function fetchDecklistView(decklistId: string) {
   const document = await fetchDecklistPage(decklistId);
@@ -677,9 +686,9 @@ export const parseStandingsToTournamentDeck = (
   const decklistInfo = userDecklistMap?.[meleeUserId];
 
   if (decklistInfo) {
-    console.log(`Found Premier decklist for ${meleePlayerUsername}`);
+    console.log(`Found selected decklist for ${meleePlayerUsername}`);
   } else {
-    console.log(`No Premier decklist found for ${meleePlayerUsername}`);
+    console.log(`No selected decklist found for ${meleePlayerUsername}`);
   }
 
   const meleeDecklistGuid = decklistInfo?.DecklistId ?? null;
@@ -718,6 +727,7 @@ export const parseStandingsToTournamentDeck2 = async (
   standing: any,
   tournament: Tournament,
   availableDecks: TournamentDeck[],
+  requiredDecklistFormat?: string,
 ): Promise<{
   meleeDecklistGuid?: string;
   meleePlayerUsername?: string;
@@ -725,7 +735,9 @@ export const parseStandingsToTournamentDeck2 = async (
   exists: boolean;
   realDecklistId?: string;
 }> => {
-  const decklistInfo = toNormalizedDecklistInfo(await findPremierDecklist(standing.Decklists));
+  const decklistInfo = toNormalizedDecklistInfo(
+    await findDecklistForFormat(standing.Decklists, requiredDecklistFormat),
+  );
   const meleeDecklistGuid = decklistInfo?.DecklistId;
   const meleePlayerUsername = standing.Team.Players[0].DisplayName;
   const oldUsername = standing.Team.Players[0].Username;

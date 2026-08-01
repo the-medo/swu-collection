@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/dropdown-menu.tsx';
 import { useGenerateTournamentScreenshots } from '@/api/tournaments/useGenerateTournamentScreenshots.ts';
 import { useSendTournamentDiscordResults } from '@/api/tournaments/useSendTournamentDiscordResults.ts';
+import ClearTournamentDataDialog from '@/components/app/dialogs/ClearTournamentDataDialog.tsx';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -50,7 +51,7 @@ interface TournamentDetailProps {
   displayHeader?: boolean;
 }
 
-type AdminDialog = 'edit' | 'import-melee' | 'blob' | 'delete' | null;
+type AdminDialog = 'edit' | 'import-melee' | 'blob' | 'clear-data' | 'delete' | null;
 
 const TournamentDetail: React.FC<TournamentDetailProps> = ({
   tournamentId,
@@ -303,7 +304,17 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
                         </>
                       )}
 
-                      {showAdminTools && canDelete && <DropdownMenuSeparator />}
+                      {canAccessAdmin && canDelete && <DropdownMenuSeparator />}
+
+                      {canAccessAdmin && (
+                        <DropdownMenuItem
+                          className="cursor-pointer text-destructive focus:text-destructive"
+                          onSelect={() => setAdminDialog('clear-data')}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Clear tournament data
+                        </DropdownMenuItem>
+                      )}
 
                       {canDelete && (
                         <DropdownMenuItem
@@ -343,6 +354,15 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
                     tournamentId={tournamentId}
                     open={adminDialog === 'blob'}
                     onOpenChange={open => setAdminDialog(open ? 'blob' : null)}
+                  />
+                )}
+
+                {canAccessAdmin && (
+                  <ClearTournamentDataDialog
+                    trigger={hiddenDialogTrigger}
+                    tournament={tournament}
+                    open={adminDialog === 'clear-data'}
+                    onOpenChange={open => setAdminDialog(open ? 'clear-data' : null)}
                   />
                 )}
 

@@ -19,6 +19,7 @@ import { tournamentsBulkPostRoute } from './tournaments/bulk/data/post.ts';
 import { tournamentBulkPqParsePostRoute } from './tournaments/bulk/pq-parse/post.ts';
 import { tournamentIdExportToBlobPostRoute } from './tournaments/_id/export-to-blob/post.ts';
 import { tournamentIdImportFromBlobPostRoute } from './tournaments/_id/import-from-blob/post.ts';
+import { tournamentIdClearDataPostRoute } from './tournaments/_id/clear-data/post.ts';
 import type { AuthExtension } from '../auth/auth.ts';
 
 export const selectTournament = getTableColumns(tournamentTable);
@@ -35,6 +36,7 @@ export const tournamentRoute = new Hono<AuthExtension>()
   .route('/:id/import-melee', tournamentIdImportMeleePatchRoute)
   .route('/:id/export-to-blob', tournamentIdExportToBlobPostRoute)
   .route('/:id/import-from-blob', tournamentIdImportFromBlobPostRoute)
+  .route('/:id/clear-data', tournamentIdClearDataPostRoute)
   .route('/:id/discord-results', tournamentIdDiscordResultsPostRoute)
   .route('/:id/decks', tournamentIdDecksGetRoute)
   .route('/:id/matches', tournamentIdMatchesGetRoute)

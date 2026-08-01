@@ -8,7 +8,7 @@ import {
   fetchPlayerDetails,
   fetchRoundStandings,
   fetchTournamentView,
-  findPremierDecklist,
+  findDecklistForFormat,
   type ParseStandingsAdditionalInfo,
   parseStandingsToTournamentDeck,
   toNormalizedDecklistInfo,
@@ -35,6 +35,8 @@ export async function runTournamentImport(
   const meleeTournamentId = t.meleeId;
   console.log('Melee tournament id: ', meleeTournamentId);
   if (!meleeTournamentId) throw new Error('Melee tournament ID is empty');
+
+  const requiredDecklistFormat = t.format === 1 ? 'Premier' : undefined;
 
   const selectedRoundNumbers = [...new Set(rounds ?? [])].sort((a, b) => a - b);
   const selectedRounds = new Set(selectedRoundNumbers);
@@ -96,7 +98,9 @@ export async function runTournamentImport(
     const meleeUserId = standing.Team.Players[0].ID;
     if (!meleeUserId) continue;
 
-    const decklist = toNormalizedDecklistInfo(await findPremierDecklist(standing.Decklists));
+    const decklist = toNormalizedDecklistInfo(
+      await findDecklistForFormat(standing.Decklists, requiredDecklistFormat),
+    );
     if (decklist?.DecklistId) {
       userDecklistMap[meleeUserId] = decklist;
       decklistFound = true;
@@ -104,7 +108,7 @@ export async function runTournamentImport(
   }
 
   if (!decklistFound) {
-    console.log('No Premier decklists found in standings, will try decklists on hover');
+    console.log('No matching decklists found in standings, will try decklists on hover');
   }
 
   let checkedHoverDecklists = 0;
@@ -114,16 +118,18 @@ export async function runTournamentImport(
 
     checkedHoverDecklists++;
     if (checkedHoverDecklists > 8 && !decklistFound) {
-      console.log('No Premier decklist found after 8 standings, skipping decklist search');
+      console.log('No matching decklist found after 8 standings, skipping decklist search');
       break;
     }
 
     const playerData = await fetchPlayerDetails(meleeUserId);
-    const decklist = toNormalizedDecklistInfo(await findPremierDecklist(playerData?.decklists));
+    const decklist = toNormalizedDecklistInfo(
+      await findDecklistForFormat(playerData?.decklists, requiredDecklistFormat),
+    );
     if (decklist?.DecklistId) {
       userDecklistMap[meleeUserId] = decklist;
       decklistFound = true;
-      console.log('Premier decklist: ', decklist);
+      console.log('Selected decklist: ', decklist);
     }
   }
 

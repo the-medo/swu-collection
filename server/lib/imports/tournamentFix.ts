@@ -29,9 +29,13 @@ export async function runTournamentFix(tournamentId: string) {
     .from(tournamentDeck)
     .where(eq(tournamentDeck.tournamentId, t.id));
 
+  const requiredDecklistFormat = t.format === 1 ? 'Premier' : undefined;
+
   const parsedStandings = [];
   for (const standing of roundStandings) {
-    parsedStandings.push(await parseStandingsToTournamentDeck2(standing, t, tournamentDecks));
+    parsedStandings.push(
+      await parseStandingsToTournamentDeck2(standing, t, tournamentDecks, requiredDecklistFormat),
+    );
   }
 
   const playerInfo: Record<
