@@ -25,7 +25,7 @@ export function PQEditableDataView({ data, onSave, onRemove }: PQEditableDataVie
               {Array.isArray(data) ? (
                 data.map((tournament, index) => (
                   <PQDataRow
-                    key={index}
+                    key={`${index}:${JSON.stringify(tournament)}`}
                     data={tournament}
                     index={index}
                     onSave={onSave}

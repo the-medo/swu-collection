@@ -1,11 +1,25 @@
 // Define the structure of a PQ tournament entry
 import { TournamentData } from '../../../../../../types/Tournament.ts';
 
+export const PQ_FORMATS = ['Premier', 'Sealed play', 'Eternal'] as const;
+
+export type PQFormat = (typeof PQ_FORMATS)[number];
+
+export const PQ_FORMAT_IDS: Record<PQFormat, number> = {
+  Premier: 1,
+  'Sealed play': 3,
+  Eternal: 6,
+};
+
+export const isPQFormat = (value: unknown): value is PQFormat =>
+  typeof value === 'string' && (PQ_FORMATS as readonly string[]).includes(value);
+
 export interface PQTournament {
   location: string; // Country code (e.g., "US", "FR")
   continent: string; // Continent name (e.g., "North America", "Europe")
   name: string; // Tournament name in the format "PQ - City - State, CountryCode" or "PQ - City, CountryCode"
   date: string; // ISO date string
+  format: PQFormat;
   link?: string; // Optional URL to the tournament
 }
 
