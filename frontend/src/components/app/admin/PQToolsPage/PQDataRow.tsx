@@ -1,23 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { PQTournament, PQDataRowProps } from './types';
 import { DatePicker } from '@/components/ui/date-picker.tsx';
 import ContinentSelect from '@/components/app/tournaments/components/ContinentSelect.tsx';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
+import { PQ_FORMATS, type PQFormat } from './types';
 
 // Component for editing a single PQ tournament entry
 export function PQDataRow({ data, index, onSave, onRemove }: PQDataRowProps) {
   const [formData, setFormData] = useState<PQTournament>(data);
   const [isDirty, setIsDirty] = useState(false);
 
-  // Reset form data when input data changes
-  useEffect(() => {
-    setFormData(data);
-    setIsDirty(false);
-  }, [data]);
-
   // Handle input changes
-  const handleChange = (field: keyof PQTournament, value: string) => {
+  const handleChange = <K extends keyof PQTournament>(field: K, value: PQTournament[K]) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
       setIsDirty(true);
@@ -52,6 +48,23 @@ export function PQDataRow({ data, index, onSave, onRemove }: PQDataRowProps) {
       </div>
       <div className="w-[150px]">
         <DatePicker date={formData.date} onDateChange={date => handleChange('date', date || '')} />
+      </div>
+      <div className="w-[150px]">
+        <Select
+          value={formData.format}
+          onValueChange={value => handleChange('format', value as PQFormat)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select format" />
+          </SelectTrigger>
+          <SelectContent>
+            {PQ_FORMATS.map(format => (
+              <SelectItem key={format} value={format}>
+                {format}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex-1 min-w-[200px]">
         <Input value={formData.link || ''} onChange={e => handleChange('link', e.target.value)} />

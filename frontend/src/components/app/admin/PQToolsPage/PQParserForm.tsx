@@ -29,14 +29,19 @@ export function PQParserForm({ onDataParsed }: PQParserFormProps) {
     try {
       const result = await parsePqMutation.mutateAsync({ data: inputData });
 
-      if (result.success && result.data.parsedPqData) {
-        // Ensure parsedPqData is an array
+      if (result.success && Array.isArray(result.data.parsedPqData)) {
         setParsedData(JSON.stringify(result.data.parsedPqData, null, 2));
         setHasParsedData(true);
 
         toast({
           title: 'Success',
           description: 'PQ data parsed successfully. You can now edit it before saving.',
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Invalid PQ data',
+          description: 'The parser did not return a tournament array.',
         });
       }
     } catch (error) {
