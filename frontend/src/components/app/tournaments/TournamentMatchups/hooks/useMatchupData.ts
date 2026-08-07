@@ -6,9 +6,7 @@ import { MetaInfo } from '../../TournamentMeta/MetaInfoSelector.tsx';
 import { getDeckKeys as getDeckKeyBasedOnMetaInfo } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { getAspectsFromDeckInformation } from '@/components/app/tournaments/lib/getAspectsFromDeckInformation.ts';
 import type { CardListResponse } from '@/api/lists/useCardList.ts';
-
-const getTournamentDeckMapKey = (tournamentId: string, deckId: string) =>
-  `${tournamentId}:${deckId}`;
+import { getTournamentDeckMapKey } from '../utils/getTournamentDeckMapKey.ts';
 
 export function useMatchupData(
   filteredMatches: TournamentMatch[],

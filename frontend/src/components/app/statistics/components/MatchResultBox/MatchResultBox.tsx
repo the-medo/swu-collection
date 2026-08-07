@@ -15,6 +15,10 @@ import { parseStatisticsTimestamp } from '@/components/app/statistics/lib/date.t
 
 interface MatchResultBoxProps {
   match: MatchResult;
+  showGames?: boolean;
+  showMetadata?: boolean;
+  className?: string;
+  cardClassName?: string;
 }
 
 const getCardIdFromKey = (
@@ -25,7 +29,13 @@ const getCardIdFromKey = (
   return key in cards ? key : basicBaseForAspect[key];
 };
 
-const MatchResultBox: React.FC<MatchResultBoxProps> = ({ match }) => {
+const MatchResultBox: React.FC<MatchResultBoxProps> = ({
+  match,
+  showGames = true,
+  showMetadata = true,
+  className,
+  cardClassName,
+}) => {
   const { data: cardListData } = useCardList();
 
   const { leaderCard, baseCard, opponentLeaderCard, opponentBaseCard } = useMemo(() => {
@@ -48,21 +58,21 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({ match }) => {
   }, [match, cardListData]);
 
   return (
-    <div className="flex gap-2">
-      <Card className="overflow-hidden relative w-[600px] min-h-[80px]">
+    <div className={cn('flex gap-2', className)}>
+      <Card className={cn('overflow-hidden relative w-[600px] min-h-[80px]', cardClassName)}>
         <div className="flex-1 relative">
-          {leaderCard && (
+          {(leaderCard || baseCard) && (
             <DeckBackgroundDecoration
-              leaderCard={leaderCard}
+              leaderCard={leaderCard ?? baseCard!}
               baseCard={baseCard}
               position="top-left"
             >
               <BaseAvatar cardId={match.baseCardKey} bordered={false} size="40" shape="circle" />
             </DeckBackgroundDecoration>
           )}
-          {opponentLeaderCard && (
+          {(opponentLeaderCard || opponentBaseCard) && (
             <DeckBackgroundDecoration
-              leaderCard={opponentLeaderCard}
+              leaderCard={opponentLeaderCard ?? opponentBaseCard!}
               baseCard={opponentBaseCard}
               position="top-right"
             >
@@ -94,20 +104,24 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({ match }) => {
                 <span className="bg-background/90 rounded p-0.5">{match.inTeamOppUserName}</span>
               )}
             </div>
-            <div className="flex absolute gap-2 left-40 right-40 top-10 justify-between">
-              <span className="text-[10px] text-muted-foreground">
-                {formatDistanceToNow(parseStatisticsTimestamp(match.firstGameCreatedAt), {
-                  addSuffix: true,
-                })}
-              </span>
-              <Badge variant="outline" size="small">
-                {match.type}
-              </Badge>
-            </div>
+            {showMetadata && (
+              <>
+                <div className="flex absolute gap-2 left-40 right-40 top-10 justify-between">
+                  <span className="text-[10px] text-muted-foreground">
+                    {formatDistanceToNow(parseStatisticsTimestamp(match.firstGameCreatedAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                  <Badge variant="outline" size="small">
+                    {match.type}
+                  </Badge>
+                </div>
+              </>
+            )}
           </CardContent>
         </div>
       </Card>
-      <MatchGames games={match.games} />
+      {showGames && <MatchGames games={match.games} />}
     </div>
   );
 };
