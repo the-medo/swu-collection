@@ -3,7 +3,11 @@ import { db } from '../../db';
 import { tournament } from '../../db/schema/tournament.ts';
 import { tournamentWeekendResource } from '../../db/schema/tournament_weekend.ts';
 import { extractYoutubeVideoId } from '../live-tournaments/resourceUrls.ts';
-import { sendDiscordChannelMessage } from './client.ts';
+import {
+  crosspostDiscordChannelMessage,
+  DiscordCrosspostError,
+  sendDiscordChannelMessage,
+} from './client.ts';
 import { getTournamentStreamsDiscordConfig, joinDiscordAppUrl } from './config.ts';
 import {
   claimNotificationForSend,
@@ -200,12 +204,19 @@ export async function sendTournamentStreamDiscordMessage({
   }
 
   try {
-    const discordMessage = await sendDiscordChannelMessage({
-      channelId: resolvedConfig.channelId,
-      payload: messageData.payload,
-      config: resolvedConfig,
-      fetchFn,
-    });
+    const discordMessage = claim.notification.discordMessageId
+      ? await crosspostDiscordChannelMessage({
+          channelId: claim.notification.discordChannelId,
+          messageId: claim.notification.discordMessageId,
+          config: resolvedConfig,
+          fetchFn,
+        })
+      : await sendDiscordChannelMessage({
+          channelId: resolvedConfig.channelId,
+          payload: messageData.payload,
+          config: resolvedConfig,
+          fetchFn,
+        });
 
     const notification = await markNotificationSuccess({
       notificationType: identity.notificationType,
@@ -220,7 +231,7 @@ export async function sendTournamentStreamDiscordMessage({
       resourceId,
       tournamentId: messageData.tournament.id,
       discordMessageId: discordMessage.id,
-      channelId: resolvedConfig.channelId,
+      channelId: claim.notification.discordChannelId,
       payload: messageData.payload,
       tournamentUrl: messageData.tournamentUrl,
       notification: notification ?? claim.notification,
@@ -232,6 +243,10 @@ export async function sendTournamentStreamDiscordMessage({
       scopeKey: identity.scopeKey,
       error: message,
       payload: messageData.payload,
+      discordMessageId:
+        error instanceof DiscordCrosspostError
+          ? error.messageId
+          : (claim.notification.discordMessageId ?? undefined),
     });
 
     return {

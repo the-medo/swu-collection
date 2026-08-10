@@ -24,6 +24,7 @@ export type MarkDiscordNotificationSuccessInput = UpdateNotificationInput & {
 
 export type MarkDiscordNotificationFailedInput = UpdateNotificationInput & {
   error: string;
+  discordMessageId?: string;
 };
 
 function notificationScopeWhere(
@@ -99,17 +100,19 @@ export async function claimNotificationForSend({
 
   if (!force) {
     if (existing?.status !== 'success' && existing?.status !== 'sending') {
+      const retryingCrosspost = Boolean(existing?.discordMessageId);
       const [updated] = await db
         .update(discordNotification)
         .set({
           scopeType,
           scopeId: scopeId ?? null,
-          discordChannelId,
+          discordChannelId: retryingCrosspost
+            ? (existing?.discordChannelId ?? discordChannelId)
+            : discordChannelId,
           status: 'sending',
-          discordMessageId: null,
           error: null,
           payload: toJsonPayload(payload) ?? null,
-          sentAt: null,
+          ...(retryingCrosspost ? {} : { discordMessageId: null, sentAt: null }),
           updatedAt: now,
         })
         .where(notificationScopeWhere({ notificationType, scopeKey }))
@@ -192,6 +195,7 @@ export async function markNotificationFailed({
   scopeKey,
   error,
   payload,
+  discordMessageId,
 }: MarkDiscordNotificationFailedInput): Promise<DiscordNotification | undefined> {
   return (
     await db
@@ -200,6 +204,7 @@ export async function markNotificationFailed({
         status: 'failed',
         error,
         payload: toJsonPayload(payload),
+        ...(discordMessageId ? { discordMessageId } : {}),
         updatedAt: nowIsoString(),
       })
       .where(notificationScopeWhere({ notificationType, scopeKey }))
