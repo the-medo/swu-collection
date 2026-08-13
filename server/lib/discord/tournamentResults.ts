@@ -8,7 +8,11 @@ import {
 import { db } from '../../db';
 import { screenshotter } from '../../db/schema/screenshotter.ts';
 import { tournament } from '../../db/schema/tournament.ts';
-import { sendDiscordChannelMessage } from './client.ts';
+import {
+  crosspostDiscordChannelMessage,
+  DiscordCrosspostError,
+  sendDiscordChannelMessage,
+} from './client.ts';
 import { getTournamentResultsDiscordConfig, joinDiscordAppUrl } from './config.ts';
 import { getTournamentDiscordDisplayName, truncateDiscordText } from './tournamentDisplay.ts';
 import {
@@ -287,12 +291,19 @@ export async function sendTournamentResultsDiscordMessage({
   }
 
   try {
-    const discordMessage = await sendDiscordChannelMessage({
-      channelId: resolvedConfig.channelId,
-      payload: messageData.payload,
-      config: resolvedConfig,
-      fetchFn,
-    });
+    const discordMessage = claim.notification.discordMessageId
+      ? await crosspostDiscordChannelMessage({
+          channelId: claim.notification.discordChannelId,
+          messageId: claim.notification.discordMessageId,
+          config: resolvedConfig,
+          fetchFn,
+        })
+      : await sendDiscordChannelMessage({
+          channelId: resolvedConfig.channelId,
+          payload: messageData.payload,
+          config: resolvedConfig,
+          fetchFn,
+        });
 
     const notification = await markNotificationSuccess({
       notificationType: identity.notificationType,
@@ -306,7 +317,7 @@ export async function sendTournamentResultsDiscordMessage({
       status: 'sent',
       tournamentId,
       discordMessageId: discordMessage.id,
-      channelId: resolvedConfig.channelId,
+      channelId: claim.notification.discordChannelId,
       payload: messageData.payload,
       tournamentUrl: messageData.tournamentUrl,
       screenshots: messageData.screenshots,
@@ -319,6 +330,10 @@ export async function sendTournamentResultsDiscordMessage({
       scopeKey: identity.scopeKey,
       error: message,
       payload: messageData.payload,
+      discordMessageId:
+        error instanceof DiscordCrosspostError
+          ? error.messageId
+          : (claim.notification.discordMessageId ?? undefined),
     });
 
     return {
