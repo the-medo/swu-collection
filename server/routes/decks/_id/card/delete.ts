@@ -7,6 +7,7 @@ import { db } from '../../../../db';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
 import type { AuthExtension } from '../../../../auth/auth.ts';
+import { assertDeckEditable, isAdminUser } from '../../../../lib/decks/deckBranchAccess.ts';
 
 export const deckIdCardDeleteRoute = new Hono<AuthExtension>().delete(
   '/',
@@ -17,11 +18,9 @@ export const deckIdCardDeleteRoute = new Hono<AuthExtension>().delete(
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const deckTableId = eq(deckTable.id, paramDeckId);
-
-    const d = (await db.select().from(deckTable).where(deckTableId))[0];
-    if (!d) return c.json({ message: "Deck doesn't exist" }, 500);
-    if (d.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
+    const isAdmin = await isAdminUser(user.id);
+    const editable = await assertDeckEditable(paramDeckId, user.id, isAdmin);
+    if (!editable.ok) return c.json({ message: editable.message }, editable.status);
 
     const deckId = eq(deckCardTable.deckId, paramDeckId);
     const cardId = eq(deckCardTable.cardId, data.cardId);

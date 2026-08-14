@@ -6,6 +6,7 @@ import { deckGetRoute } from './decks/get.ts';
 import { deckPostRoute } from './decks/post.ts';
 import { decksBulkGetRoute } from './decks/bulk.ts';
 import { deckIdGetRoute } from './decks/_id/get.ts';
+import { deckIdBranchesGetRoute } from './decks/_id/branches/get.ts';
 import { deckIdPutRoute } from './decks/_id/put.ts';
 import { deckIdDeleteRoute } from './decks/_id/delete.ts';
 import { deckIdCardGetRoute } from './decks/_id/card/get.ts';
@@ -29,6 +30,7 @@ export const deckRoute = new Hono<AuthExtension>()
   .route('/', deckGetRoute)
   .route('/', deckPostRoute)
   .route('/:id', deckIdGetRoute)
+  .route('/:id/branches', deckIdBranchesGetRoute)
   .route('/:id', deckIdPutRoute)
   .route('/:id', deckIdDeleteRoute)
   .route('/:id/card', deckIdCardGetRoute)

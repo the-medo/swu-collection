@@ -1,16 +1,21 @@
 import { Hono } from 'hono';
-import { auth, type AuthExtension } from '../../../auth/auth.ts';
+import type { AuthExtension } from '../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { zDeckUpdateRequest } from '../../../../types/ZDeck.ts';
 import { z } from 'zod';
-import { and, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { deck as deckTable } from '../../../db/schema/deck.ts';
 import { db } from '../../../db';
 import { updateDeckInformation } from '../../../lib/decks/updateDeckInformation.ts';
 import { generateDeckThumbnail } from '../../../lib/decks/generateDeckThumbnail.ts';
 import { runInBackground } from '../../../lib/utils/backgroundProcess.ts';
 import { cardPoolDecks } from '../../../db/schema/card_pool_deck.ts';
-import { publicToVisibilityMap, Visibility } from '../../../../shared/types/visibility.ts';
+import { publicToVisibilityMap } from '../../../../shared/types/visibility.ts';
+import {
+  assertDeckEditable,
+  getDeckBranchContext,
+  isAdminUser,
+} from '../../../lib/decks/deckBranchAccess.ts';
 
 export const deckIdPutRoute = new Hono<AuthExtension>().put(
   '/',
@@ -21,56 +26,35 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const isAdmin = await auth.api.userHasPermission({
-      body: {
-        userId: user.id,
-        permission: {
-          admin: ['access'],
-        },
-      },
-    });
-
-    const conditions = [eq(deckTable.id, paramDeckId)];
-    if (!isAdmin.success) {
-      conditions.push(eq(deckTable.userId, user.id));
-    }
+    const isAdmin = await isAdminUser(user.id);
+    const editable = await assertDeckEditable(paramDeckId, user.id, isAdmin);
+    if (!editable.ok) return c.json({ message: editable.message }, editable.status);
 
     // Get the current deck data to check if leader or base card has changed
-    const currentDeck = (
-      await db
-        .select()
-        .from(deckTable)
-        .where(and(...conditions))
-    )[0];
-
-    if (!currentDeck) {
-      return c.json(
-        {
-          message: "Deck doesn't exist or you don't have permission to update it",
-        },
-        404,
-      );
-    }
+    const currentDeck = editable.deck;
+    const branchContext = await getDeckBranchContext(paramDeckId);
+    const updateData = branchContext ? { ...data, public: 2 } : data;
 
     // Check if leader or base card is being updated
     const isLeaderUpdated =
-      data.leaderCardId1 !== undefined && data.leaderCardId1 !== currentDeck.leaderCardId1;
+      updateData.leaderCardId1 !== undefined &&
+      updateData.leaderCardId1 !== currentDeck.leaderCardId1;
     const isBaseUpdated =
-      data.baseCardId !== undefined && data.baseCardId !== currentDeck.baseCardId;
+      updateData.baseCardId !== undefined && updateData.baseCardId !== currentDeck.baseCardId;
 
     const updatedDeck = (
       await db
         .update(deckTable)
         .set({
-          ...data,
+          ...updateData,
           updatedAt: sql`NOW()`,
         })
-        .where(and(...conditions))
+        .where(eq(deckTable.id, paramDeckId))
         .returning()
     )[0];
 
     const newVisibility =
-      typeof data.public !== 'undefined' ? publicToVisibilityMap[data.public] : undefined;
+      typeof updateData.public !== 'undefined' ? publicToVisibilityMap[updateData.public] : undefined;
     if (newVisibility) {
       await db
         .update(cardPoolDecks)

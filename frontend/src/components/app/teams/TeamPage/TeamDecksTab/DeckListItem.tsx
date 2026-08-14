@@ -8,6 +8,7 @@ import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import type { TeamDeckExpanded } from '../../../../../../../server/routes/teams/_id/decks/get.ts';
 import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/components/CopyLinkButton.tsx';
+import { DeckBranch } from '@/components/app/decks/deckWorkflowIcons.ts';
 
 type DeckListItemDeck = Pick<
   TeamDeckExpanded['deck'],
@@ -19,7 +20,9 @@ interface TeamDeckVariantProps {
   teamId: string;
   teamDeck: TeamDeckExpanded;
   onRemove: () => void;
+  onBranch: () => void;
   removeDisabled?: boolean;
+  branchDisabled?: boolean;
 }
 
 interface AddDeckVariantProps {
@@ -42,6 +45,7 @@ const DeckListItem: React.FC<DeckListItemProps> = props => {
 
   if (variant === 'team-deck') {
     const { teamDeck, onRemove, removeDisabled } = props;
+    const { onBranch, branchDisabled } = props;
     const userName = teamDeck.user.displayName ?? teamDeck.user.name;
     return (
       <div className="flex items-center gap-3 p-3 rounded-lg border relative overflow-hidden min-h-14">
@@ -74,6 +78,16 @@ const DeckListItem: React.FC<DeckListItemProps> = props => {
           </span>
         </div>
         <CopyLinkButton deckId={deck.id} isPublic={true} compact={true} size="iconMedium" />
+        <Button
+          variant="ghost"
+          size="iconMedium"
+          className="relative z-10"
+          onClick={onBranch}
+          disabled={branchDisabled}
+          title="Branch deck"
+        >
+          <DeckBranch className="h-4 w-4" />
+        </Button>
         <Button
           variant="ghost"
           size="iconMedium"

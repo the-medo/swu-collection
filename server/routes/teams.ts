@@ -17,6 +17,14 @@ import { teamsIdDecksGetRoute } from './teams/_id/decks/get.ts';
 import { teamsIdDeckMapGetRoute } from './teams/_id/deck-map/get.ts';
 import { teamsIdDecksPostRoute } from './teams/_id/decks/post.ts';
 import { teamsIdDecksDeckIdDeleteRoute } from './teams/_id/decks/_deckId/delete.ts';
+import { teamsIdDecksDeckIdBranchesPostRoute } from './teams/_id/decks/_deckId/branches/post.ts';
+import { teamsIdDeckBranchesGetRoute } from './teams/_id/deck-branches/get.ts';
+import { teamsIdDeckBranchesBranchIdDiffGetRoute } from './teams/_id/deck-branches/_branchId/diff/get.ts';
+import { teamsIdDeckBranchesBranchIdChangeRequestPostRoute } from './teams/_id/deck-branches/_branchId/change-request/post.ts';
+import { teamsIdChangeRequestsGetRoute } from './teams/_id/change-requests/get.ts';
+import { teamsIdChangeRequestsRequestIdMergePostRoute } from './teams/_id/change-requests/_requestId/merge/post.ts';
+import { teamsIdChangeRequestsRequestIdClosePostRoute } from './teams/_id/change-requests/_requestId/close/post.ts';
+import { teamsIdChangeRequestsRequestIdCommentsPostRoute } from './teams/_id/change-requests/_requestId/comments/post.ts';
 
 export const teamsRoute = new Hono<AuthExtension>()
   .route('/', teamsPostRoute)
@@ -35,4 +43,18 @@ export const teamsRoute = new Hono<AuthExtension>()
   .route('/:id/deck-map', teamsIdDeckMapGetRoute)
   .route('/:id/decks', teamsIdDecksGetRoute)
   .route('/:id/decks', teamsIdDecksPostRoute)
-  .route('/:id/decks/:deckId', teamsIdDecksDeckIdDeleteRoute);
+  .route('/:id/decks/:deckId', teamsIdDecksDeckIdDeleteRoute)
+  .route('/:id/decks/:deckId/branches', teamsIdDecksDeckIdBranchesPostRoute)
+  .route('/:id/deck-branches', teamsIdDeckBranchesGetRoute)
+  .route('/:id/deck-branches/:branchId/diff', teamsIdDeckBranchesBranchIdDiffGetRoute)
+  .route(
+    '/:id/deck-branches/:branchId/change-request',
+    teamsIdDeckBranchesBranchIdChangeRequestPostRoute,
+  )
+  .route('/:id/change-requests', teamsIdChangeRequestsGetRoute)
+  .route('/:id/change-requests/:requestId/merge', teamsIdChangeRequestsRequestIdMergePostRoute)
+  .route(
+    '/:id/change-requests/:requestId/comments',
+    teamsIdChangeRequestsRequestIdCommentsPostRoute,
+  )
+  .route('/:id/change-requests/:requestId/close', teamsIdChangeRequestsRequestIdClosePostRoute);

@@ -17,6 +17,33 @@ SWU Base is an all-in-one toolset for Star Wars: Unlimited players, providing co
 - **Backend**: Hono, PostgreSQL, Drizzle ORM
 - **Runtime**: Bun for both server and client
 
+## Local development
+
+Copy the example env files, then start the local Postgres instance and apply migrations:
+
+```bash
+cp .env.example .env
+cp frontend/.env.local.example frontend/.env
+bun run db:up
+bun run db-migrate
+```
+
+The local database runs in Docker as `swubase-postgres` and listens at:
+
+```bash
+DATABASE_URL=postgresql://postgres:password@localhost:5442/postgres
+```
+
+Useful database commands:
+
+```bash
+bun run db:up      # start Postgres and wait for it to be healthy
+bun run db:down    # stop Postgres without deleting data
+bun run db:reset   # delete local data, recreate Postgres, and run migrations
+bun run db:seed:e2e # create local test users, a team, and a team deck
+bun run db:shell   # open psql in the local database
+```
+
 ## Screenshotter setup
 
 The server screenshotter uses Playwright Chromium. After installing root dependencies, install the browser binary with:

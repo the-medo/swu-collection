@@ -21,4 +21,40 @@ export interface DeckData {
   user: User;
   isFavorite: string | null;
   entityPrices?: EntityPrice[];
+  openBranchCount?: number;
+  openChangeRequestCount?: number;
+  openBranchTeams?: DeckBranchTeamSummary[];
+  branchContext?: {
+    branch: {
+      id: string;
+      teamId: string;
+      baseDeckId: string;
+      branchDeckId: string;
+      creatorUserId: string;
+      status: 'open' | 'merged' | 'closed';
+      createdAt: string;
+      updatedAt: string;
+    };
+    baseDeck: Deck;
+    team: {
+      id: string;
+      name: string;
+      shortcut: string | null;
+    };
+    changeRequest: {
+      id: string;
+      title: string;
+      description: string;
+      status: 'open' | 'merged' | 'closed';
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
+}
+
+export interface DeckBranchTeamSummary {
+  teamId: string;
+  teamName: string;
+  teamShortcut: string | null;
+  count: number;
 }

@@ -1,0 +1,23 @@
+name: swu-base
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: swubase-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5442:5432'
+    volumes:
+      - swubase-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  swubase-postgres-data:

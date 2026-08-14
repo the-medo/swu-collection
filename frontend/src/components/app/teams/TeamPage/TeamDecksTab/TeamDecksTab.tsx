@@ -5,24 +5,16 @@ import { BookOpen, Link2, Loader2, Plus } from 'lucide-react';
 import { useTeamDecks } from '@/api/teams/useTeamDecks.ts';
 import { useAddTeamDeck } from '@/api/teams/useAddTeamDeck.ts';
 import { useRemoveTeamDeck } from '@/api/teams/useRemoveTeamDeck.ts';
+import { useCreateDeckBranch } from '@/api/teams/useCreateDeckBranch.ts';
 import { useGetDecks } from '@/api/decks/useGetDecks.ts';
 import { useUser } from '@/hooks/useUser.ts';
+import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { toast } from '@/hooks/use-toast.ts';
 import DeckListItem from '@/components/app/teams/TeamPage/TeamDecksTab/DeckListItem.tsx';
 import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInput.tsx';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog.tsx';
 import { Alert } from '@/components/ui/alert.tsx';
 
 interface TeamDecksTabProps {
@@ -41,6 +33,7 @@ const parseDeckId = (input: string): string | null => {
 
 const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
   const user = useUser();
+  const navigate = useNavigate();
   const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined);
   const {
     data: teamDecksData,
@@ -63,9 +56,9 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
   }, [teamDecksData]);
   const addDeckMutation = useAddTeamDeck(teamId);
   const removeDeckMutation = useRemoveTeamDeck(teamId);
+  const branchDeckMutation = useCreateDeckBranch(teamId, undefined);
 
   const [linkInput, setLinkInput] = useState('');
-  const [deckToRemove, setDeckToRemove] = useState<{ id: string; name: string } | null>(null);
 
   const { data: recentDecksData, isLoading: isLoadingRecent } = useGetDecks({
     userId: user?.id,
@@ -113,14 +106,27 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
     });
   };
 
-  const handleRemove = () => {
-    if (!deckToRemove) return;
-    removeDeckMutation.mutate(deckToRemove.id, {
+  const handleRemove = (deckId: string) => {
+    removeDeckMutation.mutate(deckId, {
       onSuccess: () => {
         toast({ title: 'Deck removed from team' });
-        setDeckToRemove(null);
       },
     });
+  };
+
+  const handleBranch = (deckId: string) => {
+    branchDeckMutation.mutate(
+      { deckId },
+      {
+        onSuccess: data => {
+          navigate({
+            to: '/decks/$deckId/edit',
+            params: { deckId: data.branchDeck.id },
+            search: { deckbuilder: true },
+          });
+        },
+      },
+    );
   };
 
   return (
@@ -170,8 +176,10 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
                 variant="team-deck"
                 teamId={teamId}
                 teamDeck={td}
-                onRemove={() => setDeckToRemove({ id: td.deck.id, name: td.deck.name })}
+                onRemove={() => handleRemove(td.deck.id)}
+                onBranch={() => handleBranch(td.deck.id)}
                 removeDisabled={removeDeckMutation.isPending}
+                branchDisabled={branchDeckMutation.isPending}
               />
             ))}
             {isFetchingNextPage && (
@@ -252,30 +260,6 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
           </div>
         </div>
       </div>
-      <AlertDialog
-        open={!!deckToRemove}
-        onOpenChange={open => {
-          if (!open) setDeckToRemove(null);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove deck from team</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to remove <strong>{deckToRemove?.name}</strong> from this team?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleRemove} disabled={removeDeckMutation.isPending}>
-              {removeDeckMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-1" />
-              ) : null}
-              Remove
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };
