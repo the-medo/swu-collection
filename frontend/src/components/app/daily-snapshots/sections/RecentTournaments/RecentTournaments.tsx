@@ -8,16 +8,21 @@ import type {
 } from '../../../../../../../types/DailySnapshots.ts';
 import { X } from 'lucide-react';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
-import TournamentGroupTournament from '@/components/app/tournaments/TournamentGroup/TournamentGroupTournament.tsx';
+import TournamentGroupTournament, {
+  type TournamentGroupTournamentDisplayItem,
+} from '@/components/app/tournaments/TournamentGroup/TournamentGroupTournament.tsx';
 import RecentTournamentsDropdownMenu from '@/components/app/daily-snapshots/sections/RecentTournaments/RecentTournamentsDropdownMenu.tsx';
 import SectionHeader from '../components/SectionHeader.tsx';
 import type { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../../types/TournamentGroup.ts';
 import TournamentOverviewTable from '@/components/app/tournaments/components/TournamentOverviewTable.tsx';
 import { useMatchHeightToElementId } from '@/hooks/useMatchHeightToElementId.tsx';
 import { useTournamentOverviewTableRowClick } from '@/components/app/tournaments/lib/useTournamentOverviewTableRowClick.ts';
+import { dailySnapshotFeaturedTournamentTypes } from '../../../../../../../types/Tournament.ts';
+import { getDailySnapshotFormatSortOrder } from '../../../../../../../types/Format.ts';
+import TournamentFormatBadge from '../components/TournamentFormatBadge.tsx';
 
-// Split into majors (SQ/RQ/GC) and others (to keep table for others only)
-const majorTypes = new Set(['sq', 'rq', 'gc']);
+const openTournamentType = 'open';
+const featuredTournamentTypes = new Set<string>(dailySnapshotFeaturedTournamentTypes);
 const EMPTY_ITEMS: SectionRecentTournamentsItem[] = [];
 
 export interface RecentTournamentsProps {
@@ -35,12 +40,16 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   const items = payload.data.tournaments ?? EMPTY_ITEMS;
   const scrollRef = useMatchHeightToElementId('s-recent-tournaments', true, h => `${h - 120}px`);
 
-  // Sort tournaments by date desc, then by updatedAt desc
+  // Sort tournaments by date desc, with Premier first for each date, then by updatedAt desc.
   const sorted = useMemo(() => {
     return [...items].sort((a, b) => {
       const da = new Date(a.tournament.date).getTime();
       const db = new Date(b.tournament.date).getTime();
       if (db !== da) return db - da;
+      const formatOrder =
+        getDailySnapshotFormatSortOrder(a.tournament.format) -
+        getDailySnapshotFormatSortOrder(b.tournament.format);
+      if (formatOrder !== 0) return formatOrder;
       const ua = new Date(a.tournament.updatedAt).getTime();
       const ub = new Date(b.tournament.updatedAt).getTime();
       return ub - ua;
@@ -48,17 +57,24 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   }, [items]);
 
   const majors = useMemo(() => {
-    return sorted.filter(it => majorTypes.has(String(it.tournament.type).toLowerCase()));
+    return sorted.filter(it => {
+      const type = String(it.tournament.type).toLowerCase();
+      return type !== openTournamentType && featuredTournamentTypes.has(type);
+    });
+  }, [sorted]);
+  const opens = useMemo(() => {
+    return sorted.filter(it => String(it.tournament.type).toLowerCase() === openTournamentType);
   }, [sorted]);
   const others = useMemo(() => {
-    return sorted.filter(it => !majorTypes.has(String(it.tournament.type).toLowerCase()));
+    return sorted.filter(
+      it => !featuredTournamentTypes.has(String(it.tournament.type).toLowerCase()),
+    );
   }, [sorted]);
 
-  // Adapt majors to TournamentGroupTournament items (filter out those without a deck)
+  // Adapt featured tournaments to display cards. A winning deck is optional.
   const majorsAdapted = useMemo(() => {
-    const res: TournamentGroupTournamentType[] = [];
+    const res: TournamentGroupTournamentDisplayItem[] = [];
     for (const it of majors) {
-      if (!it.deck) continue; // component expects a deck
       const t = it.tournament;
       const tournamentForCard = {
         ...t,
@@ -67,27 +83,16 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
         createdAt: new Date(t.createdAt as string),
         updatedAt: new Date(t.updatedAt as string),
       } as unknown as TournamentGroupTournamentType['tournament'];
-      const adapted: TournamentGroupTournamentType = {
+      const adapted: TournamentGroupTournamentDisplayItem = {
         tournament: tournamentForCard,
         deck: it.deck,
         tournamentDeck:
           (it.winningTournamentDeck as unknown as TournamentGroupTournamentType['tournamentDeck']) ??
-          ({
-            tournamentId: t.id,
-            deckId: it.deck.id,
-            placement: 1,
-            topRelativeToPlayerCount: null,
-            recordWin: 0,
-            recordLose: 0,
-            recordDraw: 0,
-            points: 0,
-            meleeDecklistGuid: null,
-            meleePlayerUsername: null,
-          } as unknown as TournamentGroupTournamentType['tournamentDeck']),
+          null,
         tournamentType:
           t as unknown as TournamentGroupTournamentType['tournament'] as unknown as TournamentGroupTournamentType['tournamentType'],
         position: 0,
-      } as TournamentGroupTournamentType;
+      } as TournamentGroupTournamentDisplayItem;
       res.push(adapted);
     }
     return res;
@@ -113,6 +118,8 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
     return res;
   }, [others]);
 
+  const openRows = useMemo(() => opens.map(item => ({ type: 'item' as const, item })), [opens]);
+
   const groups = useMemo(
     () => (payload.data.tournamentGroupExt ? [payload.data.tournamentGroupExt] : []),
     [payload.data.tournamentGroupExt],
@@ -130,9 +137,10 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
               tournamentGroupExtendedInfo={groups}
             >
               <div className="text-sm">
-                All major tournaments from last 30 days + all tournaments from last 2 weeks. Rows
-                marked with <X className="h-4 w-4 text-red-500 inline-block" /> are not yet imported
-                (and maybe won't be, depending on the data that is provided from melee.gg).
+                Premier, Eternal, and limited major tournaments from the last 2 weeks, plus all
+                featured tournaments from the last 30 days. Rows marked with{' '}
+                <X className="h-4 w-4 text-red-500 inline-block" /> are not yet imported (and maybe
+                won't be, depending on the data that is provided from melee.gg).
               </div>
             </SectionInfoTooltip>
           </>
@@ -159,14 +167,34 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
                     className="min-h-[150px]"
                     onMouseDown={e => handleRowClick(e, mi.tournament.id)}
                   >
-                    <TournamentGroupTournament tournamentItem={mi} compact={true} />
+                    <TournamentGroupTournament
+                      tournamentItem={mi}
+                      compact={true}
+                      formatBadge={<TournamentFormatBadge formatId={mi.tournament.format} />}
+                    />
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          <TournamentOverviewTable rows={rows} />
+          {openRows.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-base font-semibold mb-2">Opens</h4>
+              <TournamentOverviewTable
+                rows={openRows}
+                formatBadgeRenderer={formatId => <TournamentFormatBadge formatId={formatId} />}
+                showChampionName={true}
+                nameInFullWidthRow={true}
+                nameFormatter={tournament => tournament.name}
+              />
+            </div>
+          )}
+
+          <TournamentOverviewTable
+            rows={rows}
+            formatBadgeRenderer={formatId => <TournamentFormatBadge formatId={formatId} />}
+          />
         </div>
       )}
     </div>

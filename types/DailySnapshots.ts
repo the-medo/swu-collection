@@ -59,8 +59,8 @@ export type SectionRecentTournaments = {
 // New section: Upcoming Tournaments (current or upcoming weekend)
 export type SectionUpcomingTournaments = {
   tournamentGroupId: string;
-  dataPoints: TournamentStringDate[];
-  upcomingMajorTournaments?: TournamentStringDate[]; // majors (SQ/RQ/GC) in the next 20 days
+  dataPoints: TournamentStringDate[]; // Premier plus display-only Eternal and limited majors
+  upcomingMajorTournaments?: TournamentStringDate[]; // featured tournaments in the next 30 days
   tournamentGroupExt?: TournamentGroupExtendedInfo | null;
 };
 

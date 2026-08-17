@@ -88,6 +88,24 @@ formatData.forEach(format => {
   formatDataById[format.id] = format;
 });
 
+export const PREMIER_FORMAT_ID = 1;
+export const dailySnapshotAdditionalFormatIds: number[] = [3, 4, 6];
+
+export type DailySnapshotFormatBadge = 'E' | 'L';
+
+export const dailySnapshotFormatBadgeById: Partial<Record<number, DailySnapshotFormatBadge>> = {
+  3: 'L',
+  4: 'L',
+  6: 'E',
+};
+
+export const getDailySnapshotFormatSortOrder = (formatId: number): number => {
+  if (formatId === PREMIER_FORMAT_ID) return 0;
+  if (formatId === 6) return 1;
+  if (formatId === 3 || formatId === 4) return 2;
+  return 3;
+};
+
 export const premierSetMap = {
   ...rotationBlocks[2].setMap,
   ...rotationBlocks[3].setMap,
