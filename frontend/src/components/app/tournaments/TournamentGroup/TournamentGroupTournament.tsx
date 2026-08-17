@@ -11,14 +11,24 @@ import UpcomingBadge from '../components/UpcomingBadge';
 import { isFuture } from 'date-fns';
 import { cn } from '@/lib/utils.ts';
 
+export type TournamentGroupTournamentDisplayItem = Omit<
+  TournamentGroupTournamentType,
+  'deck' | 'tournamentDeck'
+> & {
+  deck: TournamentGroupTournamentType['deck'] | null;
+  tournamentDeck: TournamentGroupTournamentType['tournamentDeck'] | null;
+};
+
 interface TournamentGroupTournamentProps {
-  tournamentItem: TournamentGroupTournamentType;
+  tournamentItem: TournamentGroupTournamentDisplayItem;
   compact?: boolean;
+  formatBadge?: React.ReactNode;
 }
 
 const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
   tournamentItem,
   compact,
+  formatBadge,
 }) => {
   const { tournament, deck } = tournamentItem;
   const { data: countryData } = useCountryList();
@@ -35,9 +45,9 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
   const displayDeck = tournament?.bracketInfo !== 'none';
 
   // Get card data for the deck
-  const leader1 = deck.leaderCardId1 && cardList ? cardList.cards[deck.leaderCardId1] : undefined;
-  const leader2 = deck.leaderCardId2 && cardList ? cardList.cards[deck.leaderCardId2] : undefined;
-  const base = deck.baseCardId && cardList ? cardList.cards[deck.baseCardId] : undefined;
+  const leader1 = deck?.leaderCardId1 && cardList ? cardList.cards[deck.leaderCardId1] : undefined;
+  const leader2 = deck?.leaderCardId2 && cardList ? cardList.cards[deck.leaderCardId2] : undefined;
+  const base = deck?.baseCardId && cardList ? cardList.cards[deck.baseCardId] : undefined;
 
   // Check if tournament is in the future
   const isUpcoming = isFuture(tournament.date);
@@ -64,6 +74,8 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
             date={tournament.date as unknown as string}
             className="absolute top-2 right-2"
           />
+
+          {formatBadge ? <div className="absolute top-2 left-2 z-10">{formatBadge}</div> : null}
 
           {/* Winning Deck - positioned at the bottom of the image */}
           {cardList && leader1 && displayDeck && (

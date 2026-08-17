@@ -50,6 +50,7 @@ export const tournamentTypes: [string, ...string[]] = [
   'ma1',
   'pq',
   'ma2',
+  'open',
   'sq',
   'rq',
   'gc',
@@ -61,9 +62,17 @@ export const tournamentTypesInfo = {
   ma1: { name: '1-day Major Tournament', sortValue: 150, major: 1 },
   pq: { name: 'Planetary Qualifier', sortValue: 200, major: 1 },
   ma2: { name: '2-day Major Tournament', sortValue: 250, major: 1 },
+  open: { name: 'Open', sortValue: 275, major: 1 },
   sq: { name: 'Sector Qualifier', sortValue: 300, major: 1 },
   rq: { name: 'Regional Qualifier', sortValue: 400, major: 1 },
   gc: { name: 'Galactic Championship', sortValue: 500, major: 1 },
 };
 
 export type TournamentTypeKey = keyof typeof tournamentTypesInfo;
+
+export const dailySnapshotFeaturedTournamentTypes: readonly TournamentTypeKey[] = [
+  'open',
+  'sq',
+  'rq',
+  'gc',
+];

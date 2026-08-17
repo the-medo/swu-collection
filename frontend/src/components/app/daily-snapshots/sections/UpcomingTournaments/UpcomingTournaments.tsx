@@ -9,9 +9,15 @@ import type {
 import Flag from '@/components/app/global/Flag.tsx';
 import { CountryCode } from '../../../../../../../server/db/lists.ts';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
-import { formatDataById } from '../../../../../../../types/Format.ts';
+import {
+  formatDataById,
+  getDailySnapshotFormatSortOrder,
+} from '../../../../../../../types/Format.ts';
 import UpcomingTournamentsDropdownMenu from '@/components/app/daily-snapshots/sections/UpcomingTournaments/UpcomingTournamentsDropdownMenu.tsx';
 import SectionHeader from '../components/SectionHeader.tsx';
+import TournamentFormatBadge from '../components/TournamentFormatBadge.tsx';
+
+const EMPTY_TOURNAMENTS: SectionUpcomingTournaments['dataPoints'] = [];
 
 export interface UpcomingTournamentsProps {
   payload: DailySnapshotSectionData<SectionUpcomingTournaments>;
@@ -24,20 +30,37 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
   dailySnapshot,
   sectionUpdatedAt,
 }) => {
-  const tournaments = payload.data.dataPoints ?? [];
-  const majors = payload.data.upcomingMajorTournaments ?? [];
+  const tournaments = payload.data.dataPoints ?? EMPTY_TOURNAMENTS;
+  const majors = payload.data.upcomingMajorTournaments ?? EMPTY_TOURNAMENTS;
 
-  // Sort by date ascending (soonest first), then by updatedAt desc if present
+  // Sort by date ascending (soonest first), with Premier first for each date.
   const sorted = useMemo(() => {
     return [...tournaments].sort((a, b) => {
       const da = new Date(a.date).getTime();
       const db = new Date(b.date).getTime();
       if (da !== db) return da - db;
+      const formatOrder =
+        getDailySnapshotFormatSortOrder(a.format) - getDailySnapshotFormatSortOrder(b.format);
+      if (formatOrder !== 0) return formatOrder;
       const ua = a.updatedAt ? new Date(a.updatedAt as unknown as string).getTime() : 0;
       const ub = b.updatedAt ? new Date(b.updatedAt as unknown as string).getTime() : 0;
       return ub - ua;
     });
   }, [tournaments]);
+
+  const sortedMajors = useMemo(() => {
+    return [...majors].sort((a, b) => {
+      const da = new Date(a.date).getTime();
+      const db = new Date(b.date).getTime();
+      if (da !== db) return da - db;
+      const formatOrder =
+        getDailySnapshotFormatSortOrder(a.format) - getDailySnapshotFormatSortOrder(b.format);
+      if (formatOrder !== 0) return formatOrder;
+      const ua = a.updatedAt ? new Date(a.updatedAt as unknown as string).getTime() : 0;
+      const ub = b.updatedAt ? new Date(b.updatedAt as unknown as string).getTime() : 0;
+      return ub - ua;
+    });
+  }, [majors]);
 
   // Group rows by exact date for divider rendering
   const rows = useMemo(() => {
@@ -56,7 +79,7 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
       res.push({ type: 'item', item: it });
     }
     return res;
-  }, [sorted, tournaments]);
+  }, [sorted]);
 
   const groups = useMemo(
     () => (payload.data.tournamentGroupExt ? [payload.data.tournamentGroupExt] : []),
@@ -75,8 +98,8 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
               tournamentGroupExtendedInfo={groups}
             >
               <div className="text-sm">
-                Upcoming tournaments for next weekend + all major tournaments happening in the next 30
-                days.
+                Premier, Eternal, and limited major tournaments for next weekend, plus all featured
+                tournaments happening in the next 30 days.
               </div>
             </SectionInfoTooltip>
           </>
@@ -86,8 +109,8 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
 
       <div className="max-h-[400px] overflow-y-auto overflow-x-auto pr-2 -mr-2 flex flex-col gap-2">
         {/* Major tournaments each in its own box */}
-        {majors.length > 0 &&
-          majors.map(m => {
+        {sortedMajors.length > 0 &&
+          sortedMajors.map(m => {
             const cc = (m.location as unknown as CountryCode) || undefined;
             return (
               <div
@@ -97,6 +120,7 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
                 <div className="flex flex-1 items-center justify-between gap-2 flex-wrap">
                   <div className="flex flex-1 items-center gap-2 min-w-[200px]">
                     {cc ? <Flag countryCode={cc} /> : null}
+                    <TournamentFormatBadge formatId={m.format} />
                     {m.id ? (
                       <Link
                         to="/tournaments/$tournamentId"
@@ -144,8 +168,9 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({
                 return (
                   <tr key={t.id} className="border-b border-gray-100 dark:border-gray-800">
                     <td className="py-2">
-                      <div className="flex items-center">
+                      <div className="flex items-center gap-2">
                         {countryCode ? <Flag countryCode={countryCode} className="mr-2" /> : null}
+                        <TournamentFormatBadge formatId={t.format} />
                         {t.id ? (
                           <Link to="/tournaments/$tournamentId" params={{ tournamentId: t.id }}>
                             {t.name}

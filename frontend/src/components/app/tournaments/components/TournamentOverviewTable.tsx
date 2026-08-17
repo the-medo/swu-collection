@@ -22,13 +22,18 @@ export type TournamentOverviewTableRow =
 
 export interface TournamentOverviewTableProps {
   rows: TournamentOverviewTableRow[];
+  formatBadgeRenderer?: (formatId: number) => React.ReactNode;
   onRowClick?: (
     e: React.MouseEvent<HTMLTableRowElement | HTMLDivElement, MouseEvent>,
     tournamentId: string,
   ) => void;
 }
 
-const TournamentOverviewTable: React.FC<TournamentOverviewTableProps> = ({ rows, onRowClick }) => {
+const TournamentOverviewTable: React.FC<TournamentOverviewTableProps> = ({
+  rows,
+  formatBadgeRenderer,
+  onRowClick,
+}) => {
   const handleRowClick = useTournamentOverviewTableRowClick(onRowClick);
   const { maTournamentId: selectedTournamentId } = useSearch({ strict: false });
 
@@ -72,7 +77,10 @@ const TournamentOverviewTable: React.FC<TournamentOverviewTableProps> = ({ rows,
               </td>
               <td className="py-1 px-1">
                 <div className="flex flex-col gap-2 min-w-[130px]">
-                  <span className="font-semibold">{name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">{name}</span>
+                    {formatBadgeRenderer?.(t.format)}
+                  </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Flag countryCode={countryCode} className="w-5 h-3" />

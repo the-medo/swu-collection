@@ -93,11 +93,16 @@ export const runDailySnapshot = async (
     },
     {
       name: 'recent-tournaments',
-      exec: () => buildRecentTournamentsSection(context.tournamentGroupIdTwoWeeks ?? null),
+      exec: () =>
+        buildRecentTournamentsSection(context.tournamentGroupIdTwoWeeks ?? null, context.date),
     },
     {
       name: 'upcoming-tournaments',
-      exec: () => buildUpcomingTournamentsSection(context.upcomingWeekTournamentGroupId ?? null),
+      exec: () =>
+        buildUpcomingTournamentsSection(
+          context.upcomingWeekTournamentGroupId ?? null,
+          context.date,
+        ),
     },
   ];
 

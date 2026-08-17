@@ -386,6 +386,13 @@
       "when": 1780171591858,
       "tag": "0054_pink_jack_power",
       "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1786973323937,
+      "tag": "0055_add_open_tournament_type",
+      "breakpoints": true
     }
   ]
 }

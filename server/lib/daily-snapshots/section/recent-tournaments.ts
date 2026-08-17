@@ -1,9 +1,10 @@
 import { db } from '../../../db';
-import { and, desc, eq, getTableColumns, gte, inArray } from 'drizzle-orm';
+import { and, desc, eq, getTableColumns, gte, inArray, lte } from 'drizzle-orm';
 import { tournament } from '../../../db/schema/tournament.ts';
 import { tournamentGroupTournament } from '../../../db/schema/tournament_group_tournament.ts';
 import { tournamentDeck } from '../../../db/schema/tournament_deck.ts';
-import { deck } from '../../../db/schema/deck.ts';
+import { deck, type Deck } from '../../../db/schema/deck.ts';
+import { tournamentType as tournamentTypeTable } from '../../../db/schema/tournament_type.ts';
 import {
   type DailySnapshotSectionData,
   type SectionRecentTournaments,
@@ -11,11 +12,13 @@ import {
 } from '../../../../types/DailySnapshots.ts';
 import { subDays } from 'date-fns';
 import type { TournamentGroupExtendedInfo } from '../../../../types/DailySnapshots.ts';
-import type { Deck } from '../../../../types/Deck.ts';
 import type { TournamentDeck } from '../../../db/schema/tournament_deck.ts';
+import { dailySnapshotFeaturedTournamentTypes } from '../../../../types/Tournament.ts';
+import { dailySnapshotAdditionalFormatIds } from '../../../../types/Format.ts';
 
 export const buildRecentTournamentsSection = async (
   groupExt?: TournamentGroupExtendedInfo | null,
+  dateInput?: Date | string,
 ): Promise<DailySnapshotSectionData<SectionRecentTournaments>> => {
   const tournamentGroupId = groupExt?.tournamentGroup.id ?? null;
   // If no group id, return empty payload to keep contract stable
@@ -30,7 +33,7 @@ export const buildRecentTournamentsSection = async (
 
   const tournamentColumns = getTableColumns(tournament);
 
-  // 1) Get all imported tournaments from the provided group (no limit)
+  // 1) Get all Premier tournaments from the provided stats group (no limit)
   const groupTournaments = await db
     .select({
       ...tournamentColumns,
@@ -40,99 +43,77 @@ export const buildRecentTournamentsSection = async (
     .where(eq(tournamentGroupTournament.groupId, tournamentGroupId))
     .orderBy(desc(tournament.updatedAt));
 
-  const groupTournamentIds = groupTournaments.map(t => t.id);
+  const snapshotDate = dateInput
+    ? typeof dateInput === 'string'
+      ? new Date(dateInput)
+      : dateInput
+    : new Date();
+  const fourteenDaysAgo = subDays(snapshotDate, 14);
+  const thirtyDaysAgo = subDays(snapshotDate, 30);
 
-  // 2) For group tournaments: fetch ALL tournament_deck rows (all placements)
-  let groupTDs: TournamentDeck[] = [];
+  // 2) Add Eternal and limited majors for the same recent window. These are display-only and are
+  // intentionally not attached to the Premier tournament group used by statistical sections.
+  const additionalFormatTournaments = await db
+    .select({ ...tournamentColumns })
+    .from(tournament)
+    .innerJoin(tournamentTypeTable, eq(tournament.type, tournamentTypeTable.id))
+    .where(
+      and(
+        eq(tournamentTypeTable.major, 1),
+        inArray(tournament.format, dailySnapshotAdditionalFormatIds),
+        gte(tournament.date, fourteenDaysAgo),
+        lte(tournament.date, snapshotDate),
+      ),
+    )
+    .orderBy(desc(tournament.updatedAt));
 
-  if (groupTournamentIds.length > 0) {
-    groupTDs = await db
-      .select()
-      .from(tournamentDeck)
-      .where(
-        and(
-          inArray(tournamentDeck.tournamentId, groupTournamentIds),
-          eq(tournamentDeck.placement, 1),
-        ),
-      );
-  }
-
-  const groupDeckIds = Array.from(new Set(groupTDs.map(td => td.deckId)));
-
-  // 3) Load Decks for group tournament decks
-  const deckById = new Map<string, Deck>();
-
-  if (groupDeckIds.length > 0) {
-    const decksRes = await db.select().from(deck).where(inArray(deck.id, groupDeckIds));
-
-    decksRes.forEach(d => deckById.set(d.id, d));
-  }
-
-  // 4) Also include tournaments of type SQ, RQ, GC from the last 50 days
-  const majorTypes: string[] = ['sq', 'rq', 'gc'] as const;
-
-  const thirtyDaysAgo = subDays(new Date(), 30);
-
+  // 3) Also include featured tournaments from the last 30 days, in any format.
+  const majorTypes: string[] = [...dailySnapshotFeaturedTournamentTypes];
   const majorsRecent = await db
     .select()
     .from(tournament)
-    .where(and(inArray(tournament.type, majorTypes), gte(tournament.date, thirtyDaysAgo)))
+    .where(
+      and(
+        inArray(tournament.type, majorTypes),
+        gte(tournament.date, thirtyDaysAgo),
+        lte(tournament.date, snapshotDate),
+      ),
+    )
     .orderBy(desc(tournament.updatedAt));
 
-  // Exclude tournaments already in the group to avoid duplicates
-  const groupIdSet = new Set(groupTournamentIds);
-  const extraMajors = majorsRecent.filter(t => !groupIdSet.has(t.id));
-  const extraMajorIds = extraMajors.map(t => t.id);
+  // 4) Merge the display-only sources without changing the Premier stats group.
+  const tournamentById = new Map(
+    [...groupTournaments, ...additionalFormatTournaments, ...majorsRecent].map(
+      t => [t.id, t] as const,
+    ),
+  );
+  const tournamentIds = [...tournamentById.keys()];
 
-  // 5) For extra majors, fetch WINNING deck only
-  const extraWinningTDs: TournamentDeck[] = extraMajorIds.length
+  // 5) Load each tournament's winning deck, when available.
+  const winningTDs: TournamentDeck[] = tournamentIds.length
     ? await db
         .select()
         .from(tournamentDeck)
         .where(
-          and(inArray(tournamentDeck.tournamentId, extraMajorIds), eq(tournamentDeck.placement, 1)),
+          and(inArray(tournamentDeck.tournamentId, tournamentIds), eq(tournamentDeck.placement, 1)),
         )
     : [];
+  const winningByTournamentId = new Map(winningTDs.map(td => [td.tournamentId, td] as const));
+  const deckIds = [...new Set(winningTDs.map(td => td.deckId))];
+  const decks = deckIds.length ? await db.select().from(deck).where(inArray(deck.id, deckIds)) : [];
+  const deckById = new Map<string, Deck>();
+  decks.forEach(d => deckById.set(d.id, d));
 
-  const extraDeckIds = Array.from(new Set(extraWinningTDs.map(td => td.deckId)));
-
-  if (extraDeckIds.length > 0) {
-    const decksRes = await db.select().from(deck).where(inArray(deck.id, extraDeckIds));
-
-    decksRes.forEach(d => deckById.set(d.id, d));
-  }
-
-  // 6) Build result items
-  const items: SectionRecentTournamentsItem[] = [];
-
-  // a) All decks for group tournaments (one item per tournament_deck)
-  const groupTournamentById = new Map(groupTournaments.map(t => [t.id, t] as const));
-  for (const td of groupTDs) {
-    const t = groupTournamentById.get(td.tournamentId);
-    if (!t) continue;
-    const d = deckById.get(td.deckId) ?? null;
-
-    // noinspection TypeScriptValidateTypes
-    items.push({
-      tournament: t,
-      winningTournamentDeck: td,
-      deck: d,
-    });
-  }
-
-  // b) Extra majors (SQ/RQ/GC last 30 days) with their winning deck
-  const extraWinningByTid = new Map(extraWinningTDs.map(td => [td.tournamentId, td] as const));
-
-  for (const t of extraMajors) {
-    const td = extraWinningByTid.get(t.id) ?? null;
+  // 6) Build one result item per tournament, including tournaments whose data is not imported yet.
+  const items: SectionRecentTournamentsItem[] = [...tournamentById.values()].map(t => {
+    const td = winningByTournamentId.get(t.id) ?? null;
     const d = td ? (deckById.get(td.deckId) ?? null) : null;
-
-    items.push({
+    return {
       tournament: t,
       winningTournamentDeck: td,
       deck: d,
-    });
-  }
+    } as unknown as SectionRecentTournamentsItem;
+  });
 
   // Sort items by tournament.updatedAt desc
   items.sort((a, b) => (b.tournament.updatedAt < a.tournament.updatedAt ? -1 : 1));
