@@ -21,6 +21,7 @@ export const deck = pgTable(
     baseCardId: varchar('base_card_id'),
     public: integer('public').notNull().default(0),
     cardPoolId: uuid('card_pool_id').references(() => cardPools.id),
+    versionCount: integer('version_count').notNull().default(0),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },

@@ -589,6 +589,13 @@
       "when": 1791732472660,
       "tag": "0083_daily_sealed_pool",
       "breakpoints": true
+    },
+    {
+      "idx": 84,
+      "version": "7",
+      "when": 1791827983466,
+      "tag": "0084_deck_versioning",
+      "breakpoints": true
     }
   ]
 }

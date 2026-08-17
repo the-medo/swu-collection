@@ -11,6 +11,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
 import { deck } from './deck.ts';
+import { deckVersion } from './deck_version.ts';
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 
 export const integration = pgTable('integration', {
@@ -93,6 +94,9 @@ export const karabastLobbyMatch = pgTable(
       .references(() => user.id, { onDelete: 'cascade' }),
     lobbyId: text('lobby_id').notNull(),
     deckId: uuid('deck_id').references(() => deck.id, { onDelete: 'set null' }),
+    deckVersionId: uuid('deck_version_id').references(() => deckVersion.id, {
+      onDelete: 'set null',
+    }),
     opponentLeaderCardId: text('opponent_leader_card_id'),
     opponentBaseCardKey: text('opponent_base_card_key'),
     lookupKey: text('lookup_key').notNull(),
@@ -112,6 +116,7 @@ export const karabastLobbyMatch = pgTable(
         table.userId,
       ),
       idxKarabastLobbyMatchMatchId: index('idx_karabast_lobby_match_match_id').on(table.matchId),
+      idxKarabastLobbyMatchDeckVersion: index('klm_dv_idx').on(table.deckVersionId),
     };
   },
 );

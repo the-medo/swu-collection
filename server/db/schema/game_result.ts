@@ -12,6 +12,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
 import { deck } from './deck.ts';
+import { deckVersion } from './deck_version.ts';
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 import type { CrossfireGameStatistics } from '../../../shared/types/crossfire-statistics.ts';
 import type { CardMetrics } from '../../../shared/types/cardMetrics.ts';
@@ -52,6 +53,9 @@ export const gameResult = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     deckId: uuid('deck_id').references(() => deck.id, { onDelete: 'set null' }),
+    deckVersionId: uuid('deck_version_id').references(() => deckVersion.id, {
+      onDelete: 'set null',
+    }),
     matchId: text('match_id'), // Source-scoped match identity; nullable for ungrouped manual games
     gameId: text('game_id').notNull(), // Source-scoped game identity or generated manual ID
     gameNumber: smallint('game_number'), // Ordered within a match; draws can extend a BO3 beyond three games
@@ -96,6 +100,7 @@ export const gameResult = pgTable(
     ),
     idxGameResultsUserMatch: index('idx_game_result_user_match').on(table.userId, table.matchId),
     idxGameResultsUserDeck: index('idx_game_result_user_deck').on(table.userId, table.deckId),
+    idxGameResultsUserDeckVersion: index('gr_user_dv_idx').on(table.userId, table.deckVersionId),
     userGameIdUnique: unique().on(table.userId, table.gameId),
   }),
 );
