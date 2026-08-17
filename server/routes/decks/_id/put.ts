@@ -3,14 +3,16 @@ import { auth, type AuthExtension } from '../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { zDeckUpdateRequest } from '../../../../types/ZDeck.ts';
 import { z } from 'zod';
-import { and, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { deck as deckTable } from '../../../db/schema/deck.ts';
 import { db } from '../../../db';
 import { updateDeckInformation } from '../../../lib/decks/updateDeckInformation.ts';
 import { generateDeckThumbnail } from '../../../lib/decks/generateDeckThumbnail.ts';
 import { runInBackground } from '../../../lib/utils/backgroundProcess.ts';
 import { cardPoolDecks } from '../../../db/schema/card_pool_deck.ts';
-import { publicToVisibilityMap, Visibility } from '../../../../shared/types/visibility.ts';
+import { publicToVisibilityMap } from '../../../../shared/types/visibility.ts';
+import { getDeckPermissions } from '../../../lib/decks/getDeckPermissions.ts';
+import { loadDeck, lockDeck } from '../../../lib/decks/deckVersionRepository.ts';
 
 export const deckIdPutRoute = new Hono<AuthExtension>().put(
   '/',
@@ -30,20 +32,42 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
       },
     });
 
-    const conditions = [eq(deckTable.id, paramDeckId)];
-    if (!isAdmin.success) {
-      conditions.push(eq(deckTable.userId, user.id));
-    }
+    const result = await db.transaction(async tx => {
+      await lockDeck(tx, paramDeckId);
+      const currentDeck = await loadDeck(tx, paramDeckId);
+      if (!currentDeck) return null;
+      const permissions = await getDeckPermissions(
+        currentDeck,
+        user.id,
+        isAdmin.success,
+        'parent',
+        tx,
+      );
+      if (!permissions.canEditMetadata) return false;
+      if (data.public !== undefined && !permissions.canChangeVisibility) return false;
 
-    // Get the current deck data to check if leader or base card has changed
-    const currentDeck = (
-      await db
-        .select()
-        .from(deckTable)
-        .where(and(...conditions))
-    )[0];
+      const isLeaderUpdated =
+        data.leaderCardId1 !== undefined && data.leaderCardId1 !== currentDeck.leaderCardId1;
+      const isBaseUpdated =
+        data.baseCardId !== undefined && data.baseCardId !== currentDeck.baseCardId;
+      const [updatedDeck] = await tx
+        .update(deckTable)
+        .set({ ...data, updatedAt: sql`NOW()` })
+        .where(eq(deckTable.id, paramDeckId))
+        .returning();
 
-    if (!currentDeck) {
+      const newVisibility =
+        typeof data.public !== 'undefined' ? publicToVisibilityMap[data.public] : undefined;
+      if (newVisibility) {
+        await tx
+          .update(cardPoolDecks)
+          .set({ visibility: newVisibility })
+          .where(eq(cardPoolDecks.deckId, paramDeckId));
+      }
+      return { updatedDeck, isLeaderUpdated, isBaseUpdated };
+    });
+
+    if (result === null) {
       return c.json(
         {
           message: "Deck doesn't exist or you don't have permission to update it",
@@ -51,32 +75,9 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
         404,
       );
     }
+    if (result === false) return c.json({ message: 'Unauthorized' }, 403);
 
-    // Check if leader or base card is being updated
-    const isLeaderUpdated =
-      data.leaderCardId1 !== undefined && data.leaderCardId1 !== currentDeck.leaderCardId1;
-    const isBaseUpdated =
-      data.baseCardId !== undefined && data.baseCardId !== currentDeck.baseCardId;
-
-    const updatedDeck = (
-      await db
-        .update(deckTable)
-        .set({
-          ...data,
-          updatedAt: sql`NOW()`,
-        })
-        .where(and(...conditions))
-        .returning()
-    )[0];
-
-    const newVisibility =
-      typeof data.public !== 'undefined' ? publicToVisibilityMap[data.public] : undefined;
-    if (newVisibility) {
-      await db
-        .update(cardPoolDecks)
-        .set({ visibility: newVisibility })
-        .where(eq(cardPoolDecks.deckId, paramDeckId));
-    }
+    const { updatedDeck, isLeaderUpdated, isBaseUpdated } = result;
 
     await updateDeckInformation(paramDeckId);
 

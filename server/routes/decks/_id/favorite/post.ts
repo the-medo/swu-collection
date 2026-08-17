@@ -1,3 +1,4 @@
+import { resolveDeckReference } from '../../../../lib/decks/resolveDeckReference.ts';
 import { Hono } from 'hono';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
@@ -19,11 +20,14 @@ export const deckIdFavoritePostRoute = new Hono<AuthExtension>().post(
   zValidator('param', z.object({ id: z.uuid() })),
   zValidator('json', zDeckFavoriteRequest),
   async c => {
-    const paramDeckId = c.req.valid('param').id;
+    const referenceId = c.req.valid('param').id;
     const user = c.get('user');
     const { isFavorite } = c.req.valid('json');
 
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
+    const resolved = await resolveDeckReference(referenceId);
+    if (!resolved) return c.json({ message: 'Deck not found' }, 404);
+    const paramDeckId = resolved.deck.id;
 
     try {
       if (isFavorite) {

@@ -3,13 +3,14 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { db } from '../../../../db';
-import { deck } from '../../../../db/schema/deck.ts';
 import { deckCard } from '../../../../db/schema/deck_card.ts';
 import { eq, sql } from 'drizzle-orm';
 import { upsertGameResults } from '../../../../lib/game-results/upsertGameResults.ts';
 import { baseSpecialNames } from '../../../../../shared/lib/basicBases.ts';
 import type { GameResult, GameResultDeckInfo } from '../../../../db/schema/game_result.ts';
 import type { CardMetrics } from '../../../../../shared/types/cardMetrics.ts';
+import { resolveDeckReference } from '../../../../lib/decks/resolveDeckReference.ts';
+import { getDeckVersionId } from '../../../../lib/decks/getDeckVersionId.ts';
 
 const schema = z.object({
   deckId: z.string().uuid(),
@@ -43,6 +44,7 @@ const mockCardMetrics = (cards: { cardId: string }[]) => {
 const mockSingleGame = ({
   userId,
   deckId,
+  deckVersionId,
   matchId,
   gameNumber,
   leaderCardId,
@@ -54,6 +56,7 @@ const mockSingleGame = ({
 }: {
   userId: string;
   deckId: string;
+  deckVersionId: string;
   matchId: string;
   gameNumber: number;
   leaderCardId: string | null;
@@ -71,6 +74,7 @@ const mockSingleGame = ({
   return {
     userId,
     deckId,
+    deckVersionId,
     matchId,
     gameId: crypto.randomUUID(),
     gameNumber,
@@ -104,20 +108,23 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
-    const { deckId } = c.req.valid('json');
+    const { deckId: submittedDeckId } = c.req.valid('json');
 
     // 1. Fetch deck info
-    const [deckRecord] = await db.select().from(deck).where(eq(deck.id, deckId));
+    const deckReference = await resolveDeckReference(submittedDeckId);
+    const deckRecord = deckReference?.deck;
 
     if (!deckRecord) {
       return c.json({ error: 'Deck not found' }, 404);
     }
 
     // Fetch deck cards
-    const cards = await db
-      .select({ cardId: deckCard.cardId })
-      .from(deckCard)
-      .where(eq(deckCard.deckId, deckId));
+    const resolvedDeckVersion = await getDeckVersionId({
+      deckId: deckRecord.id,
+      deckVersionId: deckReference?.version?.id ?? null,
+    });
+    const cards = resolvedDeckVersion.decklist;
+    const effectiveVersion = deckReference?.version?.sealedAt ? deckReference.version : null;
 
     // 2. Get random meta opponent
     const opponentResult = await db.execute(sql`
@@ -183,14 +190,15 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
     while (playerWins < 2 && opponentWins < 2 && gameNumber <= (isBo3 ? 3 : 1)) {
       const game = mockSingleGame({
         userId: user.id,
-        deckId,
+        deckId: deckRecord.id,
+        deckVersionId: resolvedDeckVersion.deckVersionId,
         matchId,
         gameNumber,
-        leaderCardId: deckRecord.leaderCardId1,
+        leaderCardId: effectiveVersion?.leaderCardId1 ?? deckRecord.leaderCardId1,
         baseCardKey:
-          deckRecord.baseCardId! in baseSpecialNames
-            ? baseSpecialNames[deckRecord.baseCardId!]
-            : deckRecord.baseCardId,
+          (effectiveVersion?.baseCardId ?? deckRecord.baseCardId)! in baseSpecialNames
+            ? baseSpecialNames[(effectiveVersion?.baseCardId ?? deckRecord.baseCardId)!]
+            : (effectiveVersion?.baseCardId ?? deckRecord.baseCardId),
         opponentLeaderCardId: opponent.leader_card_id,
         opponentBaseCardKey:
           opponent.base_card_id in baseSpecialNames
@@ -198,9 +206,9 @@ export const karabastMockGameResultPostRoute = new Hono<AuthExtension>().post(
             : opponent.base_card_id,
         cards,
         deckInfo: {
-          name: deckRecord.name,
+          name: effectiveVersion?.name ?? deckRecord.name,
           cardPoolId: deckRecord.cardPoolId,
-          formatId: deckRecord.format,
+          formatId: effectiveVersion?.format ?? deckRecord.format,
         },
       });
 

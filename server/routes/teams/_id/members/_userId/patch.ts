@@ -7,6 +7,7 @@ import { patchTeamMember } from '../../../../../lib/teams/membership.ts';
 const patchBodySchema = z.object({
   role: z.enum(['owner', 'member']).optional(),
   autoAddDeck: z.boolean().optional(),
+  allowTeamDeckEdits: z.boolean().optional(),
 });
 
 export const teamsIdMembersUserIdPatchRoute = new Hono<AuthExtension>().patch(

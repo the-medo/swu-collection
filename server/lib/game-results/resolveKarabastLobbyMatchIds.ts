@@ -11,6 +11,7 @@ import {
   createKarabastCardIdResolver,
   type KarabastCardIdResolver,
 } from './resolveKarabastCardId.ts';
+import type { KarabastResolvedDeckReferences } from './resolveKarabastDeckReferences.ts';
 
 const KARABAST_LOBBY_MATCH_LOCK_NAMESPACE = 28461;
 
@@ -21,6 +22,7 @@ export type KarabastLobbyMatchIdentity = {
   userId: string;
   lobbyId: string;
   deckId: string | null;
+  deckVersionId: string | null;
   opponentLeaderCardId: string | null;
   opponentBaseCardKey: string | null;
   lookupKey: string;
@@ -35,15 +37,26 @@ type KarabastLobbyMatchResolutionRow = {
 
 type KarabastLobbyMatchLookupKeyIdentity = Pick<
   KarabastLobbyMatchIdentity,
-  'lobbyId' | 'userId' | 'deckId' | 'opponentLeaderCardId' | 'opponentBaseCardKey'
+  'lobbyId' | 'userId' | 'deckId' | 'deckVersionId' | 'opponentLeaderCardId' | 'opponentBaseCardKey'
 >;
 
 export const buildKarabastLobbyMatchLookupKey = (identity: KarabastLobbyMatchLookupKeyIdentity) => {
+  if (!identity.deckVersionId) {
+    return JSON.stringify([
+      'karabast-lobby-match/v1',
+      identity.lobbyId,
+      identity.userId,
+      identity.deckId,
+      identity.opponentLeaderCardId,
+      identity.opponentBaseCardKey,
+    ]);
+  }
   return JSON.stringify([
-    'karabast-lobby-match/v1',
+    'karabast-lobby-match/v2',
     identity.lobbyId,
     identity.userId,
     identity.deckId,
+    identity.deckVersionId,
     identity.opponentLeaderCardId,
     identity.opponentBaseCardKey,
   ]);
@@ -52,6 +65,7 @@ export const buildKarabastLobbyMatchLookupKey = (identity: KarabastLobbyMatchLoo
 export const getKarabastLobbyMatchIdentities = (
   integrationData: IntegrationGameData,
   resolveKarabastCardId: KarabastCardIdResolver = cardUidToCardId,
+  resolvedDeckReferences?: KarabastResolvedDeckReferences,
 ): KarabastLobbyMatchIdentity[] => {
   const data = integrationData.data as IntegrationGameDataContent;
   const players = data.players || [];
@@ -70,11 +84,16 @@ export const getKarabastLobbyMatchIdentities = (
     const opponentIndex = index === 0 ? 1 : 0;
     const opponent = players[opponentIndex];
 
+    const resolvedDeck = resolvedDeckReferences?.[index];
+    const hasResolvedDeckLookup = resolvedDeckReferences && index in resolvedDeckReferences;
     const identity: KarabastLobbyMatchIdentity = {
       playerIndex: index,
       userId,
       lobbyId: integrationData.lobbyId,
-      deckId: normalizeKarabastDeckId(player.data?.deck?.id),
+      deckId: hasResolvedDeckLookup
+        ? (resolvedDeck?.deckId ?? null)
+        : normalizeKarabastDeckId(player.data?.deck?.id),
+      deckVersionId: resolvedDeck?.deckVersionId ?? null,
       opponentLeaderCardId: resolveKarabastCardId(opponent?.data?.leader),
       opponentBaseCardKey: resolveKarabastCardId(opponent?.data?.base, true),
       lookupKey: '',
@@ -82,7 +101,11 @@ export const getKarabastLobbyMatchIdentities = (
     };
 
     identity.lookupKey = buildKarabastLobbyMatchLookupKey(identity);
-    identity.lookupKeys = [identity.lookupKey];
+    const legacyLookupKey = buildKarabastLobbyMatchLookupKey({
+      ...identity,
+      deckVersionId: null,
+    });
+    identity.lookupKeys = [identity.lookupKey, legacyLookupKey];
     identities.push(identity);
   }
 
@@ -100,7 +123,7 @@ export const addLegacyKarabastLobbyMatchLookupKeys = (
   return identities.map(identity => {
     const legacyIdentity = legacyByPlayerIndex.get(identity.playerIndex);
     const lookupKeys = [
-      identity.lookupKey,
+      ...identity.lookupKeys,
       ...(legacyIdentity?.lookupKey && legacyIdentity.lookupKey !== identity.lookupKey
         ? [legacyIdentity.lookupKey]
         : []),
@@ -162,12 +185,12 @@ export const resolveKarabastLobbyMatchIds = async (
   integrationData: IntegrationGameData,
   // When omitted, this function builds one from the DB-backed preview-card cache.
   karabastCardIdResolver?: KarabastCardIdResolver,
+  resolvedDeckReferences?: KarabastResolvedDeckReferences,
 ): Promise<KarabastResolvedMatchIds> => {
-  const resolveKarabastCardId =
-    karabastCardIdResolver ?? (await createKarabastCardIdResolver());
+  const resolveKarabastCardId = karabastCardIdResolver ?? (await createKarabastCardIdResolver());
   const identities = addLegacyKarabastLobbyMatchLookupKeys(
-    getKarabastLobbyMatchIdentities(integrationData, resolveKarabastCardId),
-    getKarabastLobbyMatchIdentities(integrationData),
+    getKarabastLobbyMatchIdentities(integrationData, resolveKarabastCardId, resolvedDeckReferences),
+    getKarabastLobbyMatchIdentities(integrationData, cardUidToCardId, resolvedDeckReferences),
   );
 
   if (identities.length === 0) {
@@ -227,6 +250,7 @@ export const resolveKarabastLobbyMatchIds = async (
         userId: identity.userId,
         lobbyId: identity.lobbyId,
         deckId: identity.deckId,
+        deckVersionId: identity.deckVersionId,
         opponentLeaderCardId: identity.opponentLeaderCardId,
         opponentBaseCardKey: identity.opponentBaseCardKey,
         lookupKey: identity.lookupKey,

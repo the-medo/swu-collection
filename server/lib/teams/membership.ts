@@ -107,7 +107,7 @@ export async function patchTeamMember(
   teamId: string,
   userId: string,
   callerId: string,
-  patch: { role?: 'owner' | 'member'; autoAddDeck?: boolean },
+  patch: { role?: 'owner' | 'member'; autoAddDeck?: boolean; allowTeamDeckEdits?: boolean },
 ) {
   return db.transaction(async tx => {
     const membership = await lockMembership(tx, teamId, callerId);
@@ -120,6 +120,10 @@ export async function patchTeamMember(
         status: 403 as const,
         message: 'You can only change your own auto-add deck setting',
       };
+    if (patch.allowTeamDeckEdits !== undefined && !isOwner && callerId !== userId)
+      return { status: 403 as const, message: 'You can only change your own deck editing setting' };
+    if (patch.allowTeamDeckEdits === true && callerId !== userId)
+      return { status: 403 as const, message: 'Only the member can enable deck editing for their decks' };
     const [target] = await tx
       .select()
       .from(teamMember)
@@ -127,7 +131,7 @@ export async function patchTeamMember(
     if (!target) return { status: 404 as const, message: 'User is not a member of this team' };
     if (patch.role !== undefined && target.role === patch.role)
       return { status: 400 as const, message: `User already has the role "${patch.role}"` };
-    if (patch.role === undefined && patch.autoAddDeck === undefined)
+    if (patch.role === undefined && patch.autoAddDeck === undefined && patch.allowTeamDeckEdits === undefined)
       return { status: 400 as const, message: 'No changes provided' };
     await tx
       .update(teamMember)

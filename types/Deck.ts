@@ -48,6 +48,8 @@ export type DeckReference = {
 };
 
 export type DeckPermissions = {
+  canRead: boolean;
+  canEditAsTeamMember: boolean;
   canEditContent: boolean;
   canSaveVersion: boolean;
   canEditMetadata: boolean;

@@ -1,12 +1,16 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { zValidator } from '@hono/zod-validator';
 import { zDeckCardDeleteRequest } from '../../../../../types/ZDeckCard.ts';
 import { db } from '../../../../db';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
 import type { AuthExtension } from '../../../../auth/auth.ts';
+import { auth } from '../../../../auth/auth.ts';
+import { sql } from 'drizzle-orm';
+import { getDeckPermissions } from '../../../../lib/decks/getDeckPermissions.ts';
+import { loadDeck, lockDeck } from '../../../../lib/decks/deckVersionRepository.ts';
 
 export const deckIdCardDeleteRoute = new Hono<AuthExtension>().delete(
   '/',
@@ -17,31 +21,36 @@ export const deckIdCardDeleteRoute = new Hono<AuthExtension>().delete(
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-    const deckTableId = eq(deckTable.id, paramDeckId);
+    const isAdmin = await auth.api.userHasPermission({
+      body: { userId: user.id, permissions: { admin: ['access'] } },
+    });
+    const result = await db.transaction(async tx => {
+      await lockDeck(tx, paramDeckId);
+      const parent = await loadDeck(tx, paramDeckId);
+      if (!parent) return null;
+      const permissions = await getDeckPermissions(parent, user.id, isAdmin.success, 'parent', tx);
+      if (!permissions.canEditContent) return false;
 
-    const d = (await db.select().from(deckTable).where(deckTableId))[0];
-    if (!d) return c.json({ message: "Deck doesn't exist" }, 500);
-    if (d.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
-
-    const deckId = eq(deckCardTable.deckId, paramDeckId);
-    const cardId = eq(deckCardTable.cardId, data.cardId);
-    const board = eq(deckCardTable.board, data.board);
-
-    const primaryKeyFilters = [deckId, cardId, board];
-
-    const deletedDeckCard = await db.transaction(async tx => {
-      const [deleted] = await tx
+      const [deletedDeckCard] = await tx
         .delete(deckCardTable)
-        .where(and(...primaryKeyFilters))
+        .where(
+          and(
+            eq(deckCardTable.deckId, paramDeckId),
+            eq(deckCardTable.cardId, data.cardId),
+            eq(deckCardTable.board, data.board),
+          ),
+        )
         .returning();
-      if (deleted)
-        await tx
-          .update(deckTable)
-          .set({ updatedAt: sql`NOW()` })
-          .where(deckTableId);
-      return deleted;
+      const [updatedDeck] = await tx
+        .update(deckTable)
+        .set({ updatedAt: sql`NOW()` })
+        .where(eq(deckTable.id, paramDeckId))
+        .returning({ updatedAt: deckTable.updatedAt });
+      return { card: deletedDeckCard, updatedAt: updatedDeck.updatedAt };
     });
 
-    return c.json({ data: deletedDeckCard });
+    if (result === null) return c.json({ message: "Deck doesn't exist" }, 404);
+    if (result === false) return c.json({ message: 'Unauthorized' }, 403);
+    return c.json({ data: result.card, deckUpdatedAt: result.updatedAt });
   },
 );

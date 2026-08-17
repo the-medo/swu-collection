@@ -1,6 +1,5 @@
 import { db } from '../../db';
 import { tournament } from '../../db/schema/tournament';
-import { deck } from '../../db/schema/deck';
 import { meta } from '../../db/schema/meta';
 import { collection } from '../../db/schema/collection';
 import { eq, desc, and } from 'drizzle-orm';
@@ -10,8 +9,12 @@ import { selectDefaultVariant } from '../cards/selectDefaultVariant.ts';
 import { CollectionType } from '../../../types/enums.ts';
 import { user } from '../../db/schema/auth-schema.ts';
 import { tournamentGroup } from '../../db/schema/tournament_group.ts';
+import { resolveDeckReference } from '../decks/resolveDeckReference.ts';
 
-export async function getTournamentMetaTags(tournamentId: string, extraParams?: Record<string, string>) {
+export async function getTournamentMetaTags(
+  tournamentId: string,
+  extraParams?: Record<string, string>,
+) {
   const weekId = extraParams?.weekId;
   try {
     // Special case for /tournaments/featured, /tournaments/planetary-qualifiers, and /tournaments/all routes
@@ -73,13 +76,10 @@ export async function getTournamentMetaTags(tournamentId: string, extraParams?: 
 
             return {
               robots: 'index, follow',
-              keywords:
-                `swubase, swu, star wars, tcg, tournaments, competetive, planetary qualifiers, ${tournamentGroupData.name}, competitive play`,
-              description:
-                `${tournamentGroupData.name} - Star Wars: Unlimited Planetary Qualifiers. View tournament information, results, and qualifying decks.`,
+              keywords: `swubase, swu, star wars, tcg, tournaments, competetive, planetary qualifiers, ${tournamentGroupData.name}, competitive play`,
+              description: `${tournamentGroupData.name} - Star Wars: Unlimited Planetary Qualifiers. View tournament information, results, and qualifying decks.`,
               'og:title': `${tournamentGroupData.name} | SWU Base`,
-              'og:description':
-                `${tournamentGroupData.name} - Star Wars: Unlimited Planetary Qualifiers. View tournament information, results, and qualifying decks.`,
+              'og:description': `${tournamentGroupData.name} - Star Wars: Unlimited Planetary Qualifiers. View tournament information, results, and qualifying decks.`,
               'og:image': `https://images.swubase.com/thumbnails/pq-meta-week-${weekNumber}.webp`,
               'og:url': `https://swubase.com/tournaments/planetary-qualifiers?weekId=${weekId}`,
               'og:type': 'website',
@@ -180,7 +180,17 @@ export async function getDeckMetaTags(deckId: string) {
     }
 
     // Regular deck handling for valid UUIDs
-    const deckData = (await db.select().from(deck).where(eq(deck.id, deckId)))[0];
+    const resolvedDeck = await resolveDeckReference(deckId);
+    const deckData = resolvedDeck?.version?.sealedAt
+      ? {
+          ...resolvedDeck.deck,
+          name: resolvedDeck.version.name ?? resolvedDeck.deck.name,
+          description: resolvedDeck.version.description ?? '',
+          leaderCardId1: resolvedDeck.version.leaderCardId1,
+          leaderCardId2: resolvedDeck.version.leaderCardId2,
+          baseCardId: resolvedDeck.version.baseCardId,
+        }
+      : resolvedDeck?.deck;
 
     if (!deckData || !deckData.leaderCardId1 || !deckData.baseCardId || !deckData.public) {
       return null;

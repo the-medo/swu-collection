@@ -27,6 +27,7 @@ export const teamsIdMembersGetRoute = new Hono<AuthExtension>().get('/', async c
       role: teamMember.role,
       joinedAt: teamMember.joinedAt,
       autoAddDeck: teamMember.autoAddDeck,
+      allowTeamDeckEdits: teamMember.allowTeamDeckEdits,
       name: userTable.displayName,
       image: userTable.image,
       integration: integration.name,

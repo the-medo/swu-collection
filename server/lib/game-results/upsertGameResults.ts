@@ -61,6 +61,7 @@ export const upsertGameResults = async (results: GameResult[]) => {
       target: [gameResult.userId, gameResult.gameId],
       set: {
         deckId: sql`excluded.deck_id`,
+        deckVersionId: sql`excluded.deck_version_id`,
         matchId: sql`excluded.match_id`,
         gameNumber: sql`excluded.game_number`,
         leaderCardId: sql`excluded.leader_card_id`,

@@ -15,6 +15,7 @@ import { resolveKarabastLobbyMatchIds } from '../../../../lib/game-results/resol
 import { transformKarabastGameDataToGameResults } from '../../../../lib/game-results/transformKarabastGameDataToGameResults.ts';
 import { upsertGameResults } from '../../../../lib/game-results/upsertGameResults.ts';
 import { createKarabastCardIdResolver } from '../../../../lib/game-results/resolveKarabastCardId.ts';
+import { resolveKarabastDeckReferences } from '../../../../lib/game-results/resolveKarabastDeckReferences.ts';
 
 const playerDataSchema = z.object({
   id: z.string(),
@@ -119,14 +120,17 @@ export const karabastGameResultPostRoute = new Hono<AuthExtension>().post(
 
     if (insertedRecord) {
       const resolveKarabastCardId = await createKarabastCardIdResolver();
+      const resolvedDeckReferences = await resolveKarabastDeckReferences(insertedRecord);
       const resolvedMatchIds = await resolveKarabastLobbyMatchIds(
         insertedRecord,
         resolveKarabastCardId,
+        resolvedDeckReferences,
       );
       const results = await transformKarabastGameDataToGameResults(
         insertedRecord,
         resolvedMatchIds,
         resolveKarabastCardId,
+        resolvedDeckReferences,
       );
       await upsertGameResults(results);
     }

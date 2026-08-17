@@ -27,6 +27,9 @@ import { decksBulkDeletePostRoute } from './decks/bulk-delete/post.ts';
 import { decksForCardGetRoute } from './decks/card/_cardId/get.ts';
 import { deckImportSource as deckImportSourceTable } from '../db/schema/deck_import_source.ts';
 import { deckDiscussionRoute } from './decks/discussion.ts';
+import { deckIdVersionsGetRoute } from './decks/_id/versions/get.ts';
+import { deckIdVersionsPostRoute } from './decks/_id/versions/post.ts';
+import { deckIdVersionDiffGetRoute } from './decks/_id/versions/_versionId/diff/get.ts';
 
 export const selectDeck = getTableColumns(deckTable);
 export const selectDeckInformation = getTableColumns(deckInformationTable);
@@ -52,6 +55,9 @@ export const deckRoute = new Hono<AuthExtension>()
   .route('/:id/price', deckIdPricePostRoute)
   .route('/:id/refresh-import', deckIdRefreshImportPostRoute)
   .route('/import', decksImportPostRoute)
+  .route('/:id/versions', deckIdVersionsGetRoute)
+  .route('/:id/versions', deckIdVersionsPostRoute)
+  .route('/:id/versions/:versionId/diff', deckIdVersionDiffGetRoute)
   .route('/import-swudb', decksImportSwudbPostRoute)
   .route('/thumbnails', decksThumbnailsPostRoute)
   .route('/bulk/data', decksBulkGetRoute)
