@@ -19,7 +19,8 @@ interface Member {
   joinedAt: string;
   role: 'owner' | 'member';
   autoAddDeck: boolean;
-  integration?: 'karabast';
+  allowTeamDeckEdits: boolean;
+  integration?: string | null;
 }
 
 interface MemberRowProps {
@@ -32,6 +33,7 @@ interface MemberRowProps {
   onKick: () => void;
   onLeave: () => void;
   onAutoAddDeckChange: (checked: boolean) => void;
+  onAllowTeamDeckEditsChange: (checked: boolean) => void;
 }
 
 const MemberRow: React.FC<MemberRowProps> = ({
@@ -44,6 +46,7 @@ const MemberRow: React.FC<MemberRowProps> = ({
   onKick,
   onLeave,
   onAutoAddDeckChange,
+  onAllowTeamDeckEditsChange,
 }) => {
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg border">
@@ -69,10 +72,23 @@ const MemberRow: React.FC<MemberRowProps> = ({
         {member.integration ? <Check className="size-4" /> : <X className="size-4" />}
       </Badge>
       {(isOwner || isSelf) && (
-        <div className="flex items-center gap-2 mr-10" title="Auto-add deck">
-          <AutoAddDeckTooltip />
-          <span className="text-xs text-muted-foreground">Auto-add played decks to team decks</span>
-          <Switch checked={member.autoAddDeck} onCheckedChange={onAutoAddDeckChange} />
+        <div className="flex flex-col gap-2 mr-10">
+          <div className="flex items-center justify-end gap-2" title="Auto-add deck">
+            <AutoAddDeckTooltip />
+            <span className="text-xs text-muted-foreground">Auto-add played decks</span>
+            <Switch checked={member.autoAddDeck} onCheckedChange={onAutoAddDeckChange} />
+          </div>
+          <div
+            className="flex items-center justify-end gap-2"
+            title="Let teammates edit and save versions of this member's team-linked decks"
+          >
+            <span className="text-xs text-muted-foreground">Allow shared deck editing</span>
+            <Switch
+              checked={member.allowTeamDeckEdits}
+              disabled={!isSelf && !member.allowTeamDeckEdits}
+              onCheckedChange={onAllowTeamDeckEditsChange}
+            />
+          </div>
         </div>
       )}
       <Badge variant={member.role === 'owner' ? 'default' : 'secondary'}>{member.role}</Badge>

@@ -24,6 +24,8 @@ const DeckPricing: React.FC<DeckPricingProps> = ({
     [data?.entityPrices],
   );
 
+  if (data?.reference?.kind && data.reference.kind !== 'parent') return null;
+
   if (!prices.length && !showReloadButtonWhenNoPrices) return null;
 
   return (

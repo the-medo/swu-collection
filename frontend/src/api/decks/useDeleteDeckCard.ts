@@ -36,31 +36,30 @@ export const useDeleteDeckCard = (deckId: string | undefined) => {
       return response.json();
     },
     onSuccess: (_, variables) => {
-      queryClient.setQueryData<DeckCardResponse>(
-        ['deck-content', deckId],
-        oldData => {
-          if (!oldData) {
-            return { data: [] };
-          }
+      if (variables.board !== 3) {
+        void queryClient.invalidateQueries({ queryKey: ['deck-versions'] });
+        void queryClient.invalidateQueries({ queryKey: ['deck-version-diff'] });
+      }
+      queryClient.setQueryData<DeckCardResponse>(['deck-content', deckId], oldData => {
+        if (!oldData) {
+          return { data: [] };
+        }
 
-          const { data: existingCards } = oldData;
+        const { data: existingCards } = oldData;
 
-          const filteredCards = existingCards.filter(
-            card => 
-              !(card.cardId === variables.cardId && 
-                card.board === variables.board)
-          );
+        const filteredCards = existingCards.filter(
+          card => !(card.cardId === variables.cardId && card.board === variables.board),
+        );
 
-          toast({
-            title: 'Card removed from deck',
-          });
+        toast({
+          title: 'Card removed from deck',
+        });
 
-          return {
-            ...oldData,
-            data: filteredCards,
-          };
-        },
-      );
+        return {
+          ...oldData,
+          data: filteredCards,
+        };
+      });
     },
     onError: error => {
       toast({

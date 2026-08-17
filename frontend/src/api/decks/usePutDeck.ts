@@ -63,6 +63,9 @@ export const usePutDeck = (deckId: string | undefined) => {
         }
       });
 
+      void queryClient.invalidateQueries({ queryKey: ['deck-versions'] });
+      void queryClient.invalidateQueries({ queryKey: ['deck-version-diff'] });
+
       toast({
         title: 'Deck updated successfully',
       });

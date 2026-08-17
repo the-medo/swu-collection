@@ -18,3 +18,4 @@ export * from './usePromoteMember.ts';
 export * from './useDemoteMember.ts';
 export * from './useKickMember.ts';
 export * from './useUpdateMemberAutoAddDeck.ts';
+export * from './useUpdateMemberDeckEditing.ts';

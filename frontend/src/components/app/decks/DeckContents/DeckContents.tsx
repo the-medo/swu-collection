@@ -27,6 +27,7 @@ import { aspectArray } from '../../../../../../types/iterableEnumInfo.ts';
 import { SwuAspect, SwuSet } from '../../../../../../types/enums.ts';
 import { setRestrictionByFormat } from '../../../../../../types/Format.ts';
 import { setArray } from '../../../../../../lib/swu-resources/set-info.ts';
+import DeckVersions from '@/components/app/decks/DeckVersions/DeckVersions.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -98,6 +99,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
               </Link>
             )}
             <DeckPricing deckId={deckId} showReloadButtonWhenNoPrices={true} />
+            <DeckVersions deckId={deckId} />
             {cardPoolId && (
               <>
                 <Link

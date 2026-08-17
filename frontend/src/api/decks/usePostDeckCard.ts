@@ -30,7 +30,7 @@ export const usePostDeckCard = (deckId: string | undefined) => {
       return response.json() as unknown as { data: DeckCard };
     },
     // On success, update the cache for the GET query.
-    onSuccess: result => {
+    onSuccess: (result, variables) => {
       // result should be something like { data: newCard }
       queryClient.setQueryData<DeckCardResponse>(['deck-content', deckId], oldData => {
         if (!oldData) {
@@ -66,6 +66,11 @@ export const usePostDeckCard = (deckId: string | undefined) => {
           data: [...existingCards, result.data],
         };
       });
+
+      if (variables.board !== 3) {
+        void queryClient.invalidateQueries({ queryKey: ['deck-versions'] });
+        void queryClient.invalidateQueries({ queryKey: ['deck-version-diff'] });
+      }
 
       toast({
         title: 'Card added to deck',
