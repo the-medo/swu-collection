@@ -21,8 +21,8 @@ import { dailySnapshotFeaturedTournamentTypes } from '../../../../../../../types
 import { getDailySnapshotFormatSortOrder } from '../../../../../../../types/Format.ts';
 import TournamentFormatBadge from '../components/TournamentFormatBadge.tsx';
 
-// Split featured tournaments and others (to keep the table for others only)
-const majorTypes = new Set<string>(dailySnapshotFeaturedTournamentTypes);
+const openTournamentType = 'open';
+const featuredTournamentTypes = new Set<string>(dailySnapshotFeaturedTournamentTypes);
 const EMPTY_ITEMS: SectionRecentTournamentsItem[] = [];
 
 export interface RecentTournamentsProps {
@@ -57,10 +57,18 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
   }, [items]);
 
   const majors = useMemo(() => {
-    return sorted.filter(it => majorTypes.has(String(it.tournament.type).toLowerCase()));
+    return sorted.filter(it => {
+      const type = String(it.tournament.type).toLowerCase();
+      return type !== openTournamentType && featuredTournamentTypes.has(type);
+    });
+  }, [sorted]);
+  const opens = useMemo(() => {
+    return sorted.filter(it => String(it.tournament.type).toLowerCase() === openTournamentType);
   }, [sorted]);
   const others = useMemo(() => {
-    return sorted.filter(it => !majorTypes.has(String(it.tournament.type).toLowerCase()));
+    return sorted.filter(
+      it => !featuredTournamentTypes.has(String(it.tournament.type).toLowerCase()),
+    );
   }, [sorted]);
 
   // Adapt featured tournaments to display cards. A winning deck is optional.
@@ -109,6 +117,8 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
     }
     return res;
   }, [others]);
+
+  const openRows = useMemo(() => opens.map(item => ({ type: 'item' as const, item })), [opens]);
 
   const groups = useMemo(
     () => (payload.data.tournamentGroupExt ? [payload.data.tournamentGroupExt] : []),
@@ -165,6 +175,19 @@ const RecentTournaments: React.FC<RecentTournamentsProps> = ({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {openRows.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-base font-semibold mb-2">Opens</h4>
+              <TournamentOverviewTable
+                rows={openRows}
+                formatBadgeRenderer={formatId => <TournamentFormatBadge formatId={formatId} />}
+                showChampionName={true}
+                nameInFullWidthRow={true}
+                nameFormatter={tournament => tournament.name}
+              />
             </div>
           )}
 
