@@ -10,6 +10,7 @@ interface CopyLinkButtonProps extends ButtonProps {
   isPublic: boolean;
   compact?: boolean;
   inNavigation?: boolean;
+  label?: React.ReactNode;
 }
 
 const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({
@@ -17,6 +18,7 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({
   isPublic,
   compact,
   inNavigation,
+  label,
   variant = 'outline',
   size,
 }) => {
@@ -46,7 +48,9 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({
       onAuxClick={handleCopyLink}
     >
       <LinkIcon className="h-4 w-4" />
-      {!compact && <span className="ml-2">Copy link {!isPublic && '(private!)'}</span>}
+      {!compact && (
+        <span className="ml-2">{label ?? `Copy link${!isPublic ? ' (private!)' : ''}`}</span>
+      )}
     </Button>
   );
 

@@ -11,6 +11,7 @@ interface DeckInfoStore {
         format: number;
         owned: boolean;
         editable: boolean;
+        canSaveVersion: boolean;
         cardPoolId?: string | null;
       }
     | undefined
@@ -23,12 +24,19 @@ const defaultState: DeckInfoStore = {
 
 const store = new Store<DeckInfoStore>(defaultState);
 
-const setDeckInfo = (deckId: string, format: number, owned: boolean, cardPoolId?: string | null) =>
+const setDeckInfo = (
+  deckId: string,
+  format: number,
+  owned: boolean,
+  editable: boolean,
+  canSaveVersion: boolean,
+  cardPoolId?: string | null,
+) =>
   store.setState(state => ({
     ...state,
     deckInfo: {
       ...state.deckInfo,
-      [deckId]: { format, owned, editable: owned && !cardPoolId, cardPoolId },
+      [deckId]: { format, owned, editable, canSaveVersion, cardPoolId },
     },
   }));
 
@@ -38,6 +46,7 @@ export function useDeckInfo(deckId: string) {
       format: 1,
       owned: false,
       editable: false,
+      canSaveVersion: false,
       cardPoolId: undefined,
     }
   );
@@ -49,11 +58,7 @@ export function useDeckInfoStoreActions() {
   };
 }
 
-export const useSetDeckInfo = (
-  deckId: string,
-  adminEdit: boolean = false,
-  refreshOnMount = false,
-) => {
+export const useSetDeckInfo = (deckId: string, adminEdit: boolean = false, refreshOnMount = false) => {
   const user = useUser();
   const hasRole = useRole();
   const isAdmin = hasRole('admin');
@@ -64,10 +69,15 @@ export const useSetDeckInfo = (
   const deckUserId = data?.user?.id ?? '';
   const format = data?.deck.format ?? 1;
   const owned = (user?.id === deckUserId || (isAdmin && adminEdit)) ?? false;
+  const serverEditable = data?.permissions?.canEditContent ?? (owned && !data?.deck.cardPoolId);
+  const editable =
+    serverEditable &&
+    (!isAdmin || user?.id === deckUserId || adminEdit || data?.permissions?.canEditAsTeamMember);
+  const canSaveVersion = Boolean(data?.permissions?.canSaveVersion && editable);
 
   useEffect(() => {
-    setDeckInfo(deckId, format, owned, data?.deck.cardPoolId);
-  }, [deckId, format, owned, data?.deck.cardPoolId, setDeckInfo]);
+    setDeckInfo(deckId, format, owned, editable, canSaveVersion, data?.deck.cardPoolId);
+  }, [deckId, format, owned, editable, canSaveVersion, data?.deck.cardPoolId, setDeckInfo]);
 
-  return { data, loading: isFetching, error, owned, deckUserId, refetch };
+  return { data, loading: isFetching, error, owned, editable, deckUserId, refetch };
 };

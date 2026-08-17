@@ -1,3 +1,4 @@
+import DeckVersions from '../DeckVersions/DeckVersions.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import DeckPlayButton from './DeckPlayButton.tsx';
 import DeckLeaderBase from '@/components/app/decks/DeckContents/DeckLeaderBase.tsx';
@@ -174,6 +175,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
                 </DeckGradientButton>
               )}
               <DeckPricing deckId={deckId} showReloadButtonWhenNoPrices={true} />
+              <DeckVersions deckId={deckId} />
               {cardPoolId && (
                 <>
                   <Link

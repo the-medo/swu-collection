@@ -40,6 +40,10 @@ export const useDeleteDeckCard = (deckId: string | undefined) => {
     },
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({ queryKey: ['decks'] });
+      if (variables.board !== 3) {
+        void queryClient.invalidateQueries({ queryKey: ['deck-versions'] });
+        void queryClient.invalidateQueries({ queryKey: ['deck-version-diff'] });
+      }
       queryClient.setQueryData<DeckCardResponse>(deckKeys.cards(deckId, viewer?.id), oldData => {
         if (!oldData) {
           return { data: [] };

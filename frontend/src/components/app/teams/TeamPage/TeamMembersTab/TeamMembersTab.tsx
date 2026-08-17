@@ -5,6 +5,7 @@ import {
   useDemoteMember,
   useKickMember,
   useUpdateMemberAutoAddDeck,
+  useUpdateMemberDeckEditing,
 } from '@/api/teams';
 import { useUser } from '@/hooks/useUser.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
@@ -29,6 +30,7 @@ const TeamMembersTab: React.FC<TeamMembersTabProps> = ({ teamId, isOwner }) => {
   const demoteMember = useDemoteMember(teamId);
   const kickMember = useKickMember(teamId);
   const updateMemberAutoAddDeck = useUpdateMemberAutoAddDeck(teamId);
+  const updateMemberDeckEditing = useUpdateMemberDeckEditing(teamId);
 
   const [dialogTarget, setDialogTarget] = React.useState<DialogTarget>(null);
 
@@ -59,7 +61,7 @@ const TeamMembersTab: React.FC<TeamMembersTabProps> = ({ teamId, isOwner }) => {
         {members.map(member => (
           <MemberRow
             key={member.userId}
-            member={member as any}
+            member={member}
             isSelf={isSelf(member.userId)}
             isOwner={!!isOwner}
             canLeave={!isLastMember && (member.role !== 'owner' || ownersCount > 1)}
@@ -93,6 +95,12 @@ const TeamMembersTab: React.FC<TeamMembersTabProps> = ({ teamId, isOwner }) => {
             }
             onAutoAddDeckChange={checked =>
               updateMemberAutoAddDeck.mutate({ userId: member.userId, autoAddDeck: checked })
+            }
+            onAllowTeamDeckEditsChange={checked =>
+              updateMemberDeckEditing.mutate({
+                userId: member.userId,
+                allowTeamDeckEdits: checked,
+              })
             }
           />
         ))}

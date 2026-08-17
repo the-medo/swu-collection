@@ -74,6 +74,9 @@ export const usePutDeck = (deckId: string | undefined) => {
       // A changed timestamp or format can alter both list order and membership.
       void queryClient.invalidateQueries({ queryKey: ['decks'] });
 
+      void queryClient.invalidateQueries({ queryKey: ['deck-versions'] });
+      void queryClient.invalidateQueries({ queryKey: ['deck-version-diff'] });
+
       toast({
         title: 'Deck updated successfully',
       });
