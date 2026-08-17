@@ -17,6 +17,7 @@ export const teamMember = pgTable(
     role: teamRoleEnum('role').notNull().default('member'),
     joinedAt: timestamp('joined_at', { mode: 'string' }).notNull().defaultNow(),
     autoAddDeck: boolean('auto_add_deck').notNull().default(true),
+    allowTeamDeckEdits: boolean('allow_team_deck_edits').notNull().default(false),
   },
   table => ({
     pk: primaryKey({ columns: [table.teamId, table.userId] }),

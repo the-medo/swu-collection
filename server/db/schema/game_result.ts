@@ -12,6 +12,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
 import { deck } from './deck.ts';
+import { deckVersion } from './deck_version.ts';
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 import type { CardMetrics } from '../../../shared/types/cardMetrics.ts';
 
@@ -50,6 +51,9 @@ export const gameResult = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     deckId: uuid('deck_id').references(() => deck.id, { onDelete: 'set null' }),
+    deckVersionId: uuid('deck_version_id').references(() => deckVersion.id, {
+      onDelete: 'set null',
+    }),
     matchId: text('match_id'), // Karabast resolved match_id OR generated OR null
     gameId: text('game_id').notNull(), // Karabast gameId OR generated uuid/string for manual
     gameNumber: smallint('game_number'), // 1|2|3 (nullable for manual / unknown)
@@ -90,6 +94,7 @@ export const gameResult = pgTable(
     ),
     idxGameResultsUserMatch: index('idx_game_result_user_match').on(table.userId, table.matchId),
     idxGameResultsUserDeck: index('idx_game_result_user_deck').on(table.userId, table.deckId),
+    idxGameResultsUserDeckVersion: index('gr_user_dv_idx').on(table.userId, table.deckVersionId),
     userGameIdUnique: unique().on(table.userId, table.gameId),
   }),
 );

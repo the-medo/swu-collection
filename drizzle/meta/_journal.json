@@ -393,6 +393,13 @@
       "when": 1786973323937,
       "tag": "0055_add_open_tournament_type",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1787047632196,
+      "tag": "0056_deck_versioning",
+      "breakpoints": true
     }
   ]
 }
