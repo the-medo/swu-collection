@@ -1,32 +1,31 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { and, eq, gte, inArray, or, sql } from 'drizzle-orm';
-import { deck as deckTable } from '../../db/schema/deck.ts';
-import { deckCard as deckCardTable } from '../../db/schema/deck_card.ts';
-import { db } from '../../db';
-import { selectUser } from '../user.ts';
-import { user as userTable } from '../../db/schema/auth-schema.ts';
-import { selectDeck } from '../deck.ts';
-import { userDeckFavorite } from '../../db/schema/user_deck_favorite.ts';
+import { and, eq } from 'drizzle-orm';
 import { zValidator } from '@hono/zod-validator';
-import type { AuthExtension } from '../../auth/auth.ts';
+import { db } from '../../db';
+import { deckCard as deckCardTable, type DeckCard } from '../../db/schema/deck_card.ts';
+import { user as userTable } from '../../db/schema/auth-schema.ts';
+import { userDeckFavorite } from '../../db/schema/user_deck_favorite.ts';
+import { auth, type AuthExtension } from '../../auth/auth.ts';
 import type { DeckData } from '../../../types/Deck.ts';
-import type { DeckCard } from '../../db/schema/deck_card.ts';
+import { resolveDeckReference } from '../../lib/decks/resolveDeckReference.ts';
+import { canReadDeck, getDeckPermissions } from '../../lib/decks/getDeckPermissions.ts';
+import {
+  loadCurrentVersionedCards,
+  reconstructDeckVersion,
+} from '../../lib/decks/deckVersionRepository.ts';
 
 export interface DecksBulkResponse {
   decks: Record<string, DeckData | undefined>;
   cards: Record<string, DeckCard[]>;
 }
 
-// Define query parameters schema
 const zBulkDecksQueryParams = z.object({
   ids: z
     .string()
-    .transform(val => val.split(','))
-    .pipe(z.array(z.guid())) // Validate each ID as a UUID after splitting
-    .refine(ids => ids.length > 0, {
-      message: 'At least one deck ID must be provided',
-    }),
+    .transform(value => value.split(','))
+    .pipe(z.array(z.guid()))
+    .refine(ids => ids.length > 0, { message: 'At least one deck ID must be provided' }),
 });
 
 export const decksBulkGetRoute = new Hono<AuthExtension>().get(
@@ -35,79 +34,79 @@ export const decksBulkGetRoute = new Hono<AuthExtension>().get(
   async c => {
     const { ids } = c.req.valid('query');
     const user = c.get('user');
+    const isAdmin = user
+      ? (
+          await auth.api.userHasPermission({
+            body: { userId: user.id, permission: { admin: ['access'] } },
+          })
+        ).success
+      : false;
+    const result: DecksBulkResponse = { decks: {}, cards: {} };
 
-    const isPublicOrUnlisted = gte(deckTable.public, 1);
-    const isOwner = user ? eq(deckTable.userId, user.id) : null;
-
-    // Query 1: Get deck data for all requested deck IDs
-    let query = db
-      .select({
-        user: selectUser,
-        deck: selectDeck,
-        isFavorite: user ? userDeckFavorite.createdAt : sql.raw('NULL'),
-      })
-      .from(deckTable)
-      .innerJoin(userTable, eq(deckTable.userId, userTable.id))
-      .$dynamic();
-
-    // Only add the left join if the user is logged in
-    if (user) {
-      query = query.leftJoin(
-        userDeckFavorite,
-        and(eq(userDeckFavorite.userId, user.id), eq(userDeckFavorite.deckId, deckTable.id)),
+    for (const requestedId of ids) {
+      const resolved = await resolveDeckReference(requestedId);
+      if (!resolved) continue;
+      const permissions = await getDeckPermissions(
+        resolved.deck,
+        user?.id ?? null,
+        isAdmin,
+        resolved.reference.kind,
       );
-    }
+      if (!canReadDeck(resolved.deck, permissions)) continue;
 
-    // Apply where condition
-    query = query.where(
-      and(
-        inArray(deckTable.id, ids),
-        isOwner ? or(isOwner, isPublicOrUnlisted) : isPublicOrUnlisted,
-      ),
-    );
-
-    const decksData = await query;
-
-    // If no decks found, return empty result
-    if (decksData.length === 0) {
-      return c.json({ decks: {}, cards: {} });
-    }
-
-    // Extract the IDs of decks that were found
-    const foundDeckIds = decksData.map(deck => deck.deck.id);
-
-    // Query 2: Get all cards for the found decks
-    const deckCards = await db
-      .select({
-        deckId: deckCardTable.deckId,
-        cardId: deckCardTable.cardId,
-        board: deckCardTable.board,
-        note: deckCardTable.note,
-        quantity: deckCardTable.quantity,
-      })
-      .from(deckCardTable)
-      .where(inArray(deckCardTable.deckId, foundDeckIds));
-
-    // Organize the results
-    const result: DecksBulkResponse = {
-      decks: decksData.reduce(
-        (acc, deck) => {
-          acc[deck.deck.id] = deck as unknown as DeckData;
-          return acc;
-        },
-        {} as DecksBulkResponse['decks'], //
-      ),
-      cards: deckCards.reduce(
-        (acc, card) => {
-          if (!acc[card.deckId]) {
-            acc[card.deckId] = [];
+      const owner = (
+        await db.select().from(userTable).where(eq(userTable.id, resolved.deck.userId)).limit(1)
+      )[0];
+      const favorite = user
+        ? ((
+            await db
+              .select({ createdAt: userDeckFavorite.createdAt })
+              .from(userDeckFavorite)
+              .where(
+                and(
+                  eq(userDeckFavorite.userId, user.id),
+                  eq(userDeckFavorite.deckId, resolved.deck.id),
+                ),
+              )
+              .limit(1)
+          )[0]?.createdAt ?? null)
+        : null;
+      const effectiveDeck = resolved.version?.sealedAt
+        ? {
+            ...resolved.deck,
+            name: resolved.version.name ?? resolved.deck.name,
+            description: resolved.version.description ?? '',
+            format: resolved.version.format ?? resolved.deck.format,
+            leaderCardId1: resolved.version.leaderCardId1,
+            leaderCardId2: resolved.version.leaderCardId2,
+            baseCardId: resolved.version.baseCardId,
+            updatedAt: resolved.version.sourceDeckUpdatedAt ?? resolved.version.sealedAt,
           }
-          acc[card.deckId].push(card);
-          return acc;
-        },
-        {} as DecksBulkResponse['cards'],
-      ),
-    };
+        : resolved.deck;
+      result.decks[requestedId] = {
+        deck: effectiveDeck as unknown as DeckData['deck'],
+        user: owner as unknown as DeckData['user'],
+        isFavorite: favorite?.toISOString?.() ?? (favorite as unknown as string | null),
+        reference: resolved.reference,
+        permissions,
+      };
+
+      if (resolved.version) {
+        const cards = resolved.version.sealedAt
+          ? (await reconstructDeckVersion(db, resolved.deck.id, resolved.version.versionNumber))
+              .cards
+          : await loadCurrentVersionedCards(db, resolved.deck.id);
+        result.cards[requestedId] = cards.map(card => ({
+          deckId: resolved.deck.id,
+          ...card,
+        }));
+      } else {
+        result.cards[requestedId] = await db
+          .select()
+          .from(deckCardTable)
+          .where(eq(deckCardTable.deckId, resolved.deck.id));
+      }
+    }
 
     return c.json(result);
   },

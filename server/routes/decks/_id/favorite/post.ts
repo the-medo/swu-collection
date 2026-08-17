@@ -6,16 +6,20 @@ import { db } from '../../../../db';
 import { userDeckFavorite } from '../../../../db/schema/user_deck_favorite.ts';
 import { eq, and } from 'drizzle-orm';
 import { z } from 'zod';
+import { resolveDeckReference } from '../../../../lib/decks/resolveDeckReference.ts';
 
 export const deckIdFavoritePostRoute = new Hono<AuthExtension>().post(
   '/',
   zValidator('json', zDeckFavoriteRequest),
   async c => {
-    const paramDeckId = z.guid().parse(c.req.param('id'));
+    const referenceId = z.guid().parse(c.req.param('id'));
     const user = c.get('user');
     const { isFavorite } = c.req.valid('json');
 
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
+    const resolved = await resolveDeckReference(referenceId);
+    if (!resolved) return c.json({ message: "Deck doesn't exist" }, 404);
+    const paramDeckId = resolved.deck.id;
 
     try {
       if (isFavorite) {

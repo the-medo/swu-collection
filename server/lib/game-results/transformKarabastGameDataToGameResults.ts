@@ -9,6 +9,7 @@ import {
   createKarabastCardIdResolver,
   type KarabastCardIdResolver,
 } from './resolveKarabastCardId.ts';
+import type { KarabastResolvedDeckReferences } from './resolveKarabastDeckReferences.ts';
 
 /**
  * Transforms data from the integrationGameData into game result table.
@@ -20,12 +21,12 @@ export const transformKarabastGameDataToGameResults = async (
   resolvedMatchIds?: Record<number, string>,
   // When omitted, this function builds one from the DB-backed preview-card cache.
   karabastCardIdResolver?: KarabastCardIdResolver,
+  resolvedDeckReferences?: KarabastResolvedDeckReferences,
 ): Promise<GameResult[]> => {
   const data = integrationData.data as IntegrationGameDataContent; // The Karabast payload
   const players = data.players || [];
   const gameResults: GameResult[] = [];
-  const resolveKarabastCardId =
-    karabastCardIdResolver ?? (await createKarabastCardIdResolver());
+  const resolveKarabastCardId = karabastCardIdResolver ?? (await createKarabastCardIdResolver());
 
   const userIds = [integrationData.userId1, integrationData.userId2];
 
@@ -53,10 +54,16 @@ export const transformKarabastGameDataToGameResults = async (
 
     const opponentIndex = index === 0 ? 1 : 0;
     const opponent = players[opponentIndex];
-    const deckId = normalizeKarabastDeckId(player.data?.deck?.id);
+    const resolvedDeck = resolvedDeckReferences?.[index];
+    const hasResolvedDeckLookup = resolvedDeckReferences && index in resolvedDeckReferences;
+    const deckId = hasResolvedDeckLookup
+      ? (resolvedDeck?.deckId ?? null)
+      : normalizeKarabastDeckId(player.data?.deck?.id);
 
     let deckInfo: GameResultDeckInfo = {};
-    if (deckId) {
+    if (resolvedDeck) {
+      deckInfo = resolvedDeck.deckInfo;
+    } else if (deckId) {
       deckInfo = (
         await db
           .select({
@@ -73,6 +80,7 @@ export const transformKarabastGameDataToGameResults = async (
     const result: GameResult = {
       userId: userId,
       deckId,
+      deckVersionId: resolvedDeck?.deckVersionId ?? null,
       gameId: integrationData.gameId,
       // Keep the old lobbyId fallback until the route is wired to pass resolved match IDs.
       matchId: resolvedMatchIds?.[index] ?? integrationData.lobbyId,

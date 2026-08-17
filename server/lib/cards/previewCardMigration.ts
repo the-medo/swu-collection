@@ -1,10 +1,11 @@
-import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNull, or, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { cardList } from '../../db/lists.ts';
 import { cardPools, cardPoolCards } from '../../db/schema/card_pool.ts';
 import { collectionCard } from '../../db/schema/collection_card.ts';
 import { deck } from '../../db/schema/deck.ts';
 import { deckCard } from '../../db/schema/deck_card.ts';
+import { deckVersion, deckVersionCard } from '../../db/schema/deck_version.ts';
 import { previewCard } from '../../db/schema/preview_card.ts';
 import type { PreviewCard } from '../../db/schema/preview_card.ts';
 import type {
@@ -15,6 +16,13 @@ import type {
 import { selectDefaultVariant } from './selectDefaultVariant.ts';
 import { normalizePreviewCardPayload } from './previewCardPayload.ts';
 import { updateDeckInformation } from '../decks/updateDeckInformation.ts';
+import { loadOrderedDeckVersions, reconstructDeckVersion } from '../decks/deckVersionRepository.ts';
+import {
+  createDeckVersionDelta,
+  deckMetadataFromRow,
+  hashVersionedDeckState,
+  type VersionedDeckCard,
+} from '../decks/versionedDeckState.ts';
 
 export type PreviewCardMigrationSummary = {
   previewCardId: string;
@@ -124,6 +132,108 @@ function mapVariantId(variantMap: Record<string, string>, variantId: string): st
   return variantMap[variantId] ?? variantId;
 }
 
+function replaceVersionedCardId(
+  cards: VersionedDeckCard[],
+  fromCardId: string,
+  officialCardId: string,
+): VersionedDeckCard[] {
+  const merged = new Map<string, VersionedDeckCard>();
+  for (const card of cards) {
+    const mapped = { ...card, cardId: card.cardId === fromCardId ? officialCardId : card.cardId };
+    const key = `${mapped.board}\u0000${mapped.cardId}`;
+    const existing = merged.get(key);
+    if (!existing) merged.set(key, mapped);
+    else {
+      merged.set(key, {
+        ...existing,
+        quantity: existing.quantity + mapped.quantity,
+        note: existing.note || mapped.note,
+      });
+    }
+  }
+  return [...merged.values()].sort((a, b) => a.board - b.board || a.cardId.localeCompare(b.cardId));
+}
+
+async function migrateDeckVersionReferences(
+  tx: any,
+  fromCardId: string,
+  officialCardId: string,
+): Promise<string[]> {
+  const affectedRows = (await tx
+    .select({ deckId: deckVersion.deckId })
+    .from(deckVersion)
+    .leftJoin(deckVersionCard, eq(deckVersionCard.deckVersionId, deckVersion.id))
+    .where(
+      or(
+        eq(deckVersion.leaderCardId1, fromCardId),
+        eq(deckVersion.leaderCardId2, fromCardId),
+        eq(deckVersion.baseCardId, fromCardId),
+        eq(deckVersionCard.cardId, fromCardId),
+      ),
+    )) as { deckId: string }[];
+  const affectedDeckIds: string[] = [...new Set(affectedRows.map(row => row.deckId))];
+
+  for (const deckId of affectedDeckIds) {
+    const versions = await loadOrderedDeckVersions(tx, deckId);
+    const sealedVersions = versions.filter(version => version.sealedAt);
+    const reconstructedStates = [] as Array<{
+      versionId: string;
+      versionNumber: number;
+      metadata: ReturnType<typeof deckMetadataFromRow>;
+      cards: VersionedDeckCard[];
+    }>;
+    for (const version of sealedVersions) {
+      const state = await reconstructDeckVersion(tx, deckId, version.versionNumber);
+      reconstructedStates.push({
+        versionId: version.id,
+        versionNumber: version.versionNumber,
+        metadata: {
+          ...state.metadata,
+          leaderCardId1:
+            state.metadata.leaderCardId1 === fromCardId
+              ? officialCardId
+              : state.metadata.leaderCardId1,
+          leaderCardId2:
+            state.metadata.leaderCardId2 === fromCardId
+              ? officialCardId
+              : state.metadata.leaderCardId2,
+          baseCardId:
+            state.metadata.baseCardId === fromCardId ? officialCardId : state.metadata.baseCardId,
+        },
+        cards: replaceVersionedCardId(state.cards, fromCardId, officialCardId),
+      });
+    }
+
+    if (versions.length) {
+      await tx.delete(deckVersionCard).where(
+        inArray(
+          deckVersionCard.deckVersionId,
+          versions.map(version => version.id),
+        ),
+      );
+    }
+    let previousCards: VersionedDeckCard[] = [];
+    for (const state of reconstructedStates) {
+      const delta = createDeckVersionDelta(previousCards, state.cards);
+      if (delta.length) {
+        await tx
+          .insert(deckVersionCard)
+          .values(delta.map(card => ({ deckVersionId: state.versionId, ...card })));
+      }
+      await tx
+        .update(deckVersion)
+        .set({
+          ...state.metadata,
+          contentHash: hashVersionedDeckState(state.metadata, state.cards),
+        })
+        .where(eq(deckVersion.id, state.versionId));
+      previousCards = state.cards;
+    }
+  }
+
+  return affectedDeckIds;
+}
+
 function getOfficialCard(officialCardId: string) {
   const officialCard = cardList[officialCardId];
   if (!officialCard) {
@@ -172,6 +282,13 @@ export async function migratePreviewCardToOfficial(
     const variantMap = buildPreviewVariantIdMap(previewPayload, officialCard);
 
     if (fromCardId !== officialCardId) {
+      const affectedVersionDeckIds = await migrateDeckVersionReferences(
+        tx,
+        fromCardId,
+        officialCardId,
+      );
+      affectedVersionDeckIds.forEach(deckId => addAffectedDeckId(affectedDeckIds, deckId));
+
       const leader1Decks = await tx
         .update(deck)
         .set({ leaderCardId1: officialCardId, updatedAt: now })
