@@ -15,12 +15,21 @@ const DeckTitleBarCompact: React.FC<DeckTitleBarCompactProps> = ({ deckId, setDe
   const { data } = useGetDeck(deckId);
 
   const name = (data?.deck.name ?? '').replace(/\s*\[[^[\]]*\]\s*$/, '');
+  const selectedVersionLabel =
+    data?.reference?.kind === 'sealed-version'
+      ? `Saved v${data.reference.versionNumber}`
+      : data?.reference?.kind === 'open-version'
+        ? `Current changes v${data.reference.versionNumber}`
+        : null;
 
   return (
     <div className="w-full flex items-center justify-between gap-3 py-1 -mt-3 pr-10">
       <div className="flex items-center gap-3 py-1">
         <DeckAvatar deck={data?.deck} size="50" />
-        <h6 className="mb-0! truncate">{name}</h6>
+        <h6 className="mb-0! truncate">
+          {name}
+          {selectedVersionLabel && ` [${selectedVersionLabel}]`}
+        </h6>
       </div>
 
       <Popover>

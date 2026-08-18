@@ -40,7 +40,17 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
   onArticleEditingChange,
 }) => {
   const user = useUser();
-  const { data, loading, error, owned, refetch } = useSetDeckInfo(deckId, adminEdit, embedded);
+  const { data, loading, error, owned, editable, refetch } = useSetDeckInfo(deckId, adminEdit, embedded);
+  const selectedVersionLabel =
+    data?.reference?.kind === 'sealed-version'
+      ? `Saved v${data.reference.versionNumber}`
+      : data?.reference?.kind === 'open-version'
+        ? `Current changes v${data.reference.versionNumber}`
+        : null;
+  const deckTitle = data?.deck.name
+    ? `${data.deck.name}${selectedVersionLabel ? ` [${selectedVersionLabel}]` : ''}`
+    : undefined;
+  const isParent = !data?.reference || data.reference.kind === 'parent';
   const contents = useGetDeckCards(embedded ? deckId : undefined, embedded);
   const [resolvedDeckId, setResolvedDeckId] = useState<string>();
   if (
@@ -100,7 +110,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
     );
   }
 
-  if (deckbuilder && owned) {
+  if (deckbuilder && editable) {
     return (
       <div className="flex flex-1 flex-col gap-0 h-screen max-h-screen overflow-y-auto">
         <DeckContents deckId={deckId} deckbuilder />
@@ -110,10 +120,10 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
 
   return (
     <>
-      {!embedded && <Helmet title={`${data?.deck.name || 'Loading deck'} | SWUBase`} />}
+      {!embedded && <Helmet title={`${deckTitle || 'Loading deck'} | SWUBase`} />}
       <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
         <LoadingTitle
-          mainTitle={data?.deck.name}
+          mainTitle={deckTitle}
           subTitle={
             <span className="inline-flex max-w-full items-center gap-1">
               <span className="shrink-0">deck by</span>
@@ -124,7 +134,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
         />
         {user && (
           <div className="flex flex-row gap-4 items-center">
-            {owned && data?.deck && (
+            {owned && isParent && data?.deck && (
               <>
                 {deckPrivacyRenderer(data?.deck.public)}
                 <EditDeckDialog deck={data?.deck} trigger={<Button>Edit deck</Button>} />
@@ -155,7 +165,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
           tab={tab}
           onTabChange={onTabChange}
           discussion={
-            !embedded && !deckbuilder && data && !error
+            !embedded && !deckbuilder && isParent && data && !error
               ? {
                   ownerId: data.deck.userId,
                   editing: articleEditing ?? false,
