@@ -11,6 +11,7 @@ import {
 import { MoreHorizontal, Shield, ShieldOff, UserX, LogOut, Check, X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch.tsx';
 import { AutoAddDeckTooltip } from '@/components/app/teams/TeamPage/components/AutoAddDeckTooltip.tsx';
+import InfoTooltip from '@/components/app/global/InfoTooltip/InfoTooltip.tsx';
 
 interface Member {
   userId: string;
@@ -78,14 +79,11 @@ const MemberRow: React.FC<MemberRowProps> = ({
             <span className="text-xs text-muted-foreground">Auto-add played decks</span>
             <Switch checked={member.autoAddDeck} onCheckedChange={onAutoAddDeckChange} />
           </div>
-          <div
-            className="flex items-center justify-end gap-2"
-            title="Let teammates edit and save versions of this member's team-linked decks"
-          >
+          <div className="flex items-center justify-end gap-2">
+            <InfoTooltip tooltip="When enabled, teammates can edit this member's team-linked decks and save new versions." />
             <span className="text-xs text-muted-foreground">Allow shared deck editing</span>
             <Switch
               checked={member.allowTeamDeckEdits}
-              disabled={!isSelf && !member.allowTeamDeckEdits}
               onCheckedChange={onAllowTeamDeckEditsChange}
             />
           </div>

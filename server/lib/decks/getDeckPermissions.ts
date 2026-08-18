@@ -18,7 +18,9 @@ export async function getDeckPermissions(
   const isOwner = actorId === parent.userId;
   let isCollaborator = false;
 
-  if (actorId && !isOwner && !isAdmin && !parent.cardPoolId) {
+  // Keep the collaboration result even for admins. The client uses it to
+  // distinguish a teammate edit from the separate explicit admin-edit mode.
+  if (actorId && !isOwner && !parent.cardPoolId) {
     const actorMembership = alias(teamMember, 'actor_membership');
     const ownerMembership = alias(teamMember, 'owner_membership');
     isCollaborator = Boolean(
@@ -54,6 +56,7 @@ export async function getDeckPermissions(
     canEditMetadata: canEdit,
     canChangeVisibility: canOwn,
     canDelete: canOwn,
+    canEditAsTeamMember: canCollaborate,
   };
 }
 

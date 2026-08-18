@@ -18,7 +18,16 @@ interface DeckDetailProps {
 
 const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder }) => {
   const user = useUser();
-  const { data, loading, error, owned, deckUserId } = useSetDeckInfo(deckId, adminEdit);
+  const { data, loading, error, owned, editable, deckUserId } = useSetDeckInfo(deckId, adminEdit);
+  const selectedVersionLabel =
+    data?.reference?.kind === 'sealed-version'
+      ? `Saved v${data.reference.versionNumber}`
+      : data?.reference?.kind === 'open-version'
+        ? `Current changes v${data.reference.versionNumber}`
+        : null;
+  const deckTitle = data?.deck.name
+    ? `${data.deck.name}${selectedVersionLabel ? ` [${selectedVersionLabel}]` : ''}`
+    : undefined;
 
   if (error?.status === 404) {
     return (
@@ -32,7 +41,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder 
     );
   }
 
-  if (deckbuilder && owned) {
+  if (deckbuilder && editable) {
     return (
       <div className="flex flex-1 flex-col gap-0 h-screen max-h-screen overflow-y-auto">
         <DeckContents deckId={deckId} deckbuilder />
@@ -42,10 +51,10 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder 
 
   return (
     <>
-      <Helmet title={`${data?.deck.name || 'Loading deck'} | SWUBase`} />
+      <Helmet title={`${deckTitle || 'Loading deck'} | SWUBase`} />
       <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
         <LoadingTitle
-          mainTitle={data?.deck.name}
+          mainTitle={deckTitle}
           subTitle={
             <>
               deck by{' '}

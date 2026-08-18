@@ -46,9 +46,6 @@ export const teamsIdMembersUserIdPatchRoute = new Hono<AuthExtension>().patch(
     if (body.allowTeamDeckEdits !== undefined && !isOwner && !isSelf) {
       return c.json({ message: 'You can only change your own deck editing setting' }, 403);
     }
-    if (body.allowTeamDeckEdits === true && !isSelf) {
-      return c.json({ message: 'Only the member can enable deck editing for their decks' }, 403);
-    }
 
     const targetMembership = await getTeamMembership(teamId, userId);
     if (!targetMembership) {

@@ -70,12 +70,14 @@ export const useSetDeckInfo = (deckId: string, adminEdit: boolean = false) => {
   const format = data?.deck.format ?? 1;
   const owned = (user?.id === deckUserId || (isAdmin && adminEdit)) ?? false;
   const serverEditable = data?.permissions?.canEditContent ?? (owned && !data?.deck.cardPoolId);
-  const editable = serverEditable && (!isAdmin || user?.id === deckUserId || adminEdit);
+  const editable =
+    serverEditable &&
+    (!isAdmin || user?.id === deckUserId || adminEdit || data?.permissions?.canEditAsTeamMember);
   const canSaveVersion = Boolean(data?.permissions?.canSaveVersion && editable);
 
   useEffect(() => {
     setDeckInfo(deckId, format, owned, editable, canSaveVersion, data?.deck.cardPoolId);
   }, [deckId, format, owned, editable, canSaveVersion, data?.deck.cardPoolId, setDeckInfo]);
 
-  return { data, loading: isFetching, error, owned, deckUserId };
+  return { data, loading: isFetching, error, owned, editable, deckUserId };
 };

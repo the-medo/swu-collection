@@ -43,6 +43,7 @@ export type DeckPermissions = {
   canEditMetadata: boolean;
   canChangeVisibility: boolean;
   canDelete: boolean;
+  canEditAsTeamMember: boolean;
 };
 
 export type DeckVersionSummary = {

@@ -55,12 +55,18 @@ const DeckVersionDiff = ({ deckId, versionId }: { deckId: string; versionId: str
   const sideboardRemovals = data.data.changes.filter(
     change => change.board === 2 && change.quantityChange < 0,
   );
+  const hasMainboardChanges = mainboardAdditions.length > 0 || mainboardRemovals.length > 0;
   const hasSideboardChanges = sideboardAdditions.length > 0 || sideboardRemovals.length > 0;
 
   return (
     <div className="mt-2 space-y-2 border-l pl-2 text-xs">
-      <ChangeList changes={mainboardAdditions} />
-      <ChangeList changes={mainboardRemovals} />
+      {hasMainboardChanges && (
+        <div className="space-y-1">
+          <div className="font-medium text-muted-foreground">Mainboard</div>
+          <ChangeList changes={mainboardAdditions} />
+          <ChangeList changes={mainboardRemovals} />
+        </div>
+      )}
       {hasSideboardChanges && (
         <div className="space-y-1">
           <div className="font-medium text-muted-foreground">Sideboard</div>

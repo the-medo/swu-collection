@@ -11,6 +11,7 @@ import DeckVersionDiff from './DeckVersionDiff.tsx';
 import type { DeckVersionSummary } from '../../../../../../types/Deck.ts';
 import InfoTooltip from '@/components/app/global/InfoTooltip/InfoTooltip.tsx';
 import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/components/CopyLinkButton.tsx';
+import { cn } from '@/lib/utils.ts';
 
 const ChangeCounts = ({ version }: { version: DeckVersionSummary }) => {
   const parts = [
@@ -18,7 +19,7 @@ const ChangeCounts = ({ version }: { version: DeckVersionSummary }) => {
     version.removedCards ? `−${version.removedCards}` : '',
     version.changedCards ? `~${version.changedCards}` : '',
   ].filter(Boolean);
-  return <span>{parts.length ? parts.join(' · ') : 'No card changes'}</span>;
+  return <span>{parts.length ? parts.join(' ') : 'No card changes'}</span>;
 };
 
 const DeckVersions = ({ deckId }: { deckId: string }) => {
@@ -28,10 +29,15 @@ const DeckVersions = ({ deckId }: { deckId: string }) => {
   const { data, isLoading } = useGetDeckVersions(supportsVersions ? canonicalDeckId : undefined);
   const saveVersion = useSaveDeckVersion(canonicalDeckId);
   const [changeNote, setChangeNote] = useState('');
-  const [displayChanges, setDisplayChanges] = useState(false);
+  const [expandedVersionIds, setExpandedVersionIds] = useState<Set<string>>(() => new Set());
 
   if (!supportsVersions) return null;
   const versions = data?.data ?? [];
+  const selectedVersionId =
+    deckData?.reference?.kind === 'parent'
+      ? versions.find(version => version.state === 'open')?.id
+      : deckData?.reference?.deckVersionId;
+  const openVersion = versions.find(version => version.state === 'open');
   const isParent = deckData?.reference?.kind === 'parent' || !deckData?.reference;
   const canSave = Boolean(deckData?.permissions?.canSaveVersion && isParent);
 
@@ -39,6 +45,38 @@ const DeckVersions = ({ deckId }: { deckId: string }) => {
     await saveVersion.mutateAsync(changeNote);
     setChangeNote('');
   };
+
+  const toggleChanges = (versionId: string) => {
+    setExpandedVersionIds(current => {
+      const next = new Set(current);
+      if (next.has(versionId)) {
+        next.delete(versionId);
+      } else {
+        next.add(versionId);
+      }
+      return next;
+    });
+  };
+
+  const renderSaveForm = (isFirstVersion: boolean) => (
+    <div className={cn('space-y-2', !isFirstVersion && 'border-t pt-3')}>
+      <Input
+        value={changeNote}
+        onChange={event => setChangeNote(event.target.value)}
+        placeholder="Optional version note"
+        maxLength={255}
+      />
+      <Button
+        className="w-full"
+        size="sm"
+        onClick={() => void handleSave()}
+        disabled={saveVersion.isPending || (!isFirstVersion && openVersion?.hasChanges === false)}
+      >
+        {saveVersion.isPending ? <Loader2 className="animate-spin" /> : <Save />}
+        {isFirstVersion ? 'Create first version' : 'Save current version'}
+      </Button>
+    </div>
+  );
 
   return (
     <Card className="w-full">
@@ -48,11 +86,6 @@ const DeckVersions = ({ deckId }: { deckId: string }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 p-4 pt-0">
-        {deckData?.reference?.kind === 'sealed-version' && (
-          <div className="rounded-md bg-muted p-2 text-xs">
-            Viewing saved version {deckData.reference.versionNumber}. This decklist is read-only.
-          </div>
-        )}
         {deckData?.reference?.kind === 'open-version' && (
           <div className="rounded-md bg-muted p-2 text-xs">
             Viewing current changes v{deckData.reference.versionNumber}. This link remains mutable
@@ -60,81 +93,79 @@ const DeckVersions = ({ deckId }: { deckId: string }) => {
           </div>
         )}
 
-        {canSave && (
-          <div className="space-y-2">
-            <Input
-              value={changeNote}
-              onChange={event => setChangeNote(event.target.value)}
-              placeholder="Optional version note"
-              maxLength={255}
-            />
-            <Button
-              className="w-full"
-              size="sm"
-              onClick={() => void handleSave()}
-              disabled={
-                saveVersion.isPending || (versions.length > 0 && versions[0]?.hasChanges === false)
-              }
-            >
-              {saveVersion.isPending ? <Loader2 className="animate-spin" /> : <Save />}
-              {versions.length ? 'Save current version' : 'Create first version'}
-            </Button>
-          </div>
-        )}
+        {canSave && versions.length === 0 && renderSaveForm(true)}
 
         {isLoading && <div className="text-sm text-muted-foreground">Loading versions…</div>}
         {!isLoading && versions.length === 0 && (
           <div className="text-sm text-muted-foreground">No saved versions yet.</div>
         )}
-        {versions.some(version => version.versionNumber > 1) && (
-          <Button
-            variant="link"
-            size="xs"
-            className="h-auto p-0 text-xs"
-            onClick={() => setDisplayChanges(current => !current)}
-          >
-            {displayChanges ? 'Hide changes' : 'Display changes'}
-          </Button>
-        )}
         <div className="space-y-2">
-          {versions.map(version => (
-            <div key={version.id} className="rounded-md border p-2 text-sm">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1">
-                    <Link
-                      to="/decks/$deckId"
-                      params={{ deckId: version.id }}
-                      className="font-medium hover:underline"
-                    >
-                      {version.state === 'open'
-                        ? `Current changes v${version.versionNumber}`
-                        : `Saved v${version.versionNumber}`}
-                    </Link>
-                    {version.changeNote && (
-                      <InfoTooltip tooltip={version.changeNote} className="p-0" />
+          {versions.map(version => {
+            const versionDeckId = version.state === 'open' ? canonicalDeckId : version.id;
+            const canShowChanges = version.versionNumber > 1;
+            const isExpanded = expandedVersionIds.has(version.id);
+            const isSelected = version.id === selectedVersionId;
+
+            return (
+              <div
+                key={version.id}
+                className={cn(
+                  'rounded-md border p-2 text-sm',
+                  isSelected && 'border-primary bg-primary/5 ring-1 ring-primary/30',
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+                    <div className="flex items-center gap-1">
+                      <Link
+                        to="/decks/$deckId"
+                        params={{ deckId: versionDeckId }}
+                        className="font-medium hover:underline"
+                      >
+                        {version.state === 'open'
+                          ? `Current changes v${version.versionNumber}`
+                          : `Saved v${version.versionNumber}`}
+                      </Link>
+                      {version.changeNote && (
+                        <InfoTooltip tooltip={version.changeNote} className="p-0" />
+                      )}
+                    </div>
+                    {canShowChanges && (
+                      <button
+                        type="button"
+                        className="text-left text-xs text-muted-foreground hover:text-foreground hover:underline"
+                        onClick={() => toggleChanges(version.id)}
+                        aria-expanded={isExpanded}
+                      >
+                        <ChangeCounts version={version} />
+                      </button>
+                    )}
+                    {version.sealedAt && (
+                      <time
+                        dateTime={version.sealedAt}
+                        className="ml-auto shrink-0 text-xs text-muted-foreground"
+                      >
+                        {new Date(version.sealedAt).toLocaleDateString()}
+                      </time>
                     )}
                   </div>
-                  {version.versionNumber > 1 && (
-                    <div className="text-xs text-muted-foreground">
-                      <ChangeCounts version={version} />
-                      {version.sealedAt && ` · ${new Date(version.sealedAt).toLocaleDateString()}`}
-                    </div>
-                  )}
+                  <CopyLinkButton
+                    deckId={versionDeckId}
+                    isPublic={Boolean(deckData?.deck.public)}
+                    variant="ghost"
+                    compact
+                    size="icon"
+                    className="size-6"
+                    iconClassName="size-3"
+                  />
                 </div>
-                <CopyLinkButton
-                  deckId={version.id}
-                  isPublic={Boolean(deckData?.deck.public)}
-                  variant="ghost"
-                  size="xs"
-                  label="Link"
-                />
+                {isExpanded && canShowChanges && (
+                  <DeckVersionDiff deckId={canonicalDeckId} versionId={version.id} />
+                )}
+                {canSave && version.state === 'open' && renderSaveForm(false)}
               </div>
-              {displayChanges && version.versionNumber > 1 && version.hasChanges && (
-                <DeckVersionDiff deckId={canonicalDeckId} versionId={version.id} />
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CardContent>
     </Card>

@@ -11,6 +11,7 @@ interface CopyLinkButtonProps extends ButtonProps {
   compact?: boolean;
   inNavigation?: boolean;
   label?: React.ReactNode;
+  iconClassName?: string;
 }
 
 const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({
@@ -19,8 +20,11 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({
   compact,
   inNavigation,
   label,
+  iconClassName,
   variant = 'outline',
   size,
+  className,
+  ...buttonProps
 }) => {
   const { toast } = useToast();
   const deckLink = `${window.location.origin}/decks/${deckId}`;
@@ -41,13 +45,12 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({
     <Button
       variant={variant}
       size={size ?? (compact ? 'icon' : 'default')}
-      className={cn({
-        'opacity-80': !isPublic,
-      })}
+      className={cn(className, { 'opacity-80': !isPublic })}
+      {...buttonProps}
       onClick={handleCopyLink}
       onAuxClick={handleCopyLink}
     >
-      <LinkIcon className="h-4 w-4" />
+      <LinkIcon className={cn('h-4 w-4', iconClassName)} />
       {!compact && (
         <span className="ml-2">{label ?? `Copy link${!isPublic ? ' (private!)' : ''}`}</span>
       )}
