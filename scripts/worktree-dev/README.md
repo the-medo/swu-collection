@@ -54,6 +54,23 @@ container, volume, ports, and generated state. `prune` lists stale resources;
 `prune --yes` removes only the listed labelled resources after their worktree is
 no longer live.
 
+## Opt-in integration test
+
+After changing the worktree lifecycle, Docker resource ownership, port
+allocation, or cleanup behavior, run:
+
+```bash
+scripts/worktree-dev/test-concurrent-worktrees.sh
+```
+
+This test creates two temporary detached Git worktrees and labelled PostgreSQL
+containers. It restores an empty, local custom-format fixture dump, verifies
+that their database resources, ports, and cookie prefixes differ, writes a
+sentinel only to one database, then purges it while ensuring the other remains
+ready. It does not read `.env`, download contributor data, or contact R2. Root
+dependencies and the `postgres:16-alpine` image must already be installed; it
+removes its temporary worktrees and labelled test resources on exit.
+
 ## Codex Desktop
 
 In the Linux/WSL setup-script field of a Codex Desktop local environment, use:
