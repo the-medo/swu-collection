@@ -128,6 +128,16 @@ r2_work_file() {
   fi
 }
 
+backup_timestamp_from_name() {
+  local backup_name=${1##*/}
+
+  backup_name=${backup_name#pg-dump-postgres-}
+  backup_name=${backup_name%.dmp}
+  [[ "${backup_name}" =~ ^[0-9]+$ ]] \
+    || fail "Backup name does not contain a numeric timestamp: ${1}"
+  printf '%s\n' "${backup_name}"
+}
+
 select_local_backup() {
   local backup_directory=$1
   local selected
@@ -136,25 +146,32 @@ select_local_backup() {
 
   if [[ "${backup_timestamp}" == latest ]]; then
     selected=$(find "${backup_directory}" -maxdepth 1 -type f -printf '%f\n' \
-      | sed -n 's/^pg-dump-postgres-\([0-9][0-9]*\)$/\1 &/p' \
+      | sed -n 's/^pg-dump-postgres-\([0-9][0-9]*\)\(\.dmp\)\{0,1\}$/\1 &/p' \
       | sort -n \
       | tail -n 1 \
       | cut -d ' ' -f 2-)
   else
-    selected="pg-dump-postgres-${backup_timestamp}"
+    for candidate in \
+      "pg-dump-postgres-${backup_timestamp}" \
+      "pg-dump-postgres-${backup_timestamp}.dmp"; do
+      if [[ -f "${backup_directory}/${candidate}" ]]; then
+        selected=${candidate}
+        break
+      fi
+    done
   fi
 
   [[ -n "${selected}" && -f "${backup_directory}/${selected}" ]] \
     || fail "No matching local backup was found in ${backup_directory}."
 
   cp -- "${backup_directory}/${selected}" "${work_directory}/raw-backup.dmp"
-  source_backup_timestamp=${selected##*-}
+  source_backup_timestamp=$(backup_timestamp_from_name "${selected}")
   echo "Using local backup timestamp ${source_backup_timestamp}."
 }
 
 select_r2_backup() {
   local prefix=$1
-  local selected_key
+  local selected_key candidate backup_filename
 
   prefix=${prefix#/}
   prefix=${prefix%/}
@@ -166,12 +183,22 @@ select_r2_backup() {
       --query 'Contents[].Key' \
       --output text \
       | tr '\t' '\n' \
-      | sed -n 's#^\(.*\/\)\{0,1\}pg-dump-postgres-\([0-9][0-9]*\)$#\2 \0#p' \
+      | sed -n 's#^\(.*\/\)\{0,1\}pg-dump-postgres-\([0-9][0-9]*\)\(\.dmp\)\{0,1\}$#\2 \0#p' \
       | sort -n \
       | tail -n 1 \
       | cut -d ' ' -f 2-)
   else
-    selected_key="${prefix}/pg-dump-postgres-${backup_timestamp}"
+    for backup_filename in \
+      "pg-dump-postgres-${backup_timestamp}" \
+      "pg-dump-postgres-${backup_timestamp}.dmp"; do
+      candidate="${prefix}/${backup_filename}"
+      if r2_aws s3api head-object \
+        --bucket "${REMOTE_DEV_R2_BUCKET}" \
+        --key "${candidate}" >/dev/null 2>&1; then
+        selected_key=${candidate}
+        break
+      fi
+    done
   fi
 
   [[ -n "${selected_key}" ]] || fail "No matching R2 backup was found under the configured prefix."
@@ -181,7 +208,7 @@ select_r2_backup() {
     "$(r2_work_file "${work_directory}/raw-backup.dmp")" \
     --only-show-errors
 
-  source_backup_timestamp=${selected_key##*-}
+  source_backup_timestamp=$(backup_timestamp_from_name "${selected_key}")
   echo "Using R2 backup timestamp ${source_backup_timestamp}."
 }
 
