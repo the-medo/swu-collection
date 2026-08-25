@@ -15,5 +15,5 @@ command -v bun >/dev/null 2>&1 || {
 
 cd -- "${REPOSITORY_DIR}"
 bun install
-bun --cwd frontend install
+bun install --cwd frontend
 exec "${SCRIPT_DIR}/swubase-worktree-dev" setup
