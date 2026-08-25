@@ -1,9 +1,37 @@
 # SWUBASE agent guide
 
+## Repository overview
+
+| Area | Location | Stack |
+| --- | --- | --- |
+| Backend/API | `server/` | Hono, TypeScript, PostgreSQL, Drizzle |
+| Frontend | `frontend/` | React, TypeScript, Vite, TanStack |
+| Database schema/migrations | `server/db/schema/`, `drizzle/` | Drizzle, PostgreSQL |
+| Local worktree tooling | `scripts/worktree-dev/` | Bash, Docker, PostgreSQL 16 |
+| Server-only contributor-data producer | `scripts/remote-dev/` | Bash, PostgreSQL, R2/Coolify |
+
+## Instruction routing
+
+- Before implementing, reviewing, or validating a task, read
+  [`.agents/skills/SELECTION-MATRIX.md`](.agents/skills/SELECTION-MATRIX.md)
+  and load every repository skill that matches the changed workflow or files.
+  Do not load unrelated skills just because they are available.
+- Read domain documentation before changing a covered area:
+  `docs/migrations.md`, `docs/karabast-integration/integration-workflow.md`, or
+  `docs/preview-cards/preview-card-docs.md` as routed by the matrix.
+- When writing an implementation plan, name the matching repository skills so
+  the implementing agent can load them deliberately.
+
 ## Worktree development
 
-For Linux/WSL worktrees, use the supported lifecycle command rather than
-creating ad-hoc PostgreSQL containers:
+For a newly created Linux/WSL worktree, use the agent-neutral bootstrap:
+
+```bash
+scripts/worktree-dev/bootstrap-worktree.sh
+```
+
+For lifecycle operations, use the supported command rather than creating
+ad-hoc PostgreSQL containers:
 
 ```bash
 scripts/worktree-dev/swubase-worktree-dev setup
@@ -12,12 +40,15 @@ scripts/worktree-dev/swubase-worktree-dev status
 scripts/worktree-dev/swubase-worktree-dev down
 ```
 
-Use `refresh-db` only when replacing local development data is intentional.
-Use `down --purge-data` or `prune --yes` only after checking the exact labelled
-resources the command reports. Never remove unlabelled Docker resources.
+`setup` is idempotent. Use `refresh-db` only when replacing development data is
+intentional. Use `down --purge-data` or `prune --yes` only after checking the
+exact labelled resources reported by the command. Never remove unlabelled
+Docker resources.
 
 Generated `.swubase/`, `.env.worktree`, and `frontend/.env.worktree` files are
-local state. Do not commit or copy them between worktrees.
+local state. Do not commit or copy them between worktrees. The bootstrap does
+not copy `.env` or start the app; each agent/developer must deliberately provide
+a development-only `.env` before running `up`.
 
 ## Development data and external configuration
 
@@ -33,5 +64,9 @@ emails, OAuth traffic, or uploads.
 
 For changes to worktree tooling, run Bash syntax checks, exercise `status`, and
 verify that any Docker resource touched has the current `com.swubase.*` labels.
-For frontend/backend changes, run the focused build or test commands relevant to
-the changed area before handing off work.
+Run `scripts/worktree-dev/test-concurrent-worktrees.sh` only for worktree
+lifecycle, resource-ownership, restore, port, or cleanup changes.
+
+For backend database changes, run `bun run db-migrate` against the intended
+local database. For frontend changes, run `bun run --cwd frontend build` in
+addition to focused checks relevant to the changed behavior.
