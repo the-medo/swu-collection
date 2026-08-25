@@ -202,7 +202,7 @@ write_worktree_env_contents() {
     write_assignment VITE_BETTER_AUTH_URL "${frontend_url}"
     write_assignment VITE_BACKEND_URL "${backend_url}"
     write_assignment VITE_GAME_RESULTS_WS_URL "ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/game-results"
-    write_assignment VITE_LIVE_TOURNAMENT_WS_URL "ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/live-tournaments/{weekendId}"
+    write_assignment VITE_LIVE_TOURNAMENT_WS_URL "ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/live-tournaments/:weekendId"
     write_assignment SCREENSHOTTER_APP_BASE_URL "${frontend_url}"
     write_assignment DISCORD_TOURNAMENT_RESULTS_APP_BASE_URL "${frontend_url}"
   } > "${target_file}"
@@ -218,7 +218,7 @@ write_frontend_env_contents() {
     write_assignment VITE_BETTER_AUTH_URL "${frontend_url}"
     write_assignment VITE_BACKEND_URL "${backend_url}"
     write_assignment VITE_GAME_RESULTS_WS_URL "ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/game-results"
-    write_assignment VITE_LIVE_TOURNAMENT_WS_URL "ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/live-tournaments/{weekendId}"
+    write_assignment VITE_LIVE_TOURNAMENT_WS_URL "ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/live-tournaments/:weekendId"
   } > "${target_file}"
 }
 
@@ -728,7 +728,7 @@ start_frontend_service() {
       VITE_BETTER_AUTH_URL="http://localhost:${SWUBASE_FRONTEND_PORT}" \
       VITE_BACKEND_URL="http://127.0.0.1:${SWUBASE_BACKEND_PORT}" \
       VITE_GAME_RESULTS_WS_URL="ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/game-results" \
-      VITE_LIVE_TOURNAMENT_WS_URL="ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/live-tournaments/{weekendId}" \
+      VITE_LIVE_TOURNAMENT_WS_URL="ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/live-tournaments/:weekendId" \
       bun run dev -- --host 127.0.0.1 --port "${SWUBASE_FRONTEND_PORT}" --strictPort
   ) >"${log_file}" 2>&1 &
   printf '%s\n' "$!" > "${pid_file}"

@@ -14,13 +14,22 @@ The `link-confirm` and `refresh-token` endpoints are publicly accessible (protec
 ### 4. Plaintext linkToken in URL
 The `linkToken` is passed back to Karabast as a query parameter in the redirect URI. While common in OAuth2 (as `code`), it's a potential leak point if the user's browser history or logs are compromised.
 
+### 5. Non-atomic Token Consumption
+`link-confirm` checks a token and then clears it in a separate unconditional
+update. Concurrent confirmations can both pass and receive tokens before the
+last update wins. Refresh-token rotation has the analogous race. Use a
+transactional/conditional claim before relying on strict single-use semantics.
+
 ## Recommended Improvements
 
 ### 1. Link Token Expiration
 Currently, `linkToken` does not have an expiration time in the database. We should add a `link_token_expires_at` column and check it in `link-confirm`. A 10-15 minute window is usually sufficient.
 
-### 2. Revocation Endpoint
-Add an endpoint for Karabast (or Swubase) to explicitly revoke an integration. This should clear all tokens and set `revoked_at`.
+### 2. Retained Revocation/Audit Flow
+`POST /api/integration/unlink` already provides a destructive unlink by deleting
+the `user_integration` row. A future auditable revocation flow could instead
+clear tokens, retain the row, set `revoked_at`, and enforce that state on every
+integration-authenticated request.
 
 ### 3. Webhook Notifications
 If Swubase data changes (e.g., user deletes a deck), we could implement webhooks to notify Karabast if they have the appropriate scopes.

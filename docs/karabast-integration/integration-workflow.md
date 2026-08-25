@@ -14,8 +14,15 @@ The user clicks "Link Swubase" button on Karabast. Karabast redirects the user t
 
 ### 2. User Approval (Swubase Frontend)
 The user arrives at the Swubase `frontend/src/routes/_authenticated/settings/link/karabast/index.tsx` page.
-- Swubase displays a confirmation card showing the `karabast_user_id` and requested `scopes`.
+- Swubase displays a confirmation card showing the requested `scopes`. The
+  external user ID is currently accepted but not displayed.
 - The user clicks the "Approve Link" button.
+
+The current page casts its search parameters instead of validating them and
+redirects the plaintext link token to the supplied `redirect_uri`. Treat real
+Zod search validation and an allowlist tying redirect origins to the configured
+Karabast client as required security hardening, not as behavior already
+enforced.
 
 ### 3. Link Token Creation (Swubase Frontend -> Swubase Backend)
 The Swubase frontend calls Swubase endpoint `POST /api/integration/link-create` with the following payload:
@@ -37,34 +44,48 @@ The frontend redirects the user back to the `{REDIRECT_URI}` (probably `/api/swu
 - `karabast_user_id`: The external user ID (for double-check).
 
 ### 5. Link Approval (Karabast backend -> Swubase Backend)
-Karabast backend calls Swubase endpoint `POST /api/integration/link-confirm`:
-- `integration`: "karabast"
-- `clientId`: Swubase client ID.
-- `clientSecret`: Swubase client secret.
-- `linkToken`: The token received in the redirect.
-- `karabastUserId`: The external user ID.
+Karabast backend calls Swubase endpoint `POST /api/integration/link-confirm`
+with the current snake_case wire payload:
+- `integration`: `"karabast"`
+- `client_id`: Karabast's configured client ID.
+- `client_secret`: Karabast's configured client secret.
+- `external_user_id`: The Karabast user ID.
+- `link_token`: The single-use-intended token received in the redirect.
 
 The backend (Swubase) (`server/routes/integration/link-confirm/post.ts`):
 - Validates `clientId` and `clientSecret`.
-- Finds the `user_integration` record by `karabastUserId` and matching (decrypted) `linkToken`.
+- Resolves the integration ID, loads records matching that ID and
+  `externalUserId`, then decrypts each `linkTokenEnc` to compare it with the
+  supplied token. Encrypted token ciphertext cannot be queried directly because
+  encryption uses a random IV.
 - Generates `accessToken` and `refreshToken`.
 - Encrypts and stores the tokens, sets `linkedAt` timestamp, and clears the `linkTokenEnc`.
 - Returns the tokens to Karabast.
 
 ### 6. Token Refresh (Karabast -> Swubase Backend)
-When the access token expires, Karabast calls Swubase endpoint `POST /api/integration/refresh-token`:
-- `refreshToken`: The current refresh token.
-- `clientId`: Swubase client ID.
-- `clientSecret`: Swubase client secret.
-- `karabastUserId`: The external user ID.
+When the access token expires, Karabast calls Swubase endpoint
+`POST /api/integration/refresh-token` with the current snake_case wire payload:
+- `integration`: `"karabast"`
+- `refresh_token`: The current refresh token.
+- `client_id`: Karabast's configured client ID.
+- `client_secret`: Karabast's configured client secret.
+- `external_user_id`: The external Karabast user ID.
 
 The Swubase backend (`server/routes/integration/refresh-token/post.ts`):
 - Validates credentials.
-- Finds the record by `refreshTokenEnc` and `karabastUserId`.
+- Resolves the integration ID, loads records matching that ID and
+  `externalUserId`, then decrypts each `refreshTokenEnc` to compare it with the
+  supplied token.
 - Generates, encrypts, and stores new tokens.
 - Returns new tokens to Karabast.
 
+The route Zod schemas are the exact wire-contract source of truth. Keep this
+document synchronized with them whenever request fields change.
+
 ## Security
 - All tokens are encrypted using AES-256-CBC before storage in the database.
-- `link token` is one-time use and cleared after approval.
+- The normal confirmation path clears `linkTokenEnc` after approval. The claim
+  is not currently atomic, so concurrent confirmations can both pass the check;
+  make consumption conditional/transactional before treating the token as
+  strictly single-use. Refresh-token rotation has the same concurrency gap.
 - Client ID and Secret are required for server-to-server communication.

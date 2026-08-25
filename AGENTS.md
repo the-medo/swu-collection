@@ -6,7 +6,10 @@
 | --- | --- | --- |
 | Backend/API | `server/` | Hono, TypeScript, PostgreSQL, Drizzle |
 | Frontend | `frontend/` | React, TypeScript, Vite, TanStack |
+| Shared contracts | `types/`, `shared/` | Zod and TypeScript domain contracts |
+| Browser persistence | `frontend/src/dexie/` | Dexie/IndexedDB and cache synchronization |
 | Database schema/migrations | `server/db/schema/`, `drizzle/` | Drizzle, PostgreSQL |
+| Integrations/background work | `server/lib/`, `server/crons/`, `server/screenshotter/` | Discord, Karabast, WebSockets, Coolify jobs, Playwright |
 | Local worktree tooling | `scripts/worktree-dev/` | Bash, Docker, PostgreSQL 16 |
 | Server-only contributor-data producer | `scripts/remote-dev/` | Bash, PostgreSQL, R2/Coolify |
 
@@ -16,9 +19,9 @@
   [`.agents/skills/SELECTION-MATRIX.md`](.agents/skills/SELECTION-MATRIX.md)
   and load every repository skill that matches the changed workflow or files.
   Do not load unrelated skills just because they are available.
-- Read domain documentation before changing a covered area:
-  `docs/migrations.md`, `docs/karabast-integration/integration-workflow.md`, or
-  `docs/preview-cards/preview-card-docs.md` as routed by the matrix.
+- Follow the matching skill's required source documents before changing a
+  covered workflow. The matrix routes migrations, Karabast, and preview-card
+  work to their detailed documentation.
 - When writing an implementation plan, name the matching repository skills so
   the implementing agent can load them deliberately.
 
@@ -67,6 +70,8 @@ verify that any Docker resource touched has the current `com.swubase.*` labels.
 Run `scripts/worktree-dev/test-concurrent-worktrees.sh` only for worktree
 lifecycle, resource-ownership, restore, port, or cleanup changes.
 
-For backend database changes, run `bun run db-migrate` against the intended
-local database. For frontend changes, run `bun run --cwd frontend build` in
-addition to focused checks relevant to the changed behavior.
+Use `swubase-validation` plus the changed workflow's specialized skill to pick
+checks. For backend database changes, run `bun run db-migrate` against the
+intended local database. For frontend changes, run
+`bun run --cwd frontend build` in addition to focused checks relevant to the
+changed behavior.

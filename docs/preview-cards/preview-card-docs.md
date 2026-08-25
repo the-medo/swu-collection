@@ -10,7 +10,9 @@ The key rule is:
 
 ## Data Model
 
-Preview rows are stored in the `preview_card` table, defined in `server/db/schema/preview_card.ts` and created by `drizzle/0053_long_squadron_supreme.sql`.
+Preview rows are stored in the `preview_card` table, defined in
+`server/db/schema/preview_card.ts` and created by
+`drizzle/0054_pink_jack_power.sql`.
 
 Columns:
 
