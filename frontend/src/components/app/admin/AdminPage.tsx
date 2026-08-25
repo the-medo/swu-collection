@@ -12,13 +12,14 @@ import { SpecialActionsPage } from '@/components/app/admin/SpecialActionsPage';
 import { CardPricePairingAdministrationPage } from '@/components/app/admin/CardPricesPage/CardPricePairingAdministrationPage.tsx';
 import VariantCheckerPage from '@/components/app/admin/VariantCheckerPage/VariantCheckerPage.tsx';
 import { PreviewCardsPage } from '@/components/app/admin/PreviewCardsPage.tsx';
+import { TournamentResultsPage } from '@/components/app/admin/TournamentResultsPage/TournamentResultsPage.tsx';
 import { Helmet } from 'react-helmet-async';
 import { Route } from '@/routes/_authenticated.admin';
 
 export function AdminPage() {
   const hasRole = useRole();
   const isAdmin = hasRole('admin');
-  const { page } = useSearch({ from: '/_authenticated/admin' });
+  const { page, tournamentId, view, round } = useSearch({ from: '/_authenticated/admin' });
   const navigate = useNavigate({ from: Route.fullPath });
 
   // Redirect if not an admin
@@ -51,6 +52,7 @@ export function AdminPage() {
             <TabsTrigger value="card-prices">Card Prices</TabsTrigger>
             <TabsTrigger value="variant-checker">Variant Checker</TabsTrigger>
             <TabsTrigger value="preview-cards">Preview Cards</TabsTrigger>
+            <TabsTrigger value="tournament-results">Tournament Results</TabsTrigger>
           </TabsList>
 
           <TabsContent value="metas">
@@ -120,6 +122,13 @@ export function AdminPage() {
             <Card>
               <CardContent className="p-4">
                 <PreviewCardsPage />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="tournament-results">
+            <Card>
+              <CardContent className="p-4">
+                <TournamentResultsPage tournamentId={tournamentId} view={view} round={round} />
               </CardContent>
             </Card>
           </TabsContent>

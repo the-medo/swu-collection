@@ -13,7 +13,9 @@ import {
   Send,
   ShieldCheck,
   Trash2,
+  TableProperties,
 } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 import EditTournamentDialog from '@/components/app/dialogs/EditTournamentDialog.tsx';
 import DeleteTournamentDialog from '@/components/app/dialogs/DeleteTournamentDialog.tsx';
 import ImportMeleeTournamentDialog from '@/components/app/dialogs/ImportMeleeTournamentDialog.tsx';
@@ -263,6 +265,20 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
 
                       {canAccessAdmin && (
                         <>
+                          <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link
+                              to="/admin"
+                              search={{
+                                page: 'tournament-results',
+                                tournamentId,
+                                view: 'standings',
+                              }}
+                            >
+                              <TableProperties className="h-4 w-4" />
+                              Tournament results
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="cursor-pointer"
                             disabled={!tournament.imported || sendDiscordResults.isPending}

@@ -9,6 +9,9 @@ import { previewCardsIdPatchRoute } from './admin/preview-cards/_id/patch.ts';
 import { previewCardsIdDeleteRoute } from './admin/preview-cards/_id/delete.ts';
 import { previewCardsIdImagePostRoute } from './admin/preview-cards/_id/image/post.ts';
 import { previewCardsIdMigratePostRoute } from './admin/preview-cards/_id/migrate/post.ts';
+import { adminTournamentIdStandingsGetRoute } from './admin/tournaments/_id/standings/get.ts';
+import { adminTournamentIdStandingPatchRoute } from './admin/tournaments/_id/standings/_deckId/patch.ts';
+import { adminTournamentIdMatchesGetRoute } from './admin/tournaments/_id/matches/get.ts';
 import type { AuthExtension } from '../auth/auth.ts';
 
 export const adminRoute = new Hono<AuthExtension>()
@@ -21,4 +24,7 @@ export const adminRoute = new Hono<AuthExtension>()
   .route('/preview-cards/:id', previewCardsIdPatchRoute)
   .route('/preview-cards/:id', previewCardsIdDeleteRoute)
   .route('/preview-cards/:id/image', previewCardsIdImagePostRoute)
-  .route('/preview-cards/:id/migrate', previewCardsIdMigratePostRoute);
+  .route('/preview-cards/:id/migrate', previewCardsIdMigratePostRoute)
+  .route('/tournaments/:tournamentId/standings', adminTournamentIdStandingsGetRoute)
+  .route('/tournaments/:tournamentId/standings/:deckId', adminTournamentIdStandingPatchRoute)
+  .route('/tournaments/:tournamentId/matches', adminTournamentIdMatchesGetRoute);

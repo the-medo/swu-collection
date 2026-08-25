@@ -7,8 +7,10 @@ export {
   type TournamentMatchesStore,
   getStoredTournamentDecks,
   storeTournamentDecks,
+  deleteStoredTournamentDecks,
   getStoredTournamentMatches,
   storeTournamentMatches,
+  deleteStoredTournamentMatches,
   isDataStale,
 } from './tournament';
 
