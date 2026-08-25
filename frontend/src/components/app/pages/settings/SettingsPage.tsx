@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.t
 import CollectionAndWantlistSettings from '@/components/app/pages/settings/CollectionAndWantlistSettings.tsx';
 import UserSettings from '@/components/app/pages/settings/UserSettings.tsx';
 import WatchedPlayersSettings from '@/components/app/pages/settings/WatchedPlayersSettings.tsx';
+import DevelopmentSettings from '@/components/app/pages/settings/DevelopmentSettings.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { Route } from '@/routes/_authenticated/settings';
@@ -35,6 +36,9 @@ export function SettingsPage() {
             <TabsTrigger value="watched-players" className="flex-1 sm:flex-none">
               Watched players
             </TabsTrigger>
+            <TabsTrigger value="development" className="flex-1 sm:flex-none">
+              Development
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="collections-and-wantlists">
@@ -55,6 +59,13 @@ export function SettingsPage() {
             <Card>
               <CardContent className="p-4">
                 <WatchedPlayersSettings />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="development">
+            <Card>
+              <CardContent className="p-4">
+                <DevelopmentSettings />
               </CardContent>
             </Card>
           </TabsContent>

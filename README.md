@@ -39,6 +39,19 @@ For local smoke checks without R2 upload:
 bun run screenshotter:tournament -- --tournament-id <uuid> --skip-upload --output-dir .tmp/screenshots/<uuid>
 ```
 
+## Sanitized contributor database backup
+
+The server-only [`create-sanitized-db-backup.sh`](scripts/remote-dev/create-sanitized-db-backup.sh) script creates a contributor-safe database dump from a Coolify backup. Its configuration belongs in the server's untracked `.env`; see `.env.example` for the required variables.
+
+Its reviewed baseline rules are in `scripts/remote-dev/sql/`; they remove credentials and sensitive integration fields, retain only opted-in user data, and fail the export if privacy assertions do not pass. Run it from the server with an explicit source:
+
+```bash
+./scripts/remote-dev/create-sanitized-db-backup.sh --source local --timestamp latest
+./scripts/remote-dev/create-sanitized-db-backup.sh --source r2 --timestamp 1786676402
+```
+
+The temporary database is never assigned a host port. On success or failure, the script removes the temporary container and all local dump files.
+
 ## Contribution
 We welcome contributions from the community! Whether it's fixing bugs, adding features, or improving documentation. See our [Contributing Guide](CONTRIBUTING.md) for more information.
 

@@ -9,15 +9,27 @@
 1. Docker installed (used only for local DB, but you can use something else)
 2. bun installed
 
-### Start database (postgres in docker):
-1. `docker pull postgres:16-alpine`
-2. `docker run -d --name swubase-postgres -e POSTGRES_PASSWORD=password -p 5442:5432 postgres:16-alpine`
+### Start database (Postgres in Docker)
+
+Place `pg-dump.dmp` in the repository root, then run the setup script for your platform:
+
+```bash
+# Linux or macOS
+./setup-local-db.sh
+```
+
+```powershell
+# Windows (PowerShell)
+.\setup-local-db.ps1
+```
+
+The script recreates the `swubase_postgres_local` database and restores the dump into it.
 
 
 ### Create .env file
 Currently it is possible to sign in only using github / google, so you will need cliend id/secrets for at least one of them, even in development:
 ```env
-DATABASE_URL=postgresql://postgres:password@localhost:5442/postgres
+DATABASE_URL=postgresql://postgres:password@localhost:5442/swubase_postgres_local
 BETTER_AUTH_SECRET=___random_string
 BETTER_AUTH_URL=http://localhost:5173
 VITE_BETTER_AUTH_URL=http://localhost:5173
