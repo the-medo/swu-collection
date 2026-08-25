@@ -32,6 +32,10 @@ export async function storeTournamentDecks(
   });
 }
 
+export async function deleteStoredTournamentDecks(tournamentId: string): Promise<void> {
+  await db.tournamentDecks.delete(tournamentId);
+}
+
 export async function getStoredTournamentMatches(
   tournamentId: string,
 ): Promise<TournamentMatchesStore | undefined> {
@@ -47,6 +51,10 @@ export async function storeTournamentMatches(
     matches,
     fetchedAt: new Date(),
   });
+}
+
+export async function deleteStoredTournamentMatches(tournamentId: string): Promise<void> {
+  await db.tournamentMatches.delete(tournamentId);
 }
 
 // Helper to check if data is stale compared to tournament update time
