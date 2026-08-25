@@ -1,0 +1,58 @@
+# Deploy this file as a separate, private Docker Compose Service in the existing
+# SWUBASE Coolify project. Do not assign either service a domain or a port.
+#
+# Set REMOTE_DEV_RAW_BACKUP_HOST_DIR only in Coolify's environment-variable UI.
+# It is intentionally not present in this repository because it identifies the
+# server-only location of production database backups.
+#
+# Add a Coolify Scheduled Task targeting `sanitizer` with this command:
+# /app/scripts/remote-dev/create-sanitized-db-backup.sh --source local --timestamp latest
+services:
+  sanitizer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["sh", "-c", "exec sleep infinity"]
+    depends_on:
+      clean-postgres:
+        condition: service_healthy
+    environment:
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:?Set in Coolify}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:?Set in Coolify}
+      R2_ENDPOINT: ${R2_ENDPOINT:?Set in Coolify}
+      REMOTE_DEV_R2_BUCKET: swu-images
+      REMOTE_DEV_LOCAL_BACKUP_DIR: /backups/raw
+      REMOTE_DEV_SANITIZED_R2_KEY: data/development/sanitized/swubase-clean-db.dmp
+      REMOTE_DEV_SANITIZED_MANIFEST_R2_KEY: data/development/sanitized/swubase-clean-db.manifest.json
+      REMOTE_DEV_SANITIZED_PUBLIC_BASE_URL: https://images.swubase.com
+      REMOTE_DEV_SANITIZED_RETENTION_DAYS: "14"
+      REMOTE_DEV_R2_REGION: auto
+      REMOTE_DEV_SANITIZE_SQL_DIR: scripts/remote-dev/sql
+      REMOTE_DEV_CLEAN_DB_HOST: clean-postgres
+      REMOTE_DEV_CLEAN_DB_PORT: "5432"
+      REMOTE_DEV_CLEAN_DB_NAME: swubase_clean
+      REMOTE_DEV_CLEAN_DB_USER: postgres
+      REMOTE_DEV_CLEAN_DB_PASSWORD: ${CLEAN_POSTGRES_PASSWORD:?Set in Coolify}
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ${REMOTE_DEV_RAW_BACKUP_HOST_DIR:?Set in Coolify}
+        target: /backups/raw
+        read_only: true
+    # No Docker socket: the task uses PostgreSQL and AWS clients directly.
+
+  clean-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: ${CLEAN_POSTGRES_PASSWORD:?Set in Coolify}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    volumes:
+      - clean-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  clean-postgres-data:

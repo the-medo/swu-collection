@@ -14,6 +14,13 @@ export type AuthExtension = {
 };
 
 export const auth = betterAuth({
+  advanced: process.env.BETTER_AUTH_COOKIE_PREFIX
+    ? {
+        // Cookies are scoped to a host rather than a port. Worktree setup gives
+        // every localhost instance its own prefix so their sessions cannot mix.
+        cookiePrefix: process.env.BETTER_AUTH_COOKIE_PREFIX,
+      }
+    : undefined,
   plugins: [
     adminPlugin({
       ac,

@@ -52,6 +52,29 @@ Its reviewed baseline rules are in `scripts/remote-dev/sql/`; they remove creden
 
 The temporary database is never assigned a host port. On success or failure, the script removes the temporary container and all local dump files.
 
+For a Coolify-managed scheduled job, deploy
+[`scripts/remote-dev/docker-compose.coolify.yml`](scripts/remote-dev/docker-compose.coolify.yml)
+as a separate private Compose Service. Configure the real backup host path and
+R2 write credentials only in Coolify, then target the `sanitizer` container
+with the command documented in that Compose file. The job deliberately has no
+Docker-socket mount, domain, or published port.
+
+## Parallel local worktrees
+
+Linux/WSL worktrees can run independently, each with its own labelled PostgreSQL
+container, volume, ports, auth-cookie namespace, and frontend/backend URLs:
+
+```bash
+scripts/worktree-dev/swubase-worktree-dev setup
+scripts/worktree-dev/swubase-worktree-dev up
+scripts/worktree-dev/swubase-worktree-dev status
+```
+
+The first setup uses an ignored local `pg-dump.dmp` when available; otherwise it
+downloads the public sanitized dump through a checksum-verified manifest. See
+[`scripts/worktree-dev/README.md`](scripts/worktree-dev/README.md) for refresh,
+cleanup, public-data boundaries, and Codex Desktop setup.
+
 ## Contribution
 We welcome contributions from the community! Whether it's fixing bugs, adding features, or improving documentation. See our [Contributing Guide](CONTRIBUTING.md) for more information.
 

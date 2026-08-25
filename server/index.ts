@@ -3,7 +3,7 @@ import { migrateSwuBase } from './db/migrate.ts';
 
 const server = Bun.serve({
   port: process.env.PORT || 3010,
-  hostname: '0.0.0.0',
+  hostname: process.env.HOST || '0.0.0.0',
   fetch: app.fetch,
   websocket: bunWebsocket,
 });

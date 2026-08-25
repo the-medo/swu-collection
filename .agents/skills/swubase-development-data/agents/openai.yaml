@@ -1,0 +1,3 @@
+interface:
+  display_name: "Swubase Development Data"
+  short_description: "Safely handle sanitized development data"

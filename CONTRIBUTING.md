@@ -11,11 +11,15 @@
 
 ### Start database (Postgres in Docker)
 
-Place `pg-dump.dmp` in the repository root, then run the setup script for your platform:
+On Linux or WSL, use the worktree-aware setup command. It creates a labelled
+PostgreSQL container, volume, and ports unique to this checkout. Place an
+ignored `pg-dump.dmp` in the repository root, or let the command download the
+checksum-verified public sanitized dump:
 
 ```bash
-# Linux or macOS
+# Linux or WSL
 ./setup-local-db.sh
+# or: scripts/worktree-dev/swubase-worktree-dev setup
 ```
 
 ```powershell
@@ -23,7 +27,13 @@ Place `pg-dump.dmp` in the repository root, then run the setup script for your p
 .\setup-local-db.ps1
 ```
 
-The script recreates the `swubase_postgres_local` database and restores the dump into it.
+The Linux/WSL command keeps a healthy database on repeated runs. Use
+`scripts/worktree-dev/swubase-worktree-dev refresh-db` only when you explicitly
+want to replace it. See [`scripts/worktree-dev/README.md`](scripts/worktree-dev/README.md)
+for concurrent worktrees, status, app URLs, and cleanup.
+
+The current PowerShell script remains a single-checkout setup helper; concurrent
+worktree isolation is currently supported on Linux/WSL.
 
 
 ### Create .env file
@@ -53,3 +63,6 @@ To run server:
 To run frontend, go to `/frontend` and do the same:
 1. `bun install`
 2. `bun dev`
+
+For an isolated worktree, `scripts/worktree-dev/swubase-worktree-dev up` starts
+both processes with the generated per-worktree ports and URLs.
