@@ -16,6 +16,16 @@ export const zTournamentStandingParams = zTournamentIdParams.extend({
   deckId: z.uuid(),
 });
 
+export const zTournamentRoundParams = zTournamentIdParams.extend({
+  round: z.coerce.number().int().nonnegative(),
+});
+
+export const zTournamentStandingMoveBody = z
+  .object({
+    direction: z.enum(['up', 'down']),
+  })
+  .strict();
+
 export const zTournamentStandingUpdateBody = z
   .object({
     placement: z.number().int().min(1).nullable(),

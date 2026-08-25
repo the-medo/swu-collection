@@ -7,7 +7,7 @@ Melee.gg tournaments are occasionally left unfinished, so their final standings 
 Add an admin-only tournament-results page, opened from the existing **Admin** menu in a tournament's detail header. It has two subpages:
 
 1. **Standings** — show every `tournament_deck` row for the tournament and edit one row at a time.
-2. **Rounds** — select a tournament round and inspect every `tournament_match` row in that round. This view is read-only for now.
+2. **Rounds** — select a tournament round, inspect every `tournament_match` row in that round, and apply that round's recorded results to the tournament standings.
 
 The only editable standing fields are:
 
@@ -105,6 +105,15 @@ Validation policy:
 
 On a successful save, close the dialog, refresh the admin table, update/evict the relevant normal tournament caches, and show an exact success or partial-success message.
 
+Each placement cell also has small **up** and **down** controls. Moving a standing swaps its placement with the standing at the immediately adjacent numeric placement; it does not renumber the rest of the table.
+
+- Moving placement 3 down swaps it with the unique standing at placement 4.
+- Moving placement 3 up swaps it with the unique standing at placement 2.
+- A placement of 1 has no up control; `null`, missing-adjacent, and ambiguous duplicate placements cannot be moved with arrows.
+- Duplicate placements remain valid for manual editing. The arrow control is intentionally unavailable when either side of the proposed swap is not unique, because there is no deterministic single row to exchange.
+
+Whenever a numeric placement changes—whether through the editor or a swap—the linked decklist name is updated in the same transaction. Imported names begin with `#<placement>`, so the system replaces only that leading decimal prefix and preserves the tournament name and the remaining deck name. Clearing a placement to `null` leaves the decklist name unchanged because an unknown placement has no valid prefix.
+
 ### Rounds subpage
 
 Load all matches for this one tournament from the protected admin endpoint, derive the distinct round numbers, and render a single-select toggle group ordered numerically. The newest/highest round is selected by default; `round` in the URL keeps an explicit selected round after refresh. If it is absent or no longer valid, use the highest available round.
@@ -117,7 +126,21 @@ For the selected round, show a read-only match table with enough raw information
 - normalized result in a human-readable form (player-one win, draw, or player-two win);
 - BYE state.
 
-No match edits, no match deletion, no manual round creation, and no recalculation from matches are part of this release.
+The selected round also has an **Apply all matches** action. It applies each match result to its linked `tournament_deck` row in one server transaction; it never alters the `tournament_match` rows or the placement column.
+
+For each player in the selected round:
+
+| Match result | Standing update                    |
+| ------------ | ---------------------------------- |
+| Win          | `recordWin + 1`, `points + 3`      |
+| Draw         | `recordDraw + 1`, `points + 1`     |
+| Loss         | `recordLose + 1`, points unchanged |
+
+The stored result is from player one's perspective (`3` win, `1` draw, `0` loss); player two receives the inverse result. A BYE has only player one, so only that standing is changed. The operation is additive and must be confirmed in the UI because applying the same round again intentionally adds the round a second time; this first release does not introduce a round-application history or an undo workflow.
+
+The server verifies that every player referenced by the selected round has a matching `tournament_deck` row for this tournament before writing any changes. If the import is incomplete, it rejects the request rather than partially applying a round.
+
+No match edits, match deletion, manual round creation, or recalculation of `tournament_match` data are part of this release.
 
 ## Boundaries and explicit non-goals
 
@@ -126,8 +149,9 @@ No match edits, no match deletion, no manual round creation, and no recalculatio
 - No automatic attempt to manufacture missing `tournament_deck` rows. The page only edits rows already produced by import.
 - No reconciliation between manually corrected standings and match results. An unfinished event can legitimately have final standings that do not follow the last recorded match data.
 - No audit-history table, bulk editor, CSV import/export, or rollback UI in this first version.
-- No match mutations in the rounds view.
+- No mutations to `tournament_match` rows in the rounds view; **Apply all matches** updates only linked standings.
+- No persistent round-application history, automatic de-duplication, or undo workflow. The confirmation dialog makes the additive behavior explicit.
 
 ## Completion criteria
 
-The feature is complete when an administrator can open any tournament from its detail Admin menu, inspect every imported standing, correct the five allowed statistics for exactly one standing (including a duplicate placement), inspect any available round's matches without mutation controls, and see the correction reflected in regular tournament views and affected derived statistics.
+The feature is complete when an administrator can open any tournament from its detail Admin menu, inspect every imported standing, correct the five allowed statistics for exactly one standing (including a duplicate placement), swap unambiguous adjacent placements with arrows, apply one selected round's match results to standings, and see the correction reflected in regular tournament views and affected derived statistics.

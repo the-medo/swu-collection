@@ -19,11 +19,13 @@
 
 Add a focused route group below `/api/admin/tournaments/:tournamentId` and register it in `server/routes/admin.ts`. Follow the existing Hono and `requireAdmin()` conventions used by the preview-card endpoints.
 
-| Endpoint                                                       | Purpose                            | Response / mutation rules                                                                                                                                                                                  |
-| -------------------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/admin/tournaments/:tournamentId/standings`           | Load all standings for the page.   | Verify admin and tournament existence. Return each `tournament_deck` row plus minimal read-only linked-deck context. Order by placement ascending with nulls last, then points descending and player name. |
-| `PATCH /api/admin/tournaments/:tournamentId/standings/:deckId` | Correct one standing.              | Verify admin, UUID parameters, and that the composite-key row belongs to the URL tournament. Accept only the five editable fields.                                                                         |
-| `GET /api/admin/tournaments/:tournamentId/matches`             | Load rows for the round inspector. | Verify admin and tournament existence. Return all rows ordered by round and a stable in-round order. No mutation endpoint is added.                                                                        |
+| Endpoint                                                                | Purpose                                | Response / mutation rules                                                                                                                                                                                  |
+| ----------------------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/admin/tournaments/:tournamentId/standings`                    | Load all standings for the page.       | Verify admin and tournament existence. Return each `tournament_deck` row plus minimal read-only linked-deck context. Order by placement ascending with nulls last, then points descending and player name. |
+| `PATCH /api/admin/tournaments/:tournamentId/standings/:deckId`          | Correct one standing.                  | Verify admin, UUID parameters, and that the composite-key row belongs to the URL tournament. Accept only the five editable fields.                                                                         |
+| `GET /api/admin/tournaments/:tournamentId/matches`                      | Load rows for the round inspector.     | Verify admin and tournament existence. Return all rows ordered by round and a stable in-round order. No mutation endpoint is added.                                                                        |
+| `POST /api/admin/tournaments/:tournamentId/rounds/:round/apply-matches` | Apply one selected round to standings. | Verify admin, integer round, tournament, and all referenced standings. Atomically increment W/L/D/points and leave placement untouched.                                                                    |
+| `POST /api/admin/tournaments/:tournamentId/standings/:deckId/move`      | Swap one adjacent placement.           | Verify admin, the composite-key row, an `up` or `down` direction, and that both positions are uniquely occupied before swapping.                                                                           |
 
 Suggested server layout:
 
@@ -46,6 +48,9 @@ The exact folder names may follow the repository's established parameter naming 
 4. Use `where(and(eq(tournamentDeck.tournamentId, tournamentId), eq(tournamentDeck.deckId, deckId)))` for the update. A row that does not exist under that exact tournament returns 404; it must never update a row from another tournament.
 5. Select only the linked-deck fields needed for context (for example ID, name, leader/base IDs) rather than pulling all deck-card data.
 6. Return clear `401`, `403`, `404`, and validation `400` responses. The frontend should display the API message when it is safe to do so.
+7. The new round-application endpoint uses `tournament_match.p1DeckId` and `p2DeckId`, not player names. For result `3 | 1 | 0`, player one receives win/draw/loss and player two receives loss/draw/win. The transaction rejects the complete request with a conflict when a required linked standing is absent; it never makes a partial application.
+8. The new placement-move endpoint accepts a `direction` of `up` or `down`. It must not renumber a range of rows. It swaps exactly two rows and returns a conflict when the source placement is null/duplicated, the target placement is missing, or the target placement is duplicated.
+9. Extract a small helper that replaces only the leading `#<decimal>` prefix of an imported decklist name. Use it in the manual standing update and placement-swap transactions so all numerically changed placements keep their decklist names in sync; leaving placement blank keeps the existing name.
 
 ## 3. Preserve cache validity and statistics integrity
 
@@ -105,8 +110,20 @@ The parent timestamp update is essential: normal tournament deck/match hooks use
    - game W–L–D;
    - a human-readable result decoded from `0 | 1 | 3`;
    - a BYE badge/indicator.
-4. Keep round, match ID, deck IDs, and raw result data available in row data/debugging but do not surface edit actions, inputs, save controls, or destructive controls.
-5. For a tournament without matches, render a no-rounds empty state and no disabled phantom toggles.
+4. Add an **Apply all matches** button for the currently selected round, with a confirmation dialog that states the operation is additive and leaves placement unchanged.
+   - disable it while the request is pending;
+   - show how many matches/standings were applied on success;
+   - invalidate the same tournament, standings, and Dexie caches as a manual standing save;
+   - show server-side data-integrity errors without making any optimistic changes.
+5. Keep round, match ID, deck IDs, and raw result data available in row data/debugging but do not surface match-edit inputs, match save controls, or destructive match controls.
+6. For a tournament without matches, render a no-rounds empty state and no disabled phantom toggles.
+
+## 5a. Add placement movement controls
+
+1. Add compact up/down buttons beside the standings placement text.
+2. Determine button availability from the loaded standings: the current placement and the adjacent placement must each occur exactly once. Keep the server validation authoritative in case of stale data or concurrent requests.
+3. Add an admin mutation calling the move endpoint. Disable both controls on the moving row while it is pending.
+4. On success, use the existing standing-mutation cache invalidation and derived-stat refresh behavior. On conflict, reload/display the current table state and show the API message.
 
 ## 6. Type, migration, and generated-route work
 

@@ -1,5 +1,5 @@
-import { FormEvent, useState } from 'react';
-import { Loader2, Pencil } from 'lucide-react';
+import { FormEvent, useMemo, useState } from 'react';
+import { ArrowDown, ArrowUp, Loader2, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import {
   Dialog,
@@ -22,8 +22,10 @@ import {
 import { toast } from '@/hooks/use-toast.ts';
 import {
   type AdminTournamentStanding,
+  type TournamentStandingMoveDirection,
   type TournamentStandingUpdate,
   useAdminTournamentStandings,
+  useMoveAdminTournamentStanding,
   useUpdateAdminTournamentStanding,
 } from '@/api/admin/tournamentResults.ts';
 
@@ -87,9 +89,21 @@ function getDeckLabel(standing: AdminTournamentStanding) {
 export function TournamentStandingsPanel({ tournamentId }: TournamentStandingsPanelProps) {
   const { data, error, isLoading } = useAdminTournamentStandings(tournamentId);
   const updateStanding = useUpdateAdminTournamentStanding(tournamentId);
+  const moveStanding = useMoveAdminTournamentStanding(tournamentId);
   const [selectedStanding, setSelectedStanding] = useState<AdminTournamentStanding>();
   const [formValues, setFormValues] = useState<StandingFormValues>();
   const [formError, setFormError] = useState<string>();
+  const standings = data?.data;
+  const placementCounts = useMemo(() => {
+    const counts = new Map<number, number>();
+    for (const standing of standings ?? []) {
+      const placement = standing.tournamentDeck.placement;
+      if (placement !== null) {
+        counts.set(placement, (counts.get(placement) ?? 0) + 1);
+      }
+    }
+    return counts;
+  }, [standings]);
 
   const openEditor = (standing: AdminTournamentStanding) => {
     setSelectedStanding(standing);
@@ -140,6 +154,46 @@ export function TournamentStandingsPanel({ tournamentId }: TournamentStandingsPa
     }
   };
 
+  const canMoveStanding = (
+    standing: AdminTournamentStanding,
+    direction: TournamentStandingMoveDirection,
+  ) => {
+    const placement = standing.tournamentDeck.placement;
+    if (placement === null || (direction === 'up' && placement <= 1)) return false;
+
+    const adjacentPlacement = direction === 'up' ? placement - 1 : placement + 1;
+    return placementCounts.get(placement) === 1 && placementCounts.get(adjacentPlacement) === 1;
+  };
+
+  const handleMove = async (
+    standing: AdminTournamentStanding,
+    direction: TournamentStandingMoveDirection,
+  ) => {
+    try {
+      const result = await moveStanding.mutateAsync({
+        deckId: standing.tournamentDeck.deckId,
+        direction,
+      });
+
+      if (result.warnings.length > 0) {
+        toast({
+          title: 'Placement swapped with warnings',
+          description: result.warnings.join(' '),
+          variant: 'destructive',
+        });
+      } else {
+        toast({ title: 'Placement swapped' });
+      }
+    } catch (error) {
+      toast({
+        title: 'Could not swap placement',
+        description:
+          error instanceof Error ? error.message : 'Failed to move the tournament standing.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="rounded-md border p-6 text-sm text-muted-foreground">Loading standings…</div>
@@ -154,9 +208,9 @@ export function TournamentStandingsPanel({ tournamentId }: TournamentStandingsPa
     );
   }
 
-  const standings = data?.data ?? [];
+  const visibleStandings = standings ?? [];
 
-  if (standings.length === 0) {
+  if (visibleStandings.length === 0) {
     return (
       <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
         This tournament has no imported standings to manage.
@@ -179,11 +233,41 @@ export function TournamentStandingsPanel({ tournamentId }: TournamentStandingsPa
             </TableRow>
           </TableHeader>
           <TableBody>
-            {standings.map(standing => {
+            {visibleStandings.map(standing => {
               const row = standing.tournamentDeck;
+              const canMoveUp = canMoveStanding(standing, 'up');
+              const canMoveDown = canMoveStanding(standing, 'down');
+              const movementDisabledReason =
+                'Adjacent placements must each belong to exactly one standing.';
               return (
                 <TableRow key={row.deckId}>
-                  <TableCell className="font-medium">{row.placement ?? '—'}</TableCell>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-1">
+                      <span>{row.placement ?? '—'}</span>
+                      <div className="flex flex-col">
+                        <Button
+                          variant="ghost"
+                          size="iconXSmall"
+                          aria-label={`Move ${getDeckLabel(standing)} up one placement`}
+                          title={canMoveUp ? 'Move up' : movementDisabledReason}
+                          disabled={!canMoveUp || moveStanding.isPending}
+                          onClick={() => void handleMove(standing, 'up')}
+                        >
+                          <ArrowUp />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="iconXSmall"
+                          aria-label={`Move ${getDeckLabel(standing)} down one placement`}
+                          title={canMoveDown ? 'Move down' : movementDisabledReason}
+                          disabled={!canMoveDown || moveStanding.isPending}
+                          onClick={() => void handleMove(standing, 'down')}
+                        >
+                          <ArrowDown />
+                        </Button>
+                      </div>
+                    </div>
+                  </TableCell>
                   <TableCell>{row.meleePlayerUsername || 'Unknown player'}</TableCell>
                   <TableCell className="max-w-64 truncate" title={getDeckLabel(standing)}>
                     {getDeckLabel(standing)}
