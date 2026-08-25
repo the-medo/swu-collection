@@ -1,6 +1,6 @@
 ---
 name: swubase-browser-storage
-description: Change SWUBASE Dexie or localStorage schemas, browser caches, offline fallbacks, sync cursors, persisted user settings, and Query-cache synchronization.
+description: Change SWUBASE Dexie or localStorage schemas, browser caches, offline fallbacks, sync cursors, browser-side setting copies, and Query-cache synchronization.
 ---
 
 # SWUBASE browser storage
@@ -30,17 +30,19 @@ the Query cache and persistent cache deliberately.
 
 Use localStorage only for small browser-only UI preferences or sync cursors.
 Namespace stable keys, parse defensively, catch unavailable-storage errors, and
-remove obsolete keys. Cross-device/account preferences belong in
-`shared/lib/userSettings.ts` with a default and should flow through the existing
-user-setting hooks. Large or queryable structured data belongs in Dexie. Choose
-the boundary deliberately instead of creating a parallel store for an existing
-setting.
+remove obsolete keys. Cross-device/account preferences belong to the
+`swubase-user-settings` workflow and flow through
+`shared/lib/userSettings.ts` plus the existing user-setting hooks. Large or
+queryable structured data belongs in Dexie. Choose the boundary deliberately
+instead of creating a parallel store for an existing setting.
 
 Browser storage is origin-scoped, so different worktree frontend ports have
 separate IndexedDB and localStorage.
 
-Load `swubase-frontend-api` for server synchronization and
-`swubase-preview-cards` when changing the split official/preview card-list cache.
+Load `swubase-frontend-api` for server synchronization,
+`swubase-user-settings` for the account-synced settings contract, and
+`swubase-card-catalog` plus `swubase-preview-cards` when changing the split
+official/preview card-list cache.
 
 ## Validation
 

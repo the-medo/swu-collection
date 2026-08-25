@@ -7,6 +7,7 @@
 | Backend/API | `server/` | Hono, TypeScript, PostgreSQL, Drizzle |
 | Frontend | `frontend/` | React, TypeScript, Vite, TanStack |
 | Shared contracts | `types/`, `shared/` | Zod and TypeScript domain contracts |
+| Card catalog and official ingestion | `server/db/json/card-list.json`, `server/lib/cards/`, `lib/swu-resources/` | Static official data, preview-aware providers, generated assets |
 | Browser persistence | `frontend/src/dexie/` | Dexie/IndexedDB and cache synchronization |
 | Database schema/migrations | `server/db/schema/`, `drizzle/` | Drizzle, PostgreSQL |
 | Integrations/background work | `server/lib/`, `server/crons/`, `server/screenshotter/` | Discord, Karabast, WebSockets, Coolify jobs, Playwright |

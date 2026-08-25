@@ -33,6 +33,7 @@ Preserve these invariants:
   `lib/swu-resources/set-info.ts` before preview payloads can use it.
 
 Load `swubase-browser-storage` for cache schema/protocol work,
+`swubase-card-catalog` for shared card identity and runtime-list behavior,
 `swubase-karabast-integration` for mapping changes, and
 `swubase-database-migrations` for persistence changes.
 
