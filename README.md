@@ -70,10 +70,13 @@ scripts/worktree-dev/swubase-worktree-dev up
 scripts/worktree-dev/swubase-worktree-dev status
 ```
 
-The first setup uses an ignored local `pg-dump.dmp` when available; otherwise it
-downloads the public sanitized dump through a checksum-verified manifest. See
+The agent-neutral
+[`bootstrap-worktree.sh`](scripts/worktree-dev/bootstrap-worktree.sh) installs
+dependencies and provisions a fresh worktree before its first run. The first
+setup uses an ignored local `pg-dump.dmp` when available; otherwise it downloads
+the public sanitized dump through a checksum-verified manifest. See
 [`scripts/worktree-dev/README.md`](scripts/worktree-dev/README.md) for refresh,
-cleanup, public-data boundaries, and Codex Desktop setup.
+cleanup, public-data boundaries, and the optional Codex Desktop adapter.
 
 ## Contribution
 We welcome contributions from the community! Whether it's fixing bugs, adding features, or improving documentation. See our [Contributing Guide](CONTRIBUTING.md) for more information.

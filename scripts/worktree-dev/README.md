@@ -14,6 +14,21 @@ frontend. Use `status`, `logs`, and `down` to inspect or stop this worktree.
 
 The compatibility command `./setup-local-db.sh` delegates to `setup`.
 
+## Agent-neutral bootstrap
+
+For a fresh worktree, an agent or developer can install both dependency sets
+and provision its isolated database in one step:
+
+```bash
+scripts/worktree-dev/bootstrap-worktree.sh
+```
+
+The bootstrap intentionally stops after `setup`: it neither copies `.env` nor
+starts the app. Supply a reviewed, development-only `.env` through the
+agent/developer's explicit configuration mechanism before running `up`. The
+generated `.env.worktree` files are local runtime state and must never be
+copied between worktrees.
+
 ## Dumps
 
 The command selects its data source in this order:
@@ -71,15 +86,17 @@ ready. It does not read `.env`, download contributor data, or contact R2. Root
 dependencies and the `postgres:16-alpine` image must already be installed; it
 removes its temporary worktrees and labelled test resources on exit.
 
-## Codex Desktop
+## Codex Desktop (optional adapter)
 
 In the Linux/WSL setup-script field of a Codex Desktop local environment, use:
 
 ```bash
-scripts/worktree-dev/codex-setup.sh
+scripts/worktree-dev/bootstrap-worktree.sh
 ```
 
-It installs root/frontend dependencies and runs `setup`. `.worktreeinclude`
-copies the local `.env` into Codex-managed worktrees; keep that file
-development-only. The generated `.env.worktree` overlay is worktree-local and
-must not be copied or committed.
+Codex then runs the same agent-neutral bootstrap automatically when it creates
+a managed worktree. `.worktreeinclude` copies the local `.env` only for those
+Codex-managed worktrees; keep that file development-only. It has no effect for
+Claude Code, direct Git worktrees, or other agents, which must provide their
+own development configuration explicitly. `codex-setup.sh` remains as a
+backwards-compatible wrapper for an existing configured environment.
