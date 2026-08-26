@@ -25,6 +25,7 @@ readonly SWUBASE_WORKTREE_LOCAL_STATE_FILE="${SWUBASE_WORKTREE_LOCAL_STATE_DIR}/
 readonly SWUBASE_WORKTREE_ENV_FILE="${SWUBASE_WORKTREE_REPOSITORY_DIR}/.env.worktree"
 readonly SWUBASE_WORKTREE_FRONTEND_ENV_FILE="${SWUBASE_WORKTREE_REPOSITORY_DIR}/frontend/.env.worktree"
 readonly SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE="${SWUBASE_WORKTREE_REPOSITORY_DIR}/.idea/dataSources.xml"
+readonly SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_LOCAL_FILE="${SWUBASE_WORKTREE_REPOSITORY_DIR}/.idea/dataSources.local.xml"
 
 readonly SWUBASE_WORKTREE_STATE_ROOT="${SWUBASE_WORKTREE_STATE_ROOT:-${XDG_STATE_HOME:-${HOME}/.local/state}/swubase/worktree-dev}"
 readonly SWUBASE_WORKTREE_CONFIG_DIR="${SWUBASE_WORKTREE_CONFIG_DIR:-${XDG_CONFIG_HOME:-${HOME}/.config}/swubase/worktree-dev}"
@@ -478,52 +479,69 @@ jetbrains_datasource_uuid() {
     "${digest:19:12}"
 }
 
+jetbrains_datasource_name() {
+  printf 'SWUBASE local (%s)\n' "${SWUBASE_WORKTREE_ID}"
+}
+
 jetbrains_datasource_entry() {
   local datasource_uuid
 
   datasource_uuid=$(jetbrains_datasource_uuid)
   cat <<EOF
-    <data-source source="LOCAL" name="SWUBASE local (${SWUBASE_WORKTREE_ID})" uuid="${datasource_uuid}">
+    <data-source source="LOCAL" name="$(jetbrains_datasource_name)" uuid="${datasource_uuid}">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://127.0.0.1:${SWUBASE_DB_PORT}/${SWUBASE_DB_NAME}?user=postgres&amp;password=${SWUBASE_WORKTREE_DB_PASSWORD}</jdbc-url>
-      <user-name>postgres</user-name>
       <remarks>Generated for this isolated SWUBASE worktree. Do not edit; run setup to refresh it.</remarks>
       <working-dir>\$PROJECT_DIR\$</working-dir>
     </data-source>
 EOF
 }
 
-write_jetbrains_datasource_contents() {
-  local target_file=$1
-  local datasource_uuid datasource_entry
+jetbrains_datasource_local_entry() {
+  local datasource_uuid
 
   datasource_uuid=$(jetbrains_datasource_uuid)
-  datasource_entry=$(jetbrains_datasource_entry)
+  cat <<EOF
+    <data-source name="$(jetbrains_datasource_name)" uuid="${datasource_uuid}">
+      <auth-provider>no-auth</auth-provider>
+      <user-name>postgres</user-name>
+      <schema-mapping />
+    </data-source>
+EOF
+}
 
-  if [[ ! -f "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" ]]; then
+write_jetbrains_datasource_contents() {
+  local target_file=$1
+  local datasource_uuid
+
+  if [[ ! -f "${JETBRAINS_DATASOURCE_TARGET_FILE}" ]]; then
     {
       printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>'
       printf '%s\n' '<project version="4">'
-      printf '%s\n' '  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">'
-      printf '%s\n' "${datasource_entry}"
+      printf '  %s\n' "${JETBRAINS_DATASOURCE_COMPONENT_OPEN}"
+      printf '%s\n' "${JETBRAINS_DATASOURCE_ENTRY}"
       printf '%s\n' '  </component>'
       printf '%s\n' '</project>'
     } > "${target_file}"
     return 0
   fi
 
-  SWUBASE_JETBRAINS_SOURCE_FILE="${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" \
+  datasource_uuid=$(jetbrains_datasource_uuid)
+  SWUBASE_JETBRAINS_SOURCE_FILE="${JETBRAINS_DATASOURCE_TARGET_FILE}" \
     SWUBASE_JETBRAINS_DATASOURCE_UUID="${datasource_uuid}" \
-    SWUBASE_JETBRAINS_DATASOURCE_ENTRY="${datasource_entry}" \
+    SWUBASE_JETBRAINS_DATASOURCE_ENTRY="${JETBRAINS_DATASOURCE_ENTRY}" \
+    SWUBASE_JETBRAINS_DATASOURCE_COMPONENT_NAME="${JETBRAINS_DATASOURCE_COMPONENT_NAME}" \
     bun -e '
 const sourceFile = process.env.SWUBASE_JETBRAINS_SOURCE_FILE;
 const uuid = process.env.SWUBASE_JETBRAINS_DATASOURCE_UUID;
 const entry = process.env.SWUBASE_JETBRAINS_DATASOURCE_ENTRY;
+const componentName = process.env.SWUBASE_JETBRAINS_DATASOURCE_COMPONENT_NAME;
 const xml = await Bun.file(sourceFile).text();
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const uuidPattern = escapeRegExp(uuid);
+const componentNamePattern = escapeRegExp(componentName);
 const dataSourcePattern = new RegExp(
   `<data-source\\b(?=[^>]*\\buuid=["\\x27]${uuidPattern}["\\x27])[^>]*(?:/>|>[\\s\\S]*?</data-source>)`,
   "g",
@@ -537,17 +555,20 @@ let updated;
 if (matches.length === 1) {
   updated = xml.replace(dataSourcePattern, entry);
 } else {
-  const componentPattern = /<component\b(?=[^>]*\bname=["\x27]DataSourceManagerImpl["\x27])[^>]*>/g;
+  const componentPattern = new RegExp(
+    `<component\\b(?=[^>]*\\bname=["\\x27]${componentNamePattern}["\\x27])[^>]*>`,
+    "g",
+  );
   const components = [...xml.matchAll(componentPattern)];
   if (components.length !== 1) {
     throw new Error(
-      `Refusing to update ${sourceFile}: expected exactly one DataSourceManagerImpl component and found ${components.length}.`,
+      `Refusing to update ${sourceFile}: expected exactly one ${componentName} component and found ${components.length}.`,
     );
   }
   const componentStart = components[0].index + components[0][0].length;
   const componentEnd = xml.indexOf("</component>", componentStart);
   if (componentEnd === -1) {
-    throw new Error(`Refusing to update ${sourceFile}: DataSourceManagerImpl has no closing tag.`);
+    throw new Error(`Refusing to update ${sourceFile}: ${componentName} has no closing tag.`);
   }
   updated = `${xml.slice(0, componentEnd)}\n${entry}\n  ${xml.slice(componentEnd)}`;
 }
@@ -556,15 +577,41 @@ process.stdout.write(updated);
 ' > "${target_file}"
 }
 
+sync_jetbrains_datasource_file() {
+  local target_file=$1
+  local component_name=$2
+  local component_open=$3
+  local datasource_entry=$4
+  local JETBRAINS_DATASOURCE_TARGET_FILE
+  local JETBRAINS_DATASOURCE_COMPONENT_NAME
+  local JETBRAINS_DATASOURCE_COMPONENT_OPEN
+  local JETBRAINS_DATASOURCE_ENTRY
+
+  JETBRAINS_DATASOURCE_TARGET_FILE="${target_file}"
+  JETBRAINS_DATASOURCE_COMPONENT_NAME="${component_name}"
+  JETBRAINS_DATASOURCE_COMPONENT_OPEN="${component_open}"
+  JETBRAINS_DATASOURCE_ENTRY="${datasource_entry}"
+  if ! write_file_atomically \
+    "${target_file}" \
+    write_jetbrains_datasource_contents; then
+    log_warning "JetBrains datasource was not changed because ${target_file} could not be safely updated."
+    return 0
+  fi
+}
+
 sync_jetbrains_datasource() {
   require_command bun
 
-  if ! write_file_atomically \
+  sync_jetbrains_datasource_file \
     "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" \
-    write_jetbrains_datasource_contents; then
-    log_warning "JetBrains datasource was not changed because ${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE} could not be safely updated."
-    return 0
-  fi
+    DataSourceManagerImpl \
+    '<component name="DataSourceManagerImpl" format="xml" multifile-model="true">' \
+    "$(jetbrains_datasource_entry)"
+  sync_jetbrains_datasource_file \
+    "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_LOCAL_FILE}" \
+    dataSourceStorageLocal \
+    '<component name="dataSourceStorageLocal">' \
+    "$(jetbrains_datasource_local_entry)"
 }
 
 remove_jetbrains_datasource_contents() {
@@ -572,7 +619,7 @@ remove_jetbrains_datasource_contents() {
   local datasource_uuid
 
   datasource_uuid=$(jetbrains_datasource_uuid)
-  SWUBASE_JETBRAINS_SOURCE_FILE="${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" \
+  SWUBASE_JETBRAINS_SOURCE_FILE="${JETBRAINS_DATASOURCE_TARGET_FILE}" \
     SWUBASE_JETBRAINS_DATASOURCE_UUID="${datasource_uuid}" \
     bun -e '
 const sourceFile = process.env.SWUBASE_JETBRAINS_SOURCE_FILE;
@@ -592,17 +639,26 @@ process.stdout.write(matches.length === 1 ? xml.replace(dataSourcePattern, "\n  
 ' > "${target_file}"
 }
 
-remove_jetbrains_datasource() {
-  [[ -f "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" ]] || return 0
+remove_jetbrains_datasource_file() {
+  local target_file=$1
+  local JETBRAINS_DATASOURCE_TARGET_FILE
+
+  [[ -f "${target_file}" ]] || return 0
   if ! command -v bun >/dev/null 2>&1; then
     log_warning "Bun is unavailable, so the generated JetBrains datasource was left unchanged."
     return 0
   fi
+  JETBRAINS_DATASOURCE_TARGET_FILE="${target_file}"
   if ! write_file_atomically \
-    "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" \
+    "${target_file}" \
     remove_jetbrains_datasource_contents; then
-    log_warning "The generated JetBrains datasource was left unchanged because ${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE} could not be safely updated."
+    log_warning "The generated JetBrains datasource was left unchanged because ${target_file} could not be safely updated."
   fi
+}
+
+remove_jetbrains_datasource() {
+  remove_jetbrains_datasource_file "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}"
+  remove_jetbrains_datasource_file "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_LOCAL_FILE}"
 }
 
 write_current_state() {

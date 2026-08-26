@@ -304,6 +304,8 @@ main() {
 
   local first_datasource_file="${first_worktree}/.idea/dataSources.xml"
   local second_datasource_file="${second_worktree}/.idea/dataSources.xml"
+  local first_datasource_local_file="${first_worktree}/.idea/dataSources.local.xml"
+  local second_datasource_local_file="${second_worktree}/.idea/dataSources.local.xml"
   assert_file_contains "${first_datasource_file}" 'name="Unrelated test source"' \
     "First unrelated JetBrains datasource preservation"
   assert_file_contains "${second_datasource_file}" 'name="Unrelated test source"' \
@@ -311,13 +313,17 @@ main() {
   assert_file_contains "${first_datasource_file}" \
     "jdbc:postgresql://127.0.0.1:${first_db_port}/${first_database}?user=postgres&amp;password=password" \
     "First generated JetBrains datasource URL"
-  assert_file_contains "${first_datasource_file}" '<user-name>postgres</user-name>' \
-    "First generated JetBrains datasource username"
+  assert_file_contains "${first_datasource_local_file}" '<user-name>postgres</user-name>' \
+    "First generated JetBrains local datasource username"
+  assert_file_contains "${first_datasource_local_file}" '<auth-provider>no-auth</auth-provider>' \
+    "First generated JetBrains local datasource URL-only authentication"
   assert_file_contains "${second_datasource_file}" \
     "jdbc:postgresql://127.0.0.1:${second_db_port}/${second_database}?user=postgres&amp;password=password" \
     "Second generated JetBrains datasource URL"
-  assert_file_contains "${second_datasource_file}" '<user-name>postgres</user-name>' \
-    "Second generated JetBrains datasource username"
+  assert_file_contains "${second_datasource_local_file}" '<user-name>postgres</user-name>' \
+    "Second generated JetBrains local datasource username"
+  assert_file_contains "${second_datasource_local_file}" '<auth-provider>no-auth</auth-provider>' \
+    "Second generated JetBrains local datasource URL-only authentication"
 
   log_info "Switching the stopped second worktree to an external HTTPS access profile."
   run_worktree_command_with_access \
@@ -361,9 +367,15 @@ main() {
   assert_file_not_contains "${first_datasource_file}" \
     "jdbc:postgresql://127.0.0.1:${first_db_port}/${first_database}?user=postgres&amp;password=password" \
     "First generated JetBrains datasource removal"
+  assert_file_not_contains "${first_datasource_local_file}" \
+    "SWUBASE local (${first_id})" \
+    "First generated JetBrains local datasource removal"
   assert_file_contains "${second_datasource_file}" \
     "jdbc:postgresql://127.0.0.1:${second_db_port}/${second_database}?user=postgres&amp;password=password" \
     "Second generated JetBrains datasource remains after first purge"
+  assert_file_contains "${second_datasource_local_file}" \
+    "SWUBASE local (${second_id})" \
+    "Second generated JetBrains local datasource remains after first purge"
   docker exec "${second_container}" pg_isready -U postgres -d "${second_database}" >/dev/null \
     || fail "Second worktree database was affected by first-worktree cleanup."
 

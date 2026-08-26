@@ -15,7 +15,8 @@ frontend. Use `status`, `logs`, and `down` to inspect or stop this worktree.
 ## JetBrains Gateway and Database tool window
 
 Every `setup`, `up`, or `refresh-db` creates or refreshes one project-local
-PostgreSQL data source in `.idea/dataSources.xml`:
+PostgreSQL data source in `.idea/dataSources.xml` and its ignored JetBrains
+authentication companion `.idea/dataSources.local.xml`:
 
 ```text
 SWUBASE local (<worktree identity>)
@@ -23,15 +24,16 @@ SWUBASE local (<worktree identity>)
 
 It points to that worktree's own `127.0.0.1` database port and includes the
 fixed local-only `postgres` / `password` credentials, so it is ready in
-WebStorm's **Database** tool window without an SSH tunnel or a Tailscale address. With JetBrains Gateway,
+WebStorm's **Database** tool window without an SSH tunnel, Tailscale address,
+or JetBrains Password Safe prompt. With JetBrains Gateway,
 the IDE backend runs on the development machine, so `127.0.0.1` correctly
 means that machine rather than the client PC. JetBrains may ask once to download
 the PostgreSQL JDBC driver on the development machine.
 
-The launcher preserves unrelated data sources in the same file, replaces only
-its deterministic worktree entry on repeated setup, and removes only that entry
+The launcher preserves unrelated data sources in both files, replaces only its
+deterministic worktree entries on repeated setup, and removes only those entries
 when `down --purge-data` removes the database. `.idea/` remains local and
-ignored; do not commit, copy, or manually edit the generated SWUBASE entry.
+ignored; do not commit, copy, or manually edit the generated SWUBASE entries.
 
 The compatibility command `./setup-local-db.sh` delegates to `setup`.
 

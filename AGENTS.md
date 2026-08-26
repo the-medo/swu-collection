@@ -58,11 +58,12 @@ and removes only a matching worktree route. Changed profiles take effect after
 `down` then `up`; use `status` for the public URL and exact Google callback.
 
 Generated `.swubase/`, `.env.worktree`, `frontend/.env.worktree`, and the
-worktree's managed `.idea/dataSources.xml` entry are local state. Do not commit
-or copy them between worktrees. The bootstrap does not copy `.env` or start the
-app; each agent/developer must deliberately provide a development-only `.env`
-before running `up`. The JetBrains entry always targets this worktree database
-on `127.0.0.1`; under Gateway, that is the remote IDE/backend machine.
+worktree's managed `.idea/dataSources.xml` and `.idea/dataSources.local.xml`
+entries are local state. Do not commit or copy them between worktrees. The
+bootstrap does not copy `.env` or start the app; each agent/developer must
+deliberately provide a development-only `.env` before running `up`. The
+JetBrains entries always target this worktree database on `127.0.0.1`; under
+Gateway, that is the remote IDE/backend machine.
 
 ## Development data and external configuration
 
