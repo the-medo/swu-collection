@@ -24,6 +24,7 @@ readonly SWUBASE_WORKTREE_LOCAL_STATE_DIR="${SWUBASE_WORKTREE_REPOSITORY_DIR}/.s
 readonly SWUBASE_WORKTREE_LOCAL_STATE_FILE="${SWUBASE_WORKTREE_LOCAL_STATE_DIR}/worktree-dev.env"
 readonly SWUBASE_WORKTREE_ENV_FILE="${SWUBASE_WORKTREE_REPOSITORY_DIR}/.env.worktree"
 readonly SWUBASE_WORKTREE_FRONTEND_ENV_FILE="${SWUBASE_WORKTREE_REPOSITORY_DIR}/frontend/.env.worktree"
+readonly SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE="${SWUBASE_WORKTREE_REPOSITORY_DIR}/.idea/dataSources.xml"
 
 readonly SWUBASE_WORKTREE_STATE_ROOT="${SWUBASE_WORKTREE_STATE_ROOT:-${XDG_STATE_HOME:-${HOME}/.local/state}/swubase/worktree-dev}"
 readonly SWUBASE_WORKTREE_CONFIG_DIR="${SWUBASE_WORKTREE_CONFIG_DIR:-${XDG_CONFIG_HOME:-${HOME}/.config}/swubase/worktree-dev}"
@@ -463,11 +464,152 @@ write_frontend_env_contents() {
   } > "${target_file}"
 }
 
+jetbrains_datasource_uuid() {
+  local digest
+
+  digest=$(sha256_string "${SWUBASE_WORKTREE_ID}")
+  # A deterministic, UUID-shaped identifier lets repeated setup calls replace
+  # only this worktree's generated entry rather than adding duplicates.
+  printf '%s-%s-5%s-a%s-%s\n' \
+    "${digest:0:8}" \
+    "${digest:8:4}" \
+    "${digest:12:3}" \
+    "${digest:16:3}" \
+    "${digest:19:12}"
+}
+
+jetbrains_datasource_entry() {
+  local datasource_uuid
+
+  datasource_uuid=$(jetbrains_datasource_uuid)
+  cat <<EOF
+    <data-source source="LOCAL" name="SWUBASE local (${SWUBASE_WORKTREE_ID})" uuid="${datasource_uuid}">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://127.0.0.1:${SWUBASE_DB_PORT}/${SWUBASE_DB_NAME}?user=postgres&amp;password=${SWUBASE_WORKTREE_DB_PASSWORD}</jdbc-url>
+      <remarks>Generated for this isolated SWUBASE worktree. Do not edit; run setup to refresh it.</remarks>
+      <working-dir>\$PROJECT_DIR\$</working-dir>
+    </data-source>
+EOF
+}
+
+write_jetbrains_datasource_contents() {
+  local target_file=$1
+  local datasource_uuid datasource_entry
+
+  datasource_uuid=$(jetbrains_datasource_uuid)
+  datasource_entry=$(jetbrains_datasource_entry)
+
+  if [[ ! -f "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" ]]; then
+    {
+      printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>'
+      printf '%s\n' '<project version="4">'
+      printf '%s\n' '  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">'
+      printf '%s\n' "${datasource_entry}"
+      printf '%s\n' '  </component>'
+      printf '%s\n' '</project>'
+    } > "${target_file}"
+    return 0
+  fi
+
+  SWUBASE_JETBRAINS_SOURCE_FILE="${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" \
+    SWUBASE_JETBRAINS_DATASOURCE_UUID="${datasource_uuid}" \
+    SWUBASE_JETBRAINS_DATASOURCE_ENTRY="${datasource_entry}" \
+    bun -e '
+const sourceFile = process.env.SWUBASE_JETBRAINS_SOURCE_FILE;
+const uuid = process.env.SWUBASE_JETBRAINS_DATASOURCE_UUID;
+const entry = process.env.SWUBASE_JETBRAINS_DATASOURCE_ENTRY;
+const xml = await Bun.file(sourceFile).text();
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const uuidPattern = escapeRegExp(uuid);
+const dataSourcePattern = new RegExp(
+  `<data-source\\b(?=[^>]*\\buuid=["\\x27]${uuidPattern}["\\x27])[^>]*(?:/>|>[\\s\\S]*?</data-source>)`,
+  "g",
+);
+const matches = [...xml.matchAll(dataSourcePattern)];
+if (matches.length > 1) {
+  throw new Error(`Refusing to update ${sourceFile}: found multiple data sources with the generated UUID.`);
+}
+
+let updated;
+if (matches.length === 1) {
+  updated = xml.replace(dataSourcePattern, entry);
+} else {
+  const componentPattern = /<component\b(?=[^>]*\bname=["\x27]DataSourceManagerImpl["\x27])[^>]*>/g;
+  const components = [...xml.matchAll(componentPattern)];
+  if (components.length !== 1) {
+    throw new Error(
+      `Refusing to update ${sourceFile}: expected exactly one DataSourceManagerImpl component and found ${components.length}.`,
+    );
+  }
+  const componentStart = components[0].index + components[0][0].length;
+  const componentEnd = xml.indexOf("</component>", componentStart);
+  if (componentEnd === -1) {
+    throw new Error(`Refusing to update ${sourceFile}: DataSourceManagerImpl has no closing tag.`);
+  }
+  updated = `${xml.slice(0, componentEnd)}\n${entry}\n  ${xml.slice(componentEnd)}`;
+}
+
+process.stdout.write(updated);
+' > "${target_file}"
+}
+
+sync_jetbrains_datasource() {
+  require_command bun
+
+  if ! write_file_atomically \
+    "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" \
+    write_jetbrains_datasource_contents; then
+    log_warning "JetBrains datasource was not changed because ${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE} could not be safely updated."
+    return 0
+  fi
+}
+
+remove_jetbrains_datasource_contents() {
+  local target_file=$1
+  local datasource_uuid
+
+  datasource_uuid=$(jetbrains_datasource_uuid)
+  SWUBASE_JETBRAINS_SOURCE_FILE="${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" \
+    SWUBASE_JETBRAINS_DATASOURCE_UUID="${datasource_uuid}" \
+    bun -e '
+const sourceFile = process.env.SWUBASE_JETBRAINS_SOURCE_FILE;
+const uuid = process.env.SWUBASE_JETBRAINS_DATASOURCE_UUID;
+const xml = await Bun.file(sourceFile).text();
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const uuidPattern = escapeRegExp(uuid);
+const dataSourcePattern = new RegExp(
+  `\\n?\\s*<data-source\\b(?=[^>]*\\buuid=["\\x27]${uuidPattern}["\\x27])[^>]*(?:/>|>[\\s\\S]*?</data-source>)\\s*`,
+  "g",
+);
+const matches = [...xml.matchAll(dataSourcePattern)];
+if (matches.length > 1) {
+  throw new Error(`Refusing to remove from ${sourceFile}: found multiple data sources with the generated UUID.`);
+}
+process.stdout.write(matches.length === 1 ? xml.replace(dataSourcePattern, "\n  ") : xml);
+' > "${target_file}"
+}
+
+remove_jetbrains_datasource() {
+  [[ -f "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" ]] || return 0
+  if ! command -v bun >/dev/null 2>&1; then
+    log_warning "Bun is unavailable, so the generated JetBrains datasource was left unchanged."
+    return 0
+  fi
+  if ! write_file_atomically \
+    "${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE}" \
+    remove_jetbrains_datasource_contents; then
+    log_warning "The generated JetBrains datasource was left unchanged because ${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE} could not be safely updated."
+  fi
+}
+
 write_current_state() {
   write_file_atomically "${SWUBASE_WORKTREE_LOCAL_STATE_FILE}" write_local_state_contents
   write_file_atomically "${SWUBASE_WORKTREE_REGISTRY_DIR}/${SWUBASE_WORKTREE_ID}.env" write_registry_contents
   write_file_atomically "${SWUBASE_WORKTREE_ENV_FILE}" write_worktree_env_contents
   write_file_atomically "${SWUBASE_WORKTREE_FRONTEND_ENV_FILE}" write_frontend_env_contents
+  sync_jetbrains_datasource
 }
 
 validate_loaded_state() {
@@ -1175,6 +1317,7 @@ stop_current_worktree() {
       docker volume rm "${SWUBASE_DB_VOLUME}" >/dev/null
     fi
     release_current_ports
+    remove_jetbrains_datasource
     rm -f -- \
       "${SWUBASE_WORKTREE_LOCAL_STATE_FILE}" \
       "${SWUBASE_WORKTREE_ENV_FILE}" \
@@ -1224,6 +1367,7 @@ Identity: ${SWUBASE_WORKTREE_ID}
 Branch: ${SWUBASE_WORKTREE_BRANCH} (${SWUBASE_WORKTREE_REVISION})
 Database: ${SWUBASE_DB_CONTAINER} (${container_status}; ${database_health})
 Database URL: $(database_url)
+JetBrains data source: SWUBASE local (${SWUBASE_WORKTREE_ID}) (${SWUBASE_WORKTREE_JETBRAINS_DATASOURCE_FILE})
 Backend: http://127.0.0.1:${SWUBASE_BACKEND_PORT} (${backend_status})
 Frontend (public): ${SWUBASE_WORKTREE_PUBLIC_ORIGIN} (${frontend_status})
 Frontend (loopback): http://localhost:${SWUBASE_FRONTEND_PORT}

@@ -68,3 +68,14 @@ safe development dump or the checksum-verified public sanitized manifest;
 never use raw production/Coolify backups. Use `swubase-development-data` when
 changing that restore or sanitization boundary, and `swubase-validation` when
 validating tooling changes.
+
+Each successful `setup`, `up`, or `refresh-db` also manages one deterministic
+project-local JetBrains PostgreSQL data source in `.idea/dataSources.xml`, named
+`SWUBASE local (<worktree identity>)`. It always connects to the current
+worktree database over `127.0.0.1`; under JetBrains Gateway that loopback address
+belongs to the remote IDE backend machine, which is exactly where the database
+container is published. Do not redirect it through Tailscale or overwrite other
+data sources. Repeated setup replaces only the generated entry, and
+`down --purge-data` removes only that entry after checking its deterministic
+identity. JetBrains may need to download its PostgreSQL JDBC driver once on the
+development machine.

@@ -12,6 +12,27 @@ to the worktree, restores a local or sanitized dump only when the database does
 not yet exist, and applies migrations. `up` additionally starts the backend and
 frontend. Use `status`, `logs`, and `down` to inspect or stop this worktree.
 
+## JetBrains Gateway and Database tool window
+
+Every `setup`, `up`, or `refresh-db` creates or refreshes one project-local
+PostgreSQL data source in `.idea/dataSources.xml`:
+
+```text
+SWUBASE local (<worktree identity>)
+```
+
+It points to that worktree's own `127.0.0.1` database port and includes the
+local development credentials, so it is ready in WebStorm's **Database** tool
+window without an SSH tunnel or a Tailscale address. With JetBrains Gateway,
+the IDE backend runs on the development machine, so `127.0.0.1` correctly
+means that machine rather than the client PC. JetBrains may ask once to download
+the PostgreSQL JDBC driver on the development machine.
+
+The launcher preserves unrelated data sources in the same file, replaces only
+its deterministic worktree entry on repeated setup, and removes only that entry
+when `down --purge-data` removes the database. `.idea/` remains local and
+ignored; do not commit, copy, or manually edit the generated SWUBASE entry.
+
 The compatibility command `./setup-local-db.sh` delegates to `setup`.
 
 ## Agent-neutral bootstrap
@@ -106,7 +127,8 @@ the backend and other repository tooling continue to use Bun.
 
 `down` stops processes and PostgreSQL but retains the labelled database volume
 for a quick restart. `down --purge-data` removes only this worktree's labelled
-container, volume, ports, and generated state. `prune` lists stale resources;
+container, volume, ports, generated JetBrains data source, and generated state.
+`prune` lists stale resources;
 `prune --yes` removes only the listed labelled resources after their worktree is
 no longer live.
 

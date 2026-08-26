@@ -50,6 +50,24 @@ assert_not_equal() {
   [[ "${left}" != "${right}" ]] || fail "${description} must differ, but both were '${left}'."
 }
 
+assert_file_contains() {
+  local file=$1
+  local expected_text=$2
+  local description=$3
+
+  rg -F -q -- "${expected_text}" "${file}" \
+    || fail "${description}: '${expected_text}' was not found in ${file}."
+}
+
+assert_file_not_contains() {
+  local file=$1
+  local unexpected_text=$2
+  local description=$3
+
+  ! rg -F -q -- "${unexpected_text}" "${file}" \
+    || fail "${description}: '${unexpected_text}' was unexpectedly found in ${file}."
+}
+
 assert_container_label() {
   local container_name=$1
   local label_name=$2
@@ -200,6 +218,19 @@ prepare_worktree() {
   # worktree is removed during cleanup, so this does not alter a tracked tree.
   cp -a "${REPOSITORY_DIR}/scripts/worktree-dev/." "${worktree_path}/scripts/worktree-dev/"
   ln -s "${REPOSITORY_DIR}/node_modules" "${worktree_path}/node_modules"
+  mkdir -p "${worktree_path}/.idea"
+  cat > "${worktree_path}/.idea/dataSources.xml" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="Unrelated test source" uuid="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa">
+      <driver-ref>postgresql</driver-ref>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://127.0.0.1:5999/unrelated</jdbc-url>
+    </data-source>
+  </component>
+</project>
+EOF
   printf '%s\n' "${worktree_path}"
 }
 
@@ -208,6 +239,7 @@ main() {
   require_command docker
   require_command flock
   require_command git
+  require_command rg
   require_command sha256sum
   require_command ss
 
@@ -270,6 +302,19 @@ main() {
   assert_equal false "${second_tailscale_serve}" "Second Tailscale Serve mode"
   assert_not_equal "${first_auth_prefix}" "${second_auth_prefix}" "Auth cookie prefixes"
 
+  local first_datasource_file="${first_worktree}/.idea/dataSources.xml"
+  local second_datasource_file="${second_worktree}/.idea/dataSources.xml"
+  assert_file_contains "${first_datasource_file}" 'name="Unrelated test source"' \
+    "First unrelated JetBrains datasource preservation"
+  assert_file_contains "${second_datasource_file}" 'name="Unrelated test source"' \
+    "Second unrelated JetBrains datasource preservation"
+  assert_file_contains "${first_datasource_file}" \
+    "jdbc:postgresql://127.0.0.1:${first_db_port}/${first_database}?user=postgres&amp;password=password" \
+    "First generated JetBrains datasource URL"
+  assert_file_contains "${second_datasource_file}" \
+    "jdbc:postgresql://127.0.0.1:${second_db_port}/${second_database}?user=postgres&amp;password=password" \
+    "Second generated JetBrains datasource URL"
+
   log_info "Switching the stopped second worktree to an external HTTPS access profile."
   run_worktree_command_with_access \
     "${second_worktree}" \
@@ -307,6 +352,14 @@ main() {
     || fail "First worktree volume still exists after purge."
   [[ ! -f "${first_worktree}/.swubase/worktree-dev.env" ]] \
     || fail "First worktree state still exists after purge."
+  assert_file_contains "${first_datasource_file}" 'name="Unrelated test source"' \
+    "First unrelated JetBrains datasource remains after purge"
+  assert_file_not_contains "${first_datasource_file}" \
+    "jdbc:postgresql://127.0.0.1:${first_db_port}/${first_database}?user=postgres&amp;password=password" \
+    "First generated JetBrains datasource removal"
+  assert_file_contains "${second_datasource_file}" \
+    "jdbc:postgresql://127.0.0.1:${second_db_port}/${second_database}?user=postgres&amp;password=password" \
+    "Second generated JetBrains datasource remains after first purge"
   docker exec "${second_container}" pg_isready -U postgres -d "${second_database}" >/dev/null \
     || fail "Second worktree database was affected by first-worktree cleanup."
 
