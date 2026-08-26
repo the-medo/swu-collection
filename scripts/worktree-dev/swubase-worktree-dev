@@ -21,6 +21,7 @@ Commands:
                              Show recent logs for this worktree only.
   down [--purge-data]        Stop app processes and PostgreSQL; retain data by default.
   prune [--yes]              List or remove stale labelled worktree resources.
+  configure-access [options] Set/show this machine's localhost, HTTPS proxy, or Tailscale Serve profile.
 
 Dump selection for setup/up/refresh-db:
   1. --dump PATH
@@ -28,10 +29,12 @@ Dump selection for setup/up/refresh-db:
   3. ./pg-dump.dmp (a local ignored fallback)
   4. checksum-verified public sanitized dump manifest
 
-The frontend/OAuth origin is selected from localhost ports 5173-5180. These
-exact callback origins must be registered with Google before Google login can be
-used in a worktree. PostgreSQL and backend ports are separately allocated and
-bound to 127.0.0.1.
+By default, frontend/OAuth origins are selected from localhost ports 5173-5180.
+`configure-access` can set an HTTPS origin template for this machine and
+optionally manage private Tailscale Serve mappings. Google callback URIs remain
+exact (not wildcard) and `configure-access --show` prints the eight values for
+the configured template. PostgreSQL and backend ports are always separately
+allocated and bound to 127.0.0.1.
 EOF
 }
 
@@ -64,6 +67,10 @@ main() {
       usage
       return 0
       ;;
+    configure-access)
+      configure_access "$@"
+      return 0
+      ;;
   esac
 
   initialize_registry
@@ -87,6 +94,7 @@ main() {
     start)
       [[ $# -eq 0 ]] || fail "start does not accept options."
       load_current_state || fail "This worktree has not been set up. Run setup first."
+      ensure_current_state
       start_application_services
       print_status
       ;;

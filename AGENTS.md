@@ -49,6 +49,14 @@ intentional. Use `down --purge-data` or `prune --yes` only after checking the
 exact labelled resources reported by the command. Never remove unlabelled
 Docker resources.
 
+The default worktree access profile is localhost-only. A developer may opt into
+a machine-local HTTPS origin and optional private Tailscale Serve mapping with
+`scripts/worktree-dev/swubase-worktree-dev configure-access`; it writes outside
+the repository and must never be committed. The worktree launcher keeps
+PostgreSQL/backend loopback-only, refuses to overwrite unrelated Serve routes,
+and removes only a matching worktree route. Changed profiles take effect after
+`down` then `up`; use `status` for the public URL and exact Google callback.
+
 Generated `.swubase/`, `.env.worktree`, and `frontend/.env.worktree` files are
 local state. Do not commit or copy them between worktrees. The bootstrap does
 not copy `.env` or start the app; each agent/developer must deliberately provide

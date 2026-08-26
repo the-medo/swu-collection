@@ -76,7 +76,8 @@ dependencies and provisions a fresh worktree before its first run. The first
 setup uses an ignored local `pg-dump.dmp` when available; otherwise it downloads
 the public sanitized dump through a checksum-verified manifest. See
 [`scripts/worktree-dev/README.md`](scripts/worktree-dev/README.md) for refresh,
-cleanup, public-data boundaries, and the optional Codex Desktop adapter.
+cleanup, public-data boundaries, optional private HTTPS/Tailscale access, and
+the optional Codex Desktop adapter.
 
 ## Contribution
 We welcome contributions from the community! Whether it's fixing bugs, adding features, or improving documentation. See our [Contributing Guide](CONTRIBUTING.md) for more information.

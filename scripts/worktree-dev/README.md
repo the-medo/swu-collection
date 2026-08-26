@@ -49,17 +49,54 @@ Run `refresh-db` only to intentionally replace existing local development data:
 scripts/worktree-dev/swubase-worktree-dev refresh-db
 ```
 
-## App URLs and OAuth
+## App URLs, remote access, and OAuth
 
-Frontend ports are reserved from `http://localhost:5173` through
-`http://localhost:5180`; this is a hard cap of eight concurrent
-Google-enabled worktrees. Before using Google sign-in, a maintainer must
-register the exact Better Auth callback URI for every enabled origin in Google
-Cloud. The generated worktree configuration assigns an auth-cookie prefix per
-worktree because cookies are host-scoped rather than port-scoped.
+Frontend ports are reserved from `5173` through `5180`; this is a hard cap of
+eight concurrent worktrees. Backend and database ports are dynamically reserved
+and always bind to `127.0.0.1`.
 
-Backend and database ports are dynamically reserved and bind to `127.0.0.1`.
-Use `status` to see the exact URLs.
+By default, every developer uses the localhost-only access profile:
+
+```text
+http://localhost:{frontend_port}
+```
+
+This is the right default for ordinary local development. To configure a
+machine once for a private HTTPS proxy, run:
+
+```bash
+scripts/worktree-dev/swubase-worktree-dev configure-access \
+  --origin-template 'https://steamdeck.tail73a93e.ts.net:{frontend_port}' \
+  --tailscale-serve
+```
+
+The command writes the uncommitted, per-machine profile to
+`~/.config/swubase/worktree-dev/access.env` and prints the exact Google OAuth
+callback URIs for all eight possible frontend ports. New or stopped worktrees
+read that profile automatically; an already-running worktree must be restarted
+with `down` then `up` to adopt a changed profile.
+
+`--tailscale-serve` creates a private Tailscale Serve proxy from the selected
+HTTPS port to that worktree's loopback Vite server. It requires that the
+configured hostname exactly matches the machine's Tailscale DNS name. The
+launcher refuses to replace another Serve configuration and removes a mapping
+only when it still points to that exact worktree frontend. It never uses
+Tailscale Funnel.
+
+Developers using a different HTTPS reverse proxy can set their own origin
+template with `--no-tailscale-serve`; their proxy remains outside this tool's
+control. Restore the default at any time with:
+
+```bash
+scripts/worktree-dev/swubase-worktree-dev configure-access --localhost
+```
+
+Google requires exact redirect URIs and does not support a wildcard origin or
+port pattern. Register the values printed by `configure-access --show` for the
+chosen hostname before using Google sign-in. The generated worktree
+configuration assigns an auth-cookie prefix per worktree because cookies are
+host-scoped rather than port-scoped. `status` prints the public URL, loopback
+URL, callback URI, and Serve state for the current worktree.
 
 ## Cleanup
 

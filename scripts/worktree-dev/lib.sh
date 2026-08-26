@@ -26,10 +26,13 @@ readonly SWUBASE_WORKTREE_ENV_FILE="${SWUBASE_WORKTREE_REPOSITORY_DIR}/.env.work
 readonly SWUBASE_WORKTREE_FRONTEND_ENV_FILE="${SWUBASE_WORKTREE_REPOSITORY_DIR}/frontend/.env.worktree"
 
 readonly SWUBASE_WORKTREE_STATE_ROOT="${SWUBASE_WORKTREE_STATE_ROOT:-${XDG_STATE_HOME:-${HOME}/.local/state}/swubase/worktree-dev}"
+readonly SWUBASE_WORKTREE_CONFIG_DIR="${SWUBASE_WORKTREE_CONFIG_DIR:-${XDG_CONFIG_HOME:-${HOME}/.config}/swubase/worktree-dev}"
+readonly SWUBASE_WORKTREE_ACCESS_CONFIG_FILE="${SWUBASE_WORKTREE_ACCESS_CONFIG_FILE:-${SWUBASE_WORKTREE_CONFIG_DIR}/access.env}"
 readonly SWUBASE_WORKTREE_REGISTRY_DIR="${SWUBASE_WORKTREE_STATE_ROOT}/worktrees"
 readonly SWUBASE_WORKTREE_PORT_REGISTRY_DIR="${SWUBASE_WORKTREE_STATE_ROOT}/ports"
 readonly SWUBASE_WORKTREE_DUMP_CACHE_DIR="${SWUBASE_WORKTREE_STATE_ROOT}/dumps"
 readonly SWUBASE_WORKTREE_LOCK_FILE="${SWUBASE_WORKTREE_STATE_ROOT}/registry.lock"
+readonly SWUBASE_WORKTREE_DEFAULT_PUBLIC_ORIGIN_TEMPLATE='http://localhost:{frontend_port}'
 
 log_info() {
   printf '%s\n' "==> $*" >&2
@@ -46,6 +49,115 @@ fail() {
 
 require_command() {
   command -v "$1" >/dev/null 2>&1 || fail "'$1' is required but was not found in PATH."
+}
+
+dotenv_value() {
+  local dotenv_file=$1
+  local key=$2
+  local value
+
+  [[ -f "${dotenv_file}" ]] || return 1
+  value=$(sed -n -E "s/^${key}=//p" "${dotenv_file}" | tail -n 1)
+  [[ -n "${value}" ]] || return 1
+  if [[ "${value}" == \"*\" || "${value}" == \'*\' ]]; then
+    value=${value:1:${#value}-2}
+  fi
+  printf '%s\n' "${value}"
+}
+
+access_config_value() {
+  local key=$1
+  local default_value=$2
+  local value="${!key:-}"
+
+  if [[ -z "${value}" ]]; then
+    value=$(dotenv_value "${SWUBASE_WORKTREE_ACCESS_CONFIG_FILE}" "${key}" || true)
+  fi
+  printf '%s\n' "${value:-${default_value}}"
+}
+
+resolve_public_origin() {
+  local origin_template=$1
+  local frontend_port=$2
+
+  ORIGIN_TEMPLATE="${origin_template}" FRONTEND_PORT="${frontend_port}" bun -e '
+const template = process.env.ORIGIN_TEMPLATE;
+const port = process.env.FRONTEND_PORT;
+const placeholder = "{frontend_port}";
+if (template.split(placeholder).length !== 2) process.exit(2);
+
+let url;
+try {
+  url = new URL(template.replace(placeholder, port));
+} catch {
+  process.exit(2);
+}
+
+if (
+  !["http:", "https:"].includes(url.protocol) ||
+  url.port !== port ||
+  url.pathname !== "/" ||
+  url.search ||
+  url.hash ||
+  url.username ||
+  url.password
+) {
+  process.exit(2);
+}
+
+process.stdout.write(`${url.origin}\t${url.hostname.toLowerCase()}\t${url.protocol}`);
+'
+}
+
+load_requested_access_profile() {
+  local resolved_profile
+
+  REQUESTED_SWUBASE_WORKTREE_PUBLIC_ORIGIN_TEMPLATE=$(access_config_value \
+    SWUBASE_WORKTREE_PUBLIC_ORIGIN_TEMPLATE \
+    "${SWUBASE_WORKTREE_DEFAULT_PUBLIC_ORIGIN_TEMPLATE}")
+  REQUESTED_SWUBASE_WORKTREE_TAILSCALE_SERVE=$(access_config_value \
+    SWUBASE_WORKTREE_ACCESS_TAILSCALE_SERVE \
+    false)
+
+  case "${REQUESTED_SWUBASE_WORKTREE_TAILSCALE_SERVE}" in
+    true|false)
+      ;;
+    *)
+      fail "SWUBASE_WORKTREE_TAILSCALE_SERVE must be true or false."
+      ;;
+  esac
+
+  resolved_profile=$(resolve_public_origin \
+    "${REQUESTED_SWUBASE_WORKTREE_PUBLIC_ORIGIN_TEMPLATE}" \
+    "${SWUBASE_FRONTEND_PORT}") \
+    || fail "SWUBASE_WORKTREE_PUBLIC_ORIGIN_TEMPLATE must be an http(s) origin with exactly one {frontend_port} placeholder and no path."
+  IFS=$'\t' read -r \
+    REQUESTED_SWUBASE_WORKTREE_PUBLIC_ORIGIN \
+    REQUESTED_SWUBASE_WORKTREE_PUBLIC_HOST \
+    REQUESTED_SWUBASE_WORKTREE_PUBLIC_PROTOCOL <<< "${resolved_profile}"
+
+  if [[ "${REQUESTED_SWUBASE_WORKTREE_TAILSCALE_SERVE}" == true \
+    && "${REQUESTED_SWUBASE_WORKTREE_PUBLIC_PROTOCOL}" != https: ]]; then
+    fail "Tailscale Serve requires an https public-origin template."
+  fi
+}
+
+apply_requested_access_profile() {
+  SWUBASE_WORKTREE_PUBLIC_ORIGIN="${REQUESTED_SWUBASE_WORKTREE_PUBLIC_ORIGIN}"
+  SWUBASE_WORKTREE_PUBLIC_HOST="${REQUESTED_SWUBASE_WORKTREE_PUBLIC_HOST}"
+  SWUBASE_WORKTREE_TAILSCALE_SERVE="${REQUESTED_SWUBASE_WORKTREE_TAILSCALE_SERVE}"
+}
+
+hydrate_legacy_access_profile() {
+  if [[ -n "${SWUBASE_WORKTREE_PUBLIC_ORIGIN:-}" \
+    && -n "${SWUBASE_WORKTREE_PUBLIC_HOST:-}" \
+    && -n "${SWUBASE_WORKTREE_TAILSCALE_SERVE:-}" ]]; then
+    return 0
+  fi
+
+  SWUBASE_WORKTREE_PUBLIC_ORIGIN="http://localhost:${SWUBASE_FRONTEND_PORT}"
+  SWUBASE_WORKTREE_PUBLIC_HOST=localhost
+  SWUBASE_WORKTREE_TAILSCALE_SERVE=false
 }
 
 initialize_registry() {
@@ -144,6 +256,128 @@ write_file_atomically() {
   mv -- "${temporary_file}" "${target_file}"
 }
 
+stored_access_config_value() {
+  local key=$1
+  local default_value=$2
+  local value
+
+  value=$(dotenv_value "${SWUBASE_WORKTREE_ACCESS_CONFIG_FILE}" "${key}" || true)
+  printf '%s\n' "${value:-${default_value}}"
+}
+
+write_access_config_contents() {
+  local target_file=$1
+
+  {
+    printf '# Per-machine SWUBASE worktree access profile. Do not commit.\n'
+    printf '# {frontend_port} is replaced with the isolated worktree frontend port.\n'
+    printf 'SWUBASE_WORKTREE_PUBLIC_ORIGIN_TEMPLATE=%s\n' "${CONFIGURED_ACCESS_ORIGIN_TEMPLATE}"
+    printf 'SWUBASE_WORKTREE_ACCESS_TAILSCALE_SERVE=%s\n' "${CONFIGURED_ACCESS_TAILSCALE_SERVE}"
+  } > "${target_file}"
+}
+
+print_access_profile() {
+  local origin_template=$1
+  local tailscale_serve=$2
+  local frontend_port resolved_profile public_origin public_host public_protocol
+
+  printf 'Access configuration: %s\n' "${SWUBASE_WORKTREE_ACCESS_CONFIG_FILE}"
+  printf 'Public origin template: %s\n' "${origin_template}"
+  printf 'Tailscale Serve: %s\n' "${tailscale_serve}"
+  printf 'Google OAuth callbacks to register (Google does not support wildcard callback URIs):\n'
+  for ((frontend_port = SWUBASE_WORKTREE_FRONTEND_PORT_START; frontend_port <= SWUBASE_WORKTREE_FRONTEND_PORT_END; frontend_port += 1)); do
+    resolved_profile=$(resolve_public_origin "${origin_template}" "${frontend_port}") \
+      || fail "Could not resolve the configured public-origin template."
+    IFS=$'\t' read -r public_origin public_host public_protocol <<< "${resolved_profile}"
+    printf '  %s/api/auth/callback/google\n' "${public_origin}"
+  done
+}
+
+configure_access() {
+  local origin_template tailscale_serve option show_only=false resolved_profile public_origin public_host public_protocol
+
+  origin_template=$(stored_access_config_value \
+    SWUBASE_WORKTREE_PUBLIC_ORIGIN_TEMPLATE \
+    "${SWUBASE_WORKTREE_DEFAULT_PUBLIC_ORIGIN_TEMPLATE}")
+  tailscale_serve=$(stored_access_config_value SWUBASE_WORKTREE_ACCESS_TAILSCALE_SERVE false)
+
+  while [[ $# -gt 0 ]]; do
+    option=$1
+    case "${option}" in
+      --origin-template)
+        [[ $# -ge 2 ]] || fail "--origin-template requires a URL template."
+        origin_template=$2
+        shift 2
+        ;;
+      --tailscale-serve)
+        tailscale_serve=true
+        shift
+        ;;
+      --no-tailscale-serve)
+        tailscale_serve=false
+        shift
+        ;;
+      --localhost)
+        origin_template="${SWUBASE_WORKTREE_DEFAULT_PUBLIC_ORIGIN_TEMPLATE}"
+        tailscale_serve=false
+        shift
+        ;;
+      --show)
+        show_only=true
+        shift
+        ;;
+      -h|--help)
+        cat <<EOF
+Usage:
+  scripts/worktree-dev/swubase-worktree-dev configure-access [options]
+
+Options:
+  --localhost                    Restore the default localhost-only profile.
+  --origin-template URL          http(s) origin with exactly one {frontend_port} placeholder.
+  --tailscale-serve              Map each started frontend privately with Tailscale Serve.
+  --no-tailscale-serve           Do not manage Tailscale Serve; use an external proxy instead.
+  --show                         Print the configured profile and Google callback URIs.
+EOF
+        return 0
+        ;;
+      *)
+        fail "Unknown configure-access option: ${option}"
+        ;;
+    esac
+  done
+
+  case "${tailscale_serve}" in
+    true|false)
+      ;;
+    *)
+      fail "Tailscale Serve must be true or false."
+      ;;
+  esac
+  resolved_profile=$(resolve_public_origin "${origin_template}" "${SWUBASE_WORKTREE_FRONTEND_PORT_START}") \
+    || fail "--origin-template must be an http(s) origin with exactly one {frontend_port} placeholder and no path."
+  IFS=$'\t' read -r public_origin public_host public_protocol <<< "${resolved_profile}"
+  if [[ "${tailscale_serve}" == true && "${public_protocol}" != https: ]]; then
+    fail "Tailscale Serve requires an HTTPS public-origin template."
+  fi
+
+  if [[ "${show_only}" == true ]]; then
+    print_access_profile "${origin_template}" "${tailscale_serve}"
+    return 0
+  fi
+
+  if [[ "${SWUBASE_WORKTREE_ACCESS_CONFIG_FILE}" == "${SWUBASE_WORKTREE_CONFIG_DIR}/"* ]]; then
+    mkdir -p "${SWUBASE_WORKTREE_CONFIG_DIR}"
+    chmod 700 "${SWUBASE_WORKTREE_CONFIG_DIR}"
+  else
+    mkdir -p "$(dirname -- "${SWUBASE_WORKTREE_ACCESS_CONFIG_FILE}")"
+  fi
+  CONFIGURED_ACCESS_ORIGIN_TEMPLATE="${origin_template}"
+  CONFIGURED_ACCESS_TAILSCALE_SERVE="${tailscale_serve}"
+  write_file_atomically "${SWUBASE_WORKTREE_ACCESS_CONFIG_FILE}" write_access_config_contents
+  printf 'Saved per-machine worktree access profile. Existing running worktrees keep their current profile until restarted.\n'
+  print_access_profile "${origin_template}" "${tailscale_serve}"
+}
+
 write_local_state_contents() {
   local target_file=$1
 
@@ -160,6 +394,9 @@ write_local_state_contents() {
     write_assignment SWUBASE_DB_PORT "${SWUBASE_DB_PORT}"
     write_assignment SWUBASE_BACKEND_PORT "${SWUBASE_BACKEND_PORT}"
     write_assignment SWUBASE_FRONTEND_PORT "${SWUBASE_FRONTEND_PORT}"
+    write_assignment SWUBASE_WORKTREE_PUBLIC_ORIGIN "${SWUBASE_WORKTREE_PUBLIC_ORIGIN}"
+    write_assignment SWUBASE_WORKTREE_PUBLIC_HOST "${SWUBASE_WORKTREE_PUBLIC_HOST}"
+    write_assignment SWUBASE_WORKTREE_TAILSCALE_SERVE "${SWUBASE_WORKTREE_TAILSCALE_SERVE}"
     write_assignment SWUBASE_AUTH_SECRET "${SWUBASE_AUTH_SECRET}"
     write_assignment SWUBASE_DUMP_SHA256 "${SWUBASE_DUMP_SHA256:-}"
     write_assignment SWUBASE_DUMP_SOURCE "${SWUBASE_DUMP_SOURCE:-}"
@@ -182,12 +419,16 @@ write_registry_contents() {
     write_assignment SWUBASE_DB_PORT "${SWUBASE_DB_PORT}"
     write_assignment SWUBASE_BACKEND_PORT "${SWUBASE_BACKEND_PORT}"
     write_assignment SWUBASE_FRONTEND_PORT "${SWUBASE_FRONTEND_PORT}"
+    write_assignment SWUBASE_WORKTREE_PUBLIC_ORIGIN "${SWUBASE_WORKTREE_PUBLIC_ORIGIN}"
+    write_assignment SWUBASE_WORKTREE_PUBLIC_HOST "${SWUBASE_WORKTREE_PUBLIC_HOST}"
+    write_assignment SWUBASE_WORKTREE_TAILSCALE_SERVE "${SWUBASE_WORKTREE_TAILSCALE_SERVE}"
   } > "${target_file}"
 }
 
 write_worktree_env_contents() {
   local target_file=$1
-  local frontend_url="http://localhost:${SWUBASE_FRONTEND_PORT}"
+  local frontend_url="${SWUBASE_WORKTREE_PUBLIC_ORIGIN}"
+  local frontend_local_url="http://localhost:${SWUBASE_FRONTEND_PORT}"
   local backend_url="http://127.0.0.1:${SWUBASE_BACKEND_PORT}"
 
   {
@@ -201,24 +442,24 @@ write_worktree_env_contents() {
     write_assignment BETTER_AUTH_COOKIE_PREFIX "swubase-${SWUBASE_WORKTREE_ID}"
     write_assignment VITE_BETTER_AUTH_URL "${frontend_url}"
     write_assignment VITE_BACKEND_URL "${backend_url}"
-    write_assignment VITE_GAME_RESULTS_WS_URL "ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/game-results"
-    write_assignment VITE_LIVE_TOURNAMENT_WS_URL "ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/live-tournaments/:weekendId"
-    write_assignment SCREENSHOTTER_APP_BASE_URL "${frontend_url}"
+    write_assignment VITE_GAME_RESULTS_WS_URL "/api/ws/game-results"
+    write_assignment VITE_LIVE_TOURNAMENT_WS_URL "/api/ws/live-tournaments/:weekendId"
+    write_assignment SCREENSHOTTER_APP_BASE_URL "${frontend_local_url}"
     write_assignment DISCORD_TOURNAMENT_RESULTS_APP_BASE_URL "${frontend_url}"
   } > "${target_file}"
 }
 
 write_frontend_env_contents() {
   local target_file=$1
-  local frontend_url="http://localhost:${SWUBASE_FRONTEND_PORT}"
+  local frontend_url="${SWUBASE_WORKTREE_PUBLIC_ORIGIN}"
   local backend_url="http://127.0.0.1:${SWUBASE_BACKEND_PORT}"
 
   {
     printf '# Generated by scripts/worktree-dev/swubase-worktree-dev. Do not commit.\n'
     write_assignment VITE_BETTER_AUTH_URL "${frontend_url}"
     write_assignment VITE_BACKEND_URL "${backend_url}"
-    write_assignment VITE_GAME_RESULTS_WS_URL "ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/game-results"
-    write_assignment VITE_LIVE_TOURNAMENT_WS_URL "ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/live-tournaments/:weekendId"
+    write_assignment VITE_GAME_RESULTS_WS_URL "/api/ws/game-results"
+    write_assignment VITE_LIVE_TOURNAMENT_WS_URL "/api/ws/live-tournaments/:weekendId"
   } > "${target_file}"
 }
 
@@ -249,6 +490,8 @@ validate_loaded_state() {
 
   [[ "${SWUBASE_WORKTREE_PATH}" == "${SWUBASE_WORKTREE_REPOSITORY_DIR}" ]] \
     || fail "State file belongs to a different worktree: ${SWUBASE_WORKTREE_PATH}"
+
+  hydrate_legacy_access_profile
 }
 
 load_current_state() {
@@ -349,6 +592,8 @@ create_current_state() {
   SWUBASE_DB_PORT=$(claim_port database "${SWUBASE_WORKTREE_DB_PORT_START}" "${SWUBASE_WORKTREE_DB_PORT_END}")
   SWUBASE_BACKEND_PORT=$(claim_port backend "${SWUBASE_WORKTREE_BACKEND_PORT_START}" "${SWUBASE_WORKTREE_BACKEND_PORT_END}")
   SWUBASE_FRONTEND_PORT=$(claim_port frontend/OAuth "${SWUBASE_WORKTREE_FRONTEND_PORT_START}" "${SWUBASE_WORKTREE_FRONTEND_PORT_END}")
+  load_requested_access_profile
+  apply_requested_access_profile
   SWUBASE_AUTH_SECRET=$(generate_auth_secret)
   SWUBASE_DUMP_SHA256=""
   SWUBASE_DUMP_SOURCE=""
@@ -360,6 +605,14 @@ ensure_current_state() {
 
   if load_current_state; then
     if [[ "${SWUBASE_WORKTREE_ID}" == "${EXPECTED_WORKTREE_ID}" ]]; then
+      load_requested_access_profile
+      if [[ "${SWUBASE_WORKTREE_PUBLIC_ORIGIN}" != "${REQUESTED_SWUBASE_WORKTREE_PUBLIC_ORIGIN}" \
+        || "${SWUBASE_WORKTREE_TAILSCALE_SERVE}" != "${REQUESTED_SWUBASE_WORKTREE_TAILSCALE_SERVE}" ]]; then
+        if service_is_running backend || service_is_running frontend; then
+          fail "The machine access profile changed. Run 'down', then 'up' to restart this worktree with the new public origin."
+        fi
+        apply_requested_access_profile
+      fi
       SWUBASE_WORKTREE_BRANCH="${EXPECTED_WORKTREE_BRANCH}"
       SWUBASE_WORKTREE_REVISION="${EXPECTED_WORKTREE_REVISION}"
       write_current_state
@@ -459,20 +712,6 @@ start_database_container() {
     -p "127.0.0.1:${SWUBASE_DB_PORT}:5432" \
     "${SWUBASE_WORKTREE_POSTGRES_IMAGE}" >/dev/null
   wait_for_database
-}
-
-dotenv_value() {
-  local dotenv_file=$1
-  local key=$2
-  local value
-
-  [[ -f "${dotenv_file}" ]] || return 1
-  value=$(sed -n -E "s/^${key}=//p" "${dotenv_file}" | tail -n 1)
-  [[ -n "${value}" ]] || return 1
-  if [[ "${value}" == \"*\" || "${value}" == \'*\' ]]; then
-    value=${value:1:${#value}-2}
-  fi
-  printf '%s\n' "${value}"
 }
 
 configuration_value() {
@@ -696,7 +935,7 @@ start_backend_service() {
   pid_file=$(pid_file_for_service backend)
   log_file=$(log_file_for_service backend)
   rm -f -- "${pid_file}"
-  log_info "Starting backend on http://127.0.0.1:${SWUBASE_BACKEND_PORT}."
+  log_info "Starting backend on http://127.0.0.1:${SWUBASE_BACKEND_PORT} for ${SWUBASE_WORKTREE_PUBLIC_ORIGIN}."
   (
     cd -- "${SWUBASE_WORKTREE_REPOSITORY_DIR}"
     exec setsid nohup env \
@@ -705,10 +944,11 @@ start_backend_service() {
       HOST=127.0.0.1 \
       PORT="${SWUBASE_BACKEND_PORT}" \
       BETTER_AUTH_SECRET="${SWUBASE_AUTH_SECRET}" \
-      BETTER_AUTH_URL="http://localhost:${SWUBASE_FRONTEND_PORT}" \
+      BETTER_AUTH_URL="${SWUBASE_WORKTREE_PUBLIC_ORIGIN}" \
+      VITE_BETTER_AUTH_URL="${SWUBASE_WORKTREE_PUBLIC_ORIGIN}" \
       BETTER_AUTH_COOKIE_PREFIX="swubase-${SWUBASE_WORKTREE_ID}" \
       SCREENSHOTTER_APP_BASE_URL="http://localhost:${SWUBASE_FRONTEND_PORT}" \
-      DISCORD_TOURNAMENT_RESULTS_APP_BASE_URL="http://localhost:${SWUBASE_FRONTEND_PORT}" \
+      DISCORD_TOURNAMENT_RESULTS_APP_BASE_URL="${SWUBASE_WORKTREE_PUBLIC_ORIGIN}" \
       bun run dev
   ) >"${log_file}" 2>&1 &
   printf '%s\n' "$!" > "${pid_file}"
@@ -721,14 +961,15 @@ start_frontend_service() {
   pid_file=$(pid_file_for_service frontend)
   log_file=$(log_file_for_service frontend)
   rm -f -- "${pid_file}"
-  log_info "Starting frontend on http://localhost:${SWUBASE_FRONTEND_PORT}."
+  log_info "Starting frontend on ${SWUBASE_WORKTREE_PUBLIC_ORIGIN} (bound to 127.0.0.1:${SWUBASE_FRONTEND_PORT})."
   (
     cd -- "${SWUBASE_WORKTREE_REPOSITORY_DIR}/frontend"
     exec setsid nohup env \
-      VITE_BETTER_AUTH_URL="http://localhost:${SWUBASE_FRONTEND_PORT}" \
+      VITE_BETTER_AUTH_URL="${SWUBASE_WORKTREE_PUBLIC_ORIGIN}" \
       VITE_BACKEND_URL="http://127.0.0.1:${SWUBASE_BACKEND_PORT}" \
-      VITE_GAME_RESULTS_WS_URL="ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/game-results" \
-      VITE_LIVE_TOURNAMENT_WS_URL="ws://localhost:${SWUBASE_BACKEND_PORT}/api/ws/live-tournaments/:weekendId" \
+      VITE_GAME_RESULTS_WS_URL="/api/ws/game-results" \
+      VITE_LIVE_TOURNAMENT_WS_URL="/api/ws/live-tournaments/:weekendId" \
+      __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS="${SWUBASE_WORKTREE_PUBLIC_HOST}" \
       bun run dev -- --host 127.0.0.1 --port "${SWUBASE_FRONTEND_PORT}" --strictPort
   ) >"${log_file}" 2>&1 &
   printf '%s\n' "$!" > "${pid_file}"
@@ -750,6 +991,130 @@ wait_for_http_service() {
   fail "${description} did not become reachable. See $(log_file_for_service "${description,,}")."
 }
 
+tailscale_serve_expected_proxy() {
+  printf 'http://127.0.0.1:%s\n' "${SWUBASE_FRONTEND_PORT}"
+}
+
+tailscale_self_dns_name() {
+  require_command tailscale
+  tailscale status --json | bun -e '
+const input = await Bun.stdin.text();
+const dnsName = JSON.parse(input).Self?.DNSName;
+if (typeof dnsName !== "string" || dnsName.length === 0) process.exit(2);
+process.stdout.write(dnsName.replace(/\.$/, "").toLowerCase());
+'
+}
+
+tailscale_serve_mapping_state() {
+  local expected_host=$1
+  local expected_port=$2
+
+  require_command tailscale
+  tailscale serve status --json | \
+    TAILSCALE_EXPECTED_HOST="${expected_host}" TAILSCALE_EXPECTED_PORT="${expected_port}" bun -e '
+const input = await Bun.stdin.text();
+const config = JSON.parse(input);
+const host = process.env.TAILSCALE_EXPECTED_HOST.toLowerCase();
+const port = process.env.TAILSCALE_EXPECTED_PORT;
+const expectedKey = `${host}:${port}`;
+const web = config.Web ?? {};
+const matchingEntries = Object.entries(web)
+  .filter(([key]) => key.toLowerCase().endsWith(`:${port}`));
+const expectedEntry = Object.entries(web)
+  .find(([key]) => key.toLowerCase() === expectedKey)?.[1];
+const proxy = expectedEntry?.Handlers?.["/"]?.Proxy;
+
+if (typeof proxy === "string") {
+  process.stdout.write(`proxy\t${proxy}\n`);
+} else if (!config.TCP?.[port] && matchingEntries.length === 0) {
+  process.stdout.write("missing\t\n");
+} else {
+  process.stdout.write("other\t\n");
+}
+'
+}
+
+validate_tailscale_serve_profile() {
+  local tailscale_dns_name mapping_state mapping_proxy
+
+  [[ "${SWUBASE_WORKTREE_TAILSCALE_SERVE}" == true ]] || return 0
+  [[ "${SWUBASE_WORKTREE_PUBLIC_ORIGIN}" == https://* ]] \
+    || fail "Tailscale Serve requires an HTTPS public origin."
+
+  tailscale_dns_name=$(tailscale_self_dns_name) \
+    || fail "Could not determine this machine's Tailscale DNS name."
+  [[ "${SWUBASE_WORKTREE_PUBLIC_HOST}" == "${tailscale_dns_name}" ]] \
+    || fail "Tailscale Serve on this machine is available as '${tailscale_dns_name}', not '${SWUBASE_WORKTREE_PUBLIC_HOST}'. Use that hostname in the access profile or disable Tailscale Serve."
+
+  IFS=$'\t' read -r mapping_state mapping_proxy < <(
+    tailscale_serve_mapping_state "${SWUBASE_WORKTREE_PUBLIC_HOST}" "${SWUBASE_FRONTEND_PORT}"
+  )
+  case "${mapping_state}" in
+    missing)
+      ;;
+    proxy)
+      [[ "${mapping_proxy}" == "$(tailscale_serve_expected_proxy)" ]] \
+        || fail "Tailscale Serve HTTPS port ${SWUBASE_FRONTEND_PORT} already proxies '${mapping_proxy}', not this worktree's loopback frontend."
+      ;;
+    *)
+      fail "Tailscale Serve HTTPS port ${SWUBASE_FRONTEND_PORT} already has an unrelated configuration; refusing to replace it."
+      ;;
+  esac
+}
+
+ensure_tailscale_serve_mapping() {
+  local mapping_state mapping_proxy expected_proxy
+
+  [[ "${SWUBASE_WORKTREE_TAILSCALE_SERVE}" == true ]] || return 0
+  validate_tailscale_serve_profile
+  expected_proxy=$(tailscale_serve_expected_proxy)
+  IFS=$'\t' read -r mapping_state mapping_proxy < <(
+    tailscale_serve_mapping_state "${SWUBASE_WORKTREE_PUBLIC_HOST}" "${SWUBASE_FRONTEND_PORT}"
+  )
+
+  if [[ "${mapping_state}" == proxy && "${mapping_proxy}" == "${expected_proxy}" ]]; then
+    return 0
+  fi
+
+  log_info "Publishing ${SWUBASE_WORKTREE_PUBLIC_ORIGIN} privately through Tailscale Serve."
+  tailscale serve --https="${SWUBASE_FRONTEND_PORT}" --bg "${expected_proxy}"
+}
+
+disable_tailscale_serve_mapping() {
+  local mapping_state mapping_proxy expected_proxy
+
+  [[ "${SWUBASE_WORKTREE_TAILSCALE_SERVE:-false}" == true ]] || return 0
+  if ! command -v tailscale >/dev/null 2>&1; then
+    log_warning "Tailscale is unavailable, so this worktree's Serve mapping was left unchanged."
+    return 0
+  fi
+
+  expected_proxy=$(tailscale_serve_expected_proxy)
+  if ! IFS=$'\t' read -r mapping_state mapping_proxy < <(
+    tailscale_serve_mapping_state "${SWUBASE_WORKTREE_PUBLIC_HOST}" "${SWUBASE_FRONTEND_PORT}"
+  ); then
+    log_warning "Could not inspect Tailscale Serve, so this worktree's mapping was left unchanged."
+    return 0
+  fi
+
+  case "${mapping_state}" in
+    missing)
+      return 0
+      ;;
+    proxy)
+      if [[ "${mapping_proxy}" != "${expected_proxy}" ]]; then
+        log_warning "Tailscale Serve HTTPS port ${SWUBASE_FRONTEND_PORT} no longer points at this worktree; leaving it unchanged."
+        return 0
+      fi
+      log_info "Removing this worktree's private Tailscale Serve mapping on HTTPS port ${SWUBASE_FRONTEND_PORT}."
+      tailscale serve --https="${SWUBASE_FRONTEND_PORT}" off
+      ;;
+    *)
+      log_warning "Tailscale Serve HTTPS port ${SWUBASE_FRONTEND_PORT} has an unrelated configuration; leaving it unchanged."
+      ;;
+  esac
+}
+
 start_application_services() {
   require_command bun
   require_command curl
@@ -762,6 +1127,7 @@ start_application_services() {
   wait_for_http_service "http://127.0.0.1:${SWUBASE_BACKEND_PORT}/api" backend
   start_frontend_service
   wait_for_http_service "http://127.0.0.1:${SWUBASE_FRONTEND_PORT}" frontend
+  ensure_tailscale_serve_mapping
 }
 
 stop_service() {
@@ -787,6 +1153,7 @@ stop_service() {
 stop_current_worktree() {
   local purge_data=${1:-false}
 
+  disable_tailscale_serve_mapping
   stop_service frontend
   stop_service backend
 
@@ -820,6 +1187,8 @@ print_status() {
   local database_health="unavailable"
   local backend_status="stopped"
   local frontend_status="stopped"
+  local tailscale_serve_status="not configured"
+  local mapping_state mapping_proxy
 
   if docker container inspect "${SWUBASE_DB_CONTAINER}" >/dev/null 2>&1; then
     assert_current_container_ownership
@@ -831,6 +1200,23 @@ print_status() {
   service_is_running backend && backend_status="running"
   service_is_running frontend && frontend_status="running"
 
+  if [[ "${SWUBASE_WORKTREE_TAILSCALE_SERVE}" == true ]]; then
+    if command -v tailscale >/dev/null 2>&1 \
+      && IFS=$'\t' read -r mapping_state mapping_proxy < <(
+        tailscale_serve_mapping_state "${SWUBASE_WORKTREE_PUBLIC_HOST}" "${SWUBASE_FRONTEND_PORT}"
+      ); then
+      if [[ "${mapping_state}" == proxy && "${mapping_proxy}" == "$(tailscale_serve_expected_proxy)" ]]; then
+        tailscale_serve_status="mapped privately to ${mapping_proxy}"
+      elif [[ "${mapping_state}" == missing ]]; then
+        tailscale_serve_status="enabled in profile, but not currently mapped"
+      else
+        tailscale_serve_status="enabled in profile, but occupied by another Serve configuration"
+      fi
+    else
+      tailscale_serve_status="enabled in profile, but Tailscale status is unavailable"
+    fi
+  fi
+
   cat <<EOF
 Worktree: ${SWUBASE_WORKTREE_PATH}
 Identity: ${SWUBASE_WORKTREE_ID}
@@ -838,7 +1224,10 @@ Branch: ${SWUBASE_WORKTREE_BRANCH} (${SWUBASE_WORKTREE_REVISION})
 Database: ${SWUBASE_DB_CONTAINER} (${container_status}; ${database_health})
 Database URL: $(database_url)
 Backend: http://127.0.0.1:${SWUBASE_BACKEND_PORT} (${backend_status})
-Frontend: http://localhost:${SWUBASE_FRONTEND_PORT} (${frontend_status})
+Frontend (public): ${SWUBASE_WORKTREE_PUBLIC_ORIGIN} (${frontend_status})
+Frontend (loopback): http://localhost:${SWUBASE_FRONTEND_PORT}
+Google OAuth callback: ${SWUBASE_WORKTREE_PUBLIC_ORIGIN}/api/auth/callback/google
+Tailscale Serve: ${tailscale_serve_status}
 Logs: ${SWUBASE_WORKTREE_LOCAL_STATE_DIR}
 EOF
 }
@@ -880,6 +1269,8 @@ remove_stale_worktree() {
   [[ -f "${registry_file}" ]] || return 0
   # shellcheck disable=SC1090
   source "${registry_file}"
+
+  disable_tailscale_serve_mapping
 
   if docker container inspect "${SWUBASE_DB_CONTAINER}" >/dev/null 2>&1; then
     [[ "$(docker_label container "${SWUBASE_DB_CONTAINER}" com.swubase.worktree-id)" == "${SWUBASE_WORKTREE_ID}" ]] \

@@ -37,6 +37,26 @@ scripts/worktree-dev/swubase-worktree-dev status
 and `prune --yes` are destructive and may operate only on the exact labelled
 resources reported by the command.
 
+The default access profile is `http://localhost:{frontend_port}`. A developer
+can configure a machine-local public-origin template, optionally with private
+Tailscale Serve, using:
+
+```bash
+scripts/worktree-dev/swubase-worktree-dev configure-access \
+  --origin-template 'https://machine.tailnet.ts.net:{frontend_port}' \
+  --tailscale-serve
+```
+
+This profile belongs under the developer's config directory, never in Git or
+the shared `.env`. It controls Better Auth's trusted origin, frontend auth
+client URL, Vite's allowed host, and same-origin WebSocket proxying while the
+backend/database remain loopback-only. Tailscale Serve requires the actual
+machine DNS name and HTTPS; the launcher must only create/remove a mapping when
+it matches that worktree's exact loopback frontend. Do not use Funnel. Google
+callback URIs are exact rather than wildcard; `configure-access --show` prints
+the eight possible values. Existing running worktrees need `down` then `up` to
+adopt a changed profile.
+
 Do not create fixed-name PostgreSQL containers or reuse another worktree's
 database URL. Generated `.swubase/` and `.env.worktree` files are local state;
 never commit or manually copy them. Worktrees may restore only from a supplied
