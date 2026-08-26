@@ -139,5 +139,4 @@ Codex then runs the same agent-neutral bootstrap automatically when it creates
 a managed worktree. `.worktreeinclude` copies the local `.env` only for those
 Codex-managed worktrees; keep that file development-only. It has no effect for
 Claude Code, direct Git worktrees, or other agents, which must provide their
-own development configuration explicitly. `codex-setup.sh` remains as a
-backwards-compatible wrapper for an existing configured environment.
+own development configuration explicitly.
