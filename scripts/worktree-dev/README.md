@@ -98,6 +98,10 @@ configuration assigns an auth-cookie prefix per worktree because cookies are
 host-scoped rather than port-scoped. `status` prints the public URL, loopback
 URL, callback URI, and Serve state for the current worktree.
 
+`up` requires both Bun and Node. The launcher deliberately runs Vite's dev
+server under Node so its WebSocket proxy has the Node socket APIs it requires;
+the backend and other repository tooling continue to use Bun.
+
 ## Cleanup
 
 `down` stops processes and PostgreSQL but retains the labelled database volume

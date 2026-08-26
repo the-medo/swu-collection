@@ -57,6 +57,10 @@ callback URIs are exact rather than wildcard; `configure-access --show` prints
 the eight possible values. Existing running worktrees need `down` then `up` to
 adopt a changed profile.
 
+`up` requires Node as well as Bun: Vite is launched with Node so same-origin
+WebSocket proxying works reliably. Do not replace that worktree launcher with
+the Bun Vite runtime without revalidating remote WSS behavior.
+
 Do not create fixed-name PostgreSQL containers or reuse another worktree's
 database URL. Generated `.swubase/` and `.env.worktree` files are local state;
 never commit or manually copy them. Worktrees may restore only from a supplied

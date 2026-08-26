@@ -970,7 +970,7 @@ start_frontend_service() {
       VITE_GAME_RESULTS_WS_URL="/api/ws/game-results" \
       VITE_LIVE_TOURNAMENT_WS_URL="/api/ws/live-tournaments/:weekendId" \
       __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS="${SWUBASE_WORKTREE_PUBLIC_HOST}" \
-      bun run dev -- --host 127.0.0.1 --port "${SWUBASE_FRONTEND_PORT}" --strictPort
+      node ./node_modules/vite/bin/vite.js --host 127.0.0.1 --port "${SWUBASE_FRONTEND_PORT}" --strictPort
   ) >"${log_file}" 2>&1 &
   printf '%s\n' "$!" > "${pid_file}"
 }
@@ -1118,6 +1118,7 @@ disable_tailscale_serve_mapping() {
 start_application_services() {
   require_command bun
   require_command curl
+  require_command node
   require_command setsid
   [[ -f "${SWUBASE_WORKTREE_REPOSITORY_DIR}/.env" ]] \
     || fail "Create a development-only .env file before starting the app. See .env.example; do not copy production credentials into a worktree."
