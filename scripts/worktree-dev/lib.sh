@@ -488,6 +488,7 @@ jetbrains_datasource_entry() {
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://127.0.0.1:${SWUBASE_DB_PORT}/${SWUBASE_DB_NAME}?user=postgres&amp;password=${SWUBASE_WORKTREE_DB_PASSWORD}</jdbc-url>
+      <user-name>postgres</user-name>
       <remarks>Generated for this isolated SWUBASE worktree. Do not edit; run setup to refresh it.</remarks>
       <working-dir>\$PROJECT_DIR\$</working-dir>
     </data-source>

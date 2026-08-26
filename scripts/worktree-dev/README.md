@@ -22,8 +22,8 @@ SWUBASE local (<worktree identity>)
 ```
 
 It points to that worktree's own `127.0.0.1` database port and includes the
-local development credentials, so it is ready in WebStorm's **Database** tool
-window without an SSH tunnel or a Tailscale address. With JetBrains Gateway,
+fixed local-only `postgres` / `password` credentials, so it is ready in
+WebStorm's **Database** tool window without an SSH tunnel or a Tailscale address. With JetBrains Gateway,
 the IDE backend runs on the development machine, so `127.0.0.1` correctly
 means that machine rather than the client PC. JetBrains may ask once to download
 the PostgreSQL JDBC driver on the development machine.

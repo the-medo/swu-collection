@@ -311,9 +311,13 @@ main() {
   assert_file_contains "${first_datasource_file}" \
     "jdbc:postgresql://127.0.0.1:${first_db_port}/${first_database}?user=postgres&amp;password=password" \
     "First generated JetBrains datasource URL"
+  assert_file_contains "${first_datasource_file}" '<user-name>postgres</user-name>' \
+    "First generated JetBrains datasource username"
   assert_file_contains "${second_datasource_file}" \
     "jdbc:postgresql://127.0.0.1:${second_db_port}/${second_database}?user=postgres&amp;password=password" \
     "Second generated JetBrains datasource URL"
+  assert_file_contains "${second_datasource_file}" '<user-name>postgres</user-name>' \
+    "Second generated JetBrains datasource username"
 
   log_info "Switching the stopped second worktree to an external HTTPS access profile."
   run_worktree_command_with_access \
