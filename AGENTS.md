@@ -26,6 +26,15 @@
 - When writing an implementation plan, name the matching repository skills so
   the implementing agent can load them deliberately.
 
+## Cross-cutting delivery
+
+For every tracked source, test, schema, configuration, or tooling change, load
+`swubase-change-review` alongside the matching domain skill and
+`swubase-validation` before handoff or commit. It requires an independent,
+read-only local Claude Code review when the CLI is available; report clearly if
+that review could not run. Do not apply this requirement to documentation-only
+edits unless the user requests a code review.
+
 ## Worktree development
 
 For a newly created Linux/WSL worktree, use the agent-neutral bootstrap:

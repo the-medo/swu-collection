@@ -5,6 +5,18 @@ request. Start with the primary skill and add companions only when the task
 crosses their boundary. For implementation or code review, also use
 `swubase-validation` to choose the final checks.
 
+## Discovery, design, and delivery
+
+| Task pattern | Primary skill | Companion skills |
+| --- | --- | --- |
+| An intended feature, fix, operational change, or decision has material unanswered questions | `swubase-task-discovery` | Matching domain skill after the task is ready; `swubase-github-issues` only when tracking is requested |
+| Explain, assess, challenge, or choose a SWUBASE architectural direction | `swubase-architecture` | Affected domain skill; `swubase-documentation` to record a chosen durable decision |
+| Generate or assess future product, contributor, or operational improvement ideas | `swubase-product-discovery` | Affected domain skill for feasibility; `swubase-github-issues` only for selected ideas |
+| Diagnose a bug, regression, flaky behaviour, or performance problem | `swubase-debugging` | Affected domain skill; `swubase-validation`; `swubase-github-issues` only when tracking is requested |
+| Create, update, or audit durable project, feature, architecture, or operational documentation | `swubase-documentation` | Affected domain/operational skill for source-of-truth verification |
+| Draft, split, triage, or explicitly publish GitHub issues | `swubase-github-issues` | `swubase-task-discovery` for missing requirements; matching domain skill |
+| Make tracked source, test, schema, configuration, or tooling changes | Matching domain skill | `swubase-change-review` + `swubase-validation` before handoff/commit |
+
 ## Local development and contributor data
 
 | Task pattern | Primary skill | Companion skills |
