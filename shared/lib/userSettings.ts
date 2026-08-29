@@ -35,6 +35,9 @@ export interface UserSettings {
   deckImage_imageViewMode: DeckImageViewMode;
   deckImage_cardVariants: string;
   deckImage_exportWidth: number;
+  // Contributor development database
+  share_development_data: boolean;
+  share_development_data_matches: boolean;
 }
 
 export const userSettingsSchema = z.object({
@@ -66,6 +69,9 @@ export const userSettingsSchema = z.object({
   deckImage_imageViewMode: z.union([z.literal('full'), z.literal('small')]).default('full'),
   deckImage_cardVariants: z.string().default('{}'),
   deckImage_exportWidth: z.coerce.number().default(2200),
+  // Contributor development database
+  share_development_data: booleanPreprocessor.default(false),
+  share_development_data_matches: booleanPreprocessor.default(false),
 });
 
 export type UserSettingsSchema = z.infer<typeof userSettingsSchema>;

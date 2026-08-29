@@ -1,0 +1,4 @@
+-- The reviewed baseline sanitization rules are in 001-core-data.sql and
+-- 002-teams-and-matches.sql. Add later rules as a numbered *.sql file so they
+-- run after the relevant prerequisite. Each file runs with psql's
+-- ON_ERROR_STOP enabled, in filename order.

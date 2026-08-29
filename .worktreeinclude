@@ -1,0 +1,4 @@
+# This file is copied only into Codex-managed local worktrees. Keep the local
+# .env development-only; never place server backup paths or R2 write secrets in
+# it. The generated .env.worktree overlay provides each worktree's local URLs.
+.env

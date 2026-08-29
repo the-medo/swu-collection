@@ -1,0 +1,98 @@
+# SWUBASE agent guide
+
+## Repository overview
+
+| Area | Location | Stack |
+| --- | --- | --- |
+| Backend/API | `server/` | Hono, TypeScript, PostgreSQL, Drizzle |
+| Frontend | `frontend/` | React, TypeScript, Vite, TanStack |
+| Shared contracts | `types/`, `shared/` | Zod and TypeScript domain contracts |
+| Card catalog and official ingestion | `server/db/json/card-list.json`, `server/lib/cards/`, `lib/swu-resources/` | Static official data, preview-aware providers, generated assets |
+| Browser persistence | `frontend/src/dexie/` | Dexie/IndexedDB and cache synchronization |
+| Database schema/migrations | `server/db/schema/`, `drizzle/` | Drizzle, PostgreSQL |
+| Integrations/background work | `server/lib/`, `server/crons/`, `server/screenshotter/` | Discord, Karabast, WebSockets, Coolify jobs, Playwright |
+| Local worktree tooling | `scripts/worktree-dev/` | Bash, Docker, PostgreSQL 16 |
+| Server-only contributor-data producer | `scripts/remote-dev/` | Bash, PostgreSQL, R2/Coolify |
+
+## Instruction routing
+
+- Before implementing, reviewing, or validating a task, read
+  [`.agents/skills/SELECTION-MATRIX.md`](.agents/skills/SELECTION-MATRIX.md)
+  and load every repository skill that matches the changed workflow or files.
+  Do not load unrelated skills just because they are available.
+- Follow the matching skill's required source documents before changing a
+  covered workflow. The matrix routes migrations, Karabast, and preview-card
+  work to their detailed documentation.
+- When writing an implementation plan, name the matching repository skills so
+  the implementing agent can load them deliberately.
+
+## Cross-cutting delivery
+
+For every tracked source, test, schema, configuration, or tooling change, load
+`swubase-change-review` alongside the matching domain skill and
+`swubase-validation` before handoff or commit. It requires an independent,
+read-only local Claude Code review when the CLI is available; report clearly if
+that review could not run. Do not apply this requirement to documentation-only
+edits unless the user requests a code review.
+
+## Worktree development
+
+For a newly created Linux/WSL worktree, use the agent-neutral bootstrap:
+
+```bash
+scripts/worktree-dev/bootstrap-worktree.sh
+```
+
+For lifecycle operations, use the supported command rather than creating
+ad-hoc PostgreSQL containers:
+
+```bash
+scripts/worktree-dev/swubase-worktree-dev setup
+scripts/worktree-dev/swubase-worktree-dev up
+scripts/worktree-dev/swubase-worktree-dev status
+scripts/worktree-dev/swubase-worktree-dev down
+```
+
+`setup` is idempotent. Use `refresh-db` only when replacing development data is
+intentional. Use `down --purge-data` or `prune --yes` only after checking the
+exact labelled resources reported by the command. Never remove unlabelled
+Docker resources.
+
+The default worktree access profile is localhost-only. A developer may opt into
+a machine-local HTTPS origin and optional private Tailscale Serve mapping with
+`scripts/worktree-dev/swubase-worktree-dev configure-access`; it writes outside
+the repository and must never be committed. The worktree launcher keeps
+PostgreSQL/backend loopback-only, refuses to overwrite unrelated Serve routes,
+and removes only a matching worktree route. Changed profiles take effect after
+`down` then `up`; use `status` for the public URL and exact Google callback.
+
+Generated `.swubase/`, `.env.worktree`, `frontend/.env.worktree`, and the
+worktree's managed `.idea/dataSources.xml` and `.idea/dataSources.local.xml`
+entries are local state. Do not commit or copy them between worktrees. The
+bootstrap does not copy `.env` or start the app; each agent/developer must
+deliberately provide a development-only `.env` before running `up`. The
+JetBrains entries always target this worktree database on `127.0.0.1`; under
+Gateway, that is the remote IDE/backend machine.
+
+## Development data and external configuration
+
+Only the public sanitized-dump manifest may be downloaded by a worktree. Raw
+Coolify backups, their server paths, and R2 write credentials are server-only.
+
+Development `.env` values may intentionally point to development external
+services such as Discord. Do not add silent production fallbacks or invent
+credentials. Local PostgreSQL isolation does not prevent external webhooks,
+emails, OAuth traffic, or uploads.
+
+## Validation
+
+For changes to worktree tooling, run Bash syntax checks, exercise `status`, and
+verify that any Docker resource touched has the current `com.swubase.*` labels.
+Run `scripts/worktree-dev/test-concurrent-worktrees.sh` only for worktree
+lifecycle, resource-ownership, restore, port, or cleanup changes.
+
+Use `swubase-validation` plus the changed workflow's specialized skill to pick
+checks. For backend database changes, run `bun run db-migrate` against the
+intended local database. For frontend changes, run
+`bun run --cwd frontend build` in addition to focused checks relevant to the
+changed behavior.

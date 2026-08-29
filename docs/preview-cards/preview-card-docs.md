@@ -10,7 +10,9 @@ The key rule is:
 
 ## Data Model
 
-Preview rows are stored in the `preview_card` table, defined in `server/db/schema/preview_card.ts` and created by `drizzle/0053_long_squadron_supreme.sql`.
+Preview rows are stored in the `preview_card` table, defined in
+`server/db/schema/preview_card.ts` and created by
+`drizzle/0054_pink_jack_power.sql`.
 
 Columns:
 
@@ -97,7 +99,7 @@ Each section includes `cards` only when that section is stale. The legacy `lastU
 
 Preview cards are not only frontend data. Server paths that need card metadata use the merged provider:
 
-- `/api/decks/:id/json` loads `getMergedCardList()` before building public JSON exports.
+- `/api/deck/:id/json` loads `getMergedCardList()` before building public JSON exports.
 - `server/lib/decks/deckExport.ts` formats preview cards with `karabast_id` first, then `SET_###`, then the internal `cardId` fallback.
 - `server/lib/decks/updateDeckInformation.ts` uses merged cards for preview leaders and bases.
 - `server/lib/decks/generateDeckThumbnail.ts` uses merged cards for leader/base images.

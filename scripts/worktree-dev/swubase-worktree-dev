@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/lib.sh"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  scripts/worktree-dev/swubase-worktree-dev <command> [options]
+
+Commands:
+  setup [--dump PATH]        Create/reuse this worktree's PostgreSQL database.
+  up [--dump PATH]           Set up the database, then start backend and frontend.
+  start                      Start backend and frontend for an existing database.
+  refresh-db [--dump PATH]   Explicitly replace this worktree's database from a dump.
+  status                     Show this worktree's isolated resources and URLs.
+  logs [database|backend|frontend|all]
+                             Show recent logs for this worktree only.
+  down [--purge-data]        Stop app processes and PostgreSQL; retain data by default.
+  prune [--yes]              List or remove stale labelled worktree resources.
+  configure-access [options] Set/show this machine's localhost, HTTPS proxy, or Tailscale Serve profile.
+
+Dump selection for setup/up/refresh-db:
+  1. --dump PATH
+  2. SWUBASE_DEV_DUMP_PATH
+  3. ./pg-dump.dmp (a local ignored fallback)
+  4. checksum-verified public sanitized dump manifest
+
+By default, frontend/OAuth origins are selected from localhost ports 5173-5180.
+`configure-access` can set an HTTPS origin template for this machine and
+optionally manage private Tailscale Serve mappings. Google callback URIs remain
+exact (not wildcard) and `configure-access --show` prints the eight values for
+the configured template. PostgreSQL and backend ports are always separately
+allocated and bound to 127.0.0.1.
+EOF
+}
+
+parse_dump_option() {
+  REQUESTED_DUMP=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --dump)
+        [[ $# -ge 2 ]] || fail "--dump requires a path."
+        REQUESTED_DUMP=$2
+        shift 2
+        ;;
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      *)
+        fail "Unknown option: $1"
+        ;;
+    esac
+  done
+}
+
+main() {
+  local command=${1:-help}
+  shift || true
+
+  case "${command}" in
+    help|-h|--help)
+      usage
+      return 0
+      ;;
+    configure-access)
+      configure_access "$@"
+      return 0
+      ;;
+  esac
+
+  initialize_registry
+  acquire_registry_lock
+  trap release_registry_lock EXIT
+
+  case "${command}" in
+    setup)
+      parse_dump_option "$@"
+      ensure_current_state
+      setup_database "${REQUESTED_DUMP}" false
+      print_status
+      ;;
+    up)
+      parse_dump_option "$@"
+      ensure_current_state
+      setup_database "${REQUESTED_DUMP}" false
+      start_application_services
+      print_status
+      ;;
+    start)
+      [[ $# -eq 0 ]] || fail "start does not accept options."
+      load_current_state || fail "This worktree has not been set up. Run setup first."
+      ensure_current_state
+      start_application_services
+      print_status
+      ;;
+    refresh-db|recreate-db)
+      parse_dump_option "$@"
+      ensure_current_state
+      setup_database "${REQUESTED_DUMP}" true
+      print_status
+      ;;
+    status)
+      [[ $# -eq 0 ]] || fail "status does not accept options."
+      load_current_state || fail "This worktree has not been set up. Run setup first."
+      print_status
+      ;;
+    logs)
+      [[ $# -le 1 ]] || fail "logs accepts at most one target."
+      load_current_state || fail "This worktree has not been set up. Run setup first."
+      print_logs "${1:-all}"
+      ;;
+    down)
+      local purge_data=false
+      case "${1:-}" in
+        "")
+          ;;
+        --purge-data)
+          purge_data=true
+          ;;
+        *)
+          fail "down accepts only --purge-data."
+          ;;
+      esac
+      load_current_state || fail "This worktree has not been set up."
+      stop_current_worktree "${purge_data}"
+      ;;
+    prune)
+      case "${1:-}" in
+        "")
+          prune_stale_worktrees false
+          ;;
+        --yes)
+          prune_stale_worktrees true
+          ;;
+        *)
+          fail "prune accepts only --yes."
+          ;;
+      esac
+      ;;
+    *)
+      usage >&2
+      fail "Unknown command: ${command}"
+      ;;
+  esac
+}
+
+main "$@"

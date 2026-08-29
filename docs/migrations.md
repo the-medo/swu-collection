@@ -1,54 +1,59 @@
-# Migration with DB changes
+# Database migrations
 
-### Step 1: Generate the migration
+The Drizzle schemas in `server/db/schema/` are the current schema source of
+truth. Migrations are append-only once committed, shared, or applied.
 
-Run this command in the root of the project:
-```bash
-bun db-generate
-```
+Run every command from the repository root with `DATABASE_URL` pointing to the
+intended isolated development database.
 
-### Step 2: Check the generated file
-Drizzle will create a new file in your `drizzle/` directory (e.g., `drizzle/0041_your_migration_name.sql`). Open it and chack the logic.
+## Schema change
 
-Drizzle will also create snapshot file in `drizzle/meta` directory with the same id (`drizzle/meta/0000_snapshot.json`).
+1. Update the relevant file in `server/db/schema/`.
+2. Generate the migration:
 
-In case something is wrong:
-- Remove both generated files
-- Update schema
-- Re-run the migration command to regenerate the files
-- Check the generated files for any syntax errors or logical mistakes
+   ```bash
+   bun run db-generate
+   ```
 
-### Step 3: Run the migration
-Since you have a migration script in your project, apply the changes by running:
+3. Review all artifacts created for the same migration ID:
 
-```bash
-bun db-migrate
-```
+   - `drizzle/<id>_<name>.sql`
+   - `drizzle/meta/<id>_snapshot.json`
+   - the new entry in `drizzle/meta/_journal.json`
 
-# Custom migration (no DB changes, just seeding)
+   Check the SQL for destructive operations, nullability changes, defaults and
+   backfills, constraints, foreign-key delete behavior, indexes, casts, and
+   production-data volume.
 
-To create an empty migration in Drizzle with Bun, you can use the `--custom` flag with the `drizzle-kit generate` command. This will generate a new migration file with the next sequential prefix (e.g., `0041_your_name.sql`) that contains no schema changes, allowing you to add your custom SQL (like data seeding).
+4. Check and apply it:
 
-### Step 1: Generate the custom migration
-Run the following command in your terminal:
+   ```bash
+   bunx drizzle-kit check --config=drizzle.config.ts
+   bun run db-migrate
+   ```
 
-```bash
-bun db-generate --custom --name your_migration_name
-```
-
-### Step 2: Edit the generated file
-Drizzle will create a new file in your `drizzle/` directory (e.g., `drizzle/0041_your_migration_name.sql`). Open it and add your seeding logic:
-
-```sql
--- Example seeding logic
-INSERT INTO "your_table" ("format") VALUES ('New Format 1'), ('New Format 2');
-```
-
-Drizzle will also create snapshot file in `drizzle/meta` directory with the same id.
-
-### Step 3: Run the migration
-Since you have a migration script in your project, apply the changes by running:
+If a newly generated migration is wrong and has not been applied, shared, or
+committed, drop that exact entry with:
 
 ```bash
-bun db-migrate
+bunx drizzle-kit drop --config=drizzle.config.ts
 ```
+
+Confirm the migration selected by the interactive prompt before accepting the
+change. The command removes its SQL and snapshot and updates the journal
+together. Use a tightly scoped manual revert only if the command cannot handle
+the entry, then run `drizzle-kit check`; never leave those three artifacts out
+of sync or modify an older migration to represent a new change.
+
+## Custom data migration
+
+For seeding, backfills, or other SQL that does not originate from a schema
+diff, generate an empty tracked migration:
+
+```bash
+bun run db-generate --custom --name example_data_backfill
+```
+
+Edit the generated SQL file, then review the matching snapshot and journal
+entry and apply it with `bun run db-migrate` as above. A custom migration still
+needs all three migration artifacts.

@@ -9,15 +9,37 @@
 1. Docker installed (used only for local DB, but you can use something else)
 2. bun installed
 
-### Start database (postgres in docker):
-1. `docker pull postgres:16-alpine`
-2. `docker run -d --name swubase-postgres -e POSTGRES_PASSWORD=password -p 5442:5432 postgres:16-alpine`
+### Start database (Postgres in Docker)
+
+On Linux or WSL, use the worktree-aware setup command. It creates a labelled
+PostgreSQL container, volume, and ports unique to this checkout. Place an
+ignored `pg-dump.dmp` in the repository root, or let the command download the
+checksum-verified public sanitized dump:
+
+```bash
+# Linux or WSL
+./setup-local-db.sh
+# or: scripts/worktree-dev/swubase-worktree-dev setup
+```
+
+```powershell
+# Windows (PowerShell)
+.\setup-local-db.ps1
+```
+
+The Linux/WSL command keeps a healthy database on repeated runs. Use
+`scripts/worktree-dev/swubase-worktree-dev refresh-db` only when you explicitly
+want to replace it. See [`scripts/worktree-dev/README.md`](scripts/worktree-dev/README.md)
+for concurrent worktrees, status, app URLs, and cleanup.
+
+The current PowerShell script remains a single-checkout setup helper; concurrent
+worktree isolation is currently supported on Linux/WSL.
 
 
 ### Create .env file
 Currently it is possible to sign in only using github / google, so you will need cliend id/secrets for at least one of them, even in development:
 ```env
-DATABASE_URL=postgresql://postgres:password@localhost:5442/postgres
+DATABASE_URL=postgresql://postgres:password@localhost:5442/swubase_postgres_local
 BETTER_AUTH_SECRET=___random_string
 BETTER_AUTH_URL=http://localhost:5173
 VITE_BETTER_AUTH_URL=http://localhost:5173
@@ -41,3 +63,6 @@ To run server:
 To run frontend, go to `/frontend` and do the same:
 1. `bun install`
 2. `bun dev`
+
+For an isolated worktree, `scripts/worktree-dev/swubase-worktree-dev up` starts
+both processes with the generated per-worktree ports and URLs.
