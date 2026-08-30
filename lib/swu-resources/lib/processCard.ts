@@ -10,11 +10,17 @@ import { downloadAndTransformVariantImages } from './downloadAndTransformVariant
 import type { CardVariant, ParsedCardData } from '../types.ts';
 import { setInfo } from '../set-info.ts';
 import type { SwuSet } from '../../../types/enums.ts';
+import { fetchWithRetry } from './fetchWithRetry.ts';
 
-export async function processCard(card: any, skipExisting = true) {
+export type ProcessCardResult =
+  | { success: true; cardId: string }
+  | { success: false; cardId: string; cardName: string; swuId: string; error: unknown };
+
+export async function processCard(card: any, skipExisting = true): Promise<ProcessCardResult> {
   const c = card.attributes;
   if (c.subtitle === '') c.subtitle = null;
   const cardName = c.subtitle !== null ? `${c.title}, ${c.subtitle}` : c.title;
+  const cardId = transformToId(cardName);
 
   const expansion = c.expansion.data.attributes.code.toLowerCase() as SwuSet;
 
@@ -25,7 +31,7 @@ export async function processCard(card: any, skipExisting = true) {
       title: c.title,
       subtitle: c.subtitle,
       name: cardName,
-      cardId: transformToId(cardName),
+      cardId,
       cardUid: [String(c.cardUid)],
       artist: c.artist,
       cost: c.cost,
@@ -63,25 +69,22 @@ export async function processCard(card: any, skipExisting = true) {
     };
 
     let filename = transformToId(parsedCard.cardId);
+    const completedCardFilepath = path.resolve(`./lib/swu-resources/output/cards/${filename}.json`);
     let dirpath = path.resolve(`./lib/swu-resources/output/parsed/${parsedCard.set}`);
     let filepath = path.join(dirpath, `${filename}.json`);
     fs.mkdirSync(dirpath, { recursive: true });
 
-    if (fs.existsSync(filepath) && skipExisting) {
-      console.log(`File ${filepath} already exists, skipping.`);
-      return;
+    if (fs.existsSync(completedCardFilepath) && skipExisting) {
+      console.log(`File ${completedCardFilepath} already exists, skipping.`);
+      return { success: true, cardId };
     }
 
     fs.writeFileSync(filepath, JSON.stringify(parsedCard, null, 2));
     console.log(`Saved ${parsedCard.name} to ${filepath}`);
 
-    const variantsResponse = await fetch(
+    const variantsResponse = await fetchWithRetry(
       `https://admin.starwarsunlimited.com/api/card/printings/${parsedCard.swuId}?locale=all`,
     );
-
-    if (!variantsResponse.ok) {
-      throw new Error(`HTTP error! status: ${variantsResponse.status}`);
-    }
 
     const variants = (await variantsResponse.json()) as any;
     await delay(500);
@@ -111,7 +114,9 @@ export async function processCard(card: any, skipExisting = true) {
     fs.mkdirSync(dirpath, { recursive: true });
     fs.writeFileSync(filepath, JSON.stringify(finalObject, null, 2));
     console.log(`Saved ${parsedCard.name} to ${filepath}`);
+    return { success: true, cardId };
   } catch (err) {
     console.error(`Error processing card ${cardName}:`, err);
+    return { success: false, cardId, cardName, swuId: String(card.id), error: err };
   }
 }

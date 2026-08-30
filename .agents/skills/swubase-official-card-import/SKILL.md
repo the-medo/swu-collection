@@ -41,8 +41,15 @@ exact known set of staged card JSON and images before continuing.
 
 1. Run `lib/swu-resources/raw-data-parser.ts` only with explicit `--key=value`
    arguments, including `--expansions=...`. Use `--skipExisting=false` when
-   refreshing upstream corrections; its default `true` skips existing staged
-   cards.
+   refreshing upstream corrections; its default `true` skips cards with an
+   existing completed file under `output/cards` but retries cards that only
+   have an intermediate `output/parsed` file from an interrupted or failed
+   attempt. Numeric upstream expansion IDs are accepted even when they do not
+   have a `setInfo` row. This is expected for auxiliary promo expansions, but
+   inspect the resulting variant set code and ensure every generated card's
+   core `card.set` resolves to a known playable set through one of its
+   printings. A successful expansion-list response alone does not prove that
+   identity mapping is safe.
 2. Inspect `lib/swu-resources/output/parsed`,
    `lib/swu-resources/output/cards`, PNGs, WebPs, logs, counts, and
    representative cards. Check IDs, variants, printings, orientation, and
@@ -51,14 +58,27 @@ exact known set of staged card JSON and images before continuing.
    shapes. The merger assumes arrays; a legacy scalar old value can be spread
    into individual characters. Normalize the targeted input or fix/validate
    the merger before continuing.
-4. Only after reviewing every staged card file, run
+4. Official API list, printings, and variant-detail requests retry three times
+   after the initial failure, waiting five seconds between attempts. Exhausted
+   per-card failures are listed in red at the end, written to
+   `output/logs/failed-cards.json`, and produce a non-zero exit status. A later
+   success for the same logical `cardId` clears its earlier failure, which is
+   relevant when several requested expansions contain that card. Treat any
+   remaining report as an incomplete staging run; rerun with
+   `--skipExisting=false` after addressing it.
+5. When image publication is authorized, review the staged WebP set and run
+   `bun lib/swu-resources/upload-images.ts` before merging. Confirm that its
+   reported success count matches the reviewed staged WebP count; any failed
+   object makes the process exit non-zero.
+6. Only after reviewing every staged card file and completing any authorized
+   image upload, run
    `bun lib/swu-resources/card-merger.ts`. It rewrites the tracked
    `server/db/json/card-list.json`, merges all staged cards, unions old/new
    `cardUid` values, and deliberately restores old variants missing upstream.
-5. Review the catalog delta by changed card and variant IDs rather than only a
+7. Review the catalog delta by changed card and variant IDs rather than only a
    raw multi-megabyte JSON diff. Unexpected additions, retained stale variants,
    renames, or number changes need an explicit decision.
-6. `bun lib/swu-resources/variant-checker.ts --set=ash` is read-only, but replace
+8. `bun lib/swu-resources/variant-checker.ts --set=ash` is read-only, but replace
    the example set and remember the script currently checks only the hard-coded
    `Hyperspace Foil` variant. It is a diagnostic, not complete validation.
 
@@ -70,8 +90,10 @@ explicitly requests rollout actions.
 1. Run `bun lib/swu-resources/upload-images.ts` only when public R2 publication
    was requested and the intended credentials/file set were reviewed. It
    uploads every staged WebP to hard-coded bucket `swu-images` under `cards/`,
-   has no dry run, and overwrites an existing same-key public object. Verify
-   objects independently afterward.
+   has no dry run, trims accidental surrounding whitespace from its three R2
+   variables, and overwrites an existing same-key public object. It exits
+   non-zero when configuration is missing or any upload fails; still inspect
+   the failure output and verify objects independently afterward.
 2. Deploy/restart only when requested so the static import and startup-time
    official version change.
 3. After adding cards or changing default variants, run
@@ -94,9 +116,9 @@ explicitly requests rollout actions.
   hard-coded default expansion import. Never use that command for discovery.
 - The parser default is currently expansion 108. Always pass the intended
   expansion explicitly.
-- Parser, per-card processing, merger, variant checker, and image uploader catch
-  and log important failures without reliably returning a failing exit code.
-  Even the uploader's final success message does not prove every upload worked.
+- The merger and variant checker still catch and log important failures without
+  reliably returning a failing exit code. Inspect their output rather than
+  trusting process status alone.
 - The merger does not remove absent upstream cards and restores absent old
   variants. Deletion or replacement therefore needs explicit migration work.
 - The official JSON is cast rather than runtime-validated. In particular,

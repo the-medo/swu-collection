@@ -3,6 +3,7 @@ import { processCard } from './lib/processCard.ts';
 import { setInfo } from './set-info.ts';
 import type { SwuSet } from '../../types/enums.ts';
 import { processArguments } from './lib/processArguments.ts';
+import { fetchWithRetry } from './lib/fetchWithRetry.ts';
 
 const imagePath = './lib/swu-resources/output/images';
 export const pngImagePath = `${imagePath}/png`;
@@ -17,6 +18,11 @@ const expansionsToProcess = params.expansions
   : [108];
 
 async function main() {
+  const failureLogPath = './lib/swu-resources/output/logs/failed-cards.json';
+  const failedCards = new Map<
+    string,
+    { cardId: string; cardName: string; swuId: string; error: unknown }
+  >();
   try {
     let cardCounter = 0;
     const startFrom = params.start ? parseInt(params.start) : 0;
@@ -47,11 +53,7 @@ async function main() {
           url = `https://admin.starwarsunlimited.com/api/card-list?locale=en&orderBy[expansion][id]=asc&sort[0]=type.sortValue%3Aasc%2C%20expansion.sortValue%3Adesc%2CcardNumber%3Aasc%2C&filters[$and][0][variantOf][id][$null]=true&filters[$and][1][expansion][id][$in][0]=${expansionId}&aspectMethod=0&traitMethod=0&pagination[page]=${page}&pagination[pageSize]=50`;
         }
         console.log('Getting cards from url: ', url, '');
-        const cardsResponse = await fetch(url);
-
-        if (!cardsResponse.ok) {
-          throw new Error(`HTTP error! status: ${cardsResponse.status}`);
-        }
+        const cardsResponse = await fetchWithRetry(url);
 
         const cards = (await cardsResponse.json()) as any;
 
@@ -75,15 +77,45 @@ async function main() {
               process.exit(1);
             }
           }
-          await processCard(card, skipExisting);
+          const result = await processCard(card, skipExisting);
+          if (result.success) failedCards.delete(result.cardId);
+          else failedCards.set(result.cardId, result);
           console.log(`=============================================================`);
         }
       }
     }
 
-    console.log('Finished processing all cards.');
+    if (failedCards.size > 0) {
+      fs.mkdirSync('./lib/swu-resources/output/logs', { recursive: true });
+      fs.writeFileSync(
+        failureLogPath,
+        JSON.stringify(
+          [...failedCards.values()].map(({ cardId, cardName, swuId, error }) => ({
+            cardId,
+            cardName,
+            swuId,
+            error: error instanceof Error ? error.message : String(error),
+          })),
+          null,
+          2,
+        ),
+      );
+      console.error(`\n\x1b[31m${failedCards.size} card(s) failed after all retries:\x1b[0m`);
+      for (const failedCard of failedCards.values()) {
+        console.error(
+          `\x1b[31m- ${failedCard.cardName} (SWU ID ${failedCard.swuId}): ${String(failedCard.error)}\x1b[0m`,
+        );
+      }
+      console.error(`\x1b[31mFailure details written to ${failureLogPath}.\x1b[0m`);
+      process.exitCode = 1;
+      return;
+    }
+
+    if (fs.existsSync(failureLogPath)) fs.rmSync(failureLogPath);
+    console.log('Finished processing all cards successfully.');
   } catch (error) {
     console.error('Error loading JSON:', error);
+    process.exitCode = 1;
   }
 }
 
