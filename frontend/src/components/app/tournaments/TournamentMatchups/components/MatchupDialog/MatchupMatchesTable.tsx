@@ -11,6 +11,7 @@ import {
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { cn } from '@/lib/utils.ts';
 import type { MatchupMatch } from '../../utils/getMatchesForMatchup.ts';
+import { getSwissRoundCount, getTopCutRoundLabel } from './matchupRound.ts';
 
 const MATCHES_BATCH_SIZE = 30;
 const LOAD_MORE_THRESHOLD_PX = 200;
@@ -94,10 +95,12 @@ const MatchupMatchesTable: React.FC<MatchupMatchesTableProps> = ({
 }) => {
   const { data: cardListData } = useCardList();
   const labelRenderer = useLabel();
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const [visibleMatchCount, setVisibleMatchCount] = React.useState(MATCHES_BATCH_SIZE);
 
   React.useEffect(() => {
     setVisibleMatchCount(MATCHES_BATCH_SIZE);
+    scrollContainerRef.current?.scrollTo({ top: 0 });
   }, [matches]);
 
   const visibleMatches = matches.slice(0, visibleMatchCount);
@@ -129,7 +132,11 @@ const MatchupMatchesTable: React.FC<MatchupMatchesTableProps> = ({
   }
 
   return (
-    <div className="h-full overflow-auto rounded-md border" onScroll={handleScroll}>
+    <div
+      ref={scrollContainerRef}
+      className="h-full overflow-auto rounded-md border"
+      onScroll={handleScroll}
+    >
       <table className="w-full min-w-[780px] border-collapse text-sm">
         <thead className="sticky top-0 z-10 bg-background shadow-xs">
           <tr>
@@ -158,6 +165,12 @@ const MatchupMatchesTable: React.FC<MatchupMatchesTableProps> = ({
               const colPlayerWon = rowResult === 0;
               const isDraw = rowResult === 1;
               const totalRounds = roundCountsByTournament.get(match.tournamentId);
+              const roundLabel = getTopCutRoundLabel(
+                tournament?.bracketInfo,
+                match.round,
+                totalRounds,
+              );
+              const swissRoundCount = getSwissRoundCount(tournament?.bracketInfo, totalRounds);
               const score =
                 gameDraws > 0
                   ? `${rowGameWins}-${colGameWins}-${gameDraws}`
@@ -181,8 +194,14 @@ const MatchupMatchesTable: React.FC<MatchupMatchesTableProps> = ({
                     </div>
                   </td>
                   <td className="whitespace-nowrap p-2 align-top text-xs">
-                    <strong>R{match.round}</strong>
-                    {totalRounds ? ` of ${totalRounds}` : ''}
+                    {roundLabel ? (
+                      <strong>{roundLabel}</strong>
+                    ) : (
+                      <>
+                        <strong>R{match.round}</strong>
+                        {swissRoundCount ? ` of ${swissRoundCount}` : ''}
+                      </>
+                    )}
                   </td>
                   <td
                     className={cn('p-2 align-top', {

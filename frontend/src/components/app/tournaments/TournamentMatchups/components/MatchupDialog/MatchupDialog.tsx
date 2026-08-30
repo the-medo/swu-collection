@@ -17,7 +17,10 @@ import MatchResultBox from '@/components/app/statistics/components/MatchResultBo
 import { createMatchupResult } from '../../utils/createMatchupResult.ts';
 import { getMatchesForMatchup } from '../../utils/getMatchesForMatchup.ts';
 import MatchupDeckViewer from './MatchupDeckViewer.tsx';
+import MatchupMatchFilters from './MatchupMatchFilters.tsx';
 import MatchupMatchesTable from './MatchupMatchesTable.tsx';
+import { createDefaultMatchupMatchFilters } from './matchupMatchFilterTypes.ts';
+import { isTopCutRound } from './matchupRound.ts';
 
 interface MatchupDialogProps {
   rowKey: string;
@@ -52,6 +55,7 @@ const MatchupDialog: React.FC<MatchupDialogProps> = ({
   onClose,
 }) => {
   const [selectedDeckId, setSelectedDeckId] = useState<string>();
+  const [matchFilters, setMatchFilters] = useState(createDefaultMatchupMatchFilters);
   const matchupMatches = useMemo(
     () =>
       getMatchesForMatchup({
@@ -76,15 +80,62 @@ const MatchupDialog: React.FC<MatchupDialogProps> = ({
     return roundCounts;
   }, [matches]);
 
+  const filteredMatchupMatches = useMemo(
+    () =>
+      matchupMatches.filter(matchupMatch => {
+        const tournamentId = matchupMatch.match.tournamentId;
+        const tournament = tournaments[tournamentId]?.tournament;
+        const attendance = tournament?.attendance;
+
+        if (
+          matchFilters.minPlayerCount !== undefined &&
+          (attendance === undefined || attendance < matchFilters.minPlayerCount)
+        ) {
+          return false;
+        }
+
+        if (
+          matchFilters.minRound !== undefined &&
+          matchupMatch.match.round < matchFilters.minRound
+        ) {
+          return false;
+        }
+
+        if (matchFilters.topCutRoundsOnly) {
+          const totalRounds = roundCountsByTournament.get(tournamentId);
+          if (!isTopCutRound(tournament?.bracketInfo, matchupMatch.match.round, totalRounds)) {
+            return false;
+          }
+        }
+
+        if (matchFilters.deckAResult === 'win' && matchupMatch.rowResult !== 3) return false;
+        if (matchFilters.deckAResult === 'loss' && matchupMatch.rowResult !== 0) return false;
+
+        if (matchFilters.maxPlacementPercentile !== undefined) {
+          const rowPlacement = matchupMatch.rowPlayer.deck.tournamentDeck.placement;
+          const colPlacement = matchupMatch.colPlayer.deck.tournamentDeck.placement;
+
+          if (!attendance || rowPlacement === null || colPlacement === null) return false;
+
+          const maxPlacement = (attendance * matchFilters.maxPlacementPercentile) / 100;
+          if (rowPlacement > maxPlacement || colPlacement > maxPlacement) return false;
+        }
+
+        return true;
+      }),
+    [matchFilters, matchupMatches, roundCountsByTournament, tournaments],
+  );
+
   const rowLabel = getLabelText(labelRenderer, rowKey, metaInfo);
   const colLabel = getLabelText(labelRenderer, colKey, metaInfo);
-  const matchCountLabel = `${matchupMatches.length} ${
-    matchupMatches.length === 1 ? 'match' : 'matches'
-  }`;
+  const matchCountLabel =
+    filteredMatchupMatches.length === matchupMatches.length
+      ? `${matchupMatches.length} ${matchupMatches.length === 1 ? 'match' : 'matches'}`
+      : `${filteredMatchupMatches.length} of ${matchupMatches.length} matches`;
   const matchupResult = useMemo(
     () =>
       createMatchupResult({
-        matches: matchupMatches,
+        matches: filteredMatchupMatches,
         tournaments,
         rowKey,
         colKey,
@@ -92,7 +143,7 @@ const MatchupDialog: React.FC<MatchupDialogProps> = ({
         rowLabel,
         colLabel,
       }),
-    [colKey, colLabel, matchupMatches, metaInfo, rowKey, rowLabel, tournaments],
+    [colKey, colLabel, filteredMatchupMatches, metaInfo, rowKey, rowLabel, tournaments],
   );
 
   const handleOpenChange = (open: boolean) => {
@@ -119,6 +170,7 @@ const MatchupDialog: React.FC<MatchupDialogProps> = ({
             className="flex min-h-[360px] flex-col gap-2 overflow-hidden xl:min-h-0"
             aria-label="Matchup matches"
           >
+            <MatchupMatchFilters value={matchFilters} onChange={setMatchFilters} />
             {matchupResult && (
               <MatchResultBox
                 match={matchupResult}
@@ -130,7 +182,7 @@ const MatchupDialog: React.FC<MatchupDialogProps> = ({
             )}
             <div className="min-h-0 flex-1">
               <MatchupMatchesTable
-                matches={matchupMatches}
+                matches={filteredMatchupMatches}
                 tournaments={tournaments}
                 roundCountsByTournament={roundCountsByTournament}
                 rowKey={rowKey}
