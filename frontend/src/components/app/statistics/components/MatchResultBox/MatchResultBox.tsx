@@ -84,7 +84,7 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({
               />
             </DeckBackgroundDecoration>
           )}
-          <CardContent className="flex p-2 relative z-10 px-50">
+          <CardContent className="relative z-10 flex p-2 px-4 sm:px-50">
             <div className="flex flex-col flex-1 md:flex-row justify-around gap-4 items-center">
               <div className="flex flex-col items-center">
                 <h3

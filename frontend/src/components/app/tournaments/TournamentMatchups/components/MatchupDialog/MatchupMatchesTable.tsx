@@ -84,6 +84,118 @@ const formatTournamentDate = (value: string) => {
     : new Intl.DateTimeFormat(undefined, { dateStyle: 'short' }).format(date);
 };
 
+interface MobileMatchCardProps {
+  matchupMatch: MatchupMatch;
+  tournaments: TournamentInfoMap;
+  roundCountsByTournament: ReadonlyMap<string, number>;
+  cardListData: CardListResponse | undefined;
+  labelRenderer: ReturnType<typeof useLabel>;
+  onDeckClick: (deckId: string) => void;
+}
+
+const MobileMatchCard: React.FC<MobileMatchCardProps> = ({
+  matchupMatch: { match, rowPlayer, colPlayer, rowGameWins, colGameWins, gameDraws, rowResult },
+  tournaments,
+  roundCountsByTournament,
+  cardListData,
+  labelRenderer,
+  onDeckClick,
+}) => {
+  const tournament = tournaments[match.tournamentId]?.tournament;
+  const rowPlayerWon = rowResult === 3;
+  const colPlayerWon = rowResult === 0;
+  const isDraw = rowResult === 1;
+  const totalRounds = roundCountsByTournament.get(match.tournamentId);
+  const roundLabel = getTopCutRoundLabel(tournament?.bracketInfo, match.round, totalRounds);
+  const swissRoundCount = getSwissRoundCount(tournament?.bracketInfo, totalRounds);
+  const score =
+    gameDraws > 0 ? `${rowGameWins}-${colGameWins}-${gameDraws}` : `${rowGameWins}-${colGameWins}`;
+
+  return (
+    <article className="space-y-2 p-3">
+      <div className="flex min-w-0 items-start justify-between gap-3">
+        <div className="min-w-0">
+          <Link
+            to="/tournaments/$tournamentId"
+            params={{ tournamentId: match.tournamentId }}
+            className="flex min-w-0 items-start gap-1 text-xs font-medium hover:underline"
+          >
+            <ExternalLink className="mt-0.5 size-3 shrink-0" />
+            <span className="truncate">{tournament?.name ?? 'Unknown tournament'}</span>
+          </Link>
+          <div className="mt-1 truncate text-[11px] text-muted-foreground">
+            {tournament?.date && formatTournamentDate(tournament.date)}
+            {tournament?.attendance !== undefined && ` (${tournament.attendance} players)`}
+          </div>
+        </div>
+        <div className="shrink-0 text-right text-xs">
+          <strong>{roundLabel ?? `R${match.round}`}</strong>
+          {!roundLabel && swissRoundCount ? (
+            <span className="text-muted-foreground"> of {swissRoundCount}</span>
+          ) : null}
+        </div>
+      </div>
+
+      <div
+        className={cn('rounded-md border p-2', {
+          'border-green-300/70 bg-green-100/60 dark:border-green-800 dark:bg-green-900/40':
+            rowPlayerWon,
+          'border-red-300/70 bg-red-100/60 dark:border-red-800 dark:bg-red-900/40': colPlayerWon,
+          'border-amber-300/70 bg-amber-100/60 dark:border-amber-800 dark:bg-amber-900/40': isDraw,
+        })}
+      >
+        <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Deck A · {rowPlayerWon ? 'Win' : colPlayerWon ? 'Loss' : 'Draw'}
+        </div>
+        <PlayerDeck
+          playerName={rowPlayer.username}
+          deck={rowPlayer.deck}
+          points={rowPlayer.points}
+          cardListData={cardListData}
+          labelRenderer={labelRenderer}
+          onClick={onDeckClick}
+        />
+      </div>
+
+      <div className="flex items-center gap-2" aria-label={`Deck A to Deck B game score: ${score}`}>
+        <div className="h-px flex-1 bg-border" />
+        <span
+          className={cn('rounded-md px-2 py-1 text-xs font-bold tabular-nums', {
+            'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300': rowPlayerWon,
+            'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300': colPlayerWon,
+            'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300': isDraw,
+          })}
+        >
+          {score}
+          {gameDraws > 0 && <span className="ml-1 font-normal text-muted-foreground">W-L-D</span>}
+        </span>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+
+      <div
+        className={cn('rounded-md border p-2', {
+          'border-red-300/70 bg-red-100/60 dark:border-red-800 dark:bg-red-900/40': rowPlayerWon,
+          'border-green-300/70 bg-green-100/60 dark:border-green-800 dark:bg-green-900/40':
+            colPlayerWon,
+          'border-amber-300/70 bg-amber-100/60 dark:border-amber-800 dark:bg-amber-900/40': isDraw,
+        })}
+      >
+        <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Deck B · {colPlayerWon ? 'Win' : rowPlayerWon ? 'Loss' : 'Draw'}
+        </div>
+        <PlayerDeck
+          playerName={colPlayer.username}
+          deck={colPlayer.deck}
+          points={colPlayer.points}
+          cardListData={cardListData}
+          labelRenderer={labelRenderer}
+          onClick={onDeckClick}
+        />
+      </div>
+    </article>
+  );
+};
+
 const MatchupMatchesTable: React.FC<MatchupMatchesTableProps> = ({
   matches,
   tournaments,
@@ -137,7 +249,26 @@ const MatchupMatchesTable: React.FC<MatchupMatchesTableProps> = ({
       className="h-full overflow-auto rounded-md border"
       onScroll={handleScroll}
     >
-      <table className="w-full min-w-[780px] border-collapse text-sm">
+      <div className="divide-y lg:hidden">
+        {visibleMatches.map(matchupMatch => (
+          <MobileMatchCard
+            key={matchupMatch.match.id}
+            matchupMatch={matchupMatch}
+            tournaments={tournaments}
+            roundCountsByTournament={roundCountsByTournament}
+            cardListData={cardListData}
+            labelRenderer={labelRenderer}
+            onDeckClick={onDeckClick}
+          />
+        ))}
+        {hasMoreMatches && (
+          <div className="p-3 text-center text-xs text-muted-foreground">
+            Showing {visibleMatches.length} of {matches.length} matches. Scroll to load more.
+          </div>
+        )}
+      </div>
+
+      <table className="hidden w-full min-w-[780px] border-collapse text-sm lg:table">
         <thead className="sticky top-0 z-10 bg-background shadow-xs">
           <tr>
             <th scope="col" className="w-[180px] border-b p-2 text-left text-xs font-semibold">

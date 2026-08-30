@@ -21,6 +21,7 @@ import MatchupMatchFilters from './MatchupMatchFilters.tsx';
 import MatchupMatchesTable from './MatchupMatchesTable.tsx';
 import { createDefaultMatchupMatchFilters } from './matchupMatchFilterTypes.ts';
 import { isTopCutRound } from './matchupRound.ts';
+import { cn } from '@/lib/utils.ts';
 
 interface MatchupDialogProps {
   rowKey: string;
@@ -55,6 +56,7 @@ const MatchupDialog: React.FC<MatchupDialogProps> = ({
   onClose,
 }) => {
   const [selectedDeckId, setSelectedDeckId] = useState<string>();
+  const [mobilePane, setMobilePane] = useState<'matches' | 'deck'>('matches');
   const [matchFilters, setMatchFilters] = useState(createDefaultMatchupMatchFilters);
   const matchupMatches = useMemo(
     () =>
@@ -165,9 +167,38 @@ const MatchupDialog: React.FC<MatchupDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto xl:grid-cols-[minmax(0,1.6fr)_minmax(22rem,1fr)] xl:overflow-hidden">
+        <div
+          aria-label="Matchup dialog view"
+          className="grid h-9 w-full grid-cols-2 rounded-md bg-muted p-1 text-muted-foreground xl:hidden"
+        >
+          <button
+            type="button"
+            aria-pressed={mobilePane === 'matches'}
+            aria-controls="matchup-matches-panel"
+            className="rounded-sm px-3 text-sm font-medium transition-all aria-pressed:bg-background aria-pressed:text-foreground aria-pressed:shadow-xs focus-visible:outline-2 focus-visible:outline-primary"
+            onClick={() => setMobilePane('matches')}
+          >
+            Matches
+          </button>
+          <button
+            type="button"
+            aria-pressed={mobilePane === 'deck'}
+            aria-controls="matchup-deck-panel"
+            disabled={!selectedDeckId}
+            className="rounded-sm px-3 text-sm font-medium transition-all aria-pressed:bg-background aria-pressed:text-foreground aria-pressed:shadow-xs focus-visible:outline-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50"
+            onClick={() => setMobilePane('deck')}
+          >
+            Deck details
+          </button>
+        </div>
+
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden xl:grid-cols-[minmax(0,1.6fr)_minmax(22rem,1fr)]">
           <section
-            className="flex min-h-[360px] flex-col gap-2 overflow-hidden xl:min-h-0"
+            id="matchup-matches-panel"
+            className={cn(
+              'min-h-0 flex-col gap-2 overflow-hidden xl:flex',
+              mobilePane === 'matches' ? 'flex' : 'hidden',
+            )}
             aria-label="Matchup matches"
           >
             <MatchupMatchFilters value={matchFilters} onChange={setMatchFilters} />
@@ -188,18 +219,28 @@ const MatchupDialog: React.FC<MatchupDialogProps> = ({
                 rowKey={rowKey}
                 colKey={colKey}
                 metaInfo={metaInfo}
-                onDeckClick={deckId => setSelectedDeckId(deckId)}
+                onDeckClick={deckId => {
+                  setSelectedDeckId(deckId);
+                  setMobilePane('deck');
+                }}
               />
             </div>
           </section>
           <section
-            className="min-h-[360px] overflow-hidden rounded-md border xl:min-h-0"
+            id="matchup-deck-panel"
+            className={cn(
+              'min-h-0 overflow-hidden rounded-md border xl:block',
+              mobilePane === 'deck' ? 'block' : 'hidden',
+            )}
             aria-label="Deck details"
           >
             {selectedDeckId ? (
               <MatchupDeckViewer
                 deckId={selectedDeckId}
-                onClose={() => setSelectedDeckId(undefined)}
+                onClose={() => {
+                  setSelectedDeckId(undefined);
+                  setMobilePane('matches');
+                }}
               />
             ) : (
               <div className="flex h-full min-h-[360px] items-center justify-center p-6 text-center text-sm text-muted-foreground xl:min-h-0">

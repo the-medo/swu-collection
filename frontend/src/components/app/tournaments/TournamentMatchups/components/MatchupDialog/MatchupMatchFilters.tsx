@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Info } from 'lucide-react';
+import { ChevronDown, Info, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Input } from '@/components/ui/input.tsx';
@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select.tsx';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
+import { cn } from '@/lib/utils.ts';
 import {
   createDefaultMatchupMatchFilters,
   type DeckAResultFilter,
@@ -33,17 +34,47 @@ const parseOptionalNumber = (value: string, min: number, max?: number) => {
 };
 
 const MatchupMatchFilters: React.FC<MatchupMatchFiltersProps> = ({ value, onChange }) => {
+  const [mobileExpanded, setMobileExpanded] = React.useState(false);
   const hasActiveFilters =
     value.minPlayerCount !== undefined ||
     value.minRound !== undefined ||
     value.topCutRoundsOnly ||
     value.deckAResult !== 'any' ||
     value.maxPlacementPercentile !== undefined;
+  const activeFilterCount = [
+    value.minPlayerCount !== undefined,
+    value.minRound !== undefined,
+    value.topCutRoundsOnly,
+    value.deckAResult !== 'any',
+    value.maxPlacementPercentile !== undefined,
+  ].filter(Boolean).length;
 
   return (
     <div className="shrink-0 rounded-md border bg-muted/30 p-3" aria-label="Match filters">
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="w-36 space-y-1">
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="h-8 w-full justify-between sm:hidden"
+        aria-expanded={mobileExpanded}
+        onClick={() => setMobileExpanded(expanded => !expanded)}
+      >
+        <span className="flex items-center gap-2">
+          <SlidersHorizontal className="size-4" />
+          Filters{activeFilterCount > 0 && ` (${activeFilterCount})`}
+        </span>
+        <ChevronDown
+          className={cn('size-4 transition-transform', mobileExpanded && 'rotate-180')}
+        />
+      </Button>
+
+      <div
+        className={cn(
+          'grid-cols-2 items-end gap-3 pt-3 sm:flex sm:flex-wrap sm:pt-0',
+          mobileExpanded ? 'grid' : 'hidden sm:flex',
+        )}
+      >
+        <div className="col-span-2 w-full space-y-1 sm:col-span-1 sm:w-36">
           <Label htmlFor="matchup-min-player-count" className="text-xs">
             Min. tournament attendance
           </Label>
@@ -64,7 +95,7 @@ const MatchupMatchFilters: React.FC<MatchupMatchFiltersProps> = ({ value, onChan
           />
         </div>
 
-        <div className="w-28 space-y-1">
+        <div className="w-full space-y-1 sm:w-28">
           <Label htmlFor="matchup-min-round" className="text-xs">
             Min. round
           </Label>
@@ -85,7 +116,7 @@ const MatchupMatchFilters: React.FC<MatchupMatchFiltersProps> = ({ value, onChan
           />
         </div>
 
-        <div className="w-32 space-y-1">
+        <div className="w-full space-y-1 sm:w-32">
           <Label htmlFor="matchup-deck-a-result" className="text-xs">
             Deck A result
           </Label>
@@ -104,7 +135,7 @@ const MatchupMatchFilters: React.FC<MatchupMatchFiltersProps> = ({ value, onChan
           </Select>
         </div>
 
-        <div className="w-36 space-y-1">
+        <div className="w-full space-y-1 sm:w-36">
           <div className="flex items-center gap-1">
             <Label htmlFor="matchup-placement-percentile" className="text-xs">
               Both players top %
@@ -144,7 +175,7 @@ const MatchupMatchFilters: React.FC<MatchupMatchFiltersProps> = ({ value, onChan
           />
         </div>
 
-        <div className="flex h-8 items-center gap-2 px-1">
+        <div className="col-span-2 flex h-8 items-center gap-2 px-1 sm:col-span-1">
           <Checkbox
             id="matchup-top-cut-rounds"
             checked={value.topCutRoundsOnly}
@@ -163,7 +194,7 @@ const MatchupMatchFilters: React.FC<MatchupMatchFiltersProps> = ({ value, onChan
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8"
+          className="col-span-2 h-8 sm:col-span-1"
           disabled={!hasActiveFilters}
           onClick={() => onChange(createDefaultMatchupMatchFilters())}
         >
