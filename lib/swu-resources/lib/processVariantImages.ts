@@ -1,14 +1,11 @@
 import { delay } from './delay.ts';
+import { fetchWithRetry } from './fetchWithRetry.ts';
 import type { CardVariant } from '../types.ts';
 
 export async function processVariantImages(variant: CardVariant): Promise<CardVariant> {
-  const variantDetailResponse = await fetch(
+  const variantDetailResponse = await fetchWithRetry(
     `https://admin.starwarsunlimited.com/api/card/details/${variant.swuId}?locale=all`,
   );
-
-  if (!variantDetailResponse.ok) {
-    throw new Error(`HTTP error! status: ${variantDetailResponse.status}`);
-  }
 
   const variantDetails = (await variantDetailResponse.json()) as any;
   await delay(500);
