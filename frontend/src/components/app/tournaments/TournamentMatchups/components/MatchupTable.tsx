@@ -24,6 +24,7 @@ export interface MatchupTableProps {
   labelRenderer: ReturnType<typeof useLabel>;
   totalMatchesAnalyzed: number;
   formatId?: number;
+  onMatchupCellClick?: (rowKey: string, colKey: string) => void;
 }
 
 // Maximum number of rows/columns to display when not showing all data
@@ -36,6 +37,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
   labelRenderer,
   totalMatchesAnalyzed,
   formatId,
+  onMatchupCellClick,
 }) => {
   const displayFilters = filterableMetaInfoMap[metaInfo] ?? false;
 
@@ -293,6 +295,7 @@ export const MatchupTable: React.FC<MatchupTableProps> = ({
         availableRowCount={filteredRowKeys.length}
         availableColCount={filteredColKeys.length}
         maxDisplayItems={MAX_DISPLAY_ITEMS}
+        onMatchupCellClick={onMatchupCellClick}
       />
     </div>
   );

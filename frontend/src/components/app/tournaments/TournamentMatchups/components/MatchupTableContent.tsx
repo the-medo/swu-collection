@@ -39,6 +39,7 @@ interface MatchupTableContentProps {
   availableRowCount: number;
   availableColCount: number;
   maxDisplayItems: number;
+  onMatchupCellClick?: (rowKey: string, colKey: string) => void;
 }
 
 const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
@@ -65,6 +66,7 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
   availableRowCount,
   availableColCount,
   maxDisplayItems,
+  onMatchupCellClick,
 }) => {
   const displayFilters = filterableMetaInfoMap[metaInfo] ?? false;
   const tableColSpan = Math.max(2 + colKeys.length, 2);
@@ -145,6 +147,12 @@ const MatchupTableContent: React.FC<MatchupTableContentProps> = ({
                   columnIndex={colIndex + 2} // +2 because of the two initial columns
                   registerCellRef={registerCellRef}
                   handleColumnEnter={handleColumnEnter}
+                  onMatchupCellClick={onMatchupCellClick}
+                  ariaLabel={
+                    onMatchupCellClick
+                      ? `View matches for ${labelRenderer(rowKey, metaInfo, 'text') ?? rowKey} versus ${labelRenderer(colKey, metaInfo, 'text') ?? colKey}`
+                      : undefined
+                  }
                 />
               ))}
             </tr>

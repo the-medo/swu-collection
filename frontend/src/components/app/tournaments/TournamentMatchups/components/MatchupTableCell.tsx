@@ -16,6 +16,8 @@ export interface MatchupTableCellProps {
     oldCellRef?: HTMLTableCellElement | null,
   ) => void;
   handleColumnEnter: (index: number) => void;
+  onMatchupCellClick?: (rowKey: string, colKey: string) => void;
+  ariaLabel?: string;
 }
 
 export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
@@ -26,6 +28,8 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
   columnIndex,
   registerCellRef,
   handleColumnEnter,
+  onMatchupCellClick,
+  ariaLabel,
 }) => {
   const wins = matchups[rowKey]?.[colKey]?.wins || 0;
   const losses = matchups[rowKey]?.[colKey]?.losses || 0;
@@ -69,6 +73,10 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
     handleColumnEnter(columnIndex);
   }, [columnIndex, handleColumnEnter]);
 
+  const onClick = useCallback(() => {
+    onMatchupCellClick?.(rowKey, colKey);
+  }, [colKey, onMatchupCellClick, rowKey]);
+
   // If there's no data, show a dash
   if (total === 0 || rowKey === colKey) {
     return (
@@ -86,19 +94,29 @@ export const MatchupTableCell: React.FC<MatchupTableCellProps> = ({
   const winrate = (displayWins / total) * 100;
   const colorClass = getWinrateColorClass(winrate);
 
+  const content =
+    displayMode === 'winLoss' || displayMode === 'gameWinLoss'
+      ? `${Math.round(displayWins)}/${Math.round(displayLosses)}`
+      : `${winrate.toFixed(1)}%`;
+
   return (
     <td
       ref={cellRef}
-      className={cn('p-2 border text-center w-[50px] text-xs', colorClass)}
+      className={cn('border text-center w-[50px] text-xs', colorClass)}
       onMouseEnter={onMouseEnter}
       data-column-index={columnIndex}
     >
-      {displayMode === 'winLoss' || displayMode === 'gameWinLoss' ? (
-        <>
-          {Math.round(displayWins)}/{Math.round(displayLosses)}
-        </>
+      {onMatchupCellClick ? (
+        <button
+          type="button"
+          className="w-full h-full min-h-[34px] p-2 cursor-pointer transition-[filter] hover:brightness-90 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary"
+          onClick={onClick}
+          aria-label={ariaLabel}
+        >
+          {content}
+        </button>
       ) : (
-        `${winrate.toFixed(1)}%`
+        <span className="inline-block p-2">{content}</span>
       )}
     </td>
   );

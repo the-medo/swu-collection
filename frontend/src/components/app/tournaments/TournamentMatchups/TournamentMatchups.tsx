@@ -13,7 +13,8 @@ import { TournamentInfoMap } from '@/components/app/tournaments/TournamentMeta/t
 import { TournamentMatch } from '../../../../../../server/db/schema/tournament_match.ts';
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import MobileCard from '@/components/ui/mobile-card.tsx';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import MatchupDialog from './components/MatchupDialog/MatchupDialog.tsx';
 
 export interface TournamentMatchupsProps {
   decks: TournamentDeckResponse[];
@@ -39,6 +40,9 @@ function resolveMatchupFilterFormat(
 const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tournaments, matches }) => {
   const search = useSearch({ strict: false });
   const navigate = useNavigate();
+  const [activeMatchup, setActiveMatchup] = useState<{ rowKey: string; colKey: string } | null>(
+    null,
+  );
 
   // Use URL parameters with fallbacks to default values
   const matchFilter = (search.maMatchFilter as MatchFilter) || 'all';
@@ -107,6 +111,10 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
 
   const matchupData = useMatchupData(filteredMatches, filteredDecks, cardListData, metaInfo);
 
+  const handleMatchupCellClick = useCallback((rowKey: string, colKey: string) => {
+    setActiveMatchup({ rowKey, colKey });
+  }, []);
+
   return (
     <div className="space-y-2">
       <div className="flex flex-row gap-2 flex-wrap items-start justify-between">
@@ -137,9 +145,24 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
           labelRenderer={labelRenderer}
           totalMatchesAnalyzed={filteredMatches.length}
           formatId={matchupFilterFormatId}
+          onMatchupCellClick={handleMatchupCellClick}
         />
       ) : (
         <p className="text-muted-foreground">No data available for the selected filters.</p>
+      )}
+      {activeMatchup && (
+        <MatchupDialog
+          key={JSON.stringify(activeMatchup)}
+          rowKey={activeMatchup.rowKey}
+          colKey={activeMatchup.colKey}
+          matches={filteredMatches}
+          decks={filteredDecks}
+          tournaments={tournaments}
+          metaInfo={metaInfo}
+          cardListData={cardListData}
+          labelRenderer={labelRenderer}
+          onClose={() => setActiveMatchup(null)}
+        />
       )}
     </div>
   );

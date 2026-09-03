@@ -3,12 +3,10 @@ import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.
 import { TournamentInfoMap } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { TournamentMatch } from '../../../../../../../server/db/schema/tournament_match.ts';
 import { MatchFilter } from '../types';
+import { getTournamentDeckMapKey } from '../utils/getTournamentDeckMapKey.ts';
 
 const hasPlacementAtMost = (deck: TournamentDeckResponse | undefined | null, placement: number) =>
   deck?.tournamentDeck.placement != null && deck.tournamentDeck.placement <= placement;
-
-const getTournamentDeckMapKey = (tournamentId: string, deckId: string) =>
-  `${tournamentId}:${deckId}`;
 
 export function useFilteredMatches(
   matches: TournamentMatch[],
