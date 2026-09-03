@@ -112,7 +112,7 @@ const MobileMatchCard: React.FC<MobileMatchCardProps> = ({
     gameDraws > 0 ? `${rowGameWins}-${colGameWins}-${gameDraws}` : `${rowGameWins}-${colGameWins}`;
 
   return (
-    <article className="space-y-2 p-3">
+    <article className="space-y-2 rounded-md border p-3">
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0">
           <Link
@@ -137,16 +137,12 @@ const MobileMatchCard: React.FC<MobileMatchCardProps> = ({
       </div>
 
       <div
-        className={cn('rounded-md border p-2', {
-          'border-green-300/70 bg-green-100/60 dark:border-green-800 dark:bg-green-900/40':
-            rowPlayerWon,
-          'border-red-300/70 bg-red-100/60 dark:border-red-800 dark:bg-red-900/40': colPlayerWon,
-          'border-amber-300/70 bg-amber-100/60 dark:border-amber-800 dark:bg-amber-900/40': isDraw,
+        className={cn('rounded-md p-2', {
+          'bg-green-100/60 dark:bg-green-900/40': rowPlayerWon,
+          'bg-red-100/60 dark:bg-red-900/40': colPlayerWon,
+          'bg-amber-100/60 dark:bg-amber-900/40': isDraw,
         })}
       >
-        <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Deck A · {rowPlayerWon ? 'Win' : colPlayerWon ? 'Loss' : 'Draw'}
-        </div>
         <PlayerDeck
           playerName={rowPlayer.username}
           deck={rowPlayer.deck}
@@ -173,16 +169,12 @@ const MobileMatchCard: React.FC<MobileMatchCardProps> = ({
       </div>
 
       <div
-        className={cn('rounded-md border p-2', {
-          'border-red-300/70 bg-red-100/60 dark:border-red-800 dark:bg-red-900/40': rowPlayerWon,
-          'border-green-300/70 bg-green-100/60 dark:border-green-800 dark:bg-green-900/40':
-            colPlayerWon,
-          'border-amber-300/70 bg-amber-100/60 dark:border-amber-800 dark:bg-amber-900/40': isDraw,
+        className={cn('rounded-md p-2', {
+          'bg-red-100/60 dark:bg-red-900/40': rowPlayerWon,
+          'bg-green-100/60 dark:bg-green-900/40': colPlayerWon,
+          'bg-amber-100/60 dark:bg-amber-900/40': isDraw,
         })}
       >
-        <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Deck B · {colPlayerWon ? 'Win' : rowPlayerWon ? 'Loss' : 'Draw'}
-        </div>
         <PlayerDeck
           playerName={colPlayer.username}
           deck={colPlayer.deck}
@@ -246,10 +238,10 @@ const MatchupMatchesTable: React.FC<MatchupMatchesTableProps> = ({
   return (
     <div
       ref={scrollContainerRef}
-      className="h-full overflow-auto rounded-md border"
+      className="h-full overflow-auto rounded-md lg:border"
       onScroll={handleScroll}
     >
-      <div className="divide-y lg:hidden">
+      <div className="space-y-2 lg:hidden">
         {visibleMatches.map(matchupMatch => (
           <MobileMatchCard
             key={matchupMatch.match.id}
