@@ -7,6 +7,17 @@ import { Textarea } from '@/components/ui/textarea.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog.tsx';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -29,6 +40,7 @@ import {
   type PreviewCardMigrationSummary,
   type PreviewCardPayload,
   type PreviewCardStatus,
+  useArchiveActivePreviewCards,
   useArchivePreviewCard,
   useMigratePreviewCard,
   usePreviewCards,
@@ -69,6 +81,7 @@ export function PreviewCardsPage() {
   const { data, isLoading, refetch } = usePreviewCards();
   const savePreviewCard = useSavePreviewCard();
   const archivePreviewCard = useArchivePreviewCard();
+  const archiveActivePreviewCards = useArchiveActivePreviewCards();
   const migratePreviewCard = useMigratePreviewCard();
   const uploadPreviewCardImage = useUploadPreviewCardImage();
 
@@ -87,6 +100,7 @@ export function PreviewCardsPage() {
   const rows = data?.data ?? [];
   const template = data?.template;
   const selectedRow = rows.find(row => row.id === selectedId);
+  const activeRowCount = rows.filter(row => row.status === 'active').length;
 
   const parsedPayload = useMemo(() => {
     if (!editorJson.trim()) return undefined;
@@ -250,6 +264,25 @@ export function PreviewCardsPage() {
     }
   };
 
+  const handleArchiveActive = async () => {
+    try {
+      const archivedCount = await archiveActivePreviewCards.mutateAsync();
+      if (selectedRow?.status === 'active') {
+        setStatus('archived');
+      }
+      toast({
+        title: 'Active preview cards archived',
+        description: `${archivedCount} ${archivedCount === 1 ? 'card' : 'cards'} archived.`,
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Bulk archive failed',
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
+
   const handleMigrate = async () => {
     if (!selectedId || !officialCardId.trim()) return;
     try {
@@ -323,10 +356,44 @@ export function PreviewCardsPage() {
         <div>
           <h2 className="text-xl font-semibold">Preview Cards</h2>
           <p className="text-sm text-muted-foreground">
-            {rows.length} rows, {rows.filter(row => row.status === 'active').length} active
+            {rows.length} rows, {activeRowCount} active
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                disabled={activeRowCount === 0 || archiveActivePreviewCards.isPending}
+              >
+                {archiveActivePreviewCards.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Archive className="mr-2 h-4 w-4" />
+                )}
+                Archive all active
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Archive all active preview cards?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will archive {activeRowCount}{' '}
+                  {activeRowCount === 1 ? 'preview card' : 'preview cards'} so they no longer appear
+                  in the public card list. Migrated and already archived cards will not be changed.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={handleArchiveActive}
+                >
+                  Archive all active
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Button variant="outline" onClick={() => refetch()}>
             <RefreshCcw className="mr-2 h-4 w-4" />
             Refresh

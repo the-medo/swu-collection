@@ -151,6 +151,27 @@ export function useArchivePreviewCard() {
   });
 }
 
+export function useArchiveActivePreviewCards() {
+  const queryClient = useQueryClient();
+
+  return useMutation<number, Error>({
+    mutationFn: async () => {
+      const response = await api.admin['preview-cards']['archive-active'].$post();
+
+      if (!response.ok) {
+        throw await readApiError(response, 'Failed to archive active preview cards');
+      }
+
+      const result = (await response.json()) as { data: { archivedCount: number } };
+      return result.data.archivedCount;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: previewCardsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['cardList'] });
+    },
+  });
+}
+
 export function useMigratePreviewCard() {
   const queryClient = useQueryClient();
 

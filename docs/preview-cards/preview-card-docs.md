@@ -118,6 +118,7 @@ Endpoints:
 - `POST /api/admin/preview-cards`: create a row.
 - `PATCH /api/admin/preview-cards/:id`: update `cardId`, `status`, `officialCardId`, or payload.
 - `DELETE /api/admin/preview-cards/:id`: archive the row by setting `status = "archived"`.
+- `POST /api/admin/preview-cards/archive-active`: archive every currently active preview row.
 - `POST /api/admin/preview-cards/:id/image`: upload an image to R2.
 - `POST /api/admin/preview-cards/:id/migrate`: migrate saved references to an official card.
 
