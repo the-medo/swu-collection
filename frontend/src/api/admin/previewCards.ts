@@ -70,6 +70,11 @@ export type UploadPreviewCardImageResult = {
   horizontal: boolean;
 };
 
+export type ImportPreviewCardInput = {
+  sourceUrl: string;
+  definition: unknown;
+};
+
 const previewCardsQueryKey = ['admin', 'preview-cards'] as const;
 
 async function readApiError(response: Response, fallback: string): Promise<Error> {
@@ -168,6 +173,19 @@ export function useArchiveActivePreviewCards() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: previewCardsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['cardList'] });
+    },
+  });
+}
+
+export function useImportPreviewCard() {
+  return useMutation<PreviewCardPayload, Error, ImportPreviewCardInput>({
+    mutationFn: async input => {
+      const response = await api.admin['preview-cards'].import.$post({ json: input });
+      if (!response.ok) {
+        throw await readApiError(response, 'Failed to import preview card');
+      }
+      const result = (await response.json()) as { data: PreviewCardPayload };
+      return result.data;
     },
   });
 }

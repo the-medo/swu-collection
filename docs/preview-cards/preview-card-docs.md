@@ -119,12 +119,32 @@ Endpoints:
 - `PATCH /api/admin/preview-cards/:id`: update `cardId`, `status`, `officialCardId`, or payload.
 - `DELETE /api/admin/preview-cards/:id`: archive the row by setting `status = "archived"`.
 - `POST /api/admin/preview-cards/archive-active`: archive every currently active preview row.
+- `POST /api/admin/preview-cards/import`: fetch and map one externally defined card into the preview payload template, including R2 image ingestion.
 - `POST /api/admin/preview-cards/:id/image`: upload an image to R2.
 - `POST /api/admin/preview-cards/:id/migrate`: migrate saved references to an official card.
 
 The admin page is the `Preview Cards` tab in `frontend/src/components/app/admin/PreviewCardsPage.tsx`.
 
 The editing surface is a JSON textarea prefilled from `createPreviewCardPayloadTemplate()`. The frontend parses JSON before sending it, then the server performs full Zod validation. The page also has row selection, duplicate, status, `cardId`, `officialCardId`, archive, migrate, image upload, and `CardImage` preview controls.
+
+The external import surface accepts a card URL and a private, pasted JSON definition. Definitions are used for the import request but are not persisted server-side. They declare a source URL template, an HTTP request, named value mappings, a partial preview payload template, and optional front/back image URL templates. Expressions support response-field selection, URL variables, string interpolation, constants, array wrapping, named mappings, and the allowlisted `lowercase`, `uppercase`, `integer`, `stripPairedTags`, and `cardId` transforms. This is deliberately declarative and cannot execute code.
+
+When the admin clicks Import, the definition text is saved only in that
+browser's origin-scoped local storage under
+`swubase:admin:preview-cards:import-definition` and restored on the next visit.
+The source URL is not persisted, and unavailable browser storage does not block
+an import.
+
+When an imported definition leaves Karabast metadata empty, SWUBASE prefills
+`karabast_id` as `SET_###` from the imported variant and derives
+`karabast_id_to_swubase_id` from the title and subtitle using Karabast's current
+mock-card convention: join the two parts with `#`, normalize accents, lowercase,
+remove punctuation and underscores, replace whitespace with hyphens, and append
+`-id`. Explicit non-empty values from the definition take precedence. The
+derived inbound value is a convenience for current preview cards and should be
+checked if Karabast assigns an exceptional or official ID.
+
+External requests accept public HTTPS destinations only. Loopback, private, link-local, metadata-style, and non-HTTPS destinations are rejected; redirects are revalidated, and response time and size are bounded. Imported images must be PNG, JPEG, or WebP, are resized and converted to WebP, then uploaded under `cards/preview/`. Image upload happens during import, before the admin reviews and explicitly saves the returned preview payload, so abandoning an import may leave unreferenced image objects.
 
 Image upload accepts PNG/JPEG/WebP, converts to WebP, stores under `cards/preview/...` in R2, and returns the relative `preview/...webp` path plus orientation. The UI injects that path into the textarea, but the preview row is not updated until the admin saves the JSON.
 

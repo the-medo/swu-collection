@@ -27,6 +27,7 @@ export enum SwuSet {
   LAW = 'law',
   TS26 = 'ts26',
   ASH = 'ash',
+  HMW = 'hmw',
 }
 
 export enum SwuAspect {
