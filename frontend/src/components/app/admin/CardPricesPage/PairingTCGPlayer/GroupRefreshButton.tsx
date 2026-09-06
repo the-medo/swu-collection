@@ -1,43 +1,27 @@
 import React from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import {
-  TCGCSV_HEADERS,
-  TCGCSV_GROUPS_LOCAL_STORAGE_KEY,
-  TCGCSV_SWU_ID,
-} from '../../../../../../../shared/consts/constants.ts';
+import { useGetTcgPlayerGroups } from '@/api/card-prices';
 
 const GroupRefreshButton: React.FC = () => {
-  const [isLoading, setIsLoading] = React.useState(false);
   const [status, setStatus] = React.useState<null | 'ok' | 'error'>(null);
+  const { refetch, isFetching } = useGetTcgPlayerGroups();
 
   const handleRefresh = async () => {
     try {
-      setIsLoading(true);
       setStatus(null);
-
-      const url = `https://tcgcsv.com/tcgplayer/${TCGCSV_SWU_ID}/groups`;
-      const res = await fetch(url, {
-        headers: TCGCSV_HEADERS,
-      });
-
-      if (!res.ok) {
-        throw new Error(`Request failed with status ${res.status}`);
-      }
-
-      const data = await res.json();
-      localStorage.setItem(TCGCSV_GROUPS_LOCAL_STORAGE_KEY, JSON.stringify(data));
+      const result = await refetch();
+      if (result.error) throw result.error;
       setStatus('ok');
     } catch (e) {
       console.error('Failed to refresh TCGplayer groups', e);
       setStatus('error');
     } finally {
-      setIsLoading(false);
       // Clear status after a short delay
       setTimeout(() => setStatus(null), 2500);
     }
   };
 
-  const label = isLoading
+  const label = isFetching
     ? 'Refreshing...'
     : status === 'ok'
       ? 'Groups saved'
@@ -46,7 +30,7 @@ const GroupRefreshButton: React.FC = () => {
         : 'Refresh groups';
 
   return (
-    <Button size="sm" variant="outline" onClick={handleRefresh} disabled={isLoading}>
+    <Button size="sm" variant="outline" onClick={handleRefresh} disabled={isFetching}>
       {label}
     </Button>
   );

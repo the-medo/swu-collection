@@ -10,30 +10,38 @@ import { CardPriceSourceType } from '../../../../../../../types/CardPrices.ts';
 interface CardRowProps {
   card: ParsedCardData;
   sourceType: CardPriceSourceType;
+  isSubmitted: boolean;
+  isBatchSubmitting: boolean;
+  onSubmitted: () => void;
 }
 
-const CardRow: React.FC<CardRowProps> = ({ card, sourceType }) => {
+const CardRow: React.FC<CardRowProps> = ({
+  card,
+  sourceType,
+  isSubmitted,
+  isBatchSubmitting,
+  onSubmitted,
+}) => {
   const [variantId, setVariantId] = useState(card.variantId || '');
   const [cardId, setCardId] = useState(card.cardId || '');
   const [isEditingCardId, setIsEditingCardId] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const createMutation = useCreateCardPriceSource();
 
   const handleSubmit = async () => {
-    if (!card.cardId || !variantId) {
+    if (!cardId || !variantId) {
       return;
     }
 
     try {
       await createMutation.mutateAsync({
-        cardId: card.cardId,
-        variantId: variantId,
+        cardId,
+        variantId,
         sourceType,
         sourceLink: card.link,
         sourceProductId: card.productId,
       });
 
-      setIsSubmitted(true);
+      onSubmitted();
     } catch (error) {
       console.error('Failed to create pricing source:', error);
     }
@@ -55,24 +63,21 @@ const CardRow: React.FC<CardRowProps> = ({ card, sourceType }) => {
         <Input value={card.productId} disabled className="w-full" />
         <Input
           value={cardId}
-          onChange={e => {
-            setCardId(e.target.value);
-            card.cardId = e.target.value;
-          }}
+          onChange={e => setCardId(e.target.value)}
           onDoubleClick={() => {
             if (!isSubmitted) setIsEditingCardId(true);
           }}
           // Keep blur if you want to exit edit mode automatically
           // onBlur={() => setIsEditingCardId(false)}
           readOnly={!isEditingCardId}
-          disabled={isSubmitted}
+          disabled={isSubmitted || isBatchSubmitting}
           className="w-full"
         />
         <Input
           value={variantId}
           onChange={e => setVariantId(e.target.value)}
           className="w-full"
-          disabled={isSubmitted}
+          disabled={isSubmitted || isBatchSubmitting}
         />
       </TableCell>
       <TableCell className="w-[150px] truncate">
@@ -89,7 +94,9 @@ const CardRow: React.FC<CardRowProps> = ({ card, sourceType }) => {
         <Button
           variant="outline"
           onClick={handleSubmit}
-          disabled={isSubmitted || createMutation.isPending || !card.cardId || !variantId}
+          disabled={
+            isSubmitted || isBatchSubmitting || createMutation.isPending || !cardId || !variantId
+          }
         >
           {createMutation.isPending ? 'Submitting...' : isSubmitted ? 'Submitted' : 'Submit'}
         </Button>

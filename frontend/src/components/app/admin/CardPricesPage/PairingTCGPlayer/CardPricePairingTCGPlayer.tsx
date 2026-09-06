@@ -11,6 +11,7 @@ import CardPricePairingTable from '../components/CardPricePairingTable.tsx';
 import TCGPlayerGroupSelect from '@/components/app/admin/CardPricesPage/PairingTCGPlayer/TCGPlayerGroupSelect.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { CardPriceSourceType } from '../../../../../../../types/CardPrices.ts';
+import { useGetTcgPlayerProducts } from '@/api/card-prices';
 
 const CardPricePairingTCGPlayer: React.FC = () => {
   const [selectedGroupId, setSelectedGroupId] = React.useState<number | null>(null);
@@ -20,8 +21,10 @@ const CardPricePairingTCGPlayer: React.FC = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [preferredVariantName, setPreferredVariantName] = React.useState<string>('');
   const [preferredVariantNameExact, setPreferredVariantNameExact] = React.useState<boolean>(false);
+  const [isBatchSubmitting, setIsBatchSubmitting] = React.useState(false);
 
   const { data: cardList } = useCardList();
+  const productsQuery = useGetTcgPlayerProducts(selectedGroupId);
 
   const handleClear = () => {
     setSelectedGroupId(null);
@@ -40,8 +43,11 @@ const CardPricePairingTCGPlayer: React.FC = () => {
         setError('Please select a TCGplayer group first');
         return;
       }
+      const productsResult = await productsQuery.refetch();
+      if (productsResult.error) throw productsResult.error;
+
       const results = await parseTCGPlayerData(
-        selectedGroupId,
+        productsResult.data ?? [],
         selectedSet,
         cardList?.cards,
         preferredVariantName.toLowerCase().trim() || undefined,
@@ -105,13 +111,17 @@ const CardPricePairingTCGPlayer: React.FC = () => {
                 Exact
               </label>
             </div>
-            <Button onClick={handleParse} disabled={isLoading}>
+            <Button onClick={handleParse} disabled={isLoading || isBatchSubmitting}>
               {isLoading ? 'Parsing...' : 'Parse'}
             </Button>
             <Button
               variant="outline"
               onClick={handleClear}
-              disabled={isLoading || (!selectedGroupId && !selectedSet && parsedData.length === 0)}
+              disabled={
+                isLoading ||
+                isBatchSubmitting ||
+                (!selectedGroupId && !selectedSet && parsedData.length === 0)
+              }
             >
               Clear
             </Button>
@@ -139,6 +149,7 @@ const CardPricePairingTCGPlayer: React.FC = () => {
           <CardPricePairingTable
             parsedData={parsedData}
             sourceType={CardPriceSourceType.TCGPLAYER}
+            onBatchSubmittingChange={setIsBatchSubmitting}
           />
         </div>
       </CardContent>
