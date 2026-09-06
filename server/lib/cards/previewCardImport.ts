@@ -130,7 +130,11 @@ function applyTransform(value: unknown, transform: (typeof transformNames)[numbe
     return parsed;
   }
   if (transform === 'stripPairedTags') return stripPairedFormattingTags(String(value));
-  return transformToId(String(value));
+  return transformToId(String(value)).replace(/^-+|-+$/g, '');
+}
+
+function isEmptyArrayValue(value: unknown): boolean {
+  return value === null || value === undefined || (typeof value === 'string' && !value.trim());
 }
 
 function evaluateExpression(
@@ -160,7 +164,10 @@ function evaluateExpression(
     value = Array.isArray(value) ? value.map(mapValue).filter(Boolean) : mapValue(value);
   }
   for (const transform of expression.$transforms ?? []) value = applyTransform(value, transform);
-  if (expression.$array) value = value === null ? [] : Array.isArray(value) ? value : [value];
+  if (expression.$array) {
+    const values = Array.isArray(value) ? value : [value];
+    value = values.filter(entry => !isEmptyArrayValue(entry));
+  }
   return value;
 }
 
@@ -210,6 +217,16 @@ export function buildImportedPreviewCard(
     context,
     definition.mappings,
   ) as Record<string, unknown>;
+  if (typeof rendered.subtitle === 'string' && !rendered.subtitle.trim()) {
+    rendered.subtitle = undefined;
+    if (
+      typeof rendered.title === 'string' &&
+      typeof rendered.name === 'string' &&
+      rendered.name.trim() === `${rendered.title.trim()},`
+    ) {
+      rendered.name = rendered.title;
+    }
+  }
   const renderedVariants = rendered.variants as Record<string, Record<string, unknown>> | undefined;
   Object.entries(renderedVariants ?? {}).forEach(([variantId, variant]) => {
     const set = z.enum(SwuSet).parse(variant.set);
