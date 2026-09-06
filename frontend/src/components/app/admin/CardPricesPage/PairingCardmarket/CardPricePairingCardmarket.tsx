@@ -15,6 +15,7 @@ const CardPricePairingCardmarket: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [selectedSet, setSelectedSet] = React.useState<SwuSet | null>(null);
+  const [isBatchSubmitting, setIsBatchSubmitting] = React.useState(false);
 
   const { data: cardList } = useCardList();
 
@@ -72,14 +73,14 @@ const CardPricePairingCardmarket: React.FC = () => {
                 showFullName={true}
               />
             </div>
-            <Button onClick={handleParse} disabled={isLoading}>
+            <Button onClick={handleParse} disabled={isLoading || isBatchSubmitting}>
               {isLoading ? 'Parsing...' : 'Parse'}
             </Button>
 
             <Button
               variant="outline"
               onClick={handleClear}
-              disabled={isLoading || (!bulkText && parsedData.length === 0)}
+              disabled={isLoading || isBatchSubmitting || (!bulkText && parsedData.length === 0)}
             >
               Clear
             </Button>
@@ -108,6 +109,7 @@ const CardPricePairingCardmarket: React.FC = () => {
           <CardPricePairingTable
             parsedData={parsedData}
             sourceType={CardPriceSourceType.CARDMARKET}
+            onBatchSubmittingChange={setIsBatchSubmitting}
           />
         </div>
       </CardContent>

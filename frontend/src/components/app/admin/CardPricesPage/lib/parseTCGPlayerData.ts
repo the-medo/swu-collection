@@ -2,9 +2,7 @@ import { SwuSet } from '../../../../../../../types/enums.ts';
 import { CardList, CardVariant } from '../../../../../../../lib/swu-resources/types.ts';
 import { transformToId } from '../../../../../../../lib/swu-resources/lib/transformToId.ts';
 import { ParsedCardData } from './parseCardmarketHtml.ts';
-import { TCGCSV_HEADERS, TCGCSV_SWU_ID } from '../../../../../../../shared/consts/constants.ts';
-
-type TcgplayerProduct = {
+export type TcgplayerProduct = {
   productId: number;
   name: string;
   url?: string;
@@ -20,21 +18,13 @@ function cleanCardName(name: string): string {
 }
 
 export async function parseTCGPlayerData(
-  tcgPlayerGroupId: number,
+  products: TcgplayerProduct[],
   selectedSet: SwuSet | null,
   cards: CardList | undefined,
   preferredVariantName?: string,
   preferredVariantNameExact?: boolean,
 ): Promise<ParsedCardData[]> {
   try {
-    const url = `https://tcgcsv.com/tcgplayer/${TCGCSV_SWU_ID}/${tcgPlayerGroupId}/products`;
-    const res = await fetch(url, { headers: TCGCSV_HEADERS });
-    if (!res.ok) {
-      throw new Error(`Request failed with status ${res.status}`);
-    }
-    const json = await res.json();
-    const results: TcgplayerProduct[] = Array.isArray(json?.results) ? json.results : [];
-
     const matchPreferredVariantName = (v: CardVariant | undefined) => {
       if (!preferredVariantName || preferredVariantName === '' || !v) return false;
       return preferredVariantNameExact
@@ -42,7 +32,7 @@ export async function parseTCGPlayerData(
         : (v?.variantName || '').toLowerCase().includes(preferredVariantName);
     };
 
-    return results.map(p => {
+    return products.map(p => {
       const nameDirty = p.name || '';
       const name = cleanCardName(nameDirty);
       let cardNumber = '';
@@ -67,7 +57,7 @@ export async function parseTCGPlayerData(
           return !selectedSet || v?.set === selectedSet;
         });
 
-        let chosen = foundPreferred ?? candidates[0];
+        const chosen = foundPreferred ?? candidates[0];
         probableVariantId = chosen?.variantId;
       } else {
         probableCardId = undefined;
