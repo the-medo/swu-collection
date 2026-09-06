@@ -16,7 +16,7 @@ import DecklistChartsTabs from '@/components/app/decks/DeckContents/DeckActionsM
 import { NavigationMenuItem, NavigationMenuList } from '@/components/ui/navigation-menu.tsx';
 import DeckImageButton from '@/components/app/decks/DeckContents/DeckImage/DeckImageButton.tsx';
 import { Link } from '@tanstack/react-router';
-import { EyeIcon, Hammer } from 'lucide-react';
+import { EyeIcon, Hammer, TriangleAlert } from 'lucide-react';
 import DeckGradientButton from '@/components/app/decks/DeckContents/DeckImage/DeckGradientButton.tsx';
 import DeckCollection from '@/components/app/decks/DeckContents/DeckCollection/DeckCollection.tsx';
 import { useCardPoolDeckDetailStoreActions } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
@@ -27,6 +27,7 @@ import { aspectArray } from '../../../../../../types/iterableEnumInfo.ts';
 import { SwuAspect, SwuSet } from '../../../../../../types/enums.ts';
 import { setRestrictionByFormat } from '../../../../../../types/Format.ts';
 import { setArray } from '../../../../../../lib/swu-resources/set-info.ts';
+import { Alert, AlertDescription } from '@/components/ui/alert.tsx';
 
 interface DeckContentsProps {
   deckId: string;
@@ -36,6 +37,14 @@ interface DeckContentsProps {
   compact?: boolean;
 }
 
+const getDeckCardsKarabastMessage = (count: number) =>
+  count === 1
+    ? '1 main deck/sideboard card is not implemented in Karabast.'
+    : `${count} different main deck/sideboard cards are not implemented in Karabast.`;
+
+const getLeaderBaseKarabastMessage = (count: number) =>
+  `${count} leader/base ${count === 1 ? 'card is' : 'cards are'} not implemented in Karabast.`;
+
 const DeckContents: React.FC<DeckContentsProps> = ({
   deckId,
   setDeckId,
@@ -44,9 +53,17 @@ const DeckContents: React.FC<DeckContentsProps> = ({
   compact,
 }) => {
   const { cardPoolId, owned, editable } = useDeckInfo(deckId);
-  const { deckMeta } = useDeckData(deckId);
+  const {
+    deckMeta,
+    karabastUnimplementedDeckCardsSummary,
+    karabastUnimplementedLeaderBaseSummary,
+  } = useDeckData(deckId);
   const [tabsValue, setTabsValue] = useState('decklist');
   const { setDeckView } = useCardPoolDeckDetailStoreActions();
+  const karabastUnimplementedDeckCardsCount =
+    karabastUnimplementedDeckCardsSummary.uniqueCardIds.length;
+  const karabastUnimplementedLeaderBaseCount =
+    karabastUnimplementedLeaderBaseSummary.uniqueCardIds.length;
 
   const deckbuilderSearch = React.useMemo(() => {
     const aspectSet = new Set<SwuAspect>();
@@ -193,6 +210,22 @@ const DeckContents: React.FC<DeckContentsProps> = ({
               <div className="flex flex-wrap gap-4 items-center max-lg:justify-center w-full">
                 <DeckBoardCardCounts deckId={deckId} />
               </div>
+            )}
+            {karabastUnimplementedDeckCardsCount > 0 && (
+              <Alert variant="warning" size="xs">
+                <TriangleAlert className="h-4 w-4 text-yellow-600 stroke-yellow-600 dark:text-yellow-400 dark:stroke-yellow-400" />
+                <AlertDescription>
+                  {getDeckCardsKarabastMessage(karabastUnimplementedDeckCardsCount)}
+                </AlertDescription>
+              </Alert>
+            )}
+            {karabastUnimplementedLeaderBaseCount > 0 && (
+              <Alert variant="warning" size="xs">
+                <TriangleAlert className="h-4 w-4 text-yellow-600 stroke-yellow-600 dark:text-yellow-400 dark:stroke-yellow-400" />
+                <AlertDescription>
+                  {getLeaderBaseKarabastMessage(karabastUnimplementedLeaderBaseCount)}
+                </AlertDescription>
+              </Alert>
             )}
 
             {tabsValue === 'decklist' && (

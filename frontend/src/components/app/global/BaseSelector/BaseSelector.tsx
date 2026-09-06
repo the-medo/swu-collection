@@ -26,6 +26,7 @@ import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { aspectsForBases } from '@/components/app/global/MultiAspectFilter/multiAspectFilterLib.tsx';
 import type { FilterByFormat } from '../../../../../../types/Format.ts';
 import { DialogTitle } from '@/components/ui/dialog.tsx';
+import KarabastUnimplementedWarningIcon from '@/components/app/decks/KarabastUnimplementedWarningIcon.tsx';
 
 type BaseSelectorProps = Pick<DialogProps, 'trigger'> & {
   baseCardId?: string;
@@ -178,7 +179,15 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
           cardVariantId={selectDefaultVariant(selectedBase)}
           forceHorizontal={true}
           size={size}
-        />
+        >
+          {selectedBase.karabast_unimplemented && (
+            <KarabastUnimplementedWarningIcon
+              className="absolute bottom-2 left-2 z-20"
+              size="large"
+              tooltipSide="right"
+            />
+          )}
+        </CardImage>
       </div>
     );
   }, [selectedBase, size, editable]);
@@ -231,7 +240,6 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
     );
   }, [
     filterByFormat,
-    setFormatFilterEnabled,
     formatFilterEnabled,
     formatFilterSwitchId,
     search,
@@ -261,7 +269,14 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
           forceHorizontal={true}
           size="w100"
           backSideButton={false}
-        />
+        >
+          {localSelectedBase?.karabast_unimplemented && (
+            <KarabastUnimplementedWarningIcon
+              className="absolute bottom-1 left-1 z-20 h-4 w-4"
+              tooltipSide="right"
+            />
+          )}
+        </CardImage>
         <div className="flex flex-col gap-2 items-end">
           <h6 className="mb-0!">{localSelectedBase?.title ?? 'No selected base'} </h6>
           <div className="flex gap-2 items-center">
@@ -304,7 +319,16 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
                 cardVariantId={base.variantId}
                 forceHorizontal={true}
                 size="w300"
-              />
+              >
+                {base?.card?.karabast_unimplemented && (
+                  <KarabastUnimplementedWarningIcon
+                    className="absolute bottom-2 left-2 z-20"
+                    size="large"
+                    stopClickPropagation={true}
+                    tooltipSide="right"
+                  />
+                )}
+              </CardImage>
             </div>
           ))}
           {bases.length === 0 && (

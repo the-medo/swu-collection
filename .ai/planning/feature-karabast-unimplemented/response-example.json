@@ -1,0 +1,29 @@
+[
+  {
+    "id": "0522959604",
+    "setId": {
+      "set": "ASH",
+      "number": 264
+    },
+    "types": "event",
+    "titleAndSubtitle": "A New Order"
+  },
+  {
+    "id": "0978988682",
+    "setId": {
+      "set": "ASH",
+      "number": 214
+    },
+    "types": "basicUnit",
+    "titleAndSubtitle": "Amnesty Officer"
+  },
+  {
+    "id": "2674341776",
+    "setId": {
+      "set": "ASH",
+      "number": 84
+    },
+    "types": "basicUpgrade",
+    "titleAndSubtitle": "Arcana Star Map, Path to Peridea"
+  }
+]
