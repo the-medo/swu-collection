@@ -32,7 +32,8 @@ const CreateDeckSection: React.FC<CreateDeckSectionProps> = ({ pool, className, 
 
   const createMutation = useCreateCardPoolDeck(pool?.id);
 
-  const canSubmit = Boolean(pool?.id) && name.trim().length > 0 && !createMutation.isPending;
+  const poolIsReady = Boolean(pool?.id) && pool?.status !== 'in_progress';
+  const canSubmit = poolIsReady && name.trim().length > 0 && !createMutation.isPending;
 
   const handleCreate = () => {
     if (!canSubmit) return;
@@ -58,7 +59,7 @@ const CreateDeckSection: React.FC<CreateDeckSectionProps> = ({ pool, className, 
           onChange={e => setName(e.target.value)}
           placeholder="Deck name"
           className="w-full h-8 text-sm"
-          disabled={!pool?.id || createMutation.isPending}
+          disabled={!pool?.id || !poolIsReady || createMutation.isPending}
         />
         <VisibilitySelector value={visibility} onChange={setVisibility} />
         <SignInWrapper text="Sign in to start a deck">
@@ -71,8 +72,13 @@ const CreateDeckSection: React.FC<CreateDeckSectionProps> = ({ pool, className, 
             {createMutation.isPending ? 'Creating…' : 'Start a new deck!'}
           </Button>
         </SignInWrapper>
+        {pool?.status === 'in_progress' && (
+          <div className="text-xs text-muted-foreground">
+            This card pool is incomplete and cannot be used to create a deck.
+          </div>
+        )}
         {createMutation.isError && (
-          <div className="text-xs text-red-500">Failed to create deck. Please try again.</div>
+          <div className="text-xs text-red-500">{createMutation.error.message}</div>
         )}
         {createMutation.isSuccess && <div className="text-xs text-green-600">Deck created!</div>}
       </div>

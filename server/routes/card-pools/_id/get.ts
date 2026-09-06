@@ -5,6 +5,8 @@ import type { AuthExtension } from '../../../auth/auth.ts';
 import { db } from '../../../db';
 import { and, eq, or, ne, SQL } from 'drizzle-orm';
 import { cardPools as cardPoolsTable } from '../../../db/schema/card_pool.ts';
+import { deck as deckTable } from '../../../db/schema/deck.ts';
+import { cardPoolDecks as cardPoolDecksTable } from '../../../db/schema/card_pool_deck.ts';
 
 const zParams = z.object({ id: z.uuid() });
 
@@ -41,7 +43,25 @@ export const cardPoolsIdGetRoute = new Hono<AuthExtension>().get(
         return c.json({ message: 'Card pool not found' }, 404);
       }
 
-      return c.json({ data: pool });
+      const [deckReference, cardPoolDeckReference] = await Promise.all([
+        db
+          .select({ id: deckTable.id })
+          .from(deckTable)
+          .where(eq(deckTable.cardPoolId, id))
+          .limit(1),
+        db
+          .select({ id: cardPoolDecksTable.deckId })
+          .from(cardPoolDecksTable)
+          .where(eq(cardPoolDecksTable.cardPoolId, id))
+          .limit(1),
+      ]);
+
+      return c.json({
+        data: {
+          ...pool,
+          hasDecks: deckReference.length > 0 || cardPoolDeckReference.length > 0,
+        },
+      });
     } catch (e) {
       return c.json({ message: 'Failed to fetch card pool' }, 500);
     }

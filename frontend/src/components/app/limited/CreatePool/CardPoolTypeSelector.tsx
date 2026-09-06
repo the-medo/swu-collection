@@ -1,4 +1,8 @@
-import { CardPoolType } from '../../../../../../shared/types/cardPools.ts';
+import {
+  CardPoolType,
+  DEFAULT_CARD_POOL_BOOSTER_COUNT,
+  type CardPoolBoosterCount,
+} from '../../../../../../shared/types/cardPools.ts';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import React from 'react';
@@ -11,36 +15,31 @@ type CardPoolTypeOption = {
   disabled?: boolean;
 };
 
-const cardPoolTypeOptions: CardPoolTypeOption[] = [
-  {
-    value: CardPoolType.Sealed,
-    label: 'Sealed deck',
-    description: 'Create a deck from six booster packs',
-  },
-  {
-    value: CardPoolType.Prerelease,
-    label: 'Prerelease',
-    description: 'Create a deck from six booster packs + 2 bonus leaders',
-  },
-  /*{
-    value: CardPoolType.Draft,
-    label: 'Draft (not yet implemented)',
-    description: 'Create a deck from drafted cards',
-    disabled: true,
-  },*/
-];
-
 interface CardPoolTypeSelectorProps {
   selectedType: CardPoolType;
   setSelectedType: (type: CardPoolType) => void;
+  sealedBoosterCount: CardPoolBoosterCount;
   showPrerelease?: boolean;
 }
 
 const CardPoolTypeSelector: React.FC<CardPoolTypeSelectorProps> = ({
   selectedType,
   setSelectedType,
+  sealedBoosterCount,
   showPrerelease = true,
 }) => {
+  const cardPoolTypeOptions: CardPoolTypeOption[] = [
+    {
+      value: CardPoolType.Sealed,
+      label: 'Sealed deck',
+      description: `Create a deck from ${sealedBoosterCount} booster packs`,
+    },
+    {
+      value: CardPoolType.Prerelease,
+      label: 'Prerelease',
+      description: `Create a deck from ${DEFAULT_CARD_POOL_BOOSTER_COUNT} booster packs + 2 bonus leaders`,
+    },
+  ];
   const options = cardPoolTypeOptions.filter(
     option => showPrerelease || option.value !== CardPoolType.Prerelease,
   );

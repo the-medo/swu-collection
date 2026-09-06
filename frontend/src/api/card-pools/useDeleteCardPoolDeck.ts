@@ -20,6 +20,7 @@ export const useDeleteCardPoolDeck = (
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['card-pool-decks', id], exact: false });
+      void queryClient.invalidateQueries({ queryKey: ['card-pool', id] });
       void queryClient.invalidateQueries({ queryKey: ['deck', deckId] });
       void queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });
     },

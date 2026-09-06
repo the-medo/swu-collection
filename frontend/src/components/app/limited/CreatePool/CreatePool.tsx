@@ -1,8 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import GridSection from '@/components/app/global/GridSection/GridSection.tsx';
 import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
 import SectionHeader from '@/components/app/daily-snapshots/sections/components/SectionHeader.tsx';
-import { CardPoolType } from '../../../../../../shared/types/cardPools.ts';
+import {
+  CARD_POOL_BOOSTER_COUNTS,
+  CardPoolType,
+  DEFAULT_CARD_POOL_BOOSTER_COUNT,
+  type CardPoolBoosterCount,
+} from '../../../../../../shared/types/cardPools.ts';
 import CardPoolTypeSelector from '@/components/app/limited/CreatePool/CardPoolTypeSelector.tsx';
 import { SwuSet } from '../../../../../../types/enums.ts';
 import SetIcon from '@/components/app/global/icons/SetIcon.tsx';
@@ -17,6 +22,11 @@ import { useToast } from '@/hooks/use-toast.ts';
 import { useCreateCardPool } from '@/api/card-pools/useCreateCardPool.ts';
 import SignInWrapper from '@/components/app/auth/SignInWrapper.tsx';
 import { useNavigate } from '@tanstack/react-router';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
+import CustomPoolCardEntry from './CustomPoolCardEntry.tsx';
+import type { CustomPoolDraftEntry } from './customPoolDraft.ts';
+
+type PoolCreationMode = 'generated' | 'custom';
 
 const gridSizing = {
   4: { row: { from: 1, to: 3 }, col: { from: 1, to: 1 } },
@@ -45,69 +55,109 @@ const typeLabel = (type: CardPoolType): string => {
   }
 };
 
-const generatePoolName = (type: CardPoolType, setAbbr: SwuSet, date: Date = new Date()) => {
-  return `${typeLabel(type)} ${setAbbr.toUpperCase()} [${formatDate(date)}]`;
+const generatePoolName = (
+  type: CardPoolType,
+  setAbbr: SwuSet,
+  custom: boolean,
+  date: Date = new Date(),
+) => {
+  const label = custom ? 'Custom' : typeLabel(type);
+  return `${label} ${setAbbr.toUpperCase()} [${formatDate(date)}]`;
 };
 
 const CreatePool: React.FC = () => {
   const navigate = useNavigate();
+  const [creationMode, setCreationMode] = useState<PoolCreationMode>('generated');
   const [selectedType, setSelectedType] = useState<CardPoolType>(CardPoolType.Sealed);
   const [selectedSet, setSelectedSet] = useState<SwuSet>(SwuSet.ASH);
+  const [boosterCount, setBoosterCount] = useState<CardPoolBoosterCount>(
+    DEFAULT_CARD_POOL_BOOSTER_COUNT,
+  );
+  const [customCards, setCustomCards] = useState<CustomPoolDraftEntry[]>([]);
   const [visibility, setVisibility] = useState<Visibility>(Visibility.Public);
   const [userEditedName, setUserEditedName] = useState<boolean>(false);
-  const [name, setName] = useState<string>(generatePoolName(selectedType, selectedSet, new Date()));
+  const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const { toast } = useToast();
   const createPoolMutation = useCreateCardPool();
 
-  // Auto-update the generated name when type or set changes, unless user already edited the name.
-  useEffect(() => {
-    if (!userEditedName) {
-      setName(generatePoolName(selectedType, selectedSet, new Date()));
-    }
-  }, [selectedType, selectedSet, userEditedName]);
-
-  // Ensure simplified view doesn't keep a hidden, unsupported option selected
-  useEffect(() => {
-    if (!expanded && selectedType === CardPoolType.Prerelease) {
-      setSelectedType(CardPoolType.Sealed);
-    }
-  }, [expanded, selectedType]);
-
-  const handleCreate = useCallback(
-    (custom: boolean) => {
-      createPoolMutation.mutate(
-        {
-          set: selectedSet,
-          type: selectedType,
-          visibility,
-          name,
-          description,
-          custom,
-        },
-        {
-          onSuccess: data => {
-            toast({ title: `Card pool "${name}" created!` });
-            navigate({ to: `/limited/pool/$poolId/detail`, params: { poolId: data.data.id } });
-          },
-          onError: () => {
-            toast({ title: 'Failed to create card pool', variant: 'destructive' });
-          },
-        },
+  const poolName = userEditedName
+    ? name
+    : generatePoolName(
+        creationMode === 'custom' ? CardPoolType.Sealed : selectedType,
+        selectedSet,
+        creationMode === 'custom',
       );
-    },
-    [selectedSet, selectedType, visibility, name, description],
-  );
 
-  /*const handleCreateCustom = useCallback(() => {
-    handleCreate(true);
-  }, [handleCreate]);*/
+  const handleCreationModeChange = (value: string) => {
+    if (value !== 'generated' && value !== 'custom') return;
+    setCreationMode(value);
+  };
 
-  const handleCreateAutomatic = useCallback(() => {
-    handleCreate(false);
-  }, [handleCreate]);
+  const handleTypeChange = (type: CardPoolType) => {
+    setSelectedType(type);
+    if (type === CardPoolType.Prerelease) {
+      setBoosterCount(DEFAULT_CARD_POOL_BOOSTER_COUNT);
+    }
+  };
+
+  const handleSetChange = (set: SwuSet) => {
+    if (set === selectedSet) return;
+
+    if (customCards.length > 0 && set !== selectedSet) {
+      if (creationMode === 'custom') {
+        toast({
+          title: 'Clear the custom pool before changing sets',
+          description: 'Collector numbers are resolved within the currently selected set.',
+        });
+        return;
+      }
+
+      setCustomCards([]);
+      toast({
+        title: 'Custom pool draft cleared',
+        description: 'Its card numbers belonged to the previously selected set.',
+      });
+    }
+    setSelectedSet(set);
+  };
+
+  const handleCreate = () => {
+    const custom = creationMode === 'custom';
+    const cards = customCards.map(card => card.cardId);
+
+    createPoolMutation.mutate(
+      {
+        set: selectedSet,
+        type: custom ? CardPoolType.Sealed : selectedType,
+        visibility,
+        name: poolName,
+        description,
+        custom,
+        ...(custom ? { cards } : { boosterCount }),
+      },
+      {
+        onSuccess: data => {
+          toast({ title: `Card pool "${poolName}" created!` });
+          navigate({ to: `/limited/pool/$poolId/detail`, params: { poolId: data.data.id } });
+        },
+        onError: error => {
+          toast({
+            title: 'Failed to create card pool',
+            description: error.message,
+            variant: 'destructive',
+          });
+        },
+      },
+    );
+  };
+
+  const canCreate =
+    poolName.trim().length > 0 &&
+    !createPoolMutation.isPending &&
+    (creationMode === 'generated' || customCards.length > 0);
 
   return (
     <GridSection id="create-pool-section" sizing={gridSizing}>
@@ -128,22 +178,82 @@ const CreatePool: React.FC = () => {
               value={selectedSet}
               emptyOption={false}
               showFullName={true}
-              onChange={setSelectedSet}
+              onChange={handleSetChange}
               forcedSetList={cardPoolSets}
             />
           </div>
-          <CardPoolTypeSelector
-            selectedType={selectedType}
-            setSelectedType={setSelectedType}
-            showPrerelease={expanded}
-          />
+
+          <div className="flex flex-col gap-1">
+            <span className="text-sm font-medium">Creation method</span>
+            <ToggleGroup
+              type="single"
+              value={creationMode}
+              onValueChange={handleCreationModeChange}
+              className="justify-start"
+              aria-label="Card pool creation method"
+            >
+              <ToggleGroupItem value="generated">Generate packs</ToggleGroupItem>
+              <ToggleGroupItem value="custom">Enter my cards</ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+
+          {creationMode === 'generated' ? (
+            <>
+              <CardPoolTypeSelector
+                selectedType={selectedType}
+                setSelectedType={handleTypeChange}
+                sealedBoosterCount={boosterCount}
+                showPrerelease={expanded}
+              />
+
+              {selectedType === CardPoolType.Sealed && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-medium">Booster packs</span>
+                  <ToggleGroup
+                    type="single"
+                    value={String(boosterCount)}
+                    onValueChange={value => {
+                      const count = CARD_POOL_BOOSTER_COUNTS.find(
+                        candidate => String(candidate) === value,
+                      );
+                      if (count !== undefined) {
+                        setBoosterCount(count);
+                      }
+                    }}
+                    className="justify-start"
+                    aria-label="Number of booster packs"
+                  >
+                    {CARD_POOL_BOOSTER_COUNTS.map(count => (
+                      <ToggleGroupItem key={count} value={String(count)}>
+                        {count} packs
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                </div>
+              )}
+            </>
+          ) : (
+            <CustomPoolCardEntry
+              selectedSet={selectedSet}
+              entries={customCards}
+              onChange={setCustomCards}
+              disabled={createPoolMutation.isPending}
+              description={
+                <>
+                  Enter a {selectedSet.toUpperCase()} collector number and press Enter. You can
+                  create custom pool now and update it afterwards.
+                </>
+              }
+            />
+          )}
 
           {expanded && (
             <div className="flex flex-col gap-2 mt-2">
               <Input
                 type="text"
                 placeholder="Name"
-                value={name}
+                value={poolName}
+                maxLength={200}
                 onChange={e => {
                   if (!userEditedName) setUserEditedName(true);
                   setName(e.target.value);
@@ -152,6 +262,7 @@ const CreatePool: React.FC = () => {
               <Textarea
                 placeholder="Description"
                 value={description}
+                maxLength={2000}
                 onChange={e => setDescription(e.target.value)}
               />
             </div>
@@ -159,19 +270,15 @@ const CreatePool: React.FC = () => {
 
           <div className="flex justify-between gap-2 mt-2 flex-wrap">
             <VisibilitySelector value={visibility} onChange={setVisibility} />
-            {/*<Button
-              variant="outline"
-              onClick={handleCreateCustom}
-              disabled={createPoolMutation.isPending || name.trim().length === 0}
+            <SignInWrapper
+              text={creationMode === 'custom' ? 'Sign in to create' : 'Sign in to generate'}
             >
-              {createPoolMutation.isPending ? 'Creating...' : 'Import your own'}
-            </Button>*/}
-            <SignInWrapper text="Sign in to generate">
-              <Button
-                onClick={handleCreateAutomatic}
-                disabled={createPoolMutation.isPending || name.trim().length === 0}
-              >
-                {createPoolMutation.isPending ? 'Creating...' : 'Generate'}
+              <Button onClick={handleCreate} disabled={!canCreate}>
+                {createPoolMutation.isPending
+                  ? 'Creating...'
+                  : creationMode === 'custom'
+                    ? 'Create custom pool'
+                    : 'Generate'}
               </Button>
             </SignInWrapper>
           </div>
