@@ -2,6 +2,8 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import type { AuthExtension } from '../../../../auth/auth.ts';
+import { MAX_CUSTOM_CARD_POOL_SIZE } from '../../../../../shared/types/cardPools.ts';
+import { SwuSet } from '../../../../../types/enums.ts';
 import { db } from '../../../../db';
 import { and, eq, sql } from 'drizzle-orm';
 import {
@@ -14,19 +16,23 @@ import {
   filterLeadersFromCardPool,
   transformCardPoolToCardPoolCards,
 } from '../../../../lib/card-pools/generate-card-pool.ts';
-import { findInvalidCardIds } from '../../../../lib/card-pools/validate-card-ids.ts';
+import {
+  describeCustomCardPoolValidation,
+  isCustomCardPoolValidationSuccessful,
+  validateCustomCardPoolCards,
+} from '../../../../lib/card-pools/validate-card-ids.ts';
 import { getMergedCardList } from '../../../../lib/cards/cardListProvider.ts';
 
 const zParams = z.object({ id: z.uuid() });
-const zBody = z.object({
+export const zCardPoolCardsPut = z.object({
   // Full replacement of card pool contents: array of card ids
-  cards: z.array(z.string()).min(1),
+  cards: z.array(z.string().min(1)).max(MAX_CUSTOM_CARD_POOL_SIZE),
 });
 
 export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
   '/',
   zValidator('param', zParams),
-  zValidator('json', zBody),
+  zValidator('json', zCardPoolCardsPut),
   async c => {
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
@@ -42,9 +48,11 @@ export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
             id: cardPoolsTable.id,
             userId: cardPoolsTable.userId,
             custom: cardPoolsTable.custom,
+            set: cardPoolsTable.set,
           })
           .from(cardPoolsTable)
           .where(eq(cardPoolsTable.id, id))
+          .for('update')
           .limit(1);
 
         if (!pool || pool.userId !== user.id) {
@@ -52,6 +60,9 @@ export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
         }
         if (!pool.custom) {
           return { status: 'not_custom' as const };
+        }
+        if (!pool.set || !Object.values(SwuSet).includes(pool.set as SwuSet)) {
+          return { status: 'invalid_set' as const };
         }
 
         // Check usage: referenced by any deck or card_pool_decks row
@@ -75,9 +86,13 @@ export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
         const mergedCardList = await getMergedCardList();
 
         // Validate card ids exist in the merged card list (official + active preview)
-        const invalid = findInvalidCardIds(body.cards, mergedCardList);
-        if (invalid.length > 0) {
-          return { status: 'invalid_cards' as const, invalid };
+        const validation = validateCustomCardPoolCards(
+          body.cards,
+          pool.set as SwuSet,
+          mergedCardList,
+        );
+        if (!isCustomCardPoolValidationSuccessful(validation)) {
+          return { status: 'invalid_cards' as const, validation };
         }
 
         // Transform to rows
@@ -91,29 +106,45 @@ export const cardPoolsIdCardsPutRoute = new Hono<AuthExtension>().put(
 
         // Update pool status, leaders, updated_at
         const leaders = filterLeadersFromCardPool(body.cards, mergedCardList);
+        const status = body.cards.length > 0 ? ('ready' as const) : ('in_progress' as const);
         const [updated] = await tx
           .update(cardPoolsTable)
-          .set({ status: 'ready', updatedAt: new Date().toISOString(), leaders: leaders.join(',') })
+          .set({ status, updatedAt: new Date().toISOString(), leaders: leaders.join(',') })
           .where(and(eq(cardPoolsTable.id, id), eq(cardPoolsTable.userId, user.id)))
           .returning();
 
         if (!updated) return { status: 'error' as const };
 
-        return { status: 'ok' as const, replaced: rows.length, leaders };
+        return { status: 'ok' as const, replaced: rows.length, leaders, poolStatus: status };
       });
 
       if (result.status === 'not_found') return c.json({ message: 'Card pool not found' }, 404);
       if (result.status === 'not_custom')
         return c.json({ message: 'Only custom card pools can import/replace cards' }, 400);
+      if (result.status === 'invalid_set')
+        return c.json({ message: 'Card pool has no valid set' }, 400);
       if (result.status === 'used')
         return c.json(
-          { message: 'Card pool already used in decks; cards cannot be replaced' },
-          400,
+          { message: 'This card pool has a deck, so its cards can no longer be changed' },
+          409,
         );
       if (result.status === 'invalid_cards')
-        return c.json({ message: 'Invalid card ids supplied', invalid: result.invalid }, 400);
+        return c.json(
+          {
+            message: describeCustomCardPoolValidation(result.validation),
+            validation: result.validation,
+          },
+          400,
+        );
       if (result.status === 'ok')
-        return c.json({ data: { id, replaced: result.replaced, leaders: result.leaders } });
+        return c.json({
+          data: {
+            id,
+            replaced: result.replaced,
+            leaders: result.leaders,
+            status: result.poolStatus,
+          },
+        });
 
       return c.json({ message: 'Failed to replace card pool cards' }, 500);
     } catch (e) {

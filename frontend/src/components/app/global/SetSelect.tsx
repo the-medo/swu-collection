@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import * as React from 'react';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { SwuSet } from '../../../../../types/enums.ts';
 import { setArray, SetInfo } from '../../../../../lib/swu-resources/set-info.ts';
 
@@ -34,28 +34,22 @@ const SetSelect: React.FC<SetSelectProps> = ({
   showFullName = false,
   forcedSetList,
 }) => {
-  const [swuSet, setSwuSet] = React.useState<SwuSet | 'empty'>(value ?? 'empty');
-
-  useEffect(() => setSwuSet(value ?? 'empty'), [value]);
-
   const onChangeHandler = useCallback(
     (v: SwuSet | 'empty') => {
       if (!emptyOption && v === 'empty') {
         throw new Error('Empty option is not allowed');
       }
       if (v === 'empty' && emptyOption) {
-        setSwuSet('empty');
         onChange(null);
       } else if (v !== 'empty') {
         onChange(v);
-        setSwuSet(v);
       }
     },
-    [onChange],
+    [emptyOption, onChange],
   );
 
   return (
-    <Select value={swuSet ?? undefined} onValueChange={onChangeHandler}>
+    <Select value={value ?? 'empty'} onValueChange={onChangeHandler}>
       <SelectTrigger>
         <SelectValue placeholder="Set" />
       </SelectTrigger>

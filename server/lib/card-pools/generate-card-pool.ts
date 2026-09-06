@@ -1,6 +1,10 @@
 import type { SwuSet } from '../../../types/enums.ts';
 import { cardPoolInfo } from '../../../lib/swu-resources/card-pool-info.ts';
-import { CardPoolType } from '../../../shared/types/cardPools.ts';
+import {
+  CardPoolType,
+  DEFAULT_CARD_POOL_BOOSTER_COUNT,
+  type CardPoolBoosterCount,
+} from '../../../shared/types/cardPools.ts';
 import { type CardPoolMap, getCardPoolMap } from './card-pool-map-by-set.ts';
 import type { CardList } from '../../../lib/swu-resources/types.ts';
 
@@ -53,7 +57,11 @@ export const generateBoosterPack = (cardPoolMap: CardPoolMap): BoosterPack => {
   ]);
 };
 
-export const generateCardPool = (s: SwuSet, type: CardPoolType, boosterCount: number = 6) => {
+export const generateCardPool = (
+  s: SwuSet,
+  type: CardPoolType,
+  boosterCount: CardPoolBoosterCount = DEFAULT_CARD_POOL_BOOSTER_COUNT,
+) => {
   if (!cardPoolInfo[s]) throw new Error(`No card pool info found for set ${s}`);
   if (type === CardPoolType.Draft) throw new Error(`Draft card pools not implemented yet`);
 

@@ -6,9 +6,9 @@ import { visibilityToPublicMap, Visibility } from '../../../../../shared/types/v
 import { db } from '../../../../db';
 import { deck as deckTable } from '../../../../db/schema/deck.ts';
 import { cardPoolDecks, cardPoolDeckCards } from '../../../../db/schema/card_pool_deck.ts';
-import { cardPoolCards } from '../../../../db/schema/card_pool.ts';
+import { cardPoolCards, cardPools as cardPoolsTable } from '../../../../db/schema/card_pool.ts';
 import { eq } from 'drizzle-orm';
-import { getCardPoolBasedOnIdAndUser } from '../../../../lib/card-pools/card-pool-access.ts';
+import { buildCardPoolVisibilityWhere } from '../../../../lib/card-pools/card-pool-access.ts';
 
 const zParams = z.object({ id: z.uuid() });
 const zBody = z.object({
@@ -28,16 +28,23 @@ export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
     const { id } = c.req.valid('param');
     const body = c.req.valid('json');
 
-    // 1) Check access to the card pool
-    const pool = await getCardPoolBasedOnIdAndUser(id, user);
-    if (!pool) return c.json({ message: 'Card pool not found' }, 404);
-
-    // 2) Determine deck format based on pool type
-    // format 3 => sealed/prerelease, format 4 => draft
-    const formatId = pool.type === 'draft' ? 4 : 3;
-
     const result = await db.transaction(async tx => {
-      // 2) Create deck row
+      // Lock the pool before either creating a deck or replacing its cards. This makes
+      // the "editable until the first deck" rule safe under concurrent requests.
+      const [pool] = await tx
+        .select()
+        .from(cardPoolsTable)
+        .where(buildCardPoolVisibilityWhere(id, user))
+        .for('update')
+        .limit(1);
+
+      if (!pool) return { status: 'not_found' as const };
+      if (pool.status === 'in_progress') return { status: 'not_ready' as const };
+
+      // format 3 => sealed/prerelease, format 4 => draft
+      const formatId = pool.type === 'draft' ? 4 : 3;
+
+      // Create deck row
       const inserted = await tx
         .insert(deckTable)
         .values({
@@ -53,7 +60,7 @@ export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
       const newDeck = inserted[0];
       const newDeckId = newDeck.id;
 
-      // 3) Insert into card_pool_decks
+      // Insert into card_pool_decks
       await tx.insert(cardPoolDecks).values({
         deckId: newDeckId,
         cardPoolId: id,
@@ -61,7 +68,7 @@ export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
         visibility: body.visibility,
       });
 
-      // 4) Pre-populate card_pool_deck_cards from card_pool_cards
+      // Pre-populate card_pool_deck_cards from card_pool_cards
       const poolCards = await tx
         .select({ cardPoolNumber: cardPoolCards.cardPoolNumber })
         .from(cardPoolCards)
@@ -77,8 +84,15 @@ export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
         await tx.insert(cardPoolDeckCards).values(deckCards);
       }
 
-      return { newDeck, createdCardsCount: poolCards.length };
+      return { status: 'ok' as const, newDeck, createdCardsCount: poolCards.length };
     });
+
+    if (result.status === 'not_found') {
+      return c.json({ message: 'Card pool not found' }, 404);
+    }
+    if (result.status === 'not_ready') {
+      return c.json({ message: 'Card pool is not ready for deck creation' }, 409);
+    }
 
     return c.json(
       {

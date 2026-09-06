@@ -2,6 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { Visibility } from '../../../../shared/types/visibility.ts';
 import type { Deck } from '../../../../types/Deck.ts';
+import { createApiError } from '@/api/errors.ts';
+import type { CardPoolDataResponse } from './useGetCardPool.ts';
 
 export interface CreateCardPoolDeckBody {
   name?: string;
@@ -27,12 +29,15 @@ export const useCreateCardPoolDeck = (id: string | undefined) => {
         json: body,
       });
       if (!res.ok) {
-        throw new Error('Failed to create deck for card pool');
+        throw await createApiError(res, 'Failed to create deck for card pool');
       }
       return (await res.json()) as CreateCardPoolDeckResponse;
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['card-pool-decks', id], exact: false });
+      queryClient.setQueryData<CardPoolDataResponse>(['card-pool', id], current =>
+        current ? { ...current, data: { ...current.data, hasDecks: true } } : current,
+      );
       // New deck may also affect global decks views
       void queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });
     },

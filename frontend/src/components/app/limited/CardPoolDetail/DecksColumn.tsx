@@ -1,12 +1,15 @@
 import React, { useMemo } from 'react';
-import { CardPool } from '../../../../../../server/db/schema/card_pool.ts';
+import type { CardPoolWithDeckState } from '@/api/card-pools/useGetCardPool.ts';
 import { useGetCardPoolDecks } from '@/api/card-pools/useGetCardPoolDecks.ts';
 import CreateDeckSection from './CreateDeckSection.tsx';
 import DeckCard from './DeckCard.tsx';
 import { useUser } from '@/hooks/useUser.ts';
+import EditCustomPoolCardsSection from './EditCustomPoolCardsSection.tsx';
+import { Alert } from '@/components/ui/alert.tsx';
+import { TriangleAlert } from 'lucide-react';
 
 export interface DecksColumnProps {
-  pool?: CardPool;
+  pool?: CardPoolWithDeckState;
 }
 
 const DecksColumn: React.FC<DecksColumnProps> = ({ pool }) => {
@@ -26,11 +29,25 @@ const DecksColumn: React.FC<DecksColumnProps> = ({ pool }) => {
   }, [decks, user]);
 
   const noDecks = !isFetching && !isError && decks.length === 0;
+  const canManageCustomPool = Boolean(user && pool?.custom && user.id === pool.userId);
 
   return (
     <div className="h-full rounded-lg border border-border bg-card p-3">
       <h3 className="text-sm font-semibold mb-2">Decks</h3>
       <CreateDeckSection pool={pool} className="mb-3" />
+      {pool && canManageCustomPool && (
+        <>
+          <EditCustomPoolCardsSection pool={pool} />
+          <Alert variant="warning" size="xs" className="mb-3 items-start">
+            <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
+            <span>
+              {pool.hasDecks
+                ? 'This pool has a deck, so its card list can no longer be changed.'
+                : 'You can update this pool only while it has no decks. Creating a deck will lock its card list.'}
+            </span>
+          </Alert>
+        </>
+      )}
       {isFetching && <div className="text-xs opacity-60">Loading decks...</div>}
       {isError && <div className="text-xs text-red-400">Failed to load decks.</div>}
       {noDecks && (

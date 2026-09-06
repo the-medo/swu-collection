@@ -3,8 +3,12 @@ import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
 import { CardPool } from '../../../../server/db/schema/card_pool.ts';
 
+export type CardPoolWithDeckState = CardPool & {
+  hasDecks: boolean;
+};
+
 export interface CardPoolDataResponse {
-  data: CardPool;
+  data: CardPoolWithDeckState;
 }
 
 export const useGetCardPool = (id: string | undefined) => {
