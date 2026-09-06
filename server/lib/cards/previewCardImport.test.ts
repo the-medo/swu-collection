@@ -13,7 +13,7 @@ const definition = zPreviewCardImportDefinition.parse({
   sourceUrlTemplate: 'https://cards.example/card/{expansionAbbreviation}/{cardNumber}',
   request: { url: 'https://cards.example/api/card', method: 'POST' },
   mappings: {
-    aspects: { 1: 'Aggression', 3: 'Cunning', 6: 'Villainy' },
+    aspects: { 1: 'Aggression', 3: 'Cunning', 5: 'Heroism', 6: 'Villainy' },
   },
   template: {
     cardId: { $template: '{cardName}, {title}', $transforms: ['cardId'] },
@@ -108,6 +108,34 @@ describe('preview card external import', () => {
       fullSetName: 'Homeworlds',
       cardNo: 15,
       artist: 'Kyle Petchock',
+    });
+  });
+
+  test('handles cards without a subtitle or arena', () => {
+    const result = buildImportedPreviewCard(definition, 'https://cards.example/card/HMW/172', {
+      cardName: 'Heavy Ion Cannon',
+      title: '',
+      hitPoints: null,
+      power: null,
+      hitPointBonus: null,
+      powerBonus: null,
+      frontAbilityText: '{p}{b}When Played:{/b} Draw a card.{/p}',
+      backAbilityText: '',
+      aspects: [1, 5],
+      cardTypeDescription: 'Upgrade',
+      cost: 3,
+      traits: ['Fortification'],
+      arenaDescription: '',
+      artistName: 'Shane Molina',
+    });
+
+    expect(result.payload.cardId).toBe('heavy-ion-cannon');
+    expect(result.payload.name).toBe('Heavy Ion Cannon');
+    expect(result.payload.subtitle).toBeUndefined();
+    expect(result.payload.arenas).toEqual([]);
+    expect(result.payload.variants['heavy-ion-cannon-preview-standard']).toMatchObject({
+      cardNo: 172,
+      artist: 'Shane Molina',
     });
   });
 
