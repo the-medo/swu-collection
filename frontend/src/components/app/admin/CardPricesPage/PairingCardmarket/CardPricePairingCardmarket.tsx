@@ -59,7 +59,7 @@ const CardPricePairingCardmarket: React.FC = () => {
       <CardContent>
         <div className="space-y-4">
           <Textarea
-            placeholder="Paste Cardmarket data here... HTML table elements"
+            placeholder="Paste the complete &lt;section&gt; HTML element from the Cardmarket page source here..."
             className="min-h-[200px]"
             value={bulkText}
             onChange={e => setBulkText(e.target.value)}
