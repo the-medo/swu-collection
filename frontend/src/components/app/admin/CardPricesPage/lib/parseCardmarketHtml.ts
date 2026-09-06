@@ -31,12 +31,14 @@ function getCardNumber(row: Element): string {
  * @param htmlContent The HTML content to parse
  * @param selectedSet
  * @param cards
+ * @param customSet
  * @returns Array of parsed card data
  */
 export function parseCardmarketHtml(
   htmlContent: string,
   selectedSet: SwuSet | null,
   cards: CardList | undefined,
+  customSet?: string,
 ): ParsedCardData[] {
   // Create a DOM parser
   const parser = new DOMParser();
@@ -45,6 +47,8 @@ export function parseCardmarketHtml(
   // Find all product rows
   const productRows = doc.querySelectorAll('div[id^="productRow"]');
   const results: ParsedCardData[] = [];
+  const customSetFilter = customSet?.trim().toLowerCase();
+  const setFilter = selectedSet ?? customSetFilter;
 
   productRows.forEach(row => {
     try {
@@ -66,7 +70,9 @@ export function parseCardmarketHtml(
       let probableVariantId: string | undefined = undefined;
       if (cards && cards[probableCardId]) {
         const variant = Object.values(cards[probableCardId]?.variants || {}).find(v => {
-          return v?.cardNo === parseInt(cardNumber) && (!selectedSet || v?.set === selectedSet);
+          return (
+            v?.cardNo === parseInt(cardNumber) && (!setFilter || v?.set.toLowerCase() === setFilter)
+          );
         });
         probableVariantId = variant?.variantId;
       } else {

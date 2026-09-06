@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import { Input } from '@/components/ui/input.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import SetSelect from '@/components/app/global/SetSelect.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -15,6 +16,7 @@ const CardPricePairingCardmarket: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [selectedSet, setSelectedSet] = React.useState<SwuSet | null>(null);
+  const [customSet, setCustomSet] = React.useState('');
   const [isBatchSubmitting, setIsBatchSubmitting] = React.useState(false);
 
   const { data: cardList } = useCardList();
@@ -24,6 +26,7 @@ const CardPricePairingCardmarket: React.FC = () => {
     setParsedData([]);
     setError(null);
     setSelectedSet(null);
+    setCustomSet('');
   };
 
   const handleParse = () => {
@@ -36,7 +39,7 @@ const CardPricePairingCardmarket: React.FC = () => {
         return;
       }
 
-      const results = parseCardmarketHtml(bulkText, selectedSet, cardList?.cards);
+      const results = parseCardmarketHtml(bulkText, selectedSet, cardList?.cards, customSet);
 
       if (results.length === 0) {
         setError('No card data found. Please check the HTML content.');
@@ -64,13 +67,22 @@ const CardPricePairingCardmarket: React.FC = () => {
             value={bulkText}
             onChange={e => setBulkText(e.target.value)}
           />
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             <div className="w-40">
               <SetSelect
                 value={selectedSet}
                 emptyOption={true}
                 onChange={setSelectedSet}
                 showFullName={true}
+              />
+            </div>
+            <div className="w-40">
+              <Input
+                placeholder="custom set abbr."
+                aria-label="Custom set abbreviation"
+                value={customSet}
+                onChange={e => setCustomSet(e.target.value)}
+                disabled={selectedSet !== null}
               />
             </div>
             <Button onClick={handleParse} disabled={isLoading || isBatchSubmitting}>

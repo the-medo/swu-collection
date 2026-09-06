@@ -16,6 +16,12 @@ const cardList = {
         cardNo: 79,
         variantName: 'Standard',
       },
+      custom: {
+        variantId: 'custom',
+        set: 'custom',
+        cardNo: 79,
+        variantName: 'Custom set',
+      },
     },
   },
 } as unknown as CardList;
@@ -42,5 +48,19 @@ describe('parseCardmarketHtml', () => {
         variantId: 'standard',
       },
     ]);
+  });
+
+  test('uses a normalized custom set only when no regular set is selected', () => {
+    const html = `
+      <div id="productRow123">
+        <a href="/en/StarWarsUnlimited/Products/Test/Test-Card">Test Card</a>
+        <div data-testid="collector_number"><span>#</span><span>079</span></div>
+      </div>
+    `;
+
+    expect(parseCardmarketHtml(html, null, cardList, ' CUSTOM ')[0]?.variantId).toBe('custom');
+    expect(parseCardmarketHtml(html, SwuSet.SOR, cardList, 'custom')[0]?.variantId).toBe(
+      'standard',
+    );
   });
 });
