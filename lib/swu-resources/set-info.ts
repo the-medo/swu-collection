@@ -13,7 +13,7 @@ export type SetInfo = {
   name: string;
   cardCount: number;
   sortValue: number;
-  expansionId: number;
+  expansionId?: number;
   hexColor: string;
   rotationBlockId?: number;
   releaseDate: string;
@@ -47,11 +47,12 @@ export const rotationBlocks: Record<number | string, RotationBlock> = {
   3: {
     id: 3,
     year: 2026,
-    name: 'Block 3 (LAW, ASH)',
+    name: 'Block 3 (LAW, ASH, HMW)',
     hexColor: '#4782c6',
     setMap: {
       [SwuSet.LAW]: true,
       [SwuSet.ASH]: true,
+      [SwuSet.HMW]: true,
     },
   },
 };
@@ -156,6 +157,15 @@ export const setInfo: Record<SwuSet, SetInfo> = {
     hexColor: '#425563',
     rotationBlockId: 3,
     releaseDate: '2026-07-11',
+  },
+  [SwuSet.HMW]: {
+    code: SwuSet.HMW,
+    name: 'Homeworlds',
+    cardCount: 264,
+    sortValue: 11,
+    hexColor: '#3f7d5b',
+    rotationBlockId: 3,
+    releaseDate: '2026-10-02',
   },
 } as const;
 

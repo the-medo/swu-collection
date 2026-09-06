@@ -1,11 +1,32 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Archive, Copy, Loader2, Plus, RefreshCcw, Save, Sparkles, Upload } from 'lucide-react';
+import {
+  Archive,
+  Copy,
+  Download,
+  Loader2,
+  Plus,
+  RefreshCcw,
+  Save,
+  Sparkles,
+  Upload,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog.tsx';
 import {
   Select,
   SelectContent,
@@ -29,7 +50,9 @@ import {
   type PreviewCardMigrationSummary,
   type PreviewCardPayload,
   type PreviewCardStatus,
+  useArchiveActivePreviewCards,
   useArchivePreviewCard,
+  useImportPreviewCard,
   useMigratePreviewCard,
   usePreviewCards,
   useSavePreviewCard,
@@ -38,6 +61,26 @@ import {
 import { transformToId } from '../../../../../lib/swu-resources/lib/transformToId.ts';
 
 const PREVIEW_STATUSES: PreviewCardStatus[] = ['active', 'archived', 'migrated'];
+const PREVIEW_CARD_IMPORT_DEFINITION_STORAGE_KEY =
+  'swubase:admin:preview-cards:import-definition';
+
+function loadStoredImportDefinition(): string {
+  if (typeof window === 'undefined') return '';
+
+  try {
+    return window.localStorage.getItem(PREVIEW_CARD_IMPORT_DEFINITION_STORAGE_KEY) ?? '';
+  } catch {
+    return '';
+  }
+}
+
+function storeImportDefinition(definition: string): void {
+  try {
+    window.localStorage.setItem(PREVIEW_CARD_IMPORT_DEFINITION_STORAGE_KEY, definition);
+  } catch {
+    // Browser storage can be unavailable; importing should still work for the current page.
+  }
+}
 
 function stringifyPayload(payload: unknown): string {
   return JSON.stringify(payload, null, 2);
@@ -69,6 +112,8 @@ export function PreviewCardsPage() {
   const { data, isLoading, refetch } = usePreviewCards();
   const savePreviewCard = useSavePreviewCard();
   const archivePreviewCard = useArchivePreviewCard();
+  const archiveActivePreviewCards = useArchiveActivePreviewCards();
+  const importPreviewCard = useImportPreviewCard();
   const migratePreviewCard = useMigratePreviewCard();
   const uploadPreviewCardImage = useUploadPreviewCardImage();
 
@@ -83,10 +128,13 @@ export function PreviewCardsPage() {
   const [selectedVariantId, setSelectedVariantId] = useState('');
   const [imageSide, setImageSide] = useState<'front' | 'back'>('front');
   const [imageFile, setImageFile] = useState<File | undefined>();
+  const [importSourceUrl, setImportSourceUrl] = useState('');
+  const [importDefinitionJson, setImportDefinitionJson] = useState(loadStoredImportDefinition);
 
   const rows = data?.data ?? [];
   const template = data?.template;
   const selectedRow = rows.find(row => row.id === selectedId);
+  const activeRowCount = rows.filter(row => row.status === 'active').length;
 
   const parsedPayload = useMemo(() => {
     if (!editorJson.trim()) return undefined;
@@ -250,6 +298,46 @@ export function PreviewCardsPage() {
     }
   };
 
+  const handleArchiveActive = async () => {
+    try {
+      const archivedCount = await archiveActivePreviewCards.mutateAsync();
+      if (selectedRow?.status === 'active') {
+        setStatus('archived');
+      }
+      toast({
+        title: 'Active preview cards archived',
+        description: `${archivedCount} ${archivedCount === 1 ? 'card' : 'cards'} archived.`,
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Bulk archive failed',
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
+
+  const handleImport = async () => {
+    storeImportDefinition(importDefinitionJson);
+
+    try {
+      const definition = JSON.parse(importDefinitionJson) as unknown;
+      const payload = await importPreviewCard.mutateAsync({
+        sourceUrl: importSourceUrl.trim(),
+        definition,
+      });
+      startNew(payload);
+      setCardId(payload.cardId);
+      toast({ title: 'Preview card imported', description: 'Review the payload, then save it.' });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Import failed',
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
+
   const handleMigrate = async () => {
     if (!selectedId || !officialCardId.trim()) return;
     try {
@@ -323,10 +411,44 @@ export function PreviewCardsPage() {
         <div>
           <h2 className="text-xl font-semibold">Preview Cards</h2>
           <p className="text-sm text-muted-foreground">
-            {rows.length} rows, {rows.filter(row => row.status === 'active').length} active
+            {rows.length} rows, {activeRowCount} active
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                disabled={activeRowCount === 0 || archiveActivePreviewCards.isPending}
+              >
+                {archiveActivePreviewCards.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Archive className="mr-2 h-4 w-4" />
+                )}
+                Archive all active
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Archive all active preview cards?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will archive {activeRowCount}{' '}
+                  {activeRowCount === 1 ? 'preview card' : 'preview cards'} so they no longer appear
+                  in the public card list. Migrated and already archived cards will not be changed.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={handleArchiveActive}
+                >
+                  Archive all active
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Button variant="outline" onClick={() => refetch()}>
             <RefreshCcw className="mr-2 h-4 w-4" />
             Refresh
@@ -334,6 +456,53 @@ export function PreviewCardsPage() {
           <Button onClick={() => startNew()}>
             <Plus className="mr-2 h-4 w-4" />
             New
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-3 rounded-md border p-4">
+        <div>
+          <h3 className="font-semibold">Import from external source</h3>
+          <p className="text-sm text-muted-foreground">
+            Paste a source URL and its private import definition. Imported images are uploaded
+            immediately; review and save the generated payload afterward. The definition is saved
+            only in this browser when you import.
+          </p>
+        </div>
+        <div className="grid gap-3 lg:grid-cols-[minmax(260px,0.7fr)_minmax(420px,1.3fr)_auto]">
+          <div className="space-y-2">
+            <Label htmlFor="preview-card-import-url">Source URL</Label>
+            <Input
+              id="preview-card-import-url"
+              value={importSourceUrl}
+              onChange={event => setImportSourceUrl(event.target.value)}
+              placeholder="https://example.com/cards/SET/123"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="preview-card-import-definition">Import definition JSON</Label>
+            <Textarea
+              id="preview-card-import-definition"
+              value={importDefinitionJson}
+              onChange={event => setImportDefinitionJson(event.target.value)}
+              className="min-h-24 font-mono text-xs"
+              placeholder='{"sourceUrlTemplate":"https://example.com/cards/{set}/{number}", ...}'
+              spellCheck={false}
+            />
+          </div>
+          <Button
+            className="self-end"
+            disabled={
+              !importSourceUrl.trim() || !importDefinitionJson.trim() || importPreviewCard.isPending
+            }
+            onClick={handleImport}
+          >
+            {importPreviewCard.isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
+            Import
           </Button>
         </div>
       </div>
