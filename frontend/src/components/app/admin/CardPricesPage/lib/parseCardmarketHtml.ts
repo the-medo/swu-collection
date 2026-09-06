@@ -16,6 +16,16 @@ function cleanCardName(name: string): string {
   return name.replace(/\s*\(V\.\d+\)\s*$/, '').trim();
 }
 
+function getCardNumber(row: Element): string {
+  const container = row.querySelector(
+    'div[data-testid="collector_number"], div[data-testid="number"]',
+  );
+  const numberText =
+    container?.querySelector('span:last-child')?.textContent ?? container?.textContent;
+
+  return numberText?.match(/\d+/)?.[0] ?? '';
+}
+
 /**
  * Parses HTML content from Cardmarket to extract card data
  * @param htmlContent The HTML content to parse
@@ -50,8 +60,7 @@ export function parseCardmarketHtml(
       const nameDirty = linkElement.textContent || '';
       const name = cleanCardName(nameDirty);
 
-      const cardNumberContainer = row.querySelector('div[data-testid="number"]'); //.querySelector('.col-number > div > span:last-child');
-      const cardNumber = cardNumberContainer ? cardNumberContainer.textContent?.trim() || '' : '';
+      const cardNumber = getCardNumber(row);
 
       let probableCardId: string | undefined = transformToId(name);
       let probableVariantId: string | undefined = undefined;
