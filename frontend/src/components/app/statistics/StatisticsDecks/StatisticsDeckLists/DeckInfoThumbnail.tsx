@@ -11,6 +11,7 @@ import { Link } from '@tanstack/react-router';
 import { cn } from '@/lib/utils.ts';
 import { getCardIdFromKey } from '@/components/app/statistics/lib/lib.ts';
 import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
+import { StatSectionCompact } from '@/components/app/statistics/common/StatSectionCompact.tsx';
 
 interface DeckInfoThumbnailProps {
   teamId?: string;
@@ -56,9 +57,10 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
         teamId,
       }}
       search={prev => ({ ...prev, sDeckId: deckId })}
+      className="block w-full min-w-0"
     >
       <Card
-        className={cn('overflow-hidden relative', {
+        className={cn('overflow-hidden relative @container/deck-statistics-item', {
           'w-full h-[200px] min-w-[350px]': statSectionVariant === 'vertical',
           'w-full': statSectionVariant === 'horizontal',
         })}
@@ -69,22 +71,28 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
               leaderCard={leaderCard}
               baseCard={baseCard}
               position="top-left"
+              className={cn({
+                'origin-top-left scale-[0.65] @[720px]/deck-statistics-item:scale-100':
+                  statSectionVariant === 'horizontal',
+              })}
             >
               <BaseAvatar cardId={baseCardKey} bordered={false} size="40" shape="circle" />
             </DeckBackgroundDecoration>
           )}
           <CardContent
-            className={cn('flex p-2 relative z-10 gap-4', {
+            className={cn('flex min-w-0 p-2 relative z-10 gap-4', {
               'flex-col h-full items-end justify-end': statSectionVariant === 'vertical',
               'flex-row flex-1 items-center justify-between flex-wrap':
                 statSectionVariant === 'horizontal',
-              'pl-45': displayDeckBackground && statSectionVariant === 'horizontal',
+              'pl-28 @[720px]/deck-statistics-item:pl-45':
+                displayDeckBackground && statSectionVariant === 'horizontal',
             })}
           >
             <h6
               className={cn('mb-0!', {
                 'truncate text-xs w-[170px]': statSectionVariant === 'vertical',
-                'min-w-[170px] max-w-[500px] truncate': statSectionVariant === 'horizontal',
+                'w-full min-w-0 max-w-[500px] truncate @[720px]/deck-statistics-item:w-auto @[720px]/deck-statistics-item:min-w-[170px]':
+                  statSectionVariant === 'horizontal',
               })}
             >
               {deckName}
@@ -92,13 +100,36 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
             <div
               className={cn('flex gap-4 flex-1', {
                 'justify-between items-end': statSectionVariant === 'vertical',
-                'flex-row-reverse justify-start items-center': statSectionVariant === 'horizontal',
+                'w-full min-w-0 flex-row-reverse justify-between items-center @[720px]/deck-statistics-item:w-auto @[720px]/deck-statistics-item:justify-start':
+                  statSectionVariant === 'horizontal',
               })}
             >
               <div className="flex gap-4">
                 {deckId && <CopyLinkButton deckId={deckId} isPublic={true} compact={true} />}
               </div>
-              <div className="flex flex-wrap gap-4">
+              {statSectionVariant === 'horizontal' && (
+                <div className="flex flex-col gap-1 @[720px]/deck-statistics-item:hidden">
+                  <StatSectionCompact
+                    label="Games"
+                    wins={gameWins}
+                    losses={gameLosses}
+                    winrate={gameWinrate}
+                  />
+                  <StatSectionCompact
+                    label="Matches"
+                    wins={matchWins}
+                    losses={matchLosses}
+                    winrate={matchWinrate}
+                  />
+                </div>
+              )}
+              <div
+                className={cn('flex-wrap gap-4', {
+                  flex: statSectionVariant === 'vertical',
+                  'hidden @[720px]/deck-statistics-item:flex':
+                    statSectionVariant === 'horizontal',
+                })}
+              >
                 <StatSection
                   label="Games"
                   wins={gameWins}

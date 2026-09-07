@@ -115,7 +115,7 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
   }, [isClearingCache, queryClient, scopeId, toast]);
 
   return (
-    <div className="flex flex-wrap items-end gap-4">
+    <div className="flex w-full flex-wrap items-end gap-4">
       <div className="flex flex-col gap-1">
         <span className="text-xs font-semibold">Match type:</span>
         <MatchTypeSelector
