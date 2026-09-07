@@ -39,6 +39,45 @@ export const basicAspectIgnoreBaseForAspect: Record<string, string> = {
   ['Cunning-AspectIgnore']: 'canto-bight',
 };
 
+export const homeworldBaseTraits = ['Tatooine', 'Naboo', 'Kashyyyk', 'Endor'] as const;
+
+export type HomeworldBaseTrait = (typeof homeworldBaseTraits)[number];
+
+export const homeworldBasicBasesByTrait = {
+  Tatooine: {
+    [SwuAspect.VIGILANCE]: 'dune-sea',
+    [SwuAspect.COMMAND]: 'tusken-camp',
+    [SwuAspect.AGGRESSION]: 'jundland-wastes',
+    [SwuAspect.CUNNING]: 'mos-eisley',
+  },
+  Naboo: {
+    [SwuAspect.VIGILANCE]: 'great-grass-plains',
+    [SwuAspect.COMMAND]: 'theed-palace',
+    [SwuAspect.AGGRESSION]: 'bioweapons-lab',
+    [SwuAspect.CUNNING]: 'otoh-gunga',
+  },
+  Kashyyyk: {
+    [SwuAspect.VIGILANCE]: 'kachirho',
+    [SwuAspect.COMMAND]: 'origin-tree',
+    [SwuAspect.AGGRESSION]: 'shadowlands',
+    [SwuAspect.CUNNING]: 'kyyyalstaad-swamp',
+  },
+  Endor: {
+    [SwuAspect.VIGILANCE]: 'shield-generator-complex',
+    [SwuAspect.COMMAND]: 'bright-tree-village',
+    [SwuAspect.AGGRESSION]: 'dendroid-wilds',
+    [SwuAspect.CUNNING]: 'research-station-9',
+  },
+} as const satisfies Record<
+  HomeworldBaseTrait,
+  Record<SwuAspect.VIGILANCE | SwuAspect.COMMAND | SwuAspect.AGGRESSION | SwuAspect.CUNNING, string>
+>;
+
+export const getHomeworldBasicBaseIdsForTrait = (trait: HomeworldBaseTrait): string[] =>
+  Object.values(homeworldBasicBasesByTrait[trait]);
+
+export const homeworldBasicBaseIds = homeworldBaseTraits.flatMap(getHomeworldBasicBaseIdsForTrait);
+
 export const baseSpecialNames: Record<string, string> = {
   // basic Vigilance bases
   'capital-city': 'Vigilance',
@@ -53,6 +92,9 @@ export const baseSpecialNames: Record<string, string> = {
   'uscru-entertainment-district': 'Vigilance',
   'fortress-of-the-great-mothers': 'Vigilance',
   'nevarro-city--restored': 'Vigilance',
+  'dune-sea': 'Vigilance',
+  'great-grass-plains': 'Vigilance',
+  kachirho: 'Vigilance',
   //force Vigilance bases
   'nightsister-lair': 'Vigilance-Force',
   'shadowed-undercity': 'Vigilance-Force',
@@ -73,6 +115,9 @@ export const baseSpecialNames: Record<string, string> = {
   'senate-rotunda': 'Command',
   'emperor-s-throne-room': 'Command',
   'kryze-castle': 'Command',
+  'bright-tree-village': 'Command',
+  'origin-tree': 'Command',
+  'tusken-camp': 'Command',
   //force Command bases
   'jedi-temple': 'Command-Force',
   'starlight-temple': 'Command-Force',
@@ -93,6 +138,10 @@ export const baseSpecialNames: Record<string, string> = {
   'naval-intelligence-hq': 'Aggression',
   'ancient-henge': 'Aggression',
   'dragonsnake-bog': 'Aggression',
+  'bioweapons-lab': 'Aggression',
+  'dendroid-wilds': 'Aggression',
+  'jundland-wastes': 'Aggression',
+  shadowlands: 'Aggression',
   // force Aggresion bases
   'fortress-vader': 'Aggression-Force',
   'strangled-cliffs': 'Aggression-Force',
@@ -112,6 +161,9 @@ export const baseSpecialNames: Record<string, string> = {
   'mount-tantiss': 'Cunning',
   'emperor-s-observatory': 'Cunning',
   freetown: 'Cunning',
+  'kyyyalstaad-swamp': 'Cunning',
+  'otoh-gunga': 'Cunning',
+  'research-station-9': 'Cunning',
   // force Cunning bases
   'crystal-caves': 'Cunning-Force',
   'the-holy-city': 'Cunning-Force',
@@ -147,11 +199,14 @@ export const getBasicBaseIdsForSet = (set: SwuSet, cardList: CardList, single: b
   const byAspect: Partial<Record<SwuAspect, true>> = {};
 
   const basicBaseIds: string[] = [];
-  Object.keys(baseSpecialNames).forEach(baseCardId => {
+  const candidateBaseIds =
+    set === SwuSet.HMW ? homeworldBasicBaseIds : Object.keys(baseSpecialNames);
+
+  candidateBaseIds.forEach(baseCardId => {
     const card = cardList[baseCardId];
-    if (card?.set !== set) return;
+    if (!card || (set !== SwuSet.HMW && card.set !== set)) return;
     const aspect = card?.aspects[0];
-    if (!aspect || (single && byAspect[aspect])) return;
+    if (!aspect || (set !== SwuSet.HMW && single && byAspect[aspect])) return;
     byAspect[aspect] = true;
     basicBaseIds.push(baseCardId);
   });
