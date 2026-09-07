@@ -1,8 +1,17 @@
 import { z } from 'zod';
 import { SwuArena, SwuAspect, SwuRarity, SwuSet } from '../../../../../../types/enums.ts';
+import { premierSetMap } from '../../../../../../types/Format.ts';
 
 export const cardUniquenessFilterValues = ['both', 'unique', 'not-unique'] as const;
 export type CardUniquenessFilter = (typeof cardUniquenessFilterValues)[number];
+
+export const premierSetCodes = Object.keys(premierSetMap) as SwuSet[];
+
+export const isPremierOnlySetSelection = (sets: readonly SwuSet[]) =>
+  sets.length === premierSetCodes.length && premierSetCodes.every(set => sets.includes(set));
+
+export const togglePremierOnlySetSelection = (sets: readonly SwuSet[]): SwuSet[] =>
+  isPremierOnlySetSelection(sets) ? [] : [...premierSetCodes];
 
 export const cardSearchParams = z.object({
   // Text search
