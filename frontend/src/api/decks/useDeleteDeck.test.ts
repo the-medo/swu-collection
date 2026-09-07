@@ -1,7 +1,15 @@
 import { describe, expect, test } from 'bun:test';
 import { QueryClient } from '@tanstack/react-query';
-import { removeDeckFromListCache } from './useDeleteDeck.ts';
+import { applyDeletedDeckCaches, removeDecksFromListCache } from './deckDeletionCache.ts';
 import { getNextDecksPageParam } from './useGetDecks.ts';
+
+type TestDeckListCache = {
+  pages: {
+    data: { deck: { id: string } }[];
+    pagination?: { limit: number; offset: number; hasMore: boolean };
+  }[];
+  pageParams: number[];
+};
 
 describe('deck deletion cache update', () => {
   test('removes the deleted deck from every cached deck list without changing other queries', () => {
@@ -14,10 +22,7 @@ describe('deck deletion cache update', () => {
     queryClient.setQueryData(allDecksKey, {
       pages: [
         {
-          data: [
-            { deck: { id: 'kept-deck' } },
-            { deck: { id: 'deleted-deck' } },
-          ],
+          data: [{ deck: { id: 'kept-deck' } }, { deck: { id: 'deleted-deck' } }],
           pagination: { limit: 20, offset: 0, hasMore: false },
         },
       ],
@@ -34,9 +39,9 @@ describe('deck deletion cache update', () => {
     });
     queryClient.setQueryData(unrelatedKey, unrelatedData);
 
-    removeDeckFromListCache(queryClient, 'deleted-deck');
+    removeDecksFromListCache(queryClient, ['deleted-deck']);
 
-    expect(queryClient.getQueryData(allDecksKey)).toEqual({
+    expect(queryClient.getQueryData<TestDeckListCache>(allDecksKey)).toEqual({
       pages: [
         {
           data: [{ deck: { id: 'kept-deck' } }],
@@ -45,7 +50,7 @@ describe('deck deletion cache update', () => {
       ],
       pageParams: [0],
     });
-    expect(queryClient.getQueryData(favoriteDecksKey)).toEqual({
+    expect(queryClient.getQueryData<TestDeckListCache>(favoriteDecksKey)).toEqual({
       pages: [
         {
           data: [],
@@ -54,7 +59,27 @@ describe('deck deletion cache update', () => {
       ],
       pageParams: [0],
     });
-    expect(queryClient.getQueryData(unrelatedKey)).toBe(unrelatedData);
+    expect(queryClient.getQueryData<typeof unrelatedData>(unrelatedKey)).toBe(unrelatedData);
+  });
+
+  test('removes several deleted decks from every page in one cache update', () => {
+    const queryClient = new QueryClient();
+    const key = ['decks', 'all', { userId: 'user-1' }] as const;
+
+    queryClient.setQueryData(key, {
+      pages: [
+        { data: [{ deck: { id: 'first' } }, { deck: { id: 'kept' } }] },
+        { data: [{ deck: { id: 'second' } }] },
+      ],
+      pageParams: [0, 2],
+    });
+
+    removeDecksFromListCache(queryClient, ['first', 'second']);
+
+    expect(queryClient.getQueryData<TestDeckListCache>(key)).toEqual({
+      pages: [{ data: [{ deck: { id: 'kept' } }] }, { data: [] }],
+      pageParams: [0, 2],
+    });
   });
 
   test('uses the remaining cached row count as the next page offset', () => {
@@ -68,5 +93,20 @@ describe('deck deletion cache update', () => {
     };
 
     expect(getNextDecksPageParam(secondPage, [firstPage, secondPage])).toBe(39);
+  });
+
+  test('clears deleted deck detail caches and invalidates affected card pools', () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(['deck', 'deleted-deck'], { id: 'deleted-deck' });
+    queryClient.setQueryData(['deck-content', 'deleted-deck'], { data: [] });
+    queryClient.setQueryData(['decks-bulk', 'deleted-deck'], true);
+    queryClient.setQueryData(['card-pool', 'pool-1'], { id: 'pool-1' });
+
+    applyDeletedDeckCaches(queryClient, ['deleted-deck'], ['pool-1']);
+
+    expect(queryClient.getQueryData(['deck', 'deleted-deck'])).toBeUndefined();
+    expect(queryClient.getQueryData(['deck-content', 'deleted-deck'])).toBeUndefined();
+    expect(queryClient.getQueryData(['decks-bulk', 'deleted-deck'])).toBeUndefined();
+    expect(queryClient.getQueryState(['card-pool', 'pool-1'])?.isInvalidated).toBe(true);
   });
 });

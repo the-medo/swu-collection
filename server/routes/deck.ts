@@ -21,6 +21,7 @@ import { deckIdJsonGetRoute } from './decks/_id/json/get.ts';
 import { deckIdPricePostRoute } from './decks/_id/price/post.ts';
 import type { AuthExtension } from '../auth/auth.ts';
 import { decksForModalsGetRoute } from './decks/for-modals/data/get.ts';
+import { decksBulkDeletePostRoute } from './decks/bulk-delete/post.ts';
 
 export const selectDeck = getTableColumns(deckTable);
 export const selectDeckInformation = getTableColumns(deckInformationTable);
@@ -28,6 +29,7 @@ export const selectDeckInformation = getTableColumns(deckInformationTable);
 export const deckRoute = new Hono<AuthExtension>()
   .route('/', deckGetRoute)
   .route('/', deckPostRoute)
+  .route('/bulk-delete', decksBulkDeletePostRoute)
   .route('/:id', deckIdGetRoute)
   .route('/:id', deckIdPutRoute)
   .route('/:id', deckIdDeleteRoute)

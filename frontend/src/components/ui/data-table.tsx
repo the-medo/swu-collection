@@ -1,7 +1,9 @@
 'use client';
 
 import {
+  Cell,
   ColumnDef,
+  HeaderContext,
   flexRender,
   getCoreRowModel,
   Row,
@@ -47,7 +49,7 @@ interface DataTableProps<TData, TValue> {
   onRowClick?: (row: Row<TData>) => void;
   onRowMouseEnter?: (row: Row<TData>) => void;
   onRowMouseLeave?: (row: Row<TData>) => void;
-  onCellMouseEnter?: (cell: any, row: Row<TData>) => void;
+  onCellMouseEnter?: (cell: Cell<TData, unknown>, row: Row<TData>) => void;
   onTableMouseLeave?: () => void;
   isRowHighlighted?: (row: Row<TData>) => void;
   view?: DataTableViewMode;
@@ -55,6 +57,7 @@ interface DataTableProps<TData, TValue> {
   infiniteScrollLoading?: boolean;
   enableRowSelection?: boolean;
   rowSelection?: RowSelectionState;
+  getRowId?: TableOptions<TData>['getRowId'];
   className?: string;
   cellClassName?: string;
   headerCellClassName?: string;
@@ -84,17 +87,18 @@ export function DataTable<TData, TValue>({
   infiniteScrollLoading,
   enableRowSelection = false,
   rowSelection = {},
+  getRowId,
   className,
   cellClassName,
   headerCellClassName,
   onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
-    // @ts-ignore
-    data: loading ? emptyData : data,
+    data: (loading ? emptyData : data) as TData[],
     columns,
     getCoreRowModel: getCoreRowModel(),
     defaultColumn,
+    getRowId,
     enableRowSelection,
     state: {
       rowSelection,
@@ -109,8 +113,10 @@ export function DataTable<TData, TValue>({
           table.getRowModel().rows.map(row => (
             <Card
               key={row.id}
+              data-state={row.getIsSelected() ? 'selected' : undefined}
               className={cn('overflow-hidden transition-colors hover:bg-muted/50 cursor-pointer', {
                 'animate-pulse': loading,
+                'bg-muted/50': row.getIsSelected(),
               })}
               onClick={() => onRowClick?.(row)}
             >
@@ -129,7 +135,9 @@ export function DataTable<TData, TValue>({
                         headerContent !== '' &&
                         columnDef.displayBoxHeader !== false && (
                           <div className="font-medium text-sm text-muted-foreground">
-                            {typeof headerContent === 'string' ? headerContent : headerContent({})}
+                            {typeof headerContent === 'string'
+                              ? headerContent
+                              : headerContent({} as HeaderContext<TData, unknown>)}
                           </div>
                         )}
                       <div className={cn('grow', headerContent ? 'text-right' : '')}>

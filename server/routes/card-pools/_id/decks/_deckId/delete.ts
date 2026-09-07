@@ -4,10 +4,9 @@ import { zValidator } from '@hono/zod-validator';
 import type { AuthExtension } from '../../../../../auth/auth.ts';
 import { db } from '../../../../../db';
 import { deck as deckTable } from '../../../../../db/schema/deck.ts';
-import { deckInformation as deckInformationTable } from '../../../../../db/schema/deck_information.ts';
-import { cardPoolDecks, cardPoolDeckCards } from '../../../../../db/schema/card_pool_deck.ts';
 import { and, eq } from 'drizzle-orm';
 import { getCardPoolBasedOnIdAndUser } from '../../../../../lib/card-pools/card-pool-access.ts';
+import { deleteDecksOwnedByUser } from '../../../../../lib/decks/deleteDecks.ts';
 
 const zParams = z.object({ id: z.uuid(), deckId: z.uuid() });
 
@@ -32,23 +31,11 @@ export const cardPoolsIdDecksDeckIdDeleteRoute = new Hono<AuthExtension>().delet
     if (!existing) return c.json({ message: 'Deck not found in this pool' }, 404);
     if (existing.userId !== user.id) return c.json({ message: 'Forbidden' }, 403);
 
-    await db.transaction(async tx => {
-      // 1) remove "pool" from decks (unset card_pool_id and bump updated_at)
-      await tx
-        .update(deckTable)
-        .set({ cardPoolId: null, updatedAt: new Date() })
-        .where(eq(deckTable.id, deckId));
-
-      // 2) remove card_pool_deck_cards and card_pool_decks rows
-      await tx.delete(cardPoolDeckCards).where(eq(cardPoolDeckCards.deckId, deckId));
-      await tx
-        .delete(cardPoolDecks)
-        .where(and(eq(cardPoolDecks.deckId, deckId), eq(cardPoolDecks.cardPoolId, id)));
-
-      // 3) remove rows from deck_information and decks
-      await tx.delete(deckInformationTable).where(eq(deckInformationTable.deckId, deckId));
-      await tx.delete(deckTable).where(eq(deckTable.id, deckId));
-    });
+    const result = await deleteDecksOwnedByUser(user.id, [deckId]);
+    if (result.status === 'not_found') return c.json({ message: 'Deck not found' }, 404);
+    if (result.status === 'conflict') {
+      return c.json({ message: 'Deck is linked to tournament data and cannot be deleted' }, 409);
+    }
 
     return c.body(null, 204);
   },

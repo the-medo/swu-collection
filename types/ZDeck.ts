@@ -61,8 +61,21 @@ export const zDeckFavoriteRequest = z.object({
   isFavorite: booleanPreprocessor,
 });
 
+export const MAX_BULK_DECK_DELETE_COUNT = 100;
+
+export const zDeckBulkDeleteRequest = z.object({
+  deckIds: z
+    .array(z.guid())
+    .min(1)
+    .max(MAX_BULK_DECK_DELETE_COUNT)
+    .refine(deckIds => new Set(deckIds).size === deckIds.length, {
+      message: 'Deck IDs must be unique',
+    }),
+});
+
 export type ZDeck = z.infer<typeof zDeckSchema>;
 export type ZDeckCreateRequest = z.infer<typeof zDeckCreateRequest>;
 export type ZDeckUpdateRequest = z.infer<typeof zDeckUpdateRequest>;
 export type ZDeckImportSwudbRequest = z.infer<typeof zDeckImportSwudbRequest>;
 export type ZDeckFavoriteRequest = z.infer<typeof zDeckFavoriteRequest>;
+export type ZDeckBulkDeleteRequest = z.infer<typeof zDeckBulkDeleteRequest>;

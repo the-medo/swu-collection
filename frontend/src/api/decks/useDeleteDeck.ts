@@ -1,30 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
+import { createApiError } from '@/api/errors.ts';
+import { applyDeletedDeckCaches } from '@/api/decks/deckDeletionCache.ts';
 
-type DeckListCache = InfiniteData<{
-  data?: { deck?: { id?: string } }[];
-}>;
-
-export const removeDeckFromListCache = (queryClient: QueryClient, deckId: string) => {
-  queryClient.setQueriesData<DeckListCache>({ queryKey: ['decks'] }, current => {
-    if (!current) return current;
-
-    let didChange = false;
-    const pages = current.pages.map(page => {
-      if (!page.data) return page;
-
-      const data = page.data.filter(item => item.deck?.id !== deckId);
-      if (data.length === page.data.length) return page;
-
-      didChange = true;
-      return { ...page, data };
-    });
-
-    return didChange ? { ...current, pages } : current;
-  });
-};
+export { removeDeckFromListCache } from '@/api/decks/deckDeletionCache.ts';
 
 export const useDeleteDeck = () => {
   const queryClient = useQueryClient();
@@ -35,17 +15,16 @@ export const useDeleteDeck = () => {
         param: { id: deckId },
       });
       if (!response.ok) {
-        throw new Error(response.statusText);
+        throw await createApiError(response, 'Failed to delete deck');
       }
       return response.json();
     },
-    onSuccess: (_result, deckId) => {
-      removeDeckFromListCache(queryClient, deckId);
-
-      queryClient.invalidateQueries({
-        queryKey: ['deck', deckId],
-        exact: true,
-      });
+    onSuccess: (result, deckId) => {
+      applyDeletedDeckCaches(
+        queryClient,
+        [deckId],
+        result.data.cardPoolId ? [result.data.cardPoolId] : [],
+      );
     },
     onError: error => {
       toast({
