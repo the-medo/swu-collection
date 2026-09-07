@@ -6,6 +6,22 @@ const PAGE_SIZE = 20;
 
 export type GetDecksRequest = Partial<DeckQueryParams>;
 
+type DeckListPage = {
+  data?: readonly unknown[];
+  pagination?: { hasMore?: boolean };
+};
+
+export const getNextDecksPageParam = (
+  lastPage: DeckListPage,
+  allPages: readonly DeckListPage[],
+) => {
+  if (!lastPage.data?.length || !lastPage.pagination?.hasMore) return undefined;
+
+  // A successful deletion updates cached pages in place, so their row count is
+  // the authoritative offset for the next request.
+  return allPages.reduce((offset, page) => offset + (page.data?.length ?? 0), 0);
+};
+
 export const useGetDecks = (props: GetDecksRequest) => {
   const {
     userId,
@@ -65,14 +81,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
       return data; // Return the full response with data and pagination info
     },
     initialPageParam: 0,
-    getNextPageParam: lastPage => {
-      // Check if there are more pages to fetch
-      if (!lastPage.data || lastPage.data.length === 0 || !lastPage.pagination?.hasMore) {
-        return undefined;
-      }
-      // Return the next offset
-      return lastPage.pagination.offset + lastPage.pagination.limit;
-    },
+    getNextPageParam: getNextDecksPageParam,
     staleTime: Infinity,
   });
 };

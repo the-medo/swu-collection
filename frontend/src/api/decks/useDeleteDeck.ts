@@ -1,6 +1,30 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
+
+type DeckListCache = InfiniteData<{
+  data?: { deck?: { id?: string } }[];
+}>;
+
+export const removeDeckFromListCache = (queryClient: QueryClient, deckId: string) => {
+  queryClient.setQueriesData<DeckListCache>({ queryKey: ['decks'] }, current => {
+    if (!current) return current;
+
+    let didChange = false;
+    const pages = current.pages.map(page => {
+      if (!page.data) return page;
+
+      const data = page.data.filter(item => item.deck?.id !== deckId);
+      if (data.length === page.data.length) return page;
+
+      didChange = true;
+      return { ...page, data };
+    });
+
+    return didChange ? { ...current, pages } : current;
+  });
+};
 
 export const useDeleteDeck = () => {
   const queryClient = useQueryClient();
@@ -15,15 +39,15 @@ export const useDeleteDeck = () => {
       }
       return response.json();
     },
-    onSuccess: result => {
-      const deletedDeck = result.data;
+    onSuccess: (_result, deckId) => {
+      removeDeckFromListCache(queryClient, deckId);
 
       queryClient.invalidateQueries({
-        queryKey: ['deck', deletedDeck?.id],
+        queryKey: ['deck', deckId],
         exact: true,
       });
     },
-    onError: (error: any) => {
+    onError: error => {
       toast({
         variant: 'destructive',
         title: 'Error while deleting deck',
