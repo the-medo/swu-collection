@@ -84,12 +84,12 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({
               />
             </DeckBackgroundDecoration>
           )}
-          <CardContent className="relative z-10 flex p-2 px-4 sm:px-50">
+          <CardContent className="relative z-10 flex p-2 max-sm:pt-9  px-4 sm:px-50">
             <div className="flex flex-col flex-1 md:flex-row justify-around gap-4 items-center">
               <div className="flex flex-col items-center">
                 <h3
                   className={cn(
-                    'font-semibold text-sm border-b-3 px-1 mb-0!',
+                    'font-semibold text-sm max-sm:text-lg! border-b-3 px-1 mb-0!',
                     getResultBorderColor(match.result),
                   )}
                 >
@@ -106,7 +106,7 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({
             </div>
             {showMetadata && (
               <>
-                <div className="flex absolute gap-2 left-40 right-40 top-10 justify-between">
+                <div className="flex absolute gap-2 left-40 right-40 max-sm:bottom-0 max-sm:right-1 sm:top-10 justify-between max-sm:justify-end min-w-[100px]">
                   <span className="text-[10px] text-muted-foreground">
                     {formatDistanceToNow(parseStatisticsTimestamp(match.firstGameCreatedAt), {
                       addSuffix: true,

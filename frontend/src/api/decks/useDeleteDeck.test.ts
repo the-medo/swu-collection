@@ -1,6 +1,10 @@
 import { describe, expect, test } from 'bun:test';
 import { QueryClient } from '@tanstack/react-query';
-import { applyDeletedDeckCaches, removeDecksFromListCache } from './deckDeletionCache.ts';
+import {
+  applyBulkDeletedDeckCaches,
+  applyDeletedDeckCaches,
+  removeDecksFromListCache,
+} from './deckDeletionCache.ts';
 import { getNextDecksPageParam } from './useGetDecks.ts';
 
 type TestDeckListCache = {
@@ -108,5 +112,22 @@ describe('deck deletion cache update', () => {
     expect(queryClient.getQueryData(['deck-content', 'deleted-deck'])).toBeUndefined();
     expect(queryClient.getQueryData(['decks-bulk', 'deleted-deck'])).toBeUndefined();
     expect(queryClient.getQueryState(['card-pool', 'pool-1'])?.isInvalidated).toBe(true);
+  });
+
+  test('can invalidate every deck list after a bulk deletion', async () => {
+    const queryClient = new QueryClient();
+    const allDecksKey = ['decks', 'all', { userId: 'user-1' }] as const;
+    const favoriteDecksKey = ['decks', 'favorite', { userId: 'user-1' }] as const;
+    queryClient.setQueryData(allDecksKey, {
+      pages: [{ data: [{ deck: { id: 'deleted-deck' } }] }],
+      pageParams: [0],
+    });
+    queryClient.setQueryData(favoriteDecksKey, { pages: [], pageParams: [] });
+
+    await applyBulkDeletedDeckCaches(queryClient, ['deleted-deck'], []);
+
+    expect(queryClient.getQueryData<TestDeckListCache>(allDecksKey)?.pages[0].data).toEqual([]);
+    expect(queryClient.getQueryState(allDecksKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(favoriteDecksKey)?.isInvalidated).toBe(true);
   });
 });

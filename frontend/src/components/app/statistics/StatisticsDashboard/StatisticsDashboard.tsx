@@ -46,22 +46,22 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
   const showWinLose = !sInTeam;
 
   return (
-    <div className="flex flex-wrap gap-4">
-      <div className="flex flex-1 flex-col gap-2">
-        <Card className="p-4 h-fit">
+    <div className="flex flex-wrap gap-4 max-lg:flex-col">
+      <div className="flex flex-1 flex-col gap-2 max-lg:w-full max-lg:min-w-0">
+        <Card className="p-4 h-fit max-lg:w-full max-lg:min-w-0">
           <h3 className="text-lg font-semibold mb-4">Activity</h3>
           <DashboardCalendar matchesByDate={gameResultData?.matches.byDate} />
-          <div className="flex">
-            <div className="p-2 w-full md:min-w-[270px]">
+          <div className="flex max-lg:flex-col">
+            <div className="p-2 w-full lg:min-w-[270px]">
               <h3 className="text-lg font-semibold">Today</h3>
               <DashboardOverview matches={todayMatches} showWinLose={showWinLose} />
             </div>
-            <div className="p-2 w-full md:min-w-[270px]">
+            <div className="p-2 w-full lg:min-w-[270px]">
               <h3 className="text-lg font-semibold mb-4">Last 7 days</h3>
               <DashboardOverview matches={last7DaysMatches} showWinLose={showWinLose} />
             </div>
             {/*{allMatches.length !== last7DaysMatches.length && (*/}
-            <div className="p-2 w-full md:min-w-[270px]">
+            <div className="p-2 w-full lg:min-w-[270px]">
               <h3 className="text-lg font-semibold mb-4">All</h3>
               <DashboardOverview matches={allMatches} showWinLose={showWinLose} />
             </div>
@@ -69,7 +69,12 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
           </div>
         </Card>
         {visibleMatches.map(match => (
-          <MatchResultBox key={match.id} match={match} />
+          <MatchResultBox
+            key={match.id}
+            match={match}
+            className="max-lg:w-full"
+            cardClassName="max-lg:w-full"
+          />
         ))}
         <Link
           to={`${getTeamUrlPrefix(teamId)}/statistics/history`}
@@ -81,7 +86,7 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
           <Button variant="outline">View full match history</Button>
         </Link>
       </div>
-      <div className="flex flex-1 flex-wrap gap-4">
+      <div className="flex flex-1 flex-wrap gap-4 max-lg:w-full max-lg:min-w-0">
         {gameResultData && (
           <DashboardLeaderBase
             teamId={teamId}

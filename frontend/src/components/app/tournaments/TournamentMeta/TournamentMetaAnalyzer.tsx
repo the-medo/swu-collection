@@ -8,15 +8,20 @@ import MetaPartSelector, { MetaPart } from './MetaPartSelector';
 import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
 import ViewModeSelector, { ViewMode } from './ViewModeSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useDeferredValue, useMemo, useState } from 'react';
 import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
 import TournamentMetaPieChart from './TournamentMetaPieChart';
 import { Alert } from '@/components/ui/alert.tsx';
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, SearchIcon } from 'lucide-react';
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import MobileCard from '@/components/ui/mobile-card.tsx';
 import { Input } from '@/components/ui/input.tsx';
+import {
+  getLeaderSearchMatches,
+  normalizeLeaderSearch,
+  supportsLeaderSearch,
+} from './tournamentMetaSearch.ts';
 
 interface TournamentMetaAnalyzerProps {
   decks: TournamentDeckResponse[];
@@ -35,10 +40,12 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   const showDay2Selector = useMemo(() => {
     const ts = Object.values(tournaments) ?? [];
     return ts.length > 0 && ts.every(t => t.tournament?.days > 1);
-  }, [metaPart]);
+  }, [tournaments]);
 
   // State for minimum deck count filter
   const [minDeckCount, setMinDeckCount] = useState<number | undefined>(undefined);
+  const [leaderSearch, setLeaderSearch] = useState('');
+  const deferredLeaderSearch = useDeferredValue(leaderSearch);
 
   // Functions to update URL parameters
   const setMetaPart = (value: MetaPart) => {
@@ -217,6 +224,28 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
     championsDeckCount,
   ]);
 
+  const showLeaderSearch = viewMode === 'chart' && supportsLeaderSearch(metaInfo);
+  const isHighlightingLeaders =
+    showLeaderSearch && normalizeLeaderSearch(deferredLeaderSearch).length > 0;
+  const highlightedLeaderKeys = useMemo(
+    () =>
+      cardListData
+        ? getLeaderSearchMatches(
+            analysisData,
+            metaInfo,
+            cardListData.cards,
+            isHighlightingLeaders ? deferredLeaderSearch : '',
+          )
+        : new Set<string>(),
+    [
+      analysisData,
+      cardListData,
+      deferredLeaderSearch,
+      isHighlightingLeaders,
+      metaInfo,
+    ],
+  );
+
   return (
     <div
       className="space-y-2"
@@ -254,21 +283,39 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
             />
           </div>
         )}
-        <Alert variant="info" size="xs" className="w-auto">
-          <InfoIcon className="size-4 top-0 left-0" />{' '}
-          <ul className="">
-            <li>
-              Winrates are computed from filtered decks, so decks in top 8 will have naturally
-              higher winrates than others. Mirror matches are not cleared from this view.
-            </li>
-            {metaInfo === 'aspects' && (
+        <div className="ml-auto flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2">
+          {showLeaderSearch && (
+            <div className="w-full sm:w-56 shrink-0">
+              <label htmlFor="metaLeaderSearch" className="sr-only">
+                Highlight leader
+              </label>
+              <Input
+                id="metaLeaderSearch"
+                type="search"
+                icon={SearchIcon}
+                className="h-7 text-xs"
+                placeholder="Highlight leader…"
+                value={leaderSearch}
+                onChange={event => setLeaderSearch(event.target.value)}
+              />
+            </div>
+          )}
+          <Alert variant="info" size="xs" className="w-auto max-w-full">
+            <InfoIcon className="size-4 top-0 left-0" />{' '}
+            <ul className="">
               <li>
-                In case of double aspect decks, aspect is counted twice. Percentages can be skewed
-                because of this.
+                Winrates are computed from filtered decks, so decks in top 8 will have naturally
+                higher winrates than others. Mirror matches are not cleared from this view.
               </li>
-            )}
-          </ul>
-        </Alert>
+              {metaInfo === 'aspects' && (
+                <li>
+                  In case of double aspect decks, aspect is counted twice. Percentages can be skewed
+                  because of this.
+                </li>
+              )}
+            </ul>
+          </Alert>
+        </div>
       </div>
 
       {viewMode === 'chart' ? (
@@ -283,6 +330,8 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
               top8Decks={top8DeckCount}
               top64Decks={top64DeckCount}
               championsDecks={championsDeckCount}
+              highlightedKeys={highlightedLeaderKeys}
+              isHighlighting={isHighlightingLeaders}
             />
           </div>
           <div className="w-full md:w-1/2">
@@ -295,6 +344,8 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
               top8Decks={top8DeckCount}
               top64Decks={top64DeckCount}
               championsDecks={championsDeckCount}
+              highlightedKeys={highlightedLeaderKeys}
+              isHighlighting={isHighlightingLeaders}
             />
           </div>
         </div>

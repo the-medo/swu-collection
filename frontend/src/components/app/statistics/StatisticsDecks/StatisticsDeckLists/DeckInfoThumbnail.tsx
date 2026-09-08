@@ -18,6 +18,7 @@ interface DeckInfoThumbnailProps {
   statistics?: DeckStatistics;
   statSectionVariant?: StatSectionProps['variant'];
   displayDeckBackground?: boolean;
+  compactOnMobile?: boolean;
 }
 
 const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
@@ -25,6 +26,7 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
   statistics,
   statSectionVariant = 'vertical',
   displayDeckBackground = true,
+  compactOnMobile = false,
 }) => {
   const deckId = statistics?.deckId;
   const deckName = statistics?.deckName;
@@ -36,6 +38,8 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
   const matchLosses = statistics?.matchLosses;
   const gameWins = statistics?.gameWins;
   const gameLosses = statistics?.gameLosses;
+  const gameAndMatchRecordsAreEqual =
+    gameWins === matchWins && gameLosses === matchLosses;
 
   const { data: cardListData } = useCardList();
 
@@ -93,6 +97,8 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
                 'truncate text-xs w-[170px]': statSectionVariant === 'vertical',
                 'w-full min-w-0 max-w-[500px] truncate @[720px]/deck-statistics-item:w-auto @[720px]/deck-statistics-item:min-w-[170px]':
                   statSectionVariant === 'horizontal',
+                'max-sm:line-clamp-2 max-sm:max-w-none max-sm:whitespace-normal max-sm:text-xs max-sm:font-semibold':
+                  statSectionVariant === 'horizontal' && compactOnMobile,
               })}
             >
               {deckName}
@@ -105,7 +111,14 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
               })}
             >
               <div className="flex gap-4">
-                {deckId && <CopyLinkButton deckId={deckId} isPublic={true} compact={true} />}
+                {deckId && (
+                  <CopyLinkButton
+                    deckId={deckId}
+                    isPublic={true}
+                    compact={true}
+                    size="iconMedium"
+                  />
+                )}
               </div>
               {statSectionVariant === 'horizontal' && (
                 <div className="flex flex-col gap-1 @[720px]/deck-statistics-item:hidden">
@@ -115,12 +128,18 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
                     losses={gameLosses}
                     winrate={gameWinrate}
                   />
-                  <StatSectionCompact
-                    label="Matches"
-                    wins={matchWins}
-                    losses={matchLosses}
-                    winrate={matchWinrate}
-                  />
+                  <div
+                    className={cn({
+                      'max-sm:hidden': compactOnMobile && gameAndMatchRecordsAreEqual,
+                    })}
+                  >
+                    <StatSectionCompact
+                      label="Matches"
+                      wins={matchWins}
+                      losses={matchLosses}
+                      winrate={matchWinrate}
+                    />
+                  </div>
                 </div>
               )}
               <div

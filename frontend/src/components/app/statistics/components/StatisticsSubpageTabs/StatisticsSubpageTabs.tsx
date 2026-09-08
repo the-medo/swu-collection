@@ -34,10 +34,11 @@ const tabs: Record<StatisticsSubpageTabsProps['type'], TabConfig[]> = {
 };
 const StatisticsSubpageTabs: React.FC<StatisticsSubpageTabsProps> = ({ className, type }) => {
   const { sSubpage = 'matches' } = useSearch({ strict: false });
+  const gridColumns = type === 'deck' ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3';
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-6 mb-2 rounded-lg bg-muted p-1">
+      <div className={cn('grid mb-2 rounded-lg bg-muted p-1', gridColumns)}>
         {tabs[type].map(tab => {
           const isActive = sSubpage === tab.key;
           return (

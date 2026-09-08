@@ -32,6 +32,9 @@ export const removeDeckFromListCache = (queryClient: QueryClient, deckId: string
   removeDecksFromListCache(queryClient, [deckId]);
 };
 
+export const invalidateDeckListCaches = (queryClient: QueryClient) =>
+  queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });
+
 export const applyDeletedDeckCaches = (
   queryClient: QueryClient,
   deckIds: string[],
@@ -59,4 +62,13 @@ export const applyDeletedDeckCaches = (
       exact: false,
     });
   });
+};
+
+export const applyBulkDeletedDeckCaches = async (
+  queryClient: QueryClient,
+  deckIds: string[],
+  affectedCardPoolIds: string[],
+) => {
+  applyDeletedDeckCaches(queryClient, deckIds, affectedCardPoolIds);
+  await invalidateDeckListCaches(queryClient);
 };

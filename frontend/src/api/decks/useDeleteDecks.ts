@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createApiError } from '@/api/errors.ts';
-import { applyDeletedDeckCaches } from '@/api/decks/deckDeletionCache.ts';
+import { applyBulkDeletedDeckCaches } from '@/api/decks/deckDeletionCache.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { api } from '@/lib/api.ts';
 
@@ -15,8 +15,8 @@ export const useDeleteDecks = () => {
       }
       return response.json();
     },
-    onSuccess: result => {
-      applyDeletedDeckCaches(
+    onSuccess: async result => {
+      await applyBulkDeletedDeckCaches(
         queryClient,
         result.data.deletedDeckIds,
         result.data.affectedCardPoolIds,
