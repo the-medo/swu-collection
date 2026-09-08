@@ -58,7 +58,9 @@ export const zCollectionCardUpdateRequest = z.object({
     .omit({
       collectionId: true,
       cardId: true,
+      language: true,
     })
+    .extend({ language: z.enum(CardLanguage) })
     .partial(),
 });
 
