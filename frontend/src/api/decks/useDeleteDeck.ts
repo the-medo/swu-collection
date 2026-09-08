@@ -1,6 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
+import { createApiError } from '@/api/errors.ts';
+import { applyDeletedDeckCaches } from '@/api/decks/deckDeletionCache.ts';
+
+export { removeDeckFromListCache } from '@/api/decks/deckDeletionCache.ts';
 
 export const useDeleteDeck = () => {
   const queryClient = useQueryClient();
@@ -11,19 +15,18 @@ export const useDeleteDeck = () => {
         param: { id: deckId },
       });
       if (!response.ok) {
-        throw new Error(response.statusText);
+        throw await createApiError(response, 'Failed to delete deck');
       }
       return response.json();
     },
-    onSuccess: result => {
-      const deletedDeck = result.data;
-
-      queryClient.invalidateQueries({
-        queryKey: ['deck', deletedDeck?.id],
-        exact: true,
-      });
+    onSuccess: (result, deckId) => {
+      applyDeletedDeckCaches(
+        queryClient,
+        [deckId],
+        result.data.cardPoolId ? [result.data.cardPoolId] : [],
+      );
     },
-    onError: (error: any) => {
+    onError: error => {
       toast({
         variant: 'destructive',
         title: 'Error while deleting deck',

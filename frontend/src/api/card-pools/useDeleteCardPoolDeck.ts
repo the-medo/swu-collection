@@ -1,4 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createApiError } from '@/api/errors.ts';
+import { applyDeletedDeckCaches } from '@/api/decks/deckDeletionCache.ts';
 import { api } from '@/lib/api.ts';
 
 export const useDeleteCardPoolDeck = (
@@ -14,15 +16,12 @@ export const useDeleteCardPoolDeck = (
         param: { id, deckId },
       });
       if (!res.ok) {
-        throw new Error('Failed to remove deck from card pool');
+        throw await createApiError(res, 'Failed to remove deck from card pool');
       }
       return true;
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['card-pool-decks', id], exact: false });
-      void queryClient.invalidateQueries({ queryKey: ['card-pool', id] });
-      void queryClient.invalidateQueries({ queryKey: ['deck', deckId] });
-      void queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });
+      applyDeletedDeckCaches(queryClient, [deckId!], [id!]);
     },
   });
 };

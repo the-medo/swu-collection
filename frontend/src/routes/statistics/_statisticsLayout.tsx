@@ -65,10 +65,10 @@ function RouteComponent() {
 
   return (
     <div className="p-2 @container/full-stats-page">
-      <div className="flex flex-row justify-between mb-2">
-        <h3>Your statistics</h3>
+      <div className="flex flex-col items-start justify-between gap-2 mb-2 @[720px]/full-stats-page:flex-row @[720px]/full-stats-page:items-end">
+        <h3 className="mb-0!">Your statistics</h3>
         {hasKarabastIntegration && (
-          <div className="flex gap-4">
+          <div className="flex w-full min-w-0 gap-4 @[720px]/full-stats-page:w-auto">
             <StatisticsFilters />
           </div>
         )}

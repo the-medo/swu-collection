@@ -22,7 +22,7 @@ function YourDecks() {
           <NewDeckDialog trigger={<Button>New deck</Button>} />
         </div>
         <div className="flex flex-col gap-2 items-start min-w-[300px] w-full">
-          <UserDecks userId={user?.id} loading={!user} />
+          <UserDecks userId={user?.id} loading={!user} bulkDeleteEnabled />
         </div>
       </div>
     </AuthorizedRouteComponent>

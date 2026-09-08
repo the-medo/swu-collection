@@ -50,6 +50,7 @@ interface DeckBackgroundDecorationProps extends PropsWithChildren {
   leaderCard: CardDataWithVariants<CardListVariants> | undefined;
   baseCard: CardDataWithVariants<CardListVariants> | undefined;
   position: 'top-left' | 'top-right';
+  className?: string;
 }
 
 const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
@@ -57,6 +58,7 @@ const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
   baseCard,
   position,
   children,
+  className,
 }) => {
   const leaderVariant = leaderCard?.variants[Object.keys(leaderCard?.variants)[0]];
   console.log({ leaderVariant });
@@ -70,7 +72,7 @@ const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
   const imageUrl = `https://images.swubase.com/cards/${imageName}`;
 
   const baseAspect = baseCard?.aspects[0];
-  let baseColor = baseAspect ? aspectLib[baseAspect] : 'gray';
+  const baseColor = baseAspect ? aspectLib[baseAspect] : 'gray';
 
   return (
     <>
@@ -78,6 +80,7 @@ const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
         className={cn(
           'absolute w-[150px] h-[300px] pointer-events-none overflow-hidden z-10',
           positionClasses[position],
+          className,
         )}
         style={maskGradients[position]}
       >
@@ -93,6 +96,7 @@ const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
           positionBaseClasses[position],
           position === 'top-left' && `border-r-[10px]`,
           position === 'top-right' && `border-l-[10px]`,
+          className,
         )}
         style={{
           background: `${baseColor}aa`,

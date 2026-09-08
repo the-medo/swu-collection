@@ -8,7 +8,7 @@ interface MatchGamesProps {
 
 const MatchGames: React.FC<MatchGamesProps> = ({ games }) => {
   return (
-    <div className="flex flex-col border-l border-border/40 h-full min-w-[150px]">
+    <div className="flex flex-col border-l border-border/40 h-full min-w-[150px] max-lg:hidden">
       {games.map((game, index) => (
         <GameRow key={game.id || index} game={game} index={index} />
       ))}

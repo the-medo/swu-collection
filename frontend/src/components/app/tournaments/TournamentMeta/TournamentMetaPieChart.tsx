@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ResponsivePie } from '@nivo/pie';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
@@ -11,6 +11,7 @@ import {
 import { useTournamentMetaActions } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
 import { useChartColorsAndGradients } from '@/components/app/tournaments/TournamentMeta/useChartColorsAndGradients.tsx';
 import { useTheme } from '@/components/theme-provider.tsx';
+import { splitMetaPieData } from './tournamentMetaSearch.ts';
 
 interface TournamentMetaPieChartProps {
   analysisData: AnalysisDataItem[];
@@ -21,6 +22,15 @@ interface TournamentMetaPieChartProps {
   top8Decks: number;
   top64Decks: number;
   championsDecks: number;
+  highlightedKeys: ReadonlySet<string>;
+  isHighlighting: boolean;
+}
+
+interface HoveredMetaItem {
+  contextKey: string;
+  name: string;
+  value: number;
+  data: TournamentMetaTooltipProps['data'];
 }
 
 // Define colors for the pie chart segments using shades of primary/secondary colors
@@ -57,22 +67,26 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
   top8Decks,
   top64Decks,
   championsDecks,
+  highlightedKeys,
+  isHighlighting,
 }) => {
   const labelRenderer = useLabel();
   const { theme } = useTheme();
   const pieChartColorDefinitions = useChartColorsAndGradients();
   const { setTournamentDeckKey } = useTournamentMetaActions();
-  const [hoveredItem, setHoveredItem] = useState<any>(null);
-
-  // Reset the hovered item when the metaInfo or metaPart changes, because old information would be displayed
-  useEffect(() => {
-    setHoveredItem(null);
-  }, [metaInfo, metaPart]);
+  const [hoveredItemState, setHoveredItem] = useState<HoveredMetaItem | null>(null);
+  const chartContextKey = `${metaInfo}:${metaPart}`;
+  const hoveredItem =
+    hoveredItemState?.contextKey === chartContextKey ? hoveredItemState : null;
 
   // Map all items for visualization
   const chartData = useMemo(() => {
-    // Take the top 20 items
-    const top20Items = analysisData.slice(0, 20).map((item, index) => ({
+    const { visibleItems, aggregatedItems } = splitMetaPieData(
+      analysisData,
+      highlightedKeys,
+      isHighlighting,
+    );
+    const displayedItems = visibleItems.map((item, index) => ({
       id: item.key || 'Unknown',
       label: item.key || 'Unknown',
       value: item.count,
@@ -80,17 +94,17 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
       winrate: item.winrate,
       color: COLORS[index % COLORS.length],
       originalIndex: index,
+      isHighlighted: highlightedKeys.has(item.key),
     }));
 
-    // Calculate the sum of the remaining items (if any)
-    if (analysisData.length > 20) {
-      const remainingItems = analysisData.slice(20);
-      const othersCount = remainingItems.reduce((sum, item) => sum + item.count, 0);
+    // Calculate the sum of items that remain aggregated after promoting search matches.
+    if (aggregatedItems.length > 0) {
+      const othersCount = aggregatedItems.reduce((sum, item) => sum + item.count, 0);
 
       // Only add "Others" category if there are remaining items with a non-zero sum
       if (othersCount > 0) {
         // Combine data from all remaining items
-        const combinedData: NonNullable<TournamentMetaTooltipProps['data']> = remainingItems.reduce(
+        const combinedData: NonNullable<TournamentMetaTooltipProps['data']> = aggregatedItems.reduce(
           (acc, item) => {
             if (item.data) {
               acc.all += item.data.all || 0;
@@ -144,7 +158,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
         }
 
         // Add the "Others" category
-        top20Items.push({
+        displayedItems.push({
           id: 'Others',
           label: 'Others',
           value: othersCount,
@@ -152,12 +166,23 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
           winrate: 0, // We don't have winrate data for the combined items
           color: COLORS[COLORS.length - 1], // Use the last color (dedicated for "Others")
           originalIndex: 20,
+          isHighlighted: false,
         });
       }
     }
 
-    return top20Items;
-  }, [analysisData, metaPart, totalDecks, day2Decks, top8Decks, top64Decks]);
+    return displayedItems;
+  }, [
+    analysisData,
+    highlightedKeys,
+    isHighlighting,
+    metaPart,
+    totalDecks,
+    day2Decks,
+    top8Decks,
+    top64Decks,
+    championsDecks,
+  ]);
 
   const totalDeckCountBasedOnMetaPart = getTotalDeckCountBasedOnMetaPart(
     metaPart,
@@ -169,9 +194,9 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
   );
 
   const handlePieClick = useCallback(
-    (node: any) => {
+    (node: { id: string | number }) => {
       setTournamentDeckKey({
-        key: node.id,
+        key: String(node.id),
         metaInfo: metaInfo as MetaInfo,
       });
     },
@@ -179,21 +204,30 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
   );
 
   const handleMouseEnter = useCallback(
-    (node: any) => {
-      const matchingItem = chartData.find(item => item.id === node.id);
+    (node: { id: string | number }) => {
+      const matchingItem = chartData.find(item => item.id === String(node.id));
       if (matchingItem) {
         setHoveredItem({
+          contextKey: chartContextKey,
           name: matchingItem.id,
           value: matchingItem.value,
           data: matchingItem.data,
-          winrate: matchingItem.winrate,
         });
       }
     },
-    [chartData],
+    [chartContextKey, chartData],
   );
 
-  const chartDefs = chartData.map(i => pieChartColorDefinitions(i.id, metaInfo));
+  const chartDefs = chartData.map(item => {
+    const definition = pieChartColorDefinitions(item.id, metaInfo);
+
+    if (!isHighlighting || item.isHighlighted) return definition;
+
+    return {
+      ...definition,
+      colors: definition.colors.map(color => ({ ...color, opacity: 0.3 })),
+    };
+  });
   const fill = chartData.map(item => ({
     match: { id: item.id },
     id: item.id,
@@ -215,6 +249,12 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
           innerRadius={0.5}
           padAngle={0.7}
           cornerRadius={3}
+          borderWidth={isHighlighting ? 2 : 0}
+          borderColor={datum =>
+            isHighlighting && highlightedKeys.has(String(datum.id))
+              ? 'hsl(var(--foreground))'
+              : 'transparent'
+          }
           activeOuterRadiusOffset={8}
           arcLinkLabelsSkipAngle={10}
           colors={['#3B3B3B']}

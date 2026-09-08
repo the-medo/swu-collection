@@ -11,12 +11,9 @@ import { Button } from '@/components/ui/button.tsx';
 import { MoreHorizontal } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
-import { useUser } from '@/hooks/useUser.ts';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { getFormatName, UserDeckData } from './deckTableLib.tsx';
-import { useCountryList } from '@/api/lists/useCountryList.ts';
-import { useCurrencyList } from '@/api/lists/useCurrencyList.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cn } from '@/lib/utils.ts';
@@ -24,12 +21,15 @@ import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table
 import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
 import { EntityPriceBadge } from '@/components/app/card-prices/EntityPriceBadge.tsx';
 import { getPriceSourceSortValue } from '../../../../../../shared/lib/card-prices/source-type-sorters.ts';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
 
 interface DeckTableColumnsProps {
   view?: DataTableViewMode;
   isCompactBoxView?: boolean; // applies only in Box view
   showOwner?: boolean;
   showPublic?: boolean;
+  showSelection?: boolean;
+  selectionLimit?: number;
 }
 
 export function useDeckTableColumns({
@@ -37,15 +37,59 @@ export function useDeckTableColumns({
   isCompactBoxView = false,
   showOwner,
   showPublic,
+  showSelection,
+  selectionLimit,
 }: DeckTableColumnsProps): ExtendedColumnDef<UserDeckData>[] {
-  const user = useUser();
-  const { data: currencyData } = useCurrencyList();
-  const { data: countryData } = useCountryList();
   const { data: cardList } = useCardList();
   const putDeckMutation = usePutDeck(undefined);
 
   return useMemo(() => {
     const definitions: ExtendedColumnDef<UserDeckData>[] = [];
+
+    if (showSelection) {
+      definitions.push({
+        id: 'select',
+        size: 8,
+        displayBoxHeader: false,
+        header: ({ table }) => {
+          const eligibleRows = table
+            .getRowModel()
+            .rows.slice(0, selectionLimit ?? Number.MAX_SAFE_INTEGER);
+          const allEligibleRowsSelected =
+            eligibleRows.length > 0 && eligibleRows.every(row => row.getIsSelected());
+          const someRowsSelected = table.getSelectedRowModel().rows.length > 0;
+
+          return (
+            <Checkbox
+              checked={allEligibleRowsSelected ? true : someRowsSelected ? 'indeterminate' : false}
+              onCheckedChange={checked => {
+                table.setRowSelection(
+                  checked === true
+                    ? Object.fromEntries(eligibleRows.map(row => [row.id, true]))
+                    : {},
+                );
+              }}
+              aria-label={`Select up to ${selectionLimit ?? eligibleRows.length} loaded decks`}
+            />
+          );
+        },
+        cell: ({ row, table }) => (
+          <div className={cn('flex items-center', { 'justify-end': view === 'box' })}>
+            <Checkbox
+              checked={row.getIsSelected()}
+              onCheckedChange={checked => row.toggleSelected(checked === true)}
+              onClick={event => event.stopPropagation()}
+              disabled={
+                selectionLimit !== undefined &&
+                !row.getIsSelected() &&
+                table.getSelectedRowModel().rows.length >= selectionLimit
+              }
+              aria-label={`Select ${row.original.deck.name}`}
+            />
+          </div>
+        ),
+      });
+    }
 
     // Leader and Base cards
     definitions.push({
@@ -272,5 +316,14 @@ export function useDeckTableColumns({
     });
 
     return definitions;
-  }, [cardList, countryData, currencyData, putDeckMutation, user, view, isCompactBoxView]);
+  }, [
+    cardList,
+    putDeckMutation,
+    view,
+    isCompactBoxView,
+    showSelection,
+    showOwner,
+    showPublic,
+    selectionLimit,
+  ]);
 }

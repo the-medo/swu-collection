@@ -74,6 +74,17 @@ export const userSettingsSchema = z.object({
   share_development_data_matches: booleanPreprocessor.default(false),
 });
 
+const userSettingsUpdateShape: z.ZodRawShape = Object.fromEntries(
+  Object.entries(userSettingsSchema.shape).map(([key, schema]) => [
+    key,
+    schema.removeDefault().optional(),
+  ]),
+);
+
+// Removing each field's default is essential: a patch must contain only keys
+// supplied by the client, otherwise omitted preferences get reset on every save.
+export const userSettingsUpdateSchema = z.strictObject(userSettingsUpdateShape);
+
 export type UserSettingsSchema = z.infer<typeof userSettingsSchema>;
 
 // Returns the default value for a property key as defined in the Zod schema

@@ -13,6 +13,9 @@ import { cn } from '@/lib/utils.ts';
 import DeckInfoThumbnail from '@/components/app/statistics/StatisticsDecks/StatisticsDeckLists/DeckInfoThumbnail.tsx';
 import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
 import { getStatisticsTimestampMs } from '@/components/app/statistics/lib/date.ts';
+import { useGetBulkDecks } from '@/api/decks/useGetBulkDecks.ts';
+import { useQueryClient } from '@tanstack/react-query';
+import type { DeckData } from '../../../../../../../types/Deck.ts';
 
 export interface LeaderBaseInfoThumbnailProps {
   teamId?: string;
@@ -86,6 +89,33 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
       .slice(0, 3);
   }, [matches]);
 
+  const missingDeckNameIds = useMemo(
+    () =>
+      recentDecks
+        .filter(deck => !deck.deckName && !deckStatistics[deck.deckId]?.deckName)
+        .map(deck => deck.deckId),
+    [deckStatistics, recentDecks],
+  );
+  const { data: bulkDecksLoaded } = useGetBulkDecks(
+    missingDeckNameIds.length > 0 ? missingDeckNameIds : undefined,
+  );
+  const queryClient = useQueryClient();
+
+  const hydratedDeckStatistics = useMemo(() => {
+    if (missingDeckNameIds.length > 0 && !bulkDecksLoaded) return deckStatistics;
+
+    const result = { ...deckStatistics };
+    recentDecks.forEach(deck => {
+      const statistics = result[deck.deckId];
+      if (!statistics || statistics.deckName) return;
+
+      const cachedDeck = queryClient.getQueryData<DeckData>(['deck', deck.deckId]);
+      const deckName = deck.deckName ?? cachedDeck?.deck.name;
+      if (deckName) result[deck.deckId] = { ...statistics, deckName };
+    });
+    return result;
+  }, [bulkDecksLoaded, deckStatistics, missingDeckNameIds.length, queryClient, recentDecks]);
+
   const { leaderCard, baseCard } = useMemo(() => {
     const leader = leaderCardId ? cardListData?.cards[leaderCardId] : undefined;
     const baseId = getCardIdFromKey(baseCardKey, cardListData?.cards);
@@ -104,8 +134,9 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
         teamId,
       }}
       search={prev => ({ ...prev, sLeaderCardId: leaderCardId, sBaseCardKey: baseCardKey })}
+      className="max-sm:block max-sm:w-full max-sm:min-w-0"
     >
-      <Card className="overflow-hidden relative w-full h-full min-h-[200px] min-w-[350px] hover:shadow-md">
+      <Card className="overflow-hidden relative w-full h-full min-h-[200px] min-w-[350px] max-sm:min-w-0 hover:shadow-md">
         <div className="flex-1 relative h-full">
           {leaderCard && (
             <DeckBackgroundDecoration
@@ -118,19 +149,21 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
           )}
           <CardContent
             className={cn('flex h-full p-2 relative z-10 items-start gap-4', {
-              'flex-row flex-wrap justify-end': statSectionVariant === 'horizontal',
+              'flex-row flex-wrap justify-end max-sm:flex-col max-sm:items-stretch':
+                statSectionVariant === 'horizontal',
               'flex-col pt-12 justify-start': statSectionVariant === 'vertical',
             })}
           >
             {statSectionVariant === 'horizontal' && (
-              <div className="flex flex-col flex-1 gap-2 pl-40">
+              <div className="flex flex-col flex-1 gap-2 pl-40 max-sm:mt-8 max-sm:w-full max-sm:min-w-0 max-sm:pl-28">
                 {recentDecks.map(deck => (
                   <DeckInfoThumbnail
-                    key={deck.lastPlayed}
+                    key={deck.deckId}
                     teamId={teamId}
-                    statistics={deckStatistics[deck.deckId]}
+                    statistics={hydratedDeckStatistics[deck.deckId]}
                     statSectionVariant={statSectionVariant}
                     displayDeckBackground={false}
+                    compactOnMobile
                   />
                 ))}
               </div>
@@ -164,9 +197,9 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
             {statSectionVariant === 'vertical' &&
               recentDecks.map(deck => (
                 <DeckInfoThumbnailCompact
-                  key={deck.lastPlayed}
+                  key={deck.deckId}
                   teamId={teamId}
-                  statistics={deckStatistics[deck.deckId]}
+                  statistics={hydratedDeckStatistics[deck.deckId]}
                 />
               ))}
           </CardContent>

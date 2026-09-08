@@ -22,7 +22,14 @@ import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { KeyboardEventHandler, useCallback } from 'react';
 import { AdvancedSearchStringLookup } from '@/components/app/cards/AdvancedCardSearch/advancedSearchContext.ts';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx';
-import type { CardUniquenessFilter } from './advancedSearchLib.ts';
+import {
+  areAllFutureSetsSelected,
+  futureSetCodes,
+  isPremierOnlySetSelection,
+  toggleFutureSetSelection,
+  togglePremierOnlySetSelection,
+  type CardUniquenessFilter,
+} from './advancedSearchLib.ts';
 
 // Available card types
 const CARD_TYPES = ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'];
@@ -122,6 +129,8 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   const availableSearchCardTypes = availableCardTypes
     ? Object.keys(availableCardTypes)
     : CARD_TYPES;
+  const premierOnlySelected = isPremierOnlySetSelection(sets);
+  const futureSetsSelected = areAllFutureSetsSelected(sets);
 
   return (
     <div
@@ -279,12 +288,40 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                 <div className="text-center py-2">Loading keywords...</div>
               )}
 
-              <SetMultiSelect
-                value={sets}
-                defaultValue={sets}
-                onChange={setSets}
-                showFullName={true}
-              />
+              <div className="space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-medium">Sets</span>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      size="xs"
+                      variant={premierOnlySelected ? 'secondary' : 'outline'}
+                      aria-pressed={premierOnlySelected}
+                      title="Select released sets currently legal in Premier"
+                      onClick={() => setSets(togglePremierOnlySetSelection(sets))}
+                    >
+                      Premier
+                    </Button>
+                    <Button
+                      type="button"
+                      size="xs"
+                      variant={futureSetsSelected ? 'secondary' : 'outline'}
+                      aria-pressed={futureSetsSelected}
+                      disabled={futureSetCodes.length === 0}
+                      title="Add or remove sets with a future release date"
+                      onClick={() => setSets(toggleFutureSetSelection(sets))}
+                    >
+                      +Preview
+                    </Button>
+                  </div>
+                </div>
+                <SetMultiSelect
+                  value={sets}
+                  defaultValue={sets}
+                  onChange={setSets}
+                  showFullName={true}
+                />
+              </div>
               <RarityMultiSelect value={rarities} defaultValue={rarities} onChange={setRarities} />
               <RadioGroup
                 value={uniqueness}

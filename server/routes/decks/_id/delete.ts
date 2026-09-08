@@ -1,34 +1,32 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
-import { deck as deckTable } from '../../../db/schema/deck.ts';
-import { db } from '../../../db';
-import { deckCard as deckCardTable } from '../../../db/schema/deck_card.ts';
-import {
-  cardPoolDecks as cardPoolDeckTable,
-  cardPoolDeckCards as cardPoolDeckCardsTable,
-} from '../../../db/schema/card_pool_deck.ts';
-import { deckInformation as deckInformationTable } from '../../../db/schema/deck_information.ts';
 import type { AuthExtension } from '../../../auth/auth.ts';
+import { zValidator } from '@hono/zod-validator';
+import { deleteDecksOwnedByUser } from '../../../lib/decks/deleteDecks.ts';
 
-export const deckIdDeleteRoute = new Hono<AuthExtension>().delete('/', async c => {
-  const paramDeckId = z.guid().parse(c.req.param('id'));
-  const user = c.get('user');
-  if (!user) return c.json({ message: 'Unauthorized' }, 401);
+const zParams = z.object({ id: z.guid() });
 
-  const deckTableId = eq(deckTable.id, paramDeckId);
+export const deckIdDeleteRoute = new Hono<AuthExtension>().delete(
+  '/',
+  zValidator('param', zParams),
+  async c => {
+    const user = c.get('user');
+    if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
-  const d = (await db.select().from(deckTable).where(deckTableId))[0];
-  if (!d) return c.json({ message: "Deck doesn't exist" }, 500);
-  if (d.userId !== user.id) return c.json({ message: 'Unauthorized' }, 401);
+    const { id } = c.req.valid('param');
+    const result = await deleteDecksOwnedByUser(user.id, [id]);
 
-  await db.delete(deckInformationTable).where(eq(deckInformationTable.deckId, paramDeckId));
-  await db.delete(deckCardTable).where(eq(deckCardTable.deckId, paramDeckId));
-  await db.delete(cardPoolDeckCardsTable).where(eq(cardPoolDeckCardsTable.deckId, paramDeckId));
-  await db.delete(cardPoolDeckTable).where(eq(cardPoolDeckTable.deckId, paramDeckId));
-  const deletedDeck = (
-    await db.delete(deckTable).where(eq(deckTable.id, paramDeckId)).returning()
-  )[0];
+    if (result.status === 'not_found') {
+      return c.json(
+        { message: "Deck doesn't exist or you don't have permission to delete it" },
+        404,
+      );
+    }
 
-  return c.json({ data: deletedDeck });
-});
+    if (result.status === 'conflict') {
+      return c.json({ message: 'Deck is linked to tournament data and cannot be deleted' }, 409);
+    }
+
+    return c.json({ data: result.deletedDecks[0] });
+  },
+);
