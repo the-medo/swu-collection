@@ -4,10 +4,19 @@ import type {
   CardListVariants,
 } from '../../../../../../lib/swu-resources/types.ts';
 import { SwuSet } from '../../../../../../types/enums.ts';
-import { matchesLeaderCostFilter, matchesLeaderSetFilter } from './leaderSelectorFilters.ts';
+import {
+  isLeaderSetAvailableForFormat,
+  matchesLeaderCostFilter,
+  matchesLeaderSearch,
+  matchesLeaderSetFilter,
+} from './leaderSelectorFilters.ts';
 
-const leader = (set: SwuSet, cost: number | null) =>
-  ({ set, cost }) as CardDataWithVariants<CardListVariants>;
+const leader = (
+  set: SwuSet,
+  cost: number | null,
+  name = 'Luke Skywalker - Faithful Friend',
+  traits = ['Force', 'Rebel'],
+) => ({ set, cost, name, traits }) as CardDataWithVariants<CardListVariants>;
 
 describe('leader selector filters', () => {
   test('matches one set and clears back to all sets', () => {
@@ -34,5 +43,22 @@ describe('leader selector filters', () => {
     expect(matchesLeaderCostFilter(leader(SwuSet.HMW, null), '4')).toBe(false);
     expect(matchesLeaderCostFilter(undefined, '7+')).toBe(false);
     expect(matchesLeaderCostFilter(undefined, undefined)).toBe(true);
+  });
+
+  test('searches leader names and traits case-insensitively', () => {
+    const luke = leader(SwuSet.SOR, 6);
+
+    expect(matchesLeaderSearch(luke, 'skywalker')).toBe(true);
+    expect(matchesLeaderSearch(luke, 'force')).toBe(true);
+    expect(matchesLeaderSearch(luke, 'imperial')).toBe(false);
+    expect(matchesLeaderSearch(luke, '   ')).toBe(true);
+  });
+
+  test('limits set choices when a format supplies a set map', () => {
+    const premierSets = { [SwuSet.JTL]: true, [SwuSet.HMW]: true } as const;
+
+    expect(isLeaderSetAvailableForFormat(SwuSet.HMW, premierSets)).toBe(true);
+    expect(isLeaderSetAvailableForFormat(SwuSet.SOR, premierSets)).toBe(false);
+    expect(isLeaderSetAvailableForFormat(SwuSet.SOR, undefined)).toBe(true);
   });
 });

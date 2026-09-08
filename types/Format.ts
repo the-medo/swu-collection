@@ -15,6 +15,7 @@ export type FormatFilter = (format: Format) => boolean;
 export type FilterByFormat = {
   title: string;
   filterCallback: (card: CardDataWithVariants<CardListVariants>) => boolean;
+  setMap?: Partial<Record<SwuSet, true | undefined>>;
 };
 
 export const formatData: Format[] = [
@@ -120,6 +121,7 @@ export const cardFiltersByFormat: Record<string, FilterByFormat> = {
   premier: {
     title: 'Premier only',
     filterCallback: (card: CardDataWithVariants<CardListVariants>) => !!premierSetMap[card?.set],
+    setMap: premierSetMap,
   },
 };
 

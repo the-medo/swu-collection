@@ -20,9 +20,7 @@ import { Switch } from '@/components/ui/switch.tsx';
 import { cn } from '@/lib/utils.ts';
 import {
   basicBases,
-  getHomeworldBasicBaseIdsForTrait,
   homeworldBaseTraits,
-  homeworldBasicBasesByTrait,
   sortBasesBySpecialSortValues,
 } from '../../../../../../shared/lib/basicBases.ts';
 import type { HomeworldBaseTrait } from '../../../../../../shared/lib/basicBases.ts';
@@ -33,6 +31,17 @@ import { DialogTitle } from '@/components/ui/dialog.tsx';
 import KarabastUnimplementedWarningIcon from '@/components/app/decks/KarabastUnimplementedWarningIcon.tsx';
 import { ToggleGroup } from '@/components/ui/toggle-group.tsx';
 import BaseTraitFilterButton from '@/components/app/global/BaseSelector/BaseTraitFilterButton.tsx';
+import {
+  matchesBaseSearch,
+  matchesBaseTraitFilter,
+} from '@/components/app/global/BaseSelector/baseSelectorFilters.ts';
+
+const representativeBaseIdByTrait = {
+  Tatooine: 'dune-sea',
+  Naboo: 'otoh-gunga',
+  Kashyyyk: 'origin-tree',
+  Endor: 'bright-tree-village',
+} as const satisfies Record<HomeworldBaseTrait, string>;
 
 type BaseSelectorProps = Pick<DialogProps, 'trigger'> & {
   baseCardId?: string;
@@ -94,24 +103,16 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
 
   const filteringByBasicBases = useCallback(
     (card: CardDataWithVariants<CardListVariants> | undefined) => {
-      if (allBasicBases || search !== '' || homeworldTraitFilter) return true;
+      if (allBasicBases || search.trim() !== '' || homeworldTraitFilter) return true;
       return !isBasicBase(card); // card?.text !== '' && card?.text !== null;
     },
     [search, allBasicBases, homeworldTraitFilter],
   );
 
-  const homeworldBaseIdsForTrait = useMemo(
-    () =>
-      homeworldTraitFilter
-        ? new Set(getHomeworldBasicBaseIdsForTrait(homeworldTraitFilter))
-        : undefined,
-    [homeworldTraitFilter],
-  );
-
   const filteringByHomeworldTrait = useCallback(
     (card: CardDataWithVariants<CardListVariants> | undefined) =>
-      !homeworldBaseIdsForTrait || homeworldBaseIdsForTrait.has(card?.cardId ?? ''),
-    [homeworldBaseIdsForTrait],
+      matchesBaseTraitFilter(card, homeworldTraitFilter),
+    [homeworldTraitFilter],
   );
 
   const filteringByFormat = useCallback(
@@ -123,7 +124,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
   );
 
   const oneBasicBaseOfEach = useMemo(() => {
-    if (allBasicBases || search !== '' || homeworldTraitFilter) return [];
+    if (allBasicBases || search.trim() !== '' || homeworldTraitFilter) return [];
 
     return Object.values(cardList?.cardsByCardType['Base'] ?? {}).filter(
       (card: CardDataWithVariants<CardListVariants> | undefined) => {
@@ -144,7 +145,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
         .filter(filteringByAspects)
         .filter(filteringByHomeworldTrait)
         .filter(filteringByFormat)
-        .filter(l => search === '' || l?.name.toLowerCase().includes(search.toLowerCase()))
+        .filter(l => matchesBaseSearch(l, search))
         .map(l => {
           const variantId = selectDefaultVariant(l!) ?? '';
           return {
@@ -252,9 +253,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
                   <BaseTraitFilterButton
                     key={trait}
                     trait={trait}
-                    representativeBase={
-                      cardList?.cards[homeworldBasicBasesByTrait[trait][SwuAspect.VIGILANCE]]
-                    }
+                    representativeBase={cardList?.cards[representativeBaseIdByTrait[trait]]}
                   />
                 ))}
               </ToggleGroup>

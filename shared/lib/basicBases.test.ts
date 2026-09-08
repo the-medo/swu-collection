@@ -4,6 +4,7 @@ import { SwuAspect, SwuSet } from '../../types/enums.ts';
 import {
   baseSpecialNames,
   getBasicBaseIdsForSet,
+  getHomeworldBaseTrait,
   getHomeworldBasicBaseIdsForTrait,
   homeworldBaseTraits,
   homeworldBasicBaseIds,
@@ -50,5 +51,14 @@ describe('Homeworlds basic bases', () => {
     expect(baseIds).toContain('shield-generator-complex');
     expect(baseIds).toContain('theed-palace');
     expect(baseIds).toContain('mos-eisley');
+  });
+
+  test('resolves effective traits for reprints and other compatible bases', () => {
+    expect(getHomeworldBaseTrait('theed-palace')).toBe('Naboo');
+    expect(getHomeworldBaseTrait('shield-generator-complex')).toBe('Endor');
+    expect(getHomeworldBaseTrait('lake-country')).toBe('Naboo');
+    expect(getHomeworldBaseTrait('daimyo-s-palace')).toBe('Tatooine');
+    expect(getHomeworldBaseTrait('great-pit-of-carkoon')).toBe('Tatooine');
+    expect(getHomeworldBaseTrait('echo-base')).toBeUndefined();
   });
 });

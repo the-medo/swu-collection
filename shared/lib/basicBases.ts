@@ -78,6 +78,31 @@ export const getHomeworldBasicBaseIdsForTrait = (trait: HomeworldBaseTrait): str
 
 export const homeworldBasicBaseIds = homeworldBaseTraits.flatMap(getHomeworldBasicBaseIdsForTrait);
 
+// Older official base records omit their printed planet traits, so keep the
+// known compatible non-HMW bases alongside the Homeworlds basics.
+const additionalHomeworldBaseIdsByTrait = {
+  Tatooine: ['daimyo-s-palace', 'great-pit-of-carkoon'],
+  Naboo: ['lake-country'],
+  Kashyyyk: [],
+  Endor: [],
+} as const satisfies Record<HomeworldBaseTrait, readonly string[]>;
+
+export const homeworldBaseTraitByCardId = homeworldBaseTraits.reduce(
+  (traitsByCardId, trait) => {
+    [
+      ...getHomeworldBasicBaseIdsForTrait(trait),
+      ...additionalHomeworldBaseIdsByTrait[trait],
+    ].forEach(cardId => {
+      traitsByCardId[cardId] = trait;
+    });
+    return traitsByCardId;
+  },
+  {} as Record<string, HomeworldBaseTrait | undefined>,
+);
+
+export const getHomeworldBaseTrait = (cardId: string | undefined) =>
+  cardId ? homeworldBaseTraitByCardId[cardId] : undefined;
+
 export const baseSpecialNames: Record<string, string> = {
   // basic Vigilance bases
   'capital-city': 'Vigilance',

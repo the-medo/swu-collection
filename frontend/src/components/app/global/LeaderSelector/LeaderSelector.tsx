@@ -27,7 +27,9 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
 import { setArray } from '../../../../../../lib/swu-resources/set-info.ts';
 import {
   leaderCostFilterValues,
+  isLeaderSetAvailableForFormat,
   matchesLeaderCostFilter,
+  matchesLeaderSearch,
   matchesLeaderSetFilter,
 } from '@/components/app/global/LeaderSelector/leaderSelectorFilters.ts';
 import type { LeaderCostFilter } from '@/components/app/global/LeaderSelector/leaderSelectorFilters.ts';
@@ -62,6 +64,16 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   useEffect(() => {
     setFormatFilterEnabled(Boolean(filterByFormat));
   }, [filterByFormat]);
+
+  useEffect(() => {
+    if (
+      formatFilterEnabled &&
+      setFilter &&
+      !isLeaderSetAvailableForFormat(setFilter, filterByFormat?.setMap)
+    ) {
+      setSetFilter(undefined);
+    }
+  }, [filterByFormat?.setMap, formatFilterEnabled, setFilter]);
 
   const leaderSorter = useMemo(
     () =>
@@ -125,6 +137,16 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
     [costFilter],
   );
 
+  const displayedSets = useMemo(
+    () =>
+      setArray.filter(
+        set =>
+          !formatFilterEnabled ||
+          isLeaderSetAvailableForFormat(set.code as SwuSet, filterByFormat?.setMap),
+      ),
+    [filterByFormat?.setMap, formatFilterEnabled],
+  );
+
   const allLeaders = useMemo(
     () =>
       Object.values(cardList?.cardsByCardType['Leader'] ?? {})
@@ -141,7 +163,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
         .filter(filteringByFormat)
         .filter(filteringBySet)
         .filter(filteringByCost)
-        .filter(l => search === '' || l?.name.toLowerCase().includes(search.toLowerCase()))
+        .filter(l => matchesLeaderSearch(l, search))
         .map(cardTransformer)
         .sort((a, b) => {
           if (!leaderSorter) return 0;
@@ -232,43 +254,45 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
               </div>
             )}
           </div>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="font-semibold">Set</span>
-            <ToggleGroup
-              type="single"
-              value={setFilter ?? ''}
-              onValueChange={value => setSetFilter(value ? (value as SwuSet) : undefined)}
-              variant="outline"
-              size="sm"
-              aria-label="Filter leaders by set"
-              className="flex-wrap justify-start"
-            >
-              {setArray.map(set => (
-                <ToggleGroupItem key={set.code} value={set.code}>
-                  {set.code.toUpperCase()}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          </div>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="font-semibold">Cost</span>
-            <ToggleGroup
-              type="single"
-              value={costFilter ?? ''}
-              onValueChange={value =>
-                setCostFilter(value ? (value as LeaderCostFilter) : undefined)
-              }
-              variant="outline"
-              size="sm"
-              aria-label="Filter leaders by cost"
-              className="justify-start"
-            >
-              {leaderCostFilterValues.map(cost => (
-                <ToggleGroupItem key={cost} value={cost}>
-                  {cost}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+          <div className="mt-2 grid grid-cols-1 items-start gap-x-6 gap-y-2 md:grid-cols-[minmax(0,1fr)_auto]">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold">Set</span>
+              <ToggleGroup
+                type="single"
+                value={setFilter ?? ''}
+                onValueChange={value => setSetFilter(value ? (value as SwuSet) : undefined)}
+                variant="outline"
+                size="sm"
+                aria-label="Filter leaders by set"
+                className="flex-wrap justify-start"
+              >
+                {displayedSets.map(set => (
+                  <ToggleGroupItem key={set.code} value={set.code}>
+                    {set.code.toUpperCase()}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold">Cost</span>
+              <ToggleGroup
+                type="single"
+                value={costFilter ?? ''}
+                onValueChange={value =>
+                  setCostFilter(value ? (value as LeaderCostFilter) : undefined)
+                }
+                variant="outline"
+                size="sm"
+                aria-label="Filter leaders by cost"
+                className="justify-start"
+              >
+                {leaderCostFilterValues.map(cost => (
+                  <ToggleGroupItem key={cost} value={cost}>
+                    {cost}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
           </div>
         </div>
       </>
@@ -282,6 +306,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
     isMobile,
     setFilter,
     costFilter,
+    displayedSets,
   ]);
 
   const handleSave = useCallback(
