@@ -81,7 +81,7 @@ export const homeworldBasicBaseIds = homeworldBaseTraits.flatMap(getHomeworldBas
 // Older official base records omit their printed planet traits, so keep the
 // known compatible non-HMW bases alongside the Homeworlds basics.
 const additionalHomeworldBaseIdsByTrait = {
-  Tatooine: ['daimyo-s-palace', 'great-pit-of-carkoon'],
+  Tatooine: ['freetown', 'daimyo-s-palace', 'great-pit-of-carkoon'],
   Naboo: ['lake-country'],
   Kashyyyk: [],
   Endor: [],

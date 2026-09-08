@@ -254,7 +254,7 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
               </div>
             )}
           </div>
-          <div className="mt-2 grid grid-cols-1 items-start gap-x-6 gap-y-2 md:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="mt-2 flex flex-wrap items-start gap-x-4 gap-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold">Set</span>
               <ToggleGroup

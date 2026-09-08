@@ -57,6 +57,7 @@ describe('Homeworlds basic bases', () => {
     expect(getHomeworldBaseTrait('theed-palace')).toBe('Naboo');
     expect(getHomeworldBaseTrait('shield-generator-complex')).toBe('Endor');
     expect(getHomeworldBaseTrait('lake-country')).toBe('Naboo');
+    expect(getHomeworldBaseTrait('freetown')).toBe('Tatooine');
     expect(getHomeworldBaseTrait('daimyo-s-palace')).toBe('Tatooine');
     expect(getHomeworldBaseTrait('great-pit-of-carkoon')).toBe('Tatooine');
     expect(getHomeworldBaseTrait('echo-base')).toBeUndefined();
