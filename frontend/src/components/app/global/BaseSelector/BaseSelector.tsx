@@ -20,13 +20,28 @@ import { Switch } from '@/components/ui/switch.tsx';
 import { cn } from '@/lib/utils.ts';
 import {
   basicBases,
+  homeworldBaseTraits,
   sortBasesBySpecialSortValues,
 } from '../../../../../../shared/lib/basicBases.ts';
+import type { HomeworldBaseTrait } from '../../../../../../shared/lib/basicBases.ts';
 import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { aspectsForBases } from '@/components/app/global/MultiAspectFilter/multiAspectFilterLib.tsx';
 import type { FilterByFormat } from '../../../../../../types/Format.ts';
 import { DialogTitle } from '@/components/ui/dialog.tsx';
 import KarabastUnimplementedWarningIcon from '@/components/app/decks/KarabastUnimplementedWarningIcon.tsx';
+import { ToggleGroup } from '@/components/ui/toggle-group.tsx';
+import BaseTraitFilterButton from '@/components/app/global/BaseSelector/BaseTraitFilterButton.tsx';
+import {
+  matchesBaseSearch,
+  matchesBaseTraitFilter,
+} from '@/components/app/global/BaseSelector/baseSelectorFilters.ts';
+
+const representativeBaseIdByTrait = {
+  Tatooine: 'dune-sea',
+  Naboo: 'otoh-gunga',
+  Kashyyyk: 'origin-tree',
+  Endor: 'bright-tree-village',
+} as const satisfies Record<HomeworldBaseTrait, string>;
 
 type BaseSelectorProps = Pick<DialogProps, 'trigger'> & {
   baseCardId?: string;
@@ -49,6 +64,9 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
   const [localBaseCardId, setLocalBaseCardId] = useState<string | undefined>(baseCardId);
   const [search, setSearch] = useState<string>('');
   const [aspectFilter, setAspectFilter] = useState<SwuAspect[]>(aspectsForBases);
+  const [homeworldTraitFilter, setHomeworldTraitFilter] = useState<
+    HomeworldBaseTrait | undefined
+  >();
   const [formatFilterEnabled, setFormatFilterEnabled] = useState(Boolean(filterByFormat));
   const basicBasesSwitchId = useId();
   const formatFilterSwitchId = useId();
@@ -85,10 +103,16 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
 
   const filteringByBasicBases = useCallback(
     (card: CardDataWithVariants<CardListVariants> | undefined) => {
-      if (allBasicBases || search !== '') return true;
+      if (allBasicBases || search.trim() !== '' || homeworldTraitFilter) return true;
       return !isBasicBase(card); // card?.text !== '' && card?.text !== null;
     },
-    [search, allBasicBases],
+    [search, allBasicBases, homeworldTraitFilter],
+  );
+
+  const filteringByHomeworldTrait = useCallback(
+    (card: CardDataWithVariants<CardListVariants> | undefined) =>
+      matchesBaseTraitFilter(card, homeworldTraitFilter),
+    [homeworldTraitFilter],
   );
 
   const filteringByFormat = useCallback(
@@ -100,14 +124,14 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
   );
 
   const oneBasicBaseOfEach = useMemo(() => {
-    if (allBasicBases || search !== '') return [];
+    if (allBasicBases || search.trim() !== '' || homeworldTraitFilter) return [];
 
     return Object.values(cardList?.cardsByCardType['Base'] ?? {}).filter(
       (card: CardDataWithVariants<CardListVariants> | undefined) => {
         return basicBases[card?.cardId ?? ''];
       },
     );
-  }, [cardList, search, allBasicBases]);
+  }, [cardList, search, allBasicBases, homeworldTraitFilter]);
 
   const allBases = useMemo(() => {
     return Object.values(cardList?.cardsByCardType['Base'] ?? {}).filter(Boolean);
@@ -119,8 +143,9 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
         .filter(filteringByBasicBases)
         .concat(oneBasicBaseOfEach)
         .filter(filteringByAspects)
+        .filter(filteringByHomeworldTrait)
         .filter(filteringByFormat)
-        .filter(l => search === '' || l?.name.toLowerCase().includes(search.toLowerCase()))
+        .filter(l => matchesBaseSearch(l, search))
         .map(l => {
           const variantId = selectDefaultVariant(l!) ?? '';
           return {
@@ -147,6 +172,7 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
       filteringByAspects,
       filteringByBasicBases,
       filteringByFormat,
+      filteringByHomeworldTrait,
       oneBasicBaseOfEach,
       search,
     ],
@@ -212,6 +238,26 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
               multiSelect={true}
               availableAspects={aspectsForBases}
             />
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold">Trait</span>
+              <ToggleGroup
+                type="single"
+                value={homeworldTraitFilter ?? ''}
+                onValueChange={value =>
+                  setHomeworldTraitFilter(value ? (value as HomeworldBaseTrait) : undefined)
+                }
+                aria-label="Filter Homeworlds bases by trait"
+                className="flex-wrap justify-start"
+              >
+                {homeworldBaseTraits.map(trait => (
+                  <BaseTraitFilterButton
+                    key={trait}
+                    trait={trait}
+                    representativeBase={cardList?.cards[representativeBaseIdByTrait[trait]]}
+                  />
+                ))}
+              </ToggleGroup>
+            </div>
             <div className="flex flex-row items-center gap-2">
               <label htmlFor={basicBasesSwitchId} className="font-semibold">
                 Display all basic bases
@@ -244,6 +290,8 @@ const BaseSelector: React.FC<BaseSelectorProps> = ({
     formatFilterSwitchId,
     search,
     aspectFilter,
+    cardList,
+    homeworldTraitFilter,
     allBasicBases,
     basicBasesSwitchId,
   ]);

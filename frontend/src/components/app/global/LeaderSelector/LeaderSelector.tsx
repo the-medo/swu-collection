@@ -10,6 +10,7 @@ import { CollectionSortBy } from '@/components/app/collections/CollectionContent
 import { createFakeCollectionCard } from '../../../../../../types/CollectionCard.ts';
 import MultiAspectFilter from '@/components/app/global/MultiAspectFilter/MultiAspectFilter.tsx';
 import { SwuAspect } from '../../../../../../types/enums.ts';
+import type { SwuSet } from '../../../../../../types/enums.ts';
 import { aspectArray } from '../../../../../../types/iterableEnumInfo.ts';
 import {
   CardDataWithVariants,
@@ -22,6 +23,16 @@ import { useSidebar } from '@/components/ui/sidebar.tsx';
 import type { FilterByFormat } from '../../../../../../types/Format.ts';
 import { DialogTitle } from '@/components/ui/dialog.tsx';
 import KarabastUnimplementedWarningIcon from '@/components/app/decks/KarabastUnimplementedWarningIcon.tsx';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
+import { setArray } from '../../../../../../lib/swu-resources/set-info.ts';
+import {
+  leaderCostFilterValues,
+  isLeaderSetAvailableForFormat,
+  matchesLeaderCostFilter,
+  matchesLeaderSearch,
+  matchesLeaderSetFilter,
+} from '@/components/app/global/LeaderSelector/leaderSelectorFilters.ts';
+import type { LeaderCostFilter } from '@/components/app/global/LeaderSelector/leaderSelectorFilters.ts';
 
 type LeaderSelectorProps = Pick<DialogProps, 'trigger'> & {
   leaderCardId?: string;
@@ -44,6 +55,8 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   const [localLeaderCardId, setLocalLeaderCardId] = useState<string | undefined>(leaderCardId);
   const [search, setSearch] = useState<string>('');
   const [aspectFilter, setAspectFilter] = useState<SwuAspect[]>(aspectArray);
+  const [setFilter, setSetFilter] = useState<SwuSet | undefined>();
+  const [costFilter, setCostFilter] = useState<LeaderCostFilter | undefined>();
   const [formatFilterEnabled, setFormatFilterEnabled] = useState(Boolean(filterByFormat));
   const formatFilterSwitchId = useId();
   const { data: cardList } = useCardList();
@@ -51,6 +64,16 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
   useEffect(() => {
     setFormatFilterEnabled(Boolean(filterByFormat));
   }, [filterByFormat]);
+
+  useEffect(() => {
+    if (
+      formatFilterEnabled &&
+      setFilter &&
+      !isLeaderSetAvailableForFormat(setFilter, filterByFormat?.setMap)
+    ) {
+      setSetFilter(undefined);
+    }
+  }, [filterByFormat?.setMap, formatFilterEnabled, setFilter]);
 
   const leaderSorter = useMemo(
     () =>
@@ -102,6 +125,28 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
     [filterByFormat, formatFilterEnabled],
   );
 
+  const filteringBySet = useCallback(
+    (card: CardDataWithVariants<CardListVariants> | undefined) =>
+      matchesLeaderSetFilter(card, setFilter),
+    [setFilter],
+  );
+
+  const filteringByCost = useCallback(
+    (card: CardDataWithVariants<CardListVariants> | undefined) =>
+      matchesLeaderCostFilter(card, costFilter),
+    [costFilter],
+  );
+
+  const displayedSets = useMemo(
+    () =>
+      setArray.filter(
+        set =>
+          !formatFilterEnabled ||
+          isLeaderSetAvailableForFormat(set.code as SwuSet, filterByFormat?.setMap),
+      ),
+    [filterByFormat?.setMap, formatFilterEnabled],
+  );
+
   const allLeaders = useMemo(
     () =>
       Object.values(cardList?.cardsByCardType['Leader'] ?? {})
@@ -116,13 +161,23 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
         .filter(Boolean)
         .filter(filteringByAspects)
         .filter(filteringByFormat)
-        .filter(l => search === '' || l?.name.toLowerCase().includes(search.toLowerCase()))
+        .filter(filteringBySet)
+        .filter(filteringByCost)
+        .filter(l => matchesLeaderSearch(l, search))
         .map(cardTransformer)
         .sort((a, b) => {
           if (!leaderSorter) return 0;
           return leaderSorter(a.fakeCollectionCardForSorting, b.fakeCollectionCardForSorting);
         }),
-    [cardList, filteringByAspects, filteringByFormat, leaderSorter, search],
+    [
+      cardList,
+      filteringByAspects,
+      filteringByCost,
+      filteringByFormat,
+      filteringBySet,
+      leaderSorter,
+      search,
+    ],
   );
 
   const selectedLeader = useMemo(() => {
@@ -199,10 +254,60 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
               </div>
             )}
           </div>
+          <div className="mt-2 flex flex-wrap items-start gap-x-4 gap-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold">Set</span>
+              <ToggleGroup
+                type="single"
+                value={setFilter ?? ''}
+                onValueChange={value => setSetFilter(value ? (value as SwuSet) : undefined)}
+                variant="outline"
+                size="sm"
+                aria-label="Filter leaders by set"
+                className="flex-wrap justify-start"
+              >
+                {displayedSets.map(set => (
+                  <ToggleGroupItem key={set.code} value={set.code}>
+                    {set.code.toUpperCase()}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold">Cost</span>
+              <ToggleGroup
+                type="single"
+                value={costFilter ?? ''}
+                onValueChange={value =>
+                  setCostFilter(value ? (value as LeaderCostFilter) : undefined)
+                }
+                variant="outline"
+                size="sm"
+                aria-label="Filter leaders by cost"
+                className="justify-start"
+              >
+                {leaderCostFilterValues.map(cost => (
+                  <ToggleGroupItem key={cost} value={cost}>
+                    {cost}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
+          </div>
         </div>
       </>
     );
-  }, [filterByFormat, formatFilterEnabled, formatFilterSwitchId, search, aspectFilter, isMobile]);
+  }, [
+    filterByFormat,
+    formatFilterEnabled,
+    formatFilterSwitchId,
+    search,
+    aspectFilter,
+    isMobile,
+    setFilter,
+    costFilter,
+    displayedSets,
+  ]);
 
   const handleSave = useCallback(
     (leaderCardId: string | undefined) => {
