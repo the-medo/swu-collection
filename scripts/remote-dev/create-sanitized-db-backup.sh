@@ -428,6 +428,7 @@ if [[ "${direct_postgres_mode}" == true ]]; then
   pg_dump \
     -d "${CLEAN_DATABASE}" \
     --format=custom \
+    --exclude-table-data='play.*' \
     --no-owner --no-privileges \
     --file="${work_directory}/swubase-clean-db.dmp"
   pg_restore --list "${work_directory}/swubase-clean-db.dmp" >/dev/null
@@ -477,6 +478,7 @@ else
     -U postgres \
     -d "${CLEAN_DATABASE}" \
     --format=custom \
+    --exclude-table-data='play.*' \
     --no-owner --no-privileges \
     --file=/tmp/swubase-clean-db.dmp
   docker exec "${CONTAINER_NAME}" pg_restore --list /tmp/swubase-clean-db.dmp >/dev/null

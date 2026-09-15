@@ -103,6 +103,7 @@ state_value() {
       database) printf '%s\n' "${SWUBASE_DB_NAME}" ;;
       database-port) printf '%s\n' "${SWUBASE_DB_PORT}" ;;
       backend-port) printf '%s\n' "${SWUBASE_BACKEND_PORT}" ;;
+      crossfire-port) printf '%s\n' "${SWUBASE_CROSSFIRE_PORT}" ;;
       frontend-port) printf '%s\n' "${SWUBASE_FRONTEND_PORT}" ;;
       public-origin) printf '%s\n' "${SWUBASE_WORKTREE_PUBLIC_ORIGIN}" ;;
       tailscale-serve) printf '%s\n' "${SWUBASE_WORKTREE_TAILSCALE_SERVE}" ;;
@@ -149,6 +150,21 @@ generated_env_value() {
     printf '%s\n' "${!key}"
   )
 }
+
+# Exercise the supported managed worker lifecycle without booting unrelated
+# HTTP integrations or installing a second frontend dependency tree.
+start_test_crossfire() (
+  local worktree_path=$1
+  export SWUBASE_WORKTREE_STATE_ROOT="${state_root}" CROSSFIRE_ENABLED=1
+  # shellcheck disable=SC1090
+  source "${worktree_path}/scripts/worktree-dev/lib.sh"
+  initialize_registry
+  acquire_registry_lock
+  trap release_registry_lock EXIT
+  load_current_state
+  start_crossfire_service
+  wait_for_http_service "http://127.0.0.1:${SWUBASE_CROSSFIRE_PORT}/health" crossfire
+)
 
 cleanup_worktree() {
   local worktree_path=$1
@@ -236,6 +252,7 @@ EOF
 
 main() {
   require_command bun
+  require_command curl
   require_command docker
   require_command flock
   require_command git
@@ -263,9 +280,19 @@ main() {
   run_worktree_command "${first_worktree}" setup --dump "${fixture_dump}"
   run_worktree_command "${second_worktree}" setup --dump "${fixture_dump}"
 
+  # Older worktrees lack this field. Reuse their own reservation on upgrade,
+  # preserving the database, existing ports and authentication state.
+  local original_crossfire_port
+  original_crossfire_port=$(state_value "${first_worktree}" crossfire-port)
+  sed -i '/^SWUBASE_CROSSFIRE_PORT=/d' "${first_worktree}/.swubase/worktree-dev.env"
+  run_worktree_command "${first_worktree}" status >/dev/null
+  run_worktree_command "${first_worktree}" setup
+  assert_equal "${original_crossfire_port}" "$(state_value "${first_worktree}" crossfire-port)" "Legacy Crossfire port upgrade"
+
   local first_id second_id first_container second_container first_volume second_volume
   local first_database second_database first_db_port second_db_port first_backend_port second_backend_port
   local first_frontend_port second_frontend_port first_auth_prefix second_auth_prefix
+  local first_crossfire_port second_crossfire_port
   local first_public_origin second_public_origin first_tailscale_serve second_tailscale_serve
 
   first_id=$(state_value "${first_worktree}" id)
@@ -280,6 +307,8 @@ main() {
   second_db_port=$(state_value "${second_worktree}" database-port)
   first_backend_port=$(state_value "${first_worktree}" backend-port)
   second_backend_port=$(state_value "${second_worktree}" backend-port)
+  first_crossfire_port=$(state_value "${first_worktree}" crossfire-port)
+  second_crossfire_port=$(state_value "${second_worktree}" crossfire-port)
   first_frontend_port=$(state_value "${first_worktree}" frontend-port)
   second_frontend_port=$(state_value "${second_worktree}" frontend-port)
   first_public_origin=$(state_value "${first_worktree}" public-origin)
@@ -295,6 +324,10 @@ main() {
   assert_not_equal "${first_database}" "${second_database}" "Database names"
   assert_not_equal "${first_db_port}" "${second_db_port}" "Database ports"
   assert_not_equal "${first_backend_port}" "${second_backend_port}" "Backend ports"
+  assert_not_equal "${first_crossfire_port}" "${second_crossfire_port}" "Crossfire ports"
+  assert_equal "${first_crossfire_port}" "$(generated_env_value "${first_worktree}" CROSSFIRE_PORT)" "Worker generated port"
+  assert_equal "http://127.0.0.1:${second_crossfire_port}" "$(generated_env_value "${second_worktree}" CROSSFIRE_PROXY_URL)" "Worker proxy target"
+  assert_equal /api/ws/crossfire/:gameId "$(generated_env_value "${second_worktree}" VITE_CROSSFIRE_WS_URL)" "Worker WebSocket path"
   assert_not_equal "${first_frontend_port}" "${second_frontend_port}" "Frontend ports"
   assert_equal "http://localhost:${first_frontend_port}" "${first_public_origin}" "First public origin"
   assert_equal "http://localhost:${second_frontend_port}" "${second_public_origin}" "Second public origin"
@@ -349,6 +382,12 @@ main() {
   assert_volume_label "${first_volume}" com.swubase.worktree-id "${first_id}"
   assert_volume_label "${second_volume}" com.swubase.worktree-id "${second_id}"
 
+  log_info "Starting isolated Crossfire workers using the managed lifecycle."
+  start_test_crossfire "${first_worktree}"
+  start_test_crossfire "${second_worktree}"
+  curl --fail --silent "http://127.0.0.1:${first_crossfire_port}/health" >/dev/null
+  curl --fail --silent "http://127.0.0.1:${second_crossfire_port}/health" >/dev/null
+
   docker exec "${first_container}" psql -U postgres -d "${first_database}" -v ON_ERROR_STOP=1 -c \
     'CREATE TABLE worktree_integration_sentinel (id integer PRIMARY KEY); INSERT INTO worktree_integration_sentinel VALUES (1);' >/dev/null
   assert_equal t "$(docker exec "${second_container}" psql -U postgres -d "${second_database}" -Atqc "SELECT to_regclass('public.worktree_integration_sentinel') IS NULL;")" \
@@ -362,6 +401,12 @@ main() {
     || fail "First worktree volume still exists after purge."
   [[ ! -f "${first_worktree}/.swubase/worktree-dev.env" ]] \
     || fail "First worktree state still exists after purge."
+  [[ ! -f "${state_root}/ports/${first_crossfire_port}" ]] || fail "Purged worker port remains reserved."
+  assert_file_contains "${state_root}/ports/${second_crossfire_port}" "${second_id}" "Surviving worker port ownership"
+  ! curl --fail --silent --max-time 1 "http://127.0.0.1:${first_crossfire_port}/health" >/dev/null \
+    || fail "Purged worktree worker still accepts connections."
+  curl --fail --silent "http://127.0.0.1:${second_crossfire_port}/health" >/dev/null \
+    || fail "Other worktree worker was affected by purge."
   assert_file_contains "${first_datasource_file}" 'name="Unrelated test source"' \
     "First unrelated JetBrains datasource remains after purge"
   assert_file_not_contains "${first_datasource_file}" \

@@ -13,11 +13,11 @@ Usage:
 
 Commands:
   setup [--dump PATH]        Create/reuse this worktree's PostgreSQL database.
-  up [--dump PATH]           Set up the database, then start backend and frontend.
-  start                      Start backend and frontend for an existing database.
+  up [--dump PATH]           Set up the database, then start application services.
+  start                      Start application services for an existing database.
   refresh-db [--dump PATH]   Explicitly replace this worktree's database from a dump.
   status                     Show this worktree's isolated resources and URLs.
-  logs [database|backend|frontend|all]
+  logs [database|backend|frontend|crossfire|all]
                              Show recent logs for this worktree only.
   down [--purge-data]        Stop app processes and PostgreSQL; retain data by default.
   prune [--yes]              List or remove stale labelled worktree resources.
@@ -35,6 +35,8 @@ optionally manage private Tailscale Serve mappings. Google callback URIs remain
 exact (not wildcard) and `configure-access --show` prints the eight values for
 the configured template. PostgreSQL and backend ports are always separately
 allocated and bound to 127.0.0.1.
+Crossfire has a separate loopback port (3110-3199) and starts when
+CROSSFIRE_ENABLED=1 is set in the development .env or launching environment.
 EOF
 }
 
