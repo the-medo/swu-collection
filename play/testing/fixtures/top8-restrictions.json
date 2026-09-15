@@ -1,0 +1,38 @@
+{
+  "trade-route-taxation": {
+    "text": "Choose an opponent. If you control more units than that opponent, they can't play events for this phase.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "keywords": ["Plot"],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40005?locale=en",
+    "officialText": "Choose an opponent. If you control more units than that opponent, they can't play events for this phase.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "officialTextStyled": "<p>Choose an opponent. If you control more units than that opponent, they can't play events for this phase.</p><p><strong>Plot</strong> <i>(When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)</i></p>",
+    "officialRules": null
+  },
+  "gallius-rax--counselor-to-the-empire": {
+    "text": "Other friendly units with 2 or more different keywords get +2/+2.",
+    "keywords": [],
+    "rules": "\"\"Different\"\" keywords means different words, regardless of numbers that might follow them. \"\"Raid 1\"\" and \"\"Raid 2\"\" do not count as different keywords.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52182?locale=en",
+    "officialText": "Other friendly units with 2 or more different keywords get +2/+2.",
+    "officialTextStyled": "<p>Other friendly units with 2 or more different <strong>keywords</strong> get <strong>+2</strong>/<strong>+2</strong>.</p>",
+    "officialRules": "\"\"Different\"\" keywords means different words, regardless of numbers that might follow them. \"\"Raid 1\"\" and \"\"Raid 2\"\" do not count as different keywords.\n"
+  },
+  "leia-organa--of-a-secret-bloodline": {
+    "text": "Action [1 resource, Exhaust]: Disclose Vigilance, Command, Aggression, Cunning, or Heroism (reveal a card from your hand with this aspect icon). If you do, give an Experience token to a unit that doesn't share an aspect with the disclosed card.",
+    "keywords": [],
+    "rules": "Leia's ability can only give an Experience token to a unit that shares no aspects with the disclosed card, regardless of which aspect was disclosed.\nYou may use Leia's \"On Attack\" ability to give an Experience token to herself if the disclosed card doesn't share an aspect with her. This occurs before combat damage is dealt.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may disclose Vigilance, Command, Aggression, Cunning, or Heroism. If you do, give an Experience token to a unit that doesn't share an aspect with the disclosed card.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39395?locale=en",
+    "officialText": "Action [1 resource, Exhaust]: Disclose Vigilance, Command, Aggression, Cunning, or Heroism (reveal a card from your hand with this aspect icon). If you do, give an Experience token to a unit that doesn't share an aspect with the disclosed card.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Disclose <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_vigilance_cd5c27a54d.png\" alt=\"icon_vigilance.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_command_7586b7d888.png\" alt=\"icon_command.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_aggression_847a987450.png\" alt=\"icon_aggression.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cunning_9335911968.png\" alt=\"icon_cunning.png\">, or <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_heroism_895bfc1dc1.png\" alt=\"icon_heroism.png\"> <i>(reveal a card from your hand with this aspect icon)</i>. If you do, give an Experience token to a unit that doesn't share an aspect with the disclosed card.</p>",
+    "officialRules": "Leia's ability can only give an Experience token to a unit that shares no aspects with the disclosed card, regardless of which aspect was disclosed.\nYou may use Leia's \"On Attack\" ability to give an Experience token to herself if the disclosed card doesn't share an aspect with her. This occurs before combat damage is dealt.\n"
+  }
+}

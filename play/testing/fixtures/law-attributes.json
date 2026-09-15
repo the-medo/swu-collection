@@ -1,0 +1,34 @@
+{
+  "adventurer-sniper-rifle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46682?locale=en",
+    "unique": false,
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains: “Action [Exhaust]: Choose an undamaged non-leader ground unit. Its printed HP is considered to be 1 for this phase.”",
+    "rules": null,
+    "officialRules": "Printed HP refers to the number physically printed on the card. When a unit is chosen by Adventurer Sniper Rifle, its HP number is considered to be 1 for the phase. This number can then be modified by other abilities and upgrades attached to that unit.\nIf multiple abilities or effects change the printed power or printed HP of a card, the most recent ability or effect to become active determines the card's printed values.\n",
+    "keywords": []
+  },
+  "obi-wan-kenobi--protector-of-felucia": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46232?locale=en",
+    "unique": true,
+    "text": "Sentinel\nWhile you control 7 or more units, their printed power is considered to be 7 and printed HP is considered to be 7.",
+    "rules": null,
+    "officialRules": "\"Printed power\" and \"printed HP\" refer to the numbers physically printed on the card. While you control 7 or more units, those numbers are both considered to be 7. These numbers can then be modified by other abilities and upgrades attached to those units.\nIf multiple abilities or effects change the printed power or printed HP of a card, the most recent ability or effect to become active determines the card's printed values.\n",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "malakili--keeper-of-the-menagerie": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47112?locale=en",
+    "unique": true,
+    "text": "Each friendly Creature unit and each Creature unit you own that isn't in play gains the Underworld trait.",
+    "rules": null,
+    "keywords": []
+  },
+  "hunter-for-hire": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46832?locale=en",
+    "unique": false,
+    "text": "Action [defeat a friendly Credit token]: Take control of this unit. Any player may use this ability.",
+    "rules": null,
+    "keywords": []
+  }
+}

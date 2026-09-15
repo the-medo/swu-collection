@@ -1,0 +1,25 @@
+{
+  "chimaera--reinforcing-the-center": {
+    "text": "When Played: You may use a \u201cWhen Defeated\u201d ability on another friendly unit.\nWhen Defeated: Create 2 TIE Fighter tokens.",
+    "keywords": [],
+    "rules": "Any ability whose trigger starts with \"When defeated\u2026\" or includes \"When Defeated\" is considered a \"When Defeated\" ability.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19666?locale=en",
+    "officialText": "When Played: You may use a \u201cWhen Defeated\u201d ability on another friendly unit.\nWhen Defeated: Create 2 TIE Fighter tokens.",
+    "officialTextStyled": "<p><strong>When Played:</strong> You may use a \u201c<strong>When Defeated</strong>\u201d ability on another friendly unit.</p><p><strong>When Defeated:</strong> Create 2 TIE Fighter tokens.</p>",
+    "officialRules": "Any ability whose trigger starts with \"When defeated\u2026\" is considered a \"When Defeated\" ability."
+  },
+  "superlaser-technician": {
+    "text": "When Defeated: You may put this unit into play as a resource and ready it.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": null,
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/105?locale=en",
+    "officialTextStyled": "<p><strong>When Defeated:</strong> You may resource this unit and ready it.</p>",
+    "officialRules": "(ERRATA) Templating update: \u201cPut into play as a resource\u201d becomes \u201cresource\u201d.\n"
+  }
+}

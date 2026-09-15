@@ -1,0 +1,134 @@
+{
+  "the-force": {
+    "text": "(The Force is with you. When you use the Force, remove this token from play.)",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "acolyte-of-the-beyond": {
+    "text": "On Attack/When Defeated: The Force is with you .",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "karis--we-don-t-like-strangers": {
+    "text": "When Defeated: You may use the Force . If you do, give a unit \u20132/\u20132 for this phase.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "talzin-s-assassin": {
+    "text": "When Played: You may use the Force (lose your Force token). If you do, give a unit \u20133/\u20133 for this phase.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "darth-tyranus--servant-of-sidious": {
+    "text": "Shielded \nWhile the Force is with you, this unit gains Ambush. ",
+    "keywords": ["Shielded", "Ambush"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "shatterpoint": {
+    "text": "Choose one:\nDefeat a non-leader unit with 3 or less remaining HP.\nUse the Force . If you do, defeat a non-leader unit.\n",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "nightsister-lair": {
+    "text": "When a friendly Force unit attacks: The Force is with you (create your Force token).",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "darth-maul--sith-revealed": {
+    "text": "Action [Exhaust, use the Force (lose your Force token)]: Deal 1 damage to a unit and 1 damage to a different unit.",
+    "keywords": [],
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "On Attack: Deal 1 damage to a unit and 1 damage to a different unit."
+  },
+  "owen-lars--devoted-uncle": {
+    "text": "Restore 2\nWhen Defeated: Search the top 5 cards of your deck for a Force unit, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": ["Restore"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "constructed-lightsaber": {
+    "text": "Attach to a Force unit.\nIf attached unit is a Heroism unit, it gains Restore 2.\nIf attached unit is a Villainy unit, it gains Raid 2.\nIf attached unit is a non-Heroism, non-Villainy unit, it gains Sentinel.",
+    "keywords": ["Restore", "Raid", "Sentinel"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "sabine-s-lightsaber--not-alone": {
+    "text": "Attach to a non-Vehicle unit.\nIf attached unit is Sabine Wren or a Force unit, it gains Restore 2.",
+    "keywords": ["Restore"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "luke-s-jedi-lightsaber--constructed-by-hand": {
+    "text": "Attach to a non-Vehicle unit.\nIf attached unit is Luke Skywalker, he gains Sentinel. (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "keywords": ["Sentinel"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "devastator--hunting-the-rebellion": {
+    "text": "You assign all indirect damage you deal to opponents.\nWhen Played: Deal 4 indirect damage to each opponent.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "hunting-aggressor": {
+    "text": "Indirect damage you deal to opponents is increased by 1.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "planetary-bombardment": {
+    "text": "Deal 8 indirect damage to a player. If you control a Capital Ship unit, deal 12 indirect damage instead.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "droid-missile-platform": {
+    "text": "When Defeated: Deal 3 indirect damage to a player. (They assign 3 unpreventable damage among their base and units.)",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "tie-bomber": {
+    "text": "On Attack: Deal 3 indirect damage to the defending player. (They assign 3 unpreventable damage among their base and units.)",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "red-squadron-y-wing": {
+    "text": "On Attack: Deal 3 indirect damage to the defending player. (They assign 3 unpreventable damage among their base and units.)",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "first-order-stormtrooper": {
+    "text": "On Attack/When Defeated: Deal 1 indirect damage to a player. (They assign 1 unpreventable damage among their base and units.)",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "zygerrian-starhopper": {
+    "text": "When Defeated: Deal 2 indirect damage to a player. (They assign 2 unpreventable damage among their base and units.)",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "fett-s-firespray--feared-silhouette": {
+    "text": "When Played/On Attack: Deal 1 indirect damage to a player. If you control Boba Fett (as a unit, upgrade, or leader), deal 2 indirect damage instead. (They assign unpreventable damage among their base and units.)",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "allegiant-general-pryde--ruthless-and-loyal": {
+    "text": "When indirect damage is dealt to a unit: You may defeat a non-unique upgrade on it.\nOn Attack: If you have the initiative, deal 2 indirect damage to a player.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  }
+}

@@ -13,6 +13,7 @@ import {
 import { user } from './auth-schema.ts';
 import { deck } from './deck.ts';
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import type { CrossfireGameStatistics } from '../../../shared/types/crossfire-statistics.ts';
 import type { CardMetrics } from '../../../shared/types/cardMetrics.ts';
 
 export const userEvent = pgTable(
@@ -50,9 +51,9 @@ export const gameResult = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     deckId: uuid('deck_id').references(() => deck.id, { onDelete: 'set null' }),
-    matchId: text('match_id'), // Karabast resolved match_id OR generated OR null
-    gameId: text('game_id').notNull(), // Karabast gameId OR generated uuid/string for manual
-    gameNumber: smallint('game_number'), // 1|2|3 (nullable for manual / unknown)
+    matchId: text('match_id'), // Source-scoped match identity; nullable for ungrouped manual games
+    gameId: text('game_id').notNull(), // Source-scoped game identity or generated manual ID
+    gameNumber: smallint('game_number'), // Ordered within a match; draws can extend a BO3 beyond three games
     format: text('format'),
     leaderCardId: text('leader_card_id'),
     baseCardKey: text('base_card_key'),
@@ -63,7 +64,7 @@ export const gameResult = pgTable(
     isWinner: boolean('is_winner'),
     containsUnknownCards: boolean('contains_unknown_cards').notNull().default(false),
     exclude: boolean('exclude').notNull().default(false), // exclude this game from stats
-    gameSource: text('game_source').notNull(), // 'karabast' | 'manual' (extend later if needed)
+    gameSource: text('game_source').notNull(), // Discriminator for imported, manual and Crossfire results
     manuallyEdited: boolean('manually_edited').notNull().default(false),
 
     // user grouping
@@ -101,6 +102,7 @@ export type GameResultDeckInfo = {
 };
 
 export type GameResultOtherData = {
+  crossfire?: CrossfireGameStatistics;
   karabastLobbyId?: string;
   roundNumber?: number;
   startedAt?: string;

@@ -1,0 +1,29 @@
+{
+  "ryder-azadi--restored-governor": {
+    "text": "Restore 1\nWhen Played: Name a card. While this unit is in play, opponents can't play cards with that name.",
+    "keywords": [
+      "Restore"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Abilities that refer to a card’s “name” do not include the subtitle of the card.\nUntil Ryder leaves play, opponents can't play cards with the chosen name. This effect is not changed if an opponent takes control of Ryder.\nIf Ryder is captured and then rescued, his \"\"When Played\"\" effect does not resume.\n"
+  },
+  "garindan--information-broker": {
+    "text": "When Played: Name a card. Look at an opponent's hand and discard a card with that name from it.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Plot"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Abilities that refer to a card’s “name” do not include the subtitle of the card.\n"
+  },
+  "galen-erso--you-ll-never-win": {
+    "text": "When Played: Name a card. While this unit is in play, each non-leader card an opponent owns with that name, including those not in play, loses all abilities .\nPlot",
+    "keywords": [
+      "Plot"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  }
+}

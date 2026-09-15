@@ -1,0 +1,14 @@
+{
+  "nabat-village": {
+    "text": "Draw 3 more cards in your starting hand. You can't take a mulligan.\nWhen the first action phase starts: Put 3 cards from your hand on the bottom of your deck in any order.",
+    "keywords": [],
+    "rules": "Nabat Village's triggered ability is resolved at the start of the first action phase, after setup but before the player with initiative has taken their first action.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19611?locale=en",
+    "officialText": "Draw 3 more cards in your starting hand. You can't take a mulligan.\nWhen the first action phase starts: Put 3 cards from your hand on the bottom of your deck in any order.",
+    "officialTextStyled": "<p>Draw 3 more cards in your starting hand. You can't take a mulligan.</p><p><strong>When the first action phase starts:</strong> Put 3 cards from your hand on the bottom of your deck in any order.</p>",
+    "officialRules": "Nabat Village's triggered ability is resolved at the start of the first action phase, after setup but before the player with initiative has taken their first action.\n"
+  }
+}

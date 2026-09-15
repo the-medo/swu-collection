@@ -1,0 +1,462 @@
+{
+  "rickety-quadjumper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5611?locale=en",
+    "unique": false,
+    "text": "On Attack: You may reveal the top card of your deck. If it's not a unit, give an Experience token to another unit. (Leave the revealed card on top of your deck.)",
+    "rules": null,
+    "keywords": []
+  },
+  "street-gang-recruiter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/6581?locale=en",
+    "unique": false,
+    "text": "When Played: You may return an Underworld card from your discard pile to your hand.",
+    "rules": null,
+    "officialRules": "Street Gang Recruiter can return itself to hand if defeated before its “When Played” is resolved.\n",
+    "keywords": []
+  },
+  "-staccato-lightning--repeater": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46987?locale=en",
+    "unique": false,
+    "text": "Attach to a non-Vehicle unit.\nWhen Played: Deal 1 damage to each of up to 3 different ground units.",
+    "rules": null,
+    "keywords": []
+  },
+  "attack-from-all-sides": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47087?locale=en",
+    "unique": false,
+    "text": "Deal 3 damage to a unit. If there are 4 or more different aspects among friendly units, you may deal 5 damage to that unit instead.",
+    "rules": null,
+    "keywords": []
+  },
+  "baze-malbus--good-luck": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46287?locale=en",
+    "unique": true,
+    "text": "Sentinel\nWhen 1 or more damage is healed from this unit: You may deal that much damage to a unit.",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "beilert-valance--target--vader": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46307?locale=en",
+    "unique": true,
+    "text": "On Attack: Draw a card. You may deal damage to a ground unit equal to the number of cards you've drawn this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "bib-fortuna--die-wanna-wanga-": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46722?locale=en",
+    "unique": true,
+    "text": "When Played: If you control another Underworld unit, create a Credit token.",
+    "rules": null,
+    "keywords": []
+  },
+  "bix-caleen--selling-scrap": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47232?locale=en",
+    "unique": true,
+    "text": "When Played/On Attack: You may discard a card from your hand. If you do, create a Credit token.",
+    "rules": null,
+    "keywords": []
+  },
+  "black-sun-cabalist": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47297?locale=en",
+    "unique": false,
+    "text": "When Played: Give an Experience token to another friendly Underworld unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "bodhi-rook--creating-a-diversion": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46572?locale=en",
+    "unique": true,
+    "text": "On Attack: You may give a friendly Rebel unit Sentinel for this phase.",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "cassian-andor--everything-for-the-rebellion": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46332?locale=en",
+    "unique": true,
+    "text": "When a friendly unit's attack ends: If the defending unit was defeated, deal 2 damage to a base.",
+    "rules": null,
+    "officialRules": "\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage. The attacking unit doesn't need to survive the attack in order to deal damage to a base.\n",
+    "keywords": []
+  },
+  "chio-fain--four-armed-slicer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46292?locale=en",
+    "unique": true,
+    "text": "On Attack: You may choose 2 players. If you do, they each draw a card.",
+    "rules": null,
+    "keywords": []
+  },
+  "chirrut--mwe--i-don-t-need-luck": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46282?locale=en",
+    "unique": true,
+    "text": "Saboteur\nWhen Attack Ends: If this unit dealt combat damage to a base, you may heal 4 damage from another unit.",
+    "rules": null,
+    "officialRules": "\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage. Chirrut does not need to survive the attack in order to heal 4 damage from another unit.\n",
+    "keywords": ["Saboteur"]
+  },
+  "chopper--spectre-three": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46327?locale=en",
+    "unique": true,
+    "text": "Raid 1 \nWhen Played: Give an Experience token to this unit. If you control a Cunning or Vigilance unit, give 2 Experience tokens to him instead.",
+    "rules": null,
+    "officialText": "Raid 1 (This unit gets +1/+0 while attacking.)\nWhen Played: Give an Experience token to this unit. If you control a Cunning or Vigilance unit, give 2 Experience tokens to him instead.",
+    "keywords": ["Raid"]
+  },
+  "combat-exercise": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46877?locale=en",
+    "unique": false,
+    "text": "Exhaust a friendly unit. If you do, give 2 Experience tokens to it.",
+    "rules": null,
+    "keywords": []
+  },
+  "common-cause": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46887?locale=en",
+    "unique": false,
+    "text": "Give a unit +1/+1 for this phase for each different aspect among units you control.",
+    "rules": null,
+    "keywords": []
+  },
+  "from-a-certain-point-of-view": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47372?locale=en",
+    "unique": false,
+    "text": "Play a card from your hand, ignoring its aspect penalties.",
+    "rules": null,
+    "officialRules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\n",
+    "keywords": []
+  },
+  "han-s-golden-dice": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47177?locale=en",
+    "unique": true,
+    "text": "Attached unit gains: “On Attack: Discard a card from your deck. If its cost is odd, create a Credit token.”",
+    "rules": null,
+    "officialRules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "keywords": []
+  },
+  "jaunty-light-freighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46787?locale=en",
+    "unique": false,
+    "text": "When Played: Give an Experience token to this unit for each different aspect among units you control.",
+    "rules": null,
+    "keywords": []
+  },
+  "khetanna--upon-the-dune-sea": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46842?locale=en",
+    "unique": true,
+    "text": "When Played/On Attack: The next Underworld unit you play this phase costs 1 resource less.",
+    "rules": null,
+    "officialRules": "The cost discount remains active even if Khetanna is defeated.\n",
+    "keywords": []
+  },
+  "lady-proxima--where-s-the-money-": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47227?locale=en",
+    "unique": true,
+    "text": "Action [Exhaust]: Create a Credit token.",
+    "rules": null,
+    "keywords": []
+  },
+  "phantom--spectre-shuttle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46772?locale=en",
+    "unique": true,
+    "text": "When Played: You may play a Heroism unit from your hand (paying its cost) and give an Experience token to it.",
+    "rules": null,
+    "officialRules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\n",
+    "keywords": []
+  },
+  "scarif-lieutenant": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46762?locale=en",
+    "unique": false,
+    "text": "When Defeated: Give an Experience token to a friendly Rebel unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "scavenging-sandcrawler": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47242?locale=en",
+    "unique": false,
+    "text": "On Attack: You may put a card from your discard pile on the bottom of your deck. If you do, create a Credit token.",
+    "rules": null,
+    "keywords": []
+  },
+  "shadow-cloaking": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46267?locale=en",
+    "unique": false,
+    "text": "Ready a unit and give a Shield token to it.",
+    "rules": null,
+    "keywords": []
+  },
+  "stockpile": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46907?locale=en",
+    "unique": false,
+    "text": "Resource this event and the top card of your deck.",
+    "rules": "Resources enter play exhausted.\n",
+    "keywords": []
+  },
+  "syndicate-spice-runner": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46732?locale=en",
+    "unique": false,
+    "text": "When Played: Search the top 3 cards of your deck for an Underworld unit, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "rules": null,
+    "officialRules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "tantive-iv--carrying-hope": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46597?locale=en",
+    "unique": true,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)\nWhen Played: If a friendly unit was defeated this phase, heal 4 damage from your base.",
+    "rules": null,
+    "keywords": ["Restore"]
+  },
+  "unmarked-credits": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47272?locale=en",
+    "unique": false,
+    "text": "Create a Credit token.",
+    "rules": null,
+    "keywords": []
+  },
+  "asajj-ventress--reluctant-hunter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46357?locale=en",
+    "unique": true,
+    "text": "When Played: You may ready another Bounty Hunter unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "bank-job-fugitives": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47362?locale=en",
+    "unique": false,
+    "text": "When Played: Create a Credit token.",
+    "rules": null,
+    "keywords": []
+  },
+  "bracca-shipbreaker": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47012?locale=en",
+    "unique": false,
+    "text": "On Attack: Discard a card from your deck.",
+    "rules": null,
+    "officialRules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "keywords": []
+  },
+  "broken-horn--vizago-s-pride": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46467?locale=en",
+    "unique": true,
+    "text": "When Played: If you have fewer cards in hand than an opponent, draw a card. If you control fewer resources than an opponent, resource the top card of your deck.",
+    "rules": null,
+    "officialRules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\nResources enter play exhausted.\n",
+    "keywords": []
+  },
+  "criminal-contact": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47342?locale=en",
+    "unique": false,
+    "text": "On Attack: You may pay 2 resources. If you do, create a Credit token.",
+    "rules": null,
+    "keywords": []
+  },
+  "cutthroat-podracer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47117?locale=en",
+    "unique": false,
+    "text": "When Played: You may deal 2 damage to an exhausted ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "daring-delve": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47067?locale=en",
+    "unique": false,
+    "text": "Discard 2 cards from your deck. You may return a Aggression card discarded this way to your hand.",
+    "rules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "keywords": []
+  },
+  "doctor-aphra--digging-for-answers": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47022?locale=en",
+    "unique": true,
+    "text": "On Attack: Discard 3 cards from your deck. You may return an Underworld card discarded this way to your hand.",
+    "rules": null,
+    "officialRules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "keywords": []
+  },
+  "enfys-nest-s-helmet": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46982?locale=en",
+    "unique": true,
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains: “On Attack: You may give another unit +3/+0 for this phase.”",
+    "rules": null,
+    "keywords": []
+  },
+  "every-day--more-lies": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47072?locale=en",
+    "unique": false,
+    "text": "Each player discards a card from their hand.",
+    "rules": null,
+    "keywords": []
+  },
+  "hidden-hand-supplier": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47337?locale=en",
+    "unique": false,
+    "text": "When Played: You may pay 1 resource. If you do, give an Experience token to another unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "hound-s-tooth--hunters--approach": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46217?locale=en",
+    "unique": true,
+    "text": "When Attack Ends: If this unit survived, you may defeat a unit with less power than this unit.",
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage. Hound’s Tooth must survive the attack in order to defeat a unit.\n",
+    "keywords": []
+  },
+  "industrious-team": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46672?locale=en",
+    "unique": false,
+    "text": "When Played: You may defeat a non-leader unit with 4 or less remaining HP.",
+    "rules": null,
+    "keywords": []
+  },
+  "jango-fett--wily-mercenary": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46487?locale=en",
+    "unique": true,
+    "text": "Shielded \nOn Attack: If this unit is upgraded, exhaust an enemy unit.",
+    "rules": null,
+    "officialText": "Shielded (When you play this unit, give a Shield token to him.)\nOn Attack: If this unit is upgraded, exhaust an enemy unit.",
+    "keywords": ["Shielded"]
+  },
+  "k-2so--locking-the-vault": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46447?locale=en",
+    "unique": true,
+    "text": "Ambush\nOn Attack: You may deal 3 damage to a damaged ground unit.",
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\n",
+    "keywords": ["Ambush"]
+  },
+  "l3-37--radical-instigator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46367?locale=en",
+    "unique": true,
+    "text": "Hidden\nWhen Played: Search the top 10 cards of your deck for any number of Droid units with combined cost 5 or less and play each of them for free.",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n\"Play for free\" ignores all resource costs, including aspect penalties, but not other additional costs.\nIf playing multiple units, resolve all abilities triggered while playing each unit before playing the next unit.\n",
+    "keywords": ["Hidden"]
+  },
+  "milodon-rider": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47252?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nWhen Played: You may return another friendly non-leader unit to its owner's hand.",
+    "rules": null,
+    "officialRules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n",
+    "keywords": ["Ambush"]
+  },
+  "overcharged-transport": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47027?locale=en",
+    "unique": false,
+    "text": "When Played/When Defeated: You may defeat an upgrade attached to a space unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "partisan-u-wing": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46857?locale=en",
+    "unique": false,
+    "text": "When Played: If a friendly unit was defeated this phase, create a Credit token.",
+    "rules": null,
+    "keywords": []
+  },
+  "payroll-heist": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46897?locale=en",
+    "unique": false,
+    "text": "For this phase, each friendly unit gains: “On Attack: Create a Credit token.”",
+    "rules": null,
+    "keywords": []
+  },
+  "profiteering-hunter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46807?locale=en",
+    "unique": false,
+    "text": "When Played: Another friendly unit gets +1/+1 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "rhydonium-detonation": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46532?locale=en",
+    "unique": false,
+    "text": "Each player may return a non-leader unit to its owner's hand. Then, defeat all non-leader units.",
+    "rules": null,
+    "officialRules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\nStarting with the active player, each player chooses a unit to return to its owner's hand. After all units are returned to hands, defeat all non-leader units.\n",
+    "keywords": []
+  },
+  "rodian-bondsman": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46632?locale=en",
+    "unique": false,
+    "text": "When Defeated: Each player creates a Credit token.",
+    "rules": null,
+    "keywords": []
+  },
+  "rookie-rocket-jumper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47187?locale=en",
+    "unique": false,
+    "text": "When Played: You may pay 1 resource. If you do, give a Shield token to this unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "ruthless-duo": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46737?locale=en",
+    "unique": false,
+    "text": "When Played: If you control another Villainy unit, you may deal 2 damage to a ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "targeted-for-removal": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46757?locale=en",
+    "unique": false,
+    "text": "Attached unit gains: “When Defeated: An opponent creates Credit tokens equal to this unit's cost.”",
+    "rules": null,
+    "officialRules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nIf there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "keywords": []
+  },
+  "the-ghost--home-of-the-spectres": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46397?locale=en",
+    "unique": true,
+    "text": "When Played: You may give an Experience token and a Shield token to a unit. If you control a Vigilance or Aggression unit, you may give an Experience token and a Shield token to each of up to 2 units instead.",
+    "rules": null,
+    "keywords": []
+  },
+  "thermal-detonator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47057?locale=en",
+    "unique": false,
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains: “When Defeated: If this unit was ready, deal 2 damage to each enemy ground unit.”",
+    "rules": null,
+    "keywords": []
+  },
+  "two-faced-troig": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46512?locale=en",
+    "unique": false,
+    "text": "Sentinel\nWhen Played: You may have an opponent take control of this unit. If you do, create 2 Credit tokens.",
+    "rules": null,
+    "officialRules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "keywords": ["Sentinel"]
+  },
+  "undercity-hunting-team": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46742?locale=en",
+    "unique": false,
+    "text": "When Played: Search the top 5 cards of your deck for a Bounty Hunter unit, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "rules": null,
+    "officialRules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "val--it-s-been-a-ride--babe": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46507?locale=en",
+    "unique": true,
+    "text": "When Played: Give a Shield token to another friendly unit.\nWhen Defeated: Give a Shield token to an enemy unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "watchful": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46677?locale=en",
+    "unique": false,
+    "text": "Attached unit gains: “On Attack: Look at the top card of a deck. You may put it on the bottom of that deck. (Otherwise, leave it on top.)”",
+    "rules": null,
+    "keywords": []
+  },
+  "weazel--fighting-back": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46962?locale=en",
+    "unique": true,
+    "text": "On Attack: Another friendly unit gains Raid 2 for this phase. (It gets +2/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "windfall": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47292?locale=en",
+    "unique": false,
+    "text": "Create 3 Credit tokens.",
+    "rules": null,
+    "keywords": []
+  }
+}

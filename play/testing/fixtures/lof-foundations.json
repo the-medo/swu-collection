@@ -1,0 +1,404 @@
+{
+  "army-of-the-dead": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28204?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "awakened-specters": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27354?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "fallen-jedi": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28174?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "gifted-urchin": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28304?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "hyperspace-wayfarer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27619?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "knight-of-ren": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27444?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "outer-rim-mystic": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27584?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "porg": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28294?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "ravenous-rathtar": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27864?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "wampa": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/255?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": null,
+    "officialRules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "anakin-skywalker--force-prodigy": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27974?locale=en",
+    "unique": true,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)\nShielded (When you play this unit, give a Shield token to him.)",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden", "Shielded"]
+  },
+  "attuned-fyrnock": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27739?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "banking-clan-shuttle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27929?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "blue-squadron-assault-wing": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28279?locale=en",
+    "unique": false,
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "cartel-interceptor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27809?locale=en",
+    "unique": false,
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "charging-phillak": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28074?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nHidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "officialRules": "Ambush is an ability that triggers at the same time as \"When Played\" abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nIf a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Ambush", "Hidden"]
+  },
+  "exegol-patroller": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27424?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": null,
+    "officialRules": "If the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "eye-of-sion--to-peridea": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27464?locale=en",
+    "unique": true,
+    "text": "Hidden\nAmbush\nOverwhelm\nRestore 1",
+    "rules": null,
+    "officialRules": "Ambush is an ability that triggers at the same time as \"When Played\" abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nIf a unit has Hidden and Sentinel at the same time, it can be attacked.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
+    "keywords": ["Hidden", "Ambush", "Overwhelm", "Restore"]
+  },
+  "gungan-warrior": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28259?locale=en",
+    "unique": false,
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\nRestore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "rules": null,
+    "keywords": ["Shielded", "Restore"]
+  },
+  "hive-defense-wing": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27574?locale=en",
+    "unique": false,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "rules": null,
+    "keywords": ["Restore"]
+  },
+  "jedi-temple-guards": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27589?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nRestore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "rules": null,
+    "officialRules": "Ambush is an ability that triggers at the same time as \"When Played\" abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": ["Ambush", "Restore"]
+  },
+  "kowakian-monkey-lizard": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28309?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)",
+    "rules": null,
+    "officialRules": "Ambush is an ability that triggers at the same time as \"When Played\" abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": ["Ambush"]
+  },
+  "longbeam-cruiser": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28289?locale=en",
+    "unique": false,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "rules": null,
+    "keywords": ["Restore"]
+  },
+  "magistrate-s-scout": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27184?locale=en",
+    "unique": false,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "rules": null,
+    "keywords": ["Restore"]
+  },
+  "mynock": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27569?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": null,
+    "officialRules": "If the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "mysterious-hermit": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28064?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)",
+    "rules": null,
+    "officialRules": "Ambush is an ability that triggers at the same time as \"When Played\" abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": ["Ambush"]
+  },
+  "nihil-marauder": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27934?locale=en",
+    "unique": false,
+    "text": "Raid 3 (This unit gets +3/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "relic-scavenger": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27604?locale=en",
+    "unique": false,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "rules": null,
+    "keywords": ["Restore"]
+  },
+  "sandtrooper-cavalry": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28184?locale=en",
+    "unique": false,
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "rules": null,
+    "keywords": ["Grit"]
+  },
+  "sorcerers-of-tund": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28094?locale=en",
+    "unique": false,
+    "text": "Shielded (When you play this card, give a Shield token to it.)",
+    "rules": null,
+    "keywords": ["Shielded"]
+  },
+  "thralls-of-the-coven": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27704?locale=en",
+    "unique": false,
+    "text": "Raid 3 (This unit gets +3/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "trident-assault-ship": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27624?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": null,
+    "officialRules": "If the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "tuk-ata": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27829?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "village-tender": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27559?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)\nRestore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden", "Restore"]
+  },
+  "vulptex": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28249?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "witch-of-the-mist": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27794?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "guardian-of-the-whills": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/1309?locale=en",
+    "unique": false,
+    "text": "The first upgrade you play on this unit each round costs 1 resource less.",
+    "rules": null,
+    "officialText": "The first upgrade you play on this unit each round costs [1 resource] less.",
+    "officialRules": "Abilities that give token upgrades are not discounted. Token upgrades are not “played.”\n",
+    "keywords": []
+  },
+  "hunting-nexu": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/6146?locale=en",
+    "unique": false,
+    "text": "While you control another Aggression unit, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "padawan-starfighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14491?locale=en",
+    "unique": false,
+    "text": "While you control a Force unit or upgrade, this unit gets +1/+1.",
+    "rules": null,
+    "officialText": "While you control a Force unit or a Force upgrade, this unit gets +1/+1.",
+    "officialRules": "Padawan Starfighter gets +1/+1 while you control a Force unit or a Force upgrade.\n",
+    "keywords": []
+  },
+  "captain-enoch--captain-of-the-guard": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27439?locale=en",
+    "unique": true,
+    "text": "This unit gets +1/+0 for each Trooper unit in your discard pile.",
+    "rules": null,
+    "keywords": []
+  },
+  "jedi-guardian": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27269?locale=en",
+    "unique": false,
+    "text": "While this unit is defending, it gets +2/+0.",
+    "rules": null,
+    "keywords": []
+  },
+  "jedi-sentinel": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28004?locale=en",
+    "unique": false,
+    "text": "While the Force is with you, this unit gains Sentinel. (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "jedi-vector": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28244?locale=en",
+    "unique": false,
+    "text": "This unit gets +1/+0 if you control another Jedi unit and +1/+0 if you control a Lightsaber upgrade.",
+    "rules": null,
+    "keywords": []
+  },
+  "life-wind-sage": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28084?locale=en",
+    "unique": false,
+    "text": "While an enemy unit is exhausted, this unit gains Raid 2. (This unit gets +2/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "plo-koon--i-don-t-believe-in-chance": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27274?locale=en",
+    "unique": true,
+    "text": "While the Force is with you, this unit gains Grit. (He gets +1/+0 for each damage on him.)",
+    "rules": null,
+    "keywords": ["Grit"]
+  },
+  "praetorian-guard": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27449?locale=en",
+    "unique": false,
+    "text": "While you control a unit with 4 or more power, this unit gains Sentinel. (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "officialRules": "Abilities that refer to a card’s power include temporary modifiers.\n",
+    "keywords": ["Sentinel"]
+  },
+  "scimitar--sith-infiltrator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28189?locale=en",
+    "unique": true,
+    "text": "While this unit is damaged, it gets +3/+0.",
+    "rules": null,
+    "keywords": []
+  },
+  "sith-legionnaire": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27429?locale=en",
+    "unique": false,
+    "text": "While you control another Villainy unit, this unit gets +2/+0.",
+    "rules": null,
+    "keywords": []
+  },
+  "terentatek": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27614?locale=en",
+    "unique": false,
+    "text": "While an opponent controls a Force unit, this unit gains Ambush. (When you play this unit, it may attack an enemy unit.)",
+    "rules": null,
+    "officialRules": "Ambush is an ability that triggers at the same time as \"When Played\" abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": ["Ambush"]
+  },
+  "the-son--embodiment-of-darkness": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28209?locale=en",
+    "unique": true,
+    "text": "While the Force is with you, each friendly unit gets +2/+0.",
+    "rules": null,
+    "keywords": []
+  },
+  "supremacy--of-unimaginable-size": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27469?locale=en",
+    "unique": true,
+    "text": "Ambush\nOther friendly Vehicle units get +6/+6.",
+    "rules": null,
+    "officialRules": "Ambush is an ability that triggers at the same time as \"When Played\" abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": ["Ambush"]
+  },
+  "bolstered-endurance": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27394?locale=en",
+    "unique": false,
+    "text": "Attach to a Force unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "heirloom-lightsaber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27289?locale=en",
+    "unique": false,
+    "text": "Attach to a non-Vehicle unit.\nIf attached unit is a Force unit, it gains Restore 1. ",
+    "rules": null,
+    "officialText": "Attach to a non-Vehicle unit.\nIf attached unit is a Force unit, it gains Restore 1. (When this unit attacks, heal 1 damage from your base.)",
+    "keywords": ["Restore"]
+  },
+  "inquisitor-s-lightsaber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27474?locale=en",
+    "unique": false,
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains: “While attacking a Force unit, this unit gets +2/+0.”",
+    "rules": null,
+    "keywords": []
+  }
+}

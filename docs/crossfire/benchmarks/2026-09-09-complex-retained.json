@@ -1,0 +1,238 @@
+[
+  {
+    "versions": {
+      "state": 5,
+      "engine": "crossfire-0.5.0",
+      "cards": "crossfire-core-5",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "7d5622c888ca7b1f8581348b158f83ac84290f84",
+    "sha256": "a82721343975403759403b2073224bae982aa2b0b2301ffbf490a25703b74f10",
+    "commands": 61,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true,
+    "currentBundleContinuations": []
+  },
+  {
+    "versions": {
+      "state": 2,
+      "engine": "crossfire-0.2.0",
+      "cards": "crossfire-core-2",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "03d268b31dfc8a2c904f2705824c957dcfbf564c",
+    "sha256": "c573f6fc075b708bbfd555561fd3e5dd735fd8a76366d3d68823890e73835884",
+    "commands": 51,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true,
+    "currentBundleContinuations": []
+  },
+  {
+    "versions": {
+      "state": 6,
+      "engine": "crossfire-0.6.0",
+      "cards": "crossfire-core-6",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "a513ed982c34ccf2c7d5cab75015dd7ca6c48bd3",
+    "sha256": "d691bf48c69a7d33b5ae61f1817aebf276498f944672a4446129f23fd351d62d",
+    "commands": 61,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true,
+    "currentBundleContinuations": []
+  },
+  {
+    "versions": {
+      "state": 8,
+      "engine": "crossfire-0.8.0",
+      "cards": "crossfire-core-8",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "850685e0a9654215147ccf36193ec68177755612",
+    "sha256": "d0a9768213b7644c1162e507930946056985ddca2fab08d8e4c4ad7295e92db5",
+    "commands": 61,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true,
+    "currentBundleContinuations": []
+  },
+  {
+    "versions": {
+      "state": 10,
+      "engine": "crossfire-0.10.0",
+      "cards": "crossfire-core-10",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "39e717e466e0245993dcd30f003ee37492f84cf1",
+    "sha256": "65fa85c28e2defc843a1ab65fc08010c4f5b1b9eee3c50c79bc714f982090043",
+    "commands": 61,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true,
+    "currentBundleContinuations": [
+      {
+        "name": "nested-trigger",
+        "checkpointBytes": 33407,
+        "freshProcessRecoveryMatched": true
+      },
+      {
+        "name": "private-search",
+        "checkpointBytes": 32243,
+        "freshProcessRecoveryMatched": true
+      },
+      {
+        "name": "search-randomness",
+        "checkpointBytes": 32138,
+        "freshProcessRecoveryMatched": true
+      },
+      {
+        "name": "borrowed-trigger",
+        "checkpointBytes": 35352,
+        "freshProcessRecoveryMatched": true
+      },
+      {
+        "name": "shield-replacement",
+        "checkpointBytes": 34924,
+        "freshProcessRecoveryMatched": true
+      },
+      {
+        "name": "piloting-trigger",
+        "checkpointBytes": 32407,
+        "freshProcessRecoveryMatched": true
+      },
+      {
+        "name": "delayed-player",
+        "checkpointBytes": 32872,
+        "freshProcessRecoveryMatched": true
+      },
+      {
+        "name": "delayed-order",
+        "checkpointBytes": 32856,
+        "freshProcessRecoveryMatched": true
+      },
+      {
+        "name": "long-history",
+        "checkpointBytes": 105852,
+        "freshProcessRecoveryMatched": true
+      }
+    ]
+  },
+  {
+    "versions": {
+      "state": 9,
+      "engine": "crossfire-0.9.0",
+      "cards": "crossfire-core-9",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "d9d2ef53ceff52bd3cee75d4501b0807aa11de0d",
+    "sha256": "0285f82e41f664ebb25a6207c08ec5f74c8afb4414b4ca415e004c5ab41a2d8d",
+    "commands": 61,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true,
+    "currentBundleContinuations": []
+  },
+  {
+    "versions": {
+      "state": 1,
+      "engine": "crossfire-0.1.0",
+      "cards": "crossfire-sor-core-1",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "46f29e70383b6804cffcbd028d8bda6c4f8bf788",
+    "sha256": "a54051c73615f533ec1b38d4ffdcd89b26a71cc8897d85223921d943bf7d9fb4",
+    "commands": 51,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true,
+    "currentBundleContinuations": []
+  },
+  {
+    "versions": {
+      "state": 4,
+      "engine": "crossfire-0.4.0",
+      "cards": "crossfire-core-4",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "826ce4f80ca9a79650c76b6cec691f0160748fe3",
+    "sha256": "a8cb0f55728b9f80dc525feb2857d90bda62bb83d1a75ff546a628fa79aef358",
+    "commands": 61,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true,
+    "currentBundleContinuations": []
+  },
+  {
+    "versions": {
+      "state": 3,
+      "engine": "crossfire-0.3.0",
+      "cards": "crossfire-core-3",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "a6b706f81cc336e841c24d5a7d1010c4e780675c",
+    "sha256": "2940cc262c569b7397912848abdf3a8b8775e59483fd92f002548e70280590fa",
+    "commands": 61,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true,
+    "currentBundleContinuations": []
+  },
+  {
+    "versions": {
+      "state": 7,
+      "engine": "crossfire-0.7.0",
+      "cards": "crossfire-core-7",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "1cdb54f86e8cdf29fbfb236ef52f306fe81a6fb9",
+    "sha256": "9bdcfc5923c8e91b829efa096989086621ff5428a91ffdbdf49a32266963b844",
+    "commands": 61,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true,
+    "currentBundleContinuations": []
+  }
+]

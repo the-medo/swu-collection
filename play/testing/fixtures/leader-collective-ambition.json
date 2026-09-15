@@ -1,0 +1,13 @@
+{
+  "maul--collective-ambition": {
+    "text": "Action [Exhaust]: Choose a unit. If it has more different keywords than it has Experience tokens on it, give an Experience token to it and deal 1 damage to it.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "When Deployed/On Attack: Choose a unit. If it has more different keywords than it has Experience tokens on it, give an Experience token to it and deal 1 damage to it.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50867?locale=en",
+    "officialRules": "Multiple instances of the same keyword aren't considered different keywords, including for stacking keywords like Raid X.\nThe chosen unit gets the Experience token and is dealt 1 damage simultaneously, so it will survive if it has 1 remaining HP.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Choose a unit. If it has more different <strong>keywords</strong> than it has Experience tokens on it, give an Experience token to it and deal 1 damage to it.</p>",
+    "officialDeployBoxStyled": "<p><strong>When Deployed/On Attack:</strong> Choose a unit. If it has more different <strong>keywords</strong> than it has Experience tokens on it, give an Experience token to it and deal 1 damage to it.</p>"
+  }
+}

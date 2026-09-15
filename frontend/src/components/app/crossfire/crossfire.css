@@ -1,0 +1,22 @@
+/* The app's unlayered article typography otherwise overrides utility sizes.
+   Keep the game controls compact without changing other SWUBASE pages. */
+.crossfire h1 {
+  font-size: 1.75rem;
+  line-height: 1.2;
+  margin: 0;
+}
+.crossfire h2 {
+  font-size: 1rem;
+  line-height: 1.4;
+  margin: 0;
+  padding-bottom: 0;
+  border: 0;
+}
+.crossfire h3 {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  margin: 0;
+}
+.crossfire p {
+  line-height: 1.5;
+}

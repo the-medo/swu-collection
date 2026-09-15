@@ -1,0 +1,9 @@
+{
+  "tear-this-ship-apart": {
+    "text": "Look at all of an opponent's resources. You may play 1 of those cards for free. If you do, that opponent resources the top card of their deck.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Resources enter play exhausted.\n\"Play for free\" ignores all resource costs, including aspect penalties, but not other additional costs.\n"
+  }
+}

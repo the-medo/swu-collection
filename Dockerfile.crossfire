@@ -1,0 +1,21 @@
+# The worker has its own runtime image; no frontend build or browser is needed.
+ARG BUN_VERSION=1.3.14
+FROM oven/bun:${BUN_VERSION}-slim AS dependencies
+WORKDIR /app
+COPY package.json bun.lock ./
+RUN bun ci --production
+
+FROM oven/bun:${BUN_VERSION}-slim
+WORKDIR /app
+ENV NODE_ENV=production CROSSFIRE_HOST=0.0.0.0 CROSSFIRE_PORT=3110
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY package.json ./
+COPY play ./play
+COPY server ./server
+COPY shared ./shared
+COPY types ./types
+COPY lib ./lib
+EXPOSE 3110
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD bun -e 'fetch("http://127.0.0.1:" + process.env.CROSSFIRE_PORT + "/health").then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
+USER bun
+CMD ["bun", "play/worker/index.ts"]

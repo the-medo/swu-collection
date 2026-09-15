@@ -1,0 +1,54 @@
+{
+  "a-precarious-predicament": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28134?locale=en",
+    "unique": false,
+    "text": "Return an enemy non-leader unit to its owner's hand unless its controller says, “It could be worse.” If they do, you may play a card named It's Worse from your hand or resources for free.",
+    "rules": null,
+    "officialRules": "\"Play for free\" ignores all resource costs, including the aspect penalty, but not other additional costs.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\nYou must choose a unit to return before your opponent chooses whether to say \"it could be worse.\"\nYour opponent may opt to use another method instead of saying \"it could be worse\" as long as they clearly indicate which option they are choosing.\n",
+    "keywords": []
+  },
+  "as-i-have-foreseen": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27964?locale=en",
+    "unique": false,
+    "text": "Look at the top card of your deck. You may use the Force (lose your Force token). If you do, play that card. It costs 4 resources less.",
+    "rules": null,
+    "keywords": []
+  },
+  "following-the-path": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27539?locale=en",
+    "unique": false,
+    "text": "Search the top 8 cards of your deck for up to 2 Force units, reveal them, and put them on top of your deck in any order. (Put the other cards on the bottom of your deck in a random order.)",
+    "rules": null,
+    "officialRules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "luminous-beings": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27544?locale=en",
+    "unique": false,
+    "text": "Put up to 3 Force units from your discard pile on the bottom of your deck in a random order. Give that many units +4/+4 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "premonition-of-doom": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28039?locale=en",
+    "unique": false,
+    "text": "The next time you take the initiative this phase, exhaust all units.",
+    "rules": null,
+    "keywords": []
+  },
+  "qui-gon-jinn-s-aethersprite--guided-by-the-force": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28009?locale=en",
+    "unique": true,
+    "text": "On Attack: The next time you use a “When Played” ability this phase, you may use that ability again.",
+    "rules": null,
+    "officialRules": "Any ability whose trigger starts with \"When played…\" is considered a \"When Played\" ability.\nOnce it triggers, the Aethersprite's \"On Attack\" ability lets you reuse the next \"When Played\" ability you use even if it is defeated.\n",
+    "keywords": []
+  },
+  "rey--with-palpatine-s-power": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27764?locale=en",
+    "unique": true,
+    "text": "When you draw this card during the action phase: If you control a Aggression leader or base, you may reveal this card from your hand. If you do, deal 2 damage to a unit and 2 damage to a base.",
+    "rules": "If there are any other triggers waiting to resolve when you draw Rey, you must announce to your opponents that you have drawn and triggered Rey. Once drawn, Rey must be kept separate from the rest of the cards in your hand until revealed.\n",
+    "keywords": []
+  }
+}

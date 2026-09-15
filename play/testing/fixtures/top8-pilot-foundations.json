@@ -1,0 +1,38 @@
+{
+  "r2-d2--artooooooooo-": {
+    "text": "",
+    "keywords": ["Piloting"],
+    "rules": null,
+    "epicAction": "Piloting [0 resources Heroism]\nThis upgrade can be played on a friendly Vehicle unit with a Pilot on it.\nAttached unit gains: “You may play or deploy 1 additional Pilot on this unit.”",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20696?locale=en",
+    "officialText": "",
+    "officialTextStyled": "",
+    "officialRules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nR2-D2's ability overrides the usual restriction of the Piloting keyword and Pilot leader deploy ability that specifies they must be attached to a unit without a Pilot on it. If R2-D2 is attached to a unit, another Pilot still can be played or deployed on that unit. Multiple such abilities are additive.\n"
+  },
+  "the-armorer--steel-shapes-us": {
+    "text": "Action [Exhaust]: Play an upgrade from your resources on a unit that entered play this phase (paying its cost). If you do, resource the top card of your deck.",
+    "keywords": [],
+    "rules": "You can use The Armorer's ability to play any card that can be played as an upgrade, including Pilots.\nYou may use the upgrade you play using The Armorer's ability to help pay for its cost, since it’s still a resource while paying costs.\nAbilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nWhen Attack Ends abilities trigger at the same time as units deal combat damage. The Armorer does not need to survive the attack in order for you to play an upgrade, though you can't play an upgrade on her if she is defeated.\nResources enter play exhausted.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When Attack Ends: You may play an upgrade from your resources on a friendly unit. If you do, resource the top card of your deck.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51687?locale=en",
+    "officialText": "Action [Exhaust]: Play an upgrade from your resources on a unit that entered play this phase (paying its cost). If you do, resource the top card of your deck.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Play an upgrade from your resources on a unit that entered play this phase <i>(paying its cost)</i>. If you do, resource the top card of your deck.</p>",
+    "officialRules": "You can use The Armorer's ability to play any card that can be played as an upgrade, including Pilots.\nYou may use the upgrade you play using The Armorer's ability to help pay for its cost, since it’s still a resource while paying costs.\nAbilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nWhen Attack Ends abilities trigger at the same time as units deal combat damage. The Armorer does not need to survive the attack in order for you to play an upgrade, though you can't play an upgrade on her if she is defeated.\nResources enter play exhausted.\n"
+  },
+  "han-solo--never-tell-me-the-odds": {
+    "text": "Action [Exhaust]: Reveal the top card of your deck, then attack with a unit. If the revealed card and that unit have different odd costs, that unit gets +1/+0 for this attack.",
+    "keywords": [],
+    "rules": "The revealed card stays on top of your deck.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nIf you use Han’s leader ability, you must attack with a unit, if able. You choose which unit to attack with after revealing the top card of your deck. Units must be ready in order to attack.\nZero is an even number.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, choose one:\nDeploy this leader.\nDeploy this leader as an upgrade on a friendly Vehicle unit without a Pilot on it.",
+    "deployBox": "\nAttached unit is a leader unit.\nWhen deployed as an upgrade: For each friendly unit or upgrade that has an odd cost, ready a resource.\n",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19556?locale=en",
+    "officialText": "Action [Exhaust]: Reveal the top card of your deck, then attack with a unit. If the revealed card and that unit have different odd costs, that unit gets +1/+0 for this attack.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Reveal the top card of your deck, then attack with a unit. If the revealed card and that unit have different odd costs, that unit gets <strong>+1</strong>/<strong>+0</strong> for this attack.</p>",
+    "officialRules": "The revealed card stays on top of your deck.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nIf you use Han’s leader ability, you must attack with a unit, if able. You choose which unit to attack with after revealing the top card of your deck. Units must be ready in order to attack.\nZero is an even number.\n"
+  }
+}

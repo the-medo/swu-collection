@@ -1,4 +1,5 @@
-import { createRootRoute, HeadContent, Outlet } from '@tanstack/react-router';
+import { CrossfireInvitations } from '@/components/app/crossfire/CrossfireInvitations.tsx';
+import { createRootRoute, HeadContent, Outlet, useMatchRoute } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
 import { LeftSidebar } from '@/components/app/navigation/LeftSidebar/LeftSidebar.tsx';
 import { SidebarProvider, useSidebar } from '@/components/ui/sidebar.tsx';
@@ -106,6 +107,11 @@ const globalSearchParams = z.object({
 export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 
 function RootShell() {
+  const matchRoute = useMatchRoute();
+  const immersive =
+    !!matchRoute({ to: '/crossfire/$lobbyId', fuzzy: false }) ||
+    !!matchRoute({ to: '/crossfire/replay/$lobbyId', fuzzy: false }) ||
+    !!matchRoute({ to: '/crossfire/reports/$reportId', fuzzy: false });
   const { streamId } = Route.useSearch();
   const { isMobile, setOpen, setOpenMobile } = useSidebar();
   const collapsedForStreamId = useRef<string | null>(null);
@@ -133,6 +139,13 @@ function RootShell() {
     collapsedForStreamId.current = streamId;
   }, [isMobile, setOpen, setOpenMobile, streamId]);
 
+  if (immersive)
+    return (
+      <main className="w-full min-w-0 h-dvh overflow-y-auto">
+        <Outlet />
+      </main>
+    );
+
   return (
     <>
       <LeftSidebar />
@@ -153,9 +166,11 @@ export const Route = createRootRoute({
   component: () => (
     <>
       <HeadContent />
-      <SidebarProvider>
-        <RootShell />
-      </SidebarProvider>
+      <CrossfireInvitations>
+        <SidebarProvider>
+          <RootShell />
+        </SidebarProvider>
+      </CrossfireInvitations>
       <CookieConsent />
       <Toaster />
       <PriceFetcher />

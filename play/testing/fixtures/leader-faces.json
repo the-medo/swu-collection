@@ -1,0 +1,37 @@
+{
+  "chancellor-palpatine--playing-both-sides": {
+    "text": "This leader starts the game with this side faceup.\nAction [Exhaust]: If a friendly Heroism unit was defeated this phase, draw a card, heal 2 damage from your base, then flip this leader.",
+    "keywords": [],
+    "rules": "Palpatine's leader ability still can be used as an action even if no friendly Heroism unit was defeated this phase (but you don't resolve any of the listed effects). The same applies to Sidious's leader ability.\nWhen Chancellor Palpatine or Darth Sidious flip due to their leader ability, they remain exhausted.\n",
+    "epicAction": null,
+    "deployBox": "Action [Exhaust]: If you played a Villainy card this phase, create a Clone Trooper token, deal 2 damage to each enemy base, then flip this leader.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14286?locale=en",
+    "officialRules": "Palpatine's leader ability still can be used as an action even if no friendly Heroism unit was defeated this phase (but you don't resolve any of the listed effects). The same applies to Sidious's leader ability.\nWhen Chancellor Palpatine or Darth Sidious flip due to their leader ability, they remain exhausted.\n",
+    "officialTextStyled": "<p>This leader starts the game with this side faceup.</p><p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If a friendly <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_heroism_895bfc1dc1.png\" alt=\"icon_heroism.png\"> unit was defeated this phase, draw a card, heal 2 damage from your base, then flip this leader.</p>",
+    "frontAttributes": {
+      "title": "Chancellor Palpatine",
+      "name": "Chancellor Palpatine, Playing Both Sides",
+      "aspects": [
+        "Cunning",
+        "Heroism"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ]
+    },
+    "backAttributes": {
+      "title": "Darth Sidious",
+      "name": "Darth Sidious, Playing Both Sides",
+      "aspects": [
+        "Cunning",
+        "Villainy"
+      ],
+      "traits": [
+        "Force",
+        "Separatist",
+        "Sith"
+      ]
+    }
+  }
+}

@@ -1,7 +1,8 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CrossfireAccessPage } from './CrossfireAccessPage';
+import { CrossfireCardsPage } from './CrossfireCardsPage';
 import { Card, CardContent } from '@/components/ui/card';
 import { useRole } from '@/hooks/useRole';
-import { Navigate, useNavigate, useSearch } from '@tanstack/react-router';
+import { Navigate, useSearch } from '@tanstack/react-router';
 import { MetaTable } from './MetaTable';
 import { SetsPage } from './SetsPage';
 import { ThumbnailsPage } from '@/components/app/admin/ThumbnailsPage.tsx';
@@ -14,125 +15,53 @@ import VariantCheckerPage from '@/components/app/admin/VariantCheckerPage/Varian
 import { PreviewCardsPage } from '@/components/app/admin/PreviewCardsPage.tsx';
 import { TournamentResultsPage } from '@/components/app/admin/TournamentResultsPage/TournamentResultsPage.tsx';
 import { Helmet } from 'react-helmet-async';
-import { Route } from '@/routes/_authenticated.admin';
+import { AdminNavigation } from './AdminNavigation';
+import { adminSections } from './adminNavigation';
 
 export function AdminPage() {
   const hasRole = useRole();
   const isAdmin = hasRole('admin');
   const { page, tournamentId, view, round } = useSearch({ from: '/_authenticated/admin' });
-  const navigate = useNavigate({ from: Route.fullPath });
+  const section = adminSections.find(section => section.items.some(item => item.id === page))!;
+  const current = section.items.find(item => item.id === page)!;
 
   // Redirect if not an admin
   if (!isAdmin) {
     return <Navigate to="/" />;
   }
 
-  const handleTabChange = (value: string) => {
-    navigate({
-      search: prev => ({
-        ...prev,
-        page: value,
-      }),
-    });
-  };
-
   return (
     <>
       <Helmet title="Admin dashboard | SWUBase" />
-      <div className="container mx-auto">
-        <Tabs value={page} onValueChange={handleTabChange} className="w-full">
-          <TabsList>
-            <TabsTrigger value="metas">Metas</TabsTrigger>
-            <TabsTrigger value="sets">Sets</TabsTrigger>
-            <TabsTrigger value="tournament-groups">Tournament Groups</TabsTrigger>
-            <TabsTrigger value="tournament-weekends">Tournament Weekends</TabsTrigger>
-            <TabsTrigger value="deck-thumbnails">SSR Thumbnails</TabsTrigger>
-            <TabsTrigger value="pq-tools">PQ Tools</TabsTrigger>
-            <TabsTrigger value="special-actions">Special Actions</TabsTrigger>
-            <TabsTrigger value="card-prices">Card Prices</TabsTrigger>
-            <TabsTrigger value="variant-checker">Variant Checker</TabsTrigger>
-            <TabsTrigger value="preview-cards">Preview Cards</TabsTrigger>
-            <TabsTrigger value="tournament-results">Tournament Results</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="metas">
-            <Card>
-              <CardContent className="p-4">
-                <MetaTable />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="sets">
-            <Card>
-              <CardContent className="p-4">
-                <SetsPage />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="tournament-groups">
-            <Card>
-              <CardContent className="p-4">
-                <TournamentGroupsPage />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="tournament-weekends">
-            <Card>
-              <CardContent className="p-4">
-                <TournamentWeekendsPage />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="deck-thumbnails">
-            <Card>
-              <CardContent className="p-4">
-                <ThumbnailsPage />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="pq-tools">
-            <Card>
-              <CardContent className="p-4">
-                <PQToolsPage />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="special-actions">
-            <Card>
-              <CardContent className="p-4">
-                <SpecialActionsPage />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="card-prices">
-            <Card>
-              <CardContent className="p-4">
-                <CardPricePairingAdministrationPage />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="variant-checker">
-            <Card>
-              <CardContent className="p-4">
-                <VariantCheckerPage />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="preview-cards">
-            <Card>
-              <CardContent className="p-4">
-                <PreviewCardsPage />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="tournament-results">
-            <Card>
-              <CardContent className="p-4">
+      <div className="flex w-full min-w-0 flex-col gap-4">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-1">
+          <h1 className="text-xl font-semibold">Administration</h1>
+          <span className="text-sm text-muted-foreground">
+            {section.title} / {current.label}
+          </span>
+        </div>
+        <div className="grid min-w-0 gap-4 lg:grid-cols-[13rem_minmax(0,1fr)] lg:items-start">
+          <AdminNavigation page={page} />
+          <Card className="min-w-0" key={page}>
+            <CardContent className="p-4">
+              {page === 'crossfire-access' && <CrossfireAccessPage />}
+              {page === 'crossfire-cards' && <CrossfireCardsPage />}
+              {page === 'metas' && <MetaTable />}
+              {page === 'sets' && <SetsPage />}
+              {page === 'tournament-groups' && <TournamentGroupsPage />}
+              {page === 'tournament-weekends' && <TournamentWeekendsPage />}
+              {page === 'deck-thumbnails' && <ThumbnailsPage />}
+              {page === 'pq-tools' && <PQToolsPage />}
+              {page === 'special-actions' && <SpecialActionsPage />}
+              {page === 'card-prices' && <CardPricePairingAdministrationPage />}
+              {page === 'variant-checker' && <VariantCheckerPage />}
+              {page === 'preview-cards' && <PreviewCardsPage />}
+              {page === 'tournament-results' && (
                 <TournamentResultsPage tournamentId={tournamentId} view={view} round={round} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </>
   );

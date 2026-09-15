@@ -4,7 +4,7 @@ import { db } from '../db';
 import { authSchema } from '../db/schema/auth-schema.ts';
 import { generateDisplayName } from './generateDisplayName.ts';
 import { admin as adminPlugin } from 'better-auth/plugins';
-import { ac, admin, moderator, organizer } from './permissions';
+import { ac, applicationRoles } from './permissions';
 
 export type AuthExtension = {
   Variables: {
@@ -24,11 +24,7 @@ export const auth = betterAuth({
   plugins: [
     adminPlugin({
       ac,
-      roles: {
-        admin,
-        moderator,
-        organizer,
-      },
+      roles: applicationRoles,
     }),
   ],
   database: drizzleAdapter(db, {

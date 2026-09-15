@@ -1,0 +1,14 @@
+.git
+**/node_modules
+**/.swubase
+**/.env
+**/.env.*
+**/.idea
+**/dist
+**/coverage
+**/*.log
+frontend
+.ai
+.agents
+.codex
+attachments

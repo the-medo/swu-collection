@@ -1,0 +1,50 @@
+{
+  "grand-admiral-thrawn--patient-and-insightful": {
+    "text": "When the action phase starts: Look at the top card of each player's deck.\n\nAction [1 resource, exhaust]: Reveal the top card of any player's deck. Exhaust a unit that costs the same as or less than the revealed card.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "When the action phase starts: Look at the top card of each player's deck.\n\nOn Attack: You may reveal the top card of any player's deck. Exhaust a unit that costs the same as or less than the revealed card.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/305?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>When the action phase starts:</strong> Look at the top card of each player's deck.</p><p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Reveal the top card of any player's deck. Exhaust a unit that costs the same as or less than the revealed card.</p>",
+    "officialDeployBoxStyled": "<p><strong>When the action phase starts:</strong> Look at the top card of each player's deck.</p><p><strong>On Attack:</strong> You may reveal the top card of any player's deck. Exhaust a unit that costs the same as or less than the revealed card.</p>"
+  },
+  "hunter--outcast-sergeant": {
+    "text": "Action [1 resource, Exhaust]: Reveal a resource you control. If it shares a name with a friendly unique unit, return the resource to its owner's hand and put the top card of your deck into play as a resource.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "rules": "Abilities that refer to a card\u2019s \u201cname\u201d do not include the subtitle of the card.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "epicAction": "Epic Action: If you control 7\u00a0or more resources, deploy this leader.",
+    "deployBox": "Overwhelm\nOn Attack: You may reveal a resource you control. If it shares a name with a friendly unique unit, return the resource to its owner\u2019s hand and put the top card of your deck into play as a resource.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5391?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s \u201cname\u201d do not include the subtitle of the card.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nA card put into play as a resource enters play exhausted.\n(ERRATA) Templating update: \u201cPut into play as a resource\u201d becomes \u201cresource\u201d.\n(ERRATA) Templating update: \u201cUnique\u201d becomes \u201c<uq>\u201d.\n",
+    "officialTextStyled": "<p><strong>Action [<img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\">]:</strong> Reveal a resource you control. If it shares a name with a friendly <img src=\"https://ffg-prod-uploads.s3.amazonaws.com//icon_unique_white_a08b37532f.png\" alt=\"icon_cunning.png\"> unit, return the resource to its owner\u2019s hand and resource the top card of your deck.</p>",
+    "officialDeployBoxStyled": "<p><strong>Overwhelm</strong></p><p><strong>On Attack:</strong> You may reveal a resource you control. If it shares a name with a friendly <img src=\"https://ffg-prod-uploads.s3.amazonaws.com//icon_unique_white_a08b37532f.png\" alt=\"icon_cunning.png\"> unit, return the resource to its owner\u2019s hand and resource the top card of your deck.</p>"
+  },
+  "ahsoka-tano--i-have-an-idea": {
+    "text": "When you play an event: You may exhaust this leader. If you do, look at the top card of your deck. You may play it , discard it, or leave it on top of your deck.",
+    "keywords": [
+      "Raid"
+    ],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Raid 1 \nWhen Attack Ends: Look at the top card of your deck. You may play it, discard it, or leave it on top of your deck. If you play it, it costs 1 resource less.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50892?locale=en",
+    "officialRules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage. Ahsoka doesn't need to survive the attack in order to use this ability.\nFully resolve the played event before resolving Ahsoka's triggered leader ability.\n",
+    "officialTextStyled": "<p><strong>When you play an event:</strong> You may exhaust this leader. If you do, look at the top card of your deck. You may play it <i>(paying its cost),</i> discard it, or leave it on top of your deck.</p>",
+    "officialDeployBoxStyled": "<p><strong>Raid 1</strong> <i>(This unit gets <strong>+1</strong>/<strong>+0</strong> while attacking.)</i></p><p><strong>When Attack Ends:</strong> Look at the top card of your deck. You may play it, discard it, or leave it on top of your deck. If you play it, it costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less.</p>"
+  },
+  "doctor-aphra--rapacious-archaeologist": {
+    "text": "When the regroup phase starts: Discard a card from your deck.",
+    "keywords": [],
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAbilities that refer to a card\u2019s \u201cname\u201d do not include the subtitle of the card.\nAlways discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "epicAction": "Epic Action: If you control 5\u00a0or more resources, deploy this leader.",
+    "deployBox": "While there are 5 or more different costs among cards in your discard pile, this unit gets +3/+0.\nWhen Deployed: Choose 3 cards in your discard pile with different names. If you do, return 1 of them at random to your hand.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7938?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAbilities that refer to a card\u2019s \u201cname\u201d do not include the subtitle of the card.\nAlways discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "officialTextStyled": "<p><strong>When the regroup phase starts:</strong> Discard a card from your deck.</p>",
+    "officialDeployBoxStyled": "<p>While there are 5 or more different costs among cards in your discard pile, this unit gets <strong>+3</strong>/<strong>+0</strong>.</p><p><strong>When Deployed:</strong> Choose 3 cards in your discard pile with different names. If you do, return 1 of them at random to your hand.</p>"
+  }
+}

@@ -22,17 +22,23 @@ export const calculateDeckStatistics = (deckId: string, matches: MatchResult[]):
   let totalGames = 0;
   let wonGames = 0;
   let wonMatches = 0;
+  let lostMatches = 0;
+  let lostGames = 0;
+  let completedMatches = 0;
 
   matches.forEach(match => {
+    if (match.result !== undefined) completedMatches++;
     if (match.result === 3) wonMatches++;
+    if (match.result === 0) lostMatches++;
 
     match.games.forEach(game => {
       totalGames++;
-      if (game.isWinner) wonGames++;
+      if (game.isWinner === true) wonGames++;
+      if (game.isWinner === false) lostGames++;
     });
   });
 
-  const matchWinrate = matches.length > 0 ? (wonMatches / matches.length) * 100 : 0;
+  const matchWinrate = completedMatches > 0 ? (wonMatches / completedMatches) * 100 : 0;
   const gameWinrate = totalGames > 0 ? (wonGames / totalGames) * 100 : 0;
 
   return {
@@ -44,9 +50,9 @@ export const calculateDeckStatistics = (deckId: string, matches: MatchResult[]):
     matchWinrate,
     gameWinrate,
     matchWins: wonMatches,
-    matchLosses: matches.length - wonMatches,
+    matchLosses: lostMatches,
     gameWins: wonGames,
-    gameLosses: totalGames - wonGames,
+    gameLosses: lostGames,
     matches,
   };
 };

@@ -1,0 +1,32 @@
+{
+  "admiral-trench--chk-chk-chk-chk": {
+    "text": "Action [Exhaust]: Discard a card that costs 3 or more from your hand. If you do, draw a card.",
+    "keywords": [],
+    "rules": "Trench does not use an Epic Action to deploy, so he may deploy multiple times in a game.\nAbilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nIf there are multiple opponents, the controlling player chooses which one will be \u201can opponent.\u201d\n",
+    "epicAction": "Action [3 resources, Exhaust]: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "When Deployed: Reveal the top 4 cards of your deck. An opponent discards 2 of them. Draw 1 of the remaining cards and discard the other.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19541?locale=en",
+    "officialRules": "Trench does not use an Epic Action to deploy, so he may deploy multiple times in a game.\nAbilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nIf there are multiple opponents, the controlling player chooses which one will be \u201can opponent.\u201d\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Discard a card that costs 3 or more from your hand. If you do, draw a card.</p>"
+  },
+  "bail-organa--doing-everything-he-can": {
+    "text": "Action [1 resource, Exhaust]: If a friendly unit was defeated this phase, return a friendly resource to its owner's hand. If you do, put the top card of your deck into play as a resource.",
+    "keywords": [],
+    "rules": "Bail\u2019s leader ability still can be used as an action even if no friendly units were defeated this phase (but no resource is returned).\nBail does not use an Epic Action to deploy, so he may deploy multiple times in a game.\nBail still deploys ready, even though his deploy action requires you to exhaust him.\nBail's unit ability triggers when you play a card using Smuggle or Plot.\n",
+    "epicAction": "Action [Exhaust, discard 2 cards from your hand]: If you control 4 or more resources, deploy this leader.",
+    "deployBox": "When you play a card from your resources: Heal 1 damage from your base.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39415?locale=en",
+    "officialRules": "Bail\u2019s leader ability still can be used as an action even if no friendly units were defeated this phase (but no resource is returned).\nBail does not use an Epic Action to deploy, so he may deploy multiple times in a game.\nBail still deploys ready, even though his deploy action requires you to exhaust him.\nBail's unit ability triggers when you play a card using Smuggle or Plot.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If a friendly unit was defeated this phase, return a friendly resource to its owner's hand. If you do, put the top card of your deck into play as a resource.</p>"
+  },
+  "poe-dameron--i-can-fly-anything": {
+    "text": "Action [1 resource, Exhaust]: Flip this leader and attach him as an upgrade to a friendly Vehicle unit without a Pilot on it.",
+    "keywords": [],
+    "rules": "Using Poe's action ability to flip and attach him to a unit allows him to enter play as an upgrade but is not considered deploying him. If he is defeated as an upgrade or unit without having used his Epic Action to deploy, it is still available to use.\nPoe attaching to a unit does not make it a Leader Unit, though he is a Leader Upgrade.\nIf an opponent takes control of the unit Poe is on, Poe remains attached as an upgrade under your control. Only you may use his action ability, even while he is attached to an enemy unit.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader (as a unit).",
+    "deployBox": "\nAction [1 resource]: Attach this upgrade to a friendly Vehicle unit without a Pilot on it. Use this ability only once each round.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19536?locale=en",
+    "officialRules": "Using Poe's action ability to flip and attach him to a unit allows him to enter play as an upgrade but is not considered deploying him. If he is defeated as an upgrade or unit without having used his Epic Action to deploy, it is still available to use.\nPoe attaching to a unit does not make it a Leader Unit, though he is a Leader Upgrade.\nIf an opponent takes control of the unit Poe is on, Poe remains attached as an upgrade under your control. Only you may use his action ability, even while he is attached to an enemy unit.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Flip this leader and attach him as an upgrade to a friendly <i><strong>Vehicle</strong></i> unit without a <i><strong>Pilot</strong></i> on it.</p>"
+  }
+}

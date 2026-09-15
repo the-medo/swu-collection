@@ -1,0 +1,16 @@
+{
+  "sense-through-the-force": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52854?locale=en",
+    "unique": false,
+    "text": "Choose a number, then search the top 5 cards of your deck for a card, reveal it, and draw it. If its cost is the chosen number, you may give 3 Advantage tokens to a Force unit.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "wipe-them-out": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52366?locale=en",
+    "unique": false,
+    "text": "Attack with a unit. For this attack, you may deal its excess damage to another unit in the same arena.",
+    "rules": "You must attack with a unit, if able. Units must be ready in order to attack.\nIf you attack with a unit that has Overwhelm, you may choose whether to deal its excess damage to the defending player's base or to another unit in the same arena.\n",
+    "keywords": []
+  }
+}

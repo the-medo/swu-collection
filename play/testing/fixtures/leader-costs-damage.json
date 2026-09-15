@@ -1,0 +1,70 @@
+{
+  "rex--no-other-option": {
+    "text": "Action [Exhaust, ready an exhausted enemy unit]: The next event you play this phase costs 1 resource less.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may ready an exhausted enemy unit. If you do, the next event you play this phase costs 2 resources less.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50882?locale=en",
+    "officialRules": "The cost reduction from Rex's \u201cOn Attack\u201d ability remains active even if he is defeated.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>,</strong> <strong>ready an exhausted enemy unit]: </strong>The next event you play this phase costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> You may ready an exhausted enemy unit. If you do, the next event you play this phase costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_2_cd0914a233.png\" alt=\"icon_cost_2.png\"> less.</p>"
+  },
+  "vane--quarrelsome-pirate": {
+    "text": "Action [Exhaust, defeat a friendly upgrade]: Deal 2 damage to a base.",
+    "keywords": [],
+    "rules": "A friendly upgrade is any upgrade you put into play or any token upgrade on a friendly unit.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may defeat a friendly upgrade. If you do, deal 2 damage to the defending unit or a base.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51742?locale=en",
+    "officialRules": "A friendly upgrade is any upgrade you put into play or any token upgrade on a friendly unit.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, defeat a friendly upgrade]:</strong> Deal 2 damage to a base.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> You may defeat a friendly upgrade. If you do, deal 2 damage to the defending unit or a base.</p>"
+  },
+  "han-solo--i-got-a-really-good-feeling": {
+    "text": "Action [Exhaust, defeat a friendly token]: Deal 1 damage to a unit.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nOn Attack: Defeat any number of friendly tokens. Deal damage to a unit equal to the number of tokens defeated this way.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46137?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, defeat a friendly token]:</strong> Deal 1 damage to a unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>Saboteur</strong> <i>(When this unit attacks, ignore Sentinel and defeat the defender's Shields.)</i></p><p><strong>On Attack:</strong> Defeat any number of friendly tokens. Deal damage to a unit equal to the number of tokens defeated this way.</p>"
+  },
+  "tobias-beckett--people-are-predictable": {
+    "text": "Action [Exhaust]: Choose a friendly unit. An opponent takes control of it. If they do, create a Credit token.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When Deployed: Defeat any number of units you own but don't control. For each unit defeated this way, create a Credit token and draw a card.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46062?locale=en",
+    "officialRules": "If there are multiple opponents, the controlling player chooses which one will be \u201can opponent.\u201d\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Choose a friendly unit. An opponent takes control of it. If they do, create a Credit token.</p>",
+    "officialDeployBoxStyled": "<p><strong>When Deployed:</strong> Defeat any number of units you own but don't control. For each unit defeated this way, create a Credit token and draw a card.</p>"
+  },
+  "jabba-the-hutt--wonderful-human-being": {
+    "text": "Action [1 resource, Exhaust]: A friendly damaged unit deals 1 damage to an enemy unit. If the friendly unit has 3 or more damage on it, it deals 2 damage instead.",
+    "keywords": [],
+    "rules": "Jabba's ability triggers when a friendly unit is dealt combat damage or non-combat damage.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When another friendly unit is dealt damage and survives: You may have that unit deal that much damage to an enemy unit. Use this ability only once each round.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39385?locale=en",
+    "officialRules": "Jabba's ability triggers when a friendly unit is dealt combat damage or non-combat damage.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> A friendly damaged unit deals 1 damage to an enemy unit. If the friendly unit has 3 or more damage on it, it deals 2 damage instead.</p>",
+    "officialDeployBoxStyled": "<p><strong>When another friendly unit is dealt damage and survives:</strong> You may have that unit deal that much damage to an enemy unit. Use this ability only once each round.</p>"
+  },
+  "jango-fett--concealing-the-conspiracy": {
+    "text": "When a friendly unit deals damage to an enemy unit: You may exhaust this leader. If you do, exhaust that enemy unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When a friendly unit deals damage to an enemy unit: You may exhaust that unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14281?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>When a friendly unit deals damage to an enemy unit:</strong> You may exhaust this leader. If you do, exhaust that enemy unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>When a friendly unit deals damage to an enemy unit:</strong> You may exhaust that unit.</p>"
+  }
+}

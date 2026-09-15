@@ -1,0 +1,78 @@
+{
+  "darth-sion--lord-of-pain": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39550?locale=en",
+    "unique": true,
+    "text": "When Played: Give an Experience token to this unit for each enemy unit that was defeated this phase.\nWhen Defeated: If this unit had 7 or more power, return him to his owner's hand.",
+    "rules": "Darth Sion's \"When Defeated\" ability references his power when he was defeated, which includes temporary modifiers.\nDarth Sion's \"When Defeated\" ability only returns him to hand if he is in the discard pile when it resolves.\n",
+    "keywords": []
+  },
+  "libertine--under-new-ownership": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40435?locale=en",
+    "unique": true,
+    "text": "This unit gets +1/+0 for each captured card it's guarding.\nWhen Played: Choose an enemy unit and a non-leader friendly unit. The enemy unit captures the friendly unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "implicate": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40530?locale=en",
+    "unique": false,
+    "text": "Choose a unit. For this phase, it gains Sentinel and: “When this unit is attacked: Create a Spy token.”",
+    "rules": "“When this unit is attacked” triggers at the same time as “On Attack” abilities.\n",
+    "officialRules": "“When this unit is attacked” triggers at the same time as “On Attack” abilities.\nOn Defense abilities trigger when this unit is chosen as the defender for an attack, in the same window as the attacker's On Attack abilities.\n",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "one-in-a-million": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39640?locale=en",
+    "unique": false,
+    "text": "This card can't be played from your hand.\nDefeat a unit with power and remaining HP both equal to the number of ready resources you control.\nPlot",
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\nIn order for a unit to be defeated by One in a Million, the unit's power and remaining HP must be equal to each other and equal to the number of ready resources you control after paying for One in a Million.\n",
+    "keywords": [
+      "Plot"
+    ]
+  },
+  "oppression-breeds-rebellion": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40165?locale=en",
+    "unique": false,
+    "text": "If a friendly unit was defeated while attacking this phase, draw 3 cards.",
+    "rules": null,
+    "keywords": []
+  },
+  "populist-advisor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39580?locale=en",
+    "unique": false,
+    "text": "When an enemy unit deals combat damage to your base: This unit gains Sentinel for this phase. (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n",
+    "officialRules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "the-elite-squad--neutralizing-insurgents": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40090?locale=en",
+    "unique": true,
+    "text": "Grit\nWhen Played/When damage is dealt to this unit: You may deal 2 damage to another <uq> (unique) unit.",
+    "rules": null,
+    "keywords": [
+      "Grit"
+    ]
+  },
+  "fully-armed-and-operational": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40345?locale=en",
+    "unique": false,
+    "text": "If an opponent attacked your base during their previous action this phase, play a unit from your hand. Give it Ambush for this phase.\nPlot",
+    "rules": "An opponent must have declared an attack against your base during their previous action for Fully Armed and Operational to let you play a unit from your hand. This can be from taking an action or using an ability to make an attack, but does not count Overwhelm damage from an attack on a unit.\nAbilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nAmbush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": [
+      "Ambush",
+      "Plot"
+    ]
+  },
+  "willrow-hood--on-the-run": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39680?locale=en",
+    "unique": true,
+    "text": "While this unit has exactly 1 friendly upgrade on it, that upgrade can't be defeated or returned to hand by enemy card abilities.",
+    "rules": null,
+    "keywords": []
+  }
+}

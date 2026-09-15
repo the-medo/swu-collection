@@ -95,6 +95,17 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({
                 >
                   {match.finalWins} - {match.finalLosses}
                 </h3>
+                {match.gameSource === 'crossfire' && (
+                  <span className="text-[10px] text-muted-foreground text-center">
+                    {match.status === 'in-progress'
+                      ? 'Crossfire · In progress'
+                      : match.status === 'abandoned'
+                        ? 'Crossfire · Abandoned'
+                        : match.completionReason === 'forfeit'
+                          ? `Crossfire · ${match.result === 3 ? 'Won' : 'Lost'} by forfeit`
+                          : 'Crossfire'}
+                  </span>
+                )}
               </div>
             </div>
 

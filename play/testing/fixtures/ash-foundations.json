@@ -1,0 +1,255 @@
+{
+  "inspired-recruit": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52441?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "strike-team-vanguard": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51987?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "death-trooper-squad": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52889?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "dinosaur-turtle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52336?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "noti-mobile-pod": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52984?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "peridea-bandit": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52631?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "emperor-s-champion": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52646?locale=en",
+    "unique": false,
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\nSaboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": ["Shielded", "Saboteur"]
+  },
+  "forest-patroller": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52162?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nRestore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": ["Overwhelm", "Restore"]
+  },
+  "alamite-hunter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52501?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "blurrg": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52286?locale=en",
+    "unique": false,
+    "text": "Support \nOverwhelm ",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": ["Support", "Overwhelm"],
+    "officialText": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)"
+  },
+  "covert-veteran": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52924?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "imperial-loyalist": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52874?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "n5-sentry-droid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52939?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "noti-nomad": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52027?locale=en",
+    "unique": false,
+    "text": "Shielded (When you play this unit, give a Shield token to it.)",
+    "rules": null,
+    "keywords": ["Shielded"]
+  },
+  "pathfinder-sergeant": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52211?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nRestore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\n",
+    "keywords": ["Ambush", "Restore"]
+  },
+  "praetorian-elite": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52406?locale=en",
+    "unique": false,
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "rules": null,
+    "keywords": ["Grit"]
+  },
+  "rebel-infiltrators": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52959?locale=en",
+    "unique": false,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)\nSaboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": ["Restore", "Saboteur"]
+  },
+  "remnant-official": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52062?locale=en",
+    "unique": false,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "rules": null,
+    "keywords": ["Restore"]
+  },
+  "remnant-trooper-corps": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52899?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "scorpenek-annihilator-droid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51827?locale=en",
+    "unique": false,
+    "text": "Sentinel\nShielded\nOverwhelm",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": ["Sentinel", "Shielded", "Overwhelm"]
+  },
+  "survivors--langskib": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52311?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "tempest-lieutenant": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52396?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "tie-striker": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52386?locale=en",
+    "unique": false,
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": ["Saboteur"]
+  },
+  "womp-rat": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52745?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "wookiee-chieftain": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52556?locale=en",
+    "unique": false,
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "rules": null,
+    "keywords": ["Grit"]
+  },
+  "consortium-starviper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52291?locale=en",
+    "unique": false,
+    "text": "While you have the initiative, this unit gains Restore 2. (When this unit attacks, heal 2 damage from your base.)",
+    "rules": null,
+    "keywords": ["Restore"]
+  },
+  "bo-katan-kryze--for-all-of-mandalore": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52206?locale=en",
+    "unique": true,
+    "text": "While you control another Mandalorian unit, this unit gains Raid 2.",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "warrior-of-clan-kryze": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52281?locale=en",
+    "unique": false,
+    "text": "While you control another exhausted unit, this unit gains Sentinel. (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "mandalorian-super-commandos": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52879?locale=en",
+    "unique": false,
+    "text": "While you control a leader unit, this unit gets +2/+0.",
+    "rules": null,
+    "keywords": []
+  },
+  "stolen-eta-shuttle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52306?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)\nWhile you have the initiative, this unit gets +2/+0.",
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "mandalorian-flagship--captured-from-the-empire": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52246?locale=en",
+    "unique": true,
+    "text": "While you control a leader unit, this unit gains Ambush. (When you play this unit, it may attack an enemy unit.)\nThis unit gets +1/+0 for each other friendly Mandalorian unit.",
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\n",
+    "keywords": ["Ambush"]
+  },
+  "domesticated-loth-cat": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52022?locale=en",
+    "unique": false,
+    "text": "Enemy units lose Ambush and Support.",
+    "rules": "All enemy units lose and can't gain Ambush and Support while Domesticated Loth-Cat is in play. This ability applies to units as they are played.\n",
+    "keywords": ["Ambush", "Support"]
+  },
+  "onyx-cinder--adventure-awaits": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52566?locale=en",
+    "unique": true,
+    "text": "Hidden\nOther friendly units gain Hidden.",
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "carson-teva--there-s-something-going-on": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52691?locale=en",
+    "unique": true,
+    "text": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nWhile attacking, this unit deals combat damage before the defender.",
+    "rules": "If an attacking unit deals combat damage first, and the defending unit is defeated by that damage, it does not deal combat damage back. If it survives and has Grit, it deals bonus damage from Grit when dealing combat damage back.\n",
+    "keywords": ["Support"]
+  },
+  "nowhere-to-hide": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52671?locale=en",
+    "unique": false,
+    "text": "Attached unit gains Sentinel. (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "pointless-to-resist": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51952?locale=en",
+    "unique": false,
+    "text": "Attached unit gets –3/–0 while attacking a base.",
+    "rules": null,
+    "keywords": []
+  }
+}

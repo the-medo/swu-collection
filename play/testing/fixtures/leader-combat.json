@@ -1,0 +1,162 @@
+{
+  "anakin-skywalker--what-it-takes-to-win": {
+    "text": "Action [Exhaust, deal 2 damage to your base]: Attack with a unit. If it's attacking a unit, it gets +2/+0 for this attack.",
+    "keywords": [],
+    "rules": "If you use Anakin's leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent\u2019s base.)\nThis unit gets +1/+0 for every 5 damage on your base.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14266?locale=en",
+    "officialRules": "If you use Anakin's leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, deal 2 damage to your base]:</strong> Attack with a unit. If it\u2019s attacking a unit, it gets <strong>+2</strong>/<strong>+0</strong> for this attack.</p>"
+  },
+  "jyn-erso--resisting-oppression": {
+    "text": "Action [Exhaust]: Attack with a unit. The defender gets -1/-0 for this attack.",
+    "keywords": [],
+    "rules": "If you use Jyn\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "While a friendly unit is attacking, the defender gets -1/-0.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/391?locale=en",
+    "officialRules": "If you use Jyn\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n(ERRATA) Templating update: \u201cDefender\u201d becomes \u201cdefending unit\u201d.\n",
+    "officialTextStyled": "<p><strong>Action [<img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\">]:</strong> Attack with a unit. The defending unit gets -1/-0 for this attack.</p>"
+  },
+  "grand-inquisitor--stories-travel-quickly": {
+    "text": "Action [Exhaust, use the Force (lose your Force token)]: Attack with a friendly unit. The defender gets \u20132/\u20130 for this attack.",
+    "keywords": ["Shielded"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Shielded (When you deploy this leader, give a Shield token to him.)\nOn Attack: The defender gets \u20132/\u20130 for this attack.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27094?locale=en",
+    "officialRules": "If you use Grand Inquisitor\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n(ERRATA) Templating update: \u201cDefender\u201d becomes \u201cdefending unit\u201d.\n",
+    "officialTextStyled": "<p><strong>Action [<img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\">, use the Force</strong> <i>(lose your Force token)</i><strong>]:</strong> Attack with a friendly unit. The defending unit gets \u20132/\u20130 for this attack.</p>"
+  },
+  "moff-gideon--formidable-commander": {
+    "text": "Action [exhaust]: Attack with a unit that costs 3 or less. If it's attacking a unit, it gets +1/+0 for this attack.",
+    "keywords": ["Overwhelm"],
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nIf you use Moff Gideon\u2019s leader ability, you must attack with a unit that costs 3 or less, if able. Units must be ready in order to attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated before combat damage is dealt, the attacker is still considered to be attacking a unit, and all damage is considered excess damage for the purpose of Overwhelm.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
+    "deployBox": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\n\nEach friendly unit that costs 3 or less gets +1/+0 and gains Overwhelm while attacking an enemy unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/2754?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nIf you use Moff Gideon\u2019s leader ability, you must attack with a unit that costs 3 or less, if able. Units must be ready in order to attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated before combat damage is dealt, the attacker is still considered to be attacking a unit, and all damage is considered excess damage for the purpose of Overwhelm.\n",
+    "officialTextStyled": "<p><strong>Action [<img src=\"https://cdn.starwarsunlimited.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\">]: </strong>Attack with a unit that costs <strong>3</strong> or less. If it's attacking a unit, it gets <strong>+1/+0</strong> for this attack.</p>"
+  },
+  "leia-organa--alliance-general": {
+    "text": "Action [exhaust]: Attack with a Rebel unit. Then, you may attack with another Rebel unit.",
+    "keywords": ["Raid"],
+    "rules": "If you use Leia\u2019s leader ability, you must attack with a Rebel unit, if able. Units must be ready in order to attack.\nFor abilities that encompass multiple actions, resolve each action (and any resulting triggers) sequentially.\nA unit must survive an attack to trigger its \u201cwhen this unit completes an attack\u201d abilities.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Raid 1 (This unit gets +1/+0 while attacking.)\n\nWhen this unit completes an attack: You may attack with another Rebel unit. ",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/205?locale=en",
+    "officialRules": "If you use Leia\u2019s leader ability, you must attack with a Rebel unit, if able. Units must be ready in order to attack.\nFor abilities that encompass multiple actions, resolve each action (and any resulting triggers) sequentially.\nA unit must survive an attack to trigger its \u201cwhen this unit completes an attack\u201d abilities.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn\u2019t need to survive for the ability to trigger unless the ability says otherwise. The unit isn\u2019t considered to be attacking when these abilities resolve.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Attack with a <i><strong>REBEL </strong></i>unit. Then, you may attack with another <i><strong>REBEL</strong></i> unit.</p>"
+  },
+  "colonel-yularen--this-is-why-we-plan": {
+    "text": "Action [Exhaust]: Attack with a unit. Then, you may attack with another unit that costs less than it.",
+    "keywords": [],
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nIf you use Yularen\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\nFully resolve the first attack, including all triggers, before beginning the second attack.\nA unit must survive an attack to trigger its \u201cwhen this unit completes an attack\u201d abilities.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When this unit completes an attack (and survives): You may attack with another unit that costs 4 or less.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39405?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nIf you use Yularen\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\nFully resolve the first attack, including all triggers, before beginning the second attack.\nA unit must survive an attack to trigger its \u201cwhen this unit completes an attack\u201d abilities.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn\u2019t need to survive for the ability to trigger unless the ability says otherwise. The unit isn\u2019t considered to be attacking when these abilities resolve.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Attack with a unit. Then, you may attack with another unit that costs less than it.</p>"
+  },
+  "saw-gerrera--bring-down-the-empire": {
+    "text": "Action [Exhaust]: Attack with a unit. It gets +2/+0 and gains Overwhelm for this attack. After completing this attack, defeat it.",
+    "keywords": ["Overwhelm"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "When Attack Ends: If this unit survived, you may attack with another unit. It gets +2/+0 and gains Overwhelm for this attack. After completing this attack, defeat it.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46057?locale=en",
+    "officialRules": "If you use Saw\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage. Saw must survive the attack in order to attack with another unit.\nResolve all triggered abilities from the attack before defeating the unit.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Attack with a unit. It gets <strong>+2</strong>/<strong>+0</strong> and gains <strong>Overwhelm</strong> for this attack. After completing this attack, defeat it.</p>"
+  },
+  "grogu--charming-companion": {
+    "text": "",
+    "keywords": [],
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nPlaying a pilot as an upgrade does not count as playing a unit, so it would not let you deploy Grogu.\n",
+    "epicAction": "When you play a <uq> unit that costs 4 or more: If this leader is ready, you may deploy him.",
+    "deployBox": "While another friendly unit is defending, it gets +1/+0.\nWhile another friendly unit is attacking, the defending unit gets \u20131/\u20130.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51772?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nPlaying a pilot as an upgrade does not count as playing a unit, so it would not let you deploy Grogu.\n",
+    "officialTextStyled": "<p></p>"
+  },
+  "baylan-skoll--power-beyond-dream": {
+    "text": "Action [1 resource, Exhaust]: Give a friendly unit +2/+2 for this phase if it's the only unit you control in its arena.",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may give a friendly unit +2/+2 and Sentinel for this phase if it's the only non-leader unit you control in its arena. (Enemy units in its arena must attack a Sentinel when they attack you.)",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51697?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Give a friendly unit <strong>+2</strong>/<strong>+2</strong> for this phase if it's the only unit you control in its arena.</p>"
+  },
+  "grand-admiral-thrawn--victory-is-mine": {
+    "text": "Action [Exhaust]: Attack with a unit. It gains Restore 2 for this attack if you control the same number of units as the defending player.",
+    "keywords": ["Restore"],
+    "rules": "If you use Thrawn\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "epicAction": "Epic Action: If you control 8 or more resources, deploy this leader.",
+    "deployBox": "Restore 2\nOn Attack: If you control more units than the defending player, you may defeat a non-leader unit they control.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51702?locale=en",
+    "officialRules": "If you use Thrawn\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Attack with a unit. It gains <strong>Restore 2</strong> for this attack if you control the same number of units as the defending player.</p>"
+  },
+  "shin-hati--eager-adversary": {
+    "text": "When a friendly unit's attack ends: You may exhaust this leader. If you do, exhaust a unit that costs less than the amount of combat damage dealt to a base this attack.",
+    "keywords": [],
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\n\u201cCombat damage\u201d is only the damage dealt during the \u201cEnd attack\u201d step of an attack.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "When a friendly unit's attack ends: You may exhaust a unit that costs less than the amount of combat damage dealt to a base this attack. Use this ability only once each round.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51762?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\n\u201cCombat damage\u201d is only the damage dealt during the \u201cEnd attack\u201d step of an attack.\n",
+    "officialTextStyled": "<p><strong>When a friendly unit's attack ends:</strong> You may exhaust this leader. If you do, exhaust a unit that costs less than the amount of combat damage dealt to a base this attack.</p>"
+  },
+  "chirrut--mwe--one-with-the-force": {
+    "text": "Action [Exhaust]: Give a unit +0/+2 for this phase.",
+    "keywords": [],
+    "rules": "Chirrut can be assigned more damage than his remaining HP.\nChirrut is defeated passively as soon as the regroup phase starts if he has damage on him equal to or greater than his remaining HP.\nIf Chirrut is attacked by a unit with Overwhelm, there is no excess damage if he is not defeated.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "During the action phase, this unit isn\u2019t defeated by having no remaining HP. (During the regroup phase, if he has no remaining HP, defeat him.)",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/386?locale=en",
+    "officialRules": "Chirrut can be assigned more damage than his remaining HP.\nChirrut is defeated passively as soon as the regroup phase starts if he has damage on him equal to or greater than his remaining HP.\nIf Chirrut is attacked by a unit with Overwhelm, there is no excess damage if he is not defeated.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Give a unit <strong>+0/+2</strong> for this phase.</p>"
+  },
+  "cassian-andor--climb-": {
+    "text": "Friendly units that have damaged an opponent's base this phase can't be attacked (unless they have Sentinel).",
+    "keywords": ["Overwhelm"],
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nCassian's leader ability applies to all units that have dealt combat or non-combat damage to an opponent's base. If one of those units gains Sentinel, it can be attacked.\nCassian can be assigned more damage than his remaining HP. While you have the initiative, he can't be defeated directly by card abilities that \u201cdefeat a unit\u201d, but he still can be defeated as a result of card abilities, such as abilities that give a unit -X/-X for the phase.\nWhile you have the initiative, if Cassian is attacked by a unit with Overwhelm, there is no excess damage if he is not defeated.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Overwhelm\nWhile you have the initiative, this unit isn't defeated by having no remaining HP and can't be defeated by enemy card abilities.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39435?locale=en",
+    "officialRules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nCassian's leader ability applies to all units that have dealt combat or non-combat damage to an opponent's base. If one of those units gains Sentinel, it can be attacked.\nCassian can be assigned more damage than his remaining HP. While you have the initiative, he can't be defeated directly by card abilities that \u201cdefeat a unit\u201d or by having 0 remaining HP.\nWhile you have the initiative, if Cassian is attacked by a unit with Overwhelm, there is no excess damage if he is not defeated.\n",
+    "officialTextStyled": "<p>Friendly units that have damaged an opponent's base this phase can't be attacked <i>(unless they have Sentinel)</i>.</p>"
+  },
+  "asajj-ventress--i-work-alone": {
+    "text": "Action [Exhaust]: Deal 1 damage to a friendly unit. If you do, deal 1 damage to an enemy unit in the same arena.",
+    "keywords": ["Grit"],
+    "rules": "If the damage to a friendly unit from Asajj's ability is prevented or replaced, you still resolve the damage to an enemy unit.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, choose one:\nDeploy this leader.\nDeploy this leader as an upgrade on a friendly Vehicle unit without a Pilot on it.",
+    "deployBox": "Grit\nAttached unit is a leader unit. It gains Grit and: \u201cOn Attack: You may deal 1 damage to a friendly unit. If you do, deal 1 damage to an enemy unit in the same arena.\u201d\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19476?locale=en",
+    "officialRules": "If the damage to a friendly unit from Asajj's ability is prevented or replaced, you still resolve the damage to an enemy unit.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Deal 1 damage to a friendly unit. If you do, deal 1 damage to an enemy unit in the same arena.</p>"
+  },
+  "admiral-holdo--we-re-not-alone": {
+    "text": "Action [1 resource, Exhaust]: Give a Resistance unit or a unit with a Resistance upgrade on it +2/+2 for this phase.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may give another Resistance unit or a unit with a Resistance upgrade on it +2/+2 for this phase.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19506?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Give a <i><strong>Resistance</strong></i> unit or a unit with a Resistance upgrade on it <strong>+2</strong>/<strong>+2</strong> for this phase.</p>"
+  },
+  "admiral-ackbar--it-s-a-trap-": {
+    "text": "Action [1 resource, Exhaust]: Exhaust a non-leader unit. If you do, its controller creates an X-Wing token.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may exhaust a unit. If you do, its controller creates an X-Wing token.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19551?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Exhaust a non-leader unit. If you do, its controller creates an X-Wing token.</p>"
+  }
+}

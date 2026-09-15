@@ -1,0 +1,122 @@
+{
+  "conveyex-security-captain": {
+    "text": "Enemy Credit tokens lose all abilities.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46637?locale=en",
+    "officialText": "Enemy Credit tokens lose all abilities.",
+    "officialTextStyled": "<p>Enemy Credit tokens lose all abilities.</p>",
+    "officialRules": null
+  },
+  "lieutenant-gorn--i-deserve-worse": {
+    "text": "On Attack: Take control of an enemy Credit token.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47157?locale=en",
+    "officialText": "On Attack: Take control of an enemy Credit token.",
+    "officialTextStyled": "<p><strong>On Attack:</strong> Take control of an enemy Credit token.</p>",
+    "officialRules": null
+  },
+  "tempest-assault": {
+    "text": "If you've dealt damage to an enemy base this phase, deal 2 damage to each enemy space unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40095?locale=en",
+    "officialText": "If you've dealt damage to an enemy base this phase, deal 2 damage to each enemy space unit.",
+    "officialTextStyled": "<p>If you've dealt damage to an enemy base this phase, deal 2 damage to each enemy space unit.</p>",
+    "officialRules": null
+  },
+  "decimator-of-dissidents": {
+    "text": "If you dealt indirect damage this phase, this unit costs 1 resource less to play.\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "keywords": ["Overwhelm"],
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20161?locale=en",
+    "officialText": "If you dealt indirect damage this phase, this unit costs 1 resource less to play.\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "officialTextStyled": "<p>If you dealt indirect damage this phase, this unit costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less to play.</p><p><strong>Overwhelm</strong> <i>(When attacking an enemy unit, deal excess damage to the opponent's base.)</i></p>",
+    "officialRules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "mist-hunter--the-findsman-s-pursuit": {
+    "text": "On Attack: If you played a Bounty Hunter or Pilot card this phase, you may draw a card.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20401?locale=en",
+    "officialText": "On Attack: If you played a Bounty Hunter or Pilot card this phase, you may draw a card.",
+    "officialTextStyled": "<p><strong>On Attack:</strong> If you played a <i><strong>Bounty Hunter</strong></i> or <i><strong>Pilot</strong></i> card this phase, you may draw a card.</p>",
+    "officialRules": null
+  },
+  "the-client--please-lower-your-blaster": {
+    "text": "Action [Exhaust]: If you created a token this phase, exhaust an enemy unit.",
+    "keywords": ["Shielded"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Shielded (When you deploy this leader, give him a Shield token.)\nOn Attack: If you created a token this phase, exhaust an enemy unit.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46132?locale=en",
+    "officialText": "Action [Exhaust]: If you created a token this phase, exhaust an enemy unit.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If you created a token this phase, exhaust an enemy unit.</p>",
+    "officialRules": "The Client’s leader ability still can be used as an action even if you didn't create a token this phase (but you don't exhaust a unit).\n"
+  },
+  "vult-skerris-s-defender--secret-project": {
+    "text": "When Played: If you discarded a card from your hand or deck this phase, give a Shield token to this unit.\nOn Attack: You may deal 1 damage to a space unit and exhaust it.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46432?locale=en",
+    "officialText": "When Played: If you discarded a card from your hand or deck this phase, give a Shield token to this unit.\nOn Attack: You may deal 1 damage to a space unit and exhaust it.",
+    "officialTextStyled": "<p><strong>When Played:</strong> If you discarded a card from your hand or deck this phase, give a Shield token to this unit.</p><p><strong>On Attack:</strong> You may deal 1 damage to a space unit and exhaust it.</p>",
+    "officialRules": null
+  },
+  "outcast--mercenary-starship": {
+    "text": "When a friendly unit enters play (including this one): It gets +1/+0 for this phase.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51887?locale=en",
+    "officialText": "When a friendly unit enters play (including this one): It gets +1/+0 for this phase.",
+    "officialTextStyled": "<p><strong>When a friendly unit enters play </strong><i>(including this one)</i><strong>:</strong> It gets <strong>+1</strong>/<strong>+0</strong> for this phase.</p>",
+    "officialRules": null
+  },
+  "guerilla-soldier": {
+    "text": "When Played: Deal 3 indirect damage to a player. If a base is damaged this way, ready this unit. (That player assigns 3 unpreventable damage among their base and units.)",
+    "keywords": [],
+    "rules": "A player can't assign more indirect damage to a unit than it has remaining HP. Indirect damage is unpreventable and ignores Shields.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20561?locale=en",
+    "officialText": "When Played: Deal 3 indirect damage to a player. If a base is damaged this way, ready this unit. (That player assigns 3 unpreventable damage among their base and units.)",
+    "officialTextStyled": "<p><strong>When Played:</strong> Deal 3 indirect damage to a player. If a base is damaged this way, ready this unit. <i>(That player assigns 3 unpreventable damage among their base and units.)</i></p>",
+    "officialRules": "A player can't assign more indirect damage to a unit than it has remaining HP. Indirect damage is unpreventable and ignores Shields.\n"
+  },
+  "eviscerator--burn-them-away": {
+    "text": "Advantage tokens on friendly units lose all abilities. (They aren't defeated after combat.)\nWhen Played/On Attack: Give 2 Advantage tokens to each other friendly unit.",
+    "keywords": [],
+    "rules": "Friendly Advantage tokens lose all abilities and can't gain abilities while Eviscerator is in play. This means they won't be defeated after combat.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52426?locale=en",
+    "officialText": "Advantage tokens on friendly units lose all abilities. (They aren't defeated after combat.)\nWhen Played/On Attack: Give 2 Advantage tokens to each other friendly unit.",
+    "officialTextStyled": "<p>Advantage tokens on friendly units lose all abilities. <i>(They aren't defeated after combat.)</i></p><p><strong>When Played/On Attack:</strong> Give 2 Advantage tokens to each other friendly unit.</p>",
+    "officialRules": "Friendly Advantage tokens lose all abilities and can't gain abilities while Eviscerator is in play. This means they won't be defeated after combat.\n"
+  }
+}

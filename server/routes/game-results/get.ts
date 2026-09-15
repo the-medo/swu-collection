@@ -75,7 +75,10 @@ export const gameResultGetRoute = new Hono<AuthExtension>().get(
       const results = await db
         .select(gameResultColumns)
         .from(gameResult)
-        .innerJoin(teamDeck, eq(gameResult.deckId, teamDeck.deckId))
+        .innerJoin(
+          teamDeck,
+          and(eq(gameResult.deckId, teamDeck.deckId), eq(teamDeck.teamId, resolvedTeamId)),
+        )
         .where(whereClause)
         .orderBy(desc(gameResult.createdAt));
 

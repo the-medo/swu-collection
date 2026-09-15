@@ -1,0 +1,9 @@
+{
+  "trench-run": {
+    "text": "Attack with a Fighter unit. For this attack, it gets +4/+0 and gains: \u201cOn Attack: Discard 2 cards from the defending player's deck. Deal unpreventable damage equal to the difference in the discarded cards' costs to this unit.\u201d",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAlways discard from the top of a deck, unless an ability specifies otherwise.\nIf you play Trench Run, you must attack with a unit, if able. Units must be ready in order to attack.\n"
+  }
+}

@@ -1,0 +1,222 @@
+{
+  "chewbacca--walking-carpet": {
+    "text": "Action [exhaust]: Play a unit that costs 3 or less from your hand (paying its cost). It gains Sentinel for this phase.",
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\n\nGrit (This unit gains +1/+0 for each damage on it.)",
+    "keywords": ["Sentinel", "Grit"],
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAbilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/65?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAbilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Play a unit that costs <strong>3</strong> or less from your hand <i>(paying its cost)</i>. It gains <strong>Sentinel </strong>for this phase.</p>",
+    "officialDeployBoxStyled": "<p><sKey><strong>Sentinel</strong> <i>(Enemy units in this arena must attack a Sentinel when they attack you.)</i></sKey></p><p><strong>Grit</strong> <i>(This unit gets +1/+0 for each damage on it.)</i></p>"
+  },
+  "fennec-shand--honoring-the-deal": {
+    "text": "Action [1 resource, Exhaust]: Play a unit that costs 4 or less from your hand (paying its cost). Give it Ambush for this phase. (After you play the unit, it may ready and attack an enemy unit.)",
+    "epicAction": "Epic Action: If you control 5\u00a0or more resources, deploy this leader.",
+    "deployBox": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender\u2019s Shields.)\nAction: Play a unit that costs 4 or less from your hand (paying its cost). Give it Ambush for this phase.",
+    "keywords": ["Ambush", "Saboteur"],
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAbilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\nAmbush is an ability that triggers at the same time as \u201cWhen Played\u201d abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nThe ability on Fennec\u2019s unit side cannot be used as an action if you choose not to play a unit, as it would not change the game state.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7943?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAbilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\nAmbush is an ability that triggers at the same time as \u201cWhen Played\u201d abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nThe ability on Fennec\u2019s unit side cannot be used as an action if you choose not to play a unit, as it would not change the game state.\n",
+    "officialTextStyled": "<p><strong>Action [<img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\">]:</strong> Play a unit that costs 4 or less from your hand <i>(paying its cost)</i>. Give it <strong>Ambush</strong> for this phase. <i>(When you play this unit, it may attack an enemy unit.)</i></p>",
+    "officialDeployBoxStyled": "<p><strong>Saboteur</strong> <i>(When this unit attacks, ignore Sentinel and defeat the defender\u2019s Shields.)</i></p><p><strong>Action:</strong> Play a unit that costs 4 or less from your hand <i>(paying its cost)</i>. Give it <strong>Ambush</strong> for this phase.</p>"
+  },
+  "han-solo--worth-the-risk": {
+    "text": "Action [Exhaust]: Play a unit from your hand. It costs 1 resource less. Deal 2 damage to it.",
+    "epicAction": "Epic Action: If you control 5\u00a0or more resources, deploy this leader.",
+    "deployBox": "Action: Play a unit from your hand. It costs 1 resource less. Deal 2 damage to it.",
+    "keywords": [],
+    "rules": "The ability on Han\u2019s unit side cannot be used as an action if you choose not to play a unit, as it would not change the game state.\nWhen using Han\u2019s ability to play a unit, 2 damage is dealt to the played unit before resolving any \u201cWhen Played\u201d abilities.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7928?locale=en",
+    "officialRules": "The ability on Han\u2019s unit side cannot be used as an action if you choose not to play a unit, as it would not change the game state.\nWhen using Han\u2019s ability to play a unit, 2 damage is dealt to the played unit before resolving any \u201cWhen Played\u201d abilities.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Play a unit from your hand. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less. Deal 2 damage to it.</p>",
+    "officialDeployBoxStyled": "<p><strong>Action:</strong> Play a unit from your hand. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less. Deal 2 damage to it.</p>"
+  },
+  "grand-inquisitor--hunting-the-jedi": {
+    "text": "Action [exhaust]: Deal 2 damage to a friendly unit with 3 or less power and ready it.",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may deal 1 damage to another friendly unit with 3 or less power and ready it.",
+    "keywords": [],
+    "rules": "Abilities that refer to a card\u2019s power include temporary modifiers.\nThe unit chosen by Grand Inquisitor\u2019s ability can exceed 3 power after the damage is dealt (for example, if the unit has Grit).\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/230?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s power include temporary modifiers.\nThe unit chosen by Grand Inquisitor\u2019s ability can exceed 3 power after the damage is dealt (for example, if the unit has Grit).\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Deal 2 damage to a friendly unit with <strong>3</strong> or less power and ready it.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> You may deal 1 damage to another friendly unit with <strong>3 </strong>or less power and ready it.</p><p>&nbsp;</p>"
+  },
+  "grand-moff-tarkin--oversector-governor": {
+    "text": "Action [1 resource, exhaust]: Give an Experience token to an Imperial unit.",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may give an Experience token to another Imperial unit.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/200?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Give an Experience token to an <i><strong>IMPERIAL</strong></i> unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> You may give an Experience token to another <i><strong>IMPERIAL</strong></i> unit.</p>"
+  },
+  "maul--a-rival-in-darkness": {
+    "text": "Action [Exhaust]: Attack with a unit. It gains Overwhelm for this attack. (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Overwhelm\nEach other friendly unit gains Overwhelm.",
+    "keywords": ["Overwhelm"],
+    "rules": "If you use Maul's leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14256?locale=en",
+    "officialRules": "If you use Maul's leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Attack with a unit. It gains <strong>Overwhelm</strong> for this attack. <i>(When attacking an enemy unit, deal excess damage to the opponent\u2019s base.)</i></p>",
+    "officialDeployBoxStyled": "<p><strong>Overwhelm</strong></p><p>Each other friendly unit gains Overwhelm.</p>"
+  },
+  "ig-88--ruthless-bounty-hunter": {
+    "text": "Action [Exhaust]: Attack with a unit. If you control more units than the defending player, the attacker gets +1/+0 for this attack.",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Each other friendly unit gains Raid 1. (They get +1/+0 while attacking.)",
+    "keywords": ["Raid"],
+    "rules": "If you use IG-88\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/389?locale=en",
+    "officialRules": "If you use IG-88\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Attack with a unit. If you control more units than the defending player, the attacker gets <strong>+1/+0</strong> for this attack.</p>",
+    "officialDeployBoxStyled": "<p>Each other friendly unit gains <strong>Raid 1</strong>. <i>(They get +1/+0 while attacking.)</i></p><p>&nbsp;</p>"
+  },
+  "rey--more-than-a-scavenger": {
+    "text": "Action [1 resource, Exhaust]: Give an Experience token to a unit with 2 or less power.",
+    "epicAction": "Epic Action: If you control 6\u00a0or more resources, deploy this leader.",
+    "deployBox": "Restore 3 (When this unit attacks, heal 3\u00a0damage from your base.)\nOn Attack: You may give an Experience token to a unit with 2 or less power.",
+    "keywords": ["Restore"],
+    "rules": "Abilities that refer to a card\u2019s power include all modifiers, including upgrades and temporary effects.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7903?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s power include all modifiers, including upgrades and temporary effects.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Give an Experience token to a unit with <strong>2</strong> or less power.</p>",
+    "officialDeployBoxStyled": "<p><strong>Restore 3</strong> <i>(When this unit attacks, heal 3&nbsp;damage from your base.)</i></p><p><strong>On Attack:</strong> You may give an Experience token to a unit with <strong>2</strong> or less power.</p>"
+  },
+  "wat-tambor--techno-union-foreman": {
+    "text": "Action [Exhaust]: If a friendly unit was defeated this phase, give a unit +2/+2 for this phase.",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "On Attack: If a friendly unit was defeated this phase, you may give another unit +2/+2 for this phase.",
+    "keywords": [],
+    "rules": "Wat's leader ability still can be used as an action even if no friendly unit left play this phase (but no unit gets +2/+2).\nWat's \"On Attack\" ability can't be used to give himself +2/+2.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14241?locale=en",
+    "officialRules": "Wat's leader ability still can be used as an action even if no friendly unit left play this phase (but no unit gets +2/+2).\nWat's \"On Attack\" ability can't be used to give himself +2/+2.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If a friendly unit was defeated this phase, give a unit <strong>+2/+2</strong> for this phase.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> If a friendly unit was defeated this phase, you may give another unit <strong>+2/+2</strong> for this phase.</p>"
+  },
+  "general-grievous--general-of-the-droid-armies": {
+    "text": "Action [Exhaust]: Give a Droid unit Sentinel for this phase. (Units in its arena can't attack your non-Sentinel units or your base.)",
+    "epicAction": "Epic Action: If you control 6\u00a0or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
+    "deployBox": "On Attack: You may give a Droid unit +1/+0 and Sentinel for this phase.",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/13985?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [<img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\">]:</strong> Give a <strong><i>Droid</i></strong> unit <strong>Sentinel</strong> for this phase. <i>(Enemy units in this arena must attack a Sentinel when they attack you.)</i></p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> You may give a <i><strong>Droid</strong></i> unit <strong>+1</strong>/<strong>+0</strong> and <strong>Sentinel</strong> for this phase.</p>"
+  },
+  "ahsoka-tano--fighting-for-peace": {
+    "text": "Action [Exhaust, use the Force (lose your Force token)]: Give a friendly unit Sentinel for this phase. (Enemy units in its arena must attack a sentinel when they attack you.)",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may give a friendly unit Sentinel for this phase.",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27039?locale=en",
+    "officialRules": "Ahsoka's unit side ability can be used to give herself Sentinel.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, use the Force</strong> <i>(lose your Force token)</i><strong>]:</strong> Give a friendly unit <strong>Sentinel</strong> for this phase. <i>(Enemy units in its arena must attack a sentinel when they attack you.)</i></p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> You may give a friendly unit <strong>Sentinel</strong> for this phase.</p>"
+  },
+  "barriss-offee--we-have-become-villains": {
+    "text": "Action [Exhaust, use the Force (lose your Force token)]: Play an event from your hand. It costs 1 resource less.",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Action [use the Force]: Play an event from your hand. It costs 1 resource less.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27089?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, use the Force</strong> <i>(lose your Force token)</i><strong>]:</strong> Play an event from your hand. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less.</p>",
+    "officialDeployBoxStyled": "<p><strong>Action [use the Force]:</strong> Play an event from your hand. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less.</p>"
+  },
+  "cal-kestis--i-can-t-keep-hiding": {
+    "text": "Action [Exhaust, use the Force (lose your Force token)]: An opponent chooses a ready unit they control. Exhaust that unit.",
+    "epicAction": "Epic Action: If you control 4 or more resources, deploy this leader.",
+    "deployBox": "On Attack: An opponent chooses a ready unit they control. Exhaust that unit.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27099?locale=en",
+    "officialRules": "If there are multiple opponents, the controlling player chooses which one will be \"an opponent.\"\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, use the Force</strong> <i>(lose your Force token)</i><strong>]:</strong> An opponent chooses a ready unit they control. Exhaust that unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> An opponent chooses a ready unit they control. Exhaust that unit.</p>"
+  },
+  "kanan-jarrus--help-us-survive": {
+    "text": "Action [1 resource, Exhaust]: Give a Shield token to a Creature or Spectre unit.",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Shielded (When you deploy this leader, give a Shield token to him.)\nWhile you control another Creature or Spectre unit, this unit gets +2/+2.",
+    "keywords": ["Shielded"],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27044?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Give a Shield token to a <strong><i>Creature</i></strong> or <strong><i>Spectre</i></strong> unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>Shielded</strong> <i>(When you deploy this leader, give a Shield token to him.)</i></p><p>While you control another <strong><i>Creature</i></strong> or <strong><i>Spectre</i></strong> unit, this unit gets <strong>+2</strong>/<strong>+2</strong>.</p>"
+  },
+  "kit-fisto--focused-jedi-master": {
+    "text": "Action [1 resource, Exhaust]: If you attacked with a Jedi unit this phase, deal 2 damage to a unit.",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nThis unit gets +1/+0 for each other friendly Jedi unit.",
+    "keywords": ["Saboteur"],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27079?locale=en",
+    "officialRules": "Kit\u2019s leader ability still can be used as an action even if you haven't attacked with a Jedi unit (but you don't deal damage).\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If you attacked with a <strong><i>Jedi</i></strong> unit this phase, deal 2 damage to a unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>Saboteur</strong> <i>(When this unit attacks, ignore Sentinel and defeat the defender's Shields.)</i></p><p>This unit gets <strong>+1</strong>/<strong>+0</strong> for each other friendly <strong><i>Jedi</i></strong> unit.</p>"
+  },
+  "c-3po--human-cyborg-relations": {
+    "text": "Action [1 resource, Exhaust]: If you control an exhausted unit, exhaust a unit.",
+    "epicAction": "Epic Action: If you control 4 or more resources, deploy this leader.",
+    "deployBox": "On Attack: If you control another exhausted unit, you may exhaust a unit.",
+    "keywords": [],
+    "rules": "C-3PO\u2019s leader ability still can be used as an action even if you don't control an exhausted unit (but no unit gets exhausted).\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39450?locale=en",
+    "officialRules": "C-3PO\u2019s leader ability still can be used as an action even if you don't control an exhausted unit (but no unit gets exhausted).\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If you control an exhausted unit, exhaust a unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> If you control another exhausted unit, you may exhaust a unit.</p>"
+  },
+  "sly-moore--cipher-in-the-dark": {
+    "text": "Action [1 resource, Exhaust]: If there are 4 or more exhausted units in play, create a Spy token.",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may deal 2 damage to an exhausted unit.",
+    "keywords": [],
+    "rules": "Sly\u2019s leader ability still can be used as an action even if fewer than 4 exhausted units are in play (but no Spy token is created).\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39445?locale=en",
+    "officialRules": "Sly\u2019s leader ability still can be used as an action even if fewer than 4 exhausted units are in play (but no Spy token is created).\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If there are 4 or more exhausted units in play, create a Spy token.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> You may deal 2 damage to an exhausted unit.</p>"
+  },
+  "vel-sartha--aldhani-insurgent": {
+    "text": "Action [Exhaust]: Give an Experience token to a unit. An opponent creates a Credit token.",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may give an Experience token to a unit. If you do, an opponent creates a Credit token.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46082?locale=en",
+    "officialRules": "If there are multiple opponents, the controlling player chooses which one will be \u201can opponent.\u201d\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Give an Experience token to a unit. An opponent creates a Credit token.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> You may give an Experience token to a unit. If you do, an opponent creates a Credit token.</p>"
+  },
+  "bo-katan-kryze--reclaiming-mandalore": {
+    "text": "Action [2 resources, Exhaust]: If you control a unit in each arena, create a Mandalorian token.",
+    "epicAction": "Epic Action: If the number of resources you control plus the number of friendly Mandalorian units is 10 or more, deploy this leader.",
+    "deployBox": "Other friendly Mandalorian units get +1/+0.\nOn Attack: If you control a unit in each arena, create a Mandalorian token.",
+    "keywords": [],
+    "rules": "Bo-Katan\u2019s leader ability still can be used as an action even if you don't control a unit in each arena (but you don't create a token).\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51732?locale=en",
+    "officialRules": "Bo-Katan\u2019s leader ability still can be used as an action even if you don't control a unit in each arena (but you don't create a token).\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_2_cd0914a233.png\" alt=\"icon_cost_2.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If you control a unit in each arena, create a Mandalorian token.</p>",
+    "officialDeployBoxStyled": "<p>Other friendly <strong><i>Mandalorian</i></strong> units get <strong>+1</strong>/<strong>+0</strong>.</p><p><strong>On Attack:</strong> If you control a unit in each arena, create a Mandalorian token.</p>"
+  },
+  "emperor-palpatine--according-to-my-design": {
+    "text": "Action [Exhaust]: Choose an exhausted friendly unit. Give an Advantage token to it for each other friendly unit.",
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may choose another exhausted friendly unit. If you do, give an Advantage token to it for each other friendly unit.",
+    "keywords": [],
+    "rules": "Emperor Palpatine's ability gives Advantage tokens equal to the number of friendly units minus 1.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51757?locale=en",
+    "officialRules": "Emperor Palpatine's ability gives Advantage tokens equal to the number of friendly units minus 1.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Choose an exhausted friendly unit. Give an Advantage token to it for each other friendly unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> You may choose another exhausted friendly unit. If you do, give an Advantage token to it for each other friendly unit.</p>"
+  }
+}

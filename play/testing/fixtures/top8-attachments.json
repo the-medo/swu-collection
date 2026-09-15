@@ -1,0 +1,102 @@
+{
+  "blade-of-talzin--a-gift-of-shadows": {
+    "text": "Attach to a non-Vehicle unit.\nWhen Defeated: If this upgrade was on a friendly Night unit, return this upgrade from your discard pile to your hand.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51957?locale=en",
+    "officialText": "Attach to a non-Vehicle unit.\nWhen Defeated: If this upgrade was on a friendly Night unit, return this upgrade from your discard pile to your hand.",
+    "officialRules": null
+  },
+  "axe-woves--accomplished-warrior": {
+    "text": "Shielded\nThis unit gets +1/+1 for each upgrade on him.",
+    "keywords": [
+      "Shielded"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27334?locale=en",
+    "officialText": "Shielded\nThis unit gets +1/+1 for each upgrade on him.",
+    "officialRules": "A unit \"attacks and defeats a unit\" if it defeats the defender at any point during the attack.\n"
+  },
+  "heroic-purrgil": {
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nWhile attacking using Ambush, this unit gets +2/+0.",
+    "keywords": [
+      "Ambush"
+    ],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52716?locale=en",
+    "officialText": "Ambush (When you play this unit, it may attack an enemy unit.)\nWhile attacking using Ambush, this unit gets +2/+0.",
+    "officialRules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\n"
+  },
+  "8d8--daimyo-s-majordomo": {
+    "text": "Hidden\nAction [Exhaust]: Deal 1 damage to another friendly unit. If you do, search the top 5 cards of your deck for a unit, reveal it, and draw it.",
+    "keywords": [
+      "Hidden"
+    ],
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52271?locale=en",
+    "officialText": "Hidden\nAction [Exhaust]: Deal 1 damage to another friendly unit. If you do, search the top 5 cards of your deck for a unit, reveal it, and draw it.",
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n"
+  },
+  "liberty--draw-their-fire-": {
+    "text": "Sentinel\nWhen Played/On Attack: Exhaust an enemy unit and return all upgrades on it that cost 4 or less to their owner's hands.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47172?locale=en",
+    "officialText": "Sentinel\nWhen Played/On Attack: Exhaust an enemy unit and return all upgrades on it that cost 4 or less to their owner's hands.",
+    "officialRules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "r5-d4--built-for-adventure": {
+    "text": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nOn Attack: Defeat all upgrades on the defending unit.",
+    "keywords": [
+      "Support"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52461?locale=en",
+    "officialText": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nOn Attack: Defeat all upgrades on the defending unit.",
+    "officialRules": null
+  },
+  "pong-krell--it-s-treason--then": {
+    "text": "Grit\nWhen this unit completes an attack (and survives): You may defeat a unit with less remaining HP than this unit's power.",
+    "keywords": [
+      "Grit"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27214?locale=en",
+    "officialText": "Grit\nWhen this unit completes an attack (and survives): You may defeat a unit with less remaining HP than this unit's power.",
+    "officialRules": "A unit must survive an attack to trigger its \"when this unit completes an attack\" abilities.\nAbilities that refer to a card’s power include temporary modifiers.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n"
+  },
+  "the-desolation-of-hoth": {
+    "text": "Defeat up to 2 enemy units that each cost 3 or less.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39350?locale=en",
+    "officialText": "Defeat up to 2 enemy units that each cost 3 or less.",
+    "officialRules": null
+  }
+}

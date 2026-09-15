@@ -1,0 +1,58 @@
+{
+  "bossk--hunting-his-prey": {
+    "text": "Action [Exhaust]: Deal 1 damage to a unit with a Bounty. You may give it +1/+0 for this phase.",
+    "keywords": [
+      "Bounty"
+    ],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7918?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Deal 1 damage to a unit with a <strong>Bounty</strong>. You may give it <strong>+1</strong>/<strong>+0</strong> for this phase.</p>",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When you collect a bounty: You may collect that bounty again. Use this ability only once each round.",
+    "officialDeployBoxStyled": "<p><strong>When you collect a bounty:</strong> You may collect that bounty again. Use this ability only once each round.</p>"
+  },
+  "jabba-the-hutt--his-high-exaltedness": {
+    "text": "Action [Exhaust]: Choose a unit. For this phase, it gains: “Bounty — The next unit you play this phase costs 1 resource less.”",
+    "keywords": [
+      "Bounty"
+    ],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5381?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Choose a unit. For this phase, it gains: “<strong>Bounty</strong> — The next unit you play this phase costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less.”</p>",
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "When Deployed: Another friendly unit captures an enemy non-leader unit.\nAction [Exhaust]: Choose a unit. For this phase, it gains: “Bounty — The next unit you play this phase costs 2 resources less.”",
+    "officialDeployBoxStyled": "<p><strong>When Deployed:</strong> Another friendly unit captures an enemy non-leader unit.</p><p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Choose a unit. For this phase, it gains: “<strong>Bounty</strong> — The next unit you play this phase costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_2_cd0914a233.png\" alt=\"icon_cost_2.png\"> less.”</p>"
+  },
+  "cartel-turncoat": {
+    "text": "Bounty — Draw a card. (When this unit is defeated or captured, your opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/6276?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Bounty</strong> — Draw a card. <i>(When this unit is defeated or captured, your opponent collects its bounty.)</i></p>"
+  },
+  "fugitive-wookiee": {
+    "text": "Bounty — Exhaust a unit. (When this unit is defeated or captured, your opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/6351?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Bounty</strong> — Exhaust a unit. <i>(When this unit is defeated or captured, your opponent collects its bounty.)</i></p>"
+  },
+  "death-mark": {
+    "text": "Attached unit gains: “Bounty — Draw 2 cards.” (When this unit is defeated or captured, its opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/6181?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p>Attached unit gains: “<strong>Bounty</strong> — Draw 2 cards.” <i>(When this unit is defeated or captured, its opponent collects its bounty.)</i></p>"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "krrsantan--hit-and-run": {
+    "text": "Ambush\nOverwhelm\nAction [discard 2 cards from your hand]: Return this unit to your hand (from play).",
+    "keywords": [
+      "Ambush",
+      "Overwhelm"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46472?locale=en",
+    "officialText": "Ambush\nOverwhelm\nAction [discard 2 cards from your hand]: Return this unit to your hand (from play).",
+    "officialTextStyled": "<p><strong>Ambush</strong></p><p><strong>Overwhelm</strong></p><p><strong>Action [discard 2 cards from your hand]:</strong> Return this unit to your hand <i>(from play)</i>.</p>",
+    "officialRules": "(ERRATA) \"Return this unit to its owner's hand\"\nAmbush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "dryden-vos--i-never-ask-twice": {
+    "text": "Action [Exhaust, discard a card that costs 6 or more from your hand]: Play a unit that costs 5 or less from your hand (paying its cost). It gains Ambush for this phase.",
+    "keywords": [
+      "Ambush",
+      "Overwhelm"
+    ],
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAbilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nAmbush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "Overwhelm\nAction [discard a card from your hand]: Play a unit from your hand (paying its cost). It gains Ambush for this phase.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39410?locale=en",
+    "officialText": "Action [Exhaust, discard a card that costs 6 or more from your hand]: Play a unit that costs 5 or less from your hand (paying its cost). It gains Ambush for this phase.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, discard a card that costs </strong>6<strong> or more from your hand]:</strong> Play a unit that costs 5 or less from your hand <i>(paying its cost)</i>. It gains <strong>Ambush</strong> for this phase.</p>",
+    "officialRules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAbilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nAmbush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "chewbacca--hero-of-kessel": {
+    "text": "Action [1 resource, Exhaust, defeat a friendly resource]: Deal 2 damage to a unit and create a Credit token.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action [4 resources]: Deploy this leader.",
+    "deployBox": "On Attack: You may defeat a friendly resource. If you do, deal 2 damage to a unit and create a Credit token.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46117?locale=en",
+    "officialText": "Action [1 resource, Exhaust, defeat a friendly resource]: Deal 2 damage to a unit and create a Credit token.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, defeat a friendly resource]:</strong> Deal 2 damage to a unit and create a Credit token.</p>",
+    "officialRules": null
+  },
+  "sebulba--especially-dangerous-dug": {
+    "text": "Action [Exhaust, discard a card from your deck]: A friendly unit gains Raid 1 for this phase.",
+    "keywords": [
+      "Raid"
+    ],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 4 or more resources, deploy this leader.",
+    "deployBox": "Raid 1\nOn Attack: Discard a card from your deck.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46112?locale=en",
+    "officialText": "Action [Exhaust, discard a card from your deck]: A friendly unit gains Raid 1 for this phase.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, discard a card from your deck]:</strong> A friendly unit gains <strong>Raid 1</strong> for this phase.</p>",
+    "officialRules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n"
+  },
+  "jabba-the-hutt--crime-boss": {
+    "text": "Action [1 resource, Exhaust, return a friendly Underworld unit to its owner's hand]: Create a Credit token.",
+    "keywords": [
+      "Ambush"
+    ],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Action: Play an Underworld unit from your hand. If you defeated a Credit while paying its cost, that unit gains Ambush for this phase.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46127?locale=en",
+    "officialText": "Action [1 resource, Exhaust, return a friendly Underworld unit to its owner's hand]: Create a Credit token.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, return a friendly </strong><strong><i>Underworld</i></strong><strong> unit to its owner's hand]:</strong> Create a Credit token.</p>",
+    "officialRules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\nJabba's action ability cannot be used as an action if you can't play a unit, as it would not change the game state.\n"
+  },
+  "alliance-outpost": {
+    "text": "Epic Action [defeat a friendly token]: Give an Experience or Shield token to a unit, or create a Credit token.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46147?locale=en",
+    "officialText": "Epic Action [defeat a friendly token]: Give an Experience or Shield token to a unit, or create a Credit token.",
+    "officialTextStyled": "<p><strong>Epic Action [defeat a friendly token]:</strong> Give an Experience or Shield token to a unit, or create a Credit token.</p>",
+    "officialRules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\n"
+  }
+}

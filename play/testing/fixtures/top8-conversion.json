@@ -1,0 +1,20 @@
+{
+  "corvus--inferno-squadron-raider": {
+    "text": "Restore 2\nWhen Played: You may attach a friendly Pilot unit or upgrade to this unit. (Defeat all upgrades on that Pilot and remove all damage from it.)",
+    "unique": true,
+    "rules": "If you choose to attach a Pilot unit to Corvus as an upgrade, defeat all upgrades on that Pilot and remove all damage from it.\n",
+    "keywords": [
+      "Restore"
+    ],
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19661?locale=en",
+    "officialTextStyled": "<p><strong>Restore 2</strong></p><p><strong>When Played:</strong> You may attach a friendly <i><strong>Pilot</strong></i> unit or upgrade to this unit. <i>(Defeat all upgrades on that Pilot and remove all damage from it.)</i></p>"
+  },
+  "eject": {
+    "text": "Detach a Pilot upgrade, move it to the ground arena as a unit, and exhaust it. Draw a card.",
+    "unique": false,
+    "rules": "Moving the Pilot doesn't cause it to leave or enter play.\n",
+    "keywords": [],
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20101?locale=en",
+    "officialTextStyled": "<p>Detach a <i><strong>Pilot</strong></i> upgrade, move it to the ground arena as a unit, and exhaust it. Draw a card.</p>"
+  }
+}

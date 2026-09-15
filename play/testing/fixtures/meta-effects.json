@@ -1,0 +1,122 @@
+{
+  "anakin-skywalker--champion-of-mortis": {
+    "text": "When Played: If there is a Heroism card in your discard pile, you may give a unit \u20133/\u20133 for this phase.\nWhen Played: If there is a Villainy card in your discard pile, you may give a unit \u20133/\u20133 for this phase.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "the-cyborg-mech--mysterious-threat": {
+    "text": "Grit \nWhen Played: Either deal 2 damage to an undamaged ground unit or 5 damage to a damaged ground unit.",
+    "keywords": ["Grit"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "huyang--your-aptitude-falls-short": {
+    "text": "On Attack: You may give an upgraded unit \u20134/\u20130 for this phase.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "yaddle--a-chance-to-make-things-right": {
+    "text": "Restore 1\nOn Attack: Each other friendly Jedi unit gains Restore 1 for this phase.",
+    "keywords": ["Restore"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "death-space-skirmisher": {
+    "text": "When Played: If you control another space unit, you may exhaust a unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "blue-ace--colorful-racer": {
+    "text": "Ambush\nOn Attack: Ready an exhausted enemy unit.",
+    "keywords": ["Ambush"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "kill-switch": {
+    "text": "When Played: Exhaust attached unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "t-6-shuttle-1974--with-a-mentor-s-dedication": {
+    "text": "Sentinel \nAction [Exhaust]: Give another unit +2/+2 for this phase. You may attack with that unit.",
+    "keywords": ["Sentinel"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "knowledge-and-defense": {
+    "text": "Give a unit \u20132/\u20132 for this phase.\nDraw a card.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "incapacitate": {
+    "text": "Give a unit \u20132/\u20132 for this phase.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "out-the-airlock": {
+    "text": "Give a unit \u20135/\u20135 for this phase.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "the-axe-forgets": {
+    "text": "Return a non-leader unit that costs 3 or less to its owner's hand.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "the-tree-remembers": {
+    "text": "An enemy unit loses all abilities for this phase. If it costs 3 or less, defeat it.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "jyn-erso--take-the-next-chance": {
+    "text": "When Played: Either give an Experience token to a unit or exhaust a unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "corellian-hounds": {
+    "text": "If an opponent controls no ground units, this unit enters play ready.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "special-forces-tie-fighter": {
+    "text": "When Played: If an opponent controls more space units than you, ready this unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "rose-tico--now-it-s-worth-it": {
+    "text": "If you control a non-<uq> unit, this unit enters play ready.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "crackshot-v-wing": {
+    "text": "When Played: If you control no other Fighter units, deal 1 damage to this unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "piercing-shot": {
+    "text": "Defeat all Shield tokens on a unit. Deal 3 damage to that unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "ahsoka-tano--trust-in-the-force": {
+    "text": "Action [Exhaust]: Choose a unit with less power than a friendly unit. It gets +2/+0 for this phase.",
+    "keywords": ["Support"],
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Support (When you deploy this leader, you may attack with another unit. It gains this unit's other abilities for this attack.)\nOn Attack: You may give a unit with less power than this unit +2/+0 for this phase."
+  }
+}

@@ -1,0 +1,67 @@
+.cf-replay-controls {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding: 7px 18px;
+  border-bottom: 1px solid #33465b65;
+  background: #0c1727;
+}
+.cf-replay-transport {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.cf-replay-transport button {
+  height: 30px;
+  width: 30px;
+}
+.cf-replay-scrubber {
+  flex: 1;
+  min-width: 110px;
+  accent-color: #65ddea;
+}
+.cf-replay-options {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+}
+.cf-replay-options select {
+  max-width: 155px;
+  color: #dce8f4;
+  background: #132237;
+  border: 1px solid #33465b;
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 11px;
+}
+.cf-replay-options button {
+  font-size: 11px;
+  height: 28px;
+  padding: 0 4px;
+}
+.cf-replay-follow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+@media (max-width: 900px) {
+  .cf-replay-options {
+    width: 100%;
+  }
+}
+@media (max-width: 600px) {
+  .cf-replay-controls {
+    padding: 5px 8px;
+    gap: 4px 8px;
+  }
+  .cf-replay-options {
+    gap: 4px 8px;
+  }
+  .cf-replay-options select {
+    max-width: 130px;
+  }
+}

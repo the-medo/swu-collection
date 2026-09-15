@@ -1,0 +1,37 @@
+{
+  "credit": {
+    "text": "While paying resources, you may defeat this token. If you do, pay 1 resource less.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "arvel-skeen--win-and-walk-away": {
+    "text": "When Played/On Attack: You may defeat a Credit token (belonging to any player). If you do, deal 1 damage to a unit or base.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "taramyn-barcona--eyes-front-": {
+    "text": "When Played: You may defeat a Credit token (belonging to any player). If you do, give an Experience token to this unit and another friendly unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "defiant-scrapper": {
+    "text": "When Played: You may defeat an enemy Credit token.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "champion-s-kt9-podracer": {
+    "text": "When Played: Create a Credit token.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  }
+}

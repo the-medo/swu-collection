@@ -1,0 +1,471 @@
+{
+  "recordedAt": "2026-09-09T08:28:56.820Z",
+  "sourceRevision": "be5fe525b71c0f53f5dc01db938d0bbccd83eaea",
+  "playTreeDirty": false,
+  "harnessSha256": "31bcdc5faaab0319fccf325b4142bcbaf4634b69dab7ac4adf3689352ec0d1f9",
+  "versions": {
+    "state": 10,
+    "engine": "crossfire-0.10.0",
+    "cards": "crossfire-core-10",
+    "rules": "swu-8.0",
+    "format": "core-practice"
+  },
+  "environment": {
+    "bun": "1.3.14",
+    "platform": "linux",
+    "arch": "x64",
+    "cpu": "AMD Custom CPU 1772",
+    "logicalCpus": 12,
+    "ramBytes": 16357249024
+  },
+  "method": {
+    "samples": 300,
+    "warmup": 30,
+    "processSamples": 3,
+    "viewerCount": 3,
+    "history": "Complete facts are projected; no transport/delta cache or database calls are included."
+  },
+  "fixtures": [
+    {
+      "name": "nested-trigger",
+      "description": "Opponent heal-base choice before an older Ambush",
+      "cards": 132,
+      "facts": 6,
+      "pendingFrames": 4,
+      "checkpointBytes": 33407,
+      "projectionBytes": {
+        "firstPlayer": 10770,
+        "secondPlayer": 11451,
+        "spectator": 9802
+      },
+      "metrics": {
+        "command": {
+          "samples": 300,
+          "p50Ms": 0.3800650000000019,
+          "p95Ms": 0.5887969999999996,
+          "maxMs": 1.7295430000000351
+        },
+        "checkpointEncode": {
+          "samples": 300,
+          "p50Ms": 0.03559699999999566,
+          "p95Ms": 0.044473000000039065,
+          "maxMs": 1.0032959999999775
+        },
+        "checkpointDecode": {
+          "samples": 300,
+          "p50Ms": 0.41659299999997756,
+          "p95Ms": 0.6571260000000052,
+          "maxMs": 4.071987999999976
+        },
+        "threeViewerProjections": {
+          "samples": 300,
+          "p50Ms": 0.2677539999999681,
+          "p95Ms": 0.34914600000001883,
+          "maxMs": 2.364296999999965
+        },
+        "freshProcessResume": {
+          "samples": 3,
+          "p50Ms": 47.60183099999995,
+          "p95Ms": 51.086423999999965,
+          "maxMs": 51.086423999999965
+        }
+      }
+    },
+    {
+      "name": "private-search",
+      "description": "Choose two exact units from a private top-five search",
+      "cards": 131,
+      "facts": 3,
+      "pendingFrames": 3,
+      "checkpointBytes": 32243,
+      "projectionBytes": {
+        "firstPlayer": 11474,
+        "secondPlayer": 9474,
+        "spectator": 8506
+      },
+      "metrics": {
+        "command": {
+          "samples": 300,
+          "p50Ms": 0.23809800000003634,
+          "p95Ms": 0.285857999999962,
+          "maxMs": 1.3117770000000064
+        },
+        "checkpointEncode": {
+          "samples": 300,
+          "p50Ms": 0.033944000000019514,
+          "p95Ms": 0.03945499999997537,
+          "maxMs": 0.0900499999999056
+        },
+        "checkpointDecode": {
+          "samples": 300,
+          "p50Ms": 0.31762700000001587,
+          "p95Ms": 0.3882899999999836,
+          "maxMs": 1.5824360000000297
+        },
+        "threeViewerProjections": {
+          "samples": 300,
+          "p50Ms": 0.26262400000007347,
+          "p95Ms": 0.36932500000000346,
+          "maxMs": 2.372500999999943
+        },
+        "freshProcessResume": {
+          "samples": 3,
+          "p50Ms": 54.079403000000184,
+          "p95Ms": 67.34274600000003,
+          "maxMs": 67.34274600000003
+        }
+      }
+    },
+    {
+      "name": "search-randomness",
+      "description": "Server shuffle of unchosen search remainder",
+      "cards": 131,
+      "facts": 3,
+      "pendingFrames": 3,
+      "checkpointBytes": 32138,
+      "projectionBytes": {
+        "firstPlayer": 9977,
+        "secondPlayer": 9474,
+        "spectator": 8506
+      },
+      "metrics": {
+        "command": {
+          "samples": 300,
+          "p50Ms": 0.3460109999998622,
+          "p95Ms": 0.5909620000002178,
+          "maxMs": 1.9050120000001698
+        },
+        "checkpointEncode": {
+          "samples": 300,
+          "p50Ms": 0.05377099999986967,
+          "p95Ms": 0.0895780000000741,
+          "maxMs": 0.8542769999999109
+        },
+        "checkpointDecode": {
+          "samples": 300,
+          "p50Ms": 0.29992399999991903,
+          "p95Ms": 0.6368279999999231,
+          "maxMs": 1.769117999999935
+        },
+        "threeViewerProjections": {
+          "samples": 300,
+          "p50Ms": 0.2276480000000447,
+          "p95Ms": 0.30093600000009246,
+          "maxMs": 1.792171000000053
+        },
+        "freshProcessResume": {
+          "samples": 3,
+          "p50Ms": 42.536925999999994,
+          "p95Ms": 42.75088800000003,
+          "maxMs": 42.75088800000003
+        }
+      }
+    },
+    {
+      "name": "borrowed-trigger",
+      "description": "Order borrowed Migs and printed Sabine attack abilities",
+      "cards": 135,
+      "facts": 5,
+      "pendingFrames": 6,
+      "checkpointBytes": 35352,
+      "projectionBytes": {
+        "firstPlayer": 12768,
+        "secondPlayer": 11755,
+        "spectator": 10787
+      },
+      "metrics": {
+        "command": {
+          "samples": 300,
+          "p50Ms": 0.3072779999999966,
+          "p95Ms": 0.35307399999987865,
+          "maxMs": 1.6373100000000704
+        },
+        "checkpointEncode": {
+          "samples": 300,
+          "p50Ms": 0.038080999999920095,
+          "p95Ms": 0.046037000000069384,
+          "maxMs": 0.8119970000000194
+        },
+        "checkpointDecode": {
+          "samples": 300,
+          "p50Ms": 0.4284259999999449,
+          "p95Ms": 0.6146060000000944,
+          "maxMs": 1.7754990000000817
+        },
+        "threeViewerProjections": {
+          "samples": 300,
+          "p50Ms": 0.39523400000007314,
+          "p95Ms": 0.5492730000000847,
+          "maxMs": 3.785639000000174
+        },
+        "freshProcessResume": {
+          "samples": 3,
+          "p50Ms": 45.01268200000004,
+          "p95Ms": 47.31863799999974,
+          "maxMs": 47.31863799999974
+        }
+      }
+    },
+    {
+      "name": "shield-replacement",
+      "description": "Choose a physical Shield while borrowed damage and combat remain pending",
+      "cards": 135,
+      "facts": 5,
+      "pendingFrames": 8,
+      "checkpointBytes": 34924,
+      "projectionBytes": {
+        "firstPlayer": 11755,
+        "secondPlayer": 12672,
+        "spectator": 10787
+      },
+      "metrics": {
+        "command": {
+          "samples": 300,
+          "p50Ms": 0.37050700000008874,
+          "p95Ms": 0.4443260000002738,
+          "maxMs": 1.537912000000233
+        },
+        "checkpointEncode": {
+          "samples": 300,
+          "p50Ms": 0.030626999999640248,
+          "p95Ms": 0.03964399999995294,
+          "maxMs": 0.824319999999716
+        },
+        "checkpointDecode": {
+          "samples": 300,
+          "p50Ms": 0.4269230000004427,
+          "p95Ms": 0.8488170000000537,
+          "maxMs": 3.4504690000003393
+        },
+        "threeViewerProjections": {
+          "samples": 300,
+          "p50Ms": 0.38121700000010605,
+          "p95Ms": 0.44868399999995745,
+          "maxMs": 3.660914000000048
+        },
+        "freshProcessResume": {
+          "samples": 3,
+          "p50Ms": 46.35762100000011,
+          "p95Ms": 48.815724000000046,
+          "maxMs": 48.815724000000046
+        }
+      }
+    },
+    {
+      "name": "piloting-trigger",
+      "description": "Upgrade-only healing with a ground Pilot attached to a space Vehicle",
+      "cards": 132,
+      "facts": 3,
+      "pendingFrames": 3,
+      "checkpointBytes": 32407,
+      "projectionBytes": {
+        "firstPlayer": 12945,
+        "secondPlayer": 10118,
+        "spectator": 9150
+      },
+      "metrics": {
+        "command": {
+          "samples": 300,
+          "p50Ms": 0.3793630000000121,
+          "p95Ms": 0.4400279999999839,
+          "maxMs": 1.4880479999997078
+        },
+        "checkpointEncode": {
+          "samples": 300,
+          "p50Ms": 0.03610800000024028,
+          "p95Ms": 0.041758999999728985,
+          "maxMs": 0.7458929999997963
+        },
+        "checkpointDecode": {
+          "samples": 300,
+          "p50Ms": 0.33213500000010754,
+          "p95Ms": 0.5996979999999894,
+          "maxMs": 3.5702040000001034
+        },
+        "threeViewerProjections": {
+          "samples": 300,
+          "p50Ms": 0.2870199999997567,
+          "p95Ms": 0.348515000000134,
+          "maxMs": 3.809074000000237
+        },
+        "freshProcessResume": {
+          "samples": 3,
+          "p50Ms": 44.83375500000011,
+          "p95Ms": 46.11978399999998,
+          "maxMs": 46.11978399999998
+        }
+      }
+    },
+    {
+      "name": "delayed-player",
+      "description": "Initiative holder selects whose regroup effects resolve first",
+      "cards": 132,
+      "facts": 2,
+      "pendingFrames": 8,
+      "checkpointBytes": 32872,
+      "projectionBytes": {
+        "firstPlayer": 10790,
+        "secondPlayer": 11316,
+        "spectator": 9822
+      },
+      "metrics": {
+        "command": {
+          "samples": 300,
+          "p50Ms": 0.21582600000010643,
+          "p95Ms": 0.2684150000000045,
+          "maxMs": 1.366711000000123
+        },
+        "checkpointEncode": {
+          "samples": 300,
+          "p50Ms": 0.0363180000003922,
+          "p95Ms": 0.04250000000001819,
+          "maxMs": 0.07732500000020082
+        },
+        "checkpointDecode": {
+          "samples": 300,
+          "p50Ms": 0.2983110000000124,
+          "p95Ms": 0.3729809999999816,
+          "maxMs": 1.3343990000003032
+        },
+        "threeViewerProjections": {
+          "samples": 300,
+          "p50Ms": 0.2841940000002978,
+          "p95Ms": 0.34405699999979333,
+          "maxMs": 3.610429999999724
+        },
+        "freshProcessResume": {
+          "samples": 3,
+          "p50Ms": 41.67348200000015,
+          "p95Ms": 47.65189499999997,
+          "maxMs": 47.65189499999997
+        }
+      }
+    },
+    {
+      "name": "delayed-order",
+      "description": "Controller orders exact-copy defeats before either player draws",
+      "cards": 132,
+      "facts": 2,
+      "pendingFrames": 8,
+      "checkpointBytes": 32856,
+      "projectionBytes": {
+        "firstPlayer": 11741,
+        "secondPlayer": 10790,
+        "spectator": 9822
+      },
+      "metrics": {
+        "command": {
+          "samples": 300,
+          "p50Ms": 0.3091709999998784,
+          "p95Ms": 0.3816069999998035,
+          "maxMs": 1.6305760000000191
+        },
+        "checkpointEncode": {
+          "samples": 300,
+          "p50Ms": 0.03596799999968425,
+          "p95Ms": 0.041748999999981606,
+          "maxMs": 0.9173460000001796
+        },
+        "checkpointDecode": {
+          "samples": 300,
+          "p50Ms": 0.28633799999988696,
+          "p95Ms": 0.3367830000001959,
+          "maxMs": 1.221668000000136
+        },
+        "threeViewerProjections": {
+          "samples": 300,
+          "p50Ms": 0.288923000000068,
+          "p95Ms": 0.33327600000029634,
+          "maxMs": 1.8993819999996049
+        },
+        "freshProcessResume": {
+          "samples": 3,
+          "p50Ms": 43.76626699999997,
+          "p95Ms": 46.46570400000019,
+          "maxMs": 46.46570400000019
+        }
+      }
+    },
+    {
+      "name": "long-history",
+      "description": "Round 40 after real passing/regroup inputs, with large hands and full logs",
+      "cards": 230,
+      "facts": 390,
+      "pendingFrames": 1,
+      "checkpointBytes": 105852,
+      "projectionBytes": {
+        "firstPlayer": 100759,
+        "secondPlayer": 74860,
+        "spectator": 37934
+      },
+      "metrics": {
+        "command": {
+          "samples": 300,
+          "p50Ms": 0.9781100000000151,
+          "p95Ms": 1.4252509999996619,
+          "maxMs": 2.9756960000004256
+        },
+        "checkpointEncode": {
+          "samples": 300,
+          "p50Ms": 0.10498800000004849,
+          "p95Ms": 0.11559699999997974,
+          "maxMs": 0.8269749999999476
+        },
+        "checkpointDecode": {
+          "samples": 300,
+          "p50Ms": 1.1519960000005085,
+          "p95Ms": 2.287913000000117,
+          "maxMs": 3.862554000000273
+        },
+        "threeViewerProjections": {
+          "samples": 300,
+          "p50Ms": 2.035848999999871,
+          "p95Ms": 4.4040619999996125,
+          "maxMs": 7.348199000000022
+        },
+        "freshProcessResume": {
+          "samples": 3,
+          "p50Ms": 53.2766529999999,
+          "p95Ms": 54.94371900000078,
+          "maxMs": 54.94371900000078
+        }
+      }
+    }
+  ],
+  "memory": {
+    "retainedGames": 100,
+    "retainedCards": 14322,
+    "distribution": "Round-robin across the nine fixture states",
+    "before": {
+      "process": {
+        "rss": 179572736,
+        "heapTotal": 10490880,
+        "heapUsed": 17431111,
+        "external": 7303638,
+        "arrayBuffers": 0
+      },
+      "jsc": {
+        "heapSize": 11508678,
+        "heapCapacity": 17670662,
+        "objectCount": 71323
+      }
+    },
+    "after": {
+      "process": {
+        "rss": 170336256,
+        "heapTotal": 14012416,
+        "heapUsed": 17431111,
+        "external": 6427934,
+        "arrayBuffers": 0
+      },
+      "jsc": {
+        "heapSize": 15334750,
+        "heapCapacity": 20333902,
+        "objectCount": 162130
+      }
+    },
+    "jscHeapDeltaBytes": 3826072,
+    "jscHeapDeltaPerGameBytes": 38260.72
+  },
+  "limitations": "Headless microbenchmarks, not a concurrency or production-capacity claim. Fresh-process measurements include startup and serialization. Memory deltas are noisy. Persistence, transport, slow viewers and mixed live service load require separate tests."
+}

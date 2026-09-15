@@ -1,0 +1,58 @@
+{
+  "grand-admiral-sloane--holding-the-empire-together": {
+    "text": "Action [Exhaust]: Choose one:\nGive each ground unit Sentinel and Overwhelm for this phase.\nGive each space unit Sentinel and Overwhelm for this phase.\n",
+    "keywords": [
+      "Sentinel",
+      "Overwhelm"
+    ],
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Overwhelm\nEach other friendly unit gains Overwhelm and Sentinel.",
+    "rules": "Sloane's leader ability gives Sentinel and Overwhelm to each ground or space unit when the ability is used. Units that enter play after the ability is used don't gain Sentinel or Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "leia-organa--someone-who-loves-you": {
+    "text": "Action [2 resources, Exhaust]: For this phase, give a unit +1/+1 for each different aspect it has.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Overwhelm\nWhen Deployed: Choose a unit. Give an Experience token to that unit for each different aspect among units you control.",
+    "rules": null
+  },
+  "sabine-s-masterpiece--crazy-colorful": {
+    "text": "On Attack: If you control a:\n<bullet>Vigilance unit, heal 2 damage from a base.\nCommand unit, give an Experience token to a unit.\nAggression unit, deal 1 damage to a unit or a base.\nCunning unit, exhaust or ready a resource.</bullet>\n",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "enoch--solemn-servant": {
+    "text": "When Defeated: You may deal up to 6 damage to your base. The next unit you play this phase costs 1 resource less for every 2 damage dealt this way.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "If Enoch's ability's damage to your base is prevented, then there is no cost reduction.\n"
+  },
+  "mando-s-n-1-starfighter--faster-than-a-fathier": {
+    "text": "Support\nOn Attack: You may exhaust a friendly  leader. If you do, this unit gets +2/+0 for this attack.",
+    "keywords": [
+      "Support"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "You may exhaust leaders or leader units as part of Mando's N-1 Starfighter's \"\"On Attack\"\" ability. Upgrades can't be exhausted.\n"
+  },
+  "canto-bight": {
+    "text": "Epic Action: Play a card from your hand, ignoring 1 of its Vigilance, Command, Aggression, or Cunning aspect penalties.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "daimyo-s-palace": {
+    "text": "Epic Action: Play a card from your hand, ignoring 1 of its Vigilance, Command, Aggression, or Cunning aspect penalties.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "enfys-nest--until-we-can-go-no-higher": {
+    "text": "When you use an “On Attack” ability: You may pay 2 resources and exhaust this leader. If you do, use that ability again.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When you use an “On Attack” ability: You may use that ability again. Use this ability only once each round.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46122?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>When you use an “On Attack” ability:</strong> You may pay <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_2_cd0914a233.png\" alt=\"icon_cost_2.png\"> and exhaust this leader. If you do, use that ability again.</p>",
+    "officialDeployBoxStyled": "<p><strong>When you use an “On Attack” ability:</strong> You may use that ability again. Use this ability only once each round.</p>"
+  },
+  "gar-saxon--viceroy-of-mandalore": {
+    "text": "Each friendly upgraded unit gets +1/+0.",
+    "keywords": [],
+    "rules": "If Gar Saxon is defeated simultaneously with other friendly units, all “When Defeated” abilities still trigger.\nYou may only use Gar Saxon’s unit side ability to return upgrades that were attached to the unit when it was defeated.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Each friendly upgraded unit gets +1/+0 and gains: “When Defeated: You may return an upgrade that was attached to this unit to its owner’s hand.”",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7888?locale=en",
+    "officialRules": "If Gar Saxon is defeated simultaneously with other friendly units, all “When Defeated” abilities still trigger.\nYou may only use Gar Saxon’s unit side ability to return upgrades that were attached to the unit when it was defeated.\n",
+    "officialTextStyled": "<p>Each friendly upgraded unit gets <strong>+1</strong>/<strong>+0</strong>.</p>",
+    "officialDeployBoxStyled": "<p>Each friendly upgraded unit gets <strong>+1</strong>/<strong>+0</strong> and gains: “<strong>When Defeated:</strong> You may return an upgrade that was attached to this unit to its owner’s hand.”</p>"
+  }
+}

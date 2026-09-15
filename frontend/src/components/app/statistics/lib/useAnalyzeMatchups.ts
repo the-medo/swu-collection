@@ -102,7 +102,7 @@ export const useAnalyzeMatchups = (
 
       const entry = matrix[deckKey][opponentDeckKey];
 
-      entry.total++;
+      if (m.result !== undefined) entry.total++;
       if (m.result === 3) {
         entry.wins++;
       } else if (m.result === 0) {

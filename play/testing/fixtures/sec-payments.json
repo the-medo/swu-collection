@@ -1,0 +1,9 @@
+{
+  "vuutun-palaa--droid-control-ship": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39985?locale=en",
+    "unique": true,
+    "text": "This unit costs 1 resource less to play for each friendly Droid unit.\nEach friendly Droid unit may be exhausted to pay costs as if it were a resource.",
+    "rules": "Vuutun Palaa's second ability is only in effect once Vuutun Palaa is in play. Friendly Droid units can't be exhausted to pay for Vuutun Palaa.\n",
+    "keywords": []
+  }
+}

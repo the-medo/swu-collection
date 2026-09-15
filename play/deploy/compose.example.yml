@@ -1,0 +1,43 @@
+# Reference for a separate Coolify worker resource on the existing private network.
+# Supply the actual image, network and public hostname through Coolify.
+services:
+  crossfire:
+    image: ${CROSSFIRE_IMAGE:?Build Dockerfile.crossfire from the matching application revision}
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 20s
+    expose:
+      - '3110'
+    environment:
+      CROSSFIRE_ENABLED: '1'
+      CROSSFIRE_HOST: '0.0.0.0'
+      CROSSFIRE_PORT: '3110'
+      DATABASE_URL: ${DATABASE_URL:?Use the existing PostgreSQL container's private address}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:?Exact public SWUBASE origin}
+      CROSSFIRE_REPLAY_IDLE_MS: '240000'
+      CROSSFIRE_REPLAY_CHECKPOINT_ACTIONS: '5'
+      CROSSFIRE_REPLAY_MAX_MIB: '256'
+      CROSSFIRE_REPLAY_GAME_MIB: '64'
+      CROSSFIRE_REPLAY_MAX_GAMES: '32'
+      CROSSFIRE_MAX_GAMES: '128'
+      # Optional immediate bug-report posts. These belong on the worker.
+      DISCORD_CROSSFIRE_REPORTS_ENABLED: ${DISCORD_CROSSFIRE_REPORTS_ENABLED:-false}
+      DISCORD_CROSSFIRE_REPORTS_CHANNEL_ID: ${DISCORD_CROSSFIRE_REPORTS_CHANNEL_ID:-}
+      DISCORD_CROSSFIRE_REPORTS_APP_BASE_URL: ${DISCORD_CROSSFIRE_REPORTS_APP_BASE_URL:-}
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN:-}
+    # Initial limits to measure under your workload, not demonstrated game capacity.
+    cpus: 2
+    mem_limit: 2g
+    networks: [swubase]
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=${SWUBASE_NETWORK}'
+      - 'traefik.http.routers.crossfire.rule=Host(`${SWUBASE_HOST:?Public hostname without scheme}`) && PathPrefix(`/api/ws/crossfire/`)'
+      - 'traefik.http.routers.crossfire.priority=200'
+      - 'traefik.http.routers.crossfire.entrypoints=https'
+      - 'traefik.http.routers.crossfire.tls=true'
+      - 'traefik.http.services.crossfire.loadbalancer.server.port=3110'
+networks:
+  swubase:
+    external: true
+    name: ${SWUBASE_NETWORK:?Existing Coolify private network}

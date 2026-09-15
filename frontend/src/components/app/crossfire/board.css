@@ -1,0 +1,2864 @@
+/* The game table has its own dark palette in either application theme. */
+.cf-game,
+.cf-mobile-log,
+.cf-card-menu,
+.cf-preview,
+.cf-inspect,
+.cf-pile-dialog,
+.cf-match-dialog {
+  --background: 222 46% 7%;
+  --foreground: 214 32% 91%;
+  --card: 220 36% 10%;
+  --card-foreground: 214 32% 91%;
+  --popover: 220 36% 10%;
+  --popover-foreground: 214 32% 91%;
+  --muted: 217 26% 16%;
+  --muted-foreground: 215 20% 62%;
+  --accent: 215 32% 20%;
+  --accent-foreground: 210 40% 96%;
+  --border: 215 25% 22%;
+  --input: 215 25% 22%;
+  --ring: 187 78% 58%;
+  color: #e1eaf5;
+  background-color: #080f1b;
+  color-scheme: dark;
+}
+.cf-game {
+  height: 100dvh;
+  min-height: 460px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: 13px;
+}
+.cf-game button,
+.cf-game a {
+  -webkit-tap-highlight-color: transparent;
+}
+.cf-game button:focus-visible,
+.cf-game a:focus-visible {
+  outline: 2px solid #65ddea;
+  outline-offset: 3px;
+}
+.cf-header {
+  min-height: 54px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 20px;
+  border-bottom: 1px solid #33465b65;
+  background: #0a1220;
+  z-index: 5;
+}
+.cf-header > div:first-child > svg {
+  color: #83e1e8;
+  width: 22px;
+}
+.cf-wordmark {
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.2;
+}
+.cf-wordmark small {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.38em;
+  color: #7f97ad;
+  margin-top: 4px;
+}
+.cf-header-phase {
+  color: #99aec3;
+  border-left: 1px solid #314257;
+  padding-left: 16px;
+  font-size: 12px;
+}
+.cf-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-left: auto;
+  min-width: 0;
+}
+.cf-toolbar-utilities {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 8px;
+  border-left: 1px solid #314257;
+}
+.cf-toolbar-button {
+  height: 36px;
+  flex-shrink: 0;
+}
+.cf-toolbar-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  flex-shrink: 0;
+  justify-content: center;
+  border-radius: 6px;
+}
+.cf-toolbar-icon:hover {
+  background-color: #24354a;
+}
+.cf-toolbar-undo {
+  background: #f5c451;
+  color: #201706;
+  gap: 4px;
+}
+.cf-toolbar-undo:hover {
+  background: #ffda75;
+  color: #201706;
+}
+.cf-toolbar-bookmark {
+  background: #175ca7;
+  color: #edf7ff;
+}
+.cf-toolbar-bookmark:hover {
+  background: #2179d2;
+  color: #fff;
+}
+.cf-toolbar-report {
+  background: #a42e3c;
+  color: #fff0f2;
+}
+.cf-toolbar-report:hover {
+  background: #c83b4c;
+  color: #fff;
+}
+.cf-match-score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #314257;
+  border-radius: 8px;
+  background: #132035;
+  font-size: 13px;
+}
+.cf-match-score strong {
+  font-size: 30px;
+  white-space: nowrap;
+  color: #f5c451;
+}
+.cf-match-score strong span {
+  color: #7f97ad;
+}
+.cf-reveal-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.cf-reveal-toggle > svg {
+  width: 15px;
+}
+.cf-leave {
+  color: #aebed0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+}
+.cf-connection {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #8194a9;
+  font-size: 10px;
+}
+.cf-status-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #6ee0cb;
+  box-shadow: 0 0 9px #6ee0cb55;
+  flex-shrink: 0;
+}
+.cf-connection:not(.cf-connection-connected) .cf-status-dot {
+  background: #f5b05a;
+}
+.cf-notice {
+  margin: 0;
+  padding: 6px 16px;
+  background: #654320;
+  color: #ffe1b3;
+  font-size: 12px;
+}
+.cf-match {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 270px;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+.cf-table {
+  --cf-card-width: clamp(74px, 6.3vw, 115px);
+  --cf-base-width: clamp(96px, 9vw, 146px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 25% 22%, #1e486333, transparent 50%),
+    radial-gradient(ellipse at 75% 80%, #2b3f7540, transparent 55%),
+    repeating-radial-gradient(
+      ellipse at 50% 50%,
+      transparent 0 185px,
+      #5c8daf0a 186px 187px,
+      transparent 188px 350px
+    ),
+    #091421;
+}
+.cf-table::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, #b2cfe7 70%, transparent),
+    radial-gradient(1px 1px at 75% 32%, #b2cfe7 70%, transparent),
+    radial-gradient(1px 1px at 40% 67%, #b2cfe7 70%, transparent);
+  background-size:
+    171px 237px,
+    283px 379px,
+    397px 281px;
+}
+.cf-player-rail {
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 20px;
+  min-height: 108px;
+  height: 17%;
+  max-height: 154px;
+  flex-shrink: 0;
+}
+.cf-player-rail.cf-opponent {
+  height: 14%;
+  max-height: 116px;
+}
+.cf-player-rail.cf-own {
+  border-top: 1px solid #80c6e718;
+  background: linear-gradient(0deg, #142b4160, transparent);
+}
+.cf-supplies {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  height: 100%;
+}
+.cf-pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 52px;
+  height: 100%;
+  font-size: 9px;
+  color: #8fabc2;
+  background: transparent;
+  border: 0;
+}
+button.cf-pile:hover {
+  color: #bfeef7;
+}
+.cf-pile-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% - 20px);
+  max-height: 83px;
+  aspect-ratio: 5 / 7;
+  width: auto;
+  border: 1px solid #6a829344;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #101f32;
+  box-shadow:
+    3px 3px 0 #203045,
+    5px 5px 0 #0b1420;
+}
+.cf-pile > span:last-child {
+  white-space: nowrap;
+}
+.cf-pile b {
+  margin-left: 4px;
+  color: #d7e7f6;
+}
+.cf-resources {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 5px 12px;
+  border-left: 1px solid #5b79943b;
+  margin-left: 4px;
+  min-width: 95px;
+  text-align: left;
+  border-radius: 4px;
+}
+.cf-resources:hover {
+  background: #3b7c951f;
+}
+.cf-resources > span {
+  display: grid;
+  grid-template-columns: 17px 1fr;
+  column-gap: 7px;
+  align-items: center;
+}
+.cf-resources svg {
+  width: 15px;
+  height: 15px;
+  color: #e7c479;
+}
+.cf-resources b {
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  line-height: 1;
+}
+.cf-resources small {
+  color: #7f99b0;
+  font-size: 13px;
+  font-weight: 400;
+}
+.cf-resources em {
+  font-size: 8px;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  grid-column: 2;
+  color: #8fa7bc;
+  margin-top: 2px;
+}
+.cf-hand {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 0 14px;
+  --hand-width: clamp(84px, 8vw, 126px);
+}
+.cf-hand-fan {
+  display: flex;
+  align-items: flex-end;
+  width: min(100%, calc(var(--fan-count) * 76px + 50px));
+  padding-right: var(--hand-width);
+  height: 100%;
+}
+.cf-hand-slot {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: calc(var(--hand-width) * 1.4);
+  transform-origin: calc(var(--hand-width) / 2) bottom;
+  transform: translateY(calc(22px + var(--fan-drop))) rotate(var(--fan-angle));
+  transition: transform 180ms ease;
+}
+.cf-hand-slot:last-child {
+  flex: 0;
+}
+.cf-hand-slot > .cf-card {
+  width: var(--hand-width);
+  height: 100%;
+}
+.cf-hand-slot:hover,
+.cf-hand-slot:focus-within {
+  z-index: 12;
+  transform: translateY(-32px) rotate(0deg) scale(1.5);
+}
+.cf-resource-row {
+  display: flex;
+  align-items: center;
+  width: clamp(90px, 13vw, 195px);
+  min-width: 0;
+  flex-shrink: 1;
+  overflow-x: auto;
+  padding: 12px 6px;
+  scrollbar-width: thin;
+}
+.cf-resource-row .cf-card {
+  width: 43px;
+  margin-right: -26px;
+}
+.cf-resource-row .cf-card:last-child {
+  margin-right: 0;
+}
+.cf-resource-row .cf-card:hover,
+.cf-resource-row .cf-card:focus-visible {
+  z-index: 5;
+}
+.cf-resource-row .cf-copy {
+  display: none;
+}
+.cf-player-tokens {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 100%;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.cf-player-tokens:empty {
+  display: none;
+}
+.cf-card.cf-token {
+  width: auto;
+  min-width: 30px;
+  height: 24px;
+  aspect-ratio: auto;
+  border-color: #70b6db;
+  background: #153951;
+}
+.cf-token-label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 5px;
+  font-size: 8px;
+  white-space: nowrap;
+}
+.cf-token-label svg {
+  width: 12px;
+  height: 12px;
+}
+.cf-token-experience {
+  color: #97edb9;
+  background: #183e32 !important;
+  border-color: #5bba87 !important;
+}
+.cf-token-advantage {
+  color: #dfc1ff;
+  background: #34264c !important;
+  border-color: #ad87d0 !important;
+}
+.cf-token-the-force {
+  color: #e4c9ff;
+  background: #332544 !important;
+  border-color: #ab8bcd !important;
+}
+.cf-token-credit {
+  color: #f4d490;
+  background: #44361c !important;
+  border-color: #ac8c47 !important;
+}
+.cf-token .cf-copy,
+.cf-token .cf-attachment-mark {
+  display: none;
+}
+.cf-rail-label {
+  min-width: 84px;
+  color: #96b1c9;
+  text-align: right;
+  font-size: 11px;
+}
+.cf-rail-label small {
+  display: block;
+  font-size: 9px;
+  color: #607d98;
+  margin-top: 3px;
+}
+.cf-hidden-hand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  position: relative;
+  padding: 0 12px 9px;
+}
+.cf-hidden-card {
+  display: block;
+  height: 100%;
+  max-height: 97px;
+  aspect-ratio: 5 / 7;
+  border: 1px solid #3a5167;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 0 -9px;
+  box-shadow: 0 4px 10px #0008;
+}
+.cf-hidden-card {
+  transform: translateY(var(--fan-drop)) rotate(var(--fan-angle));
+  transform-origin: center bottom;
+}
+.cf-hand-count {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0a1423e8;
+  padding: 2px 9px;
+  border: 1px solid #334961;
+  border-radius: 8px;
+  color: #a1b6cb;
+  font-size: 9px;
+  white-space: nowrap;
+}
+.cf-card-back {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #080f18;
+}
+.cf-card-back > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cf-battlefield {
+  z-index: 1;
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--cf-base-width) minmax(0, 1fr);
+  grid-template-rows: minmax(100px, 1fr) 62px minmax(100px, 1fr);
+  gap: 8px 14px;
+  padding: 4px 18px;
+}
+.cf-arena {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #5c87a329;
+  border-radius: 13px 4px 13px 4px;
+  background: #12233728;
+  overflow: hidden;
+}
+.cf-arena.cf-opponent {
+  border-top-color: #d3796b45;
+  background: linear-gradient(180deg, #702d2614, #12233718 45%);
+}
+.cf-arena.cf-own {
+  border-bottom-color: #65c9e045;
+  background: linear-gradient(0deg, #176f8c17, #12233718 45%);
+}
+.cf-arena-cards {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: safe center;
+  justify-content: safe center;
+  gap: 22px 16px;
+  padding: 9px 12px 16px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.cf-empty-arena {
+  color: #65869e13;
+  margin: auto;
+}
+.cf-empty-arena svg {
+  width: 57px;
+  height: 57px;
+  stroke-width: 0.6;
+}
+.cf-unit-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-right: 4px;
+  padding-bottom: 5px;
+}
+.cf-card {
+  position: relative;
+  width: var(--cf-card-width, 100px);
+  aspect-ratio: 5 / 7;
+  display: block;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid #70859980;
+  border-radius: 6px;
+  background: #0b1420;
+  color: #eff7ff;
+  box-shadow: 0 5px 14px #0007;
+  cursor: pointer;
+  transition:
+    border-color 0.16s,
+    box-shadow 0.16s,
+    opacity 0.16s,
+    rotate 0.2s,
+    translate 0.16s;
+  isolation: isolate;
+}
+.cf-card-art {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.cf-card-art img {
+  border-radius: inherit;
+}
+.cf-art-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  min-height: 30px;
+  padding: 6px;
+  font-size: 10px;
+  text-align: center;
+  background: linear-gradient(140deg, #1c3a4d, #10192b);
+}
+.cf-card[data-exhausted='true']:not([data-zone='captured']) {
+  rotate: 12deg;
+}
+.cf-card[data-exhausted='true'] .cf-card-art {
+  filter: saturate(0.7) brightness(0.8);
+}
+.cf-card:hover {
+  z-index: 4;
+  border-color: #b2d7e7;
+}
+.cf-card[data-available='true'] {
+  border-color: #62c8d0;
+  box-shadow:
+    0 0 0 1px #62c8d03b,
+    0 5px 15px #0008;
+}
+.cf-card[data-target='true'] {
+  border: 2px solid #f1c678;
+  box-shadow:
+    0 0 0 3px #f0bd622b,
+    0 0 24px #eeaf482a;
+}
+.cf-card[data-target='true']:hover {
+  box-shadow:
+    0 0 0 3px #f0bd6266,
+    0 0 30px #eeaf4855;
+}
+.cf-card.cf-card-selected,
+.cf-card.cf-card-highlighted {
+  border-color: #82ecf4;
+  box-shadow:
+    0 0 0 3px #5be0ec90,
+    0 0 25px #38b7d530;
+  z-index: 3;
+}
+.cf-card.cf-card-muted {
+  opacity: 0.5;
+}
+.cf-stat {
+  position: absolute;
+  bottom: -7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 25px;
+  height: 29px;
+  padding: 0 3px;
+  border-radius: 6px 6px 9px 9px;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 2px #0007;
+  border: 1px solid #fffa;
+  box-shadow: 0 3px 5px #0006;
+}
+.cf-power {
+  left: -7px;
+  background: linear-gradient(135deg, #e06454, #882d35);
+}
+.cf-hp {
+  right: -7px;
+  background: linear-gradient(135deg, #62cfea, #266d99);
+}
+.cf-damage {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  translate: -50% 0;
+  min-width: 24px;
+  height: 25px;
+  padding: 0 4px;
+  background: #b82e35;
+  border: 1px solid #f18b81;
+  border-radius: 5px;
+  font-size: 19px;
+  font-weight: 800;
+  text-align: center;
+  box-shadow: 0 2px 7px #0009;
+}
+.cf-card-landscape {
+  width: 100%;
+  aspect-ratio: 7 / 5;
+}
+.cf-card-landscape .cf-hp {
+  right: -4px;
+  bottom: -3px;
+}
+.cf-card-landscape .cf-damage {
+  bottom: 27%;
+  width: 33px;
+  height: 35px;
+  font-size: 27px;
+}
+.cf-copy,
+.cf-attachment-mark {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  padding: 1px 4px;
+  background: #21344e;
+  border: 1px solid #7a94ab;
+  border-radius: 4px;
+  font-size: 9px;
+}
+.cf-attachment-mark {
+  right: -3px;
+  left: auto;
+}
+.cf-selected-amount {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  min-width: 24px;
+  height: 24px;
+  padding: 1px 5px;
+  font-weight: 800;
+  color: #06131e;
+  background: #81e1e6;
+  border: 2px solid #d2f8fc;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px #0009;
+}
+.cf-upgrades {
+  display: flex;
+  justify-content: center;
+  margin-top: 9px;
+  gap: 4px;
+  width: 100%;
+  max-width: 160px;
+  flex-wrap: wrap;
+}
+.cf-upgrades .cf-card {
+  width: 31px;
+}
+.cf-upgrades .cf-card:hover,
+.cf-captured .cf-card:hover {
+  z-index: 7;
+}
+.cf-upgrades .cf-copy,
+.cf-upgrades .cf-attachment-mark {
+  display: none;
+}
+.cf-captured {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cf-captive-slot {
+  position: absolute;
+  top: calc(var(--captive-index) * 10px);
+  left: 0;
+  width: 100%;
+  aspect-ratio: 5 / 7;
+  transform: rotate(90deg);
+  z-index: -100;
+  pointer-events: none;
+}
+.cf-captive-slot .cf-card {
+  pointer-events: auto;
+  width: 100%;
+  border-color: #b09058;
+}
+.cf-unit-stack:has(.cf-captured) {
+  padding-inline: calc(var(--cf-card-width) * 0.2);
+}
+.cf-captive-slot:is(:hover, :focus-within) {
+  z-index: 3;
+}
+.cf-base-slot:has(.cf-captured) {
+  isolation: isolate;
+}
+.cf-base-slot > .cf-captured {
+  width: 80%;
+  left: 10%;
+  top: -35%;
+}
+.cf-captured .cf-stat,
+.cf-captured .cf-copy {
+  display: none;
+}
+.cf-command {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 4px;
+  min-height: 0;
+}
+.cf-command-slot {
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+}
+.cf-command-slot .cf-card {
+  max-height: calc((100dvh - 370px) / 4);
+  width: auto;
+  max-width: 100%;
+}
+.cf-player-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #a4bfd3;
+  font-size: 10px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.cf-opponent .cf-player-label {
+  color: #d79d95;
+}
+.cf-initiative {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  padding: 2px 4px;
+  border: 1px solid #b08a4d70;
+  background: #64472033;
+  border-radius: 4px;
+  color: #ebca83;
+  font-size: 8px;
+}
+.cf-deployed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 48px;
+  aspect-ratio: 7 / 5;
+  border: 1px dashed #48667e;
+  border-radius: 6px;
+  font-size: 10px;
+  color: #7094ad;
+  text-align: center;
+}
+.cf-deployed small {
+  font-size: 8px;
+  padding: 0 5px;
+}
+.cf-action-band {
+  position: relative;
+  isolation: isolate;
+  grid-column: 1 / -1;
+  min-height: 46px;
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  background: #091322d9;
+  border: 1px solid #607e9333;
+  border-radius: 7px;
+  box-shadow: 0 4px 20px #0002;
+  max-height: 62px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.cf-action-band.cf-your-choice {
+  border-color: #54a7b352;
+  background: linear-gradient(90deg, #0e2633e6, #0b1727ef);
+}
+.cf-action-hint,
+.cf-waiting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  margin: 0;
+  white-space: nowrap;
+}
+.cf-action-hint small,
+.cf-waiting small {
+  color: #91a8bf;
+  font-size: 10px;
+  font-weight: 400;
+  margin-left: 4px;
+}
+.cf-target-instruction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  color: #f0d297;
+}
+.cf-target-instruction > svg {
+  flex-shrink: 0;
+  width: 18px;
+}
+.cf-target-instruction strong {
+  font-size: 12px;
+}
+.cf-target-instruction strong span {
+  font-weight: 400;
+}
+.cf-target-instruction p {
+  font-size: 11px;
+  color: #bda987;
+  margin-top: 2px;
+}
+.cf-target-instruction kbd {
+  margin-left: 6px;
+  opacity: 0.6;
+  font-size: 9px;
+}
+.cf-prompt {
+  min-width: 0;
+  font-size: 12px;
+  width: 100%;
+}
+.cf-action-hint:not([hidden]) + .cf-prompt {
+  width: auto;
+}
+.cf-action-hint:not([hidden]) + .cf-prompt > h2 {
+  display: none;
+}
+.cf-prompt h2,
+.cf-prompt p {
+  margin-bottom: 5px;
+  font-size: 11px;
+}
+.cf-prompt-options {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.cf-prompt-options button {
+  font-size: 11px;
+  background: #274355;
+  color: #dfecf7;
+  border: 1px solid #47647d;
+  padding: 5px 12px;
+}
+.cf-prompt-options button:hover {
+  background: #3a5a70;
+}
+.cf-prompt-options button:disabled {
+  opacity: 0.35;
+}
+.cf-prompt-options [data-option-kind='pass'],
+.cf-prompt-options [data-option-kind='decline-effect'] {
+  background: transparent;
+}
+.cf-prompt-options [data-option-kind='take-initiative'] {
+  color: #edcf8a;
+  border-color: #a2824777;
+  background: #73532327;
+}
+.cf-choice-cards {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  overflow-x: auto;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+.cf-choice-cards .cf-card {
+  width: 66px;
+}
+.cf-result {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: #ade0ed;
+}
+.cf-result strong {
+  font-size: 18px;
+}
+.cf-result a {
+  font-size: 11px;
+  text-decoration: underline;
+}
+.cf-table-help {
+  z-index: 1;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 3px 10px 7px;
+  text-align: center;
+  color: #658299;
+  font-size: 9px;
+}
+.cf-table-help span {
+  margin: 0 8px;
+  opacity: 0.4;
+}
+.cf-log-rail {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  background: #0a121f;
+  border-left: 1px solid #4b6b833b;
+}
+.cf-log-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 17px;
+  border-bottom: 1px solid #4b6b8333;
+}
+.cf-log-heading > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.cf-round-marker {
+  margin: 16px 16px 4px;
+  font-size: 9px;
+  letter-spacing: 0.17em;
+  color: #72c9d5;
+}
+.cf-round-marker span {
+  display: block;
+  margin-top: 5px;
+  color: #e1ebf5;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.cf-log {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 14px 16px;
+}
+.cf-log-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 10px;
+  color: #8098ae;
+  padding-bottom: 9px;
+}
+.cf-log-toolbar h2 {
+  font-size: 10px;
+  font-weight: 500;
+}
+.cf-log-toolbar label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+}
+.cf-log-entries {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: 4px;
+  font-size: 11px;
+  line-height: 1.65;
+}
+.cf-log-entries > p {
+  padding: 10px 0;
+  border-bottom: 1px solid #516a8222;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.cf-log-entries button {
+  color: #93d4e3;
+  text-decoration-color: #5aa1b3;
+}
+.cf-log-footer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 15px 16px;
+  border-top: 1px solid #4b6b832e;
+  color: #617e97;
+  font-size: 8px;
+  letter-spacing: 0.13em;
+}
+.cf-log-footer > span:last-child {
+  margin-left: auto;
+  font-size: 7px;
+}
+.cf-scheduled {
+  margin: 0 16px 12px;
+  color: #90a8bf;
+  font-size: 10px;
+  max-height: 120px;
+  overflow: auto;
+}
+.cf-scheduled p {
+  padding: 5px 0;
+}
+.cf-log-toggle,
+.cf-log-close {
+  display: none;
+}
+.cf-card-menu {
+  border: 1px solid #4b687b;
+}
+.cf-card-menu button {
+  color: #d7e8f4;
+  font-size: 12px;
+}
+.cf-card-menu button:hover {
+  background: #254052;
+}
+.cf-pile-dialog {
+  --cf-card-width: 100px;
+}
+.cf-pile-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-height: 65dvh;
+  overflow-y: auto;
+  padding: 14px;
+}
+@media (min-width: 1700px) {
+  .cf-match {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+  .cf-arena-cards {
+    gap: 25px;
+  }
+}
+@media (max-height: 760px) and (min-width: 901px) {
+  .cf-player-rail {
+    min-height: 82px;
+  }
+  .cf-player-rail.cf-own {
+    max-height: 113px;
+  }
+  .cf-table {
+    --cf-card-width: 80px;
+    --cf-base-width: 105px;
+  }
+  .cf-command-slot .cf-card {
+    max-height: calc((100dvh - 295px) / 4);
+  }
+}
+@media (max-width: 1150px) {
+  .cf-match {
+    grid-template-columns: minmax(0, 1fr) 225px;
+  }
+  .cf-player-rail {
+    gap: 8px;
+    padding-inline: 12px;
+  }
+  .cf-rail-label {
+    display: none;
+  }
+  .cf-action-hint small {
+    display: none;
+  }
+  .cf-battlefield {
+    gap: 6px 9px;
+    padding-inline: 10px;
+  }
+  .cf-supplies {
+    gap: 8px;
+  }
+  .cf-resources {
+    padding-inline: 7px;
+    min-width: 75px;
+  }
+  .cf-header-controls {
+    gap: 4px;
+  }
+  .cf-header-phase {
+    max-width: 150px;
+  }
+  .cf-header .cf-connection {
+    display: none;
+  }
+}
+@media (max-width: 900px) {
+  .cf-match {
+    grid-template-columns: minmax(0, 1fr);
+    position: relative;
+  }
+  .cf-log-rail {
+    display: none;
+  }
+  .cf-log-open {
+    display: flex;
+    position: absolute;
+    z-index: 20;
+    inset: 0 0 0 auto;
+    width: min(310px, 90vw);
+    box-shadow: -20px 0 60px #000b;
+  }
+  .cf-log-toggle,
+  .cf-log-close {
+    display: inline-flex;
+  }
+  .cf-table {
+    --cf-card-width: clamp(62px, 10vw, 100px);
+    --cf-base-width: clamp(80px, 14vw, 122px);
+  }
+  .cf-header {
+    padding-inline: 12px;
+    flex-wrap: wrap;
+  }
+  .cf-header-controls {
+    flex-basis: 100%;
+    max-width: none;
+  }
+  .cf-connection {
+    display: none;
+  }
+  .cf-command-slot .cf-card {
+    max-height: calc((100dvh - 340px) / 4);
+  }
+}
+@media (max-width: 600px) {
+  .cf-game {
+    min-height: 480px;
+  }
+  .cf-header {
+    min-height: 48px;
+    gap: 5px;
+    padding: 5px 9px;
+  }
+  .cf-header > div:first-child {
+    gap: 8px;
+  }
+  .cf-header > div:first-child > svg {
+    width: 16px;
+  }
+  .cf-header-logo {
+    width: 34px;
+    height: 20px;
+  }
+  .cf-wordmark {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+  .cf-wordmark small {
+    font-size: 6px;
+  }
+  .cf-header-phase {
+    font-size: 9px;
+    padding-left: 8px;
+    max-width: 95px;
+  }
+  .cf-header-controls {
+    gap: 4px;
+  }
+  .cf-toolbar-button,
+  .cf-toolbar-icon {
+    height: 40px;
+  }
+  .cf-toolbar-icon {
+    width: 40px;
+  }
+  .cf-toolbar-utilities {
+    gap: 4px;
+    padding-left: 4px;
+  }
+  .cf-toolbar-undo {
+    padding-inline: 8px;
+  }
+  .cf-control-label {
+    display: none;
+  }
+  .cf-reveal-toggle {
+    font-size: 8px;
+    max-width: 93px;
+    gap: 4px;
+  }
+  .cf-reveal-toggle > svg {
+    display: none;
+  }
+  .cf-table {
+    --cf-card-width: 63px;
+    --cf-base-width: 76px;
+  }
+  .cf-player-rail {
+    height: 116px;
+    min-height: 95px;
+    gap: 5px;
+    padding: 7px;
+  }
+  .cf-player-rail.cf-opponent {
+    height: 90px;
+    min-height: 80px;
+  }
+  .cf-supplies {
+    gap: 6px;
+  }
+  .cf-pile {
+    width: 31px;
+    font-size: 7px;
+  }
+  .cf-pile-art {
+    max-height: 49px;
+  }
+  .cf-resources {
+    min-width: 48px;
+    padding: 3px 3px 3px 6px;
+    gap: 6px;
+    margin: 0;
+  }
+  .cf-resources > span {
+    grid-template-columns: 11px 1fr;
+    gap: 3px;
+  }
+  .cf-resources svg {
+    width: 11px;
+    height: 11px;
+  }
+  .cf-resources b {
+    font-size: 14px;
+  }
+  .cf-resources small {
+    font-size: 10px;
+  }
+  .cf-resources em {
+    font-size: 6px;
+  }
+  .cf-hand {
+    gap: 6px;
+    padding: 5px;
+    justify-content: flex-start;
+  }
+  .cf-hidden-card {
+    margin-inline: -13px;
+    max-height: 69px;
+  }
+  .cf-hidden-hand {
+    padding-inline: 17px;
+  }
+  .cf-hand-count {
+    font-size: 7px;
+    padding: 1px 6px;
+  }
+  .cf-battlefield {
+    gap: 5px;
+    padding: 2px 5px;
+    grid-template-rows: minmax(100px, 1fr) 62px minmax(100px, 1fr);
+  }
+  .cf-arena {
+    border-radius: 7px;
+  }
+  .cf-arena h2 {
+    padding: 6px;
+    gap: 4px;
+    font-size: 6px;
+    letter-spacing: 0;
+  }
+  .cf-arena h2 svg {
+    width: 9px;
+    height: 9px;
+  }
+  .cf-arena h2 small {
+    display: none;
+  }
+  .cf-arena-cards {
+    padding: 10px 8px;
+    gap: 17px 13px;
+  }
+  .cf-command {
+    padding-inline: 2px;
+  }
+  .cf-command-slot .cf-card {
+    max-height: 61px;
+  }
+  .cf-player-label {
+    flex-wrap: wrap;
+    font-size: 8px;
+    height: auto;
+    min-height: 13px;
+    gap: 2px;
+  }
+  .cf-initiative {
+    font-size: 6px;
+    padding: 1px 3px;
+  }
+  .cf-initiative svg {
+    width: 8px;
+    height: 8px;
+  }
+  .cf-stat {
+    min-width: 19px;
+    height: 22px;
+    font-size: 17px;
+  }
+  .cf-power {
+    left: -5px;
+  }
+  .cf-hp {
+    right: -5px;
+  }
+  .cf-damage {
+    font-size: 15px;
+    min-width: 19px;
+    height: 21px;
+  }
+  .cf-card-landscape .cf-damage {
+    width: 23px;
+    height: 25px;
+    font-size: 19px;
+  }
+  .cf-copy {
+    font-size: 7px;
+  }
+  .cf-upgrades .cf-card {
+    width: 24px;
+  }
+  .cf-upgrades {
+    max-width: 100px;
+  }
+  .cf-action-band {
+    position: relative;
+    isolation: isolate;
+    padding: 7px;
+    min-height: 43px;
+    gap: 6px;
+    max-height: 62px;
+    flex-wrap: wrap;
+  }
+  .cf-action-hint {
+    font-size: 10px;
+  }
+  .cf-prompt-options {
+    gap: 5px;
+  }
+  .cf-prompt-options button {
+    font-size: 9px;
+    min-height: 28px;
+    padding: 3px 7px;
+  }
+  .cf-prompt h2,
+  .cf-prompt p {
+    font-size: 10px;
+  }
+  .cf-target-instruction {
+    gap: 7px;
+  }
+  .cf-target-instruction > svg {
+    display: none;
+  }
+  .cf-target-instruction strong {
+    font-size: 10px;
+  }
+  .cf-target-instruction p {
+    font-size: 9px;
+  }
+  .cf-target-instruction button {
+    font-size: 9px;
+    padding: 4px 7px;
+  }
+  .cf-target-instruction kbd {
+    display: none;
+  }
+  .cf-waiting {
+    font-size: 10px;
+  }
+  .cf-waiting small {
+    font-size: 8px;
+  }
+  .cf-table-help {
+    font-size: 7px;
+    white-space: nowrap;
+    padding-bottom: 4px;
+  }
+  .cf-table-help span {
+    margin: 0 3px;
+  }
+  .cf-choice-cards .cf-card {
+    width: 53px;
+  }
+  .cf-result {
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 10px;
+    gap: 7px;
+  }
+  .cf-result strong {
+    font-size: 15px;
+  }
+}
+@media (hover: none) {
+  .cf-preview {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-card {
+    transition: none;
+  }
+  .cf-hand .cf-card:hover {
+    translate: none;
+  }
+}
+
+/* The positioning wrapper is also transparent to clicks; a large preview must
+   never cover an adjacent legal target. */
+[data-radix-popper-content-wrapper]:has(> .cf-preview) {
+  pointer-events: none;
+}
+
+.cf-log-entries > p {
+  line-height: 1.65;
+}
+.cf-deployed {
+  line-height: 1.3;
+}
+.cf-prompt p {
+  line-height: 1.5;
+}
+@media (max-width: 600px) {
+  .cf-deployed small {
+    display: none;
+  }
+  .cf-deployed {
+    font-size: 8px;
+    gap: 4px;
+  }
+}
+
+.cf-mobile-log {
+  width: min(310px, 90vw);
+}
+.cf-mobile-log .cf-log-rail {
+  display: flex;
+  height: 100%;
+}
+.cf-mobile-log .cf-log-heading {
+  padding-right: 42px;
+}
+
+@media (max-width: 1100px) {
+  .cf-rail-label {
+    display: none;
+  }
+  .cf-player-rail {
+    gap: 7px;
+  }
+  .cf-resource-row {
+    width: 100px;
+  }
+}
+/* Compact rails leave the arena room for several rows on phones. */
+@media (max-width: 600px), (max-width: 1000px) and (max-height: 500px) {
+  .cf-player-rail {
+    position: relative;
+    flex-wrap: nowrap;
+    gap: 6px;
+    min-height: 0;
+    padding: 4px 8px;
+  }
+  .cf-player-rail.cf-own {
+    height: 110px;
+    max-height: 110px;
+  }
+  .cf-player-rail.cf-opponent {
+    height: 82px;
+    max-height: 82px;
+  }
+  .cf-supplies {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    align-content: center;
+    gap: 4px;
+    height: auto;
+  }
+  .cf-pile {
+    width: auto;
+    min-height: 24px;
+    font-size: 9px;
+  }
+  .cf-pile-art,
+  .cf-resource-row {
+    display: none;
+  }
+  .cf-resources {
+    grid-column: 1 / -1;
+    min-width: 0;
+    border-left: 0;
+    margin: 0;
+    padding: 3px;
+    gap: 4px;
+  }
+  .cf-resources > span {
+    display: flex;
+    gap: 3px;
+  }
+  .cf-resources svg {
+    display: none;
+  }
+  .cf-resources b,
+  .cf-resources small,
+  .cf-resources em {
+    font-size: 10px;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-transform: none;
+    margin: 0;
+  }
+  .cf-hand {
+    flex-basis: 0;
+    height: 100%;
+    --hand-width: 72px;
+    padding-inline: 14px;
+  }
+  .cf-hand-slot {
+    transform: translateY(calc(8px + var(--fan-drop))) rotate(var(--fan-angle));
+  }
+  .cf-hand-slot:hover,
+  .cf-hand-slot:focus-within {
+    transform: translateY(-24px) scale(1.3);
+  }
+  .cf-hidden-hand {
+    margin-inline: auto;
+  }
+  .cf-table-help {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .cf-table {
+    --cf-card-width: clamp(44px, 12vw, 60px);
+    --cf-base-width: 60px;
+  }
+  .cf-arena-cards {
+    padding: 10px 6px;
+    gap: 16px 9px;
+  }
+  .cf-unit-stack {
+    padding-right: 0;
+  }
+  .cf-stat {
+    min-width: 16px;
+    height: 19px;
+    font-size: 14px;
+  }
+  .cf-command-slot .cf-card {
+    max-height: 53px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-hand-slot {
+    transition: none;
+  }
+}
+
+/* Choices float above the table without changing either arena's size. They are
+   non-modal so physical cards remain usable for targeting and selection. */
+.cf-choice-dialog {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: max-content;
+  min-width: min(330px, calc(100% - 24px));
+  max-width: min(600px, calc(100% - 24px));
+  max-height: min(350px, 55dvh);
+  overflow-y: auto;
+  padding: 17px 20px;
+  border: 1px solid #729daf;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #162c3f, #0d1b2b);
+  box-shadow:
+    0 15px 55px #0009,
+    0 0 0 4px #67d2df0b;
+  scrollbar-width: thin;
+}
+.cf-choice-dialog .cf-prompt h2 {
+  font-size: 13px;
+  padding-right: 18px;
+  margin-bottom: 12px;
+  color: #e1edf6;
+}
+.cf-choice-minimize {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  color: #8ba7bc;
+  padding: 4px;
+}
+.cf-naming-prompt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 9px;
+}
+.cf-naming-prompt h2,
+.cf-naming-prompt > p {
+  grid-column: 1 / -1;
+}
+.cf-naming-prompt .cf-prompt-options {
+  flex-wrap: nowrap;
+}
+.cf-name-select {
+  justify-content: space-between;
+  min-width: 0;
+  width: 100%;
+  background: #102136;
+  border-color: #4b6b83;
+  color: #d8e6f2;
+}
+.cf-name-select span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cf-name-select svg {
+  flex-shrink: 0;
+}
+.cf-name-picker {
+  background: #102136;
+  border-color: #4b6b83;
+  color: #d8e6f2;
+  z-index: 60;
+}
+.cf-name-picker [cmdk-root] {
+  background: inherit;
+  color: inherit;
+}
+.cf-name-picker [cmdk-item][data-selected='true'] {
+  background: #254a62;
+  color: #edfaff;
+}
+@media (max-width: 600px) {
+  .cf-choice-dialog {
+    padding: 15px 12px;
+  }
+  .cf-choice-dialog .cf-prompt h2 {
+    font-size: 11px;
+  }
+  .cf-name-select {
+    font-size: 11px;
+    padding-inline: 8px;
+  }
+}
+/* Spread resources when the current decision can use them, keeping every
+   selectable card reachable without another card covering its click target. */
+.cf-resource-row:has([data-available='true']) .cf-card {
+  margin-right: 5px;
+}
+
+.cf-upgrades .cf-card.cf-token {
+  width: auto;
+}
+.cf-opponent .cf-hand {
+  --hand-width: 68px;
+}
+.cf-opponent .cf-hand-slot {
+  transform: translateY(var(--fan-drop)) rotate(var(--fan-angle));
+}
+.cf-opponent .cf-hand-slot:hover,
+.cf-opponent .cf-hand-slot:focus-within {
+  transform: translateY(75px) scale(1.5);
+  z-index: 12;
+}
+.cf-epic-markers {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  translate: 0 -50%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cf-epic-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 3px;
+  color: #fff0bc;
+  background: #856428;
+  border: 1px solid #e0c06b;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px #0009;
+}
+.cf-epic-marker svg {
+  width: 16px;
+  height: 16px;
+}
+.cf-epic-marker[data-spent='true'] {
+  background: #25323f;
+  border-color: #657585;
+  color: #94a3b2;
+}
+.cf-epic-marker small {
+  font-size: 10px;
+  font-weight: 700;
+}
+@media (max-width: 600px) {
+  .cf-epic-marker {
+    min-width: 19px;
+    height: 19px;
+    padding: 2px;
+  }
+  .cf-epic-marker svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+/* A keyboard-selected card stays above an adjacent hovered card in the fan. */
+.cf-hand-slot:focus-within {
+  z-index: 13;
+}
+
+/* Physical upgrade strips remain underneath the host at the same scale. */
+.cf-attached-stack {
+  position: relative;
+  width: var(--cf-card-width, 100px);
+  padding-bottom: calc(var(--upgrade-count) * var(--cf-card-width, 100px) * 0.23);
+  isolation: isolate;
+}
+.cf-upgrade-underlay {
+  position: absolute;
+  inset: calc(var(--upgrade-index) * var(--cf-card-width, 100px) * 0.23) 0 auto;
+  z-index: calc(0 - var(--upgrade-index));
+}
+.cf-upgrade-underlay .cf-card {
+  width: 100%;
+}
+.cf-host-card {
+  position: relative;
+  z-index: 1;
+}
+.cf-token-overlay {
+  position: absolute;
+  z-index: 6;
+}
+.cf-overlay-shield {
+  top: calc(var(--cf-card-width, 100px) * 1.4 - 55px);
+  right: -8px;
+}
+.cf-overlay-advantage {
+  top: calc(var(--cf-card-width, 100px) * 1.4 - 55px);
+  left: -8px;
+}
+.cf-overlay-experience,
+.cf-overlay-weakness {
+  top: calc(var(--cf-card-width, 100px) * 1.4 - 55px);
+  left: 50%;
+  translate: -50% 0;
+}
+.cf-overlay-experience:has(+ .cf-overlay-weakness) {
+  translate: -100% 0;
+}
+.cf-overlay-experience + .cf-overlay-weakness {
+  translate: 5% 0;
+}
+.cf-token-overlay .cf-card.cf-token {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: auto;
+  min-width: 25px;
+  height: 25px;
+  padding: 3px;
+  border-radius: 7px;
+}
+.cf-token-overlay svg {
+  width: 16px;
+  height: 16px;
+}
+.cf-token-overlay .cf-token-label {
+  padding: 0;
+}
+.cf-token-overlay .cf-token-label > span {
+  display: none;
+}
+.cf-token-overlay .cf-card-art {
+  overflow: visible;
+}
+.cf-token-count {
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+.cf-token-overlay [data-highlighted='true'],
+.cf-token-overlay [aria-pressed='true'] {
+  box-shadow: 0 0 0 3px #81e1e6;
+}
+.cf-token-shield {
+  color: #d8f5ff;
+  background: #1268ab !important;
+}
+.cf-token-experience {
+  color: #d4ffe3;
+  background: #197345 !important;
+}
+.cf-token-advantage {
+  color: #fff;
+  background: #101114 !important;
+  border-color: #65717a !important;
+}
+.cf-token-weakness {
+  color: #fff;
+  background: #a32c38 !important;
+  border-color: #eb6b75 !important;
+}
+.cf-damage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+  height: auto;
+  min-height: 25px;
+  left: auto;
+  right: 22px;
+  translate: none;
+}
+.cf-card-landscape .cf-damage {
+  left: 50%;
+  right: auto;
+  bottom: 50%;
+  translate: -50% 50%;
+  width: auto;
+  min-width: 33px;
+  height: auto;
+  padding: 2px 6px;
+}
+.cf-base-slot {
+  position: relative;
+}
+.cf-force-over-base {
+  position: absolute;
+  right: -12px;
+  top: 12%;
+  z-index: 6;
+}
+.cf-force-over-base .cf-card.cf-token {
+  display: grid;
+  place-items: center;
+  width: 33px;
+  height: 33px;
+  min-width: 0;
+  border-radius: 50%;
+  background: #16639c !important;
+  color: #c4f3ff;
+  border-color: #76c9f1 !important;
+  box-shadow: 0 0 16px #258dcc66;
+}
+.cf-force-over-base .cf-token-label {
+  padding: 0;
+}
+.cf-force-over-base .cf-token-label svg {
+  width: 22px;
+  height: 22px;
+}
+.cf-force-over-base .cf-token-label > span {
+  display: none;
+}
+.cf-resources .cf-credit-count,
+.cf-resources .cf-credit-count em {
+  color: #f4d490;
+}
+:is(.cf-resource-back, .cf-captured-back) .cf-card-art > img,
+:is(.cf-resource-back, .cf-captured-back) .cf-card-art > .cf-art-fallback {
+  display: none;
+}
+:is(.cf-resource-back, .cf-captured-back):is(:hover, :focus-visible) .cf-card-art > img,
+:is(.cf-resource-back, .cf-captured-back):is(:hover, :focus-visible)
+  .cf-card-art
+  > .cf-art-fallback {
+  display: block;
+}
+:is(.cf-resource-back, .cf-captured-back):has(.cf-card-art > img, .cf-art-fallback):is(
+    :hover,
+    :focus-visible
+  )
+  .cf-card-back {
+  display: none;
+}
+@media (max-width: 600px) {
+  .cf-token-overlay .cf-card.cf-token {
+    min-width: 22px;
+    height: 22px;
+  }
+  .cf-token-overlay svg {
+    width: 13px;
+    height: 13px;
+  }
+  .cf-card-landscape .cf-damage {
+    min-width: 25px;
+  }
+  .cf-damage {
+    right: 18px;
+  }
+  .cf-force-over-base {
+    right: -6px;
+  }
+  .cf-force-over-base .cf-card.cf-token {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* Assignment controls belong to the exact target, outside its card button. */
+.cf-assignment-target {
+  position: relative;
+  width: var(--cf-card-width, 100px);
+}
+.cf-assignment-target > .cf-card {
+  width: 100%;
+}
+.cf-assignment-base {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.cf-assignment-controls {
+  position: absolute;
+  z-index: 9;
+  top: 4px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid #9aeaf3;
+  border-radius: 8px;
+  background: #123544;
+  color: #d9fcff;
+  box-shadow: 0 3px 10px #0009;
+}
+.cf-assignment-controls button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+}
+.cf-assignment-controls button:hover {
+  background: #376775;
+}
+.cf-assignment-controls button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.cf-assignment-controls output {
+  min-width: 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+}
+.cf-assignment-controls[data-count='0'] {
+  opacity: 0.65;
+}
+.cf-prompt.cf-allocation-prompt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 12px;
+  max-width: 800px;
+}
+.cf-prompt.cf-allocation-prompt h2 {
+  display: block;
+  grid-column: 1;
+  margin: 0;
+  font-size: 11px;
+}
+.cf-prompt.cf-allocation-prompt p {
+  grid-column: 1;
+  margin: 0;
+  font-size: 10px;
+}
+.cf-allocation-prompt .cf-prompt-options {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+.cf-action-hint[hidden] {
+  display: none;
+}
+.cf-hand[data-reorderable='true'] .cf-hand-slot {
+  touch-action: none;
+  user-select: none;
+}
+.cf-hand[data-reorderable='true'] .cf-card {
+  cursor: grab;
+}
+.cf-hand-slot[data-dragging='true'] {
+  z-index: 30;
+  transition: none;
+  transform: translate(var(--drag-x), calc(var(--drag-y) - 32px)) rotate(0deg) scale(1.15);
+}
+.cf-hand-slot[data-dragging='true'] .cf-card {
+  cursor: grabbing;
+}
+.cf-hand-slot[data-drop-target='true']::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  width: 3px;
+  background: #84eaf7;
+  box-shadow: 0 0 10px #84eaf7;
+  border-radius: 3px;
+}
+@media (max-width: 600px) {
+  .cf-assignment-controls {
+    top: 3px;
+    gap: 0;
+  }
+  .cf-assignment-controls button {
+    width: 28px;
+    height: 30px;
+  }
+  .cf-prompt.cf-allocation-prompt {
+    gap: 0 5px;
+  }
+  .cf-prompt.cf-allocation-prompt h2,
+  .cf-prompt.cf-allocation-prompt p {
+    font-size: 9px;
+  }
+}
+/* Pointer inspection takes precedence over a previously keyboard-focused resource. */
+.cf-resource-row:has(.cf-card:hover) .cf-resource-back:not(:hover) .cf-card-art > img,
+.cf-resource-row:has(.cf-card:hover) .cf-resource-back:not(:hover) .cf-card-art > .cf-art-fallback {
+  display: none;
+}
+.cf-resource-row:has(.cf-card:hover) .cf-resource-back:not(:hover) .cf-card-back {
+  display: block;
+}
+
+@media (max-width: 400px) {
+  .cf-toolbar-icon,
+  .cf-toolbar-undo {
+    width: 36px;
+    padding: 0;
+  }
+  .cf-undo-label {
+    display: none;
+  }
+  .cf-toolbar-utilities .cf-toolbar-button:not(.cf-toolbar-icon) {
+    padding-inline: 8px;
+  }
+}
+@media (max-width: 350px) {
+  .cf-header-controls {
+    flex-wrap: wrap;
+  }
+  .cf-toolbar-utilities {
+    flex-basis: 100%;
+    justify-content: flex-end;
+    border-left: 0;
+  }
+}
+
+.cf-chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  padding: 12px;
+  gap: 12px;
+}
+.cf-chat-message {
+  margin-bottom: 14px;
+  overflow-wrap: anywhere;
+}
+.cf-chat form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cf-chat form button {
+  align-self: flex-end;
+}
+
+/* Effective Sentinel is supplied by the engine, including conditional grants. */
+.cf-card[data-sentinel='true']:not([data-highlighted='true']):not([data-target='true']):not(
+    [aria-pressed='true']
+  ) {
+  box-shadow:
+    0 0 0 2px #b6c7e4aa,
+    0 0 18px #7a9ed445;
+}
+.cf-sentinel {
+  position: absolute;
+  z-index: 5;
+  top: -9px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 5px;
+  border: 1px solid #c2d5f0;
+  border-radius: 5px;
+  background: #213851;
+  color: #e6f2ff;
+  font-size: 8px;
+  line-height: 1;
+  box-shadow: 0 2px 6px #0007;
+}
+.cf-sentinel svg {
+  flex-shrink: 0;
+}
+.cf-ability-description {
+  max-width: 480px;
+  color: #d5e5ef;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-line;
+  margin: 0 0 10px;
+}
+.cf-resource-plan {
+  max-width: 360px;
+  color: #aac3d2;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+.cf-prompt-options.cf-trigger-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.cf-choice-dialog:has(.cf-trigger-options) {
+  width: min(490px, calc(100% - 24px));
+  max-height: min(470px, 70dvh);
+  padding: 14px;
+}
+.cf-trigger-options button.cf-ability-choice {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  width: 100%;
+  min-height: 64px;
+  height: auto;
+  overflow: hidden;
+  border: 1px solid #91b4cf55;
+  border-radius: 7px;
+  padding: 9px 12px;
+  text-align: left;
+  background: #182b3e;
+}
+.cf-ability-art {
+  position: absolute;
+  z-index: -2;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 135px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.cf-ability-art img {
+  width: 150%;
+  height: auto;
+  max-width: none;
+  position: absolute;
+  left: -25%;
+  top: 50%;
+  object-fit: contain;
+  transform: translateY(-32%);
+  opacity: 0.75;
+}
+.cf-ability-art[data-art-region='event'] img {
+  transform: translateY(-75%);
+}
+.cf-ability-choice::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(90deg, #102338, #102338e8 55%, #10233865);
+}
+.cf-trigger-options .cf-ability-choice:hover {
+  border-color: #a0dcf2;
+  background: #244a60;
+}
+.cf-ability-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 4px;
+}
+.cf-ability-copy strong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 8px;
+  font-size: 12px;
+  color: #e9f4ff;
+}
+.cf-ability-copy small {
+  font-size: 9px;
+  font-weight: 400;
+  color: #aec4d6;
+}
+.cf-ability-copy > span {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #d1dfeb;
+  white-space: normal;
+}
+.cf-log-toolbar {
+  justify-content: flex-end;
+}
+.cf-log-entries > .cf-activity-entry {
+  margin: 0 0 6px;
+  padding: 8px 9px;
+  border: 0;
+  border-left: 3px solid #536779;
+  border-radius: 0 5px 5px 0;
+  overflow-wrap: anywhere;
+}
+.cf-log-entries > .cf-activity-entry[data-actor='self'] {
+  border-left-color: #50b8ee;
+}
+.cf-log-entries > .cf-activity-entry[data-actor='opponent'] {
+  border-left-color: #e99b73;
+}
+.cf-log-entries > .cf-chat-message {
+  background: #23384cd9;
+}
+.cf-log-entries > .cf-chat-message[data-actor='opponent'] {
+  background: #43332ed9;
+}
+.cf-chat-message time {
+  display: block;
+  font-size: 9px;
+  color: #9eb4c4;
+}
+.cf-chat-message p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+.cf-log .cf-chat {
+  flex: 0 0 auto;
+  padding: 10px 0 0;
+  border-top: 1px solid #6c879733;
+}
+.cf-log .cf-chat textarea {
+  min-height: 58px;
+  resize: vertical;
+  max-height: 130px;
+  font-size: 12px;
+}
+@media (max-width: 600px) {
+  .cf-ability-copy strong {
+    font-size: 11px;
+  }
+  .cf-ability-copy small {
+    font-size: 8px;
+  }
+  .cf-trigger-options button.cf-ability-choice {
+    min-height: 60px;
+    padding: 8px 10px;
+  }
+}
+
+.cf-illustrated-prompt {
+  position: relative;
+  isolation: isolate;
+}
+.cf-illustrated-prompt > .cf-ability-art {
+  height: 84px;
+  max-height: 100%;
+  border-radius: 6px;
+  opacity: 0.75;
+  mask-image: linear-gradient(90deg, transparent, #000);
+}
+.cf-prompt > h2 {
+  border: 0;
+  padding-bottom: 0;
+}
+/* These images are anchored to the outer strip/dialog, beyond its text padding. */
+.cf-choice-dialog > .cf-illustrated-prompt,
+.cf-prompt.cf-board-target-prompt {
+  position: static;
+  isolation: auto;
+}
+.cf-prompt.cf-board-target-prompt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 1px 12px;
+  width: 100%;
+  max-width: none;
+  max-height: 100%;
+  padding: 0;
+}
+.cf-prompt.cf-board-target-prompt > h2,
+.cf-prompt.cf-board-target-prompt > p {
+  margin: 0;
+  line-height: 1.3;
+  font-size: 11px;
+}
+.cf-prompt.cf-board-target-prompt > h2 {
+  grid-column: 1 / 3;
+  grid-row: 1;
+}
+.cf-board-target-prompt > .cf-ability-description {
+  grid-column: 1;
+  grid-row: 2;
+  max-width: none;
+}
+.cf-prompt.cf-board-target-prompt > .cf-selection-status {
+  grid-column: 2;
+  grid-row: 2;
+  white-space: nowrap;
+  text-align: right;
+}
+.cf-prompt.cf-board-target-prompt > .cf-selection-budget {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: right;
+}
+.cf-prompt.cf-board-target-prompt > .cf-prompt-options {
+  grid-column: 3;
+  grid-row: 1 / 3;
+}
+.cf-board-target-prompt > .cf-prompt-options:empty {
+  display: none;
+}
+.cf-board-target-prompt .cf-ability-art {
+  width: 120px;
+  opacity: 0.65;
+  border-radius: 0 6px 0 0;
+}
+.cf-card-markers {
+  position: absolute;
+  z-index: 6;
+  top: 18%;
+  left: -7px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.cf-card-markers > span {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 6px;
+  border: 1px solid #fff6;
+  box-shadow: 0 2px 6px #0008;
+}
+.cf-note-marker {
+  background: #f3ce56;
+  color: #493514;
+}
+.cf-warning-marker {
+  background: #ee933a;
+  color: #431b08;
+}
+@media (max-width: 600px) {
+  .cf-ability-art {
+    width: 110px;
+  }
+  .cf-prompt.cf-board-target-prompt {
+    gap: 0 6px;
+  }
+  .cf-prompt.cf-board-target-prompt > h2,
+  .cf-prompt.cf-board-target-prompt > p {
+    font-size: 9px;
+  }
+  .cf-board-target-prompt .cf-prompt-options button {
+    min-height: 28px;
+    padding: 4px 7px;
+  }
+}
+
+.cf-choice-dialog:has(.cf-plot-prompt) {
+  width: 360px;
+  max-height: min(590px, 80dvh);
+}
+.cf-plot-prompt {
+  text-align: center;
+}
+.cf-plot-card {
+  margin: 10px auto;
+  width: min(190px, 38dvh);
+}
+.cf-plot-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 9px;
+}
+.cf-plot-payment {
+  margin: 12px 0;
+  text-align: left;
+}
+.cf-plot-payment label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.cf-plot-payment small {
+  display: block;
+  margin-top: 6px;
+  color: #9fb6c8;
+  font-size: 10px;
+}
+.cf-plot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.cf-plot-actions button {
+  min-width: 90px;
+}
+.cf-plot-actions .cf-plot-play {
+  background: #75d6df;
+  color: #092432;
+  border: 1px solid #c1f7fb;
+  font-weight: 700;
+}
+.cf-plot-actions .cf-plot-play:hover {
+  background: #a0e8ee;
+}
+.cf-plot-reveal-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  max-height: 60dvh;
+  overflow-y: auto;
+}
+.cf-plot-reveal-cards figure {
+  width: 150px;
+  margin: 0;
+}
+.cf-plot-reveal-cards img {
+  width: 100%;
+  border-radius: 8px;
+}
+.cf-plot-reveal-cards figcaption {
+  margin-top: 5px;
+  font-size: 11px;
+}
+
+.cf-plot-reveal-dialog {
+  background: linear-gradient(135deg, #162c3f, #0d1b2b);
+  border: 1px solid #729daf;
+  color: #e1edf6;
+}
+.cf-plot-reveal-dialog h2 {
+  font-size: 18px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.cf-plot-reveal-dialog > p {
+  color: #adc5d8;
+  font-size: 12px;
+}
+.cf-plot-notice-dismiss {
+  background: #75d6df;
+  color: #092432;
+}
+
+.cf-aspect-options button {
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+.cf-resources[data-available='true'] {
+  outline: 1px solid #62c8d0;
+  background: #174453;
+}
+.cf-token[data-warning='true'] {
+  outline: 2px solid #f59e42;
+}
+.cf-token .cf-card-markers {
+  top: -8px;
+  left: auto;
+  right: -7px;
+}
+.cf-token .cf-warning-marker {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+}
+.cf-token .cf-warning-marker svg {
+  width: 12px;
+  height: 12px;
+}
+@media (max-width: 600px), (max-width: 1000px) and (max-height: 500px) {
+  /* A separate row above HP keeps damage clear of wide power/HP values. */
+  .cf-card:has(> .cf-power) > .cf-damage {
+    right: -5px;
+    bottom: 17px;
+    min-width: 16px;
+    min-height: 16px;
+    height: auto;
+    padding: 0 2px;
+    font-size: 11px;
+  }
+  .cf-attached-stack:has(.cf-host-card > .cf-card > .cf-damage) > .cf-token-overlay {
+    top: calc(var(--cf-card-width) * 1.4 - 63px);
+  }
+  .cf-token-overlay .cf-card.cf-token {
+    min-width: 19px;
+    height: 19px;
+    padding: 2px;
+  }
+  .cf-token-overlay svg {
+    width: 13px;
+    height: 13px;
+  }
+  .cf-overlay-shield,
+  .cf-overlay-advantage,
+  .cf-overlay-experience,
+  .cf-overlay-weakness {
+    top: calc(var(--cf-card-width) * 1.4 - 43px);
+  }
+  .cf-card-markers > span {
+    width: 19px;
+    height: 19px;
+  }
+}
+/* Short landscape screens keep both arenas and hands inside the viewport. */
+@media (max-width: 1000px) and (max-height: 500px) {
+  .cf-game {
+    min-height: 0;
+  }
+  .cf-match {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cf-log-rail {
+    display: none;
+  }
+  .cf-log-toggle {
+    display: inline-flex;
+  }
+  .cf-header {
+    flex-wrap: nowrap;
+    min-height: 44px;
+    padding: 4px 8px;
+  }
+  .cf-header-controls {
+    flex-basis: auto;
+  }
+  .cf-wordmark {
+    font-size: 11px;
+  }
+  .cf-header-phase {
+    font-size: 9px;
+  }
+  .cf-table {
+    --cf-card-width: 48px;
+    --cf-base-width: 68px;
+  }
+  .cf-player-rail.cf-own,
+  .cf-player-rail.cf-opponent {
+    height: 54px;
+    max-height: 54px;
+  }
+  .cf-supplies {
+    display: flex;
+    gap: 8px;
+  }
+  .cf-pile {
+    font-size: 8px;
+  }
+  .cf-hand {
+    --hand-width: 44px;
+  }
+  .cf-hand-fan {
+    width: min(100%, calc(var(--fan-count) * 26px + 35px));
+  }
+  .cf-hidden-card {
+    width: 33px;
+    max-height: 46px;
+    margin-inline: -9px;
+  }
+  .cf-battlefield {
+    grid-template-rows: minmax(0, 1fr) 48px minmax(0, 1fr);
+    gap: 4px 8px;
+  }
+  .cf-arena-cards {
+    padding: 5px 10px 8px;
+    gap: 12px;
+  }
+  .cf-command {
+    padding: 0;
+    gap: 2px;
+  }
+  .cf-command-slot .cf-card {
+    max-height: 31px;
+  }
+  .cf-card-landscape .cf-damage {
+    min-width: 20px;
+    min-height: 20px;
+    font-size: 17px;
+    padding: 1px 3px;
+  }
+  .cf-force-over-base {
+    right: 0;
+  }
+  .cf-force-over-base .cf-card.cf-token {
+    width: 23px;
+    height: 23px;
+  }
+  .cf-force-over-base .cf-token-label svg {
+    width: 16px;
+    height: 16px;
+  }
+  .cf-player-label {
+    font-size: 7px;
+    height: 10px;
+  }
+  .cf-initiative {
+    font-size: 6px;
+    padding: 0 2px;
+  }
+  .cf-stat {
+    min-width: 16px;
+    height: 18px;
+    font-size: 13px;
+  }
+  .cf-action-band {
+    min-height: 0;
+    padding-block: 3px;
+  }
+}
+
+.cf-card,
+.cf-pile,
+[data-card-reference] {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+.cf-card-inspection {
+  width: min(440px, calc(100% - 24px));
+  max-width: none;
+  max-height: 92dvh;
+  padding: 20px;
+  gap: 12px;
+}
+.cf-card-inspection > div:first-child {
+  padding-right: 20px;
+}
+.cf-inspection-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+.cf-inspection-image img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: min(60dvh, 520px);
+  border-radius: 10px;
+}
+.cf-card-inspection[data-related='true'] .cf-inspection-image img {
+  max-height: min(calc(92dvh - 230px), 520px);
+}
+.cf-inspection-related {
+  min-width: 0;
+}
+.cf-inspection-paging {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.cf-inspection-thumbnails {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 3px;
+}
+.cf-inspection-thumbnails button {
+  flex: 0 0 52px;
+  padding: 3px;
+  border: 1px solid #52677c;
+  border-radius: 5px;
+  background: #16283a;
+}
+.cf-inspection-thumbnails button[aria-pressed='true'] {
+  border-color: #79d6e2;
+  box-shadow: 0 0 0 1px #79d6e2;
+}
+.cf-inspection-thumbnails img {
+  height: 62px;
+  width: 100%;
+  object-fit: contain;
+}
+.cf-inspection-thumbnails small {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .cf-card-inspection {
+    width: min(640px, calc(100% - 24px));
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    padding: 14px;
+  }
+  .cf-card-inspection > div:first-child {
+    grid-column: 2;
+  }
+  .cf-inspection-image {
+    grid-row: 1 / 3;
+    grid-column: 1;
+  }
+  .cf-card-inspection .cf-inspection-image img {
+    max-height: calc(92dvh - 30px);
+  }
+  .cf-inspection-related {
+    grid-column: 2;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .cf-inspection-thumbnails {
+    flex-wrap: wrap;
+  }
+}

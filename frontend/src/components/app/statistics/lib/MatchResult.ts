@@ -17,6 +17,8 @@ export type MatchResult = {
   opponentBaseCardKey?: string;
 
   result?: 0 | 1 | 3;
+  status?: 'in-progress' | 'complete' | 'abandoned';
+  completionReason?: 'score' | 'forfeit' | 'abandoned';
   finalWins?: number;
   finalLosses?: number;
 

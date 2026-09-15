@@ -1,0 +1,61 @@
+{
+  "qi-ra--i-alone-survived": {
+    "text": "Action [1 resource, Exhaust]: Deal 2 damage to a friendly unit. Then, give a Shield token to it.",
+    "keywords": [
+      "Grit"
+    ],
+    "rules": "All damage dealt by Qi’ra’s “When Deployed” ability is dealt simultaneously.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Grit (This unit gets +1/+0 for each damage on her.)\nWhen Deployed: Heal all damage from each unit. Then, deal damage to each unit equal to half its remaining HP, rounded down.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7893?locale=en",
+    "officialRules": "All damage dealt by Qi’ra’s “When Deployed” ability is dealt simultaneously.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Deal 2 damage to a friendly unit. Then, give a Shield token to it.</p>",
+    "officialDeployBoxStyled": "<p><strong>Grit</strong> <i>(This unit gets <strong>+1</strong>/<strong>+0</strong> for each damage on her.)</i></p><p><strong>When Deployed:</strong> Heal all damage from each unit. Then, deal damage to each unit equal to half its remaining HP, rounded down.</p>"
+  },
+  "moff-gideon--indomitable-warlord": {
+    "text": "Action [Exhaust]: If a friendly Imperial unit was defeated this phase, play a unit from your hand. It costs 1 resource less.",
+    "keywords": [
+      "Ambush",
+      "Grit",
+      "Hidden",
+      "Overwhelm",
+      "Saboteur",
+      "Sentinel",
+      "Shielded",
+      "Support"
+    ],
+    "rules": "Moff Gideon’s leader ability still can be used as an action even if no friendly Imperial units were defeated this phase (but you don't play a card).\nMoff Gideon does not gain conditional keywords on Imperial units in your discard pile, even if the condition is met.\nIf an Imperial unit in your discard pile has Support, Moff Gideon's leader unit gains \"\"Support\"\" but not the unit's other abilities.\n",
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "This unit gains each of the following keywords if it is on an Imperial unit in your discard pile: Ambush, Grit, Hidden, Overwhelm, Saboteur, Sentinel, Shielded, Support.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51722?locale=en",
+    "officialRules": "Moff Gideon’s leader ability still can be used as an action even if no friendly Imperial units were defeated this phase (but you don't play a card).\nMoff Gideon does not gain conditional keywords on Imperial units in your discard pile, even if the condition is met.\nIf an Imperial unit in your discard pile has Support, Moff Gideon's leader unit gains \"\"Support\"\" but not the unit's other abilities.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If a friendly <strong><i>Imperial</i></strong> unit was defeated this phase, play a unit from your hand. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less.</p>",
+    "officialDeployBoxStyled": "<p>This unit gains each of the following <strong>keywords</strong> if it is on an <strong><i>Imperial</i></strong> unit in your discard pile: <strong>Ambush</strong>, <strong>Grit</strong>, <strong>Hidden</strong>, <strong>Overwhelm</strong>, <strong>Saboteur</strong>, <strong>Sentinel</strong>, <strong>Shielded</strong>, <strong>Support</strong>.</p>"
+  },
+  "sabine-wren--bargaining-on-belief": {
+    "text": "Action [Exhaust]: An opponent gives 2 Advantage tokens to a unit they control. If they do, the next unit you play this phase gains Shielded for this phase. (When you play that unit, give a Shield token to it.)",
+    "keywords": [
+      "Shielded"
+    ],
+    "rules": "Once Sabine's “On Attack” ability resolves, it remains active even if she is defeated before you play your next unit.\nIf there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "On Attack: The next unit you play this phase gains Shielded for this phase.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51712?locale=en",
+    "officialRules": "Once Sabine's “On Attack” ability resolves, it remains active even if she is defeated before you play your next unit.\nIf there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> An opponent gives 2 Advantage tokens to a unit they control. If they do, the next unit you play this phase gains <strong>Shielded</strong> for this phase. <i>(When you play that unit, give a Shield token to it.)</i></p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> The next unit you play this phase gains <strong>Shielded</strong> for this phase.</p>"
+  },
+  "dj--need-a-lift-": {
+    "text": "Action [Exhaust]: Choose a friendly unit. If you do, play a unit from your hand. It costs 1 resource less. The chosen unit captures it. (When Played abilities resolve after the unit is captured.)",
+    "keywords": [
+      "Saboteur"
+    ],
+    "rules": "When using DJ's leader ability, any abilities that trigger from playing the unit, including that unit's \"When Played\" abilities, still trigger. The played unit is captured before any of triggered abilities resolve.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Saboteur\nFriendly units that are rescued enter play ready.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39465?locale=en",
+    "officialRules": "When using DJ's leader ability, any abilities that trigger from playing the unit, including that unit's \"When Played\" abilities, still trigger. The played unit is captured before any of triggered abilities resolve.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Choose a friendly unit. If you do, play a unit from your hand. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less. The chosen unit captures it. <i>(When Played abilities resolve after the unit is captured.)</i></p>",
+    "officialDeployBoxStyled": "<p><strong>Saboteur</strong></p><p>Friendly units that are rescued enter play ready.</p>"
+  }
+}

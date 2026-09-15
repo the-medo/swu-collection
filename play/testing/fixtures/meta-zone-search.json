@@ -1,0 +1,9 @@
+{
+  "annihilator--tagge-s-flagship": {
+    "text": "When Played/When Defeated: You may defeat an enemy unit. If you do, search its controller's deck and hand for each card with that unit's name and discard them. (They shuffle their deck.)",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "After searching a deck, that deck's owner shuffles it.\nAbilities that refer to a card’s “name” do not include the subtitle of the card.\n"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "dooku-s-palace": {
+    "text": "Epic Action: Play a unit from your hand. It costs 1 resource less for each friendly leader unit.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50902?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Epic Action:</strong> Play a unit from your hand. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less for each friendly leader unit.</p>"
+  },
+  "executioner-s-arena": {
+    "text": "Epic Action: For each friendly leader unit, you may deal 2 damage to a unit.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50907?locale=en",
+    "officialRules": "If you control multiple leader units, you may deal 2 damage multiple times, to the same unit or different units. All damage is dealt simultaneously.\n",
+    "officialTextStyled": "<p><strong>Epic Action:</strong> For each friendly leader unit, you may deal 2 damage to a unit.</p>"
+  },
+  "first-battle-memorial": {
+    "text": "Epic Action: For each friendly leader unit, give an Experience token to a unit.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50897?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Epic Action:</strong> For each friendly leader unit, give an Experience token to a unit.</p>"
+  },
+  "great-pit-of-carkoon": {
+    "text": "Epic Action [discard a unit from your hand]: Search your deck for a card named The Sarlacc of Carkoon, reveal it, and draw it.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46167?locale=en",
+    "officialRules": "After searching your deck, shuffle it.\n",
+    "officialTextStyled": "<p><strong>Epic Action [discard a unit from your hand]:</strong> Search your deck for a card named The Sarlacc of Carkoon, reveal it, and draw it.</p>"
+  },
+  "the-sarlacc-of-carkoon--horror-of-the-dune-sea": {
+    "text": "On Attack: Put a unit from your discard pile on the bottom of your deck. Deal damage equal to that unit's power to an enemy ground unit.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46867?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>On Attack:</strong> Put a unit from your discard pile on the bottom of your deck. Deal damage equal to that unit's power to an enemy ground unit.</p>"
+  },
+  "kylo-ren--rash-and-deadly": {
+    "text": "Action [Exhaust, discard a card from your hand]: Give a unit +2/+0 for this phase.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7923?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, discard a card from your hand]:</strong> Give a unit <strong>+2</strong>/<strong>+0</strong> for this phase.</p>",
+    "epicAction": "Epic Action: If you control 4\u00a0or more resources, deploy this leader.",
+    "deployBox": "This unit gets \u20131/\u20130 for each card in your hand."
+  }
+}

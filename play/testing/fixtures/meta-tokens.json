@@ -1,0 +1,146 @@
+{
+  "spy": {
+    "text": "Raid 2 ",
+    "keywords": ["Raid"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "mandalorian": {
+    "text": "Shielded (When you create this token, give a Shield token to it.)",
+    "keywords": ["Shielded"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "x-wing": {
+    "text": "",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "advantage": {
+    "text": "When attached unit's attack or defense ends: Defeat this upgrade.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "chimaera--a-frightening-reality": {
+    "text": "When Played: You may choose a friendly unit and an enemy non-leader unit. If you do, defeat those units.\nWhen an enemy unit is defeated: Heal 2 damage from your base.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "pre-vizsla--strong-willed-ruler": {
+    "text": "When Played: Defeat any number of non\u2011leader units with a total of 6 or less remaining HP. Create a Mandalorian token for each unit defeated this way.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "koska-reeves--warrior-of-mandalore": {
+    "text": "While you control a token unit, this unit gains Sentinel.\nWhen Played: If a friendly unit was defeated this phase, create a Mandalorian token.",
+    "keywords": ["Sentinel"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "marrok--mysterious-warrior": {
+    "text": "Sentinel\nWhile this unit is upgraded, he loses Sentinel and gains Saboteur.",
+    "keywords": ["Sentinel", "Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "justifier--relentless": {
+    "text": "When Played/On Attack: You may deal 1 damage to a unit. If that unit is defeated this way, give an Advantage token to a unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "dedra-meero--with-verifiable-data": {
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nOn Attack: Create a Spy token.",
+    "keywords": ["Ambush"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "i-am-the-senate": {
+    "text": "Create 5 Spy tokens.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "covering-the-wing": {
+    "text": "Create an X-Wing token. You may give a Shield token to another unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "contempt-for-culture": {
+    "text": "Deal 2 damage to a non-Vehicle unit.\nCreate a Spy token.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "crucible--centuries-of-wisdom": {
+    "text": "When Played/When Defeated: Give an Experience token to each other friendly unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "finn--looking-closer": {
+    "text": "Ambush \nOn Attack: You may give a Shield token to a non-<uq> unit.",
+    "keywords": ["Ambush"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "luke-skywalker--answering-the-call": {
+    "text": "Restore 1\nWhen Played: If you control at least 4 units, deal 3 damage to each enemy unit.",
+    "keywords": ["Restore"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "ezra-bridger--attuned-with-life": {
+    "text": "On Attack: You may give an Experience token to another Creature or Spectre unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "greef-karga--gracious-magistrate": {
+    "text": "When you play or create a unit: You may exhaust this leader. If you do, give an Advantage token to that unit.",
+    "keywords": [],
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "When you play or create a unit: Give an Advantage token to that unit."
+  },
+  "marrok-s-fiend-fighter--formidable-pursuer": {
+    "text": "Support\nOverwhelm\nThis unit gets +2/+0 while attacking a damaged unit.",
+    "keywords": ["Support", "Overwhelm"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "nimble-prowess": {
+    "text": "Attach to a friendly unit.\nWhen Played: You may exhaust a unit in attached unit's arena.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "haymaker": {
+    "text": "Give an Experience token to a friendly unit. That unit deals damage equal to its power to an enemy unit in the same arena.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "protect-the-pod": {
+    "text": "A friendly non-Vehicle unit deals damage equal to its remaining HP to an enemy unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "craving-power": {
+    "text": "Attach to a friendly unit.\nWhen Played: Deal damage to an enemy unit equal to attached unit's power.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "battered-haulcraft": {
+    "text": "When Played: Deal 1 damage to this unit and 1 damage to an enemy space unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  }
+}

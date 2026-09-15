@@ -48,7 +48,7 @@ const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) 
           containsInTeam = true;
           if (match.id.startsWith('inTeam-')) {
             totalGames += match.games.length;
-            totalMatches++;
+            if (match.result !== undefined) totalMatches++;
           }
           return;
         } else {
@@ -60,7 +60,7 @@ const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) 
         else if (match.result === 0) losses++;
 
         totalGames += match.games.length;
-        totalMatches++;
+        if (match.result !== undefined) totalMatches++;
 
         match.games.forEach(game => {
           if (game.isWinner === true) gWins++;

@@ -1,0 +1,26 @@
+{
+  "max-rebo--encore-": {
+    "text": "There is an additional regroup phase after the first regroup phase each round.",
+    "keywords": [],
+    "rules": "The additional regroup phase includes drawing 2 cards, resourcing a card, and readying exhausted cards. Any abilities that trigger during the regroup phase trigger an additional time.\nIf there are multiple Max Rebos in play, each Max Rebo causes its own additional regroup phase.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46412?locale=en",
+    "officialText": "There is an additional regroup phase after the first regroup phase each round.",
+    "officialTextStyled": "<p>There is an additional regroup phase after the first regroup phase each round.</p>",
+    "officialRules": "The additional regroup phase includes drawing 2 cards, resourcing a card, and readying exhausted cards. Any abilities that trigger during the regroup phase trigger an additional time.\nIf there are multiple Max Rebos in play, each Max Rebo causes its own additional regroup phase.\n"
+  },
+  "kazuda-xiono--best-pilot-in-the-galaxy": {
+    "text": "Action [Exhaust]: A friendly unit loses all abilities for this round. Take an extra action after this one.",
+    "keywords": [],
+    "rules": "You may take any standard action as your extra action: Play a Card, Attack With a Unit, Use an Action Ability, Take the Initiative, or Pass.\nThe chosen units for Kaz's “On Attack” ability lose all abilities for the round even if he is defeated.\nA friendly unit that has lost all abilities for the round cannot gain or be given any new abilities for the round.\n",
+    "epicAction": "Epic Action: If you control 4 or more resources, choose one:\nDeploy this leader.\nDeploy this leader as an upgrade on a friendly Vehicle unit without a Pilot on it.",
+    "deployBox": "On Attack: Choose any number of friendly units. They lose all abilities for this round.\nAttached unit is a leader unit. It gains: “On Attack: Choose any number of friendly units. They lose all abilities for this round.”\n",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19561?locale=en",
+    "officialText": "Action [Exhaust]: A friendly unit loses all abilities for this round. Take an extra action after this one.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> A friendly unit loses all abilities for this round. Take an extra action after this one.</p>",
+    "officialRules": "You may take any standard action as your extra action: Play a Card, Attack With a Unit, Use an Action Ability, Take the Initiative, or Pass.\nThe chosen units for Kaz's “On Attack” ability lose all abilities for the round even if he is defeated.\nA friendly unit that has lost all abilities for the round cannot gain or be given any new abilities for the round.\n"
+  }
+}

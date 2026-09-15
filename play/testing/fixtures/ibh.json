@@ -1,0 +1,355 @@
+{
+  "admiral-ozzel--as-clumsy-as-he-is-stupid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39255?locale=en",
+    "unique": true,
+    "text": "When Defeated: Each opponent discards a card from their hand.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "admiral-piett--in-command-now": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39155?locale=en",
+    "unique": true,
+    "text": "On Attack: If you control a Aggression unit, draw a card.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "avenger--hunting-the-rebels": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39190?locale=en",
+    "unique": true,
+    "text": "When Played: Deal 1 damage to each other unit (including friendly units).",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "blizzard-force-at-st": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39345?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Sentinel"]
+  },
+  "blizzard-one--veers-at-the-helm": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39325?locale=en",
+    "unique": true,
+    "text": "When Played: You may defeat a non-leader ground unit with 3 or less remaining HP.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "bright-hope--narrow-escape": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/38960?locale=en",
+    "unique": true,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Sentinel"]
+  },
+  "c-3po--oh-dear--oh-dear": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39035?locale=en",
+    "unique": true,
+    "text": "When Played: If you control a Cunning unit, draw a card.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "chewbacca--rrruuuurrr": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39060?locale=en",
+    "unique": true,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Sentinel"]
+  },
+  "death-squadron-star-destroyer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39320?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Sentinel"]
+  },
+  "e-web-gunner": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39245?locale=en",
+    "unique": false,
+    "text": "Raid 4 (This unit gets +4/+0 while attacking.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Raid"]
+  },
+  "echo-coordinator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39065?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "evacuation-escort": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39050?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "first-legion-trooper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39335?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "general-rieekan--stalwart-tactician": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39010?locale=en",
+    "unique": true,
+    "text": "Action [Exhaust]: Attack with another Heroism unit. It gets +2/+0 for this attack.  (You can only attack with a ready friendly unit.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "general-veers--leading-the-assault": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39270?locale=en",
+    "unique": true,
+    "text": "When Played: If you control a Vigilance unit, deal 2 damage to an enemy base and heal 2 damage from your base.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "go-for-the-legs": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39055?locale=en",
+    "unique": false,
+    "text": "Exhaust an enemy ground unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "gr-75-medium-transport": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39030?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "ground-assault-at-at": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39165?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "han-solo--scruffy-looking-nerf-herder": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39040?locale=en",
+    "unique": true,
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)\nOn Attack:The defender gets -2/-0 for this attack.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Raid"],
+    "officialRules": "(ERRATA) Templating update: “Defender” becomes “defending unit”.\n"
+  },
+  "hoth-lieutenant": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39290?locale=en",
+    "unique": false,
+    "text": "When Played: You may attack with another unit. It gets +2/+0 for this attack.  (You can only attack with a ready friendly unit.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "hoth-trooper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39070?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "i-ll-cover-for-you": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39025?locale=en",
+    "unique": false,
+    "text": "Deal 1 damage to an enemy unit and 1 damage to another enemy unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "i-ve-found-them": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/38955?locale=en",
+    "unique": false,
+    "text": "Reveal the top 3 cards of your deck. Draw a unit revealed this way, then discard the other revealed cards.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "i-want-proof--not-leads": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39340?locale=en",
+    "unique": false,
+    "text": "Draw 2 cards, then discard a card from your hand.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "imperial-deck-officer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39330?locale=en",
+    "unique": false,
+    "text": "Action [Exhaust]: Heal 2 damage from a Villainy unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "improvised-detonation": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/38980?locale=en",
+    "unique": false,
+    "text": "Attack with a unit. It gets +2/+0 for this attack. (You can only attack with a ready friendly unit.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "ion-cannon": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/38965?locale=en",
+    "unique": false,
+    "text": "Action [Exhaust]: Deal 3 damage to a space unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "lambda-shuttle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39280?locale=en",
+    "unique": false,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Restore"]
+  },
+  "luke-skywalker--do-you-read-me-": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/38930?locale=en",
+    "unique": true,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)\nWhen Played: You may deal 3 damage to a ground unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Restore"]
+  },
+  "r2-d2--known-to-make-mistakes": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39075?locale=en",
+    "unique": true,
+    "text": "On Attack: If you control a Command unit, exhaust an enemy ground unit that costs 4 or less.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "rampaging-wampa": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39210?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "rebellion-y-wing": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/38990?locale=en",
+    "unique": false,
+    "text": "On Attack: Deal 1 damage to a base.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "recovery": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/38895?locale=en",
+    "unique": false,
+    "text": "Heal 5 damage from a unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "rogue-squadron-speeder": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39000?locale=en",
+    "unique": false,
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Raid"]
+  },
+  "scouting-tie-fighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39315?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "snowtrooper-vanguard": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39310?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "snowtrooper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39265?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "surface-assault-bomber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39300?locale=en",
+    "unique": false,
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Raid"]
+  },
+  "target-the-main-generator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39185?locale=en",
+    "unique": false,
+    "text": "Deal 2 damage to a base.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "tauntaun-mount": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39085?locale=en",
+    "unique": false,
+    "text": "When Defeated: Heal 2 damage from your base.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "too-strong-for-blasters": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39285?locale=en",
+    "unique": false,
+    "text": "Heal 2 damage from a unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "trench-defender": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39080?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "we-re-in-trouble": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39260?locale=en",
+    "unique": false,
+    "text": "Deal 3 damage to a unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "you-have-failed-me": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39305?locale=en",
+    "unique": false,
+    "text": "Defeat a friendly unit. If you do, ready a friendly unit with 5 or less power.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  }
+}

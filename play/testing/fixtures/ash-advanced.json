@@ -1,0 +1,100 @@
+{
+  "executor--final-destruction-of-the-alliance": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52666?locale=en",
+    "unique": true,
+    "text": "This unit gets +1/+0 for each upgrade on other friendly units.\nWhen Played: Give an Advantage token to each other friendly unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "clan-wren-loyalist": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52216?locale=en",
+    "unique": false,
+    "text": "When Played: Search the top 5 cards of your deck for a card that shares a Trait with a unit you control, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "dathomiri-magicks": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52201?locale=en",
+    "unique": false,
+    "text": "If you control a Force unit, this event costs 1 resource less to play.\nPlay up to 3 non-Vehicle units that each cost 2 or less from your discard pile for free.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n",
+    "keywords": []
+  },
+  "eye-of-sion--delivered-from-exile": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52904?locale=en",
+    "unique": true,
+    "text": "Action [Exhaust]: Search the top 8 cards of your deck for a unit that costs the same as or less than this unit's power. Play it for free. It enters play ready.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\nAbilities that refer to a card’s power include temporary modifiers.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n",
+    "keywords": []
+  },
+  "faith-in-the-empire": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52989?locale=en",
+    "unique": false,
+    "text": "This upgrade costs 1 resource less to play on an Imperial unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "the-way-of-the-mand-alor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52994?locale=en",
+    "unique": false,
+    "text": "This upgrade costs 1 resource less to play on a Mandalorian unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "nebulon-c-frigate": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52087?locale=en",
+    "unique": false,
+    "text": "When Played: You may heal 3 damage from a unit or base.",
+    "rules": null,
+    "keywords": []
+  },
+  "reckoning": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52616?locale=en",
+    "unique": false,
+    "text": "Deal damage to a unit equal to the total amount of damage on all units you control.",
+    "rules": null,
+    "keywords": []
+  },
+  "tatooine-repulsor-train": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51857?locale=en",
+    "unique": false,
+    "text": "This unit can't be attacked while you control 2 or more exhausted units (unless it gains Sentinel).\nOn Attack: Deal 2 damage to a ground unit for each friendly exhausted unit.",
+    "rules": "(ERRATA) On Attack: Choose a ground unit. Deal 2 damage to it for each friendly exhausted unit.\nIf Tatooine Repulsor Train gains Sentinel, it can be attacked, even while you control 2 or more exhausted units.\n",
+    "keywords": []
+  },
+  "unfettered-ambition": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52591?locale=en",
+    "unique": false,
+    "text": "When Played: For each upgrade on attached unit not named Advantage (including this one), give an Advantage token to attached unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "diplomatic-pageantry": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52834?locale=en",
+    "unique": false,
+    "text": "Exhaust a friendly unit and an enemy unit. If you do, give 2 Advantage tokens to that friendly unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "red-leader--strike-the-reactor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51867?locale=en",
+    "unique": true,
+    "text": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nThis unit may attack units in either arena.",
+    "rules": null,
+    "keywords": ["Support"]
+  },
+  "wicket--yub-nub-": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51852?locale=en",
+    "unique": true,
+    "text": "Saboteur\nThis unit can't attack bases.",
+    "rules": "Units that can’t attack bases can still damage bases through other abilities, like Overwhelm.\n",
+    "keywords": ["Saboteur"]
+  },
+  "treacherous-minefield": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52611?locale=en",
+    "unique": false,
+    "text": "Choose an arena. For this phase, each unit in that arena gains: “On Attack: Deal 2 damage to this unit.”",
+    "rules": "Treacherous Minefield gives the \"\"On Attack\"\" ability to each unit in the chosen arena when the event is played. Units that enter play after the event is played don't gain the \"\"On Attack\"\" ability.\n",
+    "keywords": []
+  }
+}

@@ -10,9 +10,11 @@ import {
   BookCopy,
   Loader2,
 } from 'lucide-react';
+import { CrossfireLogo } from '@/components/app/crossfire/CrossfireLogo.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
 import { cn } from '@/lib/utils.ts';
+import { useRole } from '@/hooks/useRole.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { useMemo } from 'react';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
@@ -21,7 +23,7 @@ import { useCardList } from '@/api/lists/useCardList.ts';
 import { ComparerEntryAdditionalData } from '@/components/app/comparer/useComparerStore.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useDuplicateDeck } from '@/api/decks/useDuplicateDeck.ts';
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import {
   useComparerStore,
   useComparerStoreActions,
@@ -38,6 +40,7 @@ interface DeckMenuContentProps {
 
 const DeckMenuContent: React.FC<DeckMenuContentProps> = ({ deckId }) => {
   const user = useUser();
+  const canCrossfire = useRole()('crossfire');
   const { toast } = useToast();
 
   // User setting: display collection info
@@ -199,6 +202,21 @@ const DeckMenuContent: React.FC<DeckMenuContentProps> = ({ deckId }) => {
             </div>
           </NavigationMenuLink>
         </li>
+
+        {canCrossfire && (
+          <li>
+            <NavigationMenuLink asChild>
+              <Link
+                to="/crossfire"
+                search={previous => ({ ...previous, cfDeck: deckId })}
+                className="flex items-center gap-2 rounded p-2 text-sm font-medium hover:bg-accent"
+              >
+                <CrossfireLogo />
+                Play in Crossfire
+              </Link>
+            </NavigationMenuLink>
+          </li>
+        )}
 
         {/* Duplicate deck */}
         <li

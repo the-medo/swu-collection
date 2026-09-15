@@ -1,0 +1,80 @@
+{
+  "ninth-sister--hulking-inquisitor": {
+    "text": "Overwhelm\nWhen Played: An opponent discards a card from their hand. You may deal damage equal to its cost divided as you choose among any number of units.",
+    "keywords": ["Overwhelm"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "0-0-0--translation-and-torture": {
+    "text": "On Attack: You may put a Aggression card from your discard pile on the bottom of your deck. If you do, deal 1 damage to each enemy base.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "bt-1--blastomech": {
+    "text": "On Attack: Discard a card from your deck. If it's Aggression, you may deal 1 damage to a ground unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "beguile": {
+    "text": "Look at an opponent's hand. Then, choose a non-leader unit that opponent controls that costs 6 or less and return it to its owner's hand.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "moff-gideon--remnant-commander": {
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)\nWhen Defeated: You may return a non-<uq> Imperial unit from your discard pile to your hand.",
+    "keywords": ["Sentinel"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "trask-walker": {
+    "text": "When Played/On Attack: Choose a unit in your discard pile that costs 7 or less. Either put that card on the bottom of your deck and heal 3 damage from your base or return it to your hand.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "interrogation-droid": {
+    "text": "When Played: Exhaust an enemy unit. If you do and that unit costs 3 or less, its controller discards a card from their hand.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "merrin--alone-with-the-dead": {
+    "text": "On Attack: You may discard a card from your hand. If you do, deal 2 damage to a unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "reckless-sacrifice": {
+    "text": "Discard a unit from your hand. Deal 5 damage to a unit that costs more than the discarded card.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "remnant-lookouts": {
+    "text": "When Played: Look at an opponent's hand. You may discard a card from it. If you do, they draw a card.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "mid-rim-sharpshooter": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nWhen Played: You may pay 1 resource. If you do, an opponent discards a card from their hand.",
+    "keywords": ["Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "qui-gon-jinn--the-negotiations-will-be-short": {
+    "text": "Ambush\nWhen Defeated: You may choose a non-leader ground unit. Its owner puts it on the top or bottom of their deck.",
+    "keywords": ["Ambush"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "hold-for-questioning": {
+    "text": "Exhaust an enemy unit. If you do, look at its controller's hand and discard a card from it that shares an aspect with that unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  }
+}

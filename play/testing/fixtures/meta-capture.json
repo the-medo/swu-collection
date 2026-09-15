@@ -1,0 +1,32 @@
+{
+  "arrest": {
+    "text": "Your base captures an enemy non-leader unit. At the start of the regroup phase, its owner rescues it.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "A base capturing a unit functions similarly to a unit capturing another unit. The captured unit is placed facedown under the base, out of play, and the base guards that unit. The captured unit can be rescued so long as the rescue ability doesn't specify that a unit is guarding the captured unit.\n"
+  },
+  "grand-admiral-thrawn--grand-schemer": {
+    "text": "When Played: An opponent may choose a non-leader unit they control. If they do, this unit captures that unit. If they don't, ready this unit.\nWhen Defeated: A friendly unit captures an enemy non-leader unit in the same arena.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be \u201can opponent.\u201d\n"
+  },
+  "lando-calrissian--trust-me": {
+    "text": "Grit\nWhen Played: You may choose an enemy unit and another friendly non-leader unit. If you do, heal 6 damage from your base and the enemy unit captures the friendly unit.",
+    "keywords": [
+      "Grit"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "moral-authority": {
+    "text": "Attach to a friendly <uq> (unique) unit.\nWhen Played: Attached unit captures an enemy non-leader unit with less remaining HP than it.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  }
+}

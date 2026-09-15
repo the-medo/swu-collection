@@ -1,0 +1,79 @@
+{
+  "hondo-ohnaka--that-s-good-business": {
+    "text": "When you play a card using Smuggle: You may exhaust this leader. If you do, give an Experience token to a unit.",
+    "keywords": [
+      "Smuggle",
+      "Raid"
+    ],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Raid 1 (This unit gets +1/+0 while attacking.)\nWhen you play a card using Smuggle: You may give an Experience token to a unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7908?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>When you play a card using Smuggle:</strong> You may exhaust this leader. If you do, give an Experience token to a unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>Raid 1</strong> <i>(This unit gets <strong>+1</strong>/<strong>+0</strong> while attacking.)</i></p><p><strong>When you play a card using Smuggle:</strong> You may give an Experience token to a unit.</p>"
+  },
+  "lando-calrissian--with-impeccable-taste": {
+    "text": "Action [Exhaust]: Play a card using Smuggle. It costs 2 resources less. Defeat a resource you own and control.",
+    "keywords": [
+      "Smuggle"
+    ],
+    "rules": "When using Lando’s ability to Smuggle a card, a resource is defeated after replacing the Smuggled card but before resolving any “When Played” abilities.\n",
+    "epicAction": "Epic Action: If you control 4 or more resources, deploy this leader.",
+    "deployBox": "Action: Play a card using Smuggle. It costs 2 resources less. Defeat a resource you own and control. Use this ability only once each round.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7948?locale=en",
+    "officialRules": "When using Lando’s ability to Smuggle a card, a resource is defeated after replacing the Smuggled card but before resolving any “When Played” abilities.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Play a card using <strong>Smuggle</strong>. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_2_cd0914a233.png\" alt=\"icon_cost_2.png\"> less. Defeat a resource you own and control.</p>",
+    "officialDeployBoxStyled": "<p><strong>Action:</strong> Play a card using <strong>Smuggle</strong>. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_2_cd0914a233.png\" alt=\"icon_cost_2.png\"> less. Defeat a resource you own and control. Use this ability only once each round.</p>"
+  },
+  "collections-starhopper": {
+    "text": "Smuggle [3 resources Command] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5871?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Smuggle</strong> <strong>[</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_3_5b5918aa29.png\" alt=\"icon_cost_3.png\"> <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_command_7586b7d888.png\" alt=\"icon_command.png\"><strong>]</strong> <i>(If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)</i></p>"
+  },
+  "smuggler-s-aid": {
+    "text": "Heal 3 damage from your base.\nSmuggle [3 resources Heroism] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/6541?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p>Heal 3 damage from your base.</p><p><strong>Smuggle</strong> <strong>[</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_3_5b5918aa29.png\" alt=\"icon_cost_3.png\"> <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_heroism_895bfc1dc1.png\" alt=\"icon_heroism.png\"><strong>]</strong> <i>(If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)</i></p>"
+  },
+  "hotshot-dl-44-blaster": {
+    "text": "Attach to a non-VEHICLE unit.\n\nSmuggle [3 resources, cunning]\n\nWhen played using Smuggle: Attack with attached unit.",
+    "keywords": [
+      "Smuggle"
+    ],
+    "rules": "If you play the Blaster using Smuggle, you must attack with the attached unit, if able. Units must be ready in order to attack.\nYou can only attack with units you control, so using Smuggle to play Hotshot DL-44 Blaster on an enemy unit does not begin an attack.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/2807?locale=en",
+    "officialRules": "If you play the Blaster using Smuggle, you must attack with the attached unit, if able. Units must be ready in order to attack.\nYou can only attack with units you control, so using Smuggle to play Hotshot DL-44 Blaster on an enemy unit does not begin an attack.\n",
+    "officialTextStyled": "<p>Attach to a non-<i><strong>VEHICLE</strong></i> unit.</p><p><strong>Smuggle [<img src=\"https://cdn.starwarsunlimited.com/icon_cost_3_5b5918aa29.png\" alt=\"icon_cost_3.png\"> </strong><img src=\"https://cdn.starwarsunlimited.com/icon_cunning_9335911968.png\" alt=\"icon_cunning.png\"><strong>]</strong></p><p><strong>When played using Smuggle:</strong> Attack with attached unit.</p>"
+  },
+  "privateer-crew": {
+    "text": "Smuggle [6 resources, command] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)\n\nWhen played using Smuggle: Give 3 Experience tokens to this unit.",
+    "keywords": [
+      "Smuggle"
+    ],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/2805?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Smuggle [</strong><img src=\"https://cdn.starwarsunlimited.com//icon_cost_6_bd3b26356a.png\" alt=\"icon_cost_6.png\"> <img src=\"https://cdn.starwarsunlimited.com/icon_command_7586b7d888.png\" alt=\"icon_command.png\"><strong>]</strong> <strong>(If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)</strong></p><p><strong>When played using Smuggle: </strong>Give 3 Experience tokens to this unit.</p>"
+  },
+  "tech--source-of-insight": {
+    "text": "Each friendly resource gains Smuggle. The gained Smuggle cost is that card's cost plus 2 resources and its aspect icons.\nSmuggle [4 resources Heroism]",
+    "keywords": [
+      "Smuggle"
+    ],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/6526?locale=en",
+    "officialRules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "officialTextStyled": "<p>Each friendly resource gains <strong>Smuggle</strong>. The gained <strong>Smuggle</strong> cost is that card’s cost plus <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_2_cd0914a233.png\" alt=\"icon_cost_2.png\"> and its aspect icons.</p><p><strong>Smuggle [<img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_4_8df699e37c.png\" alt=\"icon_cost_4.png\"> <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_heroism_895bfc1dc1.png\" alt=\"icon_heroism.png\">]</strong></p>"
+  }
+}

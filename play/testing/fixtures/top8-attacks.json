@@ -1,0 +1,50 @@
+{
+  "the-stranger--no-survivors": {
+    "text": "Ambush\nGrit\nWhile attacking, you may have the defending unit deal combat damage before this unit.",
+    "keywords": ["Ambush", "Grit"],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\nIf the defending unit deals combat damage first, and The Stranger is defeated by that damage, he does not deal combat damage back. If he survives, he deals bonus damage from Grit when dealing combat damage back.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46482?locale=en",
+    "officialText": "Ambush\nGrit\nWhile attacking, you may have the defending unit deal combat damage before this unit.",
+    "officialTextStyled": "<p><strong>Ambush</strong></p><p><strong>Grit</strong></p><p>While attacking, you may have the defending unit deal combat damage before this unit.</p>",
+    "officialRules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\nIf the defending unit deals combat damage first, and The Stranger is defeated by that damage, he does not deal combat damage back. If he survives, he deals bonus damage from Grit when dealing combat damage back.\n"
+  },
+  "babu-frik--heyyy-": {
+    "text": "Action [Exhaust]: You may attack with a friendly Droid unit. For this attack, it deals damage equal to its remaining HP instead of its power.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28054?locale=en",
+    "officialText": "Action [Exhaust]: You may attack with a friendly Droid unit. For this attack, it deals damage equal to its remaining HP instead of its power.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> You may attack with a friendly <strong><i>Droid</i></strong> unit. For this attack, it deals damage equal to its remaining HP instead of its power.</p>",
+    "officialRules": "Units must be ready in order to attack.\n"
+  },
+  "one-way-out": {
+    "text": "Attack with a unit. It gets +1/+0 and gains Overwhelm for this attack. If it attacks a unit, the defender loses all abilities for this attack.",
+    "keywords": ["Overwhelm"],
+    "rules": "If you play One Way Out, you must attack with a unit, if able. Units must be ready in order to attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nThe defending unit also can't gain abilities for this attack.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40160?locale=en",
+    "officialText": "Attack with a unit. It gets +1/+0 and gains Overwhelm for this attack. If it attacks a unit, the defender loses all abilities for this attack.",
+    "officialTextStyled": "<p>Attack with a unit. It gets +1/+0 and gains <strong>Overwhelm</strong> for this attack. If it attacks a unit, the defending unit loses all abilities for this attack.</p>",
+    "officialRules": "If you play One Way Out, you must attack with a unit, if able. Units must be ready in order to attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nThe defending unit also can't gain abilities for this attack.\n(ERRATA) Templating update: “Defender” becomes “defending unit”.\n"
+  },
+  "flash-the-vents": {
+    "text": "Attack with a unit. It gets +2/+0 and gains Overwhelm for this attack. After completing this attack, if that unit damaged a base, defeat that unit.",
+    "keywords": ["Overwhelm"],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47077?locale=en",
+    "officialText": "Attack with a unit. It gets +2/+0 and gains Overwhelm for this attack. After completing this attack, if that unit damaged a base, defeat that unit.",
+    "officialTextStyled": "<p>Attack with a unit. It gets <strong>+2</strong>/<strong>+0</strong> and gains <strong>Overwhelm</strong> for this attack. After completing this attack, if that unit damaged a base, defeat that unit.</p>",
+    "officialRules": "You must attack with a unit, if able. Units must be ready in order to attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nResolve all triggered abilities from the attack before defeating the unit.\nFlash the Vents does not specify \"combat damage,\" so if the unit deals damage to a base with an ability during the attack, it is defeated.\n"
+  }
+}

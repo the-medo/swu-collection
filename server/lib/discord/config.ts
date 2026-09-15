@@ -5,6 +5,25 @@ import type {
 } from './types.ts';
 
 const DEFAULT_DISCORD_API_BASE_URL = 'https://discord.com/api/v10';
+
+export function getCrossfireReportsDiscordConfig() {
+  const enabled = readBooleanEnv('DISCORD_CROSSFIRE_REPORTS_ENABLED') ?? false;
+  const channelId = readStringEnv('DISCORD_CROSSFIRE_REPORTS_CHANNEL_ID');
+  // This destination is deliberately independent of public tournament channels.
+  const appBaseUrl = readStringEnv('DISCORD_CROSSFIRE_REPORTS_APP_BASE_URL');
+  const config = getDiscordConfig({ requireBotToken: enabled });
+  if (enabled) {
+    if (!channelId || !/^\d{17,20}$/.test(channelId))
+      throw new Error('DISCORD_CROSSFIRE_REPORTS_CHANNEL_ID must be a channel ID.');
+    if (
+      !appBaseUrl ||
+      !/^https?:$/.test(new URL(appBaseUrl).protocol) ||
+      new URL(appBaseUrl).origin !== appBaseUrl
+    )
+      throw new Error('DISCORD_CROSSFIRE_REPORTS_APP_BASE_URL must be an exact HTTP(S) origin.');
+  }
+  return { ...config, enabled, channelId, appBaseUrl };
+}
 const DEFAULT_LOCAL_APP_BASE_URL = 'http://localhost:5173';
 const DISCORD_APP_BASE_URL_ENV_LABEL =
   'DISCORD_APP_BASE_URL, DISCORD_TOURNAMENT_RESULTS_APP_BASE_URL, BETTER_AUTH_URL, or VITE_BETTER_AUTH_URL';

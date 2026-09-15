@@ -1,0 +1,74 @@
+{
+  "no-glory--only-results": {
+    "text": "Take control of a non-leader unit, then defeat it.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "galen-erso--destroying-his-creation": {
+    "text": "When Played: You may have an opponent take control of this unit.\nEnemy units gain Raid 1 and Saboteur.",
+    "keywords": ["Raid", "Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "poe-dameron--i-ll-come-back-for-you": {
+    "text": "All units lose Sentinel.",
+    "keywords": ["Sentinel"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "victor-leader--leading-from-the-front": {
+    "text": "Each other friendly space unit gets +1/+1.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "clone-combat-squadron": {
+    "text": "This unit gets +1/+1 for each other friendly space unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "grand-inquisitor--you-re-right-to-be-afraid": {
+    "text": "Hidden\nRaid 1\nOther friendly Inquisitor units gain Hidden.",
+    "keywords": ["Hidden", "Raid"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "anakin-skywalker--you-were-right-about-me": {
+    "text": "Hidden\nSaboteur\nWhen Played: Give a Shield token to another friendly unit.",
+    "keywords": ["Hidden", "Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "punishing-one--takes-no-prisoners": {
+    "text": "This unit gains Raid 1 for each damaged enemy unit.\nWhen Played/On Attack: You may deal 1 damage to a unit.",
+    "keywords": ["Raid"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "vonreg-s-tie-interceptor--ace-of-the-first-order": {
+    "text": "While this unit has 4 or more power, it gains Overwhelm. (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhile this unit has 6 or more power, it gains Raid 1. (It gets +1/+0 while attacking.)",
+    "keywords": ["Overwhelm", "Raid"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "millennium-falcon--get-out-and-push": {
+    "text": "You may play or deploy 1 additional Pilot on this unit.\nThis unit gets +1/+0 for each Pilot on it.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "kylo-ren-s-command-shuttle--icon-of-authority": {
+    "text": "Each friendly ground unit with Sentinel gets +0/+2.",
+    "keywords": ["Sentinel"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "bo-katan-s-gauntlet--reinforce-from-above": {
+    "text": "Restore 1\nEach other friendly non-token unit gains: \u201cWhen Defeated: Create a Mandalorian token.\u201d",
+    "keywords": ["Restore"],
+    "epicAction": "",
+    "deployBox": null
+  }
+}

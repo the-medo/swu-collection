@@ -1,0 +1,290 @@
+{
+  "coronet-city": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5466?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "dagobah-swamp": {
+    "text": null,
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/926?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "death-watch-hideout": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5456?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "droid-manufactory": {
+    "text": "When you deploy a leader: Create 2 Battle Droid tokens.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15471?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>When you deploy a leader:</strong> Create 2 Battle Droid tokens.</p>"
+  },
+  "echo-base": {
+    "text": null,
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/308?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "energy-conversion-lab": {
+    "text": "Epic Action: Play a unit that costs 6 resources or less from your hand. Give it AMBUSH for this phase.",
+    "keywords": ["Ambush"],
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAbilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\nAmbush is an ability that triggers at the same time as \u201cWhen Played\u201d abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/307?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAbilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\nAmbush is an ability that triggers at the same time as \u201cWhen Played\u201d abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "officialTextStyled": "<p><strong>Epic Action:</strong> Play a unit that costs <strong>6 </strong>resources or less from your hand. Give it <strong>AMBUSH</strong> for this phase.</p><p>&nbsp;</p>"
+  },
+  "jabba-s-palace": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5471?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "jedha-city": {
+    "text": "Epic Action: Give a non-leader unit -4/-0 for this phase.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/311?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Epic Action:</strong> Give a non-leader unit <strong>-4/-0</strong> for this phase.</p>"
+  },
+  "kcm-mining-facility": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15491?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p></p>"
+  },
+  "kestro-city": {
+    "text": null,
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/927?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "lair-of-grievous": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15476?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "level-1313": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15506?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p></p>"
+  },
+  "maz-kanata-s-castle": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5446?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "nevarro-city": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5451?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "pau-city": {
+    "text": "Each leader unit you control gets +0/+1.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15456?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p>Each leader unit you control gets <strong>+0</strong>/<strong>+1</strong>.</p>"
+  },
+  "petranaki-arena": {
+    "text": "Each leader unit you control gets +1/+0.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15501?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p>Each leader unit you control gets <strong>+1</strong>/<strong>+0</strong>.</p>"
+  },
+  "pyke-palace": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15511?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p></p>"
+  },
+  "remnant-science-facility": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5436?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "remote-village": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5441?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "security-complex": {
+    "text": "Epic Action: Give a Shield token to a non-leader unit.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/306?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Epic Action:</strong> Give a Shield token to a non-leader unit.</p>"
+  },
+  "shadow-collective-camp": {
+    "text": "When you deploy a leader: Draw a card.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15486?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>When you deploy a leader:</strong> Draw a card.</p>"
+  },
+  "spice-mines": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5461?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "sundari": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15461?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p></p>"
+  },
+  "tarkintown": {
+    "text": "Epic Action: Deal 3 damage to a damaged non-leader unit.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/309?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Epic Action:</strong> Deal 3 damage to a damaged non-leader unit.</p>"
+  },
+  "the-crystal-city": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15466?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p></p>"
+  },
+  "the-nest": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15496?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p></p>"
+  },
+  "tipoca-city": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/15481?locale=en",
+    "officialRules": null,
+    "officialTextStyled": ""
+  },
+  "theed-palace": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19586?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p></p>"
+  },
+  "thermal-oscillator": {
+    "text": "Your minimum deck size is decreased by 5 cards.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19596?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p>Your minimum deck size is decreased by 5 cards.</p>"
+  },
+  "jedi-temple": {
+    "text": "When a friendly Force unit attacks: The Force is with you (create your Force token).",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27139?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>When a friendly </strong><strong><i>Force</i></strong><strong> unit attacks:</strong> The Force is with you <i>(create your Force token)</i>.</p>"
+  },
+  "starlight-temple": {
+    "text": "When a friendly Force unit attacks: The Force is with you (create your Force token).",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27144?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>When a friendly </strong><strong><i>Force</i></strong><strong> unit attacks:</strong> The Force is with you <i>(create your Force token)</i>.</p>"
+  },
+  "echo-caverns": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/38840?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p></p>"
+  },
+  "senate-rotunda": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39485?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p></p>"
+  },
+  "aldhani-garrison": {
+    "text": "Epic Action: Play a card from your hand, ignoring 1 of its Vigilance, Command, Aggression, or Cunning aspect penalties.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46162?locale=en",
+    "officialRules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n",
+    "officialTextStyled": "<p><strong>Epic Action:</strong> Play a card from your hand, ignoring 1 of its <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_vigilance_cd5c27a54d.png\" alt=\"icon_vigilance.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_command_7586b7d888.png\" alt=\"icon_command.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_aggression_847a987450.png\" alt=\"icon_aggression.png\">, or <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cunning_9335911968.png\" alt=\"icon_cunning.png\"> aspect penalties.</p>"
+  },
+  "imperial-command-complex": {
+    "text": "Epic Action: Play a card from your hand, ignoring 1 of its Vigilance, Command, Aggression, or Cunning aspect penalties.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46172?locale=en",
+    "officialRules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n",
+    "officialTextStyled": "<p><strong>Epic Action:</strong> Play a card from your hand, ignoring 1 of its <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_vigilance_cd5c27a54d.png\" alt=\"icon_vigilance.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_command_7586b7d888.png\" alt=\"icon_command.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_aggression_847a987450.png\" alt=\"icon_aggression.png\">, or <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cunning_9335911968.png\" alt=\"icon_cunning.png\"> aspect penalties.</p>"
+  },
+  "partisan-hideout": {
+    "text": "Epic Action: Play a card from your hand, ignoring 1 of its Vigilance, Command, Aggression, or Cunning aspect penalties.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46202?locale=en",
+    "officialRules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n",
+    "officialTextStyled": "<p><strong>Epic Action:</strong> Play a card from your hand, ignoring 1 of its <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_vigilance_cd5c27a54d.png\" alt=\"icon_vigilance.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_command_7586b7d888.png\" alt=\"icon_command.png\">, <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_aggression_847a987450.png\" alt=\"icon_aggression.png\">, or <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cunning_9335911968.png\" alt=\"icon_cunning.png\"> aspect penalties.</p>"
+  }
+}

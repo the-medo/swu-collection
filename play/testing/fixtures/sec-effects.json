@@ -1,0 +1,688 @@
+{
+  "death-trooper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/313?locale=en",
+    "unique": false,
+    "text": "When Played: Deal 2 damage to a friendly ground unit and 2 damage to an enemy ground unit.",
+    "rules": null,
+    "officialRules": "If Death Trooper is the only friendly unit in play, it must be chosen by its “When Played” ability.\n",
+    "keywords": []
+  },
+  "isb-agent": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/365?locale=en",
+    "unique": false,
+    "text": "When Played: You may reveal an event from your hand. If you do, deal 1 damage to a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "viper-probe-droid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/155?locale=en",
+    "unique": false,
+    "text": "When Played: Look at an opponent's hand.",
+    "rules": null,
+    "keywords": []
+  },
+  "c-3po--anything-i-might-do-": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39840?locale=en",
+    "unique": true,
+    "text": "Action [Exhaust, return this unit to its owner's hand]: Give a unit +2/+2 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "chopper--war-hero": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40110?locale=en",
+    "unique": true,
+    "text": "When this unit deals combat damage to a base: Each player discards a card from their hand.",
+    "rules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": []
+  },
+  "academy-disciplinarian": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40200?locale=en",
+    "unique": false,
+    "text": "When Played: You may deal 1 damage to a friendly unit with 2 or less power and ready it.",
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n",
+    "keywords": []
+  },
+  "ahsoka-tano--i-learned-it-from-you": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39855?locale=en",
+    "unique": true,
+    "text": "When this unit completes an attack (and survives): You may disclose CommandHeroism. If you do, attack with another unit.",
+    "rules": "If you use Ahsoka’s ability, you must attack with a unit, if able. Units must be ready in order to attack.\nA unit must survive an attack to trigger its “when this unit completes an attack” abilities.\n",
+    "officialRules": "If you use Ahsoka’s ability, you must attack with a unit, if able. Units must be ready in order to attack.\nA unit must survive an attack to trigger its “when this unit completes an attack” abilities.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": []
+  },
+  "alexsandr-kallus--with-new-purpose": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40150?locale=en",
+    "unique": true,
+    "text": "While you have the initiative, each other friendly <uq> (unique) unit gains Raid 2.\nWhen Played: Deal 2 damage to each of up to 3 ground units.",
+    "rules": null,
+    "keywords": [
+      "Raid"
+    ]
+  },
+  "ambition-s-reward": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40250?locale=en",
+    "unique": false,
+    "text": "When Played: Create a Spy token.",
+    "rules": null,
+    "keywords": []
+  },
+  "b2emo--that-s-two-lies": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40615?locale=en",
+    "unique": true,
+    "text": "Restore 1\nOn Attack: You may disclose HeroismHeroism (reveal cards from your hand with these aspect icons among them). If you do, give a unit Sentinel for this phase.",
+    "rules": null,
+    "keywords": [
+      "Restore",
+      "Sentinel"
+    ]
+  },
+  "bardottan-ornithopter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39685?locale=en",
+    "unique": false,
+    "text": "When Played: You may disclose Vigilance (reveal a card from your hand with this aspect icon). If you do, draw a card.",
+    "rules": null,
+    "keywords": []
+  },
+  "budget-scheming": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39995?locale=en",
+    "unique": false,
+    "text": "Give an Experience token to each of up to 3 Official units.",
+    "rules": null,
+    "keywords": []
+  },
+  "cad-bane--impressed-now-": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39545?locale=en",
+    "unique": true,
+    "text": "When Played: You may defeat a unit with 2 or less remaining HP.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": null,
+    "keywords": [
+      "Plot"
+    ]
+  },
+  "catch-unawares": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40520?locale=en",
+    "unique": false,
+    "text": "Attack with a unit. The defender gets –4/–0 for this attack.",
+    "rules": "If you play Catch Unawares, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "officialRules": "If you play Catch Unawares, you must attack with a unit, if able. Units must be ready in order to attack.\n(ERRATA) Templating update: “Defender” becomes “defending unit”.\n",
+    "keywords": []
+  },
+  "chancellor-valorum--civil-servant": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39910?locale=en",
+    "unique": true,
+    "text": "When this unit completes an attack: You may disclose CommandCommandCommand (reveal cards from your hand with these aspect icons among them). If you do, put the top card of your deck into play as a resource.",
+    "rules": "A unit must survive an attack to trigger its “when this unit completes an attack” abilities.\n",
+    "officialRules": "A unit must survive an attack to trigger its “when this unit completes an attack” abilities.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": []
+  },
+  "charged-with-espionage": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40525?locale=en",
+    "unique": false,
+    "text": "You may disclose CunningCunning (reveal cards from your hand with these aspect icons among them). If you do, look at an opponent's hand and discard a unit from it.",
+    "rules": null,
+    "keywords": []
+  },
+  "charged-with-murder": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39755?locale=en",
+    "unique": false,
+    "text": "You may disclose VigilanceVigilance (reveal cards from your hand with these aspect icons among them). If you do, defeat a damaged non-leader unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "convene-the-senate": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40015?locale=en",
+    "unique": false,
+    "text": "Search the top 8 cards of your deck for up to 2 Official units, reveal them, and draw them. (Put the other cards on the bottom of your deck in a random order.)\nCreate a Spy token.",
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "corporate-warmongering": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39830?locale=en",
+    "unique": false,
+    "text": "Give a friendly unit +3/+3 for this phase. Give each other friendly unit +1/+1 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "covert-operative": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40640?locale=en",
+    "unique": false,
+    "text": "When Played: This unit captures an enemy non-leader unit that costs 2 or less. (Put the captured card facedown under this unit until this unit leaves play.)",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "keywords": []
+  },
+  "crosshair--filled-with-doubt": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40185?locale=en",
+    "unique": true,
+    "text": "On Attack: You may deal 1 damage to another friendly unit. If you do, deal 2 damage to the defending player's base.",
+    "rules": null,
+    "keywords": []
+  },
+  "dhani-pilgrim": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39650?locale=en",
+    "unique": false,
+    "text": "When Played/When Defeated: Heal 1 damage from your base.",
+    "rules": null,
+    "keywords": []
+  },
+  "director-krennic--i-lose-nothing-but-time": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39825?locale=en",
+    "unique": true,
+    "text": "Sentinel\nWhen this unit is attacked: Discard a card from your deck. If it's a unit, you may return it to your hand.",
+    "rules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n“When this unit is attacked” triggers at the same time as “On Attack” abilities.\nOn Defense abilities trigger when this unit is chosen as the defender for an attack, in the same window as the attacker's On Attack abilities.\n",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "fn-trooper-corps": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40590?locale=en",
+    "unique": false,
+    "text": "When Played: Give an Experience token to another friendly unit.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": null,
+    "keywords": [
+      "Plot"
+    ]
+  },
+  "furtive-handmaiden": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40360?locale=en",
+    "unique": false,
+    "text": "On Attack: You may discard a card from your hand. If you do, draw a card.",
+    "rules": null,
+    "keywords": []
+  },
+  "general-grievous--scuttling-to-safety": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40310?locale=en",
+    "unique": true,
+    "text": "Hidden \nWhen this unit is attacked: Return him to his owner's hand .",
+    "rules": "“When this unit is attacked” triggers at the same time as “On Attack” abilities.\nGrievous can only be returned to hand by his ability if he is in play when it is resolves.\nIf a unit with Overwhelm attacks General Grievous and he returns to his owner's hand, all combat damage is considered excess damage and dealt to the defending player's base.\nOn Defense abilities trigger when this unit is chosen as the defender for an attack, in the same window as the attacker's On Attack abilities.\n",
+    "officialText": "Hidden (This unit can't be attacked if he was played this phase.)\nWhen this unit is attacked: Return him to his owner's hand (before damage is dealt).",
+    "keywords": [
+      "Hidden"
+    ]
+  },
+  "grand-moff-tarkin--taking-krennic-s-achievement": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40335?locale=en",
+    "unique": true,
+    "text": "When Played: Take control of an enemy non-leader Vehicle unit. When this unit leaves play, that unit's owner takes control of that unit.",
+    "rules": "If Tarkin has already left play when you resolve his \"When Played\" ability, immediately return the stolen unit to its owner's control.\n",
+    "keywords": []
+  },
+  "hunter--extraordinary-tracker": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40415?locale=en",
+    "unique": true,
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nOn Attack: If the defender is exhausted, it gets –4/–0 for this attack.",
+    "rules": null,
+    "officialRules": "(ERRATA) Templating update: “Defender” becomes “defending unit”.\n",
+    "keywords": [
+      "Saboteur"
+    ]
+  },
+  "imperial-occupier": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40035?locale=en",
+    "unique": false,
+    "text": "When Defeated: Create a Spy token.",
+    "rules": null,
+    "keywords": []
+  },
+  "inner-rim-coalition": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40145?locale=en",
+    "unique": false,
+    "text": "When Defeated: You may ready a unit that costs 5 or less.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "keywords": []
+  },
+  "isb-shuttle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39790?locale=en",
+    "unique": false,
+    "text": "When Played: If a friendly unit was defeated this phase, create a Spy token.",
+    "rules": null,
+    "keywords": []
+  },
+  "it-s-not-over-yet": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40260?locale=en",
+    "unique": false,
+    "text": "You may ready a unit that didn't attack or enter play this phase.\nCreate a Spy token.",
+    "rules": null,
+    "keywords": []
+  },
+  "junior-senator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40375?locale=en",
+    "unique": false,
+    "text": "When Played: You may return an upgrade that costs 3 or less to its owner's hand.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n",
+    "keywords": []
+  },
+  "kaydel-connix--for-our-survival": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40120?locale=en",
+    "unique": true,
+    "text": "When Played: You may defeat all non-<uq> (non-unique) upgrades on a unit.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": null,
+    "keywords": [
+      "Plot"
+    ]
+  },
+  "kreia-s-whispers": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40535?locale=en",
+    "unique": false,
+    "text": "Draw 3 cards, then put a card from your hand on the top of your deck and another card from your hand on the bottom of your deck.",
+    "rules": null,
+    "keywords": []
+  },
+  "maarva-andor--we-ve-been-sleeping": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40635?locale=en",
+    "unique": true,
+    "text": "When Defeated: Give an Experience token to each friendly Rebel unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "major-partagaz--healthcare-provider": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39780?locale=en",
+    "unique": true,
+    "text": "Overwhelm\nWhen another friendly Official unit attacks: This unit gets +2/+2 for this phase.",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": [
+      "Overwhelm"
+    ]
+  },
+  "mas-amedda--accomplice-to-power": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39795?locale=en",
+    "unique": true,
+    "text": "When Played: Give an Experience token to each of up to 2 other Official units.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": null,
+    "keywords": [
+      "Plot"
+    ]
+  },
+  "miraj-scintel--the-weak-deserve-to-kneel": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40070?locale=en",
+    "unique": true,
+    "text": "While a friendly unit is attacking a damaged unit, the attacker gains Overwhelm.\nWhen Played: You may deal 3 damage to an undamaged unit.",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": [
+      "Overwhelm"
+    ]
+  },
+  "naboo-security-force": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39975?locale=en",
+    "unique": false,
+    "text": "When Played/When Defeated: You may disclose Command (reveal a card from your hand with this aspect icon). If you do, give a friendly unit Sentinel for this phase.",
+    "rules": null,
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "no-one-ever-knew": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40355?locale=en",
+    "unique": false,
+    "text": "For each friendly Official unit, exhaust an enemy unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "nute-gunray--escaping-justice": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39530?locale=en",
+    "unique": true,
+    "text": "Grit\nWhen Played/On Attack: You may give another friendly Official unit Sentinel for this phase.",
+    "rules": null,
+    "keywords": [
+      "Grit",
+      "Sentinel"
+    ]
+  },
+  "orn-free-taa--political-power-broker": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39935?locale=en",
+    "unique": true,
+    "text": "This unit gets +1/+0 for each Law card in your discard pile.\nWhen Played: Search the top 10 cards of your deck for a Law card, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "political-bully": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40580?locale=en",
+    "unique": false,
+    "text": "When Played: If you control another Official unit, you may deal 2 damage to a ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "premor-personnel-carrier": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39820?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhen Played: Give this unit an Experience token for each ground unit you control.",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": [
+      "Overwhelm"
+    ]
+  },
+  "pursue-the-lead": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40265?locale=en",
+    "unique": false,
+    "text": "Choose a player. That player discards a card from their hand. If it costs 3 or less, create a Spy token.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "keywords": []
+  },
+  "rebel-propagandist": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40385?locale=en",
+    "unique": false,
+    "text": "When Played/When Defeated: Give another friendly unit +1/+0 and Saboteur for this phase. (When that unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": [
+      "Saboteur"
+    ]
+  },
+  "reconnaissance": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40000?locale=en",
+    "unique": false,
+    "text": "If you control a ground unit and a space unit, draw 2 cards.",
+    "rules": null,
+    "keywords": []
+  },
+  "remote-escort-tank": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40650?locale=en",
+    "unique": false,
+    "text": "When Played: Give a unit Sentinel for this phase.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": null,
+    "keywords": [
+      "Sentinel",
+      "Plot"
+    ]
+  },
+  "restore-freedom": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40660?locale=en",
+    "unique": false,
+    "text": "Play a unit from your hand. It costs 1 resource less for each Heroism aspect icon among friendly units.",
+    "rules": null,
+    "keywords": []
+  },
+  "senator-chuchi--voice-for-the-voiceless": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39600?locale=en",
+    "unique": true,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)\nOn Attack: Give another friendly Official unit Restore 2 for this phase.",
+    "rules": null,
+    "keywords": [
+      "Restore"
+    ]
+  },
+  "soulless-one--swift-and-agile": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40325?locale=en",
+    "unique": true,
+    "text": "On Attack: You may disclose CunningCunningVillainy (reveal cards from your hand with these aspect icons among them). If you do, ready 2 resources.",
+    "rules": null,
+    "keywords": []
+  },
+  "stolen-starpath-unit": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40425?locale=en",
+    "unique": false,
+    "text": "Attached unit gains: “On Attack: Name a card. The defending player reveals their hand. For each card in their hand with that name, create a Spy token.”",
+    "rules": "Abilities that refer to a card’s “name” do not include the subtitle of the card.\n",
+    "keywords": []
+  },
+  "strike-force-x-wing": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40135?locale=en",
+    "unique": false,
+    "text": "When Played: You may deal 2 damage to a ready unit.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": null,
+    "keywords": [
+      "Plot"
+    ]
+  },
+  "synara-san--harboring-a-secret": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40500?locale=en",
+    "unique": true,
+    "text": "Hidden\nOn Attack: For each friendly unit, ready a friendly resource.",
+    "rules": null,
+    "keywords": [
+      "Hidden"
+    ]
+  },
+  "taylander-shuttle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39950?locale=en",
+    "unique": false,
+    "text": "On Attack: If you have the initiative, create a Spy token.",
+    "rules": null,
+    "keywords": []
+  },
+  "the-chancellor-s-shuttle--grim-harbinger": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39510?locale=en",
+    "unique": true,
+    "text": "Restore 1\nWhen Defeated: If you control Chancellor Palpatine (as a leader or unit), you may give an Experience token to a unit.",
+    "rules": null,
+    "keywords": [
+      "Restore"
+    ]
+  },
+  "theed-security": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39850?locale=en",
+    "unique": false,
+    "text": "When Played: If an opponent controls an upgrade, give an Experience token to a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "trade-federation-delegates": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40330?locale=en",
+    "unique": false,
+    "text": "When Played: Create 2 Spy tokens.",
+    "rules": null,
+    "keywords": []
+  },
+  "unauthorized-investigation": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40280?locale=en",
+    "unique": false,
+    "text": "Create a Spy token.\nYou may disclose Aggression (reveal a card from your hand with this aspect icon). If you do, create another Spy token.",
+    "rules": null,
+    "keywords": []
+  },
+  "undercover-operation": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40555?locale=en",
+    "unique": false,
+    "text": "Ready a unit that was played this phase. If it costs 3 or less, create a Spy token.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "keywords": []
+  },
+  "unruly-astromech": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40480?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)\nWhen Defeated: Exhaust an enemy unit.",
+    "rules": null,
+    "keywords": [
+      "Hidden"
+    ]
+  },
+  "valiant-commando": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40125?locale=en",
+    "unique": false,
+    "text": "When this unit deals combat damage to a base: You may defeat this unit. If you do, deal 3 damage to that base.",
+    "rules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n",
+    "officialRules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": []
+  },
+  "vice-admiral-rampart--on-schedule": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39800?locale=en",
+    "unique": true,
+    "text": "On Attack: You may disclose CommandCommandVillainy (reveal cards from your hand with these aspect icons among them). If you do, give an Experience token to each of up to 2 other units.",
+    "rules": null,
+    "keywords": []
+  },
+  "when-has-become-now": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40600?locale=en",
+    "unique": false,
+    "text": "Play a card with Plot from your resources (paying its cost). Put the top card of your deck into play as a resource.",
+    "rules": "(ERRATA) Play a card with Plot from your resources (paying its cost). If you do, put the top card of your deck into play as a resource.\nAbilities that let you play a card require you to pay that card’s cost unless specified otherwise.\n",
+    "keywords": [
+      "Plot"
+    ]
+  },
+  "with-thunderous-applause": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40020?locale=en",
+    "unique": false,
+    "text": "Give a unit +2/+2 for this phase.\nYou may disclose Command (reveal a card from your hand with this aspect icon). If you do, give another unit +2/+2 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "arihnda-pryce--on-the-road-to-power": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40055?locale=en",
+    "unique": true,
+    "text": "When Defeated: You may defeat another friendly unit. If you do, deal 4 damage to each enemy base.",
+    "rules": null,
+    "keywords": []
+  },
+  "assassin-probe": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40690?locale=en",
+    "unique": false,
+    "text": "When Defeated: Deal 1 damage to each exhausted enemy ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "beloved-orator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39860?locale=en",
+    "unique": false,
+    "text": "When Played: Create a Spy token.",
+    "rules": null,
+    "keywords": []
+  },
+  "chairman-papanoida--undaunted-diplomat": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40170?locale=en",
+    "unique": true,
+    "text": "When a player draws 1 or more cards during the action phase: You may disclose AggressionAggression (reveal cards from your hand with these aspect icons among them). If you do, create a Spy token.",
+    "rules": null,
+    "keywords": []
+  },
+  "clandestine-connections": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40695?locale=en",
+    "unique": false,
+    "text": "Attached unit gains: “On Attack: You may pay 2 resources. If you do, deal 2 damage to a base.”",
+    "rules": null,
+    "keywords": []
+  },
+  "diplomatic-envoy": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39920?locale=en",
+    "unique": false,
+    "text": "When Played: You may disclose Command (reveal a card from your hand with this aspect icon). If you do, the next unit you play this phase gains Ambush for this phase.",
+    "rules": "The Ambush from Diplomatic Envoy's “When Played” ability remains active even if it is defeated before you play another unit.\nAmbush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": [
+      "Ambush"
+    ]
+  },
+  "duchess-s-investigators": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40490?locale=en",
+    "unique": false,
+    "text": "When Played: You may disclose Cunning (reveal a card from your hand with this aspect icon). If you do, each opponent discards a random card from their hand.",
+    "rules": null,
+    "keywords": []
+  },
+  "emissaries-from-ryloth": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40405?locale=en",
+    "unique": false,
+    "text": "When Played: You may give a unit –3/–0 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "escape-pod": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39655?locale=en",
+    "unique": false,
+    "text": "When Played: You may have this unit capture a friendly non-Vehicle, non-leader unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "ferrix-uprising": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40025?locale=en",
+    "unique": false,
+    "text": "Deal damage to a unit equal to twice the number of units you control in its arena.",
+    "rules": null,
+    "keywords": []
+  },
+  "heroic-arc-170": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40645?locale=en",
+    "unique": false,
+    "text": "When Played: If you control a damaged unit, you may deal 2 damage to an enemy unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "hutt-cartel-starfighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40575?locale=en",
+    "unique": false,
+    "text": "When Played: Deal 2 damage to this unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "inspiring-senator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40680?locale=en",
+    "unique": false,
+    "text": "When Defeated: The next Official unit you play this phase costs 1 resource less.",
+    "rules": null,
+    "keywords": []
+  },
+  "lightmaker--i-have-an-idea": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40410?locale=en",
+    "unique": true,
+    "text": "Raid 4\nWhen Defeated: Choose an arena. Exhaust each enemy unit in that arena.",
+    "rules": null,
+    "keywords": [
+      "Raid"
+    ]
+  },
+  "nala-se--chief-medical-scientist": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39700?locale=en",
+    "unique": true,
+    "text": "On Attack: You may disclose VigilanceVigilance (reveal cards from your hand with these aspect icons among them). If you do, heal up to 4 damage from among other units.",
+    "rules": null,
+    "keywords": []
+  },
+  "nemik-s-manifesto": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40155?locale=en",
+    "unique": true,
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains the Rebel trait and: “When Defeated: Deal 1 damage to each enemy base for each other friendly Rebel unit.”",
+    "rules": null,
+    "keywords": []
+  },
+  "regulations-bureaucrat": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40455?locale=en",
+    "unique": false,
+    "text": "Action [Exhaust]: Exhaust a resource.",
+    "rules": null,
+    "keywords": []
+  },
+  "relief-request": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39745?locale=en",
+    "unique": false,
+    "text": "Heal 3 damage from a unit.\nYou may disclose Vigilance (reveal a card from your hand with this aspect icon). If you do, heal 3 damage from another unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "renewed-friendship": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39900?locale=en",
+    "unique": false,
+    "text": "Return a unit from your discard pile to your hand.\nCreate 2 Spy tokens.",
+    "rules": null,
+    "keywords": []
+  },
+  "renowned-dignitaries": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39885?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhen Played: Heal 2 damage from your base for each friendly Official unit.",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": [
+      "Overwhelm"
+    ]
+  },
+  "saw-gerrera-s-u-wing--breaking-the-rules": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40245?locale=en",
+    "unique": true,
+    "text": "Saboteur\nWhen this unit completes an attack (and survives): You may attack with another Aggression unit.",
+    "rules": "A unit must survive an attack to trigger its “when this unit completes an attack” abilities.\nUnits must be ready in order to attack.\n",
+    "officialRules": "A unit must survive an attack to trigger its “when this unit completes an attack” abilities.\nUnits must be ready in order to attack.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": [
+      "Saboteur"
+    ]
+  },
+  "senate-warden": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39670?locale=en",
+    "unique": false,
+    "text": "When Defeated: You may disclose Vigilance (reveal a card from your hand with this aspect icon). If you do, give an Experience token to a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "special-modifications": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40510?locale=en",
+    "unique": false,
+    "text": "Attach to a Vehicle unit.\nWhen Played: If attached unit is a Transport, you may create a Spy token.",
+    "rules": null,
+    "keywords": []
+  }
+}

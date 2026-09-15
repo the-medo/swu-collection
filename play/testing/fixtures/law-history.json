@@ -1,0 +1,127 @@
+{
+  "ben-solo--facing-the-light": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46977?locale=en",
+    "unique": true,
+    "text": "Hidden\nWhen Played/When Defeated: Ready another friendly unit. It can't be attacked this phase.",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\nIf the unit chosen by Ben Solo has or gains Sentinel, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "dengar--take-your-shot": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46317?locale=en",
+    "unique": true,
+    "text": "When a unit with the highest cost among enemy units is defeated: Create a Credit token. Use this ability only once each round.",
+    "rules": null,
+    "officialRules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nIf multiple enemy unis are tied for the highest cost, defeating any of them will trigger Dengar's ability.\n",
+    "keywords": []
+  },
+  "fear-and-dead-men": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46947?locale=en",
+    "unique": false,
+    "text": "This card costs 1 resource less to play for each card discarded from your hand this phase.\nDeal 4 damage to each enemy ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "improvise": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47262?locale=en",
+    "unique": false,
+    "text": "Look at the top card of your deck. You may play it. It costs 1 resource less. If you don't, you may discard it.",
+    "rules": null,
+    "keywords": []
+  },
+  "intimidator--citadel-overwatch": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46752?locale=en",
+    "unique": true,
+    "text": "When Played: Return any number of friendly resources to their owners' hands. For each resource returned this way, create a Credit token.",
+    "rules": null,
+    "keywords": []
+  },
+  "luke-skywalker--profit-or-be-destroyed": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46452?locale=en",
+    "unique": true,
+    "text": "When Played: An opponent chooses one:\nThey create a Credit token. Ready this unit.\nYou may deal 5 damage to a unit.\n",
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "keywords": []
+  },
+  "patient-hunter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46417?locale=en",
+    "unique": false,
+    "text": "When the regroup phase starts: You may give an Experience token to a non-leader unit. If you do, that unit can't ready during this regroup phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "r2-d2--part-of-the-plan": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46777?locale=en",
+    "unique": true,
+    "text": "When Played: Search the top 5 cards of your deck for a unit that shares an aspect with a friendly unit, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "rules": null,
+    "officialRules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "secret-battle-of-pretend": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47182?locale=en",
+    "unique": false,
+    "text": "Exhaust a friendly unit. If you do, for each different aspect it has, exhaust an enemy unit in the same arena.",
+    "rules": null,
+    "keywords": []
+  },
+  "that-s-a-rock": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47082?locale=en",
+    "unique": false,
+    "text": "Deal 1 damage to a unit.\nWhen this event is discarded from your hand or deck: You may deal 1 damage to a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "weequay-pirate": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47207?locale=en",
+    "unique": false,
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nWhen Played: If no resources were paid to play this unit, give an Experience token to it.",
+    "rules": null,
+    "keywords": ["Saboteur"]
+  },
+  "you-hold-this": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46477?locale=en",
+    "unique": false,
+    "text": "Choose a friendly non-leader unit. An opponent takes control of it. If they do, deal 4 damage to another unit in the same arena.",
+    "rules": null,
+    "officialRules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "keywords": []
+  },
+  "aerie--cloud-rider-dropship": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46972?locale=en",
+    "unique": true,
+    "text": "On Attack: Deal 2 damage to an enemy ground unit and 2 damage to a base.",
+    "rules": null,
+    "keywords": []
+  },
+  "betrayed-trust": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46702?locale=en",
+    "unique": false,
+    "text": "Choose an enemy unit. For this phase, that unit can't deal combat damage.",
+    "rules": null,
+    "officialRules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n",
+    "keywords": []
+  },
+  "phoenix-squadron-fighters": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46602?locale=en",
+    "unique": false,
+    "text": "This unit costs 1 resource less to play for each friendly damaged unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "salvaged-blaster": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47052?locale=en",
+    "unique": false,
+    "text": "Attach to a non-Vehicle unit.\nAction: If this upgrade was discarded from your hand or deck this phase, play it from your discard pile (paying its cost).",
+    "rules": null,
+    "officialRules": "Salvaged Blaster’s ability cannot be used as an action if it wasn’t discarded from your hand or deck this phase, or if you can’t pay its cost, as that would not change the game state.\nAbilities that let you play a card require you to pay that card’s cost unless specified otherwise.\n",
+    "keywords": []
+  },
+  "shifty-suspects": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47037?locale=en",
+    "unique": false,
+    "text": "On Attack: Bases can't be healed for this phase.",
+    "rules": null,
+    "keywords": []
+  }
+}

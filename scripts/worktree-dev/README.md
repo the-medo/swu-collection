@@ -9,8 +9,9 @@ scripts/worktree-dev/swubase-worktree-dev up
 
 `setup` creates or reuses a labelled PostgreSQL 16 container and volume unique
 to the worktree, restores a local or sanitized dump only when the database does
-not yet exist, and applies migrations. `up` additionally starts the backend and
-frontend. Use `status`, `logs`, and `down` to inspect or stop this worktree.
+not yet exist, and applies migrations. `up` additionally starts the backend,
+frontend and enabled Crossfire worker. Use `status`, `logs`, and `down` to inspect
+or stop this worktree. `start` starts services for an already provisioned database.
 
 ## JetBrains Gateway and Database tool window
 
@@ -125,6 +126,27 @@ URL, callback URI, and Serve state for the current worktree.
 server under Node so its WebSocket proxy has the Node socket APIs it requires;
 the backend and other repository tooling continue to use Bun.
 
+## Crossfire game worker
+
+Set `CROSSFIRE_ENABLED=1` in the development `.env` (or launching environment)
+to enable the lobby API and separate game worker. `up`/`start` launch it through
+the same managed lifecycle; `down` stops it before PostgreSQL. It uses this
+worktree's database and public Better Auth origin with its own process/pool.
+`status` includes its address and `logs crossfire` shows its local process log.
+
+Each worktree reserves an independent port from `3110` through `3199`, bound to
+`127.0.0.1`. An older worktree receives that reservation on its next setup/up/start
+without changing existing database/app ports or data. Generated `.env.worktree`
+files include `CROSSFIRE_HOST`, `CROSSFIRE_PORT` and the Vite proxy configuration;
+they complement the development `.env` and must not be committed.
+
+Vite sends `/api/ws/crossfire/:gameId` to the worker, ahead of the generic `/api`
+proxy. The browser keeps the frontend's origin, including HTTPS/WSS under the
+existing private access profile. This does not add another public port or OAuth
+callback. A changed running frontend needs `down` then `up` to adopt new proxy
+configuration. Production reverse proxies must route this path to their own
+separate worker; Vite's development configuration is not production deployment.
+
 ## Cleanup
 
 `down` stops processes and PostgreSQL but retains the labelled database volume
@@ -147,7 +169,9 @@ This test creates two temporary detached Git worktrees and labelled PostgreSQL
 containers. It restores an empty, local custom-format fixture dump, verifies
 that their database resources, ports, and cookie prefixes differ, writes a
 sentinel only to one database, then purges it while ensuring the other remains
-ready. It does not read `.env`, download contributor data, or contact R2. Root
+ready. It also checks legacy worker-port upgrade, starts two managed Crossfire
+workers, and verifies that purging one releases only its own worker/port. It
+does not read `.env`, download contributor data, or contact R2. Root
 dependencies and the `postgres:16-alpine` image must already be installed; it
 removes its temporary worktrees and labelled test resources on exit.
 

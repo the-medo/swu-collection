@@ -1,0 +1,26 @@
+{
+  "hondo-ohnaka--plays-by-his-own-rules": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46522?locale=en",
+    "unique": true,
+    "text": "You may look at the top card of your deck at any time.\nAction: Play the top card of your deck (paying its cost). Use this ability only once each round.",
+    "rules": null,
+    "officialRules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nHondo's action ability cannot be used as an action if you can't play the unit, as it would not change the game state.\n",
+    "keywords": []
+  },
+  "fire-across-the-galaxy": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47332?locale=en",
+    "unique": false,
+    "text": "Use any number of “When Played” abilities on friendly Spectre units.",
+    "rules": null,
+    "officialRules": "Any ability whose trigger starts with \"When played…\" is considered a \"When Played\" ability.\n",
+    "keywords": []
+  },
+  "vermillion--qi-ra-s-auction-house": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47127?locale=en",
+    "unique": true,
+    "text": "When Attack Ends: If this unit survived, reveal the top card of a deck, then choose a player. They may play the revealed card for free. If they do, a different player creates Credit tokens equal to that card's cost.",
+    "rules": null,
+    "officialRules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage.\n\"Play for free\" ignores all resource costs, including aspect penalties, but not other additional costs.\nThe chosen player may choose not to play the revealed card.\n",
+    "keywords": []
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "chancellor-palpatine--how-liberty-dies": {
+    "text": "Action [1 resource, Exhaust]: Search the top 5 cards of your deck for a card with Plot, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "rules": "The cost discount from Palpatine's “When Deployed” ability remains active even if he is defeated before you play a card using Plot.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "When Deployed: The next card you play using Plot this phase costs 3 resources less.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39380?locale=en",
+    "officialRules": "The cost discount from Palpatine's “When Deployed” ability remains active even if he is defeated before you play a card using Plot.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Search the top 5 cards of your deck for a card with <strong>Plot</strong>, reveal it, and draw it. <i>(Put the other cards on the bottom of your deck in a random order.)</i></p>",
+    "officialDeployBoxStyled": "<p><strong>When Deployed:</strong> The next card you play using <strong>Plot</strong> this phase costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_3_5b5918aa29.png\" alt=\"icon_cost_3.png\"> less.</p>"
+  }
+}

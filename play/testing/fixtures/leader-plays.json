@@ -1,0 +1,152 @@
+{
+  "finn--this-is-a-rescue": {
+    "text": "Action [Exhaust]: Defeat a friendly upgrade on a unit. If you do, give a Shield token to that unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5\u00a0or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may defeat a friendly upgrade on a unit. If you do, give a Shield token to that unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7898?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Defeat a friendly upgrade on a unit. If you do, give a Shield token to that unit.</p>"
+  },
+  "emperor-palpatine--galactic-ruler": {
+    "text": "Action [1 resource, exhaust, defeat a friendly unit]: Deal 1 damage to a unit and draw a card.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 8 or more resources, deploy this leader.",
+    "deployBox": "When Deployed: Take control of a damaged non-leader unit.\n\nOn Attack: You may defeat another friendly unit. If you do, deal 1 damage to a unit and draw a card.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/387?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, defeat a friendly unit]:</strong> Deal 1 damage to a unit and draw a card.</p>"
+  },
+  "lando-calrissian--buying-time": {
+    "text": "Action [1 resource, Exhaust]: Play a unit from your hand (paying its cost). If you do and you control a ground unit and a space unit, give a Shield token to a unit.",
+    "keywords": ["Sentinel"],
+    "rules": "The unit you play with the first part of Lando's leader ability can count as the ground unit or space unit for the second part of the ability.\nAbilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\nGive a unit a Shield before resolving any \u201cWhen Played\u201d abilities or other abilities that trigger when you play your unit.\n",
+    "epicAction": "Epic Action: If you control 7 or more resources, choose one:\nDeploy this leader.\nDeploy this leader as an upgrade on a friendly Vehicle unit without a Pilot on it.",
+    "deployBox": "Sentinel\nAttached unit is a leader unit. \nAttached unit gains Sentinel.\nWhen deployed as an upgrade: You may give a Shield token to a unit in a different arena.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19486?locale=en",
+    "officialRules": "The unit you play with the first part of Lando's leader ability can count as the ground unit or space unit for the second part of the ability.\nAbilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\nGive a unit a Shield before resolving any \u201cWhen Played\u201d abilities or other abilities that trigger when you play your unit.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Play a unit from your hand <i>(paying its cost)</i>. If you do and you control a ground unit and a space unit, give a Shield token to a unit.</p>"
+  },
+  "major-vonreg--red-baron": {
+    "text": "Action [Exhaust]: Play a Vehicle unit from your hand (paying its cost). If you do, give another unit +1/+0 for this phase.",
+    "keywords": [],
+    "rules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n",
+    "epicAction": "Epic Action: If you control 4 or more resources, choose one:\nDeploy this leader.\nDeploy this leader as an upgrade on a friendly Vehicle unit without a Pilot on it.",
+    "deployBox": "\nAttached unit is a leader unit. It gains: \u201cOn Attack: You may give another unit in this arena +1/+0 for this phase.\u201d\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19526?locale=en",
+    "officialRules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Play a <strong><i>Vehicle</i></strong> unit from your hand <i>(paying its cost)</i>. If you do, give another unit <strong>+1</strong>/<strong>+0</strong> for this phase.</p>"
+  },
+  "rio-durant--wisecracking-wheelman": {
+    "text": "Action [1 resource, Exhaust]: Attack with a space unit. It gets +1/+0 and gains Saboteur for this attack. (Ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": ["Saboteur"],
+    "rules": "If you use Rio\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, choose one:\nDeploy this leader.\nDeploy this leader as an upgrade on a friendly Vehicle unit without a Pilot on it.",
+    "deployBox": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender\u2019s Shields.)\nAttached unit is a leader unit. It gains Saboteur. If it\u2019s a Transport, it also gets +1/+0.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19546?locale=en",
+    "officialRules": "If you use Rio\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Attack with a space unit. It gets <strong>+1</strong>/<strong>+0</strong> and gains <strong>Saboteur</strong> for this attack. <i>(Ignore Sentinel and defeat the defender's Shields.)</i></p>"
+  },
+  "wedge-antilles--leader-of-red-squadron": {
+    "text": "Action [Exhaust]: Play a card from your hand using Piloting. It costs 1 resource less.",
+    "keywords": ["Piloting"],
+    "rules": "Wedge's leader ability requires that you use the Piloting keyword to play a Pilot as an upgrade. Wedge's upgrade ability reduces the cost of cards with the Pilot trait, regardless of how they are played.\nThe discount from Wedge's \u201cOn Attack\u201d ability remains active even if he is defeated.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, choose one:\nDeploy this leader.\nDeploy this leader as an upgrade on a friendly Vehicle unit without a Pilot on it.",
+    "deployBox": "\nAttached unit is a leader unit. It gains: \u201cOn Attack: The next Pilot card you play this phase costs 1 resource less. (This includes Piloting costs.)\u201d\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19511?locale=en",
+    "officialRules": "Wedge's leader ability requires that you use the Piloting keyword to play a Pilot as an upgrade. Wedge's upgrade ability reduces the cost of cards with the Pilot trait, regardless of how they are played.\nThe discount from Wedge's \u201cOn Attack\u201d ability remains active even if he is defeated.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Play a card from your hand using <strong>Piloting</strong>. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less.</p>"
+  },
+  "rey--nobody": {
+    "text": "Action [Exhaust]: If you played a non-unit Force card this phase, deal 1 damage to a unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "When Deployed: You may discard your hand. If you do, draw 2 cards.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27084?locale=en",
+    "officialRules": "If you have no cards in your hand, you may still choose to discard your hand in order to draw 2 cards.\nPlaying a Pilot with the Force trait as an upgrade counts as a \"non-unit Force card\" for Rey's ability.\nRey\u2019s leader ability still can be used as an action even if you haven't played a non-unit Force card (but you don't deal damage).\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If you played a non-unit <strong><i>Force</i></strong> card this phase, deal 1 damage to a unit.</p>"
+  },
+  "satine-kryze--standing-on-principles": {
+    "text": "Action [Exhaust]: Heal up to 2 damage from a unit. If you do, deal that much damage to your base.",
+    "keywords": ["Restore"],
+    "rules": "You can use Satine's leader ability and choose to heal 0 damage from a unit, but if you do, you are not considered to have healed any damage.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Restore 4",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39400?locale=en",
+    "officialRules": "You can use Satine's leader ability and choose to heal 0 damage from a unit, but if you do, you are not considered to have healed any damage.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Heal up to 2 damage from a unit. If you do, deal that much damage to your base.</p>"
+  },
+  "anakin-skywalker--tempted-by-the-dark-side": {
+    "text": "Action [Exhaust, use the Force (lose your Force token)]: Play a Villainy non-unit card from your hand, ignoring its aspect penalties.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Action [use the Force]: Play a Villainy non-unit card from your hand, ignoring its aspect penalties.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27114?locale=en",
+    "officialRules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\nAnakin's ability can be used to play Villainy Pilot cards as upgrades.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, use the Force</strong> <i>(lose your Force token)</i><strong>]:</strong> Play a <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_villainy_ea34258f27.png\" alt=\"icon_villainy.png\"> non-unit card from your hand, ignoring its aspect penalties.</p>"
+  },
+  "agent-kallus--reconsider-your-allegiance": {
+    "text": "Action [1 resource, Exhaust]: Play a card from your hand, ignoring its aspect penalties.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Action [1 resource]: Play a card from your hand, ignoring its aspect penalties.\nWhen you play a Heroism card: Heal 2 damage from your base.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46067?locale=en",
+    "officialRules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Play a card from your hand, ignoring its aspect penalties.</p>"
+  },
+  "third-sister--seething-with-ambition": {
+    "text": "Action [Exhaust]: Play a unit from your hand. It gains Hidden for this phase. (It can't be attacked for this phase unless it has Sentinel.)",
+    "keywords": ["Hidden"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Hidden (This unit can't be attacked if she was deployed this phase.)\nOn Attack: The next unit you play this phase gains Hidden.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27074?locale=en",
+    "officialRules": "(ERRATA) On Attack: The next unit you play this phase gains Hidden for this phase.\nAbilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\nIf a unit has Hidden and Sentinel at the same time, it can be attacked.\nOnce it triggers, Third Sister's \"On Attack\" ability gives the next unit you play this phase Hidden even if she is defeated.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Play a unit from your hand. It gains <strong>Hidden</strong> for this phase. <i>(It can't be attacked for this phase unless it has Sentinel.)</i></p>"
+  },
+  "asajj-ventress--ambitious-apprentice": {
+    "text": "Action [Exhaust]: Attack with a token unit. It gets +1/+0 for this attack.",
+    "keywords": ["Hidden"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Hidden  \nWhile you've attacked with a token unit this phase, this unit gets +2/+0.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50887?locale=en",
+    "officialRules": "If you use Asajj\u2019s leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\nIf a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Attack with a token unit. It gets <strong>+1</strong>/<strong>+0</strong> for this attack.</p>"
+  },
+  "supreme-leader-snoke--in-the-seat-of-power": {
+    "text": "Action [1 resource, Exhaust]: Give an Experience token to the unit with the most power among friendly Villainy units. (If multiple units are tied, choose one.)",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "On Attack: Give an Experience token to the unit with the most power among friendly Villainy units.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27054?locale=en",
+    "officialRules": "Abilities that refer to a card\u2019s power include temporary modifiers.\nSnoke's ability only considers friendly Villainy units when determining which has the most power, regardless of the power of friendly non-Villainy units.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Give an Experience token to the unit with the most power among friendly <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_villainy_ea34258f27.png\" alt=\"icon_villainy.png\"> units. <i>(If multiple units are tied, choose one.)</i></p>"
+  },
+  "savage-opress--you-must-have-your-revenge": {
+    "text": "Each friendly unit with the most power among friendly units gains Overwhelm. ",
+    "keywords": ["Overwhelm", "Raid"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Raid 3 \nOverwhelm\nEach other friendly unit gains Overwhelm.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50877?locale=en",
+    "officialRules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nAbilities that refer to a card\u2019s power include temporary modifiers.\nIf multiple friendly units are tied for the most power, they each gain Overwhelm.\n",
+    "officialTextStyled": "<p>Each friendly unit with the most power among friendly units gains <strong>Overwhelm</strong>. <i>(When attacking an enemy unit, deal excess damage to the opponent's base.)</i></p>"
+  },
+  "count-dooku--offering-aid": {
+    "text": "Action [Exhaust]: Choose 2 players. They each heal 1 damage from their base and create a Battle Droid token.",
+    "keywords": ["Restore"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "Restore 2 \nOn Attack: Create 2 Battle Droid tokens.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50857?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Choose 2 players. They each heal 1 damage from their base and create a Battle Droid token.</p>"
+  }
+}

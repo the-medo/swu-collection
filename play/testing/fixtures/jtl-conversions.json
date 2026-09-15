@@ -1,0 +1,53 @@
+{
+  "poe-dameron--one-hell-of-a-pilot": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19971?locale=en",
+    "unique": true,
+    "text": "When played as a unit: Create an X-Wing token. You may attach this unit as an upgrade to a friendly Vehicle unit without a Pilot on it.",
+    "rules": null,
+    "epicAction": "Piloting [2 resources Command Heroism] ",
+    "officialEpicAction": "Piloting [2 resources Command Heroism] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)",
+    "officialRules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nPoe may attach to the X-Wing created by his \"When Played\" ability.\n",
+    "keywords": ["Piloting"]
+  },
+  "sidon-ithano--the-crimson-corsair": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20536?locale=en",
+    "unique": true,
+    "text": "When played as a unit: You may attach this unit as an upgrade to an enemy Vehicle unit without a Pilot on it.",
+    "rules": "Pilots are considered units while not in play. Sidon Ithano doesn't have the Piloting keyword and can only attach to a unit as a Pilot through his \"When Played\" ability.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "phantom-ii--modified-to-dock": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19721?locale=en",
+    "unique": true,
+    "text": "Grit\nAction [1 resource]: If this card is a unit, attach it as an upgrade to The Ghost. (It's no longer a unit. Defeat all upgrades on it and remove all damage from it.)\nAttached unit gets +3/+3 and gains Grit.",
+    "rules": "If you use Phantom II's ability to attach it to a unit as an upgrade, defeat all upgrades on it and remove all damage from it. It is considered an upgrade while attached and it still has its text.\n",
+    "epicAction": "",
+    "keywords": ["Grit"]
+  },
+  "pantoran-starship-thief": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19886?locale=en",
+    "unique": false,
+    "text": "When Played: You may pay 3 resources. If you do, attach this unit as an upgrade to a Fighter or Transport unit without a Pilot on it. Take control of that unit.",
+    "rules": "Pilots are considered units while not in play. Pantoran Starship Thief doesn't have the Piloting keyword and can only attach to a unit as a Pilot through its \"When Played\" ability.\n",
+    "epicAction": "When this upgrade detaches from a unit: That unit's owner takes control of it.",
+    "keywords": []
+  },
+  "death-star-plans": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20771?locale=en",
+    "unique": false,
+    "text": "When attached unit is attacked: The attacking player takes control of this upgrade and attaches it to a unit they control.\nAttached unit gains: “The first unit you play each round costs 2 resources less.”",
+    "rules": "“When attached unit is attacked” triggers at the same time as “On Attack” abilities.\nMultiple players can benefit from the discount ability in the same round.\n",
+    "epicAction": "",
+    "officialRules": "“When attached unit is attacked” triggers at the same time as “On Attack” abilities.\nMultiple players can benefit from the discount ability in the same round.\nOn Defense abilities trigger when this unit is chosen as the defender for an attack, in the same window as the attacker's On Attack abilities.\n",
+    "keywords": []
+  },
+  "sweep-the-area": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20636?locale=en",
+    "unique": false,
+    "text": "Return up to 2 non-leader units in the same arena with a combined cost 3 or less to their owners' hands.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "epicAction": "",
+    "keywords": []
+  }
+}

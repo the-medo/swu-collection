@@ -47,6 +47,13 @@ port. Load `swubase-frontend-api` when sockets update Query data and
 `swubase-auth-permissions` for session/origin changes. Load
 `swubase-worktree-dev` when adding or changing generated WebSocket URLs or ports.
 
+Crossfire uses a separate game worker under `/api/ws/crossfire/:gameId` and keeps
+the main app's WebSocket export intact. Worktree tooling generates
+`VITE_CROSSFIRE_WS_URL` plus the server-only `CROSSFIRE_PROXY_URL` Vite target.
+Load `swubase-online-play` for its ticket admission, viewer-specific deltas,
+durable command authorization and retry semantics; generic Query events do not
+describe its authoritative state protocol.
+
 ## Validation
 
 Run the frontend build, connect an authenticated browser, verify the connected

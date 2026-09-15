@@ -1,0 +1,49 @@
+{
+  "name": "@swubase/crossfire",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./engine": {
+      "browser": null,
+      "default": "./engine/index.ts"
+    },
+    "./host": {
+      "browser": null,
+      "default": "./host/session.ts"
+    },
+    "./projection": {
+      "browser": null,
+      "default": "./projection/projector.ts"
+    },
+    "./view": "./view/types.ts",
+    "./bundles": {
+      "browser": null,
+      "default": "./host/bundles.ts"
+    },
+    "./storage": {
+      "browser": null,
+      "default": "./storage/postgres.ts"
+    },
+    "./durable-host": {
+      "browser": null,
+      "default": "./host/durable-game.ts"
+    },
+    "./admission": {
+      "browser": null,
+      "default": "./admission/decks.ts"
+    }
+  },
+  "scripts": {
+    "test": "bun test testing",
+    "typecheck": "../node_modules/.bin/tsgo --project tsconfig.json && ../node_modules/.bin/tsgo --project browser/tsconfig.json",
+    "boundaries": "bun scripts/check-boundaries.ts",
+    "check": "bun run typecheck && bun run boundaries && bun run test",
+    "demo": "bun testing/demo.ts",
+    "archive": "bun scripts/archive-bundle.ts",
+    "archive:verify": "bun scripts/verify-archive.ts",
+    "benchmark": "bun scripts/benchmark.ts",
+    "coverage": "bun scripts/coverage.ts",
+    "storage:test": "bun test integration"
+  }
+}
