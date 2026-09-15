@@ -69,6 +69,14 @@ never use raw production/Coolify backups. Use `swubase-development-data` when
 changing that restore or sanitization boundary, and `swubase-validation` when
 validating tooling changes.
 
+Crossfire is an optional separate process: `CROSSFIRE_ENABLED=1` in the
+development `.env` or launching environment enables it for `up`/`start`.
+The launcher reserves a loopback worker port, supplies the same database/public
+auth origin, generates the same-origin socket proxy, and stops the worker before
+PostgreSQL. Use `status` and `logs crossfire`; do not launch an unmanaged fixed-port
+worker for normal worktree development. Older state gains its worker reservation
+on the next setup/up/start. See the [tooling guide](../../../scripts/worktree-dev/README.md).
+
 Each successful `setup`, `up`, or `refresh-db` also manages one deterministic
 project-local JetBrains PostgreSQL data source in `.idea/dataSources.xml` plus
 its authentication state in `.idea/dataSources.local.xml`, named `SWUBASE local

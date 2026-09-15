@@ -1,0 +1,38 @@
+[
+  {
+    "versions": {
+      "state": 2,
+      "engine": "crossfire-0.2.0",
+      "cards": "crossfire-core-2",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "03d268b31dfc8a2c904f2705824c957dcfbf564c",
+    "sha256": "c573f6fc075b708bbfd555561fd3e5dd735fd8a76366d3d68823890e73835884",
+    "commands": 51,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true
+  },
+  {
+    "versions": {
+      "state": 1,
+      "engine": "crossfire-0.1.0",
+      "cards": "crossfire-sor-core-1",
+      "rules": "swu-8.0",
+      "format": "core-practice"
+    },
+    "sourceRevision": "46f29e70383b6804cffcbd028d8bda6c4f8bf788",
+    "sha256": "a54051c73615f533ec1b38d4ffdcd89b26a71cc8897d85223921d943bf7d9fb4",
+    "commands": 51,
+    "result": {
+      "winner": "alice",
+      "reason": "base-defeat"
+    },
+    "everyInputReplayed": true,
+    "freshProcessRecoveryMatched": true
+  }
+]

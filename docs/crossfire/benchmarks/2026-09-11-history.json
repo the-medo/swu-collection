@@ -1,0 +1,218 @@
+{
+  "createdAt": "2026-09-11T19:03:03.863Z",
+  "hardware": {
+    "cpu": "AMD Custom CPU 1772",
+    "threads": 12,
+    "totalMemoryBytes": 16357249024,
+    "platform": "linux",
+    "bun": "1.3.14"
+  },
+  "sample": {
+    "attempts": 24,
+    "completed": 24,
+    "failedOrLimited": 0,
+    "measured": 15,
+    "rounds": [
+      6,
+      6,
+      9,
+      10,
+      8,
+      6,
+      6,
+      7,
+      6,
+      7,
+      8,
+      7,
+      6,
+      7,
+      6
+    ],
+    "commands": {
+      "samples": 15,
+      "mean": 87.2,
+      "p50": 86,
+      "p95": 120,
+      "max": 120
+    },
+    "actions": {
+      "samples": 15,
+      "mean": 52,
+      "p50": 51,
+      "p95": 70,
+      "max": 70
+    }
+  },
+  "scope": "Synthetic base-attack-first policy over tracked Top 8 decks. Core history tables only; excludes lobbies, seats, auth, bookmarks, WAL, backups and production proxy traffic. Wire sizes include the replay JSON envelope but exclude WebSocket/TLS framing. CPU/memory are for the benchmark process (including its replay thread), not the finalizer child. Physical copies amortize PostgreSQL pages; they are not independent samples.",
+  "postgres": {
+    "version": "PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+    "compression": "pglz"
+  },
+  "archivePayloadBytes": {
+    "samples": 15,
+    "mean": 19256.333333333332,
+    "p50": 18947,
+    "p95": 24825,
+    "max": 24825
+  },
+  "initialSnapshotJsonBytes": {
+    "samples": 15,
+    "mean": 29317.533333333333,
+    "p50": 28440,
+    "p95": 32887,
+    "max": 32887
+  },
+  "finalSnapshotJsonBytes": {
+    "samples": 15,
+    "mean": 81656.2,
+    "p50": 79129,
+    "p95": 108100,
+    "max": 108100
+  },
+  "coldSeekMs": {
+    "samples": 15,
+    "mean": 381.2401126000001,
+    "p50": 371.37776699999995,
+    "p95": 575.0642270000008,
+    "max": 575.0642270000008
+  },
+  "warmFiveStepSeekMs": {
+    "samples": 180,
+    "mean": 3.3365318611112746,
+    "p50": 1.7567330000019865,
+    "p95": 16.573441000000457,
+    "max": 33.645588999999745
+  },
+  "viewUpdateBytes": {
+    "samples": 180,
+    "mean": 9566.616666666667,
+    "p50": 9483,
+    "p95": 16977,
+    "max": 21905
+  },
+  "replacementViewBytes": {
+    "samples": 180,
+    "mean": 62588.71666666667,
+    "p50": 61430,
+    "p95": 84703,
+    "max": 84840
+  },
+  "physical": {
+    "baseline": {
+      "copiesPerSample": 5,
+      "physicalGameCount": 75,
+      "bytesPerGame": 171048.96,
+      "tables": [
+        {
+          "table": "games",
+          "bytes": 98304,
+          "indexBytes": 32768
+        },
+        {
+          "table": "journal_live",
+          "bytes": 8716288,
+          "indexBytes": 2203648
+        },
+        {
+          "table": "checkpoints",
+          "bytes": 4014080,
+          "indexBytes": 73728
+        }
+      ]
+    },
+    "live": {
+      "copiesPerSample": 5,
+      "physicalGameCount": 75,
+      "bytesPerGame": 135441.06666666668,
+      "tables": [
+        {
+          "table": "games",
+          "bytes": 98304,
+          "indexBytes": 32768
+        },
+        {
+          "table": "journal_live",
+          "bytes": 8716288,
+          "indexBytes": 2203648
+        },
+        {
+          "table": "checkpoints",
+          "bytes": 1343488,
+          "indexBytes": 40960
+        }
+      ]
+    },
+    "finalized": {
+      "copiesPerSample": 5,
+      "physicalGameCount": 75,
+      "bytesPerGame": 23374.506666666668,
+      "tables": [
+        {
+          "table": "games",
+          "bytes": 106496,
+          "indexBytes": 32768
+        },
+        {
+          "table": "journal_history",
+          "bytes": 1646592,
+          "indexBytes": 16384
+        }
+      ]
+    }
+  },
+  "liveCommitBaselineMs": {
+    "samples": 30,
+    "mean": 3.4861929333339505,
+    "p50": 3.076133000002301,
+    "p95": 5.805154000001494,
+    "max": 7.910181999999622
+  },
+  "concurrentReplay": {
+    "commitMs": {
+      "samples": 30,
+      "mean": 4.569435366666827,
+      "p50": 4.38497500000085,
+      "p95": 6.04541700000118,
+      "max": 7.35353600000235
+    },
+    "readers": 3,
+    "seeks": 4,
+    "elapsedMs": 559.6415890000062,
+    "processCpuMicros": {
+      "user": 855247,
+      "system": 77464
+    }
+  },
+  "concurrentReplayAndFinalization": {
+    "commitMs": {
+      "samples": 30,
+      "mean": 5.651980099999976,
+      "p50": 5.350049999993644,
+      "p95": 8.423837999995158,
+      "max": 8.877240999994683
+    },
+    "readers": 3,
+    "seeks": 8,
+    "elapsedMs": 602.9643329999963,
+    "processCpuMicros": {
+      "user": 840162,
+      "system": 77531
+    }
+  },
+  "finalizationElapsedMs": 952.5072620000064,
+  "cache": {
+    "games": 4,
+    "bytes": 1565683,
+    "loads": 0,
+    "snapshots": 23
+  },
+  "processMemory": {
+    "rss": 376446976,
+    "heapTotal": 66477056,
+    "heapUsed": 74651174,
+    "external": 45968412,
+    "arrayBuffers": 18531476
+  },
+  "idleEvictionReload": "passed (accelerated 40 ms idle threshold)"
+}
