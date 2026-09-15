@@ -66,8 +66,8 @@ invalidation normally supplies updates immediately.
 The started lobby lazy-loads the board for a participant or permitted spectator.
 The sidebar and deck menu provide entry points.
 
-Crossfire uses the Grogu logo with longer crossed blades (concept 05), promoted
-to `frontend/src/assets/crossfire/logo-light.svg` and `logo-dark.svg`.
+Crossfire uses the Grogu logo with longer crossed blades, stored in
+`frontend/src/assets/crossfire/logo-light.svg` and `logo-dark.svg`.
 `CrossfireLogo` replaces the main sidebar logo on Crossfire pages and follows the
 application theme in navigation, deck menus and invitations; the dark game, replay and report tables explicitly use the light
 artwork intended for dark backgrounds.
@@ -239,6 +239,10 @@ The command also copies only its generated gallery files into the ignored
 `frontend/.swubase/crossfire-gallery/` directory, served by development Vite at
 `/.swubase/crossfire-gallery/index.html`. This directory is outside `public/` and
 is excluded from the production build.
+The generator (`play/browser/gallery.ts`), scenarios and interaction checks are
+committed; generated HTML, manifests and screenshots are local artifacts only
+and are not committed or uploaded to R2. These captures show the implemented UI,
+not the discarded logo alternatives or homepage design mockups.
 Checks cover keyboard, mouse and real touch ordering without game commands;
 touch cancellation followed by normal card play; resource privacy; exact token
 identities; title selection; allocation bounds and increments; engine advancement;
