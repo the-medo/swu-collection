@@ -1,0 +1,51 @@
+{
+  "queen-amidala--championing-her-people": {
+    "text": "When Played: Create 2 Spy tokens.\nIf damage would be dealt to this unit, you may defeat another friendly unit that shares a trait with this unit. If you do, prevent that damage.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "If Queen Amidala has a Shield attached to her, you can choose in what order to resolve the damage prevention effects.\n"
+  },
+  "chewbacca--faithful-first-mate": {
+    "text": "This unit can't be defeated or returned to hand by enemy card abilities.",
+    "keywords": [
+      "Piloting"
+    ],
+    "epicAction": "Piloting [3 resources Command Heroism] \nAttached unit gains: \u201cThis unit can't be defeated or returned to hand by enemy card abilities.\u201d",
+    "deployBox": null,
+    "rules": null
+  },
+  "rey--skywalker": {
+    "text": "Opponents can't take control of this unit.\nThis unit can't be defeated by enemy card abilities.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "the-mandalorian--devoted-rescuer": {
+    "text": "Shielded\nIf damage would be dealt to another friendly unit, you may defeat a Shield token on this unit. If you do, prevent that damage.",
+    "keywords": [
+      "Shielded"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "If you control multiple effects that would be used to prevent the same damage, you choose which to resolve.\n"
+  },
+  "gorian-shard-s-corsair--pirate-warship": {
+    "text": "Damage dealt by friendly Underworld cards is unpreventable.\nWhen Played/On Attack: You may deal 2 damage to a unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "boba-fett--feared-bounty-hunter": {
+    "text": "Shielded",
+    "keywords": [
+      "Shielded",
+      "Piloting"
+    ],
+    "epicAction": "Piloting [2 resources Cunning Villainy] \nWhen played as an upgrade: You may deal 1 damage to a unit. If attached unit is a Transport, you may deal 2 damage instead.",
+    "deployBox": null,
+    "rules": null
+  }
+}

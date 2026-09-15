@@ -1,0 +1,10 @@
+{
+  "improvised-identity": {
+    "text": "Attach to a ground unit.\nAttached unit gains: \u201cAction: Search the top 3 cards of your deck for a ground unit and discard it. Then, you may attack with this unit. For this attack, this unit gains the discarded unit's abilities. Use this ability only once each round.\u201d",
+    "unique": false,
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\nUnits must be ready in order to attack.\n",
+    "keywords": [],
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52829?locale=en",
+    "officialTextStyled": "<p>Attach to a ground unit.</p><p>Attached unit gains: \u201c<strong>Action:</strong> Search the top 3 cards of your deck for a ground unit and discard it. Then, you may attack with this unit. For this attack, this unit gains the discarded unit's abilities. Use this ability only once each round.\u201d</p>"
+  }
+}

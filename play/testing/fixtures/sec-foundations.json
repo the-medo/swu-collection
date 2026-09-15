@@ -1,0 +1,404 @@
+{
+  "rebel-pathfinder": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/383?locale=en",
+    "unique": false,
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": [
+      "Saboteur"
+    ]
+  },
+  "alderaanian-envoys": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39705?locale=en",
+    "unique": false,
+    "text": "Restore 3 (When this unit attacks, heal 3 damage from your base.)",
+    "rules": null,
+    "keywords": [
+      "Restore"
+    ]
+  },
+  "ando-commission": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40685?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "chandrilan-sponsor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39590?locale=en",
+    "unique": false,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "rules": null,
+    "keywords": [
+      "Restore"
+    ]
+  },
+  "consular-s-cruiser": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39960?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "cruel-commandos": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39805?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": [
+      "Sentinel",
+      "Overwhelm"
+    ]
+  },
+  "daro-commando": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39940?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": [
+      "Overwhelm"
+    ]
+  },
+  "defense-fleet-x-wing": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39675?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "dogmatic-shock-squad": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39555?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": null,
+    "keywords": [
+      "Sentinel",
+      "Plot"
+    ]
+  },
+  "enforcer-squadron": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40065?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "keywords": [
+      "Hidden"
+    ]
+  },
+  "jade-squadron-patrol": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39620?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "loan-shark": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40485?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nRaid 1 (This unit gets +1/+0 while attacking.)",
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": [
+      "Ambush",
+      "Raid"
+    ]
+  },
+  "lost-jedi": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39665?locale=en",
+    "unique": false,
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "rules": null,
+    "keywords": [
+      "Grit"
+    ]
+  },
+  "populist-champion": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39595?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "raxian-assembly": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39965?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "rebellious-functionary": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40105?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "keywords": [
+      "Hidden"
+    ]
+  },
+  "reckless-rebel": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40175?locale=en",
+    "unique": false,
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": [
+      "Saboteur"
+    ]
+  },
+  "republic-aurek-starfighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40205?locale=en",
+    "unique": false,
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "rules": null,
+    "keywords": [
+      "Grit"
+    ]
+  },
+  "sith-assassin": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40565?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "keywords": [
+      "Hidden"
+    ]
+  },
+  "sneaking-suspicion": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40505?locale=en",
+    "unique": false,
+    "text": "Plot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": null,
+    "keywords": [
+      "Plot"
+    ]
+  },
+  "supreme-council-aide": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40560?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "asp-laborer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40670?locale=en",
+    "unique": false,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "rules": null,
+    "keywords": [
+      "Restore"
+    ]
+  },
+  "contraband-starhopper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40180?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "coruscant-undercity-police": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40210?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "crait-veteran": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40630?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "republic-war-walker": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40240?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": [
+      "Overwhelm"
+    ]
+  },
+  "shadow-crawler": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39980?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)",
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": [
+      "Ambush"
+    ]
+  },
+  "zenuas-shadow-fighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40460?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "keywords": [
+      "Hidden"
+    ]
+  },
+  "anakin-skywalker--secret-husband": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40380?locale=en",
+    "unique": true,
+    "text": "Hidden (This unit can't be attacked if he was played this phase.)\nWhile you control Padmé Amidala (as a leader or unit), this unit gains Raid 2.",
+    "rules": null,
+    "keywords": [
+      "Hidden",
+      "Raid"
+    ]
+  },
+  "corrupt-politician": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39770?locale=en",
+    "unique": false,
+    "text": "While you control more units than an opponent, this unit gains Sentinel.",
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "high-command-councilor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40620?locale=en",
+    "unique": false,
+    "text": "While you control another Official unit, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
+    "rules": null,
+    "keywords": [
+      "Raid"
+    ]
+  },
+  "hunting-assassin-droid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40045?locale=en",
+    "unique": false,
+    "text": "While an enemy unit is damaged, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
+    "rules": null,
+    "keywords": [
+      "Raid"
+    ]
+  },
+  "kazuda-xiono--i-m-not-a-spy": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40130?locale=en",
+    "unique": true,
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)\nWhile you control fewer resources than an opponent, this unit gets +2/+0.",
+    "rules": null,
+    "keywords": [
+      "Raid"
+    ]
+  },
+  "kino-loy--you-answer-to-me": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39945?locale=en",
+    "unique": true,
+    "text": "This unit gets +1/+0 for each other exhausted friendly unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "nubian-star-skiff": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39955?locale=en",
+    "unique": false,
+    "text": "While you control an Official unit, this unit gains Restore 2. (When this unit attacks, heal 2 damage from your base.)",
+    "rules": null,
+    "keywords": [
+      "Restore"
+    ]
+  },
+  "rotunda-senate-guards": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39690?locale=en",
+    "unique": false,
+    "text": "While this unit is undamaged, it gains Sentinel. (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "senator-s-aide": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39915?locale=en",
+    "unique": false,
+    "text": "While you have the initiative, this unit gets +2/+0.",
+    "rules": null,
+    "keywords": []
+  },
+  "zam-wesell--inconspicuous-assassin": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39520?locale=en",
+    "unique": true,
+    "text": "While this unit is upgraded, she gains Grit. (She gets +1/+0 for each damage on her.)",
+    "rules": null,
+    "keywords": [
+      "Grit"
+    ]
+  },
+  "congress-of-malastare": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39695?locale=en",
+    "unique": false,
+    "text": "The first upgrade you play each phase costs 1 resource less.",
+    "rules": null,
+    "keywords": []
+  },
+  "coronet--stately-vessel": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39610?locale=en",
+    "unique": true,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)\nEach other friendly unit gains Restore 1.",
+    "rules": null,
+    "keywords": [
+      "Restore"
+    ]
+  },
+  "hondo-ohnaka--you-better-hurry": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40075?locale=en",
+    "unique": true,
+    "text": "Each other friendly unit gains Raid 1.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": null,
+    "keywords": [
+      "Raid",
+      "Plot"
+    ]
+  },
+  "tala-durith--i-can-get-you-inside": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40390?locale=en",
+    "unique": true,
+    "text": "Each other friendly unit gains Hidden.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": "Hidden prevents a unit from being attacked during the same phase it enters play, so Tala Durith's ability means each other friendly unit can't be attacked the phase it enters play.\n",
+    "keywords": [
+      "Hidden",
+      "Plot"
+    ]
+  },
+  "disciples--devotion": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39730?locale=en",
+    "unique": false,
+    "text": "While attached unit is exhausted, it gains Sentinel. (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "figure-of-unity": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39895?locale=en",
+    "unique": true,
+    "text": "Attach to a <uq> unit.\nAttached unit gains: “While this unit is ready, each other friendly unit gains Overwhelm, Raid 1, and Restore 1.”",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": [
+      "Overwhelm",
+      "Raid",
+      "Restore"
+    ]
+  },
+  "vel-sartha--one-path--one-choice": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40495?locale=en",
+    "unique": true,
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)\nEach exhausted enemy unit gets –2/–0 while defending.",
+    "rules": null,
+    "keywords": [
+      "Raid"
+    ]
+  },
+  "muckraker-crab-droid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40050?locale=en",
+    "unique": false,
+    "text": "While this unit is ready, it can't be attacked.",
+    "rules": "If a unit that can't be attacked gains Sentinel, it can be attacked.\n",
+    "keywords": []
+  }
+}

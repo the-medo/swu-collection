@@ -1,0 +1,26 @@
+{
+  "admiral-yularen--fleet-coordinator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19706?locale=en",
+    "unique": true,
+    "text": "When Played: Choose Grit, Restore 1, Sentinel, or Shielded. While this unit is in play, each friendly Vehicle unit gains the chosen keyword.",
+    "rules": "Until Yularen leaves play, each friendly Vehicle unit gains the chosen keyword. This effect is not changed if an opponent takes control of Yularen.\nIf Yularen is captured and then rescued, his \"When Played\" effect does not resume.\n",
+    "epicAction": "",
+    "officialRules": "Until Yularen leaves play, each friendly Vehicle unit gains the chosen keyword. This effect is not changed if an opponent takes control of Yularen.\nIf Yularen is captured and then rescued, his \"When Played\" effect does not resume.\n(ERRATA) When Played: Choose Grit, Restore 1, Sentinel, or Shielded. While this unit is in play, each Vehicle unit you control or play gains the chosen keyword.\n",
+    "keywords": [
+      "Grit",
+      "Restore",
+      "Sentinel",
+      "Shielded"
+    ]
+  },
+  "the-ghost--heart-of-the-family": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19736?locale=en",
+    "unique": true,
+    "text": "Each other friendly Spectre unit gains this unit's keywords.\nWhile this unit is upgraded, it gains Sentinel.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  }
+}

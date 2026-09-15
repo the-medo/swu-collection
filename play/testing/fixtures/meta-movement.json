@@ -1,0 +1,74 @@
+{
+  "blue-leader--scarif-air-support": {
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nWhen Played: You may pay 2 resources. If you do, move this unit to the ground arena and give 2 Experience tokens to it. (It's a ground unit.)",
+    "keywords": ["Ambush"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "system-shock": {
+    "text": "Defeat a non-leader upgrade attached to a unit. If you do, deal 1 damage to that unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "pegasus-tri-wing": {
+    "text": "When Played: You may defeat a friendly upgrade. If you do, ready this unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "kit-fisto-s-aethersprite--good-hunting": {
+    "text": "Saboteur\nWhen Played: You may defeat any number of upgrades on a unit.",
+    "keywords": ["Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "watch-this": {
+    "text": "Return a non-leader unit that costs 6 or less to its owner's hand. Exhaust each other enemy unit in the same arena.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "sabine-wren--spectre-five": {
+    "text": "Ambush (When you play this unit, she may attack an enemy unit.)\nWhen Played: You may defeat a non-<uq> upgrade. If you control a Vigilance or Command unit, you may defeat an upgrade instead.",
+    "keywords": ["Ambush"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "commence-the-festivities": {
+    "text": "Attack with a unit. It gains Saboteur for this attack. If you control fewer resources than an opponent, it gets +2/+0 for this attack.",
+    "keywords": ["Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "masterstroke": {
+    "text": "Attack with a unit. It gets +1/+0 for this attack for each unit the defending player controls in its arena.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "emissary-s-sheathipede": {
+    "text": "When Defeated: Each opponent may ready a resource.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "emergency-powers": {
+    "text": "Choose a non-leader unit and pay any number of resources. For each resource paid this way, give an Experience token to the chosen unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "ravager--final-imperial-command": {
+    "text": "Restore 2\nWhen you play a unit: You may have it deal damage equal to its power to a unit in the same arena.",
+    "keywords": ["Restore"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "there-is-no-conflict": {
+    "text": "When Played: Return any number of other upgrades on attached unit to their owners' hands.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  }
+}

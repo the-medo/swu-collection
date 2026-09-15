@@ -1,0 +1,23 @@
+{
+  "boba-fett--any-methods-necessary": {
+    "text": "When you deal non-combat damage: You may exhaust this leader. If you do, deal 1 indirect damage to a player. (That player assigns 1 unpreventable damage among their base and units.)",
+    "keywords": [],
+    "epicAction": "Epic Action: If you control 6 or more resources, choose one:\nDeploy this leader.\nDeploy this leader as an upgrade on a friendly Vehicle unit without a Pilot on it.",
+    "deployBox": "\nAttached unit is a leader unit.\nWhen deployed as an upgrade: Deal up to 4 damage divided as you choose among any number of units.\n",
+    "rules": "\u201cNon-combat damage\u201d is any damage dealt outside the \u201cdeal combat damage\u201d step of an attack. Damage dealt by \"On Attack\" abilities is non-combat damage.\nWith Boba's \"When Deployed\" ability, you can choose to assign more damage to a unit than it has remaining HP.\nAll damage dealt by Boba's \"When Deployed\" ability is dealt simultaneously.\n"
+  },
+  "darth-vader--victor-squadron-leader": {
+    "text": "Action [Exhaust]: If you attacked with a non-token Vehicle unit this phase, create a TIE Fighter token.",
+    "keywords": [],
+    "epicAction": "Epic Action: If you control 6 or more resources, choose one:\nDeploy this leader.\nDeploy this leader as an upgrade on a friendly Vehicle unit without a Pilot on it.",
+    "deployBox": "\nAttached unit is a leader unit.\nWhen deployed as an upgrade: Create 2 TIE Fighter tokens.\n",
+    "rules": "In order to deploy Vader as an upgrade, there needs to be a friendly Vehicle unit for him to attach to. You cannot deploy him as an upgrade and attach him to one of the TIE Fighter tokens he creates when deployed.\nVader\u2019s leader ability still can be used as an action even if you haven't attacked with a non-token Vehicle unit this phase (but no TIE Fighter token is created).\n"
+  },
+  "luke-skywalker--hero-of-yavin": {
+    "text": "Action [Exhaust]: If you attacked with a Fighter unit this phase, deal 1 damage to a unit.",
+    "keywords": [],
+    "epicAction": "Epic Action: If you control 6 or more resources, choose one:\nDeploy this leader.\nDeploy this leader as an upgrade on a friendly Vehicle unit without a Pilot on it.",
+    "deployBox": "\nThis upgrade can\u2019t be defeated by enemy card abilities.\nAttached unit is a leader unit. If it\u2019s a Fighter, it gains: \u201cOn Attack: You may deal 3 damage to a unit.\u201d\n",
+    "rules": "Luke\u2019s leader ability still can be used as an action even if you haven't attacked with a Fighter unit this phase (but no damage is dealt).\n"
+  }
+}

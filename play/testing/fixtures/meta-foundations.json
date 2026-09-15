@@ -1,0 +1,146 @@
+{
+  "gungi--finding-himself": {
+    "text": "",
+    "keywords": []
+  },
+  "phoenix-squadron-a-wing": {
+    "text": "",
+    "keywords": []
+  },
+  "fortress-of-the-great-mothers": {
+    "text": "",
+    "keywords": []
+  },
+  "nevarro-city--restored": {
+    "text": "",
+    "keywords": []
+  },
+  "lake-country": {
+    "text": "",
+    "keywords": []
+  },
+  "imperial-dark-trooper": {
+    "text": "",
+    "keywords": []
+  },
+  "trayus-acolyte": {
+    "text": "",
+    "keywords": []
+  },
+  "massassi-group-marines": {
+    "text": "",
+    "keywords": []
+  },
+  "mos-eisley": {
+    "text": "",
+    "keywords": []
+  },
+  "shield-generator-complex": {
+    "text": "",
+    "keywords": []
+  },
+  "n-1-starfighter": {
+    "text": "",
+    "keywords": []
+  },
+  "republic-y-wing": {
+    "text": "",
+    "keywords": []
+  },
+  "freetown": {
+    "text": "",
+    "keywords": []
+  },
+  "dragonsnake-bog": {
+    "text": "",
+    "keywords": []
+  },
+  "mount-tantiss": {
+    "text": "",
+    "keywords": []
+  },
+  "open-circle-ace": {
+    "text": "",
+    "keywords": []
+  },
+  "city-in-the-clouds": {
+    "text": "",
+    "keywords": []
+  },
+  "rix-road": {
+    "text": "",
+    "keywords": []
+  },
+  "emperor-s-observatory": {
+    "text": "",
+    "keywords": []
+  },
+  "forward-command-post": {
+    "text": "",
+    "keywords": []
+  },
+  "emperor-s-throne-room": {
+    "text": "",
+    "keywords": []
+  },
+  "republic-city": {
+    "text": "",
+    "keywords": []
+  },
+  "pirate-snub-fighter": {
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)",
+    "keywords": ["Ambush"]
+  },
+  "eager-escort-fighter": {
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)",
+    "keywords": ["Ambush"]
+  },
+  "x-34-landspeeder": {
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)",
+    "keywords": ["Ambush"]
+  },
+  "a-wing": {
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "keywords": ["Raid"]
+  },
+  "honnah--oink--squee-": {
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)\nRestore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "keywords": ["Raid", "Restore"]
+  },
+  "droid-laser-turret": {
+    "text": "Sentinel \nShielded ",
+    "keywords": ["Sentinel", "Shielded"]
+  },
+  "black-sun-patroller": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)",
+    "keywords": ["Shielded"]
+  },
+  "secretive-sage": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)",
+    "keywords": ["Shielded"]
+  },
+  "outland-protector": {
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "keywords": ["Sentinel"]
+  },
+  "supremacy-tie-sf": {
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "keywords": ["Sentinel"]
+  },
+  "contracted-jumpmaster": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"]
+  },
+  "han-solo--hibernation-sick": {
+    "text": "Shielded \nOn Attack: Give an Experience token to this unit.",
+    "keywords": ["Shielded"]
+  },
+  "imperial-door-technician": {
+    "text": "When Defeated: Heal 2 damage from your base.",
+    "keywords": []
+  },
+  "jedi-starfighter": {
+    "text": "On Attack: You may deal 1 damage to a space unit.",
+    "keywords": []
+  }
+}

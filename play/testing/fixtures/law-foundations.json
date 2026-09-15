@@ -1,0 +1,236 @@
+{
+  "alliance-x-wing": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/45?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "officialText": null,
+    "keywords": []
+  },
+  "alkenzi-patroller": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46622?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "artful-pickpocket": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47142?locale=en",
+    "unique": false,
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": ["Saboteur"]
+  },
+  "callous-bounty-hunter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47302?locale=en",
+    "unique": false,
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": ["Saboteur"]
+  },
+  "cartel-heavy-fighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47347?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": null,
+    "keywords": ["Overwhelm"],
+    "officialRules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "circuit-challenger": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47327?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)",
+    "rules": null,
+    "keywords": ["Ambush"],
+    "officialRules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\n"
+  },
+  "guild-ambush-team": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47247?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)",
+    "rules": null,
+    "keywords": ["Ambush"],
+    "officialRules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\n"
+  },
+  "haxion-aggressor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47002?locale=en",
+    "unique": false,
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "hidden-hunters": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46852?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "keywords": ["Hidden"],
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n"
+  },
+  "ig-88--programmed-to-kill": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46262?locale=en",
+    "unique": true,
+    "text": "Shielded",
+    "rules": null,
+    "keywords": ["Shielded"]
+  },
+  "igv-55-listener": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46552?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "kage-elite": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47222?locale=en",
+    "unique": false,
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)\nSaboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": ["Raid", "Saboteur"]
+  },
+  "kessel-hulk": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47367?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "liberated-wookiee": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46767?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "nihil-stormsower": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47097?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "keywords": ["Hidden"],
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n"
+  },
+  "ohnaka-gang-bandits": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47047?locale=en",
+    "unique": false,
+    "text": "Raid 3 (This unit gets +3/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "ohnaka-gang-starhopper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47202?locale=en",
+    "unique": false,
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": ["Saboteur"]
+  },
+  "partisan-infantry": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46822?locale=en",
+    "unique": false,
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "quarren-contractor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46352?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)\nGrit (This unit gets +1/+0 for each damage on it.)",
+    "rules": null,
+    "keywords": ["Sentinel", "Grit"]
+  },
+  "relentless-hunters": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47032?locale=en",
+    "unique": false,
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "rules": null,
+    "keywords": ["Saboteur"]
+  },
+  "savareen-survivor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46992?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "keywords": ["Hidden"],
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n"
+  },
+  "seasoned-tracker": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47352?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)",
+    "rules": null,
+    "keywords": ["Hidden"],
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n"
+  },
+  "shielded-hauler": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46662?locale=en",
+    "unique": false,
+    "text": "Shielded (When you play this unit, give a Shield token to it.)",
+    "rules": null,
+    "keywords": ["Shielded"]
+  },
+  "stalwart-fleet-trooper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47322?locale=en",
+    "unique": false,
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "syndicate-security": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46667?locale=en",
+    "unique": false,
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "rules": null,
+    "keywords": ["Grit"]
+  },
+  "vandor-range-troopers": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46542?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "keywords": []
+  },
+  "vigilant-scouts": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46652?locale=en",
+    "unique": false,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "rules": null,
+    "keywords": ["Restore"]
+  },
+  "wookiee-guerilla": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47152?locale=en",
+    "unique": false,
+    "text": "Hidden \nRaid 2 ",
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "officialText": "Hidden (This unit can't be attacked if it was played this phase.)\nRaid 2 (This unit gets +2/+0 while attacking.)",
+    "keywords": ["Hidden", "Raid"]
+  },
+  "son-tuul-berserkers": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46937?locale=en",
+    "unique": false,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": null,
+    "keywords": ["Overwhelm"],
+    "officialRules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "admiral-motti--chain-of-command": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46747?locale=en",
+    "unique": true,
+    "text": "Friendly leader units get +2/+2.",
+    "rules": null,
+    "keywords": []
+  },
+  "fulcrum": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46802?locale=en",
+    "unique": true,
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains the Rebel trait and “Each other friendly Rebel unit gets +2/+2.”",
+    "rules": null,
+    "keywords": []
+  },
+  "veiled-strength": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46692?locale=en",
+    "unique": false,
+    "text": "Attach to a non-leader unit.\nAttached unit gains Grit.",
+    "rules": null,
+    "keywords": ["Grit"]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "mon-mothma--clinging-to-hope": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39890?locale=en",
+    "unique": true,
+    "text": "Restore 3\nWhen Played: You may attack with any number of other units , even if those units are exhausted. They can't attack bases for these attacks.",
+    "rules": null,
+    "officialText": "Restore 3\nWhen Played: You may attack with any number of other units (one at a time), even if those units are exhausted. They can't attack bases for these attacks.",
+    "officialRules": "Fully resolve the each attack, including all triggers, before beginning the next attack.\nYou can't use Mon Mothma's \"When Played\" ability to attack with the same unit multiple times.\nUnits that can’t attack bases can still damage bases through other abilities, like Overwhelm.\n",
+    "keywords": [
+      "Restore"
+    ]
+  },
+  "let-s-talk": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40030?locale=en",
+    "unique": false,
+    "text": "If a friendly unit left play this phase, this event costs 3 resources less to play.\nEach friendly unit captures an enemy non-leader unit in the same arena.",
+    "rules": null,
+    "keywords": []
+  },
+  "obi-wan-kenobi--finding-what-doesn-t-exist": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40400?locale=en",
+    "unique": true,
+    "text": "When this unit deals combat damage to a base: Discard a card from the defending player's deck. For this phase, you may play that card from their discard pile, ignoring its aspect penalties.",
+    "rules": "Always discard from the top of a deck, unless an ability specifies otherwise.\nAbilities that let you play a card require you to pay that card’s cost unless specified otherwise.\n“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": []
+  }
+}

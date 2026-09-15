@@ -1,0 +1,14 @@
+{
+  "grand-admiral-thrawn-----how-unfortunate": {
+    "text": "When you use a “When Defeated” ability: You may exhaust this leader. If you do, use that ability again.",
+    "keywords": [],
+    "rules": "Any ability whose trigger starts with \"When defeated…\" or includes \"When Defeated\" is considered a \"When Defeated\" ability.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "When you use a “When Defeated” ability: You may use that ability again. Use this ability only once each round.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19481?locale=en",
+    "officialTextStyled": "<p><strong>When you use a “When Defeated” ability:</strong> You may exhaust this leader. If you do, use that ability again.</p>",
+    "officialDeployBoxStyled": "<p><strong>When you use a “When Defeated” ability:</strong> You may use that ability again. Use this ability only once each round.</p>",
+    "officialRules": "Any ability whose trigger starts with \"When defeated…\" is considered a \"When Defeated\" ability.\n"
+  }
+}

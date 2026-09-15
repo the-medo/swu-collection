@@ -1,0 +1,176 @@
+{
+  "lepi-lookout": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "keywords": ["Shielded", "Overwhelm"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "unsanctioned-patrol": {
+    "text": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nSaboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": ["Support", "Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "mc30-assault-frigate": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nRaid 1 (This unit gets +1/+0 while attacking.)",
+    "keywords": ["Overwhelm", "Raid"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "bravo-squadron-fighter": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": ["Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "bith-brute": {
+    "text": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)\nSaboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": ["Sentinel", "Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "fennec-shand--the-galaxy-is-dangerous": {
+    "text": "Ambush \nSaboteur ",
+    "keywords": ["Ambush", "Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "ig-2000--assassin-s-aggressor": {
+    "text": "Overwhelm\nWhen Played: Deal 1 damage to each of up to 3 units.",
+    "keywords": ["Overwhelm"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "b-wing-skirmisher": {
+    "text": "When Played: Deal 1 damage to each of up to 2 space units.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "tie-dagger-vanguard": {
+    "text": "When Played: You may deal 2 damage to a damaged unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "red-five--running-the-trench": {
+    "text": "On Attack: You may deal 2 damage to a damaged unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "nightsister-warrior": {
+    "text": "When Defeated: Draw a card.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "ant-droid": {
+    "text": "When Defeated: Draw a card.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "swoop-bike-marauder": {
+    "text": "On Attack: Draw a card.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "benthic--two-tubes---the-war-has-just-begun": {
+    "text": "On Attack: Deal 1 damage to an enemy ground unit.\nWhen Defeated: Deal 1 damage to a base.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "cavern-angels-x-wing": {
+    "text": "When Defeated: Deal 2 damage to a base.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "resupply": {
+    "text": "Put this event into play as a resource.",
+    "keywords": [],
+    "epicAction": null,
+    "deployBox": null
+  },
+  "expendable-mercenary": {
+    "text": "When Defeated: You may resource this unit from its owner's discard pile.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "direct-hit": {
+    "text": "Defeat a non-leader Vehicle unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "crushing-blow": {
+    "text": "Defeat a non-leader unit that costs 2 or less.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "lost-and-forgotten": {
+    "text": "Defeat a non-leader unit. If you do, heal 3 damage from your base.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "hyperspace-disaster": {
+    "text": "Defeat all space units.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "nebula-ignition": {
+    "text": "Defeat each unit that isn't upgraded.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "single-reactor-ignition": {
+    "text": "Defeat all units. For each enemy unit defeated this way, deal 1 damage to its controller's base.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "operation-cinder": {
+    "text": "Deal 5 damage to your base. Then, deal 5 damage to each unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "no-disintegrations": {
+    "text": "Deal damage to a non-leader unit equal to 1 less than its remaining HP.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "rebellious-hammerhead": {
+    "text": "When Played: You may deal damage to a unit equal to the number of cards in your hand.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "ascension-cable": {
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains Saboteur. (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": ["Saboteur"],
+    "epicAction": "",
+    "deployBox": null
+  },
+  "cad-bane--still-faster-than-you": {
+    "text": "Action [Exhaust]: Deal 1 damage to a unit with 2 or more remaining HP.",
+    "keywords": ["Overwhelm"],
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nOn Attack: You may deal 1 damage to a unit with 2 or more remaining HP."
+  },
+  "aurra-sing--assassin": {
+    "text": "Action [Exhaust]: Defeat a non\u2011leader unit with 1 or less remaining HP.",
+    "keywords": [],
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "When Deployed: You may defeat a non\u2011leader unit with 5 or less remaining HP."
+  }
+}

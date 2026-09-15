@@ -1,0 +1,50 @@
+{
+  "maul--master-of-the-shadow-collective": {
+    "text": "Overwhelm\nWhen Attack Ends: If this unit dealt combat damage to a player's base, you may take control of a non-leader unit that player controls. When this unit leaves play, that unit's owner takes control of that unit.",
+    "keywords": ["Overwhelm"],
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage. Maul does not need to survive the attack for his ability to trigger, but if he is not in play when it resolves, you do not take control of a unit.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46322?locale=en",
+    "officialText": "Overwhelm\nWhen Attack Ends: If this unit dealt combat damage to a player's base, you may take control of a non-leader unit that player controls. When this unit leaves play, that unit's owner takes control of that unit.",
+    "officialTextStyled": "<p><strong>Overwhelm</strong></p><p><strong>When Attack Ends:</strong> If this unit dealt combat damage to a player's base, you may take control of a non-leader unit that player controls. When this unit leaves play, that unit's owner takes control of that unit.</p>",
+    "officialRules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage. Maul does not need to survive the attack for his ability to trigger, but if he is not in play when it resolves, you do not take control of a unit.\n"
+  },
+  "liberated-by-darkness": {
+    "text": "Use the Force (lose your Force token). If you do, take control of a non-leader unit. At the start of the regroup phase, its owner takes control of it.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27969?locale=en",
+    "officialText": "Use the Force (lose your Force token). If you do, take control of a non-leader unit. At the start of the regroup phase, its owner takes control of it.",
+    "officialTextStyled": "<p>Use the Force <i>(lose your Force token)</i>. If you do, take control of a non-leader unit. At the start of the regroup phase, its owner takes control of it.</p>",
+    "officialRules": null
+  },
+  "dryden-vos--i-get-all-worked-up": {
+    "text": "On Attack: You may double this unit's power for this attack. If you do, this unit doesn't ready during the next regroup phase.",
+    "keywords": [],
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\nDryden Vos doubles whatever his power is when his \"On Attack\" ability resolves, which includes temporary attack power modifiers like Raid.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40060?locale=en",
+    "officialText": "On Attack: You may double this unit's power for this attack. If you do, this unit doesn't ready during the next regroup phase.",
+    "officialTextStyled": "<p><strong>On Attack:</strong> You may double this unit's power for this attack. If you do, this unit doesn't ready during the next regroup phase.</p>",
+    "officialRules": "Abilities that refer to a card’s power include temporary modifiers.\nDryden Vos doubles whatever his power is when his \"On Attack\" ability resolves, which includes temporary attack power modifiers like Raid.\n"
+  },
+  "time-of-crisis": {
+    "text": "Each player chooses a unit they control. Deal 3 damage to each unit not chosen this way.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27909?locale=en",
+    "officialText": "Each player chooses a unit they control. Deal 3 damage to each unit not chosen this way.",
+    "officialTextStyled": "<p>Each player chooses a unit they control. Deal 3 damage to each unit not chosen this way.</p>",
+    "officialRules": "All damage dealt by Time of Crisis is dealt simultaneously.\n"
+  }
+}

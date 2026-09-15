@@ -1,0 +1,16 @@
+{
+  "admiral-ackbar--assume-attack-coordinates": {
+    "text": "When Played: You may defeat this unit. If you do, search the top 10 cards of your deck for any number of space units with combined cost 5 or less and play each of them for free.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n\u201cPlay for free\u201d ignores all resource costs, including the aspect penalty, but not other additional costs.\n"
+  },
+  "reforge": {
+    "text": "Defeat an upgrade on a friendly unit. If you do, search the top 8 cards of your deck for an upgrade that can attach to that unit, reveal it, and play it on that unit. It costs 4 resources less.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n"
+  }
+}

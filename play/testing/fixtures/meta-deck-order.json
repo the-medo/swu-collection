@@ -1,0 +1,18 @@
+{
+  "qui-gon-jinn--influencing-chance": {
+    "text": "Sentinel\nWhen Played/On Attack: Look at the top 3 cards of your deck. You may discard 1 of them. Put the rest back on top in any order.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "rogue-one--at-any-cost": {
+    "text": "When a friendly unit is defeated: Look at the top 2 cards of your deck. Put any number of them on the bottom of your deck and the rest on top in any order.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  }
+}

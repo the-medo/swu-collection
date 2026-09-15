@@ -1,0 +1,18 @@
+{
+  "elzar-mann--haunted-by-a-vision": {
+    "text": "While you control a Force leader, this unit enters play ready.\nWhen Played: Distribute up to 5 Advantage tokens among other friendly units. Then, an opponent searches twice that many cards from the top of their deck for an event, reveals it, and draws it.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "After searching, your opponent puts any cards not chosen on the bottom of their deck in a random order.\nIf there are multiple opponents, the controlling player chooses which one will be \u201can opponent.\u201d\n"
+  },
+  "trace-martez--trusting-sister": {
+    "text": "",
+    "keywords": [
+      "Piloting"
+    ],
+    "epicAction": "Piloting [1 resource Vigilance] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nAttached unit gains: \u201cOn Attack: You may heal 2 total damage from any number of units.\u201d",
+    "deployBox": null,
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n"
+  }
+}

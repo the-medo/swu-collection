@@ -1,0 +1,209 @@
+{
+  "ahsoka-tano--snips": {
+    "text": "Coordinate \u2014 Action [Exhaust]: Attack with a unit. It gets +1/+0 for this attack. (Gain this ability while you control 3 or more units.)",
+    "keywords": ["Coordinate"],
+    "rules": "If you use Ahsoka's leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "epicAction": "Epic Action: If you control 5\u00a0or more resources, deploy this leader. (Flip her, ready her, and move her to the ground arena.)",
+    "deployBox": "Coordinate \u2014 This unit gets +2/+0.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/13980?locale=en",
+    "officialRules": "If you use Ahsoka's leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "officialTextStyled": "<p><strong>Coordinate</strong> \u2014 <strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Attack with a unit. It gets <strong>+1</strong>/<strong>+0</strong> for this attack. <i>(Gain this ability while you control 3 or more units.)</i></p>"
+  },
+  "padm--amidala--serving-the-republic": {
+    "text": "Coordinate \u2014 Action [1 resource, Exhaust]: Search the top 3 cards of your deck for a Republic card, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order. Gain this ability while you control 3 or more units.)",
+    "keywords": ["Coordinate", "Restore"],
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Restore 1 (When this unit attacks, heal 1 damage from your base.)\nCoordinate \u2014 On Attack: Search the top 3 cards of your deck for a Republic card, reveal it, and draw it.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14251?locale=en",
+    "officialRules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "officialTextStyled": "<p><strong>Coordinate</strong> \u2014 <strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Search the top 3 cards of your deck for a <i><strong>Republic</strong></i> card, reveal it, and draw it. <i>(Put the other cards on the bottom of your deck in a random order. Gain this ability while you control 3 or more units.)</i></p>"
+  },
+  "captain-rex--fighting-for-his-brothers": {
+    "text": "Action [2 resources, Exhaust]: If a friendly unit attacked this phase, create a Clone Trooper token.",
+    "keywords": [],
+    "rules": "Rex's leader ability still can be used as an action even if no friendly unit attacked this phase (but no token is created).\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When Deployed: Create a Clone Trooper token.\nEach other friendly Trooper unit gets +0/+1.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14246?locale=en",
+    "officialRules": "Rex's leader ability still can be used as an action even if no friendly unit attacked this phase (but no token is created).\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_2_cd0914a233.png\" alt=\"icon_cost_2.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If a friendly unit attacked this phase, create a Clone Trooper token.</p>"
+  },
+  "nute-gunray--vindictive-viceroy": {
+    "text": "Action [Exhaust]: If 2 or more friendly units were defeated this phase, create a Battle Droid token.",
+    "keywords": [],
+    "rules": "Nute's leader ability still can be used as an action even if fewer than 2 friendly units were defeated this phase (but no Battle Droid token is created).\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "On Attack: Create a Battle Droid token.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14221?locale=en",
+    "officialRules": "Nute's leader ability still can be used as an action even if fewer than 2 friendly units were defeated this phase (but no Battle Droid token is created).\n(ERRATA) Templating update: \"Aspect penalty\" becomes \"aspect penalties\" when referring to multiple.\n",
+    "officialTextStyled": "<p>Ignore the aspect penalties on <strong><i>Clone</i></strong> units you play.</p>"
+  },
+  "director-krennic--aspiring-to-authority": {
+    "text": "Each friendly damaged unit gets +1/+0. ",
+    "keywords": ["Restore"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader. ",
+    "deployBox": "Restore 2 (When this unit attacks, heal 2 damage from your base.)\n\nEach friendly damaged unit gets +1/+0.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/60?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p>Each friendly damaged unit gets <strong>+1/+0</strong>.&nbsp;</p>"
+  },
+  "leia-organa--get-to-your-transports-": {
+    "text": "Action [1 resource, Exhaust]: Heal 1 damage from a friendly unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader. (Flip her, ready her, and move her to the ground arena.)",
+    "deployBox": "On Attack: Heal 1 damage from a friendly unit and 1 damage from another friendly unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/38835?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Heal 1 damage from a friendly unit.</p>"
+  },
+  "governor-pryce--tyrant-of-lothal": {
+    "text": "Action [1 resource, Exhaust]: Ready a token unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "This unit gets +1/+0 for each ready friendly token unit.\nOn Attack: Create a Spy token.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39430?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Ready a token unit.</p>"
+  },
+  "obi-wan-kenobi--patient-mentor": {
+    "text": "Action [Exhaust]: Heal 1 damage from a unit.",
+    "keywords": ["Sentinel"],
+    "rules": "\"Another unit\" in Obi-Wan's unit side ability refers to a unit other than the one healed. Obi-Wan's unit side ability may be used to deal 1 damage to Obi-Wan.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Sentinel (Units in this arena can\u2019t attack your non-Sentinel units or your base.)\nOn Attack: Heal 1 damage from a unit. If you do, deal 1 damage to a different unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14226?locale=en",
+    "officialRules": "\"A different unit\" in Obi-Wan's unit side ability refers to a unit other than the one healed. Obi-Wan's unit side ability may be used to deal 1 damage to Obi-Wan.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Heal 1 damage from a unit.</p>"
+  },
+  "mace-windu--vaapad-form-master": {
+    "text": "Action [1 resource, Exhaust]: Deal 1 damage to a damaged enemy unit. Then, if it has 5 or more damage on it, deal 1 damage to it.",
+    "keywords": [],
+    "rules": "Mace's leader ability deals 2 instances of damage. If both instances of instances of damage are dealt to a unit with a Shield token, the Shield will only prevent the first damage.\n",
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "When Deployed: Deal 2 damage to each damaged enemy unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14271?locale=en",
+    "officialRules": "Mace's leader ability deals 2 instances of damage. If both instances of instances of damage are dealt to a unit with a Shield token, the Shield will only prevent the first damage.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Deal 1 damage to a damaged enemy unit. Then, if it has 5 or more damage on it, deal 1 damage to it.</p>"
+  },
+  "luke-skywalker--faithful-friend": {
+    "text": "Action [1 resource, exhaust]: Give a Shield token to a [Heroism] unit you played this phase. ",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader. ",
+    "deployBox": "On Attack: You may give another unit a Shield token. ",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Give a Shield token to a <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_heroism_895bfc1dc1.png\" alt=\"icon_heroism.png\"> unit you played this phase.&nbsp;</p>"
+  },
+  "iden-versio--inferno-squad-commander": {
+    "text": "Action [Exhaust]: If an enemy unit was defeated this phase, heal 1 damage from your base.",
+    "keywords": ["Shielded"],
+    "rules": "Iden\u2019s leader ability still can be used as an action even if no enemy unit left play this phase (but it heals no damage from your base).\nIf Iden is defeated simultaneously with other enemy units, you still get to heal damage.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Shielded (When you deploy this leader, give her a Shield token.)\n\nWhen an enemy unit is defeated: Heal 1 damage from your base.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/385?locale=en",
+    "officialRules": "Iden\u2019s leader ability still can be used as an action even if no enemy unit left play this phase (but it heals no damage from your base).\nIf Iden is defeated simultaneously with other enemy units, you still get to heal damage.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If an enemy unit was defeated this phase, heal 1 damage from your base.</p>"
+  },
+  "darth-vader--dark-lord-of-the-sith": {
+    "text": "Action [1 resource, exhaust]: If you played a [Villainy] card this phase, deal 1 damage to a unit and 1 damage to a base.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader. ",
+    "deployBox": "On Attack: You may deal 2 damage to a unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/6?locale=en",
+    "officialRules": "Vader\u2019s leader ability still can be used as an action even if you haven\u2019t played a Villain card this phase (but it deals no damage).\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If you played a <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_villainy_ea34258f27.png\" alt=\"icon_villainy.png\"> card this phase, deal 1 damage to a unit and 1 damage to a base.</p>"
+  },
+  "asajj-ventress--unparalleled-adversary": {
+    "text": "Action [Exhaust]: Attack with a unit. If you played an event this phase, it gets +1/+0 for this attack.",
+    "keywords": [],
+    "rules": "If you use Asajj's leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n\u201cCombat damage\u201d is only the damage dealt during the \u201cdeal combat damage\u201d step of an attack.\nIf Asajj deals combat damage first, and the defender is defeated by that damage, it does not deal combat damage back. If it survives and has Grit, it deals bonus damage from Grit when dealing combat damage back.\nIf you play an event card that lets you make an attack with Asajj, you have played an event card this phase and her \"On Attack\" ability will trigger.\n",
+    "epicAction": "Epic Action: If you control 4 or more resources, deploy this leader.",
+    "deployBox": "On Attack: If you played an event this phase, this unit gets +1/+0 for this attack and deals combat damage before the defender. (If the defender is defeated, it deals no combat damage.)",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14276?locale=en",
+    "officialRules": "If you use Asajj's leader ability, you must attack with a unit, if able. Units must be ready in order to attack.\n\u201cCombat damage\u201d is only the damage dealt during the \u201cdeal combat damage\u201d step of an attack.\nIf Asajj deals combat damage first, and the defender is defeated by that damage, it does not deal combat damage back. If it survives and has Grit, it deals bonus damage from Grit when dealing combat damage back.\nIf you play an event card that lets you make an attack with Asajj, you have played an event card this phase and her \"On Attack\" ability will trigger.\n(ERRATA) Templating update: \u201cDefender\u201d becomes \u201cdefending unit\u201d.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Attack with a unit. If you played an event this phase, it gets <strong>+1</strong>/<strong>+0</strong> for this attack.</p>"
+  },
+  "captain-phasma--chrome-dome": {
+    "text": "Action [Exhaust]: If you played a First Order card this phase, deal 1 damage to a base.",
+    "keywords": [],
+    "rules": "Phasma\u2019s leader ability still can be used as an action even if you haven't played a First Order card this phase (but no damage is dealt).\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "On Attack: If you played another First Order card this phase, you may deal 1 damage to a unit. If you do, deal 1 damage to a base.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19521?locale=en",
+    "officialRules": "Phasma\u2019s leader ability still can be used as an action even if you haven't played a First Order card this phase (but no damage is dealt).\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If you played a <i><strong>First Order</strong></i> card this phase, deal 1 damage to a base.</p>"
+  },
+  "jyn-erso--time-to-fight": {
+    "text": "Action [1 resource, Exhaust]: If a friendly Rebel unit was defeated this phase, search the top 3 cards of your deck for a card and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "On Attack: If a friendly Rebel unit was defeated this phase, search the top 3 cards of your deck for a card and draw it.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46077?locale=en",
+    "officialRules": "Jyn\u2019s leader ability still can be used as an action even if no friendly Rebel unit was defeated this phase (but you don't search or draw).\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If a friendly <strong><i>Rebel</i></strong> unit was defeated this phase, search the top 3 cards of your deck for a card and draw it. <i>(Put the other cards on the bottom of your deck in a random order.)</i></p>"
+  },
+  "nala-se--clone-engineer": {
+    "text": "Ignore the aspect penalty on Clone units you play.",
+    "keywords": [],
+    "rules": "If Nala Se is defeated simultaneously with other friendly units, all \u201cWhen Defeated\u201d abilities still trigger.\n",
+    "epicAction": "Epic Action: If you control 4 or more resources, deploy this leader.",
+    "deployBox": "Ignore the aspect penalty on Clone units you play.\nEach friendly Clone unit gains: \u201cWhen Defeated: Heal 2 damage from your base.\u201d",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14216?locale=en",
+    "officialRules": "If Nala Se is defeated simultaneously with other friendly units, all \u201cWhen Defeated\u201d abilities still trigger.\n",
+    "officialTextStyled": "<p>Ignore the aspect penalty on <strong><i>Clone</i></strong> units you play.</p>"
+  },
+  "hera-syndulla--spectre-two": {
+    "text": "Ignore the aspect penalty on SPECTRE cards you play.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Ignore the aspect penalty on SPECTRE cards you play.\n\nOn Attack: You may give an Experience token to another unique unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/388?locale=en",
+    "officialRules": "(ERRATA) Templating update: \"Aspect penalty\" becomes \"aspect penalties\" when referring to multiple.\n(ERRATA) Templating update: \u201cUnique\u201d becomes \u201c<uq>\u201d.\n",
+    "officialTextStyled": "<p>Ignore the aspect penalties on <strong><i>Spectre</i></strong> cards you play.</p>"
+  },
+  "hera-syndulla--not-fighting-alone": {
+    "text": "While you control 2 or more units, ignore the aspect penalties on Heroism units you play.",
+    "keywords": ["Restore"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Restore 1 (When this unit attacks, heal 1 damage from your base.)\nWhile you control 2 or more units, ignore the aspect penalties on Heroism units you play.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46097?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p>While you control 2 or more units, ignore the aspect penalties on <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_heroism_895bfc1dc1.png\" alt=\"icon_heroism.png\"> units you play.</p>"
+  },
+  "mon-mothma--forming-a-coalition": {
+    "text": "Ignore the aspect penalties on non-Villainy Official units you play.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Ignore the aspect penalties on non\u2011Villainy Official units you play.\nEach other friendly Official unit gets +0/+1.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39420?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p>Ignore the aspect penalties on non-<img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_villainy_ea34258f27.png\" alt=\"icon_villainy.png\"> <strong><i>Official</i></strong> units you play.</p>"
+  },
+  "bo-katan-kryze--princess-in-exile": {
+    "text": "Action [Exhaust]: If you attacked with a Mandalorian unit this phase, deal 1\u00a0damage to a unit.",
+    "keywords": [],
+    "rules": "Bo-Katan\u2019s leader ability still can be used as an action even if you didn\u2019t attack with a Mandalorian unit this phase (but it doesn\u2019t deal damage).\nBo-Katan\u2019s \u201cOn Attack\u201d ability deals 2 instances of damage. If both instances of instances of damage are dealt to a unit with a Shield token, the Shield will only prevent the first damage.\n",
+    "epicAction": "Epic Action: If you control 6\u00a0or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may deal 1 damage to a unit. If you attacked with another Mandalorian unit this phase, you may deal 1 damage to a unit. (The same unit or a different unit.)",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/5406?locale=en",
+    "officialRules": "Bo-Katan\u2019s leader ability still can be used as an action even if you didn\u2019t attack with a Mandalorian unit this phase (but it doesn\u2019t deal damage).\nBo-Katan\u2019s \u201cOn Attack\u201d ability deals 2 instances of damage. If both instances of instances of damage are dealt to a unit with a Shield token, the Shield will only prevent the first damage.\n(ERRATA) On Attack: You may deal 1 damage to a unit. Then, if you attacked with another Mandalorian unit this phase, you may deal 1 damage to a unit. (The same unit or a different unit.)\n",
+    "officialTextStyled": "<p><strong>On Attack:</strong> You may deal 1 damage to a unit. Then, if you attacked with another <strong><i>Mandalorian</i></strong> unit this phase, you may deal 1 damage to a unit. <i>(The same unit or a different unit.)</i></p>"
+  },
+  "clone-trooper": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51282?locale=en",
+    "officialRules": null
+  }
+}

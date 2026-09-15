@@ -1,0 +1,371 @@
+{
+  "ahsoka-tano--chasing-whispers": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20476?locale=en",
+    "unique": true,
+    "text": "When Played: An opponent discards a card from their hand. If it's a unit, you may exhaust a unit.",
+    "rules": null,
+    "epicAction": "",
+    "officialRules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "keywords": []
+  },
+  "apology-accepted": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19926?locale=en",
+    "unique": false,
+    "text": "Defeat a friendly unit. You may give 2 Experience tokens to a unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "attack-run": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20776?locale=en",
+    "unique": false,
+    "text": "Attack with 2 space units (one at a time).",
+    "rules": "If you play Attack Run, you must attack with two units, if able. Units must be ready in order to attack.\nFully resolve the first attack, including all triggers, before beginning the second attack.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "banshee--crippling-command": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19656?locale=en",
+    "unique": true,
+    "text": "On Attack: You may deal damage to a unit equal to the amount of damage on this unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "barrel-roll": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20611?locale=en",
+    "unique": false,
+    "text": "Attack with a space unit. After completing this attack, you may exhaust a space unit.",
+    "rules": "If you play Barrel Roll, you must attack with a unit, if able. Units must be ready in order to attack.\nResolve all triggered abilities from the attack before exhausting a unit.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "black-squadron-scout-wing": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20481?locale=en",
+    "unique": false,
+    "text": "When you play an upgrade on this unit: You may attack with this unit. It gets +1/+0 for this attack.",
+    "rules": "Attaching an upgrade or creating and attaching a token upgrade do not trigger Black Squadron Scout Wing's ability.\nUnits must be ready in order to attack.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "blade-squadron-b-wing": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20466?locale=en",
+    "unique": false,
+    "text": "When Played: If another player controls 3 or more exhausted units, give a Shield token to a unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "bossk--hunt-by-instinct": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20406?locale=en",
+    "unique": true,
+    "text": "On Attack: Exhaust the defender and deal 1 damage to it.",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [2 resources Cunning Villainy]\nAttached unit gains: “On Attack: Exhaust the defender and deal 1 damage to it.”",
+    "officialEpicAction": "Piloting [2 resources Cunning Villainy]\nAttached unit gains: “On Attack: Exhaust the defender and deal 1 damage to it (if it's a unit).”",
+    "officialText": "On Attack: Exhaust the defender and deal 1 damage to it (if it's a unit).",
+    "officialRules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n(ERRATA) Templating update: “Defender” becomes “defending unit”.\n",
+    "keywords": ["Piloting"]
+  },
+  "cassian-andor--threading-the-eye": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19711?locale=en",
+    "unique": true,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAlways discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "epicAction": "Piloting [2 resources Vigilance Heroism] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nAttached unit gains: “On Attack: Discard a card from the defending player's deck. If that card costs 3 or less, draw a card.”",
+    "keywords": ["Piloting"]
+  },
+  "cat-and-mouse": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20446?locale=en",
+    "unique": false,
+    "text": "Exhaust an enemy unit. If you do, ready a friendly unit in the same arena with power equal to or less than that enemy unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "commence-patrol": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20496?locale=en",
+    "unique": false,
+    "text": "Put another card in a discard pile on the bottom of its owner's deck. If you do, create an X-Wing token.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "dengar--crude-and-slovenly": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20166?locale=en",
+    "unique": true,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nA player can't assign more indirect damage to a unit than it has remaining HP. Indirect damage is unpreventable and ignores Shields.\n",
+    "epicAction": "Piloting [2 resources Aggression Villainy]\nAttached unit gains: “On Attack: Deal 2 indirect damage to a player. If this unit is an Underworld unit, deal 3 indirect damage instead.”",
+    "keywords": ["Piloting"]
+  },
+  "dogfight": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20086?locale=en",
+    "unique": false,
+    "text": "Attack with a unit, even if it's exhausted. That unit can't attack bases for this attack.",
+    "rules": "If you play Dogfight, you must attack with a unit, if able.\n",
+    "epicAction": "",
+    "officialRules": "If you play Dogfight, you must attack with a unit, if able.\nUnits that can’t attack bases can still damage bases through other abilities, like Overwhelm.\n",
+    "keywords": []
+  },
+  "face-off": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20361?locale=en",
+    "unique": false,
+    "text": "If no player has taken the initiative this phase, you may ready an enemy unit. If you do, ready a friendly unit in the same arena.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "fly-casual": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20501?locale=en",
+    "unique": false,
+    "text": "Ready a Vehicle unit. It can't attack bases for this phase.",
+    "rules": null,
+    "epicAction": "",
+    "officialRules": "Units that can’t attack bases can still damage bases through other abilities, like Overwhelm.\n",
+    "keywords": []
+  },
+  "general-hux--no-terms--no-surrender": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20141?locale=en",
+    "unique": true,
+    "text": "Each other friendly First Order unit gains Raid 1. (They get +1/+0 while attacking.)\nAction [Exhaust]: If you played a First Order card this phase, draw a card.",
+    "rules": "Hux’s action ability still can be used as an action even if you haven't played a First Order card this phase (but no card is drawn).\n",
+    "epicAction": "",
+    "keywords": ["Raid"]
+  },
+  "gold-leader--fastest-ship-in-the-fleet": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19741?locale=en",
+    "unique": true,
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\nWhile this unit is defending, the attacker gets –1/–0.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Shielded"]
+  },
+  "grim-valor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19836?locale=en",
+    "unique": false,
+    "text": "Attached unit gains: “When Defeated: You may exhaust a unit.”",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "heartless-tactics": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20441?locale=en",
+    "unique": false,
+    "text": "Exhaust a unit and give it –2/–0 for this phase. Then, if it has 0 power and isn't a leader, you may return it to its owner's hand.",
+    "rules": "If a unit's power is modified below 0, it is considered to have 0 power.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "invincible--naval-adversary": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20426?locale=en",
+    "unique": true,
+    "text": "If you control a unique Separatist card, this unit costs 1 resource less to play.\nWhen you deploy a leader: You may return a non-leader unit that costs 3 or less to its owner's hand.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n",
+    "epicAction": "",
+    "officialRules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n(ERRATA) Templating update: “Unique” becomes “<uq>”.\n",
+    "keywords": []
+  },
+  "it-s-a-trap": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20516?locale=en",
+    "unique": false,
+    "text": "If an opponent controls more space units than you, ready each space unit you control.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "koiogran-turn": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20366?locale=en",
+    "unique": false,
+    "text": "Ready a Fighter or Transport unit with 6 or less power.",
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "leia-organa--pilots--to-your-stations": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19956?locale=en",
+    "unique": true,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)\nWhen Played: You may attack with a Pilot unit or a unit with a Pilot on it. It gets +1/+0 and gains Restore 1 for this attack.",
+    "rules": "Units must be ready in order to attack.\n",
+    "epicAction": "",
+    "keywords": ["Restore"]
+  },
+  "lightspeed-assault": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20106?locale=en",
+    "unique": false,
+    "text": "Defeat a friendly space unit and deal damage equal to its power to an enemy space unit. If you do, deal indirect damage equal to the enemy unit's power to its controller.",
+    "rules": "When determining a defeated unit's power, include any modifiers to its power when it was defeated.\nLightspeed Assault still does indirect damage even if the enemy unit is defeated.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "massassi-tactical-officer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20201?locale=en",
+    "unique": false,
+    "text": "Action [Exhaust]: Attack with a Fighter unit. It gets +2/+0 for this attack.",
+    "rules": "If you use Massassi Tactical Officer’s ability, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "moff-gideon--i-know-everything": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20411?locale=en",
+    "unique": true,
+    "text": "When this unit deals combat damage to an opponent's base: Each unit that opponent plays this phase costs 1 resource more.",
+    "rules": "The cost increase from Gideon's ability remains active even if he is defeated.\n“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n",
+    "epicAction": "",
+    "officialRules": "The cost increase from Gideon's ability remains active even if he is defeated.\n“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": []
+  },
+  "never-tell-me-the-odds": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20511?locale=en",
+    "unique": false,
+    "text": "Discard 3 cards from an opponent's deck and 3 cards from your deck. Deal damage to a unit equal to the number of cards with an odd cost discarded this way.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAlways discard from the top of a deck, unless an ability specifies otherwise.\nZero is an even number.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "radiant-vii--ambassadors--arrival": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20601?locale=en",
+    "unique": true,
+    "text": "Each enemy non-leader unit gets –1/–0 for each damage on it.\nWhen Played: Deal 5 indirect damage to a player.",
+    "rules": "A player can't assign more indirect damage to a unit than it has remaining HP. Indirect damage is unpreventable and ignores Shields.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "rafa-martez--shrewd-sister": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20566?locale=en",
+    "unique": true,
+    "text": "When Played/On Attack: Deal 1 damage to a friendly unit and ready a resource.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "retrofitted-airspeeder": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20766?locale=en",
+    "unique": false,
+    "text": "Ambush\nThis unit can attack space units.\nWhile attacking a space unit, this unit gets –1/–0.",
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "epicAction": "",
+    "keywords": ["Ambush"]
+  },
+  "scramble-fighters": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19931?locale=en",
+    "unique": false,
+    "text": "Create 8 TIE Fighter tokens and ready them. They can't attack bases for this phase.",
+    "rules": null,
+    "epicAction": "",
+    "officialRules": "Units that can’t attack bases can still damage bases through other abilities, like Overwhelm.\n",
+    "keywords": []
+  },
+  "shuttle-tydirium--fly-casual": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20471?locale=en",
+    "unique": true,
+    "text": "On Attack: Discard a card from your deck. If it has an odd cost, you may give an Experience token to another unit.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAlways discard from the top of a deck, unless an ability specifies otherwise.\nZero is an even number.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "skyway-cloud-car": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20571?locale=en",
+    "unique": false,
+    "text": "When Defeated: You may return a non-leader unit with 2 or less power to its owner's hand.",
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "snap-wexley--resistance-recon-flier": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19961?locale=en",
+    "unique": true,
+    "text": "When played as a unit/On Attack: The next Resistance card you play this phase costs 1 resource less.",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nThe discount from Snap's “On Attack” ability remains active even if he is defeated.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "epicAction": "Piloting [2 resources Command Heroism]\nWhen played as an upgrade: Search the top 5 cards of your deck for a Resistance card, reveal it, and draw it.",
+    "keywords": ["Piloting"]
+  },
+  "superheavy-ion-cannon": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20606?locale=en",
+    "unique": false,
+    "text": "Attach to a Capital Ship or Transport unit.\nAttached unit gains: “On Attack: You may exhaust a non-leader unit the defending player controls. If you do, deal indirect damage equal to its power to that player.”",
+    "rules": "A player can't assign more indirect damage to a unit than it has remaining HP. Indirect damage is unpreventable and ignores Shields.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "swarming-vulture-droid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20751?locale=en",
+    "unique": false,
+    "text": "A deck can have up to 15 copies of this card.\nThis unit gets +1/+0 for each other friendly Swarming Vulture Droid.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "tactical-heavy-bomber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20231?locale=en",
+    "unique": false,
+    "text": "On Attack: Deal indirect damage equal to this unit's power to the defending player. If a base is damaged this way, draw a card. (That player assigns that much unpreventable damage among their base and units.)",
+    "rules": "A player can't assign more indirect damage to a unit than it has remaining HP. Indirect damage is unpreventable and ignores Shields.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "they-hate-that-ship": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20246?locale=en",
+    "unique": false,
+    "text": "An opponent creates 2 TIE Fighter tokens and readies them. Then, play a Vehicle unit from your hand. It costs 3 resources less.",
+    "rules": "Any abilities that trigger from an opponent creating the TIE Fighter tokens resolve after the event is finished resolving.\nIf there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "tie-ambush-squadron": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19906?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nWhen Played/When Defeated: Create a TIE Fighter token.",
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "epicAction": "",
+    "keywords": ["Ambush"]
+  },
+  "timely-reinforcements": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20121?locale=en",
+    "unique": false,
+    "text": "Choose an opponent. For every 2 resources they control, create an X-Wing token and give it Sentinel for this phase. (Units in its arena can't attack your non-Sentinel units or your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": ["Sentinel"]
+  },
+  "twin-laser-turret": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20331?locale=en",
+    "unique": false,
+    "text": "Attach to a Vehicle unit.\nAttached unit gains: “On Attack: Deal 1 damage to each of up to 2 units in this arena.”",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "war-juggernaut": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20321?locale=en",
+    "unique": false,
+    "text": "This unit gets +1/+0 for each damaged unit.\nWhen Played: Deal 1 damage to each of any number of units.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "you-re-all-clear--kid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19746?locale=en",
+    "unique": false,
+    "text": "Defeat an enemy space unit with 3 or less remaining HP. If you do and an opponent controls no space units, you may give an Experience token to a unit.",
+    "rules": "If you defeat an opponent's last space unit with this event, you may give an Experience token to a unit, even if that unit has a \"When Defeated\" ability that would put a new space unit into play.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "all-wings-report-in": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20081?locale=en",
+    "unique": false,
+    "text": "Exhaust up to 2 friendly space units. For each unit exhausted this way, create an X-Wing token.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "focus-fire": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20116?locale=en",
+    "unique": false,
+    "text": "Choose a unit. Each friendly Vehicle unit in the same arena deals damage equal to its power to that unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "captain-rex--into-the-firefight": {
+    "text": "When Played/When this unit completes an attack: Give this unit and an enemy unit Sentinel for this phase.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "A unit must survive an attack to trigger its \u201cwhen this unit completes an attack\u201d abilities.\n"
+  },
+  "the-invisible-hand--crawling-with-vultures": {
+    "text": "When Played/When this unit completes an attack : You may search the top 8 cards of your deck for a Droid unit, reveal it, and draw it. If it costs 2 or less, you may play it for free. ",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "jabba-the-hutt--eminence-of-tatooine": {
+    "text": "Restore 2\nWhen Played: You may return an upgrade to its owner's hand. If it's returned to your hand, you may play it for free.",
+    "keywords": [
+      "Restore"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\n\u201cPlay for free\u201d ignores all resource costs, including the aspect penalty, but not other additional costs.\n"
+  },
+  "retaliation": {
+    "text": "Defeat a unit that dealt damage to a base this phase.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  }
+}

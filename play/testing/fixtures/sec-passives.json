@@ -1,0 +1,44 @@
+{
+  "cassian-andor--lay-low": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39585?locale=en",
+    "unique": true,
+    "text": "While this unit is defending, the attacker gets –2/–0.\nIf an enemy card ability would deal damage to this unit, prevent 2 of that damage.",
+    "rules": null,
+    "officialRules": "Enemy card abilities include any ability controlled by an enemy on a unit, upgrade, or event. Combat damage is not a card ability.\nIf Cassian has a Shield attached to him, you can choose in what order to resolve the damage prevention effects.\n",
+    "keywords": []
+  },
+  "exiled-from-the-force": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39645?locale=en",
+    "unique": false,
+    "text": "Attached unit loses the Force trait and all abilities except for Grit.\nAttached unit gains Grit.",
+    "rules": "The attached unit can't gain abilities other than Grit.\n",
+    "keywords": [
+      "Grit"
+    ]
+  },
+  "sly-moore--witness-to-power": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39540?locale=en",
+    "unique": true,
+    "text": "When Played: For this phase, each enemy unit gets –2/–0 while it's attacking a base.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+    "rules": "(ERRATA) When Played: For this phase, while a base is being attacked by an enemy unit, the attacker gets -2/-0.\n",
+    "keywords": [
+      "Plot"
+    ]
+  },
+  "vigil--securing-the-future": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39625?locale=en",
+    "unique": true,
+    "text": "If damage would be dealt to another friendly unit, prevent 1 of that damage.\nIf damage would be dealt to this unit by another card, deal that much damage plus 1 instead.\nPlot",
+    "rules": "If the other friendly unit has a Shield attached, you can choose in what order to resolve the prevention effects.\nVigil's ability applies to a single instance of damage once; after increasing or decreasing the total damage dealt by 1, Vigil's ability does not resolve again.\n",
+    "keywords": [
+      "Plot"
+    ]
+  },
+  "umbaran-mobile-cannon": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39710?locale=en",
+    "unique": false,
+    "text": "The first time this unit would take damage each phase, prevent that damage.",
+    "rules": null,
+    "keywords": []
+  }
+}

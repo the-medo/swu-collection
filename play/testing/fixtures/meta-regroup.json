@@ -1,0 +1,25 @@
+{
+  "alphabet-squadron-u-wing--quiet-devotion": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhen the regroup phase starts: Give an Advantage token to a unit.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "shadow-of-stygeon-prime": {
+    "text": "Attach to a non-leader unit.\nAttached unit can't ready. It gains: \u201cWhen the regroup phase starts: Deal 2 damage to your base.\u201d",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "commandeer": {
+    "text": "Take control of a non-leader Vehicle unit that costs 6 or less without a Pilot on it. If you do, ready it. At the start of the next regroup phase, return that unit to its owner's hand.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Abilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nCommandeer only returns the unit to hand if it's in play.\n"
+  }
+}

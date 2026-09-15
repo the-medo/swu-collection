@@ -1,0 +1,100 @@
+{
+  "anakin-skywalker--i-ll-try-spinning": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20456?locale=en",
+    "unique": true,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nA unit must survive an attack to trigger its “when this unit completes an attack” abilities.\n",
+    "epicAction": "Piloting [2 resources Cunning Heroism] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nWhen attached unit completes an attack (and survives): You may return this upgrade to its owner's hand.",
+    "officialRules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nA unit must survive an attack to trigger its “when this unit completes an attack” abilities.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": ["Piloting"]
+  },
+  "close-the-shield-gate": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19841?locale=en",
+    "unique": false,
+    "text": "Choose a base. The next time damage would be dealt to it this phase, prevent that damage.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "dorsal-turret": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20071?locale=en",
+    "unique": false,
+    "text": "Attach to a Vehicle unit.\nAttached unit gains: “When this unit deals combat damage to a unit while attacking: Defeat that unit.”",
+    "rules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "i-have-you-now": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20436?locale=en",
+    "unique": false,
+    "text": "Attack with a Vehicle unit. Prevent all damage that would be dealt to it during this attack.",
+    "rules": "If you play I Have You Now, you must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "iden-versio--adapt-or-die": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19651?locale=en",
+    "unique": true,
+    "text": "Shielded",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [3 resources Vigilance Villainy]\nWhen this upgrade attaches to a unit: Give a Shield token to that unit.",
+    "keywords": ["Shielded", "Piloting"]
+  },
+  "jarek-yeager--coordinating-with-the-resistance": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20016?locale=en",
+    "unique": true,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [2 resources Command] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nWhile you control a ground unit and a space unit, attached unit gains Sentinel.",
+    "keywords": ["Piloting", "Sentinel"]
+  },
+  "kimogila-heavy-fighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20581?locale=en",
+    "unique": false,
+    "text": "When Played: Deal 3 indirect damage to a player. Exhaust each unit damaged this way. (That player assigns 3 unpreventable damage among their base and units.)",
+    "rules": "A player can't assign more indirect damage to a unit than it has remaining HP. Indirect damage is unpreventable and ignores Shields.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "rampart--enjoy-the-exit": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20381?locale=en",
+    "unique": true,
+    "text": "This unit doesn't ready during the regroup phase unless its power is 4 or more.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "targeting-computer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20326?locale=en",
+    "unique": false,
+    "text": "Attached unit gains: “You assign all indirect damage dealt by this unit.”",
+    "rules": "A player can't assign more indirect damage to a unit than it has remaining HP. Indirect damage is unpreventable and ignores Shields.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "u-wing-lander": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19821?locale=en",
+    "unique": false,
+    "text": "When Played: Give 3 Experience tokens to this unit.\nWhen this unit completes an attack (and survives): You may attach an upgrade on this unit to another eligible friendly Vehicle unit.",
+    "rules": "A unit must survive an attack to trigger its “when this unit completes an attack” abilities.\n",
+    "epicAction": "",
+    "officialRules": "A unit must survive an attack to trigger its “when this unit completes an attack” abilities.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": []
+  },
+  "hondo-ohnaka--superfluous-swindler": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19751?locale=en",
+    "unique": true,
+    "text": "Shielded\nOn Attack: You may take control of a non-Pilot upgrade on a unit and attach it to a different eligible unit.",
+    "rules": "You can use Hondo's ability to attach an upgrade to himself.\n",
+    "epicAction": "",
+    "keywords": ["Shielded"]
+  },
+  "in-debt-to-crimson-dawn": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20431?locale=en",
+    "unique": false,
+    "text": "When attached unit readies: Exhaust it unless its controller pays 2 resources.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  }
+}

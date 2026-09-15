@@ -1,0 +1,16 @@
+{
+  "the-mandalorian--let-s-see-the-puck": {
+    "text": "When Played: Draw a card.\nWhen you draw 1 or more cards during the action phase: Give a Shield token to this unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "anakin-skywalker--prescient-podracer": {
+    "text": "When a friendly unit's attack ends: If no other units have attacked this phase, you may return it to its owner's hand. If you do, heal 2 damage from your base.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "\"No other units have attacked this phase\" means that no player has made an attack with a unit this phase.\n\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage. If the attacking unit is defeated, it cannot be returned to hand by Anakin's ability.\n"
+  }
+}

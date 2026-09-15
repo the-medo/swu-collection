@@ -1,0 +1,96 @@
+{
+  "boba-fett--collecting-the-bounty": {
+    "text": "When an enemy unit leaves play: You may exhaust this leader. If you do, ready a resource.",
+    "keywords": [],
+    "rules": "A unit must survive an attack to trigger its \u201cwhen this unit completes an attack\u201d abilities.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When this unit completes an attack: If an enemy unit left play this phase, ready up to 2 resources.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/271?locale=en",
+    "officialRules": "A unit must survive an attack to trigger its \u201cwhen this unit completes an attack\u201d abilities.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn\u2019t need to survive for the ability to trigger unless the ability says otherwise. The unit isn\u2019t considered to be attacking when these abilities resolve.\n",
+    "officialTextStyled": "<p><strong>When an enemy unit leaves play:</strong> You may exhaust this leader. If you do, ready a resource.</p>",
+    "officialDeployBoxStyled": "<p><strong>When Attack Ends:</strong> If this unit survived and an enemy unit left play this phase, ready up to 2 resources.</p>"
+  },
+  "yoda--sensing-darkness": {
+    "text": "Action [Exhaust]: If a unit left play this phase, draw a card, then put a card from your hand on the top or bottom of your deck.",
+    "keywords": [
+      "Restore"
+    ],
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\nYoda's leader ability still can be used as an action even if no unit left play this phase (but you don't resolve any of the listed effects).\nAlways discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "Restore 2\nWhen Deployed: You may discard a card from your deck. If you do, defeat an enemy non-leader unit that costs the same as or less than the discarded card.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14231?locale=en",
+    "officialRules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\nYoda's leader ability still can be used as an action even if no unit left play this phase (but you don't resolve any of the listed effects).\nAlways discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If a unit left play this phase, draw a card, then put a card from your hand on the top or bottom of your deck.</p>",
+    "officialDeployBoxStyled": "<p><strong>Restore 2</strong></p><p><strong>When Deployed:</strong> You may discard a card from your deck. If you do, defeat an enemy non-leader unit that costs the same as or less than the discarded card.</p>"
+  },
+  "cassian-andor--dedicated-to-the-rebellion": {
+    "text": "Action [1 resource, Exhaust]: If you've dealt 3 or more damage to an enemy base this phase, draw a card.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "rules": "Cassian\u2019s leader ability can still be used as an action even if you haven\u2019t dealt 3 or more damage to a base this phase (but it deals no damage).\nAny card you control or ability you resolve that deals damage is considered damage dealt by you.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\n\nWhen you deal damage to an enemy base: You may draw a card. Use this ability only once each round.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/390?locale=en",
+    "officialRules": "Cassian\u2019s leader ability can still be used as an action even if you haven\u2019t dealt 3 or more damage to a base this phase (but you don't draw a card).\nAny card you control or ability you resolve that deals damage is considered damage dealt by you.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If you've dealt 3 or more damage to an enemy base this phase, draw a card.</p>",
+    "officialDeployBoxStyled": "<p><strong>Saboteur</strong> <i>(When this unit attacks, ignore Sentinel and defeat the defender's Shields.)</i></p><p><strong>When you deal damage to an enemy base:</strong><i> </i>You may draw a card. Use this ability only once each round.</p><p>&nbsp;</p>"
+  },
+  "pre-vizsla--pursuing-the-throne": {
+    "text": "Action [1 resource, Exhaust]: Deal damage to a unit equal to the number of cards you've drawn this phase. (This doesn't include cards drawn in the regroup phase.)",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "While you have 3 or more cards in your hand, this unit gains Saboteur.\nWhile you have 6 or more cards in your hand, this unit gets +2/+0.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14261?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Deal damage to a unit equal to the number of cards you\u2019ve drawn this phase. <i>(This doesn\u2019t include cards drawn in the regroup phase.)</i></p>",
+    "officialDeployBoxStyled": "<p>While you have 3 or more cards in your hand, this unit gains <strong>Saboteur</strong>.</p><p>While you have 6 or more cards in your hand, this unit gets <strong>+2</strong>/<strong>+0</strong>.</p>"
+  },
+  "luthen-rael--don-t-you-want-to-fight-for-real-": {
+    "text": "When a friendly unit is defeated while attacking: You may exhaust this leader. If you do, deal 1 damage to a unit or base.",
+    "keywords": [],
+    "rules": "Luthen's ability resolves during the same window as any \"When Defeated\" abilities on the friendly unit. It is not considered a \"When Defeated\" ability.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When a friendly unit is defeated while attacking: You may deal 2 damage to a unit or base.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39440?locale=en",
+    "officialRules": "Luthen's ability resolves during the same window as any \"When Defeated\" abilities on the friendly unit. It is not considered a \"When Defeated\" ability.\n",
+    "officialTextStyled": "<p><strong>When a friendly unit is defeated:</strong> If it attacked this action, you may exhaust this leader. If you do, deal 1 damage to a unit or base.</p>",
+    "officialDeployBoxStyled": "<p><strong>When a friendly unit is defeated:</strong> If it attacked this action, you may deal 2 damage to a unit or base.</p>"
+  },
+  "padm--amidala--what-do-you-have-to-hide-": {
+    "text": "When you reveal or discard 1 or more cards from your hand: You may exhaust this leader. If you do, deal 1 damage to a unit.",
+    "keywords": [],
+    "rules": "If another player's ability discards a card from your hand, you are still considered to discard that card, and Padme's ability still triggers.\nOnly effects that explicitly reveal cards from your hand can trigger Padme's ability. Padme's ability does not trigger if you show an opponent a card for game state purposes.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "When you reveal or discard 1 or more cards from your hand: You may deal 1 damage to a unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39455?locale=en",
+    "officialRules": "If another player's ability discards a card from your hand, you are still considered to discard that card, and Padme's ability still triggers.\nOnly effects that explicitly reveal cards from your hand can trigger Padme's ability. Padme's ability does not trigger if you show an opponent a card for game state purposes.\n",
+    "officialTextStyled": "<p><strong>When you reveal or discard 1 or more cards from your hand:</strong> You may exhaust this leader. If you do, deal 1 damage to a unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>When you reveal or discard 1 or more cards from your hand:</strong> You may deal 1 damage to a unit.</p>"
+  },
+  "anakin-skywalker--protect-her-at-all-costs": {
+    "text": "Action [Exhaust]: If 2 or more friendly units entered play this phase , give a Shield token to 1 of them.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Sentinel \nOn Attack: Give a Shield token to another friendly unit that entered play this phase.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50862?locale=en",
+    "officialRules": "Anakin\u2019s leader ability still can be used as an action even if fewer than 2 friendly units entered play this phase (but no Shield token is created).\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If 2 or more friendly units entered play this phase <i>(including tokens and leaders)</i>, give a Shield token to 1 of them.</p>",
+    "officialDeployBoxStyled": "<p><strong>Sentinel </strong><i>(Enemy units in this arena must attack a Sentinel when they attack you.)</i></p><p><strong>On Attack</strong>: Give a Shield token to another friendly unit that entered play this phase.</p>"
+  },
+  "padm--amidala--follow-my-lead": {
+    "text": "Action [Exhaust]: If 2 or more friendly units entered play this phase  , attack with 1 of them, even if it's exhausted. It can't attack bases for this attack.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "When Attack Ends: You may attack with another friendly unit that entered play this phase, even if it's exhausted. It can't attack bases for this attack.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/50872?locale=en",
+    "officialRules": "Padme\u2019s leader ability still can be used as an action even if fewer than 2 friendly units entered play this phase (but you don't get to attack).\nIf you use Padme\u2019s leader ability, you must attack with a unit, if able.\n\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage. Padme does not need to survive the attack in order to attack with another unit.\nUnits that can\u2019t attack bases can still damage bases through other abilities, like Overwhelm.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> If 2 or more friendly units entered play this phase <i>(including tokens and leaders) </i>, attack with 1 of them, even if it's exhausted. It can't attack bases for this attack.</p>",
+    "officialDeployBoxStyled": "<p><strong>When Attack Ends:</strong> You may attack with another friendly unit that entered play this phase, even if it's exhausted. It can't attack bases for this attack.</p>"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "kylo-ren--we-re-not-done-yet": {
+    "text": "Action [Exhaust]: Discard a card from your hand. If you discarded an upgrade this way, draw a card.",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "Sentinel\nWhen Deployed: Play any number of upgrades from your discard pile on this unit (one at a time, paying their costs).",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27029?locale=en",
+    "officialText": "Action [Exhaust]: Discard a card from your hand. If you discarded an upgrade this way, draw a card.",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Discard a card from your hand. If you discarded an upgrade this way, draw a card.</p>",
+    "officialRules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nFor abilities that encompass multiple actions, resolve each action (and any resulting triggers) sequentially.\n"
+  },
+  "sab---queen-s-shadow": {
+    "text": "When a friendly unit deals combat damage to a base: You may exhaust this leader. If you do, look at the top 2 cards of the defending player's deck. Discard 1 of those cards. (Put the other back on top.)",
+    "keywords": ["Raid"],
+    "rules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Raid 1\nWhen this unit deals combat damage to a base: Look at the defending player's hand. You may discard a card from it. If you do, that player draws a card.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39460?locale=en",
+    "officialText": "When a friendly unit deals combat damage to a base: You may exhaust this leader. If you do, look at the top 2 cards of the defending player's deck. Discard 1 of those cards. (Put the other back on top.)",
+    "officialTextStyled": "<p><strong>When a friendly unit's attack ends:</strong> If it dealt combat damage to a base, you may exhaust this leader. If you do, look at the top 2 cards of the defending player's deck. Discard 1 of those cards. <i>(Put the other back on top.)</i></p>",
+    "officialRules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "officialDeployBoxStyled": "<p><strong>Raid 1</strong></p><p><strong>When Attack Ends:</strong> If this unit dealt combat damage to a base, look at the defending player's hand. You may discard a card from it. If you do, that player draws a card.</p>"
+  }
+}

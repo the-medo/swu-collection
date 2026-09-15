@@ -1,0 +1,350 @@
+{
+  "mother-talzin--power-through-magick": {
+    "text": "Action [Exhaust, use the Force (lose your Force token)]: Give a unit –1/–1 for this phase.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "On Attack: You may give a unit –1/–1 for this phase.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27034?locale=en",
+    "officialText": "Action [Exhaust, use the Force (lose your Force token)]: Give a unit –1/–1 for this phase.",
+    "officialRules": null
+  },
+  "chirrut--mwe--blind--but-not-deaf": {
+    "text": "Sentinel\nWhen this unit is attacked (before damage is dealt): You may use the Force (lose your Force token). If you do, the attacker gets –2/–0 for this attack.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27359?locale=en",
+    "officialText": "Sentinel\nWhen this unit is attacked (before damage is dealt): You may use the Force (lose your Force token). If you do, the attacker gets –2/–0 for this attack.",
+    "officialRules": "\"When this unit is attacked\" triggers at the same time as \"On Attack\" abilities.\nOn Defense abilities trigger when this unit is chosen as the defender for an attack, in the same window as the attacker's On Attack abilities.\n"
+  },
+  "luke-skywalker--i-can-save-him": {
+    "text": "When a friendly unit's attack ends: You may exhaust this leader. If you do, heal 1 damage from that unit.",
+    "keywords": [],
+    "rules": "When Attack Ends abilities trigger at the same time as units deal combat damage. If the attacking unit is defeated by combat damage, you cannot heal it.\n",
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "When a friendly unit's attack ends: Heal 2 damage from that unit or from your base.",
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51707?locale=en",
+    "officialText": "When a friendly unit's attack ends: You may exhaust this leader. If you do, heal 1 damage from that unit.",
+    "officialRules": "When Attack Ends abilities trigger at the same time as units deal combat damage. If the attacking unit is defeated by combat damage, you cannot heal it.\n"
+  },
+  "jam-communications": {
+    "text": "Look at an opponent's hand and discard an event from it.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20506?locale=en",
+    "officialText": "Look at an opponent's hand and discard an event from it.",
+    "officialRules": null
+  },
+  "jod-na-nawood--keeping-secrets": {
+    "text": "Sentinel\nWhen Played: You may pay 4 resources. If you do, choose an arena. Exhaust each unit in that arena.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52774?locale=en",
+    "officialText": "Sentinel\nWhen Played: You may pay 4 resources. If you do, choose an arena. Exhaust each unit in that arena.",
+    "officialRules": null
+  },
+  "at-st-raider": {
+    "text": "While you control another non-<uq> unit, this unit gains Ambush. (When you play this unit, it may attack an enemy unit.)",
+    "keywords": [
+      "Ambush"
+    ],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52172?locale=en",
+    "officialText": "While you control another non-<uq> unit, this unit gains Ambush. (When you play this unit, it may attack an enemy unit.)",
+    "officialRules": "Ambush is an ability that triggers at the same time as “When Played” abilities. The unit does not have to be ready in order to attack.\n"
+  },
+  "fulminatrix--fleet-killer": {
+    "text": "When Played/On Attack: You may deal 4 damage to a ground unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40085?locale=en",
+    "officialText": "When Played/On Attack: You may deal 4 damage to a ground unit.",
+    "officialRules": null
+  },
+  "bendu--do-you-fear-the-storm-": {
+    "text": "On Attack: Deal 3 damage to each other unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27874?locale=en",
+    "officialText": "On Attack: Deal 3 damage to each other unit.",
+    "officialRules": "All damage dealt by Bendu's \"On Attack\" ability is dealt simultaneously.\n"
+  },
+  "drk-1-probe-droid": {
+    "text": "When Played: You may defeat a non-<uq> (non-unique) upgrade.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27799?locale=en",
+    "officialText": "When Played: You may defeat a non-<uq> (non-unique) upgrade.",
+    "officialRules": null
+  },
+  "leia-organa--vigilant-for-danger": {
+    "text": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nOn Attack: You may deal 1 damage to this unit. If you do, heal 2 damage from your base.",
+    "keywords": [
+      "Support"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51977?locale=en",
+    "officialText": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nOn Attack: You may deal 1 damage to this unit. If you do, heal 2 damage from your base.",
+    "officialRules": null
+  },
+  "one-must-destroy-to-create": {
+    "text": "Defeat a friendly non-leader unit. Then, you may play that unit from your discard pile for free.",
+    "keywords": [],
+    "rules": "“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52914?locale=en",
+    "officialText": "Defeat a friendly non-leader unit. Then, you may play that unit from your discard pile for free.",
+    "officialRules": "“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n"
+  },
+  "razor-crest--outfitted-armament": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nOn Attack: You may discard a card from your hand. If you do, this unit gets +2/+0 for this attack.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52541?locale=en",
+    "officialText": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nOn Attack: You may discard a card from your hand. If you do, this unit gets +2/+0 for this attack.",
+    "officialRules": null
+  },
+  "preparation": {
+    "text": "When Played: Exhaust attached unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52819?locale=en",
+    "officialText": "When Played: Exhaust attached unit.",
+    "officialRules": null
+  },
+  "yoda-s-lightsaber": {
+    "text": "Attach to a non-Vehicle unit.\nWhen Played: You may use the Force . If you do, heal 3 damage from a base.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27534?locale=en",
+    "officialText": "Attach to a non-Vehicle unit.\nWhen Played: You may use the Force (lose your Force token). If you do, heal 3 damage from a base.",
+    "officialRules": null
+  },
+  "bog-down-in-procedure": {
+    "text": "Exhaust a unit.\nYou may disclose Cunning (reveal a card from your hand with this aspect icon). If you do, exhaust another unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40545?locale=en",
+    "officialText": "Exhaust a unit.\nYou may disclose Cunning (reveal a card from your hand with this aspect icon). If you do, exhaust another unit.",
+    "officialRules": null
+  },
+  "cybernetic-enhancements": {
+    "text": "When Played: Draw a card.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52117?locale=en",
+    "officialText": "When Played: Draw a card.",
+    "officialRules": null
+  },
+  "durasteel-plating": {
+    "text": "When Played: Give a Shield token to attached unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52112?locale=en",
+    "officialText": "When Played: Give a Shield token to attached unit.",
+    "officialRules": null
+  },
+  "get-lost": {
+    "text": "Defeat an upgraded non-leader unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52017?locale=en",
+    "officialText": "Defeat an upgraded non-leader unit.",
+    "officialRules": null
+  },
+  "morgan-elsbeth--life-abandoned": {
+    "text": "Support \nWhen Defeated: You may give a unit –2/–2 for this phase.",
+    "keywords": [
+      "Support"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51932?locale=en",
+    "officialText": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nWhen Defeated: You may give a unit –2/–2 for this phase.",
+    "officialRules": null
+  },
+  "the-legacy-run--doomed-debris": {
+    "text": "When Defeated: Deal 6 damage divided as you choose among enemy units.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28089?locale=en",
+    "officialText": "When Defeated: Deal 6 damage divided as you choose among enemy units.",
+    "officialRules": "All damage dealt by The Legacy Run's \"When Defeated\" ability is dealt simultaneously.\nYou can choose to assign more damage to a unit than it has remaining HP.\n"
+  },
+  "cham-syndulla--rallying-ryloth": {
+    "text": "When Played: If an opponent controls more resources than you, you may put the top card of your deck into play as a resource.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20291?locale=en",
+    "officialText": "When Played: If an opponent controls more resources than you, you may put the top card of your deck into play as a resource.",
+    "officialRules": "A card put into play as a resource enters play exhausted.\n(ERRATA) Templating update: “Put into play as a resource” becomes “resource”. \"Controls more\" becomes \"control fewer\".\n"
+  },
+  "charged-with-corruption": {
+    "text": "You may disclose CommandCommand (reveal cards from your hand with these aspect icons among them). If you do, a friendly unit captures an enemy non-leader unit. (Put the captured card facedown under that unit until that unit leaves play.)",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40010?locale=en",
+    "officialText": "You may disclose CommandCommand (reveal cards from your hand with these aspect icons among them). If you do, a friendly unit captures an enemy non-leader unit. (Put the captured card facedown under that unit until that unit leaves play.)",
+    "officialRules": null
+  },
+  "contracted-hunter": {
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nWhen the regroup phase starts: Defeat this unit.",
+    "keywords": [
+      "Ambush"
+    ],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20551?locale=en",
+    "officialText": "Ambush (When you play this unit, it may attack an enemy unit.)\nWhen the regroup phase starts: Defeat this unit.",
+    "officialRules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "desperate-commando": {
+    "text": "When Defeated: You may give a unit –1/–1 for this phase.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19771?locale=en",
+    "officialText": "When Defeated: You may give a unit –1/–1 for this phase.",
+    "officialRules": null
+  },
+  "fireball--an-explosion-with-wings": {
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nWhen the regroup phase starts: Deal 1 damage to this unit.",
+    "keywords": [
+      "Ambush"
+    ],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20461?locale=en",
+    "officialText": "Ambush (When you play this unit, it may attack an enemy unit.)\nWhen the regroup phase starts: Deal 1 damage to this unit.",
+    "officialRules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "grassroots-resistance": {
+    "text": "Deal 3 damage to a unit.\nHeal 3 damage from your base.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52969?locale=en",
+    "officialText": "Deal 3 damage to a unit.\nHeal 3 damage from your base.",
+    "officialRules": null
+  },
+  "itinerant-warrior": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\nWhen Played: You may use the Force (lose your Force token). If you do, heal 3 damage from a base.",
+    "keywords": [
+      "Shielded"
+    ],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27264?locale=en",
+    "officialText": "Shielded (When you play this unit, give a Shield token to it.)\nWhen Played: You may use the Force (lose your Force token). If you do, heal 3 damage from a base.",
+    "officialRules": null
+  },
+  "jedi-consular": {
+    "text": "Action [Exhaust, use the Force ]: Play a unit from your hand. It costs 2 resources less.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27494?locale=en",
+    "officialText": "Action [Exhaust, use the Force (lose your Force token)]: Play a unit from your hand. It costs 2 resources less.",
+    "officialRules": null
+  },
+  "maz-kanata--the-light-guides": {
+    "text": "When Played: You may attack with a Force unit. It gets +2/+0 for this attack.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27579?locale=en",
+    "officialText": "When Played: You may attack with a Force unit. It gets +2/+0 for this attack.",
+    "officialRules": "Units must be ready in order to attack.\n"
+  },
+  "persecutor--fire-over-scarif": {
+    "text": "When Played/On Attack: Choose an arena. You may deal 3 damage to each unit in that arena.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46942?locale=en",
+    "officialText": "When Played/On Attack: Choose an arena. You may deal 3 damage to each unit in that arena.",
+    "officialRules": null
+  }
+}

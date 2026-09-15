@@ -1,0 +1,68 @@
+{
+  "cad-bane--now-it-s-my-turn": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46212?locale=en",
+    "unique": true,
+    "text": "Shielded\nOverwhelm\nOn Attack: Defeat any number of friendly Credit tokens. Give an Experience token to this unit for each Credit defeated this way.",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": [
+      "Shielded",
+      "Overwhelm"
+    ]
+  },
+  "choke-on-aspirations": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46562?locale=en",
+    "unique": false,
+    "text": "Deal up to 5 damage to a friendly non-Vehicle unit. If it survives, heal damage from your base equal to the damage dealt this way.",
+    "rules": null,
+    "officialRules": "If this event's damage is prevented with a Shield or similar effect, no damage is healed from your base.\n",
+    "keywords": []
+  },
+  "defiant-hammerhead": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46362?locale=en",
+    "unique": false,
+    "text": "On Attack: If this unit is attacking a unit, you may give this unit +4/+0 for this attack. If you do, defeat this unit after completing this attack.",
+    "rules": null,
+    "officialRules": "Resolve all triggered abilities from the attack before defeating the unit.\n",
+    "keywords": []
+  },
+  "double-cross": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46902?locale=en",
+    "unique": false,
+    "text": "Choose a friendly non-leader unit and an enemy non-leader unit. Exchange control of those units. The player who takes control of the lower-cost unit creates Credit tokens equal to the difference between those units' costs.",
+    "rules": null,
+    "officialRules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "keywords": []
+  },
+  "display-piece": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46567?locale=en",
+    "unique": false,
+    "text": "Defeat an enemy non-leader unit. Its controller resources it from its owner's discard pile.",
+    "rules": null,
+    "officialRules": "Resources enter play exhausted.\n",
+    "keywords": []
+  },
+  "rio-durant--beckett-s-right-hands": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46517?locale=en",
+    "unique": true,
+    "text": "When Played: You may return a non-leader unit that costs 3 or less to its owner's hand. Then, its owner may play it for free. It gains Shielded for this phase.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n\"Play for free\" ignores all resource costs, including aspect penalties, but not other additional costs.\n",
+    "keywords": [
+      "Shielded"
+    ]
+  },
+  "salvaged-materials": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/47277?locale=en",
+    "unique": false,
+    "text": "Play an Item upgrade from your discard pile. It costs 3 resources less. At the start of the next regroup phase, defeat it.",
+    "rules": null,
+    "keywords": []
+  },
+  "maz-kanata--where-s-my-boyfriend-": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46422?locale=en",
+    "unique": true,
+    "text": "When Attack Ends: If this unit survived, search the top 5 cards of your deck for an Underworld unit and play it. It costs 4 resources less and enters play ready. At the start of the regroup phase, put that unit on the bottom of your deck .",
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n\"When Attack Ends\" abilities trigger at the same time the attacking unit deals combat damage.\nPutting a unit on the bottom of your deck from play does not trigger any “When Defeated” abilities on that unit.\n",
+    "officialText": "When Attack Ends: If this unit survived, search the top 5 cards of your deck for an Underworld unit and play it. It costs 4 resources less and enters play ready. At the start of the regroup phase, put that unit on the bottom of your deck (if it is still in play).",
+    "keywords": []
+  }
+}

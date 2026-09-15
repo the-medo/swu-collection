@@ -1,0 +1,425 @@
+{
+  "emperor-s-messenger": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52626?locale=en",
+    "unique": false,
+    "text": "Support \nOn Attack: Ready a resource.",
+    "rules": null,
+    "officialText": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nOn Attack: Ready a resource.",
+    "keywords": ["Support"]
+  },
+  "ferry-droid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52769?locale=en",
+    "unique": false,
+    "text": "When Played: Give 4 Advantage tokens to this unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "follow-me": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52601?locale=en",
+    "unique": false,
+    "text": "Attack with a unit. After completing the attack, give 3 Advantage tokens to a unit.",
+    "rules": "You must attack with a unit, if able. Units must be ready in order to attack.\n",
+    "keywords": []
+  },
+  "helix-starfighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52784?locale=en",
+    "unique": false,
+    "text": "When Played: If an opponent controls a space unit, give a Shield token to this unit. Otherwise, give 2 Advantage tokens to this unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "long-live-the-empire": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52196?locale=en",
+    "unique": false,
+    "text": "Defeat a friendly Imperial unit. If you do, resource the top card of your deck.",
+    "rules": "Resources enter play exhausted.\n",
+    "keywords": []
+  },
+  "rash-action": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52491?locale=en",
+    "unique": false,
+    "text": "Attack with a unit. For this attack, it gets +1/+0 and gains: “When Attack Ends: If this unit dealt combat damage to an opponent's base, that opponent discards a card.”",
+    "rules": "You must attack with a unit, if able. Units must be ready in order to attack.\n“Combat damage” is only the damage dealt during the “End attack” step of an attack.\nWhen Attack Ends abilities trigger at the same timeas units deal combat damage. The attacking unit does not need to survive the attack in order to make your opponent discard, so long as it dealt combat damage to that opponent's base.\n",
+    "keywords": []
+  },
+  "rukh--from-the-shadows": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51862?locale=en",
+    "unique": true,
+    "text": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nWhen Attack Ends: If the defending unit was defeated, you may give 3 Advantage tokens to a unit.",
+    "rules": "When Attack Ends abilities trigger at the same time as units deal combat damage. Rukh (or the supported unit) does not need to survive the attack in order to give Advantage tokens, so long as the defending unit was defeated.\n",
+    "keywords": ["Support"]
+  },
+  "a-new-order": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52999?locale=en",
+    "unique": false,
+    "text": "Give an Advantage token to each of up to 2 units.",
+    "rules": null,
+    "keywords": []
+  },
+  "amnesty-officer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52750?locale=en",
+    "unique": false,
+    "text": "When Played: You may exhaust a unit with one or more keywords.",
+    "rules": null,
+    "keywords": []
+  },
+  "attendant-navigator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52869?locale=en",
+    "unique": false,
+    "text": "When Played: You may give 2 Advantage tokens to a space unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "axe-woves--undaunted": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52526?locale=en",
+    "unique": true,
+    "text": "When you draw 1 or more cards (including during the regroup phase): Give an Advantage token to this unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "bokken-saber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52581?locale=en",
+    "unique": false,
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains: “When Attack Ends: Give an Advantage token to this unit.”",
+    "rules": "When Attack Ends abilities trigger at the same time as units deal combat damage.\n",
+    "keywords": []
+  },
+  "buy-time": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52137?locale=en",
+    "unique": false,
+    "text": "Create a Mandalorian token and give it Sentinel for this phase. (Enemy units in its arena must attack a Sentinel when they attack you.)",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "camtono": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52824?locale=en",
+    "unique": false,
+    "text": "Attached unit gains: “When Attack Ends: Look at the top card of your deck. If it costs 2 or less, you may play it for free.”",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nWhen Attack Ends abilities trigger at the same time as units deal combat damage. The attached unit does not need to survive the attack in order to resolve the ability.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n",
+    "keywords": []
+  },
+  "children-of-the-watch": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52236?locale=en",
+    "unique": false,
+    "text": "When Played: Create 2 Mandalorian tokens.",
+    "rules": null,
+    "keywords": []
+  },
+  "choose-your-path": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52964?locale=en",
+    "unique": false,
+    "text": "Choose one:\nIf you control a Force unit, heal 5 damage from your base.\nIf you control a Mandalorian unit, create a Mandalorian token and give an Advantage token to it.\n",
+    "rules": null,
+    "keywords": []
+  },
+  "clan-vizsla-soldier": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52506?locale=en",
+    "unique": false,
+    "text": "When Defeated: You may defeat an upgrade.",
+    "rules": null,
+    "keywords": []
+  },
+  "covert-believers": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52082?locale=en",
+    "unique": false,
+    "text": "When Defeated: Create a Mandalorian token.",
+    "rules": null,
+    "keywords": []
+  },
+  "ddc-defender": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52731?locale=en",
+    "unique": false,
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains: “On Defense: You may deal 1 damage to a unit in this unit's arena and exhaust it.”",
+    "rules": "“On Defense” abilities trigger at the same time as “On Attack” abilities.\n",
+    "keywords": []
+  },
+  "desert-sharpshooter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52531?locale=en",
+    "unique": false,
+    "text": "When Played: You may deal 2 damage to an upgraded ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "display-of-strength": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52361?locale=en",
+    "unique": false,
+    "text": "Give a unit +3/+3 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "duchess-s-protector": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51972?locale=en",
+    "unique": false,
+    "text": "When Defeated: Create a Mandalorian token.",
+    "rules": null,
+    "keywords": []
+  },
+  "exploit-advantage": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52909?locale=en",
+    "unique": false,
+    "text": "Defeat a friendly upgrade. If you do, draw 2 cards.",
+    "rules": "A friendly upgrade is any upgrade you put into play or any token upgrade on a friendly unit.\n",
+    "keywords": []
+  },
+  "ezra-bridger--the-force-is-all-i-need": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52726?locale=en",
+    "unique": true,
+    "text": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nOn Attack: If this unit is upgraded, you may give a unit –3/–0 for this phase.",
+    "rules": "Ezra's \"\"On Attack\"\" ability gives a unit -3/-0 if the attacking unit is upgraded.\n",
+    "keywords": ["Support"]
+  },
+  "foundling-rescue": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52142?locale=en",
+    "unique": false,
+    "text": "You may defeat a unit with 2 or less remaining HP.\nCreate a Mandalorian token.",
+    "rules": null,
+    "keywords": []
+  },
+  "full-of-surprises": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52839?locale=en",
+    "unique": false,
+    "text": "Return an upgrade that costs 2 or less to its owner's hand.\nGive a Shield token to a unit.",
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "keywords": []
+  },
+  "gallofree-transport": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52949?locale=en",
+    "unique": false,
+    "text": "When Defeated: Give 2 Advantage tokens to a friendly unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "gar-saxon--coveting-power": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51917?locale=en",
+    "unique": true,
+    "text": "When you play an upgrade on this unit: You may create a Mandalorian token. Use this ability only once each round.",
+    "rules": "Attaching a token upgrade is not considered playing an upgrade and does not trigger Gar Saxon's ability.\n",
+    "keywords": []
+  },
+  "grand-admiral-thrawn--orchestrating-his-return": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51847?locale=en",
+    "unique": true,
+    "text": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nWhen Attack Ends: If the defending unit was defeated, ready this unit.",
+    "rules": "When Attack Ends abilities trigger at the same time as units deal combat damage.\nIf you use Thrawn's Support ability to attack with another unit and the defending unit is defeated by that attack, the attacking unit readies.\n",
+    "keywords": ["Support"]
+  },
+  "grav-charge": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52107?locale=en",
+    "unique": false,
+    "text": "When attached unit's attack ends: Deal 4 damage to it and defeat this upgrade.",
+    "rules": "When Attack Ends abilities trigger at the same time as units deal combat damage.\n",
+    "keywords": []
+  },
+  "imperial-defector": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52929?locale=en",
+    "unique": false,
+    "text": "When Played: Look at an opponent's hand.",
+    "rules": null,
+    "keywords": []
+  },
+  "imposing-scout-walker": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52561?locale=en",
+    "unique": false,
+    "text": "When Played: You may deal 3 damage to a ground unit. If it's defeated this way, give 3 Advantage tokens to this unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "inspiring-veteran": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52706?locale=en",
+    "unique": false,
+    "text": "When Played: Give an Advantage token to each of up to 3 exhausted units.",
+    "rules": null,
+    "keywords": []
+  },
+  "intimidation": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52606?locale=en",
+    "unique": false,
+    "text": "If you control a unit with 4 or more power, draw 2 cards.",
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n",
+    "keywords": []
+  },
+  "keep-them-talking": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52844?locale=en",
+    "unique": false,
+    "text": "Exhaust up to 2 units that each cost 3 or less.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "keywords": []
+  },
+  "knobby-white-ice-spider": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52571?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)\nWhen Played: For each enemy unit, give an Advantage token to this unit.",
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "lang--arrogant-mercenary": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52296?locale=en",
+    "unique": true,
+    "text": "Action [Exhaust]: This unit deals damage equal to his power to a ground unit.",
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n",
+    "keywords": []
+  },
+  "lep-ratcatcher": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52974?locale=en",
+    "unique": false,
+    "text": "When Played: You may deal 1 damage to a ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "mandalorian-scout": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52759?locale=en",
+    "unique": false,
+    "text": "When Defeated: Exhaust a ready friendly resource.",
+    "rules": null,
+    "keywords": []
+  },
+  "mark-my-words": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52586?locale=en",
+    "unique": false,
+    "text": "Attach to a damaged unit.\nAttached unit gains Overwhelm. (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "mayor-s-majordomo--no-problem-groveling": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52764?locale=en",
+    "unique": true,
+    "text": "Action [Exhaust, discard a card from your hand]: Exhaust a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "mortar-trooper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52391?locale=en",
+    "unique": false,
+    "text": "Action [Exhaust]: Deal 1 damage to each of up to 3 ground units.",
+    "rules": "All damage dealt by Mortar Trooper's ability is dealt simultaneously.\n",
+    "keywords": []
+  },
+  "mos-espa-watermonger": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52979?locale=en",
+    "unique": false,
+    "text": "When Played: You may draw a card. If you do, discard a card.",
+    "rules": null,
+    "keywords": []
+  },
+  "mouse-droid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52864?locale=en",
+    "unique": false,
+    "text": "Raid 1 \nWhen Played: The next Imperial unit you play this phase costs 1 resource less.",
+    "rules": "Once Mouse Droid's “When Played” ability resolves, it remains active even if it is defeated before you play your next Imperial unit.\n",
+    "officialText": "Raid 1 (This unit gets +1/+0 while attacking.)\nWhen Played: The next Imperial unit you play this phase costs 1 resource less.",
+    "keywords": ["Raid"]
+  },
+  "perseverance": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52127?locale=en",
+    "unique": false,
+    "text": "Heal 3 damage from a unit and give a Shield token to it.",
+    "rules": null,
+    "keywords": []
+  },
+  "peli-motto--you-bring-the-cash-": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52740?locale=en",
+    "unique": true,
+    "text": "Shielded\nIgnore the aspect penalties of the first non‑unit card you play each phase.",
+    "rules": null,
+    "keywords": ["Shielded"]
+  },
+  "qi-ra--master-of-ter-s-k-si": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52809?locale=en",
+    "unique": true,
+    "text": "This unit gets –1/–0 for each card in your hand.\nWhen Played: You may discard a card from your hand. If you do, deal 3 damage to a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "queen-soruna--willing-to-fight": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52341?locale=en",
+    "unique": true,
+    "text": "When Played/On Attack: You may reveal a unit from your hand. If you do, deal 3 damage to a unit with the same cost as the revealed unit.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "keywords": []
+  },
+  "rehabilitation": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52681?locale=en",
+    "unique": false,
+    "text": "Choose a non-leader unit. Give that unit –3/–0 for this phase, then take control of it. At the start of the regroup phase, its owner takes control of it.",
+    "rules": null,
+    "keywords": []
+  },
+  "reinforcing-light-cruiser": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51937?locale=en",
+    "unique": false,
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)\nWhen Played: You may exhaust a unit.",
+    "rules": null,
+    "keywords": ["Restore"]
+  },
+  "scion-shuttle--at-morgan-s-bidding": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51912?locale=en",
+    "unique": true,
+    "text": "Support (When you play this unit, you may attack with another unit. It gains this unit's other abilities for this attack.)\nWhile this unit is attacking, the defending unit gets –1/–1.",
+    "rules": null,
+    "keywords": ["Support"]
+  },
+  "starfortress-heavy-bomber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52551?locale=en",
+    "unique": false,
+    "text": "When Played: You may deal 6 damage to a non-<uq> ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "summa-verminoth": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52097?locale=en",
+    "unique": false,
+    "text": "Sentinel\nOn Attack: Defeat all other space units.",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "the-armorer--secrecy-is-our-survival": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52002?locale=en",
+    "unique": true,
+    "text": "Shielded \nWhen Played: Give a Shield token to each friendly unit with Shielded .",
+    "rules": null,
+    "officialText": "Shielded (When you play this unit, give a Shield token to her.)\nWhen Played: Give a Shield token to each friendly unit with Shielded (including this one).",
+    "keywords": ["Shielded"]
+  },
+  "the-student-guides-the-master": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52256?locale=en",
+    "unique": false,
+    "text": "Give a friendly unit +1/+0 for this phase for each other friendly unit with less power than it.",
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n",
+    "keywords": []
+  },
+  "the-twins--we-don-t-want-war": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52316?locale=en",
+    "unique": true,
+    "text": "When Played/On Attack: You may give another friendly unit Sentinel for this phase.\nWhen another friendly unit is defeated: Heal 1 damage from your base.",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "trexler-armored-marauder": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52092?locale=en",
+    "unique": false,
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)\nWhen Played: You may give a Shield token to a unit that costs 3 or less.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "keywords": ["Grit"]
+  },
+  "turning-the-tide": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52371?locale=en",
+    "unique": false,
+    "text": "Choose a unit. Deal 1 damage to it for each friendly unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "warrior-s-legacy": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52351?locale=en",
+    "unique": false,
+    "text": "Attached unit gains: “When Defeated: Create a Mandalorian token.”",
+    "rules": null,
+    "keywords": []
+  },
+  "zealous-soldier": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52934?locale=en",
+    "unique": false,
+    "text": "When Played: Give an Advantage token to this unit.",
+    "rules": null,
+    "keywords": []
+  }
+}

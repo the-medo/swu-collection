@@ -1,0 +1,23 @@
+{
+  "shadow-caster--just-business": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20316?locale=en",
+    "unique": true,
+    "text": "When a friendly unit is defeated: You may use all of its “When Defeated” abilities again.",
+    "rules": "Any ability whose trigger starts with \"When defeated…\" or includes \"When Defeated\" is considered a \"When Defeated\" ability.\n",
+    "epicAction": "",
+    "officialRules": "Any ability whose trigger starts with \"When defeated…\" is considered a \"When Defeated\" ability.",
+    "keywords": []
+  },
+  "l3-37--get-out-of-my-seat": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19716?locale=en",
+    "unique": true,
+    "text": "If this unit would be defeated, you may instead attach her as an upgrade to a friendly Vehicle unit without a Pilot on it. ",
+    "rules": null,
+    "epicAction": "Piloting [3 resources Vigilance Heroism]",
+    "officialText": "If this unit would be defeated, you may instead attach her as an upgrade to a friendly Vehicle unit without a Pilot on it. (She's no longer a unit. Defeat all upgrades on her and remove all damage from her.)",
+    "officialRules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nIf you choose to attach L3-37 to a unit as an upgrade when she would be defeated, defeat all upgrades on her and remove all damage from her.\n",
+    "keywords": [
+      "Piloting"
+    ]
+  }
+}

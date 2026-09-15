@@ -1,0 +1,541 @@
+{
+  "corellian-freighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20761?locale=en",
+    "unique": false,
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "occupier-siege-tank": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20306?locale=en",
+    "unique": false,
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Grit"
+    ]
+  },
+  "adept-arc-170": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20041?locale=en",
+    "unique": false,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Restore"
+    ]
+  },
+  "corporate-light-cruiser": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20596?locale=en",
+    "unique": false,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nRaid 1 (This unit gets +1/+0 while attacking.)",
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "epicAction": "",
+    "keywords": [
+      "Ambush",
+      "Raid"
+    ]
+  },
+  "jedi-light-cruiser": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20726?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "munificent-frigate": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19816?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "omicron-strike-craft": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19791?locale=en",
+    "unique": false,
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "outer-rim-outlaws": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19796?locale=en",
+    "unique": false,
+    "text": "Shielded (When you play this unit, give a Shield token to it.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Shielded"
+    ]
+  },
+  "perimeter-at-rt": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19811?locale=en",
+    "unique": false,
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "rogue-class-starfighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20676?locale=en",
+    "unique": false,
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "royal-security-fighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19776?locale=en",
+    "unique": false,
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Grit"
+    ]
+  },
+  "scouting-headhunter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20021?locale=en",
+    "unique": false,
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "shadowed-hover-tank": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20591?locale=en",
+    "unique": false,
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "techno-union-transport": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20421?locale=en",
+    "unique": false,
+    "text": "Shielded (When you play this unit, give a Shield token to it.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Shielded"
+    ]
+  },
+  "corporate-defense-shuttle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19766?locale=en",
+    "unique": false,
+    "text": "This unit can't attack.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "homestead-militia": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20036?locale=en",
+    "unique": false,
+    "text": "While you control 6 or more resources, this unit gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "bunker-defender": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20006?locale=en",
+    "unique": false,
+    "text": "While you control a Vehicle unit, this unit gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "flanking-fang-fighter": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20756?locale=en",
+    "unique": false,
+    "text": "While you control another Fighter unit, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Raid"
+    ]
+  },
+  "resistance-x-wing": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20706?locale=en",
+    "unique": false,
+    "text": "While this unit has a Pilot on it, it gets +1/+1.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "at-dp-occupier": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20286?locale=en",
+    "unique": false,
+    "text": "This unit costs 1 resource less to play for each damaged ground unit.\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "epicAction": "",
+    "keywords": [
+      "Overwhelm"
+    ]
+  },
+  "captain-tarkin--full-forward-assault": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20276?locale=en",
+    "unique": true,
+    "text": "Each friendly Vehicle unit gets +1/+0 and gains Overwhelm. (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "epicAction": "",
+    "keywords": [
+      "Overwhelm"
+    ]
+  },
+  "d-qar-cargo-frigate": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19731?locale=en",
+    "unique": false,
+    "text": "This unit gets –1/–0 for each damage on it.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "repair": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19846?locale=en",
+    "unique": false,
+    "text": "Heal 3 damage from a unit or base.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "diversion": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20616?locale=en",
+    "unique": false,
+    "text": "Give a unit Sentinel for this phase. (Units in its arena can't attack your non-Sentinel units or your base.)",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "coordinated-front": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20736?locale=en",
+    "unique": false,
+    "text": "You may give a ground unit +2/+2 for this phase.\nYou may give a space unit +2/+2 for this phase.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "dedicated-wingmen": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20741?locale=en",
+    "unique": false,
+    "text": "Create 2 X-Wing tokens.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "evasive-maneuver": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20781?locale=en",
+    "unique": false,
+    "text": "Exhaust a unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "echo-base-engineer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19691?locale=en",
+    "unique": false,
+    "text": "When Played: You may give a Shield token to a damaged Vehicle unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "cloaked-starviper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19806?locale=en",
+    "unique": false,
+    "text": "When Played: Give 2 Shield tokens to this unit.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "landing-shuttle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19786?locale=en",
+    "unique": false,
+    "text": "When Defeated: You may draw a card.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "quasar-tie-carrier": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20686?locale=en",
+    "unique": false,
+    "text": "On Attack: Create a TIE Fighter token.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "kijimi-patrollers": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19881?locale=en",
+    "unique": false,
+    "text": "When Played: Create a TIE Fighter token.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "general-draven--doing-what-must-be-done": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20056?locale=en",
+    "unique": true,
+    "text": "When Played/On Attack: Create an X-Wing token.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "veteran-fleet-officer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19966?locale=en",
+    "unique": false,
+    "text": "When Played: Create an X-Wing token.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "cr90-relief-runner": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19826?locale=en",
+    "unique": false,
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)\nWhen Defeated: Heal up to 3 damage from a unit or base.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Restore"
+    ]
+  },
+  "insurgent-saboteurs": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20311?locale=en",
+    "unique": false,
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nOn Attack: You may defeat an upgrade.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Saboteur"
+    ]
+  },
+  "supporting-eta-2": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20271?locale=en",
+    "unique": false,
+    "text": "On Attack: You may give a ground unit +2/+0 for this phase.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "captain-phasma--on-my-command": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19911?locale=en",
+    "unique": true,
+    "text": "When Played/On Attack: You may give another First Order unit +2/+2 for this phase.",
+    "rules": "",
+    "epicAction": "",
+    "keywords": []
+  },
+  "wing-guard-security-team": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19831?locale=en",
+    "unique": false,
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\nWhen Played: Give a Shield token to each of up to 2 Fringe units.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": [
+      "Sentinel"
+    ]
+  },
+  "relentless-firespray": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20256?locale=en",
+    "unique": false,
+    "text": "On Attack: Ready this unit. Use this ability only once each round.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "sith-trooper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20661?locale=en",
+    "unique": false,
+    "text": "On Attack: This unit gets +1/+0 for this attack for each damaged unit the defending player controls.",
+    "rules": null,
+    "epicAction": "",
+    "keywords": []
+  },
+  "red-leader--form-up": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19976?locale=en",
+    "unique": true,
+    "text": "This unit costs 1 resource less to play for each friendly Pilot unit and upgrade.\nWhen a Pilot upgrade attaches to this unit: Create an X-Wing token.",
+    "rules": "Red Leader's cost only gets reduced for Pilot units and Pilot upgrades.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "in-the-heat-of-battle": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19856?locale=en",
+    "unique": false,
+    "text": "Each unit gains Sentinel and loses Saboteur for this phase.",
+    "rules": "Events only affect units that are in play when the event is played, unless specified otherwise.\n",
+    "epicAction": "",
+    "officialRules": "Events only affect units that are in play when the event is played, unless specified otherwise.\nAffected units can't gain Saboteur for this phase.\n",
+    "keywords": [
+      "Sentinel",
+      "Saboteur"
+    ]
+  },
+  "there-is-no-escape": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20691?locale=en",
+    "unique": false,
+    "text": "Choose up to 3 units. Those units lose all abilities and can't gain abilities for this round.",
+    "rules": null,
+    "epicAction": "",
+    "officialRules": "(ERRATA) Templating update: “Lose all abilities and can't gain abilities” becomes “lose all abilities”.\n",
+    "keywords": []
+  },
+  "power-from-pain": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19681?locale=en",
+    "unique": false,
+    "text": "Give a unit +1/+0 for this phase for each damage on it.",
+    "rules": "The unit gets +1/+0 only for the damage on it when this event is played.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "fight-fire-with-fire": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20336?locale=en",
+    "unique": false,
+    "text": "Choose a friendly unit and an enemy unit in the same arena. If you do, deal 3 damage to each of them.",
+    "rules": "If there aren't a friendly and enemy unit in the same arena to choose, deal no damage.\n",
+    "epicAction": "",
+    "keywords": []
+  },
+  "dagger-squadron-pilot": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20451?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [1 resource Cunning Heroism] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)",
+    "keywords": [
+      "Piloting"
+    ]
+  },
+  "determined-recruit": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20266?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [2 resources Aggression] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)",
+    "keywords": [
+      "Piloting"
+    ]
+  },
+  "hopeful-volunteer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20701?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [2 resources Heroism] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)",
+    "keywords": [
+      "Piloting"
+    ]
+  },
+  "indoctrinated-conscript": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20651?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [1 resource Villainy] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)",
+    "keywords": [
+      "Piloting"
+    ]
+  },
+  "sullustan-spacer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20746?locale=en",
+    "unique": false,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [1 resource] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)",
+    "keywords": [
+      "Piloting"
+    ]
+  },
+  "interceptor-ace": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19641?locale=en",
+    "unique": false,
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "rules": "Any ability whose trigger starts with \"When defeated…\" or includes \"When Defeated\" is considered a \"When Defeated\" ability.\nPilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [3 resources Vigilance Villainy] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nAttached unit gains Grit.",
+    "keywords": [
+      "Grit",
+      "Piloting"
+    ]
+  },
+  "ig-88--murderous-phlutdroid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20176?locale=en",
+    "unique": true,
+    "text": "While an enemy unit is damaged, this unit gets +3/+0.",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [2 resources Aggression Villainy] \nAttached unit gains: “While an enemy unit is damaged, this unit gets +3/+0.”",
+    "keywords": [
+      "Piloting"
+    ]
+  },
+  "bb-8--happy-beeps": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20196?locale=en",
+    "unique": true,
+    "text": "",
+    "rules": null,
+    "epicAction": "Piloting [1 resource Aggression Heroism] \nWhen played as an upgrade: You may pay 2 resources. If you do, ready a Resistance unit.",
+    "officialEpicAction": "Piloting [1 resource Aggression Heroism] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nWhen played as an upgrade: You may pay 2 resources. If you do, ready a Resistance unit.",
+    "officialRules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "keywords": [
+      "Piloting"
+    ]
+  },
+  "frisk--vanguard-loudmouth": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20211?locale=en",
+    "unique": true,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "epicAction": "Piloting [2 resources Aggression Heroism] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nWhen played as an upgrade: You may defeat an upgrade that costs 2 or less.",
+    "keywords": [
+      "Piloting"
+    ]
+  },
+  "tam-ryvora--searching-for-purpose": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19646?locale=en",
+    "unique": true,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [2 resources Vigilance Villainy] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nAttached unit gains: “On Attack: Give an enemy unit in this arena –1/–1 for this phase.”",
+    "keywords": [
+      "Piloting"
+    ]
+  },
+  "wingman-victor-two--mauler-mithel": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19891?locale=en",
+    "unique": true,
+    "text": "",
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [1 resource Command Villainy] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nWhen played as an upgrade: Create a TIE Fighter token.",
+    "keywords": [
+      "Piloting"
+    ]
+  },
+  "wingman-victor-three--backstabber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19901?locale=en",
+    "unique": true,
+    "text": "",
+    "rules": "(ERRATA) When played as an upgrade: You may give an Experience token to a unit other than the attached unit.\nPilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\n",
+    "epicAction": "Piloting [1 resource Command Villainy] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nWhen played as an upgrade: You may give an Experience token to another unit.",
+    "keywords": [
+      "Piloting"
+    ]
+  }
+}

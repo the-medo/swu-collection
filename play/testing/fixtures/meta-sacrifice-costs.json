@@ -1,0 +1,9 @@
+{
+  "director-krennic--amidst-my-achievement": {
+    "text": "Action [Exhaust, defeat a friendly unit]: Create a Credit token.",
+    "keywords": [],
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "When Deployed: Another friendly unit deals damage equal to its power to an enemy unit.",
+    "rules": null
+  }
+}

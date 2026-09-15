@@ -1,0 +1,628 @@
+{
+  "adept-of-anger": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27914?locale=en",
+    "unique": false,
+    "text": "Action [Exhaust, use the Force (lose your Force token)]: Exhaust a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "acclamator-assault-ship": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27554?locale=en",
+    "unique": false,
+    "text": "On Attack: You may give another unit +5/+5 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "always-two": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27234?locale=en",
+    "unique": false,
+    "text": "Choose 2 friendly <uq> Sith units. If you do, give 2 Shield tokens and 2 Experience tokens to each chosen unit. Defeat all other friendly units.",
+    "rules": null,
+    "keywords": []
+  },
+  "ataru-onslaught": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27894?locale=en",
+    "unique": false,
+    "text": "Ready a Force unit with 4 or less power.",
+    "rules": null,
+    "officialRules": "Abilities that refer to a card’s power include temporary modifiers.\n",
+    "keywords": []
+  },
+  "baylan-skoll--enigmatic-master": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27949?locale=en",
+    "unique": true,
+    "text": "Hidden\nWhen Played: You may use the Force. If you do, return a non-leader unit that costs 4 or less to its owner's hand. Then, its owner may play it for free.",
+    "rules": "\"Play for free\" ignores all resource costs, including the aspect penalty, but not other additional costs.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\nIf a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "caretaker-matron": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28239?locale=en",
+    "unique": false,
+    "text": "Action [Exhaust]: If you played a Force card this phase, draw a card.",
+    "rules": null,
+    "officialRules": "Caretaker Matron's ability can still be used as an action even if you haven't played a Force card this phase (but you don't draw a card).\n",
+    "keywords": []
+  },
+  "calm-in-the-storm": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27294?locale=en",
+    "unique": false,
+    "text": "Exhaust a friendly unit. If you do, give a Shield token and 2 Experience tokens to it.",
+    "rules": null,
+    "keywords": []
+  },
+  "cin-drallig--esteemed-blademaster": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27774?locale=en",
+    "unique": true,
+    "text": "When Played: You may play a Lightsaber upgrade from your hand for free on this unit. If you do, ready him.",
+    "rules": null,
+    "officialRules": "\"Play for free\" ignores all resource costs, including the aspect penalty, but not other additional costs.\n",
+    "keywords": []
+  },
+  "consumed-by-the-dark-side": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28219?locale=en",
+    "unique": false,
+    "text": "Give 2 Experience tokens to a unit, then deal 2 damage to it.",
+    "rules": null,
+    "keywords": []
+  },
+  "corrupted-saber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27959?locale=en",
+    "unique": false,
+    "text": "Attach to a non-Vehicle unit.\nIf attached unit is a Force unit, it gains: “On Attack: The defender gets –2/–0 for this attack.”",
+    "rules": null,
+    "officialRules": "(ERRATA) Templating update: “Defender” becomes “defending unit”.\n",
+    "keywords": []
+  },
+  "cure-wounds": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27399?locale=en",
+    "unique": false,
+    "text": "Use the Force (lose your Force token). If you do, heal 6 damage from a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "dagoyan-master": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27599?locale=en",
+    "unique": false,
+    "text": "When Played/When Defeated: You may use the Force (lose your Force token). If you do, search the top 5 cards of your deck for a Force unit, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "rules": null,
+    "officialRules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "darth-malak--covetous-apprentice": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28194?locale=en",
+    "unique": true,
+    "text": "Overwhelm\nWhen Played: If you control a Sith leader unit, you may ready this unit.",
+    "rules": "If the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "darth-sidious--the-phantom-menace": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27219?locale=en",
+    "unique": true,
+    "text": "Restore 2 \nWhen Played: You may use the Force. If you do, defeat each non-Sith unit with 3 or less remaining HP.",
+    "rules": null,
+    "officialText": "Restore 2 (When this unit attacks, heal 2 damage from your base.)\nWhen Played: You may use the Force. If you do, defeat each non-Sith unit with 3 or less remaining HP.",
+    "keywords": ["Restore"]
+  },
+  "death-field": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27729?locale=en",
+    "unique": false,
+    "text": "Deal 2 damage to each non-Vehicle enemy unit. If you control a Force unit, draw a card.",
+    "rules": null,
+    "keywords": []
+  },
+  "deceptive-shade": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27924?locale=en",
+    "unique": false,
+    "text": "When Defeated: The next unit you play this phase gains Ambush for this phase.",
+    "rules": null,
+    "officialRules": "Ambush is an ability that triggers at the same time as \"When Played\" abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": ["Ambush"]
+  },
+  "directed-by-the-force": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27639?locale=en",
+    "unique": false,
+    "text": "The Force is with you (create your Force token). You may play a unit from your hand (paying its cost).",
+    "rules": null,
+    "officialRules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\n",
+    "keywords": []
+  },
+  "disturbance-in-the-force": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28104?locale=en",
+    "unique": false,
+    "text": "If a friendly unit left play this phase, the Force is with you (create your Force token) and you may give a Shield token to a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "do-or-do-not": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27899?locale=en",
+    "unique": false,
+    "text": "You may use the Force . If you do, draw 2 cards. If you do not, draw a card.",
+    "rules": null,
+    "officialText": "You may use the Force (lose your Force token). If you do, draw 2 cards. If you do not, draw a card.",
+    "keywords": []
+  },
+  "dooku--it-is-too-late": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28079?locale=en",
+    "unique": true,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)\nWhen Played: Each friendly unit with Hidden can't be attacked for this phase.",
+    "rules": null,
+    "officialRules": "Dooku's \"When Played\" ability affects each friendly unit with Hidden, even if it entered play in a previous round.\nIf a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "drain-essence": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27229?locale=en",
+    "unique": false,
+    "text": "Deal 2 damage to a unit. The Force is with you (create your Force token).",
+    "rules": null,
+    "keywords": []
+  },
+  "drengir-spawn": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27454?locale=en",
+    "unique": false,
+    "text": "Overwhelm\nWhen this unit attacks and defeats a unit: Give a number of Experience tokens to this unit equal to the defeated unit's cost.",
+    "rules": null,
+    "officialRules": "A unit \"attacks and defeats a unit\" if it defeats the defender at any point during the attack.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "dume--redeem-the-future": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27299?locale=en",
+    "unique": true,
+    "text": "When the regroup phase starts: Give an Experience token to each other friendly non-Vehicle unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "eeth-koth--spiritual-warrior": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27509?locale=en",
+    "unique": true,
+    "text": "When Defeated: You may use the Force. If you do, put this card into play as a resource.",
+    "rules": null,
+    "officialRules": "A card put into play as a resource enters play exhausted.\n(ERRATA) Templating update: “Put into play as a resource” becomes “resource”.\n",
+    "keywords": []
+  },
+  "eighth-brother--hunt-together": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27459?locale=en",
+    "unique": true,
+    "text": "Ambush (When you play this unit, it may attack an enemy unit.)\nWhen you play another unit: You may use the Force (lose your Force token). If you do, give a unit +2/+2 for this phase.",
+    "rules": null,
+    "officialRules": "Ambush is an ability that triggers at the same time as \"When Played\" abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "keywords": ["Ambush"]
+  },
+  "flight-of-the-inquisitor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28224?locale=en",
+    "unique": false,
+    "text": "You may return a Force unit and a Lightsaber upgrade from your discard pile to your hand.",
+    "rules": null,
+    "keywords": []
+  },
+  "focus-determines-reality": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27784?locale=en",
+    "unique": false,
+    "text": "Each friendly Force unit gains Raid 1 and Saboteur for this phase.",
+    "rules": null,
+    "keywords": ["Raid", "Saboteur"]
+  },
+  "force-slow": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28109?locale=en",
+    "unique": false,
+    "text": "Give an exhausted unit –8/–0 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "force-speed": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28049?locale=en",
+    "unique": false,
+    "text": "Attack with a unit. For this attack, it gains: “On Attack: Return any number of non-<uq> (non-unique) upgrades attached to the defender to their owners' hands.”",
+    "rules": null,
+    "officialRules": "If you play Forse Speed, you must attack with a unit, if able. Units must be ready in order to attack.\n(ERRATA) Templating update: “Defender” becomes “defending unit”.\n",
+    "keywords": []
+  },
+  "go-into-hiding": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28334?locale=en",
+    "unique": false,
+    "text": "Choose a unit. It can't be attacked this phase (unless it has Sentinel).",
+    "rules": null,
+    "officialRules": "If a unit that can't be attacked gains Sentinel, it can be attacked.\n",
+    "keywords": []
+  },
+  "heavy-blaster-cannon": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27879?locale=en",
+    "unique": false,
+    "text": "Attach to a non-Vehicle unit.\nWhen Played: You may deal 1 damage to a ground unit. Then, deal 1 damage to the same unit. Then, deal 1 damage to the same unit.",
+    "rules": null,
+    "officialRules": "Heavy Blaster Cannon’s When Played ability deals 3 instances of damage. If all instances of damage are dealt to a unit with a Shield token, the Shield will only prevent the first damage.\n",
+    "keywords": []
+  },
+  "heavy-missile-gunship": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27694?locale=en",
+    "unique": false,
+    "text": "Action [Exhaust]: Deal 2 damage to a ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "hk-87-assassin-droid": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28199?locale=en",
+    "unique": false,
+    "text": "When Defeated: Deal 2 damage to each ground unit.",
+    "rules": "All damage dealt by HK-87 Assassin Droid's \"When Defeated\" ability is dealt simultaneously.\n",
+    "keywords": []
+  },
+  "hyena-bomber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27814?locale=en",
+    "unique": false,
+    "text": "When Played: If you control another Aggression unit, you may deal 2 damage to a ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "impossible-escape": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28114?locale=en",
+    "unique": false,
+    "text": "You may either exhaust a friendly unit or use the Force (lose your Force token). If you do either, exhaust an enemy unit and draw a card.",
+    "rules": null,
+    "keywords": []
+  },
+  "in-the-shadows": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28229?locale=en",
+    "unique": false,
+    "text": "Give an Experience token to each of up to 3 friendly units with Hidden.",
+    "rules": null,
+    "keywords": ["Hidden"]
+  },
+  "it-s-worse": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28344?locale=en",
+    "unique": false,
+    "text": "Defeat a non-leader unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "j-type-nubian-starship": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27994?locale=en",
+    "unique": false,
+    "text": "When Played: Draw a card.\nWhen Defeated: Discard a card from your hand.",
+    "rules": null,
+    "keywords": []
+  },
+  "jedi-holocron": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27279?locale=en",
+    "unique": false,
+    "text": "Attach to a Force unit. \nAttached unit gains: “On Attack: You may heal 3 damage from another unit.”",
+    "rules": null,
+    "keywords": []
+  },
+  "jedi-in-hiding": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27819?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)\nWhen Defeated: You may use the Force (lose your Force token). If you do, each opponent discards a card from their hand.",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "jedi-knight": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27749?locale=en",
+    "unique": false,
+    "text": "When Played: If you have the initiative, deal 2 damage to an enemy ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "jocasta-nu--the-gift-of-knowledge": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28264?locale=en",
+    "unique": true,
+    "text": "When Played: You may attach a friendly upgrade on a friendly unit to a different eligible unit.",
+    "rules": null,
+    "officialRules": "You can use Jocasta's ability to attach an upgrade to her.\n",
+    "keywords": []
+  },
+  "kaadu": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27594?locale=en",
+    "unique": false,
+    "text": "When Played: You may give another friendly unit Overwhelm for this phase. (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": null,
+    "officialRules": "If the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "last-words": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28339?locale=en",
+    "unique": false,
+    "text": "If a friendly unit was defeated this phase, give 2 Experience tokens to a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "lightsaber-throw": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27904?locale=en",
+    "unique": false,
+    "text": "Discard a Lightsaber card from your hand. If you do, deal 4 damage to a ground unit and draw a card.",
+    "rules": null,
+    "keywords": []
+  },
+  "lor-san-tekka--secret-keeper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27499?locale=en",
+    "unique": true,
+    "text": "When Defeated: You may give an Experience token to a <uq> (unique) unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "loth-cat": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28059?locale=en",
+    "unique": false,
+    "text": "When Played/When Defeated: You may exhaust a ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "luke-skywalker--a-hero-s-beginning": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28269?locale=en",
+    "unique": true,
+    "text": "When you play another <uq>  unit: You may use the Force . If you do, give an Experience token and a Shield token to this unit.",
+    "rules": null,
+    "officialText": "When you play another <uq> (unique) unit: You may use the Force (lose your Force token). If you do, give an Experience token and a Shield token to this unit.",
+    "keywords": []
+  },
+  "luthen-rael--masquerading-antiquarian": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27364?locale=en",
+    "unique": true,
+    "text": "On Attack: Search the top 5 cards of your deck for an Item upgrade, reveal it, and draw it. ",
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "officialText": "On Attack: Search the top 5 cards of your deck for an Item upgrade, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": []
+  },
+  "mace-windu--leaping-into-action": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27769?locale=en",
+    "unique": true,
+    "text": "Overwhelm \nWhen Played: You may use the Force . If you do, deal 4 damage to a unit.",
+    "rules": "If the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
+    "officialText": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhen Played: You may use the Force (lose your Force token). If you do, deal 4 damage to a unit.",
+    "keywords": ["Overwhelm"]
+  },
+  "medical-frigate": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28274?locale=en",
+    "unique": false,
+    "text": "On Attack: You may heal 2 damage from another unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "niman-strike": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27644?locale=en",
+    "unique": false,
+    "text": "Attack with a Force unit, even if it's exhausted. It gets +1/+0 and can't attack bases for this attack.",
+    "rules": null,
+    "officialRules": "If you play Niman Strike, you must attack with a unit, if able. \nUnits that can’t attack bases can still damage bases through other abilities, like Overwhelm.\n",
+    "keywords": []
+  },
+  "overpower": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27654?locale=en",
+    "unique": false,
+    "text": "Give a unit +3/+3 and Overwhelm for this phase. (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "rules": null,
+    "officialRules": "If the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "paladin-training-corvette": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27519?locale=en",
+    "unique": false,
+    "text": "When Played: You may give an Experience token to each of up to 3 Force units.",
+    "rules": null,
+    "keywords": []
+  },
+  "peli-motto--i-should-charge-you-more": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28314?locale=en",
+    "unique": true,
+    "text": "On Attack: Give an Experience token to a friendly Vehicle or Droid unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "pillio-star-compass": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27634?locale=en",
+    "unique": true,
+    "text": "Attach to a non-Vehicle unit.\nWhen Played: Search the top 3 cards of your deck for a unit, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order).",
+    "rules": null,
+    "officialRules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "point-rain-reclaimer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27484?locale=en",
+    "unique": false,
+    "text": "When Played: If you control a Jedi unit, you may give an Experience token to this unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "pounce": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28144?locale=en",
+    "unique": false,
+    "text": "Attack with a Creature unit. It gets +4/+0 for this attack.",
+    "rules": null,
+    "officialRules": "If you play Pounce, you must attack with a Creature unit, if able. Units must be ready in order to attack.\n",
+    "keywords": []
+  },
+  "priestesses-of-the-force--eternal": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27384?locale=en",
+    "unique": true,
+    "text": "When Played: You may use the Force (lose your Force token). If you do, give a Shield token to each of up to 5 units.",
+    "rules": null,
+    "keywords": []
+  },
+  "purge-trooper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27689?locale=en",
+    "unique": false,
+    "text": "When Played: You may deal 2 damage to a Force unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "quinlan-vos--dark-disciple": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27839?locale=en",
+    "unique": true,
+    "text": "On Attack: If this unit has 6 or more power, you may deal 2 damage to an enemy base.",
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n",
+    "keywords": []
+  },
+  "rampage": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27659?locale=en",
+    "unique": false,
+    "text": "Each friendly Creature unit gets +2/+2 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "ravening-gundark": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28319?locale=en",
+    "unique": false,
+    "text": "When Played: Deal 1 damage to a ground unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "refugee-of-the-path": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28234?locale=en",
+    "unique": false,
+    "text": "When Played: You may give a Shield token to a unit with Sentinel.",
+    "rules": null,
+    "keywords": ["Sentinel"]
+  },
+  "saesee-tiin--courageous-warrior": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27859?locale=en",
+    "unique": true,
+    "text": "When Played: If you have the initiative, deal 1 damage to each of up to 3 units.",
+    "rules": null,
+    "officialRules": "All damage dealt by Saesee Tiin's \"When Played\" ability is dealt simultaneously.\n",
+    "keywords": []
+  },
+  "savage-opress--imbued-with-hate": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27709?locale=en",
+    "unique": true,
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhen Played/When Defeated: You may use the Force (lose your Force token). If you don't, deal 9 damage to your base.",
+    "rules": null,
+    "officialRules": "If the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "scythe--intimidating-silhouette": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27699?locale=en",
+    "unique": true,
+    "text": "On Attack: You may give another friendly Inquisitor unit +2/+0 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "sifo-dyas--commissioning-an-army": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27609?locale=en",
+    "unique": true,
+    "text": "When Defeated: Search the top 8 cards of your deck for any number of Clone units with combined cost 4 or less and discard them. (Put the other cards on the bottom of your deck in a random order.) For this phase, you may play those cards from your discard pile for free.",
+    "rules": null,
+    "officialRules": "\"Play for free\" ignores all resource costs, including the aspect penalty, but not other additional costs.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "sith-holocron": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27714?locale=en",
+    "unique": false,
+    "text": "Attach to a Force unit.\nAttached unit gains: “On Attack: You may deal 2 damage to a friendly unit. If you do, this unit gets +2/+0 for this attack.”",
+    "rules": null,
+    "officialRules": "The attached unit can use Sith Holocron's ability to damage itself.\n",
+    "keywords": []
+  },
+  "sorcerous-blast": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27884?locale=en",
+    "unique": false,
+    "text": "Use the Force (lose your Force token). If you do, deal 3 damage to a unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "soresu-stance": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27404?locale=en",
+    "unique": false,
+    "text": "Play a Force unit from your hand (paying its cost) and give a Shield token to it.",
+    "rules": null,
+    "officialRules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\n",
+    "keywords": []
+  },
+  "stinger-mantis--where-are-we-going-": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28014?locale=en",
+    "unique": true,
+    "text": "When Played: You may deal 2 damage to an exhausted unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "t-6-shuttle-1974--stay-close": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27259?locale=en",
+    "unique": true,
+    "text": "When this unit is attacked (before damage is dealt): You may give an Experience token to this unit.",
+    "rules": null,
+    "officialRules": "\"When this unit is attacked\" triggers at the same time as \"On Attack\" abilities.\nOn Defense abilities trigger when this unit is chosen as the defender for an attack, in the same window as the attacker's On Attack abilities.\n",
+    "keywords": []
+  },
+  "tauntaun": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27344?locale=en",
+    "unique": false,
+    "text": "When Defeated: You may give a Shield token to a damaged non-Vehicle unit.",
+    "rules": null,
+    "keywords": []
+  },
+  "the-burden-of-masters": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27649?locale=en",
+    "unique": false,
+    "text": "Put a Force unit from your discard pile on the bottom of your deck. If you do, play a unit from your hand and give 2 Experience tokens to it.",
+    "rules": null,
+    "officialRules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\n",
+    "keywords": []
+  },
+  "the-daughter--embodiment-of-light": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28284?locale=en",
+    "unique": true,
+    "text": "When damage is dealt to your base: You may use the Force (lose your Force token). If you do, heal 2 damage from your base.",
+    "rules": null,
+    "keywords": []
+  },
+  "the-father--maintaining-balance": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28324?locale=en",
+    "unique": true,
+    "text": "When you use the Force: You may deal 1 damage to this unit. If you do, the Force is with you.",
+    "rules": null,
+    "officialRules": "The Father's ability triggers when you use the Force but only resolves after any current ability is finished resolving.\n",
+    "keywords": []
+  },
+  "three-lessons": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28149?locale=en",
+    "unique": false,
+    "text": "Play a unit from your hand (paying its cost). It gains Hidden for this phase. Give an Experience token and a Shield token to it.",
+    "rules": null,
+    "officialRules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nIf a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "unleash-rage": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27889?locale=en",
+    "unique": false,
+    "text": "Use the Force (lose your Force token). If you do, give a friendly unit +3/+0 for this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "vernestra-rwoh--precocious-knight": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27999?locale=en",
+    "unique": true,
+    "text": "When Played: You may use the Force . If you do, ready this unit.",
+    "rules": null,
+    "officialText": "When Played: You may use the Force (lose your Force token). If you do, ready this unit.",
+    "keywords": []
+  },
+  "watto--no-money--no-parts--no-deal": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27349?locale=en",
+    "unique": true,
+    "text": "On Attack: An opponent chooses one:\nYou give an Experience token to a friendly unit.\nYou draw a card.\n",
+    "rules": null,
+    "officialRules": "If there are multiple opponents, the controlling player chooses which one will be \"an opponent.\"\n",
+    "keywords": []
+  },
+  "whirlwind-of-power": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27414?locale=en",
+    "unique": false,
+    "text": "Give a unit –2/–2 for this phase. If you control a Force unit, give it –3/–3 instead.",
+    "rules": null,
+    "keywords": []
+  },
+  "youngling-padawan": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27989?locale=en",
+    "unique": false,
+    "text": "When Played: The Force is with you (create your Force token).",
+    "rules": null,
+    "keywords": []
+  },
+  "zuckuss--the-findsman": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28044?locale=en",
+    "unique": true,
+    "text": "On Attack: Name a card, then discard the top card of the defending player's deck. If a card with that name is discarded, this unit gets +4/+0 for this attack.",
+    "rules": null,
+    "officialRules": "Abilities that refer to a card’s \"name\" do not include the subtitle of the card.\n",
+    "keywords": []
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "profundity--we-fight-": {
+    "text": "Overwhelm\nWhen Played/When Defeated: Choose a player. They discard a card from their hand. Then, if they have more cards in their hand than you, they discard a card from their hand.",
+    "keywords": ["Overwhelm"],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20241?locale=en",
+    "officialText": "Overwhelm\nWhen Played/When Defeated: Choose a player. They discard a card from their hand. Then, if they have more cards in their hand than you, they discard a card from their hand.",
+    "officialTextStyled": "<p><strong>Overwhelm</strong></p><p><strong>When Played/When Defeated:</strong> Choose a player. They discard a card from their hand. Then, if they have more cards in their hand than you, they discard a card from their hand.</p>",
+    "officialRules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "inspector-s-shuttle": {
+    "text": "When Played: Name a card, then an opponent reveals their hand. For each copy of the named card in their hand, give an Experience token to this unit.",
+    "keywords": [],
+    "rules": "(ERRATA) When Played: Name a card, then an opponent reveals their hand. For each card with that name in their hand, give an Experience token to this unit.\nAbilities that refer to a card’s “name” do not include the subtitle of the card.\nIf there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40675?locale=en",
+    "officialText": "When Played: Name a card, then an opponent reveals their hand. For each copy of the named card in their hand, give an Experience token to this unit.",
+    "officialTextStyled": "<p><strong>When Played:</strong> Name a card, then an opponent reveals their hand. For each card with that name in their hand, give an Experience token to this unit.</p>",
+    "officialRules": "(ERRATA) When Played: Name a card, then an opponent reveals their hand. For each card with that name in their hand, give an Experience token to this unit.\nAbilities that refer to a card’s “name” do not include the subtitle of the card.\nIf there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n"
+  },
+  "reanimated-night-trooper": {
+    "text": "When Defeated: Look at the top card of a deck. You may discard it.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51907?locale=en",
+    "officialText": "When Defeated: Look at the top card of a deck. You may discard it.",
+    "officialTextStyled": "<p><strong>When Defeated:</strong> Look at the top card of a deck. You may discard it.</p>",
+    "officialRules": null
+  },
+  "luthen-s-haulcraft--countermeasures-armed": {
+    "text": "When Defeated: You may choose an opponent and disclose AggressionAggressionHeroism (reveal cards from your hand with these aspect icons among them). If you do, that opponent discards 2 cards from their hand.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40140?locale=en",
+    "officialText": "When Defeated: You may choose an opponent and disclose AggressionAggressionHeroism (reveal cards from your hand with these aspect icons among them). If you do, that opponent discards 2 cards from their hand.",
+    "officialTextStyled": "<p><strong>When Defeated:</strong> You may choose an opponent and disclose <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_aggression_847a987450.png\" alt=\"icon_aggression.png\"><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_aggression_847a987450.png\" alt=\"icon_aggression.png\"><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_heroism_895bfc1dc1.png\" alt=\"icon_heroism.png\"> <i>(reveal cards from your hand with these aspect icons among them)</i>. If you do, that opponent discards 2 cards from their hand.</p>",
+    "officialRules": null
+  },
+  "the-will-of-the-force": {
+    "text": "Return a non-leader unit to its owner's hand. You may use the Force (lose your Force token). If you do, that player discards a random card from their hand.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28159?locale=en",
+    "officialText": "Return a non-leader unit to its owner's hand. You may use the Force (lose your Force token). If you do, that player discards a random card from their hand.",
+    "officialTextStyled": "<p>Return a non-leader unit to its owner's hand. You may use the Force <i>(lose your Force token)</i>. If you do, that player discards a random card from their hand.</p>",
+    "officialRules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "boshek--charismatic-smuggler": {
+    "text": "",
+    "keywords": ["Piloting"],
+    "rules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAlways discard from the top of a deck, unless an ability specifies otherwise.\nZero is an even number.\n",
+    "epicAction": "Piloting [2 resources Cunning] (You may play this as an upgrade on a friendly Vehicle without a Pilot.)\nWhen played as an upgrade: Discard 2 cards from your deck. Return each of those cards with an odd cost to your hand.",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20546?locale=en",
+    "officialText": "",
+    "officialTextStyled": "",
+    "officialRules": "Pilots are considered units while not in play. If you use a \"play a unit\" ability, you may only play a Pilot as a unit. If you use a \"play an upgrade\" ability, you may only play a Pilot as an upgrade. If you use a \"play a card\" ability, you may do either.\nAbilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAlways discard from the top of a deck, unless an ability specifies otherwise.\nZero is an even number.\n"
+  },
+  "ebon-hawk--cause-and-effect": {
+    "text": "On Attack: You may disclose Heroism and/or Villainy. If you disclosed Heroism, this unit gets +2/+0 for this attack. If you disclosed Villainy, give the defender –4/–0 for this attack.",
+    "keywords": [],
+    "rules": "(ERRATA) Templating update: “Defender” becomes “defending unit”.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40470?locale=en",
+    "officialText": "On Attack: You may disclose Heroism and/or Villainy. If you disclosed Heroism, this unit gets +2/+0 for this attack. If you disclosed Villainy, give the defender –4/–0 for this attack.",
+    "officialTextStyled": "<p><strong>On Attack:</strong> You may disclose <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_heroism_895bfc1dc1.png\" alt=\"icon_heroism.png\"> and/or <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_villainy_ea34258f27.png\" alt=\"icon_villainy.png\">. If you disclosed <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_heroism_895bfc1dc1.png\" alt=\"icon_heroism.png\">, this unit gets +2/+0 for this attack. If you disclosed <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_villainy_ea34258f27.png\" alt=\"icon_villainy.png\">, give the defending unit –4/–0 for this attack.</p>",
+    "officialRules": "(ERRATA) Templating update: “Defender” becomes “defending unit”.\n"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "boba-fett--daimyo": {
+    "text": "When you play a unit that has 1 or more keywords: You may exhaust this leader. If you do, give a friendly unit +1/+0 for this phase.",
+    "keywords": [],
+    "rules": "A unit still has its keywords even if they don\u2019t have any effect, as long as another ability has not made it lose those keywords\nBoba\u2019s ability triggers if the played unit has a keyword upon entering play, so a unit with an active conditional keyword still triggers his ability.\n",
+    "epicAction": "Epic Action: If you control 6\u00a0or more resources, deploy this leader.",
+    "deployBox": "Each other friendly unit that has 1 or more keywords gets +1/+0.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7913?locale=en",
+    "officialRules": "A unit still has its keywords even if they don\u2019t have any effect, as long as another ability has not made it lose those keywords\nBoba\u2019s ability triggers if the played unit has a keyword upon entering play, so a unit with an active conditional keyword still triggers his ability.\n",
+    "officialTextStyled": "<p><strong>When you play a unit that has 1 or more keywords:</strong> You may exhaust this leader. If you do, give a friendly unit <strong>+1</strong>/<strong>+0</strong> for this phase.</p>",
+    "officialDeployBoxStyled": "<p>Each other friendly unit that has 1 or more <strong>keywords</strong> gets <strong>+1</strong>/<strong>+0</strong>.</p>"
+  },
+  "cad-bane--he-who-needs-no-introduction": {
+    "text": "When you play an Underworld card: You may exhaust this leader. If you do, an opponent chooses a unit they control. Deal 1 damage to it.",
+    "keywords": [
+      "Raid"
+    ],
+    "rules": "If there are multiple opponents, Can Bane\u2019s controller chooses which one will be \u201can opponent.\u201d\n",
+    "epicAction": "Epic Action: If you control 6\u00a0or more resources, deploy this leader.",
+    "deployBox": "Raid 2 (This unit gets +2/+0 while attacking.)\nWhen you play an Underworld card: You may choose an opponent. They choose a unit they control. Deal 2 damage to it. Use this ability only once each round.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/7933?locale=en",
+    "officialRules": "If there are multiple opponents, Can Bane\u2019s controller chooses which one will be \u201can opponent.\u201d\n",
+    "officialTextStyled": "<p><strong>When you play an </strong><i><strong>Underworld</strong></i><strong> card:</strong> You may exhaust this leader. If you do, an opponent chooses a unit they control. Deal 1 damage to it.</p>",
+    "officialDeployBoxStyled": "<p><strong>Raid 2</strong> <i>(This unit gets <strong>+2</strong>/<strong>+0</strong> while attacking.)</i></p><p><strong>When you play an </strong><i><strong>Underworld</strong></i><strong> card:</strong> You may choose an opponent. They choose a unit they control. Deal 2 damage to it. Use this ability only once each round.</p>"
+  },
+  "the-mandalorian--sworn-to-the-creed": {
+    "text": "When you play an upgrade: You may exhaust this leader. If you do, exhaust an enemy unit with 4 or less remaining HP.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6\u00a0or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
+    "deployBox": "When you play an upgrade: You may exhaust an enemy unit with 6 or less remaining HP.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/2755?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>When you play an upgrade: </strong>You may exhaust this leader. If you do, exhaust an enemy unit with <strong>4</strong> or less remaining HP.</p>",
+    "officialDeployBoxStyled": "<p><strong>When you play an upgrade:</strong> You may exhaust an enemy unit with <strong>6</strong> or less remaining HP.</p>"
+  },
+  "darth-revan--scourge-of-the-old-republic": {
+    "text": "When a friendly unit attacks and defeats a unit: You may exhaust this leader. If you do, give an Experience token to that friendly unit.",
+    "keywords": [
+      "Restore"
+    ],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Restore 1\nWhen a friendly unit attacks and defeats a unit: You may give an Experience token to that friendly unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27109?locale=en",
+    "officialRules": "A unit \"attacks and defeats a unit\" if it defeats the defender at any point during the attack.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn\u2019t need to survive for the ability to trigger unless the ability says otherwise. The unit isn\u2019t considered to be attacking when these abilities resolve.\n",
+    "officialTextStyled": "<p><strong>When a friendly unit's attack ends:</strong> If the defending unit was defeated, you may exhaust this leader. If you do, give an Experience token to that friendly unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>Restore 1</strong></p><p><strong>When a friendly unit's attack ends:</strong> If the defending unit was defeated, you may give an Experience token to that friendly unit.</p>"
+  },
+  "quinlan-vos--sticking-the-landing": {
+    "text": "When you play a unit: You may exhaust this leader. If you do, deal 1 damage to an enemy unit that costs the same as the played unit.",
+    "keywords": [],
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\n",
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "When you play a unit: You may deal 1 damage to an enemy unit that costs the same as or less than the played unit.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/14291?locale=en",
+    "officialRules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\n",
+    "officialTextStyled": "<p><strong>When you play a unit:</strong> You may exhaust this leader. If you do, deal 1 damage to an enemy unit that costs the same as the played unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>When you play a unit:</strong> You may deal 1 damage to an enemy unit that costs the same as or less than the played unit.</p>"
+  },
+  "darth-vader--unstoppable": {
+    "text": "Action [Exhaust, discard a card from your hand]: Deal 1 damage to a unit or base.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader.",
+    "deployBox": "On Attack: Discard any number of cards from your hand. Deal damage to a unit or base equal to the number of cards discarded this way.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46107?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, discard a card from your hand]:</strong> Deal 1 damage to a unit or base.</p>",
+    "officialDeployBoxStyled": "<p><strong>On Attack:</strong> Discard any number of cards from your hand. Deal damage to a unit or base equal to the number of cards discarded this way.</p>"
+  },
+  "lama-su--we-modified-their-genetics": {
+    "text": "Action [Exhaust]: Play an upgrade from your hand on a friendly non-Vehicle unit. It costs 1 resource less. If you do, deal 1 damage to that unit.",
+    "keywords": [],
+    "rules": "When using Lama Su's leader ability, the damage is dealt to the unit before any triggered abilities resolve from playing the upgrade.\nA unit must survive an attack to trigger its \u201cwhen this unit completes an attack\u201d abilities.\n",
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "When this unit completes an attack (and survives): You may play an upgrade from your discard pile on a friendly non-Vehicle unit. It costs 1 resource less.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/39390?locale=en",
+    "officialRules": "When using Lama Su's leader ability, the damage is dealt to the unit before any triggered abilities resolve from playing the upgrade.\nA unit must survive an attack to trigger its \u201cwhen this unit completes an attack\u201d abilities.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn\u2019t need to survive for the ability to trigger unless the ability says otherwise. The unit isn\u2019t considered to be attacking when these abilities resolve.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>]:</strong> Play an upgrade from your hand on a friendly non-<strong><i>Vehicle</i></strong> unit. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less. If you do, deal 1 damage to that unit.</p>",
+    "officialDeployBoxStyled": "<p><strong>When Attack Ends:</strong> If this unit survived, you may play an upgrade from your discard pile on a friendly non-<strong><i>Vehicle</i></strong> unit. It costs <img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"> less.</p>"
+  },
+  "qui-gon-jinn--student-of-the-living-force": {
+    "text": "Action [Exhaust, use the Force (lose your Force token)]: Return a friendly non-leader unit to its owner's hand. Play a non-Villainy unit that costs less than the returned unit from your hand for free.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader.",
+    "deployBox": "When this unit completes an attack (and survives): You may return a friendly non-leader unit to its owner's hand. Play a non-Villainy unit that costs less than the returned unit from your hand for free.",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27104?locale=en",
+    "officialRules": "\"Play for free\" ignores all resource costs, including the aspect penalty, but not other additional costs.\nA unit must survive an attack to trigger its \"when this unit completes an attack\" abilities.\nAbilities that refer to a card\u2019s cost always refer to its printed cost, regardless of modifiers.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn\u2019t need to survive for the ability to trigger unless the ability says otherwise. The unit isn\u2019t considered to be attacking when these abilities resolve.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, use the Force</strong> <i>(lose your Force token)</i><strong>]:</strong> Return a friendly non-leader unit to its owner's hand. Play a non-<img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_villainy_ea34258f27.png\" alt=\"icon_villainy.png\"> unit that costs less than the returned unit from your hand for free.</p>",
+    "officialDeployBoxStyled": "<p><strong>When Attack Ends:</strong> If this unit survived, you may return a friendly non-leader unit to its owner's hand. Play a non-<img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_villainy_ea34258f27.png\" alt=\"icon_villainy.png\"> unit that costs less than the returned unit from your hand for free.</p>"
+  }
+}

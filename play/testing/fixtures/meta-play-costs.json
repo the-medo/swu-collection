@@ -1,0 +1,79 @@
+{
+  "kelleran-beq--the-sabered-hand": {
+    "text": "When Played: Search the top 7 cards of your deck for a unit, reveal it, and play it. It costs 3 resources less. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "old-daka--oldest-and-wisest": {
+    "text": "When Played: You may defeat a friendly Night unit not named Old Daka. Then, you may play that unit from your discard pile for free.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "salvage": {
+    "text": "Play a Vehicle unit from your discard pile (paying its cost). Then, deal 1 damage to it.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n"
+  },
+  "mastery": {
+    "text": "This upgrade costs 1 resource less to play on a <uq> unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "gnk-power-droid": {
+    "text": "On Attack: The next unit you play this phase costs 1 resource less.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "The cost discount from CNK Power Droid's \u201cOn Attack\u201d ability remains active even if it is defeated before you play another unit.\n"
+  },
+  "honor-bound-partisan": {
+    "text": "When Played: Deal 1 damage to a base.\nWhen Defeated: The next unit you play this phase costs 1 resource less.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "neel--the-cutest-boy": {
+    "text": "When Played/On Attack: The next unit you play this phase with 1 or less power enters play ready.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "(ERRATA) When Played/On Attack: The next unit you play this phase with 1 or less printed power enters play ready.\nOnce Neel's \u201cWhen Played/On Attack\u201d ability resolves, it remains active even if it is defeated before you play your next unit with 1 or less printed power.\n"
+  },
+  "director-krennic--on-the-verge-of-greatness": {
+    "text": "Shielded \nThe first unit you play each round that has a \u201cWhen Defeated\u201d ability costs 1 resource less.",
+    "keywords": ["Shielded"],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "admiral-piett--commanding-the-armada": {
+    "text": "Action [Exhaust]: Play a Capital Ship unit from your hand. It costs 1 resource less.",
+    "keywords": [],
+    "epicAction": "Epic Action: If you control 5 or more resources, deploy this leader.",
+    "deployBox": "Each Capital Ship unit you play costs 2 resources less.",
+    "rules": null
+  },
+  "data-vault": {
+    "text": "Your minimum deck size is increased by 10 cards.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "colossus": {
+    "text": "Draw 1 less card in your starting hand.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "If you choose to mulligan your hand, you still draw 1 less card in your mulligan hand.\n"
+  }
+}

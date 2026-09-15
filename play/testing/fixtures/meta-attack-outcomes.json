@@ -1,0 +1,49 @@
+{
+  "oggdo-bogdo--bogano-brute": {
+    "text": "This unit can't attack unless it's damaged.\nWhen this unit attacks and defeats a unit: Heal 2 damage from this unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "rancor-keeper": {
+    "text": "When a friendly unit is dealt damage and survives: Deal 1 damage to any number of bases. Use this ability only once each round.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "All damage dealt by Rancor Keeper's ability is dealt simultaneously.\n"
+  },
+  "first-light--threatening-elegance": {
+    "text": "Ambush\nWhen this unit attacks and defeats a unit: You may draw a card.\nPlot",
+    "keywords": [
+      "Ambush",
+      "Plot"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Ambush is an ability that triggers at the same time as \u201cWhen Played\u201d abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nA unit \"attacks and defeats a unit\" if it defeats the defender at any point during the attack.\n"
+  },
+  "hera-syndulla--renegade-general": {
+    "text": "When Attack Ends: If this unit dealt combat damage to a base, heal that much damage from your base.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "\u201cCombat damage\u201d is only the damage dealt during the \u201cEnd attack\u201d step of an attack.\nWhen Attack Ends abilities trigger at the same time as units deal combat damage. Hera does not need to survive the attack in order to heal damage from your base.\n"
+  },
+  "the-great-mothers--with-strange-magicks": {
+    "text": "Support\nWhen Attack Ends: If this unit dealt combat damage to 1 or more non-leader units, defeat those units.",
+    "keywords": [
+      "Support"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "\u201cCombat damage\u201d is only the damage dealt during the \u201cEnd attack\u201d step of an attack.\nWhen Attack Ends abilities trigger at the same time as units deal combat damage. The Great Mothers do not need to survive the attack in order to resolve defeat units, so long as they dealt combat damage to those units.\n"
+  },
+  "shin-hati-s-fiend-fighter--compact-and-agile": {
+    "text": "When Defeated: You may give 2 Advantage tokens to a unit. If this unit wasn't defeated by combat damage, you may give 3 Advantage tokens to that unit instead.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "\u201cCombat damage\u201d is only the damage dealt during the \u201cEnd attack\u201d step of an attack.\n"
+  }
+}

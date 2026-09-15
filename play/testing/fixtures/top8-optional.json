@@ -1,0 +1,26 @@
+{
+  "sebulba-s-podracer--taking-the-lead": {
+    "text": "When you discard a card from your deck: You may ready this unit. Use this ability only once each round.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46932?locale=en",
+    "officialText": "When you discard a card from your deck: You may ready this unit. Use this ability only once each round.",
+    "officialTextStyled": "<p><strong>When you discard a card from your deck:</strong> You may ready this unit. Use this ability only once each round.</p>",
+    "officialRules": null
+  },
+  "bothan-5--new-republic-prison-ship": {
+    "text": "When another friendly non-Vehicle unit is defeated: You may have this unit capture that unit from your discard pile. Use this ability only once each round.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": true,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52321?locale=en",
+    "officialText": "When another friendly non-Vehicle unit is defeated: You may have this unit capture that unit from your discard pile. Use this ability only once each round.",
+    "officialTextStyled": "<p><strong>When another friendly non-</strong><strong><i>Vehicle</i></strong> <strong>unit is defeated:</strong> You may have this unit capture that unit from your discard pile. Use this ability only once each round.</p>",
+    "officialRules": null
+  }
+}

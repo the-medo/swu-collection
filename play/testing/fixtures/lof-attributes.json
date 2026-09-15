@@ -1,0 +1,164 @@
+{
+  "adi-gallia--stern-and-focused": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27734?locale=en",
+    "unique": true,
+    "text": "When an opponent plays an event: Deal 1 damage to that player's base.",
+    "rules": null,
+    "keywords": []
+  },
+  "curious-flock": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28299?locale=en",
+    "unique": false,
+    "text": "When Played: Pay up to 6 resources. For each resource paid this way, give an Experience token to this unit.",
+    "rules": null,
+    "officialRules": "Curious Flock's \"When Played\" ability is not reduced by effects that reduce the cost of cards.\n",
+    "keywords": []
+  },
+  "infused-brawler": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27804?locale=en",
+    "unique": false,
+    "text": "When Played: You may use the Force . If you do, give 2 Experience tokens to this unit.\nWhen this unit completes an attack: Defeat an Experience token on it.",
+    "rules": "A unit must survive an attack to trigger its \"when this unit completes an attack\" abilities.\n",
+    "officialText": "When Played: You may use the Force (lose your Force token). If you do, give 2 Experience tokens to this unit.\nWhen this unit completes an attack: Defeat an Experience token on it.",
+    "officialRules": "A unit must survive an attack to trigger its \"when this unit completes an attack\" abilities.\nWhen Attack Ends abilities trigger when combat damage is dealt. The attacker doesn’t need to survive for the ability to trigger unless the ability says otherwise. The unit isn’t considered to be attacking when these abilities resolve.\n",
+    "keywords": []
+  },
+  "jedi-trials": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27284?locale=en",
+    "unique": false,
+    "text": "Attach to a Force unit.\nAttached unit gains: “On Attack: Give an Experience token to this unit.”\nWhile attached unit has 4 or more upgrades on it, it gains the Jedi trait.",
+    "rules": null,
+    "keywords": []
+  },
+  "kylo-ren-s-lightsaber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27224?locale=en",
+    "unique": true,
+    "text": "Attach to a non-Vehicle unit.\nIf attached unit is a Force unit, it gains: “This unit can't be exhausted by enemy card abilities.”",
+    "rules": null,
+    "keywords": []
+  },
+  "leia-organa--extraordinary": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27514?locale=en",
+    "unique": true,
+    "text": "While this unit is in the space arena, she can't ready and gains: “Action [use the Force]: Move this unit to the ground arena and give each friendly Heroism unit +2/+2 for this phase.”",
+    "rules": null,
+    "keywords": []
+  },
+  "malakili--loving-rancor-keeper": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27564?locale=en",
+    "unique": true,
+    "text": "The first Creature unit you play each phase costs 1 resource less.\nIf a friendly Creature unit would deal damage to a friendly unit, prevent that damage.",
+    "rules": "If an ability preceding \"if you do\" would deal damage to a friendly unit, but Malakili prevents that damage from being dealt to that unit, the effect following \"if you do\" still resolves.\n",
+    "keywords": []
+  },
+  "marchion-ro--eye-of-the-nihil": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27954?locale=en",
+    "unique": true,
+    "text": "Each friendly unit's Raid is doubled.",
+    "rules": null,
+    "officialRules": "Apply Marchion Ro's doubling ability as the last step of calculating a unit's Raid value. A unit with Raid 2 is considered to have Raid 4 while Marchion Ro is in play. If the unit then gains Raid 1, it is now considered to have Raid 6.\nIf multiple abilities double a unit's Raid (such as a player controlling Marchion Ro and a Cloned copy), both abilities apply and the Raid value is quadrupled.\n",
+    "keywords": [
+      "Raid"
+    ]
+  },
+  "mind-trick": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28034?locale=en",
+    "unique": false,
+    "text": "Exhaust any number of units with a combined power of 4 or less. If you control a Force unit, those units lose all abilities and can't gain abilities for this phase.",
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n",
+    "officialRules": "Abilities that refer to a card’s power include temporary modifiers.\n(ERRATA) Templating update: “Lose all abilities and can't gain abilities” becomes “lose all abilities”.\n",
+    "keywords": []
+  },
+  "nameless-terror": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27189?locale=en",
+    "unique": false,
+    "text": "When Played: You may exhaust a Force unit.\nOn Attack: Each enemy unit loses the Force trait for this phase.",
+    "rules": null,
+    "officialRules": "Units affected by Nameless Terror's \"On Attack\" ability can't gain the Force trait for this phase.\n",
+    "keywords": []
+  },
+  "mythosaur--folklore-awakened": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27389?locale=en",
+    "unique": true,
+    "text": "Shielded\nFriendly upgraded units can't be exhausted or returned to hand by enemy card abilities.\nFriendly leaders gain the Mandalorian trait.",
+    "rules": null,
+    "officialRules": "Friendly upgraded units can be exhausted by other game effects, such as when attacking.\nMythosaur gives friendly leaders, leader units, and leader upgrades the Mandalorian trait.\n",
+    "keywords": [
+      "Shielded"
+    ]
+  },
+  "paz-vizsla--unyielding-warrior": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27789?locale=en",
+    "unique": true,
+    "text": "This unit gets +2/+0 for each damage on him.",
+    "rules": null,
+    "keywords": []
+  },
+  "oppo-rancisis--ancient-councilor": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27549?locale=en",
+    "unique": true,
+    "text": "This unit gains Ambush while another friendly unit has Ambush. The same is true for Grit, Hidden, Overwhelm, Saboteur, Sentinel, and Shielded.\nThis unit gains Raid 2 while another friendly unit has Raid. The same is true for Restore.",
+    "rules": null,
+    "keywords": [
+      "Ambush",
+      "Grit",
+      "Hidden",
+      "Overwhelm",
+      "Saboteur",
+      "Sentinel",
+      "Shielded",
+      "Raid",
+      "Restore"
+    ]
+  },
+  "psychometry": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28119?locale=en",
+    "unique": false,
+    "text": "Choose another card in your discard pile. Search the top 5 cards of your deck for a card that shares a trait with the chosen card, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "rules": null,
+    "officialRules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n",
+    "keywords": []
+  },
+  "qui-gon-jinn-s-lightsaber": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28029?locale=en",
+    "unique": true,
+    "text": "Attach to a friendly non-Vehicle unit.\nWhen Played: If attached unit is Qui-Gon Jinn, you may exhaust any number of units with combined cost 6 or less.",
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "keywords": []
+  },
+  "second-sister--seeking-the-holocron": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27944?locale=en",
+    "unique": true,
+    "text": "On Attack: You may discard 2 cards from your deck. For each Force card discarded this way, ready a resource.",
+    "rules": null,
+    "officialRules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "keywords": []
+  },
+  "size-matters-not": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27304?locale=en",
+    "unique": false,
+    "text": "If you control a Force unit, this upgrade costs 1 resource less to play.\nAttached unit's printed power is considered to be 5 and its printed HP is considered to be 5.",
+    "rules": null,
+    "officialRules": "\"Printed power\" and \"printed HP\" refer to the numbers physically printed on the card. While Size Matters Not is attached to a unit, those numbers are both considered to be 5. These numbers can then be modified by other abilities and upgrades attached to that unit.\nIf multiple abilities or effects change the printed power or printed HP of a card, the most recent ability or effect to become active determines the card's printed values.\n",
+    "keywords": []
+  },
+  "vane---i-live-to-serve": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27434?locale=en",
+    "unique": true,
+    "text": "When Played/On Attack: You may defeat an Experience token on a friendly unit. If you do, give an Experience token to a friendly unit.",
+    "rules": null,
+    "officialRules": "You may choose to defeat an Experience token on and give an Experience token to the same unit.\n",
+    "keywords": []
+  },
+  "tusken-tracker": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28069?locale=en",
+    "unique": false,
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)\nWhen Played: Each enemy unit loses Hidden for this phase.",
+    "rules": null,
+    "officialRules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\nOnly units in play when Tusken Tracker's \"When Played\" ability resolves lose Hidden.\n",
+    "keywords": [
+      "Raid",
+      "Hidden"
+    ]
+  }
+}

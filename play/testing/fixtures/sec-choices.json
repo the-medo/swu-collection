@@ -1,0 +1,32 @@
+{
+  "aat-incinerator": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40220?locale=en",
+    "unique": false,
+    "text": "When Played: Deal 1 damage to each of up to 4 other ground units. If no friendly units were damaged by this ability, deal 2 damage to your base.",
+    "rules": null,
+    "keywords": []
+  },
+  "cikatro-vizago--business-is-what-matters": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40465?locale=en",
+    "unique": true,
+    "text": "On Attack: Reveal the top card of your deck. An opponent may pay 1 resource. If they don't, draw that card.",
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\nIf an opponent pays 1, put the revealed card facedown on top of your deck.\n",
+    "keywords": []
+  },
+  "elia-kane--false-convert": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40585?locale=en",
+    "unique": true,
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)\nWhen Played: Look at 3 enemy resources. You may defeat 1 of them. If you do, its controller puts the top card of their deck into play as a resource and readies it.",
+    "rules": null,
+    "keywords": [
+      "Raid"
+    ]
+  },
+  "hired-slicer": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/40475?locale=en",
+    "unique": false,
+    "text": "On Attack: Reveal the top 2 cards of a deck. If you do, you may exhaust a unit that shares a Trait with one of those cards. Put those cards on the bottom of that deck in a random order.",
+    "rules": null,
+    "keywords": []
+  }
+}

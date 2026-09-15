@@ -1,0 +1,18 @@
+{
+  "the-starhawk--prototype-battleship": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/19996?locale=en",
+    "unique": true,
+    "text": "Ambush\nWhile paying costs, you pay half as many resources, rounded up.",
+    "rules": "The Starhawk's ability applies to both the costs of cards and the costs of abilities.\nWhen paying a cost, you only need to pay resources up to half of the determined cost (rounded up) in order to consider the cost paid. This ability does not affect any non-resource costs.\nAmbush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "epicAction": "",
+    "keywords": ["Ambush"]
+  },
+  "jump-to-lightspeed": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/20631?locale=en",
+    "unique": false,
+    "text": "Return a friendly space unit and any number of non-leader upgrades on it to their owners' hands. The next time you play a copy of that unit this phase, you may play it for free.",
+    "rules": "Any upgrades on the unit not returned to their owners' hands are defeated.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n",
+    "epicAction": "",
+    "keywords": []
+  }
+}

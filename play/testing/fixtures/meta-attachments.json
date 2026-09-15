@@ -1,0 +1,41 @@
+{
+  "the-darksaber--icon-of-leadership": {
+    "text": "Attach to a <uq> non-Vehicle unit.\nAttached unit is a leader unit and gains the Mandalorian trait.\nAttached unit gains: \u201cWhile you are paying costs, this unit provides its aspect icons.\u201d",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "leia-s-disguise": {
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains the Underworld trait.\nWhen Played: If attached unit is Leia Organa, give a Shield token to a friendly unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "sabine-wren--i-learned-the-hard-way": {
+    "text": "Shielded (When you play this unit, give a Shield token to her.)\nWhen 1 or more upgrades attach to this unit (including from Shielded): You may exhaust a ground unit.",
+    "keywords": [
+      "Shielded"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "shuttle-st-149--under-krennic-s-authority": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\nWhen Played/When Defeated: You may take control of a token upgrade on a unit and attach it to a different eligible unit.",
+    "keywords": [
+      "Shielded"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "You can use Shuttle ST-149's ability to attach an upgrade to itself or attach its Shield to another unit.\n"
+  },
+  "zeb-orrelios--fists-work-every-time": {
+    "text": "When Played: Give 3 Advantage tokens to another unit.\nWhen a friendly upgrade is defeated: Deal 1 damage to a base.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  }
+}

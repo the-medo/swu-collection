@@ -1,0 +1,50 @@
+{
+  "at-attin-safety-droid": {
+    "text": "If your base would be dealt more than 4 damage, prevent all but 4 of that damage.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52032?locale=en",
+    "officialText": "If your base would be dealt more than 4 damage, prevent all but 4 of that damage.",
+    "officialTextStyled": "<p>If your base would be dealt more than 4 damage, prevent all but 4 of that damage.</p>",
+    "officialRules": null
+  },
+  "deadly-vulnerability": {
+    "text": "If attached unit would take damage, it takes twice as much damage instead.\nWhile attached unit is defending, the attacker loses Overwhelm.",
+    "keywords": ["Overwhelm"],
+    "rules": "While attached unit is defending, the attacking unit loses Overwhelm and can't gain Overwhelm.\n",
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52431?locale=en",
+    "officialText": "If attached unit would take damage, it takes twice as much damage instead.\nWhile attached unit is defending, the attacker loses Overwhelm.",
+    "officialTextStyled": "<p>If attached unit would take damage, it takes twice as much damage instead.</p><p>While attached unit is defending, the attacker loses <strong>Overwhelm</strong>.</p>",
+    "officialRules": "While attached unit is defending, the attacking unit loses Overwhelm and can't gain Overwhelm.\n"
+  },
+  "the-tragedy-of-plagueis": {
+    "text": "Choose a friendly unit. For this phase, it can't be defeated by having no remaining HP.\nAn opponent chooses a unit they control. Defeat that unit.",
+    "keywords": [],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27239?locale=en",
+    "officialText": "Choose a friendly unit. For this phase, it can't be defeated by having no remaining HP.\nAn opponent chooses a unit they control. Defeat that unit.",
+    "officialTextStyled": "<p>Choose a friendly unit. For this phase, it can't be defeated by having no remaining HP.</p><p>An opponent chooses a unit they control. Defeat that unit.</p>",
+    "officialRules": "If the chosen friendly unit is attacked by a unit with Overwhelm, there is no excess damage if the chosen unit is not defeated.\nIf there are multiple opponents, the controlling player chooses which one will be \"an opponent.\"\nThe chosen friendly unit can be assigned more damage than its remaining HP.\nThe chosen friendly unit is defeated passively as soon as the regroup phase starts if it has damage on it equal to or greater than its remaining HP.\n"
+  },
+  "shien-flurry": {
+    "text": "Play a Force unit from your hand (paying its cost). It gains Ambush for this phase. The next time it would be dealt damage this phase, prevent 2 of that damage.",
+    "keywords": ["Ambush"],
+    "rules": null,
+    "epicAction": "",
+    "deployBox": null,
+    "unique": false,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/28124?locale=en",
+    "officialText": "Play a Force unit from your hand (paying its cost). It gains Ambush for this phase. The next time it would be dealt damage this phase, prevent 2 of that damage.",
+    "officialTextStyled": "<p>Play a <strong><i>Force</i></strong> unit from your hand <i>(paying its cost)</i>. It gains <strong>Ambush</strong> for this phase. The next time it would be dealt damage this phase, prevent 2 of that damage.</p>",
+    "officialRules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nAmbush is an ability that triggers at the same time as \"When Played\" abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  }
+}

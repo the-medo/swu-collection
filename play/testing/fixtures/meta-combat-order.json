@@ -1,0 +1,28 @@
+{
+  "han-solo--has-his-moments": {
+    "text": "Ambush",
+    "keywords": [
+      "Ambush",
+      "Piloting"
+    ],
+    "epicAction": "Piloting [2 resources Cunning Heroism] \nWhen played as an upgrade: You may attack with attached unit. If it's the Millennium Falcon, it deals its combat damage before the defender.",
+    "deployBox": null,
+    "rules": null
+  },
+  "anakin-s-podracer--so-wizard-": {
+    "text": "Ambush\nWhile attacking, if no other units have attacked this phase, this unit deals combat damage before the defending unit.",
+    "keywords": [
+      "Ambush"
+    ],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": null
+  },
+  "hotshot-maneuver": {
+    "text": "Choose a friendly unit. For each of its “On Attack” abilities, deal 2 damage to a different enemy unit. Then, attack with the chosen unit.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "Each instance of 2 damage must be dealt to a different unit. All damage is dealt simultaneously.\nIf you play Hotshot Maneuvers, you must attack with a unit, if able. Units must be ready in order to attack.\n"
+  }
+}

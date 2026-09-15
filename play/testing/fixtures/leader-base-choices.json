@@ -1,0 +1,52 @@
+{
+  "mystic-monastery": {
+    "text": "Action: The Force is with you (create your Force token). Use this ability no more than 3 times each game.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27134?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action:</strong> The Force is with you <i>(create your Force token)</i>. Use this ability no more than 3 times each game.</p>"
+  },
+  "tomb-of-eilram": {
+    "text": "Action [exhaust a friendly unit]: The Force is with you (create your Force token).",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27164?locale=en",
+    "officialRules": null,
+    "officialTextStyled": "<p><strong>Action [exhaust a friendly unit]:</strong> The Force is with you <i>(create your Force token)</i>.</p>"
+  },
+  "temple-of-destruction": {
+    "text": "When a friendly unit deals 3 or more combat damage to an enemy base: The Force is with you (create your Force token).",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/27149?locale=en",
+    "officialRules": "\"Combat damage\" is only the damage dealt during the \"deal combat damage\" step of an attack.\n",
+    "officialTextStyled": "<p><strong>When a friendly unit deals 3 or more combat damage to an enemy base:</strong> The Force is with you <i>(create your Force token)</i>.</p>"
+  },
+  "citadel-research-center": {
+    "text": "Epic Action [1 resource]: Return a friendly resource to its owner's hand. If you do, resource the top card of your deck.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46197?locale=en",
+    "officialRules": "Resources enter play exhausted.\n",
+    "officialTextStyled": "<p><strong>Epic Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>]:</strong> Return a friendly resource to its owner's hand. If you do, resource the top card of your deck.</p>"
+  },
+  "shipbreaking-yard": {
+    "text": "Epic Action: Discard 3 cards from your deck. You may return a card discarded this way to the top of your deck.",
+    "keywords": [],
+    "rules": null,
+    "source": "https://admin.starwarsunlimited.com/api/card/details/46182?locale=en",
+    "officialRules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n",
+    "officialTextStyled": "<p><strong>Epic Action:</strong> Discard 3 cards from your deck. You may return a card discarded this way to the top of your deck.</p>"
+  },
+  "fennec-shand--ready-for-war": {
+    "text": "Action [1 resource, Exhaust, exhaust a friendly unit]: Play a unit from your hand (paying its cost). It enters play ready.",
+    "keywords": ["Saboteur"],
+    "rules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n",
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51692?locale=en",
+    "officialRules": "Abilities that let you play a card require you to pay that card\u2019s cost unless specified otherwise.\n",
+    "officialTextStyled": "<p><strong>Action [</strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_cost_1_6878a6fe98.png\" alt=\"icon_cost_1.png\"><strong>, </strong><img src=\"https://ffg-prod-uploads.s3.amazonaws.com/icon_exhaust_0c450d09d4.png\" alt=\"icon_exhaust.png\"><strong>, exhaust a friendly unit]:</strong> Play a unit from your hand <i>(paying its cost)</i>. It enters play ready.</p>",
+    "epicAction": "Epic Action: If you control 4 or more resources, deploy this leader.",
+    "deployBox": "Saboteur\nAction [1 resource, exhaust a friendly unit]: Play a unit from your hand. It enters play ready."
+  }
+}

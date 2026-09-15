@@ -1,0 +1,58 @@
+{
+  "the-conflict-within": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52122?locale=en",
+    "unique": false,
+    "text": "Attached unit gains: “When this unit readies: You may pay 3 resources. If you don't, exhaust this unit.”",
+    "rules": null,
+    "keywords": []
+  },
+  "baylan-skoll--fallen-jedi": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/51877?locale=en",
+    "unique": true,
+    "text": "Overwhelm\nWhen Played/When Attack Ends: If an enemy base was damaged this phase, give an Advantage token to a unit. If a friendly upgrade was defeated this phase, you may exhaust a unit.",
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nWhen Attack Ends abilities trigger at the same time as units deal combat damage. Baylan does not need to survive the attack in order to resolve his ability, so long as the other conditions are met.\n",
+    "keywords": ["Overwhelm"]
+  },
+  "captain-pellaeon--plotting-from-the-shadows": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52147?locale=en",
+    "unique": true,
+    "text": "While a leader unit has been defeated this phase, this unit gains Raid 3. (He gets +3/+0 while attacking.)",
+    "rules": null,
+    "keywords": ["Raid"]
+  },
+  "fateful-goodbye": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52735?locale=en",
+    "unique": false,
+    "text": "If a friendly unit left play this phase, distribute 3 Advantage tokens among friendly units. If a friendly leader unit left play this phase, distribute 5 Advantage tokens instead.",
+    "rules": null,
+    "keywords": []
+  },
+  "galvanized-leap": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52621?locale=en",
+    "unique": false,
+    "text": "Ready a unit that was damaged this phase.",
+    "rules": null,
+    "keywords": []
+  },
+  "greef-karga--introductions-are-in-order": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52276?locale=en",
+    "unique": true,
+    "text": "Action [1 resource, Exhaust]: If your base was attacked this phase, create a Mandalorian token.",
+    "rules": null,
+    "keywords": []
+  },
+  "kachirho-militia": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52481?locale=en",
+    "unique": false,
+    "text": "Hidden (This unit can't be attacked if it was played this phase.)\nWhen an enemy ground unit attacks your base: Ready this unit. Use this ability only once each round.",
+    "rules": "If a unit has Hidden and Sentinel at the same time, it can be attacked.\n",
+    "keywords": ["Hidden"]
+  },
+  "pit-droid-team": {
+    "source": "https://admin.starwarsunlimited.com/api/card/details/52057?locale=en",
+    "unique": false,
+    "text": "The first upgrade you play on another friendly unit each phase costs 1 resource less.",
+    "rules": null,
+    "keywords": []
+  }
+}

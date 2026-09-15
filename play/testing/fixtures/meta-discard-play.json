@@ -1,0 +1,9 @@
+{
+  "stolen-at-hauler": {
+    "text": "When Defeated: Choose an opponent. For this phase, they may play this unit from its owner's discard pile for free.",
+    "keywords": [],
+    "epicAction": "",
+    "deployBox": null,
+    "rules": "\u201cPlay for free\u201d ignores all resource costs, including the aspect penalty, but not other additional costs.\nAn opponent can't play Stolen AT-Hauler if they can't take an action to play it, such as if they have already taken the initiative or the unit is defeated during the regroup phase.\n"
+  }
+}
