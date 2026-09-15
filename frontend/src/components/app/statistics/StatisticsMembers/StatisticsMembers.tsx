@@ -52,7 +52,7 @@ const StatisticsMembers: React.FC<StatisticsMembersProps> = ({ teamId }) => {
           });
         });
 
-        const totalMatches = matches.length;
+        const totalMatches = matches.filter(match => match.result !== undefined).length;
         const winRate = totalMatches > 0 ? (wins / totalMatches) * 100 : 0;
         const totalGames = gameWins + gameLosses;
         const gameWinRate = totalGames > 0 ? (gameWins / totalGames) * 100 : 0;

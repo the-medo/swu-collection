@@ -2,22 +2,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import { AdminPage } from '@/components/app/admin/AdminPage';
 import { z } from 'zod';
 
-const adminPages: [string, ...string[]] = [
-  'metas',
-  'sets',
-  'tournament-groups',
-  'tournament-weekends',
-  'deck-thumbnails',
-  'pq-tools',
-  'special-actions',
-  'card-prices',
-  'variant-checker',
-  'preview-cards',
-  'tournament-results',
-] as const;
+import { adminPageIds } from '@/components/app/admin/adminNavigation';
 
 const searchParams = z.object({
-  page: z.enum([...adminPages]).default('metas'),
+  page: z.enum(adminPageIds).default('metas'),
   tournamentId: z.uuid().optional(),
   view: z.enum(['standings', 'rounds']).default('standings'),
   round: z.coerce.number().int().nonnegative().optional(),

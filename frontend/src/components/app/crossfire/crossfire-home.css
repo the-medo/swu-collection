@@ -1,0 +1,938 @@
+/* Crossfire's play desk lives inside the normal SWUBASE navigation and theme. */
+.cf-home {
+  --cf-home-accent: #167c79;
+  --cf-home-surface: hsl(var(--card));
+  --cf-home-soft: #eef6f5;
+  --cf-home-line: hsl(var(--border));
+  width: 100%;
+  padding: 20px 0;
+}
+.dark .cf-home {
+  --cf-home-accent: #7adbd1;
+  --cf-home-surface: #111c24;
+  --cf-home-soft: #15282e;
+  --cf-home-line: #29373d;
+}
+.cf-home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.25fr) minmax(270px, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+.cf-play-desk {
+  display: grid;
+  grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+  height: 590px;
+  border: 1px solid var(--cf-home-line);
+  border-radius: 14px;
+  background: var(--cf-home-surface);
+  overflow: hidden;
+}
+.cf-deck-picker {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  padding: 25px 20px 12px;
+  border-right: 1px solid var(--cf-home-line);
+  background: color-mix(in srgb, var(--cf-home-soft) 30%, var(--cf-home-surface));
+}
+.cf-home .cf-deck-picker h2 {
+  font-size: 21px;
+}
+.cf-deck-picker-heading {
+  flex-shrink: 0;
+}
+.cf-deck-search {
+  flex-shrink: 0;
+  margin: 20px 0 13px;
+}
+.cf-deck-search input {
+  font-size: 12px;
+  border-color: var(--cf-home-line);
+}
+.cf-deck-groups {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.cf-deck-group {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  min-height: 0;
+  border: 0;
+  border-top: 1px solid var(--cf-home-line);
+}
+.cf-deck-group[data-state='open'] {
+  flex: 1 1 0;
+}
+.cf-deck-group > h3 {
+  flex-shrink: 0;
+}
+.cf-deck-group > h3 > button {
+  height: 48px;
+  padding: 0 4px;
+  font-size: 13px;
+  text-decoration: none;
+}
+.cf-deck-group > h3 > button > svg {
+  width: 15px;
+  height: 15px;
+}
+.cf-deck-group > h3 > button[data-state='open'] {
+  color: var(--cf-home-accent);
+}
+.cf-deck-group > h3 > button[data-state='open'] > svg {
+  rotate: none;
+  transform: rotate(180deg);
+}
+.cf-deck-source-panel {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 3px 3px 10px;
+}
+.cf-deck-source-panel[data-state='closed'] {
+  display: none;
+}
+.cf-deck-results {
+  display: grid;
+  gap: 8px;
+}
+.cf-deck-row {
+  width: 100%;
+  min-width: 0;
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid var(--cf-home-line);
+  border-radius: 8px;
+  padding: 0 10px 0 0;
+  text-align: left;
+  background: var(--cf-home-surface);
+  transition:
+    border-color 120ms,
+    background 120ms;
+}
+.cf-deck-row:hover,
+.cf-deck-row[aria-pressed='true'] {
+  border-color: var(--cf-home-accent);
+  background: var(--cf-home-soft);
+}
+.cf-deck-row:disabled {
+  opacity: 0.6;
+}
+.cf-deck-row-copy {
+  min-width: 0;
+  padding: 10px 0;
+}
+.cf-deck-row-copy strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.cf-deck-row-copy > span {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-top: 3px;
+  font-size: 10px;
+  line-height: 1.45;
+  color: hsl(var(--muted-foreground));
+}
+.cf-deck-row-copy small {
+  display: block;
+  font-size: 10px;
+  margin-top: 6px;
+  color: hsl(var(--muted-foreground));
+  overflow-wrap: anywhere;
+}
+.cf-deck-row-check {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--cf-home-line);
+  border-radius: 50%;
+}
+.cf-deck-row[aria-pressed='true'] .cf-deck-row-check {
+  border-color: var(--cf-home-accent);
+  background: var(--cf-home-accent);
+  color: var(--cf-home-surface);
+}
+.cf-deck-art {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  container-type: size;
+  overflow: hidden;
+  background: var(--cf-home-soft);
+}
+.cf-deck-row .cf-deck-art {
+  width: 64px;
+  align-self: stretch;
+  border-radius: 7px 0 0 7px;
+}
+.cf-deck-art > img {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: max(190cqw, 180cqh);
+  max-width: none;
+  height: auto;
+  transform: translate(-50%, -16.5%);
+}
+.cf-deck-art-placeholder {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--cf-home-accent);
+  opacity: 0.3;
+}
+.cf-deck-message {
+  padding: 16px 7px;
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+}
+.cf-deck-message strong {
+  display: block;
+  color: hsl(var(--foreground));
+  margin-bottom: 6px;
+}
+.cf-deck-message button {
+  margin-top: 12px;
+}
+/* Separate sibling controls: previewing must not select a deck or nest buttons. */
+.cf-deck-option {
+  position: relative;
+  min-width: 0;
+}
+.cf-deck-option .cf-deck-row {
+  padding-right: 48px;
+}
+.cf-deck-preview-button {
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  transform: translateY(-50%);
+  color: hsl(var(--muted-foreground));
+}
+.cf-deck-preview {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 27px 24px 24px;
+}
+.cf-home-eyebrow {
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: hsl(var(--muted-foreground));
+}
+.cf-preview-deck {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cf-preview-deck .cf-selected-deck {
+  flex: 1;
+  min-width: 0;
+}
+.cf-selected-art {
+  position: relative;
+  width: min(42%, 145px);
+  height: 135px;
+  background: transparent;
+}
+.cf-selected-art > img {
+  width: max(130cqw, 150cqh);
+  opacity: 0.8;
+}
+.cf-selected-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, var(--cf-home-surface), transparent 24%),
+    linear-gradient(90deg, var(--cf-home-surface), transparent 65%),
+    linear-gradient(0deg, var(--cf-home-surface), transparent 85%);
+}
+.cf-selected-art .cf-deck-art-placeholder {
+  width: 74px;
+  height: 74px;
+}
+.cf-deck-launch {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.cf-deck-launch > * {
+  flex-shrink: 0;
+}
+.cf-deck-launch > .cf-launch-actions {
+  margin-top: auto;
+}
+.cf-selected-deck strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.cf-selected-deck small {
+  display: block;
+  margin-top: 5px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+.cf-deck-readiness {
+  font-size: 11px;
+}
+.cf-deck-ready {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cf-home-accent);
+}
+.cf-deck-ready svg {
+  flex-shrink: 0;
+}
+.cf-inline-settings {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.cf-match-length {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-top: 7px;
+  border: 1px solid var(--cf-home-line);
+  border-radius: 9px;
+  background: var(--cf-home-soft);
+}
+.cf-match-option {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: hsl(var(--muted-foreground));
+}
+.cf-match-option:has([data-state='checked']) {
+  background: var(--cf-home-accent);
+  color: var(--cf-home-surface);
+}
+.cf-match-option:has(:focus-visible) {
+  outline: 2px solid var(--cf-home-accent);
+  outline-offset: 3px;
+}
+.cf-match-option:has(:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.cf-format-description,
+.cf-setup-note {
+  font-size: 10px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+.cf-format-description {
+  margin-top: 6px;
+}
+.cf-visibility-options {
+  display: grid;
+  gap: 4px;
+}
+.cf-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 31px;
+  padding: 4px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.cf-setting-row:has(:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.cf-create-invitation {
+  flex-shrink: 0;
+  justify-content: space-between;
+  width: 100%;
+  height: 44px;
+  background: var(--cf-home-accent);
+  color: #fff;
+  font-size: 12px;
+}
+.dark .cf-create-invitation {
+  color: #102622;
+}
+.cf-create-invitation:hover {
+  background: color-mix(in srgb, var(--cf-home-accent) 85%, var(--cf-home-surface));
+}
+.cf-home-aside {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.cf-home-card {
+  border: 1px solid var(--cf-home-line);
+  border-radius: 14px;
+  background: var(--cf-home-surface);
+  padding: 23px;
+  min-width: 0;
+}
+.cf-resume-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cf-home-accent);
+}
+.cf-resume-label > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.cf-home .cf-resume-label h2 {
+  font: inherit;
+  font-size: 12px;
+}
+.cf-running-list {
+  max-height: 325px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.cf-resume-opponent {
+  font-size: 17px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.cf-resume-meta {
+  font-size: 11px;
+  color: hsl(var(--muted-foreground));
+  margin-top: 5px;
+}
+.cf-resume-button {
+  margin-top: 10px;
+  width: 100%;
+  justify-content: space-between;
+  background: var(--cf-home-soft);
+  border: 1px solid color-mix(in srgb, var(--cf-home-accent) 35%, transparent);
+  color: var(--cf-home-accent);
+}
+.cf-resume-button:hover {
+  background: color-mix(in srgb, var(--cf-home-accent) 12%, var(--cf-home-surface));
+}
+.cf-no-running {
+  padding: 23px 0 5px;
+  font-size: 13px;
+}
+.cf-no-running svg {
+  color: var(--cf-home-accent);
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+.cf-no-running small {
+  display: block;
+  color: hsl(var(--muted-foreground));
+  font-size: 11px;
+  margin-top: 6px;
+}
+.cf-home .cf-invitation-entry h2 {
+  font-size: 20px;
+  margin-top: 12px;
+}
+.cf-invitation-entry > p {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  margin-top: 9px;
+}
+.cf-invitation-entry form {
+  margin-top: 18px;
+}
+.cf-invitation-entry input,
+.cf-invitation-entry button {
+  font-size: 12px;
+}
+.cf-home-activity {
+  margin-top: 28px;
+}
+.cf-activity-tabs {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  height: auto;
+  border-bottom: 1px solid var(--cf-home-line);
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  gap: 22px;
+}
+.cf-activity-tabs > button {
+  gap: 8px;
+  padding: 13px 0;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  font-size: 12px;
+}
+.cf-activity-tabs > button[data-state='active'] {
+  color: var(--cf-home-accent);
+  background: transparent;
+  border-color: var(--cf-home-accent);
+  box-shadow: none;
+}
+.cf-activity-panel {
+  padding: 12px 0;
+}
+.cf-activity-panel article > div {
+  min-width: 0;
+}
+.cf-activity-panel article p {
+  overflow-wrap: anywhere;
+}
+.cf-activity-panel article > div:has(> a) {
+  flex-wrap: wrap;
+}
+.cf-home :is(button, a, [tabindex='0']):focus-visible {
+  outline: 2px solid var(--cf-home-accent);
+  outline-offset: 2px;
+}
+@media (max-width: 1180px) {
+  .cf-home-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cf-home-aside {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cf-play-desk {
+    height: 570px;
+  }
+  .cf-running-list {
+    max-height: 210px;
+  }
+}
+@media (max-width: 740px) {
+  .cf-home {
+    padding: 12px 0;
+  }
+  .cf-home-grid {
+    gap: 16px;
+  }
+  .cf-play-desk {
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cf-deck-picker {
+    height: 490px;
+    padding: 22px 16px 10px;
+    border-right: 0;
+    border-bottom: 1px solid var(--cf-home-line);
+  }
+  .cf-deck-preview {
+    min-height: 475px;
+    padding: 24px 20px 20px;
+  }
+  .cf-deck-launch {
+    overflow: visible;
+    height: auto;
+    gap: 14px;
+  }
+  .cf-home-aside {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .cf-home-card {
+    padding: 20px;
+  }
+  .cf-activity-tabs {
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .cf-activity-tabs > button {
+    width: 50%;
+    justify-content: center;
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-home *,
+  .cf-home *::before,
+  .cf-home *::after {
+    transition: none !important;
+  }
+}
+
+.cf-linked-deck {
+  flex-shrink: 0;
+  margin-bottom: 14px;
+}
+.cf-launch-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.cf-launch-actions > button {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  white-space: normal;
+  line-height: 1.2;
+  gap: 7px;
+  padding-inline: 10px;
+  font-size: 12px;
+}
+.cf-launch-actions .cf-deck-attention {
+  border: 1px solid #ea580c;
+  background: #f97316;
+  color: #241005;
+  font-weight: 650;
+}
+.cf-launch-actions .cf-deck-attention:hover {
+  background: #fb923c;
+}
+
+.cf-game-list,
+.cf-running-list {
+  display: grid;
+  gap: 10px;
+}
+.cf-running-list {
+  margin-top: 18px;
+}
+.cf-game-row {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  gap: 16px;
+  border: 1px solid var(--cf-home-line);
+  border-radius: 9px;
+  background: var(--cf-home-surface);
+  overflow: hidden;
+}
+.cf-game-artwork {
+  position: relative;
+  display: flex;
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 116px;
+  min-height: 100px;
+  overflow: hidden;
+}
+.cf-game-artwork .cf-deck-art {
+  width: 50%;
+}
+.cf-game-artwork .cf-deck-art > img {
+  width: 200px;
+}
+.cf-game-versus {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--cf-home-line);
+  background: var(--cf-home-surface);
+  color: var(--cf-home-accent);
+  font-size: 10px;
+}
+.cf-game-row-body {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 16px 13px 0;
+}
+.cf-game-row-body > div {
+  min-width: 0;
+}
+.cf-game-row-body > div:last-child {
+  flex-wrap: wrap;
+}
+.cf-running-list .cf-game-row {
+  gap: 10px;
+}
+.cf-running-list .cf-game-artwork {
+  width: 80px;
+}
+.cf-running-list .cf-game-row-body > div {
+  width: 100%;
+}
+.cf-running-list .cf-resume-opponent {
+  font-size: 14px;
+}
+.cf-report-row .cf-game-row-body {
+  display: grid;
+}
+@media (max-width: 740px) {
+  .cf-game-row {
+    gap: 10px;
+  }
+  .cf-game-artwork {
+    width: 80px;
+  }
+  .cf-game-row-body {
+    padding-right: 10px;
+    font-size: 13px;
+  }
+  .cf-game-row-body button,
+  .cf-game-row-body a {
+    font-size: 11px;
+  }
+}
+
+/* Match the homepage's section rhythm and corner treatment. */
+.cf-home {
+  padding: 0;
+}
+.cf-home-grid {
+  grid-template-columns: minmax(270px, 1fr) minmax(0, 2.25fr);
+  gap: 8px;
+}
+.cf-play-desk,
+.cf-home-card {
+  border-radius: var(--radius);
+  background: hsl(var(--card));
+  box-shadow: 0 1px 2px #0000000d;
+}
+.cf-home-card {
+  padding: 16px;
+}
+.cf-home-aside {
+  gap: 8px;
+}
+.cf-deck-picker {
+  padding: 16px 16px 8px;
+}
+.cf-deck-preview {
+  padding: 0;
+}
+.cf-deck-launch {
+  padding: 0 16px 16px;
+}
+.cf-preview-deck {
+  margin-right: -16px;
+  min-height: 160px;
+  gap: 0;
+}
+.cf-selected-art {
+  width: min(48%, 175px);
+  height: 160px;
+  align-self: flex-start;
+}
+.cf-selected-art > img {
+  width: max(130cqw, 145cqh);
+}
+.cf-selected-art::after {
+  background:
+    linear-gradient(90deg, var(--cf-home-surface), transparent 60%),
+    linear-gradient(0deg, var(--cf-home-surface), transparent 75%);
+}
+.cf-visibility-options {
+  gap: 1px;
+}
+.cf-setting-row {
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 27px;
+  padding: 3px 0;
+}
+.cf-inline-settings:disabled {
+  opacity: 0.8;
+}
+.cf-inline-settings:disabled .cf-setting-row {
+  opacity: 1;
+}
+.cf-running-games .cf-game-artwork {
+  width: 60px;
+  min-height: 52px;
+}
+.cf-running-games .cf-game-row {
+  gap: 8px;
+  padding: 8px 0;
+}
+.cf-running-games .cf-game-row-body {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.cf-running-games .cf-game-row-body > div {
+  flex: 1;
+  min-width: 0;
+}
+.cf-running-games .cf-resume-opponent {
+  font-size: 12px;
+}
+.cf-running-games .cf-resume-meta {
+  font-size: 10px;
+}
+.cf-running-games .cf-resume-button {
+  width: auto;
+  height: 28px;
+  margin: 0;
+  padding: 0 8px;
+  font-size: 11px;
+  gap: 4px;
+}
+.cf-home-activity-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+  align-items: start;
+}
+.cf-home-activity-grid .cf-activity-panel {
+  border: 0;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+}
+.cf-saved-activity .cf-game-row {
+  flex-wrap: wrap;
+}
+.cf-saved-activity .cf-game-artwork {
+  width: 70px;
+  min-height: 60px;
+}
+.cf-saved-activity .cf-game-row-body {
+  min-width: 150px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+.cf-lobby-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border: 1px solid hsl(var(--primary) / 0.5);
+  border-radius: var(--radius);
+  background: hsl(var(--primary) / 0.08);
+  font-size: 13px;
+}
+.cf-lobby-banner .cf-invite-portraits {
+  width: 160px;
+  flex-shrink: 0;
+}
+.cf-lobby-banner > div:nth-last-of-type(1) {
+  flex: 1;
+}
+.cf-lobby-banner p {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+}
+.cf-host-waiting {
+  min-height: 450px;
+}
+@media (max-width: 1150px) {
+  .cf-home-grid {
+    grid-template-columns: minmax(220px, 1fr) minmax(0, 2.7fr);
+  }
+}
+@media (max-width: 1000px) {
+  .cf-home-grid,
+  .cf-home-activity-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cf-home-aside {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    order: 2;
+  }
+}
+@media (max-width: 740px) {
+  .cf-home-aside {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cf-home {
+    padding: 0;
+  }
+  .cf-deck-launch {
+    padding: 0 16px 16px;
+  }
+  .cf-lobby-banner {
+    flex-wrap: wrap;
+  }
+}
+.dark .cf-home {
+  --cf-home-surface: hsl(var(--card));
+}
+.cf-saved-activity .cf-game-row {
+  align-items: flex-start;
+}
+.cf-saved-activity .cf-game-artwork {
+  height: 80px;
+  align-self: flex-start;
+}
+.cf-saved-activity .cf-game-row-body {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+.cf-saved-activity .cf-game-row-body > .flex {
+  flex-wrap: wrap;
+}
+.cf-saved-activity .cf-game-row-body p {
+  font-size: 12px;
+}
+.cf-home-aside #cf-practice-title {
+  font-size: 14px;
+}
+.cf-home-aside section:has(> #cf-practice-title) {
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.cf-home-aside section:has(> #cf-practice-title) .cf-game-artwork {
+  width: 65px;
+  height: 80px;
+  align-self: flex-start;
+}
+.cf-home-aside section:has(> #cf-practice-title) .cf-game-row {
+  align-items: flex-start;
+}
+.cf-home-aside section:has(> #cf-practice-title) .cf-game-row-body {
+  font-size: 12px;
+  gap: 6px;
+}

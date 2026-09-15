@@ -1,3 +1,4 @@
+import DeckPlayButton from './DeckPlayButton.tsx';
 import DeckLeaderBase from '@/components/app/decks/DeckContents/DeckLeaderBase.tsx';
 import DeckCards from '@/components/app/decks/DeckContents/DeckCards/DeckCards.tsx';
 import DeckInputCommand from '@/components/app/decks/DeckContents/DeckInputCommand/DeckInputCommand.tsx';
@@ -176,6 +177,11 @@ const DeckContents: React.FC<DeckContentsProps> = ({
                       <NavigationMenuItem>
                         <div className="w-full flex justify-center bg-background rounded-md">
                           <DeckImageButton deckId={deckId} />
+                        </div>
+                      </NavigationMenuItem>
+                      <NavigationMenuItem>
+                        <div className="w-full flex justify-center bg-background rounded-md">
+                          <DeckPlayButton deckId={deckId} />
                         </div>
                       </NavigationMenuItem>
                     </NavigationMenuList>

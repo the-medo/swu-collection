@@ -9,8 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { authClient, useSession } from '@/lib/auth-client.ts';
 import { getGameResultsWsUrl } from '@/lib/gameResultsWsUrl.ts';
 import { GameResult } from '../../../../../server/db/schema/game_result.ts';
-import { TeamMember } from '../../../../../server/db/schema/team_member.ts';
-import type { TeamDeckShortened } from '../../../../../server/routes/teams/_id/deck-map/get.ts';
+import type { GameResultsScope } from '../../../../../shared/types/game-results-realtime.ts';
 
 const GameResultsContext = createContext<StatisticsHistoryData | undefined>(undefined);
 const authCloseCodes = new Set([4401, 4403]);
@@ -20,8 +19,9 @@ interface GameResultsProviderProps {
   children: React.ReactNode;
 }
 
-interface GameResultUpsertedEvent {
+interface GameResultsEvent {
   type?: string;
+  scope?: GameResultsScope;
   data?: GameResult;
   meta?: {
     teamIds?: string[];
@@ -116,90 +116,29 @@ export const GameResultsProvider: React.FC<GameResultsProviderProps> = ({ teamId
       };
 
       ws.onmessage = event => {
-        let payload: GameResultUpsertedEvent | null = null;
+        let payload: GameResultsEvent | null = null;
 
         try {
-          payload = JSON.parse(String(event.data)) as GameResultUpsertedEvent;
+          payload = JSON.parse(String(event.data)) as GameResultsEvent;
         } catch {
           return;
         }
 
-        if (payload?.type !== 'game_result.upserted') {
-          return;
-        }
-
-        const eventUserId = payload.data?.userId;
-        const eventTeamIds = payload.meta?.teamIds ?? [];
-
-        const isRelevant = teamId ? eventTeamIds.includes(teamId) : eventUserId === currentUserId;
-
-        if (!isRelevant) {
-          return;
-        }
-
-        let shouldAddGame: boolean | undefined = true;
-
-        if (teamId) {
-          shouldAddGame = undefined;
-          const members = (queryClient.getQueryData(['team-members', teamId]) ??
-            []) as unknown as TeamMember[];
-          const deckOwner = members.find(member => member.userId === payload.data?.userId);
-          console.log({ deckOwner, autoAddDeck: deckOwner?.autoAddDeck });
-          if (deckOwner?.autoAddDeck) {
-            shouldAddGame = true;
-            queryClient.setQueryData(['team-deck-map', teamId], (oldData: TeamDeckShortened[]) => {
-              if (oldData.find(td => td.deckId === payload.data?.deckId)) {
-                console.log('Deck already in team-deck-map');
-                return oldData;
-              }
-              console.log('Adding deck to team-deck-map');
-              return [
-                ...oldData,
-                {
-                  deckId: payload.data?.deckId,
-                  addedAt: new Date().toISOString(),
-                },
-              ];
-            });
-          } else {
-            //if owner doesnt have "autoAddDeck", we need to check if it exists already
-            const teamDeckMap = queryClient.getQueryData([
-              'team-deck-map',
-              teamId,
-            ]) as TeamDeckShortened[];
-            if (teamDeckMap.find(td => td.deckId === payload.data?.deckId)) {
-              shouldAddGame = true;
-              console.log('Deck already in team-deck-map');
-            } else {
-              console.log('Deck not in team-deck-map, adding');
-            }
-          }
-          console.log({ deckOwner });
-          // if (payload.data?.userId)
-        }
-
-        if (shouldAddGame) {
-          const publicQueries = queryClient.getQueriesData({
-            queryKey: ['game-results', scopeId] as any,
-          });
-          publicQueries.forEach(([qk, _qd]: any) => {
-            const gameDate = payload.data?.createdAt;
-            if (
-              gameDate &&
-              (qk[2] === undefined || qk[3] === undefined || (qk[3] > gameDate && gameDate > qk[2]))
-            ) {
-              console.log('adding game to this QK:', qk);
-              queryClient.setQueryData(qk, (oldData: GameResult[]) => {
-                if (oldData.find(td => td.id === payload.data?.id)) {
-                  console.log('Game already in query data, skipping');
-                  return oldData;
-                }
-                console.log('Adding game to query data');
-                return [...oldData, payload.data];
-              });
-            }
-          });
-        }
+        const relevant =
+          payload?.type === 'game_results.connected' ||
+          (payload?.type === 'game_results.changed' &&
+            (teamId
+              ? payload.scope?.teamId === teamId
+              : payload.scope?.userId === currentUserId)) ||
+          (payload?.type === 'game_result.upserted' &&
+            (teamId
+              ? payload.meta?.teamIds?.includes(teamId)
+              : payload.data?.userId === currentUserId));
+        if (!relevant) return;
+        // Refetch through the account/team API so both Query and Dexie receive
+        // updates to existing rows (for example the final BO3 match outcome).
+        void queryClient.invalidateQueries({ queryKey: ['game-results', scopeId] });
+        if (teamId) void queryClient.invalidateQueries({ queryKey: ['team-deck-map', teamId] });
       };
 
       ws.onclose = async event => {

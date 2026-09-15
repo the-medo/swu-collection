@@ -3,9 +3,12 @@ import type {
   DiscordConfig,
   DiscordCreateMessagePayload,
   DiscordMessageResponse,
+  DiscordCreateForumPostPayload,
+  DiscordForumPostResponse,
 } from './types.ts';
 
 type SendDiscordChannelMessageInput = {
+  publish: boolean;
   channelId: string;
   payload: DiscordCreateMessagePayload;
   config?: DiscordConfig;
@@ -65,7 +68,50 @@ function getErrorMessage(operation: string, status: number, body: string) {
     : `Discord ${operation} failed: ${status}`;
 }
 
+/** Creates a forum post and its first message in one Discord request. */
+export async function sendDiscordForumPost({
+  channelId,
+  payload,
+  config = getDiscordConfig({ requireBotToken: true }),
+  fetchFn = fetch,
+}: {
+  channelId: string;
+  payload: DiscordCreateForumPostPayload;
+  config?: DiscordConfig;
+  fetchFn?: typeof fetch;
+}): Promise<DiscordForumPostResponse> {
+  if (!config.botToken) throw new Error('DISCORD_BOT_TOKEN is required for Discord API requests.');
+  const response = await fetchFn(
+    `${normalizeDiscordBaseUrl(config.apiBaseUrl)}/channels/${channelId}/threads`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bot ${config.botToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(15_000),
+    },
+  );
+  if (!response.ok) {
+    const body = await readResponseBody(response);
+    throw new DiscordApiError(
+      getErrorMessage('forum post', response.status, body),
+      response.status,
+      body,
+    );
+  }
+  const post = (await response.json()) as DiscordForumPostResponse;
+  if (
+    !post.id ||
+    post.type !== 11 ||
+    post.parent_id !== channelId ||
+    !post.message?.id ||
+    post.message.channel_id !== post.id
+  )
+    throw new Error('Invalid Discord forum post response');
+  return post;
+}
+
 export async function sendDiscordChannelMessage({
+  publish,
   channelId,
   payload,
   config = getDiscordConfig({ requireBotToken: true }),
@@ -84,6 +130,7 @@ export async function sendDiscordChannelMessage({
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(15_000),
     },
   );
 
@@ -97,6 +144,7 @@ export async function sendDiscordChannelMessage({
   }
 
   const message = (await response.json()) as DiscordMessageResponse;
+  if (!publish) return message;
 
   try {
     await crosspostDiscordChannelMessage({

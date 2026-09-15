@@ -15,6 +15,7 @@ const statement = {
   meta: ['create', 'update', 'delete'],
   statistics: ['compute'],
   admin: ['access'],
+  crossfire: ['access'],
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -43,3 +44,7 @@ export const admin = ac.newRole({
   admin: ['access'],
   ...adminAc.statements,
 });
+
+export const user = ac.newRole({});
+export const crossfire = ac.newRole({ crossfire: ['access'] });
+export const applicationRoles = { user, admin, moderator, organizer, crossfire };

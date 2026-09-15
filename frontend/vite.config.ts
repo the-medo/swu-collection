@@ -19,6 +19,15 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       proxy: {
+        ...(env.CROSSFIRE_PROXY_URL
+          ? {
+              '/api/ws/crossfire': {
+                target: env.CROSSFIRE_PROXY_URL,
+                changeOrigin: true,
+                ws: true,
+              },
+            }
+          : {}),
         '/api': {
           target: env.VITE_BACKEND_URL || 'http://127.0.0.1:3010',
           changeOrigin: true,

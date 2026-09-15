@@ -212,6 +212,7 @@ export async function sendTournamentStreamDiscordMessage({
           fetchFn,
         })
       : await sendDiscordChannelMessage({
+          publish: true,
           channelId: resolvedConfig.channelId,
           payload: messageData.payload,
           config: resolvedConfig,

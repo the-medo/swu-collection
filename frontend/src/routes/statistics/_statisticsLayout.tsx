@@ -1,15 +1,12 @@
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router';
 import StatisticsTabs from '@/components/app/statistics/StatisticsTabs/StatisticsTabs.tsx';
-import { useGetGameResults } from '@/api/game-results/useGetGameResults.ts';
-import { useSession } from '@/lib/auth-client.ts';
 import StatisticsFilters from '@/components/app/statistics/components/StatisticsFilters/StatisticsFilters.tsx';
 import { z } from 'zod';
 import { StatisticsSubpage } from '@/components/app/statistics/components/StatisticsSubpageTabs/StatisticsSubpageTabs.tsx';
 import { MatchupSort } from '@/components/app/statistics/components/SubpageMatchups/matchupLib.ts';
 import { emptyCardStatTableRow } from '@/components/app/statistics/components/SubpageCardStats/cardStatLib.ts';
 import { GameResultsProvider } from '@/components/app/statistics/GameResultsContext.tsx';
-import { useUserSetup } from '@/api/teams';
-import KarabastIntegrationGuide from '@/components/app/guides/KarabastIntegrationGuide.tsx';
+import SignInWrapper from '@/components/app/auth/SignInWrapper.tsx';
 import { MatchType } from '@/components/app/statistics/components/StatisticsFilters/MatchTypeSelector.tsx';
 import { matchResultStatsTableSortColumns } from '@/components/app/statistics/common/MatchResultStatsTable/matchResultStatsTableLib.ts';
 import { metaInfoArray } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
@@ -47,42 +44,20 @@ export const Route = createFileRoute('/statistics/_statisticsLayout')({
 function RouteComponent() {
   const { pathname } = useLocation();
   const activeTab = pathname.split('/').pop() || 'dashboard';
-  const { sDateRangeFrom, sDateRangeTo } = Route.useSearch();
-  const { data: userSetup } = useUserSetup();
-
-  const session = useSession();
-
-  const hasKarabastIntegration = userSetup?.integrations?.some(
-    integration => integration.integrationName === 'karabast' && !integration.revokedAt,
-  );
-
-  useGetGameResults({
-    dateFrom: sDateRangeFrom,
-    dateTo: sDateRangeTo,
-    enabled: !!session.data,
-    userId: session.data?.user.id,
-  });
-
   return (
     <div className="p-2 @container/full-stats-page">
-      <div className="flex flex-col items-start justify-between gap-2 mb-2 @[720px]/full-stats-page:flex-row @[720px]/full-stats-page:items-end">
-        <h3 className="mb-0!">Your statistics</h3>
-        {hasKarabastIntegration && (
+      <SignInWrapper text="Sign in to see your statistics">
+        <div className="flex flex-col items-start justify-between gap-2 mb-2 @[720px]/full-stats-page:flex-row @[720px]/full-stats-page:items-end">
+          <h3 className="mb-0!">Your statistics</h3>
           <div className="flex w-full min-w-0 gap-4 @[720px]/full-stats-page:w-auto">
             <StatisticsFilters />
           </div>
-        )}
-      </div>
-      {hasKarabastIntegration ? (
-        <>
-          <StatisticsTabs activeTab={activeTab} className="mb-4" />
-          <GameResultsProvider>
-            <Outlet />
-          </GameResultsProvider>
-        </>
-      ) : (
-        <KarabastIntegrationGuide />
-      )}
+        </div>
+        <StatisticsTabs activeTab={activeTab} className="mb-4" />
+        <GameResultsProvider>
+          <Outlet />
+        </GameResultsProvider>
+      </SignInWrapper>
     </div>
   );
 }

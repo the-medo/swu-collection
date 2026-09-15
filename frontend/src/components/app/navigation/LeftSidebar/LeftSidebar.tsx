@@ -1,3 +1,5 @@
+import { useLocation } from '@tanstack/react-router';
+import { useCrossfireInvitations } from '@/components/app/crossfire/invitationContext.ts';
 import {
   Book,
   BookCheck,
@@ -40,6 +42,7 @@ import {
 } from '@/components/ui/sidebar.tsx';
 import { Link, useMatch } from '@tanstack/react-router';
 import SignIn from '@/components/app/auth/SignIn.tsx';
+import { useRole } from '@/hooks/useRole.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import NewCollectionDialog from '@/components/app/dialogs/NewCollectionDialog.tsx';
 import LogoLightTheme from '../../../../assets/logo-light-theme.svg';
@@ -56,6 +59,7 @@ import SidebarComparer from '../../comparer/SidebarComparer/SidebarComparer.tsx'
 import { Fragment, useMemo } from 'react';
 import { UserTeam } from '../../../../../../server/routes/teams/get.ts';
 import { Badge } from '@/components/ui/badge.tsx';
+import { CrossfireLogo } from '@/components/app/crossfire/CrossfireLogo.tsx';
 
 const getGroups = (
   setOpenMobile: (open: boolean) => void,
@@ -84,6 +88,13 @@ const getGroups = (
             url: '/tournaments/planetary-qualifiers',
           },
         ],
+      },
+      {
+        title: 'Crossfire',
+        url: '/crossfire',
+        icon: CrossfireLogo,
+        authenticated: true,
+        beta: true,
       },
       {
         title: 'Your decks',
@@ -231,6 +242,11 @@ const getGroups = (
 
 export function LeftSidebar() {
   const user = useUser();
+  const canCrossfire = useRole()('crossfire');
+  const isCrossfire = useLocation({
+    select: location => location.pathname.startsWith('/crossfire'),
+  });
+  const { count: invitationCount } = useCrossfireInvitations();
   const { theme } = useTheme();
   const { open, state, isMobile, setOpenMobile } = useSidebar();
   const teamMatch = useMatch({ from: '/teams/$teamId/', shouldThrow: false });
@@ -243,8 +259,12 @@ export function LeftSidebar() {
   const { data: teams } = useTeams();
 
   const groups = useMemo(
-    () => getGroups(setOpenMobile, state, teams ?? []),
-    [setOpenMobile, state, teams],
+    () =>
+      getGroups(setOpenMobile, state, teams ?? []).map(group => ({
+        ...group,
+        items: group.items.filter(item => item.url !== '/crossfire' || canCrossfire),
+      })),
+    [setOpenMobile, state, teams, canCrossfire],
   );
 
   const swubaseLogo = theme === 'light' ? LogoLightTheme : LogoDarkTheme;
@@ -292,7 +312,11 @@ export function LeftSidebar() {
             className={cn({ 'self-center': !isMobile, 'self-start pl-4': isMobile })}
             onClick={() => setOpenMobile(false)}
           >
-            {isMobile ? (
+            {isCrossfire && canCrossfire ? (
+              <span aria-label="Crossfire">
+                <CrossfireLogo className={isMobile ? 'h-8 w-16' : 'h-20 w-32'} />
+              </span>
+            ) : isMobile ? (
               <div className="w-full flex justify-between gap-4">
                 <img src={swubaseLogo} className="w-8 h-8" alt="Logo" />
                 <h3 className="mb-0">
@@ -367,6 +391,15 @@ export function LeftSidebar() {
                             >
                               <i.icon />
                               <span>{i.title}</span>
+                              {i.url === '/crossfire' && invitationCount > 0 && (
+                                <Badge
+                                  aria-label={`${invitationCount} Crossfire invitations`}
+                                  size="small"
+                                  className="ml-auto px-2"
+                                >
+                                  {invitationCount}
+                                </Badge>
+                              )}
                               {'beta' in i && i.beta && (
                                 <Badge size="small" className="text-xs px-2" variant="outline">
                                   Beta

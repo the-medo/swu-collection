@@ -54,9 +54,24 @@ export type DiscordEmbed = {
 };
 
 export type DiscordCreateMessagePayload = {
+  nonce?: string;
+  enforce_nonce?: boolean;
   content?: string;
   embeds?: DiscordEmbed[];
   allowed_mentions?: DiscordAllowedMentions;
+};
+
+// Forum starter messages support fewer fields than Create Message (no nonce).
+export type DiscordCreateForumPostPayload = {
+  name: string;
+  message: Pick<DiscordCreateMessagePayload, 'content' | 'embeds' | 'allowed_mentions'>;
+};
+
+export type DiscordForumPostResponse = {
+  id: string;
+  parent_id: string;
+  type: number;
+  message: DiscordMessageResponse;
 };
 
 export type DiscordNotificationPayload = DiscordCreateMessagePayload | Record<string, unknown>;

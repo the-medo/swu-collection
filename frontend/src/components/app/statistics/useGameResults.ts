@@ -1,3 +1,4 @@
+import { summarizeMatch } from './lib/summarizeMatch.ts';
 import { useSession } from '@/lib/auth-client.ts';
 import { useGetGameResults } from '@/api/game-results/useGetGameResults.ts';
 import { useMemo } from 'react';
@@ -179,32 +180,7 @@ export const useGameResults = (
       match.exclude = match.games.every(g => g.exclude);
       match.manuallyEdited = match.games.some(g => g.manuallyEdited);
 
-      const gameCount = match.games.length;
-      if (gameCount === 1) {
-        match.type = 'Bo1';
-      } else if (gameCount >= 2 && gameCount <= 3) {
-        match.type = 'Bo3';
-      } else {
-        match.type = 'other';
-      }
-
-      let wins = 0;
-      let losses = 0;
-      match.games.forEach(g => {
-        if (g.isWinner === true) wins++;
-        else if (g.isWinner === false) losses++;
-      });
-
-      match.finalWins = wins;
-      match.finalLosses = losses;
-
-      if (wins > losses) {
-        match.result = 3;
-      } else if (wins === losses) {
-        match.result = 1;
-      } else {
-        match.result = 0;
-      }
+      Object.assign(match, summarizeMatch(match.games));
 
       match.games.sort((a, b) => (a.gameNumber ?? 0) - (b.gameNumber ?? 0));
 

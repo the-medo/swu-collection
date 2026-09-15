@@ -41,7 +41,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ showWinLose = tru
         containsInTeam = true;
         if (match.id.startsWith('inTeam-')) {
           totalGames += match.games.length;
-          totalMatches++;
+          if (match.result !== undefined) totalMatches++;
         }
         return;
       } else {
@@ -52,14 +52,14 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ showWinLose = tru
       else if (match.result === 0) losses++;
 
       totalGames += match.games.length;
-      totalMatches++;
+      if (match.result !== undefined) totalMatches++;
       match.games.forEach(game => {
         if (game.isWinner === true) gameWins++;
         else if (game.isWinner === false) gameLosses++;
       });
     });
 
-    const winRate = matches.length > 0 ? (wins / matches.length) * 100 : 0;
+    const winRate = totalMatches > 0 ? (wins / totalMatches) * 100 : 0;
     const gameWinRate = totalGames > 0 ? (gameWins / totalGames) * 100 : 0;
 
     return {

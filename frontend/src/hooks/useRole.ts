@@ -1,3 +1,4 @@
+import { hasRole, type AppRole } from '../../../shared/lib/auth/roles';
 import { useCallback } from 'react';
 import { useUser } from '@/hooks/useUser.ts';
 
@@ -5,10 +6,10 @@ export function useRole() {
   const user = useUser();
 
   return useCallback(
-    (role: 'admin' | 'organizer' | 'moderator') => {
+    (role: AppRole) => {
       if (!user) return false;
-      return ((user.role ?? '').split(',') as ('admin' | 'organizer' | 'moderator')[]).includes(role);
+      return hasRole(user.role, role);
     },
-    [user?.role],
+    [user],
   );
 }

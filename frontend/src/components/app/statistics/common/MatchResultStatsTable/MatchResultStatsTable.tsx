@@ -105,7 +105,7 @@ const MatchResultStatsTable: React.FC<MatchResultStatsTableProps> = ({
         const entry = groups.get(key);
         if (!entry) return;
 
-        entry.totalMatches++;
+        if (match.result !== undefined) entry.totalMatches++;
 
         if (match.result === 3) entry.matchWins++;
         else if (match.result === 0) entry.matchLosses++;

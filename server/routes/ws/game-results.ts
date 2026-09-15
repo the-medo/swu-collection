@@ -1,3 +1,4 @@
+import { startGameResultNotifications } from '../../lib/ws/gameResultsNotifications.ts';
 import { Hono } from 'hono';
 import { upgradeWebSocket } from 'hono/bun';
 import type { AuthExtension } from '../../auth/auth.ts';
@@ -40,6 +41,7 @@ export const wsGameResultsRoute = new Hono<AuthExtension>().get('/', async c => 
   }
 
   const teamIds = await getUserTeamIdsForRealtime(user.id);
+  await startGameResultNotifications();
 
   return upgradeWebSocket(c, {
     onOpen(_event, ws) {

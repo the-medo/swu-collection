@@ -1,0 +1,49 @@
+import { lazy, Suspense, type ReactNode } from 'react';
+import { useGetDeck } from '@/api/decks/useGetDeck.ts';
+import Dialog from '@/components/app/global/Dialog.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import { useSetDeckInfo } from './DeckContents/useDeckInfoStore.ts';
+
+const DeckContents = lazy(() => import('./DeckContents/DeckContents.tsx'));
+
+// This subtree only mounts when the dialog opens; browsing rows loads metadata only.
+function Preview({ deckId }: { deckId: string }) {
+  const { data, error, loading } = useSetDeckInfo(deckId);
+  const query = useGetDeck(deckId);
+  if (error)
+    return (
+      <div role="alert" className="space-y-3 p-3">
+        <p>
+          {error.status === 404 ? 'This deck is no longer available.' : 'Could not load this deck.'}
+        </p>
+        <Button variant="outline" onClick={() => void query.refetch()}>
+          Try again
+        </Button>
+      </div>
+    );
+  if (!data || loading)
+    return (
+      <p role="status" className="p-3">
+        Loading decklist…
+      </p>
+    );
+  return (
+    <Suspense fallback={<p role="status">Loading decklist…</p>}>
+      <DeckContents deckId={deckId} compact />
+    </Suspense>
+  );
+}
+
+export default function DeckPreviewDialog({
+  deckId,
+  trigger,
+}: {
+  deckId: string;
+  trigger: ReactNode;
+}) {
+  return (
+    <Dialog trigger={trigger} header="Decklist" size="large" contentClassName="w-full">
+      <Preview deckId={deckId} />
+    </Dialog>
+  );
+}

@@ -1,3 +1,5 @@
+import { crossfireAccessRoute } from './admin/crossfire-access/index.ts';
+import { crossfireCardReleasesRoute } from './admin/crossfire-cards/index.ts';
 import { Hono } from 'hono';
 import { updateDeckInformationPostRoute } from './admin/special-actions/update-deck-information/post.ts';
 import { dailySnapshotPostRoute } from './admin/special-actions/daily-snapshot/post.ts';
@@ -19,6 +21,8 @@ import { adminTournamentIdStandingMovePostRoute } from './admin/tournaments/_id/
 import type { AuthExtension } from '../auth/auth.ts';
 
 export const adminRoute = new Hono<AuthExtension>()
+  .route('/crossfire-access', crossfireAccessRoute)
+  .route('/crossfire-cards', crossfireCardReleasesRoute)
   .route('/special-actions/update-deck-information', updateDeckInformationPostRoute)
   .route('/special-actions/daily-snapshot', dailySnapshotPostRoute)
   .route('/variant-checker/check-deleted-variants', checkDeletedVariantsGetRoute)

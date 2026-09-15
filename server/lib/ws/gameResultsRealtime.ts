@@ -1,3 +1,7 @@
+import type {
+  GameResultsChanged,
+  GameResultsScope,
+} from '../../../shared/types/game-results-realtime.ts';
 import type { WSContext } from 'hono/ws';
 import { db } from '../../db';
 import type { GameResult } from '../../db/schema/game_result.ts';
@@ -212,3 +216,25 @@ export const publishGameResultUpserts = async (results: GameResult[]) => {
     });
   });
 };
+
+/** Empty scope means a LISTEN reconnect gap: each socket refetches its own scope. */
+export function invalidateGameResultSockets(scope?: GameResultsScope) {
+  if (!scope) {
+    for (const [key, state] of socketStates) {
+      safeSend(
+        key,
+        JSON.stringify({ type: 'game_results.connected', data: { userId: state.userId } }),
+      );
+    }
+    return;
+  }
+  const keys = collectSocketKeysForRooms([
+    scope.userId ? userRoom(scope.userId) : teamRoom(scope.teamId!),
+  ]);
+  const event: GameResultsChanged = {
+    type: 'game_results.changed',
+    scope,
+  };
+  const payload = JSON.stringify(event);
+  for (const key of keys) safeSend(key, payload);
+}

@@ -51,6 +51,7 @@ import { Route as LimitedPublicIndexRouteImport } from './routes/limited/public/
 import { Route as DecksDeckIdIndexRouteImport } from './routes/decks/$deckId/index'
 import { Route as CollectionsCollectionIdIndexRouteImport } from './routes/collections/$collectionId/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedCrossfireIndexRouteImport } from './routes/_authenticated/crossfire/index'
 import { Route as TournamentsTournamentIdMetaRouteImport } from './routes/tournaments/$tournamentId/meta'
 import { Route as TournamentsTournamentIdMatchupsRouteImport } from './routes/tournaments/$tournamentId/matchups'
 import { Route as TournamentsTournamentIdDetailsRouteImport } from './routes/tournaments/$tournamentId/details'
@@ -58,6 +59,7 @@ import { Route as TournamentsTournamentIdDecksRouteImport } from './routes/tourn
 import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/tournaments/$tournamentId/card-stats'
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
+import { Route as AuthenticatedCrossfireLobbyIdRouteImport } from './routes/_authenticated/crossfire/$lobbyId'
 import { Route as TeamsTeamIdStatisticsIndexRouteImport } from './routes/teams/$teamId/statistics/index'
 import { Route as StatisticsStatisticsLayoutMetaIndexRouteImport } from './routes/statistics/_statisticsLayout/meta/index'
 import { Route as StatisticsStatisticsLayoutMatchupsIndexRouteImport } from './routes/statistics/_statisticsLayout/matchups/index'
@@ -67,6 +69,8 @@ import { Route as StatisticsStatisticsLayoutDecksIndexRouteImport } from './rout
 import { Route as StatisticsStatisticsLayoutDashboardIndexRouteImport } from './routes/statistics/_statisticsLayout/dashboard/index'
 import { Route as LimitedDeckDeckIdIndexRouteImport } from './routes/limited/deck/$deckId/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout'
+import { Route as AuthenticatedCrossfireReportsReportIdRouteImport } from './routes/_authenticated/crossfire/reports/$reportId'
+import { Route as AuthenticatedCrossfireReplayLobbyIdRouteImport } from './routes/_authenticated/crossfire/replay/$lobbyId'
 import { Route as LimitedPoolPoolIdDetailIndexRouteImport } from './routes/limited/pool/$poolId/detail/index'
 import { Route as AuthenticatedSettingsLinkKarabastIndexRouteImport } from './routes/_authenticated/settings/link/karabast/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutMetaIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/meta/index'
@@ -298,6 +302,12 @@ const AuthenticatedSettingsIndexRoute =
     path: '/settings/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCrossfireIndexRoute =
+  AuthenticatedCrossfireIndexRouteImport.update({
+    id: '/crossfire/',
+    path: '/crossfire/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const TournamentsTournamentIdMetaRoute =
   TournamentsTournamentIdMetaRouteImport.update({
     id: '/tournaments/$tournamentId/meta',
@@ -338,6 +348,12 @@ const CardsDetailCardIdRoute = CardsDetailCardIdRouteImport.update({
   path: '/cards/detail/$cardId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCrossfireLobbyIdRoute =
+  AuthenticatedCrossfireLobbyIdRouteImport.update({
+    id: '/crossfire/$lobbyId',
+    path: '/crossfire/$lobbyId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const TeamsTeamIdStatisticsIndexRoute =
   TeamsTeamIdStatisticsIndexRouteImport.update({
     id: '/',
@@ -389,6 +405,18 @@ const TeamsTeamIdStatisticsStatisticsLayoutRoute =
   TeamsTeamIdStatisticsStatisticsLayoutRouteImport.update({
     id: '/_statisticsLayout',
     getParentRoute: () => TeamsTeamIdStatisticsRoute,
+  } as any)
+const AuthenticatedCrossfireReportsReportIdRoute =
+  AuthenticatedCrossfireReportsReportIdRouteImport.update({
+    id: '/crossfire/reports/$reportId',
+    path: '/crossfire/reports/$reportId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCrossfireReplayLobbyIdRoute =
+  AuthenticatedCrossfireReplayLobbyIdRouteImport.update({
+    id: '/crossfire/replay/$lobbyId',
+    path: '/crossfire/replay/$lobbyId',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
 const LimitedPoolPoolIdDetailIndexRoute =
   LimitedPoolPoolIdDetailIndexRouteImport.update({
@@ -472,6 +500,7 @@ export interface FileRoutesByFullPath {
   '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
+  '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/tournaments/$tournamentId/card-stats': typeof TournamentsTournamentIdCardStatsRoute
@@ -479,6 +508,7 @@ export interface FileRoutesByFullPath {
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
+  '/crossfire': typeof AuthenticatedCrossfireIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
@@ -492,6 +522,8 @@ export interface FileRoutesByFullPath {
   '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
+  '/crossfire/replay/$lobbyId': typeof AuthenticatedCrossfireReplayLobbyIdRoute
+  '/crossfire/reports/$reportId': typeof AuthenticatedCrossfireReportsReportIdRoute
   '/teams/$teamId/statistics': typeof TeamsTeamIdStatisticsStatisticsLayoutRouteWithChildren
   '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
   '/statistics/dashboard': typeof StatisticsStatisticsLayoutDashboardIndexRoute
@@ -537,6 +569,7 @@ export interface FileRoutesByTo {
   '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
+  '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/tournaments/$tournamentId/card-stats': typeof TournamentsTournamentIdCardStatsRoute
@@ -544,6 +577,7 @@ export interface FileRoutesByTo {
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
+  '/crossfire': typeof AuthenticatedCrossfireIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
@@ -557,6 +591,8 @@ export interface FileRoutesByTo {
   '/tournaments/planetary-qualifiers': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId': typeof WantlistsWantlistIdIndexRoute
+  '/crossfire/replay/$lobbyId': typeof AuthenticatedCrossfireReplayLobbyIdRoute
+  '/crossfire/reports/$reportId': typeof AuthenticatedCrossfireReportsReportIdRoute
   '/teams/$teamId/statistics': typeof TeamsTeamIdStatisticsIndexRoute
   '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
   '/statistics/dashboard': typeof StatisticsStatisticsLayoutDashboardIndexRoute
@@ -605,6 +641,7 @@ export interface FileRoutesById {
   '/teams/': typeof TeamsIndexRoute
   '/tools/': typeof ToolsIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
+  '/_authenticated/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/tournaments/$tournamentId/card-stats': typeof TournamentsTournamentIdCardStatsRoute
@@ -612,6 +649,7 @@ export interface FileRoutesById {
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
+  '/_authenticated/crossfire/': typeof AuthenticatedCrossfireIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
@@ -625,6 +663,8 @@ export interface FileRoutesById {
   '/tournaments/planetary-qualifiers/': typeof TournamentsPlanetaryQualifiersIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/wantlists/$wantlistId/': typeof WantlistsWantlistIdIndexRoute
+  '/_authenticated/crossfire/replay/$lobbyId': typeof AuthenticatedCrossfireReplayLobbyIdRoute
+  '/_authenticated/crossfire/reports/$reportId': typeof AuthenticatedCrossfireReportsReportIdRoute
   '/teams/$teamId/statistics': typeof TeamsTeamIdStatisticsRouteWithChildren
   '/teams/$teamId/statistics/_statisticsLayout': typeof TeamsTeamIdStatisticsStatisticsLayoutRouteWithChildren
   '/limited/deck/$deckId/': typeof LimitedDeckDeckIdIndexRoute
@@ -674,6 +714,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tools'
     | '/tournaments'
+    | '/crossfire/$lobbyId'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/tournaments/$tournamentId/card-stats'
@@ -681,6 +722,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
+    | '/crossfire'
     | '/settings'
     | '/collections/$collectionId'
     | '/decks/$deckId'
@@ -694,6 +736,8 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
+    | '/crossfire/replay/$lobbyId'
+    | '/crossfire/reports/$reportId'
     | '/teams/$teamId/statistics'
     | '/limited/deck/$deckId'
     | '/statistics/dashboard'
@@ -739,6 +783,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tools'
     | '/tournaments'
+    | '/crossfire/$lobbyId'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/tournaments/$tournamentId/card-stats'
@@ -746,6 +791,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
+    | '/crossfire'
     | '/settings'
     | '/collections/$collectionId'
     | '/decks/$deckId'
@@ -759,6 +805,8 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers'
     | '/users/$userId'
     | '/wantlists/$wantlistId'
+    | '/crossfire/replay/$lobbyId'
+    | '/crossfire/reports/$reportId'
     | '/teams/$teamId/statistics'
     | '/limited/deck/$deckId'
     | '/statistics/dashboard'
@@ -806,6 +854,7 @@ export interface FileRouteTypes {
     | '/teams/'
     | '/tools/'
     | '/tournaments/'
+    | '/_authenticated/crossfire/$lobbyId'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/tournaments/$tournamentId/card-stats'
@@ -813,6 +862,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
+    | '/_authenticated/crossfire/'
     | '/_authenticated/settings/'
     | '/collections/$collectionId/'
     | '/decks/$deckId/'
@@ -826,6 +876,8 @@ export interface FileRouteTypes {
     | '/tournaments/planetary-qualifiers/'
     | '/users/$userId/'
     | '/wantlists/$wantlistId/'
+    | '/_authenticated/crossfire/replay/$lobbyId'
+    | '/_authenticated/crossfire/reports/$reportId'
     | '/teams/$teamId/statistics'
     | '/teams/$teamId/statistics/_statisticsLayout'
     | '/limited/deck/$deckId/'
@@ -1193,6 +1245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/crossfire/': {
+      id: '/_authenticated/crossfire/'
+      path: '/crossfire'
+      fullPath: '/crossfire'
+      preLoaderRoute: typeof AuthenticatedCrossfireIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/tournaments/$tournamentId/meta': {
       id: '/tournaments/$tournamentId/meta'
       path: '/tournaments/$tournamentId/meta'
@@ -1241,6 +1300,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/cards/detail/$cardId'
       preLoaderRoute: typeof CardsDetailCardIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/crossfire/$lobbyId': {
+      id: '/_authenticated/crossfire/$lobbyId'
+      path: '/crossfire/$lobbyId'
+      fullPath: '/crossfire/$lobbyId'
+      preLoaderRoute: typeof AuthenticatedCrossfireLobbyIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/teams/$teamId/statistics/': {
       id: '/teams/$teamId/statistics/'
@@ -1304,6 +1370,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/teams/$teamId/statistics'
       preLoaderRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutRouteImport
       parentRoute: typeof TeamsTeamIdStatisticsRoute
+    }
+    '/_authenticated/crossfire/reports/$reportId': {
+      id: '/_authenticated/crossfire/reports/$reportId'
+      path: '/crossfire/reports/$reportId'
+      fullPath: '/crossfire/reports/$reportId'
+      preLoaderRoute: typeof AuthenticatedCrossfireReportsReportIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/crossfire/replay/$lobbyId': {
+      id: '/_authenticated/crossfire/replay/$lobbyId'
+      path: '/crossfire/replay/$lobbyId'
+      fullPath: '/crossfire/replay/$lobbyId'
+      preLoaderRoute: typeof AuthenticatedCrossfireReplayLobbyIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/limited/pool/$poolId/detail/': {
       id: '/limited/pool/$poolId/detail/'
@@ -1373,13 +1453,23 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedCrossfireLobbyIdRoute: typeof AuthenticatedCrossfireLobbyIdRoute
+  AuthenticatedCrossfireIndexRoute: typeof AuthenticatedCrossfireIndexRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
+  AuthenticatedCrossfireReplayLobbyIdRoute: typeof AuthenticatedCrossfireReplayLobbyIdRoute
+  AuthenticatedCrossfireReportsReportIdRoute: typeof AuthenticatedCrossfireReportsReportIdRoute
   AuthenticatedSettingsLinkKarabastIndexRoute: typeof AuthenticatedSettingsLinkKarabastIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedCrossfireLobbyIdRoute: AuthenticatedCrossfireLobbyIdRoute,
+  AuthenticatedCrossfireIndexRoute: AuthenticatedCrossfireIndexRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
+  AuthenticatedCrossfireReplayLobbyIdRoute:
+    AuthenticatedCrossfireReplayLobbyIdRoute,
+  AuthenticatedCrossfireReportsReportIdRoute:
+    AuthenticatedCrossfireReportsReportIdRoute,
   AuthenticatedSettingsLinkKarabastIndexRoute:
     AuthenticatedSettingsLinkKarabastIndexRoute,
 }

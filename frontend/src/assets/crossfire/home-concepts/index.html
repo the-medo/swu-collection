@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crossfire home · Design options</title>
+    <link rel="stylesheet" href="mockups.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to page preview</a>
+    <header class="review-bar" aria-label="Design preview controls">
+      <div class="review-label">
+        <span class="review-dot"></span> HTML STUDIES
+        <span class="sample-label">Sample data · no live actions</span>
+      </div>
+      <nav class="concept-switch" aria-label="Choose a design">
+        <button data-concept="desk"><span>A</span> Play desk</button>
+        <button data-concept="room"><span>B</span> Play desk II</button>
+        <button data-concept="quick"><span>C</span> Quick start</button>
+      </nav>
+      <div class="review-tools">
+        <button id="empty-toggle" aria-pressed="false">Empty state</button>
+        <button id="theme-toggle" aria-label="Switch to light theme"></button>
+      </div>
+    </header>
+    <div id="app"></div>
+    <dialog id="modal" aria-labelledby="modal-title"></dialog>
+    <div class="toast" id="toast" role="status" hidden></div>
+    <script type="module" src="mockups.js"></script>
+  </body>
+</html>
