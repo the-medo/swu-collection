@@ -716,6 +716,20 @@ export function createGameServer(
     get connectionCount() {
       return clients.size;
     },
+    get statistics() {
+      let liveConnections = 0,
+        replayConnections = 0;
+      for (const client of clients) {
+        if (client.grant?.purpose === 'live') liveConnections++;
+        else if (client.grant?.purpose === 'replay') replayConnections++;
+      }
+      return {
+        connections: clients.size,
+        liveConnections,
+        replayConnections,
+        rooms: rooms.size,
+      };
+    },
     stop(): Promise<void> {
       if (stopping) return stopping;
       open = false;

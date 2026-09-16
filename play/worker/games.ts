@@ -58,6 +58,17 @@ export class GameWorker {
   get count() {
     return this.#entries.size;
   }
+  get statistics() {
+    const entries = [...this.#entries.values()];
+    return {
+      loadedGames: entries.filter(entry => entry.host !== undefined).length,
+      loadingGames: entries.filter(entry => entry.host === undefined).length,
+      attachedGames: entries.filter(entry => entry.references > 0).length,
+      busyGames: entries.filter(entry => entry.queued > 0).length,
+      queuedOperations: entries.reduce((total, entry) => total + entry.queued, 0),
+      capacity: this.#options.maxGames,
+    };
+  }
 
   async acquire(gameId: string): Promise<GameBinding> {
     z.string().min(1).max(128).parse(gameId);

@@ -45,6 +45,37 @@ and unrefs the listener, then awaits its own tracked operations and game leases
 instead of depending on Bun's socket counter. The fresh-process network test
 checks successful SIGTERM exit.
 
+## Operational telemetry
+
+The worker samples aggregate operational telemetry every 15 seconds and stores
+seven days in `play.worker_metrics`. In a container it reads Linux cgroup v2 (or
+v1) memory and cumulative CPU counters. The displayed memory working set removes
+reclaimable inactive-file cache while still including the replay thread,
+finalizer child and other processes in the worker container. CPU follows common
+container-tooling semantics: one fully occupied core is 100%. Host development
+deliberately reports process RSS/CPU instead of mislabeling a broader host cgroup
+as the Crossfire container. The supported worker image sets `CONTAINER=true` so
+compatible runtimes without Docker's `/.dockerenv` marker still use cgroup counters;
+custom container deployments must set the same variable.
+
+Each sample also records process RSS/heap, event-loop scheduling lag, total
+running games, games whose last accepted action was within two minutes, loaded/
+loading/attached/busy actors, queued actor operations, worker capacity, live and
+replay connections, rooms, ended games awaiting archival and finalized games
+awaiting statistics publication. Samples contain no game IDs, account data,
+commands, card data or authoritative state. The contributor-data sanitizer
+removes this table with every other `play` table.
+
+Admins can inspect the latest sample and 1/6/24-hour charts under
+**Administration → Crossfire → Operations**. The page refreshes every ten
+seconds and marks the worker offline when the newest sample is more than 45
+seconds old. It shows the current worker identity and breaks chart lines across
+worker restarts or missing samples; longer ranges retain the highest value in
+each display bucket so short resource/queue spikes remain visible. This is a
+process-liveness signal, not proof that PostgreSQL or every recoverable game is
+healthy. The dashboard follows the currently supported single-worker deployment;
+concurrent workers and routing between them remain unsupported.
+
 The [worktree launcher](../../scripts/worktree-dev/README.md) now allocates a
 separate loopback worker port and includes Crossfire in up/start/down/status/logs
 when enabled. Vite routes `/api/ws/crossfire/:gameId` to that process through the
@@ -63,14 +94,14 @@ The dedicated [worker image](../../Dockerfile.crossfire) and
 [operations guide](architecture-and-operations.md#recommended-coolify-deployment).
 Configuration is validated before the listener starts:
 
-| Environment variable | Default | Allowed range |
-| --- | --- | --- |
-| `CROSSFIRE_MAX_GAMES` | 128 | 1–1000 loaded/loading live games |
-| `CROSSFIRE_REPLAY_IDLE_MS` | 240000 | 180000–240000 ms |
-| `CROSSFIRE_REPLAY_CHECKPOINT_ACTIONS` | 5 | 5–10 actions |
-| `CROSSFIRE_REPLAY_MAX_GAMES` | 32 | 1–128 cached histories |
-| `CROSSFIRE_REPLAY_MAX_MIB` | 256 | 8–1024 MiB encoded cache budget |
-| `CROSSFIRE_REPLAY_GAME_MIB` | 64 | 1–256 MiB per game, no larger than total |
+| Environment variable                  | Default | Allowed range                            |
+| ------------------------------------- | ------- | ---------------------------------------- |
+| `CROSSFIRE_MAX_GAMES`                 | 128     | 1–1000 loaded/loading live games         |
+| `CROSSFIRE_REPLAY_IDLE_MS`            | 240000  | 180000–240000 ms                         |
+| `CROSSFIRE_REPLAY_CHECKPOINT_ACTIONS` | 5       | 5–10 actions                             |
+| `CROSSFIRE_REPLAY_MAX_GAMES`          | 32      | 1–128 cached histories                   |
+| `CROSSFIRE_REPLAY_MAX_MIB`            | 256     | 8–1024 MiB encoded cache budget          |
+| `CROSSFIRE_REPLAY_GAME_MIB`           | 64      | 1–256 MiB per game, no larger than total |
 
 These cache byte limits cover encoded payloads and indexes, not an exact bound on
 process RSS. A lower total budget also requires a compatible per-game budget.

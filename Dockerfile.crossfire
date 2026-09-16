@@ -7,7 +7,7 @@ RUN bun ci --production
 
 FROM oven/bun:${BUN_VERSION}-slim
 WORKDIR /app
-ENV NODE_ENV=production CROSSFIRE_HOST=0.0.0.0 CROSSFIRE_PORT=3110
+ENV NODE_ENV=production CONTAINER=true CROSSFIRE_HOST=0.0.0.0 CROSSFIRE_PORT=3110
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY package.json ./
 COPY play ./play

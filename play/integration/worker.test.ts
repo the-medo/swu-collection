@@ -40,6 +40,14 @@ test('concurrent bindings share one restored actor and a different worker cannot
     other = worker();
   const [a, b] = await Promise.all([owner.acquire(id), owner.acquire(id)]);
   expect(owner.count).toBe(1);
+  expect(owner.statistics).toEqual({
+    loadedGames: 1,
+    loadingGames: 0,
+    attachedGames: 1,
+    busyGames: 0,
+    queuedOperations: 0,
+    capacity: 128,
+  });
   expect(await a.run(async host => host)).toBe(await b.run(async host => host));
   await expect(other.acquire(id)).rejects.toThrow('unavailable');
   expect(other.count).toBe(0);
@@ -65,6 +73,14 @@ test('one busy game bounds its operation queue while a different game advances',
   await entered.promise;
   const queued = a.run(async () => 2);
   try {
+    expect(owner.statistics).toEqual({
+      loadedGames: 2,
+      loadingGames: 0,
+      attachedGames: 2,
+      busyGames: 1,
+      queuedOperations: 2,
+      capacity: 2,
+    });
     await expect(a.run(async () => 3)).rejects.toThrow('capacity');
     const result = await b.run(async host => {
       const input = choose(host.state, 'initiative');
@@ -166,6 +182,14 @@ test('failed restore frees its reservation and a stopped worker cannot resurrect
   workers.push(blocked);
   const pending = Promise.allSettled([blocked.acquire(id)]);
   await reserved.promise;
+  expect(blocked.statistics).toEqual({
+    loadedGames: 0,
+    loadingGames: 1,
+    attachedGames: 1,
+    busyGames: 0,
+    queuedOperations: 0,
+    capacity: 128,
+  });
   const stopping = blocked.stop();
   release.resolve();
   expect((await pending)[0]!.status).toBe('rejected');
