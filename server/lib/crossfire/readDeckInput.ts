@@ -5,16 +5,16 @@ import { deck } from '../../db/schema/deck.ts';
 import { deckCard } from '../../db/schema/deck_card.ts';
 import { cardPoolDeckCards, cardPoolDecks } from '../../db/schema/card_pool_deck.ts';
 import { cardPoolCards } from '../../db/schema/card_pool.ts';
-import type { DeckInput, OfficialIdentityCatalog } from '../../../play/admission/decks.ts';
+import type { CardIdentityCatalog, DeckInput } from '../../../play/admission/decks.ts';
 
-/** Caller supplies the authenticated session user ID and official-only catalog.
+/** Caller supplies the authenticated session user ID and preview-aware catalog.
  * This private helper does not interpret browser identity, grant admin bypass,
- * fetch previews, or disclose the source deck to another participant. */
+ * fetch card data itself, or disclose the source deck to another participant. */
 export async function readDeckInput(
   db: PostgresJsDatabase,
   userId: string,
   deckId: string,
-  catalog: OfficialIdentityCatalog,
+  catalog: CardIdentityCatalog,
 ): Promise<DeckInput | null> {
   z.string().min(1).max(128).parse(userId);
   z.uuid().parse(deckId);
@@ -29,7 +29,7 @@ export async function readDeckInputInTransaction(
   tx: Pick<PostgresJsDatabase, 'select'>,
   userId: string,
   deckId: string,
-  catalog: OfficialIdentityCatalog,
+  catalog: CardIdentityCatalog,
 ): Promise<DeckInput | null> {
   z.string().min(1).max(128).parse(userId);
   z.uuid().parse(deckId);

@@ -5,7 +5,7 @@ import { abilitiesFrom, effectiveAbilities } from './effective-abilities.ts';
 import { forceToken, gainForce } from './force.ts';
 import { modifyUnit } from './lasting.ts';
 import type { CardInstance, GameState, TokenCreationFrame } from './model.ts';
-import { recordTokenCreation, recordUnitEntry } from './phase-history.ts';
+import { recordTokenCreation, recordUnitEntry, friendlyUnitsEnterReady } from './phase-history.ts';
 import { addCard, fact, move, reference } from './state.ts';
 import { abilitySources, collectTriggers, effectFrames } from './triggers.ts';
 import type { DamageFrame } from './damage.ts';
@@ -101,7 +101,7 @@ export function commitTokenCreation(
     for (let n = 0; n < plan.count; n++) {
       const token = addCard(state, frame.creator, plan.cardId, 'set-aside');
       move(state, token, definition.arena);
-      token.exhausted = true;
+      token.exhausted = !friendlyUnitsEnterReady(state, token.controller);
       created.push(token);
     }
     if (plan.phaseAbilities)
@@ -118,6 +118,7 @@ export function commitTokenCreation(
       recordUnitEntry(state, token);
       fact(state, 'created', frame.creator, [frame.source, token]);
       collectTriggers(state, 'created', [token]);
+      collectTriggers(state, 'unit-entered', abilitySources(state), token);
       collectTriggers(
         state,
         'friendly-created',

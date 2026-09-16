@@ -2,7 +2,15 @@ import { createHash } from 'node:crypto';
 import type { CardDefinition } from './definition.ts';
 import { supportedCards } from './registry.ts';
 import titles from './catalog-names.json';
+import hmwCatalog from './hmw/catalog.json';
 import release from './release.json';
+
+const currentTitles = {
+  ...titles,
+  ...Object.fromEntries(hmwCatalog.map(card => [card.cardId, card.title])),
+  beast: 'Beast',
+  weakness: 'Weakness',
+};
 import { ENGINE_VERSION, supportsEngine } from '../engine/release.ts';
 
 export type CatalogData = {
@@ -70,13 +78,27 @@ export const bundledCatalog = new CardCatalog({
   schema: 1,
   ...release,
   cards: supportedCards,
-  titles,
+  titles: currentTitles,
 });
 export const DEVELOPMENT_BASELINE_PIN =
   '1.0.0@67e5bbc0f6f9a98c4627628324c6700868425fc99887fc5120bf4778cd6a4a50';
-const catalogs = new Map<string, CardCatalog>([[bundledCatalog.pin, bundledCatalog]]);
-if (bundledCatalog.pin === DEVELOPMENT_BASELINE_PIN)
-  catalogs.set('crossfire-core-125', bundledCatalog);
+const hmwCardIds = new Set(hmwCatalog.map(card => card.cardId));
+const developmentBaselineCatalog = new CardCatalog({
+  schema: 1,
+  version: '1.0.0',
+  requiredEngine: '1.0.0',
+  cards: supportedCards.filter(
+    card => !hmwCardIds.has(card.cardId) && card.cardId !== 'beast' && card.cardId !== 'weakness',
+  ),
+  titles,
+});
+if (developmentBaselineCatalog.pin !== DEVELOPMENT_BASELINE_PIN)
+  throw new Error('Crossfire 1.0 compatibility catalog changed');
+const catalogs = new Map<string, CardCatalog>([
+  [bundledCatalog.pin, bundledCatalog],
+  [DEVELOPMENT_BASELINE_PIN, developmentBaselineCatalog],
+  ['crossfire-core-125', developmentBaselineCatalog],
+]);
 export function registerCatalog(catalog: CardCatalog): CardCatalog {
   if (!supportsEngine(catalog.data.requiredEngine))
     throw new Error('Card bundle requires a different engine');

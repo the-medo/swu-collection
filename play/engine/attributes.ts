@@ -41,8 +41,24 @@ export function cardTraits(
   evaluation?: Evaluation,
   lastKnown = false,
 ): readonly string[] {
-  const card = state.cards[ref.instanceId];
-  if (card && card.incarnation === ref.incarnation && isUnit(state, card))
+  const current = state.cards[ref.instanceId];
+  const card = current?.incarnation === ref.incarnation ? current : undefined;
+  const departed = state.departedUnits.find(
+    entry =>
+      entry.reference.instanceId === ref.instanceId &&
+      entry.reference.incarnation === ref.incarnation,
+  );
+  const controller = card?.controller ?? departed?.controller;
+  const losesTrait = (trait: string) =>
+    controller !== undefined &&
+    (state.traitLosses ?? []).some(
+      loss =>
+        loss.round === state.round &&
+        loss.phase === state.phase &&
+        loss.playerId !== controller &&
+        loss.trait === trait,
+    );
+  if (card && isUnit(state, card))
     return [
       ...new Set([
         ...cardPrintedTraits(state, card),
@@ -64,6 +80,7 @@ export function cardTraits(
       ]),
     ].filter(
       trait =>
+        !losesTrait(trait) &&
         !activeLasting(state, card).some(e => e.loseTraits?.includes(trait)) &&
         !attachedUpgrades(state, card).some(
           u =>
@@ -71,17 +88,11 @@ export function cardTraits(
             activeUpgrade(state, u, evaluation),
         ),
     );
-  if (!lastKnown && card && card.incarnation === ref.incarnation)
+  if (!lastKnown && card)
     return [
       ...new Set([...cardPrintedTraits(state, ref), ...grantedTraits(state, card, evaluation)]),
-    ];
-  return (
-    (lastKnown
-      ? state.departedUnits.find(
-          e =>
-            e.reference.instanceId === ref.instanceId &&
-            e.reference.incarnation === ref.incarnation,
-        )?.traits
-      : undefined) ?? cardPrintedTraits(state, ref)
+    ].filter(trait => !losesTrait(trait));
+  return ((lastKnown ? departed?.traits : undefined) ?? cardPrintedTraits(state, ref)).filter(
+    trait => !losesTrait(trait),
   );
 }

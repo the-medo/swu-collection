@@ -46,6 +46,67 @@ export function targetOf(option: BoardOption): string | null {
 export function directTargetOf(option: BoardOption): string | null {
   return ['target', 'keep-unique'].includes(option.kind) ? (option.cards[0] ?? null) : null;
 }
+
+/**
+ * Collapse choices between mechanically interchangeable copies of one token on
+ * one host into an explicit prompt button. Choices spanning token types or
+ * hosts stay on the board because the physical target affects the outcome.
+ */
+export function inlineTokenChoice(view: GameView) {
+  const decision = view.decision;
+  if (!decision || decision.effect === 'ability-payment' || decision.effect === 'defeat-tokens')
+    return null;
+  const selection = decision.selection;
+  if (
+    selection &&
+    (selection.max !== 1 ||
+      selection.min > 1 ||
+      selection.allocation ||
+      selection.budget ||
+      selection.disclose)
+  )
+    return null;
+  const options = decision.options.filter(option =>
+    selection ? option.kind === 'accept-effect' : directTargetOf(option),
+  );
+  if (
+    !options.length ||
+    decision.options.some(option => !options.includes(option) && option.kind !== 'decline-effect')
+  )
+    return null;
+  if (selection && options.length !== 1) return null;
+  const cards = (selection?.cards ?? options.map(option => directTargetOf(option)!)).map(id =>
+    view.cards.find(card => card.id === id),
+  );
+  const first = cards[0];
+  if (
+    !first?.face?.token ||
+    first.face.kind !== 'upgrade' ||
+    !first.attachedTo ||
+    cards.some(
+      card =>
+        !card?.face?.token ||
+        card.face.kind !== 'upgrade' ||
+        card.face.cardId !== first.face!.cardId ||
+        card.attachedTo !== first.attachedTo,
+    )
+  )
+    return null;
+  const host = view.cards.find(card => card.id === first.attachedTo && card.face);
+  if (!host) return null;
+  return {
+    option: options[0]!,
+    selections: selection ? [first.id] : [],
+    skip:
+      selection?.min === 0 && !decision.options.some(o => o.kind === 'decline-effect')
+        ? { optionId: options[0]!.id, selections: [] as string[] }
+        : null,
+    optionIds: new Set(options.map(option => option.id)),
+    cardIds: new Set(cards.map(card => card!.id)),
+    host,
+    token: first,
+  };
+}
 export function cardActions(decision: VisibleDecision | null, cardId: string): CardAction[] {
   const groups = new Map<string, CardAction>();
   for (const option of decision?.options ?? []) {
@@ -155,6 +216,7 @@ export function pressCard(
   if (pending) return { kind: 'none' };
   const state = currentInteraction(view, interaction),
     decision = view.decision;
+  if (inlineTokenChoice(view)?.cardIds.has(id)) return { kind: 'none' };
   const visible =
     view.cards.find(c => c.id === id) ?? decision?.inspectedCards.find(c => c.id === id);
   if (!visible) return { kind: 'none' };
@@ -188,7 +250,8 @@ export function pressCard(
 /** Keep targeting on the table when every choice is already visible there. */
 export function isBoardTargetChoice(view: GameView): boolean {
   const d = view.decision;
-  if (!d || d.kind !== 'effect') return false;
+  if (!d || (d.kind !== 'effect' && d.kind !== 'replacement')) return false;
+  if (inlineTokenChoice(view)) return false;
   const ids = [
     ...(d.selection?.cards ?? []),
     ...d.options.flatMap(o => (directTargetOf(o) ? [directTargetOf(o)!] : [])),
@@ -210,11 +273,13 @@ export function actionableCards(view: GameView, interaction: BoardInteraction): 
   if (!view.decision) return [];
   const action = activeAction(view, interaction);
   if (action) return [...new Set(action.options.flatMap(o => (targetOf(o) ? [targetOf(o)!] : [])))];
+  const inline = inlineTokenChoice(view);
   return [
     ...new Set([
-      ...(view.decision.selection?.cards ?? []),
+      ...(view.decision.selection?.cards ?? []).filter(id => !inline?.cardIds.has(id)),
       ...view.decision.options
         .filter(o => !o.action?.deploymentOnly || o.action.deploymentAvailable)
+        .filter(o => !inline?.optionIds.has(o.id))
         .flatMap(o =>
           sourceOf(o) ? [sourceOf(o)!] : directTargetOf(o) ? [directTargetOf(o)!] : [],
         ),

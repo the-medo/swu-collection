@@ -137,6 +137,15 @@ test('Mandalorian enters Shielded, can protect another friendly unit and can dec
     'bob',
   );
   expect(pending.execution.decision!.playerId).toBe('alice');
+  const view = new Projector(pending.gameId, {
+    role: 'player',
+    playerId: 'alice',
+  }).project(pending);
+  expect(view.decision?.source?.cardId).toBe(mando);
+  expect(view.decision?.presentation).toEqual({
+    title: 'Prevent damage',
+    text: 'Battlefield Marine would take 2 damage. Use a replacement effect, or skip it.',
+  });
   resume(
     pending,
     choose(pending, i => i.kind === 'target' && i.card === shield.instanceId),

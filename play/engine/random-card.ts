@@ -1,4 +1,6 @@
 import { boundReference } from './bindings.ts';
+import { contextController } from './bindings.ts';
+import { matchingUnits } from './targets.ts';
 import type { Frame, GameState } from './model.ts';
 import { reference } from './state.ts';
 import { effectFrames } from './triggers.ts';
@@ -27,11 +29,15 @@ export function planRandomCard(
 ): RandomCard | undefined {
   const { kind, effect, ...context } = frame;
   if (effect.kind !== 'random-card') throw new Error('Expected random card effect');
-  const cards = effect.targets.flatMap(name => {
-    const ref = boundReference(frame, name, state);
-    return ref ? [reference(ref)] : [];
-  });
-  if (cards.length !== effect.targets.length) return;
+  const cards = effect.units
+    ? matchingUnits(state, contextController(frame), effect.units, frame).map(reference)
+    : effect.group
+      ? [...(frame.groups?.[effect.group] ?? [])]
+      : (effect.targets ?? []).flatMap(name => {
+          const ref = boundReference(frame, name, state);
+          return ref ? [reference(ref)] : [];
+        });
+  if (!cards.length || (effect.targets && cards.length !== effect.targets.length)) return;
   const next: RandomCard = {
     ...context,
     kind: 'random-card',

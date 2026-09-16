@@ -95,6 +95,33 @@ test('readiness preserves deck access and identifies unsupported cards without f
   }
 });
 
+test('preview-aware catalog providers are resolved for every admission and deck search', async () => {
+  let current = catalog;
+  const dynamicLobbies = new CrossfireLobbies(sql, async () => current);
+  const dynamicBrowser = new CrossfireDecks(sql, async () => current);
+
+  expect(await dynamicLobbies.inspectDeck(a, decks[0]!)).toEqual({ ready: true, issues: [] });
+  expect(
+    (await dynamicBrowser.list(a, { source: 'mine', search: catalog[ids.leader].name })).data,
+  ).not.toHaveLength(0);
+
+  current = {
+    ...catalog,
+    [ids.marine]: undefined,
+    [ids.leader]: { ...catalog[ids.leader], name: 'Fresh Preview Leader Name' },
+  };
+  const report = await dynamicLobbies.inspectDeck(a, decks[0]!);
+  expect(report.ready).toBe(false);
+  expect(report.issues).toContainEqual({
+    code: 'unknown-card',
+    cardId: ids.marine,
+    zone: 'mainboard',
+  });
+  expect(
+    (await dynamicBrowser.list(a, { source: 'mine', search: 'fresh preview leader' })).data,
+  ).not.toHaveLength(0);
+});
+
 test('both accepted decks and initial game persist atomically; metadata and seats contain no deck disclosures', async () => {
   const lobby = await create();
   expect(lobby.status).toBe('waiting');

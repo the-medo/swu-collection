@@ -17,8 +17,12 @@ import { versions } from '../../../play/engine/model.ts';
 import { createInitialCheckpoint } from '../../../play/host/durable-game.ts';
 import { insertGame, stateDigest } from '../../../play/storage/postgres.ts';
 import { decodeDeckSnapshot, prepareDeckSnapshot } from '../../../play/admission/decks.ts';
-import type { OfficialIdentityCatalog } from '../../../play/admission/decks.ts';
 import { readDeckInputInTransaction } from './readDeckInput.ts';
+import {
+  resolveCrossfireCatalog,
+  type CrossfireCatalog,
+  type CrossfireCatalogSource,
+} from './catalog.ts';
 import { crossfirePolicySchema as policySchema } from '../../../shared/types/crossfire.ts';
 import type {
   CrossfirePolicy,
@@ -132,7 +136,7 @@ async function view(
 export class CrossfireLobbies {
   constructor(
     private readonly sql: Sql,
-    private readonly catalog: OfficialIdentityCatalog,
+    private readonly catalogSource: CrossfireCatalogSource,
   ) {}
 
   async #prepare(
@@ -140,19 +144,21 @@ export class CrossfireLobbies {
     principal: Principal,
     deckId: string,
     pinned?: BundleVersions,
+    suppliedCatalog?: CrossfireCatalog,
   ) {
+    const catalog = suppliedCatalog ?? (await resolveCrossfireCatalog(this.catalogSource));
     // The proxy executes existing Drizzle reads on this exact transaction.
     // It neither opens a nested transaction nor mutates client parser options.
     const input = await readDeckInputInTransaction(
       drizzle(async (query, params) => ({ rows: await tx.unsafe(query, params).values() })),
       principal.userId,
       deckId,
-      this.catalog,
+      catalog,
     );
     if (!input) throw new AdmissionError('deck-unavailable');
     return prepareDeckSnapshot(
       input,
-      this.catalog,
+      catalog,
       versions.format,
       pinned ?? (await activeCardVersions(tx)),
     );
@@ -162,8 +168,9 @@ export class CrossfireLobbies {
     principal: Principal,
     deckId: string,
     pinned?: BundleVersions,
+    catalog?: CrossfireCatalog,
   ) {
-    const result = await this.#prepare(tx, principal, deckId, pinned);
+    const result = await this.#prepare(tx, principal, deckId, pinned, catalog);
     if (!result.ok) throw new AdmissionError('unsupported-deck');
     return result.snapshot;
   }
@@ -291,8 +298,9 @@ export class CrossfireLobbies {
         await requireSession(tx, { userId: first.user_id, sessionId: first.session_id });
         if (!isDeepStrictEqual(first.deck_snapshot?.versions, lobby.versions))
           throw new AdmissionError('incompatible');
-        const firstDeck = decodeDeckSnapshot(first.deck_snapshot, this.catalog);
-        const secondDeck = await this.#snapshot(tx, principal, deckId, lobby.versions);
+        const catalog = await resolveCrossfireCatalog(this.catalogSource);
+        const firstDeck = decodeDeckSnapshot(first.deck_snapshot, catalog);
+        const secondDeck = await this.#snapshot(tx, principal, deckId, lobby.versions, catalog);
         const gameId = `game-${randomUUID()}`;
         const checkpoint = createInitialCheckpoint({
           gameId,

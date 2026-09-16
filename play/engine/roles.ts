@@ -34,7 +34,7 @@ export function isToken(definition: CardDefinition): boolean {
 
 export function isUpgrade(state: CatalogContext, card: CardInstance): boolean {
   return (
-    (card.zone === 'ground' || card.zone === 'space') &&
+    (card.zone === 'ground' || card.zone === 'space' || card.zone === 'base') &&
     (cardDefinition(state, card.cardId).kind === 'upgrade' || card.attachedTo !== null)
   );
 }

@@ -4,7 +4,7 @@ import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { readDeckInput } from '../../server/lib/crossfire/readDeckInput.ts';
 import { prepareDeckSnapshot } from '../admission/decks.ts';
-import type { OfficialIdentityCatalog } from '../admission/decks.ts';
+import type { CardIdentityCatalog } from '../admission/decks.ts';
 import { ids } from '../testing/helpers.ts';
 
 const url = process.env.CROSSFIRE_TEST_DATABASE_URL;
@@ -22,7 +22,7 @@ const owner = `${prefix}-owner`,
   visitor = `${prefix}-visitor`;
 const decks: string[] = [],
   pools: string[] = [];
-const catalog: OfficialIdentityCatalog = await Bun.file(
+const catalog: CardIdentityCatalog = await Bun.file(
   new URL('../../server/db/json/card-list.json', import.meta.url),
 ).json();
 const prepare = (input: unknown, format = 'core-practice') =>
@@ -138,11 +138,11 @@ test('inconsistent limited visibility/ownership and missing physical references 
   await expect(read(id)).rejects.toThrow('unresolved physical card');
 });
 
-test('unsupported main cards, preview identities, tokens, two leaders and other formats cannot enter core practice', async () => {
+test('unknown and unimplemented cards, tokens, two leaders and other formats cannot enter core practice', async () => {
   const id = await normal();
   const input = (await read(id))!;
   for (const [card, code] of [
-    ['unimplemented-preview-fixture', 'unknown-card'],
+    ['unknown-card-fixture', 'unknown-card'],
     ['shield', 'wrong-role'],
     ['overwhelming-barrage', 'unsupported-card'],
   ] as const) {

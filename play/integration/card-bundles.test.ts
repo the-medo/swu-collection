@@ -1,6 +1,7 @@
 import { publishCardRelease, type ReleaseObjects } from '../releases/storage.ts';
 import { CrossfireConnections } from '../../server/lib/crossfire/connections.ts';
 import { versionsFor } from '../cards/catalog.ts';
+import { ENGINE_VERSION } from '../engine/release.ts';
 import { afterAll, beforeAll, expect, test } from 'bun:test';
 import { randomUUID } from 'node:crypto';
 import postgres from 'postgres';
@@ -42,7 +43,8 @@ beforeAll(async () => {
   await initializeCardBundles(sql);
   original = catalogFor({ versions: await activeCardVersions(sql) });
   const data = structuredClone(original.data);
-  data.version = `1.0.${Date.now()}`;
+  const [major, minor] = data.version.split('.');
+  data.version = `${major}.${minor}.${Date.now()}`;
   const marine = data.cards.find(c => c.cardId === ids.marine)!;
   if (marine.kind === 'unit') marine.power = 9;
   updated = new CardCatalog(data);
@@ -125,7 +127,7 @@ test('activation pins waiting invitations and BO3; new matches and rematches use
     version: updated.data.version,
     checksum: updated.hash,
     requiredEngine: updated.data.requiredEngine,
-    runtimeVersion: '1.0.0',
+    runtimeVersion: ENGINE_VERSION,
     runtimeFingerprint: 'a'.repeat(64),
     sourceCommit: 'b'.repeat(40),
     publishedAt: new Date().toISOString(),

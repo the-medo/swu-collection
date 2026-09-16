@@ -146,7 +146,11 @@ export function paymentAmount(
     const determined = playCost(
       state,
       { ...instance(state, intent.card), controller: actor },
-      frame.kind === 'effect' ? numericValue(state, frame, effect?.discount ?? 0) : 0,
+      frame.kind === 'effect'
+        ? numericValue(state, frame, effect?.discount ?? 0)
+        : permission
+          ? (permission.discount ?? 0)
+          : 0,
       intent.piloting,
       intent.target ? instance(state, intent.target) : undefined,
       effect?.kind === 'play-card' && effect.ignoreOneColoredPenalty,
@@ -154,7 +158,11 @@ export function paymentAmount(
         (effect?.kind === 'play-card' && effect.ignoreAspectPenalties),
       intent.smuggle ? 'smuggle' : effect?.kind === 'play-card' ? effect.using : undefined,
       intent.smuggle,
-      effect?.kind === 'play-card' ? effect.phaseAbilities : undefined,
+      effect?.kind === 'play-card'
+        ? effect.phaseAbilities
+        : permission
+          ? permission.phaseAbilities
+          : undefined,
       parts,
       increased,
     );

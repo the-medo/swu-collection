@@ -140,8 +140,6 @@ function damageOptions(
           amount: assignment.amount,
           abilityId: lasting.id,
         });
-  // Printed damage replacement rules below target units. Bases use direct effects.
-  if (!isUnit(state, target)) return options;
   const first =
     !state.phaseHistory.damageAttempts.some(
       r => r.instanceId === target.instanceId && r.incarnation === target.incarnation,
@@ -160,10 +158,20 @@ function damageOptions(
   for (const host of abilitySources(state))
     for (const rule of effectiveAbilities(state, host).damageReplacements ?? []) {
       const self = host.instanceId === target.instanceId && host.incarnation === target.incarnation;
+      const targetRole = rule.targetRole ?? 'unit';
       if (
-        (rule.target === 'self'
-          ? !self
-          : host.controller !== target.controller || (rule.target === 'other-friendly' && self)) ||
+        (targetRole === 'unit' && !isUnit(state, target)) ||
+        (targetRole === 'base' && cardDefinition(state, target.cardId).kind !== 'base') ||
+        (rule.minimumAmount !== undefined && assignment.amount < rule.minimumAmount) ||
+        (!rule.dealtByFriendlyAbility &&
+          (rule.target === 'self'
+            ? !self
+            : host.controller !== target.controller ||
+              (rule.target === 'other-friendly' && self))) ||
+        (rule.dealtByFriendlyAbility &&
+          (frame.combatAttackId ||
+            !assignment.source ||
+            assignment.source.controller !== host.controller)) ||
         (rule.friendlySourceTrait &&
           (!isUnit(state, target) ||
             !assignment.source ||
@@ -198,7 +206,23 @@ function damageOptions(
         abilityId: rule.id,
       });
     }
-  return options;
+  return options.filter(
+    option =>
+      !assignment.declinedReplacements?.some(
+        declined =>
+          declined.source.instanceId === option.source.instanceId &&
+          declined.source.incarnation === option.source.incarnation &&
+          declined.abilityId === option.abilityId,
+      ),
+  );
+}
+function optionalReplacement(state: GameState, option: PreventionOption) {
+  return (
+    !!option.abilityId &&
+    !!effectiveAbilities(state, option.source).damageReplacements?.find(
+      rule => rule.id === option.abilityId,
+    )?.optional
+  );
 }
 export function damagePreventionChoice(state: GameState, frame: DamageFrame) {
   const reserved = new Set(
@@ -218,18 +242,44 @@ export function damagePreventionChoice(state: GameState, frame: DamageFrame) {
     )
       continue;
     const options = damageOptions(state, assignment, reserved, frame);
+    const selected = assignment.optionalReplacement;
+    const optional = selected
+      ? options.find(
+          o =>
+            o.source.instanceId === selected.source.instanceId &&
+            o.source.incarnation === selected.source.incarnation &&
+            o.abilityId === selected.abilityId,
+        )
+      : options.length === 1 && optionalReplacement(state, options[0]!)
+        ? options[0]
+        : undefined;
+    if (optional)
+      return {
+        assignment,
+        target,
+        options: [optional],
+        playerId: optional.source.controller,
+        mandatory: false,
+        optional: true,
+      };
     if (options.length)
       return {
         assignment,
         target,
         options,
+        playerId: target.controller,
+        optional: false,
         mandatory: options.some(
           o =>
+            (optionalReplacement(state, o) && o.source.controller !== target.controller) ||
             o.kind === 'shield' ||
             o.kind === 'double' ||
             o.kind === 'prevent-next' ||
             o.kind === 'prevent' ||
-            o.kind === 'increase',
+            (o.kind === 'increase' &&
+              !effectiveAbilities(state, o.source).damageReplacements?.find(
+                rule => rule.id === o.abilityId,
+              )?.optional),
         ),
       };
   }
@@ -268,6 +318,29 @@ export function reservePrevention(
 export function assertDamageReplacements(state: GameState, frame: DamageFrame) {
   const reserved = new Set<string>();
   for (const assignment of frame.assignments) {
+    const declined = assignment.declinedReplacements ?? [];
+    const optional = assignment.optionalReplacement;
+    const options = damageOptions(
+      state,
+      { ...assignment, declinedReplacements: undefined },
+      reserved,
+      frame,
+    );
+    if (
+      new Set(declined.map(d => JSON.stringify(d))).size !== declined.length ||
+      [...declined, ...(optional ? [optional] : [])].some(
+        item =>
+          !options.some(
+            o =>
+              o.source.instanceId === item.source.instanceId &&
+              o.source.incarnation === item.source.incarnation &&
+              o.source.cardId === item.source.cardId &&
+              o.abilityId === item.abilityId &&
+              optionalReplacement(state, o),
+          ),
+      )
+    )
+      throw new Error('Invalid optional damage replacement');
     const steps = assignment.replacements ?? [];
     if ((assignment.originalAmount !== undefined) !== steps.length > 0)
       throw new Error('Invalid damage replacement history');
@@ -298,11 +371,16 @@ export function assertDamageReplacements(state: GameState, frame: DamageFrame) {
       assignment.preventionDeclined &&
       damageOptions(state, assignment, reserved, frame).some(
         o =>
+          (optionalReplacement(state, o) &&
+            o.source.controller !== instance(state, assignment.target.instanceId).controller) ||
           o.kind === 'shield' ||
           o.kind === 'double' ||
           o.kind === 'prevent-next' ||
           o.kind === 'prevent' ||
-          o.kind === 'increase',
+          (o.kind === 'increase' &&
+            !effectiveAbilities(state, o.source).damageReplacements?.find(
+              rule => rule.id === o.abilityId,
+            )?.optional),
       )
     )
       throw new Error('Cannot decline mandatory damage replacement');
@@ -328,6 +406,19 @@ function recordBaseDamage(state: GameState, source: CardInstance | null | undefi
     state.phaseHistory.baseDamageSources.push(reference(source));
 }
 export function applyDamage(state: GameState, frame: DamageFrame) {
+  const replacementEffects = frame.assignments.flatMap(assignment =>
+    (assignment.replacements ?? []).flatMap(replacement => {
+      if (!replacement.abilityId) return [];
+      const source = state.cards[replacement.source.instanceId];
+      if (!source || source.incarnation !== replacement.source.incarnation) return [];
+      const rule = effectiveAbilities(state, source).damageReplacements?.find(
+        candidate => candidate.id === replacement.abilityId,
+      );
+      return rule?.effects?.length
+        ? [{ playerId: source.controller, source: structuredClone(source), effects: rule.effects }]
+        : [];
+    }),
+  );
   for (const assignment of frame.assignments) {
     const target = state.cards[assignment.target.instanceId];
     if (
@@ -418,6 +509,10 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
         triggerObservers(state, 'friendly-combat-base-damage-dealt', player),
       )
     : [];
+  const damageObservers = state.seats.flatMap(player =>
+    triggerObservers(state, 'friendly-damage-dealt', player),
+  );
+  const dealtEvents: { target: CardInstance; dealer: string; amount: number }[] = [];
   const dealtBaseEvents: { target: CardInstance; dealer: string; amount: number }[] = [];
   const recordBaseEvent = (target: CardInstance, source: CardInstance | null, amount: number) => {
     if (amount > 0) recordPhasePlayer(state.phaseHistory.basesDamaged, target.controller);
@@ -500,6 +595,8 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
     } else {
       target.damage += assignment.amount;
       const dealer = assignment.source?.controller ?? frame.actor;
+      if (dealer && assignment.amount > 0)
+        dealtEvents.push({ target: structuredClone(target), dealer, amount: assignment.amount });
       if (dealer && assignment.indirect)
         recordPhasePlayer(state.phaseHistory.indirectDamage, dealer);
       if (
@@ -548,6 +645,12 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
       if (assignment.excess) {
         const base = instance(state, assignment.excess.target.instanceId);
         base.damage += assignment.excess.amount;
+        if (dealer && assignment.excess.amount > 0)
+          dealtEvents.push({
+            target: structuredClone(base),
+            dealer,
+            amount: assignment.excess.amount,
+          });
         if (dealer && assignment.excess.amount > 0 && base.controller !== dealer)
           recordPhasePlayer(state.phaseHistory.enemyBaseDamaged, dealer);
         recordBaseDamage(state, assignment.source);
@@ -586,6 +689,12 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
         values: { damage: event.amount },
       });
   }
+  for (const event of dealtEvents)
+    for (const observer of damageObservers.filter(o => o.source.controller === event.dealer))
+      collectTriggers(state, 'friendly-damage-dealt', [observer.source], event.target, {
+        origins: observer.origins,
+        values: { damage: event.amount },
+      });
   for (const event of dealtBaseEvents)
     for (const observer of enemyBaseObservers.filter(o => o.source.controller === event.dealer))
       collectTriggers(state, 'enemy-base-damage', [observer.source], event.target, {
@@ -683,5 +792,6 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
       source: structuredClone(source),
       origins: abilityOrigins(state, source),
     })),
+    replacementEffects,
   };
 }

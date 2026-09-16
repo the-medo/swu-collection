@@ -29,8 +29,8 @@ function release(version: string) {
   const metadata: CardReleaseMetadata = {
     version,
     checksum: catalog.hash,
-    requiredEngine: '1.0.0',
-    runtimeVersion: '1.0.0',
+    requiredEngine: '1.1.0',
+    runtimeVersion: '1.1.0',
     runtimeFingerprint: 'a'.repeat(64),
     sourceCommit: 'b'.repeat(40),
     publishedAt: '2026-09-15T12:00:00.000Z',
@@ -40,7 +40,7 @@ function release(version: string) {
 }
 test('publication and download are idempotent and content addressed', async () => {
   const storage = new MemoryObjects(),
-    r = release('1.0.901');
+    r = release('1.1.901');
   await publishCardRelease(storage, r.catalog, r.metadata);
   await publishCardRelease(storage, r.catalog, {
     ...r.metadata,
@@ -62,32 +62,32 @@ test('publication and download are idempotent and content addressed', async () =
 });
 test('concurrent different publications retain both discovery entries', async () => {
   const storage = new MemoryObjects(),
-    a = release('1.0.902'),
-    b = release('1.0.903');
+    a = release('1.1.902'),
+    b = release('1.1.903');
   await Promise.all([
     publishCardRelease(storage, a.catalog, a.metadata),
     publishCardRelease(storage, b.catalog, b.metadata),
   ]);
   expect((await availableReleases(storage)).releases.map(r => r.version)).toEqual([
-    '1.0.903',
-    '1.0.902',
+    '1.1.903',
+    '1.1.902',
   ]);
 });
 test('corrupt downloads and unsupported nested data cannot become installed definitions', async () => {
   const storage = new MemoryObjects(),
-    r = release('1.0.904');
+    r = release('1.1.904');
   await publishCardRelease(storage, r.catalog, r.metadata);
   storage.files.set(releaseKey(r.metadata), {
     etag: 'bad',
-    bytes: gzipSync(JSON.stringify({ ...r.catalog.data, version: '1.0.905' })),
+    bytes: gzipSync(JSON.stringify({ ...r.catalog.data, version: '1.1.905' })),
   });
   await expect(downloadRelease(storage, r.metadata)).rejects.toThrow('checksum');
 });
 
 test('concurrent publishers cannot reuse a runtime version for different executable sources', async () => {
   const storage = new MemoryObjects(),
-    a = release('1.0.906'),
-    b = release('1.0.907');
+    a = release('1.1.906'),
+    b = release('1.1.907');
   const results = await Promise.allSettled([
     publishCardRelease(storage, a.catalog, a.metadata),
     publishCardRelease(storage, b.catalog, { ...b.metadata, runtimeFingerprint: 'd'.repeat(64) }),

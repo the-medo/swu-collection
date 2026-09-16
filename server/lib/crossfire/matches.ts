@@ -7,13 +7,18 @@ import { z } from 'zod';
 import { matchReadySchema } from '../../../shared/types/crossfire-matches.ts';
 import type { MatchReady, MatchView } from '../../../shared/types/crossfire-matches.ts';
 import { decodeDeckSnapshot, prepareDeckSnapshot } from '../../../play/admission/decks.ts';
-import type { DeckSnapshot, OfficialIdentityCatalog } from '../../../play/admission/decks.ts';
+import type { CardIdentityCatalog, DeckSnapshot } from '../../../play/admission/decks.ts';
 import { decodeState } from '../../../play/engine/checkpoint.ts';
 import { versions } from '../../../play/engine/model.ts';
 import { createInitialCheckpoint } from '../../../play/host/durable-game.ts';
 import { insertGame } from '../../../play/storage/postgres.ts';
 import { AdmissionError, principalSchema, requireSession } from './lobbies.ts';
 import type { Principal } from './lobbies.ts';
+import {
+  resolveCrossfireCatalog,
+  type CrossfireCatalog,
+  type CrossfireCatalogSource,
+} from './catalog.ts';
 
 export async function registerMatch(tx: TransactionSql, lobbyId: string, checkpoint: string) {
   await tx`INSERT INTO play.matches(id) VALUES (${lobbyId})`;
@@ -32,7 +37,7 @@ function pool(deck: DeckSnapshot) {
 export function sideboardDeck(
   original: DeckSnapshot,
   mainboard: MatchReady['mainboard'],
-  catalog: OfficialIdentityCatalog,
+  catalog: CardIdentityCatalog,
   gameVersions: BundleVersions = original.versions,
 ): DeckSnapshot {
   if (!mainboard) throw new AdmissionError('unsupported-deck');
@@ -52,6 +57,14 @@ export function sideboardDeck(
   const inactive = [...counts]
     .filter(([, n]) => n > 0)
     .map(([cardId, quantity]) => ({ cardId, quantity }));
+  const pinnedCatalog = original.cardIdentities
+    ? {
+        ...catalog,
+        ...Object.fromEntries(
+          original.cardIdentities.map(card => [card.cardId, { type: card.type }]),
+        ),
+      }
+    : catalog;
   const result = prepareDeckSnapshot(
     {
       source: {
@@ -66,7 +79,7 @@ export function sideboardDeck(
       sideboard: original.sourceKind === 'normal' ? inactive : [],
       reserve: original.sourceKind === 'limited' ? inactive : [],
     },
-    catalog,
+    pinnedCatalog,
     versions.format,
     gameVersions,
   );
@@ -76,11 +89,11 @@ export function sideboardDeck(
 export class CrossfireMatches {
   constructor(
     private readonly sql: Sql,
-    private readonly catalog: OfficialIdentityCatalog,
+    private readonly catalogSource: CrossfireCatalogSource,
   ) {}
-  private decode(raw: unknown) {
+  private decode(raw: unknown, catalog: CrossfireCatalog) {
     try {
-      return decodeDeckSnapshot(raw, this.catalog);
+      return decodeDeckSnapshot(raw, catalog);
     } catch {
       throw new AdmissionError('incompatible');
     }
@@ -149,8 +162,14 @@ export class CrossfireMatches {
       seat: membership.seat as 'p1' | 'p2',
     };
   }
-  private view(data: NonNullable<Awaited<ReturnType<CrossfireMatches['read']>>>): MatchView {
-    const original = this.decode(data.people.find(p => p.seat === data.seat)!.deck_snapshot);
+  private view(
+    data: NonNullable<Awaited<ReturnType<CrossfireMatches['read']>>>,
+    catalog: CrossfireCatalog,
+  ): MatchView {
+    const original = this.decode(
+      data.people.find(p => p.seat === data.seat)!.deck_snapshot,
+      catalog,
+    );
     const own = data.ready.find(r => r.seat === data.seat && r.kind === 'next');
     // Keep the last played deck after reload when no new submission exists.
     return {
@@ -181,27 +200,34 @@ export class CrossfireMatches {
         minimumMain: original.mainboard.reduce((n, r) => n + r.quantity, 0),
         leader: original.leader,
         base: original.base,
-        mainboard: own ? this.decode(own.deck_snapshot).mainboard : data.ownDeck.mainboard,
+        mainboard: own ? this.decode(own.deck_snapshot, catalog).mainboard : data.ownDeck.mainboard,
         pool: pool(original),
         unsupported: original.inactiveUnsupported,
       },
     };
   }
-  private async read(tx: TransactionSql, p: Principal, lobbyId: string, lock = false) {
+  private async read(
+    tx: TransactionSql,
+    p: Principal,
+    lobbyId: string,
+    catalog: CrossfireCatalog,
+    lock = false,
+  ) {
     const data = await this.load(tx, p, lobbyId, lock);
     if (!data) return null;
     const [own] =
       await tx`SELECT deck_snapshot FROM play.participants WHERE lobby_id=${data.current.lobby_id} AND seat=${data.seat} AND user_id=${p.userId}`;
     if (!own) throw new AdmissionError('unavailable');
-    return { ...data, ownDeck: this.decode(own.deck_snapshot) };
+    return { ...data, ownDeck: this.decode(own.deck_snapshot, catalog) };
   }
   async get(raw: Principal, lobbyId: string): Promise<MatchView | null> {
     const p = principalSchema.parse(raw);
     z.uuid().parse(lobbyId);
+    const catalog = await resolveCrossfireCatalog(this.catalogSource);
     return this.sql.begin('isolation level repeatable read read only', async tx => {
       await requireSession(tx, p);
-      const data = await this.read(tx, p, lobbyId);
-      return data ? this.view(data) : null;
+      const data = await this.read(tx, p, lobbyId, catalog);
+      return data ? this.view(data, catalog) : null;
     });
   }
   async ready(raw: Principal, lobbyId: string, input: MatchReady): Promise<MatchView> {
@@ -210,16 +236,20 @@ export class CrossfireMatches {
     const choice = matchReadySchema.parse(input);
     if (choice.kind === 'rematch' && choice.mainboard !== undefined)
       throw new AdmissionError('conflict');
+    const catalog = await resolveCrossfireCatalog(this.catalogSource);
     return this.sql.begin(async tx => {
       await requireSession(tx, p, true);
-      const data = await this.read(tx, p, lobbyId, true);
+      const data = await this.read(tx, p, lobbyId, catalog, true);
       if (!data) throw new AdmissionError('unavailable');
-      const original = this.decode(data.people.find(r => r.seat === data.seat)!.deck_snapshot);
+      const original = this.decode(
+        data.people.find(r => r.seat === data.seat)!.deck_snapshot,
+        catalog,
+      );
       const snapshot =
         choice.kind === 'rematch'
           ? original
           : choice.ready
-            ? sideboardDeck(original, choice.mainboard, this.catalog)
+            ? sideboardDeck(original, choice.mainboard, catalog)
             : original;
       if (data.current.lobby_id !== lobbyId || data.match.rematch_lobby_id) {
         const [old] =
@@ -227,9 +257,9 @@ export class CrossfireMatches {
         if (
           choice.ready &&
           old &&
-          this.decode(old.deck_snapshot).contentHash === snapshot.contentHash
+          this.decode(old.deck_snapshot, catalog).contentHash === snapshot.contentHash
         )
-          return this.view(data);
+          return this.view(data, catalog);
         throw new AdmissionError('conflict');
       }
       if (data.exit && (choice.kind === 'next' || data.exit.status === 'pending'))
@@ -238,10 +268,10 @@ export class CrossfireMatches {
         throw new AdmissionError('conflict');
       if (!choice.ready) {
         await tx`DELETE FROM play.match_readiness WHERE match_id=${data.match.id} AND after_lobby_id=${lobbyId} AND seat=${data.seat} AND kind=${choice.kind}`;
-        return this.view((await this.read(tx, p, lobbyId))!);
+        return this.view((await this.read(tx, p, lobbyId, catalog))!, catalog);
       }
       await tx`INSERT INTO play.match_readiness(match_id,after_lobby_id,seat,kind,session_id,deck_snapshot) VALUES (${data.match.id},${lobbyId},${data.seat},${choice.kind},${p.sessionId},${tx.json(snapshot)}) ON CONFLICT(match_id,after_lobby_id,seat,kind) DO UPDATE SET session_id=EXCLUDED.session_id,deck_snapshot=EXCLUDED.deck_snapshot`;
-      const updated = (await this.read(tx, p, lobbyId))!;
+      const updated = (await this.read(tx, p, lobbyId, catalog))!;
       const ready = updated.ready.filter(r => r.kind === choice.kind);
       if (ready.length === 2) {
         // Recheck and lock both approving sessions before launching the next game.
@@ -256,11 +286,11 @@ export class CrossfireMatches {
         const pinned =
           choice.kind === 'rematch' ? await activeCardVersions(tx) : data.root.versions;
         const decks = ['p1', 'p2'].map(seat =>
-          this.decode(ready.find(r => r.seat === seat)!.deck_snapshot),
+          this.decode(ready.find(r => r.seat === seat)!.deck_snapshot, catalog),
         );
         if (choice.kind === 'rematch')
           for (let i = 0; i < decks.length; i++)
-            decks[i] = sideboardDeck(decks[i]!, decks[i]!.mainboard, this.catalog, pinned);
+            decks[i] = sideboardDeck(decks[i]!, decks[i]!.mainboard, catalog, pinned);
         const winner = data.current.summary?.result?.winner;
         const chooser =
           choice.kind === 'next'
@@ -298,7 +328,7 @@ export class CrossfireMatches {
         } else
           await tx`INSERT INTO play.match_games(match_id,number,lobby_id,initiative_chooser) VALUES (${data.match.id},${data.current.number + 1},${nextId},${chooser})`;
       }
-      return this.view((await this.read(tx, p, lobbyId))!);
+      return this.view((await this.read(tx, p, lobbyId, catalog))!, catalog);
     });
   }
 }

@@ -10,6 +10,7 @@ import {
   pressCard,
   selectionValid,
   isBoardTargetChoice,
+  inlineTokenChoice,
   type BoardOption,
   type BoardInteraction,
 } from './interaction.ts';
@@ -323,6 +324,43 @@ test('choices needing a private inspection or Credit token tray keep their dialo
   expect(isBoardTargetChoice(view)).toBe(false);
 });
 
+test('interchangeable token copies use one explicit button instead of board clicks', () => {
+  const view = board([
+    option('shield-a', 'target', ['shield-a']),
+    option('shield-b', 'target', ['shield-b']),
+    option('skip', 'decline-effect', []),
+  ]);
+  view.decision!.kind = 'replacement';
+  view.decision!.effect = 'prevent-damage';
+  const host = view.cards[0]!;
+  host.id = 'mando';
+  host.face!.name = 'The Mandalorian, Devoted Rescuer';
+  host.face!.cardId = 'the-mandalorian--devoted-rescuer';
+  const token = (id: string) => ({
+    ...structuredClone(view.cards[1]!),
+    id,
+    attachedTo: 'mando',
+    face: {
+      ...structuredClone(view.cards[1]!.face!),
+      cardId: 'shield',
+      name: 'Shield',
+      printedKind: 'upgrade' as const,
+      kind: 'upgrade' as const,
+      token: true,
+    },
+  });
+  view.cards.push(token('shield-a'), token('shield-b'));
+  expect(inlineTokenChoice(view)?.option.id).toBe('shield-a');
+  expect(isBoardTargetChoice(view)).toBe(false);
+  expect(actionableCards(view, freshInteraction(view))).not.toContain('shield-a');
+  expect(pressCard(view, freshInteraction(view), 'shield-a', false)).toEqual({ kind: 'none' });
+
+  view.cards.find(card => card.id === 'shield-b')!.attachedTo = 'enemy';
+  expect(inlineTokenChoice(view)).toBeNull();
+  expect(isBoardTargetChoice(view)).toBe(true);
+  expect(actionableCards(view, freshInteraction(view))).toEqual(['shield-a', 'shield-b']);
+});
+
 test('Plot upgrade targeting retains the selected resource payment variant', () => {
   const view = board([
     option('normal-a', 'play', ['hand', 'unit'], { plot: { cost: 2, useOtherResources: false } }),
@@ -342,4 +380,90 @@ test('Plot upgrade targeting retains the selected resource payment variant', () 
     optionId: 'other-b',
     selections: [],
   });
+});
+
+test.each([0, 1])(
+  'single-host token selections become valid Use/Skip commands (minimum %i)',
+  min => {
+    const view = board([option('use', 'accept-effect', [])]);
+    view.decision!.kind = 'effect';
+    view.decision!.selection = { cards: ['exp-a', 'exp-b'], min, max: 1 };
+    for (const id of ['exp-a', 'exp-b'])
+      view.cards.push({
+        ...structuredClone(view.cards[0]!),
+        id,
+        attachedTo: 'unit',
+        face: {
+          ...view.cards[0]!.face!,
+          cardId: 'experience',
+          name: 'Experience',
+          kind: 'upgrade',
+          printedKind: 'upgrade',
+          token: true,
+        },
+      });
+    const inline = inlineTokenChoice(view)!;
+    expect(inline.option.id).toBe('use');
+    expect(inline.selections).toEqual(['exp-a']);
+    expect(selectionValid(view.decision!, inline.selections)).toBe(true);
+    expect(inline.skip).toEqual(min === 0 ? { optionId: 'use', selections: [] } : null);
+    if (inline.skip) expect(selectionValid(view.decision!, inline.skip.selections)).toBe(true);
+    expect(isBoardTargetChoice(view)).toBe(false);
+    expect(actionableCards(view, freshInteraction(view))).toEqual([]);
+    expect(pressCard(view, freshInteraction(view), 'exp-a', false)).toEqual({ kind: 'none' });
+    view.cards.at(-1)!.face!.cardId = 'shield';
+    expect(inlineTokenChoice(view)).toBeNull();
+    view.cards.at(-1)!.face!.cardId = 'experience';
+    view.cards.at(-1)!.attachedTo = 'enemy';
+    expect(inlineTokenChoice(view)).toBeNull();
+    view.cards.at(-1)!.attachedTo = 'unit';
+    view.decision!.selection.max = 2;
+    expect(inlineTokenChoice(view)).toBeNull();
+    view.decision!.selection.max = 1;
+    for (const effect of ['ability-payment', 'defeat-tokens']) {
+      view.decision!.effect = effect;
+      view.decision!.selection.cards = ['exp-a'];
+      expect(inlineTokenChoice(view)).toBeNull();
+      expect(actionableCards(view, freshInteraction(view))).toEqual(['exp-a']);
+    }
+  },
+);
+
+test('mandatory token selections render an enabled Use button without board selections', async () => {
+  const { createElement } = await import('react');
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const { GamePrompt } = await import('./GamePrompt.tsx');
+  const view = board([option('use', 'accept-effect', [])]);
+  view.decision!.kind = 'effect';
+  view.decision!.selection = { cards: ['experience'], min: 1, max: 1 };
+  view.cards.push({
+    ...structuredClone(view.cards[0]!),
+    id: 'experience',
+    attachedTo: 'unit',
+    face: {
+      ...view.cards[0]!.face!,
+      cardId: 'experience',
+      name: 'Experience',
+      kind: 'upgrade',
+      printedKind: 'upgrade',
+      token: true,
+    },
+  });
+  const html = renderToStaticMarkup(
+    createElement(GamePrompt, {
+      view,
+      decision: view.decision!,
+      seat: 'p1',
+      pending: false,
+      selections: [],
+      renderChoice: () => null,
+      choose: () => {},
+      highlight: () => {},
+      activate: () => {},
+    }),
+  );
+  expect(html).toContain('Use unit’s Experience');
+  expect(html).not.toMatch(/\sdisabled(?:=|>|\s)/);
+  expect(html).not.toContain('Select 1 card');
+  expect(html).not.toContain('Skip effect');
 });

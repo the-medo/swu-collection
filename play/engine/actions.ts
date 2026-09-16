@@ -1,3 +1,4 @@
+import { pendingBaseUpgradeProtectors } from './attachments.ts';
 import { matchingPlayModifiers } from './play-keywords.ts';
 import { resourcePayment } from './resource-payment.ts';
 import { unitDefeatChoice, defeatAttachmentTargets } from './unit-defeat.ts';
@@ -55,7 +56,7 @@ import { canUseAbility } from './abilities.ts';
 import { cardDefinition } from '../cards/catalog.ts';
 import type { Frame, GameState, Intent, CardInstance } from './model.ts';
 import { reference, instance, isArena, opponent, playCost } from './state.ts';
-import { triggerAvailable, sameIncarnation } from './triggers.ts';
+import { abilitySources, triggerAvailable, sameIncarnation } from './triggers.ts';
 
 export function actionIntents(state: GameState): Intent[] {
   const actor = state.activePlayer;
@@ -89,12 +90,15 @@ export function actionIntents(state: GameState): Intent[] {
           state,
           { ...card, controller: actor },
           actor,
-          0,
+          permission.discount ?? 0,
           permission.free,
           !permission.free,
           false,
           true,
           permission.ignoreAspectPenalties,
+          undefined,
+          undefined,
+          permission.phaseAbilities,
         ),
       );
   }
@@ -257,8 +261,31 @@ export function frameIntents(state: GameState, frame: Frame): Intent[] {
           ]
         : [];
     }
+    case 'different-unit-damage':
+      return frame.targets
+        .filter(
+          target =>
+            !frame.usedTargets.some(
+              used =>
+                used.instanceId === target.instanceId && used.incarnation === target.incarnation,
+            ) &&
+            state.cards[target.instanceId]?.incarnation === target.incarnation &&
+            isUnit(state, state.cards[target.instanceId]!) &&
+            state.cards[target.instanceId]!.controller !== frame.playerId,
+        )
+        .map(target => ({ kind: 'target' as const, card: target.instanceId }));
+    case 'special-play-payment':
+      return [{ kind: 'accept-effect' }];
     case 'upgrade-defeat':
       return [{ kind: 'accept-effect' }, { kind: 'decline-effect' }];
+    case 'base-upgrade-protection':
+      return [
+        ...pendingBaseUpgradeProtectors(state, frame).map(card => ({
+          kind: 'target' as const,
+          card: card.instanceId,
+        })),
+        { kind: 'decline-effect' },
+      ];
     case 'create-tokens':
       return [
         ...tokenReplacementSources(state, frame).map(card => ({
@@ -494,24 +521,48 @@ export function frameIntents(state: GameState, frame: Frame): Intent[] {
           ...(effect.optional ? [{ kind: 'decline-effect' as const }] : []),
         ];
       if (effect.kind === 'select-target')
-        return [
-          ...(effect.units
-            ? matchingUnits(state, frame.playerId, effect.units, frame).map(c => ({
-                kind: 'target' as const,
-                card: c.instanceId,
-              }))
-            : []),
-          ...(effect.bases
-            ? state.seats
-                .filter(
-                  p =>
-                    effect.bases === 'any' ||
-                    (p === frame.playerId) === (effect.bases === 'friendly'),
-                )
-                .map(p => ({ kind: 'target' as const, card: state.players[p]!.base }))
-            : []),
-          ...(effect.optional ? [{ kind: 'decline-effect' as const }] : []),
-        ];
+        return (() => {
+          return [
+            ...(effect.units
+              ? matchingUnits(state, frame.playerId, effect.units, frame)
+                  .filter(c => {
+                    const other = effect.otherThan && boundUnit(state, frame, effect.otherThan);
+                    return (
+                      !other ||
+                      c.instanceId !== other.instanceId ||
+                      c.incarnation !== other.incarnation
+                    );
+                  })
+                  .map(c => ({
+                    kind: 'target' as const,
+                    card: c.instanceId,
+                  }))
+              : []),
+            ...(effect.bases
+              ? state.seats
+                  .filter(
+                    p =>
+                      effect.bases === 'any' ||
+                      (p === frame.playerId) === (effect.bases === 'friendly'),
+                  )
+                  .map(p => state.cards[state.players[p]!.base]!)
+                  .filter(base => {
+                    const other = effect.otherThan && boundUnit(state, frame, effect.otherThan);
+                    const definition = cardDefinition(state, base.cardId);
+                    return (
+                      (!other ||
+                        base.instanceId !== other.instanceId ||
+                        base.incarnation !== other.incarnation) &&
+                      (effect.baseRemainingHpAtMost === undefined ||
+                        (definition.kind === 'base' &&
+                          definition.hp - base.damage <= effect.baseRemainingHpAtMost))
+                    );
+                  })
+                  .map(base => ({ kind: 'target' as const, card: base.instanceId }))
+              : []),
+            ...(effect.optional ? [{ kind: 'decline-effect' as const }] : []),
+          ];
+        })();
       if (effect.kind === 'unit-to-deck') {
         const unit = boundUnit(state, frame, effect.target);
         return unit && isUnit(state, unit) && !unitIsLeader(state, unit)
@@ -723,9 +774,16 @@ export function frameIntents(state: GameState, frame: Frame): Intent[] {
       }
       if (effect.kind === 'ambush') {
         const card = sameIncarnation(state, frame.source);
+        const canAttackBases =
+          card &&
+          abilitySources(state).some(
+            source =>
+              source.controller === card.controller &&
+              effectiveAbilities(state, source).ambushCanAttackBases,
+          );
         const targets =
           card && isUnit(state, card) && card.controller === frame.playerId
-            ? attackTargets(state, card, true)
+            ? attackTargets(state, card, !canAttackBases)
             : [];
         return [
           ...targets.map(card => ({ kind: 'target' as const, card })),
@@ -751,6 +809,8 @@ export function decisionContext(
       return card ? { playerId: card.controller, kind: 'replacement' } : null;
     }
     case 'upgrade-defeat':
+      return { playerId: frame.card.controller, kind: 'replacement' };
+    case 'base-upgrade-protection':
       return { playerId: frame.card.controller, kind: 'replacement' };
     case 'create-tokens':
       return tokenReplacementSources(state, frame).length
@@ -788,6 +848,10 @@ export function decisionContext(
     case 'attack-series':
     case 'arrange-deck':
       return { playerId: frame.playerId, kind: 'effect' };
+    case 'different-unit-damage':
+      return { playerId: frame.playerId, kind: 'effect' };
+    case 'special-play-payment':
+      return { playerId: frame.playerId, kind: 'effect' };
     case 'search':
       return { playerId: searchOwner(state, frame), kind: 'search' };
     case 'mulligan':
@@ -805,24 +869,33 @@ export function decisionContext(
                 ? playActor(state, frame.playerId, frame.effect, frame)
                 : frame.effect.kind === 'select-unit' && frame.effect.chooser === 'enemy'
                   ? opponent(state, frame.playerId)
-                  : frame.effect.kind === 'choose-mode' && frame.effect.chooser === 'enemy'
-                    ? opponent(state, frame.playerId)
-                    : frame.effect.kind === 'choose-mode' && frame.effect.chooserOf
-                      ? (boundUnit(state, frame, frame.effect.chooserOf)?.controller ??
-                        frame.playerId)
-                      : frame.effect.kind === 'unit-to-deck'
-                        ? (boundUnit(state, frame, frame.effect.target)?.owner ?? frame.playerId)
-                        : frame.effect.kind === 'select-resources' &&
-                            frame.effect.player === 'enemy' &&
-                            frame.effect.chooser !== 'self'
+                  : frame.effect.kind === 'select-unit' && frame.effect.chooserOf
+                    ? (boundUnit(state, frame, frame.effect.chooserOf)?.controller ??
+                      frame.playerId)
+                    : frame.effect.kind === 'select-target' && frame.effect.chooser === 'enemy'
+                      ? opponent(state, frame.playerId)
+                      : frame.effect.kind === 'select-target' && frame.effect.chooserOf
+                        ? (boundUnit(state, frame, frame.effect.chooserOf)?.controller ??
+                          frame.playerId)
+                        : frame.effect.kind === 'choose-mode' && frame.effect.chooser === 'enemy'
                           ? opponent(state, frame.playerId)
-                          : frame.playerId,
+                          : frame.effect.kind === 'choose-mode' && frame.effect.chooserOf
+                            ? (boundUnit(state, frame, frame.effect.chooserOf)?.controller ??
+                              frame.playerId)
+                            : frame.effect.kind === 'unit-to-deck'
+                              ? (boundUnit(state, frame, frame.effect.target)?.owner ??
+                                frame.playerId)
+                              : frame.effect.kind === 'select-resources' &&
+                                  frame.effect.player === 'enemy' &&
+                                  frame.effect.chooser !== 'self'
+                                ? opponent(state, frame.playerId)
+                                : frame.playerId,
         kind: 'effect',
       };
     case 'damage': {
       const choice = damagePreventionChoice(state, frame);
       return choice
-        ? { playerId: choice.target.controller, kind: 'replacement' }
+        ? { playerId: choice.playerId, kind: 'replacement' }
         : excessDamageChoice(state, frame)?.targets.length
           ? { playerId: excessDamageChoice(state, frame)!.route.source.controller, kind: 'effect' }
           : null;
@@ -854,6 +927,12 @@ export function decisionContext(
 }
 
 export function frameSelection(state: GameState, frame: Frame, playerId: string) {
+  if (frame.kind === 'special-play-payment')
+    return {
+      cards: frame.cards.map(card => card.instanceId),
+      min: frame.min,
+      max: Math.min(frame.max, frame.cards.length),
+    };
   if (frame.kind === 'unit-tax') return taxSelection(state, frame);
   if (frame.kind === 'arrange-deck') return arrangeSelection(frame);
   if (frame.kind === 'effect' && frame.effect.kind === 'damage-chosen-bases')
@@ -937,7 +1016,9 @@ export function frameSelection(state: GameState, frame: Frame, playerId: string)
         : {
             budget: {
               stat: frame.effect.budget?.stat ?? 'remaining-hp',
-              max: (frame.effect.budget?.max ?? frame.effect.remainingHpBudget)!,
+              max: frame.effect.budget
+                ? numericValue(state, frame, frame.effect.budget.max)
+                : frame.effect.remainingHpBudget!,
               costs,
             },
           }),

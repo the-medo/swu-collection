@@ -21,7 +21,7 @@ import { cardDefinition } from '../cards/catalog.ts';
 import type { CardInstance, GameState } from './model.ts';
 import { isUnit } from './attachments.ts';
 import { instance } from './state.ts';
-import { upgradeProfile } from './roles.ts';
+import { isUpgrade, upgradeProfile } from './roles.ts';
 
 export function unitProfile(card: CardDefinition) {
   if (card.kind !== 'unit' && card.kind !== 'leader') throw new Error('Card has no unit profile');
@@ -65,6 +65,7 @@ function totalCosts(ability: ActionDefinition) {
     exhaustion = 0,
     force = 0,
     defeats = 0,
+    selfDefeats = 0,
     discardDeck = 0,
     chosen = 0,
     baseDamage = 0;
@@ -91,6 +92,9 @@ function totalCosts(ability: ActionDefinition) {
       case 'defeat-friendly-unit':
         defeats++;
         break;
+      case 'defeat-self':
+        selfDefeats++;
+        break;
       case 'force':
         force++;
         break;
@@ -108,7 +112,16 @@ function totalCosts(ability: ActionDefinition) {
       }
     }
   }
-  return { resources, exhaustion, force, defeats, discardDeck, chosen, baseDamage };
+  return {
+    resources,
+    exhaustion,
+    force,
+    defeats,
+    selfDefeats,
+    discardDeck,
+    chosen,
+    baseDamage,
+  };
 }
 
 export function sacrificeCandidates(state: GameState, source: CardInstance): CardInstance[] {
@@ -128,7 +141,7 @@ export function canPayAbilityCosts(
   ability: ActionDefinition,
   credit = 0,
 ): boolean {
-  const { exhaustion, force, defeats, discardDeck, chosen } = totalCosts(ability);
+  const { exhaustion, force, defeats, selfDefeats, discardDeck, chosen } = totalCosts(ability);
   const resources = abilityResourcePayment(state, card.controller, ability.costs);
   const cost = chosenCardCost(ability);
   const cards = cost
@@ -141,6 +154,8 @@ export function canPayAbilityCosts(
   );
   return (
     chosen <= 1 &&
+    selfDefeats <= 1 &&
+    (!selfDefeats || isUpgrade(state, card)) &&
     !(chosen && defeats) &&
     (!cost || payableCards.length >= costCardCount(cost)) &&
     state.players[card.controller]!.deck.length >= discardDeck &&
@@ -202,6 +217,13 @@ export function canUseAbility(
     )
   )
     return false;
+  if (
+    ability.limit === 'once-per-phase' &&
+    state.roundHistory.actionUses.some(
+      use => use.phase === state.phase && sameActionUsage(use, actionUsage(state, card, ability)),
+    )
+  )
+    return false;
   if (!canPayAbilityCosts(state, card, ability)) return false;
   if (
     ability.requiresPlayable &&
@@ -223,6 +245,7 @@ export function canUseAbility(
     cost.resources ||
     cost.force ||
     cost.defeats ||
+    cost.selfDefeats ||
     cost.chosen ||
     cost.discardDeck ||
     cost.baseDamage

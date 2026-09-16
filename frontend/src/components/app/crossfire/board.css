@@ -1843,6 +1843,9 @@ button.cf-pile:hover {
   padding-bottom: calc(var(--upgrade-count) * var(--cf-card-width, 100px) * 0.23);
   isolation: isolate;
 }
+.cf-base-upgrades {
+  --cf-card-width: var(--cf-base-width);
+}
 .cf-upgrade-underlay {
   position: absolute;
   inset: calc(var(--upgrade-index) * var(--cf-card-width, 100px) * 0.23) 0 auto;

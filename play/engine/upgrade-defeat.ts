@@ -14,13 +14,19 @@ export function pendingUpgradeDefeats(state: GameState) {
 }
 export function hasUpgradeWork(state: GameState) {
   return state.execution.frames.some(
-    f => f.kind === 'upgrade-defeat' || f.kind === 'convert-pilot' || f.kind === 'unit-defeat',
+    f =>
+      f.kind === 'upgrade-defeat' ||
+      f.kind === 'base-upgrade-protection' ||
+      f.kind === 'convert-pilot' ||
+      f.kind === 'unit-defeat',
   );
 }
 // Replacement choices precede the caller's later effects and all pending triggers.
 // Callers can still enqueue ordinary continuations after requesting a defeat.
 export function prioritizeUpgradeDefeat(state: GameState) {
   let index = state.execution.frames.findIndex(f => f.kind === 'upgrade-defeat');
+  if (index < 0)
+    index = state.execution.frames.findIndex(f => f.kind === 'base-upgrade-protection');
   if (index < 0)
     index = state.execution.frames.findIndex(
       f => f.kind === 'convert-pilot' || f.kind === 'unit-defeat',

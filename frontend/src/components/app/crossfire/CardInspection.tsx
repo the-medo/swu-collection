@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog.tsx';
+} from './CrossfireDialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import type { GameView } from '../../../../../play/view/types.ts';
 import { FaceImage } from './GameCard.tsx';

@@ -83,6 +83,7 @@ const modules = z.strictObject({
         'resources-at-action',
         'resources-at-regroup',
         'effects-at-action',
+        'effects-at-regroup',
         'control-at-regroup',
         'control-on-departure',
       ]),
@@ -139,7 +140,7 @@ const modules = z.strictObject({
               id,
               limit: z
                 .union([
-                  z.enum(['once-per-game', 'once-per-round']),
+                  z.enum(['once-per-game', 'once-per-round', 'once-per-phase']),
                   z.strictObject({ per: z.literal('game'), max: count.positive() }),
                 ])
                 .nullable(),

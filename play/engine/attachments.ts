@@ -30,13 +30,14 @@ export function isUnit(state: CatalogContext, card: CardInstance): boolean {
   );
 }
 export function attachedUpgrades(state: GameState, unit: CardInstance): CardInstance[] {
-  return [...state.ground, ...state.space]
-    .map(id => instance(state, id))
-    .filter(
-      card =>
-        card.attachedTo?.instanceId === unit.instanceId &&
-        card.attachedTo.incarnation === unit.incarnation,
-    );
+  const candidates = isArena(unit.zone)
+    ? state[unit.zone].map(id => instance(state, id))
+    : Object.values(state.cards);
+  return candidates.filter(
+    card =>
+      card.attachedTo?.instanceId === unit.instanceId &&
+      card.attachedTo.incarnation === unit.incarnation,
+  );
 }
 export function unitStats(state: GameState, unit: CardInstance, evaluation?: Evaluation) {
   let { power, hp } = printedUnitStats(state, unit, evaluation);
@@ -121,7 +122,15 @@ export function unitStats(state: GameState, unit: CardInstance, evaluation?: Eva
 // Eligibility is evaluated when attaching, not continuously (v8 §3.6.3).
 export function canAttach(state: GameState, upgrade: CardInstance, unit: CardInstance): boolean {
   const profile = upgradeProfile(cardDefinition(state, upgrade.cardId));
-  if (!profile || !isUnit(state, unit) || unit.instanceId === upgrade.instanceId) return false;
+  const definition = cardDefinition(state, unit.cardId);
+  const base = definition.kind === 'base' && unit.zone === 'base';
+  if (
+    !profile ||
+    (!isUnit(state, unit) && !base) ||
+    unit.instanceId === upgrade.instanceId ||
+    (profile.attachTo === 'base') !== base
+  )
+    return false;
   if (upgrade.attachmentRestriction?.kind === 'filter') {
     const filter = upgrade.attachmentRestriction.filter;
     return (
@@ -151,6 +160,7 @@ export function canAttach(state: GameState, upgrade: CardInstance, unit: CardIns
     !matchesUnit(state, unit, upgrade.controller, profile.attachFilter, { source: upgrade })
   )
     return false;
+  if (profile.attachTo === 'base') return unit.controller === upgrade.controller;
   if (profile.attachTo === 'unit') return true;
   if (profile.attachTo === 'friendly-unit') return unit.controller === upgrade.controller;
   if (profile.attachTo === 'non-vehicle') return !cardTraits(state, unit).includes('Vehicle');
@@ -191,15 +201,15 @@ export function attach(state: GameState, upgrade: CardInstance, unit: CardInstan
   fact(state, 'attached', upgrade.controller, [upgrade, unit]);
   if (notify) {
     collectTriggers(state, 'attached', [upgrade], unit);
-    collectTriggers(state, 'upgrades-attached', [unit]);
-    if (cardTraits(state, upgrade).includes('Pilot'))
+    if (isUnit(state, unit)) collectTriggers(state, 'upgrades-attached', [unit]);
+    if (isUnit(state, unit) && cardTraits(state, upgrade).includes('Pilot'))
       collectTriggers(state, 'pilot-attached', [unit], upgrade);
   }
 }
 export function giveTokens(
   state: GameState,
   unit: CardInstance,
-  token: 'shield' | 'experience' | 'advantage',
+  token: 'shield' | 'experience' | 'advantage' | 'weakness',
   count: number,
   creator = unit.controller,
   notify = true,
@@ -209,13 +219,15 @@ export function giveTokens(
     const upgrade = addCard(state, unit.controller, token, 'set-aside');
     attach(state, upgrade, unit, false);
     recordTokenCreation(state, creator);
+    const given = (state.phaseHistory.tokenUpgradesGiven ??= []);
+    if (!given.includes(creator)) given.push(creator);
   }
   if (notify) collectTriggers(state, 'upgrades-attached', [unit]);
 }
 export function giveToken(
   state: GameState,
   unit: CardInstance,
-  token: 'shield' | 'experience' | 'advantage',
+  token: 'shield' | 'experience' | 'advantage' | 'weakness',
   creator = unit.controller,
 ) {
   giveTokens(state, unit, token, 1, creator);
@@ -227,6 +239,33 @@ export function captureObservers(state: GameState): AbilityObserver[] {
     origins: abilityOrigins(state, source),
   }));
 }
+export function baseUpgradeProtectors(state: GameState, card: CardInstance) {
+  const host = card.attachedTo && state.cards[card.attachedTo.instanceId];
+  return host &&
+    host.incarnation === card.attachedTo?.incarnation &&
+    cardDefinition(state, host.cardId).kind === 'base'
+    ? abilitySources(state).filter(
+        candidate =>
+          candidate.controller === card.controller &&
+          isUnit(state, candidate) &&
+          effectiveAbilities(state, candidate).protectBaseUpgradeBySelfDefeat,
+      )
+    : [];
+}
+export function pendingBaseUpgradeProtectors(
+  state: GameState,
+  frame: Extract<import('./model.ts').Frame, { kind: 'base-upgrade-protection' }>,
+) {
+  const card = state.cards[frame.card.instanceId];
+  if (!card || card.incarnation !== frame.card.incarnation || !isUpgrade(state, card)) return [];
+  return baseUpgradeProtectors(state, card).filter(candidate =>
+    frame.protectors.some(
+      original =>
+        original.instanceId === candidate.instanceId &&
+        original.incarnation === candidate.incarnation,
+    ),
+  );
+}
 export function defeatUpgrade(
   state: GameState,
   card: CardInstance,
@@ -234,6 +273,24 @@ export function defeatUpgrade(
   source?: CardInstance,
 ) {
   if (!isUpgrade(state, card) || !canAffectWithAbility(state, card, source, 'defeat')) return false;
+  const protectors = baseUpgradeProtectors(state, card);
+  if (
+    protectors.length &&
+    !state.execution.frames.some(
+      frame =>
+        frame.kind === 'base-upgrade-protection' &&
+        frame.card.instanceId === card.instanceId &&
+        frame.card.incarnation === card.incarnation,
+    )
+  ) {
+    state.execution.frames.unshift({
+      kind: 'base-upgrade-protection',
+      card: structuredClone(card),
+      protectors: structuredClone(protectors),
+      observers: structuredClone(observers),
+    });
+    return true;
+  }
   if (deferUpgradeDefeat(state, card, observers)) return true;
   commitUpgradeDefeat(state, card, observers);
   return true;

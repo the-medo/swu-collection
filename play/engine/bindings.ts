@@ -55,12 +55,12 @@ export function boundArena(
     (card.zone === 'ground' || card.zone === 'space')
   )
     return card.zone;
-  return (
+  const arena =
     ref &&
     [...state.departedUnits, ...state.departedUpgrades].find(
       d => d.reference.instanceId === ref.instanceId && d.reference.incarnation === ref.incarnation,
-    )?.arena
-  );
+    )?.arena;
+  return arena === 'ground' || arena === 'space' ? arena : undefined;
 }
 export function boundUnit(
   state: GameState,

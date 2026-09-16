@@ -97,6 +97,24 @@ export function numericValue(
     );
   }
   if (value.kind === 'group-size') return context.groups?.[value.group]?.length ?? 0;
+  if (value.kind === 'group-stat-sum')
+    return (context.groups?.[value.group] ?? []).reduce((sum, ref) => {
+      const card = state.cards[ref.instanceId];
+      if (!card || card.incarnation !== ref.incarnation) return sum;
+      return (
+        sum +
+        (value.stat === 'power' && isUnit(state, card)
+          ? unitStats(state, card, evaluation).power
+          : value.stat === 'cost'
+            ? printedCost(state, card)
+            : 0)
+      );
+    }, 0);
+  if (value.kind === 'product')
+    return (
+      numericValue(state, context, value.left, evaluation) *
+      numericValue(state, context, value.right, evaluation)
+    );
   if (value.kind === 'conditional')
     return numericValue(
       state,
@@ -214,6 +232,13 @@ export function numericValue(
             (!value.notCardId || upgrade.cardId !== value.notCardId),
         ).length
       : 0;
+  }
+  if (value.kind === 'base-upgrades-count') {
+    const player =
+      value.player === 'self'
+        ? contextController(context)
+        : opponent(state, contextController(context));
+    return attachedUpgrades(state, state.cards[state.players[player]!.base]!).length;
   }
   if (value.kind === 'card-cost') {
     const ref = boundReference(context, value.target, state);

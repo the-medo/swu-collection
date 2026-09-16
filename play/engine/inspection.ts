@@ -48,6 +48,7 @@ export function matchesCard(
       (hasPrintedCost(state, ref) &&
         printedCost(state, ref) <= numericValue(state, context, filter.costAtMost))) &&
     (!filter.withoutTrait || !cardTraits(state, ref).includes(filter.withoutTrait)) &&
+    (!filter.notName || cardPrintedTitle(state, ref) !== filter.notName) &&
     (!filter.sharesFriendlyUnitAspect ||
       matchingUnits(state, contextController(context), { controller: 'friendly' }, context).some(
         unit => cardAspects(state, unit).some(a => cardAspects(state, ref).includes(a)),
@@ -101,6 +102,13 @@ export function matchesCard(
     (!filter.named ||
       (!!context.names?.[filter.named] &&
         cardPrintedTitle(state, ref) === context.names[filter.named])) &&
+    (!filter.defeatedThisPhase ||
+      state.phaseHistory.defeated.some(
+        card =>
+          card.instanceId === ref.instanceId &&
+          card.incarnation === ref.incarnation &&
+          state.cards[ref.instanceId]?.zone === 'discard',
+      )) &&
     (filter.whenDefeated === undefined ||
       !!effectiveAbilities(state, state.cards[ref.instanceId]!).triggers?.some(
         t => t.timing === 'defeated',
@@ -112,6 +120,7 @@ export function matchesCard(
     (!filter.kind || definition.kind === filter.kind) &&
     (!filter.aspect || cardAspects(state, ref).includes(filter.aspect)) &&
     (!filter.trait || cardTraits(state, ref).includes(filter.trait)) &&
+    (!filter.anyTrait || filter.anyTrait.some(trait => cardTraits(state, ref).includes(trait))) &&
     (filter.unique === undefined || !!definition.unique === filter.unique) &&
     (filter.maxCost === undefined ||
       (hasPrintedCost(state, ref) && printedCost(state, ref) <= filter.maxCost)) &&

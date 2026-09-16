@@ -224,6 +224,11 @@ export function matchesUnit(
       ) === filter.enteredThisPhase) &&
     (!filter.withUpgrade ||
       attachedUpgrades(state, card).some(u => u.cardId === filter.withUpgrade)) &&
+    (filter.withTokenUpgrade === undefined ||
+      attachedUpgrades(state, card).some(upgrade => {
+        const definition = cardDefinition(state, upgrade.cardId);
+        return definition.kind === 'upgrade' && definition.token;
+      }) === filter.withTokenUpgrade) &&
     (!filter.sharesFriendlyLeaderTrait ||
       Object.values(state.cards).some(
         leader =>
@@ -241,6 +246,10 @@ export function matchesUnit(
       state.phaseHistory.attacks.some(
         ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
       ) === filter.attackedThisPhase) &&
+    (filter.attackedBaseThisPhase === undefined ||
+      (state.phaseHistory.baseAttackers ?? []).some(
+        ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
+      ) === filter.attackedBaseThisPhase) &&
     (filter.defending === undefined ||
       state.attacks.some(
         attack =>
@@ -268,6 +277,7 @@ export function matchesUnit(
         r => r.instanceId === card.instanceId && r.incarnation === card.incarnation,
       ) === filter.dealtBaseDamage) &&
     (!filter.hasKeyword || keywordNames(state, card, evaluation).includes(filter.hasKeyword)) &&
+    (filter.minCost === undefined || cost >= filter.minCost) &&
     (filter.powerAtLeast === undefined ||
       unitStats(state, card, evaluation).power >= filter.powerAtLeast) &&
     (!filter.costGreaterThan || (!!cheaper && cost > printedCost(state, cheaper))) &&

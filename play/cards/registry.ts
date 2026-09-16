@@ -1392,6 +1392,188 @@ import { spy } from './sec/spy.ts';
 import { mandalorian } from './ash/mandalorian.ts';
 import { xWing } from './jtl/x-wing.ts';
 import { advantage } from './ash/advantage.ts';
+import { beast } from './hmw/beast.ts';
+import { weakness } from './hmw/weakness.ts';
+import { hmwAllianceShieldGenerator } from './hmw/alliance-shield-generator.ts';
+import { hmwAsajjVentressNoTimeForRegret } from './hmw/asajj-ventress--no-time-for-regret.ts';
+import { hmwBogaLoyalVaractyl } from './hmw/boga--loyal-varactyl.ts';
+import { hmwBreach } from './hmw/breach.ts';
+import { hmwDarthSidiousThereIsNoMercy } from './hmw/darth-sidious--there-is-no-mercy.ts';
+import { hmwDarthVaderAnyMethodsNecessary } from './hmw/darth-vader--any-methods-necessary.ts';
+import { hmwDontTouchAnything } from './hmw/don-t-touch-anything.ts';
+import { hmwGiantGorax } from './hmw/giant-gorax.ts';
+import { hmwGrandMoffTarkinTyrantOfTheOuterRim } from './hmw/grand-moff-tarkin--tyrant-of-the-outer-rim.ts';
+import { hmwHunterEveryoneGetToCover } from './hmw/hunter--everyone-get-to-cover-.ts';
+import { hmwKeeperOfSkaraNalAwoken } from './hmw/keeper-of-skara-nal--awoken.ts';
+import { hmwKelnaccaSolitaryMaster } from './hmw/kelnacca--solitary-master.ts';
+import { hmwL337WereProgrammedToLearn } from './hmw/l3-37--we-re-programmed-to-learn.ts';
+import { hmwLowAltitudeCombat } from './hmw/low-altitude-combat.ts';
+import { hmwOriginTreeShyyyo } from './hmw/origin-tree-shyyyo.ts';
+import { hmwQuiGonJinnWellHandleThis } from './hmw/qui-gon-jinn--we-ll-handle-this.ts';
+import { hmwSandoAquaMonster } from './hmw/sando-aqua-monster.ts';
+import { hmwSeismicDetonation } from './hmw/seismic-detonation.ts';
+import { hmwThirdSisterCycleOfVengeance } from './hmw/third-sister--cycle-of-vengeance.ts';
+import { hmwTirelessMagnaguard } from './hmw/tireless-magnaguard.ts';
+import { hmwTrapField } from './hmw/trap-field.ts';
+import { hmwTwilekKalikori } from './hmw/twi-lek-kalikori.ts';
+import { hmwTyYorrickMonsterHunter } from './hmw/ty-yorrick--monster-hunter.ts';
+import { hmwGreaterSarlacc } from './hmw/greater-sarlacc.ts';
+import { hmwNuteGunrayPerfectlyLegal } from './hmw/nute-gunray--perfectly-legal.ts';
+import { hmwTheFirstLegionVadersFist } from './hmw/the-first-legion--vader-s-fist.ts';
+import { hmwTheMarauderANewHome } from './hmw/the-marauder--a-new-home.ts';
+import { hmwVernestraRwohWeShouldHandleThisOurselves } from './hmw/vernestra-rwoh--we-should-handle-this-ourselves.ts';
+import { hmwViceAdmiralRampartANewEraOfSafety } from './hmw/vice-admiral-rampart--a-new-era-of-safety.ts';
+import { hmwBosskCruelHunter } from './hmw/bossk--cruel-hunter.ts';
+import { hmwChamSyndullaHammerOfRyloth } from './hmw/cham-syndulla--hammer-of-ryloth.ts';
+import { hmwChewbaccaRelentlessRebel } from './hmw/chewbacca--relentless-rebel.ts';
+import { hmwDarthVaderMightOfTheEmpire } from './hmw/darth-vader--might-of-the-empire.ts';
+import { hmwDoctorHemlockEmotionHasNoPlaceHere } from './hmw/doctor-hemlock--emotion-has-no-place-here.ts';
+import { hmwGeneralGrievousSeparatistWarlord } from './hmw/general-grievous--separatist-warlord.ts';
+import { hmwJarJarBinksBombadGeneral } from './hmw/jar-jar-binks--bombad-general.ts';
+import { hmwMaulOldMaster } from './hmw/maul--old-master.ts';
+import { hmwMazKanataEclecticPirateQueen } from './hmw/maz-kanata--eclectic-pirate-queen.ts';
+import { hmwOmegaCloseYourEyesAndFocus } from './hmw/omega--close-your-eyes-and-focus.ts';
+import { hmwOshaHauntedByHerPast } from './hmw/osha--haunted-by-her-past.ts';
+import { hmwPoggleTheLesserLetTheExecutionsBegin } from './hmw/poggle-the-lesser--let-the-executions-begin.ts';
+import { hmwTarffulFightingFromTheShadowlands } from './hmw/tarfful--fighting-from-the-shadowlands.ts';
+import { hmwTheWarriorDeftDuelist } from './hmw/the-warrior--deft-duelist.ts';
+import { hmwWicketFewGreaterBattlesToFight } from './hmw/wicket--few-greater-battles-to-fight.ts';
+import { hmwAKobaRestlessRaider } from './hmw/a-koba--restless-raider.ts';
+import { hmwBatcherLoyalHound } from './hmw/batcher--loyal-hound.ts';
+import { hmwBossLyonieHypnotized } from './hmw/boss-lyonie--hypnotized.ts';
+import { hmwBossNassOtohGungaBoss } from './hmw/boss-nass--otoh-gunga-boss.ts';
+import { hmwCarrionSpikeHarbingerOfTyranny } from './hmw/carrion-spike--harbinger-of-tyranny.ts';
+import { hmwDirectorKrennicTheWorkHasStalled } from './hmw/director-krennic--the-work-has-stalled.ts';
+import { hmwDisposableB1 } from './hmw/disposable-b1.ts';
+import { hmwDookuCorruptionMustBeEradicated } from './hmw/dooku--corruption-must-be-eradicated.ts';
+import { hmwEravanaHaulingRathtars } from './hmw/eravana--hauling-rathtars.ts';
+import { hmwFettSFirespraySettlingTheScore } from './hmw/fett-s-firespray--settling-the-score.ts';
+import { hmwGungaCityGuard } from './hmw/gunga-city-guard.ts';
+import { hmwHeavyIonCannon } from './hmw/heavy-ion-cannon.ts';
+import { hmwImaGunDiHoldingOutForResupply } from './hmw/ima-gun-di--holding-out-for-resupply.ts';
+import { hmwIntelligenceAgency } from './hmw/intelligence-agency.ts';
+import { hmwKrrsantanSanto } from './hmw/krrsantan--santo.ts';
+import { hmwLograyBrightTreeShaman } from './hmw/logray--bright-tree-shaman.ts';
+import { hmwMotherTalzinPledgedToTheSisterhood } from './hmw/mother-talzin--pledged-to-the-sisterhood.ts';
+import { hmwMysteriousDisappearance } from './hmw/mysterious-disappearance.ts';
+import { hmwNoxiousRefinery } from './hmw/noxious-refinery.ts';
+import { hmwRitualDragon } from './hmw/ritual-dragon.ts';
+import { hmwStormchaser } from './hmw/stormchaser.ts';
+import { hmwTalzinSShuttleMysteriousArrival } from './hmw/talzin-s-shuttle--mysterious-arrival.ts';
+import { hmwTheTarkinDoctrineProtectAndPunish } from './hmw/the-tarkin-doctrine--protect-and-punish.ts';
+import { hmwYodaTricksterInExile } from './hmw/yoda--trickster-in-exile.ts';
+import { hmwAdamantEwoks } from './hmw/adamant-ewoks.ts';
+import { hmwBactaTank } from './hmw/bacta-tank.ts';
+import { hmwBestialBond } from './hmw/bestial-bond.ts';
+import { hmwBlockadeShip } from './hmw/blockade-ship.ts';
+import { hmwBobaFettFamilyFound } from './hmw/boba-fett--family-found.ts';
+import { hmwC3poCaptivatingStoryteller } from './hmw/c-3po--captivating-storyteller.ts';
+import { hmwCarboniteChamber } from './hmw/carbonite-chamber.ts';
+import { hmwCidScalebackCanTBeTrusted } from './hmw/cid-scaleback--can-t-be-trusted.ts';
+import { hmwCrosshairIVeChanged } from './hmw/crosshair--i-ve-changed.ts';
+import { hmwDarkSanctum } from './hmw/dark-sanctum.ts';
+import { hmwDookuSSolarSailerDroidArmyPortent } from './hmw/dooku-s-solar-sailer--droid-army-portent.ts';
+import { hmwDragonboatFreighter } from './hmw/dragonboat-freighter.ts';
+import { hmwEasyPrey } from './hmw/easy-prey.ts';
+import { hmwEwokArchers } from './hmw/ewok-archers.ts';
+import { hmwExploitConfidence } from './hmw/exploit-confidence.ts';
+import { hmwGrowth } from './hmw/growth.ts';
+import { hmwInfernoSquadWeCanGrieveLater } from './hmw/inferno-squad--we-can-grieve-later.ts';
+import { hmwLukeSkywalkerDreamingFarmboy } from './hmw/luke-skywalker--dreaming-farmboy.ts';
+import { hmwMaim } from './hmw/maim.ts';
+import { hmwNightbrotherMaulSGauntlet } from './hmw/nightbrother--maul-s-gauntlet.ts';
+import { hmwOvergrowth } from './hmw/overgrowth.ts';
+import { hmwPheeGenoaLiberatorOfAncientWonders } from './hmw/phee-genoa--liberator-of-ancient-wonders.ts';
+import { hmwQimirEveryoneHasAWeakness } from './hmw/qimir--everyone-has-a-weakness.ts';
+import { hmwQueenAmidalaRetakingTheed } from './hmw/queen-amidala--retaking-theed.ts';
+import { hmwRaidingParty } from './hmw/raiding-party.ts';
+import { hmwRazeToRuin } from './hmw/raze-to-ruin.ts';
+import { hmwRishLooTraitorousMinister } from './hmw/rish-loo--traitorous-minister.ts';
+import { hmwSandcrawlerSalesTeam } from './hmw/sandcrawler-sales-team.ts';
+import { hmwSandstorm } from './hmw/sandstorm.ts';
+import { hmwSolCompassionateGuardian } from './hmw/sol--compassionate-guardian.ts';
+import { hmwSunFacPoggleSSecond } from './hmw/sun-fac--poggle-s-second.ts';
+import { hmwSurveillanceCruiser } from './hmw/surveillance-cruiser.ts';
+import { hmwTechIThoughtItWasObvious } from './hmw/tech--i-thought-it-was-obvious.ts';
+import { hmwTeekaYouReInLuck } from './hmw/teeka--you-re-in-luck.ts';
+import { hmwTheChieftainHereSinceTheOceansDried } from './hmw/the-chieftain--here-since-the-oceans-dried.ts';
+import { hmwThermScissorpunchBoastfulGambler } from './hmw/therm-scissorpunch--boastful-gambler.ts';
+import { hmwWreckerWreckingTheEmpire } from './hmw/wrecker--wrecking-the-empire.ts';
+import { hmwArenaAcklayScreamingPredator } from './hmw/arena-acklay--screaming-predator.ts';
+import { hmwArenaNexuStarvedForPrey } from './hmw/arena-nexu--starved-for-prey.ts';
+import { hmwBabwaVenomorBurningKashyyyk } from './hmw/babwa-venomor--burning-kashyyyk.ts';
+import { hmwBattleScarredDestroyer } from './hmw/battle-scarred-destroyer.ts';
+import { hmwBeastLair } from './hmw/beast-lair.ts';
+import { hmwChewbaccaResourcefulWookiee } from './hmw/chewbacca--resourceful-wookiee.ts';
+import { hmwChewbaccaSBowcasterHandcraftedTradition } from './hmw/chewbacca-s-bowcaster--handcrafted-tradition.ts';
+import { hmwChiefChirpaDefiantElder } from './hmw/chief-chirpa--defiant-elder.ts';
+import { hmwCloneXAssassin } from './hmw/clone-x-assassin.ts';
+import { hmwDragonSMight } from './hmw/dragon-s-might.ts';
+import { hmwEmperorPalpatineConsolidatingPower } from './hmw/emperor-palpatine--consolidating-power.ts';
+import { hmwEzraBridgerWhatAreYouAfraidOf } from './hmw/ezra-bridger--what-are-you-afraid-of-.ts';
+import { hmwFambaaShieldTeam } from './hmw/fambaa-shield-team.ts';
+import { hmwGarnacLetTheHuntBegin } from './hmw/garnac--let-the-hunt-begin.ts';
+import { hmwGeneralGrievousScourgeOfDathomir } from './hmw/general-grievous--scourge-of-dathomir.ts';
+import { hmwGrandArmyMarine } from './hmw/grand-army-marine.ts';
+import { hmwHanSoloMyTeamSReady } from './hmw/han-solo--my-team-s-ready.ts';
+import { hmwHijackedAtSt } from './hmw/hijacked-at-st.ts';
+import { hmwKingGrakchawwaaKingOfKashyyyk } from './hmw/king-grakchawwaa--king-of-kashyyyk.ts';
+import { hmwLeiaOrganaTheseAreMyFriends } from './hmw/leia-organa--these-are-my-friends.ts';
+import { hmwLifetreeCaravan } from './hmw/lifetree-caravan.ts';
+import { hmwLuminaraUnduliBesiegedGeneral } from './hmw/luminara-unduli--besieged-general.ts';
+import { hmwMilitaryAcademy } from './hmw/military-academy.ts';
+import { hmwNightfall } from './hmw/nightfall.ts';
+import { hmwNumaStillFighting } from './hmw/numa--still-fighting.ts';
+import { hmwNuvoVindiBlueShadowPerfected } from './hmw/nuvo-vindi--blue-shadow-perfected.ts';
+import { hmwPeppiBowShaakHerder } from './hmw/peppi-bow--shaak-herder.ts';
+import { hmwRadiantViiNegotiatingForNaboo } from './hmw/radiant-vii--negotiating-for-naboo.ts';
+import { hmwRavage } from './hmw/ravage.ts';
+import { hmwRemoteScout } from './hmw/remote-scout.ts';
+import { hmwRhoMedicalShuttle } from './hmw/rho-medical-shuttle.ts';
+import { hmwRyykBlademaster } from './hmw/ryyk-blademaster.ts';
+import { hmwScorchImperialCommando } from './hmw/scorch--imperial-commando.ts';
+import { hmwSinisterWarMemorial } from './hmw/sinister-war-memorial.ts';
+import { hmwStormtrooperPatrol } from './hmw/stormtrooper-patrol--.ts';
+import { hmwTeeboStripedHunter } from './hmw/teebo--striped-hunter.ts';
+import { hmwTorrent } from './hmw/torrent.ts';
+import { hmwVerdantFortress } from './hmw/verdant-fortress.ts';
+import { hmwVillageTroublemaker } from './hmw/village-troublemaker.ts';
+import { hmwWookieeRangers } from './hmw/wookiee-rangers.ts';
+import { hmwYordFandarDevoutlyDisciplined } from './hmw/yord-fandar--devoutly-disciplined.ts';
+import { hmwArenaReekFixtureOfCeremony } from './hmw/arena-reek--fixture-of-ceremony.ts';
+import { hmwAssaultFrigate } from './hmw/assault-frigate.ts';
+import { hmwBankingClanWarship } from './hmw/banking-clan-warship.ts';
+import { hmwBioweaponsLab } from './hmw/bioweapons-lab.ts';
+import { hmwBrightTreeVillage } from './hmw/bright-tree-village.ts';
+import { hmwCaptainTarpalsGrandArmyCaptain } from './hmw/captain-tarpals--grand-army-captain.ts';
+import { hmwChampionsOfEndor } from './hmw/champions-of-endor.ts';
+import { hmwDendroidWilds } from './hmw/dendroid-wilds.ts';
+import { hmwDuneSea } from './hmw/dune-sea.ts';
+import { hmwEwokBrigade } from './hmw/ewok-brigade.ts';
+import { hmwFennecShandAShipForALife } from './hmw/fennec-shand--a-ship-for-a-life.ts';
+import { hmwGreatGrassPlains } from './hmw/great-grass-plains.ts';
+import { hmwGunganBattleWagon } from './hmw/gungan-battle-wagon.ts';
+import { hmwImperialVenator } from './hmw/imperial-venator.ts';
+import { hmwJaxxonICanHearYouBreathing } from './hmw/jaxxon--i-can-hear-you-breathing-.ts';
+import { hmwJundlandWastes } from './hmw/jundland-wastes.ts';
+import { hmwKachirho } from './hmw/kachirho.ts';
+import { hmwKyyyalstaadSwamp } from './hmw/kyyyalstaad-swamp.ts';
+import { hmwLurkingWampa } from './hmw/lurking-wampa.ts';
+import { hmwMaceWinduAustereCentrist } from './hmw/mace-windu--austere-centrist.ts';
+import { hmwMaeKillTheDream } from './hmw/mae--kill-the-dream.ts';
+import { hmwMaulOnlyRevengeRemains } from './hmw/maul--only-revenge-remains.ts';
+import { hmwNalaSeSilentSurvivor } from './hmw/nala-se--silent-survivor.ts';
+import { hmwOffworldJawa } from './hmw/offworld-jawa.ts';
+import { hmwOriginTree } from './hmw/origin-tree.ts';
+import { hmwOtohGunga } from './hmw/otoh-gunga.ts';
+import { hmwResearchStation9 } from './hmw/research-station-9.ts';
+import { hmwSandtrooperSquad } from './hmw/sandtrooper-squad.ts';
+import { hmwShadowlands } from './hmw/shadowlands.ts';
+import { hmwTribubbleBongoSub } from './hmw/tribubble-bongo-sub.ts';
+import { hmwTuskenCamp } from './hmw/tusken-camp.ts';
+import { hmwVictorSquadronInAttackFormation } from './hmw/victor-squadron--in-attack-formation.ts';
+import { hmwWookieeProtector } from './hmw/wookiee-protector.ts';
+import { hmwYannaSanctuaryElder } from './hmw/yanna--sanctuary-elder.ts';
 import { chimaeraAFrighteningReality } from './ash/chimaera--a-frightening-reality.ts';
 import { preVizslaStrongWilledRuler } from './ash/pre-vizsla--strong-willed-ruler.ts';
 import { koskaReevesWarriorOfMandalore } from './ash/koska-reeves--warrior-of-mandalore.ts';
@@ -2979,6 +3161,188 @@ definitions.push(
   mandalorian,
   xWing,
   advantage,
+  beast,
+  weakness,
+  hmwAllianceShieldGenerator,
+  hmwAsajjVentressNoTimeForRegret,
+  hmwBogaLoyalVaractyl,
+  hmwBreach,
+  hmwDarthSidiousThereIsNoMercy,
+  hmwDarthVaderAnyMethodsNecessary,
+  hmwDontTouchAnything,
+  hmwGiantGorax,
+  hmwGrandMoffTarkinTyrantOfTheOuterRim,
+  hmwHunterEveryoneGetToCover,
+  hmwKeeperOfSkaraNalAwoken,
+  hmwKelnaccaSolitaryMaster,
+  hmwL337WereProgrammedToLearn,
+  hmwLowAltitudeCombat,
+  hmwOriginTreeShyyyo,
+  hmwQuiGonJinnWellHandleThis,
+  hmwSandoAquaMonster,
+  hmwSeismicDetonation,
+  hmwThirdSisterCycleOfVengeance,
+  hmwTirelessMagnaguard,
+  hmwTrapField,
+  hmwTwilekKalikori,
+  hmwTyYorrickMonsterHunter,
+  hmwGreaterSarlacc,
+  hmwNuteGunrayPerfectlyLegal,
+  hmwTheFirstLegionVadersFist,
+  hmwTheMarauderANewHome,
+  hmwVernestraRwohWeShouldHandleThisOurselves,
+  hmwViceAdmiralRampartANewEraOfSafety,
+  hmwBosskCruelHunter,
+  hmwChamSyndullaHammerOfRyloth,
+  hmwChewbaccaRelentlessRebel,
+  hmwDarthVaderMightOfTheEmpire,
+  hmwDoctorHemlockEmotionHasNoPlaceHere,
+  hmwGeneralGrievousSeparatistWarlord,
+  hmwJarJarBinksBombadGeneral,
+  hmwMaulOldMaster,
+  hmwMazKanataEclecticPirateQueen,
+  hmwOmegaCloseYourEyesAndFocus,
+  hmwOshaHauntedByHerPast,
+  hmwPoggleTheLesserLetTheExecutionsBegin,
+  hmwTarffulFightingFromTheShadowlands,
+  hmwTheWarriorDeftDuelist,
+  hmwWicketFewGreaterBattlesToFight,
+  hmwAKobaRestlessRaider,
+  hmwBatcherLoyalHound,
+  hmwBossLyonieHypnotized,
+  hmwBossNassOtohGungaBoss,
+  hmwCarrionSpikeHarbingerOfTyranny,
+  hmwDirectorKrennicTheWorkHasStalled,
+  hmwDisposableB1,
+  hmwDookuCorruptionMustBeEradicated,
+  hmwEravanaHaulingRathtars,
+  hmwFettSFirespraySettlingTheScore,
+  hmwGungaCityGuard,
+  hmwHeavyIonCannon,
+  hmwImaGunDiHoldingOutForResupply,
+  hmwIntelligenceAgency,
+  hmwKrrsantanSanto,
+  hmwLograyBrightTreeShaman,
+  hmwMotherTalzinPledgedToTheSisterhood,
+  hmwMysteriousDisappearance,
+  hmwNoxiousRefinery,
+  hmwRitualDragon,
+  hmwStormchaser,
+  hmwTalzinSShuttleMysteriousArrival,
+  hmwTheTarkinDoctrineProtectAndPunish,
+  hmwYodaTricksterInExile,
+  hmwAdamantEwoks,
+  hmwBactaTank,
+  hmwBestialBond,
+  hmwBlockadeShip,
+  hmwBobaFettFamilyFound,
+  hmwC3poCaptivatingStoryteller,
+  hmwCarboniteChamber,
+  hmwCidScalebackCanTBeTrusted,
+  hmwCrosshairIVeChanged,
+  hmwDarkSanctum,
+  hmwDookuSSolarSailerDroidArmyPortent,
+  hmwDragonboatFreighter,
+  hmwEasyPrey,
+  hmwEwokArchers,
+  hmwExploitConfidence,
+  hmwGrowth,
+  hmwInfernoSquadWeCanGrieveLater,
+  hmwLukeSkywalkerDreamingFarmboy,
+  hmwMaim,
+  hmwNightbrotherMaulSGauntlet,
+  hmwOvergrowth,
+  hmwPheeGenoaLiberatorOfAncientWonders,
+  hmwQimirEveryoneHasAWeakness,
+  hmwQueenAmidalaRetakingTheed,
+  hmwRaidingParty,
+  hmwRazeToRuin,
+  hmwRishLooTraitorousMinister,
+  hmwSandcrawlerSalesTeam,
+  hmwSandstorm,
+  hmwSolCompassionateGuardian,
+  hmwSunFacPoggleSSecond,
+  hmwSurveillanceCruiser,
+  hmwTechIThoughtItWasObvious,
+  hmwTeekaYouReInLuck,
+  hmwTheChieftainHereSinceTheOceansDried,
+  hmwThermScissorpunchBoastfulGambler,
+  hmwWreckerWreckingTheEmpire,
+  hmwArenaAcklayScreamingPredator,
+  hmwArenaNexuStarvedForPrey,
+  hmwBabwaVenomorBurningKashyyyk,
+  hmwBattleScarredDestroyer,
+  hmwBeastLair,
+  hmwChewbaccaResourcefulWookiee,
+  hmwChewbaccaSBowcasterHandcraftedTradition,
+  hmwChiefChirpaDefiantElder,
+  hmwCloneXAssassin,
+  hmwDragonSMight,
+  hmwEmperorPalpatineConsolidatingPower,
+  hmwEzraBridgerWhatAreYouAfraidOf,
+  hmwFambaaShieldTeam,
+  hmwGarnacLetTheHuntBegin,
+  hmwGeneralGrievousScourgeOfDathomir,
+  hmwGrandArmyMarine,
+  hmwHanSoloMyTeamSReady,
+  hmwHijackedAtSt,
+  hmwKingGrakchawwaaKingOfKashyyyk,
+  hmwLeiaOrganaTheseAreMyFriends,
+  hmwLifetreeCaravan,
+  hmwLuminaraUnduliBesiegedGeneral,
+  hmwMilitaryAcademy,
+  hmwNightfall,
+  hmwNumaStillFighting,
+  hmwNuvoVindiBlueShadowPerfected,
+  hmwPeppiBowShaakHerder,
+  hmwRadiantViiNegotiatingForNaboo,
+  hmwRavage,
+  hmwRemoteScout,
+  hmwRhoMedicalShuttle,
+  hmwRyykBlademaster,
+  hmwScorchImperialCommando,
+  hmwSinisterWarMemorial,
+  hmwStormtrooperPatrol,
+  hmwTeeboStripedHunter,
+  hmwTorrent,
+  hmwVerdantFortress,
+  hmwVillageTroublemaker,
+  hmwWookieeRangers,
+  hmwYordFandarDevoutlyDisciplined,
+  hmwArenaReekFixtureOfCeremony,
+  hmwAssaultFrigate,
+  hmwBankingClanWarship,
+  hmwBioweaponsLab,
+  hmwBrightTreeVillage,
+  hmwCaptainTarpalsGrandArmyCaptain,
+  hmwChampionsOfEndor,
+  hmwDendroidWilds,
+  hmwDuneSea,
+  hmwEwokBrigade,
+  hmwFennecShandAShipForALife,
+  hmwGreatGrassPlains,
+  hmwGunganBattleWagon,
+  hmwImperialVenator,
+  hmwJaxxonICanHearYouBreathing,
+  hmwJundlandWastes,
+  hmwKachirho,
+  hmwKyyyalstaadSwamp,
+  hmwLurkingWampa,
+  hmwMaceWinduAustereCentrist,
+  hmwMaeKillTheDream,
+  hmwMaulOnlyRevengeRemains,
+  hmwNalaSeSilentSurvivor,
+  hmwOffworldJawa,
+  hmwOriginTree,
+  hmwOtohGunga,
+  hmwResearchStation9,
+  hmwSandtrooperSquad,
+  hmwShadowlands,
+  hmwTribubbleBongoSub,
+  hmwTuskenCamp,
+  hmwVictorSquadronInAttackFormation,
+  hmwWookieeProtector,
+  hmwYannaSanctuaryElder,
   chimaeraAFrighteningReality,
   preVizslaStrongWilledRuler,
   koskaReevesWarriorOfMandalore,
