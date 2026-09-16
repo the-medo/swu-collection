@@ -59,7 +59,9 @@ affect contributor data; deploying does not update those rules automatically.
 2. **Enable Coolify API access.** On a self-hosted instance, enable **Settings →
    Advanced → API Access** if disabled. The Coolify HTTPS URL must be reachable
    from GitHub-hosted runners. A private-only endpoint needs a runner with access
-   to that network instead of `ubuntu-latest`.
+   to that network instead of `ubuntu-latest`. Self-hosted runners must use
+   [Actions Runner v2.327.1 or newer](https://github.com/actions/setup-node/tree/v6#breaking-changes-in-v5)
+   for the Node 24 action runtimes.
 3. **Create an API token.** In **Keys & Tokens → API Tokens**, create a token for
    the team owning the applications with **deploy** permission. Save the token;
    it is shown only once. General read/write or database credentials are not
@@ -204,6 +206,7 @@ node --test scripts/deploy/*.test.mjs
 ```
 
 The tests use temporary Git repositories and mocked HTTP responses; they never
-contact Coolify. Node 20+ is sufficient (provided by the GitHub Ubuntu runner).
+contact Coolify. CI explicitly selects Node 24 with `actions/setup-node`;
+use the same version locally to match CI.
 For workflow syntax checking, optionally install [actionlint](https://github.com/rhysd/actionlint/blob/main/docs/install.md)
 and run `actionlint .github/workflows/deploy.yml`.

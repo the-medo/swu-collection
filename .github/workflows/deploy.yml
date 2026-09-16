@@ -33,10 +33,14 @@ jobs:
       has_changes: ${{ steps.plan.outputs.has_changes }}
       migration_changes: ${{ steps.plan.outputs.migration_changes }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
           persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
       - name: Test deployment tooling
         run: node --test scripts/deploy/*.test.mjs
       - name: Plan deployments
@@ -70,9 +74,13 @@ jobs:
         run: |
           echo '::error::Crossfire was not deployed because migration inputs changed or the previous revision is unavailable. Pause further production pushes, wait for the main app deployment, verify Migration complete and Server running in its logs, then run this workflow manually for crossfire. Rerunning this push will keep this guard.'
           exit 1
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
       - name: Trigger Coolify
         env:
           DEPLOY_SERVICE: ${{ matrix.service }}
