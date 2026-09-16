@@ -1,5 +1,7 @@
-# Deploy this file as a separate, private Docker Compose Service in the existing
-# SWUBASE Coolify project. Do not assign either service a domain or a port.
+# Deploy as a private Git-backed application with the Docker Compose build pack
+# in the existing SWUBASE Coolify project. Base Directory: /scripts/remote-dev;
+# Docker Compose Location: /docker-compose.coolify.yml. See docs/deployment.md.
+# Do not assign either service a domain or a port.
 #
 # Set REMOTE_DEV_RAW_BACKUP_HOST_DIR only in Coolify's environment-variable UI.
 # It is intentionally not present in this repository because it identifies the

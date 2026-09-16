@@ -10,6 +10,13 @@ Crossfire requires **one additional application container**. It shares the curre
 PostgreSQL database, accounts and frontend. There is no new database, Redis service,
 worker volume, OAuth application, DNS record or Crossfire scheduled task to create.
 
+After initial setup, use the [selective deployment workflow](../deployment.md)
+to trigger only affected Coolify applications on pushes to `main`. Shared engine
+changes select both the web/API and worker because both execute engine code.
+Migration pushes automatically hold the worker deployment until an operator
+verifies the web migration and manually deploys Crossfire; see the workflow's
+[migration handoff](../deployment.md#migration-handoff).
+
 ## 1. Prepare the release and database
 
 Deploy the same Crossfire-capable Git revision to the web application and worker.
