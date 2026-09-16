@@ -1,4 +1,5 @@
 import type { Sql } from 'postgres';
+import { aggregateWorkerMetrics, workerMetricRows } from '../../../play/storage/worker-metrics.ts';
 import type {
   CrossfireOperationsHours,
   CrossfireOperationsStatus,
@@ -68,42 +69,30 @@ export class CrossfireOperations {
   constructor(private readonly sql: Sql) {}
 
   async status(hours: CrossfireOperationsHours): Promise<CrossfireOperationsStatus> {
-    const bucketSeconds = hours === 1 ? 15 : hours === 6 ? 30 : 120;
+    const metrics = workerMetricRows(this.sql);
+    let bucketSeconds: number;
+    if (hours === 'all') {
+      const [oldest] = await this.sql<{ age_seconds: number | null }[]>`SELECT
+        extract(epoch FROM (statement_timestamp() - min(sampled_at)))::double precision AS age_seconds
+        FROM (
+          (SELECT sampled_at FROM play.worker_metrics ORDER BY sampled_at LIMIT 1)
+          UNION ALL
+          (SELECT sampled_at FROM play.worker_metric_rollups ORDER BY sampled_at LIMIT 1)
+        ) first_samples`;
+      bucketSeconds = Math.max(3600, Math.ceil((oldest?.age_seconds ?? 0) / 720 / 3600) * 3600);
+    } else {
+      bucketSeconds = { 1: 15, 6: 30, 24: 120, 168: 900, 720: 3600, 8760: 43200 }[hours];
+    }
     const [latest, history] = await Promise.all([
       this.sql<LatestMetricRow[]>`SELECT worker_metrics.*,
           sampled_at >= statement_timestamp() - ${STALE_AFTER_MS} * interval '1 millisecond' AS online
-        FROM play.worker_metrics AS worker_metrics
+        FROM ${metrics} AS worker_metrics
         ORDER BY sampled_at DESC LIMIT 1`,
-      this.sql<MetricRow[]>`SELECT
-          worker_id,
-          max(sampled_at) AS sampled_at,
-          (array_agg(started_at ORDER BY sampled_at DESC))[1] AS started_at,
-          (array_agg(resource_source ORDER BY sampled_at DESC))[1] AS resource_source,
-          max(memory_used_bytes) AS memory_used_bytes,
-          (array_agg(memory_limit_bytes ORDER BY sampled_at DESC))[1] AS memory_limit_bytes,
-          max(process_rss_bytes) AS process_rss_bytes,
-          max(heap_used_bytes) AS heap_used_bytes,
-          max(cpu_percent) AS cpu_percent,
-          (array_agg(cpu_limit_cores ORDER BY sampled_at DESC))[1] AS cpu_limit_cores,
-          max(event_loop_lag_ms) AS event_loop_lag_ms,
-          max(running_games) AS running_games,
-          max(active_games) AS active_games,
-          max(loaded_games) AS loaded_games,
-          max(loading_games) AS loading_games,
-          max(attached_games) AS attached_games,
-          max(busy_games) AS busy_games,
-          max(queued_operations) AS queued_operations,
-          (array_agg(game_capacity ORDER BY sampled_at DESC))[1] AS game_capacity,
-          max(connections) AS connections,
-          max(live_connections) AS live_connections,
-          max(replay_connections) AS replay_connections,
-          max(rooms) AS rooms,
-          max(ended_games) AS ended_games,
-          max(pending_statistics) AS pending_statistics
+      this.sql<MetricRow[]>`SELECT ${aggregateWorkerMetrics(this.sql)}
         FROM (
           SELECT *, floor(extract(epoch FROM sampled_at) / ${bucketSeconds}) AS bucket
-          FROM play.worker_metrics
-          WHERE sampled_at >= statement_timestamp() - ${hours} * interval '1 hour'
+          FROM ${metrics} AS worker_metrics
+          ${hours === 'all' ? this.sql`` : this.sql`WHERE sampled_at >= statement_timestamp() - ${hours} * interval '1 hour'`}
         ) samples GROUP BY bucket, worker_id ORDER BY bucket, max(sampled_at)`,
     ]);
     const latestView = latest[0] ? view(latest[0]) : null;

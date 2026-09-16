@@ -76,6 +76,7 @@ boundary.
 | `play.journal_history`    | Verified compressed completed games, including initial snapshot, branches and retry receipts                  |
 | `play.checkpoints`        | Full private serialized positions, including hidden cards and unfinished resolution                           |
 | `play.worker_metrics`     | Aggregate worker/container resources, actor pressure, connections and game lifecycle counts                   |
+| `play.worker_metric_rollups` | Peak-preserving historical worker telemetry in 10-minute and hourly buckets |
 | `play.lobbies`            | Waiting/started/cancelled lobby, game association and agreed disclosure settings                              |
 | `play.participants`       | Seats, account/session references, immutable accepted deck snapshots and connection generations               |
 | `play.connection_tickets` | Hashed, expiring, single-use live/replay admission tickets                                                    |
@@ -86,7 +87,7 @@ boundary.
 The ordinary application migration `0057_crossfire` creates the gameplay
 schema, including live/completed journals, lobbies, tickets, undo, bookmarks,
 practice, chat, reports, matches, invitations and immutable card bundles.
-Migration `0058` adds aggregate worker telemetry.
+Migration `0058` adds aggregate worker telemetry; `0059` adds historical telemetry rollups.
 The development migrations were consolidated before release; see the
 [migration baseline](migration-baseline.md) for custom SQL and existing local data.
 
@@ -165,11 +166,17 @@ players. `CROSSFIRE_MAX_GAMES` configures loaded-game capacity; other listener
 limits remain code defaults. These are bounds, not measured production capacity.
 
 The worker writes aggregate resource and lifecycle telemetry every 15 seconds
-to `play.worker_metrics`, retaining seven days. Container deployments use Linux
+to `play.worker_metrics`, retaining seven days of detailed samples. Older data
+moves to `play.worker_metric_rollups` at 10-minute resolution through day 30 and
+hourly resolution afterward, with no expiry. The worker maintains these tiers
+at startup and approximately hourly without an external scheduled task. Promotions
+and deletion of source samples commit atomically; failures retry on the next sample.
+Container deployments use Linux
 cgroup CPU counters and memory working set (usage minus reclaimable inactive-file
 cache); local host runs use process counters. The admin-only
-Crossfire Operations page polls these samples and displays 1/6/24-hour resource,
-game, actor and connection trends. “Active” means a running game whose last
+Crossfire Operations page polls these samples and displays resource and game
+charts for 1/6/24 hours, 7/30 days, one year or all retained history, plus current
+actor and connection counters. Charts preserve peaks, not averages. “Active” means a running game whose last
 accepted action was within two minutes. A sample older than 45 seconds is shown
 as offline. This telemetry deliberately excludes game IDs, users and game state.
 The dashboard follows the supported single-worker deployment; concurrent worker

@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import type { Sql } from 'postgres';
 import type { GameWorker } from './games.ts';
+import { compactWorkerMetrics } from '../storage/worker-metrics.ts';
 
 export type ResourceSource = 'cgroup-v2' | 'cgroup-v1' | 'process';
 export type RuntimeCounters = {
@@ -151,7 +152,6 @@ type ServerStatistics = {
 };
 type MetricsOptions = {
   intervalMs?: number;
-  retentionMs?: number;
   databaseTime?: boolean;
   now?: () => Date;
   monotonicNow?: () => number;
@@ -170,14 +170,13 @@ type GameCounts = {
 export class WorkerMetrics {
   readonly #startedAt: Date;
   readonly #intervalMs: number;
-  readonly #retentionMs: number;
   readonly #databaseTime: boolean;
   readonly #now: () => Date;
   readonly #monotonicNow: () => number;
   readonly #resources: () => Promise<RuntimeCounters>;
   readonly #onFault: (error: unknown) => void;
   #lastCpu?: { source: ResourceSource; usageMicros: number; observedAtMs: number };
-  #nextPruneAt = 0;
+  #nextCompactionAt = 0;
   #pendingEventLoopLagMs = 0;
   #sampling?: Promise<void>;
   #timer?: ReturnType<typeof setInterval>;
@@ -189,7 +188,6 @@ export class WorkerMetrics {
     options: MetricsOptions = {},
   ) {
     this.#intervalMs = options.intervalMs ?? 15_000;
-    this.#retentionMs = options.retentionMs ?? 7 * 24 * 60 * 60 * 1000;
     this.#databaseTime = options.databaseTime ?? true;
     this.#now = options.now ?? (() => new Date());
     this.#monotonicNow = options.monotonicNow ?? performance.now.bind(performance);
@@ -264,11 +262,8 @@ export class WorkerMetrics {
       ${server.liveConnections}, ${server.replayConnections}, ${server.rooms},
       ${counts?.ended_games ?? 0}, ${counts?.pending_statistics ?? 0}
     )`;
-    if (sampledAt.getTime() >= this.#nextPruneAt) {
-      this.#nextPruneAt = sampledAt.getTime() + 60 * 60 * 1000;
-      await this.sql`DELETE FROM play.worker_metrics
-        WHERE sampled_at < statement_timestamp() - ${this.#retentionMs} * interval '1 millisecond'`;
-    }
+    if (observedAtMs >= this.#nextCompactionAt && (await compactWorkerMetrics(this.sql)))
+      this.#nextCompactionAt = observedAtMs + 60 * 60 * 1000;
   }
 
   async stop() {

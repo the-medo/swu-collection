@@ -8,6 +8,9 @@ import {
 test('tooltip labels use the sample timestamp when the chart wrapper passes a series name', () => {
   const sampledAtMs = Date.parse('2026-09-16T12:00:00.000Z');
   const expected = new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(sampledAtMs));

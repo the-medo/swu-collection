@@ -1,6 +1,12 @@
 import type { CrossfireWorkerMetric } from '../../../../../shared/types/crossfire-operations.ts';
 
-const tooltipTime = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
+const tooltipTime = new Intl.DateTimeFormat(undefined, {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
 
 export function formatCrossfireOperationsTooltipTime(
   _label: unknown,

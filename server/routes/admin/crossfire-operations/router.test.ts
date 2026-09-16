@@ -47,7 +47,10 @@ test('operational metrics accept only bounded history windows and disable cachin
   expect(f.calls).toEqual([24]);
   expect((await f.request()).status).toBe(200);
   expect(f.calls).toEqual([24, 6]);
-  for (const query of ['?hours=0', '?hours=168', '?hours=6&unknown=value'])
+  for (const query of ['?hours=0', '?hours=999', '?hours=6&unknown=value'])
     expect((await f.request(query)).status).toBe(400);
   expect(f.calls).toEqual([24, 6]);
+  for (const hours of [168, 720, 8760, 'all'])
+    expect((await f.request(`?hours=${hours}`)).status).toBe(200);
+  expect(f.calls).toEqual([24, 6, 168, 720, 8760, 'all']);
 });

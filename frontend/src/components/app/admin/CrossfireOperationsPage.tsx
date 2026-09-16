@@ -17,6 +17,7 @@ import type {
   CrossfireOperationsHours,
   CrossfireWorkerMetric,
 } from '../../../../../shared/types/crossfire-operations.ts';
+import { crossfireOperationsRanges } from '../../../../../shared/types/crossfire-operations.ts';
 import {
   buildCrossfireOperationsSeries,
   formatCrossfireOperationsTooltipTime,
@@ -34,6 +35,11 @@ const gameChart = {
   loadedGames: { label: 'Loaded', color: 'hsl(var(--chart-4))' },
 } satisfies ChartConfig;
 const time = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
+const date = new Intl.DateTimeFormat(undefined, {
+  month: 'short',
+  day: 'numeric',
+  year: '2-digit',
+});
 function formatBytes(bytes: number) {
   if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(2)} GiB`;
   return `${(bytes / 1024 ** 2).toFixed(1)} MiB`;
@@ -71,8 +77,8 @@ function MetricCard({
     </Card>
   );
 }
-function axisTime(value: string | number) {
-  return time.format(new Date(value));
+function axisTime(value: string | number, hours: CrossfireOperationsHours) {
+  return (hours === 'all' || hours > 24 ? date : time).format(new Date(value));
 }
 function IsolatedDot({
   cx,
@@ -200,8 +206,8 @@ export function CrossfireOperationsPage() {
 
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h3 className="font-semibold">History</h3>
-            <div className="flex rounded-md border p-0.5" aria-label="History range">
-              {([1, 6, 24] as const).map(value => (
+            <div className="flex flex-wrap rounded-md border p-0.5" aria-label="History range">
+              {crossfireOperationsRanges.map(({ hours: value, label }) => (
                 <Button
                   key={value}
                   size="sm"
@@ -210,11 +216,15 @@ export function CrossfireOperationsPage() {
                   aria-pressed={hours === value}
                   onClick={() => setHours(value)}
                 >
-                  {value}h
+                  {label}
                 </Button>
               ))}
             </div>
           </div>
+          <p className="text-xs text-muted-foreground">
+            Charts show sampled peaks. Older history is summarized: 10-minute samples after seven
+            days, hourly samples after 30 days.
+          </p>
 
           {history.length < 2 ? (
             <p className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
@@ -240,7 +250,7 @@ export function CrossfireOperationsPage() {
                         type="number"
                         scale="time"
                         domain={['dataMin', 'dataMax']}
-                        tickFormatter={axisTime}
+                        tickFormatter={value => axisTime(value, hours)}
                         minTickGap={28}
                       />
                       <YAxis yAxisId="memory" width={42} tickFormatter={value => `${value}`} />
@@ -305,7 +315,7 @@ export function CrossfireOperationsPage() {
                         type="number"
                         scale="time"
                         domain={['dataMin', 'dataMax']}
-                        tickFormatter={axisTime}
+                        tickFormatter={value => axisTime(value, hours)}
                         minTickGap={28}
                       />
                       <YAxis width={34} allowDecimals={false} />

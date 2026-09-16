@@ -3,6 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import type { AuthExtension } from '../../../auth/auth.ts';
 import { requireAdmin } from '../../../auth/requireAdmin.ts';
 import { crossfireOperationsQuery } from '../../../../shared/types/crossfire-operations.ts';
+import type { CrossfireOperationsHours } from '../../../../shared/types/crossfire-operations.ts';
 import type { CrossfireOperations } from '../../../lib/crossfire/operations.ts';
 
 export function createCrossfireOperationsRouter(
@@ -16,9 +17,12 @@ export function createCrossfireOperationsRouter(
       if (auth.response) return auth.response;
       await next();
     })
-    .get('/', zValidator('query', crossfireOperationsQuery), async c =>
-      c.json({
-        data: await service().status(Number(c.req.valid('query').hours) as 1 | 6 | 24),
-      }),
-    );
+    .get('/', zValidator('query', crossfireOperationsQuery), async c => {
+      const hours = c.req.valid('query').hours;
+      return c.json({
+        data: await service().status(
+          hours === 'all' ? 'all' : (Number(hours) as Exclude<CrossfireOperationsHours, 'all'>),
+        ),
+      });
+    });
 }

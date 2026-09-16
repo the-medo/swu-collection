@@ -16,7 +16,7 @@ export function crossfireOperationsQueryOptions(
     queryKey: ['crossfire-operations', sessionId, hours],
     queryFn: async ({ signal }) => {
       const response = await api.admin['crossfire-operations'].$get(
-        { query: { hours: String(hours) as '1' | '6' | '24' } },
+        { query: { hours: String(hours) as `${CrossfireOperationsHours}` } },
         { init: { signal } },
       );
       if (!response.ok) throw await createApiError(response, 'Could not load Crossfire operations');

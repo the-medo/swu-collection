@@ -47,8 +47,10 @@ checks successful SIGTERM exit.
 
 ## Operational telemetry
 
-The worker samples aggregate operational telemetry every 15 seconds and stores
-seven days in `play.worker_metrics`. In a container it reads Linux cgroup v2 (or
+The worker samples aggregate operational telemetry every 15 seconds and keeps
+seven days of detailed samples in `play.worker_metrics`. Older samples are
+compacted into `play.worker_metric_rollups`: 10-minute buckets through day 30,
+then hourly buckets with no expiry. In a container it reads Linux cgroup v2 (or
 v1) memory and cumulative CPU counters. The displayed memory working set removes
 reclaimable inactive-file cache while still including the replay thread,
 finalizer child and other processes in the worker container. CPU follows common
@@ -64,17 +66,30 @@ loading/attached/busy actors, queued actor operations, worker capacity, live and
 replay connections, rooms, ended games awaiting archival and finalized games
 awaiting statistics publication. Samples contain no game IDs, account data,
 commands, card data or authoritative state. The contributor-data sanitizer
-removes this table with every other `play` table.
+removes both telemetry tables with every other `play` table.
 
-Admins can inspect the latest sample and 1/6/24-hour charts under
+No cron or Coolify scheduled task is required. Maintenance runs after the first
+successful sample at startup and approximately hourly afterward. Only complete
+aged buckets are compacted, so the detailed tiers may retain slightly more than
+their nominal duration. Downtime pauses maintenance; the next worker start
+catches up. Both promotions happen in one transaction under an advisory lock,
+preserve sampled maxima and worker identity, and remove source rows only as part
+of committing their summaries. Failed maintenance is retried with the next sample.
+Hourly summaries retain peaks rather than averages; they cannot reconstruct the
+original 15-second sequence or outages shorter than their bucket.
+
+Admins can inspect the latest sample and 1/6/24-hour, 7/30-day, 1-year or all-time charts under
 **Administration → Crossfire → Operations**. The page refreshes every ten
 seconds and marks the worker offline when the newest sample is more than 45
 seconds old. It shows the current worker identity and breaks chart lines across
-worker restarts or missing samples; longer ranges retain the highest value in
-each display bucket so short resource/queue spikes remain visible. This is a
+worker restarts or missing samples; longer ranges further group the retained
+history into roughly 720 display buckets and retain each metric's highest value.
+This is a
 process-liveness signal, not proof that PostgreSQL or every recoverable game is
 healthy. The dashboard follows the currently supported single-worker deployment;
 concurrent workers and routing between them remain unsupported.
+Migration `0059` adds the rollup table and must be applied before deploying this
+worker. Data already removed by the earlier seven-day-only retention cannot be recovered.
 
 The [worktree launcher](../../scripts/worktree-dev/README.md) now allocates a
 separate loopback worker port and includes Crossfire in up/start/down/status/logs
