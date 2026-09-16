@@ -4,6 +4,7 @@ import {
   CircleDollarSign,
   Database,
   Flag,
+  Gauge,
   Group,
   Image,
   Layers,
@@ -20,6 +21,7 @@ export const adminSections = [
     items: [
       { id: 'crossfire-access', label: 'Player access', icon: UserRoundCheck },
       { id: 'crossfire-cards', label: 'Card releases', icon: Layers },
+      { id: 'crossfire-operations', label: 'Operations', icon: Gauge },
     ],
   },
   {

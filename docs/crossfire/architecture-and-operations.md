@@ -70,21 +70,24 @@ boundary.
 
 | Table                     | What it retains                                                                                               |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `play.card_bundles` | Immutable installed JSON card releases identified by version/checksum |
+| `play.card_bundles`       | Immutable installed JSON card releases identified by version/checksum                                         |
 | `play.games`              | Engine/rules/card/state pins, latest committed sequence/revision/hash, worker owner and lease                 |
-| `play.journal_live`            | Each accepted command, recorded engine/random inputs, emitted facts, resulting hash and durable retry receipt |
-| `play.journal_history` | Verified compressed completed games, including initial snapshot, branches and retry receipts |
+| `play.journal_live`       | Each accepted command, recorded engine/random inputs, emitted facts, resulting hash and durable retry receipt |
+| `play.journal_history`    | Verified compressed completed games, including initial snapshot, branches and retry receipts                  |
 | `play.checkpoints`        | Full private serialized positions, including hidden cards and unfinished resolution                           |
+| `play.worker_metrics`     | Aggregate worker/container resources, actor pressure, connections and game lifecycle counts                   |
+| `play.worker_metric_rollups` | Peak-preserving historical worker telemetry in 10-minute and hourly buckets |
 | `play.lobbies`            | Waiting/started/cancelled lobby, game association and agreed disclosure settings                              |
 | `play.participants`       | Seats, account/session references, immutable accepted deck snapshots and connection generations               |
-| `play.connection_tickets` | Hashed, expiring, single-use live/replay admission tickets |
-| `play.undo_requests` | Pending/accepted opponent approvals pinned to one committed head |
-| `play.bookmarks` | Account-owned labels and stable logical positions |
-| `play.practice_requests` | Consent from both original players and independent practice-game identity |
+| `play.connection_tickets` | Hashed, expiring, single-use live/replay admission tickets                                                    |
+| `play.undo_requests`      | Pending/accepted opponent approvals pinned to one committed head                                              |
+| `play.bookmarks`          | Account-owned labels and stable logical positions                                                             |
+| `play.practice_requests`  | Consent from both original players and independent practice-game identity                                     |
 
-The ordinary application migration `0057_crossfire` creates the complete
-Crossfire schema, including live/completed journals, lobbies, tickets, undo,
-bookmarks, practice, chat, reports, matches, invitations and immutable card bundles.
+The ordinary application migration `0057_crossfire` creates the gameplay
+schema, including live/completed journals, lobbies, tickets, undo, bookmarks,
+practice, chat, reports, matches, invitations and immutable card bundles.
+Migration `0058` adds aggregate worker telemetry; `0059` adds historical telemetry rollups.
 The development migrations were consolidated before release; see the
 [migration baseline](migration-baseline.md) for custom SQL and existing local data.
 
@@ -162,6 +165,23 @@ listener allows 512 connections total and 64 per game, reserving two places for
 players. `CROSSFIRE_MAX_GAMES` configures loaded-game capacity; other listener
 limits remain code defaults. These are bounds, not measured production capacity.
 
+The worker writes aggregate resource and lifecycle telemetry every 15 seconds
+to `play.worker_metrics`, retaining seven days of detailed samples. Older data
+moves to `play.worker_metric_rollups` at 10-minute resolution through day 30 and
+hourly resolution afterward, with no expiry. The worker maintains these tiers
+at startup and approximately hourly without an external scheduled task. Promotions
+and deletion of source samples commit atomically; failures retry on the next sample.
+Container deployments use Linux
+cgroup CPU counters and memory working set (usage minus reclaimable inactive-file
+cache); local host runs use process counters. The admin-only
+Crossfire Operations page polls these samples and displays resource and game
+charts for 1/6/24 hours, 7/30 days, one year or all retained history, plus current
+actor and connection counters. Charts preserve peaks, not averages. “Active” means a running game whose last
+accepted action was within two minutes. A sample older than 45 seconds is shown
+as offline. This telemetry deliberately excludes game IDs, users and game state.
+The dashboard follows the supported single-worker deployment; concurrent worker
+streams and routing between them are not supported.
+
 After the last connection releases its game binding, the worker retains the game
 for two minutes, then releases its lease and memory. PostgreSQL still retains the
 game. Reconnection loads the committed position on demand; startup does not load
@@ -213,7 +233,7 @@ facts and resulting hashes. It can resume an unfinished choice inside an action.
 | Crash before the database commit                 | No accepted transition is published; an uncommitted command may be retried                                          |
 | Commit succeeds but acknowledgment is lost       | Retry the same command ID/payload; its durable receipt prevents duplicate play/randomness                           |
 | Database write fails or its outcome is uncertain | Pause/retire the actor and recover the committed position before accepting more play                                |
-| Incompatible engine is deployed                  | Reject unsupported majors/state contracts; compatible minor releases keep original card pins                            |
+| Incompatible engine is deployed                  | Reject unsupported majors/state contracts; compatible minor releases keep original card pins                        |
 
 A database ownership generation, or fence, increases on takeover. Every write
 must match the current owner and fence, so a late operation from an old worker

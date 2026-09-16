@@ -3,16 +3,19 @@
 The private adapter in [play/storage](../../play/storage/postgres.ts) uses an
 injected PostgreSQL connection pool. It imports neither the main web app nor its
 credentials. The root Drizzle migration `0057_crossfire` creates the complete
-`play` schema, including [completed histories](history.md).
+gameplay schema, including [completed histories](history.md). `0058` adds
+aggregate worker telemetry and `0059` adds historical telemetry rollups.
 There is no public storage endpoint or browser export.
 
-| Table | Stored responsibility |
-| --- | --- |
-| `play.card_bundles` | Immutable JSON card data, required engine, checksum and publication source |
-| `play.games` | Immutable engine/card pins, committed head sequence/revision/hash and worker lease/fence |
-| `play.journal_live` | Accepted command identity/hash, revision interval, ordered engine inputs including random outcomes, resulting facts and state hash |
-| `play.journal_history` | Verified compressed completed histories, including original branches and receipts |
-| `play.checkpoints` | Complete private serialized state at a committed sequence, including pending choices, hidden cards and history |
+| Table                  | Stored responsibility                                                                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `play.card_bundles`    | Immutable JSON card data, required engine, checksum and publication source                                                                |
+| `play.games`           | Immutable engine/card pins, committed head sequence/revision/hash and worker lease/fence                                                  |
+| `play.journal_live`    | Accepted command identity/hash, revision interval, ordered engine inputs including random outcomes, resulting facts and state hash        |
+| `play.journal_history` | Verified compressed completed histories, including original branches and receipts                                                         |
+| `play.checkpoints`     | Complete private serialized state at a committed sequence, including pending choices, hidden cards and history                            |
+| `play.worker_metrics`  | Seven days of aggregate worker/container resources, actor pressure, connections and game lifecycle counts; no game or account identifiers |
+| `play.worker_metric_rollups` | 10-minute peak summaries through day 30 and hourly peak summaries afterward, with no expiry; no game or account identifiers |
 
 The journal's unique `(game_id, actor_id, command_id)` index is also the durable
 command receipt. Retrying an identical request returns its original committed
@@ -90,7 +93,6 @@ insertion, exact state/fact recovery, independent games and sanitized table data
 The durable host suite also kills a separate worker before commit and after
 commit before acknowledgment, then waits for lease expiry and restores under a
 new fence. Network admission/transport and production load retain later gates.
-
 
 ## Durable host
 

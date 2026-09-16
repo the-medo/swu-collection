@@ -13,6 +13,7 @@ import { createGameServer } from './server.ts';
 import { startFinalizer } from '../history/finalizer.ts';
 import { ReplayService } from '../history/replay-service.ts';
 import { deliverCrossfireReports } from '../../server/lib/discord/crossfireReports.ts';
+import { WorkerMetrics } from './metrics.ts';
 
 if (process.env.CROSSFIRE_ENABLED !== '1') throw new Error('Crossfire is not enabled');
 const databaseUrl = process.env.DATABASE_URL,
@@ -47,6 +48,8 @@ const service = createGameServer(
   },
   new CrossfireExits(sql),
 );
+const metrics = new WorkerMetrics(sql, worker, () => service.statistics);
+metrics.start();
 const stopFinalizer = startFinalizer();
 let stopping = false;
 async function stop() {
@@ -55,7 +58,9 @@ async function stop() {
   const timeout = setTimeout(() => process.exit(1), 10_000);
   timeout.unref();
   try {
+    const stopMetrics = metrics.stop();
     await service.stop();
+    await stopMetrics;
     await stopFinalizer();
     await stopCardBundles();
     await sql.end({ timeout: 5 });

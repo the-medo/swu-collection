@@ -1,5 +1,6 @@
 import { CrossfireAccessPage } from './CrossfireAccessPage';
 import { CrossfireCardsPage } from './CrossfireCardsPage';
+import { CrossfireOperationsPage } from './CrossfireOperationsPage';
 import { Card, CardContent } from '@/components/ui/card';
 import { useRole } from '@/hooks/useRole';
 import { Navigate, useSearch } from '@tanstack/react-router';
@@ -46,6 +47,7 @@ export function AdminPage() {
             <CardContent className="p-4">
               {page === 'crossfire-access' && <CrossfireAccessPage />}
               {page === 'crossfire-cards' && <CrossfireCardsPage />}
+              {page === 'crossfire-operations' && <CrossfireOperationsPage />}
               {page === 'metas' && <MetaTable />}
               {page === 'sets' && <SetsPage />}
               {page === 'tournament-groups' && <TournamentGroupsPage />}

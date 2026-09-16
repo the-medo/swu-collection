@@ -424,6 +424,12 @@ test('spectator capacity reserves both player seats and shutdown stops the liste
   await connect(address, lobby);
   await connect(address, lobby, b);
   expect(service.connectionCount).toBe(3);
+  expect(service.statistics).toEqual({
+    connections: 3,
+    liveConnections: 3,
+    replayConnections: 0,
+    rooms: 1,
+  });
   await service.stop();
   expect(service.connectionCount).toBe(0);
   await expect(fetch(address.replace('ws:', 'http:') + '/health')).rejects.toThrow();
@@ -608,6 +614,12 @@ test('replay sessions preserve live seats, isolate private perspectives and navi
   const player = p1.view!.decision ? p1 : p2;
   const review = await connectReplay(s.address, lobby);
   expect(s.worker.count).toBe(1);
+  expect(s.service.statistics).toEqual({
+    connections: 3,
+    liveConnections: 2,
+    replayConnections: 1,
+    rooms: 1,
+  });
   const request = command(player);
   player.send(request);
   await player.next('ack');

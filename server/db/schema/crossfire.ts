@@ -1,9 +1,11 @@
 import { sql } from 'drizzle-orm';
 import { user } from './auth-schema.ts';
 import {
+  bigint,
   boolean,
   check,
   customType,
+  doublePrecision,
   index,
   integer,
   jsonb,
@@ -50,6 +52,77 @@ export const crossfireGame = playSchema.table(
     check('games_status', sql`${t.status} IN ('running', 'ended', 'finalized', 'abandoned')`),
     check('games_counters', sql`${t.sequence} >= 0 AND ${t.revision} >= 0 AND ${t.fence} >= 0`),
     check('games_owner_lease', sql`(${t.ownerId} IS NULL) = (${t.leaseUntil} IS NULL)`),
+  ],
+);
+
+// Private operational telemetry sampled by the dedicated Crossfire process.
+// It contains aggregate process/game counters only, never game or player data.
+const workerMetricColumns = () => ({
+  workerId: text('worker_id').notNull(),
+  sampledAt: timestamp('sampled_at', { withTimezone: true, mode: 'string' }).notNull(),
+  startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }).notNull(),
+  resourceSource: text('resource_source').notNull(),
+  memoryUsedBytes: bigint('memory_used_bytes', { mode: 'number' }).notNull(),
+  memoryLimitBytes: bigint('memory_limit_bytes', { mode: 'number' }),
+  processRssBytes: bigint('process_rss_bytes', { mode: 'number' }).notNull(),
+  heapUsedBytes: bigint('heap_used_bytes', { mode: 'number' }).notNull(),
+  cpuPercent: doublePrecision('cpu_percent').notNull(),
+  cpuLimitCores: doublePrecision('cpu_limit_cores'),
+  eventLoopLagMs: doublePrecision('event_loop_lag_ms').notNull(),
+  runningGames: integer('running_games').notNull(),
+  activeGames: integer('active_games').notNull(),
+  loadedGames: integer('loaded_games').notNull(),
+  loadingGames: integer('loading_games').notNull(),
+  attachedGames: integer('attached_games').notNull(),
+  busyGames: integer('busy_games').notNull(),
+  queuedOperations: integer('queued_operations').notNull(),
+  gameCapacity: integer('game_capacity').notNull(),
+  connections: integer('connections').notNull(),
+  liveConnections: integer('live_connections').notNull(),
+  replayConnections: integer('replay_connections').notNull(),
+  rooms: integer('rooms').notNull(),
+  endedGames: integer('ended_games').notNull(),
+  pendingStatistics: integer('pending_statistics').notNull(),
+});
+export const crossfireWorkerMetric = playSchema.table(
+  'worker_metrics',
+  workerMetricColumns(),
+  t => [
+    primaryKey({ columns: [t.workerId, t.sampledAt] }),
+    index('worker_metrics_sampled_at').on(t.sampledAt),
+    check(
+      'worker_metrics_source',
+      sql`${t.resourceSource} IN ('cgroup-v2', 'cgroup-v1', 'process')`,
+    ),
+    check(
+      'worker_metrics_resources',
+      sql`${t.memoryUsedBytes} >= 0 AND (${t.memoryLimitBytes} IS NULL OR ${t.memoryLimitBytes} > 0)
+        AND ${t.processRssBytes} >= 0 AND ${t.heapUsedBytes} >= 0 AND ${t.cpuPercent} >= 0
+        AND (${t.cpuLimitCores} IS NULL OR ${t.cpuLimitCores} > 0) AND ${t.eventLoopLagMs} >= 0`,
+    ),
+    check(
+      'worker_metrics_counts',
+      sql`${t.runningGames} >= 0 AND ${t.activeGames} >= 0 AND ${t.loadedGames} >= 0
+        AND ${t.loadingGames} >= 0 AND ${t.attachedGames} >= 0 AND ${t.busyGames} >= 0
+        AND ${t.queuedOperations} >= 0 AND ${t.gameCapacity} > 0 AND ${t.connections} >= 0
+        AND ${t.liveConnections} >= 0 AND ${t.replayConnections} >= 0 AND ${t.rooms} >= 0
+        AND ${t.endedGames} >= 0 AND ${t.pendingStatistics} >= 0`,
+    ),
+  ],
+);
+
+export const crossfireWorkerMetricRollup = playSchema.table(
+  'worker_metric_rollups',
+  {
+    ...workerMetricColumns(),
+    bucketStart: timestamp('bucket_start', { withTimezone: true, mode: 'string' }).notNull(),
+    bucketSeconds: integer('bucket_seconds').notNull(),
+  },
+  t => [
+    primaryKey({ columns: [t.workerId, t.bucketSeconds, t.bucketStart] }),
+    index('worker_metric_rollups_sampled_at').on(t.sampledAt),
+    index('worker_metric_rollups_compaction').on(t.bucketSeconds, t.bucketStart),
+    check('worker_metric_rollups_resolution', sql`${t.bucketSeconds} IN (600, 3600)`),
   ],
 );
 
