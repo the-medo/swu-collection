@@ -9,6 +9,7 @@ export function scheduleRegroup(
   kind: Exclude<
     DelayedEffect['kind'],
     | 'effects-at-action'
+    | 'effects-at-regroup'
     | 'victory-at-regroup'
     | 'resources-at-action'
     | 'resources-at-regroup'
@@ -40,6 +41,24 @@ export function collectRegroupEffects(state: GameState) {
   state.delayedEffects = state.delayedEffects.filter(effect => !due.includes(effect));
   if (due.length)
     state.execution.frames.unshift({ kind: 'delayed-batch', playerId: null, effects: due });
+}
+
+export function scheduleRegroupEffects(
+  state: GameState,
+  playerId: string,
+  source: CardInstance,
+  effects: readonly import('../cards/definition.ts').CardEffect[],
+) {
+  state.delayedEffects.push({
+    id: allocateId(state, 'l'),
+    kind: 'effects-at-regroup',
+    playerId,
+    source: structuredClone(source),
+    target: null,
+    dueRound: state.phase === 'regroup' ? state.round + 1 : state.round,
+    effects: structuredClone([...effects]),
+  });
+  fact(state, 'delayed-scheduled', playerId, [source]);
 }
 
 export function containsRescueSchedule(value: unknown): boolean {
@@ -95,6 +114,17 @@ export function containsActionSchedule(value: unknown, effects: unknown): boolea
       'effects' in value &&
       JSON.stringify(value.effects) === JSON.stringify(effects)) ||
     Object.values(value).some(v => containsActionSchedule(v, effects))
+  );
+}
+
+export function containsRegroupEffects(value: unknown, effects: unknown): boolean {
+  if (!value || typeof value !== 'object') return false;
+  return (
+    ('kind' in value &&
+      value.kind === 'schedule-regroup-effects' &&
+      'effects' in value &&
+      JSON.stringify(value.effects) === JSON.stringify(effects)) ||
+    Object.values(value).some(v => containsRegroupEffects(v, effects))
   );
 }
 

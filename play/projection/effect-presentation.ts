@@ -23,8 +23,12 @@ export function effectPresentation(
       const op = next.operation;
       if (op.kind === 'give-token') {
         const token =
-          { shield: 'Shield', experience: 'Experience', advantage: 'Advantage' }[op.token] ??
-          op.token;
+          {
+            shield: 'Shield',
+            experience: 'Experience',
+            advantage: 'Advantage',
+            weakness: 'Weakness',
+          }[op.token] ?? op.token;
         return {
           title: `Give ${token}`,
           text: `Give ${typeof op.count !== 'number' ? 'the indicated number of' : op.count === 1 ? (token === 'Experience' || token === 'Advantage' ? 'an' : 'a') : op.count} ${token} token${op.count === 1 ? '' : 's'} to a unit.`,

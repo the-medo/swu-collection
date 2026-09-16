@@ -1,3 +1,6 @@
+import { assertDamageSequence } from './damage-sequence.ts';
+import { abilitiesFrom } from './effective-abilities.ts';
+import { isUpgrade } from './roles.ts';
 import { assertUnitDefeat } from './unit-defeat.ts';
 import { explicitPlayedAbility, repeatedPlayedAbility } from './triggers.ts';
 import { assertPhaseTriggers } from './phase-triggers.ts';
@@ -25,9 +28,10 @@ import { catalogFor } from '../cards/catalog.ts';
 import { preventionOptions } from './damage.ts';
 import { paymentAmount } from './credits.ts';
 import { actionIntents } from './actions.ts';
+import { pendingSpecialPayment } from './play-options.ts';
 import { disclosePlayer } from './disclose.ts';
 import { plotCards } from './plot.ts';
-import { reference } from './state.ts';
+import { instance, reference } from './state.ts';
 import { assertInspection } from './inspection.ts';
 import { assertAbilityOrigins } from './effective-abilities.ts';
 import { attachedUpgrades, isUnit, sourcePower } from './attachments.ts';
@@ -119,10 +123,16 @@ export function decodeState(json: string): GameState {
         item.continuation.kind === 'action'
           ? actionIntents(state)
           : frameIntents(state, item.continuation);
+      const expectedAmount = paymentAmount(
+        state,
+        item.continuation,
+        item.intent,
+        item.playerId,
+        item.selections,
+      );
       if (
         item.amount <= 0 ||
-        item.amount !==
-          paymentAmount(state, item.continuation, item.intent, item.playerId, item.selections) ||
+        item.amount !== expectedAmount ||
         (selection
           ? new Set(item.selections).size !== item.selections.length ||
             item.selections.length > selection.max ||
@@ -150,6 +160,41 @@ export function decodeState(json: string): GameState {
         : [f],
   )) {
     if (item.kind === 'unit-defeat') assertUnitDefeat(state, item);
+    if (item.kind === 'different-unit-damage') assertDamageSequence(state, item);
+    if (item.kind === 'base-upgrade-protection') {
+      const card = state.cards[item.card.instanceId];
+      const host = item.card.attachedTo && state.cards[item.card.attachedTo.instanceId];
+      const expected = item.observers
+        .filter(observer => {
+          assertAbilityOrigins(state, observer.origins);
+          const current = state.cards[observer.source.instanceId];
+          if (
+            !current ||
+            current.cardId !== observer.source.cardId ||
+            current.incarnation < observer.source.incarnation ||
+            !state.seats.includes(observer.source.controller)
+          )
+            throw new Error('Invalid base upgrade protection observer');
+          return (
+            observer.source.controller === item.card.controller &&
+            isUnit(state, observer.source) &&
+            abilitiesFrom(state, observer.origins).protectBaseUpgradeBySelfDefeat
+          );
+        })
+        .map(observer => reference(observer.source));
+      if (
+        !card ||
+        card.cardId !== item.card.cardId ||
+        card.incarnation !== item.card.incarnation ||
+        !isUpgrade(state, item.card) ||
+        !host ||
+        cardDefinition(state, host.cardId).kind !== 'base' ||
+        host.incarnation !== item.card.attachedTo!.incarnation ||
+        new Set(item.observers.map(o => o.source.instanceId)).size !== item.observers.length ||
+        JSON.stringify(item.protectors.map(reference)) !== JSON.stringify(expected)
+      )
+        throw new Error('Invalid base upgrade protection');
+    }
     if (item.kind === 'upgrade-defeat' || item.kind === 'convert-pilot')
       assertUpgradeWork(state, item);
     if (item.kind === 'create-tokens') assertTokenCreation(state, item);
@@ -246,6 +291,39 @@ export function decodeState(json: string): GameState {
     if (item.kind === 'effect' && item.effect.kind === 'repeat-bounty')
       repeatedBounty(state, item.playerId, item.values?.[item.effect.index]);
     if (item.kind === 'ability-payment') assertAbilityPayment(state, item);
+    if (item.kind === 'special-play-payment') {
+      const payment = state.playPayment;
+      const source = state.cards[item.source.instanceId];
+      const special = payment && source && pendingSpecialPayment(state);
+      if (
+        !special ||
+        !special.affordable ||
+        special.max === 0 ||
+        !payment ||
+        payment.stage !== 'special' ||
+        payment.special !== undefined ||
+        item.intent.card !== item.source.instanceId ||
+        item.playerId !== payment.playerId ||
+        JSON.stringify(item.source) !== JSON.stringify(payment.source) ||
+        JSON.stringify(item.intent) !== JSON.stringify(payment.intent) ||
+        item.mode !== special.mode ||
+        item.min !== special.min ||
+        item.max !== special.max ||
+        item.discountEach !== special.discountEach ||
+        item.cards.length !== special.cards.length ||
+        item.cards.some((ref, index) => {
+          const expected = special.cards[index];
+          return (
+            !expected ||
+            ref.instanceId !== expected.instanceId ||
+            ref.cardId !== expected.cardId ||
+            ref.incarnation !== expected.incarnation ||
+            ref.visibility !== expected.visibility
+          );
+        })
+      )
+        throw new Error('Invalid special play payment');
+    }
     if (item.kind === 'random-bottom') {
       if (
         !state.seats.includes(item.owner) ||

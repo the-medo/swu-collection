@@ -8,22 +8,16 @@ import {
   type CrossfireDeckPage,
   type CrossfireDeckSummary,
 } from '../../../shared/types/crossfire-decks.ts';
+import { resolveCrossfireCatalog, type CrossfireCatalogSource } from './catalog.ts';
 
 const cursorSchema = z.strictObject({ date: z.iso.datetime(), id: z.uuid() });
 export class DeckBrowserRequestError extends Error {}
-type Catalog = Readonly<Record<string, { name: string; subtitle?: string | null; type: string }>>;
-
 /** Bounded account-aware discovery, using the same access predicates as deck admission. */
 export class CrossfireDecks {
-  private readonly titles: { id: string; title: string }[];
   constructor(
     private readonly sql: Sql,
-    catalog: Catalog,
-  ) {
-    this.titles = Object.entries(catalog)
-      .filter(([, card]) => card.type === 'Leader' || card.type === 'Base')
-      .map(([id, card]) => ({ id, title: `${card.name} ${card.subtitle ?? ''}`.toLowerCase() }));
-  }
+    private readonly catalog: CrossfireCatalogSource,
+  ) {}
 
   list(raw: Principal, input: CrossfireDeckBrowserQuery): Promise<CrossfireDeckPage> {
     return this.read(raw, crossfireDeckBrowserQuery.parse(input));
@@ -52,8 +46,14 @@ export class CrossfireDecks {
       }
     }
     const search = query.search.toLowerCase();
+    const catalog = await resolveCrossfireCatalog(this.catalog);
     const identities = search
-      ? this.titles.filter(card => card.title.includes(search)).map(c => c.id)
+      ? Object.entries(catalog)
+          .filter(([, card]) => card?.type === 'Leader' || card?.type === 'Base')
+          .filter(([id, card]) =>
+            `${card?.name ?? id} ${card?.subtitle ?? ''}`.toLowerCase().includes(search),
+          )
+          .map(([id]) => id)
       : [];
     // A search is literal, including SQL wildcard characters typed by the player.
     const pattern = `%${search.replace(/[\\%_]/g, '\\$&')}%`;

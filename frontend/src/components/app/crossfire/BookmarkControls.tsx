@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog.tsx';
+} from './CrossfireDialog.tsx';
 import type { CrossfireConnection } from './connection.ts';
 import { ToolbarButton } from './ToolbarButton.tsx';
 export function BookmarkControls({

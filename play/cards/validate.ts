@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import baselineContract from './contracts/1.0.json';
+import currentContract from './contracts/1.1.json';
 import { CardCatalog, type CatalogData, checksum } from './catalog.ts';
 import { parseVersion, supportsEngine } from '../engine/release.ts';
 
@@ -15,6 +16,7 @@ type Node = {
 };
 const contracts: Readonly<Record<string, { root: number; nodes: Node[] }>> = {
   '1.0': baselineContract as { root: number; nodes: Node[] },
+  '1.1': currentContract as { root: number; nodes: Node[] },
 };
 function matches(value: unknown, index: number, nodes: Node[], depth = 0): boolean {
   if (depth > 64) return false;

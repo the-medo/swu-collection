@@ -9,7 +9,7 @@ import { printedCost, matchesCard } from './inspection.ts';
 import { forceToken } from './force.ts';
 import type { Condition } from '../cards/definition.ts';
 import { cardDefinition } from '../cards/catalog.ts';
-import { isUnit } from './attachments.ts';
+import { attachedUpgrades, isUnit } from './attachments.ts';
 import { boundReference, boundUnit, type EffectContext } from './bindings.ts';
 import { matchingUnits, matchesUnit } from './targets.ts';
 import type { GameState } from './model.ts';
@@ -153,6 +153,8 @@ export function conditionMatches(
       return !!a && !!b && printedCost(state, a) !== printedCost(state, b);
     }
     case 'phase-event': {
+      if (condition.event === 'token-upgrade-given')
+        return state.phaseHistory.tokenUpgradesGiven?.includes(playerId) ?? false;
       if (condition.event === 'enemy-base-was-damaged')
         return state.phaseHistory.basesDamaged.includes(opponent(state, playerId));
       if (condition.event === 'friendly-upgrade-defeated')
@@ -173,6 +175,13 @@ export function conditionMatches(
       return state.phaseHistory.played.some(
         play => play.playerId === playerId && condition.traits.some(t => play.traits.includes(t)),
       );
+    case 'cards-played-this-phase-at-least': {
+      const controller = condition.player === 'self' ? playerId : opponent(state, playerId);
+      return (
+        state.phaseHistory.played.filter(play => play.playerId === controller).length >=
+        condition.amount
+      );
+    }
     case 'cards-in-play-at-least':
       return (
         matchingInPlayCards(state, playerId, condition.filter, context, evaluation).length >=
@@ -248,6 +257,27 @@ export function conditionMatches(
             (isUnit(state, card) && unitIsLeader(state, card, evaluation))) &&
           cardTraits(state, card, evaluation).includes(condition.trait),
       );
+    case 'controls-base-trait': {
+      const controllers =
+        condition.player === 'any'
+          ? state.seats
+          : [condition.player === 'enemy' ? opponent(state, playerId) : playerId];
+      return controllers.some(controller => {
+        const base = instance(state, state.players[controller]!.base);
+        return cardTraits(state, base, evaluation).includes(condition.trait);
+      });
+    }
+    case 'base-damage-at-least': {
+      const controllers =
+        condition.player === 'any'
+          ? state.seats
+          : [condition.player === 'enemy' ? opponent(state, playerId) : playerId];
+      return controllers.some(
+        controller => instance(state, state.players[controller]!.base).damage >= condition.amount,
+      );
+    }
+    case 'own-base-upgraded':
+      return attachedUpgrades(state, instance(state, state.players[playerId]!.base)).length > 0;
     case 'attacked-with-trait':
       return state.phaseHistory.attacks.some(
         card =>

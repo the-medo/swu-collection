@@ -252,14 +252,37 @@ test('every registered continuation conforms to the checkpoint contract', () => 
   for (const card of supportedCards) visit(card);
 });
 
-test('each supported card has a dedicated file and agrees with the official SWUBASE catalog', async () => {
-  const catalog = await Bun.file(
+test('each supported card has a dedicated file and agrees with its pinned catalog', async () => {
+  const official = await Bun.file(
     new URL('../../server/db/json/card-list.json', import.meta.url),
   ).json();
-  expect(supportedCards).toHaveLength(1498);
+  const hmw = (await Bun.file(new URL('../cards/hmw/catalog.json', import.meta.url)).json()) as {
+    cardId: string;
+    name: string;
+    type: string;
+    cost: number | null;
+    power: number | null;
+    hp: number | null;
+    upgradePower: number | null;
+    upgradeHp: number | null;
+    aspects: string[];
+    traits: string[];
+    arenas: string[];
+  }[];
+  const hmwById = Object.fromEntries(hmw.map(card => [card.cardId, card]));
+  const catalog = { ...official, ...hmwById };
+  expect(hmw).toHaveLength(180);
+  expect(supportedCards).toHaveLength(1680);
   expect(coverage.map(row => row.cardId)).toEqual(supportedCards.map(card => card.cardId));
   for (const definition of supportedCards) {
+    if (definition.cardId === 'beast' || definition.cardId === 'weakness') {
+      expect(
+        await Bun.file(new URL(`../cards/hmw/${definition.cardId}.ts`, import.meta.url)).exists(),
+      ).toBe(true);
+      continue;
+    }
     const card = catalog[definition.cardId];
+    const hmwCard = definition.cardId in hmwById;
     expect(card.cardId).toBe(definition.cardId);
     expect(card.name).toBe(definition.name);
     expect(card.type.toLowerCase()).toBe(
@@ -271,8 +294,12 @@ test('each supported card has a dedicated file and agrees with the official SWUB
     );
     if (definition.kind === 'upgrade') {
       expect(definition.modifiers).toEqual({
-        power: definition.token ? card.power : card.upgradePower,
-        hp: definition.token ? card.hp : card.upgradeHp,
+        power: definition.token
+          ? card.power
+          : hmwCard
+            ? (card.upgradePower ?? 0)
+            : card.upgradePower,
+        hp: definition.token ? card.hp : hmwCard ? (card.upgradeHp ?? 0) : card.upgradeHp,
       });
       expect(definition.cost).toBe(card.cost);
     } else if (definition.kind !== 'event' && definition.kind !== 'player-token')
@@ -281,14 +308,32 @@ test('each supported card has a dedicated file and agrees with the official SWUB
       );
     expect([...card.aspects].sort()).toEqual([...definition.aspects].sort());
     expect([...card.traits].sort()).toEqual([...definition.traits].sort());
-    const printing = (Object.values(card.variants) as { baseSet: boolean; set: string }[]).find(
-      variant => variant.baseSet,
-    )!;
+    const printing = hmwCard
+      ? { set: 'hmw' }
+      : (Object.values(card.variants) as { baseSet: boolean; set: string }[]).find(
+          variant => variant.baseSet,
+        )!;
     expect(
       await Bun.file(
         new URL(`../cards/${printing.set}/${definition.cardId}.ts`, import.meta.url),
       ).exists(),
     ).toBe(true);
+    if (hmwCard) {
+      if (definition.kind === 'event') expect(card.cost).toBe(definition.cost);
+      if (definition.kind === 'unit') {
+        expect(card.cost).toBe(definition.cost);
+        expect(card.power).toBe(definition.power);
+        expect(card.arenas.map((s: string) => s.toLowerCase())).toEqual([definition.arena]);
+      }
+      if (definition.kind === 'leader') {
+        expect(card.cost).toBe(definition.printedCost);
+        expect(card.power).toBe(definition.faces.unit?.power ?? null);
+        expect(card.arenas.map((s: string) => s.toLowerCase())).toEqual([
+          definition.faces.unit?.arena,
+        ]);
+      }
+      continue;
+    }
     if (
       (definition.kind === 'base' &&
         !definition.auras &&

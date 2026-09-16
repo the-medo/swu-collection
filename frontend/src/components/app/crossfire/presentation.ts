@@ -98,7 +98,7 @@ export function optionLabel(
     case 'attack':
       return `${name(option.cards[0])} → attack ${name(option.cards[1])}`;
     case 'use-ability':
-      return `${name(option.cards[0])}: ${words(option.action?.id ?? 'ability')}${typeof option.action?.limit === 'object' && option.action.limit ? ` (${option.action.limit.max} uses per game)` : option.action?.limit === 'once-per-round' ? ' (once per round)' : option.action?.limit ? ' (once per game)' : ''}${option.action?.grantedBy ? ` · ${option.action.grantedBy.name}` : ''}${option.cards[1] ? ` · defeat ${name(option.cards[1])}` : ''}`;
+      return `${name(option.cards[0])}: ${words(option.action?.id ?? 'ability')}${typeof option.action?.limit === 'object' && option.action.limit ? ` (${option.action.limit.max} uses per game)` : option.action?.limit === 'once-per-round' ? ' (once per round)' : option.action?.limit === 'once-per-phase' ? ' (once per phase)' : option.action?.limit ? ' (once per game)' : ''}${option.action?.grantedBy ? ` · ${option.action.grantedBy.name}` : ''}${option.cards[1] ? ` · defeat ${name(option.cards[1])}` : ''}`;
     case 'take-initiative':
       return 'Take initiative';
     case 'pass':

@@ -91,7 +91,12 @@ export type VisibleDecision = {
     action: {
       grantedBy: VisibleReference | null;
       id: string;
-      limit: 'once-per-game' | 'once-per-round' | { per: 'game'; max: number } | null;
+      limit:
+        | 'once-per-game'
+        | 'once-per-round'
+        | 'once-per-phase'
+        | { per: 'game'; max: number }
+        | null;
       deploymentAvailable: boolean;
       deploymentOnly?: boolean;
     } | null;
@@ -140,6 +145,7 @@ export type GameView = {
       | 'resources-at-regroup'
       | 'resources-at-action'
       | 'effects-at-action'
+      | 'effects-at-regroup'
       | 'control-at-regroup'
       | 'control-on-departure';
     round: number;

@@ -2,7 +2,8 @@ import { afterAll, beforeAll, expect, test } from 'bun:test';
 import { randomUUID } from 'node:crypto';
 import postgres from 'postgres';
 import { CrossfireLobbies } from '../../server/lib/crossfire/lobbies.ts';
-import { CrossfireMatches } from '../../server/lib/crossfire/matches.ts';
+import { CrossfireMatches, sideboardDeck } from '../../server/lib/crossfire/matches.ts';
+import { prepareDeckSnapshot } from '../admission/decks.ts';
 import { PostgresGameStore } from '../storage/postgres.ts';
 import { DurableGame } from '../host/durable-game.ts';
 import { encodeArchive } from '../history/archive.ts';
@@ -75,6 +76,36 @@ async function finish(lobbyId: string, loser: 'p1' | 'p2') {
   await store.release(lease);
 }
 const ready = (mainboard = main) => ({ kind: 'next' as const, ready: true, mainboard });
+test('sideboarding retains identities pinned before a preview leaves the active catalog', () => {
+  const prepared = prepareDeckSnapshot(
+    {
+      source: { deckId: a.deckId, format: 1, kind: 'normal' },
+      leader: ids.leader,
+      leader2: null,
+      base: ids.base,
+      mainboard: main,
+      sideboard: [{ cardId: side, quantity: 2 }],
+      reserve: [],
+    },
+    catalog,
+    'core-practice',
+  );
+  if (!prepared.ok) throw new Error('Fixture deck');
+  const currentCatalog = { ...catalog };
+  delete currentCatalog[ids.marine];
+  const swapped = sideboardDeck(
+    prepared.snapshot,
+    [
+      { cardId: ids.marine, quantity: 10 },
+      { cardId: side, quantity: 2 },
+    ],
+    currentCatalog,
+  );
+  expect(swapped.mainboard).toEqual([
+    { cardId: ids.marine, quantity: 10 },
+    { cardId: side, quantity: 2 },
+  ]);
+});
 test('best-of-three consent, private sideboards, races, score and rematches survive new service instances', async () => {
   const root = await start();
   expect(await matches.get(principal(c), root)).toBeNull();

@@ -5,7 +5,7 @@ import { bundleVersionsSchema, type BundleVersions } from '../cards/version-cont
 import { versions } from '../engine/model.ts';
 import { stateDigest } from '../storage/postgres.ts';
 
-export type OfficialIdentityCatalog = Readonly<Record<string, { type: string } | undefined>>;
+export type CardIdentityCatalog = Readonly<Record<string, { type: string } | undefined>>;
 const cardId = z.string().min(1).max(120);
 const rows = z
   .array(z.strictObject({ cardId, quantity: z.number().int().min(1).max(120) }))
@@ -39,12 +39,13 @@ function freeze<T extends object>(value: T): Readonly<T> {
   return Object.freeze(value);
 }
 
-/** Official catalog identity is supplied by the API's official-only provider.
- * The catalog bundle supplies behavior; unknown/preview main cards never fall
- * back to vanilla. Source identifiers and hashes remain private admission data. */
+/** Card identity is supplied by the API's preview-aware catalog provider. The
+ * pinned card bundle still supplies behavior, so an identity never falls back
+ * to vanilla when its exact implementation is absent. Source identifiers and
+ * hashes remain private admission data. */
 export function prepareDeckSnapshot(
   raw: unknown,
-  catalog: OfficialIdentityCatalog,
+  catalog: CardIdentityCatalog,
   format: string,
   gameVersions: BundleVersions = versions,
 ) {
@@ -121,10 +122,24 @@ export function prepareDeckSnapshot(
     .filter(([, card]) => card)
     .map(([cardId, card]) => [cardId, card!.type])
     .sort(([a], [b]) => (a! < b! ? -1 : a! > b! ? 1 : 0));
+  const usedIds = [
+    input.leader!,
+    input.base!,
+    ...mainboard.map(row => row.cardId),
+    ...sideboard.map(row => row.cardId),
+    ...reserve.map(row => row.cardId),
+  ];
+  const cardIdentities = [...new Set(usedIds)]
+    .flatMap(cardId => {
+      const printed = type(cardId);
+      return printed ? [{ cardId, type: printed }] : [];
+    })
+    .sort((a, b) => a.cardId.localeCompare(b.cardId));
   const content = {
     snapshotVersion: 1 as const,
     versions: { ...gameVersions },
     catalogIdentityHash: stateDigest(JSON.stringify(identity)),
+    cardIdentities,
     sourceFormat: input.source.format,
     sourceKind: input.source.kind,
     leader: input.leader!,
@@ -150,7 +165,7 @@ export type DeckSnapshot = Extract<
 >['snapshot'];
 
 /** Validate persisted input against its pinned card bundle. */
-export function decodeDeckSnapshot(raw: unknown, catalog: OfficialIdentityCatalog): DeckSnapshot {
+export function decodeDeckSnapshot(raw: unknown, catalog: CardIdentityCatalog): DeckSnapshot {
   const snapshot = z
     .object({
       snapshotVersion: z.literal(1),
@@ -165,8 +180,20 @@ export function decodeDeckSnapshot(raw: unknown, catalog: OfficialIdentityCatalo
       contentHash: z.string().regex(/^[a-f0-9]{64}$/),
       versions: bundleVersionsSchema,
       catalogIdentityHash: z.string().regex(/^[a-f0-9]{64}$/),
+      cardIdentities: z
+        .array(z.strictObject({ cardId, type: z.string().min(1).max(32) }))
+        .max(602)
+        .optional(),
     })
     .parse(raw);
+  const pinnedCatalog = snapshot.cardIdentities
+    ? {
+        ...catalog,
+        ...Object.fromEntries(
+          snapshot.cardIdentities.map(card => [card.cardId, { type: card.type }]),
+        ),
+      }
+    : catalog;
   const result = prepareDeckSnapshot(
     {
       source: {
@@ -181,7 +208,7 @@ export function decodeDeckSnapshot(raw: unknown, catalog: OfficialIdentityCatalo
       sideboard: snapshot.sideboard,
       reserve: snapshot.reserve,
     },
-    catalog,
+    pinnedCatalog,
     snapshot.versions.format,
     snapshot.versions,
   );
@@ -190,6 +217,7 @@ export function decodeDeckSnapshot(raw: unknown, catalog: OfficialIdentityCatalo
   // cards against their pinned implementation, retaining the recorded catalog
   // identity digest inside the original content hash.
   const candidate = { ...result.snapshot, catalogIdentityHash: snapshot.catalogIdentityHash };
+  if (!snapshot.cardIdentities) delete (candidate as { cardIdentities?: unknown }).cardIdentities;
   const { sourceDeckId: _source, contentHash: _hash, ...content } = candidate;
   candidate.contentHash = stateDigest(JSON.stringify(content));
   if (

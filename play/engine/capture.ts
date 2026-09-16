@@ -1,6 +1,6 @@
 import { abilitySources, collectTriggers } from './triggers.ts';
 import { effectiveAbilities } from './effective-abilities.ts';
-import { recordUnitEntry } from './phase-history.ts';
+import { recordUnitEntry, friendlyUnitsEnterReady } from './phase-history.ts';
 import { cardDefinition } from '../cards/catalog.ts';
 import { isUnit } from './attachments.ts';
 import { unitIsLeader } from './attributes.ts';
@@ -47,6 +47,7 @@ export function rescueCaptured(state: GameState, unit: CardInstance): boolean {
   if (definition.kind !== 'unit' || definition.token) throw new Error('Invalid rescued unit');
   const guard = unit.capturedBy && state.cards[unit.capturedBy.instanceId];
   const ready =
+    friendlyUnitsEnterReady(state, unit.owner) ||
     (!namedAbilityLoss(state, unit) &&
       definition.entersReady &&
       conditionMatches(state, unit.owner, definition.entersReady, { source: unit })) ||

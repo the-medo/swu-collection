@@ -72,7 +72,7 @@ function baseOrigins(
   const origins: AbilityOrigin[] = [
     { id: 'self', card: structuredClone(card), profile: 'printed', withoutSupport: false },
   ];
-  if (isUnit(state, card)) {
+  if (isUnit(state, card) || cardDefinition(state, card.cardId).kind === 'base') {
     for (const upgrade of attachedUpgrades(state, card)) {
       const profile = upgradeProfile(cardDefinition(state, upgrade.cardId));
       if (
@@ -241,7 +241,11 @@ export function abilityOrigins(
                 ? (constant.abilities?.raid ?? 0) +
                   numericValue(state, { source: card }, constant.raid ?? 0, next)
                 : undefined,
-            restore: constant.abilities?.restore,
+            restore:
+              constant.restore !== undefined || constant.abilities?.restore !== undefined
+                ? (constant.abilities?.restore ?? 0) +
+                  numericValue(state, { source: card }, constant.restore ?? 0, next)
+                : undefined,
             triggers: (constant.abilities?.triggers ?? []).map(trigger => ({
               ...trigger,
               id: `constant-${index}-${trigger.id}`,
@@ -252,6 +256,7 @@ export function abilityOrigins(
             defenderCombatFirst: constant.abilities?.defenderCombatFirst ?? false,
             surviveZeroHp: constant.abilities?.surviveZeroHp ?? false,
             cannotReady: constant.abilities?.cannotReady ?? false,
+            friendlyUnitsEnterReady: constant.abilities?.friendlyUnitsEnterReady ?? false,
             enemyAbilityImmunity: constant.abilities?.enemyAbilityImmunity ?? [],
             losesKeywords: [...(constant.losesKeywords ?? [])],
             power: numericValue(state, { source: card }, constant.power ?? 0, next),
@@ -273,6 +278,7 @@ export function abilityOrigins(
       resolved.abilities.defenderCombatFirst ||= value.defenderCombatFirst;
       resolved.abilities.surviveZeroHp ||= value.surviveZeroHp;
       resolved.abilities.cannotReady ||= value.cannotReady;
+      resolved.abilities.friendlyUnitsEnterReady ||= value.friendlyUnitsEnterReady;
       if (value.enemyAbilityImmunity.length)
         resolved.abilities.enemyAbilityImmunity = [
           ...new Set([
@@ -382,6 +388,7 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
     resourcePaymentTraits: [],
     damageReplacements: [],
     protectSingleFriendlyUpgrade: false,
+    protectBaseUpgradeBySelfDefeat: false,
     printedStats: [],
     traitGrants: [],
     friendlyRaidMultiplier: 1,
@@ -393,6 +400,7 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
     bounties: [],
     resourceSmuggle: [],
     friendlyRescueReady: false,
+    friendlyUnitsEnterReady: false,
     surviveZeroHp: false,
     protectFromAttackUnlessSentinel: [],
     baseDamageLimit: Number.MAX_SAFE_INTEGER,
@@ -415,6 +423,8 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
     cannotAttack: false,
     attackBothArenas: false,
     cannotAttackBases: false,
+    ambushCanAttackBases: false,
+    preventBaseHealing: false,
     cannotAttackUndamaged: false,
     keywords: [],
     actions: [],
@@ -497,6 +507,7 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
       ...(abilities.damageReplacements ?? []).map(r => ({ ...r, id: identify(r.id) })),
     ];
     result.protectSingleFriendlyUpgrade ||= abilities.protectSingleFriendlyUpgrade ?? false;
+    result.protectBaseUpgradeBySelfDefeat ||= abilities.protectBaseUpgradeBySelfDefeat ?? false;
     result.resourceSmuggle = [...result.resourceSmuggle, ...(abilities.resourceSmuggle ?? [])];
     result.actions = [
       ...result.actions,
@@ -527,6 +538,7 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
       result.firstCombatDamage ||= origin.resolved.abilities.firstCombatDamage ?? false;
       result.defenderCombatFirst ||= origin.resolved.abilities.defenderCombatFirst ?? false;
       result.surviveZeroHp ||= origin.resolved.abilities.surviveZeroHp ?? false;
+      result.friendlyUnitsEnterReady ||= origin.resolved.abilities.friendlyUnitsEnterReady ?? false;
       result.cannotReady ||= origin.resolved.abilities.cannotReady ?? false;
       if (origin.resolved.abilities.enemyAbilityImmunity?.length)
         result.enemyAbilityImmunity = [
@@ -585,6 +597,9 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
     result.cannotAttack ||= abilities.cannotAttack ?? false;
     result.attackBothArenas ||= abilities.attackBothArenas ?? false;
     result.cannotAttackBases ||= abilities.cannotAttackBases ?? false;
+    result.ambushCanAttackBases ||= abilities.ambushCanAttackBases ?? false;
+    result.preventBaseHealing ||= abilities.preventBaseHealing ?? false;
+    result.friendlyUnitsEnterReady ||= abilities.friendlyUnitsEnterReady ?? false;
     result.cannotAttackUndamaged ||= abilities.cannotAttackUndamaged ?? false;
     result.extraPilotSlots += abilities.extraPilotSlots ?? 0;
     result.extraRegroups += abilities.extraRegroups ?? 0;
@@ -700,6 +715,16 @@ export function effectiveAbilities(
     }
   if (losesAttackingOverwhelm(state, card))
     abilities.keywords = abilities.keywords?.filter(k => k !== 'Overwhelm');
+  const attack = state.attacks.at(-1);
+  if (
+    attack?.swapRaidRestore &&
+    attack.attacker.instanceId === card.instanceId &&
+    attack.attacker.incarnation === card.incarnation
+  ) {
+    const raid = abilities.raid;
+    abilities.raid = abilities.restore;
+    abilities.restore = raid;
+  }
   return abilities;
 }
 export function supportSourceOrigins(state: GameState, source: CardInstance): AbilityOrigin[] {

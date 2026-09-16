@@ -13,7 +13,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog.tsx';
+} from './CrossfireDialog.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import type { MatchView } from '../../../../../shared/types/crossfire-matches.ts';
 import { crossfireError, words } from './presentation.ts';

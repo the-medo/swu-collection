@@ -4,7 +4,7 @@ import { exploitAllowance } from './exploit.ts';
 import { sharesPlayKeyword } from './play-keywords.ts';
 import { boundUnit } from './bindings.ts';
 import { smuggleOptions } from './smuggle.ts';
-import { matchesUnit } from './targets.ts';
+import { matchesUnit, matchingUnits } from './targets.ts';
 import { numericValue } from './values.ts';
 import { cannotPlayCard } from './play-restrictions.ts';
 import { namedAbilityLoss } from './naming.ts';
@@ -18,6 +18,119 @@ import type { CardEffect } from '../cards/definition.ts';
 import type { CardInstance, GameState, Intent } from './model.ts';
 import { opponent, instance, playCost } from './state.ts';
 
+export type SpecialPlayPayment = {
+  mode: 'defeat-resources' | 'damage-units' | 'bottom-discard';
+  cards: CardInstance[];
+  min: number;
+  max: number;
+  discountEach: number;
+  affordable: boolean;
+};
+
+export function specialPlayPayment(
+  state: GameState,
+  card: CardInstance,
+  actor: string,
+  determinedCost: number,
+): SpecialPlayPayment | undefined {
+  const definition = cardDefinition(state, card.cardId);
+  if (definition.kind !== 'unit' || namedAbilityLoss(state, card)) return undefined;
+  const ready = spendingPower(state, actor);
+  const minimumSelections = (
+    maximum: number,
+    discountEach: number,
+    powerAfterSelection: (count: number) => number = () => ready,
+  ) => {
+    for (let count = 0; count <= maximum; count++)
+      if (
+        resourcePayment(state, actor, Math.max(0, determinedCost - count * discountEach)) <=
+        powerAfterSelection(count)
+      )
+        return count;
+    return undefined;
+  };
+  if (definition.defeatReadyResourceDiscount) {
+    const cards = state.players[actor]!.resources.map(id => instance(state, id)).filter(
+      resource => !resource.exhausted && resource.instanceId !== card.instanceId,
+    );
+    const min = minimumSelections(
+      cards.length,
+      definition.defeatReadyResourceDiscount,
+      count => ready - count,
+    );
+    return {
+      mode: 'defeat-resources',
+      cards,
+      min: min ?? 0,
+      max: cards.length,
+      discountEach: definition.defeatReadyResourceDiscount,
+      affordable: min !== undefined,
+    };
+  }
+  if (definition.damageFriendlyUnitDiscount) {
+    const cards = matchingUnits(state, actor, { controller: 'friendly' });
+    const min = minimumSelections(cards.length, definition.damageFriendlyUnitDiscount);
+    return {
+      mode: 'damage-units',
+      cards,
+      min: min ?? 0,
+      max: cards.length,
+      discountEach: definition.damageFriendlyUnitDiscount,
+      affordable: min !== undefined,
+    };
+  }
+  if (definition.bottomDiscardForPlayedAbilities) {
+    const cards = state.players[actor]!.discard.map(id => instance(state, id)).filter(discarded => {
+      const candidate = cardDefinition(state, discarded.cardId);
+      return (
+        discarded.instanceId !== card.instanceId &&
+        candidate.kind === 'unit' &&
+        candidate.cost <= definition.bottomDiscardForPlayedAbilities!.maxCost
+      );
+    });
+    return {
+      mode: 'bottom-discard',
+      cards,
+      min: 0,
+      max: Math.min(definition.bottomDiscardForPlayedAbilities.max, cards.length),
+      discountEach: 0,
+      affordable: resourcePayment(state, actor, determinedCost) <= ready,
+    };
+  }
+  return undefined;
+}
+
+export function pendingSpecialPayment(state: GameState) {
+  const payment = state.playPayment!;
+  const special =
+    !payment.intent.piloting &&
+    specialPlayPayment(state, payment.source, payment.playerId, payment.remaining);
+  // Damage while determining cost may leave fewer units for Exploit. Permit
+  // any subset here; the shared payment rollback handles an impossible result.
+  return special && payment.specialBeforeExploit
+    ? { ...special, min: 0, affordable: true }
+    : special;
+}
+
+export function copiedPlayedAbilities(state: GameState, cards: readonly CardInstance[]) {
+  const triggers = cards.flatMap((card, cardIndex) => {
+    const definition = cardDefinition(state, card.cardId);
+    return definition.kind === 'unit'
+      ? (definition.triggers ?? [])
+          .filter(trigger => trigger.timing === 'played')
+          .map(trigger => ({
+            id: `copied-${cardIndex}-${trigger.id}`,
+            timing: 'played' as const,
+            ...(trigger.optional !== undefined ? { optional: trigger.optional } : {}),
+            ...(trigger.condition ? { condition: trigger.condition } : {}),
+            ...(trigger.limit ? { limit: trigger.limit } : {}),
+            effects: trigger.effects,
+          }))
+      : [];
+  });
+  return triggers.length ? { triggers } : undefined;
+}
+
 export function cardPlayIntents(
   state: GameState,
   card: CardInstance,
@@ -27,7 +140,7 @@ export function cardPlayIntents(
   allowPiloting = true,
   ignoreOneColoredPenalty = false,
   normalAction = false,
-  ignoreAspectPenalties = false,
+  ignoreAspectPenalties: boolean | readonly import('../cards/definition.ts').Aspect[] = false,
   using?: 'plot' | 'smuggle',
   smuggle?: string,
   phaseAbilities?: import('../cards/definition.ts').SimpleAbilities,
@@ -65,28 +178,31 @@ export function cardPlayIntents(
   const ready = spendingPower(state, actor, plotPayment ? card.instanceId : undefined);
   const result: Intent[] = [];
   if (definition.kind === 'unit' || definition.kind === 'event') {
+    const baseCost = playCost(
+      state,
+      card,
+      discount,
+      undefined,
+      undefined,
+      ignoreOneColoredPenalty,
+      ignoreAspectPenalties,
+      using,
+      smuggle,
+      phaseAbilities,
+    );
+    const determinedCost = Math.max(
+      0,
+      baseCost - exploitAllowance(state, card, undefined, phaseAbilities, using),
+    );
+    const special =
+      definition.kind === 'unit'
+        ? specialPlayPayment(state, card, actor, free ? 0 : determinedCost)
+        : undefined;
     if (
       free ||
       matchingPlayModifiers(state, card, true, using).some(m => m.optionalFreeCopy) ||
-      resourcePayment(
-        state,
-        actor,
-        Math.max(
-          0,
-          playCost(
-            state,
-            card,
-            discount,
-            undefined,
-            undefined,
-            ignoreOneColoredPenalty,
-            ignoreAspectPenalties,
-            using,
-            smuggle,
-            phaseAbilities,
-          ) - exploitAllowance(state, card, undefined, phaseAbilities, using),
-        ),
-      ) <= ready
+      resourcePayment(state, actor, determinedCost) <= ready ||
+      (special?.affordable && (special.mode === 'bottom-discard' || (!free && baseCost > 0)))
     )
       result.push({
         kind: 'play',
@@ -102,7 +218,13 @@ export function cardPlayIntents(
     const costs =
       definition.kind === 'upgrade' ? [undefined] : (definition.piloting ?? []).map(p => p.id);
     for (const piloting of costs)
-      for (const id of [...state.ground, ...state.space]) {
+      for (const id of [
+        ...state.ground,
+        ...state.space,
+        ...(definition.kind === 'upgrade' && definition.attachTo === 'base'
+          ? [state.players[actor]!.base]
+          : []),
+      ]) {
         const target = instance(state, id);
         if (
           canAttach(state, card, target) &&

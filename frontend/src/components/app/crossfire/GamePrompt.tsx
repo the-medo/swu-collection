@@ -19,7 +19,13 @@ import {
 import { ChevronsUpDown, Check } from 'lucide-react';
 import type { GameView, VisibleDecision } from '../../../../../play/view/types.ts';
 import { decisionTitle, optionLabel, words } from './presentation.ts';
-import { selectionValid, sourceOf, directTargetOf, isBoardTargetChoice } from './interaction.ts';
+import {
+  selectionValid,
+  sourceOf,
+  directTargetOf,
+  isBoardTargetChoice,
+  inlineTokenChoice,
+} from './interaction.ts';
 import type { ReactNode } from 'react';
 
 export function GamePrompt({
@@ -62,6 +68,7 @@ export function GamePrompt({
   const selection = decision.selection;
   const triggerChoices = decision.kind === 'trigger' || decision.kind === 'delayed';
   const boardTarget = isBoardTargetChoice(view);
+  const tokenChoice = inlineTokenChoice(view);
   const description =
     !triggerChoices && !naming && !numbering && decision.kind !== 'action'
       ? decisionDescription(view, catalog)
@@ -105,15 +112,22 @@ export function GamePrompt({
   const valid =
     (!naming || !!namedCardId) &&
     (!numbering || validNumber) &&
-    selectionValid(decision, selections);
+    selectionValid(decision, tokenChoice?.selections ?? selections);
   const accessible = (id: string) =>
     view.cards.some(c => c.id === id) || decision.inspectedCards.some(c => c.id === id);
   const options = decision.options.filter(o => {
     if (triggerChoices) return true;
+    if (tokenChoice?.optionIds.has(o.id)) return o.id === tokenChoice.option.id;
     const source = sourceOf(o),
       target = directTargetOf(o);
     return !(source && accessible(source)) && !(target && accessible(target));
   });
+  const tokenChoiceLabel = (() => {
+    if (!tokenChoice) return null;
+    const title = tokenChoice.host.face!.name.split(',')[0]!.trim();
+    const owner = title.endsWith('s') ? `${title}’` : `${title}’s`;
+    return `Use ${owner} ${tokenChoice.token.face!.name}`;
+  })();
   if (decision.effect === 'plot-play' && decision.source)
     return (
       <PlotPlayPrompt
@@ -256,7 +270,7 @@ export function GamePrompt({
           Reveal cards with at least these aspect icons: {selection.disclose.required.join(' + ')}.
         </p>
       )}
-      {selection && (
+      {selection && !tokenChoice && (
         <>
           <p className="cf-selection-status text-sm text-muted-foreground">
             {selection.allocation ? 'Allocate ' : 'Select '}
@@ -288,6 +302,15 @@ export function GamePrompt({
       <div
         className={`cf-prompt-options ${triggerChoices ? 'cf-trigger-options' : ''} ${choosingAspect ? 'cf-aspect-options' : ''}`}
       >
+        {tokenChoice?.skip && (
+          <Button
+            variant="outline"
+            disabled={pending}
+            onClick={() => choose(tokenChoice.skip!.optionId, [])}
+          >
+            Skip effect
+          </Button>
+        )}
         {options.map(option =>
           triggerChoices ? (
             <AbilityChoice
@@ -353,7 +376,9 @@ export function GamePrompt({
                   ['allocate-damage', 'disclose'].includes(decision.effect ?? '') &&
                     option.kind === 'decline-effect'
                     ? []
-                    : selections,
+                    : option.id === tokenChoice?.option.id
+                      ? tokenChoice.selections
+                      : selections,
                   namedCardId,
                   chosenNumber,
                 )
@@ -365,6 +390,8 @@ export function GamePrompt({
                 'Confirm name'
               ) : numbering ? (
                 'Confirm number'
+              ) : tokenChoice?.option.id === option.id ? (
+                tokenChoiceLabel
               ) : (
                 optionLabel(option, view, seat)
               )}

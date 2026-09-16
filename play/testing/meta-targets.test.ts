@@ -1,4 +1,4 @@
-import { prepareDeckSnapshot, type OfficialIdentityCatalog } from '../admission/decks.ts';
+import { prepareDeckSnapshot, type CardIdentityCatalog } from '../admission/decks.ts';
 import { expect, test } from 'bun:test';
 import targets from './fixtures/meta-targets.json';
 
@@ -43,7 +43,7 @@ test('strict coverage reports incomplete nonwinning lists and unavailable result
 });
 
 test('every complete Top 8 list passes the actual deck admission contract with supported sideboards', async () => {
-  const catalog: OfficialIdentityCatalog = await Bun.file(
+  const catalog: CardIdentityCatalog = await Bun.file(
     new URL('../../server/db/json/card-list.json', import.meta.url),
   ).json();
   const complete = targets.top8.filter(d => d.leader && d.base && d.cards.some(c => c.board === 1));

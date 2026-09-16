@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog.tsx';
+} from './CrossfireDialog.tsx';
 import type { GameView, VisibleCard } from '../../../../../play/view/types.ts';
 import { GameCard, FaceImage } from './GameCard.tsx';
 import { CardBack } from './CardBack.tsx';
@@ -370,7 +370,49 @@ export function BoardPosition({
     const baseSlot = (
       <div className="cf-command-slot cf-base-slot">
         {base && capturedCards(base)}
-        {base && renderCard(base)}
+        {base && (
+          <div
+            className="cf-attached-stack cf-base-upgrades"
+            style={
+              {
+                '--upgrade-count': view.cards.filter(
+                  c => c.attachedTo === base.id && !c.face?.token,
+                ).length,
+              } as CSSProperties
+            }
+          >
+            {view.cards
+              .filter(c => c.attachedTo === base.id && !c.face?.token)
+              .map((card, index) => (
+                <div
+                  key={card.id}
+                  className="cf-upgrade-underlay"
+                  style={{ '--upgrade-index': index + 1 } as CSSProperties}
+                >
+                  {renderCard(card)}
+                </div>
+              ))}
+            <div className="cf-host-card">{renderCard(base)}</div>
+            {[
+              ...new Set(
+                view.cards
+                  .filter(c => c.attachedTo === base.id && c.face?.token)
+                  .map(c => c.face!.cardId),
+              ),
+            ].map(type => (
+              <TokenGroup
+                key={type}
+                type={type}
+                cards={view.cards.filter(c => c.attachedTo === base.id && c.face?.cardId === type)}
+                available={available}
+                highlighted={highlighted}
+                selections={interaction.selections}
+                renderCard={c => renderCard(c, false)}
+                inspect={inspect}
+              />
+            ))}
+          </div>
+        )}
         <div className="cf-force-over-base">
           {view.cards
             .filter(c => c.controller === player && c.face?.cardId === 'the-force')

@@ -1,7 +1,7 @@
 import type { CatalogContext } from '../cards/catalog.ts';
 import { takePhaseTriggers } from './phase-triggers.ts';
 import { repeatedBounty } from './bounty.ts';
-import { upgradeProfile } from './roles.ts';
+import { isUpgrade, upgradeProfile } from './roles.ts';
 import { conditionMatches } from './conditions.ts';
 import type { EffectContext } from './bindings.ts';
 import { isUnit } from './attachments.ts';
@@ -204,8 +204,13 @@ export function flushTriggers(state: GameState) {
     state.execution.frames.unshift({ kind: 'trigger-batch', playerId: null, triggers });
 }
 
-function triggerUseKey(trigger: Trigger, ability: TriggerDefinition) {
-  return JSON.stringify([trigger.source.instanceId, trigger.source.incarnation, ability.id]);
+function triggerUseKey(state: GameState, trigger: Trigger, ability: TriggerDefinition) {
+  return JSON.stringify([
+    trigger.source.instanceId,
+    trigger.source.incarnation,
+    ability.id,
+    ...(ability.limit === 'once-per-phase' ? [state.round, state.phase] : []),
+  ]);
 }
 export function triggerAvailable(state: GameState, trigger: Trigger) {
   const ability = triggerDefinitions(state, trigger.source, trigger.abilities).find(
@@ -213,7 +218,8 @@ export function triggerAvailable(state: GameState, trigger: Trigger) {
   );
   return (
     !!ability &&
-    (!ability.limit || !state.roundHistory.triggerUses.includes(triggerUseKey(trigger, ability)))
+    (!ability.limit ||
+      !state.roundHistory.triggerUses.includes(triggerUseKey(state, trigger, ability)))
   );
 }
 export function resolveTrigger(
@@ -243,7 +249,7 @@ export function resolveAcceptedTrigger(state: GameState, trigger: Trigger) {
   );
   if (!ability || !triggerAvailable(state, trigger))
     throw new Error('Unavailable optional trigger');
-  if (ability.limit) state.roundHistory.triggerUses.push(triggerUseKey(trigger, ability));
+  if (ability.limit) state.roundHistory.triggerUses.push(triggerUseKey(state, trigger, ability));
   const observed: Trigger[] = [];
   let bountyIndex: number | undefined;
   if (ability.timing === 'bounty') {
@@ -333,11 +339,11 @@ export function uniqueConflict(state: GameState): { playerId: string; cards: str
     ...state.seats.filter(id => id !== state.activePlayer),
   ]) {
     const groups = new Map<string, string[]>();
-    for (const id of [...state.ground, ...state.space]) {
-      const card = instance(state, id);
+    for (const card of Object.values(state.cards)) {
+      if (!isUnit(state, card) && !isUpgrade(state, card)) continue;
       if (card.controller !== playerId || !cardDefinition(state, card.cardId).unique) continue;
       const group = groups.get(card.cardId) ?? [];
-      group.push(id);
+      group.push(card.instanceId);
       groups.set(card.cardId, group);
     }
     for (const cards of groups.values()) if (cards.length > 1) return { playerId, cards };

@@ -2,7 +2,9 @@ import { activeLasting } from './lasting.ts';
 import { isUnit } from './attachments.ts';
 import type { CardInstance, GameState } from './model.ts';
 import { fact } from './state.ts';
-import { collectTriggers } from './triggers.ts';
+import { abilitySources, collectTriggers } from './triggers.ts';
+import { effectiveAbilities } from './effective-abilities.ts';
+import { cardDefinition } from '../cards/catalog.ts';
 
 // Call after removing the actual counters. Zero healing has no trigger event
 // (v8 section 1.9.3); multi-point healing is one event for the affected unit.
@@ -19,7 +21,9 @@ export function recordHealing(
 }
 
 export function healingAmount(state: GameState, target: CardInstance, amount: number) {
-  return activeLasting(state, target).some(e => e.cannotHeal)
+  return activeLasting(state, target).some(e => e.cannotHeal) ||
+    (cardDefinition(state, target.cardId).kind === 'base' &&
+      abilitySources(state).some(source => effectiveAbilities(state, source).preventBaseHealing))
     ? 0
     : Math.min(target.damage, Math.max(0, amount));
 }

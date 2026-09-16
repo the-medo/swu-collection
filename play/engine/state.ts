@@ -18,7 +18,7 @@ import { survivesZeroHp } from './lasting.ts';
 import { historicalOwnerMatches } from './roles.ts';
 import { conditionMatches } from './conditions.ts';
 import { containsControlSchedule, controlSourceLeft } from './delayed.ts';
-import { containsActionSchedule } from './delayed.ts';
+import { containsActionSchedule, containsRegroupEffects } from './delayed.ts';
 import { rescueCaptured } from './capture.ts';
 import { containsRescueSchedule, containsReturnSchedule } from './delayed.ts';
 import { catalogFor } from '../cards/catalog.ts';
@@ -74,6 +74,7 @@ export function emptyPhaseHistory(): GameState['phaseHistory'] {
     damagedUnits: [],
     basesDamaged: [],
     basesAttacked: [],
+    baseAttackers: [],
     upgradesDefeated: [],
     cardsDrawn: {},
     discarded: [],
@@ -114,6 +115,7 @@ export function emptyState(
     keywordGrants: [],
     lastingEffects: [],
     namedEffects: [],
+    traitLosses: [],
     phaseHistory: emptyPhaseHistory(),
     actionHistory: null,
     departedUnits: [],
@@ -192,7 +194,10 @@ export function isArena(zone: Zone): zone is 'ground' | 'space' {
 export function membership(state: GameState, card: CardInstance): string[] | null {
   if (cardDefinition(state, card.cardId).kind === 'player-token' && card.zone !== 'set-aside')
     return state.players[card.controller]!.tokens;
-  if (card.zone === 'base') return null;
+  if (card.zone === 'base')
+    return cardDefinition(state, card.cardId).kind === 'upgrade'
+      ? state.players[card.controller]!.tokens
+      : null;
   if (card.zone === 'resources') return state.players[card.controller]!.resources;
   if (card.zone === 'deck' && state.searching.includes(card.instanceId)) return state.searching;
   if (card.zone === 'set-aside') return state.setAside;
@@ -237,7 +242,7 @@ export function captureUpgradeDeparture(state: GameState, card: CardInstance) {
       reference: reference(card),
       controller: card.controller,
       traits: [...cardTraits(state, card)],
-      arena: card.zone as 'ground' | 'space',
+      arena: card.zone as 'ground' | 'space' | 'base',
       abilities: abilityOrigins(state, card),
     },
     detached:
@@ -303,7 +308,7 @@ export function move(
       reference: reference(card),
       controller: card.controller,
       traits: [...cardTraits(state, card)],
-      arena: card.zone as 'ground' | 'space',
+      arena: card.zone as 'ground' | 'space' | 'base',
       abilities: abilityOrigins(state, card),
     });
   if (zone !== 'captured') card.capturedBy = null;
@@ -453,7 +458,7 @@ export function playCost(
   piloting?: string,
   target?: CardInstance,
   ignoreOneColoredPenalty = false,
-  ignoreAspectPenalties = false,
+  ignoreAspectPenalties: boolean | readonly Aspect[] = false,
   using?: 'plot' | 'smuggle',
   smuggle?: string,
   phaseAbilities?: import('../cards/definition.ts').SimpleAbilities,
@@ -488,9 +493,16 @@ export function playCost(
       providers.add(unit.instanceId);
   const provided = [...providers].flatMap(id => cardAspects(state, instance(state, id)));
   const asUnit = definition.kind === 'unit' && !piloting;
-  let penalty = ignoreAspectPenalties
-    ? 0
-    : aspectPenalty(alternate?.aspects ?? definition.aspects, provided);
+  let penalty =
+    ignoreAspectPenalties === true
+      ? 0
+      : aspectPenalty(
+          (alternate?.aspects ?? definition.aspects).filter(
+            aspect =>
+              !Array.isArray(ignoreAspectPenalties) || !ignoreAspectPenalties.includes(aspect),
+          ),
+          provided,
+        );
   for (const source of Object.values(state.cards)) {
     if (source.controller !== card.controller || !['base', 'ground', 'space'].includes(source.zone))
       continue;
@@ -531,6 +543,11 @@ export function playCost(
       if (reduction.filter.playAs && asUnit) continue;
       if (!matchesCard(state, card, reduction.filter, { source })) continue;
       if (
+        reduction.condition &&
+        !conditionMatches(state, card.controller, reduction.condition, { source })
+      )
+        continue;
+      if (
         reduction.host &&
         (!target || !matchesUnit(state, target, source.controller, reduction.host, { source }))
       )
@@ -570,8 +587,15 @@ export function playCost(
         )
       )
         continue;
-      reductions[`source-${source.instanceId}-${source.incarnation}-${reduction.id}`] =
-        reduction.amount;
+      const prior = state.roundHistory.plays.filter(
+        play =>
+          play.card.controller === card.controller &&
+          (!reduction.filter.kind || reduction.filter.kind !== 'unit' || play.asUnit) &&
+          matchesCard(state, play.card, reduction.filter, { source }),
+      ).length;
+      const amount = reduction.ordinalAmounts?.[prior] ?? reduction.amount;
+      if (reduction.ordinalAmounts && prior >= reduction.ordinalAmounts.length) continue;
+      reductions[`source-${source.instanceId}-${source.incarnation}-${reduction.id}`] = amount;
     }
   }
   for (const modifier of matchingPlayModifiers(state, card, asUnit, using))
@@ -684,7 +708,7 @@ export function assertState(state: GameState): void {
       state.cards[play.card.instanceId]!.incarnation < play.card.incarnation ||
       (play.host &&
         (play.asUnit ||
-          !isUnit(state, play.host) ||
+          (!isUnit(state, play.host) && cardDefinition(state, play.host.cardId).kind !== 'base') ||
           !state.seats.includes(play.host.controller) ||
           !state.cards[play.host.instanceId] ||
           state.cards[play.host.instanceId]!.cardId !== play.host.cardId ||
@@ -711,11 +735,19 @@ export function assertState(state: GameState): void {
     if (player.tokens.filter(id => instance(state, id).cardId === 'the-force').length > 1)
       throw new Error('Only one Force token per player');
     for (const token of player.tokens) {
-      const definition = cardDefinition(state, instance(state, token).cardId);
-      if (definition.kind !== 'player-token') throw new Error('Invalid player token');
-      if (instance(state, token).controller !== id)
-        throw new Error('Incorrect player token controller');
-      claim(token, definition.zone);
+      const card = instance(state, token);
+      const definition = cardDefinition(state, card.cardId);
+      if (
+        definition.kind !== 'player-token' &&
+        !(
+          isUpgrade(state, card) &&
+          card.zone === 'base' &&
+          card.attachedTo?.instanceId === player.base
+        )
+      )
+        throw new Error('Invalid auxiliary in-play card');
+      if (card.controller !== id) throw new Error('Incorrect player token controller');
+      claim(token, definition.kind === 'player-token' ? definition.zone : 'base');
     }
     for (const zone of ['deck', 'hand', 'resources', 'discard'] as const) {
       for (const cardId of player[zone]) {
@@ -774,11 +806,11 @@ export function assertState(state: GameState): void {
     }
     if (definition.kind === 'upgrade' || isUpgrade(state, card)) {
       if (!upgradeProfile(definition)) throw new Error('Unsupported attached role');
-      if (isArena(card.zone) && card.exhausted) throw new Error('Upgrade cannot be exhausted');
+      if ((isArena(card.zone) || card.zone === 'base') && card.exhausted)
+        throw new Error('Upgrade cannot be exhausted');
       if (
         (definition.kind === 'leader' ? card.deployedAs !== 'upgrade' : card.deployedAs !== null) ||
-        card.zone === 'base' ||
-        isArena(card.zone) !== (card.attachedTo !== null)
+        (isArena(card.zone) || card.zone === 'base') !== (card.attachedTo !== null)
       )
         throw new Error('Invalid upgrade role');
       if (
@@ -804,7 +836,10 @@ export function assertState(state: GameState): void {
           !parent ||
           (!pending &&
             !endedReplacement &&
-            (!isUnit(state, parent) ||
+            (!(
+              isUnit(state, parent) ||
+              (parent.zone === 'base' && cardDefinition(state, parent.cardId).kind === 'base')
+            ) ||
               parent.zone !== card.zone ||
               parent.incarnation !== card.attachedTo.incarnation))
         )
@@ -923,6 +958,7 @@ export function assertState(state: GameState): void {
       use.origin.instanceId,
       use.origin.incarnation,
       use.abilityId,
+      use.phase ?? null,
     ]);
     if (actionKeys.has(key)) throw new Error('Duplicate action usage');
     actionKeys.add(key);
@@ -932,7 +968,9 @@ export function assertState(state: GameState): void {
     const value: unknown = JSON.parse(key);
     if (
       !Array.isArray(value) ||
-      value.length !== 3 ||
+      (value.length !== 3 && value.length !== 5) ||
+      (value.length === 5 &&
+        (value[3] !== state.round || !['action', 'regroup'].includes(value[4]))) ||
       typeof value[0] !== 'string' ||
       !Number.isSafeInteger(value[1]) ||
       value[1] < 0 ||
@@ -1102,6 +1140,7 @@ export function assertState(state: GameState): void {
     state.phaseHistory.enemyBaseDamaged,
     state.phaseHistory.indirectDamage,
     state.phaseHistory.tokensCreated,
+    state.phaseHistory.tokenUpgradesGiven ?? [],
     state.phaseHistory.ownCardsDiscarded,
   ]) {
     if (new Set(history).size !== history.length || history.some(id => !state.seats.includes(id)))
@@ -1114,7 +1153,7 @@ export function assertState(state: GameState): void {
         !current ||
         current.cardId !== play.host.cardId ||
         current.incarnation < play.host.incarnation ||
-        !isUnit(state, play.host) ||
+        (!isUnit(state, play.host) && cardDefinition(state, play.host.cardId).kind !== 'base') ||
         !state.seats.includes(play.host.controller) ||
         play.card.attachedTo?.instanceId !== play.host.instanceId ||
         play.card.attachedTo?.incarnation !== play.host.incarnation
@@ -1343,6 +1382,12 @@ export function assertState(state: GameState): void {
         !containsActionSchedule(definition.effects, delayed.effects)
       )
         throw new Error('Invalid delayed action effects');
+    } else if (delayed.kind === 'effects-at-regroup') {
+      if (
+        definition?.kind !== 'event' ||
+        !containsRegroupEffects(definition.effects, delayed.effects)
+      )
+        throw new Error('Invalid delayed regroup effects');
     } else {
       const target = state.cards[delayed.target.instanceId];
       if (
@@ -1420,7 +1465,7 @@ export function assertState(state: GameState): void {
       !card ||
       card.cardId !== entry.reference.cardId ||
       entry.reference.incarnation > card.incarnation ||
-      (entry.reference.incarnation === card.incarnation && isArena(card.zone)) ||
+      (entry.reference.incarnation === card.incarnation && isUpgrade(state, card)) ||
       !state.seats.includes(entry.controller) ||
       !definition ||
       (definition.kind !== 'unit' && definition.kind !== 'leader') ||
@@ -1439,7 +1484,7 @@ export function assertState(state: GameState): void {
       card.cardId !== entry.reference.cardId ||
       entry.reference.incarnation > card.incarnation ||
       entry.reference.visibility > card.visibility ||
-      (entry.reference.incarnation === card.incarnation && isArena(card.zone)) ||
+      (entry.reference.incarnation === card.incarnation && isUpgrade(state, card)) ||
       !state.seats.includes(entry.controller) ||
       !self ||
       !isUpgrade(state, self.card) ||

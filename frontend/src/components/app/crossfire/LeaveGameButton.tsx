@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog.tsx';
+} from './CrossfireDialog.tsx';
 import { useLeaveGame } from '@/api/crossfire/useLeaveGame.ts';
 import type { CrossfireExit } from '../../../../../shared/types/crossfire.ts';
 import type { CrossfireConnection } from './connection.ts';

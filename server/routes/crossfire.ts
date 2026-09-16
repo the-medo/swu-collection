@@ -6,7 +6,7 @@ import { CrossfireMatches } from '../lib/crossfire/matches.ts';
 import { CrossfirePractice } from '../lib/crossfire/practice.ts';
 import { CrossfireBookmarks } from '../lib/crossfire/bookmarks.ts';
 import postgres from 'postgres';
-import cards from '../db/json/card-list.json';
+import { getMergedCardList } from '../lib/cards/cardListProvider.ts';
 import { CrossfireLobbies } from '../lib/crossfire/lobbies.ts';
 import { CrossfireConnections } from '../lib/crossfire/connections.ts';
 import { CrossfireHistory } from '../lib/crossfire/history.ts';
@@ -42,9 +42,9 @@ export function getCrossfireServices() {
     services = {
       exits: new CrossfireExits(sql),
       invitations: new CrossfireInvitationRealtime(sql),
-      decks: new CrossfireDecks(sql, cards),
-      lobbies: new CrossfireLobbies(sql, cards),
-      matches: new CrossfireMatches(sql, cards),
+      decks: new CrossfireDecks(sql, getMergedCardList),
+      lobbies: new CrossfireLobbies(sql, getMergedCardList),
+      matches: new CrossfireMatches(sql, getMergedCardList),
       history: new CrossfireHistory(sql),
       bookmarks: new CrossfireBookmarks(sql),
       practice: new CrossfirePractice(sql),

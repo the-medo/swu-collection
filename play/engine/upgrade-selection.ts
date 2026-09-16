@@ -14,29 +14,27 @@ export function matchingUpgrades(
   const same = filter.sameAs ? boundReference(context, filter.sameAs, state) : undefined;
   const host = filter.attachedTo ? boundUnit(state, context, filter.attachedTo) : undefined;
   const other = filter.otherThan ? boundReference(context, filter.otherThan, state) : undefined;
-  return [...state.ground, ...state.space]
-    .map(id => state.cards[id]!)
-    .filter(
-      card =>
-        isUpgrade(state, card) &&
-        (!filter.sameAs ||
-          (same && card.instanceId === same.instanceId && card.incarnation === same.incarnation)) &&
-        (!filter.withoutTrait || !cardTraits(state, card).includes(filter.withoutTrait)) &&
-        (!filter.cardId || card.cardId === filter.cardId) &&
-        (filter.maxCost === undefined || printedCost(state, card) <= filter.maxCost) &&
-        (filter.token === undefined ||
-          isToken(cardDefinition(state, card.cardId)) === filter.token) &&
-        (!filter.controller ||
-          (card.controller === playerId) === (filter.controller === 'friendly')) &&
-        (!filter.nonLeader || cardDefinition(state, card.cardId).kind !== 'leader') &&
-        (filter.unique === undefined ||
-          !!cardDefinition(state, card.cardId).unique === filter.unique) &&
-        (!filter.otherThan ||
-          (other &&
-            (card.instanceId !== other.instanceId || card.incarnation !== other.incarnation))) &&
-        (!filter.attachedTo ||
-          (host &&
-            card.attachedTo?.instanceId === host.instanceId &&
-            card.attachedTo.incarnation === host.incarnation)),
-    );
+  return Object.values(state.cards).filter(
+    card =>
+      isUpgrade(state, card) &&
+      (!filter.sameAs ||
+        (same && card.instanceId === same.instanceId && card.incarnation === same.incarnation)) &&
+      (!filter.withoutTrait || !cardTraits(state, card).includes(filter.withoutTrait)) &&
+      (!filter.cardId || card.cardId === filter.cardId) &&
+      (filter.maxCost === undefined || printedCost(state, card) <= filter.maxCost) &&
+      (filter.token === undefined ||
+        isToken(cardDefinition(state, card.cardId)) === filter.token) &&
+      (!filter.controller ||
+        (card.controller === playerId) === (filter.controller === 'friendly')) &&
+      (!filter.nonLeader || cardDefinition(state, card.cardId).kind !== 'leader') &&
+      (filter.unique === undefined ||
+        !!cardDefinition(state, card.cardId).unique === filter.unique) &&
+      (!filter.otherThan ||
+        (other &&
+          (card.instanceId !== other.instanceId || card.incarnation !== other.incarnation))) &&
+      (!filter.attachedTo ||
+        (host &&
+          card.attachedTo?.instanceId === host.instanceId &&
+          card.attachedTo.incarnation === host.incarnation)),
+  );
 }

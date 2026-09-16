@@ -239,6 +239,17 @@ export class Projector {
       this.#viewer.role === 'player' ? decisionForPlayer(state, this.#viewer.playerId) : null;
     const plan = this.#viewer.role === 'player' ? resourcePlan(state, this.#viewer.playerId) : null;
     const frame = state.execution.frames[0];
+    const damageChoice = frame?.kind === 'damage' ? damagePreventionChoice(state, frame) : null;
+    const damageSource = damageChoice
+      ? damageChoice.options.length > 0 &&
+        damageChoice.options.every(
+          option =>
+            option.source.instanceId === damageChoice.options[0]!.source.instanceId &&
+            option.source.incarnation === damageChoice.options[0]!.source.incarnation,
+        )
+        ? damageChoice.options[0]!.source
+        : damageChoice.target
+      : null;
     const ownDecision =
       decision && this.#viewer.role === 'player' && decision.playerId === this.#viewer.playerId;
     const content = {
@@ -298,7 +309,13 @@ export class Projector {
         ? {
             id: this.token('decision', decision.id),
             kind: decision.kind,
-            presentation: effectPresentation(frame),
+            presentation:
+              damageChoice && frame?.kind === 'damage'
+                ? {
+                    title: 'Prevent damage',
+                    text: `${cardName(state, damageChoice.target)} would take ${damageChoice.assignment.amount} damage. ${damageChoice.mandatory ? 'Choose a replacement effect.' : 'Use a replacement effect, or skip it.'}`,
+                  }
+                : effectPresentation(frame),
             resourcePlan: plan
               ? {
                   confirmed: !!plan.queuedResources,
@@ -364,7 +381,7 @@ export class Projector {
                         ? visibleReference(frame.source)
                         : frame?.kind === 'damage'
                           ? visibleReference(
-                              damagePreventionChoice(state, frame)?.target ??
+                              damageSource ??
                                 frame.assignments.find(a => a.excessRoute)!.excessRoute!.source,
                             )
                           : null,
@@ -416,6 +433,7 @@ export class Projector {
                                                   heal: 'allocate-healing',
                                                   advantage: 'allocate-advantage',
                                                   experience: 'allocate-experience',
+                                                  weakness: 'allocate-weakness',
                                                   damage: 'allocate-damage',
                                                 } as const
                                               )[frame.effect.benefit]

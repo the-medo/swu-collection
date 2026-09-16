@@ -1,5 +1,6 @@
 import { cardTraits, unitIsLeader } from './attributes.ts';
 import { cardDefinition } from '../cards/catalog.ts';
+import { effectiveAbilities } from './effective-abilities.ts';
 import { isUnit } from './attachments.ts';
 import type { CardInstance, GameState } from './model.ts';
 import { fact, move, reference } from './state.ts';
@@ -10,6 +11,12 @@ export function recordPhasePlayer(history: string[], playerId: string) {
 }
 export function recordTokenCreation(state: GameState, playerId: string) {
   recordPhasePlayer(state.phaseHistory.tokensCreated, playerId);
+}
+export function friendlyUnitsEnterReady(state: GameState, playerId: string) {
+  return abilitySources(state).some(
+    source =>
+      source.controller === playerId && effectiveAbilities(state, source).friendlyUnitsEnterReady,
+  );
 }
 export function discardCards(
   state: GameState,

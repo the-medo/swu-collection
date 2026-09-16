@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog.tsx';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from './CrossfireDialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { FaceImage } from './GameCard.tsx';
 import type { GameView, VisibleEvent } from '../../../../../play/view/types.ts';
@@ -48,10 +54,12 @@ export function PlotRevealNotice({ view, seat }: { view: GameView | null; seat?:
       }}
     >
       <DialogContent className="cf-plot-reveal-dialog">
-        <DialogTitle>Opponent’s Plot cards</DialogTitle>
-        <DialogDescription>
-          Your opponent showed these cards and can continue resolving Plot.
-        </DialogDescription>
+        <DialogHeader>
+          <DialogTitle>Opponent’s Plot cards</DialogTitle>
+          <DialogDescription>
+            Your opponent showed these cards and can continue resolving Plot.
+          </DialogDescription>
+        </DialogHeader>
         <div className="cf-plot-reveal-cards">
           {notice?.cards.map((card, index) => (
             <figure key={`${notice.id}-${index}`}>

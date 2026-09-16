@@ -75,8 +75,8 @@ test('download validation covers every card property and nested effect', async (
   event.effects = [{ kind: 'execute-code', code: 'bad' }];
   expect(() => validateCatalog(effect)).toThrow('Invalid card definition');
   const future = modified();
-  future.version = '1.1.0';
-  future.requiredEngine = '1.1.0';
+  future.version = '1.2.0';
+  future.requiredEngine = '1.2.0';
   expect(() => validateCatalog(future)).toThrow('requires');
   const duplicate = modified();
   duplicate.cards.push(duplicate.cards[0]);
@@ -89,7 +89,7 @@ test('release 1.0.0 journal remains replay-compatible', () => {
   expect(stateDigest(encodeState(verifyHistory(history).state))).toBe(history.stateHash);
 });
 
-test('adding official catalog identities does not invalidate a frozen deck; tampering still fails', async () => {
+test('catalog changes do not invalidate a frozen deck; tampering still fails', async () => {
   const { prepareDeckSnapshot, decodeDeckSnapshot } = await import('../admission/decks.ts');
   const { versions } = await import('../engine/model.ts');
   const player = config().players[0];
@@ -115,6 +115,9 @@ test('adding official catalog identities does not invalidate a frozen deck; tamp
   expect(
     decodeDeckSnapshot(result.snapshot, { ...catalog, newlyImportedCard: { type: 'Unit' } }),
   ).toEqual(result.snapshot);
+  const withoutPlayedCard = { ...catalog };
+  delete withoutPlayedCard[player.deck[0]!.cardId];
+  expect(decodeDeckSnapshot(result.snapshot, withoutPlayedCard)).toEqual(result.snapshot);
   expect(() =>
     decodeDeckSnapshot({ ...result.snapshot, catalogIdentityHash: 'f'.repeat(64) }, catalog),
   ).toThrow('corrupted');
