@@ -54,10 +54,19 @@ The temporary database is never assigned a host port. On success or failure, the
 
 For a Coolify-managed scheduled job, deploy
 [`scripts/remote-dev/docker-compose.coolify.yml`](scripts/remote-dev/docker-compose.coolify.yml)
-as a separate private Compose Service. Configure the real backup host path and
+as a separate private Git-backed application using the Docker Compose build pack
+(Base Directory `/scripts/remote-dev`, Compose Location `/docker-compose.coolify.yml`).
+Configure the real backup host path and
 R2 write credentials only in Coolify, then target the `sanitizer` container
 with the command documented in that Compose file. The job deliberately has no
 Docker-socket mount, domain, or published port.
+
+## Production deployments
+
+GitHub Actions can select which of the main app, maintainer and Crossfire need
+redeploying after a push to `main`, then call their existing Coolify deployments.
+See the [deployment setup and runbook](docs/deployment.md) for the Coolify settings,
+GitHub secrets, path rules and manual deployments.
 
 ## Parallel local worktrees
 
