@@ -55,6 +55,8 @@ Object.keys(cardList).forEach(cid => {
     });
   }
 
+  if (type.includes('Token')) return;
+
   variantIds.forEach(vid => {
     const v = card?.variants[vid];
     if (v && v.baseSet && validVariantNames[v.variantName]) {

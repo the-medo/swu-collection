@@ -18,6 +18,7 @@ const buildCardsBySetAndNumber = (cardList: CardList) => {
 
   Object.entries(cardList).forEach(([cardId, card]) => {
     if (!card) return;
+    if (card.type.includes('Token')) return;
 
     Object.values(card.variants ?? {}).forEach(variant => {
       if (!variant || !validVariantNames[variant.variantName]) return;
