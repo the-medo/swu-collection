@@ -161,8 +161,9 @@ export const setInfo: Record<SwuSet, SetInfo> = {
   [SwuSet.HMW]: {
     code: SwuSet.HMW,
     name: 'Homeworlds',
-    cardCount: 264,
+    cardCount: 272,
     sortValue: 11,
+    expansionId: 128,
     hexColor: '#3f7d5b',
     rotationBlockId: 3,
     releaseDate: '2026-10-02',
