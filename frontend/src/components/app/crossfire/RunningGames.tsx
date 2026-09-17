@@ -4,6 +4,7 @@ import { Link } from '@tanstack/react-router';
 import { ArrowRight, Swords } from 'lucide-react';
 import { useGameHistory } from '@/api/crossfire/useGameHistory.ts';
 import { Button } from '@/components/ui/button.tsx';
+import { ReplayButton } from './ReplayButton.tsx';
 
 export function RunningGames({ sessionId }: { sessionId: string }) {
   const query = useGameHistory(sessionId, 'running');
@@ -26,7 +27,7 @@ export function RunningGames({ sessionId }: { sessionId: string }) {
       ) : games.length ? (
         <div className="cf-running-list">
           {games.map(game => (
-            <ActivityRow key={game.gameId} leaders={game.leaders}>
+            <ActivityRow key={game.gameId} leaders={game.leaders} bases={game.bases}>
               <div>
                 <p className="cf-resume-opponent">vs. {game.opponent}</p>
                 <p className="cf-resume-meta">
@@ -40,7 +41,7 @@ export function RunningGames({ sessionId }: { sessionId: string }) {
                   {new Date(game.startedAt).toLocaleDateString()}
                 </p>
               </div>
-              <div className="flex shrink-0 items-center gap-1">
+              <div className="flex shrink-0 flex-wrap items-center gap-1">
                 <Button
                   asChild
                   size="sm"
@@ -52,6 +53,7 @@ export function RunningGames({ sessionId }: { sessionId: string }) {
                     <ArrowRight size={16} />
                   </Link>
                 </Button>
+                {game.compatible !== false && <ReplayButton lobbyId={game.lobbyId} />}
                 <LeaveGameButton
                   sessionId={sessionId}
                   lobbyId={game.lobbyId}

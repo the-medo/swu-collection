@@ -71,17 +71,20 @@ const DeckInfoThumbnail: React.FC<DeckInfoThumbnailProps> = ({
       >
         <div className="flex-1 relative h-full">
           {leaderCard && displayDeckBackground && (
-            <DeckBackgroundDecoration
-              leaderCard={leaderCard}
-              baseCard={baseCard}
-              position="top-left"
-              className={cn({
+            <div
+              className={cn('pointer-events-none absolute inset-0', {
                 'origin-top-left scale-[0.65] @[720px]/deck-statistics-item:scale-100':
                   statSectionVariant === 'horizontal',
               })}
             >
-              <BaseAvatar cardId={baseCardKey} bordered={false} size="40" shape="circle" />
-            </DeckBackgroundDecoration>
+              <DeckBackgroundDecoration
+                leaderCard={leaderCard}
+                baseCard={baseCard}
+                position="top-left"
+              >
+                <BaseAvatar cardId={baseCardKey} bordered={false} size="40" shape="circle" />
+              </DeckBackgroundDecoration>
+            </div>
           )}
           <CardContent
             className={cn('flex min-w-0 p-2 relative z-10 gap-4', {

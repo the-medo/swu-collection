@@ -116,6 +116,19 @@ async function layout() {
       width: picker.width / panel.width,
       visible: headers.every(r => r.top >= picker.top && r.bottom <= picker.bottom),
       height: Math.abs(panel.height - picker.height),
+      artworkUnclipped: [...home.querySelectorAll('[data-matchup-side]')].every(side => {
+        const style = getComputedStyle(side);
+        return style.overflowX === 'visible' && style.overflowY === 'visible';
+      }),
+      recentGamesClear: [...home.querySelectorAll('.cf-recent-game-content')].every(content => {
+        const copy = content.firstElementChild!;
+        const controls = content.lastElementChild!.getBoundingClientRect();
+        const title = copy.firstElementChild!;
+        return (
+          copy.getBoundingClientRect().right < controls.left &&
+          title.scrollWidth <= title.clientWidth + 1
+        );
+      }),
     };
   });
   expect(metrics.overflow).toBe(false);
@@ -123,6 +136,8 @@ async function layout() {
   expect(metrics.deckBesideArt).toBe(true);
   expect(metrics.gutter).toBeLessThanOrEqual(16);
   expect(metrics.visible).toBe(true);
+  expect(metrics.artworkUnclipped).toBe(true);
+  expect(metrics.recentGamesClear).toBe(true);
   expect(metrics.width).toBeGreaterThanOrEqual(0.5);
   if (page.viewportSize()!.width > 740) expect(metrics.height).toBeLessThan(3);
 }
@@ -146,7 +161,7 @@ try {
     guest!.userId,
     0,
     'darth-vader--dark-lord-of-the-sith',
-    'command-center',
+    'capital-city',
   );
   await addDeck('Public explorer ' + prefix, guest!.userId, 1);
   const unlisted = await addDeck('Shared tactics ' + prefix, guest!.userId, 2);
@@ -209,13 +224,45 @@ try {
     await shot(dark ? 'desktop-dark' : 'desktop-light');
   }
   await theme(true);
-  await expect(page.locator('.cf-running-list .cf-game-artwork img')).toHaveCount(2);
+  await expect(page.locator('.cf-running-list [data-matchup-side]')).toHaveCount(2);
+  await expect(page.locator('.cf-running-list [data-base-card="command-center"]')).toHaveCount(1);
+  await expect(page.locator('.cf-running-list [data-base-card="capital-city"]')).toHaveCount(1);
+  const recentCard = page.locator('.cf-recent-game-card').first();
+  await expect(recentCard.locator('[data-base-card="capital-city"]')).toHaveCount(1);
+  const compact = await recentCard.evaluate(card => {
+    const content = card.querySelector('.cf-recent-game-content')!;
+    const copy = content.firstElementChild!.getBoundingClientRect();
+    const controls = content.lastElementChild!.getBoundingClientRect();
+    const left = card.querySelector('[data-matchup-side="left"]')!.getBoundingClientRect();
+    const right = card.querySelector('[data-matchup-side="right"]')!.getBoundingClientRect();
+    return {
+      height: card.getBoundingClientRect().height,
+      aligned: getComputedStyle(content).textAlign,
+      clear: copy.left >= left.right && controls.right <= right.left && copy.right < controls.left,
+    };
+  });
+  expect(compact.height).toBeLessThanOrEqual(90);
+  expect(compact.aligned).toBe('left');
+  expect(compact.clear).toBe(true);
+  const deckClear = await page
+    .locator('.cf-deck-row')
+    .first()
+    .evaluate(row => {
+      const art = row.querySelector('[data-matchup-side="left"]')!.getBoundingClientRect();
+      const copy = row.querySelector('.cf-deck-row-copy')!.getBoundingClientRect();
+      return copy.left - art.right;
+    });
+  expect(deckClear).toBeGreaterThanOrEqual(4);
   for (const [tab, screenshot] of [
     ['Bookmarks', 'saved-positions'],
     ['Bug reports', 'reports'],
   ]) {
     await page.getByRole('tab', { name: tab, exact: true }).click();
-    await expect(page.locator('.cf-saved-activity .cf-game-artwork img')).toHaveCount(2);
+    await expect(page.locator('.cf-saved-activity [data-matchup-side]')).toHaveCount(2);
+    await expect(page.locator('.cf-saved-activity [data-base-card="command-center"]')).toHaveCount(
+      1,
+    );
+    await expect(page.locator('.cf-saved-activity [data-base-card="capital-city"]')).toHaveCount(1);
     await shot(screenshot!);
   }
   await page.getByRole('tab', { name: 'Bookmarks', exact: true }).click();
@@ -405,7 +452,7 @@ try {
     if (width === 320) {
       for (const name of ['Bookmarks', 'Bug reports']) {
         await page.getByRole('tab', { name, exact: true }).click();
-        await expect(page.locator('.cf-saved-activity .cf-game-row')).toBeVisible();
+        await expect(page.locator('.cf-saved-activity article')).toBeVisible();
         await layout();
       }
     }

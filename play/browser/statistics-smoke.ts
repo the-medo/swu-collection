@@ -1,5 +1,5 @@
 // Real local account/API/socket acceptance; no external notification endpoints.
-import { chromium, expect, type BrowserContext } from 'playwright/test';
+import { chromium, expect, type BrowserContext, type Page } from 'playwright/test';
 import { randomUUID } from 'node:crypto';
 import { mkdir } from 'node:fs/promises';
 import postgres from 'postgres';
@@ -10,6 +10,11 @@ import { CrossfireMatches } from '../../server/lib/crossfire/matches.ts';
 import { PostgresGameStore } from '../storage/postgres.ts';
 import { DurableGame } from '../host/durable-game.ts';
 import { choose, ids } from '../testing/helpers.ts';
+import { verifyHistory } from '../history/records.ts';
+import { practiceCheckpoint } from '../history/practice.ts';
+import { decodeState } from '../engine/checkpoint.ts';
+import type { GameState } from '../engine/model.ts';
+import type { GameResult } from '../../server/db/schema/game_result.ts';
 
 const url = process.env.CROSSFIRE_TEST_DATABASE_URL,
   origin = process.env.BETTER_AUTH_URL!;
@@ -75,9 +80,72 @@ async function open(p: typeof a) {
       socket.on('framereceived', ({ payload }) => events.push(String(payload)));
   });
   await page.goto(`${origin}/statistics/history`);
+  const dismissCookies = page.getByRole('button', { name: 'Dismiss', exact: true });
+  if (await dismissCookies.count()) await dismissCookies.click();
   await expect(page.getByText('No matches found.', { exact: true })).toBeVisible();
   await expect.poll(() => events.some(e => e.includes('game_results.connected'))).toBe(true);
   return { page, context, events };
+}
+async function verifyScoreReplays(page: Page) {
+  const replays = page.getByRole('link', { name: /^Replay game \d+$/ });
+  expect(await replays.count()).toBeGreaterThan(0);
+  for (const replay of await replays.all()) {
+    await expect(replay).toBeVisible();
+    await expect(replay.locator('svg')).toHaveCount(1);
+    const layout = await replay.evaluate(link => {
+      const score = link.closest('h3')!;
+      const card = score.closest('.overflow-hidden')!;
+      const buttonBounds = link.getBoundingClientRect();
+      const scoreBounds = score.getBoundingClientRect();
+      const cardBounds = card.getBoundingClientRect();
+      return {
+        visibleText: (link as HTMLElement).innerText.trim(),
+        rightOfScore: buttonBounds.left >= scoreBounds.right,
+        centeredOnScore:
+          Math.abs(
+            buttonBounds.top + buttonBounds.height / 2 - (scoreBounds.top + scoreBounds.height / 2),
+          ) < 2,
+        insideCard: buttonBounds.right <= cardBounds.right,
+        centeredScore:
+          Math.abs(
+            scoreBounds.left + scoreBounds.width / 2 - (cardBounds.left + cardBounds.width / 2),
+          ) < 2,
+        originalNamePlacement: getComputedStyle(card.querySelector('.top-14')!).position,
+      };
+    });
+    expect(layout).toEqual({
+      visibleText: '',
+      rightOfScore: true,
+      centeredOnScore: true,
+      insideCard: true,
+      centeredScore: true,
+      originalNamePlacement: 'absolute',
+    });
+  }
+}
+async function verifyDeckArtwork(page: Page, screenshot: string) {
+  const card = page.locator('[class~="@container/deck-statistics-item"]').first();
+  await expect(card).toBeVisible();
+  await expect(card.locator('img[alt=""]')).toHaveCount(1);
+  await card.evaluate(async card => {
+    await Promise.all([...card.querySelectorAll('img')].map(img => img.decode().catch(() => {})));
+  });
+  await card.screenshot({ path: `.swubase/crossfire-home/${screenshot}.png` });
+  const artwork = await card.evaluate(card => {
+    const leader = card.querySelector('img[alt=""]')!.parentElement!.getBoundingClientRect();
+    const badge = card.querySelector('.rotate-25 > div')!.getBoundingClientRect();
+    return {
+      badgeHorizontalRatio: (badge.left + badge.width / 2 - leader.left) / leader.width,
+      badgeVerticalRatio: (badge.top + badge.height / 2 - leader.top) / leader.height,
+      overflow: document.documentElement.scrollWidth > innerWidth,
+    };
+  });
+  // The base badge belongs at the portrait's upper-right edge, not over its left/middle.
+  expect(artwork.badgeHorizontalRatio).toBeGreaterThan(0.65);
+  expect(artwork.badgeHorizontalRatio).toBeLessThan(1.1);
+  expect(artwork.badgeVerticalRatio).toBeGreaterThan(0);
+  expect(artwork.badgeVerticalRatio).toBeLessThan(0.25);
+  expect(artwork.overflow).toBe(false);
 }
 async function finish(lobbyId: string, play = false) {
   const lobby = (await lobbies.get(principal(a), lobbyId))!;
@@ -111,6 +179,107 @@ async function finish(lobbyId: string, play = false) {
   });
   expect(await child.exited).toBe(0);
   expect(await new Response(child.stderr).text()).toBe('');
+}
+async function fork(sourceLobbyId: string, early = false) {
+  const sourceLobby = (await lobbies.get(principal(a), sourceLobbyId))!;
+  const history = await store.readHistory(sourceLobby.gameId!);
+  let target: GameState = decodeState(history.checkpoint.checkpoint);
+  if (!early)
+    verifyHistory(history, (before, after) => {
+      if (after.result) target = before;
+    });
+  const gameId = `statistics-browser-practice-${randomUUID()}`,
+    lobbyId = randomUUID();
+  await store.create(practiceCheckpoint(target, gameId));
+  const provenance = {
+    kind: 'practice',
+    sourceGameId: history.gameId,
+    position: early ? 'setup-position' : 'late-position',
+    branch: 'branch',
+    sourceHash: 'private-fixture',
+  };
+  await sql`UPDATE play.games SET provenance = ${sql.json(provenance)} WHERE id = ${gameId}`;
+  await sql`INSERT INTO play.lobbies(id,creator_user_id,game_id,status,versions)
+    SELECT ${lobbyId},creator_user_id,${gameId},'started',versions FROM play.lobbies WHERE id = ${sourceLobbyId}`;
+  await sql`INSERT INTO play.participants(lobby_id,seat,user_id,session_id,deck_snapshot)
+    SELECT ${lobbyId},seat,user_id,session_id,deck_snapshot FROM play.participants WHERE lobby_id = ${sourceLobbyId}`;
+  await finish(lobbyId, early);
+  return lobbyId;
+}
+async function verifyLegacyCache(sourceContext: BrowserContext, playedDate: string) {
+  const context = await browser.newContext();
+  contexts.push(context);
+  await context.addCookies(await sourceContext.cookies());
+  const page = await context.newPage();
+  await page.route('**/cache-upgrade-fixture', route =>
+    route.fulfill({ contentType: 'text/html', body: '<html><body>Cache fixture</body></html>' }),
+  );
+  await page.goto(`${origin}/cache-upgrade-fixture`);
+  const rows: GameResult[] = await (await context.request.get(`${origin}/api/game-results`)).json();
+  const legacy = rows.find(row => row.statisticsScope === 'practice')!;
+  delete legacy.statisticsScope;
+  legacy.updatedAt = '2026-01-01 00:00:00';
+  await page.evaluate(
+    async ({ row, scopeId }) => {
+      // Native IndexedDB version 90 is Dexie version 9. Reproduce the prior schema.
+      const schemas: Record<string, string> = {
+        tournamentDecks: 'id',
+        tournamentMatches: 'id',
+        cardVariantPrices: 'id,cardId,variantId,sourceType,fetchedAt',
+        cardVariantPriceFetchList: 'id,cardId,variantId,addedAt',
+        userSettings: 'key',
+        dailySnapshots: 'date',
+        collections: 'id',
+        collectionCards: 'collectionId',
+        cardListCache: 'key',
+        gameResults:
+          '[scopeId+id],[scopeId+updatedAt],[scopeId+deckId],[scopeId+format],[scopeId+leaderCardId],[scopeId+leaderCardId+baseCardKey]',
+      };
+      const database = await new Promise<IDBDatabase>((resolve, reject) => {
+        const request = indexedDB.open('SwuBaseDB', 90);
+        request.onupgradeneeded = () => {
+          const keyPath = (key: string) =>
+            key.startsWith('[') ? key.slice(1, -1).split('+') : key;
+          for (const [name, schema] of Object.entries(schemas)) {
+            const [primary, ...indices] = schema.split(',');
+            const store = request.result.createObjectStore(name, { keyPath: keyPath(primary!) });
+            for (const index of indices) store.createIndex(index, keyPath(index));
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      await new Promise<void>((resolve, reject) => {
+        const tx = database.transaction('gameResults', 'readwrite');
+        tx.objectStore('gameResults').put({ ...row, scopeId });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+      database.close();
+    },
+    { row: legacy, scopeId: a.userId },
+  );
+  await page.route('**/api/game-results?*', route =>
+    route.fulfill({ contentType: 'application/json', body: '[]' }),
+  );
+  await page.goto(
+    `${origin}/statistics/history?sDateRangeFrom=${playedDate}&sDateRangeTo=${playedDate}`,
+  );
+  await expect(page.getByText('No matches found.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Practice from bookmark', { exact: true })).toHaveCount(0);
+  await page.goto(
+    `${origin}/statistics/dashboard?sDateRangeFrom=${playedDate}&sDateRangeTo=${playedDate}`,
+  );
+  await expect(page.getByText('Practice from bookmark', { exact: true })).toHaveCount(0);
+  await page.unroute('**/api/game-results?*');
+  await page.goto(
+    `${origin}/statistics/history?sDateRangeFrom=${playedDate}&sDateRangeTo=${playedDate}`,
+  );
+  await page.reload();
+  await expect(page.getByText('Practice from bookmark', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('2 - 0', { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText('Practice from bookmark', { exact: true })).toHaveCount(0);
 }
 try {
   for (const p of users) {
@@ -167,9 +336,30 @@ try {
   expect(
     await (await first.context.request.get(`${origin}/api/game-results?teamId=${teams[1]}`)).json(),
   ).toHaveLength(0);
-  await first.page.goto(`${origin}/statistics/decks?sDeckId=${a.deckId}`);
-  await expect(first.page.getByText('Alex Crossfire deck', { exact: true }).first()).toBeVisible();
   await mkdir('.swubase/crossfire-home', { recursive: true });
+  for (const [view, path] of [
+    ['list', '/statistics/decks'],
+    ['detail', `/statistics/decks?sDeckId=${a.deckId}`],
+  ]) {
+    await first.page.goto(origin + path);
+    await expect(
+      first.page.getByText('Alex Crossfire deck', { exact: true }).first(),
+    ).toBeVisible();
+    for (const width of [1500, 900, 390]) {
+      await first.page.setViewportSize({ width, height: 950 });
+      for (const dark of [false, true]) {
+        await first.page.evaluate(
+          dark => document.documentElement.classList.toggle('dark', dark),
+          dark,
+        );
+        await verifyDeckArtwork(
+          first.page,
+          `statistics-deck-${view}-${width}-${dark ? 'dark' : 'light'}`,
+        );
+      }
+    }
+  }
+  await first.page.setViewportSize({ width: 1500, height: 950 });
   await first.page.screenshot({
     path: '.swubase/crossfire-home/statistics-deck.png',
     fullPage: true,
@@ -178,6 +368,106 @@ try {
     path: '.swubase/crossfire-home/statistics-history.png',
     fullPage: true,
   });
+  // Cross the server's 25-row cursor boundary while revealing only ten at a time.
+  for (let i = 0; i < 26; i++) await fork(lobby.id);
+  await fork(lobby.id, true);
+  await first.page.goto(`${origin}/statistics/history?sHistoryScope=practice`);
+  await expect(first.page.getByText('2 - 0', { exact: true })).toBeVisible();
+  await expect(first.page.getByText('Practice from bookmark', { exact: true })).toHaveCount(0);
+  await expect(first.page.getByRole('link', { name: 'Practice', exact: true })).toHaveCount(0);
+  await expect(first.page.getByRole('combobox', { name: 'Games shown in history' })).toHaveCount(0);
+  await expect(first.page.getByRole('link', { name: 'Replay game 1', exact: true })).toHaveCount(1);
+  await expect(first.page.getByRole('link', { name: 'Replay game 2', exact: true })).toHaveCount(1);
+  await verifyScoreReplays(first.page);
+  await first.page.getByRole('link', { name: 'Replay game 1', exact: true }).click();
+  await expect(first.page.getByLabel('Replay controls', { exact: true })).toBeVisible();
+  await first.page.goBack();
+  await first.page.reload();
+  await expect(first.page.getByText('2 - 0', { exact: true })).toBeVisible();
+  await first.page.goto(`${origin}/statistics/dashboard`);
+  await expect(first.page.getByRole('link', { name: 'Replay game 1', exact: true })).toBeVisible();
+  await verifyScoreReplays(first.page);
+  await first.page.screenshot({
+    path: '.swubase/crossfire-home/statistics-restored-dashboard.png',
+    fullPage: true,
+  });
+
+  await first.page.goto(`${origin}/crossfire`);
+  const recent = first.page.getByRole('region', { name: 'Recent games', exact: true });
+  await expect(recent.locator('article')).toHaveCount(10);
+  await recent.getByRole('button', { name: 'Load 10 more games', exact: true }).click();
+  await expect(recent.locator('article')).toHaveCount(20);
+  await first.page.route('**/api/crossfire/history?cursor=*', route =>
+    route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: '{"message":"Try again"}',
+    }),
+  );
+  await recent.getByRole('button', { name: 'Load 10 more games', exact: true }).click();
+  await expect(recent.getByRole('alert')).toContainText('Could not load more games', {
+    timeout: 15_000,
+  });
+  await expect(recent.locator('article')).toHaveCount(20);
+  await first.page.unroute('**/api/crossfire/history?cursor=*');
+  await recent.getByRole('button', { name: 'Load 10 more games', exact: true }).click();
+  await expect(recent.locator('article')).toHaveCount(29);
+  await expect(recent.getByRole('button', { name: 'Load 10 more games', exact: true })).toHaveCount(
+    0,
+  );
+  const replayLinks = await recent
+    .getByRole('link', { name: 'Replay', exact: true })
+    .evaluateAll(links => links.map(link => link.getAttribute('href')));
+  expect(new Set(replayLinks).size).toBe(29);
+  await first.page.reload();
+  await expect(recent.locator('article')).toHaveCount(10);
+  await first.page.evaluate(() => document.documentElement.classList.remove('dark'));
+  await recent.screenshot({ path: '.swubase/crossfire-home/statistics-recent-games.png' });
+  await first.page.setViewportSize({ width: 390, height: 844 });
+  await first.page.evaluate(() => document.documentElement.classList.add('dark'));
+  await recent.scrollIntoViewIfNeeded();
+  expect(
+    await first.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBe(true);
+  await first.page.screenshot({
+    path: '.swubase/crossfire-home/statistics-recent-games-mobile.png',
+  });
+  await first.page.goto(`${origin}/statistics/history`);
+  await expect(first.page.getByRole('link', { name: 'Replay game 1', exact: true })).toBeVisible();
+  await verifyScoreReplays(first.page);
+  await first.page.screenshot({
+    path: '.swubase/crossfire-home/statistics-restored-mobile.png',
+    fullPage: true,
+  });
+  expect(
+    await first.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBe(true);
+  await first.page.setViewportSize({ width: 1500, height: 950 });
+  await first.page.goto(`${origin}/teams/${teams[0]}/statistics/history`);
+  await expect(first.page.getByText('2 - 0', { exact: true })).toBeVisible();
+  await expect(first.page.getByText('0 - 2', { exact: true })).toBeVisible();
+  await expect(first.page.getByText('Practice from bookmark', { exact: true })).toHaveCount(0);
+  await expect(first.page.getByRole('link', { name: 'Practice', exact: true })).toHaveCount(0);
+  await expect(first.page.getByRole('link', { name: 'Replay game 1', exact: true })).toHaveCount(2);
+  await verifyScoreReplays(first.page);
+  await first.page.screenshot({
+    path: '.swubase/crossfire-home/statistics-restored-team.png',
+    fullPage: true,
+  });
+  await first.page.goto(`${origin}/teams/${teams[1]}/statistics/history`);
+  await expect(first.page.getByText('No matches found.', { exact: true })).toBeVisible();
+
+  // Later updates must not move standard games out of their played-date range.
+  const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+  await sql`UPDATE game_result SET created_at = ${yesterday + ' 14:00:00'}, updated_at = clock_timestamp() AT TIME ZONE 'UTC' WHERE user_id = ${a.userId}`;
+  await first.page.goto(
+    `${origin}/statistics/history?sDateRangeFrom=${yesterday}&sDateRangeTo=${yesterday}`,
+  );
+  await expect(first.page.getByText('2 - 0', { exact: true })).toBeVisible();
+  await expect(first.page.getByText('Practice from bookmark', { exact: true })).toHaveCount(0);
+  await first.page.reload();
+  await expect(first.page.getByText('2 - 0', { exact: true })).toBeVisible();
+  await verifyLegacyCache(first.context, yesterday);
   const anonymous = await browser.newContext();
   expect((await anonymous.request.get(`${origin}/api/game-results`)).status()).toBe(401);
   const anonymousPage = await anonymous.newPage();
@@ -188,7 +478,7 @@ try {
   await anonymous.close();
   expect(errors).toEqual([]);
   console.log(
-    'Statistics browser acceptance passed: two accounts without linked integrations, live BO3 updates, scoped APIs, deck detail and refresh.',
+    'Statistics browser acceptance passed: practice excluded from personal/team statistics and history, replay buttons, ten-game pagination, mobile layout, historical ranges and legacy cache refresh.',
   );
 } finally {
   for (const context of contexts) await context.close();

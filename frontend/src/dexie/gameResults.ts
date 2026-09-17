@@ -24,34 +24,19 @@ export async function getGameResultsByScope(scopeId: string): Promise<GameResult
 }
 
 /**
- * Get game results for a scope within a date range
+ * Select played dates, independently of the updatedAt incremental-sync cursor.
  */
 export async function getGameResultsByScopeAndDateRange(
   scopeId: string,
   datetimeFrom?: string,
   datetimeTo?: string,
 ): Promise<GameResultStore[]> {
-  let collection;
-
-  if (datetimeFrom && datetimeTo) {
-    collection = db.gameResults
-      .where('[scopeId+updatedAt]')
-      .between([scopeId, datetimeFrom], [scopeId, datetimeTo], true, true);
-  } else if (datetimeFrom) {
-    collection = db.gameResults
-      .where('[scopeId+updatedAt]')
-      .between([scopeId, datetimeFrom], [scopeId, Dexie.maxKey], true, true);
-  } else if (datetimeTo) {
-    collection = db.gameResults
-      .where('[scopeId+updatedAt]')
-      .between([scopeId, Dexie.minKey], [scopeId, datetimeTo], true, true);
-  } else {
-    collection = db.gameResults
-      .where('[scopeId+updatedAt]')
-      .between([scopeId, Dexie.minKey], [scopeId, Dexie.maxKey]);
-  }
-
-  return collection.toArray();
+  // Date-only upper bounds include the entire day, with SQL and ISO encodings.
+  const end = datetimeTo?.length === 10 ? `${datetimeTo}\uffff` : datetimeTo;
+  return db.gameResults
+    .where('[scopeId+createdAt]')
+    .between([scopeId, datetimeFrom ?? Dexie.minKey], [scopeId, end ?? Dexie.maxKey], true, true)
+    .toArray();
 }
 
 /**

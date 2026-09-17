@@ -51,6 +51,7 @@ interface DeckBackgroundDecorationProps extends PropsWithChildren {
   baseCard: CardDataWithVariants<CardListVariants> | undefined;
   position: 'top-left' | 'top-right';
   className?: string;
+  showBaseDecoration?: boolean;
 }
 
 const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
@@ -59,14 +60,13 @@ const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
   position,
   children,
   className,
+  showBaseDecoration = true,
 }) => {
   const leaderVariant = leaderCard?.variants[Object.keys(leaderCard?.variants)[0]];
-  console.log({ leaderVariant });
   if (!leaderVariant) return null;
 
   const isLeader = leaderCard.type === 'Leader';
   const imageName = isLeader ? leaderVariant.image.back : leaderVariant.image.front;
-  console.log({ imageName });
   if (!imageName) return null;
 
   const imageUrl = `https://images.swubase.com/cards/${imageName}`;
@@ -90,32 +90,34 @@ const DeckBackgroundDecoration: React.FC<DeckBackgroundDecorationProps> = ({
           className={cn('w-full h-full object-cover', imageOffsetClasses[position])}
         />
       </div>
-      <div
-        className={cn(
-          'absolute w-[100px] h-[450px] overflow-hidden z-10',
-          positionBaseClasses[position],
-          position === 'top-left' && `border-r-[10px]`,
-          position === 'top-right' && `border-l-[10px]`,
-          className,
-        )}
-        style={{
-          background: `${baseColor}aa`,
-          ...baseClasses[position],
-          borderRightColor: position === 'top-left' ? baseColor : undefined,
-          borderLeftColor: position === 'top-right' ? baseColor : undefined,
-        }}
-      >
-        {children ? (
-          <div
-            className={cn(
-              'absolute pointer-events-none overflow-hidden m-0 p-[2px] opacity-90',
-              positionChildrenClasses[position],
-            )}
-          >
-            {children}
-          </div>
-        ) : null}
-      </div>
+      {showBaseDecoration && (
+        <div
+          className={cn(
+            'absolute w-[100px] h-[450px] overflow-hidden z-10',
+            positionBaseClasses[position],
+            position === 'top-left' && `border-r-[10px]`,
+            position === 'top-right' && `border-l-[10px]`,
+            className,
+          )}
+          style={{
+            background: `${baseColor}aa`,
+            ...baseClasses[position],
+            borderRightColor: position === 'top-left' ? baseColor : undefined,
+            borderLeftColor: position === 'top-right' ? baseColor : undefined,
+          }}
+        >
+          {children ? (
+            <div
+              className={cn(
+                'absolute pointer-events-none overflow-hidden m-0 p-[2px] opacity-90',
+                positionChildrenClasses[position],
+              )}
+            >
+              {children}
+            </div>
+          ) : null}
+        </div>
+      )}
     </>
   );
 };

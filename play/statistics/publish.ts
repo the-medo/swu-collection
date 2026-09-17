@@ -75,13 +75,13 @@ export async function publishStatistics(sql: Sql, history: History) {
         await tx`INSERT INTO public.game_result
           (user_id, deck_id, match_id, game_id, game_number, format,
            leader_card_id, base_card_key, opponent_leader_card_id, opponent_base_card_key,
-           has_initiative, has_mulligan, is_winner, game_source, card_metrics, round_metrics, other_data, created_at)
+           has_initiative, has_mulligan, is_winner, game_source, statistics_scope, card_metrics, round_metrics, other_data, created_at)
           VALUES (${person.user_id}, ${deck?.id ?? null}, ${statisticsMatchId(lobby.match_id)}, ${statisticsGameId(history.gameId)},
             ${lobby.number}, ${snapshot.sourceKind === 'limited' ? 'limited' : 'premier'},
             ${snapshot.leader}, ${getBaseKey(snapshot.base)},
             ${opposing.leader}, ${getBaseKey(opposing.base)},
             ${metrics.hasInitiative}, ${metrics.hasMulligan}, ${state.result!.winner === null ? null : state.result!.winner === seat},
-            'crossfire', ${tx.json(metrics.cardMetrics)}, ${tx.json(metrics.roundMetrics)}, ${tx.json(otherData)},
+            'crossfire', ${game.provenance !== null ? 'practice' : 'standard'}, ${tx.json(metrics.cardMetrics)}, ${tx.json(metrics.roundMetrics)}, ${tx.json(otherData)},
             ${game.ended_at} AT TIME ZONE 'UTC')
           ON CONFLICT (user_id, game_id) DO NOTHING`;
         if (deck)

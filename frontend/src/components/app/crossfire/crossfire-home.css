@@ -104,6 +104,9 @@
   gap: 8px;
 }
 .cf-deck-row {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   width: 100%;
   min-width: 0;
   min-height: 82px;
@@ -112,7 +115,7 @@
   gap: 11px;
   border: 1px solid var(--cf-home-line);
   border-radius: 8px;
-  padding: 0 10px 0 0;
+  padding: 0 10px 0 164px;
   text-align: left;
   background: var(--cf-home-surface);
   transition:
@@ -128,6 +131,8 @@
   opacity: 0.6;
 }
 .cf-deck-row-copy {
+  position: relative;
+  z-index: 10;
   min-width: 0;
   padding: 10px 0;
 }
@@ -155,6 +160,8 @@
   overflow-wrap: anywhere;
 }
 .cf-deck-row-check {
+  position: relative;
+  z-index: 10;
   flex-shrink: 0;
   margin-left: auto;
   display: grid;
@@ -178,11 +185,7 @@
   overflow: hidden;
   background: var(--cf-home-soft);
 }
-.cf-deck-row .cf-deck-art {
-  width: 64px;
-  align-self: stretch;
-  border-radius: 7px 0 0 7px;
-}
+
 .cf-deck-art > img {
   position: absolute;
   top: 0;
@@ -217,13 +220,23 @@
 }
 /* Separate sibling controls: previewing must not select a deck or nest buttons. */
 .cf-deck-option {
+  container-type: inline-size;
   position: relative;
   min-width: 0;
 }
 .cf-deck-option .cf-deck-row-copy {
   padding-right: 32px;
 }
+@container (max-width: 380px) {
+  .cf-deck-row {
+    padding-left: 116px;
+  }
+  .cf-deck-row [data-matchup-side] {
+    transform: scale(0.65);
+  }
+}
 .cf-deck-preview-button {
+  z-index: 20;
   position: absolute;
   top: 50%;
   right: 40px;
@@ -641,93 +654,9 @@
 .cf-running-list {
   margin-top: 18px;
 }
-.cf-game-row {
-  display: flex;
-  align-items: stretch;
-  min-width: 0;
-  gap: 16px;
-  border: 1px solid var(--cf-home-line);
-  border-radius: 9px;
-  background: var(--cf-home-surface);
-  overflow: hidden;
-}
-.cf-game-artwork {
-  position: relative;
-  display: flex;
-  align-self: stretch;
-  flex-shrink: 0;
-  width: 116px;
-  min-height: 100px;
-  overflow: hidden;
-}
-.cf-game-artwork .cf-deck-art {
-  width: 50%;
-}
-.cf-game-artwork .cf-deck-art > img {
-  width: 200px;
-}
-.cf-game-versus {
-  position: absolute;
-  z-index: 1;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 1px solid var(--cf-home-line);
-  background: var(--cf-home-surface);
-  color: var(--cf-home-accent);
-  font-size: 10px;
-}
-.cf-game-row-body {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 13px 16px 13px 0;
-}
-.cf-game-row-body > div {
-  min-width: 0;
-}
-.cf-game-row-body > div:last-child {
-  flex-wrap: wrap;
-}
-.cf-running-list .cf-game-row {
-  gap: 10px;
-}
-.cf-running-list .cf-game-artwork {
-  width: 80px;
-}
-.cf-running-list .cf-game-row-body > div {
-  width: 100%;
-}
+
 .cf-running-list .cf-resume-opponent {
   font-size: 14px;
-}
-.cf-report-row .cf-game-row-body {
-  display: grid;
-}
-@media (max-width: 740px) {
-  .cf-game-row {
-    gap: 10px;
-  }
-  .cf-game-artwork {
-    width: 80px;
-  }
-  .cf-game-row-body {
-    padding-right: 10px;
-    font-size: 13px;
-  }
-  .cf-game-row-body button,
-  .cf-game-row-body a {
-    font-size: 11px;
-  }
 }
 
 /* Match the homepage's section rhythm and corner treatment. */
@@ -792,25 +721,7 @@
 .cf-inline-settings:disabled .cf-setting-row {
   opacity: 1;
 }
-.cf-running-games .cf-game-artwork {
-  width: 60px;
-  min-height: 52px;
-}
-.cf-running-games .cf-game-row {
-  gap: 8px;
-  padding: 8px 0;
-}
-.cf-running-games .cf-game-row-body {
-  flex-direction: row;
-  align-items: center;
-  gap: 6px;
-  flex: 1;
-  min-width: 0;
-}
-.cf-running-games .cf-game-row-body > div {
-  flex: 1;
-  min-width: 0;
-}
+
 .cf-running-games .cf-resume-opponent {
   font-size: 12px;
 }
@@ -827,7 +738,7 @@
 }
 .cf-home-activity-grid {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
   gap: 8px;
   margin-top: 8px;
   align-items: start;
@@ -838,18 +749,47 @@
   background: none;
   border-radius: 0;
 }
-.cf-saved-activity .cf-game-row {
-  flex-wrap: wrap;
+
+/* Reserve both artwork edges; use the space between them for a compact row. */
+.cf-recent-game-content {
+  min-height: 76px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 164px;
+  text-align: left;
 }
-.cf-saved-activity .cf-game-artwork {
-  width: 70px;
-  min-height: 60px;
+.cf-recent-game-content p {
+  overflow-wrap: anywhere;
 }
-.cf-saved-activity .cf-game-row-body {
-  min-width: 150px;
-  flex: 1;
-  flex-wrap: wrap;
+.cf-recent-game-content p + p {
+  margin-top: 3px;
+  font-size: 10px;
+  line-height: 1.4;
 }
+@container (max-width: 640px) {
+  .cf-recent-game-content {
+    padding-inline: 104px;
+    gap: 8px;
+  }
+  .cf-recent-game-card [data-matchup-side] {
+    transform: scale(0.6);
+  }
+}
+@container (max-width: 440px) {
+  .cf-recent-game-content {
+    padding-inline: 68px;
+  }
+  .cf-recent-game-actions {
+    flex-direction: column;
+    align-items: flex-end;
+    max-width: 64px;
+  }
+  .cf-recent-game-card [data-matchup-side] {
+    transform: scale(0.4);
+  }
+}
+
 .cf-lobby-banner {
   display: flex;
   align-items: center;
@@ -907,40 +847,11 @@
 .dark .cf-home {
   --cf-home-surface: hsl(var(--card));
 }
-.cf-saved-activity .cf-game-row {
-  align-items: flex-start;
-}
-.cf-saved-activity .cf-game-artwork {
-  height: 80px;
-  align-self: flex-start;
-}
-.cf-saved-activity .cf-game-row-body {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 8px;
-}
-.cf-saved-activity .cf-game-row-body > .flex {
-  flex-wrap: wrap;
-}
-.cf-saved-activity .cf-game-row-body p {
-  font-size: 12px;
-}
+
 .cf-home-aside #cf-practice-title {
   font-size: 14px;
 }
 .cf-home-aside section:has(> #cf-practice-title) {
   border-radius: var(--radius);
   padding: 16px;
-}
-.cf-home-aside section:has(> #cf-practice-title) .cf-game-artwork {
-  width: 65px;
-  height: 80px;
-  align-self: flex-start;
-}
-.cf-home-aside section:has(> #cf-practice-title) .cf-game-row {
-  align-items: flex-start;
-}
-.cf-home-aside section:has(> #cf-practice-title) .cf-game-row-body {
-  font-size: 12px;
-  gap: 6px;
 }

@@ -13,7 +13,7 @@ function BookmarkRow({ bookmark, sessionId }: { bookmark: CrossfireBookmark; ses
     [editing, setEditing] = useState(false),
     [label, setLabel] = useState(bookmark.label);
   return (
-    <ActivityRow leaders={bookmark.leaders}>
+    <ActivityRow leaders={bookmark.leaders} bases={bookmark.bases}>
       <div className="min-w-0 flex-1">
         {editing ? (
           <form
@@ -69,7 +69,7 @@ function BookmarkRow({ bookmark, sessionId }: { bookmark: CrossfireBookmark; ses
               params={{ lobbyId: bookmark.lobbyId }}
               search={{ cfPosition: bookmark.position, cfBranch: bookmark.branch }}
             >
-              View from here
+              View
             </Link>
           </Button>
         )}
@@ -115,6 +115,10 @@ export function Bookmarks({
       >
         <BookmarkIcon size={20} /> Your bookmarks
       </h2>
+      <p className="text-sm text-muted-foreground">
+        Play from here creates a practice game. You can replay it in Crossfire, but it does not
+        appear in your personal or team statistics.
+      </p>
       {query.isPending ? (
         <p>Loading bookmarks…</p>
       ) : query.isError ? (

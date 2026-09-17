@@ -421,6 +421,13 @@
       "when": 1789563648912,
       "tag": "0059_serious_toad_men",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1789589541302,
+      "tag": "0060_crossfire_practice_statistics",
+      "breakpoints": true
     }
   ]
 }

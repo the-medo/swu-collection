@@ -10,6 +10,10 @@ import { encodeArchive } from '../history/archive.ts';
 import { publishStatistics } from '../statistics/publish.ts';
 import { statisticsMatchId, statisticsGameId } from '../statistics/matches.ts';
 import { choose, ids } from '../testing/helpers.ts';
+import { verifyHistory } from '../history/records.ts';
+import { practiceCheckpoint } from '../history/practice.ts';
+import { createHash } from 'node:crypto';
+import type { GameState } from '../engine/model.ts';
 const url = process.env.CROSSFIRE_TEST_DATABASE_URL;
 if (!url || new URL(url).hostname !== '127.0.0.1' || !new URL(url).pathname.startsWith('/swubase_'))
   throw new Error('Local worktree DB required');
@@ -112,6 +116,7 @@ test('one account result per game, frozen deck identity, private metrics, team o
   expect(own.leader_card_id).toBe(ids.leader);
   expect(own.base_card_key).toBe('Command');
   expect(own.game_source).toBe('crossfire');
+  expect(own.statistics_scope).toBe('standard');
   expect(own.game_id).toBe(statisticsGameId(history.gameId));
   expect(own.card_metrics[ids.marine]).toEqual({ drawn: 6, resourced: 2, played: 1 });
   expect(other.card_metrics[ids.marine]).toEqual({ drawn: 6, resourced: 2 });
@@ -171,7 +176,91 @@ test('BO3 sideboarding shares a match; finishing updates earlier games and remat
   await finish(rematch, 'p2');
   expect(await results(rematch)).toHaveLength(2);
   expect((await results(rematch))[0]!.game_number).toBe(1);
+  expect((await results(rematch))[0]!.statistics_scope).toBe('standard');
   expect(rematch).not.toBe(root);
+});
+
+test('repeated bookmark continuations publish practice outcomes and only post-bookmark metrics; a fresh rematch counts normally', async () => {
+  const root = await start(1);
+  const source = await finish(root, 'p2', true);
+  let target: GameState | undefined;
+  verifyHistory(source, (before, after) => {
+    if (after.result) target = before;
+  });
+  expect(target!.round).toBe(1);
+  const provenance = {
+    kind: 'practice',
+    sourceGameId: source.gameId,
+    position: 'opaque-position',
+    branch: 'opaque-branch',
+    sourceHash: 'private-hash',
+  };
+  const idsCreated: string[] = [];
+  for (let i = 0; i < 2; i++) {
+    const gameId = `practice-statistics-${randomUUID()}`,
+      lobbyId = randomUUID();
+    idsCreated.push(lobbyId);
+    await store.create(practiceCheckpoint(target!, gameId));
+    await sql`UPDATE play.games SET provenance = ${sql.json(provenance)} WHERE id = ${gameId}`;
+    await sql`INSERT INTO play.lobbies(id,creator_user_id,game_id,status,versions)
+      SELECT ${lobbyId},creator_user_id,${gameId},'started',versions FROM play.lobbies WHERE id = ${root}`;
+    await sql`INSERT INTO play.participants(lobby_id,seat,user_id,session_id,deck_snapshot)
+      SELECT ${lobbyId},seat,user_id,session_id,deck_snapshot FROM play.participants WHERE lobby_id = ${root}`;
+    await finish(lobbyId, i === 0 ? 'p1' : 'p2');
+    const rows = await results(lobbyId);
+    expect(rows).toHaveLength(2);
+    for (const row of rows) {
+      expect(row.statistics_scope).toBe('practice');
+      expect(row.other_data.crossfire).toMatchObject({
+        resumed: true,
+        totals: { played: 0, drawn: 0, resourced: 0, actions: 0 },
+      });
+      expect(JSON.stringify(row.other_data)).not.toContain('private-hash');
+      expect(JSON.stringify(row.other_data)).not.toContain(source.gameId);
+    }
+  }
+  expect((await results(root))[0]!.statistics_scope).toBe('standard');
+  await matches.ready(principal(a), idsCreated[0]!, { kind: 'rematch', ready: true });
+  const rematch = (
+    await matches.ready(principal(b), idsCreated[0]!, { kind: 'rematch', ready: true })
+  ).rematchLobbyId!;
+  await finish(rematch, 'p2', true);
+  expect((await results(rematch))[0]!.statistics_scope).toBe('standard');
+  expect((await results(rematch))[0]!.other_data.crossfire.resumed).toBe(false);
+});
+
+test('migration backfills legacy practice rows and grouping while preserving edits and making cache updates discoverable', async () => {
+  const root = await start(1);
+  const source = await finish(root, 'p2');
+  const provenance = {
+    kind: 'practice',
+    sourceGameId: 'deleted-source',
+    position: 'opaque-position',
+  };
+  await sql`UPDATE play.games SET provenance = ${sql.json(provenance)} WHERE id = ${source.gameId}`;
+  await sql`UPDATE public.game_result SET note = 'Keep this', exclude = true,
+    updated_at = '2026-01-01', other_data = jsonb_set(other_data, '{crossfire,resumed}', 'true')
+    WHERE match_id = ${statisticsMatchId(root)}`;
+  const migration = await Bun.file(
+    new URL('../../drizzle/0060_crossfire_practice_statistics.sql', import.meta.url),
+  ).text();
+  const backfills = migration.split('--> statement-breakpoint').slice(1);
+  await sql.begin(async tx => {
+    for (const query of backfills) await tx.unsafe(query);
+    // Repeating the data portion must preserve user fields and deterministic grouping.
+    for (const query of backfills) await tx.unsafe(query);
+  });
+  for (const row of await results(root)) {
+    expect(row.statistics_scope).toBe('practice');
+    expect(row.note).toBe('Keep this');
+    expect(row.exclude).toBe(true);
+    expect(row.updated_at.getTime()).toBeGreaterThan(new Date('2026-01-01').getTime());
+    expect(row.other_data.crossfire.practice).toEqual({
+      seriesId: createHash('sha256')
+        .update(provenance.sourceGameId + ':' + provenance.position)
+        .digest('hex'),
+    });
+  }
 });
 
 test('sideboarding forfeit records the actual match winner without adding fictional games', async () => {

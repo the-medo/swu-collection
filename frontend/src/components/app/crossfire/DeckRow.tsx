@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button.tsx';
 import DeckPreviewDialog from '@/components/app/decks/DeckPreviewDialog.tsx';
 import type { CrossfireDeckSummary } from '../../../../../shared/types/crossfire-decks.ts';
 import type { CardList } from '../../../../../lib/swu-resources/types.ts';
-import { DeckArtwork } from './DeckArtwork.tsx';
+import { MatchupArtwork } from '@/components/app/global/MatchupCard.tsx';
 import { deckCardName } from './presentation.ts';
 
 export function DeckRow({
@@ -28,7 +28,7 @@ export function DeckRow({
         disabled={disabled}
         onClick={() => onSelect(deck.id)}
       >
-        <DeckArtwork cardId={deck.leaderId} catalog={catalog} />
+        <MatchupArtwork leaderCardId={deck.leaderId} baseCardKey={deck.baseId} />
         <span className="cf-deck-row-copy">
           <strong>{deck.name || 'Untitled deck'}</strong>
           <span>

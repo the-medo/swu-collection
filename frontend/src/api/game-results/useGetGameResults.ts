@@ -11,7 +11,7 @@ import {
 } from '@/api/game-results/gameResultsCache.ts';
 import type { GameResult } from '../../../../server/db/schema/game_result';
 import { CardMetrics } from '../../../../shared/types/cardMetrics.ts';
-import { format, isBefore, startOfToday, subDays } from 'date-fns';
+import { endOfDay, format, isBefore, startOfToday, subDays } from 'date-fns';
 
 interface UseGetGameResultsParams {
   dateFrom?: string;
@@ -62,7 +62,11 @@ export const useGetGameResults = (params: UseGetGameResultsParams = {}) => {
             const response = await api['game-results'].$get({
               query: {
                 datetimeFrom: fetchFrom,
-                datetimeTo: dateTo,
+                // The result API accepts timestamps. Include the selected final
+                // day, matching the browser's date range and creation-date index.
+                datetimeTo: dateTo
+                  ? format(endOfDay(new Date(`${dateTo}T00:00:00`)), "yyyy-MM-dd'T'HH:mm:ss.SSS")
+                  : undefined,
                 teamId,
               },
             });

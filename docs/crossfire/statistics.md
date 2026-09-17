@@ -31,6 +31,9 @@ The provided development/container setup already uses the shared database role.
 ## Result identity
 
 - `gameSource` is `crossfire`.
+- `statisticsScope` is `standard` for fresh games and `practice` for every
+  bookmark continuation, including positions saved during setup. Reconnecting
+  to the same game does not change its scope. Fresh rematches count normally.
 - `gameId` is `crossfire:<game ID>`, unique per game.
 - `matchId` is `crossfire:<root lobby ID>`, shared by both players and every game
   of one BO3; `gameNumber` records their order.
@@ -79,6 +82,41 @@ A resumed bookmark game has a new match identity and `resumed: true`. Only facts
 and actions after its initial position are counted; its source game's earlier
 metrics are not added a second time.
 
+## Practice games
+
+Bookmark continuations are excluded from every personal and team statistics
+view, including Match History, recent dashboard results, win/loss records,
+deck/leader/base summaries, card denominators, matchups, opponent meta and member
+totals. There is no separate Practice statistics tab. The shared statistics
+hook filters practice rows before grouping games into matches, including legacy
+cached rows with `resumed: true`.
+
+Practice games remain available in Crossfire's own recent-games list for replay.
+It initially displays ten games; **Load 10 more games** reveals another batch,
+fetching the next server cursor page when necessary. This list displays
+individual games, not synthetic match outcomes. Running games, bookmarks and
+reports remain accessible independently.
+
+Crossfire result cards in personal/team statistics include replay links when
+their exported lobby reference is available. BO3 results offer a link for each
+recorded game, including on narrow screens. Replay authorization remains
+server-side; a statistics or team result never grants additional replay access.
+Statistics result cards retain their existing score and metadata layout, adding
+only icon-only replay controls to the right of the score. Crossfire's recent
+games, saved activity and deck choices use a separate leader/base card layout.
+
+Migration `0060_crossfire_practice_statistics` adds the result scope and
+classifies previous exports using their resumed flag or surviving provenance.
+It advances `updated_at` for incremental synchronization, preserving notes,
+exclusions, outcomes and metrics. This already-applied migration also backfills
+legacy opaque series keys; these are no longer used or emitted by the application.
+No private source state is included in statistics.
+
+Dexie version 10 adds a played-date index. Date selection uses `createdAt` while
+incremental fetches use `updatedAt`, so a migration or a later match update does
+not move a historical result out of its played date range. No new data source,
+cache scope or WebSocket event is introduced.
+
 ## Delivery and privacy
 
 A committed export emits small PostgreSQL `game_results` notifications addressed
@@ -93,6 +131,8 @@ Contributor sanitization still removes all `play` data. Statistics are subject
 to the existing explicit match-sharing opt-in; retained rows have game/match IDs,
 notes and `otherData` cleared. No cross-schema foreign key allows private game
 storage to cascade into unrelated domains.
+The non-identifying `statistics_scope` column survives sanitization; practice
+metadata and replay references are removed with `otherData`.
 
 ## Validation
 
@@ -103,8 +143,15 @@ storage to cascade into unrelated domains.
   BO3/sideboarding/rematch identity, deck snapshots and forfeits.
 - `bun test frontend/src/components/app/statistics/lib/summarizeMatch.test.ts`
   covers authoritative match grouping/outcomes and winrate denominators.
+- `bun test frontend/src/components/app/statistics/lib/practiceStatistics.test.ts`
+  covers legacy/sanitized practice exclusion, fresh rematches and card denominators.
+  The statistics integration suite also checks
+  repeated forks, fresh rematches, private-data boundaries and the data backfill.
 - `play/browser/statistics-smoke.ts` uses the running local worktree and two
   synthetic accounts without linked integrations. It verifies real finalizer
   processes, API/WebSocket updates, both perspectives, deck statistics, refresh,
-  team scopes and anonymous denial. It deletes its fixtures and calls no external
+  team scopes, practice exclusion from history, replay navigation, ten-game
+  pagination across server cursors, mobile layout, historical date ranges,
+  version-9 cache upgrades, legacy row refresh and anonymous denial.
+  It deletes its fixtures and calls no external
   notification endpoint.

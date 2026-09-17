@@ -12,6 +12,7 @@ import MatchGames from './MatchGames.tsx';
 import { formatDistanceToNow } from 'date-fns';
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 import { parseStatisticsTimestamp } from '@/components/app/statistics/lib/date.ts';
+import { ReplayButton } from '@/components/app/crossfire/ReplayButton.tsx';
 
 interface MatchResultBoxProps {
   match: MatchResult;
@@ -57,6 +58,10 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({
     };
   }, [match, cardListData]);
 
+  const replayGames = match.games.filter(
+    game => game.gameSource === 'crossfire' && game.otherData?.crossfire?.lobbyId,
+  );
+
   return (
     <div className={cn('flex gap-2', className)}>
       <Card className={cn('overflow-hidden relative w-[600px] min-h-[80px]', cardClassName)}>
@@ -89,11 +94,27 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({
               <div className="flex flex-col items-center">
                 <h3
                   className={cn(
-                    'font-semibold text-sm max-sm:text-lg! border-b-3 px-1 mb-0!',
+                    'relative font-semibold text-sm max-sm:text-lg! border-b-3 px-1 mb-0!',
                     getResultBorderColor(match.result),
                   )}
                 >
                   {match.finalWins} - {match.finalLosses}
+                  {replayGames.length > 0 && (
+                    <span className="absolute left-full top-1/2 ml-1 flex -translate-y-1/2 gap-0.5">
+                      {replayGames.map((game, index) => (
+                        <ReplayButton
+                          key={game.gameId}
+                          lobbyId={game.otherData.crossfire!.lobbyId}
+                          iconOnly
+                          label={
+                            replayGames.length > 1
+                              ? `Replay game ${game.gameNumber ?? index + 1}`
+                              : 'Replay'
+                          }
+                        />
+                      ))}
+                    </span>
+                  )}
                 </h3>
                 {match.gameSource === 'crossfire' && (
                   <span className="text-[10px] text-muted-foreground text-center">

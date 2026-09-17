@@ -293,7 +293,7 @@ every open and invalidate cached views when entitlement changes. Keep all
 referenced branches inside the archive. Future archive deletion rules must state
 what happens to bookmarks; compaction alone never deletes their destination.
 
-Offer **View from here** and **Play from here**. The second creates a new practice
+Offer **View** and **Play from here**. The second creates a new practice
 game after appropriate authorization, normally once the source game is finalized.
 It needs consent/access to use the exact private state; do not allow live-game
 forks that could be used to probe future draws or concealed cards.
