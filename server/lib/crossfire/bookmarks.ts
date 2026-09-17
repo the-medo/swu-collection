@@ -1,4 +1,4 @@
-import { activityLeaders } from './activity.ts';
+import { activityBases, activityLeaders } from './activity.ts';
 import type {
   CrossfireBookmark,
   CrossfireProblemReport,
@@ -27,6 +27,7 @@ export class CrossfireBookmarks {
       const rows =
         await tx`SELECT b.id,b.game_id,b.position,b.branch,b.label,b.created_at,l.id AS lobby_id,g.history_key,g.sequence,
         ${activityLeaders(tx, p.userId)} AS leaders,
+        ${activityBases(tx, p.userId)} AS bases,
         (g.status = 'finalized' AND EXISTS (SELECT 1 FROM play.participants p WHERE p.lobby_id = l.id AND p.user_id = ${p.userId})) AS can_practice,
         (l.allow_spectators OR EXISTS (SELECT 1 FROM play.participants p WHERE p.lobby_id = l.id AND p.user_id = ${p.userId})) AS available
         FROM play.bookmarks b JOIN play.lobbies l ON l.game_id = b.game_id JOIN play.games g ON g.id = b.game_id
@@ -40,6 +41,7 @@ export class CrossfireBookmarks {
         lobbyId: r.lobby_id,
         available: r.available,
         leaders: r.available ? r.leaders : null,
+        bases: r.available ? r.bases : null,
         canPractice:
           r.can_practice &&
           r.position !== historyHandle(r.history_key, r.game_id, 'position', r.sequence),
@@ -121,6 +123,7 @@ export class CrossfireBookmarks {
       const rows =
         await tx`SELECT r.id,r.position,r.branch,r.label,r.description,r.status,r.created_at,l.id AS lobby_id,
         ${activityLeaders(tx, p.userId)} AS leaders,
+        ${activityBases(tx, p.userId)} AS bases,
         (l.allow_spectators OR EXISTS(SELECT 1 FROM play.participants p WHERE p.lobby_id=l.id AND p.user_id=${p.userId})) AS available
         FROM play.problem_reports r JOIN play.lobbies l ON l.game_id=r.game_id
         WHERE r.user_id=${p.userId} ORDER BY r.created_at DESC,r.id DESC LIMIT 100`;
@@ -135,6 +138,7 @@ export class CrossfireBookmarks {
         createdAt: r.created_at.toISOString(),
         available: r.available,
         leaders: r.available ? r.leaders : null,
+        bases: r.available ? r.bases : null,
       }));
     });
   }

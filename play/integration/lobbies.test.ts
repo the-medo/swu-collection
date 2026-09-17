@@ -389,19 +389,20 @@ test('deck discovery requires consistent limited-deck ownership and visibility',
   }
 });
 
-test('activity artwork uses admitted leaders, viewer order, and current replay access', async () => {
+test('activity artwork uses admitted leaders and bases, viewer order, and current replay access', async () => {
   const { CrossfireBookmarks } = await import('../../server/lib/crossfire/bookmarks.ts');
   const { CrossfirePractice } = await import('../../server/lib/crossfire/practice.ts');
   const history = new CrossfireHistory(sql),
     bookmarks = new CrossfireBookmarks(sql),
     practice = new CrossfirePractice(sql);
   const opponentLeader = 'darth-vader--dark-lord-of-the-sith';
+  const opponentBase = 'capital-city';
   const lobby = await create();
-  await sql`UPDATE deck SET leader_card_id_1 = ${opponentLeader} WHERE id = ${decks[1]!}`;
+  await sql`UPDATE deck SET leader_card_id_1 = ${opponentLeader}, base_card_id = ${opponentBase} WHERE id = ${decks[1]!}`;
   try {
     await service.join(b, lobby.id, decks[1]!, policy);
   } finally {
-    await sql`UPDATE deck SET leader_card_id_1 = ${ids.leader} WHERE id = ${decks[1]!}`;
+    await sql`UPDATE deck SET leader_card_id_1 = ${ids.leader}, base_card_id = ${ids.base} WHERE id = ${decks[1]!}`;
   }
   const gameId = (await service.get(a, lobby.id))!.gameId!;
   const position = 'a'.repeat(32),
@@ -434,6 +435,27 @@ test('activity artwork uses admitted leaders, viewer order, and current replay a
     opponentLeader,
     ids.leader,
   ]);
+  // Source deck edits above must not rewrite either public identity from the game.
+  expect((await history.list(a)).data.find(g => g.gameId === gameId)?.bases).toEqual([
+    ids.base,
+    opponentBase,
+  ]);
+  expect((await history.list(b)).data.find(g => g.gameId === gameId)?.bases).toEqual([
+    opponentBase,
+    ids.base,
+  ]);
+  expect((await bookmarks.list(c)).find(r => r.id === bookmarkId)?.bases).toEqual([
+    ids.base,
+    opponentBase,
+  ]);
+  expect((await bookmarks.reports(c)).find(r => r.id === reportId)?.bases).toEqual([
+    ids.base,
+    opponentBase,
+  ]);
+  expect((await practice.list(b)).find(r => r.id === requestId)?.bases).toEqual([
+    opponentBase,
+    ids.base,
+  ]);
   const summaries = JSON.stringify([
     await history.list(a),
     await bookmarks.list(c),
@@ -452,10 +474,12 @@ test('activity artwork uses admitted leaders, viewer order, and current replay a
   expect((await bookmarks.list(c)).find(r => r.id === bookmarkId)).toMatchObject({
     available: false,
     leaders: null,
+    bases: null,
   });
   expect((await bookmarks.reports(c)).find(r => r.id === reportId)).toMatchObject({
     available: false,
     leaders: null,
+    bases: null,
   });
   expect((await history.list(a)).data.find(g => g.gameId === gameId)?.leaders).toEqual([
     ids.leader,

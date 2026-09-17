@@ -225,6 +225,9 @@ sessions. Source session IDs, tickets, connections and leases are not copied.
 The new game's `provenance` identifies the source position/hash but its own initial
 checkpoint provides complete recovery. Explicit source deletion can remove the
 invitation and source bookmarks without deleting or breaking the practice game.
+Every continuation is excluded from [personal and team statistics](statistics.md#practice-games),
+regardless of the bookmarked round. Fresh rematches use new setup and shuffling
+and contribute to standard statistics.
 Undo cannot reach before a practice game's starting position; if that position is
 inside a nested action, its earlier root action is outside the new history.
 

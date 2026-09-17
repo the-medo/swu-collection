@@ -15,6 +15,7 @@ import { deck } from './deck.ts';
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 import type { CrossfireGameStatistics } from '../../../shared/types/crossfire-statistics.ts';
 import type { CardMetrics } from '../../../shared/types/cardMetrics.ts';
+import type { StatisticsScope } from '../../../shared/lib/statisticsScope.ts';
 
 export const userEvent = pgTable(
   'user_event',
@@ -65,6 +66,10 @@ export const gameResult = pgTable(
     containsUnknownCards: boolean('contains_unknown_cards').notNull().default(false),
     exclude: boolean('exclude').notNull().default(false), // exclude this game from stats
     gameSource: text('game_source').notNull(), // Discriminator for imported, manual and Crossfire results
+    statisticsScope: text('statistics_scope')
+      .$type<StatisticsScope>()
+      .notNull()
+      .default('standard'),
     manuallyEdited: boolean('manually_edited').notNull().default(false),
 
     // user grouping

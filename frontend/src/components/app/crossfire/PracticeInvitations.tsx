@@ -22,6 +22,9 @@ export function PracticeInvitations({
       <h2 className={embedded ? 'sr-only' : 'text-xl font-semibold'} id="cf-practice-title">
         Practice invitations
       </h2>
+      <p className="text-sm text-muted-foreground">
+        Games continued from bookmarks do not appear in personal or team statistics.
+      </p>
       {query.isPending && <p role="status">Loading invitations…</p>}
       {!query.isPending && !query.isError && !query.data?.length && (
         <p className="text-sm text-muted-foreground">
@@ -34,7 +37,7 @@ export function PracticeInvitations({
       )}
       <div className="cf-game-list">
         {query.data?.map(request => (
-          <ActivityRow key={request.id} leaders={request.leaders}>
+          <ActivityRow key={request.id} leaders={request.leaders} bases={request.bases}>
             <div>
               <p>{request.label || 'Saved position'}</p>
               <p className="text-sm text-muted-foreground">

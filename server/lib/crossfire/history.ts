@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from 'node:util';
 import { loadGameVersions } from '../../../play/storage/card-bundles.ts';
-import { activityLeaders } from './activity.ts';
+import { activityBases, activityLeaders } from './activity.ts';
 import type { Sql } from 'postgres';
 import { z } from 'zod';
 import { principalSchema, requireSession } from './lobbies.ts';
@@ -35,6 +35,7 @@ export class CrossfireHistory {
       const rows =
         await tx`SELECT l.id, l.game_id, l.created_at, g.status, g.summary, g.ended_at, g.provenance, g.versions, l.versions AS lobby_versions, l.best_of, e.status AS exit_status, e.seat AS exit_seat,
         ${activityLeaders(tx, principal.userId)} AS leaders,
+        ${activityBases(tx, principal.userId)} AS bases,
         own.seat, coalesce(opponent_user.display_name, opponent_user.name, 'Opponent') AS opponent
         FROM play.participants own
         JOIN play.lobbies l ON l.id = own.lobby_id
@@ -69,6 +70,7 @@ export class CrossfireHistory {
           mySeat: row.seat,
           opponent: row.opponent,
           leaders: row.leaders,
+          bases: row.bases,
           round: row.summary?.round ?? null,
           result: row.summary?.result ?? null,
           startedAt: row.created_at.toISOString(),

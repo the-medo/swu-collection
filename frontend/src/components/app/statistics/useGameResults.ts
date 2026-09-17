@@ -1,4 +1,5 @@
 import { summarizeMatch } from './lib/summarizeMatch.ts';
+import { isPracticeResult } from '../../../../../shared/lib/statisticsScope.ts';
 import { useSession } from '@/lib/auth-client.ts';
 import { useGetGameResults } from '@/api/game-results/useGetGameResults.ts';
 import { useMemo } from 'react';
@@ -15,6 +16,9 @@ import {
 import { MatchType } from '@/components/app/statistics/components/StatisticsFilters/MatchTypeSelector.tsx';
 
 export interface StatisticsHistoryData {
+  isLoading: boolean;
+  isError: boolean;
+  refetch: () => void;
   games: {
     object: Record<string, GameResult>; // game id is the key
     array: GameResult[]; //sorted game pointers to `.object` property (desc by createdAt)
@@ -57,7 +61,12 @@ export const useGameResults = (
 
   const session = useSession();
 
-  const { data: gameResultData, isLoading } = useGetGameResults({
+  const {
+    data: gameResultData,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetGameResults({
     dateFrom: datetimeFrom,
     dateTo: datetimeTo,
     enabled: !!session.data,
@@ -68,6 +77,11 @@ export const useGameResults = (
   return useMemo(() => {
     if (isLoading || !gameResultData) {
       return {
+        isLoading,
+        isError,
+        refetch: () => {
+          void refetch();
+        },
         games: {
           object: {},
           array: [],
@@ -94,7 +108,8 @@ export const useGameResults = (
 
     const gamesObject: Record<string, GameResult> = {};
     gameResultData.forEach(game => {
-      if (game.id) {
+      // Exclude bookmark continuations before building history or any aggregates.
+      if (game.id && !isPracticeResult(game)) {
         if (!game.createdAt) return;
 
         const createdAtDateString = format(parseStatisticsTimestamp(game.createdAt), 'yyyy-MM-dd');
@@ -300,6 +315,11 @@ export const useGameResults = (
     });
 
     return {
+      isLoading,
+      isError,
+      refetch: () => {
+        void refetch();
+      },
       games: {
         object: filteredGamesObject,
         array: filteredGamesArray,
@@ -316,6 +336,8 @@ export const useGameResults = (
   }, [
     gameResultData,
     isLoading,
+    isError,
+    refetch,
     datetimeFrom,
     datetimeTo,
     sDateRangeFrom,

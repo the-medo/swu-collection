@@ -265,7 +265,8 @@ export function MatchControls({
                     {match.bestOf === 3
                       ? 'A new best-of-three match starts at 0–0 with your original decks and the same visibility settings.'
                       : 'A rematch starts with the original submitted decks and the same visibility settings.'}{' '}
-                    Both players must agree.
+                    Fresh setup and shuffling make this a standard game that counts toward your
+                    statistics. Both players must agree.
                   </p>
                   <p>
                     {match.rematchReady[match.mySeat === 'p1' ? 'p2' : 'p1']
@@ -280,7 +281,7 @@ export function MatchControls({
                   >
                     {match.rematchReady[match.mySeat]
                       ? 'Cancel rematch request'
-                      : 'Agree to rematch'}
+                      : 'Rematch with these decks'}
                   </Button>
                 </>
               ) : (

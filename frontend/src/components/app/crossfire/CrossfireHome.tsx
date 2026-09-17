@@ -101,7 +101,7 @@ function Home({
             <History size={16} />
             Recent games
           </h2>
-          <GameHistory sessionId={sessionId} embedded />
+          <GameHistory key={sessionId} sessionId={sessionId} embedded />
         </section>
         <Tabs defaultValue="bookmarks" className="cf-home-card cf-saved-activity">
           <TabsList aria-label="Saved Crossfire activity" className="cf-activity-tabs">

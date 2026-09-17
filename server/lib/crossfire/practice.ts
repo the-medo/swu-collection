@@ -5,7 +5,7 @@ import type { Sql } from 'postgres';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { insertGame, checkpointMetadata, stateDigest } from '../../../play/storage/postgres.ts';
-import { activityLeaders } from './activity.ts';
+import { activityBases, activityLeaders } from './activity.ts';
 import type { CrossfirePracticeRequest } from '../../../shared/types/crossfire-activity.ts';
 import { principalSchema, requireSession, AdmissionError } from './lobbies.ts';
 import type { Principal } from './lobbies.ts';
@@ -53,13 +53,15 @@ export class CrossfirePractice {
     return this.sql.begin('read only', async tx => {
       await requireSession(tx, p);
       const rows =
-        await tx`SELECT r.*,l.id AS source_lobby, ${activityLeaders(tx, p.userId)} AS leaders FROM play.practice_requests r JOIN play.lobbies l ON l.game_id = r.source_game_id
+        await tx`SELECT r.*,l.id AS source_lobby, ${activityLeaders(tx, p.userId)} AS leaders,
+        ${activityBases(tx, p.userId)} AS bases FROM play.practice_requests r JOIN play.lobbies l ON l.game_id = r.source_game_id
         WHERE (r.requester_id = ${p.userId} OR r.opponent_id = ${p.userId}) AND (r.status = 'accepted' OR (r.status = 'pending' AND r.expires_at > now()))
         ORDER BY r.created_at DESC,r.id DESC LIMIT 100`;
       return rows.map(r => ({
         id: r.id,
         lobbyId: r.source_lobby,
         leaders: r.leaders,
+        bases: r.bases,
         position: r.position,
         branch: r.branch,
         label: r.label,

@@ -288,11 +288,17 @@ The resume panel uses `/api/crossfire/history?status=running`, so an older
 running game is not hidden behind a page of completed games. These queries use
 existing tables; no migration, new database or additional service is needed.
 Running games, recent games, bookmarks, practice invitations and reports share
-compact rows with both leader portraits. Activity endpoints extract only the
-public leader IDs from the admitted participant snapshots, placing the viewer’s
+leader/base artwork. Recent games use compact rows with the outcome and opponent
+on one line, left-aligned details and right-aligned replay controls between the
+two players' artwork. Ten games appear initially, with an explicit load-more button.
+Deck choices reserve space for their artwork, scaling it down on narrow screens.
+Activity endpoints extract only the public leader and base IDs from the admitted
+participant snapshots, placing the viewer’s
 seat first (seat order for spectators). This preserves the played decks after
 source edits without reconstructing game states or requesting each deck.
-Bookmarks and reports omit these IDs when replay access is no longer available.
+Leader and base arrays use the same seat order. Bookmarks and reports omit both
+arrays when replay access is no longer available. Older responses without base
+IDs continue to render with leader artwork only.
 HTTP list DTOs carry this artwork metadata; saved-bookmark socket messages and
 engine versions are unchanged.
 

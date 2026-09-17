@@ -132,7 +132,7 @@ try {
     await page.goto(`${origin}/crossfire/${roots[0]}`);
     await page.getByRole('button', { name: 'Ready for next game', exact: true }).waitFor();
     assert(
-      !(await page.getByRole('button', { name: 'Agree to rematch', exact: true }).count()),
+      !(await page.getByRole('button', { name: 'Rematch with these decks', exact: true }).count()),
       'Rematch offered before two wins',
     );
   }
@@ -202,12 +202,12 @@ try {
   await a.setViewportSize({ width: 1600, height: 1000 });
   for (const page of pages) {
     await page.goto(`${origin}/crossfire/${roots[1]}`);
-    await page.getByRole('button', { name: 'Agree to rematch', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Rematch with these decks', exact: true }).waitFor();
   }
-  await a.getByRole('button', { name: 'Agree to rematch', exact: true }).click();
+  await a.getByRole('button', { name: 'Rematch with these decks', exact: true }).click();
   await b.getByText('Your opponent wants a rematch.', { exact: true }).waitFor();
   await shot(b, 'matches-rematch');
-  await b.getByRole('button', { name: 'Agree to rematch', exact: true }).click();
+  await b.getByRole('button', { name: 'Rematch with these decks', exact: true }).click();
   for (const page of pages)
     await page.getByRole('link', { name: 'Open rematch', exact: true }).waitFor();
   assert(
@@ -224,7 +224,7 @@ try {
   );
   for (const page of pages) {
     await page.goto(`${origin}/crossfire/${finalGame}`);
-    await page.getByRole('button', { name: 'Agree to rematch', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Rematch with these decks', exact: true }).waitFor();
     assert(
       !(await page.getByRole('button', { name: 'Ready for next game', exact: true }).count()),
       'Sideboarding offered after two wins',
@@ -238,8 +238,8 @@ try {
     !done.rematchReady.p1 && !done.rematchReady.p2,
     'Result dialog automatically consented to rematch',
   );
-  await a.getByRole('button', { name: 'Agree to rematch', exact: true }).click();
-  await b.getByRole('button', { name: 'Agree to rematch', exact: true }).click();
+  await a.getByRole('button', { name: 'Rematch with these decks', exact: true }).click();
+  await b.getByRole('button', { name: 'Rematch with these decks', exact: true }).click();
   await b.getByRole('link', { name: 'Open rematch', exact: true }).click();
   await b.getByRole('button', { name: 'Match 0–0', exact: true }).waitFor();
   assert(

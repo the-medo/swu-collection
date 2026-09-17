@@ -28,7 +28,12 @@ export function ProblemReports({
         </p>
       ) : (
         reports.data.map(report => (
-          <ActivityRow key={report.id} leaders={report.leaders} className="cf-report-row">
+          <ActivityRow
+            key={report.id}
+            leaders={report.leaders}
+            bases={report.bases}
+            className="cf-report-row"
+          >
             <div className="flex gap-3 justify-between">
               <strong>{report.label || 'Game problem'}</strong>
               <small>{report.status === 'resolved' ? 'Resolved' : 'Open'}</small>

@@ -164,6 +164,21 @@ export class SwuBaseDB extends Dexie {
         await cardListCache.delete('swubase-card-list');
         await cardListCache.delete('swubase-card-list-version');
       });
+
+    // Results updated by backfills still belong to the date they were played.
+    this.version(10).stores({
+      tournamentDecks: 'id',
+      tournamentMatches: 'id',
+      cardVariantPrices: 'id, cardId, variantId, sourceType, fetchedAt',
+      cardVariantPriceFetchList: 'id, cardId, variantId, addedAt',
+      userSettings: 'key',
+      dailySnapshots: 'date',
+      collections: 'id',
+      collectionCards: 'collectionId',
+      cardListCache: 'key',
+      gameResults:
+        '[scopeId+id], [scopeId+createdAt], [scopeId+updatedAt], [scopeId+deckId], [scopeId+format], [scopeId+leaderCardId], [scopeId+leaderCardId+baseCardKey]',
+    });
   }
 }
 
