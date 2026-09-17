@@ -69,7 +69,7 @@ function BookmarkRow({ bookmark, sessionId }: { bookmark: CrossfireBookmark; ses
               params={{ lobbyId: bookmark.lobbyId }}
               search={{ cfPosition: bookmark.position, cfBranch: bookmark.branch }}
             >
-              View from here
+              View
             </Link>
           </Button>
         )}

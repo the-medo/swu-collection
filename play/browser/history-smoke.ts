@@ -213,7 +213,7 @@ try {
   await page.getByRole('textbox', { name: 'Bookmark label', exact: true }).fill('Changed label');
   await page.getByRole('button', { name: 'Save label', exact: true }).click();
   await page.getByText('Changed label', { exact: true }).waitFor();
-  await page.getByRole('link', { name: 'View from here', exact: true }).click();
+  await page.getByRole('link', { name: 'View', exact: true }).click();
   await page.waitForFunction(() => !!document.querySelector('.cf-match'));
   await page.waitForTimeout(500);
   assert(
