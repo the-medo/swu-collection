@@ -46,16 +46,36 @@
 }
 .cf-teammate {
   display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
   gap: 8px;
+  padding: 10px;
   align-items: center;
-  font-size: 12px;
+  border: 1px solid var(--cf-home-line);
+  border-radius: 8px;
+  background: var(--cf-home-surface);
+  text-align: left;
+  font-size: 13px;
+  transition:
+    border-color 120ms,
+    background 120ms;
 }
-.cf-teammate > span {
+.cf-teammate:not(:disabled):hover,
+.cf-teammate[aria-pressed='true'] {
+  border-color: var(--cf-home-accent);
+  background: var(--cf-home-soft);
+}
+.cf-teammate:disabled {
+  opacity: 0.6;
+}
+.cf-teammate-name {
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.cf-teammate img {
+.cf-teammate > img {
+  flex-shrink: 0;
   height: 28px;
   width: 28px;
   object-fit: cover;

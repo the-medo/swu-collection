@@ -36,6 +36,7 @@ export function CrossfirePlayDesk({
   const pending = create.isPending || join.isPending;
   const { data: catalog } = useCardList();
   const matchLengthId = useId();
+  const [recipient, setRecipient] = useState<Parameters<InviteControls['invite']>[0]>();
   const [linked, setLinked] = useState(Boolean(linkedId(initialDeck ?? '', 'decks')));
   const form = useForm({
     defaultValues: {
@@ -47,7 +48,7 @@ export function CrossfirePlayDesk({
       showLeader: lobby?.showLeader ?? true,
     },
     onSubmit: async () => {
-      await start();
+      await start(recipient?.id);
     },
   });
   const values = useStore(form.store, s => s.values);
@@ -110,7 +111,17 @@ export function CrossfirePlayDesk({
   };
   return (
     <div className="cf-home-grid">
-      {renderAside({ invite: id => void start(id), canInvite: canSubmit && !lobby, pending })}
+      {renderAside({
+        invite: player => {
+          create.reset();
+          setRecipient(current =>
+            current?.id === player.id ? undefined : { id: player.id, name: player.name },
+          );
+        },
+        selectedPlayerId: recipient?.id,
+        canInvite: !lobby && !pending,
+        pending,
+      })}
       <section className="cf-play-desk" aria-label="Start a game">
         <DeckBrowser
           sessionId={sessionId}
@@ -296,11 +307,15 @@ export function CrossfirePlayDesk({
                   <DeckCheckDialog issues={readiness.data.issues} catalog={catalog?.cards} />
                 )}
               <Button type="submit" className="cf-create-invitation" disabled={!canSubmit}>
-                {pending
-                  ? 'Preparing game…'
-                  : lobby
-                    ? 'Accept invitation and play'
-                    : 'Create invitation'}
+                <span className="min-w-0">
+                  {pending
+                    ? 'Preparing game…'
+                    : lobby
+                      ? 'Accept invitation and play'
+                      : recipient
+                        ? `Send invitation to ${recipient.name}`
+                        : 'Create invitation'}
+                </span>
                 <ArrowRight size={17} />
               </Button>
             </div>

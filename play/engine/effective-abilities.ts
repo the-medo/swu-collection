@@ -892,3 +892,50 @@ function copiedKeywords(state: GameState, source: CardInstance, evaluation: Eval
     ...(names.has('Piloting') ? { piloting: [...(abilities.piloting ?? [])] } : {}),
   };
 }
+
+// Attributes and numeric bonuses imposed by other cards are not abilities of
+// their recipient (v8 §§7.3, 8.14). An inactive conditional ability still is.
+const nonAbilityFields = new Set([
+  'cardId',
+  'name',
+  'aspects',
+  'traits',
+  'unique',
+  'kind',
+  'cost',
+  'power',
+  'hp',
+  'arena',
+  'token',
+  'upgrade',
+  'printedCost',
+]);
+const keywordFields = new Set([
+  'keywords',
+  'raid',
+  'restore',
+  'exploit',
+  'bounties',
+  'smuggle',
+  'piloting',
+]);
+export function hasUnitAbilities(
+  state: GameState,
+  card: CardInstance,
+  evaluation?: Evaluation,
+): boolean {
+  if (keywordNames(state, card, evaluation).length) return true;
+  return abilityOrigins(state, card, evaluation).some(origin => {
+    if (origin.suppressed) return false;
+    const abilities = originAbilities(state, origin);
+    return (
+      !!abilities &&
+      Object.entries(abilities).some(
+        ([key, value]) =>
+          !nonAbilityFields.has(key) &&
+          !keywordFields.has(key) &&
+          (Array.isArray(value) ? value.length > 0 : value !== undefined && value !== false),
+      )
+    );
+  });
+}

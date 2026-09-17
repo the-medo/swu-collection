@@ -1,4 +1,5 @@
 import { expect, test } from 'bun:test';
+import { ENGINE_VERSION } from '../engine/release.ts';
 import { gzipSync } from 'node:zlib';
 import { bundledCatalog, CardCatalog } from '../cards/catalog.ts';
 import {
@@ -22,6 +23,8 @@ class MemoryObjects implements ReleaseObjects {
     this.files.set(key, { bytes, etag: String(++this.counter) });
   }
 }
+const version = (patch: number) =>
+  `${bundledCatalog.data.version.split('.').slice(0, 2).join('.')}.${patch}`;
 function release(version: string) {
   const data = structuredClone(bundledCatalog.data);
   data.version = version;
@@ -29,8 +32,8 @@ function release(version: string) {
   const metadata: CardReleaseMetadata = {
     version,
     checksum: catalog.hash,
-    requiredEngine: '1.1.0',
-    runtimeVersion: '1.1.0',
+    requiredEngine: data.requiredEngine,
+    runtimeVersion: ENGINE_VERSION,
     runtimeFingerprint: 'a'.repeat(64),
     sourceCommit: 'b'.repeat(40),
     publishedAt: '2026-09-15T12:00:00.000Z',
@@ -40,7 +43,7 @@ function release(version: string) {
 }
 test('publication and download are idempotent and content addressed', async () => {
   const storage = new MemoryObjects(),
-    r = release('1.1.901');
+    r = release(version(901));
   await publishCardRelease(storage, r.catalog, r.metadata);
   await publishCardRelease(storage, r.catalog, {
     ...r.metadata,
@@ -62,32 +65,32 @@ test('publication and download are idempotent and content addressed', async () =
 });
 test('concurrent different publications retain both discovery entries', async () => {
   const storage = new MemoryObjects(),
-    a = release('1.1.902'),
-    b = release('1.1.903');
+    a = release(version(902)),
+    b = release(version(903));
   await Promise.all([
     publishCardRelease(storage, a.catalog, a.metadata),
     publishCardRelease(storage, b.catalog, b.metadata),
   ]);
   expect((await availableReleases(storage)).releases.map(r => r.version)).toEqual([
-    '1.1.903',
-    '1.1.902',
+    version(903),
+    version(902),
   ]);
 });
 test('corrupt downloads and unsupported nested data cannot become installed definitions', async () => {
   const storage = new MemoryObjects(),
-    r = release('1.1.904');
+    r = release(version(904));
   await publishCardRelease(storage, r.catalog, r.metadata);
   storage.files.set(releaseKey(r.metadata), {
     etag: 'bad',
-    bytes: gzipSync(JSON.stringify({ ...r.catalog.data, version: '1.1.905' })),
+    bytes: gzipSync(JSON.stringify({ ...r.catalog.data, version: version(905) })),
   });
   await expect(downloadRelease(storage, r.metadata)).rejects.toThrow('checksum');
 });
 
 test('concurrent publishers cannot reuse a runtime version for different executable sources', async () => {
   const storage = new MemoryObjects(),
-    a = release('1.1.906'),
-    b = release('1.1.907');
+    a = release(version(906)),
+    b = release(version(907));
   const results = await Promise.allSettled([
     publishCardRelease(storage, a.catalog, a.metadata),
     publishCardRelease(storage, b.catalog, { ...b.metadata, runtimeFingerprint: 'd'.repeat(64) }),

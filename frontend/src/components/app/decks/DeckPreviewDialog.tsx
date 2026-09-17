@@ -7,7 +7,7 @@ import { useSetDeckInfo } from './DeckContents/useDeckInfoStore.ts';
 const DeckContents = lazy(() => import('./DeckContents/DeckContents.tsx'));
 
 // This subtree only mounts when the dialog opens; browsing rows loads metadata only.
-function Preview({ deckId }: { deckId: string }) {
+function Preview({ deckId, compact }: { deckId: string; compact: boolean }) {
   const { data, error, loading } = useSetDeckInfo(deckId);
   const query = useGetDeck(deckId);
   if (error)
@@ -29,7 +29,10 @@ function Preview({ deckId }: { deckId: string }) {
     );
   return (
     <Suspense fallback={<p role="status">Loading decklist…</p>}>
-      <DeckContents deckId={deckId} compact />
+      {!compact && (
+        <h3 className="mb-4 text-lg font-semibold">{data.deck.name || 'Untitled deck'}</h3>
+      )}
+      <DeckContents deckId={deckId} compact={compact} />
     </Suspense>
   );
 }
@@ -37,13 +40,15 @@ function Preview({ deckId }: { deckId: string }) {
 export default function DeckPreviewDialog({
   deckId,
   trigger,
+  compact = true,
 }: {
   deckId: string;
   trigger: ReactNode;
+  compact?: boolean;
 }) {
   return (
     <Dialog trigger={trigger} header="Decklist" size="large" contentClassName="w-full">
-      <Preview deckId={deckId} />
+      <Preview deckId={deckId} compact={compact} />
     </Dialog>
   );
 }

@@ -1,5 +1,7 @@
 import { expect, test } from 'bun:test';
-import { cardTitle, cardTitles } from '../cards/names.ts';
+import { bundledCatalog } from '../cards/catalog.ts';
+const cardTitles = bundledCatalog.data.titles;
+const cardTitle = (id: string) => bundledCatalog.title(id);
 import { cardDefinition, supportedCards } from '../cards/registry.ts';
 import type { CardEffect } from '../cards/definition.ts';
 import { advance, settle } from '../engine/advance.ts';

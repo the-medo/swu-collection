@@ -1,0 +1,372 @@
+{
+  "sourceCommit": "7e6759251e1816e4ddb8ad03021dd352959812bd",
+  "catalog": {
+    "schema": 1,
+    "version": "1.1.997",
+    "requiredEngine": "1.1.0",
+    "cards": [
+      {
+        "cardId": "battlefield-marine",
+        "traits": [
+          "Rebel",
+          "Trooper"
+        ],
+        "name": "Battlefield Marine",
+        "kind": "unit",
+        "cost": 2,
+        "power": 3,
+        "hp": 3,
+        "arena": "ground",
+        "aspects": [
+          "Command",
+          "Heroism"
+        ]
+      },
+      {
+        "cardId": "consular-security-force",
+        "traits": [
+          "Rebel",
+          "Trooper"
+        ],
+        "name": "Consular Security Force",
+        "kind": "unit",
+        "cost": 4,
+        "power": 3,
+        "hp": 7,
+        "arena": "ground",
+        "aspects": [
+          "Vigilance",
+          "Heroism"
+        ]
+      },
+      {
+        "cardId": "command-center",
+        "traits": [],
+        "name": "Command Center",
+        "kind": "base",
+        "hp": 30,
+        "aspects": [
+          "Command"
+        ]
+      },
+      {
+        "cardId": "sabine-wren--galvanized-revolutionary",
+        "traits": [
+          "Mandalorian",
+          "Rebel",
+          "Spectre"
+        ],
+        "name": "Sabine Wren, Galvanized Revolutionary",
+        "kind": "leader",
+        "aspects": [
+          "Aggression",
+          "Heroism"
+        ],
+        "printedCost": 4,
+        "faces": {
+          "leader": {
+            "actions": [
+              {
+                "id": "damage-bases",
+                "costs": [
+                  {
+                    "kind": "exhaust-self"
+                  }
+                ],
+                "limit": null,
+                "effects": [
+                  {
+                    "kind": "damage-bases",
+                    "amount": 1,
+                    "targets": "each"
+                  }
+                ]
+              },
+              {
+                "id": "deploy",
+                "costs": [],
+                "limit": "once-per-game",
+                "effects": [
+                  {
+                    "kind": "deploy",
+                    "as": "unit",
+                    "condition": {
+                      "kind": "resources-at-least",
+                      "amount": 4
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "unit": {
+            "power": 2,
+            "hp": 5,
+            "arena": "ground",
+            "triggers": [
+              {
+                "id": "on-attack",
+                "timing": "attack",
+                "effects": [
+                  {
+                    "kind": "damage-bases",
+                    "amount": 1,
+                    "targets": "enemy"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "cardId": "garnac--let-the-hunt-begin",
+        "name": "Garnac, Let the Hunt Begin!",
+        "aspects": [
+          "Command",
+          "Villainy"
+        ],
+        "traits": [
+          "Underworld"
+        ],
+        "unique": true,
+        "kind": "unit",
+        "cost": 1,
+        "power": 3,
+        "hp": 1,
+        "arena": "ground",
+        "constant": [
+          {
+            "condition": {
+              "kind": "units-at-least",
+              "filter": {
+                "controller": "enemy",
+                "unique": true
+              },
+              "amount": 1
+            },
+            "abilities": {
+              "keywords": [
+                "Hidden"
+              ]
+            }
+          }
+        ],
+        "triggers": [
+          {
+            "id": "attack-ended",
+            "timing": "attack-ended",
+            "effects": [
+              {
+                "kind": "attack-with-unit",
+                "powerBonus": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "cardId": "stormtrooper-patrol--",
+        "name": "Stormtrooper Patrol, ",
+        "aspects": [
+          "Command",
+          "Villainy"
+        ],
+        "traits": [
+          "Imperial",
+          "Trooper"
+        ],
+        "kind": "unit",
+        "cost": 3,
+        "power": 2,
+        "hp": 4,
+        "arena": "ground",
+        "keywords": [
+          "Sentinel"
+        ],
+        "constant": [
+          {
+            "condition": {
+              "kind": "units-at-least",
+              "filter": {
+                "controller": "friendly",
+                "otherThan": "source",
+                "minCost": 3
+              },
+              "amount": 1
+            },
+            "power": 2
+          }
+        ]
+      }
+    ],
+    "titles": {
+      "battlefield-marine": "Battlefield Marine",
+      "consular-security-force": "Consular Security Force",
+      "command-center": "Command Center",
+      "sabine-wren--galvanized-revolutionary": "Sabine Wren",
+      "garnac--let-the-hunt-begin": "Garnac",
+      "stormtrooper-patrol--": "Stormtrooper Patrol"
+    }
+  },
+  "cases": [
+    {
+      "name": "garnac--let-the-hunt-begin",
+      "checkpoint": "{\"versions\":{\"state\":109,\"engine\":\"1.1.0\",\"cards\":\"1.1.997@1e4a7a74bee9c3e5e1551a2d6a4aae45fa8bbc34156bebda2ca0dd60b36990f9\",\"rules\":\"swu-8.0\",\"format\":\"core-practice\"},\"gameId\":\"hmw-old-id-garnac\",\"revision\":1,\"nextId\":11,\"seats\":[\"alice\",\"bob\"],\"players\":{\"alice\":{\"id\":\"alice\",\"base\":\"c1\",\"leader\":\"c2\",\"tokens\":[],\"deck\":[],\"hand\":[],\"resources\":[],\"discard\":[]},\"bob\":{\"id\":\"bob\",\"base\":\"c5\",\"leader\":\"c6\",\"tokens\":[],\"deck\":[],\"hand\":[],\"resources\":[],\"discard\":[]}},\"cards\":{\"c1\":{\"instanceId\":\"c1\",\"cardId\":\"command-center\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c2\":{\"instanceId\":\"c2\",\"cardId\":\"sabine-wren--galvanized-revolutionary\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c3\":{\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":true,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c4\":{\"instanceId\":\"c4\",\"cardId\":\"consular-security-force\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c5\":{\"instanceId\":\"c5\",\"cardId\":\"command-center\",\"owner\":\"bob\",\"controller\":\"bob\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":3,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c6\":{\"instanceId\":\"c6\",\"cardId\":\"sabine-wren--galvanized-revolutionary\",\"owner\":\"bob\",\"controller\":\"bob\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}}},\"attacks\":[],\"delayedEffects\":[],\"printedStatActivations\":[],\"keywordGrants\":[],\"lastingEffects\":[],\"namedEffects\":[],\"traitLosses\":[],\"phaseHistory\":{\"lastActions\":{},\"defeatedAttacking\":[],\"damageAttempts\":[],\"damagedUnits\":[],\"basesDamaged\":[\"bob\"],\"basesAttacked\":[\"bob\"],\"baseAttackers\":[{\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"incarnation\":1,\"visibility\":0}],\"upgradesDefeated\":[],\"cardsDrawn\":{},\"discarded\":[],\"enemyBaseDamage\":{\"alice\":3},\"unitEntries\":[],\"left\":[],\"defeated\":[],\"attacks\":[{\"leaderUnit\":false,\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{},\"traits\":[\"Underworld\"]}],\"forceUsed\":{},\"actionsTaken\":{},\"entered\":[],\"baseDamageSources\":[{\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"incarnation\":1,\"visibility\":0}],\"enemyBaseDamaged\":[\"alice\"],\"indirectDamage\":[],\"tokensCreated\":[],\"ownCardsDiscarded\":[],\"played\":[]},\"actionHistory\":{\"attacks\":[{\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"incarnation\":1,\"visibility\":0}],\"basesAttacked\":[\"bob\"]},\"departedUnits\":[],\"departedUpgrades\":[],\"defeatedAbilityBatches\":[],\"usedDefeatedAbilities\":[],\"usedAttackAbilities\":[],\"usedPlayedAbilities\":[],\"phaseTriggers\":[],\"usedBounties\":[],\"captured\":[],\"setAside\":[],\"searching\":[],\"roundHistory\":{\"plays\":[],\"triggerUses\":[],\"actionUses\":[]},\"playPayment\":null,\"playModifiers\":[],\"playRestrictions\":[],\"phaseStatModifiers\":[],\"grantedPlays\":[],\"ground\":[\"c3\",\"c4\"],\"space\":[],\"phase\":\"action\",\"round\":1,\"activePlayer\":\"alice\",\"initiative\":{\"holder\":\"alice\",\"claimed\":false},\"consecutivePasses\":0,\"lastPassPlayer\":null,\"execution\":{\"frames\":[{\"kind\":\"effect\",\"playerId\":\"alice\",\"source\":{\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":true,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"effect\":{\"kind\":\"attack-with-unit\",\"powerBonus\":0},\"origin\":{\"id\":\"self\",\"card\":{\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":true,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"profile\":\"printed\",\"withoutSupport\":false,\"resolved\":{\"abilities\":{\"keywords\":[],\"firstCombatDamage\":false,\"defenderCombatFirst\":false},\"losesKeywords\":[],\"power\":0,\"hp\":0}},\"bindings\":{\"defender\":{\"instanceId\":\"c5\",\"cardId\":\"command-center\",\"incarnation\":1,\"visibility\":0}},\"groups\":{\"combat-units\":[]},\"values\":{\"survived\":1,\"defender-defeated\":0,\"combat-base-damage\":3,\"combat-opponent-base-damage\":3}},{\"kind\":\"flush-triggers\"},{\"kind\":\"flush-triggers\"},{\"kind\":\"finish-action\",\"playerId\":\"alice\",\"passed\":false}],\"pendingTriggers\":[],\"decision\":{\"id\":\"d10\",\"playerId\":\"alice\",\"kind\":\"effect\",\"selection\":null,\"options\":[{\"id\":\"o0\",\"intent\":{\"kind\":\"attack\",\"attacker\":\"c4\",\"defender\":\"c5\"}}]},\"random\":null},\"disclosure\":{\"handsToPlayers\":false,\"handsToSpectators\":false},\"result\":null,\"facts\":[{\"seq\":0,\"type\":\"attacked\",\"actor\":\"alice\",\"cards\":[{\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"incarnation\":1,\"visibility\":0},{\"instanceId\":\"c5\",\"cardId\":\"command-center\",\"incarnation\":1,\"visibility\":0}],\"amount\":null,\"audience\":\"public\"},{\"seq\":1,\"type\":\"damage\",\"actor\":\"alice\",\"cards\":[{\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"incarnation\":1,\"visibility\":0},{\"instanceId\":\"c5\",\"cardId\":\"command-center\",\"incarnation\":1,\"visibility\":0}],\"amount\":3,\"audience\":\"public\"},{\"seq\":2,\"type\":\"triggered\",\"actor\":\"alice\",\"cards\":[{\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"incarnation\":1,\"visibility\":0}],\"amount\":null,\"audience\":\"public\"},{\"seq\":3,\"type\":\"attack-ended\",\"actor\":null,\"cards\":[{\"instanceId\":\"c3\",\"cardId\":\"garnac--let-the-hunt-begin\",\"incarnation\":1,\"visibility\":0},{\"instanceId\":\"c5\",\"cardId\":\"command-center\",\"incarnation\":1,\"visibility\":0}],\"amount\":null,\"audience\":\"public\"}]}",
+      "input": {
+        "type": "decision",
+        "gameId": "hmw-old-id-garnac",
+        "expectedRevision": 1,
+        "playerId": "alice",
+        "decisionId": "d10",
+        "optionId": "o0",
+        "selections": []
+      },
+      "stateHash": "81179e88bfd88cc8e3b9665f648ded9eaa5630306b17e8bfec280d37b67dc17e",
+      "facts": [
+        {
+          "seq": 4,
+          "type": "attacked",
+          "actor": "alice",
+          "cards": [
+            {
+              "instanceId": "c4",
+              "cardId": "consular-security-force",
+              "incarnation": 1,
+              "visibility": 0
+            },
+            {
+              "instanceId": "c5",
+              "cardId": "command-center",
+              "incarnation": 1,
+              "visibility": 0
+            }
+          ],
+          "amount": null,
+          "audience": "public"
+        },
+        {
+          "seq": 5,
+          "type": "damage",
+          "actor": "alice",
+          "cards": [
+            {
+              "instanceId": "c4",
+              "cardId": "consular-security-force",
+              "incarnation": 1,
+              "visibility": 0
+            },
+            {
+              "instanceId": "c5",
+              "cardId": "command-center",
+              "incarnation": 1,
+              "visibility": 0
+            }
+          ],
+          "amount": 3,
+          "audience": "public"
+        },
+        {
+          "seq": 6,
+          "type": "attack-ended",
+          "actor": null,
+          "cards": [
+            {
+              "instanceId": "c4",
+              "cardId": "consular-security-force",
+              "incarnation": 1,
+              "visibility": 0
+            },
+            {
+              "instanceId": "c5",
+              "cardId": "command-center",
+              "incarnation": 1,
+              "visibility": 0
+            }
+          ],
+          "amount": null,
+          "audience": "public"
+        }
+      ]
+    },
+    {
+      "name": "stormtrooper-patrol--",
+      "checkpoint": "{\"versions\":{\"state\":109,\"engine\":\"1.1.0\",\"cards\":\"1.1.997@1e4a7a74bee9c3e5e1551a2d6a4aae45fa8bbc34156bebda2ca0dd60b36990f9\",\"rules\":\"swu-8.0\",\"format\":\"core-practice\"},\"gameId\":\"hmw-old-id-patrol\",\"revision\":0,\"nextId\":8,\"seats\":[\"alice\",\"bob\"],\"players\":{\"alice\":{\"id\":\"alice\",\"base\":\"c1\",\"leader\":\"c2\",\"tokens\":[],\"deck\":[],\"hand\":[],\"resources\":[],\"discard\":[]},\"bob\":{\"id\":\"bob\",\"base\":\"c5\",\"leader\":\"c6\",\"tokens\":[],\"deck\":[],\"hand\":[],\"resources\":[],\"discard\":[]}},\"cards\":{\"c1\":{\"instanceId\":\"c1\",\"cardId\":\"command-center\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c2\":{\"instanceId\":\"c2\",\"cardId\":\"sabine-wren--galvanized-revolutionary\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c3\":{\"instanceId\":\"c3\",\"cardId\":\"stormtrooper-patrol--\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c4\":{\"instanceId\":\"c4\",\"cardId\":\"consular-security-force\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c5\":{\"instanceId\":\"c5\",\"cardId\":\"command-center\",\"owner\":\"bob\",\"controller\":\"bob\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c6\":{\"instanceId\":\"c6\",\"cardId\":\"sabine-wren--galvanized-revolutionary\",\"owner\":\"bob\",\"controller\":\"bob\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}}},\"attacks\":[],\"delayedEffects\":[],\"printedStatActivations\":[],\"keywordGrants\":[],\"lastingEffects\":[],\"namedEffects\":[],\"traitLosses\":[],\"phaseHistory\":{\"lastActions\":{},\"defeatedAttacking\":[],\"damageAttempts\":[],\"damagedUnits\":[],\"basesDamaged\":[],\"basesAttacked\":[],\"baseAttackers\":[],\"upgradesDefeated\":[],\"cardsDrawn\":{},\"discarded\":[],\"enemyBaseDamage\":{},\"unitEntries\":[],\"left\":[],\"defeated\":[],\"attacks\":[],\"forceUsed\":{},\"actionsTaken\":{},\"entered\":[],\"baseDamageSources\":[],\"enemyBaseDamaged\":[],\"indirectDamage\":[],\"tokensCreated\":[],\"ownCardsDiscarded\":[],\"played\":[]},\"actionHistory\":null,\"departedUnits\":[],\"departedUpgrades\":[],\"defeatedAbilityBatches\":[],\"usedDefeatedAbilities\":[],\"usedAttackAbilities\":[],\"usedPlayedAbilities\":[],\"phaseTriggers\":[],\"usedBounties\":[],\"captured\":[],\"setAside\":[],\"searching\":[],\"roundHistory\":{\"plays\":[],\"triggerUses\":[],\"actionUses\":[]},\"playPayment\":null,\"playModifiers\":[],\"playRestrictions\":[],\"phaseStatModifiers\":[],\"grantedPlays\":[],\"ground\":[\"c3\",\"c4\"],\"space\":[],\"phase\":\"action\",\"round\":1,\"activePlayer\":\"alice\",\"initiative\":{\"holder\":\"alice\",\"claimed\":false},\"consecutivePasses\":0,\"lastPassPlayer\":null,\"execution\":{\"frames\":[{\"kind\":\"action\"}],\"pendingTriggers\":[],\"decision\":{\"id\":\"d7\",\"playerId\":\"alice\",\"kind\":\"action\",\"selection\":null,\"options\":[{\"id\":\"o0\",\"intent\":{\"kind\":\"attack\",\"attacker\":\"c3\",\"defender\":\"c5\"}},{\"id\":\"o1\",\"intent\":{\"kind\":\"attack\",\"attacker\":\"c4\",\"defender\":\"c5\"}},{\"id\":\"o2\",\"intent\":{\"kind\":\"use-ability\",\"card\":\"c2\",\"abilityId\":\"damage-bases\"}},{\"id\":\"o3\",\"intent\":{\"kind\":\"use-ability\",\"card\":\"c2\",\"abilityId\":\"deploy\"}},{\"id\":\"o4\",\"intent\":{\"kind\":\"take-initiative\"}},{\"id\":\"o5\",\"intent\":{\"kind\":\"pass\"}}]},\"random\":null},\"disclosure\":{\"handsToPlayers\":false,\"handsToSpectators\":false},\"result\":null,\"facts\":[]}",
+      "input": {
+        "type": "decision",
+        "gameId": "hmw-old-id-patrol",
+        "expectedRevision": 0,
+        "playerId": "alice",
+        "decisionId": "d7",
+        "optionId": "o0",
+        "selections": []
+      },
+      "stateHash": "afaf088a42128d6eb2f7c7ca887b586ce54eeea6fd84b2a646b704ab654600b8",
+      "facts": [
+        {
+          "seq": 0,
+          "type": "attacked",
+          "actor": "alice",
+          "cards": [
+            {
+              "instanceId": "c3",
+              "cardId": "stormtrooper-patrol--",
+              "incarnation": 1,
+              "visibility": 0
+            },
+            {
+              "instanceId": "c5",
+              "cardId": "command-center",
+              "incarnation": 1,
+              "visibility": 0
+            }
+          ],
+          "amount": null,
+          "audience": "public"
+        },
+        {
+          "seq": 1,
+          "type": "damage",
+          "actor": "alice",
+          "cards": [
+            {
+              "instanceId": "c3",
+              "cardId": "stormtrooper-patrol--",
+              "incarnation": 1,
+              "visibility": 0
+            },
+            {
+              "instanceId": "c5",
+              "cardId": "command-center",
+              "incarnation": 1,
+              "visibility": 0
+            }
+          ],
+          "amount": 4,
+          "audience": "public"
+        },
+        {
+          "seq": 2,
+          "type": "attack-ended",
+          "actor": null,
+          "cards": [
+            {
+              "instanceId": "c3",
+              "cardId": "stormtrooper-patrol--",
+              "incarnation": 1,
+              "visibility": 0
+            },
+            {
+              "instanceId": "c5",
+              "cardId": "command-center",
+              "incarnation": 1,
+              "visibility": 0
+            }
+          ],
+          "amount": null,
+          "audience": "public"
+        }
+      ]
+    }
+  ]
+}

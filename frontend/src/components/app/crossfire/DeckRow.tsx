@@ -41,6 +41,7 @@ export function DeckRow({
       </button>
       <DeckPreviewDialog
         deckId={deck.id}
+        compact={false}
         trigger={
           <Button
             type="button"

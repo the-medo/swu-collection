@@ -19,6 +19,12 @@ export function matchingUpgrades(
       isUpgrade(state, card) &&
       (!filter.sameAs ||
         (same && card.instanceId === same.instanceId && card.incarnation === same.incarnation)) &&
+      (!filter.trait || cardTraits(state, card).includes(filter.trait)) &&
+      (!filter.hostKind ||
+        (!!card.attachedTo &&
+          cardDefinition(state, state.cards[card.attachedTo.instanceId]!.cardId).kind ===
+            'base') ===
+          (filter.hostKind === 'base')) &&
       (!filter.withoutTrait || !cardTraits(state, card).includes(filter.withoutTrait)) &&
       (!filter.cardId || card.cardId === filter.cardId) &&
       (filter.maxCost === undefined || printedCost(state, card) <= filter.maxCost) &&

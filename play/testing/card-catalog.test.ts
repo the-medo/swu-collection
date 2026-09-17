@@ -75,8 +75,8 @@ test('download validation covers every card property and nested effect', async (
   event.effects = [{ kind: 'execute-code', code: 'bad' }];
   expect(() => validateCatalog(effect)).toThrow('Invalid card definition');
   const future = modified();
-  future.version = '1.2.0';
-  future.requiredEngine = '1.2.0';
+  future.version = '1.3.0';
+  future.requiredEngine = '1.3.0';
   expect(() => validateCatalog(future)).toThrow('requires');
   const duplicate = modified();
   duplicate.cards.push(duplicate.cards[0]);

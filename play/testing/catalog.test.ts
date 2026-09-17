@@ -271,8 +271,8 @@ test('each supported card has a dedicated file and agrees with its pinned catalo
   }[];
   const hmwById = Object.fromEntries(hmw.map(card => [card.cardId, card]));
   const catalog = { ...official, ...hmwById };
-  expect(hmw).toHaveLength(180);
-  expect(supportedCards).toHaveLength(1680);
+  expect(hmw).toHaveLength(268);
+  expect(supportedCards).toHaveLength(1768);
   expect(coverage.map(row => row.cardId)).toEqual(supportedCards.map(card => card.cardId));
   for (const definition of supportedCards) {
     if (definition.cardId === 'beast' || definition.cardId === 'weakness') {
@@ -295,11 +295,15 @@ test('each supported card has a dedicated file and agrees with its pinned catalo
     if (definition.kind === 'upgrade') {
       expect(definition.modifiers).toEqual({
         power: definition.token
-          ? card.power
+          ? (card.power ?? card.upgradePower ?? 0)
           : hmwCard
             ? (card.upgradePower ?? 0)
             : card.upgradePower,
-        hp: definition.token ? card.hp : hmwCard ? (card.upgradeHp ?? 0) : card.upgradeHp,
+        hp: definition.token
+          ? (card.hp ?? card.upgradeHp ?? 0)
+          : hmwCard
+            ? (card.upgradeHp ?? 0)
+            : card.upgradeHp,
       });
       expect(definition.cost).toBe(card.cost);
     } else if (definition.kind !== 'event' && definition.kind !== 'player-token')
@@ -308,15 +312,21 @@ test('each supported card has a dedicated file and agrees with its pinned catalo
       );
     expect([...card.aspects].sort()).toEqual([...definition.aspects].sort());
     expect([...card.traits].sort()).toEqual([...definition.traits].sort());
-    const printing = hmwCard
-      ? { set: 'hmw' }
-      : (Object.values(card.variants) as { baseSet: boolean; set: string }[]).find(
+    const printings = hmwCard
+      ? [{ set: 'hmw' }]
+      : (Object.values(card.variants) as { baseSet: boolean; set: string }[]).filter(
           variant => variant.baseSet,
-        )!;
+        );
     expect(
-      await Bun.file(
-        new URL(`../cards/${printing.set}/${definition.cardId}.ts`, import.meta.url),
-      ).exists(),
+      (
+        await Promise.all(
+          printings.map(printing =>
+            Bun.file(
+              new URL(`../cards/${printing.set}/${definition.cardId}.ts`, import.meta.url),
+            ).exists(),
+          ),
+        )
+      ).some(Boolean),
     ).toBe(true);
     if (hmwCard) {
       if (definition.kind === 'event') expect(card.cost).toBe(definition.cost);
@@ -496,7 +506,7 @@ test('every official Leader and Base has an implemented canonical definition', a
   const requested = Object.values(catalog).filter(
     (c: any) => c.type === 'Leader' || c.type === 'Base',
   ) as { cardId: string; type: string }[];
-  expect(requested.filter(c => c.type === 'Leader')).toHaveLength(154);
+  expect(requested.filter(c => c.type === 'Leader')).toHaveLength(172);
   for (const card of requested)
     expect(cardDefinition(card.cardId).kind).toBe(card.type === 'Leader' ? 'leader' : 'base');
 });

@@ -128,11 +128,11 @@ async function layout() {
 }
 try {
   for (const user of users) {
-    await sql`INSERT INTO "user" (id,name,email,email_verified,created_at,updated_at,display_name,currency, role) VALUES (${user.userId},${user.name},${user.userId + '@invalid.local'},false,now(),now(),${user.name},'USD', 'crossfire')`;
+    await sql`INSERT INTO "user" (id,name,email,email_verified,created_at,updated_at,display_name,currency, role) VALUES (${user.userId},${user.name + ' private account name'},${user.userId + '@invalid.local'},false,now(),now(),${user.name},'USD', 'crossfire')`;
     await sql`INSERT INTO session (id,token,expires_at,user_id,created_at,updated_at) VALUES (${user.sessionId},${user.token},now()+interval '1 hour',${user.userId},now(),now())`;
   }
   await sql`INSERT INTO team (id, name) VALUES (${teamId}, 'Crossfire test team')`;
-  await sql`INSERT INTO team_member (team_id, user_id) VALUES (${teamId}, ${host!.userId}), (${teamId}, ${guest!.userId})`;
+  await sql`INSERT INTO team_member (team_id, user_id) VALUES (${teamId}, ${host!.userId}), (${teamId}, ${guest!.userId}), (${teamId}, ${users[2]!.userId})`;
   const main = await addDeck('Ahsoka • A little unconventional', host!.userId);
   const sabine = await addDeck(
     'Sabine • Fast company',
@@ -227,14 +227,31 @@ try {
   const search = page.getByRole('searchbox', { name: 'Search decks or paste a deck link' });
   await search.fill('Sabine');
   await expect(page.locator('.cf-deck-row')).toHaveCount(1);
+  const deckControls = await page.locator('.cf-deck-option').evaluate(row => {
+    const eye = row.querySelector('.cf-deck-preview-button')!.getBoundingClientRect();
+    const check = row.querySelector('.cf-deck-row-check')!.getBoundingClientRect();
+    return { eyeRight: eye.right, checkLeft: check.left };
+  });
+  expect(deckControls.eyeRight).toBeLessThan(deckControls.checkLeft);
   await page
     .getByRole('button', { name: 'View decklist: Sabine • Fast company', exact: true })
     .click();
   await expect(page.getByRole('dialog')).toContainText('Battlefield Marine');
+  const deckDialog = page.getByRole('dialog', { name: 'Decklist', exact: true });
+  await expect(deckDialog.getByRole('heading', { name: 'Sabine • Fast company' })).toBeVisible();
+  for (const cardId of ['sabine-wren--galvanized-revolutionary', 'command-center']) {
+    const cardImage = deckDialog.getByRole('img', { name: `card-${cardId}`, exact: true }).first();
+    await expect(cardImage).toBeVisible();
+    expect((await cardImage.boundingBox())!.width).toBeGreaterThanOrEqual(280);
+  }
   await expect(page.locator('.cf-selected-deck strong')).toHaveText(
     'Ahsoka • A little unconventional',
   );
   await shot('deck-preview');
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await deckDialog.evaluate(dialog => dialog.scrollWidth <= dialog.clientWidth)).toBe(true);
+  await shot('deck-preview-mobile');
+  await page.setViewportSize({ width: 1600, height: 1050 });
   await page.getByRole('button', { name: 'Close', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'View decklist: Sabine • Fast company', exact: true }),
@@ -520,9 +537,71 @@ try {
   ).toBeChecked();
   await page.getByText('Best of 3', { exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Best of 3', exact: true })).toBeChecked();
-  await page.getByRole('button', { name: 'Invite Nova to Crossfire' }).click();
+  const teammateSection = page.getByRole('region', { name: 'Invitations and teammates' });
+  await expect(teammateSection).toContainText('Nova');
+  await expect(teammateSection).not.toContainText('private account name');
+  const teammateButton = page.getByRole('button', { name: 'Select teammate Nova', exact: true });
+  const otherTeammate = page.getByRole('button', { name: 'Select teammate Kai', exact: true });
+  await expect(teammateButton).toHaveText('Nova');
+  await expect(teammateButton).toHaveAttribute('aria-pressed', 'false');
+  await teammateSection.getByRole('button', { name: 'Info', exact: true }).click();
+  await expect(page.getByText(/Nothing is sent until you confirm/)).toBeVisible();
+  await page.keyboard.press('Escape');
+  const sentBeforeDraft =
+    await sql`SELECT id FROM play.lobbies WHERE creator_user_id = ${host!.userId}`;
+  // Drafting works before deck readiness too: an invalid linked deck cannot accidentally be sent.
+  const deckSearch = page.getByRole('searchbox', { name: 'Search decks or paste a deck link' });
+  await deckSearch.fill(randomUUID());
+  await teammateButton.click();
+  await expect(teammateButton).toBeFocused();
+  await expect(teammateButton).toHaveAttribute('aria-pressed', 'true');
+  await expect(teammateButton.locator('.cf-deck-row-check svg')).toHaveCount(1);
+  await expect(page.getByRole('heading', { name: 'Invite Nova', exact: true })).toHaveCount(0);
+  const sendInvitation = page.getByRole('button', { name: 'Send invitation to Nova', exact: true });
+  await expect(sendInvitation).toBeDisabled();
+  await otherTeammate.click();
+  await expect(otherTeammate).toHaveAttribute('aria-pressed', 'true');
+  await expect(teammateButton).toHaveAttribute('aria-pressed', 'false');
+  await expect(
+    page.getByRole('button', { name: 'Send invitation to Kai', exact: true }),
+  ).toBeDisabled();
+  await otherTeammate.click();
+  await expect(otherTeammate).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('button', { name: 'Create invitation', exact: true })).toBeVisible();
+  await teammateButton.focus();
+  await page.keyboard.press('Enter');
+  // Change the deck AFTER choosing the teammate, then explicitly send the reviewed selection.
+  await deckSearch.fill(main);
+  await expect(sendInvitation).toBeEnabled();
+  await expect(teammateButton).toHaveCSS(
+    'border-color',
+    await page
+      .locator('.cf-deck-row[aria-pressed="true"]')
+      .evaluate(row => getComputedStyle(row).borderColor),
+  );
+  await shot('teammate-invitation-draft');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await teammateButton.click();
+  await expect(teammateButton).toHaveAttribute('aria-pressed', 'false');
+  await page.keyboard.press('Space');
+  await expect(teammateButton).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await shot('teammate-invitation-draft-mobile');
+  await page.setViewportSize({ width: 1600, height: 1050 });
+  const sentAfterDraft =
+    await sql`SELECT id FROM play.lobbies WHERE creator_user_id = ${host!.userId}`;
+  expect(sentAfterDraft).toEqual(sentBeforeDraft);
+  await sendInvitation.click();
   const popup = guestPage.getByRole('dialog', { name: 'Crossfire invitation', exact: true });
   await expect(popup).toBeVisible({ timeout: 5000 });
+  await expect(popup).toContainText('Alex');
+  await expect(popup).not.toContainText('private account name');
+  const [sentDeck] = await sql`SELECT p.deck_snapshot->>'sourceDeckId' AS deck_id, l.best_of
+    FROM play.lobbies l JOIN play.participants p ON p.lobby_id = l.id AND p.seat = 'p1'
+    JOIN play.invitations i ON i.lobby_id = l.id
+    WHERE l.creator_user_id = ${host!.userId} AND i.recipient_user_id = ${guest!.userId}
+      AND l.status = 'waiting'`;
+  expect(sentDeck).toMatchObject({ deck_id: main, best_of: 3 });
   await expect(popup.locator('.cf-invite-portraits img')).toHaveCount(2);
   await expect(otherTab.getByLabel('1 Crossfire invitations', { exact: true })).toBeVisible({
     timeout: 5000,
@@ -556,7 +635,8 @@ try {
   // Expire a hidden-leader invite in PostgreSQL while recipient tabs stay open.
   await page.goto(origin + '/crossfire?cfDeck=' + main);
   await page.getByRole('checkbox', { name: 'Show my leader before game', exact: true }).uncheck();
-  await page.getByRole('button', { name: 'Invite Nova to Crossfire' }).click();
+  await page.getByRole('button', { name: 'Select teammate Nova', exact: true }).click();
+  await page.getByRole('button', { name: 'Send invitation to Nova', exact: true }).click();
   await expect(
     otherTab.getByRole('dialog', { name: 'Crossfire invitation', exact: true }),
   ).toBeVisible({ timeout: 5000 });
@@ -702,6 +782,8 @@ try {
   await guestContext.close();
   expect(errors).toEqual([]);
   const gallery = [
+    ['teammate-invitation-draft', 'Teammate invitation · Review before sending'],
+    ['teammate-invitation-draft-mobile', 'Teammate invitation · Mobile review'],
     ['unavailable-game', 'Older game · Clear connection error'],
     ['close-game-confirmation', 'Close an incompatible game'],
     ['close-game-mobile', 'Close game · Mobile'],
@@ -724,6 +806,7 @@ try {
 
     ['reports', 'Problem reports'],
     ['deck-preview', 'Decklist preview'],
+    ['deck-preview-mobile', 'Full decklist preview · Mobile'],
     ['deck-detail-play', 'Play from deck detail'],
     ['game-settings', 'Inline game settings'],
     ['mobile-dark', 'Mobile · Deck selector'],

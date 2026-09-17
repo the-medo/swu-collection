@@ -30,14 +30,14 @@ function effects(state: GameState, list: CardEffect[], actor = 'alice') {
   return next;
 }
 
-test('the pinned HMW preview release registers every active card plus its rules tokens', async () => {
+test('the pinned HMW catalog registers every non-reprint card plus its rules tokens', async () => {
   const catalog = (await Bun.file(
     new URL('../cards/hmw/catalog.json', import.meta.url),
   ).json()) as {
     cardId: string;
   }[];
   const registered = new Set(supportedCards.map(card => card.cardId));
-  expect(catalog).toHaveLength(180);
+  expect(catalog).toHaveLength(268);
   for (const card of catalog) expect(registered.has(card.cardId)).toBe(true);
   expect(registered.has('beast')).toBe(true);
   expect(registered.has('weakness')).toBe(true);

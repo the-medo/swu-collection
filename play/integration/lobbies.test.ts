@@ -27,6 +27,7 @@ const players: Principal[] = [0, 1, 2].map(n => ({
 const a = players[0]!,
   b = players[1]!,
   c = players[2]!;
+const displayName = (principal: Principal) => `${prefix}-display-${players.indexOf(principal)}`;
 const decks: string[] = [],
   lobbies: string[] = [],
   games: string[] = [];
@@ -39,7 +40,7 @@ const policy = { allowSpectators: true, handsToPlayers: true, handsToSpectators:
 beforeAll(async () => {
   for (const principal of players) {
     await sql`INSERT INTO "user" (id, name, email, email_verified, created_at, updated_at, display_name, currency, role)
-      VALUES (${principal.userId}, 'Synthetic lobby fixture', ${principal.userId + '@invalid.local'}, false, now(), now(), ${principal.userId}, 'USD', 'crossfire')`;
+      VALUES (${principal.userId}, 'Synthetic lobby fixture', ${principal.userId + '@invalid.local'}, false, now(), now(), ${displayName(principal)}, 'USD', 'crossfire')`;
     await sql`INSERT INTO session (id, token, expires_at, user_id, created_at, updated_at)
       VALUES (${principal.sessionId}, ${randomUUID()}, now() + interval '1 hour', ${principal.userId}, now(), now())`;
     const deckId = randomUUID();
@@ -469,6 +470,13 @@ test('teammate invitations conceal identities, restrict admission and expire dur
     await sql`INSERT INTO team_member (team_id, user_id) VALUES (${teamId}, ${a.userId}), (${teamId}, ${b.userId})`;
     expect((await service.teammates(a)).map(p => p.id)).toContain(b.userId);
     expect((await service.teammates(a)).map(p => p.id)).not.toContain(c.userId);
+    expect((await service.teammates(a)).find(p => p.id === b.userId)?.name).toBe(displayName(b));
+    await sql`UPDATE "user" SET display_name = '   ' WHERE id = ${b.userId}`;
+    try {
+      expect((await service.teammates(a)).find(p => p.id === b.userId)?.name).toBe('Player');
+    } finally {
+      await sql`UPDATE "user" SET display_name = ${displayName(b)} WHERE id = ${b.userId}`;
+    }
     await expect(service.create(a, decks[0]!, policy, 1, true, c.userId)).rejects.toThrow(
       'unavailable',
     );
@@ -489,10 +497,26 @@ test('teammate invitations conceal identities, restrict admission and expire dur
     expect(new Date(lobby.expiresAt!).getTime() - Date.now()).toBeGreaterThan(175_000);
     const incoming = (await service.invitations(b)).find(i => i.lobbyId === lobby.id)!;
     expect(incoming.direction).toBe('incoming');
+    expect(incoming.player.name).toBe(displayName(a));
+    expect((await service.invitations(a)).find(i => i.lobbyId === lobby.id)?.player.name).toBe(
+      displayName(b),
+    );
     expect(incoming).not.toHaveProperty('leaderId');
     expect(incoming).not.toHaveProperty('baseId');
     const hidden = await service.get(b, lobby.id);
-    expect(hidden!.host).toEqual({ name: 'Synthetic lobby fixture' });
+    expect(hidden!.host).toEqual({ name: displayName(a) });
+    expect(JSON.stringify([incoming, hidden, await service.teammates(a)])).not.toContain(
+      'Synthetic lobby fixture',
+    );
+    await sql`UPDATE "user" SET display_name = '   ' WHERE id = ${a.userId}`;
+    try {
+      expect((await service.get(b, lobby.id))?.host?.name).toBe('Player');
+      expect((await service.invitations(b)).find(i => i.lobbyId === lobby.id)?.player.name).toBe(
+        'Player',
+      );
+    } finally {
+      await sql`UPDATE "user" SET display_name = ${displayName(a)} WHERE id = ${a.userId}`;
+    }
     expect(lobby.host?.leaderId).toBe(ids.leader);
     expect(await service.get(c, lobby.id)).toBeNull();
     await expect(service.join(c, lobby.id, decks[2]!, policy, 3)).rejects.toThrow('unavailable');

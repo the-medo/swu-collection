@@ -9,9 +9,12 @@ when the source leaves play, including capture; rescue does not restart them.
 
 ## Public catalog choice, private continuation
 
-`play/cards/catalog-names.json` pins official canonical IDs and titles separately
-from supported behavior. `bun play/scripts/refresh-card-names.ts` rebuilds it from
-the tracked official catalog; review the changes and bump the executable bundle.
+Each immutable card bundle pins canonical IDs and titles separately from
+supported behavior. `play/cards/catalog.ts` assembles the current table from the
+retained `play/cards/catalog-names.json` baseline and newer set snapshots, including
+Homeworlds. The baseline table participates in the 1.0 compatibility checksum:
+do not overwrite it with `refresh-card-names.ts` when importing a new set.
+Extend the current release's titles while preserving historical bundle data.
 A player may name an official card that Crossfire cannot yet play. The name table
 does not register or admit unsupported definitions.
 

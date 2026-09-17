@@ -6,7 +6,7 @@ import { numericValue } from './values.ts';
 import { cardTitle } from '../cards/catalog.ts';
 import { cardTraits, unitIsLeader } from './attributes.ts';
 import type { Evaluation } from './evaluation.ts';
-import { keywordNames, effectiveAbilities } from './effective-abilities.ts';
+import { keywordNames, effectiveAbilities, hasUnitAbilities } from './effective-abilities.ts';
 import { printedCost } from './inspection.ts';
 import { boundUnit, boundReference, boundArena, type EffectContext } from './bindings.ts';
 import { sourcePower } from './attachments.ts';
@@ -31,6 +31,7 @@ export function matchesUnit(
     filter.withoutTrait ||
     filter.anyTrait ||
     filter.sharesFriendlyLeaderTrait ||
+    filter.sharesTraitWith ||
     filter.sharesTraitWithGroup
       ? cardTraits(state, card, evaluation)
       : [];
@@ -76,6 +77,13 @@ export function matchesUnit(
       (!!other &&
         (card.instanceId !== other.instanceId || card.incarnation !== other.incarnation))) &&
     (!filter.controller || (card.controller === playerId) === (filter.controller === 'friendly')) &&
+    (filter.noAbilities === undefined ||
+      hasUnitAbilities(state, card, evaluation) !== filter.noAbilities) &&
+    (!filter.sharesTraitWith ||
+      (!!boundReference(context, filter.sharesTraitWith, state) &&
+        cardTraits(state, boundReference(context, filter.sharesTraitWith, state)!, evaluation).some(
+          t => traits.includes(t),
+        ))) &&
     (!filter.sharesTraitWithGroup ||
       !!context?.groups?.[filter.sharesTraitWithGroup]?.some(ref =>
         cardTraits(state, ref, evaluation).some(t => traits.includes(t)),

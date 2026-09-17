@@ -1392,6 +1392,94 @@ import { spy } from './sec/spy.ts';
 import { mandalorian } from './ash/mandalorian.ts';
 import { xWing } from './jtl/x-wing.ts';
 import { advantage } from './ash/advantage.ts';
+import { hmwCloneOfTheZilloBeastEmperorSExperiment } from './hmw/clone-of-the-zillo-beast--emperor-s-experiment.ts';
+import { hmwTheGreatProgenitorFirstOfTheDrengir } from './hmw/the-great-progenitor--first-of-the-drengir.ts';
+import { hmwImperialCommandos } from './hmw/imperial-commandos.ts';
+import { hmwN1Patroller } from './hmw/n-1-patroller.ts';
+import { hmwVenomousWyyyshokk } from './hmw/venomous-wyyyshokk.ts';
+import { hmwTerritorialMudhorn } from './hmw/territorial-mudhorn.ts';
+import { hmwOpeeSeaKiller } from './hmw/opee-sea-killer.ts';
+import { hmwPeltaReliefFrigate } from './hmw/pelta-relief-frigate.ts';
+import { hmwStarlitPurrgil } from './hmw/starlit-purrgil.ts';
+import { hmwCoastalCatamarans } from './hmw/coastal-catamarans.ts';
+import { hmwDevotion } from './hmw/devotion.ts';
+import { hmwDireProwess } from './hmw/dire-prowess.ts';
+import { hmwResonate } from './hmw/resonate.ts';
+import { hmwAlwaysABiggerFish } from './hmw/always-a-bigger-fish.ts';
+import { hmwTrustYourself } from './hmw/trust-yourself.ts';
+import { hmwSecessionistConvert } from './hmw/secessionist-convert.ts';
+import { hmwInvasionLander } from './hmw/invasion-lander.ts';
+import { hmwSawGerreraShadowlandsInsurgent } from './hmw/saw-gerrera--shadowlands-insurgent.ts';
+import { hmwAuzituckAvenger } from './hmw/auzituck-avenger.ts';
+import { hmwChildOfDathomir } from './hmw/child-of-dathomir.ts';
+import { hmwEmerieKarrForYourOwnGood } from './hmw/emerie-karr--for-your-own-good.ts';
+import { hmwSoaringCanCell } from './hmw/soaring-can-cell.ts';
+import { hmwTibideeMate } from './hmw/tibidee-mate.ts';
+import { hmwWroshyrRebel } from './hmw/wroshyr-rebel.ts';
+import { hmwZamWesellNotWhatSheSeems } from './hmw/zam-wesell--not-what-she-seems.ts';
+import { hmwV19Skirmisher } from './hmw/v-19-skirmisher.ts';
+import { hmwCommanderGreeOfThe41stEliteCorps } from './hmw/commander-gree--of-the-41st-elite-corps.ts';
+import { hmwFlockOfMynocks } from './hmw/flock-of-mynocks.ts';
+import { hmwRexOutservedHisPurpose } from './hmw/rex--outserved-his-purpose.ts';
+import { hmwHowlerPack } from './hmw/howler-pack.ts';
+import { hmwOuterRimGarrison } from './hmw/outer-rim-garrison.ts';
+import { hmwLocalSupport } from './hmw/local-support.ts';
+import { hmwLogTrap } from './hmw/log-trap.ts';
+import { hmwMigrate } from './hmw/migrate.ts';
+import { hmwPoacherSStarfighter } from './hmw/poacher-s-starfighter.ts';
+import { hmwFilthyDianoga } from './hmw/filthy-dianoga.ts';
+import { hmwCorpoThugs } from './hmw/corpo-thugs.ts';
+import { hmwCommandeeredTourShuttle } from './hmw/commandeered-tour-shuttle.ts';
+import { hmwGungiFightingForKashyyyk } from './hmw/gungi--fighting-for-kashyyyk.ts';
+import { hmwDuneSeaNomads } from './hmw/dune-sea-nomads.ts';
+import { hmwRebelOperation } from './hmw/rebel-operation.ts';
+import { hmwDesperateNantex } from './hmw/desperate-nantex.ts';
+import { hmwFeistyBlurrg } from './hmw/feisty-blurrg.ts';
+import { hmwTuskenBanthaRider } from './hmw/tusken-bantha-rider.ts';
+import { hmwNightsisterProdigy } from './hmw/nightsister-prodigy.ts';
+import { hmwAggrocrab } from './hmw/aggrocrab.ts';
+import { hmwMiningGuildTrespasser } from './hmw/mining-guild-trespasser.ts';
+import { hmwDathomiriRancor } from './hmw/dathomiri-rancor.ts';
+import { hmwNeebrayManta } from './hmw/neebray-manta.ts';
+import { hmwEnraged } from './hmw/enraged.ts';
+import { hmwHunterSInstinct } from './hmw/hunter-s-instinct.ts';
+import { hmwVolleyFire } from './hmw/volley-fire.ts';
+import { hmwRunAmok } from './hmw/run-amok.ts';
+import { hmwCatchTheScent } from './hmw/catch-the-scent.ts';
+import { hmwTreacherousPyke } from './hmw/treacherous-pyke.ts';
+import { hmwGeonosianPicador } from './hmw/geonosian-picador.ts';
+import { hmwCoronaSquadronXWing } from './hmw/corona-squadron-x-wing.ts';
+import { hmwInsurgentCamp } from './hmw/insurgent-camp.ts';
+import { hmwNewTactics } from './hmw/new-tactics.ts';
+import { hmwCleverTrapper } from './hmw/clever-trapper.ts';
+import { hmwTuskenRaider } from './hmw/tusken-raider.ts';
+import { hmwHorizonChaser } from './hmw/horizon-chaser.ts';
+import { hmwLakesideShaaks } from './hmw/lakeside-shaaks.ts';
+import { hmwMonCalCruiser } from './hmw/mon-cal-cruiser.ts';
+import { hmwAwakenedExogorth } from './hmw/awakened-exogorth.ts';
+import { hmwGaderffiiStick } from './hmw/gaderffii-stick.ts';
+import { hmwBoomaBall } from './hmw/booma-ball.ts';
+import { hmwHowl } from './hmw/howl.ts';
+import { hmwOccupationOfficer } from './hmw/occupation-officer.ts';
+import { hmwSeparatistHarbinger } from './hmw/separatist-harbinger.ts';
+import { hmwTrandoshanCollaborator } from './hmw/trandoshan-collaborator.ts';
+import { hmwPykeSarisa } from './hmw/pyke-sarisa.ts';
+import { hmwDefoliatorTank } from './hmw/defoliator-tank.ts';
+import { hmwFrenziedTriFighters } from './hmw/frenzied-tri-fighters.ts';
+import { hmwImperialCavalry } from './hmw/imperial-cavalry.ts';
+import { hmwVillainousAmbition } from './hmw/villainous-ambition.ts';
+import { hmwForcedPacification } from './hmw/forced-pacification.ts';
+import { hmwJediInterceptor } from './hmw/jedi-interceptor.ts';
+import { hmwRylothRevolutionaryRider } from './hmw/ryloth-revolutionary-rider.ts';
+import { hmwPackGuardian } from './hmw/pack-guardian.ts';
+import { hmwBenKenobiDonTBeAfraid } from './hmw/ben-kenobi--don-t-be-afraid.ts';
+import { hmwMylayaRider } from './hmw/mylaya-rider.ts';
+import { hmwHeroicBravery } from './hmw/heroic-bravery.ts';
+import { hmwFamiliarStrategem } from './hmw/familiar-strategem.ts';
+import { hmwRenew } from './hmw/renew.ts';
+import { hmwFriendlyEopie } from './hmw/friendly-eopie.ts';
+import { hmwWildSpaceWanderer } from './hmw/wild-space-wanderer.ts';
+import { hmwLandingPad } from './hmw/landing-pad.ts';
 import { beast } from './hmw/beast.ts';
 import { weakness } from './hmw/weakness.ts';
 import { hmwAllianceShieldGenerator } from './hmw/alliance-shield-generator.ts';
@@ -1512,7 +1600,7 @@ import { hmwDragonSMight } from './hmw/dragon-s-might.ts';
 import { hmwEmperorPalpatineConsolidatingPower } from './hmw/emperor-palpatine--consolidating-power.ts';
 import { hmwEzraBridgerWhatAreYouAfraidOf } from './hmw/ezra-bridger--what-are-you-afraid-of-.ts';
 import { hmwFambaaShieldTeam } from './hmw/fambaa-shield-team.ts';
-import { hmwGarnacLetTheHuntBegin } from './hmw/garnac--let-the-hunt-begin.ts';
+import { hmwGarnacLetTheHuntBegin } from './hmw/garnac--let-the-hunt-begin-.ts';
 import { hmwGeneralGrievousScourgeOfDathomir } from './hmw/general-grievous--scourge-of-dathomir.ts';
 import { hmwGrandArmyMarine } from './hmw/grand-army-marine.ts';
 import { hmwHanSoloMyTeamSReady } from './hmw/han-solo--my-team-s-ready.ts';
@@ -1533,7 +1621,7 @@ import { hmwRhoMedicalShuttle } from './hmw/rho-medical-shuttle.ts';
 import { hmwRyykBlademaster } from './hmw/ryyk-blademaster.ts';
 import { hmwScorchImperialCommando } from './hmw/scorch--imperial-commando.ts';
 import { hmwSinisterWarMemorial } from './hmw/sinister-war-memorial.ts';
-import { hmwStormtrooperPatrol } from './hmw/stormtrooper-patrol--.ts';
+import { hmwStormtrooperPatrol } from './hmw/stormtrooper-patrol.ts';
 import { hmwTeeboStripedHunter } from './hmw/teebo--striped-hunter.ts';
 import { hmwTorrent } from './hmw/torrent.ts';
 import { hmwVerdantFortress } from './hmw/verdant-fortress.ts';
@@ -3429,6 +3517,96 @@ definitions.push(
   zygerrianStarhopper,
   fettSFiresprayFearedSilhouette,
   allegiantGeneralPrydeRuthlessAndLoyal,
+);
+definitions.push(
+  hmwCloneOfTheZilloBeastEmperorSExperiment,
+  hmwTheGreatProgenitorFirstOfTheDrengir,
+  hmwImperialCommandos,
+  hmwN1Patroller,
+  hmwVenomousWyyyshokk,
+  hmwTerritorialMudhorn,
+  hmwOpeeSeaKiller,
+  hmwPeltaReliefFrigate,
+  hmwStarlitPurrgil,
+  hmwCoastalCatamarans,
+  hmwDevotion,
+  hmwDireProwess,
+  hmwResonate,
+  hmwAlwaysABiggerFish,
+  hmwTrustYourself,
+  hmwSecessionistConvert,
+  hmwInvasionLander,
+  hmwSawGerreraShadowlandsInsurgent,
+  hmwAuzituckAvenger,
+  hmwChildOfDathomir,
+  hmwEmerieKarrForYourOwnGood,
+  hmwSoaringCanCell,
+  hmwTibideeMate,
+  hmwWroshyrRebel,
+  hmwZamWesellNotWhatSheSeems,
+  hmwV19Skirmisher,
+  hmwCommanderGreeOfThe41stEliteCorps,
+  hmwFlockOfMynocks,
+  hmwRexOutservedHisPurpose,
+  hmwHowlerPack,
+  hmwOuterRimGarrison,
+  hmwLocalSupport,
+  hmwLogTrap,
+  hmwMigrate,
+  hmwPoacherSStarfighter,
+  hmwFilthyDianoga,
+  hmwCorpoThugs,
+  hmwCommandeeredTourShuttle,
+  hmwGungiFightingForKashyyyk,
+  hmwDuneSeaNomads,
+  hmwRebelOperation,
+  hmwDesperateNantex,
+  hmwFeistyBlurrg,
+  hmwTuskenBanthaRider,
+  hmwNightsisterProdigy,
+  hmwAggrocrab,
+  hmwMiningGuildTrespasser,
+  hmwDathomiriRancor,
+  hmwNeebrayManta,
+  hmwEnraged,
+  hmwHunterSInstinct,
+  hmwVolleyFire,
+  hmwRunAmok,
+  hmwCatchTheScent,
+  hmwTreacherousPyke,
+  hmwGeonosianPicador,
+  hmwCoronaSquadronXWing,
+  hmwInsurgentCamp,
+  hmwNewTactics,
+  hmwCleverTrapper,
+  hmwTuskenRaider,
+  hmwHorizonChaser,
+  hmwLakesideShaaks,
+  hmwMonCalCruiser,
+  hmwAwakenedExogorth,
+  hmwGaderffiiStick,
+  hmwBoomaBall,
+  hmwHowl,
+  hmwOccupationOfficer,
+  hmwSeparatistHarbinger,
+  hmwTrandoshanCollaborator,
+  hmwPykeSarisa,
+  hmwDefoliatorTank,
+  hmwFrenziedTriFighters,
+  hmwImperialCavalry,
+  hmwVillainousAmbition,
+  hmwForcedPacification,
+  hmwJediInterceptor,
+  hmwRylothRevolutionaryRider,
+  hmwPackGuardian,
+  hmwBenKenobiDonTBeAfraid,
+  hmwMylayaRider,
+  hmwHeroicBravery,
+  hmwFamiliarStrategem,
+  hmwRenew,
+  hmwFriendlyEopie,
+  hmwWildSpaceWanderer,
+  hmwLandingPad,
 );
 freeze(definitions);
 const registry = new Map(definitions.map(card => [card.cardId, card]));
