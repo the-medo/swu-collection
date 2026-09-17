@@ -45,6 +45,8 @@ export type InPlayFilter = {
   roles: readonly ('unit' | 'upgrade' | 'leader')[];
 };
 export type UnitFilter = {
+  noAbilities?: boolean;
+  sharesTraitWith?: string;
   sharesTraitWithGroup?: string;
   powerEquals?: NumericValue;
   remainingHpEquals?: NumericValue;
@@ -119,6 +121,8 @@ export type ConversionFilter = Pick<
   'controller' | 'trait' | 'anyTrait' | 'name' | 'withoutPilot'
 >;
 export type UpgradeFilter = {
+  trait?: string;
+  hostKind?: 'unit' | 'base';
   sameAs?: string;
   withoutTrait?: string;
   cardId?: string;
@@ -131,6 +135,8 @@ export type UpgradeFilter = {
   unique?: boolean;
 };
 export type NumericValue =
+  | { kind: 'unit-keyword-value'; target: string; keyword: 'Raid' | 'Restore' }
+  | { kind: 'in-play-aspect-icons'; filter: InPlayFilter; aspect: Aspect }
   | { kind: 'ready-resources'; player: 'self' | 'enemy' }
   | { kind: 'spending-power'; player: 'self' | 'enemy' }
   | { kind: 'guarded-cards'; target: string }
@@ -170,7 +176,14 @@ export type NumericValue =
   | { kind: 'distinct-aspects'; target: string }
   | { kind: 'unit-aspects'; filter: UnitFilter }
   | { kind: 'base-damage-increase'; since: string; divisor: number }
-  | { kind: 'upgrades-count'; target: string; trait?: string; cardId?: string; notCardId?: string }
+  | {
+      kind: 'upgrades-count';
+      lastKnown?: boolean;
+      target: string;
+      trait?: string;
+      cardId?: string;
+      notCardId?: string;
+    }
   | { kind: 'base-upgrades-count'; player: 'self' | 'enemy' }
   | { kind: 'card-cost'; target: string }
   | number
@@ -885,6 +898,7 @@ export type Abilities = {
     hp?: number;
   }[];
   traitGrants?: readonly (
+    | { selfFromLeaders: true; except: readonly string[]; outsidePlay: boolean }
     | { fromTrait: string; trait: string; outsidePlay: boolean }
     | { leader: true; trait: string }
   )[];

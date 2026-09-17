@@ -26,8 +26,9 @@ own TypeScript check and is excluded from root TypeScript file discovery.
 
 ## Supported cards and rules
 
-There are 1,498 explicit definitions under [play/cards](../../play/cards).
-All 267 ASH, 267 LAW, 266 SEC, 267 LOF, 266 JTL and 51 IBH canonical identities are implemented, including reprints.
+There are 1,768 explicit definitions under [play/cards](../../play/cards).
+All 275 HMW, 267 ASH, 267 LAW, 266 SEC, 267 LOF, 266 JTL and 51 IBH canonical identities are implemented, including reprints.
+The [Homeworlds guide](hmw-cards.md) covers the official-set completion and preview ID changes.
 The [IBH implementation guide](ibh-cards.md) covers the 44 final definitions.
 The [LOF implementation guide](lof-cards.md) describes the 164 added definitions and their shared mechanics.
 The [JTL implementation guide](jtl-cards.md) tracks Jump to Lightspeed coverage.
@@ -48,8 +49,8 @@ Top 8 records lack complete lists; 19 other events lack imported final results. 
 keywords, Piloting, Plot, Force attack/regroup triggers and Epic aspect-penalty
 exceptions. It does not imply coverage of every official card.
 The [leader/base expansion](../../.ai/planning/feature-crossfire/leaders-and-bases.md)
-now covers every Leader and Base in the tracked official catalog: 154 leaders and
-90 bases. Every canonical identity has a dedicated implementation, including
+now covers every Leader and Base in the tracked official catalog: 172 leaders and
+103 bases. Every canonical identity has a dedicated implementation, including
 separate leader/unit/Pilot faces, repeatable deployment, unusual costs, passive
 abilities and multiple-use limits. The final batch adds Dooku and
 [Exploit payment](exploit.md), including interrupted payment and rollback.
@@ -175,7 +176,7 @@ the original source and controller even after that physical card leaves play.
 These are the mechanisms exercised by the current cards, not full timing-window
 coverage for every possible ability.
 
-Current version pins are state 109, runtime `1.0.0`, an immutable card
+Current version pins are state 109, runtime `1.2.0`, an immutable card
 version/checksum, and browser protocol 39. [Card releases](card-releases.md)
 describes dynamic installation and backwards-compatible minor versions. The
 pre-refactor engine/card tuple remains supported against its exact baseline data.

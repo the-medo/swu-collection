@@ -1,17 +1,14 @@
 import { hmwUnit } from './define.ts';
 
-export const hmwStormtrooperPatrol = hmwUnit('stormtrooper-patrol--', {
-  keywords: ['Sentinel'],
+export const hmwChildOfDathomir = hmwUnit('child-of-dathomir', {
   constant: [
     {
       condition: {
         kind: 'units-at-least',
         filter: {
           controller: 'friendly',
-          otherThan: 'source',
-          minCost: 3,
         },
-        amount: 1,
+        amount: 3,
       },
       power: 2,
     },

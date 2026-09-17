@@ -1,6 +1,6 @@
 import { hmwUnit } from './define.ts';
 
-export const hmwGarnacLetTheHuntBegin = hmwUnit('garnac--let-the-hunt-begin', {
+export const hmwGarnacLetTheHuntBegin = hmwUnit('garnac--let-the-hunt-begin-', {
   constant: [
     {
       condition: {
@@ -24,6 +24,7 @@ export const hmwGarnacLetTheHuntBegin = hmwUnit('garnac--let-the-hunt-begin', {
         {
           kind: 'attack-with-unit',
           powerBonus: 0,
+          filter: { otherThan: 'source' },
         },
       ],
     },

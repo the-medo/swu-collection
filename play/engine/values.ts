@@ -176,6 +176,23 @@ export function numericValue(
         ? contextController(context)
         : opponent(state, contextController(context)),
     ).length;
+  if (value.kind === 'unit-keyword-value') {
+    const ref = boundReference(context, value.target, state);
+    const card = ref && state.cards[ref.instanceId];
+    return card && card.incarnation === ref!.incarnation && isUnit(state, card)
+      ? (effectiveAbilities(state, card, evaluation)[
+          value.keyword === 'Raid' ? 'raid' : 'restore'
+        ] ?? 0)
+      : 0;
+  }
+  if (value.kind === 'in-play-aspect-icons')
+    return matchingInPlayCards(
+      state,
+      contextController(context),
+      value.filter,
+      context,
+      evaluation,
+    ).reduce((n, card) => n + cardAspects(state, card).filter(a => a === value.aspect).length, 0);
   if (value.kind === 'unit-aspect-icons')
     return matchingUnits(
       state,
@@ -224,14 +241,22 @@ export function numericValue(
   if (value.kind === 'upgrades-count') {
     const ref = boundReference(context, value.target, state),
       unit = ref && state.cards[ref.instanceId];
-    return unit && unit.incarnation === ref!.incarnation && isUnit(state, unit)
-      ? attachedUpgrades(state, unit).filter(
-          upgrade =>
-            (!value.trait || cardDefinition(state, upgrade.cardId).traits.includes(value.trait)) &&
-            (!value.cardId || upgrade.cardId === value.cardId) &&
-            (!value.notCardId || upgrade.cardId !== value.notCardId),
-        ).length
-      : 0;
+    const upgrades =
+      unit && unit.incarnation === ref!.incarnation && isUnit(state, unit)
+        ? attachedUpgrades(state, unit)
+        : value.lastKnown && ref
+          ? (state.departedUnits.find(
+              d =>
+                d.reference.instanceId === ref.instanceId &&
+                d.reference.incarnation === ref.incarnation,
+            )?.upgrades ?? [])
+          : [];
+    return upgrades.filter(
+      upgrade =>
+        (!value.trait || cardDefinition(state, upgrade.cardId).traits.includes(value.trait)) &&
+        (!value.cardId || upgrade.cardId === value.cardId) &&
+        (!value.notCardId || upgrade.cardId !== value.notCardId),
+    ).length;
   }
   if (value.kind === 'base-upgrades-count') {
     const player =

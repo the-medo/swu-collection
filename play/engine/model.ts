@@ -370,6 +370,8 @@ export const inPlayFilterSchema: z.ZodType<InPlayFilter> = z.strictObject({
   roles: z.array(z.enum(['unit', 'upgrade', 'leader'])),
 });
 export const unitFilterSchema: z.ZodType<UnitFilter> = z.strictObject({
+  noAbilities: z.boolean().optional(),
+  sharesTraitWith: idSchema.optional(),
   sharesTraitWithGroup: idSchema.optional(),
   powerEquals: z.lazy(() => numericValueSchema).optional(),
   remainingHpEquals: z.lazy(() => numericValueSchema).optional(),
@@ -611,6 +613,16 @@ export const conditionSchema: z.ZodType<Condition> = z.lazy(() =>
 );
 export const numericValueSchema: z.ZodType<NumericValue> = z.union([
   z.strictObject({
+    kind: z.literal('unit-keyword-value'),
+    target: idSchema,
+    keyword: z.enum(['Raid', 'Restore']),
+  }),
+  z.strictObject({
+    kind: z.literal('in-play-aspect-icons'),
+    filter: inPlayFilterSchema,
+    aspect: z.enum(['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']),
+  }),
+  z.strictObject({
     kind: z.literal('unit-sum'),
     filter: unitFilterSchema,
     stat: z.enum(['damage', 'upgrades']),
@@ -681,6 +693,7 @@ export const numericValueSchema: z.ZodType<NumericValue> = z.union([
   }),
   z.strictObject({
     kind: z.literal('upgrades-count'),
+    lastKnown: z.boolean().optional(),
     notCardId: cardIdSchema.optional(),
     cardId: cardIdSchema.optional(),
     target: idSchema,
@@ -1157,6 +1170,8 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
       .strictObject({
         kind: z.literal('select-upgrades'),
         filter: z.strictObject({
+          trait: z.string().min(1).optional(),
+          hostKind: z.enum(['unit', 'base']).optional(),
           cardId: cardIdSchema.optional(),
           maxCost: count.optional(),
           token: z.boolean().optional(),
