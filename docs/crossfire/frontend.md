@@ -44,7 +44,8 @@ precedence over automatic selection; without it the page selects the last
 played accessible deck, falling back to the most recently created owned deck.
 Linked selections also appear as a selected deck row directly below search,
 with all accordion sources initially closed. Each row has a separate
-decklist-preview button that opens the existing compact deck contents without
+decklist-preview button to the left of the selection check that opens the existing
+full deck contents (including large leader/base images) without
 changing the selected deck. The leader illustration uses a bounded
 crop flush to the upper-right corner beside the deck details to avoid enlarging the catalog image across the
 whole preview panel. Match length uses a Best of 1 / Best of 3 segmented radio
@@ -399,8 +400,16 @@ for the network. Other tabs receive the same server events.
 Pending incoming invitations appear in a nonmodal bottom-right dialog and in
 the Crossfire sidebar count. Dismissing a notice only hides that notice in the
 current tab. Incoming invitations remain in the page's primary-colored list
-until accepted, declined or expired. Teammate buttons create an invitation with
-the currently selected deck and settings. Show my leader before game defaults
+until accepted, declined or expired. Teammates are selectable rows with the same
+highlighted border and circular check as decks. Selecting a row only chooses the
+recipient; selecting it again clears the choice. It never sends immediately,
+even when a deck is automatically suggested. The player can change the deck and
+settings, then explicitly **Send invitation to {display name}** to freeze that
+selection and start the three-minute acceptance window. An info tooltip explains
+these steps; no separate draft banner is displayed.
+Teammates, invitation notices and pregame host labels use public display names,
+falling back to “Player” for an empty display name, never the account's real name.
+Show my leader before game defaults
 to true; when false, the API omits both leader and base identities from the
 recipient's invitation metadata, including the pregame page.
 

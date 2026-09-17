@@ -1,14 +1,16 @@
 import { Link } from '@tanstack/react-router';
-import { Users } from 'lucide-react';
+import { Check, UserRound, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useDeclineInvitation, useTeammates } from '@/api/crossfire/useInvitations.ts';
 import { InvitationCountdown } from './CrossfireInvitations.tsx';
 import { useCrossfireInvitations } from './invitationContext.ts';
 import { InvitationPortraits } from './InvitationPortraits.tsx';
-import { CrossfireLogo } from './CrossfireLogo.tsx';
+import InfoTooltip from '@/components/app/global/InfoTooltip/InfoTooltip.tsx';
+import type { CrossfireTeammate } from '../../../../../shared/types/crossfire.ts';
 
 export type InviteControls = {
-  invite: (userId: string) => void;
+  invite: (player: Pick<CrossfireTeammate, 'id' | 'name'>) => void;
+  selectedPlayerId?: string;
   canInvite: boolean;
   pending: boolean;
 };
@@ -64,6 +66,7 @@ export function InvitationSidebar({
       <h2 className="flex items-center gap-2">
         <Users size={16} />
         Teammates
+        <InfoTooltip tooltip="Select a teammate, review your deck and settings, then send the invitation. Nothing is sent until you confirm. Sending locks in your deck and settings; your teammate has 3 minutes to choose their own deck and accept. Select the same teammate again to clear your selection." />
       </h2>
       {teammates.isPending ? (
         <p role="status">Loading teammates…</p>
@@ -81,24 +84,35 @@ export function InvitationSidebar({
       ) : (
         <div className="cf-teammates">
           {teammates.data.map(player => {
+            const selected = controls.selectedPlayerId === player.id;
             const sent = invitations.some(
               i => i.direction === 'outgoing' && i.player.id === player.id,
             );
             return (
-              <div key={player.id} className="cf-teammate">
-                {player.image && <img src={player.image} alt="" referrerPolicy="no-referrer" />}
-                <span>{player.name}</span>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={!controls.canInvite || sent || controls.pending}
-                  onClick={() => controls.invite(player.id)}
-                  aria-label={`Invite ${player.name} to Crossfire`}
-                >
-                  <CrossfireLogo />
-                  {sent ? 'Invited' : 'Crossfire'}
-                </Button>
-              </div>
+              <button
+                key={player.id}
+                type="button"
+                className="cf-teammate"
+                aria-pressed={selected}
+                disabled={!controls.canInvite || sent || controls.pending}
+                onClick={() => controls.invite(player)}
+                aria-label={`Select teammate ${player.name}${sent ? ' (invited)' : ''}`}
+              >
+                {player.image ? (
+                  <img src={player.image} alt="" referrerPolicy="no-referrer" />
+                ) : (
+                  <UserRound
+                    size={24}
+                    className="shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                )}
+                <span className="cf-teammate-name">{player.name}</span>
+                {sent && <small className="text-muted-foreground">Invited</small>}
+                <span className="cf-deck-row-check" aria-hidden="true">
+                  {selected && <Check size={13} />}
+                </span>
+              </button>
             );
           })}
         </div>

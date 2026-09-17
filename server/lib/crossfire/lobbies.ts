@@ -87,7 +87,7 @@ async function view(
   userId: string,
 ): Promise<LobbyView | null> {
   const [row] =
-    await tx`SELECT l.id, l.status, l.best_of, l.expires_at, l.show_leader, l.creator_user_id, i.lobby_id AS directed, i.recipient_user_id, u.name AS host_name, p.deck_snapshot->>'leader' AS leader_id, p.deck_snapshot->>'base' AS base_id, l.game_id, allow_spectators, hands_to_players, hands_to_spectators, g.provenance, g.versions AS game_versions, l.versions, e.status AS exit_status, e.seat AS exit_seat
+    await tx`SELECT l.id, l.status, l.best_of, l.expires_at, l.show_leader, l.creator_user_id, i.lobby_id AS directed, i.recipient_user_id, coalesce(nullif(btrim(u.display_name), ''), 'Player') AS host_name, p.deck_snapshot->>'leader' AS leader_id, p.deck_snapshot->>'base' AS base_id, l.game_id, allow_spectators, hands_to_players, hands_to_spectators, g.provenance, g.versions AS game_versions, l.versions, e.status AS exit_status, e.seat AS exit_seat
     FROM play.lobbies l LEFT JOIN play.games g ON g.id = l.game_id
     LEFT JOIN play.match_games mg ON mg.lobby_id = l.id
     LEFT JOIN play.match_exits e ON e.match_id = mg.match_id
@@ -349,7 +349,7 @@ export class CrossfireLobbies {
     return this.sql.begin('isolation level repeatable read read only', async tx => {
       const principal = await requireSession(tx, raw);
       const rows = await tx`SELECT l.id, l.creator_user_id, l.expires_at, l.show_leader,
-        u.id AS player_id, u.name, p.deck_snapshot->>'leader' AS leader_id, p.deck_snapshot->>'base' AS base_id
+        u.id AS player_id, coalesce(nullif(btrim(u.display_name), ''), 'Player') AS name, p.deck_snapshot->>'leader' AS leader_id, p.deck_snapshot->>'base' AS base_id
         FROM play.lobbies l JOIN play.invitations i ON i.lobby_id = l.id
         JOIN public."user" u ON u.id = CASE WHEN l.creator_user_id = ${principal.userId}
           THEN i.recipient_user_id ELSE l.creator_user_id END
@@ -372,13 +372,13 @@ export class CrossfireLobbies {
     return this.sql.begin('isolation level repeatable read read only', async tx => {
       const principal = await requireSession(tx, raw);
       return [
-        ...(await tx`SELECT DISTINCT u.id, u.name, u.image FROM public.team_member mine
+        ...(await tx`SELECT DISTINCT u.id, coalesce(nullif(btrim(u.display_name), ''), 'Player') AS name, u.image FROM public.team_member mine
         JOIN public.team_member theirs ON theirs.team_id = mine.team_id
         JOIN public."user" u ON u.id = theirs.user_id
         WHERE mine.user_id = ${principal.userId} AND u.id <> ${principal.userId}
           AND u.banned IS DISTINCT FROM true
           AND 'crossfire' = ANY(regexp_split_to_array(btrim(coalesce(u.role, '')), '[[:space:]]*,[[:space:]]*'))
-          ORDER BY u.name, u.id LIMIT 500`),
+          ORDER BY name, u.id LIMIT 500`),
       ] as CrossfireTeammate[];
     });
   }

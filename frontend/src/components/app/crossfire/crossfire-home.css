@@ -164,7 +164,8 @@
   border: 1px solid var(--cf-home-line);
   border-radius: 50%;
 }
-.cf-deck-row[aria-pressed='true'] .cf-deck-row-check {
+.cf-deck-row[aria-pressed='true'] .cf-deck-row-check,
+.cf-teammate[aria-pressed='true'] .cf-deck-row-check {
   border-color: var(--cf-home-accent);
   background: var(--cf-home-accent);
   color: var(--cf-home-surface);
@@ -219,13 +220,13 @@
   position: relative;
   min-width: 0;
 }
-.cf-deck-option .cf-deck-row {
-  padding-right: 48px;
+.cf-deck-option .cf-deck-row-copy {
+  padding-right: 32px;
 }
 .cf-deck-preview-button {
   position: absolute;
   top: 50%;
-  right: 9px;
+  right: 40px;
   transform: translateY(-50%);
   color: hsl(var(--muted-foreground));
 }
@@ -392,7 +393,11 @@
   flex-shrink: 0;
   justify-content: space-between;
   width: 100%;
-  height: 44px;
+  min-height: 44px;
+  height: auto;
+  white-space: normal;
+  text-align: left;
+  overflow-wrap: anywhere;
   background: var(--cf-home-accent);
   color: #fff;
   font-size: 12px;
@@ -614,6 +619,9 @@
   gap: 7px;
   padding-inline: 10px;
   font-size: 12px;
+}
+.cf-launch-actions > .cf-create-invitation {
+  height: auto;
 }
 .cf-launch-actions .cf-deck-attention {
   border: 1px solid #ea580c;
