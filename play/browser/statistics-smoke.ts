@@ -123,6 +123,30 @@ async function verifyScoreReplays(page: Page) {
     });
   }
 }
+async function verifyDeckArtwork(page: Page, screenshot: string) {
+  const card = page.locator('[class~="@container/deck-statistics-item"]').first();
+  await expect(card).toBeVisible();
+  await expect(card.locator('img[alt=""]')).toHaveCount(1);
+  await card.evaluate(async card => {
+    await Promise.all([...card.querySelectorAll('img')].map(img => img.decode().catch(() => {})));
+  });
+  await card.screenshot({ path: `.swubase/crossfire-home/${screenshot}.png` });
+  const artwork = await card.evaluate(card => {
+    const leader = card.querySelector('img[alt=""]')!.parentElement!.getBoundingClientRect();
+    const badge = card.querySelector('.rotate-25 > div')!.getBoundingClientRect();
+    return {
+      badgeHorizontalRatio: (badge.left + badge.width / 2 - leader.left) / leader.width,
+      badgeVerticalRatio: (badge.top + badge.height / 2 - leader.top) / leader.height,
+      overflow: document.documentElement.scrollWidth > innerWidth,
+    };
+  });
+  // The base badge belongs at the portrait's upper-right edge, not over its left/middle.
+  expect(artwork.badgeHorizontalRatio).toBeGreaterThan(0.65);
+  expect(artwork.badgeHorizontalRatio).toBeLessThan(1.1);
+  expect(artwork.badgeVerticalRatio).toBeGreaterThan(0);
+  expect(artwork.badgeVerticalRatio).toBeLessThan(0.25);
+  expect(artwork.overflow).toBe(false);
+}
 async function finish(lobbyId: string, play = false) {
   const lobby = (await lobbies.get(principal(a), lobbyId))!;
   const lease = (await store.claim(lobby.gameId!, `statistics-browser-${randomUUID()}`, 60_000))!;
@@ -312,9 +336,30 @@ try {
   expect(
     await (await first.context.request.get(`${origin}/api/game-results?teamId=${teams[1]}`)).json(),
   ).toHaveLength(0);
-  await first.page.goto(`${origin}/statistics/decks?sDeckId=${a.deckId}`);
-  await expect(first.page.getByText('Alex Crossfire deck', { exact: true }).first()).toBeVisible();
   await mkdir('.swubase/crossfire-home', { recursive: true });
+  for (const [view, path] of [
+    ['list', '/statistics/decks'],
+    ['detail', `/statistics/decks?sDeckId=${a.deckId}`],
+  ]) {
+    await first.page.goto(origin + path);
+    await expect(
+      first.page.getByText('Alex Crossfire deck', { exact: true }).first(),
+    ).toBeVisible();
+    for (const width of [1500, 900, 390]) {
+      await first.page.setViewportSize({ width, height: 950 });
+      for (const dark of [false, true]) {
+        await first.page.evaluate(
+          dark => document.documentElement.classList.toggle('dark', dark),
+          dark,
+        );
+        await verifyDeckArtwork(
+          first.page,
+          `statistics-deck-${view}-${width}-${dark ? 'dark' : 'light'}`,
+        );
+      }
+    }
+  }
+  await first.page.setViewportSize({ width: 1500, height: 950 });
   await first.page.screenshot({
     path: '.swubase/crossfire-home/statistics-deck.png',
     fullPage: true,
