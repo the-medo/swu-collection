@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { booleanPreprocessor } from '../shared/lib/zod/booleanPreprocessor.ts';
+export { zDeckImportRequest } from './DeckImport.ts';
+export type { ZDeckImportRequest } from './DeckImport.ts';
 
 export const DeckSortField = {
   CREATED_AT: 'deck.created_at',
@@ -53,10 +55,6 @@ export const zDeckUpdateRequest = zDeckSchema
   })
   .partial();
 
-export const zDeckImportSwudbRequest = z.object({
-  swudbDeckId: z.string(),
-});
-
 export const zDeckFavoriteRequest = z.object({
   isFavorite: booleanPreprocessor,
 });
@@ -76,6 +74,5 @@ export const zDeckBulkDeleteRequest = z.object({
 export type ZDeck = z.infer<typeof zDeckSchema>;
 export type ZDeckCreateRequest = z.infer<typeof zDeckCreateRequest>;
 export type ZDeckUpdateRequest = z.infer<typeof zDeckUpdateRequest>;
-export type ZDeckImportSwudbRequest = z.infer<typeof zDeckImportSwudbRequest>;
 export type ZDeckFavoriteRequest = z.infer<typeof zDeckFavoriteRequest>;
 export type ZDeckBulkDeleteRequest = z.infer<typeof zDeckBulkDeleteRequest>;

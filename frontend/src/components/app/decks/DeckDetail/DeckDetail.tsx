@@ -9,6 +9,10 @@ import DeckContents from '../DeckContents/DeckContents';
 import { useSetDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { Helmet } from 'react-helmet-async';
 import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
+import {
+  deckBuilderSourceLabels,
+  getDeckBuilderDeckLink,
+} from '../../../../../../types/DeckImport.ts';
 
 interface DeckDetailProps {
   adminEdit?: boolean;
@@ -72,6 +76,16 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder 
         )}
       </div>
       <div className="flex flex-row gap-4 text-sm italic mb-2">{data?.deck.description}</div>
+      {data?.importSource && (
+        <a
+          className="mb-2 text-sm text-muted-foreground underline-offset-4 hover:underline"
+          href={getDeckBuilderDeckLink(data.importSource.source, data.importSource.sourceDeckId)}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Imported from {deckBuilderSourceLabels[data.importSource.source]}
+        </a>
+      )}
       <div className="flex grow flex-col gap-0">
         <DeckContents deckId={deckId} />
       </div>
