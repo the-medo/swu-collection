@@ -1,4 +1,5 @@
 import { parseHTML } from 'linkedom';
+import { readMeleeDecklistText } from './meleeDecklist.ts';
 import { delay } from '../../../lib/swu-resources/lib/delay.ts';
 import type { TournamentDeck } from '../../db/schema/tournament_deck.ts';
 import type { TournamentMatchInsert } from '../../db/schema/tournament_match.ts';
@@ -645,7 +646,7 @@ export async function fetchDecklistView(decklistId: string) {
   if (!document) return '';
 
   try {
-    const decklist = document.querySelector('pre#decklist-swu-text')?.textContent;
+    const decklist = readMeleeDecklistText(document);
 
     if (!decklist) {
       console.warn(`decklist-swu-text not found in https://melee.gg/Decklist/View/${decklistId}`);

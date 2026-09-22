@@ -14,6 +14,8 @@ import { cn } from '@/lib/utils.ts';
 import { useMemo } from 'react';
 
 interface FormatSelectProps {
+  id?: string;
+  'aria-describedby'?: string;
   value: number | null;
   onChange: (value: number | null) => void;
   allowEmpty?: boolean;
@@ -23,6 +25,8 @@ interface FormatSelectProps {
 }
 
 const FormatSelect: React.FC<FormatSelectProps> = ({
+  id,
+  'aria-describedby': ariaDescribedBy,
   value,
   onChange,
   allowEmpty = true,
@@ -48,7 +52,7 @@ const FormatSelect: React.FC<FormatSelectProps> = ({
   return (
     <div className={cn(`flex flex-row gap-2 items-center`, className)}>
       <Select value={stringValue} onValueChange={handleChange}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger id={id} aria-describedby={ariaDescribedBy} className="w-full">
           <SelectValue placeholder="Select format" />
         </SelectTrigger>
         <SelectContent>

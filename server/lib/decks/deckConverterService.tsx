@@ -180,6 +180,7 @@ export function parseTextToSwubase(
   leader1: string;
   leader2: string | undefined;
   base: string;
+  errors: string[];
 } {
   if (!cardList) {
     throw new Error('Card data is not loaded yet. Please try again in a moment.');
@@ -305,6 +306,7 @@ export function parseTextToSwubase(
     leader2,
     base,
     deckCards: result,
+    errors: unmatchedSection.cards.map(card => `Unknown card: ${card.count}x ${card.name}.`),
   };
 }
 

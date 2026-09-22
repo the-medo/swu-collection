@@ -14,6 +14,8 @@ import { deckIdCardPutRoute } from './decks/_id/card/put.ts';
 import { deckIdCardDeleteRoute } from './decks/_id/card/delete.ts';
 import { deckIdDuplicatePostRoute } from './decks/_id/duplicate/post.ts';
 import { decksImportSwudbPostRoute } from './decks/import-swudb/post.ts';
+import { decksImportPostRoute } from './decks/import/post.ts';
+import { deckIdRefreshImportPostRoute } from './decks/_id/refresh-import/post.ts';
 import { deckIdTournamentGetRoute } from './decks/_id/tournament/get.ts';
 import { decksThumbnailsPostRoute } from './decks/thumbnails/post.ts';
 import { deckIdFavoritePostRoute } from './decks/_id/favorite/post.ts';
@@ -22,9 +24,11 @@ import { deckIdPricePostRoute } from './decks/_id/price/post.ts';
 import type { AuthExtension } from '../auth/auth.ts';
 import { decksForModalsGetRoute } from './decks/for-modals/data/get.ts';
 import { decksBulkDeletePostRoute } from './decks/bulk-delete/post.ts';
+import { deckImportSource as deckImportSourceTable } from '../db/schema/deck_import_source.ts';
 
 export const selectDeck = getTableColumns(deckTable);
 export const selectDeckInformation = getTableColumns(deckInformationTable);
+export const selectDeckImportSource = getTableColumns(deckImportSourceTable);
 
 export const deckRoute = new Hono<AuthExtension>()
   .route('/', deckGetRoute)
@@ -42,6 +46,8 @@ export const deckRoute = new Hono<AuthExtension>()
   .route('/:id/favorite', deckIdFavoritePostRoute)
   .route('/:id/json', deckIdJsonGetRoute)
   .route('/:id/price', deckIdPricePostRoute)
+  .route('/:id/refresh-import', deckIdRefreshImportPostRoute)
+  .route('/import', decksImportPostRoute)
   .route('/import-swudb', decksImportSwudbPostRoute)
   .route('/thumbnails', decksThumbnailsPostRoute)
   .route('/bulk/data', decksBulkGetRoute)

@@ -16,6 +16,8 @@ import AdminEditButton from './components/AdminEditButton';
 import AdminMockGameDataButton from './components/AdminMockGameDataButton';
 import PriceSourceSelector from './components/PriceSourceSelector';
 import SettingsMenu from './components/SettingsMenu';
+import RefreshImportedDeckButton from './components/RefreshImportedDeckButton';
+import { useUser } from '@/hooks/useUser.ts';
 
 interface DeckActionsMenuProps {
   deckId: string;
@@ -24,6 +26,7 @@ interface DeckActionsMenuProps {
 const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
   const hasRole = useRole();
   const isAdmin = hasRole('admin');
+  const user = useUser();
 
   const { data: deckData } = useGetDeck(deckId);
   const { data: deckCardsData } = useGetDeckCards(deckId);
@@ -51,6 +54,9 @@ const DeckActionsMenu: React.FC<DeckActionsMenuProps> = ({ deckId }) => {
           deckCardsData={deckCardsData}
           cardListData={cardListData}
         />
+        {deckData?.importSource && deckData.user.id === user?.id && (
+          <RefreshImportedDeckButton deckId={deckId} source={deckData.importSource.source} />
+        )}
         <SettingsMenu />
         <AdminEditButton deckId={deckId} isAdmin={isAdmin} />
         <AdminMockGameDataButton deckId={deckId} isAdmin={isAdmin} />
