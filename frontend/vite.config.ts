@@ -4,13 +4,20 @@ import react from '@vitejs/plugin-react';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import svgr from 'vite-plugin-svgr';
 import tailwindcss from '@tailwindcss/vite';
+import { crossfireTrainingPlugin } from './dev/crossfire-training-plugin.ts';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
-    plugins: [svgr(), tanstackRouter(), react(), tailwindcss()],
+    plugins: [
+      crossfireTrainingPlugin(path.resolve(__dirname, '..')),
+      svgr(),
+      tanstackRouter(),
+      react(),
+      tailwindcss(),
+    ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

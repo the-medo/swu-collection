@@ -20,6 +20,7 @@ export class CrossfireHistory {
     raw: Principal,
     after?: string,
     status?: 'running',
+    opponent?: 'human' | 'ai',
   ): Promise<{ data: CrossfireHistoryGame[]; nextCursor: string | null }> {
     const principal = principalSchema.parse(raw);
     let cursor: z.infer<typeof cursorSchema> | undefined;
@@ -33,19 +34,21 @@ export class CrossfireHistory {
     return this.sql.begin('read only', async tx => {
       await requireSession(tx, principal);
       const rows =
-        await tx`SELECT l.id, l.game_id, l.created_at, g.status, g.summary, g.ended_at, g.provenance, g.versions, l.versions AS lobby_versions, l.best_of, e.status AS exit_status, e.seat AS exit_seat,
+        await tx`SELECT l.id, l.game_id, l.created_at, g.status, g.summary, g.ended_at, g.provenance, g.versions, g.mode, ai.deck_label, ai.release_label, ai.release_id, ai.retry_at, ai.replay_expired_at, l.versions AS lobby_versions, l.best_of, e.status AS exit_status, e.seat AS exit_seat,
         ${activityLeaders(tx, principal.userId)} AS leaders,
         ${activityBases(tx, principal.userId)} AS bases,
         own.seat, coalesce(opponent_user.display_name, opponent_user.name, 'Opponent') AS opponent
         FROM play.participants own
         JOIN play.lobbies l ON l.id = own.lobby_id
         JOIN play.games g ON g.id = l.game_id
+        LEFT JOIN play.ai_games ai ON ai.game_id=g.id
         LEFT JOIN play.match_games mg ON mg.lobby_id = l.id
         LEFT JOIN play.match_exits e ON e.match_id = mg.match_id
         LEFT JOIN play.participants opponent ON opponent.lobby_id = l.id AND opponent.seat <> own.seat
         LEFT JOIN "user" opponent_user ON opponent_user.id = opponent.user_id
         WHERE own.user_id = ${principal.userId} AND l.status = 'started'
         ${status ? tx`AND g.status = ${status}` : tx``}
+        ${opponent ? tx`AND g.mode = ${opponent}` : tx``}
         ${cursor ? tx`AND (l.created_at, l.id) < (${cursor.date}::timestamptz, ${cursor.id})` : tx``}
         ORDER BY l.created_at DESC, l.id DESC LIMIT 26`;
       const page = rows.slice(0, 25),
@@ -68,7 +71,18 @@ export class CrossfireHistory {
           exit: row.exit_status ? { status: row.exit_status, seat: row.exit_seat } : null,
           practice: row.provenance?.kind === 'practice',
           mySeat: row.seat,
-          opponent: row.opponent,
+          opponent: row.mode === 'ai' ? row.deck_label : row.opponent,
+          ...(row.mode === 'ai'
+            ? {
+                ai: {
+                  deckLabel: row.deck_label,
+                  releaseLabel: row.release_label,
+                  releaseId: row.release_id,
+                  status: row.retry_at ? ('retrying' as const) : ('ready' as const),
+                },
+                replayAvailable: !row.replay_expired_at,
+              }
+            : {}),
           leaders: row.leaders,
           bases: row.bases,
           round: row.summary?.round ?? null,

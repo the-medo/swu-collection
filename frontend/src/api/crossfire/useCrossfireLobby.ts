@@ -18,10 +18,12 @@ export function useCrossfireLobby(sessionId: string, lobbyId: string) {
     gcTime: 0,
     retry: false,
     refetchInterval: query =>
-      query.state.data?.exit?.status === 'pending'
-        ? 3000
-        : query.state.data?.status === 'waiting' && !query.state.error
-          ? 15_000
-          : false,
+      query.state.data?.ai && !query.state.error
+        ? 5000
+        : query.state.data?.exit?.status === 'pending'
+          ? 3000
+          : query.state.data?.status === 'waiting' && !query.state.error
+            ? 15_000
+            : false,
   });
 }

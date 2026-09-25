@@ -30,6 +30,7 @@ export const crossfireGame = playSchema.table(
       .notNull()
       .default(sql`gen_random_uuid()::text`),
     status: text('status').notNull().default('running'),
+    mode: text('mode').notNull().default('human'),
     summary: jsonb('summary'),
     provenance: jsonb('provenance'),
     endedAt: timestamp('ended_at', { withTimezone: true, mode: 'string' }),
@@ -50,6 +51,7 @@ export const crossfireGame = playSchema.table(
       .on(t.updatedAt)
       .where(sql`${t.status} = 'finalized' AND ${t.statisticsAt} IS NULL`),
     check('games_status', sql`${t.status} IN ('running', 'ended', 'finalized', 'abandoned')`),
+    check('games_mode', sql`${t.mode} IN ('human', 'ai')`),
     check('games_counters', sql`${t.sequence} >= 0 AND ${t.revision} >= 0 AND ${t.fence} >= 0`),
     check('games_owner_lease', sql`(${t.ownerId} IS NULL) = (${t.leaseUntil} IS NULL)`),
   ],

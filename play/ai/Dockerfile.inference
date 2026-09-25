@@ -1,0 +1,10 @@
+FROM python:3.13-slim
+WORKDIR /app
+COPY play/ai/training/requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+COPY play/ai/training/ ./play/ai/training/
+COPY play/ai/specialists/roster.json ./play/ai/specialists/roster.json
+ENV PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=""
+USER 65532:65532
+EXPOSE 3120
+CMD ["python", "play/ai/training/serve.py", "--host", "0.0.0.0", "--cpus", "3"]

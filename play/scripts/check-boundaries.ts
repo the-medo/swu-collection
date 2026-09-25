@@ -67,6 +67,7 @@ for (const file of await files(resolve(root, '../frontend/src'))) {
           'history/',
           'admission/',
           'projection/',
+          'ai/',
           'testing/',
           'integration/',
         ].some(prefix => relative(root, target).startsWith(prefix))) ||

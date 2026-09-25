@@ -1,0 +1,18 @@
+# Private deployment example; attach the API to this network. No public port.
+services:
+  crossfire-ai:
+    build:
+      context: ../..
+      dockerfile: play/ai/Dockerfile.inference
+    environment:
+      CROSSFIRE_AI_INFERENCE_TOKEN: ${CROSSFIRE_AI_INFERENCE_TOKEN:?Set a private token of at least 32 characters}
+    cpus: 3
+    mem_limit: 1g
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped

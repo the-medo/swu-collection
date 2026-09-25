@@ -35,6 +35,31 @@ function fixture(
     if (options.fail) throw options.fail;
   };
   const services = {
+    aiGames: {
+      list: async (...args: unknown[]) => {
+        invoke('ai-opponents', ...args);
+        return { data: [], configured: true, replayLimit: 5 };
+      },
+      create: async (...args: unknown[]) => {
+        invoke('ai-create', ...args);
+        return { id: lobbyId, gameId: 'cf-fixture' };
+      },
+    },
+    aiConsent: {
+      get: async (...args: unknown[]) => {
+        invoke('ai-consent-get', ...args);
+        return {
+          policy: 1 as const,
+          allowed: false,
+          bothAllowed: false,
+          state: 'waiting' as const,
+        };
+      },
+      set: async (...args: unknown[]) => {
+        invoke('ai-consent-set', ...args);
+        return { policy: 1 as const, allowed: true, bothAllowed: false, state: 'waiting' as const };
+      },
+    },
     exits: {
       leave: async (...args: unknown[]) => {
         invoke('leave', ...args);
@@ -508,4 +533,46 @@ test('every Crossfire API requires the explicit role, including administrators',
   }
   for (const role of ['crossfire', 'user,crossfire', 'admin,crossfire', 'moderator,crossfire'])
     expect((await fixture({ role }).request('/history')).status).toBe(200);
+});
+
+test('AI training permission uses the authenticated principal, checks origin and rejects forged identities', async () => {
+  const f = fixture();
+  const path = '/games/game-' + randomUUID() + '/ai-training';
+  expect((await f.request(path)).status).toBe(200);
+  expect((await f.request(path, 'PUT', { allowed: true, policy: 1 })).status).toBe(200);
+  expect(f.calls[1]?.[1]).toEqual({
+    userId: 'authenticated-user',
+    sessionId: 'authenticated-session',
+  });
+  expect(
+    (await f.request(path, 'PUT', { allowed: true, policy: 1 }, 'https://wrong.invalid')).status,
+  ).toBe(403);
+  expect(
+    (await f.request(path, 'PUT', { allowed: true, policy: 1, userId: 'opponent' })).status,
+  ).toBe(400);
+  expect((await fixture({ signedIn: false }).request(path)).status).toBe(401);
+  expect((await fixture({ fail: new AdmissionError('unavailable') }).request(path)).status).toBe(
+    404,
+  );
+});
+
+test('AI admission rejects forged fields and passes the authenticated principal', async () => {
+  const f = fixture(),
+    body = {
+      requestId: randomUUID(),
+      deckId,
+      leaderCardId: 'krennic',
+      opponentDeck: 'krennic',
+      releaseId: randomUUID(),
+    };
+  const post = (data: unknown) => f.request('/ai/games', 'POST', data);
+  expect((await post({ ...body, userId: 'forged' })).status).toBe(400);
+  expect(f.calls).toEqual([]);
+  expect((await post(body)).status).toBe(200);
+  expect(f.calls.at(-1)?.[0]).toBe('ai-create');
+  expect(f.calls.at(-1)?.[2]).toEqual(body);
+  expect((await f.request('/ai/opponents')).status).toBe(200);
+  expect((await f.request('/history?opponent=ai')).status).toBe(200);
+  expect(f.calls.at(-1)?.at(-1)).toBe('ai');
+  expect((await f.request('/history?opponent=forged')).status).toBe(400);
 });

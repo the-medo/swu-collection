@@ -1,3 +1,7 @@
+import { CrossfireAiConsent } from '../lib/crossfire/aiConsent.ts';
+import { CrossfireAiGames } from '../lib/crossfire/aiGames.ts';
+import { CrossfireAiReleases } from '../lib/crossfire/aiReleases.ts';
+import { configuredAiInference } from '../../play/ai/releases/inference.ts';
 import { listenForCardBundles } from '../../play/storage/card-bundles.ts';
 import { CrossfireExits } from '../lib/crossfire/exits.ts';
 import { CrossfireInvitationRealtime } from '../lib/crossfire/invitationRealtime.ts';
@@ -15,6 +19,8 @@ import { userHasAdminAccess } from '../lib/utils/userHasAdminAccess.ts';
 
 let services:
   | {
+      aiConsent: CrossfireAiConsent;
+      aiGames: CrossfireAiGames;
       exits: CrossfireExits;
       invitations: CrossfireInvitationRealtime;
       decks: CrossfireDecks;
@@ -40,6 +46,12 @@ export function getCrossfireServices() {
       console.error('Crossfire card bundle preload failed'),
     ).catch(() => console.error('Crossfire card bundle initialization failed'));
     services = {
+      aiGames: new CrossfireAiGames(
+        sql,
+        getMergedCardList,
+        new CrossfireAiReleases(sql, null, configuredAiInference()),
+      ),
+      aiConsent: new CrossfireAiConsent(sql),
       exits: new CrossfireExits(sql),
       invitations: new CrossfireInvitationRealtime(sql),
       decks: new CrossfireDecks(sql, getMergedCardList),

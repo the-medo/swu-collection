@@ -1,4 +1,9 @@
 import { hasCrossfireAccess } from '../../../shared/lib/auth/roles.ts';
+import type { CrossfireAiGames } from '../../lib/crossfire/aiGames.ts';
+import { createAiGameSchema } from '../../../shared/types/crossfire-ai-play.ts';
+import { AiError } from '../../../play/ai/releases/objects.ts';
+import type { CrossfireAiConsent } from '../../lib/crossfire/aiConsent.ts';
+import { aiConsentSchema } from '../../../shared/types/crossfire-ai-releases.ts';
 import type { CrossfireExits } from '../../lib/crossfire/exits.ts';
 import { DeckBrowserRequestError, type CrossfireDecks } from '../../lib/crossfire/decks.ts';
 import { crossfireDeckBrowserQuery } from '../../../shared/types/crossfire-decks.ts';
@@ -29,6 +34,8 @@ import {
 } from '../../../shared/types/crossfire.ts';
 
 type Services = {
+  aiGames?: Pick<CrossfireAiGames, 'list' | 'create'>;
+  aiConsent?: Pick<CrossfireAiConsent, 'get' | 'set'>;
   exits: Pick<CrossfireExits, 'leave'>;
   decks: Pick<CrossfireDecks, 'list' | 'get'>;
   matches: Pick<CrossfireMatches, 'get' | 'ready'>;
@@ -68,6 +75,8 @@ export function createCrossfireRouter(config: {
   let nextSweep = 0;
   return new Hono<AuthExtension>()
     .onError((error, c) => {
+      if (error instanceof AiError)
+        return c.json({ error: 'ai-unavailable', message: error.message }, 503);
       if (error instanceof HistoryRequestError || error instanceof DeckBrowserRequestError)
         return c.json({ error: 'invalid-cursor' }, 400);
       if (error instanceof HTTPException && error.status === 400)
@@ -153,6 +162,27 @@ export function createCrossfireRouter(config: {
       }
       await next();
     })
+    .get(
+      '/games/:gameId/ai-training',
+      zValidator('param', z.strictObject({ gameId: z.string().min(1).max(128) })),
+      async c => {
+        const service = config.services().aiConsent;
+        if (!service) return c.json({ error: 'unavailable' }, 503);
+        return c.json({ data: await service.get(principal(c), c.req.valid('param').gameId) });
+      },
+    )
+    .put(
+      '/games/:gameId/ai-training',
+      zValidator('param', z.strictObject({ gameId: z.string().min(1).max(128) })),
+      zValidator('json', aiConsentSchema),
+      async c => {
+        const service = config.services().aiConsent;
+        if (!service) return c.json({ error: 'unavailable' }, 503);
+        return c.json({
+          data: await service.set(principal(c), c.req.valid('param').gameId, c.req.valid('json')),
+        });
+      },
+    )
     .post('/lobbies/:lobbyId/leave', zValidator('param', crossfireLobbyParams), async c =>
       c.json({
         data: await config.services().exits.leave(principal(c), c.req.valid('param').lobbyId),
@@ -253,11 +283,26 @@ export function createCrossfireRouter(config: {
         return c.json({ success: true });
       },
     )
+    .get('/ai/opponents', async c => {
+      const service = config.services().aiGames;
+      if (!service) return c.json({ error: 'ai-unavailable' }, 503);
+      return c.json(await service.list(principal(c)));
+    })
+    .post('/ai/games', zValidator('json', createAiGameSchema), async c => {
+      const service = config.services().aiGames;
+      if (!service) return c.json({ error: 'ai-unavailable' }, 503);
+      return c.json({ data: await service.create(principal(c), c.req.valid('json')) });
+    })
     .get('/history', zValidator('query', crossfireHistoryQuery), async c =>
       c.json(
         await config
           .services()
-          .history.list(principal(c), c.req.valid('query').cursor, c.req.valid('query').status),
+          .history.list(
+            principal(c),
+            c.req.valid('query').cursor,
+            c.req.valid('query').status,
+            c.req.valid('query').opponent,
+          ),
       ),
     )
     .get('/decks', zValidator('query', crossfireDeckBrowserQuery), async c =>

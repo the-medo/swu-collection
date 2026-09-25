@@ -1,3 +1,7 @@
+import { startAiExporter } from '../ai/datasets/worker.ts';
+import { AiGameRunner } from '../ai/live/runner.ts';
+import { CrossfireAiReleases } from '../../server/lib/crossfire/aiReleases.ts';
+import { configuredAiInference } from '../ai/releases/inference.ts';
 import { listenForCardBundles } from '../storage/card-bundles.ts';
 import { CrossfireExits } from '../../server/lib/crossfire/exits.ts';
 import { CrossfireChat } from '../../server/lib/crossfire/chat.ts';
@@ -49,8 +53,17 @@ const service = createGameServer(
   new CrossfireExits(sql),
 );
 const metrics = new WorkerMetrics(sql, worker, () => service.statistics);
+const ai = new AiGameRunner(
+  sql,
+  worker,
+  new CrossfireAiReleases(sql, null, configuredAiInference()),
+  () => service.livePlayerGames,
+  id => service.committed(id),
+);
+ai.start();
 metrics.start();
 const stopFinalizer = startFinalizer();
+const stopAiExporter = startAiExporter();
 let stopping = false;
 async function stop() {
   if (stopping) return;
@@ -59,9 +72,11 @@ async function stop() {
   timeout.unref();
   try {
     const stopMetrics = metrics.stop();
+    await ai.stop();
     await service.stop();
     await stopMetrics;
     await stopFinalizer();
+    await stopAiExporter();
     await stopCardBundles();
     await sql.end({ timeout: 5 });
     clearTimeout(timeout);

@@ -13,6 +13,7 @@ import {
   Sparkles,
   UserRoundCheck,
   Wrench,
+  BrainCircuit,
 } from 'lucide-react';
 
 export const adminSections = [
@@ -22,6 +23,7 @@ export const adminSections = [
       { id: 'crossfire-access', label: 'Player access', icon: UserRoundCheck },
       { id: 'crossfire-cards', label: 'Card releases', icon: Layers },
       { id: 'crossfire-operations', label: 'Operations', icon: Gauge },
+      { id: 'crossfire-ai', label: 'AI', icon: BrainCircuit },
     ],
   },
   {

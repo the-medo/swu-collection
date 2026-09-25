@@ -57,7 +57,9 @@ async function access(
   const [lobby] =
     await tx`SELECT l.game_id, l.allow_spectators, l.versions, g.versions AS game_versions, g.status AS game_status
     FROM play.lobbies l JOIN play.games g ON g.id = l.game_id
+    LEFT JOIN play.ai_games ai ON ai.game_id=g.id
     WHERE l.id = ${lobbyId} AND l.status = 'started'
+    AND ai.replay_expired_at IS NULL
     ${lock ? tx`FOR SHARE OF l` : tx``}`;
   if (!lobby) throw new ConnectionError('denied');
   if (lobby.game_status === 'abandoned') throw new ConnectionError('closed');

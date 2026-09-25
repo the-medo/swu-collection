@@ -62,7 +62,8 @@ export default function GameBoard({
             <div className="flex items-center gap-3">
               <CrossfireLogo dark className="cf-header-logo h-7 w-12" />
               <h1 className="cf-wordmark">
-                CROSSFIRE<small>{lobby.practice ? 'PRACTICE' : 'SWUBASE'}</small>
+                CROSSFIRE
+                <small>{lobby.ai ? 'AI PRACTICE' : lobby.practice ? 'PRACTICE' : 'SWUBASE'}</small>
               </h1>
               <span className="cf-header-phase">
                 {state.view
@@ -80,7 +81,7 @@ export default function GameBoard({
               </span>
             </div>
             <div className="cf-header-controls">
-              <UndoControls connection={connection} />
+              {!lobby.ai && <UndoControls connection={connection} />}
               <BookmarkControls connection={connection} />
               <Link
                 to="/crossfire/replay/$lobbyId"
@@ -110,7 +111,7 @@ export default function GameBoard({
                 onClick={() => setLogOpen(!logOpen)}
               />
               <div className="cf-toolbar-utilities">
-                {lobby.mySeat && lobby.compatible !== false && !abandoned && (
+                {lobby.mySeat && !lobby.ai && lobby.compatible !== false && !abandoned && (
                   <MatchControls
                     key={lobby.id}
                     sessionId={sessionId}
@@ -148,6 +149,17 @@ export default function GameBoard({
               </div>
             </div>
           </header>
+          {lobby.ai && (
+            <p
+              role="status"
+              className={lobby.ai.status === 'retrying' ? 'cf-notice' : 'cf-ai-opponent'}
+            >
+              Playing {lobby.ai.deckLabel} · {lobby.ai.releaseLabel}. This game does not affect your
+              statistics.
+              {lobby.ai.status === 'retrying' &&
+                ' The AI is reconnecting. Your game is saved; it will resume automatically.'}
+            </p>
+          )}
           {state.notice && !abandoned && (
             <p role="alert" className="cf-notice">
               {state.notice}
@@ -202,6 +214,7 @@ export default function GameBoard({
                 lobby.exit?.status === 'pending'
               }
               connection={connection}
+              allowChat={!lobby.ai}
               logOpen={logOpen}
               closeLog={() => setLogOpen(false)}
             />

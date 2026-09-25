@@ -657,6 +657,23 @@ export function createGameServer(
       },
     },
   });
+  async function committed(gameId: string) {
+    replays?.committed(gameId);
+    const viewers = [...(rooms.get(gameId) ?? [])];
+    await Promise.all(
+      viewers
+        .filter(v => v.grant?.purpose === 'replay')
+        .map(async viewer => {
+          if (await authorized(viewer)) send(viewer, { type: 'replay-live' });
+        }),
+    );
+    const live = viewers.filter(v => v.grant?.purpose === 'live');
+    const binding = live.find(v => v.binding?.available)?.binding;
+    if (binding)
+      await binding.run(async host => {
+        await Promise.all(live.map(viewer => publish(viewer, host.state)));
+      });
+  }
   function maintain(): Promise<void> {
     if (maintaining) return maintaining;
     if (!open) return Promise.resolve();
@@ -712,6 +729,16 @@ export function createGameServer(
   }, options.maintenanceMs);
   return {
     server,
+    committed,
+    get livePlayerGames() {
+      return [
+        ...new Set(
+          [...clients]
+            .filter(c => !c.closed && c.grant?.role === 'player' && c.grant.purpose === 'live')
+            .map(c => c.gameId),
+        ),
+      ];
+    },
     maintain,
     get connectionCount() {
       return clients.size;

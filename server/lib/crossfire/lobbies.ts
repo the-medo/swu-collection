@@ -38,6 +38,30 @@ export type Principal = z.infer<typeof principalSchema>;
 export { policySchema };
 export type LobbyPolicy = CrossfirePolicy;
 export type LobbyView = CrossfireLobby;
+
+export async function prepareCrossfireDeck(
+  tx: TransactionSql,
+  principal: Principal,
+  deckId: string,
+  catalogSource: CrossfireCatalogSource,
+  pinned?: BundleVersions,
+  suppliedCatalog?: CrossfireCatalog,
+) {
+  const catalog = suppliedCatalog ?? (await resolveCrossfireCatalog(catalogSource));
+  const input = await readDeckInputInTransaction(
+    drizzle(async (query, params) => ({ rows: await tx.unsafe(query, params).values() })),
+    principal.userId,
+    deckId,
+    catalog,
+  );
+  if (!input) throw new AdmissionError('deck-unavailable');
+  return prepareDeckSnapshot(
+    input,
+    catalog,
+    versions.format,
+    pinned ?? (await activeCardVersions(tx)),
+  );
+}
 export class AdmissionError extends Error {
   constructor(
     readonly code:
@@ -103,8 +127,20 @@ async function view(
   )
     return null;
   const seats = await tx`SELECT seat, user_id FROM play.participants WHERE lobby_id = ${lobbyId}`;
+  const [ai] =
+    await tx`SELECT deck_label,release_label,release_id,retry_at FROM play.ai_games WHERE game_id=${row.game_id}`;
   return {
     id: row.id,
+    ...(ai
+      ? {
+          ai: {
+            deckLabel: ai.deck_label,
+            releaseLabel: ai.release_label,
+            releaseId: ai.release_id,
+            status: ai.retry_at ? ('retrying' as const) : ('ready' as const),
+          },
+        }
+      : {}),
     compatible:
       (await loadGameVersions(tx, row.versions)) &&
       (!row.game_versions || isDeepStrictEqual(row.versions, row.game_versions)),
@@ -146,22 +182,7 @@ export class CrossfireLobbies {
     pinned?: BundleVersions,
     suppliedCatalog?: CrossfireCatalog,
   ) {
-    const catalog = suppliedCatalog ?? (await resolveCrossfireCatalog(this.catalogSource));
-    // The proxy executes existing Drizzle reads on this exact transaction.
-    // It neither opens a nested transaction nor mutates client parser options.
-    const input = await readDeckInputInTransaction(
-      drizzle(async (query, params) => ({ rows: await tx.unsafe(query, params).values() })),
-      principal.userId,
-      deckId,
-      catalog,
-    );
-    if (!input) throw new AdmissionError('deck-unavailable');
-    return prepareDeckSnapshot(
-      input,
-      catalog,
-      versions.format,
-      pinned ?? (await activeCardVersions(tx)),
-    );
+    return prepareCrossfireDeck(tx, principal, deckId, this.catalogSource, pinned, suppliedCatalog);
   }
   async #snapshot(
     tx: TransactionSql,

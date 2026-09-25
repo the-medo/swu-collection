@@ -18,6 +18,8 @@ import { DeckArtwork } from './DeckArtwork.tsx';
 import { deckCardName } from './presentation.ts';
 import { DeckCheckDialog } from './DeckCheckDialog.tsx';
 import { crossfireError, linkedId } from './presentation.ts';
+import { useAiOpponents, useCreateAiGame } from '@/api/crossfire/useAiOpponent.ts';
+import { AiOpponentPicker } from './AiOpponentPicker.tsx';
 
 export function CrossfirePlayDesk({
   sessionId,
@@ -33,7 +35,15 @@ export function CrossfirePlayDesk({
   const navigate = useNavigate();
   const create = useCreateLobby(sessionId);
   const join = useJoinLobby(sessionId, lobby?.id ?? '');
-  const pending = create.isPending || join.isPending;
+  const ai = useCreateAiGame(sessionId);
+  const opponents = useAiOpponents(sessionId, !lobby);
+  const [mode, setMode] = useState<'human' | 'ai'>('human');
+  const [opponentKey, setOpponentKey] = useState<string>();
+  const opponent =
+    opponentKey === undefined
+      ? opponents.data?.data[0]
+      : opponents.data?.data.find(d => `${d.releaseId}/${d.deckKey}` === opponentKey);
+  const pending = create.isPending || join.isPending || ai.isPending;
   const { data: catalog } = useCardList();
   const matchLengthId = useId();
   const [recipient, setRecipient] = useState<Parameters<InviteControls['invite']>[0]>();
@@ -70,7 +80,12 @@ export function CrossfirePlayDesk({
   const selected = useCrossfireDeck(sessionId, selectedId);
   const readiness = useDeckReadiness(sessionId, selectedId);
   const canSubmit = Boolean(
-    selectedId && readiness.data?.ready && !readiness.isFetching && !readiness.isError && !pending,
+    selectedId &&
+      readiness.data?.ready &&
+      !readiness.isFetching &&
+      !readiness.isError &&
+      !pending &&
+      (mode !== 'ai' || (opponent && !opponents.isError)),
   );
   const start = async (recipientId?: string) => {
     if (!canSubmit) return;
@@ -82,6 +97,14 @@ export function CrossfirePlayDesk({
           acceptedBestOf: lobby.bestOf ?? 1,
         });
         await navigate({ to: '/crossfire/$lobbyId', params: { lobbyId: joined.id } });
+      } else if (mode === 'ai' && opponent) {
+        const created = await ai.mutateAsync({
+          deckId: values.deckId,
+          leaderCardId: opponent.leaderCardId,
+          opponentDeck: opponent.deckKey,
+          releaseId: opponent.releaseId,
+        });
+        await navigate({ to: '/crossfire/$lobbyId', params: { lobbyId: created.id } });
       } else {
         const created = await create.mutateAsync({
           deckId: values.deckId,
@@ -108,11 +131,13 @@ export function CrossfirePlayDesk({
     form.setFieldValue('deckId', id);
     create.reset();
     join.reset();
+    ai.reset();
   };
   return (
     <div className="cf-home-grid">
       {renderAside({
         invite: player => {
+          setMode('human');
           create.reset();
           setRecipient(current =>
             current?.id === player.id ? undefined : { id: player.id, name: player.name },
@@ -206,96 +231,131 @@ export function CrossfirePlayDesk({
                 ) : null}
               </div>
             )}
-            <fieldset disabled={pending || Boolean(lobby)} className="cf-inline-settings">
-              <legend className="sr-only">Game settings</legend>
-              <form.Field name="bestOfThree">
-                {field => (
-                  <div className="cf-match-format">
-                    <span className="sr-only" id={matchLengthId}>
-                      Match length
-                    </span>
-                    <RadioGroup
-                      aria-labelledby={matchLengthId}
-                      orientation="horizontal"
-                      value={field.state.value ? '3' : '1'}
-                      onValueChange={value => field.handleChange(value === '3')}
-                      disabled={pending || Boolean(lobby)}
-                      className="cf-match-length"
-                    >
-                      {['1', '3'].map(value => (
-                        <label
-                          key={value}
-                          className="cf-match-option"
-                          htmlFor={`${matchLengthId}-${value}`}
-                        >
-                          <RadioGroupItem
-                            id={`${matchLengthId}-${value}`}
-                            value={value}
-                            className="sr-only"
-                          />
-                          Best of {value}
-                        </label>
-                      ))}
-                    </RadioGroup>
-                    <p className="cf-format-description">
-                      {field.state.value
-                        ? 'First to two wins · Sideboarding between games'
-                        : 'One game decides the winner'}
-                    </p>
-                  </div>
+            {!lobby && (
+              <div className="space-y-4">
+                <RadioGroup
+                  aria-label="Opponent type"
+                  value={mode}
+                  disabled={pending}
+                  onValueChange={v => {
+                    setMode(v as 'human' | 'ai');
+                    ai.reset();
+                    create.reset();
+                  }}
+                  className="flex flex-wrap gap-5"
+                >
+                  {(['human', 'ai'] as const).map(value => (
+                    <label key={value} className="flex items-center gap-2 text-sm">
+                      <RadioGroupItem value={value} />
+                      {value === 'human' ? 'Play a person' : 'Play trained AI'}
+                    </label>
+                  ))}
+                </RadioGroup>
+                {mode === 'ai' && (
+                  <AiOpponentPicker
+                    data={opponents.data}
+                    selected={opponent}
+                    onSelect={setOpponentKey}
+                    loading={opponents.isPending}
+                    error={opponents.isError}
+                    retry={() => void opponents.refetch()}
+                    disabled={pending}
+                  />
                 )}
-              </form.Field>
-              <div className="cf-visibility-options">
-                <form.Field name="allowSpectators">
-                  {field => (
-                    <label className="cf-setting-row">
-                      <Checkbox
-                        checked={field.state.value}
-                        onCheckedChange={value => field.handleChange(value === true)}
-                      />
-                      <span>Allow spectators (only with invitation link)</span>
-                    </label>
-                  )}
-                </form.Field>
-                <form.Field name="handsToPlayers">
-                  {field => (
-                    <label className="cf-setting-row">
-                      <Checkbox
-                        checked={field.state.value}
-                        onCheckedChange={value => field.handleChange(value === true)}
-                      />
-                      <span>Play with open hands</span>
-                    </label>
-                  )}
-                </form.Field>
-                <form.Field name="handsToSpectators">
-                  {field => (
-                    <label className="cf-setting-row">
-                      <Checkbox
-                        checked={values.allowSpectators && field.state.value}
-                        disabled={!values.allowSpectators}
-                        onCheckedChange={value => field.handleChange(value === true)}
-                      />
-                      <span>Let spectators see both hands</span>
-                    </label>
-                  )}
-                </form.Field>
-                <form.Field name="showLeader">
-                  {field => (
-                    <label className="cf-setting-row">
-                      <Checkbox
-                        checked={field.state.value}
-                        onCheckedChange={value => field.handleChange(value === true)}
-                      />
-                      <span>Show my leader before game</span>
-                    </label>
-                  )}
-                </form.Field>
               </div>
-            </fieldset>
-            {(create.isError || join.isError) && (
+            )}
+            {mode === 'human' && (
+              <fieldset disabled={pending || Boolean(lobby)} className="cf-inline-settings">
+                <legend className="sr-only">Game settings</legend>
+                <form.Field name="bestOfThree">
+                  {field => (
+                    <div className="cf-match-format">
+                      <span className="sr-only" id={matchLengthId}>
+                        Match length
+                      </span>
+                      <RadioGroup
+                        aria-labelledby={matchLengthId}
+                        orientation="horizontal"
+                        value={field.state.value ? '3' : '1'}
+                        onValueChange={value => field.handleChange(value === '3')}
+                        disabled={pending || Boolean(lobby)}
+                        className="cf-match-length"
+                      >
+                        {['1', '3'].map(value => (
+                          <label
+                            key={value}
+                            className="cf-match-option"
+                            htmlFor={`${matchLengthId}-${value}`}
+                          >
+                            <RadioGroupItem
+                              id={`${matchLengthId}-${value}`}
+                              value={value}
+                              className="sr-only"
+                            />
+                            Best of {value}
+                          </label>
+                        ))}
+                      </RadioGroup>
+                      <p className="cf-format-description">
+                        {field.state.value
+                          ? 'First to two wins · Sideboarding between games'
+                          : 'One game decides the winner'}
+                      </p>
+                    </div>
+                  )}
+                </form.Field>
+                <div className="cf-visibility-options">
+                  <form.Field name="allowSpectators">
+                    {field => (
+                      <label className="cf-setting-row">
+                        <Checkbox
+                          checked={field.state.value}
+                          onCheckedChange={value => field.handleChange(value === true)}
+                        />
+                        <span>Allow spectators (only with invitation link)</span>
+                      </label>
+                    )}
+                  </form.Field>
+                  <form.Field name="handsToPlayers">
+                    {field => (
+                      <label className="cf-setting-row">
+                        <Checkbox
+                          checked={field.state.value}
+                          onCheckedChange={value => field.handleChange(value === true)}
+                        />
+                        <span>Play with open hands</span>
+                      </label>
+                    )}
+                  </form.Field>
+                  <form.Field name="handsToSpectators">
+                    {field => (
+                      <label className="cf-setting-row">
+                        <Checkbox
+                          checked={values.allowSpectators && field.state.value}
+                          disabled={!values.allowSpectators}
+                          onCheckedChange={value => field.handleChange(value === true)}
+                        />
+                        <span>Let spectators see both hands</span>
+                      </label>
+                    )}
+                  </form.Field>
+                  <form.Field name="showLeader">
+                    {field => (
+                      <label className="cf-setting-row">
+                        <Checkbox
+                          checked={field.state.value}
+                          onCheckedChange={value => field.handleChange(value === true)}
+                        />
+                        <span>Show my leader before game</span>
+                      </label>
+                    )}
+                  </form.Field>
+                </div>
+              </fieldset>
+            )}
+            {(create.isError || join.isError || ai.isError) && (
               <p role="alert" className="text-sm text-destructive">
-                {crossfireError(create.error ?? join.error)}
+                {crossfireError(ai.error ?? create.error ?? join.error)}
               </p>
             )}
             <div className="cf-launch-actions">
@@ -312,9 +372,11 @@ export function CrossfirePlayDesk({
                     ? 'Preparing game…'
                     : lobby
                       ? 'Accept invitation and play'
-                      : recipient
-                        ? `Send invitation to ${recipient.name}`
-                        : 'Create invitation'}
+                      : mode === 'ai'
+                        ? 'Play against AI'
+                        : recipient
+                          ? `Send invitation to ${recipient.name}`
+                          : 'Create invitation'}
                 </span>
                 <ArrowRight size={17} />
               </Button>

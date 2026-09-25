@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "strategies": [
+    { "key": "aggro", "label": "Aggro" },
+    { "key": "space-aggro", "label": "Space aggro" },
+    { "key": "control", "label": "Control" },
+    { "key": "midrange", "label": "Midrange" },
+    { "key": "ramp", "label": "Ramp" }
+  ],
+  "leaders": [
+    {
+      "key": "greef",
+      "label": "Greef Karga",
+      "cardId": "greef-karga--gracious-magistrate",
+      "strategies": ["aggro"]
+    },
+    {
+      "key": "vader",
+      "label": "Darth Vader",
+      "cardId": "darth-vader--victor-squadron-leader",
+      "strategies": ["aggro", "space-aggro"]
+    },
+    {
+      "key": "mandalorian",
+      "label": "The Mandalorian",
+      "cardId": "the-mandalorian--we-can-t-keep-running",
+      "strategies": ["control"]
+    },
+    {
+      "key": "dedra",
+      "label": "Dedra Meero",
+      "cardId": "dedra-meero--not-wasting-time",
+      "strategies": ["control"]
+    },
+    {
+      "key": "aurra",
+      "label": "Aurra Sing",
+      "cardId": "aurra-sing--assassin",
+      "strategies": ["control", "midrange"]
+    },
+    {
+      "key": "krennic",
+      "label": "Director Krennic",
+      "cardId": "director-krennic--amidst-my-achievement",
+      "strategies": ["ramp", "control"]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { defaultAiReplayLimit, retainAiReplays } from '../ai/live/retention.ts';
 import { PostgresGameStore } from '../storage/postgres.ts';
 import { publishStatistics } from '../statistics/publish.ts';
 import { encodeArchive } from './archive.ts';
@@ -23,12 +24,25 @@ try {
         await store.publishArchive(game.id, archive);
       }
       await publishStatistics(sql, history);
+      const [ai] = await sql`SELECT owner_id FROM play.ai_games WHERE game_id=${game.id}`;
+      if (ai) await retainAiReplays(sql, ai.owner_id);
     } catch {
       // Keep all source rows, and let other ended games progress before retrying.
       await sql`UPDATE play.games SET updated_at = clock_timestamp() WHERE id = ${game.id} AND status IN ('ended', 'finalized')`;
       console.error('Crossfire finalization deferred; source history retained');
     }
   }
+  // Also enforces changed account limits and retries a failed expiry transaction.
+  const owners =
+    await sql`SELECT a.owner_id FROM play.ai_games a JOIN play.games g ON g.id=a.game_id
+      LEFT JOIN play.ai_replay_limits limits ON limits.user_id=a.owner_id
+      WHERE a.replay_expired_at IS NULL AND g.status='finalized' AND g.statistics_at IS NOT NULL
+      GROUP BY a.owner_id,limits.user_id,limits.replay_limit
+      HAVING count(*) > CASE WHEN a.owner_id IS NULL THEN 0
+        WHEN limits.user_id IS NOT NULL THEN limits.replay_limit
+        ELSE ${defaultAiReplayLimit()}::bigint END
+      ORDER BY min(g.ended_at) LIMIT 64`;
+  for (const owner of owners) await retainAiReplays(sql, owner.owner_id);
 } finally {
   await sql.end({ timeout: 5 });
 }
