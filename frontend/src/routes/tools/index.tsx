@@ -11,6 +11,13 @@ function ToolsLayout() {
       <Helmet title="SWU Tools | SWUBase" />
       <div className="container mx-auto p-2">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {import.meta.env.DEV && (
+            <ToolCard
+              title="Crossfire Training"
+              description="Live training progress and matchup win rates across cycles"
+              path="/tools/crossfire-training"
+            />
+          )}
           <ToolCard
             title="Deck Format Converter"
             description="Transform decklists from melee.gg or text format into JSON"

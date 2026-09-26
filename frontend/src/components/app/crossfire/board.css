@@ -186,6 +186,14 @@
 .cf-connection:not(.cf-connection-connected) .cf-status-dot {
   background: #f5b05a;
 }
+.cf-ai-opponent {
+  margin: 0;
+  padding: 8px 16px;
+  border-bottom: 1px solid #263d50;
+  background: #0f202e;
+  color: #b9cfdf;
+  font-size: 12px;
+}
 .cf-notice {
   margin: 0;
   padding: 6px 16px;

@@ -206,6 +206,11 @@ card/decision/option handles. It returns only browser-safe
 [view contracts](../../play/view/types.ts), exposed through the `./view` export.
 Browser builds reject the engine, host, and projection package exports.
 
+The optional `{ training: true }` projector mode is limited to immutable,
+forward-only in-process training snapshots. It caches views/identifiers and
+returns appended visible events; browser and replay consumers must keep the
+default complete-history mode. See the [training guide](ai-full-game-training.md).
+
 Players see their own hand and resource faces. Other hand faces follow separate
 player/spectator policies; hand disclosure never grants resource/deck inspection.
 The spectator display preference can hide authorized hands. Decks expose counts.

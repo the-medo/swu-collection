@@ -15,6 +15,16 @@ import {
 /** A retryable projection of verified history into account statistics. Both
  * players, team-deck links and the export receipt commit in one transaction. */
 export async function publishStatistics(sql: Sql, history: History) {
+  // AI results never enter account, deck or team statistics, including manual retries.
+  const excluded = await sql.begin(async tx => {
+    const [game] =
+      await tx`SELECT mode,status FROM play.games WHERE id=${history.gameId} FOR UPDATE`;
+    if (game?.mode !== 'ai') return false;
+    if (game.status === 'finalized')
+      await tx`UPDATE play.games SET statistics_at=coalesce(statistics_at,clock_timestamp()) WHERE id=${history.gameId}`;
+    return true;
+  });
+  if (excluded) return false;
   const { players, state } = collectStatistics(history);
   return sql.begin(async tx => {
     const [lobby] = await tx`SELECT l.id, coalesce(mg.match_id, l.id) AS match_id,

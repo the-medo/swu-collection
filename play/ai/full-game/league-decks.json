@@ -1,0 +1,1659 @@
+{
+  "schema": 1,
+  "decks": [
+    {
+      "key": "greef",
+      "label": "Greef Aggression",
+      "snapshot": {
+        "snapshotVersion": 1,
+        "versions": {
+          "state": 109,
+          "engine": "1.2.0",
+          "cards": "1.2.0@45abd7024e95120c53b5d17c20188a0fabb2155bdc2878f74e693486f769dfce",
+          "rules": "swu-8.0",
+          "format": "core-practice"
+        },
+        "catalogIdentityHash": "28bbf114c6e57c5e822e85652c1db9200df7f3e45076d42a93f574de9a22b105",
+        "cardIdentities": [
+          {
+            "cardId": "aggressive-negotiations",
+            "type": "Event"
+          },
+          {
+            "cardId": "alphabet-squadron-u-wing--quiet-devotion",
+            "type": "Unit"
+          },
+          {
+            "cardId": "arvel-skeen--win-and-walk-away",
+            "type": "Unit"
+          },
+          {
+            "cardId": "beguile",
+            "type": "Event"
+          },
+          {
+            "cardId": "black-one--straight-at-them",
+            "type": "Unit"
+          },
+          {
+            "cardId": "blue-ace--colorful-racer",
+            "type": "Unit"
+          },
+          {
+            "cardId": "commandeer",
+            "type": "Event"
+          },
+          {
+            "cardId": "emissary-s-sheathipede",
+            "type": "Unit"
+          },
+          {
+            "cardId": "greef-karga--gracious-magistrate",
+            "type": "Leader"
+          },
+          {
+            "cardId": "han-solo--has-his-moments",
+            "type": "Unit"
+          },
+          {
+            "cardId": "karis-nemik--freedom-is-a-pure-idea",
+            "type": "Unit"
+          },
+          {
+            "cardId": "n-1-starfighter",
+            "type": "Unit"
+          },
+          {
+            "cardId": "naval-intelligence-hq",
+            "type": "Base"
+          },
+          {
+            "cardId": "outer-rim-constable",
+            "type": "Unit"
+          },
+          {
+            "cardId": "pegasus-tri-wing",
+            "type": "Unit"
+          },
+          {
+            "cardId": "poe-dameron--i-ll-come-back-for-you",
+            "type": "Unit"
+          },
+          {
+            "cardId": "rose-tico--now-it-s-worth-it",
+            "type": "Unit"
+          },
+          {
+            "cardId": "sabine-wren--i-learned-the-hard-way",
+            "type": "Unit"
+          },
+          {
+            "cardId": "sabine-wren--spectre-five",
+            "type": "Unit"
+          },
+          {
+            "cardId": "stolen-at-hauler",
+            "type": "Unit"
+          },
+          {
+            "cardId": "sudden-ferocity",
+            "type": "Upgrade"
+          },
+          {
+            "cardId": "unsanctioned-patrol",
+            "type": "Unit"
+          },
+          {
+            "cardId": "watch-this",
+            "type": "Event"
+          },
+          {
+            "cardId": "yellow-aces-bomber",
+            "type": "Unit"
+          },
+          {
+            "cardId": "zeb-orrelios--fists-work-every-time",
+            "type": "Unit"
+          }
+        ],
+        "sourceFormat": 1,
+        "sourceKind": "normal",
+        "leader": "greef-karga--gracious-magistrate",
+        "base": "naval-intelligence-hq",
+        "mainboard": [
+          {
+            "cardId": "aggressive-negotiations",
+            "quantity": 3
+          },
+          {
+            "cardId": "alphabet-squadron-u-wing--quiet-devotion",
+            "quantity": 2
+          },
+          {
+            "cardId": "beguile",
+            "quantity": 3
+          },
+          {
+            "cardId": "black-one--straight-at-them",
+            "quantity": 3
+          },
+          {
+            "cardId": "blue-ace--colorful-racer",
+            "quantity": 3
+          },
+          {
+            "cardId": "emissary-s-sheathipede",
+            "quantity": 3
+          },
+          {
+            "cardId": "han-solo--has-his-moments",
+            "quantity": 3
+          },
+          {
+            "cardId": "karis-nemik--freedom-is-a-pure-idea",
+            "quantity": 2
+          },
+          {
+            "cardId": "n-1-starfighter",
+            "quantity": 2
+          },
+          {
+            "cardId": "pegasus-tri-wing",
+            "quantity": 3
+          },
+          {
+            "cardId": "poe-dameron--i-ll-come-back-for-you",
+            "quantity": 3
+          },
+          {
+            "cardId": "rose-tico--now-it-s-worth-it",
+            "quantity": 2
+          },
+          {
+            "cardId": "sabine-wren--i-learned-the-hard-way",
+            "quantity": 2
+          },
+          {
+            "cardId": "sabine-wren--spectre-five",
+            "quantity": 3
+          },
+          {
+            "cardId": "stolen-at-hauler",
+            "quantity": 3
+          },
+          {
+            "cardId": "sudden-ferocity",
+            "quantity": 2
+          },
+          {
+            "cardId": "unsanctioned-patrol",
+            "quantity": 3
+          },
+          {
+            "cardId": "yellow-aces-bomber",
+            "quantity": 3
+          },
+          {
+            "cardId": "zeb-orrelios--fists-work-every-time",
+            "quantity": 2
+          }
+        ],
+        "sideboard": [
+          {
+            "cardId": "arvel-skeen--win-and-walk-away",
+            "quantity": 2
+          },
+          {
+            "cardId": "commandeer",
+            "quantity": 3
+          },
+          {
+            "cardId": "outer-rim-constable",
+            "quantity": 2
+          },
+          {
+            "cardId": "watch-this",
+            "quantity": 2
+          },
+          {
+            "cardId": "zeb-orrelios--fists-work-every-time",
+            "quantity": 1
+          }
+        ],
+        "reserve": [],
+        "inactiveUnsupported": [],
+        "sourceDeckId": "5d1f7e0b-9146-4a45-9a65-eb29b0fe0ae6",
+        "contentHash": "f9cd40484fce6515fb973b1f7450579952719bf030012f6d4cf44b342a24780b"
+      }
+    },
+    {
+      "key": "vader",
+      "label": "Vader Cunning",
+      "snapshot": {
+        "snapshotVersion": 1,
+        "versions": {
+          "state": 109,
+          "engine": "1.2.0",
+          "cards": "1.2.0@45abd7024e95120c53b5d17c20188a0fabb2155bdc2878f74e693486f769dfce",
+          "rules": "swu-8.0",
+          "format": "core-practice"
+        },
+        "catalogIdentityHash": "28bbf114c6e57c5e822e85652c1db9200df7f3e45076d42a93f574de9a22b105",
+        "cardIdentities": [
+          {
+            "cardId": "a-wing",
+            "type": "Unit"
+          },
+          {
+            "cardId": "arrest",
+            "type": "Event"
+          },
+          {
+            "cardId": "beguile",
+            "type": "Event"
+          },
+          {
+            "cardId": "black-sun-patroller",
+            "type": "Unit"
+          },
+          {
+            "cardId": "chancellor-palpatine--i-am-the-senate",
+            "type": "Unit"
+          },
+          {
+            "cardId": "clone-combat-squadron",
+            "type": "Unit"
+          },
+          {
+            "cardId": "commandeer",
+            "type": "Event"
+          },
+          {
+            "cardId": "craving-power",
+            "type": "Upgrade"
+          },
+          {
+            "cardId": "darth-vader--victor-squadron-leader",
+            "type": "Leader"
+          },
+          {
+            "cardId": "death-space-skirmisher",
+            "type": "Unit"
+          },
+          {
+            "cardId": "eager-escort-fighter",
+            "type": "Unit"
+          },
+          {
+            "cardId": "elzar-mann--haunted-by-a-vision",
+            "type": "Unit"
+          },
+          {
+            "cardId": "emissary-s-sheathipede",
+            "type": "Unit"
+          },
+          {
+            "cardId": "first-order-tie-fighter",
+            "type": "Unit"
+          },
+          {
+            "cardId": "galen-erso--destroying-his-creation",
+            "type": "Unit"
+          },
+          {
+            "cardId": "garindan--information-broker",
+            "type": "Unit"
+          },
+          {
+            "cardId": "hold-for-questioning",
+            "type": "Event"
+          },
+          {
+            "cardId": "lurking-snub-fighter",
+            "type": "Unit"
+          },
+          {
+            "cardId": "mos-eisley",
+            "type": "Base"
+          },
+          {
+            "cardId": "pirate-snub-fighter",
+            "type": "Unit"
+          },
+          {
+            "cardId": "shin-hati-s-fiend-fighter--compact-and-agile",
+            "type": "Unit"
+          },
+          {
+            "cardId": "snub-fighter-squadron",
+            "type": "Unit"
+          },
+          {
+            "cardId": "stolen-at-hauler",
+            "type": "Unit"
+          },
+          {
+            "cardId": "the-axe-forgets",
+            "type": "Event"
+          },
+          {
+            "cardId": "victor-leader--leading-from-the-front",
+            "type": "Unit"
+          }
+        ],
+        "sourceFormat": 1,
+        "sourceKind": "normal",
+        "leader": "darth-vader--victor-squadron-leader",
+        "base": "mos-eisley",
+        "mainboard": [
+          {
+            "cardId": "a-wing",
+            "quantity": 3
+          },
+          {
+            "cardId": "beguile",
+            "quantity": 3
+          },
+          {
+            "cardId": "black-sun-patroller",
+            "quantity": 3
+          },
+          {
+            "cardId": "chancellor-palpatine--i-am-the-senate",
+            "quantity": 3
+          },
+          {
+            "cardId": "clone-combat-squadron",
+            "quantity": 3
+          },
+          {
+            "cardId": "craving-power",
+            "quantity": 3
+          },
+          {
+            "cardId": "death-space-skirmisher",
+            "quantity": 3
+          },
+          {
+            "cardId": "elzar-mann--haunted-by-a-vision",
+            "quantity": 2
+          },
+          {
+            "cardId": "emissary-s-sheathipede",
+            "quantity": 3
+          },
+          {
+            "cardId": "first-order-tie-fighter",
+            "quantity": 3
+          },
+          {
+            "cardId": "galen-erso--destroying-his-creation",
+            "quantity": 2
+          },
+          {
+            "cardId": "garindan--information-broker",
+            "quantity": 3
+          },
+          {
+            "cardId": "lurking-snub-fighter",
+            "quantity": 3
+          },
+          {
+            "cardId": "pirate-snub-fighter",
+            "quantity": 3
+          },
+          {
+            "cardId": "shin-hati-s-fiend-fighter--compact-and-agile",
+            "quantity": 2
+          },
+          {
+            "cardId": "snub-fighter-squadron",
+            "quantity": 2
+          },
+          {
+            "cardId": "stolen-at-hauler",
+            "quantity": 3
+          },
+          {
+            "cardId": "victor-leader--leading-from-the-front",
+            "quantity": 3
+          }
+        ],
+        "sideboard": [
+          {
+            "cardId": "arrest",
+            "quantity": 1
+          },
+          {
+            "cardId": "commandeer",
+            "quantity": 2
+          },
+          {
+            "cardId": "eager-escort-fighter",
+            "quantity": 2
+          },
+          {
+            "cardId": "hold-for-questioning",
+            "quantity": 2
+          },
+          {
+            "cardId": "snub-fighter-squadron",
+            "quantity": 1
+          },
+          {
+            "cardId": "the-axe-forgets",
+            "quantity": 2
+          }
+        ],
+        "reserve": [],
+        "inactiveUnsupported": [],
+        "sourceDeckId": "53b60b20-12c8-4f79-9306-364b19e29bd2",
+        "contentHash": "8b5ea2600b5349ca91475e739599640c63b6b920b300e792a6b07fb6ae9b32fb"
+      }
+    },
+    {
+      "key": "mandalorian",
+      "label": "Mandalorian Colossus",
+      "snapshot": {
+        "snapshotVersion": 1,
+        "versions": {
+          "state": 109,
+          "engine": "1.2.0",
+          "cards": "1.2.0@45abd7024e95120c53b5d17c20188a0fabb2155bdc2878f74e693486f769dfce",
+          "rules": "swu-8.0",
+          "format": "core-practice"
+        },
+        "catalogIdentityHash": "28bbf114c6e57c5e822e85652c1db9200df7f3e45076d42a93f574de9a22b105",
+        "cardIdentities": [
+          {
+            "cardId": "aggressive-negotiations",
+            "type": "Event"
+          },
+          {
+            "cardId": "anakin-skywalker--champion-of-mortis",
+            "type": "Unit"
+          },
+          {
+            "cardId": "arvel-skeen--win-and-walk-away",
+            "type": "Unit"
+          },
+          {
+            "cardId": "bith-brute",
+            "type": "Unit"
+          },
+          {
+            "cardId": "bo-katan-kryze--alone",
+            "type": "Unit"
+          },
+          {
+            "cardId": "captain-rex--into-the-firefight",
+            "type": "Unit"
+          },
+          {
+            "cardId": "charged-with-treason",
+            "type": "Event"
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "type": "Unit"
+          },
+          {
+            "cardId": "collateral-damage",
+            "type": "Event"
+          },
+          {
+            "cardId": "colossus",
+            "type": "Base"
+          },
+          {
+            "cardId": "crushing-blow",
+            "type": "Event"
+          },
+          {
+            "cardId": "direct-hit",
+            "type": "Event"
+          },
+          {
+            "cardId": "droid-laser-turret",
+            "type": "Unit"
+          },
+          {
+            "cardId": "green-leader--crynyd-s-sacrifice",
+            "type": "Unit"
+          },
+          {
+            "cardId": "hera-syndulla--renegade-general",
+            "type": "Unit"
+          },
+          {
+            "cardId": "honnah--oink--squee-",
+            "type": "Unit"
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "type": "Event"
+          },
+          {
+            "cardId": "imperial-door-technician",
+            "type": "Unit"
+          },
+          {
+            "cardId": "karis-nemik--freedom-is-a-pure-idea",
+            "type": "Unit"
+          },
+          {
+            "cardId": "kit-fisto-s-aethersprite--good-hunting",
+            "type": "Unit"
+          },
+          {
+            "cardId": "lando-calrissian--eyes-open",
+            "type": "Unit"
+          },
+          {
+            "cardId": "let-s-call-it-war",
+            "type": "Event"
+          },
+          {
+            "cardId": "lost-and-forgotten",
+            "type": "Event"
+          },
+          {
+            "cardId": "nebula-ignition",
+            "type": "Event"
+          },
+          {
+            "cardId": "outer-rim-constable",
+            "type": "Unit"
+          },
+          {
+            "cardId": "piercing-shot",
+            "type": "Event"
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "type": "Unit"
+          },
+          {
+            "cardId": "rebellious-hammerhead",
+            "type": "Unit"
+          },
+          {
+            "cardId": "reckless-sacrifice",
+            "type": "Event"
+          },
+          {
+            "cardId": "remote-escort-tank",
+            "type": "Unit"
+          },
+          {
+            "cardId": "rey--skywalker",
+            "type": "Unit"
+          },
+          {
+            "cardId": "single-reactor-ignition",
+            "type": "Event"
+          },
+          {
+            "cardId": "the-desolation-of-hoth",
+            "type": "Event"
+          },
+          {
+            "cardId": "the-mandalorian--we-can-t-keep-running",
+            "type": "Leader"
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "type": "Event"
+          },
+          {
+            "cardId": "zeb-orellios--spectre-four",
+            "type": "Unit"
+          }
+        ],
+        "sourceFormat": 1,
+        "sourceKind": "normal",
+        "leader": "the-mandalorian--we-can-t-keep-running",
+        "base": "colossus",
+        "mainboard": [
+          {
+            "cardId": "aggressive-negotiations",
+            "quantity": 3
+          },
+          {
+            "cardId": "anakin-skywalker--champion-of-mortis",
+            "quantity": 3
+          },
+          {
+            "cardId": "bith-brute",
+            "quantity": 1
+          },
+          {
+            "cardId": "bo-katan-kryze--alone",
+            "quantity": 3
+          },
+          {
+            "cardId": "charged-with-treason",
+            "quantity": 2
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "quantity": 1
+          },
+          {
+            "cardId": "crushing-blow",
+            "quantity": 3
+          },
+          {
+            "cardId": "droid-laser-turret",
+            "quantity": 3
+          },
+          {
+            "cardId": "green-leader--crynyd-s-sacrifice",
+            "quantity": 3
+          },
+          {
+            "cardId": "hera-syndulla--renegade-general",
+            "quantity": 3
+          },
+          {
+            "cardId": "honnah--oink--squee-",
+            "quantity": 1
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "quantity": 2
+          },
+          {
+            "cardId": "imperial-door-technician",
+            "quantity": 3
+          },
+          {
+            "cardId": "karis-nemik--freedom-is-a-pure-idea",
+            "quantity": 3
+          },
+          {
+            "cardId": "lando-calrissian--eyes-open",
+            "quantity": 1
+          },
+          {
+            "cardId": "let-s-call-it-war",
+            "quantity": 3
+          },
+          {
+            "cardId": "lost-and-forgotten",
+            "quantity": 3
+          },
+          {
+            "cardId": "nebula-ignition",
+            "quantity": 1
+          },
+          {
+            "cardId": "outer-rim-constable",
+            "quantity": 2
+          },
+          {
+            "cardId": "piercing-shot",
+            "quantity": 2
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "quantity": 1
+          },
+          {
+            "cardId": "rebellious-hammerhead",
+            "quantity": 3
+          },
+          {
+            "cardId": "reckless-sacrifice",
+            "quantity": 3
+          },
+          {
+            "cardId": "remote-escort-tank",
+            "quantity": 1
+          },
+          {
+            "cardId": "rey--skywalker",
+            "quantity": 1
+          },
+          {
+            "cardId": "single-reactor-ignition",
+            "quantity": 3
+          },
+          {
+            "cardId": "the-desolation-of-hoth",
+            "quantity": 1
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "quantity": 3
+          },
+          {
+            "cardId": "zeb-orellios--spectre-four",
+            "quantity": 3
+          }
+        ],
+        "sideboard": [
+          {
+            "cardId": "arvel-skeen--win-and-walk-away",
+            "quantity": 1
+          },
+          {
+            "cardId": "captain-rex--into-the-firefight",
+            "quantity": 1
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "quantity": 1
+          },
+          {
+            "cardId": "collateral-damage",
+            "quantity": 1
+          },
+          {
+            "cardId": "direct-hit",
+            "quantity": 1
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "quantity": 1
+          },
+          {
+            "cardId": "kit-fisto-s-aethersprite--good-hunting",
+            "quantity": 1
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "quantity": 1
+          },
+          {
+            "cardId": "remote-escort-tank",
+            "quantity": 1
+          },
+          {
+            "cardId": "the-desolation-of-hoth",
+            "quantity": 1
+          }
+        ],
+        "reserve": [],
+        "inactiveUnsupported": [],
+        "sourceDeckId": "097370f4-cc6f-4302-8dee-c762cbee0f0c",
+        "contentHash": "29d757465368c1f6f89829f5c4940d060224cb9d39d4ab89fb70199c7707ba3c"
+      }
+    },
+    {
+      "key": "dedra",
+      "label": "Dedra Colossus",
+      "snapshot": {
+        "snapshotVersion": 1,
+        "versions": {
+          "state": 109,
+          "engine": "1.2.0",
+          "cards": "1.2.0@45abd7024e95120c53b5d17c20188a0fabb2155bdc2878f74e693486f769dfce",
+          "rules": "swu-8.0",
+          "format": "core-practice"
+        },
+        "catalogIdentityHash": "28bbf114c6e57c5e822e85652c1db9200df7f3e45076d42a93f574de9a22b105",
+        "cardIdentities": [
+          {
+            "cardId": "aggressive-negotiations",
+            "type": "Event"
+          },
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "type": "Unit"
+          },
+          {
+            "cardId": "boba-fett-s-rancor--emotionally-complex-creature",
+            "type": "Unit"
+          },
+          {
+            "cardId": "cantwell-arrestor-cruiser",
+            "type": "Unit"
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "type": "Unit"
+          },
+          {
+            "cardId": "collateral-damage",
+            "type": "Event"
+          },
+          {
+            "cardId": "colossus",
+            "type": "Base"
+          },
+          {
+            "cardId": "condemn",
+            "type": "Upgrade"
+          },
+          {
+            "cardId": "dedra-meero--not-wasting-time",
+            "type": "Leader"
+          },
+          {
+            "cardId": "devastator--hunting-the-rebellion",
+            "type": "Unit"
+          },
+          {
+            "cardId": "direct-hit",
+            "type": "Event"
+          },
+          {
+            "cardId": "hold-for-questioning",
+            "type": "Event"
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "type": "Event"
+          },
+          {
+            "cardId": "ig-2000--assassin-s-aggressor",
+            "type": "Unit"
+          },
+          {
+            "cardId": "imperial-armored-commando",
+            "type": "Unit"
+          },
+          {
+            "cardId": "imperial-door-technician",
+            "type": "Unit"
+          },
+          {
+            "cardId": "knowledge-and-defense",
+            "type": "Event"
+          },
+          {
+            "cardId": "lando-calrissian--trust-me",
+            "type": "Unit"
+          },
+          {
+            "cardId": "let-s-call-it-war",
+            "type": "Event"
+          },
+          {
+            "cardId": "lost-and-forgotten",
+            "type": "Event"
+          },
+          {
+            "cardId": "marrok--mysterious-warrior",
+            "type": "Unit"
+          },
+          {
+            "cardId": "no-glory--only-results",
+            "type": "Event"
+          },
+          {
+            "cardId": "operation-cinder",
+            "type": "Event"
+          },
+          {
+            "cardId": "planetary-bombardment",
+            "type": "Event"
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "type": "Unit"
+          },
+          {
+            "cardId": "rey--skywalker",
+            "type": "Unit"
+          },
+          {
+            "cardId": "shin-hati--going-somewhere-",
+            "type": "Unit"
+          },
+          {
+            "cardId": "single-reactor-ignition",
+            "type": "Event"
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "type": "Event"
+          }
+        ],
+        "sourceFormat": 1,
+        "sourceKind": "normal",
+        "leader": "dedra-meero--not-wasting-time",
+        "base": "colossus",
+        "mainboard": [
+          {
+            "cardId": "aggressive-negotiations",
+            "quantity": 1
+          },
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "quantity": 1
+          },
+          {
+            "cardId": "boba-fett-s-rancor--emotionally-complex-creature",
+            "quantity": 1
+          },
+          {
+            "cardId": "cantwell-arrestor-cruiser",
+            "quantity": 1
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "quantity": 3
+          },
+          {
+            "cardId": "collateral-damage",
+            "quantity": 3
+          },
+          {
+            "cardId": "condemn",
+            "quantity": 3
+          },
+          {
+            "cardId": "devastator--hunting-the-rebellion",
+            "quantity": 3
+          },
+          {
+            "cardId": "direct-hit",
+            "quantity": 1
+          },
+          {
+            "cardId": "hold-for-questioning",
+            "quantity": 2
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "quantity": 2
+          },
+          {
+            "cardId": "imperial-armored-commando",
+            "quantity": 3
+          },
+          {
+            "cardId": "imperial-door-technician",
+            "quantity": 3
+          },
+          {
+            "cardId": "knowledge-and-defense",
+            "quantity": 2
+          },
+          {
+            "cardId": "let-s-call-it-war",
+            "quantity": 3
+          },
+          {
+            "cardId": "lost-and-forgotten",
+            "quantity": 3
+          },
+          {
+            "cardId": "marrok--mysterious-warrior",
+            "quantity": 3
+          },
+          {
+            "cardId": "no-glory--only-results",
+            "quantity": 3
+          },
+          {
+            "cardId": "operation-cinder",
+            "quantity": 2
+          },
+          {
+            "cardId": "planetary-bombardment",
+            "quantity": 2
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "quantity": 3
+          },
+          {
+            "cardId": "shin-hati--going-somewhere-",
+            "quantity": 2
+          },
+          {
+            "cardId": "single-reactor-ignition",
+            "quantity": 3
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "quantity": 3
+          }
+        ],
+        "sideboard": [
+          {
+            "cardId": "aggressive-negotiations",
+            "quantity": 1
+          },
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "quantity": 1
+          },
+          {
+            "cardId": "boba-fett-s-rancor--emotionally-complex-creature",
+            "quantity": 1
+          },
+          {
+            "cardId": "cantwell-arrestor-cruiser",
+            "quantity": 1
+          },
+          {
+            "cardId": "ig-2000--assassin-s-aggressor",
+            "quantity": 2
+          },
+          {
+            "cardId": "lando-calrissian--trust-me",
+            "quantity": 1
+          },
+          {
+            "cardId": "planetary-bombardment",
+            "quantity": 1
+          },
+          {
+            "cardId": "rey--skywalker",
+            "quantity": 1
+          },
+          {
+            "cardId": "shin-hati--going-somewhere-",
+            "quantity": 1
+          }
+        ],
+        "reserve": [],
+        "inactiveUnsupported": [],
+        "sourceDeckId": "736e9695-ef03-4422-8804-2e11281c44ef",
+        "contentHash": "4e122717a407f2bd43a41628e3e1280456538e823c1ec7a9596d7d280faf4618"
+      }
+    },
+    {
+      "key": "aurra",
+      "label": "Aurra Data Vault",
+      "snapshot": {
+        "snapshotVersion": 1,
+        "versions": {
+          "state": 109,
+          "engine": "1.2.0",
+          "cards": "1.2.0@45abd7024e95120c53b5d17c20188a0fabb2155bdc2878f74e693486f769dfce",
+          "rules": "swu-8.0",
+          "format": "core-practice"
+        },
+        "catalogIdentityHash": "28bbf114c6e57c5e822e85652c1db9200df7f3e45076d42a93f574de9a22b105",
+        "cardIdentities": [
+          {
+            "cardId": "anakin-skywalker--champion-of-mortis",
+            "type": "Unit"
+          },
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "type": "Unit"
+          },
+          {
+            "cardId": "aurra-sing--assassin",
+            "type": "Leader"
+          },
+          {
+            "cardId": "battered-haulcraft",
+            "type": "Unit"
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "type": "Unit"
+          },
+          {
+            "cardId": "condemn",
+            "type": "Upgrade"
+          },
+          {
+            "cardId": "craving-power",
+            "type": "Upgrade"
+          },
+          {
+            "cardId": "data-vault",
+            "type": "Base"
+          },
+          {
+            "cardId": "dedra-meero--with-verifiable-data",
+            "type": "Unit"
+          },
+          {
+            "cardId": "doctor-pershing--dedicated-to-research",
+            "type": "Unit"
+          },
+          {
+            "cardId": "eager-escort-fighter",
+            "type": "Unit"
+          },
+          {
+            "cardId": "governor-s-shuttle",
+            "type": "Unit"
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "type": "Event"
+          },
+          {
+            "cardId": "imperial-armored-commando",
+            "type": "Unit"
+          },
+          {
+            "cardId": "imperial-dark-trooper",
+            "type": "Unit"
+          },
+          {
+            "cardId": "knowledge-and-defense",
+            "type": "Event"
+          },
+          {
+            "cardId": "koska-reeves--warrior-of-mandalore",
+            "type": "Unit"
+          },
+          {
+            "cardId": "latts-razzi--deadly-whipmaster",
+            "type": "Unit"
+          },
+          {
+            "cardId": "lawbringer--shadow-over-lothal",
+            "type": "Unit"
+          },
+          {
+            "cardId": "lepi-lookout",
+            "type": "Unit"
+          },
+          {
+            "cardId": "lost-and-forgotten",
+            "type": "Event"
+          },
+          {
+            "cardId": "moff-gideon--remnant-commander",
+            "type": "Unit"
+          },
+          {
+            "cardId": "no-glory--only-results",
+            "type": "Event"
+          },
+          {
+            "cardId": "out-the-airlock",
+            "type": "Event"
+          },
+          {
+            "cardId": "pirate-snub-fighter",
+            "type": "Unit"
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "type": "Unit"
+          },
+          {
+            "cardId": "ravager--final-imperial-command",
+            "type": "Unit"
+          },
+          {
+            "cardId": "retaliation",
+            "type": "Event"
+          },
+          {
+            "cardId": "rey--skywalker",
+            "type": "Unit"
+          },
+          {
+            "cardId": "ryder-azadi--restored-governor",
+            "type": "Unit"
+          },
+          {
+            "cardId": "salvage",
+            "type": "Event"
+          },
+          {
+            "cardId": "single-reactor-ignition",
+            "type": "Event"
+          },
+          {
+            "cardId": "taramyn-barcona--eyes-front-",
+            "type": "Unit"
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "type": "Event"
+          },
+          {
+            "cardId": "trask-walker",
+            "type": "Unit"
+          }
+        ],
+        "sourceFormat": 1,
+        "sourceKind": "normal",
+        "leader": "aurra-sing--assassin",
+        "base": "data-vault",
+        "mainboard": [
+          {
+            "cardId": "anakin-skywalker--champion-of-mortis",
+            "quantity": 2
+          },
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "quantity": 1
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "quantity": 3
+          },
+          {
+            "cardId": "craving-power",
+            "quantity": 3
+          },
+          {
+            "cardId": "dedra-meero--with-verifiable-data",
+            "quantity": 1
+          },
+          {
+            "cardId": "doctor-pershing--dedicated-to-research",
+            "quantity": 3
+          },
+          {
+            "cardId": "eager-escort-fighter",
+            "quantity": 3
+          },
+          {
+            "cardId": "governor-s-shuttle",
+            "quantity": 2
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "quantity": 1
+          },
+          {
+            "cardId": "imperial-armored-commando",
+            "quantity": 3
+          },
+          {
+            "cardId": "imperial-dark-trooper",
+            "quantity": 3
+          },
+          {
+            "cardId": "knowledge-and-defense",
+            "quantity": 2
+          },
+          {
+            "cardId": "koska-reeves--warrior-of-mandalore",
+            "quantity": 3
+          },
+          {
+            "cardId": "latts-razzi--deadly-whipmaster",
+            "quantity": 3
+          },
+          {
+            "cardId": "lawbringer--shadow-over-lothal",
+            "quantity": 1
+          },
+          {
+            "cardId": "lepi-lookout",
+            "quantity": 3
+          },
+          {
+            "cardId": "lost-and-forgotten",
+            "quantity": 3
+          },
+          {
+            "cardId": "moff-gideon--remnant-commander",
+            "quantity": 3
+          },
+          {
+            "cardId": "no-glory--only-results",
+            "quantity": 3
+          },
+          {
+            "cardId": "out-the-airlock",
+            "quantity": 1
+          },
+          {
+            "cardId": "pirate-snub-fighter",
+            "quantity": 3
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "quantity": 3
+          },
+          {
+            "cardId": "ravager--final-imperial-command",
+            "quantity": 1
+          },
+          {
+            "cardId": "ryder-azadi--restored-governor",
+            "quantity": 2
+          },
+          {
+            "cardId": "salvage",
+            "quantity": 1
+          },
+          {
+            "cardId": "single-reactor-ignition",
+            "quantity": 1
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "quantity": 2
+          },
+          {
+            "cardId": "trask-walker",
+            "quantity": 2
+          }
+        ],
+        "sideboard": [
+          {
+            "cardId": "battered-haulcraft",
+            "quantity": 2
+          },
+          {
+            "cardId": "condemn",
+            "quantity": 2
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "quantity": 1
+          },
+          {
+            "cardId": "retaliation",
+            "quantity": 1
+          },
+          {
+            "cardId": "rey--skywalker",
+            "quantity": 1
+          },
+          {
+            "cardId": "taramyn-barcona--eyes-front-",
+            "quantity": 2
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "quantity": 1
+          }
+        ],
+        "reserve": [],
+        "inactiveUnsupported": [],
+        "sourceDeckId": "ba2264c6-6867-4cad-97e8-c22c729c1487",
+        "contentHash": "2624bd97e499dce696ec73b83b12df7bbe76c044853de179318e29f1dfa0fed5"
+      }
+    },
+    {
+      "key": "krennic",
+      "label": "Krennic ramp",
+      "snapshot": {
+        "snapshotVersion": 1,
+        "versions": {
+          "state": 109,
+          "engine": "1.2.0",
+          "cards": "1.2.0@45abd7024e95120c53b5d17c20188a0fabb2155bdc2878f74e693486f769dfce",
+          "rules": "swu-8.0",
+          "format": "core-practice"
+        },
+        "catalogIdentityHash": "28bbf114c6e57c5e822e85652c1db9200df7f3e45076d42a93f574de9a22b105",
+        "cardIdentities": [
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "type": "Unit"
+          },
+          {
+            "cardId": "ant-droid",
+            "type": "Unit"
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "type": "Unit"
+          },
+          {
+            "cardId": "condemn",
+            "type": "Upgrade"
+          },
+          {
+            "cardId": "craving-power",
+            "type": "Upgrade"
+          },
+          {
+            "cardId": "darth-vader--meet-your-destiny",
+            "type": "Unit"
+          },
+          {
+            "cardId": "director-krennic--amidst-my-achievement",
+            "type": "Leader"
+          },
+          {
+            "cardId": "director-krennic--on-the-verge-of-greatness",
+            "type": "Unit"
+          },
+          {
+            "cardId": "expendable-mercenary",
+            "type": "Unit"
+          },
+          {
+            "cardId": "first-light--threatening-elegance",
+            "type": "Unit"
+          },
+          {
+            "cardId": "gnk-power-droid",
+            "type": "Unit"
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "type": "Event"
+          },
+          {
+            "cardId": "imperial-armored-commando",
+            "type": "Unit"
+          },
+          {
+            "cardId": "imperial-door-technician",
+            "type": "Unit"
+          },
+          {
+            "cardId": "koska-reeves--warrior-of-mandalore",
+            "type": "Unit"
+          },
+          {
+            "cardId": "latts-razzi--deadly-whipmaster",
+            "type": "Unit"
+          },
+          {
+            "cardId": "lawbringer--shadow-over-lothal",
+            "type": "Unit"
+          },
+          {
+            "cardId": "lost-and-forgotten",
+            "type": "Event"
+          },
+          {
+            "cardId": "moff-gideon--remnant-commander",
+            "type": "Unit"
+          },
+          {
+            "cardId": "nightsister-warrior",
+            "type": "Unit"
+          },
+          {
+            "cardId": "no-glory--only-results",
+            "type": "Event"
+          },
+          {
+            "cardId": "onyx-squadron-brute",
+            "type": "Unit"
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "type": "Unit"
+          },
+          {
+            "cardId": "ravager--final-imperial-command",
+            "type": "Unit"
+          },
+          {
+            "cardId": "remnant-lookouts",
+            "type": "Unit"
+          },
+          {
+            "cardId": "resupply-carrier",
+            "type": "Unit"
+          },
+          {
+            "cardId": "rey--skywalker",
+            "type": "Unit"
+          },
+          {
+            "cardId": "salvage",
+            "type": "Event"
+          },
+          {
+            "cardId": "shield-generator-complex",
+            "type": "Base"
+          },
+          {
+            "cardId": "the-darksaber--icon-of-leadership",
+            "type": "Upgrade"
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "type": "Event"
+          },
+          {
+            "cardId": "trask-walker",
+            "type": "Unit"
+          }
+        ],
+        "sourceFormat": 1,
+        "sourceKind": "normal",
+        "leader": "director-krennic--amidst-my-achievement",
+        "base": "shield-generator-complex",
+        "mainboard": [
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "quantity": 1
+          },
+          {
+            "cardId": "ant-droid",
+            "quantity": 3
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "quantity": 3
+          },
+          {
+            "cardId": "condemn",
+            "quantity": 1
+          },
+          {
+            "cardId": "craving-power",
+            "quantity": 3
+          },
+          {
+            "cardId": "darth-vader--meet-your-destiny",
+            "quantity": 2
+          },
+          {
+            "cardId": "director-krennic--on-the-verge-of-greatness",
+            "quantity": 3
+          },
+          {
+            "cardId": "expendable-mercenary",
+            "quantity": 3
+          },
+          {
+            "cardId": "first-light--threatening-elegance",
+            "quantity": 1
+          },
+          {
+            "cardId": "gnk-power-droid",
+            "quantity": 2
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "quantity": 2
+          },
+          {
+            "cardId": "imperial-armored-commando",
+            "quantity": 2
+          },
+          {
+            "cardId": "imperial-door-technician",
+            "quantity": 2
+          },
+          {
+            "cardId": "koska-reeves--warrior-of-mandalore",
+            "quantity": 3
+          },
+          {
+            "cardId": "latts-razzi--deadly-whipmaster",
+            "quantity": 2
+          },
+          {
+            "cardId": "lawbringer--shadow-over-lothal",
+            "quantity": 2
+          },
+          {
+            "cardId": "lost-and-forgotten",
+            "quantity": 1
+          },
+          {
+            "cardId": "moff-gideon--remnant-commander",
+            "quantity": 3
+          },
+          {
+            "cardId": "nightsister-warrior",
+            "quantity": 2
+          },
+          {
+            "cardId": "no-glory--only-results",
+            "quantity": 3
+          },
+          {
+            "cardId": "onyx-squadron-brute",
+            "quantity": 1
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "quantity": 3
+          },
+          {
+            "cardId": "resupply-carrier",
+            "quantity": 3
+          },
+          {
+            "cardId": "rey--skywalker",
+            "quantity": 1
+          }
+        ],
+        "sideboard": [
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "quantity": 1
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "quantity": 1
+          },
+          {
+            "cardId": "ravager--final-imperial-command",
+            "quantity": 1
+          },
+          {
+            "cardId": "remnant-lookouts",
+            "quantity": 1
+          },
+          {
+            "cardId": "rey--skywalker",
+            "quantity": 1
+          },
+          {
+            "cardId": "salvage",
+            "quantity": 1
+          },
+          {
+            "cardId": "the-darksaber--icon-of-leadership",
+            "quantity": 1
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "quantity": 2
+          },
+          {
+            "cardId": "trask-walker",
+            "quantity": 1
+          }
+        ],
+        "reserve": [],
+        "inactiveUnsupported": [],
+        "sourceDeckId": "6dfbf55b-57ea-4606-af93-992d37193f76",
+        "contentHash": "455d47274c09745089384608dc275ebf5fdf95e5eca0467c9f2ef5f2d6865486"
+      }
+    }
+  ]
+}

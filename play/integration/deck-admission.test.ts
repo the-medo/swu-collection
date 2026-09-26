@@ -27,7 +27,7 @@ const catalog: CardIdentityCatalog = await Bun.file(
 ).json();
 const prepare = (input: unknown, format = 'core-practice') =>
   prepareDeckSnapshot(input, catalog, format);
-const read = (deckId: string, userId = owner) => readDeckInput(db, userId, deckId, catalog);
+const read = (deckId: string, userId: string | null = owner) => readDeckInput(db, userId, deckId, catalog);
 beforeAll(async () => {
   for (const id of [owner, visitor])
     await sql`INSERT INTO "user" (id, name, email, email_verified, created_at, updated_at, display_name, currency, role)
@@ -88,6 +88,9 @@ test('owner/private and direct public/unlisted access are enforced before readin
   expect(await read(privateId)).not.toBeNull();
   expect(await read(publicId, visitor)).not.toBeNull();
   expect(await read(unlistedId, visitor)).not.toBeNull();
+  expect(await read(privateId, null)).toBeNull();
+  expect(await read(publicId, null)).not.toBeNull();
+  expect(await read(unlistedId, null)).not.toBeNull();
 });
 
 test('normal snapshots omit zero/maybeboard rows and stay fixed through later edits without timestamp changes', async () => {
@@ -128,8 +131,10 @@ test('limited physical copies become main/reserve, excluding slot cards and tras
 
 test('inconsistent limited visibility/ownership and missing physical references fail closed', async () => {
   const { id } = await limited();
+  expect(await read(id, null)).not.toBeNull();
   await sql`UPDATE card_pool_decks SET visibility = 'private' WHERE deck_id = ${id}`;
   expect(await read(id, visitor)).toBeNull();
+  expect(await read(id, null)).toBeNull();
   expect(await read(id)).not.toBeNull();
   await sql`UPDATE card_pool_decks SET user_id = ${visitor} WHERE deck_id = ${id}`;
   expect(await read(id)).toBeNull();

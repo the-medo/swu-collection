@@ -26,8 +26,9 @@ export class CrossfireUndo {
     z.uuid().parse(id);
     await this.sql.begin(async tx => {
       const [game] =
-        await tx`SELECT sequence,state_hash,status FROM play.games WHERE id = ${grant.gameId} FOR UPDATE`;
+        await tx`SELECT sequence,state_hash,status,mode FROM play.games WHERE id = ${grant.gameId} FOR UPDATE`;
       await requireConnection(tx, grant, true);
+      if (game?.mode === 'ai') throw new StorageError('not-authorized');
       const [old] = await tx`SELECT game_id,requester FROM play.undo_requests WHERE id = ${id}`;
       if (old) {
         if (old.game_id !== grant.gameId || old.requester !== grant.seat)

@@ -63,6 +63,7 @@ export function BoardPosition({
   closeLog,
   readOnly = !connection,
   readOnlyLabel = 'Replay',
+  allowChat = true,
   bottomSeat,
 }: {
   view: GameView;
@@ -73,6 +74,7 @@ export function BoardPosition({
   closeLog: () => void;
   readOnly?: boolean;
   readOnlyLabel?: string;
+  allowChat?: boolean;
   bottomSeat?: string;
 }) {
   const [stored, setInteraction] = useState(() => freshInteraction(view));
@@ -539,7 +541,7 @@ export function BoardPosition({
         ROUND {view.round}
         <span>{words(view.phase)} phase</span>
       </div>
-      {!readOnly && seat && connection ? (
+      {!readOnly && seat && connection && allowChat ? (
         <ConnectedGameLog
           connection={connection}
           view={view}

@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { AiTrainingConsent } from './AiTrainingConsent.tsx';
+import { Route } from '@/routes/_authenticated/crossfire/index.tsx';
+import { useNavigate } from '@tanstack/react-router';
 import { MatchupCard } from '@/components/app/global/MatchupCard.tsx';
 import { getResultBorderColor } from '@/components/app/statistics/lib/lib.ts';
 import { cn } from '@/lib/utils.ts';
@@ -14,7 +17,9 @@ export function GameHistory({
   sessionId: string;
   embedded?: boolean;
 }) {
-  const query = useGameHistory(sessionId);
+  const { cfOpponent } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const query = useGameHistory(sessionId, undefined, cfOpponent);
   const games = query.data?.pages.flatMap(page => page.data) ?? [];
   const [visibleCount, setVisibleCount] = useState(10);
   const loadMore = async () => {
@@ -38,6 +43,28 @@ export function GameHistory({
         <History size={20} />
         Your games
       </h2>
+      <label className="flex flex-wrap items-center gap-2 text-sm">
+        Opponent
+        <select
+          aria-label="Filter game opponents"
+          className="h-9 rounded-md border bg-background px-2"
+          value={cfOpponent ?? 'all'}
+          onChange={event => {
+            const value = event.target.value;
+            setVisibleCount(10);
+            void navigate({
+              search: prev => ({
+                ...prev,
+                cfOpponent: value === 'all' ? undefined : (value as 'human' | 'ai'),
+              }),
+            });
+          }}
+        >
+          <option value="all">All games</option>
+          <option value="human">People</option>
+          <option value="ai">AI opponents</option>
+        </select>
+      </label>
       {query.isPending ? (
         <p role="status">Loading your games…</p>
       ) : query.isError && !games.length ? (
@@ -51,8 +78,9 @@ export function GameHistory({
         <>
           {!games.length && (
             <p className="text-sm text-muted-foreground">
-              Your games will appear here when both players join. Open any game to review its
-              history.
+              {cfOpponent
+                ? 'No games match this filter yet.'
+                : 'Your games will appear here once they start. Open any game to review its history.'}
             </p>
           )}
           <div className="cf-game-list" aria-label="Recent Crossfire games">
@@ -95,10 +123,16 @@ export function GameHistory({
                             ? 'Abandoned'
                             : 'In progress'}
                       </span>
-                      <span className="truncate">vs. {game.opponent}</span>
+                      <span className="truncate">
+                        {game.ai ? 'AI · ' : ''}vs. {game.opponent}
+                      </span>
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {game.practice ? 'Practice from bookmark · ' : 'Crossfire · '}
+                      {game.ai
+                        ? 'AI practice · '
+                        : game.practice
+                          ? 'Practice from bookmark · '
+                          : 'Crossfire · '}
                       {new Date(game.startedAt).toLocaleString()} ·{' '}
                       {game.status === 'abandoned'
                         ? 'Abandoned — incompatible version'
@@ -113,8 +147,14 @@ export function GameHistory({
                         game.status !== 'abandoned' &&
                         ' · Older version'}
                     </p>
+                    {game.ai && (
+                      <p className="text-xs text-muted-foreground">
+                        {game.ai.releaseLabel} · Excluded from player statistics
+                      </p>
+                    )}
                   </div>
                   <div className="flex shrink-0 flex-wrap justify-end gap-1 cf-recent-game-actions">
+                    {!game.ai && <AiTrainingConsent gameId={game.gameId} sessionId={sessionId} />}
                     {game.status === 'running' && (
                       <Button
                         size="xs"
@@ -132,11 +172,15 @@ export function GameHistory({
                         </Link>
                       </Button>
                     )}
-                    {game.compatible !== false && game.status !== 'abandoned' ? (
+                    {game.replayAvailable !== false &&
+                    game.compatible !== false &&
+                    game.status !== 'abandoned' ? (
                       <ReplayButton lobbyId={game.lobbyId} compact />
                     ) : (
                       <span className="self-center text-xs text-muted-foreground">
-                        Replay unavailable
+                        {game.replayAvailable === false
+                          ? 'Replay expired · result retained'
+                          : 'Replay unavailable'}
                       </span>
                     )}
                   </div>

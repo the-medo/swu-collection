@@ -1,0 +1,505 @@
+{
+  "schema": 1,
+  "decks": [
+    {
+      "key": "greef",
+      "snapshot": {
+        "snapshotVersion": 1,
+        "versions": {
+          "state": 109,
+          "engine": "1.2.0",
+          "cards": "1.2.0@45abd7024e95120c53b5d17c20188a0fabb2155bdc2878f74e693486f769dfce",
+          "rules": "swu-8.0",
+          "format": "core-practice"
+        },
+        "catalogIdentityHash": "28bbf114c6e57c5e822e85652c1db9200df7f3e45076d42a93f574de9a22b105",
+        "cardIdentities": [
+          {
+            "cardId": "aggressive-negotiations",
+            "type": "Event"
+          },
+          {
+            "cardId": "alphabet-squadron-u-wing--quiet-devotion",
+            "type": "Unit"
+          },
+          {
+            "cardId": "arvel-skeen--win-and-walk-away",
+            "type": "Unit"
+          },
+          {
+            "cardId": "beguile",
+            "type": "Event"
+          },
+          {
+            "cardId": "black-one--straight-at-them",
+            "type": "Unit"
+          },
+          {
+            "cardId": "blue-ace--colorful-racer",
+            "type": "Unit"
+          },
+          {
+            "cardId": "commandeer",
+            "type": "Event"
+          },
+          {
+            "cardId": "emissary-s-sheathipede",
+            "type": "Unit"
+          },
+          {
+            "cardId": "greef-karga--gracious-magistrate",
+            "type": "Leader"
+          },
+          {
+            "cardId": "han-solo--has-his-moments",
+            "type": "Unit"
+          },
+          {
+            "cardId": "karis-nemik--freedom-is-a-pure-idea",
+            "type": "Unit"
+          },
+          {
+            "cardId": "n-1-starfighter",
+            "type": "Unit"
+          },
+          {
+            "cardId": "naval-intelligence-hq",
+            "type": "Base"
+          },
+          {
+            "cardId": "outer-rim-constable",
+            "type": "Unit"
+          },
+          {
+            "cardId": "pegasus-tri-wing",
+            "type": "Unit"
+          },
+          {
+            "cardId": "poe-dameron--i-ll-come-back-for-you",
+            "type": "Unit"
+          },
+          {
+            "cardId": "rose-tico--now-it-s-worth-it",
+            "type": "Unit"
+          },
+          {
+            "cardId": "sabine-wren--i-learned-the-hard-way",
+            "type": "Unit"
+          },
+          {
+            "cardId": "sabine-wren--spectre-five",
+            "type": "Unit"
+          },
+          {
+            "cardId": "stolen-at-hauler",
+            "type": "Unit"
+          },
+          {
+            "cardId": "sudden-ferocity",
+            "type": "Upgrade"
+          },
+          {
+            "cardId": "unsanctioned-patrol",
+            "type": "Unit"
+          },
+          {
+            "cardId": "watch-this",
+            "type": "Event"
+          },
+          {
+            "cardId": "yellow-aces-bomber",
+            "type": "Unit"
+          },
+          {
+            "cardId": "zeb-orrelios--fists-work-every-time",
+            "type": "Unit"
+          }
+        ],
+        "sourceFormat": 1,
+        "sourceKind": "normal",
+        "leader": "greef-karga--gracious-magistrate",
+        "base": "naval-intelligence-hq",
+        "mainboard": [
+          {
+            "cardId": "aggressive-negotiations",
+            "quantity": 3
+          },
+          {
+            "cardId": "alphabet-squadron-u-wing--quiet-devotion",
+            "quantity": 2
+          },
+          {
+            "cardId": "beguile",
+            "quantity": 3
+          },
+          {
+            "cardId": "black-one--straight-at-them",
+            "quantity": 3
+          },
+          {
+            "cardId": "blue-ace--colorful-racer",
+            "quantity": 3
+          },
+          {
+            "cardId": "emissary-s-sheathipede",
+            "quantity": 3
+          },
+          {
+            "cardId": "han-solo--has-his-moments",
+            "quantity": 3
+          },
+          {
+            "cardId": "karis-nemik--freedom-is-a-pure-idea",
+            "quantity": 2
+          },
+          {
+            "cardId": "n-1-starfighter",
+            "quantity": 2
+          },
+          {
+            "cardId": "pegasus-tri-wing",
+            "quantity": 3
+          },
+          {
+            "cardId": "poe-dameron--i-ll-come-back-for-you",
+            "quantity": 3
+          },
+          {
+            "cardId": "rose-tico--now-it-s-worth-it",
+            "quantity": 2
+          },
+          {
+            "cardId": "sabine-wren--i-learned-the-hard-way",
+            "quantity": 2
+          },
+          {
+            "cardId": "sabine-wren--spectre-five",
+            "quantity": 3
+          },
+          {
+            "cardId": "stolen-at-hauler",
+            "quantity": 3
+          },
+          {
+            "cardId": "sudden-ferocity",
+            "quantity": 2
+          },
+          {
+            "cardId": "unsanctioned-patrol",
+            "quantity": 3
+          },
+          {
+            "cardId": "yellow-aces-bomber",
+            "quantity": 3
+          },
+          {
+            "cardId": "zeb-orrelios--fists-work-every-time",
+            "quantity": 2
+          }
+        ],
+        "sideboard": [
+          {
+            "cardId": "arvel-skeen--win-and-walk-away",
+            "quantity": 2
+          },
+          {
+            "cardId": "commandeer",
+            "quantity": 3
+          },
+          {
+            "cardId": "outer-rim-constable",
+            "quantity": 2
+          },
+          {
+            "cardId": "watch-this",
+            "quantity": 2
+          },
+          {
+            "cardId": "zeb-orrelios--fists-work-every-time",
+            "quantity": 1
+          }
+        ],
+        "reserve": [],
+        "inactiveUnsupported": [],
+        "sourceDeckId": "5d1f7e0b-9146-4a45-9a65-eb29b0fe0ae6",
+        "contentHash": "f9cd40484fce6515fb973b1f7450579952719bf030012f6d4cf44b342a24780b"
+      }
+    },
+    {
+      "key": "dedra",
+      "snapshot": {
+        "snapshotVersion": 1,
+        "versions": {
+          "state": 109,
+          "engine": "1.2.0",
+          "cards": "1.2.0@45abd7024e95120c53b5d17c20188a0fabb2155bdc2878f74e693486f769dfce",
+          "rules": "swu-8.0",
+          "format": "core-practice"
+        },
+        "catalogIdentityHash": "28bbf114c6e57c5e822e85652c1db9200df7f3e45076d42a93f574de9a22b105",
+        "cardIdentities": [
+          {
+            "cardId": "aggressive-negotiations",
+            "type": "Event"
+          },
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "type": "Unit"
+          },
+          {
+            "cardId": "boba-fett-s-rancor--emotionally-complex-creature",
+            "type": "Unit"
+          },
+          {
+            "cardId": "cantwell-arrestor-cruiser",
+            "type": "Unit"
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "type": "Unit"
+          },
+          {
+            "cardId": "collateral-damage",
+            "type": "Event"
+          },
+          {
+            "cardId": "colossus",
+            "type": "Base"
+          },
+          {
+            "cardId": "condemn",
+            "type": "Upgrade"
+          },
+          {
+            "cardId": "dedra-meero--not-wasting-time",
+            "type": "Leader"
+          },
+          {
+            "cardId": "devastator--hunting-the-rebellion",
+            "type": "Unit"
+          },
+          {
+            "cardId": "direct-hit",
+            "type": "Event"
+          },
+          {
+            "cardId": "hold-for-questioning",
+            "type": "Event"
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "type": "Event"
+          },
+          {
+            "cardId": "ig-2000--assassin-s-aggressor",
+            "type": "Unit"
+          },
+          {
+            "cardId": "imperial-armored-commando",
+            "type": "Unit"
+          },
+          {
+            "cardId": "imperial-door-technician",
+            "type": "Unit"
+          },
+          {
+            "cardId": "knowledge-and-defense",
+            "type": "Event"
+          },
+          {
+            "cardId": "lando-calrissian--trust-me",
+            "type": "Unit"
+          },
+          {
+            "cardId": "let-s-call-it-war",
+            "type": "Event"
+          },
+          {
+            "cardId": "lost-and-forgotten",
+            "type": "Event"
+          },
+          {
+            "cardId": "marrok--mysterious-warrior",
+            "type": "Unit"
+          },
+          {
+            "cardId": "no-glory--only-results",
+            "type": "Event"
+          },
+          {
+            "cardId": "operation-cinder",
+            "type": "Event"
+          },
+          {
+            "cardId": "planetary-bombardment",
+            "type": "Event"
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "type": "Unit"
+          },
+          {
+            "cardId": "rey--skywalker",
+            "type": "Unit"
+          },
+          {
+            "cardId": "shin-hati--going-somewhere-",
+            "type": "Unit"
+          },
+          {
+            "cardId": "single-reactor-ignition",
+            "type": "Event"
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "type": "Event"
+          }
+        ],
+        "sourceFormat": 1,
+        "sourceKind": "normal",
+        "leader": "dedra-meero--not-wasting-time",
+        "base": "colossus",
+        "mainboard": [
+          {
+            "cardId": "aggressive-negotiations",
+            "quantity": 1
+          },
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "quantity": 1
+          },
+          {
+            "cardId": "boba-fett-s-rancor--emotionally-complex-creature",
+            "quantity": 1
+          },
+          {
+            "cardId": "cantwell-arrestor-cruiser",
+            "quantity": 1
+          },
+          {
+            "cardId": "chimaera--a-frightening-reality",
+            "quantity": 3
+          },
+          {
+            "cardId": "collateral-damage",
+            "quantity": 3
+          },
+          {
+            "cardId": "condemn",
+            "quantity": 3
+          },
+          {
+            "cardId": "devastator--hunting-the-rebellion",
+            "quantity": 3
+          },
+          {
+            "cardId": "direct-hit",
+            "quantity": 1
+          },
+          {
+            "cardId": "hold-for-questioning",
+            "quantity": 2
+          },
+          {
+            "cardId": "hyperspace-disaster",
+            "quantity": 2
+          },
+          {
+            "cardId": "imperial-armored-commando",
+            "quantity": 3
+          },
+          {
+            "cardId": "imperial-door-technician",
+            "quantity": 3
+          },
+          {
+            "cardId": "knowledge-and-defense",
+            "quantity": 2
+          },
+          {
+            "cardId": "let-s-call-it-war",
+            "quantity": 3
+          },
+          {
+            "cardId": "lost-and-forgotten",
+            "quantity": 3
+          },
+          {
+            "cardId": "marrok--mysterious-warrior",
+            "quantity": 3
+          },
+          {
+            "cardId": "no-glory--only-results",
+            "quantity": 3
+          },
+          {
+            "cardId": "operation-cinder",
+            "quantity": 2
+          },
+          {
+            "cardId": "planetary-bombardment",
+            "quantity": 2
+          },
+          {
+            "cardId": "pre-vizsla--strong-willed-ruler",
+            "quantity": 3
+          },
+          {
+            "cardId": "shin-hati--going-somewhere-",
+            "quantity": 2
+          },
+          {
+            "cardId": "single-reactor-ignition",
+            "quantity": 3
+          },
+          {
+            "cardId": "the-tree-remembers",
+            "quantity": 3
+          }
+        ],
+        "sideboard": [
+          {
+            "cardId": "aggressive-negotiations",
+            "quantity": 1
+          },
+          {
+            "cardId": "annihilator--tagge-s-flagship",
+            "quantity": 1
+          },
+          {
+            "cardId": "boba-fett-s-rancor--emotionally-complex-creature",
+            "quantity": 1
+          },
+          {
+            "cardId": "cantwell-arrestor-cruiser",
+            "quantity": 1
+          },
+          {
+            "cardId": "ig-2000--assassin-s-aggressor",
+            "quantity": 2
+          },
+          {
+            "cardId": "lando-calrissian--trust-me",
+            "quantity": 1
+          },
+          {
+            "cardId": "planetary-bombardment",
+            "quantity": 1
+          },
+          {
+            "cardId": "rey--skywalker",
+            "quantity": 1
+          },
+          {
+            "cardId": "shin-hati--going-somewhere-",
+            "quantity": 1
+          }
+        ],
+        "reserve": [],
+        "inactiveUnsupported": [],
+        "sourceDeckId": "736e9695-ef03-4422-8804-2e11281c44ef",
+        "contentHash": "4e122717a407f2bd43a41628e3e1280456538e823c1ec7a9596d7d280faf4618"
+      }
+    }
+  ]
+}

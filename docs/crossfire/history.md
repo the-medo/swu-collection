@@ -256,3 +256,14 @@ and card/round metrics into the account statistics tables. A separate durable
 receipt keeps failed exports retryable without changing the archive. See
 [player and deck statistics](statistics.md) for match identity, undo/cancellation
 accounting, BO3 completion, privacy and realtime delivery.
+
+
+## AI games and replay allowances
+
+AI games have `play.games.mode = 'ai'` and an immutable release pin in
+`play.ai_games`. History includes an AI opponent label, release label, and replay
+availability; its optional `opponent=human|ai` filter preserves account scoping.
+The statistics publisher consumes the finalization receipt without writing any
+AI account/deck/team result. See [AI releases](ai-releases.md) for the admission,
+worker, and configurable five-replay default. Expired replays keep summary rows,
+remove archive/recovery payloads and bookmarks, and revoke replay access checks.

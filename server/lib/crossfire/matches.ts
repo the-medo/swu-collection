@@ -240,7 +240,8 @@ export class CrossfireMatches {
     return this.sql.begin(async tx => {
       await requireSession(tx, p, true);
       const data = await this.read(tx, p, lobbyId, catalog, true);
-      if (!data) throw new AdmissionError('unavailable');
+      if (!data || data.people.some(person => !person.user_id))
+        throw new AdmissionError('unavailable');
       const original = this.decode(
         data.people.find(r => r.seat === data.seat)!.deck_snapshot,
         catalog,

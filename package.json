@@ -8,6 +8,14 @@
     "play:archive": "bun run --cwd play archive",
     "play:archive:verify": "bun run --cwd play archive:verify",
     "play:benchmark": "bun run --cwd play benchmark",
+    "play:ai:benchmark": "bun play/ai/benchmark.ts",
+    "play:ai:test": "bun test play/testing/ai",
+    "play:ai:train": ".swubase/crossfire-ai/venv/bin/python play/ai/training/experiment.py train",
+    "play:ai:evaluate": ".swubase/crossfire-ai/venv/bin/python play/ai/training/experiment.py evaluate",
+    "play:ai:league:train": ".swubase/crossfire-ai/venv/bin/python play/ai/training/league_train.py",
+    "play:ai:specialists:prepare": ".swubase/crossfire-ai/venv/bin/python play/ai/training/league_train.py --specialists --prepare-only",
+    "play:ai:specialists:train": ".swubase/crossfire-ai/venv/bin/python play/ai/training/league_train.py --specialists",
+    "play:ai:full:train": ".swubase/crossfire-ai/venv/bin/python play/ai/training/full_train.py",
     "play:targets": "bun play/scripts/card-targets.ts",
     "play:targets:refresh": "bun play/scripts/refresh-card-targets.ts",
     "play:coverage": "bun run --cwd play coverage",
@@ -30,7 +38,12 @@
     "play:cards:export": "bun play/scripts/card-release.ts export",
     "play:cards:publish": "bun --env-file=.env --env-file=.env.worktree play/scripts/card-release.ts publish",
     "play:cards:install": "bun --env-file=.env --env-file=.env.worktree play/scripts/card-release.ts install",
-    "play:cards:schema": "bun play/scripts/generate-card-schema.ts"
+    "play:cards:schema": "bun play/scripts/generate-card-schema.ts",
+    "play:ai:fork": ".swubase/crossfire-ai/venv/bin/python play/ai/training/fork_run.py",
+    "play:ai:release": ".swubase/crossfire-ai/venv/bin/python play/ai/training/release.py",
+    "play:ai:release:publish": "bun play/ai/releases/publish.ts",
+    "play:ai:data:sync": ".swubase/crossfire-ai/venv/bin/python play/ai/training/sync_data.py",
+    "play:ai:serve": ".swubase/crossfire-ai/venv/bin/python play/ai/training/serve.py"
   },
   "devDependencies": {
     "@better-auth/cli": "^1.3.34",

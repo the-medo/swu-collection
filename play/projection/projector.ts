@@ -51,6 +51,15 @@ export class Projector {
   readonly #gameId: string;
   readonly #key: string;
   readonly #epoch: string;
+  readonly #training: boolean;
+  readonly #tokens = new Map<string, string>();
+  #trainingSnapshot?: {
+    state: GameState;
+    revision: number;
+    factCount: number;
+    publicOrder: number;
+    view: GameView;
+  };
   #revision = 0;
   #lastContent = '';
   #earlyResource?: {
@@ -60,18 +69,34 @@ export class Projector {
     frame: string;
   };
 
-  constructor(gameId: string, viewer: Viewer, secret = randomBytes(32).toString('hex')) {
+  constructor(
+    gameId: string,
+    viewer: Viewer,
+    secret = randomBytes(32).toString('hex'),
+    options: { training?: boolean } = {},
+  ) {
     if (secret.length < 32) throw new Error('Projector secret must contain at least 32 characters');
     this.#gameId = gameId;
     this.#viewer = { ...viewer };
     this.#key = secret;
+    this.#training = options.training ?? false;
     this.#epoch = this.token('epoch');
   }
   private token(...parts: (string | number)[]): string {
-    return createHmac('sha256', this.#key)
+    const key = this.#training ? JSON.stringify(parts) : '';
+    const cached = this.#tokens.get(key);
+    if (cached !== undefined) return cached;
+    const value = createHmac('sha256', this.#key)
       .update(JSON.stringify([this.#gameId, this.#viewer, ...parts]))
       .digest('hex')
       .slice(0, 32);
+    if (this.#training) {
+      // Bound memory per viewer. The key includes incarnation and visibility,
+      // so neither another seat nor a hidden-zone transition reuses a handle.
+      if (this.#tokens.size >= 4096) this.#tokens.delete(this.#tokens.keys().next().value!);
+      this.#tokens.set(key, value);
+    }
+    return value;
   }
   private handle(card: CardReference | CardInstance): string {
     return this.token('card', card.instanceId, card.incarnation, card.visibility);
@@ -177,12 +202,27 @@ export class Projector {
     };
   }
 
+  // Training mode is for a single trusted, forward-only in-process game:
+  // snapshots and returned views must never be mutated. It returns only newly
+  // visible events and reuses the view for the identical snapshot. Do not send
+  // these incremental views to browser/replay consumers. Default mode retains
+  // complete histories and supports arbitrary mutable/reconstructed snapshots.
   project(state: GameState): GameView {
     if (
       state.gameId !== this.#gameId ||
       (this.#viewer.role === 'player' && !state.seats.includes(this.#viewer.playerId))
     )
       throw new IllegalInput();
+    const previous = this.#trainingSnapshot;
+    if (previous) {
+      if (state === previous.state) {
+        if (state.revision !== previous.revision || state.facts.length !== previous.factCount)
+          throw new Error('Training projection requires immutable snapshots');
+        return previous.view;
+      }
+      if (state.revision <= previous.revision || state.facts.length < previous.factCount)
+        throw new Error('Training projection requires forward-only history');
+    }
     // Enumerate visible zone order, not the private instance-allocation order.
     const cards = state.seats
       .flatMap(id => {
@@ -215,26 +255,24 @@ export class Projector {
         : {}),
       currentCardId: visibleIds.has(this.handle(ref)) ? this.handle(ref) : null,
     });
-    let publicOrder = 0;
-    const orders = new Map(
-      state.facts.map(f => [f.seq, f.audience === 'public' ? ++publicOrder : publicOrder]),
-    );
-    const events = state.facts
-      .filter(
-        event =>
-          event.audience === 'public' ||
-          (this.#viewer.role === 'player' && event.audience.includes(this.#viewer.playerId)),
-      )
-      .map(event => ({
+    let publicOrder = previous?.publicOrder ?? 0;
+    const events: GameView['events'] = [];
+    for (let i = previous?.factCount ?? 0; i < state.facts.length; i++) {
+      const event = state.facts[i]!;
+      if (event.audience === 'public') publicOrder++;
+      else if (this.#viewer.role !== 'player' || !event.audience.includes(this.#viewer.playerId))
+        continue;
+      events.push({
         id: this.token('event', event.seq),
-        order: orders.get(event.seq)!,
+        order: publicOrder,
         type: event.type,
         actor: event.actor,
         amount: event.amount,
         ...(event.mode ? { mode: event.mode } : {}),
         ...(event.namedCard ? { namedCard: event.namedCard } : {}),
         cards: event.cards.map(visibleReference),
-      }));
+      });
+    }
     const decision =
       this.#viewer.role === 'player' ? decisionForPlayer(state, this.#viewer.playerId) : null;
     const plan = this.#viewer.role === 'player' ? resourcePlan(state, this.#viewer.playerId) : null;
@@ -665,7 +703,64 @@ export class Projector {
     ) {
       this.#earlyResource = undefined;
     }
+    if (this.#training)
+      this.#trainingSnapshot = {
+        state,
+        revision: state.revision,
+        factCount: state.facts.length,
+        publicOrder,
+        view,
+      };
     return view;
+  }
+
+  /** Server-only inverse for verified history exports; never accepts browser state. */
+  projectDecision(
+    state: GameState,
+    input: Extract<EngineInput, { type: 'decision' }>,
+  ): ViewCommand {
+    if (
+      this.#viewer.role !== 'player' ||
+      input.playerId !== this.#viewer.playerId ||
+      input.gameId !== state.gameId ||
+      input.expectedRevision !== state.revision
+    )
+      throw new IllegalInput();
+    const view = this.project(state);
+    const decision = decisionForPlayer(state, this.#viewer.playerId);
+    if (
+      !decision ||
+      decision.id !== input.decisionId ||
+      !decision.options.some(o => o.id === input.optionId)
+    )
+      throw new IllegalInput();
+    const command: ViewCommand = {
+      gameId: view.gameId,
+      epoch: view.epoch,
+      expectedRevision: view.revision,
+      decisionId: view.decision!.id,
+      optionId: this.token('option', decision.id, input.optionId),
+      selections: input.selections.map(id => this.handle(instance(state, id))),
+      ...(input.namedCardId !== undefined ? { namedCardId: input.namedCardId } : {}),
+      ...(input.chosenNumber !== undefined ? { chosenNumber: input.chosenNumber } : {}),
+    };
+    const roundtrip = this.command(state, command);
+    if (
+      JSON.stringify(roundtrip) !==
+      JSON.stringify({
+        type: 'decision',
+        gameId: input.gameId,
+        expectedRevision: input.expectedRevision,
+        playerId: input.playerId,
+        decisionId: input.decisionId,
+        optionId: input.optionId,
+        selections: input.selections,
+        ...(input.namedCardId !== undefined ? { namedCardId: input.namedCardId } : {}),
+        ...(input.chosenNumber !== undefined ? { chosenNumber: input.chosenNumber } : {}),
+      })
+    )
+      throw new IllegalInput();
+    return command;
   }
 
   command(state: GameState, raw: ViewCommand): EngineInput {

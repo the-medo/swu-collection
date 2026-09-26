@@ -1,5 +1,6 @@
 import type { CrossfireGameArtwork } from './crossfire-activity.ts';
 import { z } from 'zod';
+import type { AiGameInfo } from './crossfire-ai-play.ts';
 
 export const crossfirePolicySchema = z
   .strictObject({
@@ -28,6 +29,7 @@ export const crossfireTicketBody = z.strictObject({
 });
 export type CrossfireExit = { status: 'pending' | 'forfeit' | 'abandoned'; seat: 'p1' | 'p2' };
 export type CrossfireLobby = {
+  ai?: AiGameInfo;
   exit?: CrossfireExit | null;
   compatible?: boolean;
   practice?: boolean;
@@ -70,6 +72,7 @@ export type CrossfireDeckIssue = {
 export type CrossfireDeckReadiness = { ready: boolean; issues: CrossfireDeckIssue[] };
 
 export const crossfireHistoryQuery = z.strictObject({
+  opponent: z.enum(['human', 'ai']).optional(),
   status: z.literal('running').optional(),
   cursor: z
     .string()
@@ -78,6 +81,8 @@ export const crossfireHistoryQuery = z.strictObject({
     .optional(),
 });
 export type CrossfireHistoryGame = CrossfireGameArtwork & {
+  ai?: AiGameInfo;
+  replayAvailable?: boolean;
   practice?: boolean;
   lobbyId: string;
   gameId: string;

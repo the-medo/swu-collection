@@ -7,16 +7,17 @@ import { cardPoolDeckCards, cardPoolDecks } from '../../db/schema/card_pool_deck
 import { cardPoolCards } from '../../db/schema/card_pool.ts';
 import type { CardIdentityCatalog, DeckInput } from '../../../play/admission/decks.ts';
 
-/** Caller supplies the authenticated session user ID and preview-aware catalog.
+/** Caller supplies the authenticated session user ID (or null for public/shared
+ * decks only) and preview-aware catalog.
  * This private helper does not interpret browser identity, grant admin bypass,
  * fetch card data itself, or disclose the source deck to another participant. */
 export async function readDeckInput(
   db: PostgresJsDatabase,
-  userId: string,
+  userId: string | null,
   deckId: string,
   catalog: CardIdentityCatalog,
 ): Promise<DeckInput | null> {
-  z.string().min(1).max(128).parse(userId);
+  if (userId !== null) z.string().min(1).max(128).parse(userId);
   z.uuid().parse(deckId);
   return db.transaction(tx => readDeckInputInTransaction(tx, userId, deckId, catalog), {
     isolationLevel: 'repeatable read',
@@ -27,11 +28,11 @@ export async function readDeckInput(
 /** Reuse the caller's consistent transaction when freezing and persisting admission. */
 export async function readDeckInputInTransaction(
   tx: Pick<PostgresJsDatabase, 'select'>,
-  userId: string,
+  userId: string | null,
   deckId: string,
   catalog: CardIdentityCatalog,
 ): Promise<DeckInput | null> {
-  z.string().min(1).max(128).parse(userId);
+  if (userId !== null) z.string().min(1).max(128).parse(userId);
   z.uuid().parse(deckId);
   const [source] = await tx
     .select({
@@ -44,7 +45,14 @@ export async function readDeckInputInTransaction(
       owner: deck.userId,
     })
     .from(deck)
-    .where(and(eq(deck.id, deckId), or(eq(deck.userId, userId), inArray(deck.public, [1, 2]))));
+    .where(
+      and(
+        eq(deck.id, deckId),
+        userId === null
+          ? inArray(deck.public, [1, 2])
+          : or(eq(deck.userId, userId), inArray(deck.public, [1, 2])),
+      ),
+    );
   if (!source) return null;
   const result: DeckInput = {
     source: { deckId, format: source.format, kind: source.cardPoolId ? 'limited' : 'normal' },
@@ -78,10 +86,12 @@ export async function readDeckInputInTransaction(
           eq(cardPoolDecks.deckId, deckId),
           eq(cardPoolDecks.cardPoolId, source.cardPoolId),
           eq(cardPoolDecks.userId, source.owner),
-          or(
-            eq(cardPoolDecks.userId, userId),
-            inArray(cardPoolDecks.visibility, ['public', 'unlisted']),
-          ),
+          userId === null
+            ? inArray(cardPoolDecks.visibility, ['public', 'unlisted'])
+            : or(
+                eq(cardPoolDecks.userId, userId),
+                inArray(cardPoolDecks.visibility, ['public', 'unlisted']),
+              ),
         ),
       );
     if (!poolDeck) return null;

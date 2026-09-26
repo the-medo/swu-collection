@@ -64,8 +64,12 @@ export function cardTraits(
         ...cardPrintedTraits(state, card),
         ...grantedTraits(state, card, evaluation),
         ...attachedUpgrades(state, card).flatMap(u => {
-          if (!activeUpgrade(state, u, evaluation)) return [];
           const profile = upgradeProfile(cardDefinition(state, u.cardId));
+          // Tokens without trait grants cannot affect this query. Evaluating
+          // their abilities needlessly re-enters host traits via token blanking
+          // and a trait-dependent pilot grant (e.g. Luke + Advantage).
+          if (!profile?.hostTraits?.length && !profile?.conditionalHostTraits?.length) return [];
+          if (!activeUpgrade(state, u, evaluation)) return [];
           return [
             ...(profile?.hostTraits ?? []),
             ...(profile?.conditionalHostTraits ?? []).flatMap((grant, index) =>

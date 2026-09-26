@@ -45,6 +45,7 @@ import { Route as TournamentsFeaturedIndexRouteImport } from './routes/tournamen
 import { Route as TournamentsAllIndexRouteImport } from './routes/tournaments/all/index'
 import { Route as TournamentsTournamentIdIndexRouteImport } from './routes/tournaments/$tournamentId/index'
 import { Route as ToolsDeckFormatConverterIndexRouteImport } from './routes/tools/deck-format-converter/index'
+import { Route as ToolsCrossfireTrainingIndexRouteImport } from './routes/tools/crossfire-training/index'
 import { Route as TeamsTeamIdIndexRouteImport } from './routes/teams/$teamId/index'
 import { Route as ListsCardListIdIndexRouteImport } from './routes/lists/$cardListId/index'
 import { Route as LimitedPublicIndexRouteImport } from './routes/limited/public/index'
@@ -268,6 +269,12 @@ const ToolsDeckFormatConverterIndexRoute =
   ToolsDeckFormatConverterIndexRouteImport.update({
     id: '/tools/deck-format-converter/',
     path: '/tools/deck-format-converter/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ToolsCrossfireTrainingIndexRoute =
+  ToolsCrossfireTrainingIndexRouteImport.update({
+    id: '/tools/crossfire-training/',
+    path: '/tools/crossfire-training/',
     getParentRoute: () => rootRouteImport,
   } as any)
 const TeamsTeamIdIndexRoute = TeamsTeamIdIndexRouteImport.update({
@@ -515,6 +522,7 @@ export interface FileRoutesByFullPath {
   '/limited/public': typeof LimitedPublicIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/teams/$teamId': typeof TeamsTeamIdIndexRoute
+  '/tools/crossfire-training': typeof ToolsCrossfireTrainingIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/tournaments/all': typeof TournamentsAllIndexRoute
@@ -584,6 +592,7 @@ export interface FileRoutesByTo {
   '/limited/public': typeof LimitedPublicIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/teams/$teamId': typeof TeamsTeamIdIndexRoute
+  '/tools/crossfire-training': typeof ToolsCrossfireTrainingIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/tournaments/all': typeof TournamentsAllIndexRoute
@@ -656,6 +665,7 @@ export interface FileRoutesById {
   '/limited/public/': typeof LimitedPublicIndexRoute
   '/lists/$cardListId/': typeof ListsCardListIdIndexRoute
   '/teams/$teamId/': typeof TeamsTeamIdIndexRoute
+  '/tools/crossfire-training/': typeof ToolsCrossfireTrainingIndexRoute
   '/tools/deck-format-converter/': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId/': typeof TournamentsTournamentIdIndexRoute
   '/tournaments/all/': typeof TournamentsAllIndexRoute
@@ -729,6 +739,7 @@ export interface FileRouteTypes {
     | '/limited/public'
     | '/lists/$cardListId'
     | '/teams/$teamId'
+    | '/tools/crossfire-training'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
     | '/tournaments/all'
@@ -798,6 +809,7 @@ export interface FileRouteTypes {
     | '/limited/public'
     | '/lists/$cardListId'
     | '/teams/$teamId'
+    | '/tools/crossfire-training'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
     | '/tournaments/all'
@@ -869,6 +881,7 @@ export interface FileRouteTypes {
     | '/limited/public/'
     | '/lists/$cardListId/'
     | '/teams/$teamId/'
+    | '/tools/crossfire-training/'
     | '/tools/deck-format-converter/'
     | '/tournaments/$tournamentId/'
     | '/tournaments/all/'
@@ -937,6 +950,7 @@ export interface RootRouteChildren {
   LimitedPublicIndexRoute: typeof LimitedPublicIndexRoute
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
   TeamsTeamIdIndexRoute: typeof TeamsTeamIdIndexRoute
+  ToolsCrossfireTrainingIndexRoute: typeof ToolsCrossfireTrainingIndexRoute
   ToolsDeckFormatConverterIndexRoute: typeof ToolsDeckFormatConverterIndexRoute
   TournamentsTournamentIdIndexRoute: typeof TournamentsTournamentIdIndexRoute
   TournamentsAllIndexRoute: typeof TournamentsAllIndexRoute
@@ -1201,6 +1215,13 @@ declare module '@tanstack/react-router' {
       path: '/tools/deck-format-converter'
       fullPath: '/tools/deck-format-converter'
       preLoaderRoute: typeof ToolsDeckFormatConverterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/crossfire-training/': {
+      id: '/tools/crossfire-training/'
+      path: '/tools/crossfire-training'
+      fullPath: '/tools/crossfire-training'
+      preLoaderRoute: typeof ToolsCrossfireTrainingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams/$teamId/': {
@@ -1609,6 +1630,7 @@ const rootRouteChildren: RootRouteChildren = {
   LimitedPublicIndexRoute: LimitedPublicIndexRoute,
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
   TeamsTeamIdIndexRoute: TeamsTeamIdIndexRoute,
+  ToolsCrossfireTrainingIndexRoute: ToolsCrossfireTrainingIndexRoute,
   ToolsDeckFormatConverterIndexRoute: ToolsDeckFormatConverterIndexRoute,
   TournamentsTournamentIdIndexRoute: TournamentsTournamentIdIndexRoute,
   TournamentsAllIndexRoute: TournamentsAllIndexRoute,
