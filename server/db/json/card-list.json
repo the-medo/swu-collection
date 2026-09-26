@@ -228626,6 +228626,44 @@
           "back": null
         }
       },
+      "boga--loyal-varactyl-8-homeworlds-weekly-play": {
+        "variantId": "boga--loyal-varactyl-8-homeworlds-weekly-play",
+        "swuId": 60143,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 8,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boga--loyal-varactyl-8-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "boga--loyal-varactyl-28-homeworlds-weekly-play": {
+        "variantId": "boga--loyal-varactyl-28-homeworlds-weekly-play",
+        "swuId": 60243,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 28,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boga--loyal-varactyl-28-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "boga--loyal-varactyl-394-homeworlds": {
         "variantId": "boga--loyal-varactyl-394-homeworlds",
         "swuId": 60913,
@@ -228645,6 +228683,25 @@
           "back": null
         }
       },
+      "boga--loyal-varactyl-812-homeworlds": {
+        "variantId": "boga--loyal-varactyl-812-homeworlds",
+        "swuId": 61813,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 812,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Kevin Sidharta",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boga--loyal-varactyl-812-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "boga--loyal-varactyl-632-homeworlds": {
         "variantId": "boga--loyal-varactyl-632-homeworlds",
         "swuId": 62433,
@@ -228661,6 +228718,44 @@
         },
         "image": {
           "front": "boga--loyal-varactyl-632-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "boga--loyal-varactyl-860-homeworlds": {
+        "variantId": "boga--loyal-varactyl-860-homeworlds",
+        "swuId": 63243,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 860,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Kevin Sidharta",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boga--loyal-varactyl-860-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "boga--loyal-varactyl-908-homeworlds": {
+        "variantId": "boga--loyal-varactyl-908-homeworlds",
+        "swuId": 63483,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 908,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Kevin Sidharta",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boga--loyal-varactyl-908-homeworlds-front.webp",
           "back": null
         }
       }
@@ -229020,6 +229115,25 @@
           "back": null
         }
       },
+      "origin-tree-shyyyo-828-homeworlds": {
+        "variantId": "origin-tree-shyyyo-828-homeworlds",
+        "swuId": 61893,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 828,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "origin-tree-shyyyo-828-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "origin-tree-shyyyo-655-homeworlds": {
         "variantId": "origin-tree-shyyyo-655-homeworlds",
         "swuId": 62548,
@@ -229036,6 +229150,44 @@
         },
         "image": {
           "front": "origin-tree-shyyyo-655-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "origin-tree-shyyyo-876-homeworlds": {
+        "variantId": "origin-tree-shyyyo-876-homeworlds",
+        "swuId": 63323,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 876,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "origin-tree-shyyyo-876-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "origin-tree-shyyyo-924-homeworlds": {
+        "variantId": "origin-tree-shyyyo-924-homeworlds",
+        "swuId": 63563,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 924,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "origin-tree-shyyyo-924-homeworlds-front.webp",
           "back": null
         }
       }
@@ -229117,6 +229269,25 @@
           "back": null
         }
       },
+      "garnac--let-the-hunt-begin--809-homeworlds": {
+        "variantId": "garnac--let-the-hunt-begin--809-homeworlds",
+        "swuId": 61798,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 809,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Manos Sparakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "garnac--let-the-hunt-begin--809-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "garnac--let-the-hunt-begin--614-homeworlds": {
         "variantId": "garnac--let-the-hunt-begin--614-homeworlds",
         "swuId": 62343,
@@ -229133,6 +229304,44 @@
         },
         "image": {
           "front": "garnac--let-the-hunt-begin--614-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "garnac--let-the-hunt-begin--857-homeworlds": {
+        "variantId": "garnac--let-the-hunt-begin--857-homeworlds",
+        "swuId": 63228,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 857,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Manos Sparakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "garnac--let-the-hunt-begin--857-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "garnac--let-the-hunt-begin--905-homeworlds": {
+        "variantId": "garnac--let-the-hunt-begin--905-homeworlds",
+        "swuId": 63468,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 905,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Manos Sparakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "garnac--let-the-hunt-begin--905-homeworlds-front.webp",
           "back": null
         }
       }
@@ -229193,6 +229402,44 @@
         },
         "image": {
           "front": "trandoshan-collaborator-245-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "trandoshan-collaborator-20-homeworlds-weekly-play": {
+        "variantId": "trandoshan-collaborator-20-homeworlds-weekly-play",
+        "swuId": 60203,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 20,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Sebastián Guidobono",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "trandoshan-collaborator-20-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "trandoshan-collaborator-40-homeworlds-weekly-play": {
+        "variantId": "trandoshan-collaborator-40-homeworlds-weekly-play",
+        "swuId": 60303,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 40,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Sebastián Guidobono",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "trandoshan-collaborator-40-homeworlds-weekly-play-front.webp",
           "back": null
         }
       },
@@ -229313,6 +229560,25 @@
           "back": null
         }
       },
+      "the-first-legion--vader-s-fist-810-homeworlds": {
+        "variantId": "the-first-legion--vader-s-fist-810-homeworlds",
+        "swuId": 61803,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 810,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Guillaume Ospital",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-first-legion--vader-s-fist-810-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "the-first-legion--vader-s-fist-618-homeworlds": {
         "variantId": "the-first-legion--vader-s-fist-618-homeworlds",
         "swuId": 62363,
@@ -229329,6 +229595,44 @@
         },
         "image": {
           "front": "the-first-legion--vader-s-fist-618-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "the-first-legion--vader-s-fist-858-homeworlds": {
+        "variantId": "the-first-legion--vader-s-fist-858-homeworlds",
+        "swuId": 63233,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 858,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Guillaume Ospital",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-first-legion--vader-s-fist-858-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "the-first-legion--vader-s-fist-906-homeworlds": {
+        "variantId": "the-first-legion--vader-s-fist-906-homeworlds",
+        "swuId": 63473,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 906,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Guillaume Ospital",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-first-legion--vader-s-fist-906-homeworlds-front.webp",
           "back": null
         }
       }
@@ -229607,6 +229911,28 @@
           "front": "doctor-hemlock--emotion-has-no-place-here-275-homeworlds-front.webp",
           "back": "doctor-hemlock--emotion-has-no-place-here-275-homeworlds-back.webp"
         }
+      },
+      "doctor-hemlock--emotion-has-no-place-here-785-homeworlds": {
+        "variantId": "doctor-hemlock--emotion-has-no-place-here-785-homeworlds",
+        "swuId": 61678,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 785,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "doctor-hemlock--emotion-has-no-place-here-785-homeworlds-front.webp",
+          "back": "doctor-hemlock--emotion-has-no-place-here-785-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -229767,6 +230093,44 @@
           "back": null
         }
       },
+      "scorch--imperial-commando-2-homeworlds-weekly-play": {
+        "variantId": "scorch--imperial-commando-2-homeworlds-weekly-play",
+        "swuId": 60113,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 2,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "scorch--imperial-commando-2-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "scorch--imperial-commando-22-homeworlds-weekly-play": {
+        "variantId": "scorch--imperial-commando-22-homeworlds-weekly-play",
+        "swuId": 60213,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 22,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "scorch--imperial-commando-22-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "scorch--imperial-commando-336-homeworlds": {
         "variantId": "scorch--imperial-commando-336-homeworlds",
         "swuId": 60623,
@@ -229786,6 +230150,25 @@
           "back": null
         }
       },
+      "scorch--imperial-commando-804-homeworlds": {
+        "variantId": "scorch--imperial-commando-804-homeworlds",
+        "swuId": 61773,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 804,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "scorch--imperial-commando-804-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "scorch--imperial-commando-574-homeworlds": {
         "variantId": "scorch--imperial-commando-574-homeworlds",
         "swuId": 62143,
@@ -229802,6 +230185,44 @@
         },
         "image": {
           "front": "scorch--imperial-commando-574-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "scorch--imperial-commando-852-homeworlds": {
+        "variantId": "scorch--imperial-commando-852-homeworlds",
+        "swuId": 63203,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 852,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "scorch--imperial-commando-852-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "scorch--imperial-commando-900-homeworlds": {
+        "variantId": "scorch--imperial-commando-900-homeworlds",
+        "swuId": 63443,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 900,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "scorch--imperial-commando-900-homeworlds-front.webp",
           "back": null
         }
       }
@@ -230244,6 +230665,25 @@
           "back": null
         }
       },
+      "krrsantan--santo-802-homeworlds": {
+        "variantId": "krrsantan--santo-802-homeworlds",
+        "swuId": 61763,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 802,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "krrsantan--santo-802-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "krrsantan--santo-556-homeworlds": {
         "variantId": "krrsantan--santo-556-homeworlds",
         "swuId": 62053,
@@ -230260,6 +230700,44 @@
         },
         "image": {
           "front": "krrsantan--santo-556-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "krrsantan--santo-850-homeworlds": {
+        "variantId": "krrsantan--santo-850-homeworlds",
+        "swuId": 63193,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 850,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "krrsantan--santo-850-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "krrsantan--santo-898-homeworlds": {
+        "variantId": "krrsantan--santo-898-homeworlds",
+        "swuId": 63433,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 898,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "krrsantan--santo-898-homeworlds-front.webp",
           "back": null
         }
       }
@@ -230319,6 +230797,44 @@
         },
         "image": {
           "front": "inferno-squad--we-can-grieve-later-202-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "inferno-squad--we-can-grieve-later-15-homeworlds-weekly-play": {
+        "variantId": "inferno-squad--we-can-grieve-later-15-homeworlds-weekly-play",
+        "swuId": 60178,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 15,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "inferno-squad--we-can-grieve-later-15-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "inferno-squad--we-can-grieve-later-35-homeworlds-weekly-play": {
+        "variantId": "inferno-squad--we-can-grieve-later-35-homeworlds-weekly-play",
+        "swuId": 60278,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 35,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "inferno-squad--we-can-grieve-later-35-homeworlds-weekly-play-front.webp",
           "back": null
         }
       },
@@ -231112,6 +231628,25 @@
           "back": null
         }
       },
+      "boss-nass--otoh-gunga-boss-807-homeworlds": {
+        "variantId": "boss-nass--otoh-gunga-boss-807-homeworlds",
+        "swuId": 61788,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 807,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boss-nass--otoh-gunga-boss-807-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "boss-nass--otoh-gunga-boss-587-homeworlds": {
         "variantId": "boss-nass--otoh-gunga-boss-587-homeworlds",
         "swuId": 62208,
@@ -231128,6 +231663,44 @@
         },
         "image": {
           "front": "boss-nass--otoh-gunga-boss-587-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "boss-nass--otoh-gunga-boss-855-homeworlds": {
+        "variantId": "boss-nass--otoh-gunga-boss-855-homeworlds",
+        "swuId": 63218,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 855,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boss-nass--otoh-gunga-boss-855-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "boss-nass--otoh-gunga-boss-903-homeworlds": {
+        "variantId": "boss-nass--otoh-gunga-boss-903-homeworlds",
+        "swuId": 63458,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 903,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boss-nass--otoh-gunga-boss-903-homeworlds-front.webp",
           "back": null
         }
       }
@@ -231505,6 +232078,28 @@
           "front": "maul--old-master-288-homeworlds-front.webp",
           "back": "maul--old-master-288-homeworlds-back.webp"
         }
+      },
+      "maul--old-master-798-homeworlds": {
+        "variantId": "maul--old-master-798-homeworlds",
+        "swuId": 61743,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 798,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "maul--old-master-798-homeworlds-front.webp",
+          "back": "maul--old-master-798-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -231589,6 +232184,25 @@
           "back": null
         }
       },
+      "peppi-bow--shaak-herder-805-homeworlds": {
+        "variantId": "peppi-bow--shaak-herder-805-homeworlds",
+        "swuId": 61778,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 805,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "peppi-bow--shaak-herder-805-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "peppi-bow--shaak-herder-583-homeworlds": {
         "variantId": "peppi-bow--shaak-herder-583-homeworlds",
         "swuId": 62188,
@@ -231605,6 +232219,44 @@
         },
         "image": {
           "front": "peppi-bow--shaak-herder-583-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "peppi-bow--shaak-herder-853-homeworlds": {
+        "variantId": "peppi-bow--shaak-herder-853-homeworlds",
+        "swuId": 63208,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 853,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "peppi-bow--shaak-herder-853-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "peppi-bow--shaak-herder-901-homeworlds": {
+        "variantId": "peppi-bow--shaak-herder-901-homeworlds",
+        "swuId": 63448,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 901,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "peppi-bow--shaak-herder-901-homeworlds-front.webp",
           "back": null
         }
       }
@@ -231951,6 +232603,25 @@
           "back": null
         }
       },
+      "dathomiri-rancor-830-homeworlds": {
+        "variantId": "dathomiri-rancor-830-homeworlds",
+        "swuId": 61903,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 830,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "dathomiri-rancor-830-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "dathomiri-rancor-697-homeworlds": {
         "variantId": "dathomiri-rancor-697-homeworlds",
         "swuId": 62758,
@@ -231967,6 +232638,44 @@
         },
         "image": {
           "front": "dathomiri-rancor-697-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "dathomiri-rancor-878-homeworlds": {
+        "variantId": "dathomiri-rancor-878-homeworlds",
+        "swuId": 63333,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 878,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "dathomiri-rancor-878-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "dathomiri-rancor-926-homeworlds": {
+        "variantId": "dathomiri-rancor-926-homeworlds",
+        "swuId": 63573,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 926,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "dathomiri-rancor-926-homeworlds-front.webp",
           "back": null
         }
       }
@@ -232599,6 +233308,25 @@
           "back": null
         }
       },
+      "king-grakchawwaa--king-of-kashyyyk-813-homeworlds": {
+        "variantId": "king-grakchawwaa--king-of-kashyyyk-813-homeworlds",
+        "swuId": 61818,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 813,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "king-grakchawwaa--king-of-kashyyyk-813-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "king-grakchawwaa--king-of-kashyyyk-633-homeworlds": {
         "variantId": "king-grakchawwaa--king-of-kashyyyk-633-homeworlds",
         "swuId": 62438,
@@ -232615,6 +233343,44 @@
         },
         "image": {
           "front": "king-grakchawwaa--king-of-kashyyyk-633-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "king-grakchawwaa--king-of-kashyyyk-861-homeworlds": {
+        "variantId": "king-grakchawwaa--king-of-kashyyyk-861-homeworlds",
+        "swuId": 63248,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 861,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "king-grakchawwaa--king-of-kashyyyk-861-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "king-grakchawwaa--king-of-kashyyyk-909-homeworlds": {
+        "variantId": "king-grakchawwaa--king-of-kashyyyk-909-homeworlds",
+        "swuId": 63488,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 909,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "king-grakchawwaa--king-of-kashyyyk-909-homeworlds-front.webp",
           "back": null
         }
       }
@@ -232796,6 +233562,28 @@
           "front": "poggle-the-lesser--let-the-executions-begin-284-homeworlds-front.webp",
           "back": "poggle-the-lesser--let-the-executions-begin-284-homeworlds-back.webp"
         }
+      },
+      "poggle-the-lesser--let-the-executions-begin-794-homeworlds": {
+        "variantId": "poggle-the-lesser--let-the-executions-begin-794-homeworlds",
+        "swuId": 61723,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 794,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "poggle-the-lesser--let-the-executions-begin-794-homeworlds-front.webp",
+          "back": "poggle-the-lesser--let-the-executions-begin-794-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -232952,6 +233740,44 @@
         },
         "image": {
           "front": "always-a-bigger-fish-99-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "always-a-bigger-fish-6-homeworlds-weekly-play": {
+        "variantId": "always-a-bigger-fish-6-homeworlds-weekly-play",
+        "swuId": 60133,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 6,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Alex Alexandrov",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "always-a-bigger-fish-6-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "always-a-bigger-fish-26-homeworlds-weekly-play": {
+        "variantId": "always-a-bigger-fish-26-homeworlds-weekly-play",
+        "swuId": 60233,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 26,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Alex Alexandrov",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "always-a-bigger-fish-26-homeworlds-weekly-play-front.webp",
           "back": null
         }
       },
@@ -233335,6 +234161,25 @@
           "back": null
         }
       },
+      "chewbacca--resourceful-wookiee-811-homeworlds": {
+        "variantId": "chewbacca--resourceful-wookiee-811-homeworlds",
+        "swuId": 61808,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 811,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chewbacca--resourceful-wookiee-811-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "chewbacca--resourceful-wookiee-627-homeworlds": {
         "variantId": "chewbacca--resourceful-wookiee-627-homeworlds",
         "swuId": 62408,
@@ -233351,6 +234196,44 @@
         },
         "image": {
           "front": "chewbacca--resourceful-wookiee-627-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "chewbacca--resourceful-wookiee-859-homeworlds": {
+        "variantId": "chewbacca--resourceful-wookiee-859-homeworlds",
+        "swuId": 63238,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 859,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chewbacca--resourceful-wookiee-859-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "chewbacca--resourceful-wookiee-907-homeworlds": {
+        "variantId": "chewbacca--resourceful-wookiee-907-homeworlds",
+        "swuId": 63478,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 907,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chewbacca--resourceful-wookiee-907-homeworlds-front.webp",
           "back": null
         }
       }
@@ -233631,6 +234514,25 @@
           "back": null
         }
       },
+      "the-chieftain--here-since-the-oceans-dried-820-homeworlds": {
+        "variantId": "the-chieftain--here-since-the-oceans-dried-820-homeworlds",
+        "swuId": 61853,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 820,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-chieftain--here-since-the-oceans-dried-820-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "the-chieftain--here-since-the-oceans-dried-722-homeworlds": {
         "variantId": "the-chieftain--here-since-the-oceans-dried-722-homeworlds",
         "swuId": 62883,
@@ -233647,6 +234549,44 @@
         },
         "image": {
           "front": "the-chieftain--here-since-the-oceans-dried-722-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "the-chieftain--here-since-the-oceans-dried-868-homeworlds": {
+        "variantId": "the-chieftain--here-since-the-oceans-dried-868-homeworlds",
+        "swuId": 63283,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 868,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-chieftain--here-since-the-oceans-dried-868-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "the-chieftain--here-since-the-oceans-dried-916-homeworlds": {
+        "variantId": "the-chieftain--here-since-the-oceans-dried-916-homeworlds",
+        "swuId": 63523,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 916,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-chieftain--here-since-the-oceans-dried-916-homeworlds-front.webp",
           "back": null
         }
       }
@@ -233905,6 +234845,44 @@
           "back": null
         }
       },
+      "yanna--sanctuary-elder-3-homeworlds-weekly-play": {
+        "variantId": "yanna--sanctuary-elder-3-homeworlds-weekly-play",
+        "swuId": 60118,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 3,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Mali Vasanserekul",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yanna--sanctuary-elder-3-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "yanna--sanctuary-elder-23-homeworlds-weekly-play": {
+        "variantId": "yanna--sanctuary-elder-23-homeworlds-weekly-play",
+        "swuId": 60218,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 23,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Mali Vasanserekul",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yanna--sanctuary-elder-23-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "yanna--sanctuary-elder-348-homeworlds": {
         "variantId": "yanna--sanctuary-elder-348-homeworlds",
         "swuId": 60683,
@@ -233924,6 +234902,25 @@
           "back": null
         }
       },
+      "yanna--sanctuary-elder-806-homeworlds": {
+        "variantId": "yanna--sanctuary-elder-806-homeworlds",
+        "swuId": 61783,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 806,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Guillaume Ospital",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yanna--sanctuary-elder-806-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "yanna--sanctuary-elder-586-homeworlds": {
         "variantId": "yanna--sanctuary-elder-586-homeworlds",
         "swuId": 62203,
@@ -233940,6 +234937,44 @@
         },
         "image": {
           "front": "yanna--sanctuary-elder-586-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "yanna--sanctuary-elder-854-homeworlds": {
+        "variantId": "yanna--sanctuary-elder-854-homeworlds",
+        "swuId": 63213,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 854,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Guillaume Ospital",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yanna--sanctuary-elder-854-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "yanna--sanctuary-elder-902-homeworlds": {
+        "variantId": "yanna--sanctuary-elder-902-homeworlds",
+        "swuId": 63453,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 902,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Guillaume Ospital",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yanna--sanctuary-elder-902-homeworlds-front.webp",
           "back": null
         }
       }
@@ -234485,6 +235520,44 @@
           "back": null
         }
       },
+      "chief-chirpa--defiant-elder-13-homeworlds-weekly-play": {
+        "variantId": "chief-chirpa--defiant-elder-13-homeworlds-weekly-play",
+        "swuId": 60168,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 13,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chief-chirpa--defiant-elder-13-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "chief-chirpa--defiant-elder-33-homeworlds-weekly-play": {
+        "variantId": "chief-chirpa--defiant-elder-33-homeworlds-weekly-play",
+        "swuId": 60268,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 33,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chief-chirpa--defiant-elder-33-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "chief-chirpa--defiant-elder-436-homeworlds": {
         "variantId": "chief-chirpa--defiant-elder-436-homeworlds",
         "swuId": 61123,
@@ -234504,6 +235577,25 @@
           "back": null
         }
       },
+      "chief-chirpa--defiant-elder-818-homeworlds": {
+        "variantId": "chief-chirpa--defiant-elder-818-homeworlds",
+        "swuId": 61843,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 818,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chief-chirpa--defiant-elder-818-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "chief-chirpa--defiant-elder-674-homeworlds": {
         "variantId": "chief-chirpa--defiant-elder-674-homeworlds",
         "swuId": 62643,
@@ -234520,6 +235612,44 @@
         },
         "image": {
           "front": "chief-chirpa--defiant-elder-674-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "chief-chirpa--defiant-elder-866-homeworlds": {
+        "variantId": "chief-chirpa--defiant-elder-866-homeworlds",
+        "swuId": 63273,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 866,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chief-chirpa--defiant-elder-866-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "chief-chirpa--defiant-elder-914-homeworlds": {
+        "variantId": "chief-chirpa--defiant-elder-914-homeworlds",
+        "swuId": 63513,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 914,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chief-chirpa--defiant-elder-914-homeworlds-front.webp",
           "back": null
         }
       }
@@ -234995,6 +236125,28 @@
           "front": "the-warrior--deft-duelist-290-homeworlds-front.webp",
           "back": "the-warrior--deft-duelist-290-homeworlds-back.webp"
         }
+      },
+      "the-warrior--deft-duelist-800-homeworlds": {
+        "variantId": "the-warrior--deft-duelist-800-homeworlds",
+        "swuId": 61753,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 800,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Reno",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-warrior--deft-duelist-800-homeworlds-front.webp",
+          "back": "the-warrior--deft-duelist-800-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -235083,6 +236235,28 @@
         "image": {
           "front": "osha--haunted-by-her-past-289-homeworlds-front.webp",
           "back": "osha--haunted-by-her-past-289-homeworlds-back.webp"
+        }
+      },
+      "osha--haunted-by-her-past-799-homeworlds": {
+        "variantId": "osha--haunted-by-her-past-799-homeworlds",
+        "swuId": 61748,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 799,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Robynn Frauhn",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "osha--haunted-by-her-past-799-homeworlds-front.webp",
+          "back": "osha--haunted-by-her-past-799-homeworlds-back.webp"
         }
       }
     },
@@ -235455,6 +236629,25 @@
           "back": null
         }
       },
+      "mae--kill-the-dream-835-homeworlds": {
+        "variantId": "mae--kill-the-dream-835-homeworlds",
+        "swuId": 61928,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 835,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mae--kill-the-dream-835-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "mae--kill-the-dream-565-homeworlds": {
         "variantId": "mae--kill-the-dream-565-homeworlds",
         "swuId": 62098,
@@ -235471,6 +236664,44 @@
         },
         "image": {
           "front": "mae--kill-the-dream-565-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "mae--kill-the-dream-883-homeworlds": {
+        "variantId": "mae--kill-the-dream-883-homeworlds",
+        "swuId": 63358,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 883,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mae--kill-the-dream-883-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "mae--kill-the-dream-931-homeworlds": {
+        "variantId": "mae--kill-the-dream-931-homeworlds",
+        "swuId": 63598,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 931,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mae--kill-the-dream-931-homeworlds-front.webp",
           "back": null
         }
       }
@@ -235653,6 +236884,28 @@
           "front": "darth-vader--might-of-the-empire-279-homeworlds-front.webp",
           "back": "darth-vader--might-of-the-empire-279-homeworlds-back.webp"
         }
+      },
+      "darth-vader--might-of-the-empire-789-homeworlds": {
+        "variantId": "darth-vader--might-of-the-empire-789-homeworlds",
+        "swuId": 61698,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 789,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "darth-vader--might-of-the-empire-789-homeworlds-front.webp",
+          "back": "darth-vader--might-of-the-empire-789-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -235816,6 +237069,44 @@
           "back": null
         }
       },
+      "batcher--loyal-hound-4-homeworlds-weekly-play": {
+        "variantId": "batcher--loyal-hound-4-homeworlds-weekly-play",
+        "swuId": 60123,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 4,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Seth Stockdale Woolley",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "batcher--loyal-hound-4-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "batcher--loyal-hound-24-homeworlds-weekly-play": {
+        "variantId": "batcher--loyal-hound-24-homeworlds-weekly-play",
+        "swuId": 60223,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 24,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Seth Stockdale Woolley",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "batcher--loyal-hound-24-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "batcher--loyal-hound-355-homeworlds": {
         "variantId": "batcher--loyal-hound-355-homeworlds",
         "swuId": 60718,
@@ -235948,6 +237239,44 @@
         },
         "image": {
           "front": "mace-windu--austere-centrist-638-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "mace-windu--austere-centrist-26-2026-promo": {
+        "variantId": "mace-windu--austere-centrist-26-2026-promo",
+        "swuId": 63668,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 26,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SS Participation",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mace-windu--austere-centrist-26-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "mace-windu--austere-centrist-27-2026-promo": {
+        "variantId": "mace-windu--austere-centrist-27-2026-promo",
+        "swuId": 63693,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 27,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SS Judge",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mace-windu--austere-centrist-27-2026-promo-front.webp",
           "back": null
         }
       }
@@ -236408,6 +237737,25 @@
           "back": null
         }
       },
+      "a-koba--restless-raider-803-homeworlds": {
+        "variantId": "a-koba--restless-raider-803-homeworlds",
+        "swuId": 61768,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 803,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "a-koba--restless-raider-803-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "a-koba--restless-raider-562-homeworlds": {
         "variantId": "a-koba--restless-raider-562-homeworlds",
         "swuId": 62083,
@@ -236424,6 +237772,44 @@
         },
         "image": {
           "front": "a-koba--restless-raider-562-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "a-koba--restless-raider-851-homeworlds": {
+        "variantId": "a-koba--restless-raider-851-homeworlds",
+        "swuId": 63198,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 851,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "a-koba--restless-raider-851-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "a-koba--restless-raider-899-homeworlds": {
+        "variantId": "a-koba--restless-raider-899-homeworlds",
+        "swuId": 63438,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 899,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "a-koba--restless-raider-899-homeworlds-front.webp",
           "back": null
         }
       }
@@ -237087,6 +238473,25 @@
           "back": null
         }
       },
+      "sol--compassionate-guardian-839-homeworlds": {
+        "variantId": "sol--compassionate-guardian-839-homeworlds",
+        "swuId": 61948,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 839,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Jessi Ochse",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "sol--compassionate-guardian-839-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "sol--compassionate-guardian-720-homeworlds": {
         "variantId": "sol--compassionate-guardian-720-homeworlds",
         "swuId": 62873,
@@ -237103,6 +238508,44 @@
         },
         "image": {
           "front": "sol--compassionate-guardian-720-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "sol--compassionate-guardian-887-homeworlds": {
+        "variantId": "sol--compassionate-guardian-887-homeworlds",
+        "swuId": 63378,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 887,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Jessi Ochse",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "sol--compassionate-guardian-887-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "sol--compassionate-guardian-935-homeworlds": {
+        "variantId": "sol--compassionate-guardian-935-homeworlds",
+        "swuId": 63618,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 935,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Jessi Ochse",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "sol--compassionate-guardian-935-homeworlds-front.webp",
           "back": null
         }
       }
@@ -237474,6 +238917,25 @@
           "back": null
         }
       },
+      "clone-of-the-zillo-beast--emperor-s-experiment-824-homeworlds": {
+        "variantId": "clone-of-the-zillo-beast--emperor-s-experiment-824-homeworlds",
+        "swuId": 61873,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 824,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "clone-of-the-zillo-beast--emperor-s-experiment-824-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "clone-of-the-zillo-beast--emperor-s-experiment-575-homeworlds": {
         "variantId": "clone-of-the-zillo-beast--emperor-s-experiment-575-homeworlds",
         "swuId": 62148,
@@ -237490,6 +238952,44 @@
         },
         "image": {
           "front": "clone-of-the-zillo-beast--emperor-s-experiment-575-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "clone-of-the-zillo-beast--emperor-s-experiment-872-homeworlds": {
+        "variantId": "clone-of-the-zillo-beast--emperor-s-experiment-872-homeworlds",
+        "swuId": 63303,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 872,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "clone-of-the-zillo-beast--emperor-s-experiment-872-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "clone-of-the-zillo-beast--emperor-s-experiment-920-homeworlds": {
+        "variantId": "clone-of-the-zillo-beast--emperor-s-experiment-920-homeworlds",
+        "swuId": 63543,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 920,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "clone-of-the-zillo-beast--emperor-s-experiment-920-homeworlds-front.webp",
           "back": null
         }
       }
@@ -237668,6 +239168,25 @@
           "back": null
         }
       },
+      "gungi--fighting-for-kashyyyk-819-homeworlds": {
+        "variantId": "gungi--fighting-for-kashyyyk-819-homeworlds",
+        "swuId": 61848,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 819,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gungi--fighting-for-kashyyyk-819-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "gungi--fighting-for-kashyyyk-676-homeworlds": {
         "variantId": "gungi--fighting-for-kashyyyk-676-homeworlds",
         "swuId": 62653,
@@ -237684,6 +239203,44 @@
         },
         "image": {
           "front": "gungi--fighting-for-kashyyyk-676-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "gungi--fighting-for-kashyyyk-867-homeworlds": {
+        "variantId": "gungi--fighting-for-kashyyyk-867-homeworlds",
+        "swuId": 63278,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 867,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gungi--fighting-for-kashyyyk-867-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "gungi--fighting-for-kashyyyk-915-homeworlds": {
+        "variantId": "gungi--fighting-for-kashyyyk-915-homeworlds",
+        "swuId": 63518,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 915,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gungi--fighting-for-kashyyyk-915-homeworlds-front.webp",
           "back": null
         }
       }
@@ -237843,6 +239400,44 @@
         },
         "image": {
           "front": "don-t-touch-anything-217-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "don-t-touch-anything-17-homeworlds-weekly-play": {
+        "variantId": "don-t-touch-anything-17-homeworlds-weekly-play",
+        "swuId": 60188,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 17,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "don-t-touch-anything-17-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "don-t-touch-anything-37-homeworlds-weekly-play": {
+        "variantId": "don-t-touch-anything-37-homeworlds-weekly-play",
+        "swuId": 60288,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 37,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "don-t-touch-anything-37-homeworlds-weekly-play-front.webp",
           "back": null
         }
       },
@@ -238345,6 +239940,28 @@
           "front": "maz-kanata--eclectic-pirate-queen-274-homeworlds-front.webp",
           "back": "maz-kanata--eclectic-pirate-queen-274-homeworlds-back.webp"
         }
+      },
+      "maz-kanata--eclectic-pirate-queen-784-homeworlds": {
+        "variantId": "maz-kanata--eclectic-pirate-queen-784-homeworlds",
+        "swuId": 61673,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 784,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "maz-kanata--eclectic-pirate-queen-784-homeworlds-front.webp",
+          "back": "maz-kanata--eclectic-pirate-queen-784-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -238428,6 +240045,25 @@
           "back": null
         }
       },
+      "giant-gorax-831-homeworlds": {
+        "variantId": "giant-gorax-831-homeworlds",
+        "swuId": 61908,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 831,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "giant-gorax-831-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "giant-gorax-698-homeworlds": {
         "variantId": "giant-gorax-698-homeworlds",
         "swuId": 62763,
@@ -238444,6 +240080,44 @@
         },
         "image": {
           "front": "giant-gorax-698-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "giant-gorax-879-homeworlds": {
+        "variantId": "giant-gorax-879-homeworlds",
+        "swuId": 63338,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 879,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "giant-gorax-879-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "giant-gorax-927-homeworlds": {
+        "variantId": "giant-gorax-927-homeworlds",
+        "swuId": 63578,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 927,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "giant-gorax-927-homeworlds-front.webp",
           "back": null
         }
       }
@@ -239290,6 +240964,25 @@
           "back": null
         }
       },
+      "luke-skywalker--dreaming-farmboy-847-homeworlds": {
+        "variantId": "luke-skywalker--dreaming-farmboy-847-homeworlds",
+        "swuId": 61988,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 847,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--dreaming-farmboy-847-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "luke-skywalker--dreaming-farmboy-718-homeworlds": {
         "variantId": "luke-skywalker--dreaming-farmboy-718-homeworlds",
         "swuId": 62863,
@@ -239306,6 +240999,44 @@
         },
         "image": {
           "front": "luke-skywalker--dreaming-farmboy-718-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "luke-skywalker--dreaming-farmboy-895-homeworlds": {
+        "variantId": "luke-skywalker--dreaming-farmboy-895-homeworlds",
+        "swuId": 63418,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 895,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--dreaming-farmboy-895-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "luke-skywalker--dreaming-farmboy-943-homeworlds": {
+        "variantId": "luke-skywalker--dreaming-farmboy-943-homeworlds",
+        "swuId": 63658,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 943,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--dreaming-farmboy-943-homeworlds-front.webp",
           "back": null
         }
       }
@@ -239394,6 +241125,28 @@
           "front": "chewbacca--relentless-rebel-281-homeworlds-front.webp",
           "back": "chewbacca--relentless-rebel-281-homeworlds-back.webp"
         }
+      },
+      "chewbacca--relentless-rebel-791-homeworlds": {
+        "variantId": "chewbacca--relentless-rebel-791-homeworlds",
+        "swuId": 61708,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 791,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chewbacca--relentless-rebel-791-homeworlds-front.webp",
+          "back": "chewbacca--relentless-rebel-791-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -239476,6 +241229,25 @@
           "back": null
         }
       },
+      "babwa-venomor--burning-kashyyyk-814-homeworlds": {
+        "variantId": "babwa-venomor--burning-kashyyyk-814-homeworlds",
+        "swuId": 61823,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 814,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "babwa-venomor--burning-kashyyyk-814-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "babwa-venomor--burning-kashyyyk-662-homeworlds": {
         "variantId": "babwa-venomor--burning-kashyyyk-662-homeworlds",
         "swuId": 62583,
@@ -239492,6 +241264,44 @@
         },
         "image": {
           "front": "babwa-venomor--burning-kashyyyk-662-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "babwa-venomor--burning-kashyyyk-862-homeworlds": {
+        "variantId": "babwa-venomor--burning-kashyyyk-862-homeworlds",
+        "swuId": 63253,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 862,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "babwa-venomor--burning-kashyyyk-862-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "babwa-venomor--burning-kashyyyk-910-homeworlds": {
+        "variantId": "babwa-venomor--burning-kashyyyk-910-homeworlds",
+        "swuId": 63493,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 910,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Amad Mir",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "babwa-venomor--burning-kashyyyk-910-homeworlds-front.webp",
           "back": null
         }
       }
@@ -239578,6 +241388,28 @@
         "image": {
           "front": "omega--close-your-eyes-and-focus-278-homeworlds-front.webp",
           "back": "omega--close-your-eyes-and-focus-278-homeworlds-back.webp"
+        }
+      },
+      "omega--close-your-eyes-and-focus-788-homeworlds": {
+        "variantId": "omega--close-your-eyes-and-focus-788-homeworlds",
+        "swuId": 61693,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 788,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "omega--close-your-eyes-and-focus-788-homeworlds-front.webp",
+          "back": "omega--close-your-eyes-and-focus-788-homeworlds-back.webp"
         }
       }
     },
@@ -239734,6 +241566,25 @@
           "back": null
         }
       },
+      "yord-fandar--devoutly-disciplined-844-homeworlds": {
+        "variantId": "yord-fandar--devoutly-disciplined-844-homeworlds",
+        "swuId": 61973,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 844,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yord-fandar--devoutly-disciplined-844-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "yord-fandar--devoutly-disciplined-584-homeworlds": {
         "variantId": "yord-fandar--devoutly-disciplined-584-homeworlds",
         "swuId": 62193,
@@ -239750,6 +241601,44 @@
         },
         "image": {
           "front": "yord-fandar--devoutly-disciplined-584-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "yord-fandar--devoutly-disciplined-892-homeworlds": {
+        "variantId": "yord-fandar--devoutly-disciplined-892-homeworlds",
+        "swuId": 63403,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 892,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yord-fandar--devoutly-disciplined-892-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "yord-fandar--devoutly-disciplined-940-homeworlds": {
+        "variantId": "yord-fandar--devoutly-disciplined-940-homeworlds",
+        "swuId": 63643,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 940,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "yord-fandar--devoutly-disciplined-940-homeworlds-front.webp",
           "back": null
         }
       }
@@ -240132,6 +242021,28 @@
           "front": "grand-moff-tarkin--tyrant-of-the-outer-rim-276-homeworlds-front.webp",
           "back": "grand-moff-tarkin--tyrant-of-the-outer-rim-276-homeworlds-back.webp"
         }
+      },
+      "grand-moff-tarkin--tyrant-of-the-outer-rim-786-homeworlds": {
+        "variantId": "grand-moff-tarkin--tyrant-of-the-outer-rim-786-homeworlds",
+        "swuId": 61683,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 786,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Joshua Cairos",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "grand-moff-tarkin--tyrant-of-the-outer-rim-786-homeworlds-front.webp",
+          "back": "grand-moff-tarkin--tyrant-of-the-outer-rim-786-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -240216,6 +242127,25 @@
           "back": null
         }
       },
+      "greater-sarlacc-823-homeworlds": {
+        "variantId": "greater-sarlacc-823-homeworlds",
+        "swuId": 61868,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 823,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "greater-sarlacc-823-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "greater-sarlacc-559-homeworlds": {
         "variantId": "greater-sarlacc-559-homeworlds",
         "swuId": 62068,
@@ -240232,6 +242162,44 @@
         },
         "image": {
           "front": "greater-sarlacc-559-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "greater-sarlacc-871-homeworlds": {
+        "variantId": "greater-sarlacc-871-homeworlds",
+        "swuId": 63298,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 871,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "greater-sarlacc-871-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "greater-sarlacc-919-homeworlds": {
+        "variantId": "greater-sarlacc-919-homeworlds",
+        "swuId": 63538,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 919,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "greater-sarlacc-919-homeworlds-front.webp",
           "back": null
         }
       }
@@ -240314,6 +242282,25 @@
           "back": null
         }
       },
+      "mother-talzin--pledged-to-the-sisterhood-840-homeworlds": {
+        "variantId": "mother-talzin--pledged-to-the-sisterhood-840-homeworlds",
+        "swuId": 61953,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 840,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Ivan Shavrin",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mother-talzin--pledged-to-the-sisterhood-840-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "mother-talzin--pledged-to-the-sisterhood-549-homeworlds": {
         "variantId": "mother-talzin--pledged-to-the-sisterhood-549-homeworlds",
         "swuId": 62018,
@@ -240330,6 +242317,44 @@
         },
         "image": {
           "front": "mother-talzin--pledged-to-the-sisterhood-549-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "mother-talzin--pledged-to-the-sisterhood-888-homeworlds": {
+        "variantId": "mother-talzin--pledged-to-the-sisterhood-888-homeworlds",
+        "swuId": 63383,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 888,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Ivan Shavrin",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mother-talzin--pledged-to-the-sisterhood-888-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "mother-talzin--pledged-to-the-sisterhood-936-homeworlds": {
+        "variantId": "mother-talzin--pledged-to-the-sisterhood-936-homeworlds",
+        "swuId": 63623,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 936,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Ivan Shavrin",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mother-talzin--pledged-to-the-sisterhood-936-homeworlds-front.webp",
           "back": null
         }
       }
@@ -241092,6 +243117,25 @@
           "back": null
         }
       },
+      "fambaa-shield-team-808-homeworlds": {
+        "variantId": "fambaa-shield-team-808-homeworlds",
+        "swuId": 61793,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 808,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fambaa-shield-team-808-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "fambaa-shield-team-590-homeworlds": {
         "variantId": "fambaa-shield-team-590-homeworlds",
         "swuId": 62223,
@@ -241108,6 +243152,44 @@
         },
         "image": {
           "front": "fambaa-shield-team-590-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "fambaa-shield-team-856-homeworlds": {
+        "variantId": "fambaa-shield-team-856-homeworlds",
+        "swuId": 63223,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 856,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fambaa-shield-team-856-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "fambaa-shield-team-904-homeworlds": {
+        "variantId": "fambaa-shield-team-904-homeworlds",
+        "swuId": 63463,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 904,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fambaa-shield-team-904-homeworlds-front.webp",
           "back": null
         }
       }
@@ -241194,6 +243276,28 @@
           "front": "tarfful--fighting-from-the-shadowlands-282-homeworlds-front.webp",
           "back": "tarfful--fighting-from-the-shadowlands-282-homeworlds-back.webp"
         }
+      },
+      "tarfful--fighting-from-the-shadowlands-792-homeworlds": {
+        "variantId": "tarfful--fighting-from-the-shadowlands-792-homeworlds",
+        "swuId": 61713,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 792,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tarfful--fighting-from-the-shadowlands-792-homeworlds-front.webp",
+          "back": "tarfful--fighting-from-the-shadowlands-792-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -241278,6 +243382,25 @@
           "back": null
         }
       },
+      "ritual-dragon-833-homeworlds": {
+        "variantId": "ritual-dragon-833-homeworlds",
+        "swuId": 61918,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 833,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ritual-dragon-833-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "ritual-dragon-744-homeworlds": {
         "variantId": "ritual-dragon-744-homeworlds",
         "swuId": 62993,
@@ -241294,6 +243417,44 @@
         },
         "image": {
           "front": "ritual-dragon-744-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "ritual-dragon-881-homeworlds": {
+        "variantId": "ritual-dragon-881-homeworlds",
+        "swuId": 63348,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 881,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ritual-dragon-881-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "ritual-dragon-929-homeworlds": {
+        "variantId": "ritual-dragon-929-homeworlds",
+        "swuId": 63588,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 929,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ritual-dragon-929-homeworlds-front.webp",
           "back": null
         }
       }
@@ -241356,6 +243517,44 @@
           "back": null
         }
       },
+      "arena-acklay--screaming-predator-10-homeworlds-weekly-play": {
+        "variantId": "arena-acklay--screaming-predator-10-homeworlds-weekly-play",
+        "swuId": 60153,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 10,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "arena-acklay--screaming-predator-10-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "arena-acklay--screaming-predator-30-homeworlds-weekly-play": {
+        "variantId": "arena-acklay--screaming-predator-30-homeworlds-weekly-play",
+        "swuId": 60253,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 30,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "arena-acklay--screaming-predator-30-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "arena-acklay--screaming-predator-428-homeworlds": {
         "variantId": "arena-acklay--screaming-predator-428-homeworlds",
         "swuId": 61083,
@@ -241375,6 +243574,25 @@
           "back": null
         }
       },
+      "arena-acklay--screaming-predator-815-homeworlds": {
+        "variantId": "arena-acklay--screaming-predator-815-homeworlds",
+        "swuId": 61828,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 815,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Benjamin Paulus",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "arena-acklay--screaming-predator-815-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "arena-acklay--screaming-predator-666-homeworlds": {
         "variantId": "arena-acklay--screaming-predator-666-homeworlds",
         "swuId": 62603,
@@ -241391,6 +243609,44 @@
         },
         "image": {
           "front": "arena-acklay--screaming-predator-666-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "arena-acklay--screaming-predator-863-homeworlds": {
+        "variantId": "arena-acklay--screaming-predator-863-homeworlds",
+        "swuId": 63258,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 863,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Benjamin Paulus",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "arena-acklay--screaming-predator-863-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "arena-acklay--screaming-predator-911-homeworlds": {
+        "variantId": "arena-acklay--screaming-predator-911-homeworlds",
+        "swuId": 63498,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 911,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Benjamin Paulus",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "arena-acklay--screaming-predator-911-homeworlds-front.webp",
           "back": null
         }
       }
@@ -242105,6 +244361,44 @@
           "back": null
         }
       },
+      "invasion-lander-7-homeworlds-weekly-play": {
+        "variantId": "invasion-lander-7-homeworlds-weekly-play",
+        "swuId": 60138,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 7,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kursad Karatas",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "invasion-lander-7-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "invasion-lander-27-homeworlds-weekly-play": {
+        "variantId": "invasion-lander-27-homeworlds-weekly-play",
+        "swuId": 60238,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 27,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kursad Karatas",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "invasion-lander-27-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "invasion-lander-383-homeworlds": {
         "variantId": "invasion-lander-383-homeworlds",
         "swuId": 60858,
@@ -242124,6 +244418,25 @@
           "back": null
         }
       },
+      "invasion-lander-827-homeworlds": {
+        "variantId": "invasion-lander-827-homeworlds",
+        "swuId": 61888,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 827,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Shane Molina",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "invasion-lander-827-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "invasion-lander-621-homeworlds": {
         "variantId": "invasion-lander-621-homeworlds",
         "swuId": 62378,
@@ -242140,6 +244453,44 @@
         },
         "image": {
           "front": "invasion-lander-621-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "invasion-lander-875-homeworlds": {
+        "variantId": "invasion-lander-875-homeworlds",
+        "swuId": 63318,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 875,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Shane Molina",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "invasion-lander-875-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "invasion-lander-923-homeworlds": {
+        "variantId": "invasion-lander-923-homeworlds",
+        "swuId": 63558,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 923,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Shane Molina",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "invasion-lander-923-homeworlds-front.webp",
           "back": null
         }
       }
@@ -242222,6 +244573,25 @@
           "back": null
         }
       },
+      "luminara-unduli--besieged-general-838-homeworlds": {
+        "variantId": "luminara-unduli--besieged-general-838-homeworlds",
+        "swuId": 61943,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 838,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Jessi Ochse",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luminara-unduli--besieged-general-838-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "luminara-unduli--besieged-general-634-homeworlds": {
         "variantId": "luminara-unduli--besieged-general-634-homeworlds",
         "swuId": 62443,
@@ -242238,6 +244608,44 @@
         },
         "image": {
           "front": "luminara-unduli--besieged-general-634-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "luminara-unduli--besieged-general-886-homeworlds": {
+        "variantId": "luminara-unduli--besieged-general-886-homeworlds",
+        "swuId": 63373,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 886,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Jessi Ochse",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luminara-unduli--besieged-general-886-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "luminara-unduli--besieged-general-934-homeworlds": {
+        "variantId": "luminara-unduli--besieged-general-934-homeworlds",
+        "swuId": 63613,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 934,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Jessi Ochse",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luminara-unduli--besieged-general-934-homeworlds-front.webp",
           "back": null
         }
       }
@@ -242320,6 +244728,25 @@
           "back": null
         }
       },
+      "queen-amidala--retaking-theed-848-homeworlds": {
+        "variantId": "queen-amidala--retaking-theed-848-homeworlds",
+        "swuId": 61993,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 848,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "queen-amidala--retaking-theed-848-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "queen-amidala--retaking-theed-770-homeworlds": {
         "variantId": "queen-amidala--retaking-theed-770-homeworlds",
         "swuId": 63123,
@@ -242336,6 +244763,44 @@
         },
         "image": {
           "front": "queen-amidala--retaking-theed-770-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "queen-amidala--retaking-theed-896-homeworlds": {
+        "variantId": "queen-amidala--retaking-theed-896-homeworlds",
+        "swuId": 63423,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 896,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "queen-amidala--retaking-theed-896-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "queen-amidala--retaking-theed-944-homeworlds": {
+        "variantId": "queen-amidala--retaking-theed-944-homeworlds",
+        "swuId": 63663,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 944,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Afif Khaled",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "queen-amidala--retaking-theed-944-homeworlds-front.webp",
           "back": null
         }
       }
@@ -242709,6 +245174,25 @@
           "back": null
         }
       },
+      "keeper-of-skara-nal--awoken-822-homeworlds": {
+        "variantId": "keeper-of-skara-nal--awoken-822-homeworlds",
+        "swuId": 61863,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 822,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "keeper-of-skara-nal--awoken-822-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "keeper-of-skara-nal--awoken-551-homeworlds": {
         "variantId": "keeper-of-skara-nal--awoken-551-homeworlds",
         "swuId": 62028,
@@ -242725,6 +245209,44 @@
         },
         "image": {
           "front": "keeper-of-skara-nal--awoken-551-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "keeper-of-skara-nal--awoken-870-homeworlds": {
+        "variantId": "keeper-of-skara-nal--awoken-870-homeworlds",
+        "swuId": 63293,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 870,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "keeper-of-skara-nal--awoken-870-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "keeper-of-skara-nal--awoken-918-homeworlds": {
+        "variantId": "keeper-of-skara-nal--awoken-918-homeworlds",
+        "swuId": 63533,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 918,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "keeper-of-skara-nal--awoken-918-homeworlds-front.webp",
           "back": null
         }
       }
@@ -243099,6 +245621,25 @@
           "back": null
         }
       },
+      "qui-gon-jinn--we-ll-handle-this-837-homeworlds": {
+        "variantId": "qui-gon-jinn--we-ll-handle-this-837-homeworlds",
+        "swuId": 61938,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 837,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "qui-gon-jinn--we-ll-handle-this-837-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "qui-gon-jinn--we-ll-handle-this-588-homeworlds": {
         "variantId": "qui-gon-jinn--we-ll-handle-this-588-homeworlds",
         "swuId": 62213,
@@ -243115,6 +245656,120 @@
         },
         "image": {
           "front": "qui-gon-jinn--we-ll-handle-this-588-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "qui-gon-jinn--we-ll-handle-this-885-homeworlds": {
+        "variantId": "qui-gon-jinn--we-ll-handle-this-885-homeworlds",
+        "swuId": 63368,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 885,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "qui-gon-jinn--we-ll-handle-this-885-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "qui-gon-jinn--we-ll-handle-this-933-homeworlds": {
+        "variantId": "qui-gon-jinn--we-ll-handle-this-933-homeworlds",
+        "swuId": 63608,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 933,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "qui-gon-jinn--we-ll-handle-this-933-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "qui-gon-jinn--we-ll-handle-this-34-2026-promo": {
+        "variantId": "qui-gon-jinn--we-ll-handle-this-34-2026-promo",
+        "swuId": 63703,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 34,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "PQ Top 8",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "qui-gon-jinn--we-ll-handle-this-34-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "qui-gon-jinn--we-ll-handle-this-35-2026-promo": {
+        "variantId": "qui-gon-jinn--we-ll-handle-this-35-2026-promo",
+        "swuId": 63708,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 35,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "PQ Top 4",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "qui-gon-jinn--we-ll-handle-this-35-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "qui-gon-jinn--we-ll-handle-this-36-2026-promo": {
+        "variantId": "qui-gon-jinn--we-ll-handle-this-36-2026-promo",
+        "swuId": 63713,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 36,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "PQ Finalist",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "qui-gon-jinn--we-ll-handle-this-36-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "qui-gon-jinn--we-ll-handle-this-37-2026-promo": {
+        "variantId": "qui-gon-jinn--we-ll-handle-this-37-2026-promo",
+        "swuId": 63718,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 37,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "PQ Champion",
+        "artist": "Borja Pindado",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "qui-gon-jinn--we-ll-handle-this-37-2026-promo-front.webp",
           "back": null
         }
       }
@@ -243295,6 +245950,25 @@
           "back": null
         }
       },
+      "the-great-progenitor--first-of-the-drengir-825-homeworlds": {
+        "variantId": "the-great-progenitor--first-of-the-drengir-825-homeworlds",
+        "swuId": 61878,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 825,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-great-progenitor--first-of-the-drengir-825-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "the-great-progenitor--first-of-the-drengir-577-homeworlds": {
         "variantId": "the-great-progenitor--first-of-the-drengir-577-homeworlds",
         "swuId": 62158,
@@ -243311,6 +245985,44 @@
         },
         "image": {
           "front": "the-great-progenitor--first-of-the-drengir-577-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "the-great-progenitor--first-of-the-drengir-873-homeworlds": {
+        "variantId": "the-great-progenitor--first-of-the-drengir-873-homeworlds",
+        "swuId": 63308,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 873,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-great-progenitor--first-of-the-drengir-873-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "the-great-progenitor--first-of-the-drengir-921-homeworlds": {
+        "variantId": "the-great-progenitor--first-of-the-drengir-921-homeworlds",
+        "swuId": 63548,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 921,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-great-progenitor--first-of-the-drengir-921-homeworlds-front.webp",
           "back": null
         }
       }
@@ -243391,6 +246103,25 @@
           "back": null
         }
       },
+      "maul--only-revenge-remains-842-homeworlds": {
+        "variantId": "maul--only-revenge-remains-842-homeworlds",
+        "swuId": 61963,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 842,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Joshua Cairos",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "maul--only-revenge-remains-842-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "maul--only-revenge-remains-684-homeworlds": {
         "variantId": "maul--only-revenge-remains-684-homeworlds",
         "swuId": 62693,
@@ -243407,6 +246138,44 @@
         },
         "image": {
           "front": "maul--only-revenge-remains-684-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "maul--only-revenge-remains-890-homeworlds": {
+        "variantId": "maul--only-revenge-remains-890-homeworlds",
+        "swuId": 63393,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 890,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Joshua Cairos",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "maul--only-revenge-remains-890-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "maul--only-revenge-remains-938-homeworlds": {
+        "variantId": "maul--only-revenge-remains-938-homeworlds",
+        "swuId": 63633,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 938,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Joshua Cairos",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "maul--only-revenge-remains-938-homeworlds-front.webp",
           "back": null
         }
       }
@@ -243663,6 +246432,28 @@
           "front": "asajj-ventress--no-time-for-regret-273-homeworlds-front.webp",
           "back": "asajj-ventress--no-time-for-regret-273-homeworlds-back.webp"
         }
+      },
+      "asajj-ventress--no-time-for-regret-783-homeworlds": {
+        "variantId": "asajj-ventress--no-time-for-regret-783-homeworlds",
+        "swuId": 61668,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 783,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Ivan Dedov",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "asajj-ventress--no-time-for-regret-783-homeworlds-front.webp",
+          "back": "asajj-ventress--no-time-for-regret-783-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -243752,6 +246543,28 @@
         "image": {
           "front": "darth-sidious--there-is-no-mercy-283-homeworlds-front.webp",
           "back": "darth-sidious--there-is-no-mercy-283-homeworlds-back.webp"
+        }
+      },
+      "darth-sidious--there-is-no-mercy-793-homeworlds": {
+        "variantId": "darth-sidious--there-is-no-mercy-793-homeworlds",
+        "swuId": 61718,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 793,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "darth-sidious--there-is-no-mercy-793-homeworlds-front.webp",
+          "back": "darth-sidious--there-is-no-mercy-793-homeworlds-back.webp"
         }
       }
     },
@@ -244415,6 +247228,25 @@
           "back": null
         }
       },
+      "battle-scarred-destroyer-829-homeworlds": {
+        "variantId": "battle-scarred-destroyer-829-homeworlds",
+        "swuId": 61898,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 829,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Ignacio Bazan-Lazcano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "battle-scarred-destroyer-829-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "battle-scarred-destroyer-668-homeworlds": {
         "variantId": "battle-scarred-destroyer-668-homeworlds",
         "swuId": 62613,
@@ -244431,6 +247263,44 @@
         },
         "image": {
           "front": "battle-scarred-destroyer-668-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "battle-scarred-destroyer-877-homeworlds": {
+        "variantId": "battle-scarred-destroyer-877-homeworlds",
+        "swuId": 63328,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 877,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Ignacio Bazan-Lazcano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "battle-scarred-destroyer-877-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "battle-scarred-destroyer-925-homeworlds": {
+        "variantId": "battle-scarred-destroyer-925-homeworlds",
+        "swuId": 63568,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 925,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Ignacio Bazan-Lazcano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "battle-scarred-destroyer-925-homeworlds-front.webp",
           "back": null
         }
       }
@@ -245143,44 +248013,6 @@
           "back": null
         }
       },
-      "beast-4-homeworlds": {
-        "variantId": "beast-4-homeworlds",
-        "swuId": 60073,
-        "set": "hmw",
-        "fullSetName": "Homeworlds",
-        "cardNo": 4,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": false,
-        "variantName": "Standard",
-        "artist": "Gabriel Gómez Almenzar",
-        "front": {
-          "horizontal": false
-        },
-        "image": {
-          "front": "beast-4-homeworlds-front.webp",
-          "back": null
-        }
-      },
-      "beast-5-homeworlds": {
-        "variantId": "beast-5-homeworlds",
-        "swuId": 60078,
-        "set": "hmw",
-        "fullSetName": "Homeworlds",
-        "cardNo": 5,
-        "baseSet": true,
-        "hasNonfoil": true,
-        "hasFoil": false,
-        "variantName": "Standard",
-        "artist": "Marc Escachx",
-        "front": {
-          "horizontal": false
-        },
-        "image": {
-          "front": "beast-5-homeworlds-front.webp",
-          "back": null
-        }
-      },
       "beast-8-homeworlds": {
         "variantId": "beast-8-homeworlds",
         "swuId": 60093,
@@ -245200,6 +248032,25 @@
           "back": null
         }
       },
+      "beast-4-homeworlds": {
+        "variantId": "beast-4-homeworlds",
+        "swuId": 60073,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 4,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "beast-4-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "beast-9-homeworlds": {
         "variantId": "beast-9-homeworlds",
         "swuId": 60098,
@@ -245216,6 +248067,25 @@
         },
         "image": {
           "front": "beast-9-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "beast-5-homeworlds": {
+        "variantId": "beast-5-homeworlds",
+        "swuId": 60078,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 5,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "beast-5-homeworlds-front.webp",
           "back": null
         }
       },
@@ -245700,6 +248570,25 @@
           "back": null
         }
       },
+      "awakened-exogorth-832-homeworlds": {
+        "variantId": "awakened-exogorth-832-homeworlds",
+        "swuId": 61913,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 832,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "awakened-exogorth-832-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "awakened-exogorth-743-homeworlds": {
         "variantId": "awakened-exogorth-743-homeworlds",
         "swuId": 62988,
@@ -245716,6 +248605,44 @@
         },
         "image": {
           "front": "awakened-exogorth-743-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "awakened-exogorth-880-homeworlds": {
+        "variantId": "awakened-exogorth-880-homeworlds",
+        "swuId": 63343,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 880,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "awakened-exogorth-880-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "awakened-exogorth-928-homeworlds": {
+        "variantId": "awakened-exogorth-928-homeworlds",
+        "swuId": 63583,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 928,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "awakened-exogorth-928-homeworlds-front.webp",
           "back": null
         }
       }
@@ -245775,6 +248702,44 @@
         },
         "image": {
           "front": "tribubble-bongo-sub-213-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "tribubble-bongo-sub-16-homeworlds-weekly-play": {
+        "variantId": "tribubble-bongo-sub-16-homeworlds-weekly-play",
+        "swuId": 60183,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 16,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kursad Karatas",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tribubble-bongo-sub-16-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "tribubble-bongo-sub-36-homeworlds-weekly-play": {
+        "variantId": "tribubble-bongo-sub-36-homeworlds-weekly-play",
+        "swuId": 60283,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 36,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kursad Karatas",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tribubble-bongo-sub-36-homeworlds-weekly-play-front.webp",
           "back": null
         }
       },
@@ -246089,6 +249054,25 @@
           "back": null
         }
       },
+      "emperor-palpatine--consolidating-power-836-homeworlds": {
+        "variantId": "emperor-palpatine--consolidating-power-836-homeworlds",
+        "swuId": 61933,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 836,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "emperor-palpatine--consolidating-power-836-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "emperor-palpatine--consolidating-power-620-homeworlds": {
         "variantId": "emperor-palpatine--consolidating-power-620-homeworlds",
         "swuId": 62373,
@@ -246105,6 +249089,120 @@
         },
         "image": {
           "front": "emperor-palpatine--consolidating-power-620-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "emperor-palpatine--consolidating-power-884-homeworlds": {
+        "variantId": "emperor-palpatine--consolidating-power-884-homeworlds",
+        "swuId": 63363,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 884,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "emperor-palpatine--consolidating-power-884-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "emperor-palpatine--consolidating-power-932-homeworlds": {
+        "variantId": "emperor-palpatine--consolidating-power-932-homeworlds",
+        "swuId": 63603,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 932,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "emperor-palpatine--consolidating-power-932-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "emperor-palpatine--consolidating-power-28-2026-promo": {
+        "variantId": "emperor-palpatine--consolidating-power-28-2026-promo",
+        "swuId": 63673,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 28,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SS Top 8",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "emperor-palpatine--consolidating-power-28-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "emperor-palpatine--consolidating-power-29-2026-promo": {
+        "variantId": "emperor-palpatine--consolidating-power-29-2026-promo",
+        "swuId": 63678,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 29,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SS Top 4",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "emperor-palpatine--consolidating-power-29-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "emperor-palpatine--consolidating-power-30-2026-promo": {
+        "variantId": "emperor-palpatine--consolidating-power-30-2026-promo",
+        "swuId": 63683,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 30,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SS Finalist",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "emperor-palpatine--consolidating-power-30-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "emperor-palpatine--consolidating-power-31-2026-promo": {
+        "variantId": "emperor-palpatine--consolidating-power-31-2026-promo",
+        "swuId": 63688,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 31,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SS Champion",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "emperor-palpatine--consolidating-power-31-2026-promo-front.webp",
           "back": null
         }
       }
@@ -246188,6 +249286,25 @@
           "back": null
         }
       },
+      "fett-s-firespray--settling-the-score-843-homeworlds": {
+        "variantId": "fett-s-firespray--settling-the-score-843-homeworlds",
+        "swuId": 61968,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 843,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Robert Bonchune",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fett-s-firespray--settling-the-score-843-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "fett-s-firespray--settling-the-score-563-homeworlds": {
         "variantId": "fett-s-firespray--settling-the-score-563-homeworlds",
         "swuId": 62088,
@@ -246204,6 +249321,82 @@
         },
         "image": {
           "front": "fett-s-firespray--settling-the-score-563-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "fett-s-firespray--settling-the-score-891-homeworlds": {
+        "variantId": "fett-s-firespray--settling-the-score-891-homeworlds",
+        "swuId": 63398,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 891,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Robert Bonchune",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fett-s-firespray--settling-the-score-891-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "fett-s-firespray--settling-the-score-939-homeworlds": {
+        "variantId": "fett-s-firespray--settling-the-score-939-homeworlds",
+        "swuId": 63638,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 939,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Robert Bonchune",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fett-s-firespray--settling-the-score-939-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "fett-s-firespray--settling-the-score-32-2026-promo": {
+        "variantId": "fett-s-firespray--settling-the-score-32-2026-promo",
+        "swuId": 63698,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 32,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "PQ Participation",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fett-s-firespray--settling-the-score-32-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "fett-s-firespray--settling-the-score-33-2026-promo": {
+        "variantId": "fett-s-firespray--settling-the-score-33-2026-promo",
+        "swuId": 63723,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 33,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "PQ Judge",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fett-s-firespray--settling-the-score-33-2026-promo-front.webp",
           "back": null
         }
       }
@@ -246577,6 +249770,25 @@
           "back": null
         }
       },
+      "sando-aqua-monster-826-homeworlds": {
+        "variantId": "sando-aqua-monster-826-homeworlds",
+        "swuId": 61883,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 826,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "sando-aqua-monster-826-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "sando-aqua-monster-604-homeworlds": {
         "variantId": "sando-aqua-monster-604-homeworlds",
         "swuId": 62293,
@@ -246593,6 +249805,44 @@
         },
         "image": {
           "front": "sando-aqua-monster-604-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "sando-aqua-monster-874-homeworlds": {
+        "variantId": "sando-aqua-monster-874-homeworlds",
+        "swuId": 63313,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 874,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "sando-aqua-monster-874-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "sando-aqua-monster-922-homeworlds": {
+        "variantId": "sando-aqua-monster-922-homeworlds",
+        "swuId": 63553,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 922,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "sando-aqua-monster-922-homeworlds-front.webp",
           "back": null
         }
       }
@@ -247114,6 +250364,44 @@
           "back": null
         }
       },
+      "adamant-ewoks-14-homeworlds-weekly-play": {
+        "variantId": "adamant-ewoks-14-homeworlds-weekly-play",
+        "swuId": 60173,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 14,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Moroni Hang",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "adamant-ewoks-14-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "adamant-ewoks-34-homeworlds-weekly-play": {
+        "variantId": "adamant-ewoks-34-homeworlds-weekly-play",
+        "swuId": 60273,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 34,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Moroni Hang",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "adamant-ewoks-34-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "adamant-ewoks-449-homeworlds": {
         "variantId": "adamant-ewoks-449-homeworlds",
         "swuId": 61188,
@@ -247232,6 +250520,28 @@
         "image": {
           "front": "general-grievous--separatist-warlord-280-homeworlds-front.webp",
           "back": "general-grievous--separatist-warlord-280-homeworlds-back.webp"
+        }
+      },
+      "general-grievous--separatist-warlord-790-homeworlds": {
+        "variantId": "general-grievous--separatist-warlord-790-homeworlds",
+        "swuId": 61703,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 790,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Joshua Cairos",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-grievous--separatist-warlord-790-homeworlds-front.webp",
+          "back": "general-grievous--separatist-warlord-790-homeworlds-back.webp"
         }
       }
     },
@@ -247801,6 +251111,28 @@
           "front": "jar-jar-binks--bombad-general-277-homeworlds-front.webp",
           "back": "jar-jar-binks--bombad-general-277-homeworlds-back.webp"
         }
+      },
+      "jar-jar-binks--bombad-general-787-homeworlds": {
+        "variantId": "jar-jar-binks--bombad-general-787-homeworlds",
+        "swuId": 61688,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 787,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "jar-jar-binks--bombad-general-787-homeworlds-front.webp",
+          "back": "jar-jar-binks--bombad-general-787-homeworlds-back.webp"
+        }
       }
     },
     "type": "Leader",
@@ -247962,6 +251294,44 @@
         },
         "image": {
           "front": "new-tactics-218-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "new-tactics-18-homeworlds-weekly-play": {
+        "variantId": "new-tactics-18-homeworlds-weekly-play",
+        "swuId": 60193,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 18,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "new-tactics-18-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "new-tactics-38-homeworlds-weekly-play": {
+        "variantId": "new-tactics-38-homeworlds-weekly-play",
+        "swuId": 60293,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 38,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "new-tactics-38-homeworlds-weekly-play-front.webp",
           "back": null
         }
       },
@@ -248184,6 +251554,28 @@
         "image": {
           "front": "cham-syndulla--hammer-of-ryloth-285-homeworlds-front.webp",
           "back": "cham-syndulla--hammer-of-ryloth-285-homeworlds-back.webp"
+        }
+      },
+      "cham-syndulla--hammer-of-ryloth-795-homeworlds": {
+        "variantId": "cham-syndulla--hammer-of-ryloth-795-homeworlds",
+        "swuId": 61728,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 795,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Ivan Shavrin",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "cham-syndulla--hammer-of-ryloth-795-homeworlds-front.webp",
+          "back": "cham-syndulla--hammer-of-ryloth-795-homeworlds-back.webp"
         }
       }
     },
@@ -248536,6 +251928,25 @@
           "back": null
         }
       },
+      "captain-tarpals--grand-army-captain-821-homeworlds": {
+        "variantId": "captain-tarpals--grand-army-captain-821-homeworlds",
+        "swuId": 61858,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 821,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Ivan Fiorelli",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "captain-tarpals--grand-army-captain-821-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "captain-tarpals--grand-army-captain-764-homeworlds": {
         "variantId": "captain-tarpals--grand-army-captain-764-homeworlds",
         "swuId": 63093,
@@ -248552,6 +251963,44 @@
         },
         "image": {
           "front": "captain-tarpals--grand-army-captain-764-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "captain-tarpals--grand-army-captain-869-homeworlds": {
+        "variantId": "captain-tarpals--grand-army-captain-869-homeworlds",
+        "swuId": 63288,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 869,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Ivan Fiorelli",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "captain-tarpals--grand-army-captain-869-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "captain-tarpals--grand-army-captain-917-homeworlds": {
+        "variantId": "captain-tarpals--grand-army-captain-917-homeworlds",
+        "swuId": 63528,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 917,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Ivan Fiorelli",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "captain-tarpals--grand-army-captain-917-homeworlds-front.webp",
           "back": null
         }
       }
@@ -248711,6 +252160,44 @@
           "back": null
         }
       },
+      "general-grievous--scourge-of-dathomir-11-homeworlds-weekly-play": {
+        "variantId": "general-grievous--scourge-of-dathomir-11-homeworlds-weekly-play",
+        "swuId": 60158,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 11,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-grievous--scourge-of-dathomir-11-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "general-grievous--scourge-of-dathomir-31-homeworlds-weekly-play": {
+        "variantId": "general-grievous--scourge-of-dathomir-31-homeworlds-weekly-play",
+        "swuId": 60258,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 31,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-grievous--scourge-of-dathomir-31-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "general-grievous--scourge-of-dathomir-431-homeworlds": {
         "variantId": "general-grievous--scourge-of-dathomir-431-homeworlds",
         "swuId": 61098,
@@ -248730,6 +252217,25 @@
           "back": null
         }
       },
+      "general-grievous--scourge-of-dathomir-816-homeworlds": {
+        "variantId": "general-grievous--scourge-of-dathomir-816-homeworlds",
+        "swuId": 61833,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 816,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-grievous--scourge-of-dathomir-816-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "general-grievous--scourge-of-dathomir-669-homeworlds": {
         "variantId": "general-grievous--scourge-of-dathomir-669-homeworlds",
         "swuId": 62618,
@@ -248746,6 +252252,44 @@
         },
         "image": {
           "front": "general-grievous--scourge-of-dathomir-669-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "general-grievous--scourge-of-dathomir-864-homeworlds": {
+        "variantId": "general-grievous--scourge-of-dathomir-864-homeworlds",
+        "swuId": 63263,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 864,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-grievous--scourge-of-dathomir-864-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "general-grievous--scourge-of-dathomir-912-homeworlds": {
+        "variantId": "general-grievous--scourge-of-dathomir-912-homeworlds",
+        "swuId": 63503,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 912,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Marc Escachx",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "general-grievous--scourge-of-dathomir-912-homeworlds-front.webp",
           "back": null
         }
       }
@@ -249571,6 +253115,25 @@
           "back": null
         }
       },
+      "third-sister--cycle-of-vengeance-834-homeworlds": {
+        "variantId": "third-sister--cycle-of-vengeance-834-homeworlds",
+        "swuId": 61923,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 834,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Manos Sparakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "third-sister--cycle-of-vengeance-834-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "third-sister--cycle-of-vengeance-561-homeworlds": {
         "variantId": "third-sister--cycle-of-vengeance-561-homeworlds",
         "swuId": 62078,
@@ -249587,6 +253150,44 @@
         },
         "image": {
           "front": "third-sister--cycle-of-vengeance-561-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "third-sister--cycle-of-vengeance-882-homeworlds": {
+        "variantId": "third-sister--cycle-of-vengeance-882-homeworlds",
+        "swuId": 63353,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 882,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Manos Sparakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "third-sister--cycle-of-vengeance-882-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "third-sister--cycle-of-vengeance-930-homeworlds": {
+        "variantId": "third-sister--cycle-of-vengeance-930-homeworlds",
+        "swuId": 63593,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 930,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Manos Sparakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "third-sister--cycle-of-vengeance-930-homeworlds-front.webp",
           "back": null
         }
       }
@@ -250015,6 +253616,44 @@
           "back": null
         }
       },
+      "gunga-city-guard-5-homeworlds-weekly-play": {
+        "variantId": "gunga-city-guard-5-homeworlds-weekly-play",
+        "swuId": 60128,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 5,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kevin Sidharta",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gunga-city-guard-5-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "gunga-city-guard-25-homeworlds-weekly-play": {
+        "variantId": "gunga-city-guard-25-homeworlds-weekly-play",
+        "swuId": 60228,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 25,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kevin Sidharta",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gunga-city-guard-25-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "gunga-city-guard-356-homeworlds": {
         "variantId": "gunga-city-guard-356-homeworlds",
         "swuId": 60723,
@@ -250110,6 +253749,44 @@
         },
         "image": {
           "front": "eravana--hauling-rathtars-47-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "eravana--hauling-rathtars-1-homeworlds-weekly-play": {
+        "variantId": "eravana--hauling-rathtars-1-homeworlds-weekly-play",
+        "swuId": 60108,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 1,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "eravana--hauling-rathtars-1-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "eravana--hauling-rathtars-21-homeworlds-weekly-play": {
+        "variantId": "eravana--hauling-rathtars-21-homeworlds-weekly-play",
+        "swuId": 60208,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 21,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "eravana--hauling-rathtars-21-homeworlds-weekly-play-front.webp",
           "back": null
         }
       },
@@ -250234,6 +253911,28 @@
         "image": {
           "front": "wicket--few-greater-battles-to-fight-286-homeworlds-front.webp",
           "back": "wicket--few-greater-battles-to-fight-286-homeworlds-back.webp"
+        }
+      },
+      "wicket--few-greater-battles-to-fight-796-homeworlds": {
+        "variantId": "wicket--few-greater-battles-to-fight-796-homeworlds",
+        "swuId": 61733,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 796,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Reno",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "wicket--few-greater-battles-to-fight-796-homeworlds-front.webp",
+          "back": "wicket--few-greater-battles-to-fight-796-homeworlds-back.webp"
         }
       }
     },
@@ -250677,6 +254376,25 @@
           "back": null
         }
       },
+      "saw-gerrera--shadowlands-insurgent-845-homeworlds": {
+        "variantId": "saw-gerrera--shadowlands-insurgent-845-homeworlds",
+        "swuId": 61978,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 845,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "saw-gerrera--shadowlands-insurgent-845-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "saw-gerrera--shadowlands-insurgent-629-homeworlds": {
         "variantId": "saw-gerrera--shadowlands-insurgent-629-homeworlds",
         "swuId": 62418,
@@ -250693,6 +254411,44 @@
         },
         "image": {
           "front": "saw-gerrera--shadowlands-insurgent-629-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "saw-gerrera--shadowlands-insurgent-893-homeworlds": {
+        "variantId": "saw-gerrera--shadowlands-insurgent-893-homeworlds",
+        "swuId": 63408,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 893,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "saw-gerrera--shadowlands-insurgent-893-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "saw-gerrera--shadowlands-insurgent-941-homeworlds": {
+        "variantId": "saw-gerrera--shadowlands-insurgent-941-homeworlds",
+        "swuId": 63648,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 941,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "saw-gerrera--shadowlands-insurgent-941-homeworlds-front.webp",
           "back": null
         }
       }
@@ -251058,6 +254814,25 @@
           "back": null
         }
       },
+      "qimir--everyone-has-a-weakness-846-homeworlds": {
+        "variantId": "qimir--everyone-has-a-weakness-846-homeworlds",
+        "swuId": 61983,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 846,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "qimir--everyone-has-a-weakness-846-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "qimir--everyone-has-a-weakness-706-homeworlds": {
         "variantId": "qimir--everyone-has-a-weakness-706-homeworlds",
         "swuId": 62803,
@@ -251074,6 +254849,44 @@
         },
         "image": {
           "front": "qimir--everyone-has-a-weakness-706-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "qimir--everyone-has-a-weakness-894-homeworlds": {
+        "variantId": "qimir--everyone-has-a-weakness-894-homeworlds",
+        "swuId": 63413,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 894,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "qimir--everyone-has-a-weakness-894-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "qimir--everyone-has-a-weakness-942-homeworlds": {
+        "variantId": "qimir--everyone-has-a-weakness-942-homeworlds",
+        "swuId": 63653,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 942,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "qimir--everyone-has-a-weakness-942-homeworlds-front.webp",
           "back": null
         }
       }
@@ -251151,6 +254964,44 @@
         },
         "image": {
           "front": "zam-wesell--not-what-she-seems-3-2026-convention-exclusive-front.webp",
+          "back": null
+        }
+      },
+      "zam-wesell--not-what-she-seems-9-homeworlds-weekly-play": {
+        "variantId": "zam-wesell--not-what-she-seems-9-homeworlds-weekly-play",
+        "swuId": 60148,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 9,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "zam-wesell--not-what-she-seems-9-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "zam-wesell--not-what-she-seems-29-homeworlds-weekly-play": {
+        "variantId": "zam-wesell--not-what-she-seems-29-homeworlds-weekly-play",
+        "swuId": 60248,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 29,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "zam-wesell--not-what-she-seems-29-homeworlds-weekly-play-front.webp",
           "back": null
         }
       },
@@ -251561,6 +255412,25 @@
           "back": null
         }
       },
+      "logray--bright-tree-shaman-801-homeworlds": {
+        "variantId": "logray--bright-tree-shaman-801-homeworlds",
+        "swuId": 61758,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 801,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "logray--bright-tree-shaman-801-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "logray--bright-tree-shaman-555-homeworlds": {
         "variantId": "logray--bright-tree-shaman-555-homeworlds",
         "swuId": 62048,
@@ -251577,6 +255447,44 @@
         },
         "image": {
           "front": "logray--bright-tree-shaman-555-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "logray--bright-tree-shaman-849-homeworlds": {
+        "variantId": "logray--bright-tree-shaman-849-homeworlds",
+        "swuId": 63188,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 849,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "logray--bright-tree-shaman-849-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "logray--bright-tree-shaman-897-homeworlds": {
+        "variantId": "logray--bright-tree-shaman-897-homeworlds",
+        "swuId": 63428,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 897,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Omercan Cirit",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "logray--bright-tree-shaman-897-homeworlds-front.webp",
           "back": null
         }
       }
@@ -252437,6 +256345,25 @@
           "back": null
         }
       },
+      "vernestra-rwoh--we-should-handle-this-ourselves-841-homeworlds": {
+        "variantId": "vernestra-rwoh--we-should-handle-this-ourselves-841-homeworlds",
+        "swuId": 61958,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 841,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "vernestra-rwoh--we-should-handle-this-ourselves-841-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "vernestra-rwoh--we-should-handle-this-ourselves-558-homeworlds": {
         "variantId": "vernestra-rwoh--we-should-handle-this-ourselves-558-homeworlds",
         "swuId": 62063,
@@ -252453,6 +256380,44 @@
         },
         "image": {
           "front": "vernestra-rwoh--we-should-handle-this-ourselves-558-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "vernestra-rwoh--we-should-handle-this-ourselves-889-homeworlds": {
+        "variantId": "vernestra-rwoh--we-should-handle-this-ourselves-889-homeworlds",
+        "swuId": 63388,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 889,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "vernestra-rwoh--we-should-handle-this-ourselves-889-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "vernestra-rwoh--we-should-handle-this-ourselves-937-homeworlds": {
+        "variantId": "vernestra-rwoh--we-should-handle-this-ourselves-937-homeworlds",
+        "swuId": 63628,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 937,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Gabriel Gómez Almenzar",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "vernestra-rwoh--we-should-handle-this-ourselves-937-homeworlds-front.webp",
           "back": null
         }
       }
@@ -252616,6 +256581,44 @@
           "back": null
         }
       },
+      "teebo--striped-hunter-12-homeworlds-weekly-play": {
+        "variantId": "teebo--striped-hunter-12-homeworlds-weekly-play",
+        "swuId": 60163,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 12,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "teebo--striped-hunter-12-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "teebo--striped-hunter-32-homeworlds-weekly-play": {
+        "variantId": "teebo--striped-hunter-32-homeworlds-weekly-play",
+        "swuId": 60263,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 32,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "teebo--striped-hunter-32-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
       "teebo--striped-hunter-434-homeworlds": {
         "variantId": "teebo--striped-hunter-434-homeworlds",
         "swuId": 61113,
@@ -252635,6 +256638,25 @@
           "back": null
         }
       },
+      "teebo--striped-hunter-817-homeworlds": {
+        "variantId": "teebo--striped-hunter-817-homeworlds",
+        "swuId": 61838,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 817,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard Prestige",
+        "artist": "Wu Shenyou",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "teebo--striped-hunter-817-homeworlds-front.webp",
+          "back": null
+        }
+      },
       "teebo--striped-hunter-672-homeworlds": {
         "variantId": "teebo--striped-hunter-672-homeworlds",
         "swuId": 62633,
@@ -252651,6 +256673,44 @@
         },
         "image": {
           "front": "teebo--striped-hunter-672-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "teebo--striped-hunter-865-homeworlds": {
+        "variantId": "teebo--striped-hunter-865-homeworlds",
+        "swuId": 63268,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 865,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Foil Prestige",
+        "artist": "Wu Shenyou",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "teebo--striped-hunter-865-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "teebo--striped-hunter-913-homeworlds": {
+        "variantId": "teebo--striped-hunter-913-homeworlds",
+        "swuId": 63508,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 913,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Serialized Prestige",
+        "artist": "Wu Shenyou",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "teebo--striped-hunter-913-homeworlds-front.webp",
           "back": null
         }
       }
@@ -252833,6 +256893,28 @@
         "image": {
           "front": "bossk--cruel-hunter-287-homeworlds-front.webp",
           "back": "bossk--cruel-hunter-287-homeworlds-back.webp"
+        }
+      },
+      "bossk--cruel-hunter-797-homeworlds": {
+        "variantId": "bossk--cruel-hunter-797-homeworlds",
+        "swuId": 61738,
+        "set": "hmw",
+        "fullSetName": "Homeworlds",
+        "cardNo": 797,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Showcase",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": true
+        },
+        "back": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "bossk--cruel-hunter-797-homeworlds-front.webp",
+          "back": "bossk--cruel-hunter-797-homeworlds-back.webp"
         }
       }
     },
@@ -253084,6 +257166,44 @@
         },
         "image": {
           "front": "tusken-raider-224-homeworlds-front.webp",
+          "back": null
+        }
+      },
+      "tusken-raider-19-homeworlds-weekly-play": {
+        "variantId": "tusken-raider-19-homeworlds-weekly-play",
+        "swuId": 60198,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 19,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play",
+        "artist": "Terry Wei",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tusken-raider-19-homeworlds-weekly-play-front.webp",
+          "back": null
+        }
+      },
+      "tusken-raider-39-homeworlds-weekly-play": {
+        "variantId": "tusken-raider-39-homeworlds-weekly-play",
+        "swuId": 60298,
+        "set": "hmwp",
+        "fullSetName": "Homeworlds Weekly Play",
+        "cardNo": 39,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "Weekly Play Foil",
+        "artist": "Terry Wei",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "tusken-raider-39-homeworlds-weekly-play-front.webp",
           "back": null
         }
       },

@@ -19,9 +19,10 @@ import SetMultiSelect from '@/components/app/global/SetMultiSelect.tsx';
 import RarityMultiSelect from '@/components/app/global/RarityMultiSelect.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
-import { KeyboardEventHandler, useCallback } from 'react';
+import { KeyboardEventHandler, useCallback, useState } from 'react';
 import { AdvancedSearchStringLookup } from '@/components/app/cards/AdvancedCardSearch/advancedSearchContext.ts';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import {
   areAllFutureSetsSelected,
   futureSetCodes,
@@ -53,6 +54,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
 }) => {
   const { open: sidebarOpen } = useSidebar();
   const { data: cardListData, isLoading: isLoadingCardList } = useCardList();
+  const [previewTooltipOpen, setPreviewTooltipOpen] = useState(false);
 
   // Get search store state and actions
   const {
@@ -131,6 +133,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     : CARD_TYPES;
   const premierOnlySelected = isPremierOnlySetSelection(sets);
   const futureSetsSelected = areAllFutureSetsSelected(sets);
+  const hasPreviewSets = futureSetCodes.length > 0;
 
   return (
     <div
@@ -297,22 +300,39 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                       size="xs"
                       variant={premierOnlySelected ? 'secondary' : 'outline'}
                       aria-pressed={premierOnlySelected}
-                      title="Select released sets currently legal in Premier"
+                      title="Select sets currently legal in Premier"
                       onClick={() => setSets(togglePremierOnlySetSelection(sets))}
                     >
                       Premier
                     </Button>
-                    <Button
-                      type="button"
-                      size="xs"
-                      variant={futureSetsSelected ? 'secondary' : 'outline'}
-                      aria-pressed={futureSetsSelected}
-                      disabled={futureSetCodes.length === 0}
-                      title="Add or remove sets with a future release date"
-                      onClick={() => setSets(toggleFutureSetSelection(sets))}
-                    >
-                      +Preview
-                    </Button>
+                    <Tooltip open={previewTooltipOpen} onOpenChange={setPreviewTooltipOpen}>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          size="xs"
+                          variant={futureSetsSelected ? 'secondary' : 'outline'}
+                          aria-pressed={hasPreviewSets ? futureSetsSelected : undefined}
+                          aria-disabled={!hasPreviewSets}
+                          className="aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-background aria-disabled:hover:text-foreground"
+                          onClick={event => {
+                            if (!hasPreviewSets) {
+                              // Keep the tooltip trigger from closing the explanation after a tap.
+                              event.preventDefault();
+                              setPreviewTooltipOpen(true);
+                              return;
+                            }
+                            setSets(toggleFutureSetSelection(sets));
+                          }}
+                        >
+                          +Preview
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-64">
+                        {hasPreviewSets
+                          ? 'Add or remove preview sets'
+                          : "We don't have any sets in preview currently."}
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 </div>
                 <SetMultiSelect

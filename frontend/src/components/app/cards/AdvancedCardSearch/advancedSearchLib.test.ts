@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import { SwuSet } from '../../../../../../types/enums.ts';
+import { premierSetMap } from '../../../../../../types/Format.ts';
 import {
+  areAllFutureSetsSelected,
   getCardSearchShortcutSetCodes,
   isPremierOnlySetSelection,
   premierSetCodes,
@@ -27,16 +29,21 @@ describe('Premier-only card search shortcut', () => {
     expect(togglePremierOnlySetSelection(selection)).toEqual(premierSetCodes);
   });
 
-  test('keeps future releases out of the Premier selection', () => {
-    const shortcuts = getCardSearchShortcutSetCodes('2026-09-08');
+  test('includes Homeworlds once configured for Premier, even before its release date', () => {
+    const shortcuts = getCardSearchShortcutSetCodes('2026-09-26');
 
-    expect(shortcuts.premierSetCodes).not.toContain(SwuSet.HMW);
-    expect(shortcuts.futureSetCodes).toContain(SwuSet.HMW);
+    expect(premierSetMap[SwuSet.HMW]).toBe(true);
+    expect(shortcuts.premierSetCodes).toContain(SwuSet.HMW);
+    expect(shortcuts.futureSetCodes).toEqual([]);
+    expect(areAllFutureSetsSelected(shortcuts.premierSetCodes)).toBe(false);
+    expect(toggleFutureSetSelection(shortcuts.premierSetCodes)).toEqual(shortcuts.premierSetCodes);
   });
 
-  test('adds and removes future releases without changing the other selected sets', () => {
-    const { futureSetCodes } = getCardSearchShortcutSetCodes('2026-09-08');
+  test('offers an unreleased set as a preview until it joins Premier', () => {
+    const priorPremierSets = premierSetCodes.filter(set => set !== SwuSet.HMW);
+    const { futureSetCodes } = getCardSearchShortcutSetCodes('2026-09-26', priorPremierSets);
 
+    expect(futureSetCodes).toEqual([SwuSet.HMW]);
     expect(toggleFutureSetSelection([SwuSet.LAW], futureSetCodes)).toEqual([
       SwuSet.LAW,
       ...futureSetCodes,
@@ -44,5 +51,8 @@ describe('Premier-only card search shortcut', () => {
     expect(toggleFutureSetSelection([SwuSet.LAW, ...futureSetCodes], futureSetCodes)).toEqual([
       SwuSet.LAW,
     ]);
+    expect(getCardSearchShortcutSetCodes('2026-10-02', priorPremierSets).futureSetCodes).toEqual(
+      [],
+    );
   });
 });

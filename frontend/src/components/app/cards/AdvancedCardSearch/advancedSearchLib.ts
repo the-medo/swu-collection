@@ -13,12 +13,13 @@ const getLocalDateString = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
-export const getCardSearchShortcutSetCodes = (currentDate: string) => ({
-  premierSetCodes: (Object.keys(premierSetMap) as SwuSet[]).filter(
-    set => setInfo[set].releaseDate <= currentDate,
-  ),
+export const getCardSearchShortcutSetCodes = (
+  currentDate: string,
+  premierSets: readonly SwuSet[] = Object.keys(premierSetMap) as SwuSet[],
+) => ({
+  premierSetCodes: [...premierSets],
   futureSetCodes: (Object.keys(setInfo) as SwuSet[]).filter(
-    set => setInfo[set].releaseDate > currentDate,
+    set => !premierSets.includes(set) && setInfo[set].releaseDate > currentDate,
   ),
 });
 
