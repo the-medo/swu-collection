@@ -297,7 +297,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                       size="xs"
                       variant={premierOnlySelected ? 'secondary' : 'outline'}
                       aria-pressed={premierOnlySelected}
-                      title="Select released sets currently legal in Premier"
+                      title="Select sets currently legal in Premier"
                       onClick={() => setSets(togglePremierOnlySetSelection(sets))}
                     >
                       Premier
@@ -308,7 +308,11 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                       variant={futureSetsSelected ? 'secondary' : 'outline'}
                       aria-pressed={futureSetsSelected}
                       disabled={futureSetCodes.length === 0}
-                      title="Add or remove sets with a future release date"
+                      title={
+                        futureSetCodes.length === 0
+                          ? 'No preview sets available'
+                          : 'Add or remove preview sets'
+                      }
                       onClick={() => setSets(toggleFutureSetSelection(sets))}
                     >
                       +Preview
