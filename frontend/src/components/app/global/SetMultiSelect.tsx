@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useMemo } from 'react';
 import { SwuSet } from '../../../../../types/enums.ts';
-import { setArray } from '../../../../../lib/swu-resources/set-info.ts';
+import { setArraySorted, setInfo } from '../../../../../lib/swu-resources/set-info.ts';
 import { MultiSelect } from '@/components/ui/multi-select.tsx';
 
 export type SetMultiSelectProps = {
@@ -18,9 +18,9 @@ const SetMultiSelect: React.FC<SetMultiSelectProps> = ({
   showFullName = false,
 }) => {
   const options = useMemo(() => {
-    return setArray.map(s => ({
-      value: s.code,
-      label: showFullName ? s.name : s.code.toUpperCase(),
+    return setArraySorted.map(set => ({
+      value: set,
+      label: showFullName ? setInfo[set].name : set.toUpperCase(),
     }));
   }, [showFullName]);
 
