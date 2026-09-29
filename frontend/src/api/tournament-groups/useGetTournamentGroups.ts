@@ -6,23 +6,27 @@ const PAGE_SIZE = 20;
 
 export type GetTournamentGroupsRequest = {
   meta?: number;
+  set?: string;
   visible?: boolean;
   includeStats?: boolean;
   nameTemplate?: string;
   sort?: 'name' | 'position' | 'created_at';
   order?: 'asc' | 'desc';
   pageSize?: number;
+  enabled?: boolean;
 };
 
 export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) => {
   const {
     meta,
+    set,
     visible,
     includeStats,
     nameTemplate,
     sort = 'position',
     order = 'asc',
     pageSize = PAGE_SIZE,
+    enabled = true,
   } = props;
 
   // Create a stable query key based on all filter parameters
@@ -30,11 +34,13 @@ export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) =
     'tournament-groups',
     {
       meta,
+      set,
       visible,
       includeStats,
       nameTemplate,
       sort,
       order,
+      pageSize,
     },
   ];
 
@@ -44,6 +50,7 @@ export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) =
       const response = await api['tournament-groups'].$get({
         query: {
           meta: meta?.toString(),
+          set,
           visible: visible?.toString(),
           includeStats: includeStats?.toString(),
           nameTemplate,
@@ -61,6 +68,7 @@ export const useGetTournamentGroups = (props: GetTournamentGroupsRequest = {}) =
       return (await response.json()) as unknown as TournamentGroupsResponse;
     },
     initialPageParam: 0,
+    enabled,
     getNextPageParam: lastPage => {
       // Check if there are more pages to fetch
       if (!lastPage.data || lastPage.data.length === 0 || !lastPage.pagination?.hasMore) {

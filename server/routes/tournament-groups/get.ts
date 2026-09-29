@@ -19,6 +19,7 @@ import { booleanPreprocessor } from '../../../shared/lib/zod/booleanPreprocessor
 // Define query parameters schema
 const zTournamentGroupQueryParams = z.object({
   meta: z.coerce.number().optional(),
+  set: z.string().min(1).optional(),
   visible: booleanPreprocessor.optional(),
   includeStats: booleanPreprocessor.optional().default(false),
   nameTemplate: z.string().optional(),
@@ -32,7 +33,7 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
   '/',
   zValidator('query', zTournamentGroupQueryParams),
   async c => {
-    const { meta, visible, includeStats, nameTemplate, limit, offset, sort, order } =
+    const { meta, set, visible, includeStats, nameTemplate, limit, offset, sort, order } =
       c.req.valid('query');
 
     const filters = [];
@@ -40,6 +41,10 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
     // Meta filter - exact meta ID
     if (meta !== undefined) {
       filters.push(eq(tournamentGroupTable.metaId, meta));
+    }
+
+    if (set !== undefined) {
+      filters.push(eq(metaTable.set, set));
     }
 
     // Visibility filter
