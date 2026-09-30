@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from '@tanstack/react-router';
-import { format, parseISO } from 'date-fns';
-import { ExternalLink, House } from 'lucide-react';
+import { House } from 'lucide-react';
 import type { HomeLocation } from '../../../../../../../shared/lib/userHomeLocation.ts';
 import {
   Map as LibreMap,
@@ -11,100 +9,34 @@ import {
   NavigationControl,
   FullscreenControl,
   LngLatBounds,
+  LngLat,
   setWorkerUrl,
 } from 'maplibre-gl';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { cn } from '@/lib/utils.ts';
-import { Badge } from '@/components/ui/badge.tsx';
 import type { MapTournament } from '../../../../../../../types/TournamentMap.ts';
-import { formatDataById } from '../../../../../../../types/Format.ts';
-import {
-  hasMapCoordinates,
-  locationText,
-  mapClusterBackground,
-  mapPinColor,
-  mapPinLogo,
-  tournamentLinks,
-  tournamentWeek,
-} from './mapData.ts';
+import { hasMapCoordinates, mapClusterBackground, mapPinColor, mapPinLogo } from './mapData.ts';
+import { TournamentPinDetails } from './TournamentPinDetails.tsx';
+import { mapWeekIndex } from '../../../../../../../shared/lib/tournamentMapDates.ts';
 import { createMapClusters } from './mapClusters.ts';
 
 setWorkerUrl(workerUrl);
 
-function TournamentPinDetails({ tournaments }: { tournaments: MapTournament[] }) {
-  return (
-    <div className="max-h-72 space-y-3 overflow-y-auto pr-3" aria-label="Tournament details">
-      {tournaments.map(t => (
-        <article
-          key={t.id}
-          className="flex flex-col items-start gap-1 border-b pb-2 last:border-0 last:pb-0"
-        >
-          <Badge
-            variant="outline"
-            className={cn(
-              'border-transparent leading-tight',
-              t.format === 3 ? 'text-white' : 'text-neutral-900',
-            )}
-            style={{ backgroundColor: mapPinColor(t.format, 0, 12) }}
-          >
-            {formatDataById[t.format]?.name ?? 'Tournament'}
-          </Badge>
-          <Link
-            to="/tournaments/$tournamentId"
-            params={{ tournamentId: t.id }}
-            className="block text-lg font-semibold leading-tight text-primary hover:underline"
-          >
-            {t.name}
-          </Link>
-          <p className="m-0 text-sm leading-snug!">
-            {format(parseISO(t.date), 'EEE, MMM d, yyyy')}
-          </p>
-          <p className="m-0 text-sm leading-snug! text-muted-foreground">{locationText(t)}</p>
-          {t.additionalInfo.locationPrecision === 'city' && (
-            <p className="m-0 text-xs leading-snug! text-muted-foreground">
-              Approximate city location — check the event website for the venue.
-            </p>
-          )}
-          {t.additionalInfo.locationPrecision === 'street' && (
-            <p className="m-0 text-xs leading-snug! text-muted-foreground">
-              Approximate street location.
-            </p>
-          )}
-          <div className="flex flex-wrap gap-x-3 gap-y-1">
-            {tournamentLinks(t).map(link => (
-              <a
-                key={link.url}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm leading-snug text-primary hover:underline"
-              >
-                {link.label}
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            ))}
-          </div>
-        </article>
-      ))}
-    </div>
-  );
-}
-
 export default function TournamentMapCanvas({
   tournaments,
   weeks,
-  set,
+  windowStart,
   homeCoordinates,
 }: {
   tournaments: MapTournament[];
   weeks: string[];
-  set?: string;
+  windowStart?: string;
   homeCoordinates: HomeLocation['coordinates'] | null;
 }) {
   const map = useRef<LibreMap | null>(null);
   const activePopup = useRef<Popup | null>(null);
-  const fittedSet = useRef<string | null>(null);
+  const fittedWindow = useRef<string | null>(null);
   const [popup, setPopup] = useState<{ node: HTMLDivElement; tournaments: MapTournament[] } | null>(
     null,
   );
@@ -219,7 +151,7 @@ export default function TournamentMapCanvas({
         button.setAttribute('aria-label', label);
         button.title = label;
         const colors = events.map(t =>
-          mapPinColor(t.format, weeks.indexOf(tournamentWeek(t.date)), weeks.length),
+          mapPinColor(t.format, weeks.length ? mapWeekIndex(t.date, weeks[0]) : 0, weeks.length),
         );
         const shape = document.createElement('span');
         shape.setAttribute('aria-hidden', 'true');
@@ -287,11 +219,11 @@ export default function TournamentMapCanvas({
       .filter(hasMapCoordinates)
       .forEach(t => bounds.extend([t.coordinates.x, t.coordinates.y]));
     if (homeX !== undefined && homeY !== undefined) bounds.extend([homeX, homeY]);
-    const fitKey = `${set}:${homeX}:${homeY}`;
-    // Preserve the user's zoom while filtering. Fit when the set first has pins.
-    if (!bounds.isEmpty() && fittedSet.current !== fitKey) {
+    const fitKey = `${windowStart}:${homeX}:${homeY}`;
+    // Preserve the user's zoom while filtering. Fit when the date window first has pins.
+    if (!bounds.isEmpty() && fittedWindow.current !== fitKey) {
       instance.fitBounds(bounds, { padding: 65, maxZoom: 9, duration: 0 });
-      fittedSet.current = fitKey;
+      fittedWindow.current = fitKey;
     }
     drawMarkers();
     instance.on('zoomend', drawMarkers);
@@ -300,7 +232,7 @@ export default function TournamentMapCanvas({
       markers.forEach(marker => marker.remove());
       activePopup.current?.remove();
     };
-  }, [tournaments, weeks, set, homeX, homeY]);
+  }, [tournaments, weeks, windowStart, homeX, homeY]);
 
   return (
     <div className="relative">
@@ -338,14 +270,20 @@ export default function TournamentMapCanvas({
       {popup && createPortal(<TournamentPinDetails tournaments={popup.tournaments} />, popup.node)}
       {homeCoordinates &&
         createPortal(
-          <div
-            role="img"
-            aria-label="Your home"
-            title="Your home"
-            className="flex size-10 items-center justify-center rounded-full border-2 border-white bg-sky-700 text-white shadow-lg"
+          <button
+            type="button"
+            aria-label="Zoom to your home"
+            title="Zoom to your home"
+            onClick={() =>
+              map.current?.fitBounds(
+                LngLatBounds.fromLngLat(new LngLat(homeCoordinates.x, homeCoordinates.y), 500_000),
+                { padding: 40, duration: 800 },
+              )
+            }
+            className="flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-sky-700 text-white shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <House className="size-6" aria-hidden="true" />
-          </div>,
+          </button>,
           homeNode,
         )}
     </div>

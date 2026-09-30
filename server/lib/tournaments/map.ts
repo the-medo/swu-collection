@@ -1,24 +1,30 @@
-import { and, eq, gte, sql } from 'drizzle-orm';
+import { and, asc, gte, lte, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { tournament } from '../../db/schema/tournament.ts';
-import { meta } from '../../db/schema/meta.ts';
-import type { SwuSet } from '../../../types/enums.ts';
+import { eventHighlight } from '../../db/schema/event_highlight.ts';
+import { fourMonthWindow } from '../../../shared/lib/tournamentMapDates.ts';
+import { tournamentMapWindow } from './mapWindow.ts';
 import type { TournamentMapResponse } from '../../../types/TournamentMap.ts';
 
 // Preserve PostgreSQL microseconds in both row versions and the inclusive cursor.
 const updatedAt = sql<string>`to_char(${tournament.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`;
 
 export async function getTournamentMap(
-  set: SwuSet,
-  updatedSince?: string,
+  query: { from?: string; to?: string; updatedSince?: string } = {},
 ): Promise<TournamentMapResponse> {
+  const range = query.from
+    ? { from: query.from, to: query.to ?? fourMonthWindow(query.from).to }
+    : tournamentMapWindow;
+  const { updatedSince } = query;
   return db.transaction(
     async tx => {
-      const scope = eq(meta.set, set);
+      const scope = and(
+        gte(tournament.date, sql`${range.from}::date`),
+        lte(tournament.date, sql`${range.to}::date`),
+      );
       const versions = await tx
-        .select({ id: tournament.id, updatedAt })
+        .select({ id: tournament.id, date: sql<string>`${tournament.date}::text`, updatedAt })
         .from(tournament)
-        .innerJoin(meta, eq(tournament.meta, meta.id))
         .where(scope);
       const rows = await tx
         .select({
@@ -35,7 +41,6 @@ export async function getTournamentMap(
           updatedAt,
         })
         .from(tournament)
-        .innerJoin(meta, eq(tournament.meta, meta.id))
         .where(
           and(
             scope,
@@ -43,7 +48,12 @@ export async function getTournamentMap(
           ),
         );
       return {
-        set,
+        window: tournamentMapWindow,
+        range,
+        highlights: await tx
+          .select()
+          .from(eventHighlight)
+          .orderBy(asc(eventHighlight.date), asc(eventHighlight.id)),
         tournaments: rows.map(row => ({ ...row, date: row.date.toISOString().slice(0, 10) })),
         versions,
         updatedAt: versions.reduce<string | null>(

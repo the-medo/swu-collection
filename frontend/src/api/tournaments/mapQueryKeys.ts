@@ -1,6 +1,6 @@
-import type { SwuSet } from '../../../../types/enums.ts';
+import type { TournamentMapRange } from '../../../../types/TournamentMap.ts';
 
 export const tournamentMapKeys = {
   all: ['tournament-map'] as const,
-  set: (set: SwuSet | undefined) => ['tournament-map', { set }] as const,
+  range: (range?: TournamentMapRange) => ['tournament-map', range ?? 'main'] as const,
 };

@@ -28,9 +28,6 @@ export function SettingsPage() {
       <div className="container mx-auto">
         <Tabs value={page} onValueChange={handleTabChange} className="w-full">
           <TabsList className="h-auto w-full flex-wrap justify-start">
-            <TabsTrigger value="home-location" className="flex-1 sm:flex-none">
-              Home location
-            </TabsTrigger>
             <TabsTrigger value="collections-and-wantlists" className="flex-1 sm:flex-none">
               Collections and wantlists
             </TabsTrigger>
@@ -40,18 +37,13 @@ export function SettingsPage() {
             <TabsTrigger value="watched-players" className="flex-1 sm:flex-none">
               Watched players
             </TabsTrigger>
+            <TabsTrigger value="home-location" className="flex-1 sm:flex-none">
+              Home location
+            </TabsTrigger>
             <TabsTrigger value="development" className="flex-1 sm:flex-none">
               Development
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="home-location">
-            <Card>
-              <CardContent className="p-4">
-                <HomeLocationSettings />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           <TabsContent value="collections-and-wantlists">
             <Card>
               <CardContent className="p-4">
@@ -70,6 +62,13 @@ export function SettingsPage() {
             <Card>
               <CardContent className="p-4">
                 <WatchedPlayersSettings />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="home-location">
+            <Card>
+              <CardContent className="p-4">
+                <HomeLocationSettings />
               </CardContent>
             </Card>
           </TabsContent>

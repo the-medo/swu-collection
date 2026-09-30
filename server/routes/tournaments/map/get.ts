@@ -6,9 +6,8 @@ import { getTournamentMap } from '../../../lib/tournaments/map.ts';
 
 export function createTournamentMapRoute(getMap = getTournamentMap) {
   return new Hono<AuthExtension>().get('/', zValidator('query', zTournamentMapQuery), async c => {
-    const { set, updatedSince } = c.req.valid('query');
     c.header('Cache-Control', 'no-store');
-    return c.json({ data: await getMap(set, updatedSince) });
+    return c.json({ data: await getMap(c.req.valid('query')) });
   });
 }
 

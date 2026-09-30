@@ -4,21 +4,11 @@ import { House } from 'lucide-react';
 import { useHomeLocation } from '@/api/user/useHomeLocation.ts';
 import SignInWrapper from '@/components/app/auth/SignInWrapper.tsx';
 import { Route } from '@/routes/tournaments/map';
-import { useGetMetas } from '@/api/meta';
 import { useTournamentMap } from '@/api/tournaments/useTournamentMap.ts';
 import TournamentNavigation from '@/components/app/tournaments/TournamentNavigation/TournamentNavigation.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Label } from '@/components/ui/label.tsx';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select.tsx';
-import { setArraySorted, setInfo } from '../../../../../../../lib/swu-resources/set-info.ts';
-import { SwuSet } from '../../../../../../../types/enums.ts';
 import {
   defaultMapFormats,
   defaultMapTypes,
@@ -28,6 +18,7 @@ import {
   mapPinColor,
   mapTypes,
   mapWeekRange,
+  mapWeekEnd,
   mapWeeks,
   mapWeekSummaries,
 } from './mapData.ts';
@@ -38,40 +29,33 @@ const TournamentMapCanvas = lazy(() => import('./TournamentMapCanvas.tsx'));
 const emptyTournaments: MapTournament[] = [];
 
 export default function TournamentsMap() {
-  const { tmSet, tmFrom, tmTo, tmFormats, tmTypes, metaId } = Route.useSearch();
+  const { tmFrom, tmTo, tmFormats, tmTypes } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const metas = useGetMetas();
-  const defaultSet = useMemo(() => {
-    const selected = metas.data?.data.find(item => item.meta.id === metaId);
-    const latest = metas.data?.data
-      .filter(item => item.meta.format === 1)
-      .sort((a, b) => b.meta.date.localeCompare(a.meta.date))[0];
-    const value = selected?.meta.set ?? latest?.meta.set;
-    return Object.values(SwuSet).find(set => set === value) ?? setArraySorted[0];
-  }, [metas.data, metaId]);
-  const set = tmSet ?? (metas.isPending ? undefined : defaultSet);
-  const query = useTournamentMap(set);
+  const query = useTournamentMap();
   const home = useHomeLocation();
-  const tournaments = query.data ?? emptyTournaments;
+  const tournaments = query.data?.tournaments ?? emptyTournaments;
   const formats = tmFormats ?? defaultMapFormats;
   const types = tmTypes ?? defaultMapTypes;
-  const weeks = useMemo(() => mapWeeks(tournaments), [tournaments]);
+  const window = query.data?.window;
+  const weeks = useMemo(() => mapWeeks(window), [window]);
   const weekSummaries = useMemo(
     () =>
       mapWeekSummaries(
         weeks,
         filterMapTournaments(tournaments, formats, types, undefined, undefined),
+        query.data?.highlights,
+        window?.to,
       ),
-    [weeks, tournaments, formats, types],
+    [weeks, tournaments, formats, types, query.data?.highlights, window?.to],
   );
   // Keep dragging local and live; commit one shareable URL/history entry on release.
-  const rangeKey = `${set}:${tmFrom}:${tmTo}:${weeks.join(',')}`;
+  const rangeKey = `${window?.from}:${tmFrom}:${tmTo}:${weeks.join(',')}`;
   const [draft, setDraft] = useState<{ key: string; value: [number, number] } | null>(null);
   const activeDraft = draft?.key === rangeKey ? draft : null;
   const range = activeDraft?.value ?? mapWeekRange(weeks, tmFrom, tmTo);
   const upcomingOnly = !activeDraft && !tmFrom && !tmTo;
   const from = weeks[range[0]];
-  const to = weeks[range[1]];
+  const to = weeks[range[1]] ? mapWeekEnd(weeks[range[1]], window?.to) : undefined;
   const filtered = useMemo(
     () => filterMapTournaments(tournaments, formats, types, from, to, upcomingOnly),
     [tournaments, formats, types, from, to, upcomingOnly],
@@ -89,51 +73,25 @@ export default function TournamentsMap() {
       <TournamentNavigation />
       <div className="mb-3 flex flex-wrap items-center gap-4">
         <h3 className="mb-0">Tournament Map</h3>
-        <div className="flex min-w-[220px] flex-1 items-center gap-2 sm:max-w-sm">
-          <Label htmlFor="map-set" className="text-muted-foreground">
-            Set
-          </Label>
-          <Select
-            value={set ?? ''}
-            onValueChange={value => {
-              const parsed = Object.values(SwuSet).find(code => code === value);
-              if (parsed)
-                void navigate({
-                  search: prev => ({ ...prev, tmSet: parsed, tmFrom: undefined, tmTo: undefined }),
-                });
-            }}
-          >
-            <SelectTrigger id="map-set">
-              <SelectValue placeholder="Loading sets…" />
-            </SelectTrigger>
-            <SelectContent>
-              {setArraySorted.map(code => (
-                <SelectItem key={code} value={code}>
-                  {setInfo[code].name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="ml-auto">
+          <SignInWrapper text="Set home location">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/settings" search={{ page: 'home-location' }}>
+                <House className="size-4" />
+                {home.data ? 'Home location settings' : 'Set home location'}
+              </Link>
+            </Button>
+          </SignInWrapper>
         </div>
       </div>
-      <div className="mb-3 flex items-center gap-2">
-        <SignInWrapper text="Set home location">
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/settings" search={{ page: 'home-location' }}>
-              <House className="size-4" />
-              {home.data ? 'Home location settings' : 'Set home location'}
-            </Link>
+      {home.isError && (
+        <div role="alert" className="mb-3 text-sm text-muted-foreground">
+          Could not load your home location.{' '}
+          <Button variant="link" size="sm" onClick={() => void home.refetch()}>
+            Retry
           </Button>
-        </SignInWrapper>
-        {home.isError && (
-          <span role="alert" className="text-sm text-muted-foreground">
-            Could not load your home location.{' '}
-            <Button variant="link" size="sm" onClick={() => void home.refetch()}>
-              Retry
-            </Button>
-          </span>
-        )}
-      </div>
+        </div>
+      )}
       <div className="mb-4 grid gap-5 rounded-lg border bg-card p-4 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
         <div className="min-w-0 space-y-4">
           <fieldset className="min-w-0">
@@ -218,6 +176,7 @@ export default function TournamentsMap() {
         </div>
         <WeekRangeSlider
           weeks={weeks}
+          windowEnd={window?.to}
           summaries={weekSummaries}
           value={range}
           onChange={value => setDraft({ key: rangeKey, value })}
@@ -240,7 +199,7 @@ export default function TournamentsMap() {
         <>
           {filtered.length === 0 && (
             <p className="mb-3 text-sm">
-              No tournaments match these filters. Adjust the week range, format, type, or set.
+              No tournaments match these filters. Adjust the week range, format, or type.
             </p>
           )}
           {filtered.length > 0 && located.length === 0 && (
@@ -250,7 +209,7 @@ export default function TournamentsMap() {
             <TournamentMapCanvas
               tournaments={located}
               weeks={weeks}
-              set={set}
+              windowStart={window?.from}
               homeCoordinates={home.data?.coordinates ?? null}
             />
           </Suspense>

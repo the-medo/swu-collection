@@ -1,4 +1,8 @@
 import { expect, test } from 'bun:test';
+import {
+  fourMonthWindow,
+  mapWeekIndex,
+} from '../../../../../../../shared/lib/tournamentMapDates.ts';
 import type { MapTournament } from '../../../../../../../types/TournamentMap.ts';
 import {
   filterMapTournaments,
@@ -10,7 +14,7 @@ import {
   mapClusterBackground,
   hasMapCoordinates,
   tournamentLinks,
-  tournamentWeek,
+  mapWeekEnd,
 } from './mapData.ts';
 
 const row = (date: string, days = 1): MapTournament => ({
@@ -27,7 +31,7 @@ const row = (date: string, days = 1): MapTournament => ({
   additionalInfo: {},
 });
 
-test('upcoming includes today and ongoing multi-day events; weeks start Monday across years', () => {
+test('upcoming includes today and ongoing multi-day events; date filters include the full selected week', () => {
   const rows = [row('2026-09-27'), row('2026-09-28', 2), row('2026-09-29'), row('2026-10-05')];
   expect(
     filterMapTournaments(
@@ -46,7 +50,7 @@ test('upcoming includes today and ongoing multi-day events; weeks start Monday a
       [1],
       defaultMapTypes,
       '2026-09-28',
-      '2026-09-28',
+      '2026-10-04',
       true,
       '2026-09-29',
     ),
@@ -54,7 +58,7 @@ test('upcoming includes today and ongoing multi-day events; weeks start Monday a
   expect(filterMapTournaments(rows, [1, 3, 6], defaultMapTypes, undefined, undefined)).toHaveLength(
     4,
   );
-  expect(tournamentWeek('2027-01-01')).toBe('2026-12-28');
+  expect(mapWeekIndex('2027-01-01', '2026-10-02')).toBe(13);
 });
 
 test('pins require valid points and links reject executable URLs and deduplicate destinations', () => {
@@ -87,16 +91,22 @@ test('range has a step for empty weeks and keeps format selection independent', 
     { ...row('2026-11-21'), format: 3 },
     { ...row('2026-11-22'), format: 6 },
   ];
-  const weeks = mapWeeks(rows);
+  const weeks = mapWeeks({ from: '2026-11-02', to: '2026-11-22' });
   expect(weeks).toEqual(['2026-11-02', '2026-11-09', '2026-11-16']);
   expect(mapWeekRange(weeks, undefined, undefined, '2026-11-10')).toEqual([1, 2]);
   expect(mapWeekRange(weeks, '2026-11-16', '2026-11-02')).toEqual([0, 2]);
   expect(
-    filterMapTournaments(rows, [3], defaultMapTypes, weeks[0], weeks[2]).map(t => t.format),
+    filterMapTournaments(rows, [3], defaultMapTypes, weeks[0], mapWeekEnd(weeks[2])).map(
+      t => t.format,
+    ),
   ).toEqual([3]);
-  expect(filterMapTournaments(rows, [1, 3, 6], defaultMapTypes, weeks[1], weeks[1])).toEqual([]);
-  expect(filterMapTournaments(rows, [], defaultMapTypes, weeks[0], weeks[2])).toEqual([]);
-  expect(mapWeeks([])).toEqual([]);
+  expect(
+    filterMapTournaments(rows, [1, 3, 6], defaultMapTypes, weeks[1], mapWeekEnd(weeks[1])),
+  ).toEqual([]);
+  expect(filterMapTournaments(rows, [], defaultMapTypes, weeks[0], mapWeekEnd(weeks[2]))).toEqual(
+    [],
+  );
+  expect(mapWeeks()).toEqual([]);
   expect(mapWeekRange([], undefined, undefined)).toEqual([0, 0]);
   expect(mapWeekRange([weeks[0]], undefined, undefined, '2027-01-01')).toEqual([0, 0]);
 });
@@ -127,7 +137,7 @@ test('type groups combine with format and week filters without including other t
   rows.push({ ...row('2026-11-21'), id: 'later-sector', type: 'sq' });
   rows.push({ ...row('2026-11-07'), id: 'sealed-open', type: 'open', format: 3 });
   const filter = (types: typeof defaultMapTypes, formats = [1, 3, 6]) =>
-    filterMapTournaments(rows, formats, types, '2026-11-02', '2026-11-02').map(t => t.id);
+    filterMapTournaments(rows, formats, types, '2026-11-02', '2026-11-08').map(t => t.id);
   expect(filter(['pq'])).toEqual(['pq']);
   expect(filter(['open'])).toEqual(['open', 'sealed-open']);
   expect(filter(['major'])).toEqual(['sq', 'rq', 'gc']);
@@ -143,7 +153,7 @@ test('week summaries keep empty weeks and count majors and tournaments without c
     { ...row('2027-01-03'), id: 'pq' },
     { ...row('2027-01-16'), id: 'galactic', type: 'gc', format: 6 },
   ];
-  const weeks = mapWeeks(rows);
+  const weeks = mapWeeks({ from: '2026-12-28', to: '2027-01-17' });
   const summary = mapWeekSummaries(weeks, rows);
   expect(
     summary.map(({ week, count, majors }) => ({ week, count, ids: majors.map(t => t.id) })),
@@ -155,4 +165,32 @@ test('week summaries keep empty weeks and count majors and tournaments without c
   const filtered = filterMapTournaments(rows, [6], ['major'], undefined, undefined);
   expect(mapWeekSummaries(weeks, filtered).map(s => s.count)).toEqual([0, 0, 1]);
   expect(mapWeekSummaries([], rows)).toEqual([]);
+});
+
+test('the fixed four-month window starts exactly on release day and clips its last week', () => {
+  const window = fourMonthWindow('2026-10-02');
+  expect(window).toEqual({ from: '2026-10-02', to: '2027-02-01' });
+  const weeks = mapWeeks(window);
+  expect(weeks).toHaveLength(18);
+  expect(weeks[0]).toBe('2026-10-02');
+  expect(weeks[weeks.length - 1]).toBe('2027-01-29');
+  expect(mapWeekEnd(weeks[weeks.length - 1]!, window.to)).toBe('2027-02-01');
+  expect(mapWeekRange(weeks, undefined, undefined, '2026-10-08')).toEqual([0, 17]);
+  const highlights = ['2026-10-01', '2026-10-02', '2027-02-01', '2027-02-02'].map(date => ({
+    id: date,
+    date,
+    imageUrl: 'https://images.swubase.com/logo.png',
+    description: date,
+    updatedAt: '',
+  }));
+  const summary = mapWeekSummaries(
+    weeks,
+    [row('2026-10-08'), row('2026-10-09'), row('2027-02-02')],
+    highlights,
+    window.to,
+  );
+  expect(summary[0].count).toBe(1);
+  expect(summary[1].count).toBe(1);
+  expect(summary.flatMap(s => s.highlights).map(h => h.date)).toEqual(['2026-10-02', '2027-02-01']);
+  expect(summary.reduce((n, s) => n + s.count, 0)).toBe(2);
 });

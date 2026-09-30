@@ -1,5 +1,14 @@
-import { addDays, eachWeekOfInterval, format, parseISO, startOfWeek } from 'date-fns';
-import type { MapTournament } from '../../../../../../../types/TournamentMap.ts';
+import { addDays, format, parseISO } from 'date-fns';
+import type {
+  MapTournament,
+  TournamentMapRange,
+} from '../../../../../../../types/TournamentMap.ts';
+import type { EventHighlight } from '../../../../../../../types/EventHighlight.ts';
+import {
+  mapWeekIndex,
+  rangeDates,
+  shiftDate,
+} from '../../../../../../../shared/lib/tournamentMapDates.ts';
 
 export const mapTypes = [
   { id: 'pq', label: 'PQs', tournamentTypes: ['pq'] },
@@ -19,26 +28,41 @@ export function mapPinLogo(type: string) {
   return majorPinLogos[type];
 }
 
-export function tournamentWeek(date: string) {
-  return format(startOfWeek(parseISO(date), { weekStartsOn: 1 }), 'yyyy-MM-dd');
+export function mapWeekEnd(week: string, windowEnd?: string) {
+  const end = shiftDate(week, 6);
+  return windowEnd && windowEnd < end ? windowEnd : end;
 }
 
-export function weekLabel(week: string) {
+export function weekLabel(week: string, windowEnd?: string) {
   const start = parseISO(week);
-  return `${format(start, 'MMM d')} – ${format(addDays(start, 6), 'MMM d, yyyy')}`;
+  return `${format(start, 'MMM d')} – ${format(parseISO(mapWeekEnd(week, windowEnd)), 'MMM d, yyyy')}`;
 }
 
-export function mapWeekSummaries(weeks: string[], tournaments: MapTournament[]) {
-  const summaries = new Map(
-    weeks.map(week => [week, { week, count: 0, majors: [] as MapTournament[] }]),
-  );
+export function mapWeekSummaries(
+  weeks: string[],
+  tournaments: MapTournament[],
+  highlights: EventHighlight[] = [],
+  windowEnd?: string,
+) {
+  const summaries = weeks.map(week => ({
+    week,
+    count: 0,
+    majors: [] as MapTournament[],
+    highlights: [] as EventHighlight[],
+  }));
+  if (!weeks.length) return summaries;
+  const end = windowEnd ?? mapWeekEnd(weeks[weeks.length - 1]!);
   for (const tournament of tournaments) {
-    const summary = summaries.get(tournamentWeek(tournament.date));
-    if (!summary) continue;
+    const summary = summaries[mapWeekIndex(tournament.date, weeks[0])];
+    if (!summary || tournament.date > end) continue;
     summary.count++;
     if (mapPinLogo(tournament.type)) summary.majors.push(tournament);
   }
-  return Array.from(summaries.values());
+  for (const highlight of highlights) {
+    const summary = summaries[mapWeekIndex(highlight.date, weeks[0])];
+    if (summary && highlight.date <= end) summary.highlights.push(highlight);
+  }
+  return summaries;
 }
 
 export function filterMapTournaments(
@@ -59,19 +83,14 @@ export function filterMapTournaments(
       tournamentTypes.has(t.type) &&
       (!upcomingOnly ||
         format(addDays(parseISO(t.date), Math.max(0, t.days - 1)), 'yyyy-MM-dd') >= today) &&
-      (!from || tournamentWeek(t.date) >= from) &&
-      (!to || tournamentWeek(t.date) <= to),
+      (!from || t.date >= from) &&
+      (!to || t.date <= to),
   );
 }
 
-// Include empty calendar weeks: moving one step always means seven days.
-export function mapWeeks(tournaments: MapTournament[]) {
-  const dates = tournaments.map(t => t.date).sort();
-  if (!dates.length) return [];
-  return eachWeekOfInterval(
-    { start: parseISO(dates[0]), end: parseISO(dates[dates.length - 1]) },
-    { weekStartsOn: 1 },
-  ).map(week => format(week, 'yyyy-MM-dd'));
+// The server's anchor defines week one, including weeks with no tournaments.
+export function mapWeeks(range?: TournamentMapRange) {
+  return range ? rangeDates(range).filter((_, index) => index % 7 === 0) : [];
 }
 
 export function mapWeekRange(
@@ -81,12 +100,10 @@ export function mapWeekRange(
   today = format(new Date(), 'yyyy-MM-dd'),
 ): [number, number] {
   if (!weeks.length) return [0, 0];
-  const currentWeek = tournamentWeek(today);
   const findWeek = (date: string) => {
-    const index = weeks.findIndex(week => week >= tournamentWeek(date));
-    return index === -1 ? weeks.length - 1 : index;
+    return Math.max(0, Math.min(weeks.length - 1, mapWeekIndex(date, weeks[0])));
   };
-  const start = findWeek(from ?? currentWeek);
+  const start = findWeek(from ?? today);
   const end = to ? findWeek(to) : weeks.length - 1;
   return [Math.min(start, end), Math.max(start, end)];
 }

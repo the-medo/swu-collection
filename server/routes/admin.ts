@@ -20,8 +20,10 @@ import { adminTournamentIdMatchesGetRoute } from './admin/tournaments/_id/matche
 import { adminTournamentIdRoundApplyMatchesPostRoute } from './admin/tournaments/_id/rounds/_round/apply-matches/post.ts';
 import { adminTournamentIdStandingMovePostRoute } from './admin/tournaments/_id/standings/_deckId/move/post.ts';
 import type { AuthExtension } from '../auth/auth.ts';
+import { eventHighlightsRoute } from './admin/event-highlights/index.ts';
 
 export const adminRoute = new Hono<AuthExtension>()
+  .route('/event-highlights', eventHighlightsRoute)
   .route('/crossfire-access', crossfireAccessRoute)
   .route('/crossfire-cards', crossfireCardReleasesRoute)
   .route('/crossfire-operations', crossfireOperationsRoute)

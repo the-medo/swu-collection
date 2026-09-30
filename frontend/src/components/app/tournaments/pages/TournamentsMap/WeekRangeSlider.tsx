@@ -1,18 +1,21 @@
 import * as Slider from '@radix-ui/react-slider';
-import { useEffect, useRef, useState } from 'react';
-import { addDays, format, parseISO } from 'date-fns';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button.tsx';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
-import { mapPinLogo, mapWeekSummaries, weekLabel } from './mapData.ts';
+import { mapPinLogo, mapWeekEnd, mapWeekSummaries, weekLabel } from './mapData.ts';
+import { TournamentPinDetails } from './TournamentPinDetails.tsx';
 
 export function WeekRangeSlider({
   weeks,
+  windowEnd,
   summaries,
   value,
   onChange,
   onCommit,
 }: {
   weeks: string[];
+  windowEnd?: string;
   summaries: ReturnType<typeof mapWeekSummaries>;
   value: [number, number];
   onChange: (value: [number, number]) => void;
@@ -20,15 +23,14 @@ export function WeekRangeSlider({
 }) {
   const disabled = weeks.length < 2;
   const [openWeek, setOpenWeek] = useState<string | null>(null);
-  const indicators = summaries.map(summary => ({
-    ...summary,
-    majorTypes: [...new Set(summary.majors.map(tournament => tournament.type))],
-  }));
-  const logoRows = Math.max(0, ...indicators.map(indicator => indicator.majorTypes.length));
+  const logoRows = Math.max(
+    0,
+    ...summaries.map(summary => summary.majors.length + summary.highlights.length),
+  );
   const boundaryLabel = (index: number) => {
     const week = weeks[value[index]];
     return week
-      ? format(addDays(parseISO(week), index === 0 ? 0 : 6), 'MMM d, yyyy')
+      ? format(parseISO(index === 0 ? week : mapWeekEnd(week, windowEnd)), 'MMM d, yyyy')
       : 'No weeks available';
   };
   return (
@@ -52,6 +54,42 @@ export function WeekRangeSlider({
         <span className="max-w-[48%] text-right">{boundaryLabel(1)}</span>
       </div>
       <div className="relative pb-2" style={{ paddingTop: 8 + logoRows * 26 }}>
+        {summaries.map((summary, index) => {
+          const fraction = index / Math.max(1, weeks.length - 1);
+          return (
+            <div
+              key={summary.week}
+              className="absolute bottom-10 z-30 flex -translate-x-1/2 flex-col gap-0.5"
+              style={{ left: `calc(${fraction * 100}% + ${10 - fraction * 20}px)` }}
+            >
+              {summary.majors.map(tournament => (
+                <HighlightMarker
+                  key={tournament.id}
+                  label={tournament.name}
+                  image={mapPinLogo(tournament.type)!}
+                >
+                  <TournamentPinDetails tournaments={[tournament]} />
+                </HighlightMarker>
+              ))}
+              {summary.highlights.map(highlight => (
+                <HighlightMarker
+                  key={highlight.id}
+                  label={highlight.description}
+                  image={highlight.imageUrl}
+                >
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium">
+                      {format(parseISO(highlight.date), 'EEE, MMM d, yyyy')}
+                    </div>
+                    <p className="whitespace-pre-wrap break-words text-sm">
+                      {highlight.description}
+                    </p>
+                  </div>
+                </HighlightMarker>
+              ))}
+            </div>
+          );
+        })}
         <Slider.Root
           className="relative flex h-7 w-full touch-none select-none items-center [&>span:has([role=slider])]:z-20"
           aria-labelledby="map-weeks-label"
@@ -67,12 +105,13 @@ export function WeekRangeSlider({
           <Slider.Track className="relative h-2 w-full grow rounded-full bg-secondary">
             <Slider.Range className="absolute h-full rounded-full bg-primary" />
           </Slider.Track>
-          {indicators.map((indicator, index) => (
+          {summaries.map((indicator, index) => (
             <WeekIndicator
               key={indicator.week}
               indicator={indicator}
               index={index}
               weekCount={weeks.length}
+              windowEnd={windowEnd}
               onCommit={onCommit}
               open={openWeek === indicator.week}
               onOpenChange={open =>
@@ -98,16 +137,18 @@ export function WeekRangeSlider({
 }
 
 function WeekIndicator({
-  indicator: { week, count, majors, majorTypes },
+  indicator: { week, count, majors },
   index,
   weekCount,
+  windowEnd,
   onCommit,
   open,
   onOpenChange,
 }: {
-  indicator: ReturnType<typeof mapWeekSummaries>[number] & { majorTypes: string[] };
+  indicator: ReturnType<typeof mapWeekSummaries>[number];
   index: number;
   weekCount: number;
+  windowEnd?: string;
   onCommit: (value: [number, number]) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -129,7 +170,7 @@ function WeekIndicator({
       <PopoverTrigger asChild>
         <button
           type="button"
-          aria-label={`${weekLabel(week)}: ${countLabel}`}
+          aria-label={`${weekLabel(week, windowEnd)}: ${countLabel}`}
           className="group absolute -bottom-2 z-10 flex h-11 w-5 -translate-x-1/2 items-center justify-center rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           style={{ left: `calc(${fraction * 100}% + ${10 - fraction * 20}px)` }}
           onPointerEnter={keepOpen}
@@ -147,27 +188,12 @@ function WeekIndicator({
             aria-hidden="true"
             className="h-3 w-[3px] rounded-full bg-foreground/40 transition-colors group-hover:bg-foreground"
           />
-          {majorTypes.length > 0 && (
-            <span aria-hidden="true" className="absolute bottom-9 flex flex-col gap-0.5">
-              {majorTypes.map(type => (
-                <img
-                  key={type}
-                  src={mapPinLogo(type)}
-                  alt=""
-                  width={24}
-                  height={24}
-                  draggable={false}
-                  className="size-6 max-w-none object-contain drop-shadow-[0_1px_2px_#0009]"
-                />
-              ))}
-            </span>
-          )}
         </button>
       </PopoverTrigger>
       <PopoverContent
         side="top"
         className="w-auto max-w-xs p-3 text-sm"
-        aria-label={weekLabel(week)}
+        aria-label={weekLabel(week, windowEnd)}
         onOpenAutoFocus={event => event.preventDefault()}
         onCloseAutoFocus={event => event.preventDefault()}
         onPointerEnter={keepOpen}
@@ -175,7 +201,7 @@ function WeekIndicator({
         onPointerDown={event => event.stopPropagation()}
         onKeyDown={event => event.stopPropagation()}
       >
-        <div className="font-medium">{weekLabel(week)}</div>
+        <div className="font-medium">{weekLabel(week, windowEnd)}</div>
         <div>{countLabel}</div>
         {majors.length > 0 && (
           <ul className="mt-1 space-y-0.5 border-t pt-1 text-xs">
@@ -196,6 +222,76 @@ function WeekIndicator({
         >
           Filter to this week
         </Button>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function HighlightMarker({
+  label,
+  image,
+  children,
+}: {
+  label: string;
+  image: string;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const content = useRef<HTMLDivElement>(null);
+  const keepOpen = () => {
+    clearTimeout(timer.current);
+    setOpen(true);
+  };
+  const closeSoon = () => {
+    timer.current = setTimeout(() => setOpen(false), 250);
+  };
+  useEffect(() => () => clearTimeout(timer.current), []);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          className="size-6 rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+          onPointerEnter={keepOpen}
+          onPointerLeave={closeSoon}
+          onClick={event => {
+            event.preventDefault();
+            keepOpen();
+          }}
+          onKeyDown={event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              keepOpen();
+              requestAnimationFrame(() =>
+                (content.current?.querySelector('a') ?? content.current)?.focus(),
+              );
+            }
+          }}
+        >
+          <img
+            src={image}
+            alt=""
+            width={24}
+            height={24}
+            draggable={false}
+            className="size-6 max-w-none object-contain drop-shadow-[0_1px_2px_#0009]"
+          />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        ref={content}
+        tabIndex={-1}
+        side="top"
+        className="w-80 max-w-[calc(100vw-2rem)] p-3"
+        aria-label={label}
+        onOpenAutoFocus={event => event.preventDefault()}
+        onCloseAutoFocus={event => event.preventDefault()}
+        onPointerEnter={keepOpen}
+        onPointerLeave={closeSoon}
+      >
+        {children}
       </PopoverContent>
     </Popover>
   );

@@ -18,6 +18,7 @@ import { TournamentResultsPage } from '@/components/app/admin/TournamentResultsP
 import { Helmet } from 'react-helmet-async';
 import { AdminNavigation } from './AdminNavigation';
 import { adminSections } from './adminNavigation';
+import { EventHighlightsPage } from './EventHighlightsPage';
 
 export function AdminPage() {
   const hasRole = useRole();
@@ -54,6 +55,7 @@ export function AdminPage() {
               {page === 'tournament-weekends' && <TournamentWeekendsPage />}
               {page === 'deck-thumbnails' && <ThumbnailsPage />}
               {page === 'pq-tools' && <PQToolsPage />}
+              {page === 'event-highlights' && <EventHighlightsPage />}
               {page === 'special-actions' && <SpecialActionsPage />}
               {page === 'card-prices' && <CardPricePairingAdministrationPage />}
               {page === 'variant-checker' && <VariantCheckerPage />}

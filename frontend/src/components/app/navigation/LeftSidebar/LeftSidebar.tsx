@@ -8,6 +8,7 @@ import {
   ChartPieIcon,
   ChartSpline,
   LayoutGrid,
+  Map,
   NotebookTabs,
   Plus,
   Scale,
@@ -81,6 +82,19 @@ const getGroups = (
         title: 'Tournaments',
         url: '/tournaments',
         icon: TrophyIcon,
+        menuAction:
+          state === 'expanded' ? (
+            <SidebarMenuAction asChild title="Tournament map">
+              <Link to="/tournaments/map" onClick={() => setOpenMobile(false)}>
+                <Map /> <span className="sr-only">Tournament map</span>
+              </Link>
+            </SidebarMenuAction>
+          ) : (
+            <Link to="/tournaments/map" title="Tournament map" onClick={() => setOpenMobile(false)}>
+              <Map /> <span className="sr-only">Tournament map</span>
+            </Link>
+          ),
+        displayMenuActionWhenCollapsed: true,
         separator: true,
         items: [
           {
@@ -144,13 +158,11 @@ const getGroups = (
         title: 'Your statistics',
         url: '/statistics',
         icon: ChartSpline,
-        beta: true,
       },
       {
         title: 'Teams',
         url: '/teams',
         icon: Users,
-        beta: true,
         menuAction: (
           <NewTeamDialog
             trigger={
