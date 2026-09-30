@@ -1,5 +1,6 @@
 import { expect, test } from 'bun:test';
 import { randomBytes } from 'node:crypto';
+import sharp from 'sharp';
 import { Hono } from 'hono';
 import { eq, inArray, sql } from 'drizzle-orm';
 import { db } from '../../db';
@@ -55,13 +56,16 @@ test.skipIf(process.env.TOURNAMENT_ATTACHMENT_DB_TEST !== '1')(
         await next();
         observedError = c.error;
       })
-      .route('/attachments', createTournamentAttachmentsRoute({
-        ...service,
-        async list(userId, tournamentId) {
-          if (failDatabase) throw new Error('SQL parameters: PRIVATE RESERVATION CODE');
-          return service.list(userId, tournamentId);
-        },
-      }));
+      .route(
+        '/attachments',
+        createTournamentAttachmentsRoute({
+          ...service,
+          async list(userId, tournamentId) {
+            if (failDatabase) throw new Error('SQL parameters: PRIVATE RESERVATION CODE');
+            return service.list(userId, tournamentId);
+          },
+        }),
+      );
     const request = (path: string, method = 'GET', body?: unknown) =>
       app.request(`/attachments/${path}`, {
         method,
@@ -83,7 +87,10 @@ test.skipIf(process.env.TOURNAMENT_ATTACHMENT_DB_TEST !== '1')(
       const form = new FormData();
       form.set('title', 'Ticket');
       form.set('category', 'ticket');
-      form.set('file', new File([bytes], 'ticket.pdf', { type }));
+      form.set(
+        'file',
+        new File([bytes], type === 'image/png' ? 'ticket.png' : 'ticket.pdf', { type }),
+      );
       const request = new Request(`http://localhost/attachments/${ids[0]}/files`, {
         method: 'POST',
         headers: { 'X-Requested-With': 'swubase' },
@@ -94,37 +101,33 @@ test.skipIf(process.env.TOURNAMENT_ATTACHMENT_DB_TEST !== '1')(
       return app.request(request.url, { method: 'POST', headers: request.headers, body: payload });
     };
     try {
-      await db
-        .insert(user)
-        .values(
-          users.map(id => ({
-            id,
-            name: 'Attachments fixture',
-            displayName: id,
-            email: `${id}@invalid.local`,
-            emailVerified: false,
-            currency: 'USD',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          })),
-        );
-      await db
-        .insert(tournament)
-        .values(
-          ids.map(id => ({
-            id,
-            userId: users[0],
-            name: 'Attachments fixture',
-            type: 'pq',
-            location: 'FR',
-            continent: 'Europe',
-            attendance: 0,
-            format: 1,
-            meta: null,
-            days: 1,
-            date: new Date('2026-10-31'),
-          })),
-        );
+      await db.insert(user).values(
+        users.map(id => ({
+          id,
+          name: 'Attachments fixture',
+          displayName: id,
+          email: `${id}@invalid.local`,
+          emailVerified: false,
+          currency: 'USD',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })),
+      );
+      await db.insert(tournament).values(
+        ids.map(id => ({
+          id,
+          userId: users[0],
+          name: 'Attachments fixture',
+          type: 'pq',
+          location: 'FR',
+          continent: 'Europe',
+          attendance: 0,
+          format: 1,
+          meta: null,
+          days: 1,
+          date: new Date('2026-10-31'),
+        })),
+      );
       const list = await request(ids[0]);
       expect(list.headers.get('Cache-Control')).toBe('private, no-store');
       expect((await list.json()).data).toMatchObject({
@@ -211,18 +214,70 @@ test.skipIf(process.env.TOURNAMENT_ATTACHMENT_DB_TEST !== '1')(
       const path = Array.from(objects.keys())[0];
       expect(path).toBe(`user-data/${users[0]}/tournament/${ids[0]}/${file.id}.pdf`);
       expect(Buffer.from(objects.get(path)!).includes(Buffer.from('PRIVATE BOOKING'))).toBe(false);
-      const download = await request(`${ids[0]}/${file.id}/file`);
+      const preview = await request(`${ids[0]}/${file.id}/file`);
+      expect(preview.status).toBe(200);
+      expect(preview.headers.get('Content-Type')).toBe('application/pdf');
+      expect(preview.headers.get('Content-Disposition')).toContain('inline;');
+      expect(preview.headers.get('Cache-Control')).toBe('private, no-store');
+      expect(preview.headers.get('Content-Security-Policy')).toContain('sandbox');
+      expect(await preview.text()).toBe('%PDF-1.7 PRIVATE BOOKING');
+      const download = await request(`${ids[0]}/${file.id}/file?download=true`);
       expect(download.status).toBe(200);
       expect(download.headers.get('Cache-Control')).toBe('private, no-store');
       expect(download.headers.get('Content-Disposition')).toContain('attachment;');
       expect(download.headers.get('X-Content-Type-Options')).toBe('nosniff');
       expect(await download.text()).toBe('%PDF-1.7 PRIVATE BOOKING');
+      expect((await request(`${ids[0]}/${file.id}/file?download=invalid`)).status).toBe(400);
+      expect((await request(`${ids[0]}/${file.id}/file?thumbnail=invalid`)).status).toBe(400);
+      expect((await request(`${ids[0]}/${file.id}/file?thumbnail=true`)).status).toBe(400);
+      expect(
+        (await request(`${ids[0]}/${file.id}/file?download=false`)).headers.get(
+          'Content-Disposition',
+        ),
+      ).toContain('inline;');
+      const imageBytes = await sharp({
+        create: { width: 800, height: 400, channels: 3, background: '#abcdef' },
+      })
+        .png()
+        .toBuffer();
+      const imageResponse = await upload(imageBytes, 'image/png');
+      const imageResult = await imageResponse.json();
+      expect(imageResponse.status, JSON.stringify(imageResult)).toBe(201);
+      const image = imageResult.data;
+      const imagePreview = await request(`${ids[0]}/${image.id}/file`);
+      expect(imagePreview.headers.get('Content-Type')).toBe('image/png');
+      expect(imagePreview.headers.get('Content-Disposition')).toContain('inline;');
+      expect(imagePreview.headers.get('Content-Security-Policy')).toContain('sandbox');
+      expect(imagePreview.headers.get('Content-Security-Policy')).toContain(
+        "style-src 'unsafe-inline'",
+      );
+      expect(Buffer.from(await imagePreview.arrayBuffer())).toEqual(imageBytes);
+      const thumbnail = await request(`${ids[0]}/${image.id}/file?thumbnail=true`);
+      expect(thumbnail.status).toBe(200);
+      expect(thumbnail.headers.get('Content-Type')).toBe('image/webp');
+      expect(thumbnail.headers.get('Cache-Control')).toBe('private, no-store');
+      const thumbnailBytes = Buffer.from(await thumbnail.arrayBuffer());
+      expect(thumbnailBytes.byteLength).toBeLessThan(imageBytes.byteLength);
+      expect(await sharp(thumbnailBytes).metadata()).toMatchObject({
+        width: 96,
+        height: 48,
+        format: 'webp',
+      });
+      account = users[1];
+      const beforeThumbnailRead = reads;
+      expect((await request(`${ids[0]}/${image.id}/file?thumbnail=true`)).status).toBe(404);
+      account = null;
+      expect((await request(`${ids[0]}/${image.id}/file?thumbnail=true`)).status).toBe(401);
+      expect(reads).toBe(beforeThumbnailRead);
+      account = users[0];
+      expect((await request(`${ids[0]}/${image.id}`, 'DELETE')).status).toBe(200);
       const priorReads = reads;
       account = users[1];
       expect((await (await request(ids[0])).json()).data.attachments).toEqual([]);
       expect((await (await request(ids[0])).json()).data.categories.travel).toBe('no');
       for (const [method, suffix, body] of [
         ['GET', '/file', undefined],
+        ['GET', '/file?download=true', undefined],
         ['DELETE', '', undefined],
         ['PATCH', '', { title: 'Steal', category: 'other' }],
       ] as const)
@@ -232,6 +287,7 @@ test.skipIf(process.env.TOURNAMENT_ATTACHMENT_DB_TEST !== '1')(
       for (const [method, path] of [
         ['GET', ids[0]],
         ['GET', `${ids[0]}/${file.id}/file`],
+        ['GET', `${ids[0]}/${file.id}/file?download=true`],
         ['POST', ids[0]],
         ['DELETE', `${ids[0]}/${file.id}`],
         ['PUT', `${ids[0]}/categories/travel`],
@@ -275,9 +331,7 @@ test.skipIf(process.env.TOURNAMENT_ATTACHMENT_DB_TEST !== '1')(
         (await upload(Buffer.from('HTML pretending to be an image'), 'image/png')).status,
       ).toBe(400);
       expect((await upload(new Uint8Array(11 * 1024 * 1024))).status).toBe(413);
-      expect(
-        (await request(ids[0], 'POST', { content: 'x'.repeat(110_000) })).status,
-      ).toBe(413);
+      expect((await request(ids[0], 'POST', { content: 'x'.repeat(110_000) })).status).toBe(413);
       expect(
         (
           await app.request(`/attachments/${ids[0]}`, {
@@ -304,18 +358,16 @@ test.skipIf(process.env.TOURNAMENT_ATTACHMENT_DB_TEST !== '1')(
       expect((await request(`${ids[0]}/${file.id}`, 'DELETE')).status).toBe(200);
       expect(objects.size).toBe(0);
       expect((await request(`${ids[0]}/${file.id}/file`)).status).toBe(404);
-      await db
-        .insert(userTournamentAttachment)
-        .values(
-          Array.from({ length: 98 }, (_, i) => ({
-            userId: users[0],
-            tournamentId: ids[0],
-            category: 'other' as const,
-            kind: 'text' as const,
-            title: `Quota fixture ${i}`,
-            content: 'test',
-          })),
-        );
+      await db.insert(userTournamentAttachment).values(
+        Array.from({ length: 98 }, (_, i) => ({
+          userId: users[0],
+          tournamentId: ids[0],
+          category: 'other' as const,
+          kind: 'text' as const,
+          title: `Quota fixture ${i}`,
+          content: 'test',
+        })),
+      );
       expect(
         (
           await request(ids[0], 'POST', {

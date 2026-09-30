@@ -23,6 +23,7 @@ import TournamentNavigation from '../TournamentNavigation/TournamentNavigation.t
 import { TournamentPinDetails } from '../pages/TournamentsMap/TournamentPinDetails.tsx';
 import { mapPinColor } from '../pages/TournamentsMap/mapData.ts';
 import { CalendarWeekStart } from './CalendarWeekStart.tsx';
+import { CalendarSubscriptionButton } from './CalendarSubscription.tsx';
 import { calendarEventsByDate } from './calendarData.ts';
 import type { SavedTournament } from '../../../../../../types/UserTournamentSave.ts';
 
@@ -64,7 +65,10 @@ export default function TournamentCalendar() {
       <TournamentNavigation />
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h3 className="mb-0">My tournament calendar</h3>
-        <CalendarWeekStart />
+        <div className="flex flex-wrap items-center gap-3">
+          <CalendarSubscriptionButton />
+          <CalendarWeekStart />
+        </div>
       </div>
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <Button

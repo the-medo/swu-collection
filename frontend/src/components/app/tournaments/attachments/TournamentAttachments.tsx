@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, ExternalLink, LockKeyhole, Pencil, Plus, Trash2 } from 'lucide-react';
+import { LockKeyhole } from 'lucide-react';
 import { useUser } from '@/hooks/useUser.ts';
 import {
   useTournamentAttachments,
@@ -39,6 +39,7 @@ import {
   type TournamentAttachment,
 } from '../../../../../../types/TournamentAttachment.ts';
 import { AttachmentForm } from './AttachmentForm.tsx';
+import { AttachmentItem } from './AttachmentItem.tsx';
 
 export function TournamentAttachments({ tournamentId }: { tournamentId: string }) {
   const user = useUser();
@@ -49,196 +50,171 @@ export function TournamentAttachments({ tournamentId }: { tournamentId: string }
 function Attachments({ tournamentId }: { tournamentId: string }) {
   const query = useTournamentAttachments(tournamentId);
   const mutation = useMutateTournamentAttachments(tournamentId);
-  const [edit, setEdit] = useState<TournamentAttachment | 'new' | null>(null);
+  const [edit, setEdit] = useState<TournamentAttachment | null>(null);
   const [view, setView] = useState<TournamentAttachment | null>(null);
   const [remove, setRemove] = useState<TournamentAttachment | null>(null);
   const pending = mutation.isPending;
   return (
-    <section
-      aria-label="Your attachments"
+    <div
       data-amp-mask
-      data-amp-mask-attributes="href,aria-label,download"
-      className="min-w-0 space-y-4 rounded-md border bg-card p-3 shadow-xs"
+      data-amp-mask-attributes="src,href,aria-label,download"
+      className="grid min-w-0 grid-cols-1 items-start gap-4 lg:grid-cols-2"
     >
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <section
+        aria-label="Your attachments"
+        className="@container min-w-0 space-y-4 rounded-md border bg-card p-3 shadow-xs"
+      >
         <div>
           <h4 className="mb-1 flex items-center gap-2 text-base font-semibold">
             <LockKeyhole className="size-4" />
             Your attachments
           </h4>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs leading-snug! text-muted-foreground">
             Private to you. Keep your travel plans, bookings, tickets, and notes here.
           </p>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={!query.data || pending}
-          onClick={() => {
-            mutation.reset();
-            setEdit('new');
-          }}
-        >
-          <Plus className="size-4" />
-          Add attachment
-        </Button>
-      </div>
-      {query.isPending && (
-        <p role="status" className="text-sm">
-          Loading your attachments…
-        </p>
-      )}
-      {query.isError && (
-        <p role="alert" className="text-sm text-destructive">
-          {query.error.message}{' '}
-          <Button variant="link" size="sm" onClick={() => void query.refetch()}>
-            Retry
-          </Button>
-        </p>
-      )}
-      {query.data && (
-        <>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {attachmentCategories.map(category => (
-              <div key={category} className="space-y-1">
-                <div className="text-sm font-medium">{attachmentCategoryLabels[category]}</div>
-                <ButtonGroup aria-label={`${attachmentCategoryLabels[category]} status`}>
-                  {preparationStatuses.map(status => (
-                    <Button
-                      key={status}
-                      size="sm"
-                      className="h-8 px-2 text-xs"
-                      variant={query.data.categories[category] === status ? 'default' : 'outline'}
-                      aria-pressed={query.data.categories[category] === status}
-                      disabled={pending}
-                      onClick={() => {
-                        if (query.data.categories[category] !== status)
-                          mutation.mutate({ type: 'category', category, status });
-                      }}
+        {query.isPending && (
+          <p role="status" className="text-sm">
+            Loading your attachments…
+          </p>
+        )}
+        {query.isError && (
+          <p role="alert" className="text-sm text-destructive">
+            {query.error.message}{' '}
+            <Button variant="link" size="sm" onClick={() => void query.refetch()}>
+              Retry
+            </Button>
+          </p>
+        )}
+        {query.data && (
+          <Table aria-label="Attachment categories" className="table-fixed">
+            <TableHeader className="hidden @min-[32rem]:table-header-group">
+              <TableRow>
+                <TableHead className="w-[19rem] px-2">Category</TableHead>
+                <TableHead className="px-2">Attachments</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {attachmentCategories.map(category => {
+                const items = query.data.attachments.filter(item => item.category === category);
+                return (
+                  <TableRow key={category} role="row" className="block @min-[32rem]:table-row">
+                    <TableHead
+                      role="rowheader"
+                      scope="row"
+                      className="block h-auto px-2 py-2 align-top text-foreground @min-[32rem]:table-cell @min-[32rem]:w-[19rem]"
                     >
-                      {preparationStatusLabels[status]}
-                    </Button>
-                  ))}
-                </ButtonGroup>
-              </div>
-            ))}
-          </div>
-          {query.data.attachments.length ? (
-            <Table aria-label="Private tournament attachments">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Attachment</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {query.data.attachments.map(item => (
-                  <TableRow key={item.id}>
-                    <TableCell className="whitespace-nowrap">
-                      {attachmentCategoryLabels[item.category]}
-                    </TableCell>
-                    <TableCell className="min-w-40 max-w-md break-words">
-                      {item.kind === 'text' ? (
-                        <Button
-                          variant="link"
-                          className="h-auto max-w-full whitespace-normal p-0 text-left"
-                          onClick={() => setView(item)}
-                        >
-                          {item.title}
-                        </Button>
-                      ) : item.kind === 'link' ? (
-                        // Keep private URLs out of Amplitude's automatic link-download tracking.
-                        <Button
-                          variant="link"
-                          className="h-auto max-w-full whitespace-normal p-0 text-left"
-                          onClick={() => window.open(item.content!, '_blank', 'noopener,noreferrer')}
-                        >
-                          {item.title}
-                          <ExternalLink className="size-3 shrink-0" />
-                        </Button>
-                      ) : (
-                        <a
-                          href={item.downloadUrl!}
-                          download={item.fileName ?? true}
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-primary hover:underline"
-                        >
-                          {item.title}
-                          <Download className="size-3 shrink-0" />
-                        </a>
-                      )}
-                      {item.fileName && (
-                        <div className="text-xs text-muted-foreground">
-                          {item.fileName} · {Math.ceil((item.byteSize ?? 0) / 1024)} KB
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {item.kind === 'text'
-                        ? 'Text'
-                        : item.kind === 'link'
-                          ? 'Link'
-                          : item.mimeType === 'application/pdf'
-                            ? 'PDF'
-                            : 'Image'}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="size-8"
-                          aria-label={`Edit ${item.title}`}
-                          disabled={pending}
-                          onClick={() => {
-                            mutation.reset();
-                            setEdit(item);
-                          }}
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="size-8"
-                          aria-label={`Delete ${item.title}`}
-                          disabled={pending}
-                          onClick={() => {
-                            mutation.reset();
-                            setRemove(item);
-                          }}
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
+                      <div className="grid grid-cols-[6.25rem_minmax(0,1fr)] items-center gap-2 @min-[24rem]:grid-cols-[7.5rem_minmax(0,1fr)]">
+                        <span className="text-xs @min-[24rem]:text-sm">
+                          {attachmentCategoryLabels[category]}
+                        </span>
+                        <ButtonGroup aria-label={`${attachmentCategoryLabels[category]} status`}>
+                          {preparationStatuses.map(status => (
+                            <Button
+                              key={status}
+                              size="sm"
+                              className="h-7 px-2 text-xs"
+                              variant={
+                                query.data.categories[category] === status ? 'default' : 'outline'
+                              }
+                              aria-pressed={query.data.categories[category] === status}
+                              disabled={pending}
+                              onClick={() => {
+                                if (query.data.categories[category] !== status)
+                                  mutation.mutate({ type: 'category', category, status });
+                              }}
+                            >
+                              {preparationStatusLabels[status]}
+                            </Button>
+                          ))}
+                        </ButtonGroup>
                       </div>
+                    </TableHead>
+                    <TableCell
+                      role="cell"
+                      className="block px-2 pt-0 pb-2 align-top @min-[32rem]:table-cell @min-[32rem]:py-1"
+                    >
+                      {items.length ? (
+                        <ul
+                          aria-label={`${attachmentCategoryLabels[category]} attachments`}
+                          className="divide-y"
+                        >
+                          {items.map(item => (
+                            <AttachmentItem
+                              key={item.id}
+                              item={item}
+                              pending={pending}
+                              onView={() => setView(item)}
+                              onEdit={() => {
+                                mutation.reset();
+                                setEdit(item);
+                              }}
+                              onRemove={() => {
+                                mutation.reset();
+                                setRemove(item);
+                              }}
+                            />
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="py-1.5 text-xs leading-snug! font-normal text-muted-foreground">
+                          No attachments
+                        </p>
+                      )}
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <p className="py-3 text-sm text-muted-foreground">
-              No attachments yet. Add an image, PDF, text snippet, or link.
-            </p>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
+        {mutation.error && mutation.variables?.type === 'category' && (
+          <p role="alert" className="text-sm text-destructive">
+            {mutation.error.message}
+          </p>
+        )}
+      </section>
+      {query.data && (
+        <section
+          aria-label="Add attachment"
+          className="min-w-0 space-y-4 rounded-md border bg-card p-3 shadow-xs"
+        >
+          <h4 className="text-base font-semibold">Add attachment</h4>
+          <AttachmentForm
+            uploadsEnabled={query.data.uploadsEnabled}
+            pending={pending}
+            save={action => mutation.mutateAsync(action)}
+          />
+        </section>
+      )}
+      <Dialog
+        open={!!edit}
+        onOpenChange={open => {
+          if (!open && !pending) setEdit(null);
+        }}
+      >
+        <DialogContent
+          data-amp-mask
+          data-amp-mask-attributes="aria-label"
+          className="max-h-[90vh] overflow-y-auto sm:max-w-lg"
+        >
+          <DialogHeader>
+            <DialogTitle>Edit attachment</DialogTitle>
+            <DialogDescription>Only you can access these tournament attachments.</DialogDescription>
+          </DialogHeader>
+          {edit && (
+            <AttachmentForm
+              key={edit.id}
+              attachment={edit}
+              uploadsEnabled={query.data?.uploadsEnabled ?? false}
+              pending={pending}
+              save={action => mutation.mutateAsync(action)}
+              onSaved={() => setEdit(null)}
+              onCancel={() => setEdit(null)}
+            />
           )}
-        </>
-      )}
-      {mutation.error && !edit && !remove && (
-        <p role="alert" className="text-sm text-destructive">
-          {mutation.error.message}
-        </p>
-      )}
-      {edit && (
-        <AttachmentForm
-          attachment={edit === 'new' ? undefined : edit}
-          uploadsEnabled={query.data?.uploadsEnabled ?? false}
-          pending={pending}
-          save={action => mutation.mutateAsync(action)}
-          onClose={() => setEdit(null)}
-        />
-      )}
+        </DialogContent>
+      </Dialog>
       <Dialog
         open={!!view}
         onOpenChange={open => {
@@ -254,9 +230,7 @@ function Attachments({ tournamentId }: { tournamentId: string }) {
             <DialogTitle>{view?.title}</DialogTitle>
             <DialogDescription>Private text snippet</DialogDescription>
           </DialogHeader>
-          <pre className="whitespace-pre-wrap break-words font-sans text-sm">
-            {view?.content}
-          </pre>
+          <pre className="whitespace-pre-wrap break-words font-sans text-sm">{view?.content}</pre>
         </DialogContent>
       </Dialog>
       <AlertDialog
@@ -295,6 +269,6 @@ function Attachments({ tournamentId }: { tournamentId: string }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </section>
+    </div>
   );
 }

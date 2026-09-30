@@ -14,8 +14,17 @@ import {
 } from '../../types/TournamentAttachment.ts';
 import { tournamentAttachmentService } from '../lib/tournament-attachments/service.ts';
 import { AttachmentError } from '../lib/tournament-attachments/storage.ts';
+import {
+  attachmentThumbnail,
+  withAttachmentThumbnail,
+} from '../lib/tournament-attachments/thumbnail.ts';
+import { booleanPreprocessor } from '../../shared/lib/zod/booleanPreprocessor.ts';
 const eventParams = z.object({ tournamentId: z.uuid() });
 const itemParams = eventParams.extend({ id: z.uuid() });
+const fileQuery = z.object({
+  download: booleanPreprocessor.optional(),
+  thumbnail: booleanPreprocessor.optional(),
+});
 export function createTournamentAttachmentsRoute(service = tournamentAttachmentService) {
   return new Hono<AuthExtension>()
     .onError((error, c) => {
@@ -108,22 +117,40 @@ export function createTournamentAttachmentsRoute(service = tournamentAttachmentS
       const { tournamentId, id } = c.req.valid('param');
       return c.json({ data: await service.remove(c.get('user')!.id, tournamentId, id) });
     })
-    .get('/:tournamentId/:id/file', zValidator('param', itemParams), async c => {
-      const { tournamentId, id } = c.req.valid('param');
-      const { attachment, body } = await service.download(c.get('user')!.id, tournamentId, id);
-      const filename = encodeURIComponent(attachment.fileName!).replace(
-        /['()*]/g,
-        char => `%${char.charCodeAt(0).toString(16)}`,
-      );
-      c.header('Content-Type', attachment.mimeType!);
-      c.header(
-        'Content-Disposition',
-        `attachment; filename="attachment"; filename*=UTF-8''${filename}`,
-      );
-      c.header('X-Content-Type-Options', 'nosniff');
-      c.header('Content-Security-Policy', "default-src 'none'; sandbox");
-      c.header('Referrer-Policy', 'no-referrer');
-      return c.body(new Uint8Array(body).buffer);
-    });
+    .get(
+      '/:tournamentId/:id/file',
+      zValidator('param', itemParams),
+      zValidator('query', fileQuery),
+      async c => {
+        const { tournamentId, id } = c.req.valid('param');
+        const query = c.req.valid('query');
+        const read = () => service.download(c.get('user')!.id, tournamentId, id);
+        const { attachment, body } = query.thumbnail
+          ? await withAttachmentThumbnail(async () => {
+              const file = await read();
+              if (!file.attachment.mimeType?.startsWith('image/'))
+                throw new AttachmentError('Only images have thumbnails.', 400);
+              return { attachment: file.attachment, body: await attachmentThumbnail(file.body) };
+            })
+          : await read();
+        const filename = encodeURIComponent(
+          query.thumbnail ? 'thumbnail.webp' : attachment.fileName!,
+        ).replace(/['()*]/g, char => `%${char.charCodeAt(0).toString(16)}`);
+        c.header('Content-Type', query.thumbnail ? 'image/webp' : attachment.mimeType!);
+        const disposition = query.download ? 'attachment' : 'inline';
+        c.header(
+          'Content-Disposition',
+          `${disposition}; filename="attachment"; filename*=UTF-8''${filename}`,
+        );
+        c.header('X-Content-Type-Options', 'nosniff');
+        // Native image viewers use inline styles for sizing and centering.
+        c.header(
+          'Content-Security-Policy',
+          "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+        );
+        c.header('Referrer-Policy', 'no-referrer');
+        return c.body(new Uint8Array(body).buffer);
+      },
+    );
 }
 export const userTournamentAttachmentsRoute = createTournamentAttachmentsRoute();

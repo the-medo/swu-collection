@@ -470,6 +470,13 @@
       "when": 1790798087318,
       "tag": "0066_require_attachment_file_size",
       "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1790799494270,
+      "tag": "0067_calendar_subscriptions",
+      "breakpoints": true
     }
   ]
 }

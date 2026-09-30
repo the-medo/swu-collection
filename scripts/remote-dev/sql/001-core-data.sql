@@ -103,6 +103,7 @@ TRUNCATE TABLE account, session, verification;
 -- Attendance plans and saved-event metadata stay private, including for opted-in users.
 TRUNCATE TABLE user_tournament_save;
 TRUNCATE TABLE user_tournament_attachment, user_tournament_preparation;
+TRUNCATE TABLE user_calendar_subscription;
 
 DELETE FROM user_integration ui
 USING development_cleanup_user dcu
@@ -421,6 +422,10 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_tournament_save) THEN
     RAISE EXCEPTION 'Private saved tournaments remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_calendar_subscription) THEN
+    RAISE EXCEPTION 'Private calendar subscriptions remain in the contributor dump.';
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_tournament_attachment)
