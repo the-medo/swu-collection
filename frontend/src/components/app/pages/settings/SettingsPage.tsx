@@ -4,6 +4,7 @@ import CollectionAndWantlistSettings from '@/components/app/pages/settings/Colle
 import UserSettings from '@/components/app/pages/settings/UserSettings.tsx';
 import WatchedPlayersSettings from '@/components/app/pages/settings/WatchedPlayersSettings.tsx';
 import DevelopmentSettings from '@/components/app/pages/settings/DevelopmentSettings.tsx';
+import HomeLocationSettings from './HomeLocationSettings.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { Route } from '@/routes/_authenticated/settings';
@@ -27,6 +28,9 @@ export function SettingsPage() {
       <div className="container mx-auto">
         <Tabs value={page} onValueChange={handleTabChange} className="w-full">
           <TabsList className="h-auto w-full flex-wrap justify-start">
+            <TabsTrigger value="home-location" className="flex-1 sm:flex-none">
+              Home location
+            </TabsTrigger>
             <TabsTrigger value="collections-and-wantlists" className="flex-1 sm:flex-none">
               Collections and wantlists
             </TabsTrigger>
@@ -40,6 +44,13 @@ export function SettingsPage() {
               Development
             </TabsTrigger>
           </TabsList>
+          <TabsContent value="home-location">
+            <Card>
+              <CardContent className="p-4">
+                <HomeLocationSettings />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="collections-and-wantlists">
             <Card>

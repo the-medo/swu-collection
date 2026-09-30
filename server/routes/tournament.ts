@@ -21,12 +21,16 @@ import { tournamentIdExportToBlobPostRoute } from './tournaments/_id/export-to-b
 import { tournamentIdImportFromBlobPostRoute } from './tournaments/_id/import-from-blob/post.ts';
 import { tournamentIdClearDataPostRoute } from './tournaments/_id/clear-data/post.ts';
 import type { AuthExtension } from '../auth/auth.ts';
+import { tournamentLocationRoute } from './tournaments/location/router.ts';
+import { tournamentMapGetRoute } from './tournaments/map/get.ts';
 
 export const selectTournament = getTableColumns(tournamentTable);
 export const selectTournamentType = getTableColumns(tournamentTypeTable);
 export const selectMeta = getTableColumns(metaTable);
 
 export const tournamentRoute = new Hono<AuthExtension>()
+  .route('/map', tournamentMapGetRoute)
+  .route('/', tournamentLocationRoute)
   .route('/', tournamentGetRoute)
   .route('/', tournamentPostRoute)
   .route('/:id', tournamentIdGetRoute)

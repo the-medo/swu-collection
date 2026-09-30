@@ -311,6 +311,9 @@ WHERE user_id <> 'swubase';
 -- Retain preferences for opted-in users, including their development-sharing
 -- choices. Preferences owned by deleted users must be removed explicitly to
 -- support legacy backups without the current cascading foreign key.
+-- Home addresses and coordinates are always private, including for opted-in users.
+DELETE FROM user_settings WHERE key = 'home_location';
+
 DELETE FROM user_settings us
 USING development_cleanup_user dcu
 WHERE us.user_id = dcu.user_id
@@ -406,6 +409,10 @@ BEGIN
     WHERE dcu.retain_data IS DISTINCT FROM true
   ) THEN
     RAISE EXCEPTION 'A non-opted-in user remains after contributor-dump sanitization.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_settings WHERE key = 'home_location') THEN
+    RAISE EXCEPTION 'Private home locations remain in the contributor dump.';
   END IF;
 
   IF EXISTS (

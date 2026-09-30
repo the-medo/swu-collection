@@ -2,12 +2,15 @@ import type { User } from './User.ts';
 import type { Meta } from '../server/db/schema/meta.ts';
 import type { TournamentDeck } from '../server/db/schema/tournament_deck.ts';
 import type { Deck } from '../server/db/schema/deck.ts';
+import type { TournamentAdditionalInfo, TournamentCoordinates } from './TournamentLocation.ts';
 
 export interface TournamentStringDate {
   id: string;
   userId: string;
   type: string;
   location: string;
+  coordinates?: TournamentCoordinates | null;
+  additionalInfo?: TournamentAdditionalInfo;
   continent: string;
   name: string;
   meta: number;

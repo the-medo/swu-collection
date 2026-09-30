@@ -31,6 +31,7 @@ const TournamentNavigation: React.FC<TournamentNavigationProps> = ({ className }
       search: { weekId: 'all' },
     },
     { name: 'All Tournaments', path: '/tournaments/all' },
+    { name: 'Map', path: '/tournaments/map' },
   ];
 
   // Find the active item
@@ -98,14 +99,14 @@ const TournamentNavigation: React.FC<TournamentNavigationProps> = ({ className }
 
   // Desktop layout (unchanged)
   return (
-    <div className={cn('flex flex-wrap gap-4 mb-4', className)}>
+    <div className={cn('grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4', className)}>
       {navItems.map(item => (
         <Link
           key={item.path}
           to={item.path}
           search={prev => ({ ...item.search, metaId: prev.metaId, formatId: prev.formatId })}
           className={cn(
-            'relative min-w-[250px] w-1/4 h-[60px] flex grow items-center justify-center rounded-md font-medium transition-all text-xl',
+            'relative h-[60px] flex items-center justify-center rounded-md font-medium transition-all text-xl',
             {
               'grayscale-0 grayscale-100 text-white text-2xl': isActive(item.path),
               'grayscale hover:grayscale-0 transition-all': !isActive(item.path),
@@ -121,8 +122,7 @@ const TournamentNavigation: React.FC<TournamentNavigationProps> = ({ className }
           <div
             className={cn('absolute inset-0 rounded-md bg-cover bg-center -z-10', {
               'opacity-40': !isActive(item.path),
-              'after:absolute after:inset-0 after:bg-primary/50 after:rounded-md after:content-[""]':
-                true,
+              'after:absolute after:inset-0 after:bg-primary/50 after:rounded-md after:content-[""]': true,
             })}
           />
           {item.name}

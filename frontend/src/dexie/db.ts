@@ -5,6 +5,7 @@ import type { CardVariantPriceStore, CardVariantPriceFetchListStore } from './ca
 import type { UserSettingsStore } from './userSettings';
 import type { CollectionStore, CollectionCardsStore } from './collections';
 import type { CardListCacheStore } from './cardList';
+import type { TournamentMapCache } from './tournamentMap';
 
 export class SwuBaseDB extends Dexie {
   // Tables
@@ -18,6 +19,7 @@ export class SwuBaseDB extends Dexie {
   collectionCards!: Table<CollectionCardsStore>;
   cardListCache!: Table<CardListCacheStore>;
   gameResults!: Table<import('./gameResults').GameResultStore>;
+  tournamentMapCache!: Table<TournamentMapCache, string>;
 
   constructor() {
     super('SwuBaseDB');
@@ -178,6 +180,22 @@ export class SwuBaseDB extends Dexie {
       cardListCache: 'key',
       gameResults:
         '[scopeId+id], [scopeId+createdAt], [scopeId+updatedAt], [scopeId+deckId], [scopeId+format], [scopeId+leaderCardId], [scopeId+leaderCardId+baseCardKey]',
+    });
+
+    // Public tournament snapshots and incremental cursors, independently scoped by set.
+    this.version(11).stores({
+      tournamentDecks: 'id',
+      tournamentMatches: 'id',
+      cardVariantPrices: 'id, cardId, variantId, sourceType, fetchedAt',
+      cardVariantPriceFetchList: 'id, cardId, variantId, addedAt',
+      userSettings: 'key',
+      dailySnapshots: 'date',
+      collections: 'id',
+      collectionCards: 'collectionId',
+      cardListCache: 'key',
+      gameResults:
+        '[scopeId+id], [scopeId+createdAt], [scopeId+updatedAt], [scopeId+deckId], [scopeId+format], [scopeId+leaderCardId], [scopeId+leaderCardId+baseCardKey]',
+      tournamentMapCache: 'set',
     });
   }
 }

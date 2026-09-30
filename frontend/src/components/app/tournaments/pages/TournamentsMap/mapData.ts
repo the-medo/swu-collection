@@ -1,0 +1,169 @@
+import { addDays, eachWeekOfInterval, format, parseISO, startOfWeek } from 'date-fns';
+import type { MapTournament } from '../../../../../../../types/TournamentMap.ts';
+
+export const mapTypes = [
+  { id: 'pq', label: 'PQs', tournamentTypes: ['pq'] },
+  { id: 'open', label: 'Opens', tournamentTypes: ['open'] },
+  { id: 'major', label: 'Majors', tournamentTypes: ['sq', 'rq', 'gc'] },
+] as const;
+export type MapType = (typeof mapTypes)[number]['id'];
+export const defaultMapTypes = mapTypes.map(type => type.id);
+
+const majorPinLogos: Partial<Record<string, string>> = {
+  sq: 'https://images.swubase.com/logos/organized-play/sector-qualifier.png',
+  rq: 'https://images.swubase.com/logos/organized-play/regional-championship.png',
+  gc: 'https://images.swubase.com/logos/organized-play/galactic-championship.png',
+};
+
+export function mapPinLogo(type: string) {
+  return majorPinLogos[type];
+}
+
+export function tournamentWeek(date: string) {
+  return format(startOfWeek(parseISO(date), { weekStartsOn: 1 }), 'yyyy-MM-dd');
+}
+
+export function weekLabel(week: string) {
+  const start = parseISO(week);
+  return `${format(start, 'MMM d')} – ${format(addDays(start, 6), 'MMM d, yyyy')}`;
+}
+
+export function mapWeekSummaries(weeks: string[], tournaments: MapTournament[]) {
+  const summaries = new Map(
+    weeks.map(week => [week, { week, count: 0, majors: [] as MapTournament[] }]),
+  );
+  for (const tournament of tournaments) {
+    const summary = summaries.get(tournamentWeek(tournament.date));
+    if (!summary) continue;
+    summary.count++;
+    if (mapPinLogo(tournament.type)) summary.majors.push(tournament);
+  }
+  return Array.from(summaries.values());
+}
+
+export function filterMapTournaments(
+  tournaments: MapTournament[],
+  formats: readonly number[],
+  types: readonly MapType[],
+  from: string | undefined,
+  to: string | undefined,
+  upcomingOnly = false,
+  today = format(new Date(), 'yyyy-MM-dd'),
+) {
+  const tournamentTypes = new Set<string>(
+    mapTypes.filter(type => types.includes(type.id)).flatMap(type => [...type.tournamentTypes]),
+  );
+  return tournaments.filter(
+    t =>
+      formats.includes(t.format) &&
+      tournamentTypes.has(t.type) &&
+      (!upcomingOnly ||
+        format(addDays(parseISO(t.date), Math.max(0, t.days - 1)), 'yyyy-MM-dd') >= today) &&
+      (!from || tournamentWeek(t.date) >= from) &&
+      (!to || tournamentWeek(t.date) <= to),
+  );
+}
+
+// Include empty calendar weeks: moving one step always means seven days.
+export function mapWeeks(tournaments: MapTournament[]) {
+  const dates = tournaments.map(t => t.date).sort();
+  if (!dates.length) return [];
+  return eachWeekOfInterval(
+    { start: parseISO(dates[0]), end: parseISO(dates[dates.length - 1]) },
+    { weekStartsOn: 1 },
+  ).map(week => format(week, 'yyyy-MM-dd'));
+}
+
+export function mapWeekRange(
+  weeks: string[],
+  from?: string,
+  to?: string,
+  today = format(new Date(), 'yyyy-MM-dd'),
+): [number, number] {
+  if (!weeks.length) return [0, 0];
+  const currentWeek = tournamentWeek(today);
+  const findWeek = (date: string) => {
+    const index = weeks.findIndex(week => week >= tournamentWeek(date));
+    return index === -1 ? weeks.length - 1 : index;
+  };
+  const start = findWeek(from ?? currentWeek);
+  const end = to ? findWeek(to) : weeks.length - 1;
+  return [Math.min(start, end), Math.max(start, end)];
+}
+
+export const mapFormats = [
+  { id: 1, label: 'Premier', rgb: '250, 204, 21' },
+  { id: 3, label: 'Sealed play', rgb: '194, 65, 12' },
+  { id: 6, label: 'Eternal', rgb: '249, 115, 22' },
+] as const;
+export const defaultMapFormats = mapFormats.map(format => format.id);
+
+export function mapPinColor(formatId: number, weekIndex: number, weekCount: number) {
+  // Twelve fixed shades. Longer seasons distribute those shades over the whole
+  // season; filtering never changes a tournament's original shade.
+  const shade = Math.round(
+    Math.max(0, Math.min(11, (weekIndex * 11) / Math.max(11, weekCount - 1))),
+  );
+  const opacity = (1 - (shade * 0.65) / 11).toFixed(3);
+  const rgb = mapFormats.find(format => format.id === formatId)?.rgb ?? '148, 163, 184';
+  return `rgba(${rgb}, ${opacity})`;
+}
+
+export function mapClusterBackground(colors: string[]) {
+  const counts = new Map<string, number>();
+  for (const color of colors) counts.set(color, (counts.get(color) ?? 0) + 1);
+  let offset = 0;
+  return `conic-gradient(${Array.from(counts, ([color, count]) => {
+    const start = offset;
+    offset += (count / colors.length) * 100;
+    return `${color} ${start}% ${offset}%`;
+  }).join(', ')})`;
+}
+
+export function hasMapCoordinates(
+  t: MapTournament,
+): t is MapTournament & { coordinates: NonNullable<MapTournament['coordinates']> } {
+  const point = t.coordinates;
+  return (
+    !!point &&
+    Number.isFinite(point.x) &&
+    Number.isFinite(point.y) &&
+    Math.abs(point.x) <= 180 &&
+    Math.abs(point.y) <= 90
+  );
+}
+
+export function tournamentLinks(t: MapTournament) {
+  const links = new Map<string, string>();
+  const add = (label: string, value: unknown) => {
+    if (typeof value !== 'string') return;
+    try {
+      const url = new URL(value);
+      if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) return;
+      if (!links.has(url.href)) links.set(url.href, label);
+    } catch {
+      /* Incomplete URLs are not navigable. */
+    }
+  };
+  if (t.meleeId && /^\d+$/.test(t.meleeId))
+    add('Melee.gg', `https://melee.gg/Tournament/View/${t.meleeId}`);
+  add('Melee.gg', t.additionalInfo.meleeUrl);
+  add('Store', t.additionalInfo.storeUrl);
+  add('Event website', t.additionalInfo.sourceUrl);
+  if (Array.isArray(t.additionalInfo.links)) {
+    for (const link of t.additionalInfo.links) {
+      if (link && typeof link === 'object')
+        add(typeof link.label === 'string' ? link.label : 'Event link', link.url);
+    }
+  }
+  return Array.from(links, ([url, label]) => ({ url, label }));
+}
+
+export function locationText(t: MapTournament) {
+  return (
+    ['venueName', 'address', 'city', 'state', 'postalCode', 'country']
+      .map(key => t.additionalInfo[key])
+      .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+      .join(', ') || t.location
+  );
+}

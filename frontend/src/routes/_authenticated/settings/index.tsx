@@ -7,6 +7,7 @@ export const settingsPages: [string, ...string[]] = [
   'display-name',
   'watched-players',
   'development',
+  'home-location',
 ] as const;
 
 const searchParams = z.object({

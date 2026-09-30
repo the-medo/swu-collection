@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { formatData } from './Format.ts';
 import { BracketInfo, SwuSet } from './enums.ts';
 import { booleanPreprocessor } from '../shared/lib/zod/booleanPreprocessor.ts';
+import { zTournamentAdditionalInfo } from './TournamentLocation.ts';
 
 export const TournamentSortField = {
   DATE: 'tournament.date',
@@ -38,6 +39,7 @@ export const zTournamentSchema = z.object({
   type: z.string(),
   meta: z.number().int().nullable().optional(),
   location: z.string().min(1).max(255),
+  additionalInfo: zTournamentAdditionalInfo.optional(),
   continent: z.string().min(1).max(100),
   name: z.string().min(1).max(255),
   attendance: z.number().int().min(0),
@@ -74,6 +76,7 @@ export const zTournamentCreateRequest = zTournamentSchema.omit({
 
 export const zTournamentUpdateRequest = zTournamentSchema
   .omit({
+    additionalInfo: true,
     id: true,
     userId: true,
     createdAt: true,

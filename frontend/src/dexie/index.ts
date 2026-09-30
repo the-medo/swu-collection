@@ -1,5 +1,11 @@
 // Re-export database instance and class
 export { db, SwuBaseDB } from './db';
+export {
+  type TournamentMapCache,
+  getTournamentMapCache,
+  mergeTournamentMap,
+  storeTournamentMapCache,
+} from './tournamentMap';
 
 // Re-export tournament functionality
 export {

@@ -5,9 +5,11 @@ import { PQParserForm } from './PQParserForm.tsx';
 import { PQJsonDataView } from './PQJsonDataView.tsx';
 import { PQEditableDataView } from './PQEditableDataView.tsx';
 import { PQWeekTools } from './PQWeekTools.tsx';
+import { PQCoordinates } from './PQCoordinates.tsx';
 
 export function PQToolsPage() {
   const [savedData, setSavedData] = useState<PQTournament[] | null>(null);
+  const [openSection, setOpenSection] = useState('');
 
   // Load data from local storage on component mount
   useEffect(() => {
@@ -73,7 +75,13 @@ export function PQToolsPage() {
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">PQ Parsing Tools</h2>
 
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full"
+        value={openSection}
+        onValueChange={setOpenSection}
+      >
         <PQParserForm onDataParsed={handleDataParsed} />
 
         {savedData && (
@@ -86,6 +94,7 @@ export function PQToolsPage() {
             />
           </>
         )}
+        <PQCoordinates open={openSection === 'coordinates'} />
       </Accordion>
       <h2 className="text-2xl font-bold">PQ Week Tools</h2>
       <PQWeekTools />

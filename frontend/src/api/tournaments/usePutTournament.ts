@@ -1,3 +1,4 @@
+import { tournamentMapKeys } from './mapQueryKeys.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
@@ -33,6 +34,10 @@ export const usePutTournament = (tournamentId: string) => {
 
       // Invalidate the tournaments list
       queryClient.invalidateQueries({ queryKey: ['tournaments'] });
+      queryClient.invalidateQueries({ queryKey: ['tournament-locations'] });
+      queryClient.invalidateQueries({ queryKey: tournamentMapKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['tournament-groups'] });
+      queryClient.invalidateQueries({ queryKey: ['tournament-group'] });
 
       toast({
         title: 'Tournament updated successfully',

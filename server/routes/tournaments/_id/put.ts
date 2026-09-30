@@ -56,6 +56,13 @@ export const tournamentIdPutRoute = new Hono<AuthExtension>().put(
 
     const updateData = {
       ...data,
+      // Changing the country invalidates the saved location, including concurrent geocoding.
+      ...(data.location !== undefined
+        ? {
+            coordinates: sql`CASE WHEN ${tournamentTable.location} <> ${data.location} THEN NULL ELSE ${tournamentTable.coordinates} END`,
+            additionalInfo: sql`CASE WHEN ${tournamentTable.location} <> ${data.location} THEN ${tournamentTable.additionalInfo} - 'geocoding' - 'locationPrecision' ELSE ${tournamentTable.additionalInfo} END`,
+          }
+        : {}),
       date: dateValue,
       updatedAt: sql`NOW()`,
     };

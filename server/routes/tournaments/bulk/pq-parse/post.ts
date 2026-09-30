@@ -2,13 +2,31 @@ import { Hono } from 'hono';
 import { auth, type AuthExtension } from '../../../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+import { zTournamentAdditionalInfo } from '../../../../../types/TournamentLocation.ts';
 
 export const zTournamentBulkPqParsePostRequest = z.object({
   data: z.string(),
 });
 
-const pqContinents = ['Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania'] as const;
+const pqContinents = [
+  'Africa',
+  'Asia',
+  'Europe',
+  'North America',
+  'South America',
+  'Oceania',
+] as const;
 const pqFormats = ['Premier', 'Sealed play', 'Eternal'] as const;
+const infoFields = [
+  'venueName',
+  'address',
+  'city',
+  'state',
+  'postalCode',
+  'country',
+  'storeUrl',
+  'meleeUrl',
+] as const;
 
 const zPqTournament = z.object({
   location: z.string().length(2),
@@ -17,6 +35,7 @@ const zPqTournament = z.object({
   date: z.iso.date(),
   format: z.enum(pqFormats),
   link: z.string().url().nullable(),
+  additionalInfo: zTournamentAdditionalInfo,
 });
 
 const zPqParseResponse = z.object({
@@ -42,8 +61,25 @@ const pqResponseFormat = {
               date: { type: 'string', format: 'date' },
               format: { type: 'string', enum: pqFormats },
               link: { type: ['string', 'null'] },
+              additionalInfo: {
+                type: 'object',
+                properties: {
+                  ...Object.fromEntries(infoFields.map(key => [key, { type: ['string', 'null'] }])),
+                  links: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: { label: { type: 'string' }, url: { type: 'string' } },
+                      required: ['label', 'url'],
+                      additionalProperties: false,
+                    },
+                  },
+                },
+                required: [...infoFields, 'links'],
+                additionalProperties: false,
+              },
             },
-            required: ['location', 'continent', 'name', 'date', 'format', 'link'],
+            required: ['location', 'continent', 'name', 'date', 'format', 'link', 'additionalInfo'],
             additionalProperties: false,
           },
         },
@@ -86,13 +122,14 @@ Extract every Planetary Qualifier (PQ) tournament from the supplied data. The in
 
 Return exactly one JSON object with this shape: {"tournaments":[...]}. Do not return a single tournament object or a top-level array.
 
-Every tournament must include all six properties:
+Every tournament must include these properties:
 - location: two-letter country code. Use US for USA.
 - continent: one of Africa, Asia, Europe, North America, South America, or Oceania.
 - name: use "PQ - City - State, US" for US events and "PQ - City, CountryCode" for all other events.
 - date: ISO date in YYYY-MM-DD format.
 - format: exactly one of "Premier", "Sealed play", or "Eternal". Normalize source values "Limited", "Sealed", and "Sealed Play" to "Sealed play".
 - link: the source anchor URL when available; otherwise null.
+- additionalInfo: preserve venueName, address (street address), city, state/region, postalCode, country, storeUrl, meleeUrl, and links (all relevant event/store/registration URLs as objects with label and url). Use null for missing text fields and [] for missing links. Preserve city even when no venue address is present. Only extract information actually supplied; do not invent an address or coordinates, or assume the contents of a linked website. A store link alone does not establish a street address.
 
 Possible country codes:
 AF,AL,DZ,AS,AD,AO,AI,AG,AR,AM,AW,AU,AT,AZ,BH,BD,BB,BY,BE,BZ,BJ,BM,BT,BO,BA,BW,BR,IO,VG,BN,BG,BF,MM,BI,KH,CM,CA,CV,KY,CF,ID,CL,CN,CO,KM,CK,CR,CI,HR,CU,CY,CZ,CD,DK,DJ,DM,DO,EC,EG,SV,
@@ -121,7 +158,7 @@ MY,MV,ML,MT,MH,MQ,MR,MU,YT,MX,MD,MC,MN,ME,MS,MA,MZ,NA,NR,NP,NL,AN,NC,NZ,NI,NE,NG
             },
           ],
           response_format: pqResponseFormat,
-          max_completion_tokens: 30000,
+          max_completion_tokens: 60000,
         }),
       });
 
@@ -144,7 +181,7 @@ MY,MV,ML,MT,MH,MQ,MR,MU,YT,MX,MD,MC,MN,ME,MS,MA,MZ,NA,NR,NP,NL,AN,NC,NZ,NI,NE,NG
         return c.json(
           {
             success: false,
-            message: 'PQ data output was incomplete. Please try again.',
+            message: 'PQ data output was incomplete. Please retry with a smaller batch.',
           },
           502,
         );
@@ -155,8 +192,17 @@ MY,MV,ML,MT,MH,MQ,MR,MU,YT,MX,MD,MC,MN,ME,MS,MA,MZ,NA,NR,NP,NL,AN,NC,NZ,NI,NE,NG
         if (!content) throw new Error('The model did not return any PQ data.');
 
         const parsedResponse = zPqParseResponse.parse(JSON.parse(content));
-        const parsedData = parsedResponse.tournaments.map(({ link, ...tournament }) =>
-          link ? { ...tournament, link } : tournament,
+        const parsedData = parsedResponse.tournaments.map(
+          ({ link, additionalInfo, ...tournament }) => ({
+            ...tournament,
+            ...(link ? { link } : {}),
+            additionalInfo: Object.fromEntries(
+              Object.entries({
+                ...additionalInfo,
+                ...(link ? { sourceUrl: link } : {}),
+              }).filter(([, value]) => value !== null && value !== ''),
+            ),
+          }),
         );
 
         return c.json({

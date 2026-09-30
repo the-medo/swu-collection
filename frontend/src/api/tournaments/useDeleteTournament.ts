@@ -1,3 +1,4 @@
+import { tournamentMapKeys } from './mapQueryKeys.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
@@ -25,6 +26,8 @@ export const useDeleteTournament = () => {
 
       // Invalidate tournaments list
       queryClient.invalidateQueries({ queryKey: ['tournaments'] });
+      queryClient.invalidateQueries({ queryKey: ['tournament-locations'] });
+      queryClient.invalidateQueries({ queryKey: tournamentMapKeys.all });
 
       toast({
         title: 'Tournament deleted successfully',

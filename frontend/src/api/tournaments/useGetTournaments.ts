@@ -49,11 +49,12 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
         date: date instanceof Date ? date.toISOString() : date,
         maxDate: maxDate instanceof Date ? maxDate.toISOString() : maxDate,
         meta,
+        limit,
         sort,
         order,
       },
     ],
-    [type, minType, season, set, format, continent, date, maxDate, meta, sort, order],
+    [type, minType, season, set, format, continent, date, maxDate, meta, limit, sort, order],
   );
 
   return useInfiniteQuery({
@@ -72,7 +73,7 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
           meta: meta?.toString(),
           sort,
           order,
-          limit: limit ?? PAGE_SIZE.toString(),
+          limit: (limit ?? PAGE_SIZE).toString(),
           offset: pageParam.toString(),
         },
       });
@@ -93,6 +94,6 @@ export const useGetTournaments = (props: GetTournamentsRequest, enabled = true) 
       return lastPage.pagination.offset + lastPage.pagination.limit;
     },
     staleTime: Infinity,
-    enabled: !!props,
+    enabled: enabled && !!props,
   });
 };
