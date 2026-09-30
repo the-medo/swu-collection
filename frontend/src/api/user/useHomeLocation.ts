@@ -9,7 +9,7 @@ import {
 
 const key = (userId: string | undefined) => ['user-home-location', userId] as const;
 
-export function useHomeLocation() {
+export function useHomeLocation({ refetchOnMount = true }: { refetchOnMount?: boolean } = {}) {
   const userId = useUser()?.id;
   return useQuery({
     queryKey: key(userId),
@@ -26,6 +26,7 @@ export function useHomeLocation() {
       : skipToken,
     // Private data stays in memory only and is discarded when the account/view changes.
     staleTime: 0,
+    refetchOnMount,
     gcTime: 0,
     retry: false,
   });

@@ -7,6 +7,7 @@ import type { TournamentStringDate } from '../../../../../types/Tournament.ts';
 import { formatDataById } from '../../../../../types/Format.ts';
 import { locationText, mapPinColor, tournamentLinks } from './pages/TournamentsMap/mapData.ts';
 import { TournamentSaveControls } from './TournamentSaveControls.tsx';
+import { TournamentTravelLinks } from './TournamentTravelLinks.tsx';
 
 export function TournamentEventInfo({
   tournament,
@@ -17,14 +18,26 @@ export function TournamentEventInfo({
 }: {
   tournament: Pick<
     TournamentStringDate,
-    'id' | 'name' | 'format' | 'date' | 'location' | 'additionalInfo' | 'meleeId'
+    | 'id'
+    | 'name'
+    | 'format'
+    | 'date'
+    | 'days'
+    | 'location'
+    | 'coordinates'
+    | 'additionalInfo'
+    | 'meleeId'
   >;
   linkTitle?: boolean;
   showSaveControls?: boolean;
   simpleRemoval?: boolean;
   onRemovalConfirmationChange?: (open: boolean) => void;
 }) {
-  const info = { ...tournament, additionalInfo: tournament.additionalInfo ?? {} };
+  const info = {
+    ...tournament,
+    coordinates: tournament.coordinates ?? null,
+    additionalInfo: tournament.additionalInfo ?? {},
+  };
   return (
     <div className="flex min-w-0 flex-col items-start gap-1">
       <Badge
@@ -49,7 +62,7 @@ export function TournamentEventInfo({
         <div className="text-lg font-semibold leading-tight">{tournament.name}</div>
       )}
       <p className="m-0 text-sm leading-snug!">
-        {format(parseISO(tournament.date), 'EEE, MMM d, yyyy')}
+        {format(parseISO(tournament.date.slice(0, 10)), 'EEE, MMM d, yyyy')}
       </p>
       <p className="m-0 break-words text-sm leading-snug! text-muted-foreground">
         {locationText(info)}
@@ -85,6 +98,7 @@ export function TournamentEventInfo({
           onRemovalConfirmationChange={onRemovalConfirmationChange}
         />
       )}
+      <TournamentTravelLinks tournament={info} />
     </div>
   );
 }

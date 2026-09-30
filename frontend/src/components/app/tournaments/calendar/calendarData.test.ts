@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { calendarEventsByDate } from './calendarData.ts';
+import { calendarAgendaEvents, calendarEventsByDate } from './calendarData.ts';
 import type { SavedTournament } from '../../../../../../types/UserTournamentSave.ts';
 
 const event = (id: string, date: string, days: number): SavedTournament => ({
@@ -43,4 +43,21 @@ test('calendar clips long events to the visible grid and excludes events outside
   expect(days.get('2026-11-01')).toEqual([long]);
   expect(days.get('2026-11-30')).toEqual([long]);
   expect(calendarEventsByDate([], '2026-11-01', '2026-11-30').size).toBe(0);
+});
+
+test('agenda lists each overlapping event once in chronological order without changing the cache', () => {
+  const rows = [
+    event('later', '2027-01-31', 3),
+    event('same-day-z', '2027-01-05', 1),
+    event('ongoing', '2026-12-31', 3),
+    event('same-day-a', '2027-01-05', 1),
+    event('past', '2026-12-29', 3),
+    event('future', '2027-02-01', 1),
+  ];
+  const original = rows.map(row => row.tournamentId);
+  expect(
+    calendarAgendaEvents(rows, '2027-01-01', '2027-01-31').map(row => row.tournamentId),
+  ).toEqual(['ongoing', 'same-day-a', 'same-day-z', 'later']);
+  expect(rows.map(row => row.tournamentId)).toEqual(original);
+  expect(calendarAgendaEvents([], '2027-01-01', '2027-01-31')).toEqual([]);
 });
