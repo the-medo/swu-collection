@@ -11,6 +11,7 @@ import { cardsRoute } from './routes/cards.ts';
 import { worldRoute } from './routes/world.ts';
 import { userRoute } from './routes/user.ts';
 import { userSettingsRoute } from './routes/user-settings.ts';
+import { userTournamentSavesRoute } from './routes/user-tournament-saves.ts';
 import { tournamentRoute } from './routes/tournament.ts';
 import { tournamentGroupsRoute } from './routes/tournament-groups.ts';
 import { entitiesRoute } from './routes/entity.ts';
@@ -130,6 +131,7 @@ const apiRoutes = app
   .route('/cards', cardsRoute)
   .route('/user', userRoute)
   .route('/user-settings', userSettingsRoute)
+  .route('/user-tournament-saves', userTournamentSavesRoute)
   .route('/tournament', tournamentRoute)
   .route('/tournament-groups', tournamentGroupsRoute)
   .route('/entities', entitiesRoute)

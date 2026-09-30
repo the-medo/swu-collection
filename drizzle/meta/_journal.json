@@ -449,6 +449,13 @@
       "when": 1790780172155,
       "tag": "0063_event_highlights",
       "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1790781866715,
+      "tag": "0064_user_tournament_saves",
+      "breakpoints": true
     }
   ]
 }

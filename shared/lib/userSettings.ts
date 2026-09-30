@@ -9,6 +9,7 @@ import {
 import { booleanPreprocessor } from './zod/booleanPreprocessor.ts';
 
 export interface UserSettings {
+  calendarWeekStartsOn: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   homepageMode: 'default' | 'snapshot' | 'live';
   deckLayout: DeckLayout; // default: DeckLayout.TEXT
   deckGroupBy: DeckGroupBy; // default: DeckGroupBy.CARD_TYPE
@@ -40,7 +41,21 @@ export interface UserSettings {
   share_development_data_matches: boolean;
 }
 
+export const calendarWeekStartSchema = z.preprocess(
+  value => (typeof value === 'string' && /^[0-6]$/.test(value) ? Number(value) : value),
+  z.union([
+    z.literal(0),
+    z.literal(1),
+    z.literal(2),
+    z.literal(3),
+    z.literal(4),
+    z.literal(5),
+    z.literal(6),
+  ]),
+);
+
 export const userSettingsSchema = z.object({
+  calendarWeekStartsOn: calendarWeekStartSchema.default(1),
   homepageMode: z.enum(['default', 'snapshot', 'live']).default('default'),
   deckLayout: z.enum(DeckLayout).default(DeckLayout.TEXT),
   deckGroupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),

@@ -5,6 +5,7 @@ import UserSettings from '@/components/app/pages/settings/UserSettings.tsx';
 import WatchedPlayersSettings from '@/components/app/pages/settings/WatchedPlayersSettings.tsx';
 import DevelopmentSettings from '@/components/app/pages/settings/DevelopmentSettings.tsx';
 import HomeLocationSettings from './HomeLocationSettings.tsx';
+import { CalendarWeekStart } from '@/components/app/tournaments/calendar/CalendarWeekStart.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { Route } from '@/routes/_authenticated/settings';
@@ -37,6 +38,9 @@ export function SettingsPage() {
             <TabsTrigger value="watched-players" className="flex-1 sm:flex-none">
               Watched players
             </TabsTrigger>
+            <TabsTrigger value="calendar" className="flex-1 sm:flex-none">
+              Calendar
+            </TabsTrigger>
             <TabsTrigger value="home-location" className="flex-1 sm:flex-none">
               Home location
             </TabsTrigger>
@@ -62,6 +66,14 @@ export function SettingsPage() {
             <Card>
               <CardContent className="p-4">
                 <WatchedPlayersSettings />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="calendar">
+            <Card>
+              <CardContent className="space-y-4 p-4">
+                <h3>Calendar</h3>
+                <CalendarWeekStart />
               </CardContent>
             </Card>
           </TabsContent>

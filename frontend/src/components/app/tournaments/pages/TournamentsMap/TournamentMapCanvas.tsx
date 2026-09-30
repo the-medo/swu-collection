@@ -28,15 +28,19 @@ export default function TournamentMapCanvas({
   weeks,
   windowStart,
   homeCoordinates,
+  savedTournamentIds,
 }: {
   tournaments: MapTournament[];
   weeks: string[];
   windowStart?: string;
   homeCoordinates: HomeLocation['coordinates'] | null;
+  savedTournamentIds: ReadonlySet<string>;
 }) {
   const map = useRef<LibreMap | null>(null);
   const activePopup = useRef<Popup | null>(null);
   const fittedWindow = useRef<string | null>(null);
+  const savedIds = useRef(savedTournamentIds);
+  const redrawMarkers = useRef<(() => void) | null>(null);
   const [popup, setPopup] = useState<{ node: HTMLDivElement; tournaments: MapTournament[] } | null>(
     null,
   );
@@ -129,25 +133,28 @@ export default function TournamentMapCanvas({
         const button = document.createElement('button');
         button.type = 'button';
         const grouped = events.length > 1;
-        const logo = !grouped ? mapPinLogo(events[0].type) : undefined;
-        const diamond = !grouped && events[0].type === 'open';
-        const centered = grouped || !!logo || diamond;
+        const saved = !grouped && savedIds.current.has(events[0].id);
+        const logo = !grouped && !saved ? mapPinLogo(events[0].type) : undefined;
+        const diamond = !grouped && !saved && events[0].type === 'open';
+        const centered = grouped || saved || !!logo || diamond;
         button.className = cn(
           'tournament-map-pin cursor-pointer border-0 bg-transparent p-[3px] focus-visible:rounded-md focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-ring',
           grouped
             ? 'tournament-map-cluster size-[46px]'
-            : logo
-              ? 'tournament-map-major size-[50px]'
-              : diamond
-                ? 'tournament-map-open flex size-[46px] items-center justify-center'
-                : 'h-11 w-9',
+            : saved
+              ? 'tournament-map-saved size-[46px]'
+              : logo
+                ? 'tournament-map-major size-[50px]'
+                : diamond
+                  ? 'tournament-map-open flex size-[46px] items-center justify-center'
+                  : 'h-11 w-9',
         );
         const label =
           clusterId !== undefined
             ? `${events.length} tournaments — zoom in`
             : grouped
               ? `${events.length} tournaments at this venue`
-              : events[0].name;
+              : `${saved ? 'Saved: ' : ''}${events[0].name}`;
         button.setAttribute('aria-label', label);
         button.title = label;
         const colors = events.map(t =>
@@ -156,22 +163,40 @@ export default function TournamentMapCanvas({
         const shape = document.createElement('span');
         shape.setAttribute('aria-hidden', 'true');
         shape.className = cn(
-          'tournament-map-pin-shape flex items-center justify-center border-white text-neutral-900 shadow-[0_2px_5px_#0006]',
+          'tournament-map-pin-shape flex items-center justify-center border-white text-neutral-900',
+          !saved && 'shadow-[0_2px_5px_#0006]',
           grouped
             ? 'size-10 rounded-full border'
-            : logo
-              ? 'size-11 rounded-full border-2'
-              : diamond
-                ? 'size-[26px] -rotate-45 border-2'
-                : 'size-[30px] -rotate-45 rounded-[50%_50%_50%_0] border-2',
+            : saved
+              ? 'size-10'
+              : logo
+                ? 'size-11 rounded-full border-2'
+                : diamond
+                  ? 'size-[26px] -rotate-45 border-2'
+                  : 'size-[30px] -rotate-45 rounded-[50%_50%_50%_0] border-2',
         );
-        shape.style.background = grouped ? mapClusterBackground(colors) : colors[0];
+        if (!saved) shape.style.background = grouped ? mapClusterBackground(colors) : colors[0];
         const count = document.createElement('span');
         count.className = grouped
           ? 'flex size-[26px] items-center justify-center rounded-full bg-card text-xs font-bold text-card-foreground'
           : cn('text-[15px] font-bold', !logo && 'rotate-45');
         count.textContent = grouped ? String(events.length) : '•';
-        if (logo) {
+        if (saved) {
+          const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          svg.setAttribute('viewBox', '0 0 40 40');
+          svg.setAttribute('class', 'size-10 overflow-visible drop-shadow-[0_2px_3px_#0008]');
+          const star = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+          star.setAttribute(
+            'points',
+            '20,2 25.5,13.5 38,15 28.5,24 31,37 20,31 9,37 11.5,24 2,15 14.5,13.5',
+          );
+          star.setAttribute('fill', colors[0]);
+          star.setAttribute('stroke', 'white');
+          star.setAttribute('stroke-width', '1.5');
+          star.setAttribute('stroke-linejoin', 'round');
+          svg.append(star);
+          shape.append(svg);
+        } else if (logo) {
           const image = document.createElement('img');
           image.className = 'size-10 object-contain drop-shadow-[0_1px_2px_#0009]';
           image.alt = '';
@@ -226,13 +251,21 @@ export default function TournamentMapCanvas({
       fittedWindow.current = fitKey;
     }
     drawMarkers();
+    redrawMarkers.current = drawMarkers;
     instance.on('zoomend', drawMarkers);
     return () => {
+      redrawMarkers.current = null;
       instance.off('zoomend', drawMarkers);
       markers.forEach(marker => marker.remove());
       activePopup.current?.remove();
     };
   }, [tournaments, weeks, windowStart, homeX, homeY]);
+
+  // Saving changes marker shapes while keeping the open details card in place.
+  useEffect(() => {
+    savedIds.current = savedTournamentIds;
+    redrawMarkers.current?.();
+  }, [savedTournamentIds]);
 
   return (
     <div className="relative">

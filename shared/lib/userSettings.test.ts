@@ -43,3 +43,19 @@ describe('user settings updates', () => {
     expect(() => userSettingsUpdateSchema.parse({ deckPrices: 'yes' })).toThrow();
   });
 });
+
+test('calendar week start accepts all seven days and serialized values, while preserving other settings', () => {
+  for (let day = 0; day < 7; day++) {
+    expect(userSettingsUpdateSchema.parse({ calendarWeekStartsOn: day })).toEqual({
+      calendarWeekStartsOn: day,
+    });
+    expect(userSettingsUpdateSchema.parse({ calendarWeekStartsOn: String(day) })).toEqual({
+      calendarWeekStartsOn: day,
+    });
+  }
+  for (const invalid of [null, true, false, -1, 7, 1.5, 'Monday', '', '01'])
+    expect(userSettingsUpdateSchema.safeParse({ calendarWeekStartsOn: invalid }).success).toBe(
+      false,
+    );
+  expect(userSettingsUpdateSchema.parse({ deckPrices: true })).toEqual({ deckPrices: true });
+});

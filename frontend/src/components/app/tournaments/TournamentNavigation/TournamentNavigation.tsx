@@ -32,6 +32,7 @@ const TournamentNavigation: React.FC<TournamentNavigationProps> = ({ className }
     },
     { name: 'All Tournaments', path: '/tournaments/all' },
     { name: 'Map', path: '/tournaments/map' },
+    { name: 'Calendar', path: '/tournaments/calendar' },
   ];
 
   // Find the active item
@@ -99,7 +100,7 @@ const TournamentNavigation: React.FC<TournamentNavigationProps> = ({ className }
 
   // Desktop layout (unchanged)
   return (
-    <div className={cn('grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4', className)}>
+    <div className={cn('grid grid-cols-2 xl:grid-cols-5 gap-4 mb-4', className)}>
       {navItems.map(item => (
         <Link
           key={item.path}

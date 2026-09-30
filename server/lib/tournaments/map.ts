@@ -5,9 +5,7 @@ import { eventHighlight } from '../../db/schema/event_highlight.ts';
 import { fourMonthWindow } from '../../../shared/lib/tournamentMapDates.ts';
 import { tournamentMapWindow } from './mapWindow.ts';
 import type { TournamentMapResponse } from '../../../types/TournamentMap.ts';
-
-// Preserve PostgreSQL microseconds in both row versions and the inclusive cursor.
-const updatedAt = sql<string>`to_char(${tournament.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`;
+import { tournamentMapColumns, tournamentMapUpdatedAt as updatedAt } from './mapProjection.ts';
 
 export async function getTournamentMap(
   query: { from?: string; to?: string; updatedSince?: string } = {},
@@ -27,19 +25,7 @@ export async function getTournamentMap(
         .from(tournament)
         .where(scope);
       const rows = await tx
-        .select({
-          id: tournament.id,
-          name: tournament.name,
-          date: tournament.date,
-          days: tournament.days,
-          type: tournament.type,
-          format: tournament.format,
-          location: tournament.location,
-          meleeId: tournament.meleeId,
-          coordinates: tournament.coordinates,
-          additionalInfo: tournament.additionalInfo,
-          updatedAt,
-        })
+        .select(tournamentMapColumns)
         .from(tournament)
         .where(
           and(
@@ -54,7 +40,7 @@ export async function getTournamentMap(
           .select()
           .from(eventHighlight)
           .orderBy(asc(eventHighlight.date), asc(eventHighlight.id)),
-        tournaments: rows.map(row => ({ ...row, date: row.date.toISOString().slice(0, 10) })),
+        tournaments: rows,
         versions,
         updatedAt: versions.reduce<string | null>(
           (latest, row) => (!latest || row.updatedAt > latest ? row.updatedAt : latest),

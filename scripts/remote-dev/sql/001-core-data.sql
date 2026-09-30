@@ -100,6 +100,9 @@ CREATE INDEX development_tournament_match_p2_deck_id_idx ON tournament_match (p2
 -- and credentials are replaced below.
 TRUNCATE TABLE account, session, verification;
 
+-- Attendance plans and saved-event metadata stay private, including for opted-in users.
+TRUNCATE TABLE user_tournament_save;
+
 DELETE FROM user_integration ui
 USING development_cleanup_user dcu
 WHERE ui.user_id = dcu.user_id
@@ -413,6 +416,10 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_settings WHERE key = 'home_location') THEN
     RAISE EXCEPTION 'Private home locations remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_tournament_save) THEN
+    RAISE EXCEPTION 'Private saved tournaments remain in the contributor dump.';
   END IF;
 
   IF EXISTS (

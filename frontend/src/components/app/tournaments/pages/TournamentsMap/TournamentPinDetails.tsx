@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge.tsx';
 import type { MapTournament } from '../../../../../../../types/TournamentMap.ts';
 import { formatDataById } from '../../../../../../../types/Format.ts';
 import { locationText, mapPinColor, tournamentLinks } from './mapData.ts';
+import { TournamentSaveControls } from '../../TournamentSaveControls.tsx';
 
 export function TournamentPinDetails({ tournaments }: { tournaments: MapTournament[] }) {
   return (
@@ -60,6 +61,7 @@ export function TournamentPinDetails({ tournaments }: { tournaments: MapTourname
               </a>
             ))}
           </div>
+          <TournamentSaveControls tournamentId={t.id} />
         </article>
       ))}
     </div>

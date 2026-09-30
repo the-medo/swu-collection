@@ -69,6 +69,7 @@ import { Route as StatisticsStatisticsLayoutHistoryIndexRouteImport } from './ro
 import { Route as StatisticsStatisticsLayoutDecksIndexRouteImport } from './routes/statistics/_statisticsLayout/decks/index'
 import { Route as StatisticsStatisticsLayoutDashboardIndexRouteImport } from './routes/statistics/_statisticsLayout/dashboard/index'
 import { Route as LimitedDeckDeckIdIndexRouteImport } from './routes/limited/deck/$deckId/index'
+import { Route as AuthenticatedTournamentsCalendarIndexRouteImport } from './routes/_authenticated/tournaments/calendar/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout'
 import { Route as AuthenticatedCrossfireReportsReportIdRouteImport } from './routes/_authenticated/crossfire/reports/$reportId'
 import { Route as AuthenticatedCrossfireReplayLobbyIdRouteImport } from './routes/_authenticated/crossfire/replay/$lobbyId'
@@ -407,6 +408,12 @@ const LimitedDeckDeckIdIndexRoute = LimitedDeckDeckIdIndexRouteImport.update({
   path: '/limited/deck/$deckId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedTournamentsCalendarIndexRoute =
+  AuthenticatedTournamentsCalendarIndexRouteImport.update({
+    id: '/tournaments/calendar/',
+    path: '/tournaments/calendar/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const TeamsTeamIdStatisticsStatisticsLayoutRoute =
   TeamsTeamIdStatisticsStatisticsLayoutRouteImport.update({
     id: '/_statisticsLayout',
@@ -532,6 +539,7 @@ export interface FileRoutesByFullPath {
   '/crossfire/replay/$lobbyId': typeof AuthenticatedCrossfireReplayLobbyIdRoute
   '/crossfire/reports/$reportId': typeof AuthenticatedCrossfireReportsReportIdRoute
   '/teams/$teamId/statistics': typeof TeamsTeamIdStatisticsStatisticsLayoutRouteWithChildren
+  '/tournaments/calendar': typeof AuthenticatedTournamentsCalendarIndexRoute
   '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
   '/statistics/dashboard': typeof StatisticsStatisticsLayoutDashboardIndexRoute
   '/statistics/decks': typeof StatisticsStatisticsLayoutDecksIndexRoute
@@ -602,6 +610,7 @@ export interface FileRoutesByTo {
   '/crossfire/replay/$lobbyId': typeof AuthenticatedCrossfireReplayLobbyIdRoute
   '/crossfire/reports/$reportId': typeof AuthenticatedCrossfireReportsReportIdRoute
   '/teams/$teamId/statistics': typeof TeamsTeamIdStatisticsIndexRoute
+  '/tournaments/calendar': typeof AuthenticatedTournamentsCalendarIndexRoute
   '/limited/deck/$deckId': typeof LimitedDeckDeckIdIndexRoute
   '/statistics/dashboard': typeof StatisticsStatisticsLayoutDashboardIndexRoute
   '/statistics/decks': typeof StatisticsStatisticsLayoutDecksIndexRoute
@@ -676,6 +685,7 @@ export interface FileRoutesById {
   '/_authenticated/crossfire/reports/$reportId': typeof AuthenticatedCrossfireReportsReportIdRoute
   '/teams/$teamId/statistics': typeof TeamsTeamIdStatisticsRouteWithChildren
   '/teams/$teamId/statistics/_statisticsLayout': typeof TeamsTeamIdStatisticsStatisticsLayoutRouteWithChildren
+  '/_authenticated/tournaments/calendar/': typeof AuthenticatedTournamentsCalendarIndexRoute
   '/limited/deck/$deckId/': typeof LimitedDeckDeckIdIndexRoute
   '/statistics/_statisticsLayout/dashboard/': typeof StatisticsStatisticsLayoutDashboardIndexRoute
   '/statistics/_statisticsLayout/decks/': typeof StatisticsStatisticsLayoutDecksIndexRoute
@@ -749,6 +759,7 @@ export interface FileRouteTypes {
     | '/crossfire/replay/$lobbyId'
     | '/crossfire/reports/$reportId'
     | '/teams/$teamId/statistics'
+    | '/tournaments/calendar'
     | '/limited/deck/$deckId'
     | '/statistics/dashboard'
     | '/statistics/decks'
@@ -819,6 +830,7 @@ export interface FileRouteTypes {
     | '/crossfire/replay/$lobbyId'
     | '/crossfire/reports/$reportId'
     | '/teams/$teamId/statistics'
+    | '/tournaments/calendar'
     | '/limited/deck/$deckId'
     | '/statistics/dashboard'
     | '/statistics/decks'
@@ -892,6 +904,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crossfire/reports/$reportId'
     | '/teams/$teamId/statistics'
     | '/teams/$teamId/statistics/_statisticsLayout'
+    | '/_authenticated/tournaments/calendar/'
     | '/limited/deck/$deckId/'
     | '/statistics/_statisticsLayout/dashboard/'
     | '/statistics/_statisticsLayout/decks/'
@@ -1384,6 +1397,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LimitedDeckDeckIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/tournaments/calendar/': {
+      id: '/_authenticated/tournaments/calendar/'
+      path: '/tournaments/calendar'
+      fullPath: '/tournaments/calendar'
+      preLoaderRoute: typeof AuthenticatedTournamentsCalendarIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/teams/$teamId/statistics/_statisticsLayout': {
       id: '/teams/$teamId/statistics/_statisticsLayout'
       path: '/teams/$teamId/statistics'
@@ -1478,6 +1498,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
   AuthenticatedCrossfireReplayLobbyIdRoute: typeof AuthenticatedCrossfireReplayLobbyIdRoute
   AuthenticatedCrossfireReportsReportIdRoute: typeof AuthenticatedCrossfireReportsReportIdRoute
+  AuthenticatedTournamentsCalendarIndexRoute: typeof AuthenticatedTournamentsCalendarIndexRoute
   AuthenticatedSettingsLinkKarabastIndexRoute: typeof AuthenticatedSettingsLinkKarabastIndexRoute
 }
 
@@ -1490,6 +1511,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedCrossfireReplayLobbyIdRoute,
   AuthenticatedCrossfireReportsReportIdRoute:
     AuthenticatedCrossfireReportsReportIdRoute,
+  AuthenticatedTournamentsCalendarIndexRoute:
+    AuthenticatedTournamentsCalendarIndexRoute,
   AuthenticatedSettingsLinkKarabastIndexRoute:
     AuthenticatedSettingsLinkKarabastIndexRoute,
 }

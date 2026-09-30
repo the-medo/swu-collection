@@ -2,6 +2,8 @@ import { lazy, Suspense, useMemo, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { House } from 'lucide-react';
 import { useHomeLocation } from '@/api/user/useHomeLocation.ts';
+import { useSavedTournaments } from '@/api/tournaments/useSavedTournaments.ts';
+import { useUser } from '@/hooks/useUser.ts';
 import SignInWrapper from '@/components/app/auth/SignInWrapper.tsx';
 import { Route } from '@/routes/tournaments/map';
 import { useTournamentMap } from '@/api/tournaments/useTournamentMap.ts';
@@ -29,11 +31,25 @@ const TournamentMapCanvas = lazy(() => import('./TournamentMapCanvas.tsx'));
 const emptyTournaments: MapTournament[] = [];
 
 export default function TournamentsMap() {
-  const { tmFrom, tmTo, tmFormats, tmTypes } = Route.useSearch();
+  const { tmFrom, tmTo, tmFormats, tmTypes, tmSaved } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const query = useTournamentMap();
   const home = useHomeLocation();
-  const tournaments = query.data?.tournaments ?? emptyTournaments;
+  const user = useUser();
+  const saves = useSavedTournaments();
+  const savedIdsKey =
+    saves.data
+      ?.map(row => row.tournamentId)
+      .sort()
+      .join(',') ?? '';
+  const savedTournamentIds = useMemo(
+    () => new Set(savedIdsKey ? savedIdsKey.split(',') : []),
+    [savedIdsKey],
+  );
+  const tournaments = useMemo(() => {
+    const rows = query.data?.tournaments ?? emptyTournaments;
+    return tmSaved ? rows.filter(row => savedTournamentIds.has(row.id)) : rows;
+  }, [query.data?.tournaments, tmSaved, savedTournamentIds]);
   const formats = tmFormats ?? defaultMapFormats;
   const types = tmTypes ?? defaultMapTypes;
   const window = query.data?.window;
@@ -83,6 +99,30 @@ export default function TournamentsMap() {
             </Button>
           </SignInWrapper>
         </div>
+      </div>
+      <div className="mb-3 flex flex-wrap items-center gap-3">
+        <SignInWrapper text="Show saved tournaments">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="map-saved-only"
+              checked={tmSaved ?? false}
+              onCheckedChange={checked =>
+                void navigate({
+                  search: prev => ({ ...prev, tmSaved: checked === true ? true : undefined }),
+                })
+              }
+            />
+            <Label htmlFor="map-saved-only">Saved tournaments only</Label>
+          </div>
+        </SignInWrapper>
+        {user && saves.isError && (
+          <div role="alert" className="text-sm text-destructive">
+            Could not load your saved tournaments.{' '}
+            <Button variant="link" size="sm" onClick={() => void saves.refetch()}>
+              Retry
+            </Button>
+          </div>
+        )}
       </div>
       {home.isError && (
         <div role="alert" className="mb-3 text-sm text-muted-foreground">
@@ -191,7 +231,7 @@ export default function TournamentsMap() {
           </Button>
         </div>
       )}
-      {!query.data && !query.error ? (
+      {(!query.data && !query.error) || (tmSaved && user && saves.isPending) ? (
         <p role="status" className="py-12 text-center text-muted-foreground">
           Loading tournaments…
         </p>
@@ -211,6 +251,7 @@ export default function TournamentsMap() {
               weeks={weeks}
               windowStart={window?.from}
               homeCoordinates={home.data?.coordinates ?? null}
+              savedTournamentIds={savedTournamentIds}
             />
           </Suspense>
           <p role="status" className="mt-2 text-sm text-muted-foreground">

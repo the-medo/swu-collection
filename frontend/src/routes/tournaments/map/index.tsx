@@ -8,6 +8,7 @@ export const Route = createFileRoute('/tournaments/map/')({
   validateSearch: z.object({
     tmFrom: z.iso.date().optional(),
     tmTo: z.iso.date().optional(),
+    tmSaved: z.boolean().optional(),
     tmTypes: z.array(z.enum(defaultMapTypes)).max(3).optional(),
     tmFormats: z
       .array(z.union([z.literal(1), z.literal(3), z.literal(6)]))
