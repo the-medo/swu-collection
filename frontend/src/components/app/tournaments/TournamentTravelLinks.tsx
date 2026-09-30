@@ -26,7 +26,7 @@ export function TournamentTravelLinks({
         }}
       >
         <Map className="size-3.5 shrink-0" aria-hidden="true" />
-        {home.data ? 'Google Maps · from home' : 'Google Maps'}
+        Google Maps
       </Button>
       {stays && (
         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">

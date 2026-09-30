@@ -40,11 +40,18 @@ export function accommodationLinks(
   tournament: TravelTournament,
   today = format(new Date(), 'yyyy-MM-dd'),
 ) {
-  const location =
-    ['city', 'state', 'country']
-      .map(key => tournament.additionalInfo[key])
-      .filter((value): value is string => typeof value === 'string' && !!value.trim())
-      .join(', ') || tournament.location.trim();
+  const address = tournament.additionalInfo.address;
+  const locationFields =
+    typeof address === 'string' && address.trim()
+      ? ['address', 'city', 'state', 'postalCode', 'country']
+      : ['city', 'country'];
+  // The legacy location string can contain a store name. Accommodation searches
+  // use the structured address/locality, falling back to coordinates when needed.
+  const location = locationFields
+    .map(key => tournament.additionalInfo[key])
+    .filter((value): value is string => typeof value === 'string' && !!value.trim())
+    .map(value => value.trim())
+    .join(', ');
   const point = coordinates(tournament.coordinates) ? tournament.coordinates : null;
   if (!location && !point) return null;
   // Detail responses serialize the PostgreSQL DATE as midnight UTC; the map uses YYYY-MM-DD.
@@ -52,7 +59,8 @@ export function accommodationLinks(
   const start = tournament.date.slice(0, 10);
   const checkout = format(addDays(parseISO(start), Math.max(1, tournament.days)), 'yyyy-MM-dd');
   if (checkout <= today) return null;
-  const checkin = start < today ? today : start;
+  const arrival = format(addDays(parseISO(start), -1), 'yyyy-MM-dd');
+  const checkin = arrival < today ? today : arrival;
   const airbnb = new URL('https://www.airbnb.com/s/homes');
   const booking = new URL('https://www.booking.com/searchresults.html');
   // Plain search links. Affiliate tracking requires an approved partner account.
