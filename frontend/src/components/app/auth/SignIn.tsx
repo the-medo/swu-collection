@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { NavUser } from '@/components/app/auth/NavUser.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import { LogIn } from 'lucide-react';
-import { useCallback } from 'react';
+import { useCallback, type ReactElement } from 'react';
 
 interface SignInProps {
   isLeftSidebar?: boolean;
@@ -19,9 +19,15 @@ interface SignInProps {
   buttonText?: string;
   // Force using a text button instead of the compact icon trigger
   forceTextButton?: boolean;
+  trigger?: ReactElement;
 }
 
-export default function SignIn({ isLeftSidebar, buttonText, forceTextButton = false }: SignInProps) {
+export default function SignIn({
+  isLeftSidebar,
+  buttonText,
+  forceTextButton = false,
+  trigger,
+}: SignInProps) {
   const { open } = useSidebar();
   const session = useSession();
 
@@ -45,13 +51,14 @@ export default function SignIn({ isLeftSidebar, buttonText, forceTextButton = fa
   return (
     <Dialog>
       <DialogTrigger asChild disabled={session.isPending}>
-        {open || forceTextButton ? (
-          <Button>{session.isPending ? '...' : buttonText ?? 'Sign In'}</Button>
-        ) : (
-          <Button size="icon" className="h-8 w-8 [&_svg]:size-4">
-            <LogIn />
-          </Button>
-        )}
+        {trigger ??
+          (open || forceTextButton ? (
+            <Button>{session.isPending ? '...' : (buttonText ?? 'Sign In')}</Button>
+          ) : (
+            <Button size="icon" className="h-8 w-8 [&_svg]:size-4">
+              <LogIn />
+            </Button>
+          ))}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

@@ -12,6 +12,7 @@ import { worldRoute } from './routes/world.ts';
 import { userRoute } from './routes/user.ts';
 import { userSettingsRoute } from './routes/user-settings.ts';
 import { userTournamentSavesRoute } from './routes/user-tournament-saves.ts';
+import { userTournamentAttachmentsRoute } from './routes/user-tournament-attachments.ts';
 import { tournamentRoute } from './routes/tournament.ts';
 import { tournamentGroupsRoute } from './routes/tournament-groups.ts';
 import { entitiesRoute } from './routes/entity.ts';
@@ -43,6 +44,12 @@ Sentry.init({
   dsn: process.env.SENTRY_BACKEND_DSN,
   tracesSampleRate: 1.0,
   enableLogs: process.env.ENVIRONMENT !== 'local',
+  beforeSend(event) {
+    if (event.request?.url?.includes('/api/user-tournament-attachments')) {
+      delete event.request.data;
+    }
+    return event;
+  },
   integrations: [
     Sentry.honoIntegration(),
     Sentry.requestDataIntegration(),
@@ -132,6 +139,7 @@ const apiRoutes = app
   .route('/user', userRoute)
   .route('/user-settings', userSettingsRoute)
   .route('/user-tournament-saves', userTournamentSavesRoute)
+  .route('/user-tournament-attachments', userTournamentAttachmentsRoute)
   .route('/tournament', tournamentRoute)
   .route('/tournament-groups', tournamentGroupsRoute)
   .route('/entities', entitiesRoute)

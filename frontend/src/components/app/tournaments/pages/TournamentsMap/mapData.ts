@@ -3,6 +3,8 @@ import type {
   MapTournament,
   TournamentMapRange,
 } from '../../../../../../../types/TournamentMap.ts';
+import type { SavedTournament } from '../../../../../../../types/UserTournamentSave.ts';
+import { savedTournamentMarkers } from './savedTournamentMarkers.ts';
 import type { EventHighlight } from '../../../../../../../types/EventHighlight.ts';
 import {
   mapWeekIndex,
@@ -43,12 +45,14 @@ export function mapWeekSummaries(
   tournaments: MapTournament[],
   highlights: EventHighlight[] = [],
   windowEnd?: string,
+  savedTournaments: readonly SavedTournament[] = [],
 ) {
   const summaries = weeks.map(week => ({
     week,
     count: 0,
     majors: [] as MapTournament[],
     highlights: [] as EventHighlight[],
+    savedTournaments: [] as SavedTournament[],
   }));
   if (!weeks.length) return summaries;
   const end = windowEnd ?? mapWeekEnd(weeks[weeks.length - 1]!);
@@ -61,6 +65,19 @@ export function mapWeekSummaries(
   for (const highlight of highlights) {
     const summary = summaries[mapWeekIndex(highlight.date, weeks[0])];
     if (summary && highlight.date <= end) summary.highlights.push(highlight);
+  }
+  for (const saved of savedTournaments) {
+    const summary = summaries[mapWeekIndex(saved.tournament.date, weeks[0])];
+    if (summary && saved.tournament.date <= end) summary.savedTournaments.push(saved);
+  }
+  for (const summary of summaries) {
+    summary.savedTournaments.sort(
+      (a, b) =>
+        savedTournamentMarkers[a.status].priority - savedTournamentMarkers[b.status].priority ||
+        a.tournament.date.localeCompare(b.tournament.date) ||
+        a.tournament.name.localeCompare(b.tournament.name) ||
+        a.tournamentId.localeCompare(b.tournamentId),
+    );
   }
   return summaries;
 }
@@ -150,7 +167,7 @@ export function hasMapCoordinates(
   );
 }
 
-export function tournamentLinks(t: MapTournament) {
+export function tournamentLinks(t: Pick<MapTournament, 'meleeId' | 'additionalInfo'>) {
   const links = new Map<string, string>();
   const add = (label: string, value: unknown) => {
     if (typeof value !== 'string') return;
@@ -176,7 +193,7 @@ export function tournamentLinks(t: MapTournament) {
   return Array.from(links, ([url, label]) => ({ url, label }));
 }
 
-export function locationText(t: MapTournament) {
+export function locationText(t: Pick<MapTournament, 'location' | 'additionalInfo'>) {
   return (
     ['venueName', 'address', 'city', 'state', 'postalCode', 'country']
       .map(key => t.additionalInfo[key])

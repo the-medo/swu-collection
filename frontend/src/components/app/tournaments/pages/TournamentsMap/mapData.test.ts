@@ -3,6 +3,7 @@ import {
   fourMonthWindow,
   mapWeekIndex,
 } from '../../../../../../../shared/lib/tournamentMapDates.ts';
+import type { SavedTournament } from '../../../../../../../types/UserTournamentSave.ts';
 import type { MapTournament } from '../../../../../../../types/TournamentMap.ts';
 import {
   filterMapTournaments,
@@ -193,4 +194,37 @@ test('the fixed four-month window starts exactly on release day and clips its la
   expect(summary[1].count).toBe(1);
   expect(summary.flatMap(s => s.highlights).map(h => h.date)).toEqual(['2026-10-02', '2027-02-01']);
   expect(summary.reduce((n, s) => n + s.count, 0)).toBe(2);
+});
+
+test('saved week markers respect the date window and order going, maybe, then saved without changing counts', () => {
+  const window = fourMonthWindow('2026-10-02');
+  const weeks = mapWeeks(window);
+  const saved: SavedTournament[] = [
+    ['before', 'going', '2026-10-01'],
+    ['bookmark', 'saved', '2026-10-02'],
+    ['tentative', 'maybe', '2026-10-03'],
+    ['attending', 'going', '2026-10-04'],
+    ['last', 'saved', '2027-02-01'],
+    ['after', 'going', '2027-02-02'],
+  ].map(([id, status, date]) => ({
+    tournamentId: id,
+    status: status as SavedTournament['status'],
+    tournament: { ...row(date), id, coordinates: null },
+    additionalInfo: {},
+    createdAt: '',
+    updatedAt: '',
+  }));
+  const order = saved.map(s => s.tournamentId);
+  // Saved markers remain useful even when no public tournaments match the format/type filters.
+  const summary = mapWeekSummaries(weeks, [], [], window.to, saved);
+  expect(summary[0].savedTournaments.map(s => s.tournamentId)).toEqual([
+    'attending',
+    'tentative',
+    'bookmark',
+  ]);
+  expect(summary[summary.length - 1]?.savedTournaments.map(s => s.tournamentId)).toEqual(['last']);
+  expect(summary.flatMap(s => s.savedTournaments)).toHaveLength(4);
+  expect(summary.reduce((count, s) => count + s.count, 0)).toBe(0);
+  expect(saved.map(s => s.tournamentId)).toEqual(order);
+  expect(mapWeekSummaries([], [], [], window.to, saved)).toEqual([]);
 });

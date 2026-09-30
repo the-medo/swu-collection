@@ -32,7 +32,7 @@ const TournamentNavigation: React.FC<TournamentNavigationProps> = ({ className }
     },
     { name: 'All Tournaments', path: '/tournaments/all' },
     { name: 'Map', path: '/tournaments/map' },
-    { name: 'Calendar', path: '/tournaments/calendar' },
+    { name: 'Your calendar', path: '/tournaments/calendar' },
   ];
 
   // Find the active item

@@ -456,6 +456,20 @@
       "when": 1790781866715,
       "tag": "0064_user_tournament_saves",
       "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1790797601359,
+      "tag": "0065_private_tournament_attachments",
+      "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "7",
+      "when": 1790798087318,
+      "tag": "0066_require_attachment_file_size",
+      "breakpoints": true
     }
   ]
 }
