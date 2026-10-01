@@ -7,6 +7,13 @@ export type SetCardPoolInfo = {
 };
 
 export const cardPoolInfo: Partial<Record<SwuSet, SetCardPoolInfo>> = {
+  [SwuSet.HMW]: {
+    hasPrerelease: true,
+    prereleaseLeadersId: [
+      'grand-moff-tarkin--tyrant-of-the-outer-rim',
+      'chewbacca--relentless-rebel',
+    ],
+  },
   [SwuSet.ASH]: {
     hasPrerelease: true,
     prereleaseLeadersId: [

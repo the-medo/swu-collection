@@ -69,7 +69,7 @@ const CreatePool: React.FC = () => {
   const navigate = useNavigate();
   const [creationMode, setCreationMode] = useState<PoolCreationMode>('generated');
   const [selectedType, setSelectedType] = useState<CardPoolType>(CardPoolType.Sealed);
-  const [selectedSet, setSelectedSet] = useState<SwuSet>(SwuSet.ASH);
+  const [selectedSet, setSelectedSet] = useState<SwuSet>(SwuSet.HMW);
   const [boosterCount, setBoosterCount] = useState<CardPoolBoosterCount>(
     DEFAULT_CARD_POOL_BOOSTER_COUNT,
   );

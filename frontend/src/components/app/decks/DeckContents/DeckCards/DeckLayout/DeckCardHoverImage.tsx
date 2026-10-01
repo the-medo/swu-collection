@@ -22,6 +22,7 @@ interface DeckCardHoverImageProps extends PropsWithChildren {
   size?: CardImageVariantProps['size'];
   active?: boolean;
   defaultVariantId?: string;
+  interactive?: boolean;
 }
 
 const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({
@@ -29,6 +30,7 @@ const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({
   size = 'original',
   active = true,
   defaultVariantId,
+  interactive = true,
   children,
 }) => {
   const { isMobile } = useSidebar();
@@ -36,32 +38,40 @@ const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({
 
   if (isMobile || !active) return children;
 
+  const previewContent = (
+    <HoverCardContent
+      className={cn(
+        cardImageVariants({
+          size,
+          horizontal: card?.front.horizontal ?? false,
+        }),
+        'm-0 p-0 w-fit',
+      )}
+      side="left"
+      sideOffset={10}
+      align="start"
+      avoidCollisions={true}
+    >
+      <CardImage
+        card={card}
+        cardVariantId={defaultVariant}
+        size={size}
+        forceHorizontal={card?.front.horizontal ?? false}
+      />
+    </HoverCardContent>
+  );
+
   return (
     <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
 
       {isMobile ? null : (
         <HoverCardPortal>
-          <HoverCardContent
-            className={cn(
-              cardImageVariants({
-                size,
-                horizontal: card?.front.horizontal ?? false,
-              }),
-              'm-0 p-0 w-fit',
-            )}
-            side="left"
-            sideOffset={10}
-            align="start"
-            avoidCollisions={true}
-          >
-            <CardImage
-              card={card}
-              cardVariantId={defaultVariant}
-              size={size}
-              forceHorizontal={card?.front.horizontal ?? false}
-            />
-          </HoverCardContent>
+          {interactive ? (
+            previewContent
+          ) : (
+            <div className="pointer-events-none">{previewContent}</div>
+          )}
         </HoverCardPortal>
       )}
     </HoverCard>
