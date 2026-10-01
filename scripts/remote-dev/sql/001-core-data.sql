@@ -100,6 +100,11 @@ CREATE INDEX development_tournament_match_p2_deck_id_idx ON tournament_match (p2
 -- and credentials are replaced below.
 TRUNCATE TABLE account, session, verification;
 
+-- Attendance plans and saved-event metadata stay private, including for opted-in users.
+TRUNCATE TABLE user_tournament_save;
+TRUNCATE TABLE user_tournament_attachment, user_tournament_preparation;
+TRUNCATE TABLE user_calendar_subscription;
+
 DELETE FROM user_integration ui
 USING development_cleanup_user dcu
 WHERE ui.user_id = dcu.user_id
@@ -311,6 +316,9 @@ WHERE user_id <> 'swubase';
 -- Retain preferences for opted-in users, including their development-sharing
 -- choices. Preferences owned by deleted users must be removed explicitly to
 -- support legacy backups without the current cascading foreign key.
+-- Home addresses and coordinates are always private, including for opted-in users.
+DELETE FROM user_settings WHERE key = 'home_location';
+
 DELETE FROM user_settings us
 USING development_cleanup_user dcu
 WHERE us.user_id = dcu.user_id
@@ -406,6 +414,23 @@ BEGIN
     WHERE dcu.retain_data IS DISTINCT FROM true
   ) THEN
     RAISE EXCEPTION 'A non-opted-in user remains after contributor-dump sanitization.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_settings WHERE key = 'home_location') THEN
+    RAISE EXCEPTION 'Private home locations remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_tournament_save) THEN
+    RAISE EXCEPTION 'Private saved tournaments remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_calendar_subscription) THEN
+    RAISE EXCEPTION 'Private calendar subscriptions remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_tournament_attachment)
+    OR EXISTS (SELECT 1 FROM user_tournament_preparation) THEN
+    RAISE EXCEPTION 'Private tournament attachments or preparation remain in the contributor dump.';
   END IF;
 
   IF EXISTS (

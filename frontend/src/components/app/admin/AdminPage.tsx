@@ -18,6 +18,7 @@ import { TournamentResultsPage } from '@/components/app/admin/TournamentResultsP
 import { Helmet } from 'react-helmet-async';
 import { AdminNavigation } from './AdminNavigation';
 import { adminSections } from './adminNavigation';
+import { EventHighlightsPage } from './EventHighlightsPage';
 
 export function AdminPage() {
   const hasRole = useRole();
@@ -36,7 +37,7 @@ export function AdminPage() {
       <Helmet title="Admin dashboard | SWUBase" />
       <div className="flex w-full min-w-0 flex-col gap-4">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-1">
-          <h1 className="text-xl font-semibold">Administration</h1>
+          <h3>Administration</h3>
           <span className="text-sm text-muted-foreground">
             {section.title} / {current.label}
           </span>
@@ -54,6 +55,7 @@ export function AdminPage() {
               {page === 'tournament-weekends' && <TournamentWeekendsPage />}
               {page === 'deck-thumbnails' && <ThumbnailsPage />}
               {page === 'pq-tools' && <PQToolsPage />}
+              {page === 'event-highlights' && <EventHighlightsPage />}
               {page === 'special-actions' && <SpecialActionsPage />}
               {page === 'card-prices' && <CardPricePairingAdministrationPage />}
               {page === 'variant-checker' && <VariantCheckerPage />}

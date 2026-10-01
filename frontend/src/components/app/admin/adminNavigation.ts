@@ -32,6 +32,7 @@ export const adminSections = [
       { id: 'tournament-weekends', label: 'Weekends', icon: CalendarDays },
       { id: 'tournament-results', label: 'Results', icon: ListChecks },
       { id: 'pq-tools', label: 'PQ tools', icon: Flag },
+      { id: 'event-highlights', label: 'Event highlights', icon: Image },
     ],
   },
   {

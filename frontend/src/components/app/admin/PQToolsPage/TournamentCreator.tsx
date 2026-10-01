@@ -3,8 +3,15 @@ import { Button } from '@/components/ui/button.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { toast } from '@/hooks/use-toast.ts';
 import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector.tsx';
-import { usePostTournament } from '@/api/tournaments/usePostTournament.ts';
-import { isPQFormat, PQ_FORMAT_IDS, PQ_FORMATS, type PQFormat, type PQTournament } from './types';
+import { usePostTournaments } from '@/api/tournaments/usePostTournament.ts';
+import {
+  getPqAdditionalInfo,
+  isPQFormat,
+  PQ_FORMAT_IDS,
+  PQ_FORMATS,
+  type PQFormat,
+  type PQTournament,
+} from './types';
 
 interface TournamentCreatorProps {
   data: PQTournament[];
@@ -16,8 +23,8 @@ export function TournamentCreator({ data }: TournamentCreatorProps) {
     'Sealed play': null,
     Eternal: null,
   });
-  const [isCreating, setIsCreating] = useState(false);
-  const postTournament = usePostTournament();
+  const postTournaments = usePostTournaments();
+  const isCreating = postTournaments.isPending;
 
   const handleCreate = async () => {
     if (!Array.isArray(data) || data.length === 0) {
@@ -39,15 +46,13 @@ export function TournamentCreator({ data }: TournamentCreatorProps) {
       return;
     }
 
-    setIsCreating(true);
-
     try {
-      // Create each tournament
-      const promises = data.map(tournament => {
+      const tournaments = data.map(tournament => {
         const format = PQ_FORMAT_IDS[tournament.format];
-        return postTournament.mutateAsync({
+        return {
           type: 'pq',
           location: tournament.location,
+          additionalInfo: getPqAdditionalInfo(tournament),
           continent: tournament.continent,
           name: tournament.name,
           attendance: 0,
@@ -57,15 +62,18 @@ export function TournamentCreator({ data }: TournamentCreatorProps) {
           days: 1,
           dayTwoPlayerCount: 0,
           date: tournament.date,
-          bracketInfo: 'top8',
-        });
+          bracketInfo: 'top8' as const,
+        };
       });
 
-      await Promise.all(promises);
+      const result = await postTournaments.mutateAsync(tournaments);
 
       toast({
-        title: 'Success',
-        description: `Created ${data.length} tournaments successfully`,
+        variant: result.failed ? 'destructive' : 'default',
+        title: result.failed ? 'Some tournaments were not created' : 'Success',
+        description: result.failed
+          ? `Created ${result.created} of ${data.length} tournaments. ${result.failed} failed.${result.error ? ` ${result.error}` : ''}`
+          : `Created ${result.created} tournaments successfully`,
       });
     } catch (error) {
       console.error('Error creating tournaments:', error);
@@ -74,8 +82,6 @@ export function TournamentCreator({ data }: TournamentCreatorProps) {
         title: 'Error',
         description: 'Failed to create tournaments',
       });
-    } finally {
-      setIsCreating(false);
     }
   };
 
@@ -89,7 +95,10 @@ export function TournamentCreator({ data }: TournamentCreatorProps) {
 
       <div className="space-y-4 mb-4">
         {PQ_FORMATS.map(format => (
-          <div key={format} className="grid grid-cols-1 md:grid-cols-[180px_minmax(0,1fr)] gap-2 items-center">
+          <div
+            key={format}
+            className="grid grid-cols-1 md:grid-cols-[180px_minmax(0,1fr)] gap-2 items-center"
+          >
             <Label>{format}</Label>
             <MetaSelector
               value={metaIds[format]}
@@ -102,11 +111,7 @@ export function TournamentCreator({ data }: TournamentCreatorProps) {
         ))}
       </div>
 
-      <Button
-        onClick={handleCreate}
-        disabled={isCreating || data.length === 0}
-        className="mt-2"
-      >
+      <Button onClick={handleCreate} disabled={isCreating || data.length === 0} className="mt-2">
         {isCreating ? 'Creating...' : `Create ${data.length} Tournaments`}
       </Button>
     </div>

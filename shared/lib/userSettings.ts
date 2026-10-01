@@ -9,6 +9,12 @@ import {
 import { booleanPreprocessor } from './zod/booleanPreprocessor.ts';
 
 export interface UserSettings {
+  use_tournament_attachments: boolean;
+  left_sidebar_collections_and_lists: boolean;
+  left_sidebar_my_tournaments: boolean;
+  left_sidebar_my_tournaments_days_before: number;
+  left_sidebar_my_tournaments_days_after: number;
+  calendarWeekStartsOn: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   homepageMode: 'default' | 'snapshot' | 'live';
   deckLayout: DeckLayout; // default: DeckLayout.TEXT
   deckGroupBy: DeckGroupBy; // default: DeckGroupBy.CARD_TYPE
@@ -40,7 +46,32 @@ export interface UserSettings {
   share_development_data_matches: boolean;
 }
 
+export const calendarWeekStartSchema = z.preprocess(
+  value => (typeof value === 'string' && /^[0-6]$/.test(value) ? Number(value) : value),
+  z.union([
+    z.literal(0),
+    z.literal(1),
+    z.literal(2),
+    z.literal(3),
+    z.literal(4),
+    z.literal(5),
+    z.literal(6),
+  ]),
+);
+
+export const sidebarTournamentMaxDays = 3650;
+export const sidebarTournamentDaysSchema = z.preprocess(
+  value => (typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : value),
+  z.number().int().min(0).max(sidebarTournamentMaxDays),
+);
+
 export const userSettingsSchema = z.object({
+  use_tournament_attachments: booleanPreprocessor.default(true),
+  left_sidebar_collections_and_lists: booleanPreprocessor.default(true),
+  left_sidebar_my_tournaments: booleanPreprocessor.default(true),
+  left_sidebar_my_tournaments_days_before: sidebarTournamentDaysSchema.default(3),
+  left_sidebar_my_tournaments_days_after: sidebarTournamentDaysSchema.default(30),
+  calendarWeekStartsOn: calendarWeekStartSchema.default(1),
   homepageMode: z.enum(['default', 'snapshot', 'live']).default('default'),
   deckLayout: z.enum(DeckLayout).default(DeckLayout.TEXT),
   deckGroupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
@@ -73,6 +104,16 @@ export const userSettingsSchema = z.object({
   share_development_data: booleanPreprocessor.default(false),
   share_development_data_matches: booleanPreprocessor.default(false),
 });
+
+export const sidebarSettingsSchema = userSettingsSchema.pick({
+  left_sidebar_collections_and_lists: true,
+  left_sidebar_my_tournaments: true,
+  left_sidebar_my_tournaments_days_before: true,
+  left_sidebar_my_tournaments_days_after: true,
+});
+export type SidebarSettingsValues = z.infer<typeof sidebarSettingsSchema>;
+export const featureSettingsSchema = userSettingsSchema.pick({ use_tournament_attachments: true });
+export type FeatureSettingsValues = z.infer<typeof featureSettingsSchema>;
 
 const userSettingsUpdateShape: z.ZodRawShape = Object.fromEntries(
   Object.entries(userSettingsSchema.shape).map(([key, schema]) => [

@@ -44,6 +44,7 @@ import {
 import { useGenerateTournamentScreenshots } from '@/api/tournaments/useGenerateTournamentScreenshots.ts';
 import { useSendTournamentDiscordResults } from '@/api/tournaments/useSendTournamentDiscordResults.ts';
 import ClearTournamentDataDialog from '@/components/app/dialogs/ClearTournamentDataDialog.tsx';
+import { TournamentAdditionalInfoDialog } from '../location/TournamentAdditionalInfoDialog.tsx';
 
 interface TournamentDetailProps {
   tournamentId: string;
@@ -51,9 +52,17 @@ interface TournamentDetailProps {
   activeTab?: string;
   mode?: TournamentTabsProps['mode'];
   displayHeader?: boolean;
+  showDataNotice?: boolean;
 }
 
-type AdminDialog = 'edit' | 'import-melee' | 'blob' | 'clear-data' | 'delete' | null;
+type AdminDialog =
+  | 'edit'
+  | 'additional-info'
+  | 'import-melee'
+  | 'blob'
+  | 'clear-data'
+  | 'delete'
+  | null;
 
 const TournamentDetail: React.FC<TournamentDetailProps> = ({
   tournamentId,
@@ -61,6 +70,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   activeTab,
   mode = 'tournament-page',
   displayHeader = true,
+  showDataNotice = true,
 }) => {
   const { data, isFetching, error } = useGetTournament(tournamentId);
   const hasPermission = usePermissions();
@@ -69,7 +79,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   const generateScreenshots = useGenerateTournamentScreenshots(tournamentId);
   const sendDiscordResults = useSendTournamentDiscordResults(tournamentId);
   const [adminDialog, setAdminDialog] = useState<AdminDialog>(null);
-  const loading = isFetching;
+  const loading = isFetching && !data;
   const tournament = data?.tournament;
 
   const canUpdate = hasPermission('tournament', 'update');
@@ -265,6 +275,13 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
 
                       {canAccessAdmin && (
                         <>
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onSelect={() => setAdminDialog('additional-info')}
+                          >
+                            <FileJson2 className="h-4 w-4" />
+                            Additional info
+                          </DropdownMenuItem>
                           <DropdownMenuItem asChild className="cursor-pointer">
                             <Link
                               to="/admin"
@@ -345,6 +362,17 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
                   </DropdownMenu>
                 )}
 
+                {canAccessAdmin && adminDialog === 'additional-info' && (
+                  <TournamentAdditionalInfoDialog
+                    tournament={{
+                      ...tournament,
+                      coordinates: tournament.coordinates ?? null,
+                      additionalInfo: tournament.additionalInfo ?? {},
+                    }}
+                    onClose={() => setAdminDialog(null)}
+                  />
+                )}
+
                 {canUpdate && (
                   <EditTournamentDialog
                     trigger={hiddenDialogTrigger}
@@ -397,7 +425,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
         <TournamentDataLoader tournamentId={tournamentId} />
         <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} mode={mode} />
         {activeTab === 'details' || tournament?.imported ? children : null}
-        <NoTournamentData tournamentId={tournamentId} />
+        {showDataNotice && <NoTournamentData tournamentId={tournamentId} />}
       </div>
     </>
   );

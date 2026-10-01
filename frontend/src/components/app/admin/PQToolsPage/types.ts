@@ -1,5 +1,6 @@
 // Define the structure of a PQ tournament entry
 import { TournamentData } from '../../../../../../types/Tournament.ts';
+import type { TournamentAdditionalInfo } from '../../../../../../types/TournamentLocation.ts';
 
 export const PQ_FORMATS = ['Premier', 'Sealed play', 'Eternal'] as const;
 
@@ -21,7 +22,16 @@ export interface PQTournament {
   date: string; // ISO date string
   format: PQFormat;
   link?: string; // Optional URL to the tournament
+  additionalInfo?: TournamentAdditionalInfo;
 }
+
+// Older locally saved parser results only have `link`.
+export const getPqAdditionalInfo = (
+  tournament: Pick<PQTournament, 'link' | 'additionalInfo'>,
+): TournamentAdditionalInfo => ({
+  ...(tournament.link ? { sourceUrl: tournament.link } : {}),
+  ...tournament.additionalInfo,
+});
 
 // Props for the PqDataRow component
 export interface PQDataRowProps {

@@ -25,7 +25,9 @@ export const tournamentGroupIdGetRoute = new Hono<AuthExtension>().get('/', asyn
           (
             SELECT jsonb_agg(
               jsonb_build_object(
-                'tournament', jsonb_snake_to_camel(to_jsonb(t.*)),
+                'tournament', jsonb_snake_to_camel(to_jsonb(t.*)) || jsonb_build_object(
+                  'coordinates', CASE WHEN t.coordinates IS NULL THEN NULL ELSE
+                    jsonb_build_object('x', t.coordinates[0], 'y', t.coordinates[1]) END),
                 'tournamentType', jsonb_snake_to_camel(to_jsonb(tt.*)),
                 'tournamentDeck', jsonb_snake_to_camel(to_jsonb(td.*)),
                 'deck', jsonb_snake_to_camel(to_jsonb(d.*)),

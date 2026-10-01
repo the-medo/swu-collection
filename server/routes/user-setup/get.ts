@@ -5,7 +5,8 @@ import { userSettings } from '../../db/schema/user_settings.ts';
 import { userIntegration, integration, type UserIntegration } from '../../db/schema/integration.ts';
 import { type TeamMember, teamMember } from '../../db/schema/team_member.ts';
 import { type Team, team as teamTable } from '../../db/schema/team.ts';
-import { eq } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
+import { homeLocationSettingKey } from '../../../shared/lib/userHomeLocation.ts';
 import { type UserSettingsSchema, userSettingsSchema } from '../../../shared/lib/userSettings.ts';
 import * as Sentry from '@sentry/bun';
 
@@ -37,7 +38,7 @@ export const userSetupGetRoute = new Hono<AuthExtension>().get('/', async c => {
     const userSettingsFromDb = await db
       .select()
       .from(userSettings)
-      .where(eq(userSettings.userId, user.id));
+      .where(and(eq(userSettings.userId, user.id), ne(userSettings.key, homeLocationSettingKey)));
 
     const mergedSettings: Record<string, any> = {};
     for (const setting of userSettingsFromDb) {

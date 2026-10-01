@@ -1,4 +1,7 @@
-import { pgTable, text, integer, timestamp, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, timestamp, boolean, pgEnum } from 'drizzle-orm/pg-core';
+import { calendarPrivacyValues } from '../../../types/TournamentCalendar.ts';
+
+export const calendarPrivacyEnum = pgEnum('calendar_privacy', calendarPrivacyValues);
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -16,6 +19,7 @@ export const user = pgTable('user', {
   country: text('country'),
   state: text('state'),
   currency: text('currency').notNull(),
+  calendarPrivacy: calendarPrivacyEnum('calendar_privacy').notNull().default('unlisted'),
 });
 
 export const session = pgTable('session', {

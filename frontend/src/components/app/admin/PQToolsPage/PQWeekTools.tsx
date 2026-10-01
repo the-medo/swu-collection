@@ -34,8 +34,8 @@ export function PQWeekTools() {
   const handleFetchPQs = async () => {
     setIsFetching(true);
     try {
-      await getTournamentsQuery.refetch();
-      const allPages = getTournamentsQuery.data?.pages || [];
+      const result = await getTournamentsQuery.refetch({ throwOnError: true });
+      const allPages = result.data?.pages || [];
       const allTournaments = allPages.flatMap(page => page.data || []);
 
       setPqTournaments(allTournaments);

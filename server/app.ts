@@ -11,6 +11,12 @@ import { cardsRoute } from './routes/cards.ts';
 import { worldRoute } from './routes/world.ts';
 import { userRoute } from './routes/user.ts';
 import { userSettingsRoute } from './routes/user-settings.ts';
+import { userTournamentSavesRoute } from './routes/user-tournament-saves.ts';
+import { userCalendarRoute } from './routes/user-calendar.ts';
+import { userTournamentAttachmentsRoute } from './routes/user-tournament-attachments.ts';
+import { userCalendarSubscriptionRoute } from './routes/user-calendar-subscription.ts';
+import { calendarFeedRoute } from './routes/calendar-feed.ts';
+import { isCalendarFeedRequest } from './lib/calendar-subscription/token.ts';
 import { tournamentRoute } from './routes/tournament.ts';
 import { tournamentGroupsRoute } from './routes/tournament-groups.ts';
 import { entitiesRoute } from './routes/entity.ts';
@@ -41,7 +47,18 @@ Sentry.init({
   environment: process.env.ENVIRONMENT,
   dsn: process.env.SENTRY_BACKEND_DSN,
   tracesSampleRate: 1.0,
+  ignoreTransactions: [/\/api\/calendar(?:\/|$)/],
   enableLogs: process.env.ENVIRONMENT !== 'local',
+  beforeSend(event) {
+    if (isCalendarFeedRequest(event.request?.url)) return null;
+    if (event.request?.url?.includes('/api/user-tournament-attachments')) {
+      delete event.request.data;
+    }
+    return event;
+  },
+  beforeSendTransaction(event) {
+    return isCalendarFeedRequest(event.request?.url) ? null : event;
+  },
   integrations: [
     Sentry.honoIntegration(),
     Sentry.requestDataIntegration(),
@@ -60,6 +77,9 @@ const app = new Hono<AuthExtension>().onError((err, c) => {
   return c.json({ message: 'Internal Server Error' }, 500);
 });
 
+// Calendar clients authenticate with the secret URL. Mount before session and
+// request logging middleware so tokens never enter the application access log.
+app.route('/api/calendar', calendarFeedRoute);
 app.use('*', logger());
 app.use('*', async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
@@ -130,6 +150,10 @@ const apiRoutes = app
   .route('/cards', cardsRoute)
   .route('/user', userRoute)
   .route('/user-settings', userSettingsRoute)
+  .route('/user-tournament-saves', userTournamentSavesRoute)
+  .route('/user-calendar', userCalendarRoute)
+  .route('/user-tournament-attachments', userTournamentAttachmentsRoute)
+  .route('/user-calendar-subscription', userCalendarSubscriptionRoute)
   .route('/tournament', tournamentRoute)
   .route('/tournament-groups', tournamentGroupsRoute)
   .route('/entities', entitiesRoute)

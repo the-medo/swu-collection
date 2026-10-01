@@ -9,7 +9,10 @@ import {
   index,
   text,
   boolean,
+  point,
+  jsonb,
 } from 'drizzle-orm/pg-core';
+import type { TournamentAdditionalInfo } from '../../../types/TournamentLocation.ts';
 import { tournamentType } from './tournament_type.ts';
 import { tournamentDeck } from './tournament_deck.ts';
 import { tournamentMatch } from './tournament_match.ts';
@@ -31,6 +34,11 @@ export const tournament = pgTable(
       .notNull()
       .references(() => tournamentType.id),
     location: varchar('location', { length: 255 }).notNull(),
+    coordinates: point('coordinates', { mode: 'xy' }),
+    additionalInfo: jsonb('additional_info')
+      .$type<TournamentAdditionalInfo>()
+      .notNull()
+      .default({}),
     continent: varchar('continent', { length: 100 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
     attendance: integer('attendance').notNull(),
