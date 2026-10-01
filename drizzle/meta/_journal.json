@@ -442,48 +442,6 @@
       "when": 1790706645125,
       "tag": "0062_overconfident_meteorite",
       "breakpoints": true
-    },
-    {
-      "idx": 63,
-      "version": "7",
-      "when": 1790780172155,
-      "tag": "0063_event_highlights",
-      "breakpoints": true
-    },
-    {
-      "idx": 64,
-      "version": "7",
-      "when": 1790781866715,
-      "tag": "0064_user_tournament_saves",
-      "breakpoints": true
-    },
-    {
-      "idx": 65,
-      "version": "7",
-      "when": 1790797601359,
-      "tag": "0065_private_tournament_attachments",
-      "breakpoints": true
-    },
-    {
-      "idx": 66,
-      "version": "7",
-      "when": 1790798087318,
-      "tag": "0066_require_attachment_file_size",
-      "breakpoints": true
-    },
-    {
-      "idx": 67,
-      "version": "7",
-      "when": 1790799494270,
-      "tag": "0067_calendar_subscriptions",
-      "breakpoints": true
-    },
-    {
-      "idx": 68,
-      "version": "7",
-      "when": 1790847465563,
-      "tag": "0068_strange_true_believers",
-      "breakpoints": true
     }
   ]
 }

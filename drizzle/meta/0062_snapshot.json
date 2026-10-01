@@ -316,6 +316,14 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "calendar_privacy": {
+          "name": "calendar_privacy",
+          "type": "calendar_privacy",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unlisted'"
         }
       },
       "indexes": {},
@@ -7179,6 +7187,67 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.event_highlight": {
+      "name": "event_highlight",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "event_highlight_date_idx": {
+          "name": "event_highlight_date_idx",
+          "columns": [
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.format": {
       "name": "format",
       "schema": "",
@@ -11669,6 +11738,68 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.user_calendar_subscription": {
+      "name": "user_calendar_subscription",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_calendar_subscription_user_id_user_id_fk": {
+          "name": "user_calendar_subscription_user_id_user_id_fk",
+          "tableFrom": "user_calendar_subscription",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_calendar_subscription_id_unique": {
+          "name": "user_calendar_subscription_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.user_deck_favorite": {
       "name": "user_deck_favorite",
       "schema": "",
@@ -11788,9 +11919,387 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.user_tournament_attachment": {
+      "name": "user_tournament_attachment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tournament_id": {
+          "name": "tournament_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "tournament_attachment_category",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "tournament_attachment_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "object_key": {
+          "name": "object_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "file_name": {
+          "name": "file_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mime_type": {
+          "name": "mime_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "byte_size": {
+          "name": "byte_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_tournament_attachment_owner_idx": {
+          "name": "user_tournament_attachment_owner_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "tournament_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_tournament_attachment_tournament_idx": {
+          "name": "user_tournament_attachment_tournament_idx",
+          "columns": [
+            {
+              "expression": "tournament_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "user_tournament_attachment_user_id_user_id_fk": {
+          "name": "user_tournament_attachment_user_id_user_id_fk",
+          "tableFrom": "user_tournament_attachment",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_tournament_attachment_tournament_id_tournament_id_fk": {
+          "name": "user_tournament_attachment_tournament_id_tournament_id_fk",
+          "tableFrom": "user_tournament_attachment",
+          "tableTo": "tournament",
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "user_tournament_attachment_payload_check": {
+          "name": "user_tournament_attachment_payload_check",
+          "value": "(\n    (\"user_tournament_attachment\".\"kind\" = 'file' AND \"user_tournament_attachment\".\"object_key\" IS NOT NULL AND \"user_tournament_attachment\".\"file_name\" IS NOT NULL AND \"user_tournament_attachment\".\"mime_type\" IS NOT NULL AND \"user_tournament_attachment\".\"byte_size\" IS NOT NULL AND \"user_tournament_attachment\".\"byte_size\" > 0 AND \"user_tournament_attachment\".\"content\" IS NULL)\n    OR (\"user_tournament_attachment\".\"kind\" IN ('text', 'link') AND \"user_tournament_attachment\".\"content\" IS NOT NULL AND \"user_tournament_attachment\".\"object_key\" IS NULL AND \"user_tournament_attachment\".\"file_name\" IS NULL AND \"user_tournament_attachment\".\"mime_type\" IS NULL AND \"user_tournament_attachment\".\"byte_size\" IS NULL)\n  )"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.user_tournament_preparation": {
+      "name": "user_tournament_preparation",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tournament_id": {
+          "name": "tournament_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "tournament_attachment_category",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "tournament_preparation_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'no'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_tournament_preparation_tournament_idx": {
+          "name": "user_tournament_preparation_tournament_idx",
+          "columns": [
+            {
+              "expression": "tournament_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "user_tournament_preparation_user_id_user_id_fk": {
+          "name": "user_tournament_preparation_user_id_user_id_fk",
+          "tableFrom": "user_tournament_preparation",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_tournament_preparation_tournament_id_tournament_id_fk": {
+          "name": "user_tournament_preparation_tournament_id_tournament_id_fk",
+          "tableFrom": "user_tournament_preparation",
+          "tableTo": "tournament",
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_tournament_preparation_user_id_tournament_id_category_pk": {
+          "name": "user_tournament_preparation_user_id_tournament_id_category_pk",
+          "columns": [
+            "user_id",
+            "tournament_id",
+            "category"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_tournament_save": {
+      "name": "user_tournament_save",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tournament_id": {
+          "name": "tournament_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "tournament_save_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'saved'"
+        },
+        "additional_info": {
+          "name": "additional_info",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_tournament_save_tournament_idx": {
+          "name": "user_tournament_save_tournament_idx",
+          "columns": [
+            {
+              "expression": "tournament_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "user_tournament_save_user_id_user_id_fk": {
+          "name": "user_tournament_save_user_id_user_id_fk",
+          "tableFrom": "user_tournament_save",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_tournament_save_tournament_id_tournament_id_fk": {
+          "name": "user_tournament_save_tournament_id_tournament_id_fk",
+          "tableFrom": "user_tournament_save",
+          "tableTo": "tournament",
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_tournament_save_user_id_tournament_id_pk": {
+          "name": "user_tournament_save_user_id_tournament_id_pk",
+          "columns": [
+            "user_id",
+            "tournament_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {
+    "public.calendar_privacy": {
+      "name": "calendar_privacy",
+      "schema": "public",
+      "values": [
+        "private",
+        "unlisted",
+        "public"
+      ]
+    },
     "public.card_pool_deck_card_location": {
       "name": "card_pool_deck_card_location",
       "schema": "public",
@@ -11869,6 +12378,43 @@
         "running",
         "finished",
         "unknown"
+      ]
+    },
+    "public.tournament_attachment_category": {
+      "name": "tournament_attachment_category",
+      "schema": "public",
+      "values": [
+        "travel",
+        "accommodation",
+        "ticket",
+        "other"
+      ]
+    },
+    "public.tournament_attachment_kind": {
+      "name": "tournament_attachment_kind",
+      "schema": "public",
+      "values": [
+        "file",
+        "text",
+        "link"
+      ]
+    },
+    "public.tournament_preparation_status": {
+      "name": "tournament_preparation_status",
+      "schema": "public",
+      "values": [
+        "yes",
+        "no",
+        "not_needed"
+      ]
+    },
+    "public.tournament_save_status": {
+      "name": "tournament_save_status",
+      "schema": "public",
+      "values": [
+        "saved",
+        "maybe",
+        "going"
       ]
     }
   },

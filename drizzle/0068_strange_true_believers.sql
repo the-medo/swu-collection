@@ -1,2 +1,0 @@
-CREATE TYPE "public"."calendar_privacy" AS ENUM('private', 'unlisted', 'public');--> statement-breakpoint
-ALTER TABLE "user" ADD COLUMN "calendar_privacy" "calendar_privacy" DEFAULT 'unlisted' NOT NULL;

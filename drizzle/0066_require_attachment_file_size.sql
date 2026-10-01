@@ -1,5 +1,0 @@
-ALTER TABLE "user_tournament_attachment" DROP CONSTRAINT "user_tournament_attachment_payload_check";--> statement-breakpoint
-ALTER TABLE "user_tournament_attachment" ADD CONSTRAINT "user_tournament_attachment_payload_check" CHECK ((
-    ("user_tournament_attachment"."kind" = 'file' AND "user_tournament_attachment"."object_key" IS NOT NULL AND "user_tournament_attachment"."file_name" IS NOT NULL AND "user_tournament_attachment"."mime_type" IS NOT NULL AND "user_tournament_attachment"."byte_size" IS NOT NULL AND "user_tournament_attachment"."byte_size" > 0 AND "user_tournament_attachment"."content" IS NULL)
-    OR ("user_tournament_attachment"."kind" IN ('text', 'link') AND "user_tournament_attachment"."content" IS NOT NULL AND "user_tournament_attachment"."object_key" IS NULL AND "user_tournament_attachment"."file_name" IS NULL AND "user_tournament_attachment"."mime_type" IS NULL AND "user_tournament_attachment"."byte_size" IS NULL)
-  ));
