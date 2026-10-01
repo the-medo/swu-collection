@@ -10,7 +10,7 @@ function TournamentDetailsPage() {
   const { tournamentId } = Route.useParams();
 
   return (
-    <TournamentDetail tournamentId={tournamentId} activeTab="details">
+    <TournamentDetail tournamentId={tournamentId} activeTab="details" showDataNotice={false}>
       <DetailAndBracketTab tournamentId={tournamentId} />
     </TournamentDetail>
   );

@@ -14,7 +14,11 @@ export function TournamentTravelLinks({
   const stays = accommodationLinks(tournament);
   if (!googleMapsUrl(tournament)) return null;
   return (
-    <div className="mt-2 space-y-1.5 text-sm" aria-label="Travel and accommodation">
+    <div
+      className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm"
+      role="group"
+      aria-label="Travel and accommodation"
+    >
       <Button
         type="button"
         variant="link"

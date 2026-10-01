@@ -4,10 +4,12 @@ import { TournamentEventInfo } from '../../TournamentEventInfo.tsx';
 
 export function TournamentPinDetails({
   tournaments,
+  showSaveControls = true,
   simpleRemoval = false,
   onRemovalConfirmationChange,
 }: {
   tournaments: MapTournament[];
+  showSaveControls?: boolean;
   simpleRemoval?: boolean;
   onRemovalConfirmationChange?: (open: boolean) => void;
 }) {
@@ -18,7 +20,7 @@ export function TournamentPinDetails({
         <article key={tournament.id} className="border-b pb-2 last:border-0 last:pb-0">
           <TournamentEventInfo
             tournament={tournament}
-            showSaveControls={!!user}
+            showSaveControls={showSaveControls && !!user}
             simpleRemoval={simpleRemoval}
             onRemovalConfirmationChange={onRemovalConfirmationChange}
           />

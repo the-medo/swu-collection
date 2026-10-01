@@ -61,6 +61,8 @@ import { Fragment, useMemo } from 'react';
 import { UserTeam } from '../../../../../../server/routes/teams/get.ts';
 import { Badge } from '@/components/ui/badge.tsx';
 import { CrossfireLogo } from '@/components/app/crossfire/CrossfireLogo.tsx';
+import { SidebarYourTournaments } from './SidebarYourTournaments.tsx';
+import { useSidebarSettings } from '@/api/user/useSidebarSettings.ts';
 
 const getGroups = (
   setOpenMobile: (open: boolean) => void,
@@ -68,6 +70,7 @@ const getGroups = (
   teams: UserTeam[],
 ) => [
   {
+    id: 'analysis-and-decks',
     title: 'Analysis & Decks',
     actionLabel: 'Add Deck',
     action: () => {},
@@ -184,6 +187,7 @@ const getGroups = (
     ],
   },
   {
+    id: 'lists',
     title: 'Lists',
     action: () => {},
     icon: BookOpenCheck,
@@ -254,6 +258,10 @@ const getGroups = (
 
 export function LeftSidebar() {
   const user = useUser();
+  const { data: sidebarSettings, isPending: sidebarSettingsPending } = useSidebarSettings();
+  const showLists =
+    !user ||
+    (!sidebarSettingsPending && (sidebarSettings?.left_sidebar_collections_and_lists ?? true));
   const canCrossfire = useRole()('crossfire');
   const isCrossfire = useLocation({
     select: location => location.pathname.startsWith('/crossfire'),
@@ -272,11 +280,13 @@ export function LeftSidebar() {
 
   const groups = useMemo(
     () =>
-      getGroups(setOpenMobile, state, teams ?? []).map(group => ({
-        ...group,
-        items: group.items.filter(item => item.url !== '/crossfire' || canCrossfire),
-      })),
-    [setOpenMobile, state, teams, canCrossfire],
+      getGroups(setOpenMobile, state, teams ?? [])
+        .filter(group => group.id !== 'lists' || showLists)
+        .map(group => ({
+          ...group,
+          items: group.items.filter(item => item.url !== '/crossfire' || canCrossfire),
+        })),
+    [setOpenMobile, state, teams, canCrossfire, showLists],
   );
 
   const swubaseLogo = theme === 'light' ? LogoLightTheme : LogoDarkTheme;
@@ -382,8 +392,9 @@ export function LeftSidebar() {
             )}
           </SidebarGroupContent>
         </SidebarGroup>
+        {user && <SidebarYourTournaments key={user.id} />}
         {groups.map(g => (
-          <SidebarGroup key={g.title} className="py-0">
+          <SidebarGroup key={g.id} className="py-0">
             <SidebarGroupLabel>{g.title}</SidebarGroupLabel>
             {g.sidebarGroupAction ?? null}
             <SidebarGroupContent>

@@ -1,18 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { SettingsPage } from '@/components/app/pages/settings/SettingsPage.tsx';
 import { z } from 'zod';
+import { settingsPageIds } from '@/components/app/pages/settings/settingsNavigation.ts';
 
-export const settingsPages: [string, ...string[]] = [
-  'collections-and-wantlists',
-  'display-name',
-  'watched-players',
-  'calendar',
-  'development',
-  'home-location',
-] as const;
+// Preserve the existing search type shared with legacy consumers of `page`.
+const settingsPages: string[] = settingsPageIds;
 
 const searchParams = z.object({
-  page: z.enum([...settingsPages]).default('collections-and-wantlists'),
+  page: z.enum(settingsPages).default('collections-and-wantlists'),
 });
 
 export const Route = createFileRoute('/_authenticated/settings/')({

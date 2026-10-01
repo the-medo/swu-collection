@@ -13,11 +13,14 @@ import { Skeleton } from '@/components/ui/skeleton.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import { Helmet } from 'react-helmet-async';
+import { UserCalendarTab } from './UserCalendarTab.tsx';
 
 const routeApi = getRouteApi('/users/$userId/');
 
 const UserDetail: React.FC = () => {
   const { userId } = routeApi.useParams();
+  const { userTab = 'decks' } = routeApi.useSearch();
+  const navigate = routeApi.useNavigate();
   const { data: countryData } = useCountryList();
   const { data: user, isFetching, error } = useGetUser(userId);
 
@@ -48,15 +51,17 @@ const UserDetail: React.FC = () => {
 
   return (
     <>
-      <Helmet title={`${user?.displayName} | SWUBase`} />
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4 w-full">
-          <Avatar className="h-40 w-40 min-h-40 min-w-40 rounded-lg">
+      <Helmet
+        title={`${user?.displayName}${userTab === 'calendar' ? ' · Calendar' : ''} | SWUBase`}
+      />
+      <div className="flex min-w-0 flex-col gap-4">
+        <div className="flex w-full min-w-0 flex-wrap items-center gap-4">
+          <Avatar className="size-20 shrink-0 rounded-lg sm:size-40">
             <AvatarImage src={user?.image ?? undefined} alt={user?.name} />
             <AvatarFallback className="rounded-lg">{user?.name?.[0]}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col gap-2">
-            <h2>{user?.displayName}</h2>
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <h2 className="break-words">{user?.displayName}</h2>
             <div className="flex flex-wrap gap-2 items-center">
               {country && (
                 <>
@@ -69,11 +74,47 @@ const UserDetail: React.FC = () => {
             {createdAt && <span className="text-sm">Member from: {formatDate(createdAt)}</span>}
           </div>
         </div>
-        <Tabs defaultValue="decks" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="decks">Decks</TabsTrigger>
-            <TabsTrigger value="collections">Collections</TabsTrigger>
-            <TabsTrigger value="wantlists">Wantlists</TabsTrigger>
+        <Tabs
+          value={userTab}
+          onValueChange={value => {
+            if (
+              value === 'decks' ||
+              value === 'collections' ||
+              value === 'wantlists' ||
+              value === 'calendar'
+            )
+              void navigate({
+                search: previous => ({ ...previous, userTab: value }),
+                resetScroll: false,
+              });
+          }}
+          className="w-full"
+        >
+          <TabsList className="grid h-auto w-full grid-cols-4 items-stretch">
+            <TabsTrigger
+              value="decks"
+              className="min-w-0 whitespace-normal px-1 text-xs sm:text-sm"
+            >
+              Decks
+            </TabsTrigger>
+            <TabsTrigger
+              value="collections"
+              className="min-w-0 whitespace-normal px-1 text-xs sm:text-sm"
+            >
+              Collections
+            </TabsTrigger>
+            <TabsTrigger
+              value="wantlists"
+              className="min-w-0 whitespace-normal px-1 text-xs sm:text-sm"
+            >
+              Wantlists
+            </TabsTrigger>
+            <TabsTrigger
+              value="calendar"
+              className="min-w-0 whitespace-normal px-1 text-xs sm:text-sm"
+            >
+              Calendar
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="decks">
             <UserDecks userId={userId} />
@@ -83,6 +124,9 @@ const UserDetail: React.FC = () => {
           </TabsContent>
           <TabsContent value="wantlists">
             <UserCollections userId={userId} collectionType={CollectionType.WANTLIST} />
+          </TabsContent>
+          <TabsContent value="calendar">
+            <UserCalendarTab userId={userId} />
           </TabsContent>
         </Tabs>
       </div>

@@ -26,6 +26,7 @@ import { TournamentPinDetails } from '../pages/TournamentsMap/TournamentPinDetai
 import { mapPinColor } from '../pages/TournamentsMap/mapData.ts';
 import { CalendarWeekStart } from './CalendarWeekStart.tsx';
 import { CalendarSubscriptionButton } from './CalendarSubscription.tsx';
+import { CalendarPrivacyControl } from './CalendarPrivacyControl.tsx';
 import { calendarAgendaEvents, calendarEventsByDate } from './calendarData.ts';
 import { TournamentAgenda } from './TournamentAgenda.tsx';
 import type { SavedTournament } from '../../../../../../types/UserTournamentSave.ts';
@@ -79,6 +80,7 @@ export default function TournamentCalendar() {
         <div className="flex flex-wrap items-center gap-3">
           <CalendarSubscriptionButton />
           {view === 'month' && <CalendarWeekStart />}
+          <CalendarPrivacyControl />
         </div>
       </div>
       <div className="mb-3 flex flex-wrap items-center gap-2">

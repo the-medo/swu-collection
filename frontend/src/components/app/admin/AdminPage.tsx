@@ -37,7 +37,7 @@ export function AdminPage() {
       <Helmet title="Admin dashboard | SWUBase" />
       <div className="flex w-full min-w-0 flex-col gap-4">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-1">
-          <h1 className="text-xl font-semibold">Administration</h1>
+          <h3>Administration</h3>
           <span className="text-sm text-muted-foreground">
             {section.title} / {current.label}
           </span>

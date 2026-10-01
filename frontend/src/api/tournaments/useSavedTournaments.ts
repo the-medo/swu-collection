@@ -14,6 +14,7 @@ import type {
   TournamentSaveStatus,
 } from '../../../../types/UserTournamentSave.ts';
 import { patchSavedTournaments, savedTournamentKeys } from './savedTournamentCache.ts';
+import { calendarSharingKeys } from './calendarSharingKeys.ts';
 
 export function useSavedTournaments() {
   const userId = useUser()?.id;
@@ -87,6 +88,8 @@ export function useSaveTournament(tournamentId: string) {
       client.setQueryData<SavedTournament[]>(key, current =>
         current ? patchSavedTournaments(current, tournamentId, saved) : undefined,
       );
+      // Team/share projections must re-evaluate current membership and privacy on the server.
+      await client.invalidateQueries({ queryKey: calendarSharingKeys.all });
     },
   });
   return { ...mutation, isPending: pending || mutation.isPending };

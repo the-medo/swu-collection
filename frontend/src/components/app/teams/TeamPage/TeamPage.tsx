@@ -61,9 +61,9 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
   return (
     <>
       <Helmet title={`${team.name} | SWUBase`} />
-      <div className="flex flex-col gap-4 p-4">
+      <div className="flex min-w-0 flex-col gap-4 p-4">
         {isMember && (
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             {team.logoUrl && (
               <img
                 src={team.logoUrl}
@@ -71,20 +71,21 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
                 className="w-16 h-16 rounded-lg object-cover"
               />
             )}
-            <div className="flex flex-1 flex-col gap-2">
+            <div className="flex min-w-0 flex-1 basis-64 flex-col gap-2">
               <div className="flex items-center justify-between gap-2">
                 <LoadingTitle mainTitle={team.name} />
               </div>
               <div className="flex items-center gap-2">
-                <span>Invite link: </span>
-                <div>
-                  <Input readOnly value={teamLink} className="h-8 w-[200px] text-[10px]" />
+                <span className="shrink-0">Invite link: </span>
+                <div className="min-w-0 max-w-[200px] flex-1">
+                  <Input readOnly value={teamLink} className="h-8 w-full text-[10px]" />
                 </div>
                 <Button
                   variant="outline"
                   size="iconMedium"
                   onClick={handleCopy}
                   title="Copy Team ID"
+                  className="shrink-0"
                 >
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>

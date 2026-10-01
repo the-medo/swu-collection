@@ -52,6 +52,7 @@ interface TournamentDetailProps {
   activeTab?: string;
   mode?: TournamentTabsProps['mode'];
   displayHeader?: boolean;
+  showDataNotice?: boolean;
 }
 
 type AdminDialog =
@@ -69,6 +70,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   activeTab,
   mode = 'tournament-page',
   displayHeader = true,
+  showDataNotice = true,
 }) => {
   const { data, isFetching, error } = useGetTournament(tournamentId);
   const hasPermission = usePermissions();
@@ -423,7 +425,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
         <TournamentDataLoader tournamentId={tournamentId} />
         <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} mode={mode} />
         {activeTab === 'details' || tournament?.imported ? children : null}
-        <NoTournamentData tournamentId={tournamentId} />
+        {showDataNotice && <NoTournamentData tournamentId={tournamentId} />}
       </div>
     </>
   );

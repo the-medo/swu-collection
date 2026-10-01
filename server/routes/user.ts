@@ -9,7 +9,7 @@ import type { Deck } from '../../types/Deck.ts';
 import type { AuthExtension } from '../auth/auth.ts';
 import { entityPrice, type EntityPrice } from '../db/schema/entity_price.ts';
 
-const { email, emailVerified, ...selectUser } = getTableColumns(user);
+const { email, emailVerified, calendarPrivacy, ...selectUser } = getTableColumns(user);
 export { selectUser };
 
 export type UserCollectionsResponse = {

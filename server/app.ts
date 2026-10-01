@@ -12,6 +12,7 @@ import { worldRoute } from './routes/world.ts';
 import { userRoute } from './routes/user.ts';
 import { userSettingsRoute } from './routes/user-settings.ts';
 import { userTournamentSavesRoute } from './routes/user-tournament-saves.ts';
+import { userCalendarRoute } from './routes/user-calendar.ts';
 import { userTournamentAttachmentsRoute } from './routes/user-tournament-attachments.ts';
 import { userCalendarSubscriptionRoute } from './routes/user-calendar-subscription.ts';
 import { calendarFeedRoute } from './routes/calendar-feed.ts';
@@ -150,6 +151,7 @@ const apiRoutes = app
   .route('/user', userRoute)
   .route('/user-settings', userSettingsRoute)
   .route('/user-tournament-saves', userTournamentSavesRoute)
+  .route('/user-calendar', userCalendarRoute)
   .route('/user-tournament-attachments', userTournamentAttachmentsRoute)
   .route('/user-calendar-subscription', userCalendarSubscriptionRoute)
   .route('/tournament', tournamentRoute)

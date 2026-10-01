@@ -15,11 +15,13 @@ import SignInWrapper from '@/components/app/auth/SignInWrapper.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import { useSavedTournaments, useSaveTournament } from '@/api/tournaments/useSavedTournaments.ts';
 import { tournamentSaveStatuses } from '../../../../../types/UserTournamentSave.ts';
+import { cn } from '@/lib/utils.ts';
 
 interface TournamentSaveControlsProps {
   tournamentId: string;
   simpleRemoval?: boolean;
   onRemovalConfirmationChange?: (open: boolean) => void;
+  className?: string;
 }
 
 export function TournamentSaveControls(props: TournamentSaveControlsProps) {
@@ -36,6 +38,7 @@ function SignedInSaveControls({
   tournamentId,
   simpleRemoval = false,
   onRemovalConfirmationChange,
+  className,
 }: TournamentSaveControlsProps & { userId: string }) {
   const query = useSavedTournaments();
   const mutation = useSaveTournament(tournamentId);
@@ -63,7 +66,7 @@ function SignedInSaveControls({
       </div>
     );
   return (
-    <div className="mt-2 space-y-1">
+    <div className={cn('mt-2 space-y-1', className)}>
       <ButtonGroup aria-label="Tournament save status">
         {tournamentSaveStatuses.map(status => (
           <Button

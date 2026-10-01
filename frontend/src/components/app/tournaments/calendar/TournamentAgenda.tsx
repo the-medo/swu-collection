@@ -4,7 +4,7 @@ import { Check, CircleHelp, MapPin, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
-import type { SavedTournament } from '../../../../../../types/UserTournamentSave.ts';
+import type { SharedCalendarEvent } from '../../../../../../types/TournamentCalendar.ts';
 import { formatDataById } from '../../../../../../types/Format.ts';
 import { locationText } from '../pages/TournamentsMap/mapData.ts';
 import { savedTournamentMarkers } from '../pages/TournamentsMap/savedTournamentMarkers.ts';
@@ -13,7 +13,13 @@ import { calendarEventEnd } from './calendarData.ts';
 
 const statusIcons = { going: Check, maybe: CircleHelp, saved: Star };
 
-export function TournamentAgenda({ events }: { events: SavedTournament[] }) {
+export function TournamentAgenda({
+  events,
+  showSaveControls = true,
+}: {
+  events: SharedCalendarEvent[];
+  showSaveControls?: boolean;
+}) {
   if (!events.length) return null;
   return (
     <ul aria-label="Tournament agenda" className="divide-y rounded-lg border bg-card">
@@ -75,7 +81,10 @@ export function TournamentAgenda({ events }: { events: SavedTournament[] }) {
                 className="w-80 max-w-[calc(100vw-2rem)] p-3"
                 aria-label={tournament.name}
               >
-                <TournamentPinDetails tournaments={[tournament]} />
+                <TournamentPinDetails
+                  tournaments={[tournament]}
+                  showSaveControls={showSaveControls}
+                />
               </PopoverContent>
             </Popover>
           </li>

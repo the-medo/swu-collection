@@ -44,6 +44,13 @@ export const auth = betterAuth({
   },
   user: {
     additionalFields: {
+      calendarPrivacy: {
+        type: 'string',
+        required: false,
+        input: false,
+        returned: false,
+        defaultValue: 'unlisted',
+      },
       displayName: {
         type: 'string',
         required: true,

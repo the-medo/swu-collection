@@ -1,7 +1,7 @@
 import { addDays, format, parseISO } from 'date-fns';
 import type { SavedTournament } from '../../../../../../types/UserTournamentSave.ts';
 
-export function calendarEventEnd(event: SavedTournament) {
+export function calendarEventEnd(event: Pick<SavedTournament, 'tournament'>) {
   return format(
     addDays(parseISO(event.tournament.date), Math.max(1, event.tournament.days) - 1),
     'yyyy-MM-dd',
