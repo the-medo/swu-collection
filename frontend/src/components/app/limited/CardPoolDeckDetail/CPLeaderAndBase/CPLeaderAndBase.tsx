@@ -16,6 +16,7 @@ import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/De
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
+import CPHomeworldBaseTable from './CPHomeworldBaseTable.tsx';
 
 export interface CPLeaderAndBaseProps {
   deckId?: string; // reserved for future use
@@ -47,19 +48,19 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
       .filter(c => c.card);
   }, [poolData?.data?.leaders, cardListData?.cards]);
 
+  const cards = cardListData?.cards;
   const baseCards = useMemo(() => {
     const set = poolData?.data?.set as SwuSet | undefined;
-    if (!set || !cardListData?.cards)
-      return [] as { key: number; cardId: string; card: any; cardVariantId?: string }[];
-    const ids = getBasicBaseIdsForSet(set, cardListData.cards, true);
+    if (!set || set === SwuSet.HMW || !cards) return [];
+    const ids = getBasicBaseIdsForSet(set, cards, true);
     return ids
       .map((cardId, i) => {
-        const card = cardListData.cards[cardId];
+        const card = cards[cardId];
         const cardVariantId = card ? selectDefaultVariant(card) : undefined;
         return { key: i, cardId, card, cardVariantId };
       })
       .filter(c => c.card);
-  }, [poolData?.data?.set, cardListData?.cards]);
+  }, [poolData?.data?.set, cards]);
 
   const loading = isPoolFetching || isCardListFetching;
 
@@ -91,19 +92,19 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
 
   return (
     <div className={`rounded-lg border border-border bg-card p-2 ${className ?? ''}`}>
-      {loading && <div className="text-xs opacity-60">Loading leaders...</div>}
+      {loading && <div className="text-xs opacity-60">Loading leaders and bases...</div>}
       {!loading && leaderCards.length === 0 && (
         <div className="text-xs opacity-60">No leaders selected for this pool.</div>
       )}
 
-      <div className="flex flex-row flex-wrap items-center gap-2">
+      <div className="flex min-w-0 flex-row flex-wrap items-center gap-2">
         <div className="flex items-center justify-end">
           <Button size="sm" variant="ghost" onClick={() => setLeadersAndBasesExpanded(false)}>
             Collapse
           </Button>
         </div>
-        <div className="flex flex-row flex-wrap items-center gap-8">
-          <div className="flex flex-row gap-2 items-start">
+        <div className="flex min-w-0 w-full flex-row flex-wrap items-start gap-8">
+          <div className="flex flex-row flex-wrap gap-2 items-start">
             {leaderCards.map(lc => (
               <DeckCardHoverImage
                 key={`${lc.cardId}-${lc.key}`}
@@ -128,30 +129,43 @@ const CPLeaderAndBase: React.FC<CPLeaderAndBaseProps> = ({ deckId, poolId, class
               </DeckCardHoverImage>
             ))}
           </div>
-          <div className="flex flex-row gap-2 items-start">
-            {baseCards.map(bc => (
-              <DeckCardHoverImage
-                key={`${bc.cardId}-${bc.key}`}
-                card={bc.card}
-                size="w300"
-                active={cardPreview === 'hover'}
-              >
-                <div
-                  onMouseEnter={() => setHoveredCardId(bc.cardId)}
-                  onClick={() => setSelectedBaseId(bc.cardId)}
-                  className={`rounded-md ${bc.cardId === deckBaseId ? 'ring-4 ring-black dark:ring-white' : selectedBaseId === bc.cardId ? 'ring-8 ring-primary' : ''}`}
+          {poolData?.data?.set === SwuSet.HMW ? (
+            cards ? (
+              <CPHomeworldBaseTable
+                cards={cards}
+                savedBaseId={deckBaseId}
+                selectedBaseId={selectedBaseId || deckBaseId || ''}
+                onSelect={setSelectedBaseId}
+                onHover={setHoveredCardId}
+                showPreview={cardPreview === 'hover'}
+              />
+            ) : null
+          ) : (
+            <div className="flex flex-row flex-wrap gap-2 items-start">
+              {baseCards.map(bc => (
+                <DeckCardHoverImage
+                  key={`${bc.cardId}-${bc.key}`}
+                  card={bc.card}
+                  size="w300"
+                  active={cardPreview === 'hover'}
                 >
-                  <CardImage
-                    card={bc.card}
-                    cardVariantId={bc.cardVariantId}
-                    forceHorizontal={true}
-                    size="w100"
-                    backSideButton="mid"
-                  />
-                </div>
-              </DeckCardHoverImage>
-            ))}
-          </div>
+                  <div
+                    onMouseEnter={() => setHoveredCardId(bc.cardId)}
+                    onClick={() => setSelectedBaseId(bc.cardId)}
+                    className={`rounded-md ${bc.cardId === deckBaseId ? 'ring-4 ring-black dark:ring-white' : selectedBaseId === bc.cardId ? 'ring-8 ring-primary' : ''}`}
+                  >
+                    <CardImage
+                      card={bc.card}
+                      cardVariantId={bc.cardVariantId}
+                      forceHorizontal={true}
+                      size="w100"
+                      backSideButton="mid"
+                    />
+                  </div>
+                </DeckCardHoverImage>
+              ))}
+            </div>
+          )}
         </div>
 
         {owned && (

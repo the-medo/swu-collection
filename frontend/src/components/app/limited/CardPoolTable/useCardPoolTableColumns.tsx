@@ -62,8 +62,8 @@ export const useCardPoolTableColumns = ({
             <div className="flex flex-row flex-wrap items-center gap-2">
               {row.original.type ? cardPoolTypeRenderer(row.original.type) : null}
               {typeof pool.custom === 'boolean' ? cardPoolCustomRenderer(pool.custom) : null}
-              {pool.visibility ? cardPoolVisibilityRenderer(pool.visibility as any) : null}
-              {pool.status ? cardPoolStatusRenderer(pool.status as any) : null}
+              {pool.visibility ? cardPoolVisibilityRenderer(pool.visibility) : null}
+              {pool.status ? cardPoolStatusRenderer(pool.status) : null}
             </div>
           </Link>
         );
@@ -103,7 +103,7 @@ export const useCardPoolTableColumns = ({
     // UpdatedAt column
     defs.push({
       id: 'updatedAt',
-      accessorKey: 'updated_at',
+      accessorKey: 'updatedAt',
       size: 24,
       displayInBoxView: !isCompactBoxView,
       header: view === 'box' ? 'Updated' : () => <div className="text-right">Updated</div>,

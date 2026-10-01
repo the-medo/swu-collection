@@ -17,11 +17,28 @@ scripts/worktree-dev/bootstrap-worktree.sh
 ```
 
 It installs root/frontend dependencies and provisions this worktree's database,
-but deliberately does not copy `.env` or start the app. Provide a reviewed,
-development-only `.env` through the calling tool's explicit configuration
-mechanism before starting application services. Codex Desktop can use
-`.worktreeinclude` for that input in its managed worktrees; that is a Codex
-adapter, not the shared workflow.
+but deliberately does not copy `.env` or start the app. Supplying working local
+authentication is part of setting up a usable development worktree.
+
+Before starting the app, inspect the source checkout's existing development
+configuration. Reuse its reviewed development `.env` or merge the needed values
+into the new worktree's `.env`, preserving existing worktree configuration.
+Codex Desktop's `.worktreeinclude` can supply this file, but verify that the file
+and its required values actually arrived; do not assume worktree creation copied
+it. Do not substitute a minimal `.env` without OAuth credentials when working
+development credentials are already available in the source checkout. Reusing
+that local development configuration is part of an authorized worktree setup;
+it does not require asking the user to re-enter available credentials.
+
+Check that `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are nonempty and not
+placeholders; carry over configured GitHub provider credentials too. Inspect
+only presence/validity in tool output, never print credentials. If the target
+already has a `.env`, merge the missing provider settings rather than replacing
+unrelated settings. Do not copy production/server-only credentials or another
+worktree's generated `.env.worktree` / `frontend/.env.worktree`. The launcher
+owns this worktree's database URL, auth origin, secret, and cookie prefix. If no
+working development provider configuration is available, report the specific
+missing settings instead of claiming login is ready.
 
 Run the lifecycle command from the worktree root:
 
@@ -56,6 +73,19 @@ it matches that worktree's exact loopback frontend. Do not use Funnel. Google
 callback URIs are exact rather than wildcard; `configure-access --show` prints
 the eight possible values. Existing running worktrees need `down` then `up` to
 adopt a changed profile.
+
+After adding/changing OAuth credentials in a running worktree, use `down` then
+`up` so the backend reloads them. Before handing off a running app, verify the
+real Google sign-in initiation through `/api/auth/sign-in/social` with
+`provider: "google"`, the public origin from `status`, and a callback URL under
+that origin. Expect a successful authorization URL on Google's accounts host,
+a nonempty client ID matching the development configuration, and exactly
+`{public_origin}/api/auth/callback/google` as its `redirect_uri`. Do not print
+the full authorization URL, state, cookies, or provider secrets. Where browser
+access is available, follow the redirect far enough to detect `invalid_client`
+or `redirect_uri_mismatch`, without entering the user's credentials. Mocked
+sessions, a healthy `/api`, and a successful frontend build do not verify OAuth.
+Distinguish a verified initiation/provider page from a completed user login.
 
 `up` requires Node as well as Bun: Vite is launched with Node so same-origin
 WebSocket proxying works reliably. Do not replace that worktree launcher with
