@@ -85,7 +85,9 @@ export function tournamentCalendar(events: CalendarEvent[], origin: string) {
       `URL:${url}`,
       `CATEGORIES:${statuses[event.status]}`,
       `STATUS:${event.status === 'going' ? 'CONFIRMED' : 'TENTATIVE'}`,
-      'CLASS:PRIVATE',
+      // The secret URL authorizes feed readers. PRIVATE hides details from read-only
+      // subscribers; combined with TRANSPARENT, events can disappear entirely.
+      'CLASS:PUBLIC',
       'TRANSP:TRANSPARENT',
       'END:VEVENT',
     );

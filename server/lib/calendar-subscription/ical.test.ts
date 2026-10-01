@@ -16,6 +16,16 @@ const event: CalendarEvent = {
 };
 const unfold = (value: string) => value.replace(/\r\n /g, '');
 
+test.each(['saved', 'maybe', 'going'] as const)(
+  '%s events allow subscription readers to see details without blocking their availability',
+  status => {
+    const body = unfold(tournamentCalendar([{ ...event, status }], 'https://example.com'));
+    // Google subscription readers cannot see private details; private + free can disappear.
+    expect(body).toContain('\r\nCLASS:PUBLIC\r\n');
+    expect(body).toContain('\r\nTRANSP:TRANSPARENT\r\n');
+  },
+);
+
 test('calendar uses stable IDs, all-day dates and exclusive ends across months, DST and leap days', () => {
   const body = unfold(tournamentCalendar([event], 'https://example.com'));
   expect(body).toContain('DTSTART;VALUE=DATE:20261031\r\nDTEND;VALUE=DATE:20261103');
