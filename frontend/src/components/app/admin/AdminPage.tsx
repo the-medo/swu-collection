@@ -19,6 +19,7 @@ import { Helmet } from 'react-helmet-async';
 import { AdminNavigation } from './AdminNavigation';
 import { adminSections } from './adminNavigation';
 import { EventHighlightsPage } from './EventHighlightsPage';
+import { ResourceSubmissionsPage } from './ResourceSubmissionsPage';
 
 export function AdminPage() {
   const hasRole = useRole();
@@ -53,6 +54,7 @@ export function AdminPage() {
               {page === 'sets' && <SetsPage />}
               {page === 'tournament-groups' && <TournamentGroupsPage />}
               {page === 'tournament-weekends' && <TournamentWeekendsPage />}
+              {page === 'resource-submissions' && <ResourceSubmissionsPage />}
               {page === 'deck-thumbnails' && <ThumbnailsPage />}
               {page === 'pq-tools' && <PQToolsPage />}
               {page === 'event-highlights' && <EventHighlightsPage />}

@@ -15,3 +15,5 @@ export * from './useRefreshTournamentWeekendTournaments';
 export * from './useUpdateTournamentWeekend';
 export * from './useUpdateTournamentWeekendResource';
 export * from './useUpdateTournamentWeekendTournament';
+
+export { useGetResourceSubmissions } from './useGetResourceSubmissions.ts';

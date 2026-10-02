@@ -13,7 +13,7 @@ export type UpdateTournamentWeekendResourceVariables = {
   data: TournamentWeekendResourceUpdateRequest;
 };
 
-export const useUpdateTournamentWeekendResource = (weekendId: string) => {
+export const useUpdateTournamentWeekendResource = (weekendId?: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -22,10 +22,15 @@ export const useUpdateTournamentWeekendResource = (weekendId: string) => {
     UpdateTournamentWeekendResourceVariables
   >({
     mutationFn: async ({ resourceId, data }) => {
-      const response = await api['tournament-weekends'][':id'].resources[':resourceId'].$patch({
-        param: { id: weekendId, resourceId },
-        json: data,
-      });
+      const response = weekendId
+        ? await api['tournament-weekends'][':id'].resources[':resourceId'].$patch({
+            param: { id: weekendId, resourceId },
+            json: data,
+          })
+        : await api.admin['resource-submissions'][':resourceId'].$patch({
+            param: { resourceId },
+            json: data,
+          });
 
       if (!response.ok) {
         throw await createApiError(response, 'Failed to update tournament weekend resource');
@@ -34,11 +39,8 @@ export const useUpdateTournamentWeekendResource = (weekendId: string) => {
       return response.json() as Promise<TournamentWeekendResourceMutationResponse>;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.detail(weekendId) });
-      queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.live() });
-      queryClient.invalidateQueries({
-        queryKey: tournamentWeekendQueryKeys.resourceList(weekendId),
-      });
+      // Resources belong to tournaments, which can appear in several weekends.
+      queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.all });
     },
   });
 };

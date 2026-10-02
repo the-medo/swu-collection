@@ -4,14 +4,16 @@ import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
 import { tournamentWeekendQueryKeys } from './queryKeys';
 
-export const useDeleteTournamentWeekendResource = (weekendId: string) => {
+export const useDeleteTournamentWeekendResource = (weekendId?: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<boolean, ErrorWithStatus, string>({
     mutationFn: async resourceId => {
-      const response = await api['tournament-weekends'][':id'].resources[':resourceId'].$delete({
-        param: { id: weekendId, resourceId },
-      });
+      const response = weekendId
+        ? await api['tournament-weekends'][':id'].resources[':resourceId'].$delete({
+            param: { id: weekendId, resourceId },
+          })
+        : await api.admin['resource-submissions'][':resourceId'].$delete({ param: { resourceId } });
 
       if (!response.ok) {
         throw await createApiError(response, 'Failed to delete tournament weekend resource');
@@ -20,11 +22,8 @@ export const useDeleteTournamentWeekendResource = (weekendId: string) => {
       return true;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.detail(weekendId) });
-      queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.live() });
-      queryClient.invalidateQueries({
-        queryKey: tournamentWeekendQueryKeys.resourceList(weekendId),
-      });
+      // Resources belong to tournaments, which can appear in several weekends.
+      queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.all });
     },
   });
 };

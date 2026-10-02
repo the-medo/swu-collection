@@ -5,6 +5,7 @@ import type { TournamentWeekendResource } from '../../db/schema/tournament_weeke
 export const discordNotificationTypes = {
   tournamentResults: 'tournament-results',
   tournamentStream: 'tournament-stream',
+  resourceSubmission: 'resource-submission',
 } as const;
 
 export type DiscordNotificationType =
@@ -44,6 +45,7 @@ export type DiscordEmbed = {
   description?: string;
   url?: string;
   color?: number;
+  fields?: Array<{ name: string; value: string; inline?: boolean }>;
   footer?: {
     text: string;
     icon_url?: string;

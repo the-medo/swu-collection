@@ -29,11 +29,8 @@ export const useCreateTournamentWeekendResource = (weekendId: string) => {
       return response.json() as Promise<TournamentWeekendResourceMutationResponse>;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.detail(weekendId) });
-      queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.live() });
-      queryClient.invalidateQueries({
-        queryKey: tournamentWeekendQueryKeys.resourceList(weekendId),
-      });
+      // Resources belong to tournaments, which can appear in several weekends.
+      queryClient.invalidateQueries({ queryKey: tournamentWeekendQueryKeys.all });
     },
   });
 };
