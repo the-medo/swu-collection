@@ -6,6 +6,7 @@ import DevelopmentSettings from './DevelopmentSettings.tsx';
 import HomeLocationSettings from './HomeLocationSettings.tsx';
 import SidebarSettings from './SidebarSettings.tsx';
 import FeaturesSettings from './FeaturesSettings.tsx';
+import IntegrationsSettings from './IntegrationsSettings.tsx';
 import { SettingsNavigation } from './SettingsNavigation.tsx';
 import { settingsItems } from './settingsNavigation.ts';
 import { CalendarWeekStart } from '@/components/app/tournaments/calendar/CalendarWeekStart.tsx';
@@ -29,6 +30,7 @@ export function SettingsPage() {
             <CardContent className="p-4">
               {page === 'collections-and-wantlists' && <CollectionAndWantlistSettings />}
               {page === 'display-name' && <UserSettings />}
+              {page === 'integrations' && <IntegrationsSettings />}
               {page === 'watched-players' && <WatchedPlayersSettings />}
               {page === 'calendar' && (
                 <div className="space-y-4">

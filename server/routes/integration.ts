@@ -7,8 +7,11 @@ import { unlinkPostRoute } from './integration/unlink/post.ts';
 import { karabastGameResultPostRoute } from './integration/karabast/game-result/post.ts';
 import { karabastGameResultGetRoute } from './integration/karabast/game-result/get.ts';
 import { karabastMockGameResultPostRoute } from './integration/karabast/mock/post.ts';
+import { createMeleeConnectionRouter } from './integration/melee/router.ts';
+import { meleeConnectionService } from '../lib/melee/connection.ts';
 
 export const integrationRoute = new Hono<AuthExtension>()
+  .route('/melee', createMeleeConnectionRouter(meleeConnectionService))
   .route('/link-create', linkCreatePostRoute)
   .route('/link-confirm', linkConfirmPostRoute)
   .route('/refresh-token', refreshTokenPostRoute)
