@@ -1,8 +1,7 @@
-import { ExternalLink, Loader2, Trash2 } from 'lucide-react';
-import { useDeleteTournamentWeekendResource, useUpdateTournamentWeekendResource } from '@/api/tournament-weekends';
+import { ExternalLink, Loader2 } from 'lucide-react';
+import { TournamentWeekendResourceActions } from './TournamentWeekendResourceActions.tsx';
 import Flag from '@/components/app/global/Flag.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
-import { Button } from '@/components/ui/button.tsx';
 import {
   Table,
   TableBody,
@@ -11,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table.tsx';
-import { toast } from '@/hooks/use-toast.ts';
 import type { CountryCode } from '../../../../../../../server/db/lists.ts';
 import type { TournamentWeekendResourceListItem } from '../liveTournamentTypes.ts';
 import { getHostName, getYoutubeEmbedUrl } from '../liveTournamentUtils.ts';
@@ -68,46 +66,6 @@ export function TournamentWeekendResourceTable({
   isAdmin?: boolean;
   emptyMessage?: string;
 }) {
-  const updateResource = useUpdateTournamentWeekendResource(weekendId);
-  const deleteResource = useDeleteTournamentWeekendResource(weekendId);
-
-  const handleApprove = async (resourceId: string) => {
-    try {
-      await updateResource.mutateAsync({
-        resourceId,
-        data: { approved: true },
-      });
-      toast({
-        title: 'Resource approved',
-        description: 'The resource is now available in the live tournament views.',
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to approve resource',
-        description: error instanceof Error ? error.message : 'Please try again.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleDelete = async (resourceId: string) => {
-    try {
-      await deleteResource.mutateAsync(resourceId);
-      toast({
-        title: 'Resource deleted',
-        description: 'The resource submission was removed.',
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to delete resource',
-        description: error instanceof Error ? error.message : 'Please try again.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const isMutating = updateResource.isPending || deleteResource.isPending;
-
   return (
     <Table>
       <TableHeader>
@@ -123,10 +81,7 @@ export function TournamentWeekendResourceTable({
       <TableBody>
         {isLoading ? (
           <TableRow>
-            <TableCell
-              colSpan={isAdmin ? 6 : 5}
-              className="h-20 text-center text-muted-foreground"
-            >
+            <TableCell colSpan={isAdmin ? 6 : 5} className="h-20 text-center text-muted-foreground">
               <span className="inline-flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Loading resources...
@@ -135,10 +90,7 @@ export function TournamentWeekendResourceTable({
           </TableRow>
         ) : resources.length === 0 ? (
           <TableRow>
-            <TableCell
-              colSpan={isAdmin ? 6 : 5}
-              className="h-20 text-center text-muted-foreground"
-            >
+            <TableCell colSpan={isAdmin ? 6 : 5} className="h-20 text-center text-muted-foreground">
               {emptyMessage}
             </TableCell>
           </TableRow>
@@ -175,26 +127,11 @@ export function TournamentWeekendResourceTable({
                 </TableCell>
                 {isAdmin ? (
                   <TableCell>
-                    <div className="flex justify-end gap-2">
-                      {!item.resource.approved ? (
-                        <Button
-                          size="sm"
-                          disabled={isMutating}
-                          onClick={() => handleApprove(item.resource.id)}
-                        >
-                          Approve
-                        </Button>
-                      ) : null}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={isMutating}
-                        onClick={() => handleDelete(item.resource.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Delete
-                      </Button>
-                    </div>
+                    <TournamentWeekendResourceActions
+                      weekendId={weekendId}
+                      resourceId={item.resource.id}
+                      approved={item.resource.approved}
+                    />
                   </TableCell>
                 ) : null}
               </TableRow>

@@ -5,6 +5,7 @@ import { z } from 'zod';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { db } from '../../../../db';
 import {
+  tournamentWeekend,
   tournamentWeekendResource,
   tournamentWeekendTournament,
 } from '../../../../db/schema/tournament_weekend.ts';
@@ -14,6 +15,11 @@ import {
   normalizeTournamentWeekendResourceUrl,
 } from '../../../../lib/live-tournaments/resourceUrls.ts';
 import { createLiveResourcesPatchEvent } from '../../../../lib/live-tournaments/liveTournamentHomeCache.ts';
+import { tournament } from '../../../../db/schema/tournament.ts';
+import { runResourceSubmissionDiscordAfterSave } from '../../../../lib/discord/resourceSubmissions.ts';
+import { createResourceSubmissionRateLimiter } from '../../../../lib/live-tournaments/resourceSubmissionRateLimit.ts';
+
+const checkSubmissionRate = createResourceSubmissionRateLimiter();
 
 const zTournamentWeekendResourceCreateRequest = z
   .object({
@@ -59,6 +65,12 @@ export const tournamentWeekendIdResourcesPostRoute = new Hono<AuthExtension>().p
       return c.json({ message: 'Unauthorized' }, 401);
     }
 
+    const retryAfter = checkSubmissionRate(user.id);
+    if (retryAfter) {
+      c.header('Retry-After', String(retryAfter));
+      return c.json({ message: 'Too many resource submissions. Please try again later.' }, 429);
+    }
+
     const data = c.req.valid('json');
     const normalizedResourceUrl = normalizeTournamentWeekendResourceUrl(
       data.resourceType,
@@ -71,8 +83,25 @@ export const tournamentWeekendIdResourcesPostRoute = new Hono<AuthExtension>().p
 
     const weekendTournament = (
       await db
-        .select({ tournamentId: tournamentWeekendTournament.tournamentId })
+        .select({
+          tournament: {
+            id: tournament.id,
+            name: tournament.name,
+            location: tournament.location,
+            date: tournament.date,
+          },
+          weekend: {
+            id: tournamentWeekend.id,
+            name: tournamentWeekend.name,
+            date: tournamentWeekend.date,
+          },
+        })
         .from(tournamentWeekendTournament)
+        .innerJoin(tournament, eq(tournament.id, tournamentWeekendTournament.tournamentId))
+        .innerJoin(
+          tournamentWeekend,
+          eq(tournamentWeekend.id, tournamentWeekendTournament.tournamentWeekendId),
+        )
         .where(
           and(
             eq(tournamentWeekendTournament.tournamentWeekendId, weekendId),
@@ -119,6 +148,13 @@ export const tournamentWeekendIdResourcesPostRoute = new Hono<AuthExtension>().p
     if (resource.approved) {
       await createLiveResourcesPatchEvent('live_resource.upserted', weekendId);
     }
+
+    // This helper catches delivery errors; Discord latency must not delay the 201.
+    void runResourceSubmissionDiscordAfterSave({
+      resource,
+      ...weekendTournament,
+      submitter: { id: user.id, displayName: user.displayName },
+    });
 
     return c.json({ data: resource }, 201);
   },

@@ -112,6 +112,14 @@ export type TournamentWeekendResourceListResponse = {
   data: TournamentWeekendResourceListItem[];
 };
 
+export type AdminResourceSubmissionListItem = TournamentWeekendResourceListItem & {
+  weekends: Pick<TournamentWeekend, 'id' | 'name' | 'date'>[];
+};
+
+export type AdminResourceSubmissionListResponse = {
+  data: AdminResourceSubmissionListItem[];
+};
+
 export type PlayerWatchEntry = {
   watch: PlayerWatch;
   player: Player;

@@ -6,6 +6,8 @@ import { adminPageIds } from '@/components/app/admin/adminNavigation';
 
 const searchParams = z.object({
   page: z.enum(adminPageIds).default('metas'),
+  resourceStatus: z.enum(['all', 'pending', 'approved']).default('all').catch('all'),
+  resourceSearch: z.string().max(200).optional().catch(undefined),
   tournamentId: z.uuid().optional(),
   view: z.enum(['standings', 'rounds']).default('standings'),
   round: z.coerce.number().int().nonnegative().optional(),
