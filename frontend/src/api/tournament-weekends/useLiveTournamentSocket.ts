@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from '@/lib/auth-client.ts';
-import { getLiveTournamentWsUrl } from '@/lib/liveTournamentWsUrl.ts';
+import { useAppRealtime } from '@/components/app/realtime/context.ts';
 import type {
   LiveTournamentHomePatchEvent,
   LiveTournamentHomeResponse,
@@ -9,8 +9,6 @@ import type {
 } from '../../../../types/TournamentWeekend.ts';
 import { applyLiveTournamentHomePatch } from './liveTournamentPatch.ts';
 import { tournamentWeekendQueryKeys } from './queryKeys';
-
-const maxReconnectDelayMs = 10_000;
 
 function isPatchEvent(
   payload: LiveTournamentHomeSocketEvent,
@@ -22,27 +20,16 @@ function isPatchEvent(
 export const useLiveTournamentSocket = (weekendId: string | undefined) => {
   const session = useSession();
   const queryClient = useQueryClient();
-  const reconnectTimerRef = useRef<number | null>(null);
+  const realtime = useAppRealtime();
   const refetchTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const currentUserId = session.data?.user.id;
-    if (!weekendId || !currentUserId) {
+    if (!weekendId || !currentUserId || !realtime) {
       return;
     }
 
-    let ws: WebSocket | null = null;
-    let shouldReconnect = true;
-    let reconnectAttempt = 0;
-
     const liveQueryKey = tournamentWeekendQueryKeys.live();
-
-    const clearReconnectTimer = () => {
-      if (reconnectTimerRef.current !== null) {
-        window.clearTimeout(reconnectTimerRef.current);
-        reconnectTimerRef.current = null;
-      }
-    };
 
     const clearRefetchTimer = () => {
       if (refetchTimerRef.current !== null) {
@@ -56,29 +43,6 @@ export const useLiveTournamentSocket = (weekendId: string | undefined) => {
       refetchTimerRef.current = window.setTimeout(() => {
         queryClient.refetchQueries({ queryKey: liveQueryKey });
       }, 250);
-    };
-
-    const scheduleReconnect = () => {
-      if (!shouldReconnect) return;
-
-      reconnectAttempt += 1;
-      const delay = Math.min(1000 * 2 ** Math.min(reconnectAttempt, 4), maxReconnectDelayMs);
-
-      clearReconnectTimer();
-      reconnectTimerRef.current = window.setTimeout(() => {
-        connect();
-      }, delay);
-    };
-
-    const handleConnected = (payload: LiveTournamentHomeSocketEvent) => {
-      if (payload.type !== 'live_weekend.connected') return;
-
-      const current = queryClient.getQueryData<LiveTournamentHomeResponse>(liveQueryKey);
-      const currentVersion = current?.meta.version ?? 0;
-
-      if (payload.data.version > currentVersion) {
-        scheduleRefetch();
-      }
     };
 
     const handlePatchEvent = (payload: LiveTournamentHomePatchEvent) => {
@@ -124,58 +88,24 @@ export const useLiveTournamentSocket = (weekendId: string | undefined) => {
       }
     };
 
-    const connect = () => {
-      if (!shouldReconnect) return;
-
-      ws = new WebSocket(getLiveTournamentWsUrl(weekendId));
-
-      ws.onopen = () => {
-        reconnectAttempt = 0;
-      };
-
-      ws.onmessage = event => {
-        let payload: LiveTournamentHomeSocketEvent | null = null;
-
-        try {
-          payload = JSON.parse(String(event.data)) as LiveTournamentHomeSocketEvent;
-        } catch {
-          return;
-        }
-
-        if (!payload || typeof payload.type !== 'string') {
-          return;
-        }
-
-        if (payload.type === 'live_weekend.connected') {
-          handleConnected(payload);
-          return;
-        }
-
-        if (isPatchEvent(payload)) {
-          handlePatchEvent(payload);
-        }
-      };
-
-      ws.onclose = () => {
-        ws = null;
-        scheduleReconnect();
-      };
-
-      ws.onerror = () => {
-        // onclose handles reconnect scheduling
-      };
-    };
-
-    connect();
-
-    return () => {
-      shouldReconnect = false;
-      clearReconnectTimer();
-      clearRefetchTimer();
-
-      if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
-        ws.close(1000, 'Component unmounted');
+    const unlisten = realtime.listen(event => {
+      if (event.type === 'app.resync') {
+        scheduleRefetch();
+        return;
       }
+      if (!event.type.startsWith('live_') || !event.data || typeof event.data !== 'object') return;
+      const payload = event as unknown as LiveTournamentHomeSocketEvent;
+      if (payload.data.weekendId !== weekendId) return;
+      if (payload.type === 'live_weekend.connected') {
+        // Reconnect can miss account-specific watched-player patches at the same version.
+        scheduleRefetch();
+      } else if (isPatchEvent(payload)) handlePatchEvent(payload);
+    });
+    const unsubscribe = realtime.subscribe({ topic: 'live-tournaments', weekendId });
+    return () => {
+      unlisten();
+      unsubscribe();
+      clearRefetchTimer();
     };
-  }, [queryClient, session.data?.user.id, weekendId]);
+  }, [queryClient, session.data?.user.id, weekendId, realtime]);
 };

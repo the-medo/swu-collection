@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useUser } from '@/hooks/useUser.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useCallback } from 'react';
@@ -10,9 +9,7 @@ import CountryStateSelector from '@/components/app/global/CountryStateSelector.t
 import { CountryCode, CurrencyCode } from '../../../../../../server/db/lists.ts';
 import PriceSourceCollectionSelector from '@/components/app/global/PriceSourceCollectionSelector.tsx';
 
-export interface CollectionAndWantlistSettingsProps {}
-
-const CollectionAndWantlistSettings: React.FC<CollectionAndWantlistSettingsProps> = ({}) => {
+const CollectionAndWantlistSettings = () => {
   const user = useUser();
   const { toast } = useToast();
 
@@ -33,7 +30,7 @@ const CollectionAndWantlistSettings: React.FC<CollectionAndWantlistSettingsProps
         description: (e as Error).toString(),
       });
     }
-  }, []);
+  }, [toast]);
 
   const onCountryStateChange = useCallback(async (c: string | null) => {
     try {
@@ -52,12 +49,11 @@ const CollectionAndWantlistSettings: React.FC<CollectionAndWantlistSettingsProps
         description: (e as Error).toString(),
       });
     }
-  }, []);
+  }, [toast]);
 
   const onCurrencyChange = useCallback(async (c: CurrencyCode | null) => {
     if (!c) return;
     try {
-      // @ts-ignore -- currency exists on User type, no idea why TS thinks it doesn't
       const { error } = await authClient.updateUser({ currency: c });
       if (!error) {
         toast({
@@ -73,7 +69,7 @@ const CollectionAndWantlistSettings: React.FC<CollectionAndWantlistSettingsProps
         description: (e as Error).toString(),
       });
     }
-  }, []);
+  }, [toast]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -85,7 +81,7 @@ const CollectionAndWantlistSettings: React.FC<CollectionAndWantlistSettingsProps
           allowClear={false}
         />
       </div>
-      <ul className="ml-4 list-disc list-inside text-xs text-gray-600">
+      <ul className="ml-4 list-disc list-inside text-xs text-muted-foreground">
         <li>all your collections and wantlists will automatically use this currency</li>
       </ul>
       <div className="flex flex-col gap-2">
@@ -108,7 +104,7 @@ const CollectionAndWantlistSettings: React.FC<CollectionAndWantlistSettingsProps
           <span>Select a country before selecting a state / region</span>
         )}
       </div>
-      <ul className="ml-4 list-disc list-inside text-xs text-gray-600">
+      <ul className="ml-4 list-disc list-inside text-xs text-muted-foreground">
         <li>both country and state/region are optional</li>
         <li>all your collections and wantlists are assigned to this country and state/region</li>
         <li>

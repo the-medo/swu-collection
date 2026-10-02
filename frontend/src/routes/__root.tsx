@@ -1,3 +1,4 @@
+import { AppRealtimeProvider } from '@/components/app/realtime/AppRealtimeProvider.tsx';
 import { CrossfireInvitations } from '@/components/app/crossfire/CrossfireInvitations.tsx';
 import { createRootRoute, HeadContent, Outlet, useMatchRoute } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
@@ -166,11 +167,13 @@ export const Route = createRootRoute({
   component: () => (
     <>
       <HeadContent />
-      <CrossfireInvitations>
-        <SidebarProvider>
-          <RootShell />
-        </SidebarProvider>
-      </CrossfireInvitations>
+      <AppRealtimeProvider>
+        <CrossfireInvitations>
+          <SidebarProvider>
+            <RootShell />
+          </SidebarProvider>
+        </CrossfireInvitations>
+      </AppRealtimeProvider>
       <CookieConsent />
       <Toaster />
       <PriceFetcher />

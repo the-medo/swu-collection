@@ -22,16 +22,16 @@ const Popover = ({ hover, ...props }: PopoverProps) => {
   return (
     <PopoverPrimitive.Root open={open} onOpenChange={setOpen} {...props}>
       {React.Children.map(props.children, child => {
-        if (!React.isValidElement(child)) return child;
+        if (!React.isValidElement<React.HTMLAttributes<HTMLElement>>(child)) return child;
 
         // Inject hover handlers into Trigger and Content
-        if ((child as any).type === PopoverTrigger) {
+        if (child.type === PopoverTrigger) {
           return React.cloneElement(child, {
             onMouseEnter,
             onMouseLeave,
           });
         }
-        if ((child as any).type === PopoverContent) {
+        if (child.type === PopoverContent) {
           return React.cloneElement(child, {
             onMouseEnter,
             onMouseLeave,
@@ -48,9 +48,11 @@ const PopoverTrigger = PopoverPrimitive.Trigger;
 
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
->(({ className, align = 'center', sideOffset = 4, ...props }, ref) => (
-  <PopoverPrimitive.Portal>
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> & {
+    container?: React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Portal>['container'];
+  }
+>(({ className, align = 'center', sideOffset = 4, container, ...props }, ref) => (
+  <PopoverPrimitive.Portal container={container}>
     <PopoverPrimitive.Content
       ref={ref}
       align={align}

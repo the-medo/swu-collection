@@ -74,12 +74,14 @@ socket events contain deck lists, source deck IDs, or private game state.
 invitations; `/teammates` lists current teammates; deleting
 `/invitations/:lobbyId` declines an incoming invitation.
 
-`/api/ws/invitations/crossfire` uses the existing main API origin and Better Auth
+The shared `/api/ws/events` connection uses the main API origin and Better Auth
 session. It is separate from the game-worker socket. Transactional PostgreSQL
 NOTIFY sends lobby invalidations to account-scoped socket rooms across API
-instances. Clients refetch on connection/reconnection; notifications are not a
-durable message queue. Heartbeats revalidate sessions, idle sockets close, and
-connections are bounded per account and instance.
+instances. Clients refetch on connection/reconnection. Directed invitations also
+create a durable, mandatory inbox entry in the lobby transaction; see
+[app notifications](../notifications.md). Heartbeats revalidate sessions, idle
+sockets close, and connections are bounded per account and instance. The former
+`/api/ws/invitations/crossfire` endpoint remains for already-loaded clients.
 
 Each enabled API instance runs a bounded two-second sweep over the indexed
 waiting-lobby deadline; SKIP LOCKED supports multiple instances. Expiry emits

@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
-import { logger } from 'hono/logger';
+import { requestLogger } from './lib/ws/requestLogger.ts';
+import { notificationsRoute } from './routes/notifications.ts';
 import { cors } from 'hono/cors';
 import { collectionRoute } from './routes/collection.ts';
 import { deckRoute } from './routes/deck.ts';
@@ -80,7 +81,7 @@ const app = new Hono<AuthExtension>().onError((err, c) => {
 // Calendar clients authenticate with the secret URL. Mount before session and
 // request logging middleware so tokens never enter the application access log.
 app.route('/api/calendar', calendarFeedRoute);
-app.use('*', logger());
+app.use('*', requestLogger());
 app.use('*', async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
@@ -150,6 +151,7 @@ const apiRoutes = app
   .route('/cards', cardsRoute)
   .route('/user', userRoute)
   .route('/user-settings', userSettingsRoute)
+  .route('/notifications', notificationsRoute)
   .route('/user-tournament-saves', userTournamentSavesRoute)
   .route('/user-calendar', userCalendarRoute)
   .route('/user-tournament-attachments', userTournamentAttachmentsRoute)
@@ -267,5 +269,7 @@ app.get('*', c => c.html(indexHtml));
 Sentry.setupHonoErrorHandler(app);
 
 export default app;
-export const bunWebsocket = websocket;
+// Main-app clients send only small subscription/heartbeat commands. Gameplay
+// frames are handled by the separate Crossfire worker.
+export const bunWebsocket = { ...websocket, maxPayloadLength: 4096 };
 export type ApiRoutes = typeof apiRoutes;

@@ -99,6 +99,7 @@ CREATE INDEX development_tournament_match_p2_deck_id_idx ON tournament_match (p2
 -- testing, but their provider-specific identity, arbitrary provider metadata,
 -- and credentials are replaced below.
 TRUNCATE TABLE account, session, verification;
+TRUNCATE TABLE user_notification;
 
 -- Attendance plans and saved-event metadata stay private, including for opted-in users.
 TRUNCATE TABLE user_tournament_save;
@@ -423,6 +424,10 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_settings WHERE key = 'home_location') THEN
     RAISE EXCEPTION 'Private home locations remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_notification) THEN
+    RAISE EXCEPTION 'Private user notifications remain in the contributor dump.';
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_tournament_save) THEN

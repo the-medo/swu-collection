@@ -1,4 +1,5 @@
-import { Bell, ChevronsUpDown, LogOut, Moon, Settings, ShieldCheck, Sun } from 'lucide-react';
+import { ChevronsUpDown, LogOut, Moon, Settings, ShieldCheck, Sun } from 'lucide-react';
+import { NotificationBell } from '@/components/app/notifications/NotificationBell.tsx';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -40,22 +41,22 @@ export function NavUser() {
     } else {
       setTheme('light');
     }
-  }, [theme]);
+  }, [theme, setTheme]);
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem className="flex items-center gap-1 group-data-[collapsible=icon]:flex-col">
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="min-w-0 flex-1 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:flex-none"
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={userAvatar} alt={userName} />
                 <AvatarFallback className="rounded-lg">{userName[0]}</AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user?.displayName}</span>
                 {/*<span className="truncate text-xs">{user?.email}</span>*/}
               </div>
@@ -87,10 +88,6 @@ export function NavUser() {
                   Settings
                 </DropdownMenuItem>
               </Link>
-              <DropdownMenuItem className="cursor-pointer">
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
               {isAdmin && (
                 <Link to={'/admin'}>
                   <DropdownMenuItem className="cursor-pointer">
@@ -118,6 +115,7 @@ export function NavUser() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <NotificationBell />
       </SidebarMenuItem>
     </SidebarMenu>
   );

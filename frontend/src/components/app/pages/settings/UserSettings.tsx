@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useUser } from '@/hooks/useUser.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { authClient } from '@/lib/auth-client.ts';
@@ -8,15 +7,13 @@ import { useForm } from '@tanstack/react-form';
 import { Button } from '@/components/ui/button.tsx';
 import { generateDisplayName } from '../../../../../../server/auth/generateDisplayName.ts';
 
-export interface UserSettingsProps {}
-
-const UserSettings: React.FC<UserSettingsProps> = ({}) => {
+const UserSettings = () => {
   const user = useUser();
   const { toast } = useToast();
 
   const form = useForm({
     defaultValues: {
-      displayName: user?.displayName!,
+      displayName: user?.displayName ?? '',
     },
     onSubmit: async ({ value, formApi }) => {
       try {
@@ -54,8 +51,8 @@ const UserSettings: React.FC<UserSettingsProps> = ({}) => {
           children={field => (
             <div className="flex flex-col gap-2">
               <Label htmlFor={field.name}>Display name</Label>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <div className="w-[300px] max-sm:w-full">
+              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                <div className="w-full sm:min-w-48 sm:flex-1">
                   <Input
                     type="text"
                     id={field.name}

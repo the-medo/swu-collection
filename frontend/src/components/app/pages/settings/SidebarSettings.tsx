@@ -55,21 +55,18 @@ function SidebarSettingsForm({ userId, saved }: { userId: string; saved: Sidebar
   });
   return (
     <form
-      className="max-w-xl space-y-5"
+      className="space-y-4"
       onSubmit={event => {
         event.preventDefault();
         event.stopPropagation();
         void form.handleSubmit();
       }}
     >
-      <div>
-        <h3>Sidebar</h3>
-        <p className="text-sm text-muted-foreground">
-          Choose which sections appear in the left sidebar. The tournament date window moves with
-          today and includes events that span multiple days.
-        </p>
-      </div>
-      <fieldset className="space-y-5" disabled={mutation.isPending}>
+      <p className="text-sm text-muted-foreground">
+        Choose which sections appear in the left sidebar. The tournament date window moves with
+        today and includes events that span multiple days.
+      </p>
+      <fieldset className="space-y-4" disabled={mutation.isPending}>
         <form.Field name="left_sidebar_collections_and_lists">
           {field => (
             <div className="flex items-center justify-between gap-4">

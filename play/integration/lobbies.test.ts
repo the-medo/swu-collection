@@ -518,6 +518,11 @@ test('teammate invitations conceal identities, restrict admission and expire dur
     }
     const lobby = await service.create(a, decks[0]!, policy, 3, false, b.userId);
     lobbies.push(lobby.id);
+    expect(
+      await sql`SELECT recipient_user_id, actor_user_id, type FROM public.user_notification WHERE entity_id = ${lobby.id}`,
+    ).toMatchObject([
+      { recipient_user_id: b.userId, actor_user_id: a.userId, type: 'crossfire.invitation' },
+    ]);
     expect(new Date(lobby.expiresAt!).getTime() - Date.now()).toBeGreaterThan(175_000);
     const incoming = (await service.invitations(b)).find(i => i.lobbyId === lobby.id)!;
     expect(incoming.direction).toBe('incoming');

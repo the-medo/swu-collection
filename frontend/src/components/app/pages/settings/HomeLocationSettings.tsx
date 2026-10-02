@@ -84,9 +84,8 @@ function HomeLocationForm({
     },
   ] as const;
   return (
-    <div className="max-w-xl space-y-4">
+    <div className="space-y-4">
       <div>
-        <h3>Home location</h3>
         <p className="text-sm text-muted-foreground">
           Show your home on the tournament map. Only you can see it. A city and country are enough;
           add a street address for a more precise location.

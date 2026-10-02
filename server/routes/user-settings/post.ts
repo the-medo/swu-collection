@@ -4,6 +4,7 @@ import { db } from '../../db';
 import { userSettings } from '../../db/schema/user_settings.ts';
 import { userSettingsUpdateSchema } from '../../../shared/lib/userSettings.ts';
 import { and, eq } from 'drizzle-orm';
+import { notifyUser } from '../../lib/notifications/publish.ts';
 
 export const userSettingsPostRoute = new Hono<AuthExtension>().post('/', async c => {
   const user = c.get('user');
@@ -47,6 +48,11 @@ export const userSettingsPostRoute = new Hono<AuthExtension>().post('/', async c
           set: { value: stringValue },
         });
     }
+    if (
+      Object.prototype.hasOwnProperty.call(settings, 'notifications_deck_favorites') ||
+      Object.prototype.hasOwnProperty.call(settings, 'notifications_team_members')
+    )
+      await notifyUser(tx, user.id, 'user.settings.changed');
   });
 
   return c.json({ success: true });

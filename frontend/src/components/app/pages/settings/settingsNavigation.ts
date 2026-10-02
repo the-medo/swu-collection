@@ -1,4 +1,5 @@
 import {
+  Bell,
   BookOpen,
   CalendarDays,
   Code,
@@ -11,6 +12,7 @@ import {
 } from 'lucide-react';
 
 export const settingsItems = [
+  { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'collections-and-wantlists', label: 'Collections and wantlists', icon: BookOpen },
   { id: 'display-name', label: 'Display name', icon: UserRound },
   { id: 'integrations', label: 'Integrations', icon: Plug },
