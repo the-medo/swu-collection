@@ -4,6 +4,7 @@ import {
   Code,
   House,
   PanelLeft,
+  Plug,
   SlidersHorizontal,
   UserRound,
   Users,
@@ -12,6 +13,7 @@ import {
 export const settingsItems = [
   { id: 'collections-and-wantlists', label: 'Collections and wantlists', icon: BookOpen },
   { id: 'display-name', label: 'Display name', icon: UserRound },
+  { id: 'integrations', label: 'Integrations', icon: Plug },
   { id: 'watched-players', label: 'Watched players', icon: Users },
   { id: 'calendar', label: 'Calendar', icon: CalendarDays },
   { id: 'sidebar', label: 'Sidebar', icon: PanelLeft },
