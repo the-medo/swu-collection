@@ -22,7 +22,6 @@ import { Route as ToolsIndexRouteImport } from './routes/tools/index'
 import { Route as TeamsIndexRouteImport } from './routes/teams/index'
 import { Route as StatisticsIndexRouteImport } from './routes/statistics/index'
 import { Route as MetaIndexRouteImport } from './routes/meta/index'
-import { Route as MessagesIndexRouteImport } from './routes/messages/index'
 import { Route as LimitedIndexRouteImport } from './routes/limited/index'
 import { Route as ComparerIndexRouteImport } from './routes/comparer/index'
 import { Route as WantlistsYourRouteImport } from './routes/wantlists/your'
@@ -37,6 +36,7 @@ import { Route as CollectionsYourRouteImport } from './routes/collections/your'
 import { Route as CollectionsPublicRouteImport } from './routes/collections/public'
 import { Route as CardsSearchRouteImport } from './routes/cards/search'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as WantlistsWantlistIdIndexRouteImport } from './routes/wantlists/$wantlistId/index'
 import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId/index'
@@ -149,11 +149,6 @@ const MetaIndexRoute = MetaIndexRouteImport.update({
   path: '/meta/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MessagesIndexRoute = MessagesIndexRouteImport.update({
-  id: '/messages/',
-  path: '/messages/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LimitedIndexRoute = LimitedIndexRouteImport.update({
   id: '/limited/',
   path: '/limited/',
@@ -225,6 +220,11 @@ const AuthenticatedNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -506,6 +506,7 @@ export interface FileRoutesByFullPath {
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -520,7 +521,6 @@ export interface FileRoutesByFullPath {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
   '/limited': typeof LimitedIndexRoute
-  '/messages': typeof MessagesIndexRoute
   '/meta': typeof MetaIndexRoute
   '/statistics/': typeof StatisticsIndexRoute
   '/teams': typeof TeamsIndexRoute
@@ -580,6 +580,7 @@ export interface FileRoutesByTo {
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -594,7 +595,6 @@ export interface FileRoutesByTo {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
   '/limited': typeof LimitedIndexRoute
-  '/messages': typeof MessagesIndexRoute
   '/meta': typeof MetaIndexRoute
   '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
@@ -654,6 +654,7 @@ export interface FileRoutesById {
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -669,7 +670,6 @@ export interface FileRoutesById {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer/': typeof ComparerIndexRoute
   '/limited/': typeof LimitedIndexRoute
-  '/messages/': typeof MessagesIndexRoute
   '/meta/': typeof MetaIndexRoute
   '/statistics/': typeof StatisticsIndexRoute
   '/teams/': typeof TeamsIndexRoute
@@ -732,6 +732,7 @@ export interface FileRouteTypes {
     | '/statistics2'
     | '/terms'
     | '/admin'
+    | '/messages'
     | '/notifications'
     | '/cards/search'
     | '/collections/public'
@@ -746,7 +747,6 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer'
     | '/limited'
-    | '/messages'
     | '/meta'
     | '/statistics/'
     | '/teams'
@@ -806,6 +806,7 @@ export interface FileRouteTypes {
     | '/statistics2'
     | '/terms'
     | '/admin'
+    | '/messages'
     | '/notifications'
     | '/cards/search'
     | '/collections/public'
@@ -820,7 +821,6 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer'
     | '/limited'
-    | '/messages'
     | '/meta'
     | '/teams'
     | '/tools'
@@ -879,6 +879,7 @@ export interface FileRouteTypes {
     | '/statistics2'
     | '/terms'
     | '/_authenticated/admin'
+    | '/_authenticated/messages'
     | '/_authenticated/notifications'
     | '/cards/search'
     | '/collections/public'
@@ -894,7 +895,6 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer/'
     | '/limited/'
-    | '/messages/'
     | '/meta/'
     | '/statistics/'
     | '/teams/'
@@ -969,7 +969,6 @@ export interface RootRouteChildren {
   WantlistsYourRoute: typeof WantlistsYourRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
   LimitedIndexRoute: typeof LimitedIndexRoute
-  MessagesIndexRoute: typeof MessagesIndexRoute
   MetaIndexRoute: typeof MetaIndexRoute
   TeamsIndexRoute: typeof TeamsIndexRoute
   ToolsIndexRoute: typeof ToolsIndexRoute
@@ -1087,13 +1086,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MetaIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/messages/': {
-      id: '/messages/'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof MessagesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/limited/': {
       id: '/limited/'
       path: '/limited'
@@ -1190,6 +1182,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/notifications'
       preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin': {
@@ -1533,6 +1532,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedCrossfireLobbyIdRoute: typeof AuthenticatedCrossfireLobbyIdRoute
   AuthenticatedCrossfireIndexRoute: typeof AuthenticatedCrossfireIndexRoute
@@ -1545,6 +1545,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedCrossfireLobbyIdRoute: AuthenticatedCrossfireLobbyIdRoute,
   AuthenticatedCrossfireIndexRoute: AuthenticatedCrossfireIndexRoute,
@@ -1676,7 +1677,6 @@ const rootRouteChildren: RootRouteChildren = {
   WantlistsYourRoute: WantlistsYourRoute,
   ComparerIndexRoute: ComparerIndexRoute,
   LimitedIndexRoute: LimitedIndexRoute,
-  MessagesIndexRoute: MessagesIndexRoute,
   MetaIndexRoute: MetaIndexRoute,
   TeamsIndexRoute: TeamsIndexRoute,
   ToolsIndexRoute: ToolsIndexRoute,

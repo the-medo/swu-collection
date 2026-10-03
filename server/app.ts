@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { requestLogger } from './lib/ws/requestLogger.ts';
+import { messagesRoute } from './routes/messages.ts';
 import { notificationsRoute } from './routes/notifications.ts';
 import { cors } from 'hono/cors';
 import { collectionRoute } from './routes/collection.ts';
@@ -51,14 +52,21 @@ Sentry.init({
   ignoreTransactions: [/\/api\/calendar(?:\/|$)/],
   enableLogs: process.env.ENVIRONMENT !== 'local',
   beforeSend(event) {
-    if (isCalendarFeedRequest(event.request?.url)) return null;
+    if (
+      isCalendarFeedRequest(event.request?.url) ||
+      /\/api\/messages(?:\/|$)/.test(event.request?.url ?? '')
+    )
+      return null;
     if (event.request?.url?.includes('/api/user-tournament-attachments')) {
       delete event.request.data;
     }
     return event;
   },
   beforeSendTransaction(event) {
-    return isCalendarFeedRequest(event.request?.url) ? null : event;
+    return isCalendarFeedRequest(event.request?.url) ||
+      /\/api\/messages(?:\/|$)/.test(event.request?.url ?? '')
+      ? null
+      : event;
   },
   integrations: [
     Sentry.honoIntegration(),
@@ -152,6 +160,7 @@ const apiRoutes = app
   .route('/user', userRoute)
   .route('/user-settings', userSettingsRoute)
   .route('/notifications', notificationsRoute)
+  .route('/messages', messagesRoute)
   .route('/user-tournament-saves', userTournamentSavesRoute)
   .route('/user-calendar', userCalendarRoute)
   .route('/user-tournament-attachments', userTournamentAttachmentsRoute)

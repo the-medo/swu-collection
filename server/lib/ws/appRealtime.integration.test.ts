@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { websocket } from 'hono/bun';
 import postgres from 'postgres';
 import type { AuthExtension } from '../../auth/auth.ts';
+import { messagesRoute } from '../../routes/messages.ts';
 import { AppRealtime } from './appRealtime.ts';
 import { createAppEventsRoute } from '../../routes/ws/events.ts';
 import { invalidateGameResultSockets, hasActiveGameResultSockets } from './gameResultsRealtime.ts';
@@ -26,6 +27,7 @@ test.skipIf(process.env.NOTIFICATIONS_DB_TEST !== '1')(
     const prefix = `events-${crypto.randomUUID()}`;
     const a = `${prefix}-a`,
       b = `${prefix}-b`,
+      recipient = `${prefix}-recipient`,
       teamId = crypto.randomUUID();
     const origin = 'https://socket-test.invalid';
     const oldOrigin = process.env.BETTER_AUTH_URL;
@@ -41,6 +43,7 @@ test.skipIf(process.env.NOTIFICATIONS_DB_TEST !== '1')(
         }
         await next();
       })
+      .route('/messages', messagesRoute)
       .route(
         '/api/ws/events',
         createAppEventsRoute(() => service),
@@ -66,7 +69,7 @@ test.skipIf(process.env.NOTIFICATIONS_DB_TEST !== '1')(
       };
     }
     try {
-      for (const id of [a, b]) {
+      for (const id of [a, b, recipient]) {
         await sql`INSERT INTO public."user" (id,name,display_name,email,email_verified,currency,role,created_at,updated_at)
         VALUES (${id}, 'Socket fixture', ${id}, ${id + '@invalid.local'}, false, 'USD', 'crossfire', now(), now())`;
         await sql`INSERT INTO public.session (id,user_id,token,expires_at,created_at,updated_at)
@@ -90,6 +93,45 @@ test.skipIf(process.env.NOTIFICATIONS_DB_TEST !== '1')(
       await sql`SELECT pg_notify('user_notifications', ${JSON.stringify({ userId: a, type: 'notifications.changed' })})`;
       await until(() => ca.events.some(e => e.type === 'notifications.changed'));
       expect(cb.events.some(e => e.type === 'notifications.changed')).toBe(false);
+      const recipientClient = connect(recipient);
+      await until(() => recipientClient.events.some(e => e.type === 'app.connected'));
+      const sent = await app.request(`/messages/with/${recipient}`, {
+        method: 'POST',
+        headers: { 'test-user': a, 'content-type': 'application/json' },
+        body: JSON.stringify({
+          body: 'Private socket fixture',
+          clientMessageId: crypto.randomUUID(),
+        }),
+      });
+      expect(sent.status).toBe(201);
+      await until(
+        () =>
+          ca.events.some(e => e.type === 'messages.changed') &&
+          recipientClient.events.some(e => e.type === 'messages.changed'),
+      );
+      expect(cb.events.some(e => e.type === 'messages.changed')).toBe(false);
+      expect(JSON.stringify(recipientClient.events)).not.toContain('Private socket fixture');
+      const sentMessage = await sent.json();
+      expect(ca.events.find(e => e.type === 'messages.changed')).toEqual({
+        v: 1,
+        type: 'messages.changed',
+        change: {
+          conversationId: sentMessage.conversationId,
+          peerId: recipient,
+          lastSequence: 1,
+          readSequence: 0,
+        },
+      });
+      expect(recipientClient.events.find(e => e.type === 'messages.changed')).toEqual({
+        v: 1,
+        type: 'messages.changed',
+        change: {
+          conversationId: sentMessage.conversationId,
+          peerId: a,
+          lastSequence: 1,
+          readSequence: 0,
+        },
+      });
       cb.send({ type: 'subscribe', subscription: { topic: 'game-results', teamId } });
       await until(() => cb.events.some(e => e.type === 'subscription.denied'));
       ca.send({ type: 'subscribe', subscription: { topic: 'game-results', teamId } });
@@ -139,7 +181,7 @@ test.skipIf(process.env.NOTIFICATIONS_DB_TEST !== '1')(
       await service.stop();
       server.stop(true);
       await sql`DELETE FROM team WHERE id = ${teamId}`;
-      await sql`DELETE FROM public."user" WHERE id IN (${a},${b})`;
+      await sql`DELETE FROM public."user" WHERE id IN (${a},${b},${recipient})`;
       await sql.end();
       if (oldOrigin === undefined) delete process.env.BETTER_AUTH_URL;
       else process.env.BETTER_AUTH_URL = oldOrigin;

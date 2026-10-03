@@ -77,7 +77,13 @@ export class AppRealtime {
               const event = userNotificationSignalSchema.parse(JSON.parse(payload));
               for (const client of this.clients.values())
                 if (client.principal.userId === event.userId)
-                  this.send(client, { v: 1, type: event.type });
+                  this.send(client, {
+                    v: 1,
+                    type: event.type,
+                    ...(event.type === 'messages.changed' && event.change
+                      ? { change: event.change }
+                      : {}),
+                  });
             } catch {
               /* Ignore malformed inter-process signals. */
             }

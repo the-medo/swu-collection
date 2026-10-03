@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { messageChangeSchema, type MessageChange } from './messages.ts';
 
 export const notificationTypes = [
   'crossfire.invitation',
@@ -65,9 +66,11 @@ export type AppControlEvent =
         | 'notifications.changed'
         | 'user.settings.changed';
     }
+  | { v: 1; type: 'messages.changed'; change?: MessageChange }
   | { v: 1; type: 'subscription.denied'; topic: AppSubscription['topic'] };
 export const userNotificationChannel = 'user_notifications';
 export const userNotificationSignalSchema = z.strictObject({
   userId: z.string().min(1).max(128),
-  type: z.enum(['notifications.changed', 'user.settings.changed']),
+  type: z.enum(['notifications.changed', 'user.settings.changed', 'messages.changed']),
+  change: messageChangeSchema.optional(),
 });

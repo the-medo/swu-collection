@@ -6,7 +6,10 @@ import { canReceiveNotifications } from './policy.ts';
 export async function notifyUser(
   tx: { execute(query: SQL): Promise<unknown> },
   userId: string,
-  type: 'notifications.changed' | 'user.settings.changed' = 'notifications.changed',
+  type:
+    | 'notifications.changed'
+    | 'user.settings.changed'
+    | 'messages.changed' = 'notifications.changed',
 ) {
   if (type === 'notifications.changed' && !canReceiveNotifications(userId)) return;
   await tx.execute(

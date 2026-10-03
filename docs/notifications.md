@@ -5,6 +5,10 @@ Signed-in browser tabs use one main-app connection, `/api/ws/events`. The root
 connections remain on the dedicated game worker. Legacy main-app socket routes
 remain available for previously loaded clients during rollout.
 
+[Direct user messaging](messaging.md) also uses this connection for private
+recipient-scoped invalidations. Its conversations and unread-message count are
+separate from the notification inbox.
+
 The server validates the Better Auth session and exact configured origin before
 registration, then rechecks the session on messages and deliveries. Heartbeats,
 connection limits, bounded queues and buffered bytes constrain idle or slow
@@ -93,7 +97,10 @@ uncommitted membership.
 
 Transactions emit recipient-scoped `pg_notify` messages on `user_notifications`.
 Every connected API instance listens and tells only that account's clients to
-refetch. The existing `crossfire_invitations` channel also feeds this connection.
+refresh. Direct-message signals include recipient-specific conversation and
+sequence metadata so the client can request only the affected row and new
+messages; see [messaging](messaging.md). The existing `crossfire_invitations`
+channel also feeds this connection.
 WebSocket reconnect and PostgreSQL LISTEN reconnect both cause HTTP resync; the
 database is authoritative and NOTIFY is not a durable message queue.
 
