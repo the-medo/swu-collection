@@ -9,8 +9,7 @@ export default function FeaturesSettings() {
   const query = useFeatureSettings();
   const mutation = useSetFeatureSettings();
   return (
-    <div className="max-w-xl space-y-4">
-      <h3>Features</h3>
+    <div className="space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <Label htmlFor="use-tournament-attachments">Tournament attachments</Label>

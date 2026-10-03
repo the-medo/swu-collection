@@ -1,3 +1,4 @@
+import NotificationSettings from './NotificationSettings.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import CollectionAndWantlistSettings from './CollectionAndWantlistSettings.tsx';
 import UserSettings from './UserSettings.tsx';
@@ -28,20 +29,19 @@ export function SettingsPage() {
           <SettingsNavigation page={current.id} />
           <Card className="min-w-0" key={page}>
             <CardContent className="p-4">
-              {page === 'collections-and-wantlists' && <CollectionAndWantlistSettings />}
-              {page === 'display-name' && <UserSettings />}
-              {page === 'integrations' && <IntegrationsSettings />}
-              {page === 'watched-players' && <WatchedPlayersSettings />}
-              {page === 'calendar' && (
-                <div className="space-y-4">
-                  <h3>Calendar</h3>
-                  <CalendarWeekStart />
-                </div>
-              )}
-              {page === 'sidebar' && <SidebarSettings />}
-              {page === 'features' && <FeaturesSettings />}
-              {page === 'home-location' && <HomeLocationSettings />}
-              {page === 'development' && <DevelopmentSettings />}
+              <section aria-labelledby="settings-heading" className="max-w-xl space-y-4">
+                <h3 id="settings-heading">{current.label}</h3>
+                {page === 'collections-and-wantlists' && <CollectionAndWantlistSettings />}
+                {page === 'display-name' && <UserSettings />}
+                {page === 'integrations' && <IntegrationsSettings />}
+                {page === 'watched-players' && <WatchedPlayersSettings />}
+                {page === 'calendar' && <CalendarWeekStart />}
+                {page === 'sidebar' && <SidebarSettings />}
+                {page === 'features' && <FeaturesSettings />}
+                {page === 'notifications' && <NotificationSettings />}
+                {page === 'home-location' && <HomeLocationSettings />}
+                {page === 'development' && <DevelopmentSettings />}
+              </section>
             </CardContent>
           </Card>
         </div>

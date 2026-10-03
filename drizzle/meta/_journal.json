@@ -449,6 +449,20 @@
       "when": 1790937076385,
       "tag": "0063_third_songbird",
       "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1791007596843,
+      "tag": "0064_user_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1791063970981,
+      "tag": "0065_direct_messages",
+      "breakpoints": true
     }
   ]
 }

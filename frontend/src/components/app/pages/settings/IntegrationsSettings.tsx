@@ -31,10 +31,7 @@ export default function IntegrationsSettings() {
   if (!user) return null;
   return (
     <section className="space-y-4">
-      <div>
-        <h3>Integrations</h3>
-        <p className="text-sm text-muted-foreground">Connect your accounts to SWUBASE.</p>
-      </div>
+      <p className="text-sm text-muted-foreground">Connect your accounts to SWUBASE.</p>
       {query.isPending ? (
         <p role="status">Loading integrations…</p>
       ) : query.isError ? (
@@ -74,7 +71,7 @@ function MeleeIntegration({ status }: { status: MeleeConnectionStatus }) {
   });
 
   return (
-    <div className="space-y-4 rounded-lg border p-4">
+    <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 className="font-semibold">Melee.gg</h4>
         {connection && (

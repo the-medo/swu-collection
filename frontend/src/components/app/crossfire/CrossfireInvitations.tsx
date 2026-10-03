@@ -1,5 +1,5 @@
 import { invalidateCrossfireGames } from '@/api/crossfire/useLeaveGame.ts';
-import { crossfireInvitationEventSchema } from '../../../../../shared/types/crossfire.ts';
+import { useAppRealtime } from '@/components/app/realtime/context.ts';
 import './invitations.css';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from '@tanstack/react-router';
@@ -37,7 +37,8 @@ export function CrossfireInvitations({ children }: { children: ReactNode }) {
 }
 
 function MemberInvitations({ children }: { children: ReactNode }) {
-  const { data: session, refetch } = useSession();
+  const { data: session } = useSession();
+  const realtime = useAppRealtime();
   const sessionId = session?.session.id ?? '';
   const query = useInvitations(sessionId);
   const client = useQueryClient();
@@ -46,28 +47,23 @@ function MemberInvitations({ children }: { children: ReactNode }) {
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const played = useRef(new Set<string>());
   const audio = useRef<HTMLAudioElement | null>(null);
-  const invitations = (query.data ?? []).filter(i => new Date(i.expiresAt).getTime() > now);
+  const invitations = (query.data ?? []).filter(
+    i => new Date(i.expiresAt).getTime() > Math.max(now, query.dataUpdatedAt),
+  );
   const incoming = invitations.filter(i => i.direction === 'incoming');
   const newest = incoming.find(i => !dismissed.has(i.lobbyId));
-  const available = query.data !== undefined;
   useEffect(() => {
     const active = new Set(query.data?.map(i => i.lobbyId) ?? []);
     for (const id of played.current) if (!active.has(id)) played.current.delete(id);
-    setDismissed(previous => {
-      const retained = new Set([...previous].filter(id => active.has(id)));
-      return retained.size === previous.size ? previous : retained;
-    });
   }, [query.data]);
 
   useEffect(() => {
     if (!query.data?.length) return;
-    setNow(Date.now());
     const clock = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(clock);
   }, [query.data]);
   useEffect(() => {
-    played.current.clear();
-    setDismissed(new Set());
+    // The parent keys this component by session, resetting local state on login changes.
     if (!sessionId) return;
     return () => {
       void client.cancelQueries({ queryKey: invitationsKey(sessionId) });
@@ -122,79 +118,39 @@ function MemberInvitations({ children }: { children: ReactNode }) {
     else void play();
   }, [newest]);
   useEffect(() => {
-    if (!sessionId || !available) return;
-    let stopped = false,
-      socket: WebSocket | undefined,
-      retry: ReturnType<typeof setTimeout> | undefined;
-    let attempts = 0;
-    let lastMessage = Date.now();
+    if (!sessionId || !realtime) return;
     const refresh = (lobbyId?: string) => {
-      void client.invalidateQueries({ queryKey: invitationsKey(sessionId) });
-      if (lobbyId)
-        void client.invalidateQueries({ queryKey: crossfireKeys.lobby(sessionId, lobbyId) });
-      else
-        void client.invalidateQueries({ queryKey: [...crossfireKeys.session(sessionId), 'lobby'] });
+      void client
+        .cancelQueries({ queryKey: invitationsKey(sessionId) })
+        .then(() => client.invalidateQueries({ queryKey: invitationsKey(sessionId) }));
+      void client.invalidateQueries({
+        queryKey: lobbyId
+          ? crossfireKeys.lobby(sessionId, lobbyId)
+          : [...crossfireKeys.session(sessionId), 'lobby'],
+      });
     };
-    const connect = () => {
-      if (stopped) return;
-      const url = new URL('/api/ws/invitations/crossfire', window.location.origin);
-      url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
-      socket = new WebSocket(url);
-      lastMessage = Date.now();
-      socket.onmessage = event => {
-        let data;
-        try {
-          data = JSON.parse(event.data);
-        } catch {
-          return;
-        }
-        const parsed = crossfireInvitationEventSchema.safeParse(data);
-        if (!parsed.success) return;
-        lastMessage = Date.now();
-        data = parsed.data;
-        if (data.type === 'crossfire.connected') {
-          attempts = 0;
-          refresh();
-          void invalidateCrossfireGames(client, sessionId);
-        } else if (data.type === 'crossfire.game') {
-          void invalidateCrossfireGames(client, sessionId);
-        } else if (data.type === 'crossfire.invitation' && typeof data.lobbyId === 'string')
-          refresh(data.lobbyId);
-      };
-      socket.onclose = event => {
-        if (!stopped && [4401, 4403].includes(event.code)) {
-          client.setQueryData(invitationsKey(sessionId), []);
-          void refetch();
-        }
-        if (stopped || [4401, 4403, 4404, 4429].includes(event.code)) return;
-        retry = setTimeout(
-          connect,
-          Math.min(30_000, 1000 * 2 ** Math.min(attempts++, 5)) + Math.random() * 500,
-        );
-      };
-    };
-    connect();
-    const heartbeat = setInterval(() => {
-      if (Date.now() - lastMessage > 45_000 && socket && socket.readyState < WebSocket.CLOSING)
-        socket.close();
-      else if (socket?.readyState === WebSocket.OPEN) socket.send('ping');
-    }, 15_000);
-    const focus = () => {
-      refresh();
-      if (socket?.readyState === WebSocket.CLOSED) {
-        clearTimeout(retry);
-        connect();
+    const unlisten = realtime.listen(data => {
+      if (data.type === 'app.connected' || data.type === 'app.resync') {
+        refresh();
+        void invalidateCrossfireGames(client, sessionId);
+      } else if (data.type === 'crossfire.game') {
+        void invalidateCrossfireGames(client, sessionId);
+      } else if (data.type === 'crossfire.invitation' && typeof data.lobbyId === 'string') {
+        refresh(data.lobbyId);
       }
+    });
+    let lastFocus = 0;
+    const focus = () => {
+      if (Date.now() - lastFocus < 5000) return;
+      lastFocus = Date.now();
+      refresh();
     };
     window.addEventListener('focus', focus);
     return () => {
-      stopped = true;
-      clearTimeout(retry);
-      clearInterval(heartbeat);
+      unlisten();
       window.removeEventListener('focus', focus);
-      socket?.close();
     };
-  }, [sessionId, available, client, refetch]);
+  }, [sessionId, client, realtime]);
   const viewing =
     newest && location.pathname === '/crossfire' && location.search.cfInvite === newest.lobbyId;
   return (
@@ -215,7 +171,12 @@ function MemberInvitations({ children }: { children: ReactNode }) {
               variant="ghost"
               size="icon"
               aria-label="Dismiss invitation notification"
-              onClick={() => setDismissed(previous => new Set(previous).add(newest.lobbyId))}
+              onClick={() =>
+                setDismissed(previous => {
+                  const active = new Set(invitations.map(i => i.lobbyId));
+                  return new Set([...previous].filter(id => active.has(id))).add(newest.lobbyId);
+                })
+              }
             >
               <X size={15} />
             </Button>

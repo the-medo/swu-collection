@@ -9,6 +9,8 @@ import {
 import { booleanPreprocessor } from './zod/booleanPreprocessor.ts';
 
 export interface UserSettings {
+  notifications_deck_favorites: boolean;
+  notifications_team_members: boolean;
   use_tournament_attachments: boolean;
   left_sidebar_collections_and_lists: boolean;
   left_sidebar_my_tournaments: boolean;
@@ -66,6 +68,8 @@ export const sidebarTournamentDaysSchema = z.preprocess(
 );
 
 export const userSettingsSchema = z.object({
+  notifications_deck_favorites: booleanPreprocessor.default(true),
+  notifications_team_members: booleanPreprocessor.default(true),
   use_tournament_attachments: booleanPreprocessor.default(true),
   left_sidebar_collections_and_lists: booleanPreprocessor.default(true),
   left_sidebar_my_tournaments: booleanPreprocessor.default(true),
@@ -114,6 +118,12 @@ export const sidebarSettingsSchema = userSettingsSchema.pick({
 export type SidebarSettingsValues = z.infer<typeof sidebarSettingsSchema>;
 export const featureSettingsSchema = userSettingsSchema.pick({ use_tournament_attachments: true });
 export type FeatureSettingsValues = z.infer<typeof featureSettingsSchema>;
+
+export const notificationSettingsSchema = userSettingsSchema.pick({
+  notifications_deck_favorites: true,
+  notifications_team_members: true,
+});
+export type NotificationSettingsValues = z.infer<typeof notificationSettingsSchema>;
 
 const userSettingsUpdateShape: z.ZodRawShape = Object.fromEntries(
   Object.entries(userSettingsSchema.shape).map(([key, schema]) => [

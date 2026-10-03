@@ -21,9 +21,7 @@ import { Route as TournamentsIndexRouteImport } from './routes/tournaments/index
 import { Route as ToolsIndexRouteImport } from './routes/tools/index'
 import { Route as TeamsIndexRouteImport } from './routes/teams/index'
 import { Route as StatisticsIndexRouteImport } from './routes/statistics/index'
-import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
 import { Route as MetaIndexRouteImport } from './routes/meta/index'
-import { Route as MessagesIndexRouteImport } from './routes/messages/index'
 import { Route as LimitedIndexRouteImport } from './routes/limited/index'
 import { Route as ComparerIndexRouteImport } from './routes/comparer/index'
 import { Route as WantlistsYourRouteImport } from './routes/wantlists/your'
@@ -37,6 +35,8 @@ import { Route as DecksFavoriteRouteImport } from './routes/decks/favorite'
 import { Route as CollectionsYourRouteImport } from './routes/collections/your'
 import { Route as CollectionsPublicRouteImport } from './routes/collections/public'
 import { Route as CardsSearchRouteImport } from './routes/cards/search'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as WantlistsWantlistIdIndexRouteImport } from './routes/wantlists/$wantlistId/index'
 import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId/index'
@@ -144,19 +144,9 @@ const StatisticsIndexRoute = StatisticsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => StatisticsRoute,
 } as any)
-const NotificationsIndexRoute = NotificationsIndexRouteImport.update({
-  id: '/notifications/',
-  path: '/notifications/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MetaIndexRoute = MetaIndexRouteImport.update({
   id: '/meta/',
   path: '/meta/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MessagesIndexRoute = MessagesIndexRouteImport.update({
-  id: '/messages/',
-  path: '/messages/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LimitedIndexRoute = LimitedIndexRouteImport.update({
@@ -223,6 +213,17 @@ const CardsSearchRoute = CardsSearchRouteImport.update({
   id: '/cards/search',
   path: '/cards/search',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
@@ -505,6 +506,8 @@ export interface FileRoutesByFullPath {
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/messages': typeof AuthenticatedMessagesRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -518,9 +521,7 @@ export interface FileRoutesByFullPath {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
   '/limited': typeof LimitedIndexRoute
-  '/messages': typeof MessagesIndexRoute
   '/meta': typeof MetaIndexRoute
-  '/notifications': typeof NotificationsIndexRoute
   '/statistics/': typeof StatisticsIndexRoute
   '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
@@ -579,6 +580,8 @@ export interface FileRoutesByTo {
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/messages': typeof AuthenticatedMessagesRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -592,9 +595,7 @@ export interface FileRoutesByTo {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
   '/limited': typeof LimitedIndexRoute
-  '/messages': typeof MessagesIndexRoute
   '/meta': typeof MetaIndexRoute
-  '/notifications': typeof NotificationsIndexRoute
   '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
@@ -653,6 +654,8 @@ export interface FileRoutesById {
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -667,9 +670,7 @@ export interface FileRoutesById {
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer/': typeof ComparerIndexRoute
   '/limited/': typeof LimitedIndexRoute
-  '/messages/': typeof MessagesIndexRoute
   '/meta/': typeof MetaIndexRoute
-  '/notifications/': typeof NotificationsIndexRoute
   '/statistics/': typeof StatisticsIndexRoute
   '/teams/': typeof TeamsIndexRoute
   '/tools/': typeof ToolsIndexRoute
@@ -731,6 +732,8 @@ export interface FileRouteTypes {
     | '/statistics2'
     | '/terms'
     | '/admin'
+    | '/messages'
+    | '/notifications'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -744,9 +747,7 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer'
     | '/limited'
-    | '/messages'
     | '/meta'
-    | '/notifications'
     | '/statistics/'
     | '/teams'
     | '/tools'
@@ -805,6 +806,8 @@ export interface FileRouteTypes {
     | '/statistics2'
     | '/terms'
     | '/admin'
+    | '/messages'
+    | '/notifications'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -818,9 +821,7 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer'
     | '/limited'
-    | '/messages'
     | '/meta'
-    | '/notifications'
     | '/teams'
     | '/tools'
     | '/tournaments'
@@ -878,6 +879,8 @@ export interface FileRouteTypes {
     | '/statistics2'
     | '/terms'
     | '/_authenticated/admin'
+    | '/_authenticated/messages'
+    | '/_authenticated/notifications'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -892,9 +895,7 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/comparer/'
     | '/limited/'
-    | '/messages/'
     | '/meta/'
-    | '/notifications/'
     | '/statistics/'
     | '/teams/'
     | '/tools/'
@@ -968,9 +969,7 @@ export interface RootRouteChildren {
   WantlistsYourRoute: typeof WantlistsYourRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
   LimitedIndexRoute: typeof LimitedIndexRoute
-  MessagesIndexRoute: typeof MessagesIndexRoute
   MetaIndexRoute: typeof MetaIndexRoute
-  NotificationsIndexRoute: typeof NotificationsIndexRoute
   TeamsIndexRoute: typeof TeamsIndexRoute
   ToolsIndexRoute: typeof ToolsIndexRoute
   TournamentsIndexRoute: typeof TournamentsIndexRoute
@@ -1080,25 +1079,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatisticsIndexRouteImport
       parentRoute: typeof StatisticsRoute
     }
-    '/notifications/': {
-      id: '/notifications/'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/meta/': {
       id: '/meta/'
       path: '/meta'
       fullPath: '/meta'
       preLoaderRoute: typeof MetaIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/messages/': {
-      id: '/messages/'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof MessagesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/limited/': {
@@ -1191,6 +1176,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/cards/search'
       preLoaderRoute: typeof CardsSearchRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
@@ -1533,6 +1532,8 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedCrossfireLobbyIdRoute: typeof AuthenticatedCrossfireLobbyIdRoute
   AuthenticatedCrossfireIndexRoute: typeof AuthenticatedCrossfireIndexRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
@@ -1544,6 +1545,8 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedCrossfireLobbyIdRoute: AuthenticatedCrossfireLobbyIdRoute,
   AuthenticatedCrossfireIndexRoute: AuthenticatedCrossfireIndexRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
@@ -1674,9 +1677,7 @@ const rootRouteChildren: RootRouteChildren = {
   WantlistsYourRoute: WantlistsYourRoute,
   ComparerIndexRoute: ComparerIndexRoute,
   LimitedIndexRoute: LimitedIndexRoute,
-  MessagesIndexRoute: MessagesIndexRoute,
   MetaIndexRoute: MetaIndexRoute,
-  NotificationsIndexRoute: NotificationsIndexRoute,
   TeamsIndexRoute: TeamsIndexRoute,
   ToolsIndexRoute: ToolsIndexRoute,
   TournamentsIndexRoute: TournamentsIndexRoute,
