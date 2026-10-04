@@ -48,7 +48,10 @@ export const adminSections = [
   },
   {
     title: 'Users',
-    items: [{ id: 'user-reports', label: 'User reports', icon: Flag }],
+    items: [
+      { id: 'user-reports', label: 'User reports', icon: Flag },
+      { id: 'patreon', label: 'Patreon supporters', icon: CircleDollarSign },
+    ],
   },
   {
     title: 'Operations',

@@ -8,7 +8,7 @@ import { getUserProfileFavorites, updateUserProfileFavorites } from './service.t
 import { SwuAspect } from '../../../types/enums.ts';
 
 test.skipIf(process.env.USER_PROFILE_DB_TEST !== '1')(
-  'profile persistence, monetary isolation, constraints and owner deletion',
+  'profile persistence, concurrent favorites, constraints and owner deletion',
   async () => {
     const url = new URL(process.env.DATABASE_URL!);
     if (url.hostname !== '127.0.0.1' || !url.pathname.startsWith('/swubase_'))
@@ -35,17 +35,6 @@ test.skipIf(process.env.USER_PROFILE_DB_TEST !== '1')(
       });
       expect(await db.select().from(userProfile).where(eq(userProfile.userId, id))).toHaveLength(0);
       await updateUserProfileFavorites(id, { favoriteLeaderCardId: leader.cardId });
-      const [defaults] = await db.select().from(userProfile).where(eq(userProfile.userId, id));
-      expect(defaults.totalSupport).toBe('0.00');
-      expect(defaults.activeSupporter).toBe(false);
-      await db
-        .update(userProfile)
-        .set({ totalSupport: '123.45', activeSupporter: true })
-        .where(eq(userProfile.userId, id));
-      await db
-        .update(userProfile)
-        .set({ totalSupport: sql`${userProfile.totalSupport} + 0.10` })
-        .where(eq(userProfile.userId, id));
       await Promise.all([
         updateUserProfileFavorites(id, { favoriteCardId: card.cardId }),
         updateUserProfileFavorites(id, {
@@ -58,9 +47,6 @@ test.skipIf(process.env.USER_PROFILE_DB_TEST !== '1')(
         favoriteCardId: card.cardId,
         favoriteAspects: Array(3).fill(SwuAspect.COMMAND),
       });
-      const [stored] = await db.select().from(userProfile).where(eq(userProfile.userId, id));
-      expect(stored.totalSupport).toBe('123.55');
-      expect(stored.activeSupporter).toBe(true);
       await expect(
         updateUserProfileFavorites(id, { favoriteLeaderCardId: card.cardId }),
       ).rejects.toThrow('Choose a valid leader.');
@@ -71,8 +57,6 @@ test.skipIf(process.env.USER_PROFILE_DB_TEST !== '1')(
         { favoriteAspects: Array(4).fill(SwuAspect.COMMAND) },
         { favoriteAspects: sql`ARRAY['Invalid']::text[]` },
         { favoriteAspects: sql`ARRAY[NULL]::text[]` },
-        { totalSupport: '-0.01' },
-        { totalSupport: 'NaN' },
       ])
         await expect(
           db.update(userProfile).set(values).where(eq(userProfile.userId, id)).execute(),

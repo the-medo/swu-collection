@@ -104,7 +104,7 @@ TRUNCATE TABLE user_notification;
 TRUNCATE TABLE direct_message, direct_conversation;
 -- Avatar choices are not needed in contributor development data.
 TRUNCATE TABLE user_avatar;
--- Profile preferences and financial support records stay out of contributor dumps.
+-- Profile preferences stay out of contributor dumps.
 TRUNCATE TABLE user_profile;
 -- Moderation reports and their Discord payloads stay private for every user.
 TRUNCATE TABLE user_report, user_report_action;
@@ -116,6 +116,8 @@ TRUNCATE TABLE user_tournament_attachment, user_tournament_preparation;
 TRUNCATE TABLE user_calendar_subscription;
 -- Never export uploads, filenames, or account-specific storage entitlements.
 TRUNCATE TABLE user_file, user_file_storage;
+-- Patreon credentials, supporter identities and credit awards always stay private.
+TRUNCATE TABLE user_credits, patreon_member, patreon_connection;
 
 -- Account ownership proofs and connected Melee identities always stay private.
 TRUNCATE TABLE user_melee_tournaments, user_melee_tournament_sync, melee_verification, melee_connection;
@@ -455,7 +457,7 @@ BEGIN
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_profile) THEN
-    RAISE EXCEPTION 'Profile preferences or financial support remain in the contributor dump.';
+    RAISE EXCEPTION 'Profile preferences remain in the contributor dump.';
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_report_action) OR EXISTS (SELECT 1 FROM user_report)
@@ -473,6 +475,11 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_file) OR EXISTS (SELECT 1 FROM user_file_storage) THEN
     RAISE EXCEPTION 'User uploads or storage entitlements remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_credits) OR EXISTS (SELECT 1 FROM patreon_member)
+    OR EXISTS (SELECT 1 FROM patreon_connection) THEN
+    RAISE EXCEPTION 'Patreon credentials, membership or credits remain in the contributor dump.';
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_calendar_subscription) THEN

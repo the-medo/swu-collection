@@ -9,8 +9,10 @@ import { karabastGameResultGetRoute } from './integration/karabast/game-result/g
 import { karabastMockGameResultPostRoute } from './integration/karabast/mock/post.ts';
 import { createMeleeConnectionRouter } from './integration/melee/router.ts';
 import { meleeConnectionService } from '../lib/melee/connection.ts';
+import { patreonWebhookRoute } from './integration/patreon/webhook.ts';
 
 export const integrationRoute = new Hono<AuthExtension>()
+  .route('/patreon/webhook', patreonWebhookRoute)
   .route('/melee', createMeleeConnectionRouter(meleeConnectionService))
   .route('/link-create', linkCreatePostRoute)
   .route('/link-confirm', linkConfirmPostRoute)

@@ -10,6 +10,7 @@ import { authSchema } from '../db/schema/auth-schema.ts';
 import { generateDisplayName } from './generateDisplayName.ts';
 import { admin as adminPlugin } from 'better-auth/plugins';
 import { ac, applicationRoles } from './permissions';
+import { reconcilePatreonAccount } from '../lib/patreon/account.ts';
 
 export type AuthExtension = {
   Variables: {
@@ -20,6 +21,12 @@ export type AuthExtension = {
 
 export const auth = betterAuth({
   onAPIError: { errorURL: '/auth/error' },
+  databaseHooks: {
+    user: {
+      create: { after: reconcilePatreonAccount },
+      update: { after: reconcilePatreonAccount },
+    },
+  },
   hooks: {
     before: createAuthMiddleware(async ctx => {
       assertCardAvatarUpdate(ctx.path, ctx.body);
