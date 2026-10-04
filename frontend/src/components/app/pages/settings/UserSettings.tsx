@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input.tsx';
 import { useForm } from '@tanstack/react-form';
 import { Button } from '@/components/ui/button.tsx';
 import { generateDisplayName } from '../../../../../../server/auth/generateDisplayName.ts';
+import AvatarSettings from './AvatarSettings.tsx';
 
 const UserSettings = () => {
   const user = useUser();
@@ -77,6 +78,7 @@ const UserSettings = () => {
           )}
         />
       </form>
+      {user && <AvatarSettings key={user.id} />}
     </div>
   );
 };

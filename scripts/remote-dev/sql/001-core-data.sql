@@ -102,6 +102,11 @@ TRUNCATE TABLE account, session, verification;
 TRUNCATE TABLE user_notification;
 -- Private conversations are never part of contributor data, regardless of opt-in.
 TRUNCATE TABLE direct_message, direct_conversation;
+-- Avatar choices are not needed in contributor development data.
+TRUNCATE TABLE user_avatar;
+-- Moderation reports and their Discord payloads stay private for every user.
+TRUNCATE TABLE user_report, user_report_action;
+DELETE FROM discord_notification WHERE notification_type = 'user-report';
 
 -- Attendance plans and saved-event metadata stay private, including for opted-in users.
 TRUNCATE TABLE user_tournament_save;
@@ -436,6 +441,15 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_notification) THEN
     RAISE EXCEPTION 'Private user notifications remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_avatar) THEN
+    RAISE EXCEPTION 'Avatar source choices remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_report_action) OR EXISTS (SELECT 1 FROM user_report)
+    OR EXISTS (SELECT 1 FROM discord_notification WHERE notification_type = 'user-report') THEN
+    RAISE EXCEPTION 'Private user reports remain in the contributor dump.';
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_tournament_save) THEN

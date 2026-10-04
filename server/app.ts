@@ -1,3 +1,4 @@
+import { APIError } from 'better-auth/api';
 import { Hono } from 'hono';
 import { requestLogger } from './lib/ws/requestLogger.ts';
 import { messagesRoute } from './routes/messages.ts';
@@ -12,6 +13,7 @@ import { auth, type AuthExtension } from './auth/auth.ts';
 import { cardsRoute } from './routes/cards.ts';
 import { worldRoute } from './routes/world.ts';
 import { userRoute } from './routes/user.ts';
+import { userReportsRoute } from './routes/user-reports.ts';
 import { userSettingsRoute } from './routes/user-settings.ts';
 import { userTournamentSavesRoute } from './routes/user-tournament-saves.ts';
 import { userCalendarRoute } from './routes/user-calendar.ts';
@@ -54,7 +56,7 @@ Sentry.init({
   beforeSend(event) {
     if (
       isCalendarFeedRequest(event.request?.url) ||
-      /\/api\/messages(?:\/|$)/.test(event.request?.url ?? '')
+      /\/api\/(?:messages|(?:admin\/)?user-reports)(?:[/?#]|$)/.test(event.request?.url ?? '')
     )
       return null;
     if (event.request?.url?.includes('/api/user-tournament-attachments')) {
@@ -64,7 +66,7 @@ Sentry.init({
   },
   beforeSendTransaction(event) {
     return isCalendarFeedRequest(event.request?.url) ||
-      /\/api\/messages(?:\/|$)/.test(event.request?.url ?? '')
+      /\/api\/(?:messages|(?:admin\/)?user-reports)(?:[/?#]|$)/.test(event.request?.url ?? '')
       ? null
       : event;
   },
@@ -91,7 +93,13 @@ const app = new Hono<AuthExtension>().onError((err, c) => {
 app.route('/api/calendar', calendarFeedRoute);
 app.use('*', requestLogger());
 app.use('*', async (c, next) => {
-  const session = await auth.api.getSession({ headers: c.req.raw.headers });
+  let session;
+  try {
+    session = await auth.api.getSession({ headers: c.req.raw.headers });
+  } catch (error) {
+    if (!(error instanceof APIError) || error.body?.code !== 'BANNED_USER') throw error;
+    session = null;
+  }
 
   if (!session) {
     c.set('user', null);
@@ -158,6 +166,7 @@ const apiRoutes = app
   .route('/crossfire', crossfireRoute)
   .route('/cards', cardsRoute)
   .route('/user', userRoute)
+  .route('/user-reports', userReportsRoute)
   .route('/user-settings', userSettingsRoute)
   .route('/notifications', notificationsRoute)
   .route('/messages', messagesRoute)

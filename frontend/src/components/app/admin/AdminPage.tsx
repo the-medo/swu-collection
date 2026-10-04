@@ -1,3 +1,4 @@
+import { UserReportsPage } from './user-reports/UserReportsPage';
 import { CrossfireAccessPage } from './CrossfireAccessPage';
 import { CrossfireCardsPage } from './CrossfireCardsPage';
 import { CrossfireOperationsPage } from './CrossfireOperationsPage';
@@ -47,6 +48,7 @@ export function AdminPage() {
           <AdminNavigation page={page} />
           <Card className="min-w-0" key={page}>
             <CardContent className="p-4">
+              {page === 'user-reports' && <UserReportsPage />}
               {page === 'crossfire-access' && <CrossfireAccessPage />}
               {page === 'crossfire-cards' && <CrossfireCardsPage />}
               {page === 'crossfire-operations' && <CrossfireOperationsPage />}

@@ -36,8 +36,13 @@ export default function SignIn({
       sessionStorage.setItem('needsSettingsSync', '1');
       await signIn.social({
         provider,
-        // keep user on the same page after auth
-        callbackURL: window.location.pathname + window.location.search + window.location.hash,
+        // Return to the current page, except a completed sign-in must leave
+        // the error page (including sign-ins from the sidebar).
+        callbackURL:
+          window.location.pathname === '/auth/error'
+            ? '/'
+            : window.location.pathname + window.location.search + window.location.hash,
+        errorCallbackURL: '/auth/error',
       });
     } catch (error) {
       console.error(`Error during ${provider} sign-in:`, error);

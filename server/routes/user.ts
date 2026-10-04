@@ -10,6 +10,7 @@ import type { AuthExtension } from '../auth/auth.ts';
 import { entityPrice, type EntityPrice } from '../db/schema/entity_price.ts';
 import { createUserTournamentsRouter } from './user-tournaments.ts';
 import { meleeTournamentService } from '../lib/melee/tournaments.ts';
+import { userAvatarPostRoute } from './user/avatar/post.ts';
 
 const { email, emailVerified, calendarPrivacy, ...selectUser } = getTableColumns(user);
 export { selectUser };
@@ -22,6 +23,7 @@ export type UserCollectionsResponse = {
 
 export const userRoute = new Hono<AuthExtension>()
   .route('/', createUserTournamentsRouter(meleeTournamentService))
+  .route('/avatar', userAvatarPostRoute)
   .get('/:id/collection', async c => {
     const paramUserId = c.req.param('id');
     const user = c.get('user');

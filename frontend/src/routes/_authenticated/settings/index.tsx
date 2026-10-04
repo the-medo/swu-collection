@@ -7,7 +7,10 @@ import { settingsPageIds } from '@/components/app/pages/settings/settingsNavigat
 const settingsPages: string[] = settingsPageIds;
 
 const searchParams = z.object({
-  page: z.enum(settingsPages).default('collections-and-wantlists'),
+  page: z.preprocess(
+    value => (value === 'display-name' ? 'profile' : value),
+    z.enum(settingsPages).default('profile'),
+  ),
 });
 
 export const Route = createFileRoute('/_authenticated/settings/')({

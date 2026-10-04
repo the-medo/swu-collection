@@ -120,6 +120,28 @@ export function getResourceSubmissionsDiscordConfig() {
   return { ...config, enabled, channelId, roleId, appBaseUrl: normalizeBaseUrl(appBaseUrl ?? '') };
 }
 
+export function getUserReportsDiscordConfig() {
+  const enabled = readBooleanEnv('DISCORD_USER_REPORTS_ENABLED') ?? false;
+  const channelId = readStringEnv('DISCORD_USER_REPORTS_CHANNEL_ID');
+  // User reports notify exactly the same moderator/dev role as resource submissions.
+  const roleId = readStringEnv('DISCORD_RESOURCE_SUBMISSIONS_ROLE_ID');
+  const appBaseUrl = readDiscordAppBaseUrl();
+  const config = getDiscordConfig({ requireBotToken: enabled });
+  if (enabled) {
+    for (const [name, value] of [
+      ['DISCORD_USER_REPORTS_CHANNEL_ID', channelId],
+      ['DISCORD_RESOURCE_SUBMISSIONS_ROLE_ID', roleId],
+    ]) {
+      if (!value || !/^\d{17,20}$/.test(value)) throw new Error(`${name} must be a Discord ID.`);
+    }
+    assertPresent(appBaseUrl, DISCORD_APP_BASE_URL_ENV_LABEL, 'Discord user reports');
+    const url = new URL(appBaseUrl);
+    if (!/^https?:$/.test(url.protocol) || url.origin !== normalizeBaseUrl(appBaseUrl))
+      throw new Error('Discord user reports require an HTTP(S) app origin.');
+  }
+  return { ...config, enabled, channelId, roleId, appBaseUrl: normalizeBaseUrl(appBaseUrl ?? '') };
+}
+
 export function getDiscordConfig(options: DiscordConfigOptions = {}): DiscordConfig {
   const botToken = readStringEnv('DISCORD_BOT_TOKEN');
 

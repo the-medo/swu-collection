@@ -6,6 +6,7 @@ export const discordNotificationTypes = {
   tournamentResults: 'tournament-results',
   tournamentStream: 'tournament-stream',
   resourceSubmission: 'resource-submission',
+  userReport: 'user-report',
 } as const;
 
 export type DiscordNotificationType =

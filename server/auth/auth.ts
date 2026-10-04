@@ -1,4 +1,9 @@
 import { betterAuth } from 'better-auth';
+import { APIError, createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
+import { deleteSessionCookie } from 'better-auth/cookies';
+import { hasActiveAccountRestriction } from './accountRestriction.ts';
+import { restrictionNotice } from './restrictionNotice.ts';
+import { assertCardAvatarUpdate } from './avatarPolicy.ts';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '../db';
 import { authSchema } from '../db/schema/auth-schema.ts';
@@ -14,6 +19,45 @@ export type AuthExtension = {
 };
 
 export const auth = betterAuth({
+  onAPIError: { errorURL: '/auth/error' },
+  hooks: {
+    before: createAuthMiddleware(async ctx => {
+      assertCardAvatarUpdate(ctx.path, ctx.body);
+      // Protect auth mutations as well as app routes from a session created by
+      // an OAuth callback that overlapped a restriction transaction.
+      if (ctx.path !== '/get-session' && ctx.path !== '/account-restriction') {
+        const current = await getSessionFromCtx(ctx, { disableCookieCache: true });
+        if (
+          hasActiveAccountRestriction({
+            banned: current?.user.banned,
+            banExpires: current?.user.banExpires,
+          })
+        ) {
+          await ctx.context.internalAdapter.deleteSessions(current!.user.id);
+          deleteSessionCookie(ctx);
+          throw new APIError('FORBIDDEN', {
+            code: 'BANNED_USER',
+            message: 'This account is suspended or banned.',
+          });
+        }
+      }
+    }),
+    after: createAuthMiddleware(async ctx => {
+      if (ctx.path !== '/get-session') return;
+      const current = ctx.context.returned as {
+        user?: { id: string; banned?: boolean | null; banExpires?: Date | string | null };
+      } | null;
+      if (current?.user && hasActiveAccountRestriction(current.user)) {
+        await ctx.context.internalAdapter.deleteSessions(current.user.id);
+        deleteSessionCookie(ctx);
+        ctx.context.session = null;
+        throw new APIError('UNAUTHORIZED', {
+          code: 'BANNED_USER',
+          message: 'This account is suspended or banned.',
+        });
+      }
+    }),
+  },
   advanced: process.env.BETTER_AUTH_COOKIE_PREFIX
     ? {
         // Cookies are scoped to a host rather than a port. Worktree setup gives
@@ -22,6 +66,7 @@ export const auth = betterAuth({
       }
     : undefined,
   plugins: [
+    restrictionNotice(),
     adminPlugin({
       ac,
       roles: applicationRoles,

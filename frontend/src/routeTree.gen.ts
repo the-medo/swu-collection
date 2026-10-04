@@ -35,6 +35,7 @@ import { Route as DecksFavoriteRouteImport } from './routes/decks/favorite'
 import { Route as CollectionsYourRouteImport } from './routes/collections/your'
 import { Route as CollectionsPublicRouteImport } from './routes/collections/public'
 import { Route as CardsSearchRouteImport } from './routes/cards/search'
+import { Route as AuthErrorRouteImport } from './routes/auth.error'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
@@ -213,6 +214,11 @@ const CollectionsPublicRoute = CollectionsPublicRouteImport.update({
 const CardsSearchRoute = CardsSearchRouteImport.update({
   id: '/cards/search',
   path: '/cards/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthErrorRoute = AuthErrorRouteImport.update({
+  id: '/auth/error',
+  path: '/auth/error',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedNotificationsRoute =
@@ -514,6 +520,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/auth/error': typeof AuthErrorRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -589,6 +596,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/auth/error': typeof AuthErrorRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -664,6 +672,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/auth/error': typeof AuthErrorRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -743,6 +752,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/messages'
     | '/notifications'
+    | '/auth/error'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -818,6 +828,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/messages'
     | '/notifications'
+    | '/auth/error'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -892,6 +903,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/messages'
     | '/_authenticated/notifications'
+    | '/auth/error'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -968,6 +980,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   Statistics2Route: typeof Statistics2Route
   TermsRoute: typeof TermsRoute
+  AuthErrorRoute: typeof AuthErrorRoute
   CardsSearchRoute: typeof CardsSearchRoute
   CollectionsPublicRoute: typeof CollectionsPublicRoute
   CollectionsYourRoute: typeof CollectionsYourRoute
@@ -1188,6 +1201,13 @@ declare module '@tanstack/react-router' {
       path: '/cards/search'
       fullPath: '/cards/search'
       preLoaderRoute: typeof CardsSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/error': {
+      id: '/auth/error'
+      path: '/auth/error'
+      fullPath: '/auth/error'
+      preLoaderRoute: typeof AuthErrorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/notifications': {
@@ -1684,6 +1704,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   Statistics2Route: Statistics2Route,
   TermsRoute: TermsRoute,
+  AuthErrorRoute: AuthErrorRoute,
   CardsSearchRoute: CardsSearchRoute,
   CollectionsPublicRoute: CollectionsPublicRoute,
   CollectionsYourRoute: CollectionsYourRoute,
