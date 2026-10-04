@@ -112,6 +112,8 @@ DELETE FROM discord_notification WHERE notification_type = 'user-report';
 TRUNCATE TABLE user_tournament_save;
 TRUNCATE TABLE user_tournament_attachment, user_tournament_preparation;
 TRUNCATE TABLE user_calendar_subscription;
+-- Never export uploads, filenames, or account-specific storage entitlements.
+TRUNCATE TABLE user_file, user_file_storage;
 
 -- Account ownership proofs and connected Melee identities always stay private.
 TRUNCATE TABLE user_melee_tournaments, user_melee_tournament_sync, melee_verification, melee_connection;
@@ -461,6 +463,10 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM post) THEN
     RAISE EXCEPTION 'Personal post content remains in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_file) OR EXISTS (SELECT 1 FROM user_file_storage) THEN
+    RAISE EXCEPTION 'User uploads or storage entitlements remain in the contributor dump.';
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_calendar_subscription) THEN

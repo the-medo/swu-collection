@@ -4,6 +4,7 @@ import {
   CalendarDays,
   Code,
   House,
+  Images,
   PanelLeft,
   Plug,
   SlidersHorizontal,
@@ -13,6 +14,7 @@ import {
 
 export const settingsItems = [
   { id: 'profile', label: 'Profile', icon: UserRound },
+  { id: 'uploads', label: 'Uploads', icon: Images },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'collections-and-wantlists', label: 'Collections and wantlists', icon: BookOpen },
   { id: 'integrations', label: 'Integrations', icon: Plug },

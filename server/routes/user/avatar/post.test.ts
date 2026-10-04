@@ -34,6 +34,17 @@ function fixture(authenticated = true, failure?: AvatarError, now = Date.now) {
   return { app, calls };
 }
 describe('POST user avatar', () => {
+  test('accepts an uploaded image ID with crop coordinates', async () => {
+    const { app, calls } = fixture();
+    const uploaded = { fileId: crypto.randomUUID(), crop: input.crop };
+    const response = await app.request('/avatar', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(uploaded),
+    });
+    expect(response.status).toBe(200);
+    expect(calls).toEqual([['session-user', uploaded]]);
+  });
   test('source lookup requires a session and uses only its owner', async () => {
     const owners: string[] = [];
     const source = { cardId: 'card', variantId: 'version', side: 'back' as const };

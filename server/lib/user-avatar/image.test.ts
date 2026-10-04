@@ -17,6 +17,19 @@ const input = {
 };
 
 describe('avatar source validation', () => {
+  test('accepts an upload ID but rejects mixed sources, URLs, owner IDs and invalid upload IDs', () => {
+    const uploaded = { fileId: crypto.randomUUID(), crop: input.crop };
+    expect(userAvatarInputSchema.parse(uploaded)).toEqual(uploaded);
+    for (const bad of [
+      { ...uploaded, cardId: input.cardId },
+      { ...input, fileId: uploaded.fileId },
+      { ...uploaded, fileId: '../other/avatar' },
+      { ...uploaded, fileId: 'https://example.com/image.webp' },
+      { ...uploaded, image: 'https://example.com/image.webp' },
+      { ...uploaded, userId: 'someone-else' },
+    ])
+      expect(userAvatarInputSchema.safeParse(bad).success).toBe(false);
+  });
   test('resolves the selected printing and side from the catalog', () => {
     expect(resolveAvatarImage(cardList, input)).toBe(
       `https://images.swubase.com/cards/${variant.image.front}`,
@@ -128,7 +141,7 @@ describe('avatar crop output', () => {
   });
   test('handles corrupt source images without leaking processing errors', async () => {
     await expect(cropAvatar(Buffer.from('invalid image'), input.crop)).rejects.toThrow(
-      'Could not process this card image. Try another version.',
+      'Could not process this image. Try another image.',
     );
   });
 });

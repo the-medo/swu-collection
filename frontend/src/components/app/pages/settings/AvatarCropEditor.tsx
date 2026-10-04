@@ -11,15 +11,18 @@ export function AvatarCropEditor({
   src,
   name,
   pending,
+  disabled = false,
   onSave,
   onCancel,
 }: {
   src: string;
   name: string;
   pending: boolean;
+  disabled?: boolean;
   onSave: (crop: AvatarCrop) => void;
   onCancel: () => void;
 }) {
+  const busy = pending || disabled;
   const [dimensions, setDimensions] = useState<Dimensions>();
   const [crop, setCrop] = useState<AvatarCrop>();
   const [failed, setFailed] = useState(false);
@@ -86,12 +89,12 @@ export function AvatarCropEditor({
               <svg
                 className={cn(
                   'absolute inset-0 h-full w-full touch-none select-none',
-                  pending ? 'cursor-wait' : 'cursor-crosshair',
+                  busy ? 'cursor-wait' : 'cursor-crosshair',
                 )}
                 viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
                 aria-hidden="true"
                 onPointerDown={e => {
-                  if (pending) return;
+                  if (busy) return;
                   e.preventDefault();
                   const { x, y } = point(e);
                   const isResize = (e.target as Element).hasAttribute('data-resize');
@@ -114,7 +117,7 @@ export function AvatarCropEditor({
                 }}
                 onPointerMove={e => {
                   const start = drag.current;
-                  if (!start || start.pointerId !== e.pointerId || pending) return;
+                  if (!start || start.pointerId !== e.pointerId || busy) return;
                   const { x, y } = point(e);
                   if (start.resize) {
                     const size = Math.max(
@@ -178,16 +181,17 @@ export function AvatarCropEditor({
           </div>
           {failed && (
             <p role="alert" className="text-sm text-destructive">
-              This image could not be loaded or is too small. Choose another version.
+              This image could not be loaded or is smaller than 100 × 100 pixels. Choose another
+              image.
             </p>
           )}
           {!dimensions && !failed && (
             <p role="status" className="text-sm text-muted-foreground">
-              Loading card image…
+              Loading image…
             </p>
           )}
           {dimensions && crop && (
-            <fieldset disabled={pending} className="space-y-3" aria-describedby="avatar-crop-help">
+            <fieldset disabled={busy} className="space-y-3" aria-describedby="avatar-crop-help">
               <div className="space-y-1">
                 <Label htmlFor="avatar-crop-size">Square size</Label>
                 <input
@@ -262,10 +266,10 @@ export function AvatarCropEditor({
         )}
       </div>
       <div className="flex gap-2">
-        <Button disabled={!crop || failed || pending} onClick={() => crop && onSave(crop)}>
+        <Button disabled={!crop || failed || busy} onClick={() => crop && onSave(crop)}>
           {pending ? 'Saving avatar…' : 'Save avatar'}
         </Button>
-        <Button variant="outline" disabled={pending} onClick={onCancel}>
+        <Button variant="outline" disabled={busy} onClick={onCancel}>
           Cancel
         </Button>
       </div>
