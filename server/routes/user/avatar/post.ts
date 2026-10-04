@@ -3,14 +3,18 @@ import { bodyLimit } from 'hono/body-limit';
 import { zValidator } from '@hono/zod-validator';
 import type { AuthExtension } from '../../../auth/auth.ts';
 import { userAvatarInputSchema } from '../../../../types/UserAvatar.ts';
-import { saveUserAvatar } from '../../../lib/user-avatar/service.ts';
+import { getUserAvatarSource, saveUserAvatar } from '../../../lib/user-avatar/service.ts';
 import { AvatarError } from '../../../lib/user-avatar/image.ts';
 
 type UserAvatarEnv = AuthExtension & {
   Bindings: Partial<Pick<Bun.Server<unknown>, 'timeout'>>;
 };
 
-export function createUserAvatarRoute(save = saveUserAvatar, now = Date.now) {
+export function createUserAvatarRoute(
+  save = saveUserAvatar,
+  now = Date.now,
+  getSource = getUserAvatarSource,
+) {
   const buckets = new Map<string, { until: number; used: number }>();
   const pending = new Set<string>();
   let nextSweep = 0;
@@ -18,11 +22,12 @@ export function createUserAvatarRoute(save = saveUserAvatar, now = Date.now) {
     .use('*', async (c, next) => {
       c.header('Cache-Control', 'private, no-store');
       if (!c.get('user')) return c.json({ message: 'Unauthorized' }, 401);
-      if (c.req.header('X-Requested-With') !== 'swubase') {
+      if (c.req.method === 'POST' && c.req.header('X-Requested-With') !== 'swubase') {
         return c.json({ message: 'Invalid request origin.' }, 403);
       }
       await next();
     })
+    .get('/', async c => c.json({ data: await getSource(c.get('user')!.id) }))
     .post(
       '/',
       bodyLimit({ maxSize: 4096, onError: c => c.json({ message: 'Request too large.' }, 413) }),

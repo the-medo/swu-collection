@@ -107,7 +107,13 @@ const CollectionCardSelection: React.FC<CollectionCardSelectionProps> = ({ colle
                   <div className="text-sm text-gray-600">
                     Please sign in to continue with this action.
                   </div>
-                  <Button onClick={() => signIn.social({ provider: 'google' })}>Sign in</Button>
+                  <Button
+                    onClick={() =>
+                      signIn.social({ provider: 'google', errorCallbackURL: '/auth/error' })
+                    }
+                  >
+                    Sign in
+                  </Button>
                 </div>
               )}
             </>

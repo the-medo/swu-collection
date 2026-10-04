@@ -1,3 +1,4 @@
+import { reportModerationRoute } from './admin/user-reports/index.ts';
 import { crossfireAccessRoute } from './admin/crossfire-access/index.ts';
 import { crossfireCardReleasesRoute } from './admin/crossfire-cards/index.ts';
 import { crossfireOperationsRoute } from './admin/crossfire-operations/index.ts';
@@ -24,6 +25,7 @@ import { eventHighlightsRoute } from './admin/event-highlights/index.ts';
 import { resourceSubmissionsRoute } from './admin/resource-submissions/index.ts';
 
 export const adminRoute = new Hono<AuthExtension>()
+  .route('/user-reports', reportModerationRoute)
   .route('/resource-submissions', resourceSubmissionsRoute)
   .route('/event-highlights', eventHighlightsRoute)
   .route('/crossfire-access', crossfireAccessRoute)

@@ -1,3 +1,4 @@
+import { createSessionCheckedSocket } from '../../lib/ws/sessionCheckedSocket.ts';
 import { startGameResultNotifications } from '../../lib/ws/gameResultsNotifications.ts';
 import { Hono } from 'hono';
 import { upgradeWebSocket } from 'hono/bun';
@@ -32,7 +33,8 @@ export const wsGameResultsRoute = new Hono<AuthExtension>().get('/', async c => 
   }
 
   const user = c.get('user');
-  if (!user) {
+  const session = c.get('session');
+  if (!user || !session) {
     if (isWebSocketRequest) {
       return closeWebSocket(c, unauthorizedCloseCode, 'Unauthorized');
     }
@@ -43,14 +45,18 @@ export const wsGameResultsRoute = new Hono<AuthExtension>().get('/', async c => 
   const teamIds = await getUserTeamIdsForRealtime(user.id);
   await startGameResultNotifications();
 
+  let guarded: ReturnType<typeof createSessionCheckedSocket> | undefined;
   return upgradeWebSocket(c, {
     onOpen(_event, ws) {
-      registerGameResultSocket(ws, {
+      guarded = createSessionCheckedSocket(ws, { userId: user.id, sessionId: session.id }, () =>
+        unregisterGameResultSocket(ws),
+      );
+      registerGameResultSocket(guarded.socket, {
         userId: user.id,
         teamIds,
       });
 
-      ws.send(
+      guarded?.socket.send(
         JSON.stringify({
           type: 'game_results.connected',
           data: {
@@ -61,11 +67,11 @@ export const wsGameResultsRoute = new Hono<AuthExtension>().get('/', async c => 
         }),
       );
     },
-    onMessage(event, ws) {
+    onMessage(event) {
       const input = typeof event.data === 'string' ? event.data.trim() : '';
 
       if (input === 'ping') {
-        ws.send(
+        guarded?.socket.send(
           JSON.stringify({
             type: 'pong',
             at: new Date().toISOString(),
@@ -74,18 +80,18 @@ export const wsGameResultsRoute = new Hono<AuthExtension>().get('/', async c => 
         return;
       }
 
-      ws.send(
+      guarded?.socket.send(
         JSON.stringify({
           type: 'error',
           message: 'Unsupported websocket command',
         }),
       );
     },
-    onClose(_event, ws) {
-      unregisterGameResultSocket(ws);
+    onClose() {
+      guarded?.dispose();
     },
-    onError(_event, ws) {
-      unregisterGameResultSocket(ws);
+    onError() {
+      guarded?.socket.close(1011, 'Socket error');
     },
   });
 });

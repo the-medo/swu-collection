@@ -47,6 +47,10 @@ export const adminSections = [
     ],
   },
   {
+    title: 'Users',
+    items: [{ id: 'user-reports', label: 'User reports', icon: Flag }],
+  },
+  {
     title: 'Operations',
     items: [
       { id: 'deck-thumbnails', label: 'Deck thumbnails', icon: Image },

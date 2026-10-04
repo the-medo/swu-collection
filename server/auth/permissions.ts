@@ -20,13 +20,10 @@ const statement = {
 
 export const ac = createAccessControl(statement);
 
-export const moderator = ac.newRole({
-  user: ['ban'],
-});
+export const moderator = ac.newRole({});
 
 export const organizer = ac.newRole({
   tournament: ['create', 'update', 'delete'],
-  user: ['ban'],
 });
 
 export const admin = ac.newRole({

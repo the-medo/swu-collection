@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { cn } from '@/lib/utils.ts';
 import { MessageBody } from './MessageBody.tsx';
+import { ReportUserButton } from '@/components/app/users/ReportUserButton.tsx';
 import { messageMaxLength, type MessagePeer } from '../../../../../shared/types/messages.ts';
 
 const route = getRouteApi('/_authenticated/messages');
@@ -317,6 +318,15 @@ function Conversation({
           </Link>
         ) : (
           <span className="text-sm text-muted-foreground">Conversation</span>
+        )}
+        {data && (
+          <div className="ml-auto">
+            <ReportUserButton
+              userId={peerId}
+              displayName={data.peer.displayName}
+              source="conversation"
+            />
+          </div>
         )}
       </div>
       <div className="relative flex min-h-0 flex-1 flex-col">

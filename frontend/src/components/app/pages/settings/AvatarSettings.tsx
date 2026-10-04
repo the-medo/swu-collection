@@ -1,19 +1,14 @@
 import { useState } from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useSetUserAvatar } from '@/api/user/useSetUserAvatar.ts';
+import { useUserAvatarSource } from '@/api/user/useUserAvatarSource.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
-import { Label } from '@/components/ui/label.tsx';
 import CardSearchCommand from '@/components/app/global/CardSearchCommand/CardSearchCommand.tsx';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select.tsx';
+import { CardVariantPicker } from '@/components/app/cards/CardVariantPicker.tsx';
+import { Link } from '@tanstack/react-router';
 import { getCardImageUrl } from '@/components/app/global/cardImageLib.ts';
 import { AvatarCropEditor } from './AvatarCropEditor.tsx';
 import type { CardVariant } from '../../../../../../lib/swu-resources/types.ts';
@@ -23,6 +18,10 @@ export default function AvatarSettings() {
   const user = useUser();
   const catalog = useCardList();
   const mutation = useSetUserAvatar(user!.id);
+  const sourceQuery = useUserAvatarSource(user!.id);
+  const source = sourceQuery.data;
+  const sourceCard = source && catalog.data?.cards[source.cardId];
+  const sourceVariant = sourceCard && sourceCard.variants[source!.variantId];
   const { toast } = useToast();
   const [cardId, setCardId] = useState('');
   const [variantId, setVariantId] = useState('');
@@ -53,7 +52,7 @@ export default function AvatarSettings() {
   };
 
   return (
-    <section className="space-y-4 border-t pt-5" aria-labelledby="avatar-heading">
+    <section className="@container space-y-4 border-t pt-5" aria-labelledby="avatar-heading">
       <div className="flex items-center gap-4">
         <Avatar className="size-16">
           <AvatarImage src={savedImage ?? user?.image ?? undefined} alt="Current avatar" />
@@ -66,6 +65,34 @@ export default function AvatarSettings() {
           <p className="text-sm text-muted-foreground">
             Choose card artwork and crop it to make it yours.
           </p>
+          {source && (
+            <p className="text-sm text-muted-foreground">
+              Current artwork:{' '}
+              {sourceCard ? (
+                <Link
+                  to="."
+                  search={previous => ({ ...previous, modalCardId: source.cardId })}
+                  className="text-primary underline"
+                >
+                  {sourceCard.name}
+                </Link>
+              ) : (
+                'Card no longer available'
+              )}
+              {sourceVariant &&
+                ` · ${sourceVariant.set.toUpperCase()} #${sourceVariant.cardNo} · ${sourceVariant.variantName}`}
+              {source.side === 'back' && ' · Back'}
+            </p>
+          )}
+          {sourceQuery.isError && (
+            <button
+              type="button"
+              className="text-sm text-destructive underline"
+              onClick={() => void sourceQuery.refetch()}
+            >
+              Could not load avatar source. Retry
+            </button>
+          )}
         </div>
       </div>
       {catalog.isError ? (
@@ -76,7 +103,7 @@ export default function AvatarSettings() {
           </Button>
         </div>
       ) : (
-        <div className="flex max-w-xl flex-col gap-3">
+        <div className="flex flex-col gap-3">
           <p className="text-sm font-medium">Card</p>
           <CardSearchCommand
             id="card-search-avatar"
@@ -100,27 +127,18 @@ export default function AvatarSettings() {
           {card && (
             <>
               <p className="text-sm">{card.name}</p>
-              <Label htmlFor="avatar-version">Version</Label>
-              <Select
-                value={variantId}
+              <p className="text-sm font-medium">Version</p>
+              <CardVariantPicker
+                card={card}
+                variants={variants}
+                selectedVariantId={variantId}
                 disabled={mutation.isPending}
-                onValueChange={id => {
+                onSelect={id => {
                   setVariantId(id);
                   setSide('front');
                   mutation.reset();
                 }}
-              >
-                <SelectTrigger id="avatar-version">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {variants.map(v => (
-                    <SelectItem key={v.variantId} value={v.variantId}>
-                      {v.set.toUpperCase()} {v.cardNo} · {v.variantName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              />
               {variant?.image.back && (
                 <div className="flex gap-2" role="group" aria-label="Card side">
                   {(['front', 'back'] as const).map(value => (

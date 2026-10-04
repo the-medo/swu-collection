@@ -1,10 +1,11 @@
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { db } from '../../db';
 import { user } from '../../db/schema/auth-schema.ts';
+import { userAvatar } from '../../db/schema/user_avatar.ts';
 import { getMergedCardList } from '../cards/cardListProvider.ts';
 import type { CardList } from '../../../lib/swu-resources/types.ts';
-import type { UserAvatarInput } from '../../../types/UserAvatar.ts';
+import type { UserAvatarInput, UserAvatarSource } from '../../../types/UserAvatar.ts';
 import { AvatarError, cropAvatar, fetchAvatarSource, resolveAvatarImage } from './image.ts';
 
 type AvatarDependencies = {
@@ -12,7 +13,7 @@ type AvatarDependencies = {
   fetchSource(url: string): Promise<Uint8Array>;
   storageAvailable(): boolean;
   upload(key: string, body: Buffer): Promise<void>;
-  updateProfile(userId: string, image: string): Promise<boolean>;
+  updateProfile(userId: string, image: string, source: UserAvatarSource): Promise<boolean>;
 };
 
 export function createUserAvatarService(deps: AvatarDependencies) {
@@ -28,7 +29,9 @@ export function createUserAvatarService(deps: AvatarDependencies) {
       throw new AvatarError('Could not save your avatar. Please try again.', 502);
     }
     // Never hold a database connection while waiting on the image host or R2.
-    if (!(await deps.updateProfile(userId, image))) throw new AvatarError('User not found.', 404);
+    const source = { cardId: input.cardId, variantId: input.variantId, side: input.side };
+    if (!(await deps.updateProfile(userId, image, source)))
+      throw new AvatarError('User not found.', 404);
     return { image };
   };
 }
@@ -60,12 +63,31 @@ export const saveUserAvatar = createUserAvatarService({
       { abortSignal: AbortSignal.timeout(30_000) },
     );
   },
-  async updateProfile(userId, image) {
-    const rows = await db
+  updateProfile: persistUserAvatar,
+});
+
+export async function persistUserAvatar(userId: string, image: string, source: UserAvatarSource) {
+  return db.transaction(async tx => {
+    const updatedAt = new Date();
+    const rows = await tx
       .update(user)
-      .set({ image, updatedAt: new Date() })
+      .set({ image, updatedAt })
       .where(eq(user.id, userId))
       .returning({ id: user.id });
-    return rows.length > 0;
-  },
-});
+    if (!rows.length) return false;
+    await tx
+      .insert(userAvatar)
+      .values({ userId, image, ...source, updatedAt })
+      .onConflictDoUpdate({ target: userAvatar.userId, set: { image, ...source, updatedAt } });
+    return true;
+  });
+}
+
+export async function getUserAvatarSource(userId: string): Promise<UserAvatarSource | null> {
+  const [source] = await db
+    .select({ cardId: userAvatar.cardId, variantId: userAvatar.variantId, side: userAvatar.side })
+    .from(userAvatar)
+    .innerJoin(user, eq(user.id, userAvatar.userId))
+    .where(and(eq(userAvatar.userId, userId), eq(userAvatar.image, user.image)));
+  return source ?? null;
+}

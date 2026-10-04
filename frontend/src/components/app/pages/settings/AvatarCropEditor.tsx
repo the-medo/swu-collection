@@ -49,7 +49,7 @@ export function AvatarCropEditor({
 
   return (
     <div className="space-y-5">
-      <div className="grid gap-6">
+      <div className="grid gap-6 @min-[640px]:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground" id="avatar-crop-help">
             Drag the square to frame your avatar. Resize from its corner, or use the sliders.

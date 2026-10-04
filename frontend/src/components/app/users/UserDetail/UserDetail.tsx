@@ -1,3 +1,5 @@
+import { useRole } from '@/hooks/useRole';
+import { UserReportHistory } from '@/components/app/admin/user-reports/UserReportHistory';
 import { Button } from '@/components/ui/button.tsx';
 import { Mail } from 'lucide-react';
 import { useUser } from '@/hooks/useUser.ts';
@@ -18,13 +20,16 @@ import { CollectionType } from '../../../../../../types/enums.ts';
 import { Helmet } from 'react-helmet-async';
 import { UserCalendarTab } from './UserCalendarTab.tsx';
 import { UserTournamentsTab } from './UserTournamentsTab.tsx';
+import { ReportUserButton } from '../ReportUserButton.tsx';
 
 const routeApi = getRouteApi('/users/$userId/');
 
 const UserDetail: React.FC = () => {
   const { userId } = routeApi.useParams();
   const currentUser = useUser();
-  const { userTab = 'decks' } = routeApi.useSearch();
+  const { userTab: requestedTab = 'decks' } = routeApi.useSearch();
+  const isAdmin = useRole()('admin');
+  const userTab = requestedTab === 'reports' && !isAdmin ? 'decks' : requestedTab;
   const navigate = routeApi.useNavigate();
   const { data: countryData } = useCountryList();
   const { data: user, isFetching, error } = useGetUser(userId);
@@ -57,7 +62,7 @@ const UserDetail: React.FC = () => {
   return (
     <>
       <Helmet
-        title={`${user?.displayName}${userTab === 'calendar' ? ' · Calendar' : userTab === 'tournaments' ? ' · Tournaments' : ''} | SWUBase`}
+        title={`${user?.displayName}${userTab === 'calendar' ? ' · Calendar' : userTab === 'tournaments' ? ' · Tournaments' : userTab === 'reports' ? ' · Reports' : ''} | SWUBase`}
       />
       <div className="flex min-w-0 flex-col gap-4">
         <div className="flex w-full min-w-0 flex-wrap items-center gap-4">
@@ -81,11 +86,18 @@ const UserDetail: React.FC = () => {
               currentUser.id !== userId &&
               currentUser.id !== 'swubase' &&
               userId !== 'swubase' && (
-                <Button asChild variant="outline" className="w-fit">
-                  <Link to="/messages" search={{ with: userId }}>
-                    <Mail aria-hidden="true" /> Send message
-                  </Link>
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button asChild variant="outline" className="w-fit">
+                    <Link to="/messages" search={{ with: userId }}>
+                      <Mail aria-hidden="true" /> Send message
+                    </Link>
+                  </Button>
+                  <ReportUserButton
+                    userId={userId}
+                    displayName={user.displayName}
+                    source="profile"
+                  />
+                </div>
               )}
           </div>
         </div>
@@ -97,7 +109,8 @@ const UserDetail: React.FC = () => {
               value === 'collections' ||
               value === 'wantlists' ||
               value === 'calendar' ||
-              value === 'tournaments'
+              value === 'tournaments' ||
+              (value === 'reports' && isAdmin)
             )
               void navigate({
                 search: previous => ({ ...previous, userTab: value }),
@@ -106,7 +119,9 @@ const UserDetail: React.FC = () => {
           }}
           className="w-full"
         >
-          <TabsList className="grid h-auto w-full grid-cols-3 items-stretch sm:grid-cols-5">
+          <TabsList
+            className={`grid h-auto w-full grid-cols-3 items-stretch ${isAdmin ? 'sm:grid-cols-6' : 'sm:grid-cols-5'}`}
+          >
             <TabsTrigger
               value="decks"
               className="min-w-0 whitespace-normal px-1 text-xs sm:text-sm"
@@ -137,7 +152,20 @@ const UserDetail: React.FC = () => {
             >
               Tournaments
             </TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger
+                value="reports"
+                className="min-w-0 whitespace-normal px-1 text-xs sm:text-sm"
+              >
+                Reports
+              </TabsTrigger>
+            )}
           </TabsList>
+          {isAdmin && (
+            <TabsContent value="reports">
+              <UserReportHistory userId={userId} />
+            </TabsContent>
+          )}
           <TabsContent value="decks">
             <UserDecks userId={userId} />
           </TabsContent>

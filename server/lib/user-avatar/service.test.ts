@@ -2,6 +2,7 @@ import { expect, test } from 'bun:test';
 import sharp from 'sharp';
 import { cardList } from '../../db/lists.ts';
 import { createUserAvatarService } from './service.ts';
+import type { UserAvatarSource } from '../../../types/UserAvatar.ts';
 
 const card = Object.values(cardList).find(
   c => c && Object.values(c.variants).some(v => v?.image.front),
@@ -24,7 +25,7 @@ async function fixture(
     .toBuffer();
   const calls: string[] = [];
   const uploads: { key: string; body: Buffer }[] = [];
-  const updates: { id: string; image: string }[] = [];
+  const updates: { id: string; image: string; source: UserAvatarSource }[] = [];
   const save = createUserAvatarService({
     storageAvailable: () => options.available !== false,
     getCards: async () => {
@@ -40,9 +41,9 @@ async function fixture(
       if (options.failUpload) throw new Error('upstream credential details');
       uploads.push({ key, body });
     },
-    updateProfile: async (id, image) => {
+    updateProfile: async (id, image, source) => {
       calls.push('update');
-      updates.push({ id, image });
+      updates.push({ id, image, source });
       return !options.missingUser;
     },
   });
@@ -59,7 +60,13 @@ test('uploads cropped bytes to the user key before updating their profile', asyn
     height: 256,
     format: 'webp',
   });
-  expect(updates).toEqual([{ id: 'owner', image: first.image }]);
+  expect(updates).toEqual([
+    {
+      id: 'owner',
+      image: first.image,
+      source: { cardId: input.cardId, variantId: input.variantId, side: input.side },
+    },
+  ]);
   expect(first.image).toStartWith('https://images.swubase.com/user-data/owner/avatar.webp?v=');
   const second = await save('owner', input);
   expect(uploads[1]!.key).toBe(uploads[0]!.key);

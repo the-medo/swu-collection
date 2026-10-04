@@ -14,6 +14,7 @@ import { CardVariantPriceAdministration } from '../CardVariantPrice/CardVariantP
 import { PriceBadge } from '@/components/app/card-prices';
 import { CardPriceSourceType } from '../../../../../../types/CardPrices.ts';
 import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
+import { CardVariantPicker } from '../CardVariantPicker.tsx';
 
 interface CardDetailProps {
   cardId: string;
@@ -273,46 +274,27 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                 {/* Variants Tab */}
                 <TabsContent value="variants" className="mt-0">
                   <div className="space-y-3">
-                    <div className="flex flex-wrap gap-3">
-                      {allVariants.map(variant => (
-                        <div
-                          key={variant.id}
-                          className={`cursor-pointer transition-all duration-200 rounded-md p-2 border-2 ${
-                            selectedVariantId === variant.id
-                              ? 'border-primary bg-primary/5'
-                              : 'border-transparent hover:border-muted-foreground hover:bg-muted/30'
-                          }`}
-                          onClick={() => setSelectedVariantId(variant.id)}
-                          title={`${variant.variantName} - ${variant.fullSetName} #${variant.cardNo}`}
-                        >
-                          <div className="flex flex-col items-center gap-2">
-                            <CardImage size="w100" card={card} cardVariantId={variant.id} />
-                            <div className="flex flex-col items-center">
-                              <div className="text-xs font-medium text-center max-w-28 truncate">
-                                {variant.variantName}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {variant.set?.toUpperCase()} #{variant.cardNo}
-                              </div>
-                              {variant.variantId && (
-                                <div className="flex flex-col items-center">
-                                  <PriceBadge
-                                    cardId={cardId}
-                                    sourceType={CardPriceSourceType.CARDMARKET}
-                                    variantId={variant.variantId}
-                                  />
-                                  <PriceBadge
-                                    cardId={cardId}
-                                    sourceType={CardPriceSourceType.TCGPLAYER}
-                                    variantId={variant.variantId}
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    <CardVariantPicker
+                      card={card}
+                      variants={allVariants}
+                      selectedVariantId={selectedVariantId ?? defaultVariantId}
+                      onSelect={setSelectedVariantId}
+                      showBackSide
+                      renderDetails={variant => (
+                        <>
+                          <PriceBadge
+                            cardId={cardId}
+                            sourceType={CardPriceSourceType.CARDMARKET}
+                            variantId={variant.variantId}
+                          />
+                          <PriceBadge
+                            cardId={cardId}
+                            sourceType={CardPriceSourceType.TCGPLAYER}
+                            variantId={variant.variantId}
+                          />
+                        </>
+                      )}
+                    />
 
                     {/* Price Administration for selected variant */}
                     {selectedVariantId && (

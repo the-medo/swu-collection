@@ -18,3 +18,4 @@ export const userAvatarInputSchema = z.strictObject({
 
 export type AvatarCrop = z.infer<typeof avatarCropSchema>;
 export type UserAvatarInput = z.infer<typeof userAvatarInputSchema>;
+export type UserAvatarSource = Pick<UserAvatarInput, 'cardId' | 'variantId' | 'side'>;

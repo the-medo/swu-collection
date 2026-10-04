@@ -13,6 +13,7 @@ import { settingsItems } from './settingsNavigation.ts';
 import { CalendarWeekStart } from '@/components/app/tournaments/calendar/CalendarWeekStart.tsx';
 import { Helmet } from 'react-helmet-async';
 import { Route } from '@/routes/_authenticated/settings';
+import { cn } from '@/lib/utils.ts';
 
 export function SettingsPage() {
   const { page } = Route.useSearch();
@@ -29,7 +30,10 @@ export function SettingsPage() {
           <SettingsNavigation page={current.id} />
           <Card className="min-w-0" key={page}>
             <CardContent className="p-4">
-              <section aria-labelledby="settings-heading" className="max-w-xl space-y-4">
+              <section
+                aria-labelledby="settings-heading"
+                className={cn('space-y-4', page !== 'profile' && 'max-w-xl')}
+              >
                 <h3 id="settings-heading">{current.label}</h3>
                 {page === 'collections-and-wantlists' && <CollectionAndWantlistSettings />}
                 {page === 'profile' && <UserSettings />}

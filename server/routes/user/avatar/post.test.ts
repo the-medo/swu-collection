@@ -34,6 +34,26 @@ function fixture(authenticated = true, failure?: AvatarError, now = Date.now) {
   return { app, calls };
 }
 describe('POST user avatar', () => {
+  test('source lookup requires a session and uses only its owner', async () => {
+    const owners: string[] = [];
+    const source = { cardId: 'card', variantId: 'version', side: 'back' as const };
+    const route = createUserAvatarRoute(undefined, undefined, async id => {
+      owners.push(id);
+      return source;
+    });
+    expect((await route.request('/')).status).toBe(401);
+    const app = new Hono<AuthExtension>()
+      .use('*', async (c, next) => {
+        c.set('user', { id: 'owner' } as NonNullable<AuthExtension['Variables']['user']>);
+        await next();
+      })
+      .route('/avatar', route);
+    const response = await app.request('/avatar?userId=someone-else');
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ data: source });
+    expect(owners).toEqual(['owner']);
+    expect(response.headers.get('cache-control')).toContain('no-store');
+  });
   test('uses the authenticated owner and returns the saved image', async () => {
     const { app, calls } = fixture();
     const response = await app.request('/avatar', {
