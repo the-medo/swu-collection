@@ -4,7 +4,7 @@ import {
   avatarSize,
   avatarCropSchema,
   type AvatarCrop,
-  type UserAvatarInput,
+  type CardAvatarSource,
 } from '../../../types/UserAvatar.ts';
 
 export class AvatarError extends Error {
@@ -17,7 +17,7 @@ export class AvatarError extends Error {
 }
 
 // Only catalog-owned paths within the public cards directory can be fetched.
-export function resolveAvatarImage(cards: CardList, input: UserAvatarInput): string {
+export function resolveAvatarImage(cards: CardList, input: CardAvatarSource): string {
   const card = Object.prototype.hasOwnProperty.call(cards, input.cardId)
     ? cards[input.cardId]
     : undefined;
@@ -62,7 +62,7 @@ export async function fetchAvatarSource(url: string): Promise<Uint8Array> {
     }
     return Buffer.concat(chunks);
   } catch {
-    throw new AvatarError('Could not load the card image. Please try again.', 502);
+    throw new AvatarError('Could not load the image. Please try again.', 502);
   }
 }
 
@@ -76,7 +76,7 @@ export async function cropAvatar(source: Uint8Array, input: AvatarCrop): Promise
       .rotate()
       .toBuffer({ resolveWithObject: true });
     if (left + size > info.width || top + size > info.height) {
-      throw new AvatarError('The selected square must stay inside the card image.', 400);
+      throw new AvatarError('The selected square must stay inside the image.', 400);
     }
     return await sharp(data)
       .extract({ left, top, width: size, height: size })
@@ -85,6 +85,6 @@ export async function cropAvatar(source: Uint8Array, input: AvatarCrop): Promise
       .toBuffer();
   } catch (error) {
     if (error instanceof AvatarError) throw error;
-    throw new AvatarError('Could not process this card image. Try another version.', 502);
+    throw new AvatarError('Could not process this image. Try another image.', 502);
   }
 }

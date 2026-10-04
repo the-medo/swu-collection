@@ -2,6 +2,7 @@ import NotificationSettings from './NotificationSettings.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import CollectionAndWantlistSettings from './CollectionAndWantlistSettings.tsx';
 import UserSettings from './UserSettings.tsx';
+import UploadsSettings from './uploads/UploadsSettings.tsx';
 import WatchedPlayersSettings from './WatchedPlayersSettings.tsx';
 import DevelopmentSettings from './DevelopmentSettings.tsx';
 import HomeLocationSettings from './HomeLocationSettings.tsx';
@@ -28,26 +29,30 @@ export function SettingsPage() {
         </div>
         <div className="grid min-w-0 gap-4 lg:grid-cols-[13rem_minmax(0,1fr)] lg:items-start">
           <SettingsNavigation page={current.id} />
-          <Card className="min-w-0" key={page}>
-            <CardContent className="p-4">
-              <section
-                aria-labelledby="settings-heading"
-                className={cn('space-y-4', page !== 'profile' && 'max-w-xl')}
-              >
-                <h3 id="settings-heading">{current.label}</h3>
-                {page === 'collections-and-wantlists' && <CollectionAndWantlistSettings />}
-                {page === 'profile' && <UserSettings />}
-                {page === 'integrations' && <IntegrationsSettings />}
-                {page === 'watched-players' && <WatchedPlayersSettings />}
-                {page === 'calendar' && <CalendarWeekStart />}
-                {page === 'sidebar' && <SidebarSettings />}
-                {page === 'features' && <FeaturesSettings />}
-                {page === 'notifications' && <NotificationSettings />}
-                {page === 'home-location' && <HomeLocationSettings />}
-                {page === 'development' && <DevelopmentSettings />}
-              </section>
-            </CardContent>
-          </Card>
+          {page === 'uploads' ? (
+            <UploadsSettings />
+          ) : (
+            <Card className="min-w-0" key={page}>
+              <CardContent className="p-4">
+                <section
+                  aria-labelledby="settings-heading"
+                  className={cn('space-y-4', page !== 'profile' && 'max-w-xl')}
+                >
+                  <h3 id="settings-heading">{current.label}</h3>
+                  {page === 'collections-and-wantlists' && <CollectionAndWantlistSettings />}
+                  {page === 'profile' && <UserSettings />}
+                  {page === 'integrations' && <IntegrationsSettings />}
+                  {page === 'watched-players' && <WatchedPlayersSettings />}
+                  {page === 'calendar' && <CalendarWeekStart />}
+                  {page === 'sidebar' && <SidebarSettings />}
+                  {page === 'features' && <FeaturesSettings />}
+                  {page === 'notifications' && <NotificationSettings />}
+                  {page === 'home-location' && <HomeLocationSettings />}
+                  {page === 'development' && <DevelopmentSettings />}
+                </section>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </>

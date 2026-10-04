@@ -16,7 +16,12 @@ const input = {
 };
 
 async function fixture(
-  options: { available?: boolean; failUpload?: boolean; missingUser?: boolean } = {},
+  options: {
+    available?: boolean;
+    failUpload?: boolean;
+    missingUser?: boolean;
+    missingUpload?: boolean;
+  } = {},
 ) {
   const source = await sharp({
     create: { width: 300, height: 419, channels: 3, background: '#456789' },
@@ -28,6 +33,10 @@ async function fixture(
   const updates: { id: string; image: string; source: UserAvatarSource }[] = [];
   const save = createUserAvatarService({
     storageAvailable: () => options.available !== false,
+    getUpload: async (userId, fileId) => {
+      calls.push(`upload-source:${userId}:${fileId}`);
+      return options.missingUpload ? null : `https://images.swubase.com/user-files/${fileId}.webp`;
+    },
     getCards: async () => {
       calls.push('catalog');
       return cardList;
@@ -71,6 +80,28 @@ test('uploads cropped bytes to the user key before updating their profile', asyn
   const second = await save('owner', input);
   expect(uploads[1]!.key).toBe(uploads[0]!.key);
   expect(second.image).not.toBe(first.image);
+});
+
+test('uploaded images use the authenticated owner and the same cropped avatar output', async () => {
+  const { save, calls, uploads, updates } = await fixture();
+  const fileId = crypto.randomUUID();
+  const result = await save('owner', { fileId, crop: input.crop });
+  expect(calls).toEqual([`upload-source:owner:${fileId}`, 'fetch', 'upload', 'update']);
+  expect(await sharp(uploads[0]!.body).metadata()).toMatchObject({
+    width: 256,
+    height: 256,
+    format: 'webp',
+  });
+  expect(updates).toEqual([{ id: 'owner', image: result.image, source: { fileId } }]);
+});
+
+test('missing or foreign uploads are rejected before fetching or changing the avatar', async () => {
+  const { save, calls, uploads, updates } = await fixture({ missingUpload: true });
+  const fileId = crypto.randomUUID();
+  await expect(save('owner', { fileId, crop: input.crop })).rejects.toMatchObject({ status: 404 });
+  expect(calls).toEqual([`upload-source:owner:${fileId}`]);
+  expect(uploads).toEqual([]);
+  expect(updates).toEqual([]);
 });
 
 test('missing storage fails before fetching images or changing the profile', async () => {

@@ -15,6 +15,7 @@ import { worldRoute } from './routes/world.ts';
 import { postsRoute } from './routes/posts.ts';
 import { userRoute } from './routes/user.ts';
 import { userReportsRoute } from './routes/user-reports.ts';
+import { userFilesRoute } from './routes/user-files.ts';
 import { userSettingsRoute } from './routes/user-settings.ts';
 import { userTournamentSavesRoute } from './routes/user-tournament-saves.ts';
 import { userCalendarRoute } from './routes/user-calendar.ts';
@@ -60,7 +61,10 @@ Sentry.init({
       /\/api\/(?:messages|(?:admin\/)?user-reports)(?:[/?#]|$)/.test(event.request?.url ?? '')
     )
       return null;
-    if (event.request?.url?.includes('/api/user-tournament-attachments')) {
+    if (
+      event.request?.url?.includes('/api/user-tournament-attachments') ||
+      event.request?.url?.includes('/api/user-files')
+    ) {
       delete event.request.data;
     }
     return event;
@@ -170,6 +174,7 @@ const apiRoutes = app
   .route('/user-reports', userReportsRoute)
   .route('/posts', postsRoute)
   .route('/user-settings', userSettingsRoute)
+  .route('/user-files', userFilesRoute)
   .route('/notifications', notificationsRoute)
   .route('/messages', messagesRoute)
   .route('/user-tournament-saves', userTournamentSavesRoute)

@@ -1,7 +1,7 @@
 import { expect, test } from 'bun:test';
 import { assertCardAvatarUpdate } from './avatarPolicy.ts';
 
-test('self-service auth updates cannot bypass card artwork selection', () => {
+test('self-service auth updates cannot bypass avatar selection', () => {
   for (const image of [
     'https://example.com/custom.png',
     'data:image/png;base64,abc',
@@ -9,7 +9,7 @@ test('self-service auth updates cannot bypass card artwork selection', () => {
     '',
     undefined,
   ]) {
-    expect(() => assertCardAvatarUpdate('/update-user', { image })).toThrow('Choose card artwork');
+    expect(() => assertCardAvatarUpdate('/update-user', { image })).toThrow('Choose an avatar');
   }
 });
 

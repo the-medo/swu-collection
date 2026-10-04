@@ -3,6 +3,8 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '../../db';
 import { user } from '../../db/schema/auth-schema.ts';
 import { userAvatar } from '../../db/schema/user_avatar.ts';
+import { userFile } from '../../db/schema/user_file.ts';
+import { createUserFileStorage } from '../user-files/storage.ts';
 import { getMergedCardList } from '../cards/cardListProvider.ts';
 import type { CardList } from '../../../lib/swu-resources/types.ts';
 import type { UserAvatarInput, UserAvatarSource } from '../../../types/UserAvatar.ts';
@@ -10,6 +12,7 @@ import { AvatarError, cropAvatar, fetchAvatarSource, resolveAvatarImage } from '
 
 type AvatarDependencies = {
   getCards(): Promise<CardList>;
+  getUpload(userId: string, fileId: string): Promise<string | null>;
   fetchSource(url: string): Promise<Uint8Array>;
   storageAvailable(): boolean;
   upload(key: string, body: Buffer): Promise<void>;
@@ -19,7 +22,11 @@ type AvatarDependencies = {
 export function createUserAvatarService(deps: AvatarDependencies) {
   return async (userId: string, input: UserAvatarInput) => {
     if (!deps.storageAvailable()) throw new AvatarError('Avatar storage is not configured.', 503);
-    const url = resolveAvatarImage(await deps.getCards(), input);
+    const url =
+      'fileId' in input
+        ? await deps.getUpload(userId, input.fileId)
+        : resolveAvatarImage(await deps.getCards(), input);
+    if (!url) throw new AvatarError('This image is no longer in your uploads.', 404);
     const body = await cropAvatar(await deps.fetchSource(url), input.crop);
     const key = `user-data/${encodeURIComponent(userId)}/avatar.webp`;
     const image = `https://images.swubase.com/${key}?v=${crypto.randomUUID()}`;
@@ -29,7 +36,10 @@ export function createUserAvatarService(deps: AvatarDependencies) {
       throw new AvatarError('Could not save your avatar. Please try again.', 502);
     }
     // Never hold a database connection while waiting on the image host or R2.
-    const source = { cardId: input.cardId, variantId: input.variantId, side: input.side };
+    const source: UserAvatarSource =
+      'fileId' in input
+        ? { fileId: input.fileId }
+        : { cardId: input.cardId, variantId: input.variantId, side: input.side };
     if (!(await deps.updateProfile(userId, image, source)))
       throw new AvatarError('User not found.', 404);
     return { image };
@@ -38,6 +48,7 @@ export function createUserAvatarService(deps: AvatarDependencies) {
 
 export const saveUserAvatar = createUserAvatarService({
   getCards: getMergedCardList,
+  getUpload: getUploadedAvatarUrl,
   fetchSource: fetchAvatarSource,
   storageAvailable: () =>
     !!(process.env.R2_ENDPOINT && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY),
@@ -69,6 +80,10 @@ export const saveUserAvatar = createUserAvatarService({
 export async function persistUserAvatar(userId: string, image: string, source: UserAvatarSource) {
   return db.transaction(async tx => {
     const updatedAt = new Date();
+    const metadata =
+      'fileId' in source
+        ? { fileId: source.fileId, cardId: null, variantId: null, side: null }
+        : { fileId: null, ...source };
     const rows = await tx
       .update(user)
       .set({ image, updatedAt })
@@ -77,17 +92,34 @@ export async function persistUserAvatar(userId: string, image: string, source: U
     if (!rows.length) return false;
     await tx
       .insert(userAvatar)
-      .values({ userId, image, ...source, updatedAt })
-      .onConflictDoUpdate({ target: userAvatar.userId, set: { image, ...source, updatedAt } });
+      .values({ userId, image, ...metadata, updatedAt })
+      .onConflictDoUpdate({ target: userAvatar.userId, set: { image, ...metadata, updatedAt } });
     return true;
   });
 }
 
 export async function getUserAvatarSource(userId: string): Promise<UserAvatarSource | null> {
   const [source] = await db
-    .select({ cardId: userAvatar.cardId, variantId: userAvatar.variantId, side: userAvatar.side })
+    .select({
+      cardId: userAvatar.cardId,
+      variantId: userAvatar.variantId,
+      side: userAvatar.side,
+      fileId: userAvatar.fileId,
+    })
     .from(userAvatar)
     .innerJoin(user, eq(user.id, userAvatar.userId))
     .where(and(eq(userAvatar.userId, userId), eq(userAvatar.image, user.image)));
-  return source ?? null;
+  if (!source) return null;
+  if (source.fileId) return { fileId: source.fileId };
+  if (source.cardId && source.variantId && source.side)
+    return { cardId: source.cardId, variantId: source.variantId, side: source.side };
+  return null;
+}
+
+export async function getUploadedAvatarUrl(userId: string, fileId: string): Promise<string | null> {
+  const [file] = await db
+    .select({ imageKey: userFile.imageKey })
+    .from(userFile)
+    .where(and(eq(userFile.id, fileId), eq(userFile.userId, userId)));
+  return file ? createUserFileStorage().publicUrl(file.imageKey) : null;
 }
