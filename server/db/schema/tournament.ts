@@ -59,6 +59,7 @@ export const tournament = pgTable(
     return {
       dateIdx: index('tournament-date_idx').on(table.date),
       metaIdx: index('tournament-meta_idx').on(table.meta),
+      meleeIdIdx: index('tournament_melee_id_idx').on(table.meleeId),
     };
   },
 );

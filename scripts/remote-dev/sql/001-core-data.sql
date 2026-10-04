@@ -109,7 +109,7 @@ TRUNCATE TABLE user_tournament_attachment, user_tournament_preparation;
 TRUNCATE TABLE user_calendar_subscription;
 
 -- Account ownership proofs and connected Melee identities always stay private.
-TRUNCATE TABLE melee_verification, melee_connection;
+TRUNCATE TABLE user_melee_tournaments, user_melee_tournament_sync, melee_verification, melee_connection;
 
 DELETE FROM user_integration ui
 USING development_cleanup_user dcu
@@ -377,6 +377,8 @@ BEGIN
     OR EXISTS (SELECT 1 FROM verification)
     OR EXISTS (SELECT 1 FROM melee_verification)
     OR EXISTS (SELECT 1 FROM melee_connection)
+    OR EXISTS (SELECT 1 FROM user_melee_tournaments)
+    OR EXISTS (SELECT 1 FROM user_melee_tournament_sync)
     OR EXISTS (SELECT 1 FROM integration_game_data) THEN
     RAISE EXCEPTION 'Credential or raw integration data remains after contributor-dump sanitization.';
   END IF;
