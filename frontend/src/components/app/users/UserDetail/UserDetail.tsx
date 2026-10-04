@@ -17,6 +17,7 @@ import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import { Helmet } from 'react-helmet-async';
 import { UserCalendarTab } from './UserCalendarTab.tsx';
+import { UserTournamentsTab } from './UserTournamentsTab.tsx';
 
 const routeApi = getRouteApi('/users/$userId/');
 
@@ -56,7 +57,7 @@ const UserDetail: React.FC = () => {
   return (
     <>
       <Helmet
-        title={`${user?.displayName}${userTab === 'calendar' ? ' · Calendar' : ''} | SWUBase`}
+        title={`${user?.displayName}${userTab === 'calendar' ? ' · Calendar' : userTab === 'tournaments' ? ' · Tournaments' : ''} | SWUBase`}
       />
       <div className="flex min-w-0 flex-col gap-4">
         <div className="flex w-full min-w-0 flex-wrap items-center gap-4">
@@ -95,7 +96,8 @@ const UserDetail: React.FC = () => {
               value === 'decks' ||
               value === 'collections' ||
               value === 'wantlists' ||
-              value === 'calendar'
+              value === 'calendar' ||
+              value === 'tournaments'
             )
               void navigate({
                 search: previous => ({ ...previous, userTab: value }),
@@ -104,7 +106,7 @@ const UserDetail: React.FC = () => {
           }}
           className="w-full"
         >
-          <TabsList className="grid h-auto w-full grid-cols-4 items-stretch">
+          <TabsList className="grid h-auto w-full grid-cols-3 items-stretch sm:grid-cols-5">
             <TabsTrigger
               value="decks"
               className="min-w-0 whitespace-normal px-1 text-xs sm:text-sm"
@@ -129,6 +131,12 @@ const UserDetail: React.FC = () => {
             >
               Calendar
             </TabsTrigger>
+            <TabsTrigger
+              value="tournaments"
+              className="min-w-0 whitespace-normal px-1 text-xs sm:text-sm"
+            >
+              Tournaments
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="decks">
             <UserDecks userId={userId} />
@@ -141,6 +149,9 @@ const UserDetail: React.FC = () => {
           </TabsContent>
           <TabsContent value="calendar">
             <UserCalendarTab userId={userId} />
+          </TabsContent>
+          <TabsContent value="tournaments">
+            <UserTournamentsTab key={userId} userId={userId} />
           </TabsContent>
         </Tabs>
       </div>

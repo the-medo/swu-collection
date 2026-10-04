@@ -463,6 +463,13 @@
       "when": 1791063970981,
       "tag": "0065_direct_messages",
       "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "7",
+      "when": 1791098784592,
+      "tag": "0066_user_melee_tournaments",
+      "breakpoints": true
     }
   ]
 }

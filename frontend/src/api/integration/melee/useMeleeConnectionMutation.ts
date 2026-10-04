@@ -3,6 +3,7 @@ import { api } from '@/lib/api.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { createApiError } from '@/api/errors.ts';
 import { meleeConnectionKeys } from './queryKeys.ts';
+import { userTournamentKeys } from '@/api/user/tournamentKeys.ts';
 
 type Action = { action: 'start'; username: string } | { action: 'verify' | 'disconnect' };
 
@@ -27,6 +28,7 @@ export function useMeleeConnectionMutation() {
       await queryClient.cancelQueries({ queryKey });
       queryClient.setQueryData(queryKey, data);
       await queryClient.invalidateQueries({ queryKey });
+      await queryClient.invalidateQueries({ queryKey: userTournamentKeys.profile(userId) });
     },
   });
 }

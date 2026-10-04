@@ -218,7 +218,8 @@ function MeleeIntegration({ status }: { status: MeleeConnectionStatus }) {
         <>
           <p className="text-sm text-muted-foreground">
             Verify ownership by temporarily adding a code to your public Melee bio. SWUBASE will
-            save your Melee username and display name.
+            save your Melee username and display name. Refreshing tournaments from your profile
+            publishes your results on your public SWUBASE profile.
           </p>
           <form
             className="space-y-3"

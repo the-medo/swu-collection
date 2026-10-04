@@ -53,6 +53,7 @@ import { Route as DecksDeckIdIndexRouteImport } from './routes/decks/$deckId/ind
 import { Route as CollectionsCollectionIdIndexRouteImport } from './routes/collections/$collectionId/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedCrossfireIndexRouteImport } from './routes/_authenticated/crossfire/index'
+import { Route as UsersUserIdTournamentsRouteImport } from './routes/users/$userId/tournaments'
 import { Route as UsersUserIdCalendarRouteImport } from './routes/users/$userId/calendar'
 import { Route as TournamentsTournamentIdMetaRouteImport } from './routes/tournaments/$tournamentId/meta'
 import { Route as TournamentsTournamentIdMatchupsRouteImport } from './routes/tournaments/$tournamentId/matchups'
@@ -318,6 +319,11 @@ const AuthenticatedCrossfireIndexRoute =
     path: '/crossfire/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const UsersUserIdTournamentsRoute = UsersUserIdTournamentsRouteImport.update({
+  id: '/users/$userId/tournaments',
+  path: '/users/$userId/tournaments',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UsersUserIdCalendarRoute = UsersUserIdCalendarRouteImport.update({
   id: '/users/$userId/calendar',
   path: '/users/$userId/calendar',
@@ -536,6 +542,7 @@ export interface FileRoutesByFullPath {
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
   '/users/$userId/calendar': typeof UsersUserIdCalendarRoute
+  '/users/$userId/tournaments': typeof UsersUserIdTournamentsRoute
   '/crossfire': typeof AuthenticatedCrossfireIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
@@ -609,6 +616,7 @@ export interface FileRoutesByTo {
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
   '/users/$userId/calendar': typeof UsersUserIdCalendarRoute
+  '/users/$userId/tournaments': typeof UsersUserIdTournamentsRoute
   '/crossfire': typeof AuthenticatedCrossfireIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
@@ -685,6 +693,7 @@ export interface FileRoutesById {
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
   '/users/$userId/calendar': typeof UsersUserIdCalendarRoute
+  '/users/$userId/tournaments': typeof UsersUserIdTournamentsRoute
   '/_authenticated/crossfire/': typeof AuthenticatedCrossfireIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
@@ -762,6 +771,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
     | '/users/$userId/calendar'
+    | '/users/$userId/tournaments'
     | '/crossfire'
     | '/settings'
     | '/collections/$collectionId'
@@ -835,6 +845,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
     | '/users/$userId/calendar'
+    | '/users/$userId/tournaments'
     | '/crossfire'
     | '/settings'
     | '/collections/$collectionId'
@@ -910,6 +921,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
     | '/users/$userId/calendar'
+    | '/users/$userId/tournaments'
     | '/_authenticated/crossfire/'
     | '/_authenticated/settings/'
     | '/collections/$collectionId/'
@@ -982,6 +994,7 @@ export interface RootRouteChildren {
   TournamentsTournamentIdMatchupsRoute: typeof TournamentsTournamentIdMatchupsRoute
   TournamentsTournamentIdMetaRoute: typeof TournamentsTournamentIdMetaRoute
   UsersUserIdCalendarRoute: typeof UsersUserIdCalendarRoute
+  UsersUserIdTournamentsRoute: typeof UsersUserIdTournamentsRoute
   CollectionsCollectionIdIndexRoute: typeof CollectionsCollectionIdIndexRoute
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
   LimitedPublicIndexRoute: typeof LimitedPublicIndexRoute
@@ -1309,6 +1322,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/crossfire'
       preLoaderRoute: typeof AuthenticatedCrossfireIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/users/$userId/tournaments': {
+      id: '/users/$userId/tournaments'
+      path: '/users/$userId/tournaments'
+      fullPath: '/users/$userId/tournaments'
+      preLoaderRoute: typeof UsersUserIdTournamentsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/users/$userId/calendar': {
       id: '/users/$userId/calendar'
@@ -1690,6 +1710,7 @@ const rootRouteChildren: RootRouteChildren = {
   TournamentsTournamentIdMatchupsRoute: TournamentsTournamentIdMatchupsRoute,
   TournamentsTournamentIdMetaRoute: TournamentsTournamentIdMetaRoute,
   UsersUserIdCalendarRoute: UsersUserIdCalendarRoute,
+  UsersUserIdTournamentsRoute: UsersUserIdTournamentsRoute,
   CollectionsCollectionIdIndexRoute: CollectionsCollectionIdIndexRoute,
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
   LimitedPublicIndexRoute: LimitedPublicIndexRoute,
