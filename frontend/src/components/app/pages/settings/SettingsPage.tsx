@@ -32,7 +32,7 @@ export function SettingsPage() {
               <section aria-labelledby="settings-heading" className="max-w-xl space-y-4">
                 <h3 id="settings-heading">{current.label}</h3>
                 {page === 'collections-and-wantlists' && <CollectionAndWantlistSettings />}
-                {page === 'display-name' && <UserSettings />}
+                {page === 'profile' && <UserSettings />}
                 {page === 'integrations' && <IntegrationsSettings />}
                 {page === 'watched-players' && <WatchedPlayersSettings />}
                 {page === 'calendar' && <CalendarWeekStart />}

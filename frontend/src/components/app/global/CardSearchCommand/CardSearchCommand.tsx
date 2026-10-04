@@ -11,7 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command.tsx';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
@@ -23,10 +23,18 @@ import { useSidebar } from '@/components/ui/sidebar.tsx';
 interface CardSearchCommandProps {
   /** used to determine open state and search string, since there can be multiple
     instances of CardSearchCommand on the same page (eg. homepage with expanded sidebar) */
-  id: 'card-search-left-sidebar' | 'card-search-homepage';
+  id: string;
+  onSelectCard?: (cardId: string, variantId: string) => void;
+  disabled?: boolean;
+  label?: string;
 }
 
-const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
+const CardSearchCommand: React.FC<CardSearchCommandProps> = ({
+  id,
+  onSelectCard,
+  disabled = false,
+  label = 'Search cards',
+}) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -43,34 +51,43 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
       search: prev => ({ ...prev, name: search }),
     });
     if (isMobile && id === 'card-search-left-sidebar') setOpenMobile(false);
-  }, [id, search]);
+  }, [id, search, navigate, isMobile, setOpenMobile, setSearch, setOpen]);
 
   return (
-    <Popover open={open}>
-      <Command className="border w-full" shouldFilter={false}>
-        <PopoverTrigger>
-          {isFetching ? (
-            <Skeleton className={`h-11 w-full`} />
-          ) : (
-            <CommandInput
-              placeholder="Search..."
-              value={search}
-              onValueChange={v => {
-                setSearch(v);
-              }}
-              onKeyDown={e => setOpen(e.key !== 'Escape')}
-              onMouseDown={() => {
-                setOpen(true);
-              }}
-              ref={searchInputRef}
-            />
-          )}
-        </PopoverTrigger>
+    <Popover open={open && !disabled} onOpenChange={setOpen}>
+      <Command id={id} label={label} className="border w-full" shouldFilter={false}>
+        <PopoverAnchor asChild>
+          <div>
+            {isFetching ? (
+              <Skeleton className={`h-11 w-full`} />
+            ) : (
+              <CommandInput
+                placeholder="Search..."
+                disabled={disabled}
+                value={search}
+                onValueChange={v => {
+                  setSearch(v);
+                  setOpen(true);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Escape' || e.key === 'Tab') setOpen(false);
+                  else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') setOpen(true);
+                }}
+                onPointerDown={() => {
+                  setOpen(true);
+                }}
+                ref={searchInputRef}
+              />
+            )}
+          </div>
+        </PopoverAnchor>
         <PopoverContent
-          className="md:w-[450px] ml-2 p-0"
+          className="w-[min(450px,calc(100vw-2rem))] p-0"
+          align="start"
           onOpenAutoFocus={e => e.preventDefault()}
+          onCloseAutoFocus={e => e.preventDefault()}
           onInteractOutside={e => {
-            if (e.target instanceof Element && e.target.hasAttribute('cmdk-input')) {
+            if (e.target === searchInputRef.current) {
               e.preventDefault();
             } else {
               setOpen(false);
@@ -79,22 +96,29 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
         >
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
-            <CommandItem onSelect={onShowAllResults}>
-              <div className="flex flex-col gap-2 p-4 w-full font-medium">
-                {options?.length > 0
-                  ? 'Show all results'
-                  : 'No results found. Open advenced search.'}
-              </div>
-            </CommandItem>
+            {!onSelectCard && (
+              <CommandItem onSelect={onShowAllResults}>
+                <div className="flex flex-col gap-2 p-4 w-full font-medium">
+                  {options?.length > 0
+                    ? 'Show all results'
+                    : 'No results found. Open advanced search.'}
+                </div>
+              </CommandItem>
+            )}
             {options?.map(i => {
               const card = cardList?.cards[i.cardId];
               return (
                 <CommandItem
                   key={i.cardId}
+                  value={i.cardId}
                   onSelect={() => {
                     setSearch('');
                     setOpen(false);
-                    navigate({
+                    if (onSelectCard) {
+                      onSelectCard(i.cardId, i.defaultVariant);
+                      return;
+                    }
+                    void navigate({
                       to: '.',
                       search: prev => ({ ...prev, modalCardId: i.cardId }),
                     });
@@ -106,9 +130,9 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({ id }) => {
                     cardVariantId={i.defaultVariant}
                     backSideButton={false}
                   />
-                  <div className="flex flex-col gap-2 w-full">
+                  <div className="flex min-w-0 flex-col gap-2 w-full">
                     <span className="font-medium">{card?.name}</span>
-                    <div className="flex gap-2 w-full justify-between">
+                    <div className="flex flex-wrap gap-2 w-full justify-between">
                       <span>{card?.type}</span>
                       <div className="flex gap-2">
                         {card?.cost !== null ? (

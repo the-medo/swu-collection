@@ -1,4 +1,6 @@
 import { betterAuth } from 'better-auth';
+import { createAuthMiddleware } from 'better-auth/api';
+import { assertCardAvatarUpdate } from './avatarPolicy.ts';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '../db';
 import { authSchema } from '../db/schema/auth-schema.ts';
@@ -14,6 +16,11 @@ export type AuthExtension = {
 };
 
 export const auth = betterAuth({
+  hooks: {
+    before: createAuthMiddleware(async ctx => {
+      assertCardAvatarUpdate(ctx.path, ctx.body);
+    }),
+  },
   advanced: process.env.BETTER_AUTH_COOKIE_PREFIX
     ? {
         // Cookies are scoped to a host rather than a port. Worktree setup gives
