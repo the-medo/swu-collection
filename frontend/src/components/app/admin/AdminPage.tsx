@@ -21,6 +21,7 @@ import { AdminNavigation } from './AdminNavigation';
 import { adminSections } from './adminNavigation';
 import { EventHighlightsPage } from './EventHighlightsPage';
 import { ResourceSubmissionsPage } from './ResourceSubmissionsPage';
+import { PatreonPage } from './PatreonPage';
 
 export function AdminPage() {
   const hasRole = useRole();
@@ -49,6 +50,7 @@ export function AdminPage() {
           <Card className="min-w-0" key={page}>
             <CardContent className="p-4">
               {page === 'user-reports' && <UserReportsPage />}
+              {page === 'patreon' && <PatreonPage />}
               {page === 'crossfire-access' && <CrossfireAccessPage />}
               {page === 'crossfire-cards' && <CrossfireCardsPage />}
               {page === 'crossfire-operations' && <CrossfireOperationsPage />}

@@ -18,7 +18,7 @@ export class UserProfileError extends Error {
   }
 }
 
-// Explicit public projection: payment amounts and recurring-payment status stay private.
+// Explicit public projection of profile favorites.
 const favoriteColumns = {
   userId: userProfile.userId,
   favoriteLeaderCardId: userProfile.favoriteLeaderCardId,
@@ -54,8 +54,7 @@ export async function updateUserProfileFavorites(
   }
   const [owner] = await db.select({ id: user.id }).from(user).where(eq(user.id, userId));
   if (!owner) throw new UserProfileError('User not found.', 404);
-  // Only provided favorite fields are changed; concurrent edits to other favorites
-  // and project-managed support values must survive this upsert.
+  // Only provided fields are changed; concurrent edits to other favorites survive.
   const changes = {
     ...(input.favoriteLeaderCardId !== undefined && {
       favoriteLeaderCardId: input.favoriteLeaderCardId,

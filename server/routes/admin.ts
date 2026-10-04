@@ -23,8 +23,10 @@ import { adminTournamentIdStandingMovePostRoute } from './admin/tournaments/_id/
 import type { AuthExtension } from '../auth/auth.ts';
 import { eventHighlightsRoute } from './admin/event-highlights/index.ts';
 import { resourceSubmissionsRoute } from './admin/resource-submissions/index.ts';
+import { patreonAdminRoute } from './admin/patreon/index.ts';
 
 export const adminRoute = new Hono<AuthExtension>()
+  .route('/patreon', patreonAdminRoute)
   .route('/user-reports', reportModerationRoute)
   .route('/resource-submissions', resourceSubmissionsRoute)
   .route('/event-highlights', eventHighlightsRoute)

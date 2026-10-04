@@ -1,26 +1,35 @@
-import { pgTable, text, integer, timestamp, boolean, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, timestamp, boolean, pgEnum, index } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { calendarPrivacyValues } from '../../../types/TournamentCalendar.ts';
 
 export const calendarPrivacyEnum = pgEnum('calendar_privacy', calendarPrivacyValues);
 
-export const user = pgTable('user', {
-  id: text('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull().unique(),
-  emailVerified: boolean('email_verified').notNull(),
-  image: text('image'),
-  createdAt: timestamp('created_at').notNull(),
-  updatedAt: timestamp('updated_at').notNull(),
-  role: text('role'),
-  banned: boolean('banned'),
-  banReason: text('ban_reason'),
-  banExpires: timestamp('ban_expires'),
-  displayName: text('display_name').notNull().unique(),
-  country: text('country'),
-  state: text('state'),
-  currency: text('currency').notNull(),
-  calendarPrivacy: calendarPrivacyEnum('calendar_privacy').notNull().default('unlisted'),
-});
+export const user = pgTable(
+  'user',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    email: text('email').notNull().unique(),
+    emailVerified: boolean('email_verified').notNull(),
+    image: text('image'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
+    role: text('role'),
+    banned: boolean('banned'),
+    banReason: text('ban_reason'),
+    banExpires: timestamp('ban_expires'),
+    displayName: text('display_name').notNull().unique(),
+    country: text('country'),
+    state: text('state'),
+    currency: text('currency').notNull(),
+    calendarPrivacy: calendarPrivacyEnum('calendar_privacy').notNull().default('unlisted'),
+  },
+  table => [
+    index('user_verified_normalized_email_idx')
+      .on(sql`lower(btrim(${table.email}))`)
+      .where(sql`${table.emailVerified} = true`),
+  ],
+);
 
 export const session = pgTable('session', {
   id: text('id').primaryKey(),

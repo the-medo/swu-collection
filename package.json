@@ -3,6 +3,7 @@
   "module": "server/index.ts",
   "type": "module",
   "scripts": {
+    "patreon:sync": "bun scripts/patreon/sync.ts",
     "play:browser:editors": "RICH_TEXT_EDITOR_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/rich-text-editor.browser.ts",
     "play:check": "bun run --cwd play check",
     "play:demo": "bun run --cwd play demo",

@@ -58,7 +58,9 @@ Sentry.init({
   beforeSend(event) {
     if (
       isCalendarFeedRequest(event.request?.url) ||
-      /\/api\/(?:messages|(?:admin\/)?user-reports)(?:[/?#]|$)/.test(event.request?.url ?? '')
+      /\/api\/(?:messages|(?:admin\/)?user-reports|(?:admin|integration)\/patreon)(?:[/?#]|$)/.test(
+        event.request?.url ?? '',
+      )
     )
       return null;
     if (
@@ -71,7 +73,9 @@ Sentry.init({
   },
   beforeSendTransaction(event) {
     return isCalendarFeedRequest(event.request?.url) ||
-      /\/api\/(?:messages|(?:admin\/)?user-reports)(?:[/?#]|$)/.test(event.request?.url ?? '')
+      /\/api\/(?:messages|(?:admin\/)?user-reports|(?:admin|integration)\/patreon)(?:[/?#]|$)/.test(
+        event.request?.url ?? '',
+      )
       ? null
       : event;
   },
