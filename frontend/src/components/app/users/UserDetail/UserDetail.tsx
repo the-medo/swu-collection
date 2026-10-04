@@ -18,6 +18,7 @@ import { CollectionType } from '../../../../../../types/enums.ts';
 import { Helmet } from 'react-helmet-async';
 import { ProfileBio } from './ProfileBio.tsx';
 import { ProfileHeader } from './ProfileHeader.tsx';
+import { ProfileFavorites, ProfileFavoritesSkeleton } from './ProfileFavorites.tsx';
 import {
   ProfileAvatar,
   ProfileAvatarSkeleton,
@@ -35,7 +36,7 @@ const columnsClassName =
   'grid min-w-0 flex-1 grid-cols-[92px_minmax(0,1fr)] grid-rows-[auto_auto_auto_1fr] @[401px]/main-body:grid-cols-[112px_minmax(0,1fr)] @[761px]/main-body:grid-cols-[208px_minmax(0,1fr)] @[761px]/main-body:grid-rows-[auto_auto_1fr] @[1001px]/main-body:grid-cols-[240px_minmax(0,1fr)]';
 const nameClassName = 'col-start-2 row-start-1 min-w-0 p-4';
 const bioClassName =
-  'col-span-2 row-start-2 min-w-0 p-4 empty:hidden @[761px]/main-body:col-span-1 @[761px]/main-body:col-start-2';
+  'col-span-2 row-start-2 min-w-0 @[761px]/main-body:col-span-1 @[761px]/main-body:col-start-2';
 const contentClassName =
   'col-span-2 row-start-4 min-w-0 @[761px]/main-body:col-span-1 @[761px]/main-body:col-start-2 @[761px]/main-body:row-start-3';
 const dividerClassName = 'm-0 border-t border-border';
@@ -46,6 +47,11 @@ const UserDetail: React.FC = () => {
   const { userId } = routeApi.useParams();
   const [bioActionsContainer, setBioActionsContainer] = React.useState<HTMLDivElement | null>(null);
   const currentUser = useUser();
+  const canContact =
+    !!currentUser &&
+    currentUser.id !== userId &&
+    currentUser.id !== 'swubase' &&
+    userId !== 'swubase';
   const { userTab: requestedTab = 'decks' } = routeApi.useSearch();
   const isAdmin = useRole()('admin');
   const userTab = requestedTab === 'reports' && !isAdmin ? 'decks' : requestedTab;
@@ -66,9 +72,15 @@ const UserDetail: React.FC = () => {
             <Skeleton className="h-9 w-64 max-w-full @[761px]/main-body:h-11" />
           </div>
           <div className={bioClassName}>
-            <Skeleton className="h-24 w-full" />
+            <hr className={dividerClassName} />
+            <div className="p-4">
+              <Skeleton className="h-24 w-full" />
+            </div>
           </div>
-          <ProfileSidebarSkeleton />
+          <ProfileSidebarSkeleton
+            favorites={<ProfileFavoritesSkeleton />}
+            actionCount={currentUser?.id === userId ? 1 : canContact ? 2 : 0}
+          />
           <div className={contentClassName}>
             <hr className={dividerClassName} />
             <div className="p-2">
@@ -99,33 +111,40 @@ const UserDetail: React.FC = () => {
         <div className={columnsClassName}>
           <ProfileAvatar user={user} canEdit={currentUser?.id === userId} />
           <div className={nameClassName}>
-            <h1 className="m-0! p-0 text-[clamp(28px,3.2cqi,44px)]! leading-[1.15]! font-bold! tracking-[-0.045em]! [overflow-wrap:anywhere]">
+            <h1 className="m-0! min-w-0 p-0 text-[clamp(28px,3.2cqi,44px)]! leading-[1.15]! font-bold! tracking-[-0.045em]! [overflow-wrap:anywhere]">
               {user.displayName}
             </h1>
           </div>
           <div className={bioClassName}>
-            <ProfileBio key={userId} userId={userId} actionsContainer={bioActionsContainer} />
+            <hr className={dividerClassName} />
+            <div className="min-w-0 p-4 empty:hidden">
+              <ProfileBio key={userId} userId={userId} actionsContainer={bioActionsContainer} />
+            </div>
           </div>
-          <ProfileSidebar user={user} country={country}>
-            {currentUser &&
-              currentUser.id !== userId &&
-              currentUser.id !== 'swubase' &&
-              userId !== 'swubase' && (
-                <>
-                  <Button asChild>
-                    <Link to="/messages" search={{ with: userId }}>
-                      <Mail aria-hidden="true" /> Send message
-                    </Link>
-                  </Button>
-                  <ReportUserButton
-                    userId={userId}
-                    displayName={user.displayName}
-                    source="profile"
-                    variant="ghost"
-                    className="text-muted-foreground hover:text-foreground"
-                  />
-                </>
-              )}
+          <ProfileSidebar
+            user={user}
+            country={country}
+            reserveActionSpace={currentUser?.id === userId}
+            favorites={
+              <ProfileFavorites key={userId} userId={userId} canEdit={currentUser?.id === userId} />
+            }
+          >
+            {canContact && (
+              <>
+                <Button asChild>
+                  <Link to="/messages" search={{ with: userId }}>
+                    <Mail aria-hidden="true" /> Send message
+                  </Link>
+                </Button>
+                <ReportUserButton
+                  userId={userId}
+                  displayName={user.displayName}
+                  source="profile"
+                  variant="ghost"
+                  className="text-muted-foreground hover:text-foreground"
+                />
+              </>
+            )}
             <div ref={setBioActionsContainer} className="empty:hidden" />
           </ProfileSidebar>
           <div className={contentClassName}>

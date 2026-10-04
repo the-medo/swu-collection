@@ -5,9 +5,12 @@ import { Skeleton } from '@/components/ui/skeleton.tsx';
 import type { ReactNode } from 'react';
 import { userLocale } from '@/lib/locale.ts';
 import type { User } from '../../../../../../types/User.ts';
+import { cn } from '@/lib/utils.ts';
 
 type ProfileSidebarProps = {
   children?: ReactNode;
+  favorites?: ReactNode;
+  reserveActionSpace?: boolean;
   user: Pick<User, 'displayName' | 'image' | 'createdAt' | 'state'>;
   country?: { name: string; flag: string };
 };
@@ -99,24 +102,52 @@ function ProfileSidebarLayout({ children }: { children: ReactNode }) {
   );
 }
 
-export function ProfileSidebar({ user, country, children }: ProfileSidebarProps) {
+export function ProfileSidebar({
+  user,
+  country,
+  favorites,
+  reserveActionSpace,
+  children,
+}: ProfileSidebarProps) {
   return (
     <ProfileSidebarLayout>
       <ProfileMetadata user={user} country={country} />
-      <div className="flex w-full flex-col gap-2 [&_a]:w-full [&_button]:w-full has-[>div:only-child:empty]:hidden">
+      <div
+        role="group"
+        aria-label="Profile actions"
+        className={cn(
+          'flex w-full flex-col gap-2 [&_a]:w-full [&_button]:w-full',
+          reserveActionSpace ? 'min-h-10' : 'has-[>div:only-child:empty]:hidden',
+        )}
+      >
         {children}
       </div>
+      {favorites}
     </ProfileSidebarLayout>
   );
 }
 
-export function ProfileSidebarSkeleton() {
+export function ProfileSidebarSkeleton({
+  favorites,
+  actionCount = 0,
+}: {
+  favorites?: ReactNode;
+  actionCount?: number;
+}) {
   return (
     <ProfileSidebarLayout>
       <div className="grid w-full grid-cols-2 gap-5 @[761px]/main-body:grid-cols-1">
         <Skeleton className="h-12 w-full" />
         <Skeleton className="h-12 w-full" />
       </div>
+      {actionCount > 0 && (
+        <div className="flex w-full flex-col gap-2">
+          {Array.from({ length: actionCount }, (_, index) => (
+            <Skeleton key={index} className="h-10 w-full" />
+          ))}
+        </div>
+      )}
+      {favorites}
     </ProfileSidebarLayout>
   );
 }
