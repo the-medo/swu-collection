@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
-import { logger } from 'hono/logger';
+import { requestLogger } from './lib/ws/requestLogger.ts';
+import { messagesRoute } from './routes/messages.ts';
+import { notificationsRoute } from './routes/notifications.ts';
 import { cors } from 'hono/cors';
 import { collectionRoute } from './routes/collection.ts';
 import { deckRoute } from './routes/deck.ts';
@@ -50,14 +52,21 @@ Sentry.init({
   ignoreTransactions: [/\/api\/calendar(?:\/|$)/],
   enableLogs: process.env.ENVIRONMENT !== 'local',
   beforeSend(event) {
-    if (isCalendarFeedRequest(event.request?.url)) return null;
+    if (
+      isCalendarFeedRequest(event.request?.url) ||
+      /\/api\/messages(?:\/|$)/.test(event.request?.url ?? '')
+    )
+      return null;
     if (event.request?.url?.includes('/api/user-tournament-attachments')) {
       delete event.request.data;
     }
     return event;
   },
   beforeSendTransaction(event) {
-    return isCalendarFeedRequest(event.request?.url) ? null : event;
+    return isCalendarFeedRequest(event.request?.url) ||
+      /\/api\/messages(?:\/|$)/.test(event.request?.url ?? '')
+      ? null
+      : event;
   },
   integrations: [
     Sentry.honoIntegration(),
@@ -80,7 +89,7 @@ const app = new Hono<AuthExtension>().onError((err, c) => {
 // Calendar clients authenticate with the secret URL. Mount before session and
 // request logging middleware so tokens never enter the application access log.
 app.route('/api/calendar', calendarFeedRoute);
-app.use('*', logger());
+app.use('*', requestLogger());
 app.use('*', async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
@@ -150,6 +159,8 @@ const apiRoutes = app
   .route('/cards', cardsRoute)
   .route('/user', userRoute)
   .route('/user-settings', userSettingsRoute)
+  .route('/notifications', notificationsRoute)
+  .route('/messages', messagesRoute)
   .route('/user-tournament-saves', userTournamentSavesRoute)
   .route('/user-calendar', userCalendarRoute)
   .route('/user-tournament-attachments', userTournamentAttachmentsRoute)
@@ -267,5 +278,7 @@ app.get('*', c => c.html(indexHtml));
 Sentry.setupHonoErrorHandler(app);
 
 export default app;
-export const bunWebsocket = websocket;
+// Main-app clients send only small subscription/heartbeat commands. Gameplay
+// frames are handled by the separate Crossfire worker.
+export const bunWebsocket = { ...websocket, maxPayloadLength: 4096 };
 export type ApiRoutes = typeof apiRoutes;

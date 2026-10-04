@@ -1,4 +1,7 @@
-import { getRouteApi } from '@tanstack/react-router';
+import { Button } from '@/components/ui/button.tsx';
+import { Mail } from 'lucide-react';
+import { useUser } from '@/hooks/useUser.ts';
+import { getRouteApi, Link } from '@tanstack/react-router';
 import { useGetUser } from '@/api/user/useGetUser.ts';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { useCountryList } from '@/api/lists/useCountryList.ts';
@@ -19,6 +22,7 @@ const routeApi = getRouteApi('/users/$userId/');
 
 const UserDetail: React.FC = () => {
   const { userId } = routeApi.useParams();
+  const currentUser = useUser();
   const { userTab = 'decks' } = routeApi.useSearch();
   const navigate = routeApi.useNavigate();
   const { data: countryData } = useCountryList();
@@ -72,6 +76,16 @@ const UserDetail: React.FC = () => {
               {state && <span className="text-sm">({state})</span>}
             </div>
             {createdAt && <span className="text-sm">Member from: {formatDate(createdAt)}</span>}
+            {currentUser &&
+              currentUser.id !== userId &&
+              currentUser.id !== 'swubase' &&
+              userId !== 'swubase' && (
+                <Button asChild variant="outline" className="w-fit">
+                  <Link to="/messages" search={{ with: userId }}>
+                    <Mail aria-hidden="true" /> Send message
+                  </Link>
+                </Button>
+              )}
           </div>
         </div>
         <Tabs

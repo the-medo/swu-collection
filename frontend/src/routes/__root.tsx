@@ -1,3 +1,4 @@
+import { AppRealtimeProvider } from '@/components/app/realtime/AppRealtimeProvider.tsx';
 import { CrossfireInvitations } from '@/components/app/crossfire/CrossfireInvitations.tsx';
 import { createRootRoute, HeadContent, Outlet, useMatchRoute } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
@@ -108,6 +109,7 @@ export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 
 function RootShell() {
   const matchRoute = useMatchRoute();
+  const messenger = !!matchRoute({ to: '/messages', fuzzy: true });
   const immersive =
     !!matchRoute({ to: '/crossfire/$lobbyId', fuzzy: false }) ||
     !!matchRoute({ to: '/crossfire/replay/$lobbyId', fuzzy: false }) ||
@@ -149,13 +151,17 @@ function RootShell() {
   return (
     <>
       <LeftSidebar />
-      <main className="w-full h-screen max-h-screen overflow-y-scroll p-2">
-        <div className="flex flex-col w-full @container/main-body">
+      <main
+        className={`w-full p-2 ${messenger ? 'h-dvh overflow-hidden' : 'h-screen max-h-screen overflow-y-scroll'}`}
+      >
+        <div
+          className={`flex w-full flex-col @container/main-body ${messenger ? 'h-full min-h-0' : ''}`}
+        >
           <Outlet />
           <CardDetailDialog />
           <TournamentDetailDialog />
         </div>
-        <Footer />
+        {!messenger && <Footer />}
         <SidebarTriggerButton />
       </main>
     </>
@@ -166,11 +172,13 @@ export const Route = createRootRoute({
   component: () => (
     <>
       <HeadContent />
-      <CrossfireInvitations>
-        <SidebarProvider>
-          <RootShell />
-        </SidebarProvider>
-      </CrossfireInvitations>
+      <AppRealtimeProvider>
+        <CrossfireInvitations>
+          <SidebarProvider>
+            <RootShell />
+          </SidebarProvider>
+        </CrossfireInvitations>
+      </AppRealtimeProvider>
       <CookieConsent />
       <Toaster />
       <PriceFetcher />

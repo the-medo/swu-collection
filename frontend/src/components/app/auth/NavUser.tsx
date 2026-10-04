@@ -1,4 +1,6 @@
-import { Bell, ChevronsUpDown, LogOut, Moon, Settings, ShieldCheck, Sun } from 'lucide-react';
+import { UserRoundCog, LogOut, Moon, Settings, ShieldCheck, Sun } from 'lucide-react';
+import { MessageBadge } from '@/components/app/messages/MessageBadge.tsx';
+import { NotificationBell } from '@/components/app/notifications/NotificationBell.tsx';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -31,7 +33,7 @@ export function NavUser() {
   const userName = user?.name ?? 'User';
   const userAvatar = user?.image ?? '';
 
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
   const isAdmin = hasRole('admin');
 
   const switchTheme = useCallback(() => {
@@ -40,84 +42,91 @@ export function NavUser() {
     } else {
       setTheme('light');
     }
-  }, [theme]);
+  }, [theme, setTheme]);
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={userAvatar} alt={userName} />
-                <AvatarFallback className="rounded-lg">{userName[0]}</AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user?.displayName}</span>
-                {/*<span className="truncate text-xs">{user?.email}</span>*/}
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? 'bottom' : 'right'}
-            align="end"
-            sideOffset={4}
+      <SidebarMenuItem className="flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col">
+        {user && (
+          <SidebarMenuButton
+            asChild
+            size="lg"
+            className="h-9 w-9 shrink-0 justify-center p-0"
+            title="My profile"
           >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={userAvatar} alt={userName} />
-                  <AvatarFallback className="rounded-lg">{userName[0]}</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="font-semibold">{user?.displayName}</span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <Link to={'/settings'}>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Settings />
-                  Settings
-                </DropdownMenuItem>
-              </Link>
-              <DropdownMenuItem className="cursor-pointer">
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-              {isAdmin && (
-                <Link to={'/admin'}>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <ShieldCheck />
-                    Admin dashboard
-                  </DropdownMenuItem>
-                </Link>
-              )}
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" onSelect={switchTheme}>
-              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span>Toggle theme</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onSelect={async () => {
-                await signOut();
+            <Link
+              to="/users/$userId"
+              params={{ userId: user.id }}
+              aria-label="My profile"
+              onClick={event => {
+                if (!event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0)
+                  setOpenMobile(false);
               }}
             >
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage src={userAvatar} alt="" />
+                <AvatarFallback className="rounded-lg">{userName[0]}</AvatarFallback>
+              </Avatar>
+            </Link>
+          </SidebarMenuButton>
+        )}
+        <div className="ml-auto flex items-center gap-1 group-data-[collapsible=icon]:ml-0 group-data-[collapsible=icon]:flex-col">
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                size="lg"
+                aria-label="Account menu"
+                title="Account menu"
+                className="h-9 w-9 shrink-0 justify-center p-0 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              >
+                <UserRoundCog className="size-4" aria-hidden="true" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+              side={isMobile ? 'bottom' : 'right'}
+              align="end"
+              sideOffset={4}
+            >
+              <DropdownMenuLabel>Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <Link to={'/settings'}>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Settings />
+                    Settings
+                  </DropdownMenuItem>
+                </Link>
+                {isAdmin && (
+                  <Link to={'/admin'}>
+                    <DropdownMenuItem className="cursor-pointer">
+                      <ShieldCheck />
+                      Admin dashboard
+                    </DropdownMenuItem>
+                  </Link>
+                )}
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer" onSelect={switchTheme}>
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span>Toggle theme</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={async () => {
+                  await signOut();
+                }}
+              >
+                <LogOut />
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <NotificationBell />
+          <MessageBadge />
+        </div>
       </SidebarMenuItem>
     </SidebarMenu>
   );

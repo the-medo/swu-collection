@@ -35,7 +35,8 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ deckId, isFavorite }) =
         variant={isFavorite ? 'default' : 'outline'}
         size="icon"
         onClick={handleFavoriteClick}
-        title={isFavorite ? 'Unfavorite this deck' : 'Favorite this deck'}
+        title={isFavorite ? 'Unfavorite this deck' : 'Favorite this deck.'}
+        aria-label={isFavorite ? 'Unfavorite this deck' : 'Favorite this deck.'}
         disabled={favoriteDeckMutation.isPending}
       >
         {favoriteDeckMutation.isPending ? (

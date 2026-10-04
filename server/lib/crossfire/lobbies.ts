@@ -7,6 +7,7 @@ import {
 } from '../../../play/storage/card-bundles.ts';
 import type { BundleVersions } from '../../../play/cards/version-contract.ts';
 import { notifyInvitation } from './invitationEvents.ts';
+import { createInvitationNotification } from '../notifications/publish.ts';
 import type { CrossfireInvitation, CrossfireTeammate } from '../../../shared/types/crossfire.ts';
 import { registerMatch } from './matches.ts';
 import { randomUUID } from 'node:crypto';
@@ -226,8 +227,10 @@ export class CrossfireLobbies {
         VALUES (${id}, ${principal.userId}, ${tx.json(snapshot.versions)}, ${proposed.allowSpectators}, ${proposed.handsToPlayers}, ${proposed.handsToSpectators}, ${bestOf}, ${showLeader})`;
         await tx`INSERT INTO play.participants (lobby_id, seat, user_id, session_id, deck_snapshot)
         VALUES (${id}, 'p1', ${principal.userId}, ${principal.sessionId}, ${tx.json(snapshot)})`;
-        if (recipientId)
+        if (recipientId) {
           await tx`INSERT INTO play.invitations (lobby_id, recipient_user_id) VALUES (${id}, ${recipientId})`;
+          await createInvitationNotification(tx, recipientId, principal.userId, id);
+        }
         await notifyInvitation(tx, id);
         return (await view(tx, id, principal.userId))!;
       });
