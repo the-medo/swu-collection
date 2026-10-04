@@ -1,4 +1,5 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useBlocker } from '@tanstack/react-router';
 import { Pencil } from 'lucide-react';
 import { useSession } from '@/lib/auth-client.ts';
@@ -31,6 +32,10 @@ function BioForm({
   post: Post | null;
   onClose: () => void;
 }) {
+  const formRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    formRef.current?.focus();
+  }, []);
   const [content, setContent] = useState<PostDocument>(() =>
     toSimplePostDocument(post?.content ?? emptyPostDocument()),
   );
@@ -101,7 +106,13 @@ function BioForm({
     enableBeforeUnload: dirty,
   });
   return (
-    <div className="space-y-3">
+    <div
+      ref={formRef}
+      role="group"
+      aria-label="Edit profile bio"
+      tabIndex={-1}
+      className="space-y-3 outline-none"
+    >
       {legacyWidgets && (
         <p className="text-sm text-muted-foreground">
           Existing widgets will be saved as ordinary text and links.
@@ -175,11 +186,24 @@ function BioForm({
   );
 }
 
-export function ProfileBio({ userId }: { userId: string }) {
+export function ProfileBio({
+  userId,
+  actionsContainer,
+}: {
+  userId: string;
+  actionsContainer: HTMLElement | null;
+}) {
   const session = useSession();
   const ownProfile = session.data?.user.id === userId;
   const query = useProfilePost(userId);
   const [editing, setEditing] = useState(false);
+  const restoreActionFocus = useRef(false);
+  const restoreFocusRef = useCallback((button: HTMLButtonElement | null) => {
+    if (button && restoreActionFocus.current) {
+      restoreActionFocus.current = false;
+      button.focus();
+    }
+  }, []);
   // Snapshot the revision when opening: background refreshes must not silently authorize overwrites.
   const [draftPost, setDraftPost] = useState<Post | null>(null);
   if (query.isPending)
@@ -192,7 +216,7 @@ export function ProfileBio({ userId }: { userId: string }) {
     return (
       <div role="alert">
         Could not load this bio.{' '}
-        <Button variant="outline" onClick={() => void query.refetch()}>
+        <Button ref={restoreFocusRef} variant="outline" onClick={() => void query.refetch()}>
           Try again
         </Button>
       </div>
@@ -200,13 +224,17 @@ export function ProfileBio({ userId }: { userId: string }) {
   const empty = !query.data || isPostEmpty(query.data.content);
   if (empty && !ownProfile) return null;
   return (
-    <section aria-label="Profile bio" className="min-w-0 space-y-3 rounded-lg border p-4 sm:p-6">
-      <div className="flex items-center justify-between gap-3">
-        <h3>About</h3>
-        {ownProfile && !editing && (
+    <section
+      aria-label="Profile bio"
+      className="min-w-0 space-y-3 [&_.rte-published_.bn-block-content]:px-0! [&_.rte-published_.bn-editor]:bg-transparent! [&_.rte-published_.bn-editor]:p-0!"
+    >
+      {ownProfile &&
+        !editing &&
+        actionsContainer &&
+        createPortal(
           <Button
+            ref={restoreFocusRef}
             variant="outline"
-            size="sm"
             onClick={() => {
               setDraftPost(query.data ?? null);
               setEditing(true);
@@ -214,11 +242,18 @@ export function ProfileBio({ userId }: { userId: string }) {
           >
             <Pencil className="size-4" />
             {empty ? 'Add bio' : 'Edit bio'}
-          </Button>
+          </Button>,
+          actionsContainer,
         )}
-      </div>
       {ownProfile && editing ? (
-        <BioForm userId={userId} post={draftPost} onClose={() => setEditing(false)} />
+        <BioForm
+          userId={userId}
+          post={draftPost}
+          onClose={() => {
+            restoreActionFocus.current = true;
+            setEditing(false);
+          }}
+        />
       ) : empty ? (
         <p className="text-sm text-muted-foreground">
           Tell other players about yourself, your favorite decks, or your next tournament.

@@ -104,6 +104,8 @@ TRUNCATE TABLE user_notification;
 TRUNCATE TABLE direct_message, direct_conversation;
 -- Avatar choices are not needed in contributor development data.
 TRUNCATE TABLE user_avatar;
+-- Profile preferences and financial support records stay out of contributor dumps.
+TRUNCATE TABLE user_profile;
 -- Moderation reports and their Discord payloads stay private for every user.
 TRUNCATE TABLE user_report, user_report_action;
 DELETE FROM discord_notification WHERE notification_type = 'user-report';
@@ -450,6 +452,10 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_avatar) THEN
     RAISE EXCEPTION 'Avatar source choices remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM user_profile) THEN
+    RAISE EXCEPTION 'Profile preferences or financial support remain in the contributor dump.';
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_report_action) OR EXISTS (SELECT 1 FROM user_report)

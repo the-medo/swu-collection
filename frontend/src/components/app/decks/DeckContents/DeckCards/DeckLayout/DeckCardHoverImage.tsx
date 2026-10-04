@@ -23,6 +23,7 @@ interface DeckCardHoverImageProps extends PropsWithChildren {
   active?: boolean;
   defaultVariantId?: string;
   interactive?: boolean;
+  previewDisabled?: boolean;
 }
 
 const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({
@@ -31,6 +32,7 @@ const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({
   active = true,
   defaultVariantId,
   interactive = true,
+  previewDisabled = false,
   children,
 }) => {
   const { isMobile } = useSidebar();
@@ -65,7 +67,7 @@ const DeckCardHoverImage: React.FC<DeckCardHoverImageProps> = ({
     <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
 
-      {isMobile ? null : (
+      {previewDisabled ? null : (
         <HoverCardPortal>
           {interactive ? (
             previewContent

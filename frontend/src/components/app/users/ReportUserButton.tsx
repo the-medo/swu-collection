@@ -1,7 +1,8 @@
 import { useId, useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { Flag } from 'lucide-react';
-import { Button } from '@/components/ui/button.tsx';
+import { Button, type ButtonProps } from '@/components/ui/button.tsx';
+import { cn } from '@/lib/utils.ts';
 import {
   Dialog,
   DialogContent,
@@ -17,15 +18,19 @@ import { useToast } from '@/hooks/use-toast.ts';
 import { useReportUser } from '@/api/user/useReportUser.ts';
 import { userReportMaxLength } from '../../../../../shared/types/userReports.ts';
 
+type ReportUserButtonProps = {
+  userId: string;
+  displayName: string;
+  source: 'profile' | 'conversation';
+} & Pick<ButtonProps, 'variant' | 'className'>;
+
 export function ReportUserButton({
   userId,
   displayName,
   source,
-}: {
-  userId: string;
-  displayName: string;
-  source: 'profile' | 'conversation';
-}) {
+  variant,
+  className,
+}: ReportUserButtonProps) {
   const user = useUser();
   if (!user || user.id === userId || user.id === 'swubase' || userId === 'swubase') return null;
   return (
@@ -34,6 +39,8 @@ export function ReportUserButton({
       userId={userId}
       displayName={displayName}
       source={source}
+      variant={variant}
+      className={className}
     />
   );
 }
@@ -42,11 +49,9 @@ function ReportUserDialog({
   userId,
   displayName,
   source,
-}: {
-  userId: string;
-  displayName: string;
-  source: 'profile' | 'conversation';
-}) {
+  variant = 'outline',
+  className,
+}: ReportUserButtonProps) {
   const [open, setOpen] = useState(false);
   const [clientReportId, setClientReportId] = useState(() => crypto.randomUUID());
   const inputId = useId();
@@ -87,7 +92,10 @@ function ReportUserDialog({
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" className="shrink-0 text-destructive hover:text-destructive">
+        <Button
+          variant={variant}
+          className={cn('shrink-0 text-destructive hover:text-destructive', className)}
+        >
           <Flag aria-hidden="true" /> Report
         </Button>
       </DialogTrigger>

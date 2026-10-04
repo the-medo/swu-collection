@@ -361,7 +361,10 @@ const LeaderSelector: React.FC<LeaderSelectorProps> = ({
       header={header}
       footer={footer}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={next => {
+        if (next) setLocalLeaderCardId(leaderCardId);
+        setOpen(next);
+      }}
       size="large"
     >
       <div className="flex flex-col gap-2">

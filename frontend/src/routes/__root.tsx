@@ -110,6 +110,7 @@ export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 function RootShell() {
   const matchRoute = useMatchRoute();
   const messenger = !!matchRoute({ to: '/messages', fuzzy: true });
+  const userProfile = !!matchRoute({ to: '/users/$userId', fuzzy: true });
   const immersive =
     !!matchRoute({ to: '/crossfire/$lobbyId', fuzzy: false }) ||
     !!matchRoute({ to: '/crossfire/replay/$lobbyId', fuzzy: false }) ||
@@ -152,7 +153,7 @@ function RootShell() {
     <>
       <LeftSidebar />
       <main
-        className={`w-full p-2 ${messenger ? 'h-dvh overflow-hidden' : 'h-screen max-h-screen overflow-y-scroll'}`}
+        className={`w-full min-w-0 ${userProfile ? '' : 'p-2'} ${messenger ? 'h-dvh overflow-hidden' : 'h-screen max-h-screen overflow-y-scroll'}`}
       >
         <div
           className={`flex w-full flex-col @container/main-body ${messenger ? 'h-full min-h-0' : ''}`}
