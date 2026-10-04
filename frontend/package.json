@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "7.4.0",
+  "version": "7.5.0",
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
@@ -11,6 +11,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@blocknote/core": "^0.55.0",
+    "@blocknote/react": "^0.55.0",
+    "@blocknote/shadcn": "^0.55.0",
     "@nivo/bump": "^0.99.0",
     "@nivo/calendar": "^0.99.0",
     "@nivo/pie": "^0.99.0",
@@ -46,6 +49,7 @@
     "@tanstack/react-router": "^1.133.36",
     "@tanstack/react-store": "^0.8.0",
     "@tanstack/react-table": "^8.20.6",
+    "@tiptap/pm": "^3.31.4",
     "better-auth": "^1.3.34",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

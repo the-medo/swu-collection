@@ -14,6 +14,7 @@ import { useTheme } from '@/components/theme-provider.tsx';
 import { splitMetaPieData } from './tournamentMetaSearch.ts';
 
 interface TournamentMetaPieChartProps {
+  embedded?: boolean;
   analysisData: AnalysisDataItem[];
   metaInfo: MetaInfo;
   metaPart: string;
@@ -60,6 +61,7 @@ const COLORS = [
 
 const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
   analysisData,
+  embedded = false,
   metaInfo,
   metaPart,
   totalDecks,
@@ -72,6 +74,13 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
 }) => {
   const labelRenderer = useLabel();
   const { theme } = useTheme();
+  const lightTheme =
+    theme === 'light' ||
+    (theme === 'system' &&
+      typeof window !== 'undefined' &&
+      !window.matchMedia('(prefers-color-scheme: dark)').matches);
+  // React Spring cannot interpolate space-separated CSS-variable HSL against transparent.
+  const highlightBorderColor = lightTheme ? '#0c0a09' : '#fafafa';
   const pieChartColorDefinitions = useChartColorsAndGradients();
   const { setTournamentDeckKey } = useTournamentMetaActions();
   const [hoveredItemState, setHoveredItem] = useState<HoveredMetaItem | null>(null);
@@ -195,12 +204,13 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
 
   const handlePieClick = useCallback(
     (node: { id: string | number }) => {
+      if (embedded) return;
       setTournamentDeckKey({
         key: String(node.id),
         metaInfo: metaInfo as MetaInfo,
       });
     },
-    [metaInfo, setTournamentDeckKey],
+    [metaInfo, setTournamentDeckKey, embedded],
   );
 
   const handleMouseEnter = useCallback(
@@ -244,6 +254,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
         style={{ height: '350px' }}
       >
         <ResponsivePie
+          animate={!embedded}
           data={chartData}
           margin={{ top: 40, right: 100, bottom: 30, left: 100 }}
           innerRadius={0.5}
@@ -252,7 +263,7 @@ const TournamentMetaPieChart: React.FC<TournamentMetaPieChartProps> = ({
           borderWidth={isHighlighting ? 2 : 0}
           borderColor={datum =>
             isHighlighting && highlightedKeys.has(String(datum.id))
-              ? 'hsl(var(--foreground))'
+              ? highlightBorderColor
               : 'transparent'
           }
           activeOuterRadiusOffset={8}

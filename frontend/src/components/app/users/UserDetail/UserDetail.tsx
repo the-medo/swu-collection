@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton.tsx';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import { Helmet } from 'react-helmet-async';
+import { ProfileBio } from './ProfileBio.tsx';
 import { UserCalendarTab } from './UserCalendarTab.tsx';
 import { UserTournamentsTab } from './UserTournamentsTab.tsx';
 import { ReportUserButton } from '../ReportUserButton.tsx';
@@ -101,6 +102,7 @@ const UserDetail: React.FC = () => {
               )}
           </div>
         </div>
+        <ProfileBio key={userId} userId={userId} />
         <Tabs
           value={userTab}
           onValueChange={value => {

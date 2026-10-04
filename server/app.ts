@@ -12,6 +12,7 @@ import { authRoute } from './routes/auth.ts';
 import { auth, type AuthExtension } from './auth/auth.ts';
 import { cardsRoute } from './routes/cards.ts';
 import { worldRoute } from './routes/world.ts';
+import { postsRoute } from './routes/posts.ts';
 import { userRoute } from './routes/user.ts';
 import { userReportsRoute } from './routes/user-reports.ts';
 import { userSettingsRoute } from './routes/user-settings.ts';
@@ -167,6 +168,7 @@ const apiRoutes = app
   .route('/cards', cardsRoute)
   .route('/user', userRoute)
   .route('/user-reports', userReportsRoute)
+  .route('/posts', postsRoute)
   .route('/user-settings', userSettingsRoute)
   .route('/notifications', notificationsRoute)
   .route('/messages', messagesRoute)

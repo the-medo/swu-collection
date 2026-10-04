@@ -3,7 +3,7 @@ import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
 import { DeckData } from '../../../../types/Deck.ts';
 
-export const useGetDeck = (deckId: string | undefined) => {
+export const useGetDeck = (deckId: string | undefined, refreshOnMount = false) => {
   return useQuery<DeckData, ErrorWithStatus>({
     queryKey: ['deck', deckId],
     queryFn: deckId
@@ -26,7 +26,10 @@ export const useGetDeck = (deckId: string | undefined) => {
           return data as DeckData;
         }
       : skipToken,
-    retry: (failureCount, error) => (error.status === 404 ? false : failureCount < 3),
+    retry: (failureCount, error) => !refreshOnMount && error.status !== 404 && failureCount < 3,
     staleTime: Infinity,
+    refetchOnMount: refreshOnMount ? 'always' : true,
+    refetchOnWindowFocus: !refreshOnMount,
+    refetchOnReconnect: !refreshOnMount,
   });
 };

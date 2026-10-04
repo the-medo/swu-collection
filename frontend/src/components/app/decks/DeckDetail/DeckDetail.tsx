@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
 import { Link } from '@tanstack/react-router';
 import { useUser } from '@/hooks/useUser';
 import LoadingTitle from '../../global/LoadingTitle';
@@ -18,11 +20,59 @@ interface DeckDetailProps {
   adminEdit?: boolean;
   deckId: string;
   deckbuilder?: boolean;
+  embedded?: boolean;
 }
 
-const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder }) => {
+const DeckDetail: React.FC<DeckDetailProps> = ({
+  adminEdit,
+  deckId,
+  deckbuilder,
+  embedded = false,
+}) => {
   const user = useUser();
-  const { data, loading, error, owned, deckUserId } = useSetDeckInfo(deckId, adminEdit);
+  const { data, loading, error, owned, deckUserId, refetch } = useSetDeckInfo(
+    deckId,
+    adminEdit,
+    embedded,
+  );
+  const contents = useGetDeckCards(embedded ? deckId : undefined, embedded);
+  const [resolvedDeckId, setResolvedDeckId] = useState<string>();
+  if (
+    embedded &&
+    resolvedDeckId !== deckId &&
+    !loading &&
+    !contents.isFetching &&
+    !error &&
+    !contents.isError &&
+    data &&
+    contents.data
+  )
+    setResolvedDeckId(deckId);
+
+  // Embedded details resolve fresh on opening, including access checks, while retaining
+  // the ordinary deck actions and shared caches for user-initiated edits.
+  if (embedded && (error || contents.isError)) {
+    return (
+      <div role="alert">
+        <p>This deck is unavailable, or you do not have access to it.</p>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void refetch();
+            void contents.refetch();
+          }}
+        >
+          Try again
+        </Button>
+      </div>
+    );
+  }
+  if (
+    embedded &&
+    (!data || !contents.data || (resolvedDeckId !== deckId && (loading || contents.isFetching)))
+  ) {
+    return <p role="status">Loading decklist…</p>;
+  }
 
   if (error?.status === 404) {
     return (
@@ -46,7 +96,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder 
 
   return (
     <>
-      <Helmet title={`${data?.deck.name || 'Loading deck'} | SWUBase`} />
+      {!embedded && <Helmet title={`${data?.deck.name || 'Loading deck'} | SWUBase`} />}
       <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
         <LoadingTitle
           mainTitle={data?.deck.name}
@@ -87,7 +137,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({ adminEdit, deckId, deckbuilder 
         </a>
       )}
       <div className="flex grow flex-col gap-0">
-        <DeckContents deckId={deckId} />
+        <DeckContents deckId={deckId} embedded={embedded} />
       </div>
     </>
   );

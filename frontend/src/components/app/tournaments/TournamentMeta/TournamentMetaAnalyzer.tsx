@@ -1,14 +1,11 @@
 import * as React from 'react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
-import {
-  getDeckKeys,
-  TournamentInfoMap,
-} from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
+import { getDeckKeys } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import MetaPartSelector, { MetaPart } from './MetaPartSelector';
 import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
 import ViewModeSelector, { ViewMode } from './ViewModeSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
-import { useCallback, useDeferredValue, useMemo, useState } from 'react';
+import { useCallback, useDeferredValue, useMemo, useState, useId } from 'react';
 import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
 import TournamentMetaPieChart from './TournamentMetaPieChart';
@@ -23,19 +20,30 @@ import {
   supportsLeaderSearch,
 } from './tournamentMetaSearch.ts';
 
+export interface EmbeddedMetaSettings {
+  metaPart: MetaPart;
+  metaInfo: MetaInfo;
+  leaderSearch?: string;
+}
 interface TournamentMetaAnalyzerProps {
+  embedded?: { settings: EmbeddedMetaSettings; onChange: (settings: EmbeddedMetaSettings) => void };
   decks: TournamentDeckResponse[];
-  tournaments: TournamentInfoMap;
+  tournaments: Record<string, { tournament: { days: number; dayTwoPlayerCount: number | null } }>;
 }
 
-const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, tournaments }) => {
+const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
+  decks,
+  tournaments,
+  embedded,
+}) => {
   const search = useSearch({ strict: false });
   const navigate = useNavigate();
 
   // Use URL parameters with fallbacks to default values
-  const metaPart = (search.maMetaPart as MetaPart) || 'all';
-  const metaInfo = (search.maMetaInfo as MetaInfo) || 'leaders';
-  const viewMode = (search.maViewMode as ViewMode) || 'chart';
+  const metaPart = embedded?.settings.metaPart ?? ((search.maMetaPart as MetaPart) || 'all');
+  const metaInfo = embedded?.settings.metaInfo ?? ((search.maMetaInfo as MetaInfo) || 'leaders');
+  const viewMode = embedded ? 'chart' : (search.maViewMode as ViewMode) || 'chart';
+  const fieldId = useId();
 
   const showDay2Selector = useMemo(() => {
     const ts = Object.values(tournaments) ?? [];
@@ -44,11 +52,20 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
 
   // State for minimum deck count filter
   const [minDeckCount, setMinDeckCount] = useState<number | undefined>(undefined);
-  const [leaderSearch, setLeaderSearch] = useState('');
+  const [localLeaderSearch, setLocalLeaderSearch] = useState('');
+  const leaderSearch = embedded?.settings.leaderSearch ?? localLeaderSearch;
+  const setLeaderSearch = (value: string) => {
+    if (embedded) embedded.onChange({ ...embedded.settings, leaderSearch: value });
+    else setLocalLeaderSearch(value);
+  };
   const deferredLeaderSearch = useDeferredValue(leaderSearch);
 
   // Functions to update URL parameters
   const setMetaPart = (value: MetaPart) => {
+    if (embedded) {
+      embedded.onChange({ ...embedded.settings, metaPart: value });
+      return;
+    }
     navigate({
       to: '.',
       search: prev => ({ ...prev, maMetaPart: value }),
@@ -56,6 +73,10 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
   };
 
   const setMetaInfo = (value: MetaInfo) => {
+    if (embedded) {
+      embedded.onChange({ ...embedded.settings, metaInfo: value });
+      return;
+    }
     navigate({
       to: '.',
       search: prev => ({ ...prev, maMetaInfo: value }),
@@ -237,13 +258,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
             isHighlightingLeaders ? deferredLeaderSearch : '',
           )
         : new Set<string>(),
-    [
-      analysisData,
-      cardListData,
-      deferredLeaderSearch,
-      isHighlightingLeaders,
-      metaInfo,
-    ],
+    [analysisData, cardListData, deferredLeaderSearch, isHighlightingLeaders, metaInfo],
   );
 
   return (
@@ -255,9 +270,11 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
       data-view-mode={viewMode}
     >
       <div className="flex flex-row gap-2 flex-wrap justify-between">
-        <MobileCard>
-          <ViewModeSelector value={viewMode} onChange={setViewMode} />
-        </MobileCard>
+        {!embedded && (
+          <MobileCard>
+            <ViewModeSelector value={viewMode} onChange={setViewMode} />
+          </MobileCard>
+        )}
         <MobileCard>
           <MetaPartSelector value={metaPart} onChange={setMetaPart} showDay2={showDay2Selector} />
         </MobileCard>
@@ -266,15 +283,17 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
         </MobileCard>
       </div>
 
-      <div className="flex items-center gap-4 flex-wrap justify-between">
+      <div
+        className={embedded ? 'flex flex-col gap-2' : 'flex items-center gap-4 flex-wrap justify-between'}
+      >
         <span className="text-[10px] w-auto">Total decks analyzed: {filteredDecks.length}</span>
         {viewMode === 'table' && (
           <div className="flex items-center gap-2">
-            <label htmlFor="minDeckCount" className="text-[10px] w-[130px]">
+            <label htmlFor={`${fieldId}-minDeckCount`} className="text-[10px] w-[130px]">
               Min. deck count:
             </label>
             <Input
-              id="minDeckCount"
+              id={`${fieldId}-minDeckCount`}
               type="number"
               className="h-6 w-20 text-xs"
               min={1}
@@ -286,12 +305,13 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
         <div className="ml-auto flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2">
           {showLeaderSearch && (
             <div className="w-full sm:w-56 shrink-0">
-              <label htmlFor="metaLeaderSearch" className="sr-only">
+              <label htmlFor={`${fieldId}-metaLeaderSearch`} className="sr-only">
                 Highlight leader
               </label>
               <Input
-                id="metaLeaderSearch"
+                id={`${fieldId}-metaLeaderSearch`}
                 type="search"
+                maxLength={embedded ? 100 : undefined}
                 icon={SearchIcon}
                 className="h-7 text-xs"
                 placeholder="Highlight leader…"
@@ -320,8 +340,9 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
 
       {viewMode === 'chart' ? (
         <div className="flex flex-col md:flex-row gap-4">
-          <div className="w-full md:w-1/2">
+          <div className={embedded ? 'w-full' : 'w-full md:w-1/2'}>
             <TournamentMetaPieChart
+              embedded={!!embedded}
               analysisData={analysisData}
               metaInfo={metaInfo}
               metaPart={metaPart}
@@ -334,20 +355,22 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({ decks, 
               isHighlighting={isHighlightingLeaders}
             />
           </div>
-          <div className="w-full md:w-1/2">
-            <TournamentMetaChart
-              analysisData={analysisData}
-              metaInfo={metaInfo}
-              metaPart={metaPart}
-              totalDecks={totalDeckCount}
-              day2Decks={day2DeckCount}
-              top8Decks={top8DeckCount}
-              top64Decks={top64DeckCount}
-              championsDecks={championsDeckCount}
-              highlightedKeys={highlightedLeaderKeys}
-              isHighlighting={isHighlightingLeaders}
-            />
-          </div>
+          {!embedded && (
+            <div className="w-full md:w-1/2">
+              <TournamentMetaChart
+                analysisData={analysisData}
+                metaInfo={metaInfo}
+                metaPart={metaPart}
+                totalDecks={totalDeckCount}
+                day2Decks={day2DeckCount}
+                top8Decks={top8DeckCount}
+                top64Decks={top64DeckCount}
+                championsDecks={championsDeckCount}
+                highlightedKeys={highlightedLeaderKeys}
+                isHighlighting={isHighlightingLeaders}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <TournamentMetaDataTable
