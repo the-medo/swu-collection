@@ -1,4 +1,4 @@
-import { UserRoundCog, LogOut, Moon, Settings, ShieldCheck, Sun } from 'lucide-react';
+import { UserRound, UserRoundCog, LogOut, Moon, Settings, ShieldCheck, Sun } from 'lucide-react';
 import { MessageBadge } from '@/components/app/messages/MessageBadge.tsx';
 import { NotificationBell } from '@/components/app/notifications/NotificationBell.tsx';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -91,6 +91,21 @@ export function NavUser() {
               <DropdownMenuLabel>Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
+                {user && (
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link
+                      to="/users/$userId"
+                      params={{ userId: user.id }}
+                      onClick={event => {
+                        if (!event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0)
+                          setOpenMobile(false);
+                      }}
+                    >
+                      <UserRound />
+                      My profile
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <Link to={'/settings'}>
                   <DropdownMenuItem className="cursor-pointer">
                     <Settings />

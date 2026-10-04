@@ -1,3 +1,4 @@
+import { userSearchRoute } from './user-search.ts';
 import { Hono } from 'hono';
 import { db } from '../db';
 import { collection } from '../db/schema/collection.ts';
@@ -22,6 +23,7 @@ export type UserCollectionsResponse = {
 };
 
 export const userRoute = new Hono<AuthExtension>()
+  .route('/search', userSearchRoute)
   .route('/', createUserTournamentsRouter(meleeTournamentService))
   .route('/avatar', userAvatarPostRoute)
   .get('/:id/collection', async c => {

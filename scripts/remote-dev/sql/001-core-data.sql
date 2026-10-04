@@ -116,6 +116,9 @@ TRUNCATE TABLE user_calendar_subscription;
 -- Account ownership proofs and connected Melee identities always stay private.
 TRUNCATE TABLE user_melee_tournaments, user_melee_tournament_sync, melee_verification, melee_connection;
 
+-- Posts contain arbitrary personal prose and references, even for opted-in users.
+TRUNCATE TABLE post;
+
 DELETE FROM user_integration ui
 USING development_cleanup_user dcu
 WHERE ui.user_id = dcu.user_id
@@ -454,6 +457,10 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_tournament_save) THEN
     RAISE EXCEPTION 'Private saved tournaments remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM post) THEN
+    RAISE EXCEPTION 'Personal post content remains in the contributor dump.';
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_calendar_subscription) THEN

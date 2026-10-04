@@ -6,7 +6,7 @@ export interface DeckCardResponse {
   data: DeckCard[];
 }
 
-export const useGetDeckCards = (deckId: string | undefined) => {
+export const useGetDeckCards = (deckId: string | undefined, refreshOnMount = false) => {
   return useQuery<DeckCardResponse>({
     queryKey: ['deck-content', deckId],
     queryFn: deckId
@@ -23,6 +23,10 @@ export const useGetDeckCards = (deckId: string | undefined) => {
           return data;
         }
       : skipToken,
+    retry: refreshOnMount ? false : 3,
     staleTime: Infinity,
+    refetchOnMount: refreshOnMount ? 'always' : true,
+    refetchOnWindowFocus: !refreshOnMount,
+    refetchOnReconnect: !refreshOnMount,
   });
 };

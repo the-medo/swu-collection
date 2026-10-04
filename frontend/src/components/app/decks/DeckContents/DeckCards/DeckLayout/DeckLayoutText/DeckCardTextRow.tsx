@@ -34,6 +34,7 @@ export interface DeckCardTextRowProps {
   displayMissingCards?: boolean;
   displayDropdown?: boolean;
   isHighlighted?: boolean;
+  readOnly?: boolean;
 }
 
 const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
@@ -46,10 +47,12 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   displayMissingCards = false,
   displayDropdown = true,
   isHighlighted,
+  readOnly = false,
 }) => {
   const navigate = useNavigate();
   const { isMobile } = useSidebar();
-  const { editable } = useDeckInfo(deckId);
+  const deckInfo = useDeckInfo(deckId);
+  const editable = !readOnly && deckInfo.editable;
   const mutation = usePutDeckCard(deckId);
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
 
@@ -100,7 +103,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   return (
     <DeckCardHoverImage card={card}>
       <div
-        className={cn('flex gap-2 items-center', {
+        className={cn('flex max-w-full gap-2 items-center', {
           'w-[400px]': displayDeckPrice && !compactMode,
           'w-[350px]': !displayDeckPrice && !compactMode,
           'w-[300px]': compactMode,
@@ -133,7 +136,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
         </div>
         <div
           className={cn(
-            'flex gap-1 font text-sm w-full items-center justify-between cursor-pointer',
+            'flex min-w-0 gap-1 font text-sm w-full items-center justify-between cursor-pointer',
             {
               group: editable && !isMobile,
             },

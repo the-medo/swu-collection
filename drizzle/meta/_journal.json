@@ -477,6 +477,13 @@
       "when": 1791111216460,
       "tag": "0067_user_avatars_and_reports",
       "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1791112593444,
+      "tag": "0068_posts",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,9 @@
+/* Keep the editor's resets below SWUBASE's typography and utility classes. */
+@import '@blocknote/shadcn/style.css' layer(components);
+
+@layer components {
+  .bn-shadcn .bn-editor .rte-decklist a {
+    color: revert-layer;
+    text-decoration: revert-layer;
+  }
+}

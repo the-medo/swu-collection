@@ -4,7 +4,10 @@ import DeckCardTextRow, {
 } from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckLayoutText/DeckCardTextRow.tsx';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { cn } from '@/lib/utils.ts';
-import { useDeckCollection } from '@/components/app/decks/DeckContents/DeckCollection/useDeckCollection.ts';
+import {
+  useDeckCollection,
+  type DeckCollectionData,
+} from '@/components/app/decks/DeckContents/DeckCollection/useDeckCollection.ts';
 
 interface DeckLayoutTextProps {
   variant: DeckCardRowVariant;
@@ -13,18 +16,28 @@ interface DeckLayoutTextProps {
   showSideboard?: boolean;
   highlightedCardId?: string;
   displayDropdown?: boolean;
+  readOnly?: boolean;
 }
 
-const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
+const DeckLayoutText: React.FC<DeckLayoutTextProps> = props => {
+  const { data } = useDeckCollection(props.deckId);
+  return <DeckLayoutTextContent {...props} collectionData={data} />;
+};
+
+/** The same deck-detail presentation, usable without loading personal collection data. */
+export const DeckLayoutTextContent: React.FC<
+  DeckLayoutTextProps & { collectionData?: DeckCollectionData }
+> = ({
   variant,
   deckId,
   deckCardsForLayout: { mainboardGroups, cardsByBoard, usedCardsInBoards, usedCards },
   showSideboard = true,
   highlightedCardId,
   displayDropdown = true,
+  readOnly = false,
+  collectionData: d,
 }) => {
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
-  const { data: d } = useDeckCollection(deckId);
   const compactMode = !displayDropdown;
 
   const columnClasses = cn('@container columns-1  gap-4 space-y-4', {
@@ -43,7 +56,8 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
           if (group.cards.length === 0) return null;
           return (
             <div
-              className={cn('flex flex-col gap-1 p-1 break-inside-avoid', {
+              key={groupName}
+              className={cn('flex max-w-full flex-col gap-1 p-1 break-inside-avoid', {
                 'w-[400px]': displayDeckPrice && !compactMode,
                 'w-[350px]': !displayDeckPrice && !compactMode,
                 'w-[300px]': compactMode,
@@ -62,9 +76,10 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                     card={usedCards[c.cardId]}
                     cardInBoards={usedCardsInBoards[c.cardId]}
                     missingCardInBoards={d?.missingCards[c.cardId]}
-                    displayMissingCards={d !== null}
+                    displayMissingCards={!readOnly && !!d}
                     isHighlighted={highlightedCardId === c.cardId}
-                    displayDropdown={displayDropdown}
+                    displayDropdown={displayDropdown && !readOnly}
+                    readOnly={readOnly}
                   />
                 );
               })}
@@ -73,7 +88,7 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
         })}
         {showSideboard && (
           <div
-            className={cn('flex flex-col gap-1 p-1 break-inside-avoid bg-accent', {
+            className={cn('flex max-w-full flex-col gap-1 p-1 break-inside-avoid bg-accent', {
               'w-[420px]': displayDeckPrice && !compactMode,
               'w-[370px]': !displayDeckPrice && !compactMode,
               'w-[320px]': compactMode,
@@ -93,9 +108,10 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                   card={usedCards[c.cardId]}
                   cardInBoards={usedCardsInBoards[c.cardId]}
                   missingCardInBoards={d?.missingCards[c.cardId]}
-                  displayMissingCards={d !== null}
+                  displayMissingCards={!readOnly && !!d}
                   isHighlighted={highlightedCardId === c.cardId}
-                  displayDropdown={displayDropdown}
+                  displayDropdown={displayDropdown && !readOnly}
+                  readOnly={readOnly}
                 />
               );
             })}
@@ -117,9 +133,10 @@ const DeckLayoutText: React.FC<DeckLayoutTextProps> = ({
                   deckCard={c}
                   card={usedCards[c.cardId]}
                   cardInBoards={usedCardsInBoards[c.cardId]}
-                  displayMissingCards={d !== null}
+                  displayMissingCards={!readOnly && !!d}
                   isHighlighted={highlightedCardId === c.cardId}
-                  displayDropdown={displayDropdown}
+                  displayDropdown={displayDropdown && !readOnly}
+                  readOnly={readOnly}
                 />
               );
             })}

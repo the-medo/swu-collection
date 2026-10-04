@@ -1,3 +1,4 @@
+import { useSidebar } from '@/components/ui/sidebar.tsx';
 import DeckPlayButton from './DeckPlayButton.tsx';
 import DeckLeaderBase from '@/components/app/decks/DeckContents/DeckLeaderBase.tsx';
 import DeckCards from '@/components/app/decks/DeckContents/DeckCards/DeckCards.tsx';
@@ -36,6 +37,7 @@ interface DeckContentsProps {
   highlightedCardId?: string;
   deckbuilder?: boolean;
   compact?: boolean;
+  embedded?: boolean;
 }
 
 const getDeckCardsKarabastMessage = (count: number) =>
@@ -52,7 +54,9 @@ const DeckContents: React.FC<DeckContentsProps> = ({
   highlightedCardId,
   deckbuilder,
   compact,
+  embedded = false,
 }) => {
+  const { isMobile } = useSidebar();
   const { cardPoolId, owned, editable } = useDeckInfo(deckId);
   const {
     deckMeta,
@@ -104,7 +108,7 @@ const DeckContents: React.FC<DeckContentsProps> = ({
           <div className="flex max-xl:flex-row max-xl:flex-wrap max-xl:justify-center max-xl:w-auto w-[350px] flex-col gap-2 items-center">
             {!compact && (
               <div className="flex flex-row gap-2 flex-wrap items-center justify-center">
-                <DeckLeaderBase deckId={deckId} size="w300" />
+                <DeckLeaderBase deckId={deckId} size={embedded && isMobile ? 'w200' : 'w300'} />
               </div>
             )}
             {editable && (

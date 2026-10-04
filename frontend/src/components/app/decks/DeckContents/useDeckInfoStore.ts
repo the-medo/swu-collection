@@ -49,12 +49,16 @@ export function useDeckInfoStoreActions() {
   };
 }
 
-export const useSetDeckInfo = (deckId: string, adminEdit: boolean = false) => {
+export const useSetDeckInfo = (
+  deckId: string,
+  adminEdit: boolean = false,
+  refreshOnMount = false,
+) => {
   const user = useUser();
   const hasRole = useRole();
   const isAdmin = hasRole('admin');
 
-  const { data, isFetching, error } = useGetDeck(deckId);
+  const { data, isFetching, error, refetch } = useGetDeck(deckId, refreshOnMount);
   const { setDeckInfo } = useDeckInfoStoreActions();
 
   const deckUserId = data?.user?.id ?? '';
@@ -63,7 +67,7 @@ export const useSetDeckInfo = (deckId: string, adminEdit: boolean = false) => {
 
   useEffect(() => {
     setDeckInfo(deckId, format, owned, data?.deck.cardPoolId);
-  }, [deckId, format, owned]);
+  }, [deckId, format, owned, data?.deck.cardPoolId, setDeckInfo]);
 
-  return { data, loading: isFetching, error, owned, deckUserId };
+  return { data, loading: isFetching, error, owned, deckUserId, refetch };
 };
