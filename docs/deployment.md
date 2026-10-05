@@ -251,7 +251,7 @@ deck/collection saves, protected navigation, logout, and a restricted account's
 error page. Local callback tests replace only the external provider exchange
 and do not prove the real provider credentials or redirect registrations.
 
-The shared dependency changes select both the main app and Crossfire in the
-existing deployment workflow.
+Shared dependency changes select the main app, Crossfire and MCP in the
+deployment workflow.
 Retain the previous working image for each application during the rollout;
 re-running an old Actions run rebuilds current `main` and is not an image rollback.

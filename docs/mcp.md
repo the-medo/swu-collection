@@ -8,8 +8,11 @@ Preview cards are excluded. No collections, decks or account mutations are expos
 
 Login stays on the main application. The Better Auth MCP/OAuth provider uses
 existing Google/GitHub accounts, signed consent requests, authorization codes and
-PKCE S256. Clients discover the issuer and register dynamically. Only
-`cards:read` and optional `offline_access` are available; client-credentials grants
+PKCE S256. Clients discover the issuer and register dynamically. The provider
+limits dynamic registration to five requests per IP per minute in
+production. No automatic cleanup of abandoned client registrations is included;
+review their retention with an owner/admin connection.
+Only `cards:read` and optional `offline_access` are available; client-credentials grants
 are disabled. Dynamic client names are self-reported and shown with their client ID.
 The initial authentication challenge requests `offline_access`, so discovery-driven
 clients receive a refresh token. Access tokens last five minutes. The MCP service also checks the live user,
@@ -226,6 +229,7 @@ bun --env-file=.env --env-file=.env.worktree run mcp:start
 bun run mcp:check
 SWUBASE_MCP_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test mcp/oauth.db.test.ts
 SWUBASE_MCP_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test mcp/sanitization.db.test.ts
+SWUBASE_MCP_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/scripts/mcp-auth-smoke.ts
 node --test scripts/deploy/*.test.mjs
 bun run --cwd frontend build
 ```
@@ -234,7 +238,11 @@ The DB integration test refuses a non-loopback or non-worktree database, uses
 synthetic users and local HTTP servers, exercises the actual auth configuration,
 and removes its fixtures. The sanitizer test executes the real cleanup and
 privacy assertions in a transaction that always rolls back; run it separately
-from the OAuth tests. Keep each simultaneous worktree's MCP port and resource
+from the OAuth tests and browser check. The browser check uses the running app,
+real signed login/consent requests and a synthetic session. It verifies initial
+load, refresh, social sign-in initiation, approval/denial and the agent's PKCE
+exchange without completing a real Google login, and removes its fixtures.
+Keep each simultaneous worktree's MCP port and resource
 URL distinct; the worktree launcher does not allocate or start MCP. Apply migrations
 with the development/owner connection; use the restricted role only for the MCP
 runtime. When generating auth schema, enable `MCP_RESOURCE_URL` explicitly and
