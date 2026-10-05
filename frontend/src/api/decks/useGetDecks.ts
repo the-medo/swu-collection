@@ -2,6 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { DeckQueryParams } from '../../../../server/routes/decks/get.ts';
 import { createApiError } from '@/api/errors.ts';
+import { useSession } from '@/lib/auth-client.ts';
 
 const PAGE_SIZE = 20;
 
@@ -27,6 +28,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
   const {
     userId,
     folderId,
+    sharedFolderId,
     favorite,
     format,
     leaders,
@@ -36,6 +38,8 @@ export const useGetDecks = (props: GetDecksRequest) => {
     sort = 'deck.updated_at',
     order = 'desc',
   } = props;
+  const session = useSession();
+  const viewer = session.data?.user;
 
   // Create a stable query key based on all filter parameters
   const qk = [
@@ -44,6 +48,8 @@ export const useGetDecks = (props: GetDecksRequest) => {
     {
       userId,
       folderId,
+      sharedFolderId,
+      ...(sharedFolderId ? { viewerId: viewer?.id ?? 'anonymous' } : {}),
       format,
       leaders,
       base,
@@ -56,6 +62,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
 
   return useInfiniteQuery({
     queryKey: qk,
+    enabled: !sharedFolderId || !session.isPending,
     queryFn: async ({ pageParam }) => {
       const leadersParam = Array.isArray(leaders) ? leaders.join(',') : leaders;
       const aspectsParam = aspects && aspects.length > 0 ? aspects.join(',') : undefined;
@@ -64,6 +71,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
         query: {
           userId,
           folderId,
+          sharedFolderId,
           favorite: favorite ? 'true' : undefined,
           format: format?.toString(),
           leaders: leadersParam,
@@ -86,6 +94,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
     },
     initialPageParam: 0,
     getNextPageParam: getNextDecksPageParam,
-    staleTime: Infinity,
+    staleTime: sharedFolderId ? 0 : Infinity,
+    refetchInterval: sharedFolderId ? 30_000 : false,
   });
 };

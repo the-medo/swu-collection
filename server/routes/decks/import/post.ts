@@ -4,6 +4,7 @@ import { zDeckImportRequest } from '../../../../types/DeckImport.ts';
 import type { AuthExtension } from '../../../auth/auth.ts';
 import { DeckBuilderError, getDeckBuilderForLink } from '../../../lib/decks/deckBuilders.ts';
 import { importDeckForUser } from '../../../lib/decks/importDeck.ts';
+import { DeckFolderNotFoundError } from '../../../lib/decks/deckFolders.ts';
 
 export const decksImportPostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -13,7 +14,7 @@ export const decksImportPostRoute = new Hono<AuthExtension>().post(
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
     try {
-      const { deckLink, format } = c.req.valid('json');
+      const { deckLink, format, folderId } = c.req.valid('json');
       const builder = getDeckBuilderForLink(deckLink);
       const sourceDeckId = builder.getDeckId(deckLink);
       const sourceDeck = await builder.fetchDeck(sourceDeckId);
@@ -23,10 +24,12 @@ export const decksImportPostRoute = new Hono<AuthExtension>().post(
         deckId: sourceDeckId,
         sourceDeck,
         format,
+        folderId,
       });
 
       return c.json({ data: importedDeck }, 201);
     } catch (error) {
+      if (error instanceof DeckFolderNotFoundError) return c.json({ message: error.message }, 404);
       if (error instanceof DeckBuilderError) {
         return c.json({ message: error.message }, error.status);
       }

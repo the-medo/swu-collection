@@ -6,6 +6,7 @@ import {
   GripVertical,
   MoreHorizontal,
   Pencil,
+  Share2,
   Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
@@ -21,6 +22,7 @@ import type { GetDecksRequest } from '@/api/decks/useGetDecks.ts';
 import {
   getDeckFolderDescendants,
   getDeckFolderPath,
+  getDeckFolderSharingSources,
 } from '../../../../../../shared/lib/deckFolders.ts';
 import type { DeckFolder } from '../../../../../../types/DeckFolder.ts';
 import DeckFolderDialog from './DeckFolderDialog.tsx';
@@ -30,6 +32,8 @@ import FolderDeckList, {
   type FolderSelectionChange,
 } from './FolderDeckList.tsx';
 import type { DeckFolderDrag } from './useDeckFolderDrag.ts';
+import NewDeckInFolderButton from './NewDeckInFolderButton.tsx';
+import ShareDeckFolderDialog from './ShareDeckFolderDialog.tsx';
 
 type Props = {
   folders: DeckFolder[];
@@ -37,11 +41,12 @@ type Props = {
   filters: GetDecksRequest;
   opened: Set<string>;
   onToggle: (id: string) => void;
-  onSaved: (id: string, parentId: string | null) => void;
-  onDeleted: (id: string) => void;
-  selection: FolderSelection;
-  onSelectionChange: FolderSelectionChange;
-  drag: DeckFolderDrag;
+  onSaved?: (id: string, parentId: string | null) => void;
+  onDeleted?: (id: string) => void;
+  selection?: FolderSelection;
+  onSelectionChange?: FolderSelectionChange;
+  drag?: DeckFolderDrag;
+  readOnly?: boolean;
   depth?: number;
 };
 
@@ -57,6 +62,7 @@ export default function DeckFolderSection(props: Props) {
     selection,
     onSelectionChange,
     drag,
+    readOnly = false,
     depth = 0,
   } = props;
   const open = opened.has(folder.id);
@@ -66,22 +72,34 @@ export default function DeckFolderSection(props: Props) {
     .filter(item => descendantIds.has(item.id))
     .reduce((sum, item) => sum + item.deckCount, 0);
   const Icon = open ? FolderOpen : Folder;
-  const drop = drag.drag?.drop?.targetId === folder.id ? drag.drag.drop.placement : null;
+  const drop = drag?.drag?.drop?.targetId === folder.id ? drag.drag.drop.placement : null;
   // Bound indentation for narrow and very deep trees, with a level label beyond the limit.
   const indent = `min(calc(${depth} * var(--folder-indent)), var(--folder-max-indent))`;
   const parents = getDeckFolderPath(folders, folder.id).slice(0, -1);
   const parentPath = parents.map(parent => parent.name).join(' / ');
+  const sharingSources = getDeckFolderSharingSources(folders, folder.id);
+  const sharingDescription = sharingSources
+    .map(source =>
+      [
+        source.id !== folder.id ? `Through ${source.name}` : '',
+        source.sharing?.linkEnabled ? 'Anyone with the link' : '',
+        ...(source.sharing?.teams.map(team => team.name) ?? []),
+      ]
+        .filter(Boolean)
+        .join(' · '),
+    )
+    .join('; ');
 
   return (
     <>
       <TableRow
         aria-label={`Folder ${folder.name}`}
-        data-folder-drop-row={folder.id}
+        data-folder-drop-row={readOnly ? undefined : folder.id}
         data-drop-placement={drop ?? undefined}
         className={cn(
           'h-16 border-border bg-muted/25 hover:bg-muted/40',
           depth === 0 && 'bg-muted/40 hover:bg-muted/60',
-          drag.drag?.id === folder.id && 'opacity-40',
+          drag?.drag?.id === folder.id && 'opacity-40',
           drop === 'inside' &&
             'bg-foreground/10 outline outline-2 -outline-offset-2 outline-muted-foreground',
           drop === 'before' && 'border-t-2 border-t-muted-foreground',
@@ -90,22 +108,24 @@ export default function DeckFolderSection(props: Props) {
       >
         <TableCell className="relative min-w-0 py-1">
           <div className="relative flex min-w-0 items-center gap-1" style={{ paddingLeft: indent }}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-6 shrink-0 touch-none cursor-grab active:cursor-grabbing"
-              aria-label={`Move ${folder.name}`}
-              aria-describedby="folder-drag-help"
-              aria-disabled={drag.isPending}
-              onPointerDown={event => drag.onPointerDown(event, folder.id)}
-              onPointerMove={drag.onPointerMove}
-              onPointerUp={drag.onPointerUp}
-              onPointerCancel={drag.cancel}
-              onLostPointerCapture={drag.cancel}
-              onKeyDown={event => drag.onKeyDown(event, folder.id)}
-            >
-              <GripVertical className="h-4 w-4 text-muted-foreground" />
-            </Button>
+            {!readOnly && drag && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-6 shrink-0 touch-none cursor-grab active:cursor-grabbing"
+                aria-label={`Move ${folder.name}`}
+                aria-describedby="folder-drag-help"
+                aria-disabled={drag.isPending}
+                onPointerDown={event => drag.onPointerDown(event, folder.id)}
+                onPointerMove={drag.onPointerMove}
+                onPointerUp={drag.onPointerUp}
+                onPointerCancel={drag.cancel}
+                onLostPointerCapture={drag.cancel}
+                onKeyDown={event => drag.onKeyDown(event, folder.id)}
+              >
+                <GripVertical className="h-4 w-4 text-muted-foreground" />
+              </Button>
+            )}
             <button
               type="button"
               className="flex min-h-14 min-w-0 flex-1 items-center gap-1.5 py-2 text-left sm:gap-2"
@@ -129,7 +149,7 @@ export default function DeckFolderSection(props: Props) {
                     className="block text-[11px] leading-4 text-muted-foreground"
                     title={parentPath}
                   >
-                    <span className="block truncate">{parents.at(-1)?.name}</span>
+                    <span className="block truncate">{parents[parents.length - 1]?.name}</span>
                     {depth > 2 && (
                       <span
                         className={cn(
@@ -145,69 +165,99 @@ export default function DeckFolderSection(props: Props) {
                 <span className="block break-words text-sm font-semibold leading-snug sm:text-base">
                   {folder.name}
                 </span>
+                {sharingSources.length > 0 && (
+                  <span
+                    className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground"
+                    title={sharingDescription}
+                    aria-label={sharingDescription}
+                  >
+                    <Share2 className="h-3 w-3" />
+                    Shared
+                    {!folder.sharing?.linkEnabled && !folder.sharing?.teams.length
+                      ? ' · inherited'
+                      : ''}
+                  </span>
+                )}
               </span>
             </button>
           </div>
         </TableCell>
+        {!readOnly && (
+          <TableCell className="px-1 text-right sm:px-2">
+            <NewDeckInFolderButton folderId={folder.id} name={folder.name} />
+          </TableCell>
+        )}
         <TableCell className="px-1 text-right sm:px-2">
           <span className="inline-flex min-w-7 justify-center rounded-md border border-border bg-background/80 px-1 py-1 text-xs font-semibold tabular-nums sm:px-2">
             {deckCount}
           </span>
         </TableCell>
-        <TableCell className="px-1 sm:px-2">
-          <div className="flex justify-end">
-            <DeckFolderDialog
-              folders={folders}
-              parentId={folder.id}
-              onSaved={onSaved}
-              trigger={
-                <Button
-                  variant="ghost"
-                  size="iconMedium"
-                  className="w-6 sm:w-8"
-                  aria-label={`New subfolder in ${folder.name}`}
-                >
-                  <FolderPlus className="h-4 w-4" />
-                </Button>
-              }
-            />
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="iconMedium"
-                  className="w-6 sm:w-8"
-                  aria-label={`Actions for ${folder.name}`}
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DeckFolderDialog
-                  folders={folders}
-                  folder={folder}
-                  onSaved={onSaved}
-                  trigger={
-                    <DropdownMenuItem onSelect={event => event.preventDefault()}>
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Edit folder
-                    </DropdownMenuItem>
-                  }
-                />
-                <DeleteDeckFolderDialog
-                  folder={folder}
-                  onDeleted={() => onDeleted(folder.id)}
-                  trigger={
-                    <DropdownMenuItem onSelect={event => event.preventDefault()}>
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Remove folder
-                    </DropdownMenuItem>
-                  }
-                />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </TableCell>
+        {!readOnly && onSaved && onDeleted && (
+          <TableCell className="px-1 sm:px-2">
+            <div className="flex justify-end">
+              <DeckFolderDialog
+                folders={folders}
+                parentId={folder.id}
+                onSaved={onSaved}
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="iconMedium"
+                    className="w-6 sm:w-8"
+                    aria-label={`New subfolder in ${folder.name}`}
+                  >
+                    <FolderPlus className="h-4 w-4" />
+                  </Button>
+                }
+              />
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="iconMedium"
+                    className="w-6 sm:w-8"
+                    aria-label={`Actions for ${folder.name}`}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <ShareDeckFolderDialog
+                    folders={folders}
+                    folder={folder}
+                    trigger={
+                      <DropdownMenuItem onSelect={event => event.preventDefault()}>
+                        <Share2 className="mr-2 h-4 w-4" />
+                        Share folder
+                      </DropdownMenuItem>
+                    }
+                  />
+                  <DeckFolderDialog
+                    folders={folders}
+                    folder={folder}
+                    onSaved={onSaved}
+                    trigger={
+                      <DropdownMenuItem onSelect={event => event.preventDefault()}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit folder
+                      </DropdownMenuItem>
+                    }
+                  />
+                  <DeleteDeckFolderDialog
+                    folder={folder}
+                    onDeleted={() => onDeleted(folder.id)}
+                    trigger={
+                      <DropdownMenuItem onSelect={event => event.preventDefault()}>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Remove folder
+                      </DropdownMenuItem>
+                    }
+                  />
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </TableCell>
+        )}
       </TableRow>
       {open && (
         <>
@@ -216,7 +266,7 @@ export default function DeckFolderSection(props: Props) {
           ))}
           {(folder.deckCount > 0 || children.length === 0) && (
             <tr>
-              <td colSpan={3} className="p-0">
+              <td colSpan={readOnly ? 2 : 4} className="p-0">
                 <section
                   aria-label={`Decks in ${folder.name}`}
                   className="relative min-w-0 pb-4 pt-2"
@@ -232,8 +282,8 @@ export default function DeckFolderSection(props: Props) {
                     <FolderDeckList
                       filters={filters}
                       folderId={folder.id}
-                      selection={selection}
-                      onSelectionChange={onSelectionChange}
+                      selection={readOnly ? undefined : selection}
+                      onSelectionChange={readOnly ? undefined : onSelectionChange}
                     />
                   </div>
                 </section>

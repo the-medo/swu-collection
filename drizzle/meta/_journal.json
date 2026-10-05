@@ -509,15 +509,8 @@
     {
       "idx": 72,
       "version": "7",
-      "when": 1791192812527,
-      "tag": "0072_striped_junta",
-      "breakpoints": true
-    },
-    {
-      "idx": 73,
-      "version": "7",
-      "when": 1791195388947,
-      "tag": "0073_lucky_nova",
+      "when": 1791228545414,
+      "tag": "0072_deck_folders",
       "breakpoints": true
     }
   ]

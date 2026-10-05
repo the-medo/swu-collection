@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { createApiError } from '@/api/errors.ts';
-import { deckFolderKeys } from './queryKeys.ts';
+import { invalidateDeckFolderCaches } from './deckFolderCache.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import type { DeckFolderUpdateRequest } from '../../../../types/DeckFolder.ts';
 
@@ -15,7 +15,7 @@ export function useSaveDeckFolder() {
       if (!response.ok) throw await createApiError(response, 'Failed to save folder');
       return (await response.json()).data;
     },
-    onSuccess: () => client.invalidateQueries({ queryKey: deckFolderKeys.all }),
+    onSuccess: () => invalidateDeckFolderCaches(client),
     onError: error =>
       toast({ variant: 'destructive', title: 'Could not save folder', description: error.message }),
   });

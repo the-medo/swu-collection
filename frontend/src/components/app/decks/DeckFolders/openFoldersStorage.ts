@@ -35,3 +35,33 @@ export function writeOpenDeckFolders(userId: string, folders: Set<string>) {
     // Folder navigation still works when browser storage is unavailable.
   }
 }
+
+export const sharedOpenDeckFoldersKey = (folderId: string, viewerId?: string) =>
+  `swubase:deck-folders:shared-opened:v1:${viewerId ?? 'anonymous'}:${folderId}`;
+
+export function readSharedOpenDeckFolders(folderId: string, viewerId?: string): Set<string> {
+  try {
+    const stored = localStorage.getItem(sharedOpenDeckFoldersKey(folderId, viewerId));
+    if (stored === null) return new Set([folderId]);
+    const value: unknown = JSON.parse(stored);
+    return new Set(
+      Array.isArray(value)
+        ? value.filter((id): id is string => typeof id === 'string')
+        : [folderId],
+    );
+  } catch {
+    return new Set([folderId]);
+  }
+}
+
+export function writeSharedOpenDeckFolders(
+  folderId: string,
+  opened: Set<string>,
+  viewerId?: string,
+) {
+  try {
+    localStorage.setItem(sharedOpenDeckFoldersKey(folderId, viewerId), JSON.stringify([...opened]));
+  } catch {
+    /* Browsing still works when storage is unavailable. */
+  }
+}

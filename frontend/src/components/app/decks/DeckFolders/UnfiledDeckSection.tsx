@@ -6,6 +6,7 @@ import FolderDeckList, {
   type FolderSelection,
   type FolderSelectionChange,
 } from './FolderDeckList.tsx';
+import NewDeckInFolderButton from './NewDeckInFolderButton.tsx';
 
 export default function UnfiledDeckSection({
   open,
@@ -50,12 +51,15 @@ export default function UnfiledDeckSection({
             </button>
           </div>
         </TableCell>
+        <TableCell className="px-1 text-right sm:px-2">
+          <NewDeckInFolderButton folderId={null} name="No folder" />
+        </TableCell>
         <TableCell />
         <TableCell />
       </TableRow>
       {open && (
         <tr>
-          <td colSpan={3} className="p-0">
+          <td colSpan={4} className="p-0">
             <section aria-label="Decks with no folder" className="min-w-0 pb-4 pl-5 pt-2">
               <div className="min-w-0 overflow-x-auto pl-2 sm:pl-3">
                 <FolderDeckList

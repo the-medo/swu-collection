@@ -103,6 +103,8 @@ describe('deck deletion cache update', () => {
     const queryClient = new QueryClient();
     queryClient.setQueryData(['deck', 'deleted-deck'], { id: 'deleted-deck' });
     queryClient.setQueryData(['deck-content', 'deleted-deck'], { data: [] });
+    queryClient.setQueryData(['deck', 'deleted-deck', 'viewer'], { id: 'deleted-deck' });
+    queryClient.setQueryData(['deck-content', 'deleted-deck', 'viewer'], { data: [] });
     queryClient.setQueryData(['decks-bulk', 'deleted-deck'], true);
     queryClient.setQueryData(['card-pool', 'pool-1'], { id: 'pool-1' });
 
@@ -110,6 +112,8 @@ describe('deck deletion cache update', () => {
 
     expect(queryClient.getQueryData(['deck', 'deleted-deck'])).toBeUndefined();
     expect(queryClient.getQueryData(['deck-content', 'deleted-deck'])).toBeUndefined();
+    expect(queryClient.getQueryData(['deck', 'deleted-deck', 'viewer'])).toBeUndefined();
+    expect(queryClient.getQueryData(['deck-content', 'deleted-deck', 'viewer'])).toBeUndefined();
     expect(queryClient.getQueryData(['decks-bulk', 'deleted-deck'])).toBeUndefined();
     expect(queryClient.getQueryState(['card-pool', 'pool-1'])?.isInvalidated).toBe(true);
   });

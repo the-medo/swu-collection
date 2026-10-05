@@ -2,6 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { DeckCardResponse } from './useGetDeckCards.ts';
 import { toast } from '@/hooks/use-toast.ts';
+import { useUser } from '@/hooks/useUser.ts';
+import { deckKeys } from './queryKeys.ts';
 
 export type DeckCardDeleteData = {
   cardId: string;
@@ -10,6 +12,7 @@ export type DeckCardDeleteData = {
 
 export const useDeleteDeckCard = (deckId: string | undefined) => {
   const queryClient = useQueryClient();
+  const viewer = useUser();
 
   return useMutation({
     mutationFn: async (cardData: DeckCardDeleteData) => {
@@ -36,31 +39,26 @@ export const useDeleteDeckCard = (deckId: string | undefined) => {
       return response.json();
     },
     onSuccess: (_, variables) => {
-      queryClient.setQueryData<DeckCardResponse>(
-        ['deck-content', deckId],
-        oldData => {
-          if (!oldData) {
-            return { data: [] };
-          }
+      queryClient.setQueryData<DeckCardResponse>(deckKeys.cards(deckId, viewer?.id), oldData => {
+        if (!oldData) {
+          return { data: [] };
+        }
 
-          const { data: existingCards } = oldData;
+        const { data: existingCards } = oldData;
 
-          const filteredCards = existingCards.filter(
-            card => 
-              !(card.cardId === variables.cardId && 
-                card.board === variables.board)
-          );
+        const filteredCards = existingCards.filter(
+          card => !(card.cardId === variables.cardId && card.board === variables.board),
+        );
 
-          toast({
-            title: 'Card removed from deck',
-          });
+        toast({
+          title: 'Card removed from deck',
+        });
 
-          return {
-            ...oldData,
-            data: filteredCards,
-          };
-        },
-      );
+        return {
+          ...oldData,
+          data: filteredCards,
+        };
+      });
     },
     onError: error => {
       toast({

@@ -17,10 +17,12 @@ import { selectDeck, selectDeckInformation } from '../deck.ts';
 import type { AuthExtension } from '../../auth/auth.ts';
 import { booleanPreprocessor } from '../../../shared/lib/zod/booleanPreprocessor.ts';
 import { entityPrice } from '../../db/schema/entity_price.ts';
+import { getSharedDeckFolder } from '../../lib/decks/deckFolders.ts';
 
 export const zDeckQueryParams = zPaginationParams.extend({
   userId: z.string().optional(),
   folderId: z.union([z.guid(), z.literal('unfiled')]).optional(),
+  sharedFolderId: z.guid().optional(),
   favorite: booleanPreprocessor.optional().default(false),
   format: z.coerce.number().int().positive().optional(),
   leaders: z
@@ -54,6 +56,7 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     const {
       userId,
       folderId,
+      sharedFolderId,
       favorite,
       format,
       leaders: leaderIds,
@@ -67,8 +70,28 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     } = c.req.valid('query');
 
     const filters = [];
+    c.header('Cache-Control', 'private, no-store');
 
-    if (folderId) {
+    if (sharedFolderId) {
+      const shared = await getSharedDeckFolder(sharedFolderId, user?.id);
+      if (
+        !shared ||
+        !folderId ||
+        !shared.folders.some(folder => folder.id === folderId) ||
+        (userId && userId !== shared.ownerId)
+      )
+        return c.json({ message: 'Folder not found or you do not have access' }, 404);
+      filters.push(
+        eq(deckTable.userId, shared.ownerId),
+        inArray(
+          deckTable.id,
+          db
+            .select({ id: deckFolderDeck.deckId })
+            .from(deckFolderDeck)
+            .where(eq(deckFolderDeck.folderId, folderId)),
+        ),
+      );
+    } else if (folderId) {
       // Organisation is private even when a deck is public.
       if (!user) return c.json({ message: 'Unauthorized' }, 401);
       if (userId !== user.id) return c.json({ message: 'Forbidden' }, 403);
@@ -100,7 +123,7 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     }
 
     // Public decks filter - only show public decks unless viewing your own
-    if (!userId || userId !== user?.id) filters.push(eq(deckTable.public, 1));
+    if (!sharedFolderId && (!userId || userId !== user?.id)) filters.push(eq(deckTable.public, 1));
 
     if (userId) {
       filters.push(eq(deckTable.userId, userId));

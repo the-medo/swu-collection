@@ -19,13 +19,13 @@ export type FolderSelectionChange = (
 function FolderDeckList({
   filters,
   folderId,
-  selection,
+  selection = {},
   onSelectionChange,
 }: {
   filters: GetDecksRequest;
   folderId: string;
-  selection: FolderSelection;
-  onSelectionChange: FolderSelectionChange;
+  selection?: FolderSelection;
+  onSelectionChange?: FolderSelectionChange;
 }) {
   const query = useGetDecks({ ...filters, folderId });
   const { isMobile } = useSidebar();
@@ -37,7 +37,7 @@ function FolderDeckList({
   const limit =
     MAX_BULK_DECK_DELETE_COUNT - Object.keys(selection).filter(id => !loadedIds.has(id)).length;
   const rowSelection = Object.fromEntries(Object.keys(selection).map(id => [id, true]));
-  const onChange: OnChangeFn<RowSelectionState> = updater => onSelectionChange(decks, updater);
+  const onChange: OnChangeFn<RowSelectionState> = updater => onSelectionChange?.(decks, updater);
   const eligible = decks.slice(0, limit);
   const allSelected = eligible.length > 0 && eligible.every(row => selection[row.deck.id]);
 
@@ -58,7 +58,7 @@ function FolderDeckList({
 
   return (
     <div className="min-w-0">
-      {isMobile && decks.length > 0 && (
+      {onSelectionChange && isMobile && decks.length > 0 && (
         <label className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
           <Checkbox
             checked={allSelected}
@@ -71,10 +71,10 @@ function FolderDeckList({
         </label>
       )}
       <DeckTable
-        variant="user"
+        variant={onSelectionChange ? 'user' : 'public'}
         decks={decks}
         loading={query.isPending}
-        selectable
+        selectable={!!onSelectionChange}
         selectionLimit={limit}
         rowSelection={rowSelection}
         onRowSelectionChange={onChange}

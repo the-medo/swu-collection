@@ -131,6 +131,22 @@ try {
   await unfiled().getByRole('button', { name: 'Load more decks', exact: true }).click();
   await expect(unfiled().getByRole('checkbox', { name: /^Select Fixture deck/ })).toHaveCount(25);
   await expect(unfiledRow()).toBeVisible();
+  // Folder controls stay out of the creation/import dialogs and bulk bar until folders exist.
+  await page.getByRole('button', { name: 'New deck', exact: true }).click();
+  await expect(
+    page.getByRole('dialog').getByRole('combobox', { name: 'Folder', exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole('tab', { name: 'Import', exact: true }).click();
+  await expect(
+    page.getByRole('dialog').getByRole('combobox', { name: 'Folder', exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await unfiled().getByRole('checkbox', { name: 'Select Fixture deck 00', exact: true }).check();
+  await expect(page.getByRole('combobox', { name: 'Destination folder', exact: true })).toHaveCount(
+    0,
+  );
+  await expect(page.getByRole('button', { name: 'Move decks', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Clear selection', exact: true }).click();
   await expect(
     unfiledRow().getByRole('button', { name: 'Move No folder', exact: true }),
   ).toHaveCount(0);
@@ -574,10 +590,21 @@ try {
   await page.getByRole('checkbox', { name: 'Select Fixture deck 00', exact: true }).check();
   await last.check();
   await expect(page.getByText('2 decks selected', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Move to folder', exact: true }).click();
-  await page
-    .getByRole('combobox', { name: 'Destination folder', exact: true })
-    .selectOption({ label: 'Tournament prep / Aggro / Sabine' });
+  await expect(page.getByRole('button', { name: 'Move decks', exact: true })).toBeDisabled();
+  await page.screenshot({ path: `${screenshots}/folder-selection-dark.png` });
+  await page.setViewportSize({ width: 320, height: 844 });
+  await expect(page.getByRole('region', { name: 'Selected decks', exact: true })).toBeInViewport();
+  await expect(page.getByRole('button', { name: 'Move decks', exact: true })).toBeInViewport();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: `${screenshots}/folder-selection-mobile.png` });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.getByRole('combobox', { name: 'Destination folder', exact: true }).click();
+  await expect(page.getByRole('treeitem', { name: 'Folder Sabine', exact: true })).toHaveAttribute(
+    'aria-level',
+    '3',
+  );
+  await page.getByRole('treeitem', { name: 'Folder Sabine', exact: true }).click();
   await page.getByRole('button', { name: 'Move decks', exact: true }).click();
   await expect(
     folderDecks('Sabine').getByRole('checkbox', { name: /^Select Fixture deck/ }),
@@ -697,7 +724,135 @@ try {
     folder('Sabine tests').getByRole('button', { name: 'Collapse Sabine tests', exact: true }),
   ).toBeVisible();
 
-  // Existing bulk deletion remains available alongside Move to folder.
+  // A folder row preselects the same destination in the creation and import tabs.
+  await folder('Sabine tests')
+    .getByRole('button', { name: 'New deck in Sabine tests', exact: true })
+    .click();
+  const newDeckDialog = page.getByRole('dialog', { name: 'New deck', exact: true });
+  await expect(newDeckDialog.getByRole('combobox', { name: 'Folder', exact: true })).toHaveText(
+    'Sabine tests',
+  );
+  await newDeckDialog.getByRole('combobox', { name: 'Folder', exact: true }).click();
+  await expect(
+    page.getByRole('treeitem', { name: 'Folder Sabine tests', exact: true }),
+  ).toBeFocused();
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.getByRole('treeitem', { name: 'Folder Aggro', exact: true })).toBeFocused();
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.getByRole('treeitem', { name: 'Folder Aggro', exact: true })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  );
+  await expect(
+    page.getByRole('treeitem', { name: 'Folder Sabine tests', exact: true }),
+  ).toHaveCount(0);
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('Enter');
+  await expect(newDeckDialog.getByRole('combobox', { name: 'Folder', exact: true })).toHaveText(
+    'Sabine tests',
+  );
+  await newDeckDialog.getByRole('tab', { name: 'Import', exact: true }).click();
+  await newDeckDialog.getByRole('combobox', { name: 'Folder', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Find a folder', exact: true }).fill('Aggro');
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await expect(page.getByRole('treeitem', { name: 'Folder Aggro', exact: true })).toBeFocused();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('treeitem', { name: 'Folder Aggro', exact: true })).toBeFocused();
+  await page.getByRole('textbox', { name: 'Find a folder', exact: true }).fill('Sabine');
+  await expect(
+    page.getByRole('treeitem', { name: 'Folder Tournament prep', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('treeitem', { name: 'Folder Sabine tests', exact: true }),
+  ).toHaveAttribute('aria-level', '3');
+  await expect(page.locator('[data-radix-popper-content-wrapper] > [data-state="open"]')).toHaveCSS(
+    'opacity',
+    '1',
+  );
+  await page.screenshot({ path: `${screenshots}/folder-picker-dark.png` });
+  await page.getByRole('treeitem', { name: 'Folder Sabine tests', exact: true }).click();
+  await expect(newDeckDialog.getByRole('combobox', { name: 'Folder', exact: true })).toHaveText(
+    'Sabine tests',
+  );
+  await newDeckDialog
+    .getByRole('textbox', { name: 'Deck link', exact: true })
+    .fill('https://swudb.com/deck/browser-fixture');
+  await newDeckDialog.getByRole('combobox', { name: 'Format (required)', exact: true }).click();
+  await page.getByRole('option', { name: 'Premier', exact: true }).click();
+  let importedFolder: string | null | undefined;
+  await page.route('**/api/deck/import', async route => {
+    importedFolder = route.request().postDataJSON().folderId;
+    const [deck] = await sql`SELECT id, name, description FROM deck WHERE id = ${deckIds[0]}`;
+    await route.fulfill({ json: { data: { deck, errors: [] } } });
+  });
+  await newDeckDialog.getByRole('button', { name: 'Import', exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`/decks/${deckIds[0]}`));
+  expect(importedFolder).toBe(leafId);
+  await page.unroute('**/api/deck/import');
+  await page.goto(`${origin}/decks/your`);
+  await folder('Sabine tests')
+    .getByRole('button', { name: 'New deck in Sabine tests', exact: true })
+    .click();
+  await newDeckDialog.getByPlaceholder('Deck name', { exact: true }).fill('Created in a folder');
+  const createdResponse = page.waitForResponse(
+    response =>
+      new URL(response.url()).pathname === '/api/deck' && response.request().method() === 'POST',
+  );
+  await newDeckDialog.getByRole('button', { name: 'Create', exact: true }).click();
+  const created = (await (await createdResponse).json()).data[0];
+  deckIds.push(created.id);
+  await expect(page).toHaveURL(new RegExp(`/decks/${created.id}`));
+  expect(
+    (await sql`SELECT folder_id FROM deck_folder_deck WHERE deck_id = ${created.id}`)[0]?.folder_id,
+  ).toBe(leafId);
+  await page.goto(`${origin}/decks/your`);
+  await expect(
+    folderDecks('Sabine tests').getByRole('checkbox', {
+      name: 'Select Created in a folder',
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect((await page.request.delete(`${origin}/api/deck/${created.id}`)).status()).toBe(200);
+  await page.reload();
+
+  // Long trees scroll inside a modal, and a rejected stale destination can be cleared.
+  const pickerFolders: string[] = [];
+  for (let index = 0; index < 16; index++) {
+    const response = await page.request.post(`${origin}/api/deck-folders`, {
+      data: { name: `Picker scroll ${index.toString().padStart(2, '0')}` },
+    });
+    expect(response.status()).toBe(201);
+    pickerFolders.push((await response.json()).data.id);
+  }
+  await page.reload();
+  await page.getByRole('button', { name: 'New deck', exact: true }).click();
+  await newDeckDialog.getByRole('combobox', { name: 'Folder', exact: true }).click();
+  const tree = page.getByRole('tree', { name: 'Folders', exact: true });
+  const treeBox = await tree.boundingBox();
+  if (!treeBox) throw new Error('Folder tree is not visible');
+  await page.mouse.move(treeBox.x + treeBox.width / 2, treeBox.y + treeBox.height / 2);
+  await page.mouse.wheel(0, 500);
+  await expect.poll(() => tree.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+  await tree.getByRole('treeitem', { name: 'Folder Picker scroll 00', exact: true }).click();
+  expect(
+    (await page.request.delete(`${origin}/api/deck-folders/${pickerFolders[0]}`)).status(),
+  ).toBe(200);
+  await newDeckDialog.getByRole('button', { name: 'Create', exact: true }).click();
+  await expect(newDeckDialog).toContainText('This folder is no longer available.');
+  await newDeckDialog.getByRole('button', { name: 'Use No folder', exact: true }).click();
+  await expect(newDeckDialog.getByRole('combobox', { name: 'Folder', exact: true })).toHaveText(
+    'No folder',
+  );
+  await expect(newDeckDialog.getByRole('button', { name: 'Create', exact: true })).toBeEnabled();
+  await newDeckDialog.getByRole('button', { name: 'Close', exact: true }).click();
+  for (const id of pickerFolders.slice(1))
+    expect((await page.request.delete(`${origin}/api/deck-folders/${id}`)).status()).toBe(200);
+  await page.reload();
+
+  // Existing bulk deletion remains available alongside direct movement.
   await unfiled().getByRole('checkbox', { name: 'Select Fixture deck 01', exact: true }).check();
   await page.getByRole('button', { name: 'Delete selected', exact: true }).click();
   await page
@@ -771,7 +926,7 @@ try {
     'Folder rows, mouse/touch dragging, persisted ordering, keyboard reparenting, nested folders, pagination, bulk move/delete, ownership, cycle rejection, per-account reload persistence, removal, and responsive themes passed.',
   );
 } catch (error) {
-  await page.screenshot({ path: `${screenshots}/failure.png`, fullPage: true });
+  await page.screenshot({ path: `${screenshots}/failure.png`, fullPage: true }).catch(() => {});
   console.error('Browser errors:', errors);
   console.error('Browser diagnostics:', browserDiagnostics, 'Page:', page.url());
   throw error;

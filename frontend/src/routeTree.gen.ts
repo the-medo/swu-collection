@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as Statistics2RouteImport } from './routes/statistics2'
+import { Route as StatisticsRouteImport } from './routes/statistics'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -63,6 +64,7 @@ import { Route as TournamentsTournamentIdDetailsRouteImport } from './routes/tou
 import { Route as TournamentsTournamentIdDecksRouteImport } from './routes/tournaments/$tournamentId/decks'
 import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/tournaments/$tournamentId/card-stats'
 import { Route as TeamsTeamIdEventsRouteImport } from './routes/teams/$teamId/events'
+import { Route as DecksFolderFolderIdRouteImport } from './routes/decks/folder/$folderId'
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
 import { Route as AuthenticatedCrossfireLobbyIdRouteImport } from './routes/_authenticated/crossfire/$lobbyId'
@@ -88,16 +90,10 @@ import { Route as TeamsTeamIdStatisticsStatisticsLayoutHistoryIndexRouteImport }
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutDecksIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/decks/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/dashboard/index'
 
-const StatisticsRouteImport = createFileRoute('/statistics')()
 const TeamsTeamIdStatisticsRouteImport = createFileRoute(
   '/teams/$teamId/statistics',
 )()
 
-const StatisticsRoute = StatisticsRouteImport.update({
-  id: '/statistics',
-  path: '/statistics',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -106,6 +102,11 @@ const TermsRoute = TermsRouteImport.update({
 const Statistics2Route = Statistics2RouteImport.update({
   id: '/statistics2',
   path: '/statistics2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatisticsRoute = StatisticsRouteImport.update({
+  id: '/statistics',
+  path: '/statistics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -376,6 +377,11 @@ const TeamsTeamIdEventsRoute = TeamsTeamIdEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => TeamsTeamIdRoute,
 } as any)
+const DecksFolderFolderIdRoute = DecksFolderFolderIdRouteImport.update({
+  id: '/decks/folder/$folderId',
+  path: '/decks/folder/$folderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DecksDeckIdEditRoute = DecksDeckIdEditRouteImport.update({
   id: '/decks/$deckId/edit',
   path: '/decks/$deckId/edit',
@@ -521,6 +527,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacy': typeof PrivacyRoute
+  '/statistics': typeof StatisticsStatisticsLayoutRouteWithChildren
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -535,7 +542,6 @@ export interface FileRoutesByFullPath {
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
   '/lists/your': typeof ListsYourRoute
-  '/statistics': typeof StatisticsStatisticsLayoutRouteWithChildren
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
@@ -549,6 +555,7 @@ export interface FileRoutesByFullPath {
   '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
+  '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
   '/tournaments/$tournamentId/card-stats': typeof TournamentsTournamentIdCardStatsRoute
   '/tournaments/$tournamentId/decks': typeof TournamentsTournamentIdDecksRoute
@@ -624,6 +631,7 @@ export interface FileRoutesByTo {
   '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
+  '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
   '/tournaments/$tournamentId/card-stats': typeof TournamentsTournamentIdCardStatsRoute
   '/tournaments/$tournamentId/decks': typeof TournamentsTournamentIdDecksRoute
@@ -674,6 +682,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/privacy': typeof PrivacyRoute
+  '/statistics': typeof StatisticsRouteWithChildren
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -688,7 +697,6 @@ export interface FileRoutesById {
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
   '/lists/your': typeof ListsYourRoute
-  '/statistics': typeof StatisticsRouteWithChildren
   '/statistics/_statisticsLayout': typeof StatisticsStatisticsLayoutRouteWithChildren
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/wantlists/public': typeof WantlistsPublicRoute
@@ -703,6 +711,7 @@ export interface FileRoutesById {
   '/_authenticated/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
+  '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
   '/tournaments/$tournamentId/card-stats': typeof TournamentsTournamentIdCardStatsRoute
   '/tournaments/$tournamentId/decks': typeof TournamentsTournamentIdDecksRoute
@@ -755,6 +764,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/privacy'
+    | '/statistics'
     | '/statistics2'
     | '/terms'
     | '/admin'
@@ -769,7 +779,6 @@ export interface FileRouteTypes {
     | '/decks/tournament'
     | '/decks/your'
     | '/lists/your'
-    | '/statistics'
     | '/teams/$teamId'
     | '/wantlists/public'
     | '/wantlists/your'
@@ -783,6 +792,7 @@ export interface FileRouteTypes {
     | '/crossfire/$lobbyId'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
+    | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
     | '/tournaments/$tournamentId/card-stats'
     | '/tournaments/$tournamentId/decks'
@@ -858,6 +868,7 @@ export interface FileRouteTypes {
     | '/crossfire/$lobbyId'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
+    | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
     | '/tournaments/$tournamentId/card-stats'
     | '/tournaments/$tournamentId/decks'
@@ -907,6 +918,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/privacy'
+    | '/statistics'
     | '/statistics2'
     | '/terms'
     | '/_authenticated/admin'
@@ -921,7 +933,6 @@ export interface FileRouteTypes {
     | '/decks/tournament'
     | '/decks/your'
     | '/lists/your'
-    | '/statistics'
     | '/statistics/_statisticsLayout'
     | '/teams/$teamId'
     | '/wantlists/public'
@@ -936,6 +947,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crossfire/$lobbyId'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
+    | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
     | '/tournaments/$tournamentId/card-stats'
     | '/tournaments/$tournamentId/decks'
@@ -988,6 +1000,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
   PrivacyRoute: typeof PrivacyRoute
+  StatisticsRoute: typeof StatisticsRouteWithChildren
   Statistics2Route: typeof Statistics2Route
   TermsRoute: typeof TermsRoute
   AuthErrorRoute: typeof AuthErrorRoute
@@ -999,7 +1012,6 @@ export interface RootRouteChildren {
   DecksTournamentRoute: typeof DecksTournamentRoute
   DecksYourRoute: typeof DecksYourRoute
   ListsYourRoute: typeof ListsYourRoute
-  StatisticsRoute: typeof StatisticsRouteWithChildren
   TeamsTeamIdRoute: typeof TeamsTeamIdRouteWithChildren
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
@@ -1011,6 +1023,7 @@ export interface RootRouteChildren {
   TournamentsIndexRoute: typeof TournamentsIndexRoute
   CardsDetailCardIdRoute: typeof CardsDetailCardIdRoute
   DecksDeckIdEditRoute: typeof DecksDeckIdEditRoute
+  DecksFolderFolderIdRoute: typeof DecksFolderFolderIdRoute
   TournamentsTournamentIdCardStatsRoute: typeof TournamentsTournamentIdCardStatsRoute
   TournamentsTournamentIdDecksRoute: typeof TournamentsTournamentIdDecksRoute
   TournamentsTournamentIdDetailsRoute: typeof TournamentsTournamentIdDetailsRoute
@@ -1036,13 +1049,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/statistics': {
-      id: '/statistics'
-      path: '/statistics'
-      fullPath: '/statistics'
-      preLoaderRoute: typeof StatisticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -1055,6 +1061,13 @@ declare module '@tanstack/react-router' {
       path: '/statistics2'
       fullPath: '/statistics2'
       preLoaderRoute: typeof Statistics2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/statistics': {
+      id: '/statistics'
+      path: '/statistics'
+      fullPath: '/statistics'
+      preLoaderRoute: typeof StatisticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -1157,7 +1170,7 @@ declare module '@tanstack/react-router' {
     }
     '/statistics/_statisticsLayout': {
       id: '/statistics/_statisticsLayout'
-      path: '/statistics'
+      path: ''
       fullPath: '/statistics'
       preLoaderRoute: typeof StatisticsStatisticsLayoutRouteImport
       parentRoute: typeof StatisticsRoute
@@ -1413,6 +1426,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/teams/$teamId/events'
       preLoaderRoute: typeof TeamsTeamIdEventsRouteImport
       parentRoute: typeof TeamsTeamIdRoute
+    }
+    '/decks/folder/$folderId': {
+      id: '/decks/folder/$folderId'
+      path: '/decks/folder/$folderId'
+      fullPath: '/decks/folder/$folderId'
+      preLoaderRoute: typeof DecksFolderFolderIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/decks/$deckId/edit': {
       id: '/decks/$deckId/edit'
@@ -1733,6 +1753,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
   PrivacyRoute: PrivacyRoute,
+  StatisticsRoute: StatisticsRouteWithChildren,
   Statistics2Route: Statistics2Route,
   TermsRoute: TermsRoute,
   AuthErrorRoute: AuthErrorRoute,
@@ -1744,7 +1765,6 @@ const rootRouteChildren: RootRouteChildren = {
   DecksTournamentRoute: DecksTournamentRoute,
   DecksYourRoute: DecksYourRoute,
   ListsYourRoute: ListsYourRoute,
-  StatisticsRoute: StatisticsRouteWithChildren,
   TeamsTeamIdRoute: TeamsTeamIdRouteWithChildren,
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
@@ -1756,6 +1776,7 @@ const rootRouteChildren: RootRouteChildren = {
   TournamentsIndexRoute: TournamentsIndexRoute,
   CardsDetailCardIdRoute: CardsDetailCardIdRoute,
   DecksDeckIdEditRoute: DecksDeckIdEditRoute,
+  DecksFolderFolderIdRoute: DecksFolderFolderIdRoute,
   TournamentsTournamentIdCardStatsRoute: TournamentsTournamentIdCardStatsRoute,
   TournamentsTournamentIdDecksRoute: TournamentsTournamentIdDecksRoute,
   TournamentsTournamentIdDetailsRoute: TournamentsTournamentIdDetailsRoute,

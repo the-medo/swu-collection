@@ -5,12 +5,35 @@ import {
   readUnfiledOpen,
   writeOpenDeckFolders,
   writeUnfiledOpen,
+  readSharedOpenDeckFolders,
+  writeSharedOpenDeckFolders,
+  sharedOpenDeckFoldersKey,
 } from './openFoldersStorage.ts';
 
 const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
 afterEach(() => {
   if (descriptor) Object.defineProperty(globalThis, 'localStorage', descriptor);
   else Reflect.deleteProperty(globalThis, 'localStorage');
+});
+test('shared folder navigation defaults open and remembers collapse by viewer and shared root', () => {
+  const values = storage();
+  expect(readSharedOpenDeckFolders('root')).toEqual(new Set(['root']));
+  writeSharedOpenDeckFolders('root', new Set());
+  expect(readSharedOpenDeckFolders('root')).toEqual(new Set());
+  writeSharedOpenDeckFolders('root', new Set(['root', 'child']), 'alice');
+  expect(readSharedOpenDeckFolders('root', 'alice')).toEqual(new Set(['root', 'child']));
+  expect(readSharedOpenDeckFolders('root', 'bob')).toEqual(new Set(['root']));
+  expect(readSharedOpenDeckFolders('other', 'alice')).toEqual(new Set(['other']));
+  values.set(sharedOpenDeckFoldersKey('root', 'alice'), 'invalid');
+  expect(readSharedOpenDeckFolders('root', 'alice')).toEqual(new Set(['root']));
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    get: () => {
+      throw new Error('Unavailable');
+    },
+  });
+  expect(readSharedOpenDeckFolders('root')).toEqual(new Set(['root']));
+  expect(() => writeSharedOpenDeckFolders('root', new Set())).not.toThrow();
 });
 function storage() {
   const values = new Map<string, string>();

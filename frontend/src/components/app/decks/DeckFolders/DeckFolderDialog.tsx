@@ -7,11 +7,9 @@ import { Label } from '@/components/ui/label.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useSaveDeckFolder } from '@/api/deck-folders/useSaveDeckFolder.ts';
 import { toast } from '@/hooks/use-toast.ts';
-import {
-  getDeckFolderDescendants,
-  getDeckFolderOptions,
-} from '../../../../../../shared/lib/deckFolders.ts';
+import { getDeckFolderDescendants } from '../../../../../../shared/lib/deckFolders.ts';
 import type { DeckFolder } from '../../../../../../types/DeckFolder.ts';
+import DeckFolderSelect from './DeckFolderSelect.tsx';
 
 type Props = {
   folders: DeckFolder[];
@@ -26,7 +24,7 @@ export default function DeckFolderDialog({ folders, folder, parentId, trigger, o
   const inputId = useId();
   const save = useSaveDeckFolder();
   const excluded = folder ? getDeckFolderDescendants(folders, folder.id) : new Set<string>();
-  const options = getDeckFolderOptions(folders.filter(item => !excluded.has(item.id)));
+  const options = folders.filter(item => !excluded.has(item.id));
   const form = useForm({
     defaultValues: { name: folder?.name ?? '', parentId: folder?.parentId ?? parentId ?? '' },
     onSubmit: async ({ value }) => {
@@ -95,26 +93,26 @@ export default function DeckFolderDialog({ folders, folder, parentId, trigger, o
           )}
         </form.Field>
         <form.Field name="parentId">
-          {field => (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor={`${inputId}-parent`}>Parent folder</Label>
-              <select
-                id={`${inputId}-parent`}
-                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
-                value={field.state.value}
-                disabled={save.isPending}
-                onBlur={field.handleBlur}
-                onChange={event => field.handleChange(event.target.value)}
-              >
-                <option value="">No parent folder</option>
-                {options.map(option => (
-                  <option key={option.id} value={option.id}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          {field =>
+            options.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor={`${inputId}-parent`}>Parent folder</Label>
+                <DeckFolderSelect
+                  id={`${inputId}-parent`}
+                  label="Parent folder"
+                  emptyLabel="No parent folder"
+                  folders={options}
+                  className="w-full"
+                  value={field.state.value || null}
+                  disabled={save.isPending}
+                  onChange={id => {
+                    field.handleChange(id ?? '');
+                    field.handleBlur();
+                  }}
+                />
+              </div>
+            )
+          }
         </form.Field>
         <div className="flex justify-end gap-2">
           <Button

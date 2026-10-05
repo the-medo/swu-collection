@@ -40,3 +40,12 @@ export function getDeckFolderOptions(folders: readonly Folder[]) {
     }))
     .sort((a, b) => a.label.localeCompare(b.label));
 }
+
+export function getDeckFolderSharingSources(folders: readonly DeckFolder[], id: string) {
+  const path = new Set(getDeckFolderPath(folders, id).map(folder => folder.id));
+  return folders.filter(
+    folder =>
+      path.has(folder.id) &&
+      (folder.sharing?.linkEnabled || (folder.sharing?.teams.length ?? 0) > 0),
+  );
+}

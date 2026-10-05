@@ -231,7 +231,9 @@ test.skipIf(!enabled)(
       ).toHaveLength(1);
 
       const sanitizer = await Bun.file('scripts/remote-dev/sql/001-core-data.sql').text();
-      const clear = sanitizer.match(/^TRUNCATE TABLE deck_folder_deck, deck_folder;$/m)?.[0];
+      const clear = sanitizer.match(
+        /^TRUNCATE TABLE deck_folder_share, deck_folder_deck, deck_folder;$/m,
+      )?.[0];
       const assertion = sanitizer.match(
         / {2}IF EXISTS \(SELECT 1 FROM deck_folder\)[\s\S]*?END IF;/,
       )?.[0];

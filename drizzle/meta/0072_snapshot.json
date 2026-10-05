@@ -1,5 +1,5 @@
 {
-  "id": "524c9556-4f58-48a6-80a1-c65b97ad022a",
+  "id": "faa408d5-6831-43dd-83ce-bfe8ed740373",
   "prevId": "fe9e9650-7599-480b-83a9-20f61c31ea9a",
   "version": "7",
   "dialect": "postgresql",
@@ -6187,6 +6187,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -6336,6 +6343,161 @@
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.deck_folder_share": {
+      "name": "deck_folder_share",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "folder_id": {
+          "name": "folder_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "audience": {
+          "name": "audience",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "deck_folder_share_link_unique": {
+          "name": "deck_folder_share_link_unique",
+          "columns": [
+            {
+              "expression": "folder_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"deck_folder_share\".\"audience\" = 'link'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "deck_folder_share_team_unique": {
+          "name": "deck_folder_share_team_unique",
+          "columns": [
+            {
+              "expression": "folder_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "team_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"deck_folder_share\".\"audience\" = 'team'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "deck_folder_share_owner_idx": {
+          "name": "deck_folder_share_owner_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "deck_folder_share_team_member_idx": {
+          "name": "deck_folder_share_team_member_idx",
+          "columns": [
+            {
+              "expression": "team_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "deck_folder_share_owner_fk": {
+          "name": "deck_folder_share_owner_fk",
+          "tableFrom": "deck_folder_share",
+          "tableTo": "deck_folder",
+          "columnsFrom": [
+            "folder_id",
+            "user_id"
+          ],
+          "columnsTo": [
+            "id",
+            "user_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "deck_folder_share_team_member_fk": {
+          "name": "deck_folder_share_team_member_fk",
+          "tableFrom": "deck_folder_share",
+          "tableTo": "team_member",
+          "columnsFrom": [
+            "team_id",
+            "user_id"
+          ],
+          "columnsTo": [
+            "team_id",
+            "user_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "deck_folder_share_audience_check": {
+          "name": "deck_folder_share_audience_check",
+          "value": "\n      (\"deck_folder_share\".\"audience\" = 'link' AND \"deck_folder_share\".\"team_id\" IS NULL)\n      OR (\"deck_folder_share\".\"audience\" = 'team' AND \"deck_folder_share\".\"team_id\" IS NOT NULL)\n    "
+        }
+      },
       "isRLSEnabled": false
     },
     "public.deck_import_source": {

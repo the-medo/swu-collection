@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils.ts';
-import { FolderInput, FolderPlus, Loader2, Trash2 } from 'lucide-react';
+import { FolderPlus, Loader2 } from 'lucide-react';
 import { useDeckFolders } from '@/api/deck-folders/useDeckFolders.ts';
 import { Button } from '@/components/ui/button.tsx';
 import DeckFiltersAccordion from '@/components/app/decks/DeckFilters/DeckFiltersAccordion.tsx';
@@ -9,7 +9,6 @@ import {
   useInitializeDeckFilterFromUrlParams,
 } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
 import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog/NewDeckDialog.tsx';
-import DeleteDecksDialog from '@/components/app/dialogs/DeleteDecksDialog.tsx';
 import { MAX_BULK_DECK_DELETE_COUNT } from '../../../../../../types/ZDeck.ts';
 import {
   getDeckFolderDescendants,
@@ -18,7 +17,7 @@ import {
 import DeckFolderDialog from './DeckFolderDialog.tsx';
 import DeckFolderSection from './DeckFolderSection.tsx';
 import { type FolderSelection, type FolderSelectionChange } from './FolderDeckList.tsx';
-import MoveDecksToFolderDialog from './MoveDecksToFolderDialog.tsx';
+import DeckSelectionBar from './DeckSelectionBar.tsx';
 import {
   readOpenDeckFolders,
   readUnfiledOpen,
@@ -169,6 +168,9 @@ export default function DeckFolders({ userId }: { userId: string }) {
             <TableHeader>
               <TableRow>
                 <TableHead>Folder</TableHead>
+                <TableHead className="w-8 px-1 sm:w-24 sm:px-2">
+                  <span className="sr-only">Create deck</span>
+                </TableHead>
                 <TableHead className="w-12 px-1 text-right sm:w-14 sm:px-2">Decks</TableHead>
                 <TableHead className="w-14 px-1 text-right sm:w-20 sm:px-2">Actions</TableHead>
               </TableRow>
@@ -228,38 +230,20 @@ export default function DeckFolders({ userId }: { userId: string }) {
         </>
       )}
       {selectedDecks.length > 0 && (
-        <div className="fixed bottom-4 left-1/2 z-30 flex w-fit max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-2 rounded-lg border bg-background/95 p-2 shadow-lg backdrop-blur">
-          <span className="px-1 text-sm font-medium">
-            {selectedDecks.length} {selectedDecks.length === 1 ? 'deck' : 'decks'} selected
-          </span>
-          <Button variant="outline" size="sm" onClick={() => setSelection({})}>
-            Clear
-          </Button>
-          <MoveDecksToFolderDialog
-            folders={folders}
-            deckIds={selectedDecks.map(deck => deck.id)}
-            onMoved={id => {
-              setSelection({});
-              revealFolder(id);
-            }}
-            trigger={
-              <Button variant="outline" size="sm" disabled={query.isPending || query.isError}>
-                <FolderInput className="h-4 w-4" />
-                Move to folder
-              </Button>
-            }
-          />
-          <DeleteDecksDialog
-            decks={selectedDecks}
-            onDeleted={() => setSelection({})}
-            trigger={
-              <Button variant="destructive" size="sm">
-                <Trash2 className="h-4 w-4" />
-                Delete selected
-              </Button>
-            }
-          />
-        </div>
+        <DeckSelectionBar
+          folders={folders}
+          decks={selectedDecks}
+          disabled={query.isPending || query.isError}
+          onClear={() => setSelection({})}
+          onMoved={(id, deckIds) => {
+            setSelection(current =>
+              Object.fromEntries(
+                Object.entries(current).filter(([deckId]) => !deckIds.includes(deckId)),
+              ),
+            );
+            revealFolder(id);
+          }}
+        />
       )}
     </div>
   );

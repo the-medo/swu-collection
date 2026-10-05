@@ -1,16 +1,45 @@
-import { and, count, eq, inArray } from 'drizzle-orm';
+import { and, count, eq, inArray, or } from 'drizzle-orm';
 import { db } from '../../db';
 import { user } from '../../db/schema/auth-schema.ts';
 import { deck } from '../../db/schema/deck.ts';
-import { deckFolder, deckFolderDeck } from '../../db/schema/deck_folder.ts';
+import { deckFolder, deckFolderDeck, deckFolderShare } from '../../db/schema/deck_folder.ts';
+import { team } from '../../db/schema/team.ts';
+import { teamMember } from '../../db/schema/team_member.ts';
+import { sharedDeckFolderAccess } from './deckFolderAccess.ts';
 import { getDeckFolderDescendants } from '../../../shared/lib/deckFolders.ts';
 import type {
   DeckFolderUpdateRequest,
   DeckFolderPositionRequest,
   MoveDecksToFolderRequest,
+  DeckFolderSharing,
+  DeckFolderSharingRequest,
+  SharedDeckFolder,
 } from '../../../types/DeckFolder.ts';
 
-export const listDeckFolders = (userId: string) =>
+export class DeckFolderNotFoundError extends Error {
+  constructor() {
+    super('Folder not found. Choose another folder and try again.');
+  }
+}
+
+type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+export async function requireDeckFolderForCreation(
+  tx: Transaction,
+  userId: string,
+  folderId: string | null | undefined,
+) {
+  if (!folderId) return;
+  // Use the same account lock as folder removal so the destination remains valid until commit.
+  await tx.select({ id: user.id }).from(user).where(eq(user.id, userId)).for('update');
+  const [destination] = await tx
+    .select({ id: deckFolder.id })
+    .from(deckFolder)
+    .where(and(eq(deckFolder.id, folderId), eq(deckFolder.userId, userId)));
+  if (!destination) throw new DeckFolderNotFoundError();
+}
+
+const listFolderRows = (userId: string) =>
   db
     .select({
       id: deckFolder.id,
@@ -24,6 +53,97 @@ export const listDeckFolders = (userId: string) =>
     .where(eq(deckFolder.userId, userId))
     .groupBy(deckFolder.id)
     .orderBy(deckFolder.position, deckFolder.name, deckFolder.id);
+
+export async function listDeckFolders(userId: string) {
+  const folders = await listFolderRows(userId);
+  const shares = await db
+    .select({
+      folderId: deckFolderShare.folderId,
+      audience: deckFolderShare.audience,
+      teamId: team.id,
+      teamName: team.name,
+    })
+    .from(deckFolderShare)
+    .leftJoin(team, eq(team.id, deckFolderShare.teamId))
+    .where(eq(deckFolderShare.userId, userId));
+  return folders.map(folder => {
+    const grants = shares.filter(share => share.folderId === folder.id);
+    const sharing: DeckFolderSharing = {
+      linkEnabled: grants.some(share => share.audience === 'link'),
+      teams: grants.flatMap(share =>
+        share.audience === 'team' && share.teamId && share.teamName
+          ? [{ id: share.teamId, name: share.teamName }]
+          : [],
+      ),
+    };
+    return { ...folder, sharing };
+  });
+}
+
+export async function getSharedDeckFolder(
+  id: string,
+  viewerId?: string,
+): Promise<SharedDeckFolder | null> {
+  const [root] = await db
+    .select()
+    .from(deckFolder)
+    .where(
+      and(
+        eq(deckFolder.id, id),
+        or(
+          viewerId ? eq(deckFolder.userId, viewerId) : undefined,
+          sharedDeckFolderAccess(id, viewerId),
+        ),
+      ),
+    );
+  if (!root) return null;
+  const rows = await listFolderRows(root.userId);
+  const descendants = getDeckFolderDescendants(rows, root.id);
+  // Do not reveal ancestors, siblings, or private team-sharing metadata to visitors.
+  return {
+    id: root.id,
+    name: root.name,
+    ownerId: root.userId,
+    folders: rows
+      .filter(folder => descendants.has(folder.id))
+      .map(folder => ({
+        ...folder,
+        parentId: folder.id === root.id ? null : folder.parentId,
+      })),
+  };
+}
+
+export async function saveDeckFolderSharing(
+  userId: string,
+  id: string,
+  input: DeckFolderSharingRequest,
+) {
+  return db.transaction(async tx => {
+    await tx.select({ id: user.id }).from(user).where(eq(user.id, userId)).for('update');
+    const [folder] = await tx
+      .select({ id: deckFolder.id })
+      .from(deckFolder)
+      .where(and(eq(deckFolder.id, id), eq(deckFolder.userId, userId)));
+    if (!folder) return 'not_found' as const;
+    if (input.teamIds.length) {
+      const memberships = await tx
+        .select({ id: teamMember.teamId })
+        .from(teamMember)
+        .where(and(eq(teamMember.userId, userId), inArray(teamMember.teamId, input.teamIds)))
+        .for('key share');
+      if (memberships.length !== input.teamIds.length) return 'forbidden_team' as const;
+    }
+    await tx.delete(deckFolderShare).where(eq(deckFolderShare.folderId, id));
+    const grants = [
+      ...(input.linkEnabled
+        ? [{ folderId: id, userId, audience: 'link' as const, teamId: null }]
+        : []),
+      ...input.teamIds.map(teamId => ({ folderId: id, userId, audience: 'team' as const, teamId })),
+    ];
+    if (grants.length) await tx.insert(deckFolderShare).values(grants);
+    return 'ok' as const;
+  });
+}
 
 type FolderResult =
   | { status: 'ok'; id: string; parentId: string | null }

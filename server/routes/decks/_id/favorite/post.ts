@@ -12,6 +12,7 @@ import {
   retractUnseenNotifications,
 } from '../../../../lib/notifications/write.ts';
 import { z } from 'zod';
+import { deckReadAccess } from '../../../../lib/decks/deckFolderAccess.ts';
 
 export const deckIdFavoritePostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -31,9 +32,9 @@ export const deckIdFavoritePostRoute = new Hono<AuthExtension>().post(
           const [target] = await tx
             .select({ userId: deck.userId, public: deck.public })
             .from(deck)
-            .where(eq(deck.id, paramDeckId))
+            .where(and(eq(deck.id, paramDeckId), deckReadAccess(user.id)))
             .for('share');
-          if (!target || (target.public === 0 && target.userId !== user.id)) return false;
+          if (!target) return false;
           const inserted = await tx
             .insert(userDeckFavorite)
             .values({ userId: user.id, deckId: paramDeckId })

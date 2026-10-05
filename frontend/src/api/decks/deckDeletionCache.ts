@@ -45,8 +45,8 @@ export const applyDeletedDeckCaches = (
   void queryClient.invalidateQueries({ queryKey: deckFolderKeys.all });
 
   deckIds.forEach(deckId => {
-    queryClient.removeQueries({ queryKey: ['deck', deckId], exact: true });
-    queryClient.removeQueries({ queryKey: ['deck-content', deckId], exact: true });
+    queryClient.removeQueries({ queryKey: ['deck', deckId], exact: false });
+    queryClient.removeQueries({ queryKey: ['deck-content', deckId], exact: false });
     queryClient.removeQueries({ queryKey: ['deck-tournament', deckId], exact: true });
     queryClient.removeQueries({ queryKey: ['deck-collection-data', deckId], exact: true });
   });

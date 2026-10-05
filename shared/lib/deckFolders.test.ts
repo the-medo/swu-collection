@@ -3,11 +3,13 @@ import {
   getDeckFolderDescendants,
   getDeckFolderOptions,
   getDeckFolderPath,
+  getDeckFolderSharingSources,
 } from './deckFolders.ts';
 import {
   zDeckFolderRequest,
   zDeckFolderPositionRequest,
   zMoveDecksToFolderRequest,
+  zDeckFolderSharingRequest,
 } from '../../types/DeckFolder.ts';
 
 const folders = [
@@ -18,6 +20,45 @@ const folders = [
 ];
 
 describe('nested deck folders', () => {
+  test('sharing indicators follow only the current ancestors and support multiple audiences', () => {
+    const shared = folders.map(folder => ({
+      ...folder,
+      position: 0,
+      deckCount: 0,
+      sharing: {
+        linkEnabled: folder.id === 'root',
+        teams: folder.id === 'child' ? [{ id: 'team', name: 'Team' }] : [],
+      },
+    }));
+    expect(getDeckFolderSharingSources(shared, 'leaf').map(folder => folder.id)).toEqual([
+      'root',
+      'child',
+    ]);
+    expect(getDeckFolderSharingSources(shared, 'other')).toEqual([]);
+    expect(
+      getDeckFolderSharingSources(
+        shared.map(folder => (folder.id === 'leaf' ? { ...folder, parentId: 'other' } : folder)),
+        'leaf',
+      ),
+    ).toEqual([]);
+    expect(
+      zDeckFolderSharingRequest.safeParse({ linkEnabled: true, teamIds: ['invalid'] }).success,
+    ).toBe(false);
+    const team = crypto.randomUUID();
+    expect(
+      zDeckFolderSharingRequest.safeParse({
+        linkEnabled: true,
+        teamIds: [team, team.toUpperCase()],
+      }).success,
+    ).toBe(false);
+    expect(
+      zDeckFolderSharingRequest.safeParse({ linkEnabled: true, teamIds: [team, team] }).success,
+    ).toBe(false);
+    expect(zDeckFolderSharingRequest.parse({ linkEnabled: true, teamIds: [team] })).toEqual({
+      linkEnabled: true,
+      teamIds: [team],
+    });
+  });
   test('descendants include the full subtree but not unrelated folders', () => {
     expect(getDeckFolderDescendants(folders, 'root')).toEqual(new Set(['root', 'child', 'leaf']));
     expect(getDeckFolderPath(folders, 'leaf').map(folder => folder.id)).toEqual([

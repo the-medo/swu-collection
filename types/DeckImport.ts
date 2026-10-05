@@ -45,6 +45,7 @@ export const zDeckImportFormat = z
 export const zDeckImportRequest = z.object({
   deckLink: z.string().trim().pipe(z.url()),
   format: zDeckImportFormat,
+  folderId: z.guid().nullable().optional(),
 });
 
 export type DeckBuilderSource = z.infer<typeof zDeckBuilderSource>;

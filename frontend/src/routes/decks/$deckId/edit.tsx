@@ -26,7 +26,7 @@ function RouteComponent() {
   const { deckbuilder } = useSearch(fromRoute);
   const navigate = useNavigate(fromRoute);
 
-  const { data: deckInfo, isLoading } = useGetDeck(deckId);
+  const { data: deckInfo, isPending } = useGetDeck(deckId);
 
   useEffect(() => {
     if (deckInfo?.deck.cardPoolId) {
@@ -39,7 +39,7 @@ function RouteComponent() {
     }
   }, [deckInfo?.deck.cardPoolId]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isPending) return <div>Loading...</div>;
 
   if (deckbuilder && !deckInfo?.deck.cardPoolId) {
     return <Deckbuilder deckId={deckId} />;

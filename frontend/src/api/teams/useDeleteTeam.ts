@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
+import { invalidateDeckFolderCaches } from '@/api/deck-folders/deckFolderCache.ts';
 
 export const useDeleteTeam = (teamId: string | undefined) => {
   const queryClient = useQueryClient();
@@ -24,6 +25,7 @@ export const useDeleteTeam = (teamId: string | undefined) => {
       return data;
     },
     onSuccess: () => {
+      void invalidateDeckFolderCaches(queryClient);
       queryClient.invalidateQueries({ queryKey: ['team', teamId] });
       queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({ queryKey: ['team-members', teamId] });

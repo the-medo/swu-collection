@@ -26,10 +26,32 @@ export type DeckFolderRequest = z.infer<typeof zDeckFolderRequest>;
 export type DeckFolderUpdateRequest = z.infer<typeof zDeckFolderUpdateRequest>;
 export type MoveDecksToFolderRequest = z.infer<typeof zMoveDecksToFolderRequest>;
 export type DeckFolderPositionRequest = z.infer<typeof zDeckFolderPositionRequest>;
+export const zDeckFolderSharingRequest = z.object({
+  linkEnabled: z.boolean(),
+  teamIds: z
+    .array(z.guid().transform(id => id.toLowerCase()))
+    .max(50)
+    .refine(ids => new Set(ids).size === ids.length, {
+      message: 'Choose each team only once',
+    }),
+});
+export type DeckFolderSharingRequest = z.infer<typeof zDeckFolderSharingRequest>;
+export type DeckFolderShareAudience = 'link' | 'team';
+export type DeckFolderSharing = {
+  linkEnabled: boolean;
+  teams: { id: string; name: string }[];
+};
 export type DeckFolder = {
   id: string;
   parentId: string | null;
   name: string;
   position: number;
   deckCount: number;
+  sharing?: DeckFolderSharing;
+};
+export type SharedDeckFolder = {
+  id: string;
+  name: string;
+  ownerId: string;
+  folders: DeckFolder[];
 };
