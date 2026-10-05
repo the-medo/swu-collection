@@ -164,12 +164,12 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
             )}
 
             {/* Tournament Bracket */}
-            {displayDetail && <TournamentAttachments tournamentId={tournamentId} />}
             <TournamentTopBracket
               tournamentId={tournamentId}
               top={(tournament.bracketInfo ?? BracketInfo.NONE) as BracketInfo}
               compact={compact}
             />
+            {displayDetail && <TournamentAttachments tournamentId={tournamentId} />}
           </div>
         )}
       </div>
