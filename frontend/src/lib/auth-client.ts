@@ -3,10 +3,12 @@ import { inferAdditionalFields } from 'better-auth/client/plugins';
 import type { auth } from '../../../server/auth/auth.ts';
 import { ac, applicationRoles } from '../../../server/auth/permissions.ts';
 import { adminClient } from 'better-auth/client/plugins';
+import { oauthProviderClient } from '@better-auth/oauth-provider/client';
 
 export const authClient = createAuthClient({
   baseURL: import.meta.env.VITE_BETTER_AUTH_URL!,
   plugins: [
+    oauthProviderClient(),
     inferAdditionalFields<typeof auth>(),
     adminClient({
       ac,
