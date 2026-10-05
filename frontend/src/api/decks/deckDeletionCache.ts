@@ -1,4 +1,5 @@
 import type { InfiniteData, QueryClient } from '@tanstack/react-query';
+import { deckFolderKeys } from '@/api/deck-folders/queryKeys.ts';
 
 type DeckListCache = InfiniteData<{
   data?: { deck?: { id?: string } }[];
@@ -41,6 +42,7 @@ export const applyDeletedDeckCaches = (
   affectedCardPoolIds: string[],
 ) => {
   removeDecksFromListCache(queryClient, deckIds);
+  void queryClient.invalidateQueries({ queryKey: deckFolderKeys.all });
 
   deckIds.forEach(deckId => {
     queryClient.removeQueries({ queryKey: ['deck', deckId], exact: true });

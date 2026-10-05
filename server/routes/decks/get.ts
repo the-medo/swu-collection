@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { and, eq, gt, inArray, or, sql } from 'drizzle-orm';
+import { and, eq, gt, inArray, notExists, or, sql } from 'drizzle-orm';
+import { deckFolder, deckFolderDeck } from '../../db/schema/deck_folder.ts';
 import { deck as deckTable } from '../../db/schema/deck.ts';
 import { db } from '../../db';
 import { user as userTable } from '../../db/schema/auth-schema.ts';
@@ -19,6 +20,7 @@ import { entityPrice } from '../../db/schema/entity_price.ts';
 
 export const zDeckQueryParams = zPaginationParams.extend({
   userId: z.string().optional(),
+  folderId: z.union([z.guid(), z.literal('unfiled')]).optional(),
   favorite: booleanPreprocessor.optional().default(false),
   format: z.coerce.number().int().positive().optional(),
   leaders: z
@@ -51,6 +53,7 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     const user = c.get('user');
     const {
       userId,
+      folderId,
       favorite,
       format,
       leaders: leaderIds,
@@ -64,6 +67,37 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     } = c.req.valid('query');
 
     const filters = [];
+
+    if (folderId) {
+      // Organisation is private even when a deck is public.
+      if (!user) return c.json({ message: 'Unauthorized' }, 401);
+      if (userId !== user.id) return c.json({ message: 'Forbidden' }, 403);
+      if (folderId !== 'unfiled') {
+        const [folder] = await db
+          .select({ id: deckFolder.id })
+          .from(deckFolder)
+          .where(and(eq(deckFolder.id, folderId), eq(deckFolder.userId, user.id)));
+        if (!folder) return c.json({ message: 'Folder not found' }, 404);
+        filters.push(
+          inArray(
+            deckTable.id,
+            db
+              .select({ id: deckFolderDeck.deckId })
+              .from(deckFolderDeck)
+              .where(eq(deckFolderDeck.folderId, folderId)),
+          ),
+        );
+      } else {
+        filters.push(
+          notExists(
+            db
+              .select({ id: deckFolderDeck.deckId })
+              .from(deckFolderDeck)
+              .where(eq(deckFolderDeck.deckId, deckTable.id)),
+          ),
+        );
+      }
+    }
 
     // Public decks filter - only show public decks unless viewing your own
     if (!userId || userId !== user?.id) filters.push(eq(deckTable.public, 1));

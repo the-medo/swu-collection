@@ -125,6 +125,9 @@ TRUNCATE TABLE user_melee_tournaments, user_melee_tournament_sync, melee_verific
 -- Posts contain arbitrary personal prose and references, even for opted-in users.
 TRUNCATE TABLE post;
 
+-- Folder names and hierarchy are private organisation metadata, even for opted-in decks.
+TRUNCATE TABLE deck_folder_deck, deck_folder;
+
 DELETE FROM user_integration ui
 USING development_cleanup_user dcu
 WHERE ui.user_id = dcu.user_id
@@ -471,6 +474,10 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM post) THEN
     RAISE EXCEPTION 'Personal post content remains in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM deck_folder) OR EXISTS (SELECT 1 FROM deck_folder_deck) THEN
+    RAISE EXCEPTION 'Private deck folder organisation remains in the contributor dump.';
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_file) OR EXISTS (SELECT 1 FROM user_file_storage) THEN

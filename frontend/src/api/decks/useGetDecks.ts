@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { DeckQueryParams } from '../../../../server/routes/decks/get.ts';
+import { createApiError } from '@/api/errors.ts';
 
 const PAGE_SIZE = 20;
 
@@ -25,6 +26,7 @@ export const getNextDecksPageParam = (
 export const useGetDecks = (props: GetDecksRequest) => {
   const {
     userId,
+    folderId,
     favorite,
     format,
     leaders,
@@ -41,6 +43,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
     favorite ? 'favorite' : 'all',
     {
       userId,
+      folderId,
       format,
       leaders,
       base,
@@ -60,6 +63,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
       const response = await api.deck.$get({
         query: {
           userId,
+          folderId,
           favorite: favorite ? 'true' : undefined,
           format: format?.toString(),
           leaders: leadersParam,
@@ -74,7 +78,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
       });
 
       if (!response.ok) {
-        throw new Error('Something went wrong');
+        throw await createApiError(response, 'Failed to load decks');
       }
 
       const data = await response.json();
