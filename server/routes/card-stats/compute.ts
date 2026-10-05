@@ -35,7 +35,7 @@ export const cardStatsComputeRoute = new Hono<AuthExtension>().post(
     const hasPermission = await auth.api.userHasPermission({
       body: {
         userId: user.id,
-        permission: {
+        permissions: {
           statistics: ['compute'],
         },
       },

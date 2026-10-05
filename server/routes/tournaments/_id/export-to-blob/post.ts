@@ -44,7 +44,7 @@ export const tournamentIdExportToBlobPostRoute = new Hono<AuthExtension>().post(
   const hasPermission = await auth.api.userHasPermission({
     body: {
       userId: user.id,
-      permission: { tournament: ['import'] },
+      permissions: { tournament: ['import'] },
     },
   });
   if (!hasPermission.success) {

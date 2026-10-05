@@ -11,7 +11,7 @@ export function usePermissions() {
       if (!user) return false;
       return (userRoles(user.role) as AppRole[]).some(r =>
         authClient.admin.checkRolePermission({
-          permission: {
+          permissions: {
             [section]: [permission],
           },
           role: r,

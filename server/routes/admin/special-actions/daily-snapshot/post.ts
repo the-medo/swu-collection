@@ -12,7 +12,7 @@ export const dailySnapshotPostRoute = new Hono<AuthExtension>().post('/', async 
   const hasPermission = await auth.api.userHasPermission({
     body: {
       userId: user.id,
-      permission: {
+      permissions: {
         admin: ['access'],
       },
     },

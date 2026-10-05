@@ -26,7 +26,7 @@ export const tournamentGroupIdTournamentsPutRoute = new Hono<AuthExtension>().pu
     const hasPermission = await auth.api.userHasPermission({
       body: {
         userId: user.id,
-        permission: {
+        permissions: {
           tournamentGroup: ['updateTournamentPosition'],
         },
       },

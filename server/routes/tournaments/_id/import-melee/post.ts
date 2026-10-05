@@ -27,7 +27,7 @@ export const tournamentIdImportMeleePostRoute = new Hono<AuthExtension>().post(
     const hasPermission = await auth.api.userHasPermission({
       body: {
         userId: user.id,
-        permission: {
+        permissions: {
           tournament: ['import'],
         },
       },
