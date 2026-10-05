@@ -9,7 +9,7 @@ const noticeCookie = 'restriction_notice';
 const noticeSchema = z.object({ userId: z.string().min(1), expiresAt: z.number().int() });
 type RestrictedUser = { banned?: boolean | null; banExpires?: Date | string | null };
 
-/** Register before admin: its session hook throws the native banned redirect. */
+/** Register before admin to set the private notice before it rejects the session. */
 export const restrictionNotice = () =>
   ({
     id: 'restriction-notice',

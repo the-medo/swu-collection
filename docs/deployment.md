@@ -210,3 +210,43 @@ contact Coolify. CI explicitly selects Node 24 with `actions/setup-node`;
 use the same version locally to match CI.
 For workflow syntax checking, optionally install [actionlint](https://github.com/rhysd/actionlint/blob/main/docs/install.md)
 and run `actionlint .github/workflows/deploy.yml`.
+
+## Better Auth 1.7 package upgrade
+
+The package upgrade deploys Better Auth 1.7.7 on both the API and frontend,
+Drizzle 0.45.2, and Zod 4.6.5. The auth CLI is now the `auth` package;
+`bun run auth-generate` uses its pinned local executable. The CLI requires
+Node 22.12 or newer. The app's Bun runtime stays at 1.2.19.
+
+This upgrade keeps the existing Google/GitHub providers, auth secret, cookie
+configuration, roles, and database schema. It does not enable MCP. For the
+current social-login and admin plugins, no new database migration is needed.
+
+Before merging when automatic deployments are enabled, run this read-only
+query against production using the existing database administration connection:
+
+```sql
+SELECT count(*) AS duplicate_account_keys
+FROM (
+  SELECT provider_id, account_id
+  FROM account
+  GROUP BY provider_id, account_id
+  HAVING count(*) > 1
+) AS duplicate_keys;
+```
+
+The result must be zero. Better Auth 1.7 rejects ambiguous account lookups;
+investigate any duplicates before deploying and preserve distinct users.
+Sanitized worktree data does not retain account records and cannot verify this
+production condition. See the [official upgrade guide](https://better-auth.com/docs/guides/1-7-upgrade-guide).
+
+On staging, complete Google and GitHub sign-ins for existing and new accounts,
+verify an existing session survives the upgrade, then check profile changes,
+deck/collection saves, protected navigation, logout, and a restricted account's
+error page. Local callback tests replace only the external provider exchange
+and do not prove the real provider credentials or redirect registrations.
+
+The shared dependency changes select both the main app and Crossfire in the
+existing deployment workflow.
+Retain the previous working image for each application during the rollout;
+re-running an old Actions run rebuilds current `main` and is not an image rollback.

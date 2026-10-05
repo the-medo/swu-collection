@@ -56,10 +56,12 @@ try {
       sameSite: 'Lax',
     },
   ]);
-  await page.goto(origin + '/auth/error?error=banned');
-  await expect(page.getByRole('heading', { name: 'Your account is suspended' })).toBeVisible();
-  await expect(page.locator('time')).toHaveAttribute('datetime', expiry.toISOString());
-  await expect(page.locator('body')).not.toContainText('Private evidence');
+  for (const error of ['banned', 'BANNED_USER']) {
+    await page.goto(`${origin}/auth/error?error=${error}`);
+    await expect(page.getByRole('heading', { name: 'Your account is suspended' })).toBeVisible();
+    await expect(page.locator('time')).toHaveAttribute('datetime', expiry.toISOString());
+    await expect(page.locator('body')).not.toContainText('Private evidence');
+  }
   await page.screenshot({ path: '.swubase/auth-error-desktop.png', animations: 'disabled' });
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Your account is suspended' })).toBeVisible();
@@ -146,7 +148,7 @@ try {
   await expect(page.getByRole('heading', { name: 'Your account is restricted' })).toBeVisible();
   expect(errors).toEqual([]);
   console.log(
-    'PASS: live private endpoint, exact expiry, automatic expiry transition, retry login redirects home, indefinite ban, failed fetch/retry, missing proof, generic OAuth error, navigation, mobile/light/dark, stale notice expiry, legacy error redirect; no real accounts changed.',
+    'PASS: legacy/current restriction codes, live private endpoint, exact expiry, automatic expiry transition, retry login redirects home, indefinite ban, failed fetch/retry, missing proof, generic OAuth error, navigation, mobile/light/dark, stale notice expiry, legacy error redirect; no real accounts changed.',
   );
 } finally {
   await sql`DELETE FROM "user" WHERE id=${id}`;
