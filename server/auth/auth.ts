@@ -40,7 +40,7 @@ export const auth = betterAuth({
             banExpires: current?.user.banExpires,
           })
         ) {
-          await ctx.context.internalAdapter.deleteSessions(current!.user.id);
+          await ctx.context.internalAdapter.deleteUserSessions(current!.user.id);
           deleteSessionCookie(ctx);
           throw new APIError('FORBIDDEN', {
             code: 'BANNED_USER',
@@ -55,7 +55,7 @@ export const auth = betterAuth({
         user?: { id: string; banned?: boolean | null; banExpires?: Date | string | null };
       } | null;
       if (current?.user && hasActiveAccountRestriction(current.user)) {
-        await ctx.context.internalAdapter.deleteSessions(current.user.id);
+        await ctx.context.internalAdapter.deleteUserSessions(current.user.id);
         deleteSessionCookie(ctx);
         ctx.context.session = null;
         throw new APIError('UNAUTHORIZED', {

@@ -26,8 +26,8 @@ test.skipIf(!enabled)(
     // callback, database hooks, admin plugin and signed cookies are real.
     provider.validateAuthorizationCode = async () => ({ accessToken: 'fixture-only' });
     provider.getUserInfo = async () => ({
-      user: { id, email: `${id}@invalid.local`, emailVerified: true, name: id },
-      data: {},
+      user: { email: `${id}@invalid.local`, emailVerified: true, name: id },
+      data: { sub: id },
     });
     const request = (path: string, cookie = '') =>
       auth.handler(new Request(origin + '/api/auth' + path, { headers: { Cookie: cookie } }));
@@ -100,7 +100,7 @@ test.skipIf(!enabled)(
 
       const blocked = await login();
       expect(blocked.status).toBe(302);
-      expect(blocked.headers.get('location')).toStartWith('/auth/error?error=banned');
+      expect(blocked.headers.get('location')).toStartWith('/auth/error?error=BANNED_USER');
       expect(blocked.headers.get('location')).not.toContain(id);
       const setCookie = blocked.headers
         .getSetCookie()
@@ -133,7 +133,7 @@ test.skipIf(!enabled)(
 
       await db.update(user).set({ banExpires: null }).where(eq(user.id, id));
       expect(await notice(cookie)).toEqual({ status: 'banned' });
-      expect((await login()).headers.get('location')).toStartWith('/auth/error?error=banned');
+      expect((await login()).headers.get('location')).toStartWith('/auth/error?error=BANNED_USER');
       await db.update(user).set({ banned: false }).where(eq(user.id, id));
       expect(await notice(cookie)).toEqual({ status: 'available' });
       await db

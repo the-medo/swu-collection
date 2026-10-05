@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import SignIn from './SignIn';
 
 export default function AuthErrorPage({ error }: { error?: string }) {
-  const isRestricted = error === 'banned';
+  const isRestricted = error === 'banned' || error === 'BANNED_USER';
   const restriction = useAccountRestriction(isRestricted);
   const notice = isRestricted ? restriction.data?.notice : undefined;
   const suspended = notice?.status === 'suspended';

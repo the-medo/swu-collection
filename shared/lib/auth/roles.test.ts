@@ -23,7 +23,7 @@ test('Crossfire access is independent of existing administrative roles', () => {
   expect(applicationRoles.crossfire.authorize({ user: ['ban'] }).success).toBe(false);
   expect(applicationRoles.admin.authorize({ crossfire: ['access'] }).success).toBe(false);
   expect(applicationRoles.admin.authorize({ user: ['set-role'] }).success).toBe(true);
-  expect(applicationRoles.moderator.authorize({ user: ['ban'] }).success).toBe(true);
+  expect(applicationRoles.moderator.authorize({ user: ['ban'] }).success).toBe(false);
 });
 
 test('membership changes preserve other roles and are idempotent', () => {

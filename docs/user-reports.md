@@ -110,6 +110,8 @@ are implemented. Public pages remain readable while signed out.
 Failed social sign-ins use Better Auth's `onAPIError.errorURL` and
 `errorCallbackURL` to open `/auth/error`. It distinguishes temporary suspensions
 (with an exact end date in the browser's local time) from indefinite bans.
+Both the legacy `banned` and current `BANNED_USER` callback codes load the
+private restriction notice.
 The page checks for expiry or restored access every minute while visible,
 increasing to every five seconds near a suspension's end; users can sign in
 again once access returns. Other sign-in failures get a
@@ -119,7 +121,7 @@ including an error page already open in the browser.
 The `restriction-notice` Better Auth plugin runs before the admin plugin's
 session-creation hook. Once the OAuth identity is verified, it issues a signed,
 HttpOnly, worktree-scoped cookie valid for 15 minutes; the admin plugin still
-enforces the restriction and performs the redirect. Its
+enforces the restriction and the OAuth callback redirects to the error page. Its
 `GET /api/auth/account-restriction` endpoint accepts only that proof and returns
 the current status and optional expiry with `private, no-store` caching. It
 does not create a session, accept a user ID from the browser, or disclose private
