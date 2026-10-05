@@ -13,6 +13,8 @@ COPY package.json ./
 COPY mcp ./mcp
 COPY shared/mcp ./shared/mcp
 COPY server/auth/accountRestriction.ts ./server/auth/accountRestriction.ts
+COPY server/db/schema/auth-schema.ts server/db/schema/mcp-usage.ts ./server/db/schema/
+COPY types/TournamentCalendar.ts ./types/TournamentCalendar.ts
 COPY server/db/json/card-list.json ./server/db/json/card-list.json
 EXPOSE 3210
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD bun -e 'fetch("http://127.0.0.1:" + process.env.MCP_PORT + "/health").then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
