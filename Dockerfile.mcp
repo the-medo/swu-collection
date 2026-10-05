@@ -1,0 +1,20 @@
+# Separate runtime: no frontend build, browser, migration runner or OAuth secrets.
+ARG BUN_VERSION=1.4.2
+FROM oven/bun:${BUN_VERSION}-slim AS dependencies
+WORKDIR /app
+COPY package.json bun.lock ./
+RUN bun ci --production
+
+FROM oven/bun:${BUN_VERSION}-slim
+WORKDIR /app
+ENV NODE_ENV=production MCP_HOST=0.0.0.0 MCP_PORT=3210
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY package.json ./
+COPY mcp ./mcp
+COPY shared/mcp ./shared/mcp
+COPY server/auth/accountRestriction.ts ./server/auth/accountRestriction.ts
+COPY server/db/json/card-list.json ./server/db/json/card-list.json
+EXPOSE 3210
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD bun -e 'fetch("http://127.0.0.1:" + process.env.MCP_PORT + "/health").then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
+USER bun
+CMD ["bun", "mcp/index.ts"]

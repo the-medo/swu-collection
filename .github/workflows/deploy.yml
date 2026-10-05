@@ -12,7 +12,7 @@ on:
         type: choice
         required: true
         default: all
-        options: [all, main, maintainer, crossfire]
+        options: [all, main, maintainer, crossfire, mcp]
       dry_run:
         description: Show the deployment plan without calling Coolify
         type: boolean
@@ -67,12 +67,12 @@ jobs:
       group: coolify-${{ matrix.service }}
       cancel-in-progress: false
     steps:
-      - name: Hold Crossfire until the main app migrations are verified
+      - name: Hold workers until the main app migrations are verified
         if: >-
-          github.event_name == 'push' && matrix.service == 'crossfire' &&
+          github.event_name == 'push' && (matrix.service == 'crossfire' || matrix.service == 'mcp') &&
           needs.plan.outputs.migration_changes == 'true'
         run: |
-          echo '::error::Crossfire was not deployed because migration inputs changed or the previous revision is unavailable. Pause further production pushes, wait for the main app deployment, verify Migration complete and Server running in its logs, then run this workflow manually for crossfire. Rerunning this push will keep this guard.'
+          echo '::error::This worker was not deployed because migration inputs changed or the previous revision is unavailable. Pause further production pushes, wait for the main app deployment, verify Migration complete and Server running in its logs, then run this workflow manually for the held service (crossfire or mcp). Rerunning this push will keep this guard.'
           exit 1
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:

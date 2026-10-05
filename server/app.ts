@@ -10,6 +10,9 @@ import { crossfireRoute } from './routes/crossfire.ts';
 import { serveStatic, upgradeWebSocket, websocket } from 'hono/bun';
 import { authRoute } from './routes/auth.ts';
 import { auth, type AuthExtension } from './auth/auth.ts';
+import { mcpResourceUrl } from './auth/auth.ts';
+import { oauthProviderAuthServerMetadata } from '@better-auth/oauth-provider';
+import { mcpRoute } from './routes/mcp.ts';
 import { cardsRoute } from './routes/cards.ts';
 import { worldRoute } from './routes/world.ts';
 import { postsRoute } from './routes/posts.ts';
@@ -53,11 +56,12 @@ Sentry.init({
   environment: process.env.ENVIRONMENT,
   dsn: process.env.SENTRY_BACKEND_DSN,
   tracesSampleRate: 1.0,
-  ignoreTransactions: [/\/api\/calendar(?:\/|$)/],
+  ignoreTransactions: [/\/api\/calendar(?:\/|$)/, /\/api\/auth(?:\/|$)/, /\/mcp(?:\/|$)/],
   enableLogs: process.env.ENVIRONMENT !== 'local',
   beforeSend(event) {
     if (
       isCalendarFeedRequest(event.request?.url) ||
+      /\/(?:api\/auth|api\/mcp|mcp)(?:[/?#]|$)/.test(event.request?.url ?? '') ||
       /\/api\/(?:messages|(?:admin\/)?user-reports|(?:admin|integration)\/patreon)(?:[/?#]|$)/.test(
         event.request?.url ?? '',
       )
@@ -73,6 +77,7 @@ Sentry.init({
   },
   beforeSendTransaction(event) {
     return isCalendarFeedRequest(event.request?.url) ||
+      /\/(?:api\/auth|api\/mcp|mcp)(?:[/?#]|$)/.test(event.request?.url ?? '') ||
       /\/api\/(?:messages|(?:admin\/)?user-reports|(?:admin|integration)\/patreon)(?:[/?#]|$)/.test(
         event.request?.url ?? '',
       )
@@ -100,7 +105,17 @@ const app = new Hono<AuthExtension>().onError((err, c) => {
 // Calendar clients authenticate with the secret URL. Mount before session and
 // request logging middleware so tokens never enter the application access log.
 app.route('/api/calendar', calendarFeedRoute);
-app.use('*', requestLogger());
+// RFC 8414 puts the issuer path after the well-known prefix. Mount outside
+// /api/auth so clients can discover the provider at its standards-defined URL.
+app.get('/.well-known/oauth-authorization-server/api/auth', c =>
+  mcpResourceUrl
+    ? oauthProviderAuthServerMetadata(auth)(c.req.raw)
+    : c.json({ message: 'MCP is not enabled.' }, 404),
+);
+const logRequest = requestLogger();
+app.use('*', (c, next) =>
+  /\/(?:api\/auth|api\/mcp|mcp)(?:\/|$)/.test(c.req.path) ? next() : logRequest(c, next),
+);
 app.use('*', async (c, next) => {
   let session;
   try {
@@ -169,6 +184,7 @@ app.use(
 const apiRoutes = app
   .basePath('/api')
   .route('/auth', authRoute)
+  .route('/mcp', mcpRoute)
   .route('/world', worldRoute)
   .route('/collection', collectionRoute)
   .route('/deck', deckRoute)

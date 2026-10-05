@@ -98,7 +98,9 @@ CREATE INDEX development_tournament_match_p2_deck_id_idx ON tournament_match (p2
 -- game-provider payloads. Opted-in integration rows remain for UI and schema
 -- testing, but their provider-specific identity, arbitrary provider metadata,
 -- and credentials are replaced below.
-TRUNCATE TABLE account, session, verification;
+TRUNCATE TABLE account, session, verification, jwks,
+  oauth_access_token, oauth_refresh_token, oauth_consent, oauth_client_resource,
+  oauth_client, oauth_resource, oauth_client_assertion, mcp_tool_usage;
 TRUNCATE TABLE user_notification;
 -- Private conversations are never part of contributor data, regardless of opt-in.
 TRUNCATE TABLE direct_message, direct_conversation;
@@ -389,6 +391,15 @@ BEGIN
   IF EXISTS (SELECT 1 FROM account)
     OR EXISTS (SELECT 1 FROM session)
     OR EXISTS (SELECT 1 FROM verification)
+    OR EXISTS (SELECT 1 FROM jwks)
+    OR EXISTS (SELECT 1 FROM oauth_access_token)
+    OR EXISTS (SELECT 1 FROM oauth_refresh_token)
+    OR EXISTS (SELECT 1 FROM oauth_consent)
+    OR EXISTS (SELECT 1 FROM oauth_client_resource)
+    OR EXISTS (SELECT 1 FROM oauth_client)
+    OR EXISTS (SELECT 1 FROM oauth_resource)
+    OR EXISTS (SELECT 1 FROM oauth_client_assertion)
+    OR EXISTS (SELECT 1 FROM mcp_tool_usage)
     OR EXISTS (SELECT 1 FROM melee_verification)
     OR EXISTS (SELECT 1 FROM melee_connection)
     OR EXISTS (SELECT 1 FROM user_melee_tournaments)
