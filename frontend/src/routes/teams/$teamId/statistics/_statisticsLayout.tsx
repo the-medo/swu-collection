@@ -49,7 +49,7 @@ const datetimeFrom = format(subDays(new Date(), 90), 'yyyy-MM-dd');
 function RouteComponent() {
   const { teamId } = Route.useParams();
   const { pathname } = useLocation();
-  const activeTab = pathname.split('/').pop() || 'dashboard';
+  const activeTab = pathname.split('/').filter(Boolean).pop() || 'dashboard';
   const { sDateRangeFrom } = Route.useSearch();
 
   const { data: team } = useTeam(teamId);
@@ -61,11 +61,9 @@ function RouteComponent() {
   });
 
   return (
-    <div className="p-2 @container/full-stats-page">
+    <div className="@container/full-stats-page min-w-0">
       <div className="flex flex-col items-start justify-between gap-2 mb-2 @[720px]/full-stats-page:flex-row @[720px]/full-stats-page:items-end">
-        <h3 className="mb-0!">
-          {team?.name ? `Team statistics - ${team.name}` : 'Team statistics'}
-        </h3>
+        <h2 className="mb-0!">Team statistics</h2>
         <div className="flex w-full min-w-0 gap-4 @[720px]/full-stats-page:w-auto">
           <StatisticsFilters teamId={team?.id} />
         </div>
@@ -76,9 +74,11 @@ function RouteComponent() {
         basePath={`/teams/${teamId}/statistics`}
         teamId={team?.id}
       />
-      <GameResultsProvider teamId={team?.id}>
-        <Outlet />
-      </GameResultsProvider>
+      <div className="min-w-0 overflow-x-auto">
+        <GameResultsProvider teamId={team?.id}>
+          <Outlet />
+        </GameResultsProvider>
+      </div>
     </div>
   );
 }

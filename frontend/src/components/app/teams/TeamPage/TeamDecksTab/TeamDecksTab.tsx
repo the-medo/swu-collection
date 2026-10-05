@@ -124,7 +124,7 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-4">
+    <div className="grid grid-cols-1 @min-[640px]/team-decks:grid-cols-2 gap-6 py-4">
       {/* Left: Team Decks List */}
       <div>
         <div className="flex gap-4 justify-between items-center">

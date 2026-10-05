@@ -98,11 +98,7 @@ export function TeamEventsTab({ teamId }: { teamId: string }) {
                           <Link
                             to="/users/$userId"
                             params={{ userId: member.userId }}
-                            search={previous => ({
-                              ...previous,
-                              teamTab: undefined,
-                              userTab: 'calendar',
-                            })}
+                            search={{ userTab: 'calendar' }}
                             className={cn(
                               'flex min-w-0 items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors',
                               attendeeColors[member.status],

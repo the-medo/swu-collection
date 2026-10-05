@@ -26,6 +26,7 @@ import { Route as LimitedIndexRouteImport } from './routes/limited/index'
 import { Route as ComparerIndexRouteImport } from './routes/comparer/index'
 import { Route as WantlistsYourRouteImport } from './routes/wantlists/your'
 import { Route as WantlistsPublicRouteImport } from './routes/wantlists/public'
+import { Route as TeamsTeamIdRouteImport } from './routes/teams/$teamId'
 import { Route as StatisticsStatisticsLayoutRouteImport } from './routes/statistics/_statisticsLayout'
 import { Route as ListsYourRouteImport } from './routes/lists/your'
 import { Route as DecksYourRouteImport } from './routes/decks/your'
@@ -171,6 +172,11 @@ const WantlistsPublicRoute = WantlistsPublicRouteImport.update({
   path: '/wantlists/public',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamsTeamIdRoute = TeamsTeamIdRouteImport.update({
+  id: '/teams/$teamId',
+  path: '/teams/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StatisticsStatisticsLayoutRoute =
   StatisticsStatisticsLayoutRouteImport.update({
     id: '/_statisticsLayout',
@@ -238,9 +244,9 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const TeamsTeamIdStatisticsRoute = TeamsTeamIdStatisticsRouteImport.update({
-  id: '/teams/$teamId/statistics',
-  path: '/teams/$teamId/statistics',
-  getParentRoute: () => rootRouteImport,
+  id: '/statistics',
+  path: '/statistics',
+  getParentRoute: () => TeamsTeamIdRoute,
 } as any)
 const WantlistsWantlistIdIndexRoute =
   WantlistsWantlistIdIndexRouteImport.update({
@@ -288,9 +294,9 @@ const ToolsDeckFormatConverterIndexRoute =
     getParentRoute: () => rootRouteImport,
   } as any)
 const TeamsTeamIdIndexRoute = TeamsTeamIdIndexRouteImport.update({
-  id: '/teams/$teamId/',
-  path: '/teams/$teamId/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => TeamsTeamIdRoute,
 } as any)
 const ListsCardListIdIndexRoute = ListsCardListIdIndexRouteImport.update({
   id: '/lists/$cardListId/',
@@ -366,9 +372,9 @@ const TournamentsTournamentIdCardStatsRoute =
     getParentRoute: () => rootRouteImport,
   } as any)
 const TeamsTeamIdEventsRoute = TeamsTeamIdEventsRouteImport.update({
-  id: '/teams/$teamId/events',
-  path: '/teams/$teamId/events',
-  getParentRoute: () => rootRouteImport,
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => TeamsTeamIdRoute,
 } as any)
 const DecksDeckIdEditRoute = DecksDeckIdEditRouteImport.update({
   id: '/decks/$deckId/edit',
@@ -530,6 +536,7 @@ export interface FileRoutesByFullPath {
   '/decks/your': typeof DecksYourRoute
   '/lists/your': typeof ListsYourRoute
   '/statistics': typeof StatisticsStatisticsLayoutRouteWithChildren
+  '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer': typeof ComparerIndexRoute
@@ -556,7 +563,7 @@ export interface FileRoutesByFullPath {
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/limited/public': typeof LimitedPublicIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
-  '/teams/$teamId': typeof TeamsTeamIdIndexRoute
+  '/teams/$teamId/': typeof TeamsTeamIdIndexRoute
   '/tools/deck-format-converter': typeof ToolsDeckFormatConverterIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/tournaments/all': typeof TournamentsAllIndexRoute
@@ -683,6 +690,7 @@ export interface FileRoutesById {
   '/lists/your': typeof ListsYourRoute
   '/statistics': typeof StatisticsRouteWithChildren
   '/statistics/_statisticsLayout': typeof StatisticsStatisticsLayoutRouteWithChildren
+  '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
   '/comparer/': typeof ComparerIndexRoute
@@ -762,6 +770,7 @@ export interface FileRouteTypes {
     | '/decks/your'
     | '/lists/your'
     | '/statistics'
+    | '/teams/$teamId'
     | '/wantlists/public'
     | '/wantlists/your'
     | '/comparer'
@@ -788,7 +797,7 @@ export interface FileRouteTypes {
     | '/decks/$deckId'
     | '/limited/public'
     | '/lists/$cardListId'
-    | '/teams/$teamId'
+    | '/teams/$teamId/'
     | '/tools/deck-format-converter'
     | '/tournaments/$tournamentId'
     | '/tournaments/all'
@@ -914,6 +923,7 @@ export interface FileRouteTypes {
     | '/lists/your'
     | '/statistics'
     | '/statistics/_statisticsLayout'
+    | '/teams/$teamId'
     | '/wantlists/public'
     | '/wantlists/your'
     | '/comparer/'
@@ -990,6 +1000,7 @@ export interface RootRouteChildren {
   DecksYourRoute: typeof DecksYourRoute
   ListsYourRoute: typeof ListsYourRoute
   StatisticsRoute: typeof StatisticsRouteWithChildren
+  TeamsTeamIdRoute: typeof TeamsTeamIdRouteWithChildren
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
@@ -1000,7 +1011,6 @@ export interface RootRouteChildren {
   TournamentsIndexRoute: typeof TournamentsIndexRoute
   CardsDetailCardIdRoute: typeof CardsDetailCardIdRoute
   DecksDeckIdEditRoute: typeof DecksDeckIdEditRoute
-  TeamsTeamIdEventsRoute: typeof TeamsTeamIdEventsRoute
   TournamentsTournamentIdCardStatsRoute: typeof TournamentsTournamentIdCardStatsRoute
   TournamentsTournamentIdDecksRoute: typeof TournamentsTournamentIdDecksRoute
   TournamentsTournamentIdDetailsRoute: typeof TournamentsTournamentIdDetailsRoute
@@ -1012,7 +1022,6 @@ export interface RootRouteChildren {
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
   LimitedPublicIndexRoute: typeof LimitedPublicIndexRoute
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
-  TeamsTeamIdIndexRoute: typeof TeamsTeamIdIndexRoute
   ToolsDeckFormatConverterIndexRoute: typeof ToolsDeckFormatConverterIndexRoute
   TournamentsTournamentIdIndexRoute: typeof TournamentsTournamentIdIndexRoute
   TournamentsAllIndexRoute: typeof TournamentsAllIndexRoute
@@ -1021,7 +1030,6 @@ export interface RootRouteChildren {
   TournamentsPlanetaryQualifiersIndexRoute: typeof TournamentsPlanetaryQualifiersIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   WantlistsWantlistIdIndexRoute: typeof WantlistsWantlistIdIndexRoute
-  TeamsTeamIdStatisticsRoute: typeof TeamsTeamIdStatisticsRouteWithChildren
   LimitedDeckDeckIdIndexRoute: typeof LimitedDeckDeckIdIndexRoute
   LimitedPoolPoolIdDetailIndexRoute: typeof LimitedPoolPoolIdDetailIndexRoute
 }
@@ -1140,6 +1148,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WantlistsPublicRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/teams/$teamId': {
+      id: '/teams/$teamId'
+      path: '/teams/$teamId'
+      fullPath: '/teams/$teamId'
+      preLoaderRoute: typeof TeamsTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/statistics/_statisticsLayout': {
       id: '/statistics/_statisticsLayout'
       path: '/statistics'
@@ -1233,10 +1248,10 @@ declare module '@tanstack/react-router' {
     }
     '/teams/$teamId/statistics': {
       id: '/teams/$teamId/statistics'
-      path: '/teams/$teamId/statistics'
+      path: '/statistics'
       fullPath: '/teams/$teamId/statistics'
       preLoaderRoute: typeof TeamsTeamIdStatisticsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof TeamsTeamIdRoute
     }
     '/wantlists/$wantlistId/': {
       id: '/wantlists/$wantlistId/'
@@ -1296,10 +1311,10 @@ declare module '@tanstack/react-router' {
     }
     '/teams/$teamId/': {
       id: '/teams/$teamId/'
-      path: '/teams/$teamId'
-      fullPath: '/teams/$teamId'
+      path: '/'
+      fullPath: '/teams/$teamId/'
       preLoaderRoute: typeof TeamsTeamIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof TeamsTeamIdRoute
     }
     '/lists/$cardListId/': {
       id: '/lists/$cardListId/'
@@ -1394,10 +1409,10 @@ declare module '@tanstack/react-router' {
     }
     '/teams/$teamId/events': {
       id: '/teams/$teamId/events'
-      path: '/teams/$teamId/events'
+      path: '/events'
       fullPath: '/teams/$teamId/events'
       preLoaderRoute: typeof TeamsTeamIdEventsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof TeamsTeamIdRoute
     }
     '/decks/$deckId/edit': {
       id: '/decks/$deckId/edit'
@@ -1485,7 +1500,7 @@ declare module '@tanstack/react-router' {
     }
     '/teams/$teamId/statistics/_statisticsLayout': {
       id: '/teams/$teamId/statistics/_statisticsLayout'
-      path: '/teams/$teamId/statistics'
+      path: '/statistics'
       fullPath: '/teams/$teamId/statistics'
       preLoaderRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutRouteImport
       parentRoute: typeof TeamsTeamIdStatisticsRoute
@@ -1697,6 +1712,22 @@ const TeamsTeamIdStatisticsRouteWithChildren =
     TeamsTeamIdStatisticsRouteChildren,
   )
 
+interface TeamsTeamIdRouteChildren {
+  TeamsTeamIdEventsRoute: typeof TeamsTeamIdEventsRoute
+  TeamsTeamIdIndexRoute: typeof TeamsTeamIdIndexRoute
+  TeamsTeamIdStatisticsRoute: typeof TeamsTeamIdStatisticsRouteWithChildren
+}
+
+const TeamsTeamIdRouteChildren: TeamsTeamIdRouteChildren = {
+  TeamsTeamIdEventsRoute: TeamsTeamIdEventsRoute,
+  TeamsTeamIdIndexRoute: TeamsTeamIdIndexRoute,
+  TeamsTeamIdStatisticsRoute: TeamsTeamIdStatisticsRouteWithChildren,
+}
+
+const TeamsTeamIdRouteWithChildren = TeamsTeamIdRoute._addFileChildren(
+  TeamsTeamIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -1714,6 +1745,7 @@ const rootRouteChildren: RootRouteChildren = {
   DecksYourRoute: DecksYourRoute,
   ListsYourRoute: ListsYourRoute,
   StatisticsRoute: StatisticsRouteWithChildren,
+  TeamsTeamIdRoute: TeamsTeamIdRouteWithChildren,
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
   ComparerIndexRoute: ComparerIndexRoute,
@@ -1724,7 +1756,6 @@ const rootRouteChildren: RootRouteChildren = {
   TournamentsIndexRoute: TournamentsIndexRoute,
   CardsDetailCardIdRoute: CardsDetailCardIdRoute,
   DecksDeckIdEditRoute: DecksDeckIdEditRoute,
-  TeamsTeamIdEventsRoute: TeamsTeamIdEventsRoute,
   TournamentsTournamentIdCardStatsRoute: TournamentsTournamentIdCardStatsRoute,
   TournamentsTournamentIdDecksRoute: TournamentsTournamentIdDecksRoute,
   TournamentsTournamentIdDetailsRoute: TournamentsTournamentIdDetailsRoute,
@@ -1736,7 +1767,6 @@ const rootRouteChildren: RootRouteChildren = {
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
   LimitedPublicIndexRoute: LimitedPublicIndexRoute,
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
-  TeamsTeamIdIndexRoute: TeamsTeamIdIndexRoute,
   ToolsDeckFormatConverterIndexRoute: ToolsDeckFormatConverterIndexRoute,
   TournamentsTournamentIdIndexRoute: TournamentsTournamentIdIndexRoute,
   TournamentsAllIndexRoute: TournamentsAllIndexRoute,
@@ -1746,7 +1776,6 @@ const rootRouteChildren: RootRouteChildren = {
     TournamentsPlanetaryQualifiersIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
   WantlistsWantlistIdIndexRoute: WantlistsWantlistIdIndexRoute,
-  TeamsTeamIdStatisticsRoute: TeamsTeamIdStatisticsRouteWithChildren,
   LimitedDeckDeckIdIndexRoute: LimitedDeckDeckIdIndexRoute,
   LimitedPoolPoolIdDetailIndexRoute: LimitedPoolPoolIdDetailIndexRoute,
 }
