@@ -27,10 +27,12 @@ export const mcpRoute = new Hono<AuthExtension>().get(
     }
     const query = new URLSearchParams(oauth_query);
     const scopes = query.get('scope')?.split(' ').filter(Boolean) ?? [];
+    const resources = query.getAll('resource');
     if (
       !scopes.includes(MCP_SCOPE) ||
       scopes.some(scope => ![MCP_SCOPE, 'offline_access'].includes(scope)) ||
-      query.getAll('resource').some(resource => resource !== mcpResourceUrl)
+      resources.length !== 1 ||
+      resources[0] !== mcpResourceUrl
     )
       return c.json({ message: 'Unsupported MCP access request.' }, 400);
     const [client] = await db
