@@ -23,7 +23,7 @@ interface TabLinkProps {
 
 const TabLink: React.FC<TabLinkProps> = ({ tab, isActive, basePath }) => {
   const commonClass = cn(
-    'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
+    'flex min-w-0 items-center justify-center rounded-md text-center px-3 py-1.5 text-sm font-medium transition-all',
     isActive
       ? 'bg-background text-foreground shadow-xs'
       : 'text-muted-foreground hover:text-foreground',
@@ -41,6 +41,7 @@ const TabLink: React.FC<TabLinkProps> = ({ tab, isActive, basePath }) => {
         sInTeam: prev.sInTeam,
         sMatchType: prev.sMatchType,
       })}
+      aria-current={isActive ? 'page' : undefined}
       className={commonClass}
     >
       {tab.label}
@@ -66,16 +67,21 @@ const StatisticsTabs: React.FC<StatisticsTabsProps> = ({
   teamId,
 }) => {
   const tabs = teamId ? [...baseTabs, membersTab] : baseTabs;
-  const gridCols = teamId ? 'grid-cols-2 md:grid-cols-7' : 'grid-cols-2 md:grid-cols-6';
+  const gridCols = teamId
+    ? 'grid-cols-2 @[480px]/statistics-tabs:grid-cols-4 @[840px]/statistics-tabs:grid-cols-7'
+    : 'grid-cols-2 @[480px]/statistics-tabs:grid-cols-3 @[720px]/statistics-tabs:grid-cols-6';
 
   return (
-    <div className={cn('w-full', className)}>
+    <nav
+      aria-label="Statistics sections"
+      className={cn('@container/statistics-tabs w-full min-w-0', className)}
+    >
       <div className={cn('grid mb-2 rounded-lg bg-muted p-1', gridCols)}>
         {tabs.map(tab => (
           <TabLink key={tab.key} tab={tab} isActive={activeTab === tab.key} basePath={basePath} />
         ))}
       </div>
-    </div>
+    </nav>
   );
 };
 

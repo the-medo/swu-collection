@@ -269,10 +269,9 @@ export function LeftSidebar() {
   const { count: invitationCount } = useCrossfireInvitations();
   const { theme } = useTheme();
   const { open, state, isMobile, setOpenMobile } = useSidebar();
-  const teamMatch = useMatch({ from: '/teams/$teamId/', shouldThrow: false });
+  const teamMatch = useMatch({ from: '/teams/$teamId', shouldThrow: false });
 
-  const teamStatisticsMatch = useMatch({ from: '/teams/$teamId/statistics', shouldThrow: false });
-  const teamIdOrShortcut = teamMatch?.params?.teamId ?? teamStatisticsMatch?.params?.teamId;
+  const teamIdOrShortcut = teamMatch?.params?.teamId;
 
   const { data: activeTeam } = useTeam(teamIdOrShortcut);
 

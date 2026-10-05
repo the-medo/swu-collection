@@ -17,6 +17,7 @@ import { metaInfoArray } from '@/components/app/tournaments/TournamentMeta/MetaI
 import { cardStatsTabsArray } from '@/components/app/card-stats/CardStatsTabs/CardStatsTabs.tsx';
 import { aspectTabOptions } from '@/components/app/card-stats/AspectCardStats/AspectCardStats.tsx';
 import { UserSettingsLoader } from '@/components/app/users/UserSettingsLoader.tsx';
+import { useUser } from '@/hooks/useUser.ts';
 import { CardPoolType } from '../../../shared/types/cardPools.ts';
 import TournamentDetailDialog from '@/components/app/tournaments/TournamentDetailDialog/TournamentDetailDialog.tsx';
 
@@ -108,39 +109,60 @@ const globalSearchParams = z.object({
 export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 
 function RootShell() {
+  const currentUser = useUser();
   const matchRoute = useMatchRoute();
   const messenger = !!matchRoute({ to: '/messages', fuzzy: true });
   const userProfile = !!matchRoute({ to: '/users/$userId', fuzzy: true });
+  const teamProfile = !!matchRoute({ to: '/teams/$teamId', fuzzy: true });
+  const userSettings = !!currentUser && !!matchRoute({ to: '/settings', fuzzy: false });
+  const teamStatistics = !!matchRoute({ to: '/teams/$teamId/statistics', fuzzy: true });
   const immersive =
     !!matchRoute({ to: '/crossfire/$lobbyId', fuzzy: false }) ||
     !!matchRoute({ to: '/crossfire/replay/$lobbyId', fuzzy: false }) ||
     !!matchRoute({ to: '/crossfire/reports/$reportId', fuzzy: false });
   const { streamId } = Route.useSearch();
-  const { isMobile, setOpen, setOpenMobile } = useSidebar();
-  const collapsedForStreamId = useRef<string | null>(null);
+  const { open, isMobile, setOpen, setOpenMobile } = useSidebar();
+  const collapseReason = streamId ? `stream:${streamId}` : teamStatistics ? 'team-statistics' : null;
+  const collapsedForContext = useRef<{
+    reason: string;
+    isMobile: boolean;
+    wasOpen: boolean;
+    desktopOpen: boolean;
+  } | null>(null);
 
   useEffect(() => {
-    if (!streamId) {
-      if (collapsedForStreamId.current && !isMobile) {
-        setOpen(true);
+    const previous = collapsedForContext.current;
+    if (!collapseReason) {
+      if (previous && (previous.isMobile || !open)) {
+        setOpen(previous.wasOpen || (previous.isMobile && previous.desktopOpen));
       }
 
-      collapsedForStreamId.current = null;
+      collapsedForContext.current = null;
       return;
     }
 
-    if (collapsedForStreamId.current === streamId) {
+    if (previous?.reason === collapseReason && previous.isMobile === isMobile) {
       return;
     }
+
+    const context = {
+      reason: collapseReason,
+      isMobile,
+      wasOpen: previous?.wasOpen ?? open,
+      desktopOpen: previous?.reason === collapseReason ? previous.desktopOpen : false,
+    };
 
     if (isMobile) {
+      if (previous?.reason === collapseReason && !previous.isMobile) context.desktopOpen = open;
+      // Mobile navigation uses the desktop open state for its contents, too.
+      if (context.wasOpen || context.desktopOpen) setOpen(true);
       setOpenMobile(false);
     } else {
-      setOpen(false);
+      setOpen(context.desktopOpen);
     }
 
-    collapsedForStreamId.current = streamId;
-  }, [isMobile, setOpen, setOpenMobile, streamId]);
+    collapsedForContext.current = context;
+  }, [collapseReason, isMobile, open, setOpen, setOpenMobile]);
 
   if (immersive)
     return (
@@ -153,7 +175,7 @@ function RootShell() {
     <>
       <LeftSidebar />
       <main
-        className={`w-full min-w-0 ${userProfile ? '' : 'p-2'} ${messenger ? 'h-dvh overflow-hidden' : 'h-screen max-h-screen overflow-y-scroll'}`}
+        className={`w-full min-w-0 ${userProfile || teamProfile || userSettings ? '' : 'p-2'} ${messenger ? 'h-dvh overflow-hidden' : 'h-screen max-h-screen overflow-y-scroll'}`}
       >
         <div
           className={`flex w-full flex-col @container/main-body ${messenger ? 'h-full min-h-0' : ''}`}

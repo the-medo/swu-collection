@@ -102,7 +102,7 @@ const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) 
   );
 
   return (
-    <div className="h-[200px] min-w-[400px] max-sm:min-w-0">
+    <div className="h-[200px] w-full min-w-0">
       <ResponsiveTimeRange
         data={calendarData}
         from={from}

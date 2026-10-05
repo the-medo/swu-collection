@@ -13,7 +13,7 @@ export function SettingsNavigation({ page }: { page: SettingsPageId }) {
   const navigate = useNavigate({ from: '/settings' });
   return (
     <>
-      <div className="lg:hidden">
+      <div className="@[761px]/main-body:hidden">
         <Select
           value={page}
           onValueChange={value => {
@@ -38,9 +38,9 @@ export function SettingsNavigation({ page }: { page: SettingsPageId }) {
       </div>
       <nav
         aria-label="User settings"
-        className="hidden lg:block lg:sticky lg:top-2 max-h-[calc(100dvh-1rem)] overflow-y-auto rounded-lg border bg-card p-2"
+        className="hidden @[761px]/main-body:sticky @[761px]/main-body:top-4 @[761px]/main-body:block @[761px]/main-body:max-h-[calc(100dvh-2rem)] @[761px]/main-body:overflow-y-auto"
       >
-        <ul className="space-y-0.5">
+        <ul className="space-y-1">
           {settingsItems.map(item => (
             <li key={item.id}>
               <Link
@@ -48,14 +48,14 @@ export function SettingsNavigation({ page }: { page: SettingsPageId }) {
                 search={previous => ({ ...previous, page: item.id })}
                 aria-current={page === item.id ? 'page' : undefined}
                 className={cn(
-                  'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                  'flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
                   page === item.id
-                    ? 'bg-primary/10 text-primary font-medium'
+                    ? 'bg-primary/10 text-foreground'
                     : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
                 )}
               >
                 <item.icon className="size-4 shrink-0" aria-hidden="true" />
-                {item.label}
+                <span className="min-w-0">{item.label}</span>
               </Link>
             </li>
           ))}

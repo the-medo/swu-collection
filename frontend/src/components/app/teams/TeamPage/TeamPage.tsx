@@ -2,15 +2,11 @@ import * as React from 'react';
 import { useTeam } from '@/api/teams';
 import { Helmet } from 'react-helmet-async';
 import Error404 from '@/components/app/pages/error/Error404.tsx';
-import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
-import { Skeleton } from '@/components/ui/skeleton.tsx';
-import TeamMemberView from './TeamMemberView.tsx';
+import { Outlet, useMatchRoute } from '@tanstack/react-router';
+import { TeamNavigation } from './TeamNavigation.tsx';
 import TeamNonMemberView from './TeamNonMemberView.tsx';
-import { Input } from '@/components/ui/input.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { Link } from '@tanstack/react-router';
-import { Copy, Check, ChartSpline } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast.ts';
+import { TeamProfileLayout, TeamProfileSkeleton } from './TeamProfileLayout.tsx';
+import { TeamSidebar } from './TeamSidebar.tsx';
 import type { ErrorWithStatus } from '../../../../../../types/ErrorWithStatus.ts';
 
 interface TeamPageProps {
@@ -19,96 +15,57 @@ interface TeamPageProps {
 
 const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
   const { data: team, isLoading, error } = useTeam(idOrShortcut);
-  const { toast } = useToast();
-  const [copied, setCopied] = React.useState(false);
+  const matchRoute = useMatchRoute();
+  const isStatistics = !!matchRoute({ to: '/teams/$teamId/statistics', fuzzy: true });
 
-  if (error && (error as ErrorWithStatus).status === 404) {
+  const notFound = (error as ErrorWithStatus | null)?.status === 404;
+  if (error && (notFound || !team)) {
     return (
-      <>
-        <Helmet title="Team not found | SWUBase" />
+      <div className="p-4">
+        <Helmet title={`${notFound ? 'Team not found' : 'Unable to load team'} | SWUBase`} />
         <Error404
-          title="Team not found"
-          description="The team you are looking for does not exist or you don't have the rights to see it."
+          title={notFound ? 'Team not found' : 'Unable to load team'}
+          description={
+            notFound
+              ? "The team you are looking for does not exist or you don't have the rights to see it."
+              : 'Something went wrong while loading this team. Please try refreshing the page.'
+          }
         />
-      </>
+      </div>
     );
   }
 
   if (isLoading || !team) {
     return (
-      <div className="flex flex-col gap-4 p-4">
+      <>
         <Helmet title="Loading team | SWUBase" />
-        <LoadingTitle loading />
-        <Skeleton className="h-[200px] w-full" />
-      </div>
+        <TeamProfileSkeleton />
+      </>
     );
   }
 
-  const isMember = !!team.membership;
-  const isOwner = team.membership?.role === 'owner';
-
-  const teamLink = `${window.location.origin}/teams/${team.id}`;
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(teamLink);
-    setCopied(true);
-    toast({
-      description: 'Invite link copied to clipboard',
-    });
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <>
-      <Helmet title={`${team.name} | SWUBase`} />
-      <div className="flex min-w-0 flex-col gap-4 p-4">
-        {isMember && (
-          <div className="flex flex-wrap items-center gap-4">
-            {team.logoUrl && (
-              <img
-                src={team.logoUrl}
-                alt={`${team.name} logo`}
-                className="w-16 h-16 rounded-lg object-cover"
-              />
-            )}
-            <div className="flex min-w-0 flex-1 basis-64 flex-col gap-2">
-              <div className="flex items-center justify-between gap-2">
-                <LoadingTitle mainTitle={team.name} />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="shrink-0">Invite link: </span>
-                <div className="min-w-0 max-w-[200px] flex-1">
-                  <Input readOnly value={teamLink} className="h-8 w-full text-[10px]" />
-                </div>
-                <Button
-                  variant="outline"
-                  size="iconMedium"
-                  onClick={handleCopy}
-                  title="Copy Team ID"
-                  className="shrink-0"
-                >
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                </Button>
-              </div>
-            </div>
-            <Link
-              to={`/teams/$teamId/statistics`}
-              params={{
-                teamId: team.shortcut ?? team.id,
-              }}
-              className="flex items-center gap-1.5 p-4 text-lg border-dashed border bg-primary/50 hover:bg-primary rounded-lg font-bold text-black"
-            >
-              <ChartSpline className="h-4 w-4" />
-              Team Statistics
-            </Link>
-          </div>
-        )}
-        {isMember ? (
-          <TeamMemberView team={team} isOwner={isOwner} />
-        ) : (
-          <TeamNonMemberView team={team} />
-        )}
-      </div>
+      <Helmet title={`${team.name}${isStatistics ? ' · Statistics' : ''} | SWUBase`} />
+      {team.membership ? (
+        <TeamProfileLayout
+          team={team}
+          sidebar={
+            <TeamNavigation
+              key={team.id}
+              team={team}
+              isOwner={team.membership.role === 'owner'}
+              isStatistics={isStatistics}
+            />
+          }
+        >
+          <Outlet />
+        </TeamProfileLayout>
+      ) : (
+        <TeamProfileLayout team={team} sidebar={<TeamSidebar key={team.id} team={team} />}>
+          <TeamNonMemberView key={team.id} team={team} />
+        </TeamProfileLayout>
+      )}
     </>
   );
 };
