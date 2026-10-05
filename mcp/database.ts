@@ -1,7 +1,18 @@
-import postgres, { type Sql } from 'postgres';
+import postgres from 'postgres';
+import { and, arrayContains, count, eq, gt, isNull, or, sql } from 'drizzle-orm';
+import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { z } from 'zod';
 import { hasActiveAccountRestriction } from '../server/auth/accountRestriction.ts';
 import { MCP_SCOPE } from '../shared/mcp/config.ts';
+import {
+  oauthClient,
+  oauthClientResource,
+  oauthConsent,
+  oauthResource,
+  session,
+  user,
+} from '../server/db/schema/auth-schema.ts';
+import { mcpToolUsage } from '../server/db/schema/mcp-usage.ts';
 
 const identityClaims = z.object({
   sub: z.string().min(1).max(256),
@@ -24,7 +35,7 @@ export interface McpRepository {
 }
 
 export function createMcpRepository(
-  sql: Sql,
+  database: PostgresJsDatabase,
   resource: string,
   callsPerMinute: number,
 ): McpRepository {
@@ -33,52 +44,102 @@ export function createMcpRepository(
       const parsed = identityClaims.safeParse(claims);
       if (!parsed.success) return 'invalid';
       const { sub, azp, sid, iat } = parsed.data;
-      const [grant] = await sql`
-        select u.banned, u.ban_expires at time zone 'UTC' as ban_expires
-        from "user" u
-        join session s on s.user_id = u.id and s.id = ${sid}
-          and s.expires_at at time zone 'UTC' > now()
-        join oauth_consent c on c.user_id = u.id and c.client_id = ${azp}
-        join oauth_client cl on cl.client_id = c.client_id and cl.disabled is not true
-        join oauth_client_resource cr on cr.client_id = cl.client_id and cr.resource_id = ${resource}
-        join oauth_resource r on r.identifier = cr.resource_id and r.disabled is not true
-        where u.id = ${sub} and ${MCP_SCOPE} = any(c.scopes)
-          and ${resource} = any(c.resources)
-          and date_trunc('second', c.created_at) <= to_timestamp(${iat}) at time zone 'UTC'
-        limit 1`;
+      const [grant] = await database
+        .select({
+          banned: user.banned,
+          banExpires: sql`${user.banExpires} at time zone 'UTC'`.mapWith((value: string | null) =>
+            value === null ? null : new Date(value),
+          ),
+        })
+        .from(user)
+        .innerJoin(
+          session,
+          and(
+            eq(session.userId, user.id),
+            eq(session.id, sid),
+            sql`${session.expiresAt} at time zone 'UTC' > now()`,
+          ),
+        )
+        .innerJoin(
+          oauthConsent,
+          and(eq(oauthConsent.userId, user.id), eq(oauthConsent.clientId, azp)),
+        )
+        .innerJoin(
+          oauthClient,
+          and(
+            eq(oauthClient.clientId, oauthConsent.clientId),
+            or(eq(oauthClient.disabled, false), isNull(oauthClient.disabled)),
+          ),
+        )
+        .innerJoin(
+          oauthClientResource,
+          and(
+            eq(oauthClientResource.clientId, oauthClient.clientId),
+            eq(oauthClientResource.resourceId, resource),
+          ),
+        )
+        .innerJoin(
+          oauthResource,
+          and(
+            eq(oauthResource.identifier, oauthClientResource.resourceId),
+            or(eq(oauthResource.disabled, false), isNull(oauthResource.disabled)),
+          ),
+        )
+        .where(
+          and(
+            eq(user.id, sub),
+            arrayContains(oauthConsent.scopes, [MCP_SCOPE]),
+            arrayContains(oauthConsent.resources, [resource]),
+            sql`date_trunc('second', ${oauthConsent.createdAt}) <= to_timestamp(${iat}) at time zone 'UTC'`,
+          ),
+        )
+        .limit(1);
       // Better Auth's timestamp columns store UTC without a timezone. Compare
       // consent in SQL and return a timezone-bearing ban expiry to JS.
       if (!grant) return 'invalid';
-      if (hasActiveAccountRestriction({ banned: grant.banned, banExpires: grant.ban_expires }))
-        return 'restricted';
+      if (hasActiveAccountRestriction(grant)) return 'restricted';
       return { userId: sub, clientId: azp };
     },
     async admit(identity) {
-      return sql.begin(async transaction => {
+      return database.transaction(async transaction => {
         // Serialize only this user's admissions, including across replicas.
-        await transaction`select pg_advisory_xact_lock(hashtextextended(${identity.userId}, 0))`;
-        const [usage] = await transaction`select count(*)::integer as calls from mcp_tool_usage
-          where user_id = ${identity.userId} and started_at > now() - interval '1 minute'`;
-        if (usage.calls >= callsPerMinute) return null;
-        const [row] = await transaction`insert into mcp_tool_usage (user_id, client_id, tool)
-          values (${identity.userId}, ${identity.clientId}, 'search_cards') returning id`;
-        return row.id as string;
+        await transaction.execute(
+          sql`select pg_advisory_xact_lock(hashtextextended(${identity.userId}, 0))`,
+        );
+        const [usage] = await transaction
+          .select({ calls: count() })
+          .from(mcpToolUsage)
+          .where(
+            and(
+              eq(mcpToolUsage.userId, identity.userId),
+              gt(mcpToolUsage.startedAt, sql`now() - interval '1 minute'`),
+            ),
+          );
+        if (usage!.calls >= callsPerMinute) return null;
+        const [row] = await transaction
+          .insert(mcpToolUsage)
+          .values({ userId: identity.userId, clientId: identity.clientId, tool: 'search_cards' })
+          .returning({ id: mcpToolUsage.id });
+        return row!.id;
       });
     },
     async finish(id, outcome, resultCount, durationMs) {
-      await sql`update mcp_tool_usage set outcome = ${outcome}, result_count = ${resultCount},
-        duration_ms = ${durationMs} where id = ${id}`;
+      await database
+        .update(mcpToolUsage)
+        .set({ outcome, resultCount, durationMs })
+        .where(eq(mcpToolUsage.id, id));
     },
     async health() {
-      await sql`select id from mcp_tool_usage limit 1`;
+      await database.select({ id: mcpToolUsage.id }).from(mcpToolUsage).limit(1);
     },
   };
 }
 
 export function connectMcpDatabase(databaseUrl: string, resource: string, callsPerMinute: number) {
-  const sql = postgres(databaseUrl, { max: 4, idle_timeout: 20, connect_timeout: 5 });
+  const queryClient = postgres(databaseUrl, { max: 4, idle_timeout: 20, connect_timeout: 5 });
+  const database = drizzle({ client: queryClient });
   return {
-    repository: createMcpRepository(sql, resource, callsPerMinute),
-    close: () => sql.end({ timeout: 5 }),
+    repository: createMcpRepository(database, resource, callsPerMinute),
+    close: () => queryClient.end({ timeout: 5 }),
   };
 }

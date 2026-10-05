@@ -8,5 +8,7 @@ GRANT SELECT (user_id, client_id, scopes, resources, created_at) ON oauth_consen
 GRANT SELECT (client_id, disabled) ON oauth_client TO swubase_mcp;
 GRANT SELECT (client_id, resource_id) ON oauth_client_resource TO swubase_mcp;
 GRANT SELECT (identifier, disabled) ON oauth_resource TO swubase_mcp;
-GRANT SELECT (id, user_id, started_at), INSERT (user_id, client_id, tool),
+-- Drizzle includes DEFAULT for the other usage columns in its INSERT statement.
+GRANT SELECT (id, user_id, started_at),
+  INSERT (id, user_id, client_id, tool, started_at, outcome, result_count, duration_ms),
   UPDATE (outcome, result_count, duration_ms) ON mcp_tool_usage TO swubase_mcp;

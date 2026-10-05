@@ -16,6 +16,12 @@ clients receive a refresh token. Access tokens last five minutes. The MCP servic
 session, client, resource and consent on every request, so bans, expired/deleted
 sessions, disabled clients and removed consent deny access immediately.
 
+The MCP runtime creates its own Drizzle client over a PostgreSQL pool capped at
+four connections. It reuses the main application's table definitions with the
+restricted MCP database role, without importing the main application's connection
+or auth configuration. Queries use Drizzle's typed builders; PostgreSQL SQL
+fragments handle UTC timestamp expressions and the transactional per-user lock.
+
 This uses Better Auth 1.7.7 on both sides, Drizzle 0.45.2, Zod 4.6.5 and the MCP
 SDK 2.3.1. The SDK serves both 2025 and 2026 protocol formats in stateless mode.
 The [Better Auth MCP documentation](https://better-auth.com/docs/plugins/mcp) and
@@ -59,6 +65,11 @@ describe the underlying authorization and transport.
    are required. Apply the script using a checkout containing this branch, or
    copy its SQL into your administrator session. `DBNAME` is a built-in psql
    variable for the connected database.
+
+   Drizzle includes defaulted ledger fields in its insert statement, so the script
+   grants INSERT permission for each current usage column. SELECT and UPDATE stay
+   limited to the columns needed by MCP. If the MCP role already exists, reapply
+   `mcp/deploy/grants.sql` before deploying this version.
 
 ## Coolify application
 

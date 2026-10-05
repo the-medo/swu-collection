@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, expect, test } from 'bun:test';
 import postgres from 'postgres';
+import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { serializeSignedCookie } from 'better-call';
 import { Hono } from 'hono';
 import { oauthProviderAuthServerMetadata } from '@better-auth/oauth-provider';
@@ -18,6 +19,7 @@ if (enabled) {
 }
 
 let sql: ReturnType<typeof postgres>;
+let database: PostgresJsDatabase;
 let authServer: ReturnType<typeof Bun.serve>;
 let mcpServer: ReturnType<typeof Bun.serve>;
 let issuer: string;
@@ -72,6 +74,7 @@ async function authorizationQuery(withSession: boolean) {
 beforeAll(async () => {
   if (!enabled) return;
   sql = postgres(process.env.DATABASE_URL!, { max: 4 });
+  database = drizzle({ client: sql });
   let authFetch: (request: Request) => Response | Promise<Response>;
   let mcpFetch: (request: Request) => Response | Promise<Response>;
   authServer = Bun.serve({ hostname: '127.0.0.1', port: 0, fetch: request => authFetch(request) });
@@ -104,7 +107,7 @@ beforeAll(async () => {
   authFetch = request => backend.fetch(request);
   const mcpApp = createMcpApp(
     { resource, issuer, allowedOrigins: new Set([mcpServer.url.origin, authServer.url.origin]) },
-    createMcpRepository(sql, resource, 60),
+    createMcpRepository(database, resource, 60),
   );
   mcpFetch = request => mcpApp.fetch(request);
   await sql`insert into "user" (id, name, display_name, email, email_verified, currency, role, created_at, updated_at)
@@ -365,7 +368,7 @@ test.skipIf(!enabled)(
   'usage admission enforces one per-user budget across concurrent clients',
   async () => {
     await sql`delete from mcp_tool_usage where user_id = ${userId}`;
-    const repository = createMcpRepository(sql, resource, 3);
+    const repository = createMcpRepository(database, resource, 3);
     const admissions = await Promise.all(
       Array.from({ length: 10 }, (_, i) => repository.admit({ userId, clientId: `client-${i}` })),
     );
@@ -395,7 +398,7 @@ test.skipIf(!enabled)(
       await sql`insert into oauth_consent (id, client_id, user_id, scopes, resources, created_at, updated_at)
       values (${role}, ${clientId}, ${userId}, array['cards:read'], array[${resource}], now() - interval '1 second', now())`;
       await runtimeSql`set role ${runtimeSql(role)}`;
-      const repository = createMcpRepository(runtimeSql, resource, 60);
+      const repository = createMcpRepository(drizzle({ client: runtimeSql }), resource, 60);
       const now = Math.floor(Date.now() / 1000);
       expect(
         await repository.authorize({
