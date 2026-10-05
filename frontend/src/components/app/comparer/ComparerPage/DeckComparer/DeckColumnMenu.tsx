@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { MoreHorizontal, Crown, X, ExternalLink } from 'lucide-react';
-import { queryClient } from '@/queryClient.ts';
+import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore.ts';
@@ -21,7 +21,8 @@ const DeckColumnMenu: React.FC<DeckColumnMenuProps> = ({ deckId, isMainDeck }) =
   const { data: cardList } = useCardList();
 
   // Get deck data from cache
-  const deckData = queryClient.getQueryData<any>(['deck', deckId]);
+  const { data, isError } = useGetDeck(deckId);
+  const deckData = isError ? undefined : data;
 
   // Get leader and base card IDs
   const leaderCardId1 = deckData?.deck?.leaderCardId1;

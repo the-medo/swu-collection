@@ -6,6 +6,7 @@ import { notificationsRoute } from './routes/notifications.ts';
 import { cors } from 'hono/cors';
 import { collectionRoute } from './routes/collection.ts';
 import { deckRoute } from './routes/deck.ts';
+import { deckFoldersRoute } from './routes/deck-folders.ts';
 import { crossfireRoute } from './routes/crossfire.ts';
 import { serveStatic, upgradeWebSocket, websocket } from 'hono/bun';
 import { authRoute } from './routes/auth.ts';
@@ -172,6 +173,7 @@ const apiRoutes = app
   .route('/world', worldRoute)
   .route('/collection', collectionRoute)
   .route('/deck', deckRoute)
+  .route('/deck-folders', deckFoldersRoute)
   .route('/crossfire', crossfireRoute)
   .route('/cards', cardsRoute)
   .route('/user', userRoute)

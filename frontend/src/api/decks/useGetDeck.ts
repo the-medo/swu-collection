@@ -2,10 +2,16 @@ import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
 import { DeckData } from '../../../../types/Deck.ts';
+import { useSession } from '@/lib/auth-client.ts';
+import { deckKeys } from './queryKeys.ts';
+import { isSharedPrivateDeck } from './deckAccessCache.ts';
 
 export const useGetDeck = (deckId: string | undefined, refreshOnMount = false) => {
+  const session = useSession();
+  const viewer = session.data?.user;
   return useQuery<DeckData, ErrorWithStatus>({
-    queryKey: ['deck', deckId],
+    enabled: !session.isPending,
+    queryKey: deckKeys.detail(deckId, viewer?.id),
     queryFn: deckId
       ? async () => {
           const response = await api.deck[':id'].$get({
@@ -27,7 +33,11 @@ export const useGetDeck = (deckId: string | undefined, refreshOnMount = false) =
         }
       : skipToken,
     retry: (failureCount, error) => !refreshOnMount && error.status !== 404 && failureCount < 3,
-    staleTime: Infinity,
+    staleTime: query => (isSharedPrivateDeck(query.state.data, viewer?.id) ? 0 : Infinity),
+    refetchInterval: query =>
+      query.state.status !== 'error' && isSharedPrivateDeck(query.state.data, viewer?.id)
+        ? 30_000
+        : false,
     refetchOnMount: refreshOnMount ? 'always' : true,
     refetchOnWindowFocus: !refreshOnMount,
     refetchOnReconnect: !refreshOnMount,

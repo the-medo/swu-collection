@@ -8,6 +8,7 @@ import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
 import { updateDeckInformation } from '../../../../lib/decks/updateDeckInformation.ts';
 import { cardPoolDecks, cardPoolDeckCards } from '../../../../db/schema/card_pool_deck.ts';
 import { CardPoolLocation } from '../../../../../shared/types/cardPools.ts';
+import { deckReadAccess } from '../../../../lib/decks/deckFolderAccess.ts';
 
 export const deckIdDuplicatePostRoute = new Hono<AuthExtension>().post('/', async c => {
   const paramDeckId = z.guid().parse(c.req.param('id'));
@@ -15,15 +16,15 @@ export const deckIdDuplicatePostRoute = new Hono<AuthExtension>().post('/', asyn
   if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
   // 1. Get the source deck
-  const sourceDeck = (await db.select().from(deckTable).where(eq(deckTable.id, paramDeckId)))[0];
+  const sourceDeck = (
+    await db
+      .select()
+      .from(deckTable)
+      .where(and(eq(deckTable.id, paramDeckId), deckReadAccess(user.id)))
+  )[0];
 
   if (!sourceDeck) {
     return c.json({ message: "Source deck doesn't exist" }, 404);
-  }
-
-  // 2. Check if the deck is public/unlisted or owned by the user
-  if (sourceDeck.public === 0 && sourceDeck.userId !== user.id) {
-    return c.json({ message: 'Unauthorized to duplicate this deck' }, 403);
   }
 
   // 3. Create a new deck as a copy

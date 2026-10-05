@@ -4,20 +4,35 @@ import { useToast } from '@/hooks/use-toast.ts';
 import { useForm } from '@tanstack/react-form';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { useImportDeck } from '@/api/decks/useImportDeck.ts';
+import type { useImportDeck } from '@/api/decks/useImportDeck.ts';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import FormFieldError from '@/components/app/global/FormFieldError.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { zDeckImportFormat, zDeckImportRequest } from '../../../../../../types/DeckImport.ts';
+import { useId } from 'react';
+import DeckFolderSelect from '@/components/app/decks/DeckFolders/DeckFolderSelect.tsx';
+import type { DeckFolder } from '../../../../../../types/DeckFolder.ts';
 
 interface ImportNewDeckProps {
   onSuccess: () => void;
+  folders: DeckFolder[];
+  folderId: string | null;
+  onFolderChange: (id: string | null) => void;
+  importDeck: ReturnType<typeof useImportDeck>;
+  folderBlocked: boolean;
 }
 
-export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({ onSuccess }) => {
+export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({
+  onSuccess,
+  folders,
+  folderId,
+  onFolderChange,
+  importDeck,
+  folderBlocked,
+}) => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const importDeck = useImportDeck();
+  const folderInputId = useId();
 
   const form = useForm({
     defaultValues: {
@@ -25,8 +40,8 @@ export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({ onSuccess }) => {
       format: null as number | null,
     },
     onSubmit: async ({ value }) => {
-      const request = zDeckImportRequest.safeParse(value);
-      if (!request.success || importDeck.isPending) return;
+      const request = zDeckImportRequest.safeParse({ ...value, folderId });
+      if (!request.success || importDeck.isPending || folderBlocked) return;
       importDeck.mutate(request.data, {
         onSuccess: result => {
           if (!('data' in result)) return;
@@ -103,6 +118,19 @@ export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({ onSuccess }) => {
           </div>
         )}
       />
+      {folders.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={folderInputId}>Folder</Label>
+          <DeckFolderSelect
+            id={folderInputId}
+            folders={folders}
+            value={folderId}
+            onChange={onFolderChange}
+            disabled={importDeck.isPending}
+            className="w-full"
+          />
+        </div>
+      )}
       <form.Subscribe
         selector={state => [state.canSubmit, state.isSubmitting, state.values] as const}
       >
@@ -113,6 +141,7 @@ export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({ onSuccess }) => {
               !canSubmit ||
               isSubmitting ||
               importDeck.isPending ||
+              folderBlocked ||
               !values.deckLink.trim() ||
               values.format === null
             }

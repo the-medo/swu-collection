@@ -3,9 +3,12 @@ import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { InferResponseType } from 'hono';
 import { ZDeckUpdateRequest } from '../../../../types/ZDeck.ts';
+import { useUser } from '@/hooks/useUser.ts';
+import { deckKeys } from './queryKeys.ts';
 
 export const usePutDeck = (deckId: string | undefined) => {
   const queryClient = useQueryClient();
+  const viewer = useUser();
 
   return useMutation({
     mutationFn: async (data: ZDeckUpdateRequest & { deckId?: string }) => {
@@ -33,7 +36,7 @@ export const usePutDeck = (deckId: string | undefined) => {
       type ResType = InferResponseType<typeof $getDeck>;
 
       // Update the single deck detail cache
-      queryClient.setQueryData(['deck', result.data.id], (oldData: ResType) => ({
+      queryClient.setQueryData(deckKeys.detail(result.data.id, viewer?.id), (oldData: ResType) => ({
         ...oldData,
         deck: {
           ...result.data,

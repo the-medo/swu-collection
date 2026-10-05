@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { useMemo } from 'react';
 import { useComparerStore } from '@/components/app/comparer/useComparerStore.ts';
-import { queryClient } from '@/queryClient.ts';
-import { DeckCard } from '../../../../../../../types/ZDeckCard.ts';
+import { useQueries, useQueryClient } from '@tanstack/react-query';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { groupCardsByCardType } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/groupCardsByCardType.ts';
 import { groupCardsByCost } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsByCost.ts';
@@ -13,7 +12,7 @@ import { groupCardsByKeywords } from '@/components/app/decks/DeckContents/DeckCa
 import { groupCardsBySet } from '@/components/app/decks/DeckContents/DeckCards/lib/groupCardsBySet.ts';
 import { CardComparisonData } from '../types.ts';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
-import { useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
+import { getDeckCardsQueryOptions, useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
 import ViewRowDeck from './ViewRowDeck';
 import ViewRowCard from './ViewRowCard';
 import {
@@ -22,6 +21,7 @@ import {
   DeckComparerTotalsMap,
 } from '@/components/app/comparer/ComparerPage/DeckComparer/types.ts';
 import { DeckGroupBy, ViewMode } from '../../../../../../../types/enums.ts';
+import { useSession } from '@/lib/auth-client.ts';
 
 interface DeckComparerResultProps {
   mainDeckId: string;
@@ -37,10 +37,19 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
 }) => {
   // Get settings from the comparer store
   const { settings } = useComparerStore();
+  const session = useSession();
+  const queryClient = useQueryClient();
+  const otherCards = useQueries({
+    queries: otherDeckEntries.map(entry => ({
+      ...getDeckCardsQueryOptions(entry.id, session.data?.user.id, queryClient),
+      enabled: !session.isPending,
+    })),
+  });
 
-  // Get main deck data and cards from cache
-  const { data: mainDeckData } = useGetDeck(mainDeckId);
-  const { data: mainDeckCards } = useGetDeckCards(mainDeckId);
+  const mainDeck = useGetDeck(mainDeckId);
+  const mainCards = useGetDeckCards(mainDeckId);
+  const mainDeckData = mainDeck.isError ? undefined : mainDeck.data;
+  const mainDeckCards = mainDeck.isError || mainCards.isError ? undefined : mainCards.data;
 
   // Get card list data
   const { data: cardListData } = useCardList();
@@ -76,9 +85,9 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
     }
 
     // Process other decks' cards
-    otherDeckEntries.forEach(entry => {
+    otherDeckEntries.forEach((entry, index) => {
       const deckId = entry.id;
-      const deckCards = queryClient.getQueryData<{ data: DeckCard[] }>(['deck-content', deckId]);
+      const deckCards = otherCards[index]?.isError ? undefined : otherCards[index]?.data;
 
       if (deckCards?.data && cardListData) {
         deckCards.data.forEach(card => {
@@ -105,7 +114,7 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
     });
 
     return comparisonMap;
-  }, [mainDeckCards, otherDeckEntries, cardListData]);
+  }, [mainDeckCards, otherDeckEntries, cardListData, otherCards]);
 
   // Convert map to array for rendering
   const cardComparisons = useMemo(() => {

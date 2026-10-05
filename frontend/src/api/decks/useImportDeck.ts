@@ -3,6 +3,7 @@ import { api } from '@/lib/api.ts';
 import { createApiError } from '@/api/errors.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import type { ZDeckImportRequest } from '../../../../types/DeckImport.ts';
+import { deckFolderKeys } from '@/api/deck-folders/queryKeys.ts';
 
 export const useImportDeck = () => {
   const queryClient = useQueryClient();
@@ -14,9 +15,14 @@ export const useImportDeck = () => {
       return response.json();
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });
+      void Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['decks'] }),
+        queryClient.invalidateQueries({ queryKey: deckFolderKeys.all }),
+      ]);
     },
     onError: error => {
+      if ('status' in error && error.status === 404)
+        void queryClient.invalidateQueries({ queryKey: deckFolderKeys.all });
       toast({
         variant: 'destructive',
         title: 'Error while importing a deck',

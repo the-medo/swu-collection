@@ -3,6 +3,8 @@ import { api } from '@/lib/api.ts';
 import { DeckCardResponse } from './useGetDeckCards.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { DeckCard } from '../../../../types/ZDeckCard.ts';
+import { useUser } from '@/hooks/useUser.ts';
+import { deckKeys } from './queryKeys.ts';
 
 export type DeckCardIdentification = {
   cardId: string;
@@ -21,6 +23,7 @@ type DeckCardUpdateRequest = {
 
 export const usePutDeckCard = (deckId: string | undefined) => {
   const queryClient = useQueryClient();
+  const viewer = useUser();
 
   return useMutation({
     // The mutation function updates the card in the deck.
@@ -29,7 +32,7 @@ export const usePutDeckCard = (deckId: string | undefined) => {
         throw new Error('Deck id is required');
       }
 
-      queryClient.setQueryData<DeckCardResponse>(['deck-content', deckId], oldData => {
+      queryClient.setQueryData<DeckCardResponse>(deckKeys.cards(deckId, viewer?.id), oldData => {
         if (!oldData) {
           return undefined;
         }

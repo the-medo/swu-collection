@@ -41,7 +41,8 @@ export const zDeckCreateRequest = zDeckSchema
     leaderCardId1: true,
     leaderCardId2: true,
     baseCardId: true,
-  });
+  })
+  .extend({ folderId: z.guid().nullable().optional() });
 
 export const zDeckUpdateRequest = zDeckSchema
   .pick({
