@@ -68,7 +68,9 @@ export function deploymentJobs(plan, eventName) {
   const crossfireApprovalRequired =
     eventName === 'push' && plan.migrationChanges && plan.selected.includes('crossfire');
   const automatic = plan.selected.filter(
-    service => !(crossfireApprovalRequired && service === 'crossfire'),
+    service =>
+      !(crossfireApprovalRequired && service === 'crossfire') &&
+      !(eventName === 'push' && plan.migrationChanges && service === 'mcp'),
   );
   return {
     matrix: deploymentMatrix(automatic),
@@ -105,6 +107,12 @@ export function deploymentSummary(
         ' Then manually run this workflow for crossfire after verification. ' +
         'Re-run all jobs also checks approval setup again, but redeploys every selected service.';
     }
+  }
+  if (plan.migrationChanges && plan.selected.includes('mcp')) {
+    handoff +=
+      '\n\nMCP deployment is held until migrations are verified. ' +
+      'Verify Migration complete and Server running in the new main app logs, ' +
+      'then manually run this workflow for service mcp. Rerunning the push keeps this hold.';
   }
   return (
     `## Coolify deployment plan\n\n${plan.reason}\n\n` +

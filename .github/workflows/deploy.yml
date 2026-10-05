@@ -12,7 +12,7 @@ on:
         type: choice
         required: true
         default: all
-        options: [all, main, maintainer, crossfire]
+        options: [all, main, maintainer, crossfire, mcp]
       dry_run:
         description: Show the deployment plan without calling Coolify
         type: boolean

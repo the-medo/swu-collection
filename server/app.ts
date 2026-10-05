@@ -16,6 +16,9 @@ import { crossfireRoute } from './routes/crossfire.ts';
 import { serveStatic, upgradeWebSocket, websocket } from 'hono/bun';
 import { authRoute } from './routes/auth.ts';
 import { auth, type AuthExtension } from './auth/auth.ts';
+import { mcpResourceUrl } from './auth/auth.ts';
+import { oauthProviderAuthServerMetadata } from '@better-auth/oauth-provider';
+import { mcpRoute } from './routes/mcp.ts';
 import { cardsRoute } from './routes/cards.ts';
 import { cardGroupsRoute } from './routes/card-groups/index.ts';
 import { artistsRoute } from './routes/artists.ts';
@@ -65,13 +68,14 @@ Sentry.init({
   environment: process.env.ENVIRONMENT,
   dsn: process.env.SENTRY_BACKEND_DSN,
   tracesSampleRate: 1.0,
-  ignoreTransactions: [/\/api\/calendar(?:\/|$)/],
+  ignoreTransactions: [/\/api\/calendar(?:\/|$)/, /\/api\/auth(?:\/|$)/, /\/mcp(?:\/|$)/],
   enableLogs: process.env.ENVIRONMENT !== 'local',
   beforeSend(event) {
     if (
       event.request?.url?.includes('/api/creator-hub') ||
       event.request?.url?.includes('/api/admin/creator-imports') ||
       isCalendarFeedRequest(event.request?.url) ||
+      /\/(?:api\/auth|api\/mcp|mcp)(?:[/?#]|$)/.test(event.request?.url ?? '') ||
       /\/api\/(?:support|messages|(?:admin\/)?user-reports|(?:admin|integration)\/(?:patreon|stripe))(?:[/?#]|$)/.test(
         event.request?.url ?? '',
       )
@@ -92,6 +96,7 @@ Sentry.init({
     return event.request?.url?.includes('/api/creator-hub') ||
       event.request?.url?.includes('/api/admin/creator-imports') ||
       isCalendarFeedRequest(event.request?.url) ||
+      /\/(?:api\/auth|api\/mcp|mcp)(?:[/?#]|$)/.test(event.request?.url ?? '') ||
       /\/api\/(?:support|messages|(?:admin\/)?user-reports|(?:admin|integration)\/(?:patreon|stripe))(?:[/?#]|$)/.test(
         event.request?.url ?? '',
       )
@@ -120,9 +125,16 @@ const app = new Hono<AuthExtension>().onError((err, c) => {
 // Calendar clients authenticate with the secret URL. Mount before session and
 // request logging middleware so tokens never enter the application access log.
 app.route('/api/calendar', calendarFeedRoute);
+// OAuth discovery must be reachable at the issuer's RFC 8414 well-known path.
+app.get('/.well-known/oauth-authorization-server/api/auth', c =>
+  mcpResourceUrl
+    ? oauthProviderAuthServerMetadata(auth)(c.req.raw)
+    : c.json({ message: 'MCP is not enabled.' }, 404),
+);
 const logRequest = requestLogger();
 app.use('*', async (c, next) => {
   if (
+    /\/(?:api\/auth|api\/mcp|mcp)(?:\/|$)/.test(c.req.path) ||
     c.req.path.startsWith('/api/creator-hub') ||
     c.req.path.startsWith('/api/admin/creator-imports')
   )
@@ -197,6 +209,7 @@ app.use(
 const apiRoutes = app
   .basePath('/api')
   .route('/auth', authRoute)
+  .route('/mcp', mcpRoute)
   .route('/world', worldRoute)
   .route('/collection', collectionRoute)
   .route('/deck', deckRoute)
