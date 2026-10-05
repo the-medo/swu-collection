@@ -71,9 +71,9 @@ export default function AvatarSettings() {
           <AvatarFallback>{user?.displayName?.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="space-y-1">
-          <h4 id="avatar-heading" className="font-medium">
+          <h3 id="avatar-heading" className="text-xl! font-medium">
             Avatar
-          </h4>
+          </h3>
           <p className="text-sm text-muted-foreground">
             Choose card artwork or one of your images, then crop it to make it yours.
           </p>

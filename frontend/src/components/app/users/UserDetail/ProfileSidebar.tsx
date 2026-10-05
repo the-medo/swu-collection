@@ -32,7 +32,7 @@ function ProfileAvatarLayout({ children }: { children: ReactNode }) {
 export function ProfileAvatar({
   user,
   canEdit = false,
-}: Pick<ProfileSidebarProps, 'user'> & { canEdit?: boolean }) {
+}: { user: Pick<User, 'displayName' | 'image'>; canEdit?: boolean }) {
   const initials = user.displayName.trim().slice(0, 2).toUpperCase() || '?';
   return (
     <ProfileAvatarLayout>

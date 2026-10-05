@@ -73,7 +73,7 @@ function MeleeIntegration({ status }: { status: MeleeConnectionStatus }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h4 className="font-semibold">Melee.gg</h4>
+        <h3 className="text-xl! font-semibold">Melee.gg</h3>
         {connection && (
           <span className="flex items-center gap-1 text-sm text-muted-foreground">
             <Check className="size-4" />

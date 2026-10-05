@@ -1,7 +1,7 @@
 import { useRole } from '@/hooks/useRole';
 import { UserReportHistory } from '@/components/app/admin/user-reports/UserReportHistory';
 import { Button } from '@/components/ui/button.tsx';
-import { Mail } from 'lucide-react';
+import { Mail, Settings } from 'lucide-react';
 import { useUser } from '@/hooks/useUser.ts';
 import { getRouteApi, Link } from '@tanstack/react-router';
 import { useGetUser } from '@/api/user/useGetUser.ts';
@@ -79,7 +79,7 @@ const UserDetail: React.FC = () => {
           </div>
           <ProfileSidebarSkeleton
             favorites={<ProfileFavoritesSkeleton />}
-            actionCount={currentUser?.id === userId ? 1 : canContact ? 2 : 0}
+            actionCount={currentUser?.id === userId || canContact ? 2 : 0}
           />
           <div className={contentClassName}>
             <hr className={dividerClassName} />
@@ -129,6 +129,13 @@ const UserDetail: React.FC = () => {
               <ProfileFavorites key={userId} userId={userId} canEdit={currentUser?.id === userId} />
             }
           >
+            {currentUser?.id === userId && (
+              <Button asChild variant="outline">
+                <Link to="/settings" search={{ page: 'profile' }}>
+                  <Settings className="size-4" aria-hidden="true" /> User settings
+                </Link>
+              </Button>
+            )}
             {canContact && (
               <>
                 <Button asChild>

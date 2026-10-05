@@ -17,6 +17,7 @@ import { metaInfoArray } from '@/components/app/tournaments/TournamentMeta/MetaI
 import { cardStatsTabsArray } from '@/components/app/card-stats/CardStatsTabs/CardStatsTabs.tsx';
 import { aspectTabOptions } from '@/components/app/card-stats/AspectCardStats/AspectCardStats.tsx';
 import { UserSettingsLoader } from '@/components/app/users/UserSettingsLoader.tsx';
+import { useUser } from '@/hooks/useUser.ts';
 import { CardPoolType } from '../../../shared/types/cardPools.ts';
 import TournamentDetailDialog from '@/components/app/tournaments/TournamentDetailDialog/TournamentDetailDialog.tsx';
 
@@ -108,10 +109,12 @@ const globalSearchParams = z.object({
 export type GlobalSearchParams = z.infer<typeof globalSearchParams>;
 
 function RootShell() {
+  const currentUser = useUser();
   const matchRoute = useMatchRoute();
   const messenger = !!matchRoute({ to: '/messages', fuzzy: true });
   const userProfile = !!matchRoute({ to: '/users/$userId', fuzzy: true });
   const teamProfile = !!matchRoute({ to: '/teams/$teamId', fuzzy: true });
+  const userSettings = !!currentUser && !!matchRoute({ to: '/settings', fuzzy: false });
   const teamStatistics = !!matchRoute({ to: '/teams/$teamId/statistics', fuzzy: true });
   const immersive =
     !!matchRoute({ to: '/crossfire/$lobbyId', fuzzy: false }) ||
@@ -172,7 +175,7 @@ function RootShell() {
     <>
       <LeftSidebar />
       <main
-        className={`w-full min-w-0 ${userProfile || teamProfile ? '' : 'p-2'} ${messenger ? 'h-dvh overflow-hidden' : 'h-screen max-h-screen overflow-y-scroll'}`}
+        className={`w-full min-w-0 ${userProfile || teamProfile || userSettings ? '' : 'p-2'} ${messenger ? 'h-dvh overflow-hidden' : 'h-screen max-h-screen overflow-y-scroll'}`}
       >
         <div
           className={`flex w-full flex-col @container/main-body ${messenger ? 'h-full min-h-0' : ''}`}
