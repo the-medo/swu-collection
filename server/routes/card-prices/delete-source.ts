@@ -23,7 +23,7 @@ export const cardPricesDeleteSourceRoute = new Hono<AuthExtension>().delete(
     const hasPermission = await auth.api.userHasPermission({
       body: {
         userId: user.id,
-        permission: {
+        permissions: {
           admin: ['access'],
         },
       },

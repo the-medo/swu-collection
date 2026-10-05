@@ -4,7 +4,7 @@ export async function userHasAdminAccess(userId: string) {
   const result = await auth.api.userHasPermission({
     body: {
       userId,
-      permission: {
+      permissions: {
         admin: ['access'],
       },
     },
