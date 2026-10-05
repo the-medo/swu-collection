@@ -47,7 +47,7 @@ async function tokenRequest(body: Record<string, string>) {
     body: new URLSearchParams(body),
   });
 }
-async function authorizationQuery(withSession: boolean) {
+async function authorizationQuery(withSession: boolean, resources = [resource]) {
   const verifier =
     crypto.randomUUID().replaceAll('-', '') + crypto.randomUUID().replaceAll('-', '');
   const challenge = Buffer.from(
@@ -58,11 +58,11 @@ async function authorizationQuery(withSession: boolean) {
     client_id: clientId,
     redirect_uri: 'http://127.0.0.1:8391/callback',
     scope: requestedScopes,
-    resource,
     code_challenge: challenge,
     code_challenge_method: 'S256',
     state: 'fixture-state',
   });
+  for (const value of resources) query.append('resource', value);
   const response = await authRequest(`/oauth2/authorize?${query}`, {
     headers: withSession ? { Cookie: cookie } : undefined,
   });
@@ -183,6 +183,15 @@ test.skipIf(!enabled)(
       scopes_supported: [MCP_SCOPE],
     });
     expect((await authorizationQuery(false)).location.pathname).toBe('/mcp/login');
+    const missingResource = await authorizationQuery(true, []);
+    expect(
+      (
+        await fetch(
+          `${authServer.url.origin}/api/mcp/authorization?${new URLSearchParams({ oauth_query: missingResource.location.search.slice(1) })}`,
+          { headers: sessionHeaders() },
+        )
+      ).status,
+    ).toBe(400);
     const { location, verifier } = await authorizationQuery(true);
     expect(location.pathname).toBe('/mcp/consent');
     const contextUrl = `${authServer.url.origin}/api/mcp/authorization?${new URLSearchParams({ oauth_query: location.search.slice(1) })}`;
