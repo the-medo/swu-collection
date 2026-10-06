@@ -8,7 +8,9 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '../db';
 import { authSchema } from '../db/schema/auth-schema.ts';
 import { generateDisplayName } from './generateDisplayName.ts';
-import { admin as adminPlugin } from 'better-auth/plugins';
+import { admin as adminPlugin, jwt } from 'better-auth/plugins';
+import { mcp } from '@better-auth/mcp';
+import { readMcpResourceUrl, MCP_AUTH_SCOPES } from '../../shared/mcp/config.ts';
 import { ac, applicationRoles } from './permissions';
 import { reconcilePatreonAccount } from '../lib/patreon/account.ts';
 
@@ -18,6 +20,11 @@ export type AuthExtension = {
     session: typeof auth.$Infer.Session.session | null;
   };
 };
+
+// Opt in explicitly. Existing installations can migrate before enabling MCP.
+export const mcpResourceUrl = process.env.MCP_RESOURCE_URL
+  ? readMcpResourceUrl(process.env.MCP_RESOURCE_URL)
+  : undefined;
 
 export const auth = betterAuth({
   onAPIError: { errorURL: '/auth/error' },
@@ -78,6 +85,24 @@ export const auth = betterAuth({
       ac,
       roles: applicationRoles,
     }),
+    ...(mcpResourceUrl
+      ? [
+          // OAuth needs signing keys, not an extra JWT on every browser session
+          // response. This also preserves the restriction hook's null session.
+          jwt({ disableSettingJwtHeader: true }),
+          mcp({
+            resource: mcpResourceUrl,
+            loginPage: '/mcp/login',
+            consentPage: '/mcp/consent',
+            scopes: [...MCP_AUTH_SCOPES],
+            grantTypes: ['authorization_code', 'refresh_token'],
+            accessTokenExpiresIn: 300,
+            allowDynamicClientRegistration: true,
+            allowUnauthenticatedClientRegistration: true,
+            clientRegistrationRequirePKCE: true,
+          }),
+        ]
+      : []),
   ],
   database: drizzleAdapter(db, {
     provider: 'pg',

@@ -77,10 +77,10 @@ function main() {
       .map(service => `- ${service}: ${plan.selected.includes(service) ? 'selected' : 'unchanged'}`)
       .join('\n') +
     (plan.migrationChanges
-      ? '\n\n**Action required: automatic Crossfire deployment is held.** Migration inputs changed ' +
+      ? '\n\n**Action required: automatic Crossfire and MCP deployments are held.** Migration inputs changed ' +
         '(or the previous revision is unavailable). The main app can deploy automatically. ' +
         'Pause further production pushes, verify its Migration complete and Server running logs, ' +
-        'then manually run this workflow for crossfire. Its automatic job fails explicitly until ' +
+        'then manually run this workflow for each held service (crossfire and mcp). Their automatic jobs fail explicitly until ' +
         'this handoff is performed; rerunning the same push does not bypass the hold.\n'
       : '') +
     '\n\nPull requests and manual dry runs never call Coolify. Automatic push deployments ' +

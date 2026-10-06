@@ -519,6 +519,13 @@
       "when": 1791275958835,
       "tag": "0073_team_bookmarks",
       "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1791305689945,
+      "tag": "0074_mcp",
+      "breakpoints": true
     }
   ]
 }

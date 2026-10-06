@@ -1,7 +1,8 @@
 // These boundaries describe runtime dependencies, not every file copied into an
 // image. Keep this map in sync with Dockerfiles and cross-service imports.
-export const services = ['main', 'maintainer', 'crossfire'];
+export const services = ['main', 'maintainer', 'crossfire', 'mcp'];
 const appAndWorker = ['main', 'crossfire'];
+const sharedRuntimes = ['main', 'crossfire', 'mcp'];
 
 export function servicesForPath(path) {
   if (
@@ -28,6 +29,9 @@ export function servicesForPath(path) {
     return services;
   }
   if (path.startsWith('.github/')) return [];
+  if (path.startsWith('mcp/') || ['Dockerfile.mcp', 'Dockerfile.mcp.dockerignore'].includes(path)) {
+    return ['mcp'];
+  }
   if (path.startsWith('frontend/') || path === 'Dockerfile') return ['main'];
   // The API may only type-import play/worker modules. If a runtime import is
   // introduced, expand this rule to include main in the same change.
@@ -39,15 +43,24 @@ export function servicesForPath(path) {
     return ['crossfire'];
   }
 
+  if (
+    [
+      'server/lib/decks/transformCardPoolDeckCards.ts',
+      'server/lib/decks/deckFolderAccess.ts',
+    ].includes(path)
+  )
+    return ['main', 'mcp'];
   if (path.startsWith('server/')) {
     // Worker imports Crossfire adapters, Discord delivery and Drizzle schemas.
     // Auth and catalog changes are conservative shared-dependency triggers too.
-    return /^server\/(lib\/(crossfire|discord)|db|auth)\//.test(path) ? appAndWorker : ['main'];
+    if (/^server\/(db|auth)\//.test(path)) return sharedRuntimes;
+    return /^server\/lib\/(crossfire|discord)\//.test(path) ? appAndWorker : ['main'];
   }
   // The API creates initial game states through play/host/durable-game.ts, which
   // imports the engine. Engine/cards/host changes cannot safely be worker-only.
+  if (path.startsWith('play/')) return appAndWorker;
   if (
-    /^(play|shared|types|lib|drizzle)\//.test(path) ||
+    /^(shared|types|lib|drizzle)\//.test(path) ||
     [
       'package.json',
       'bun.lock',
@@ -59,7 +72,7 @@ export function servicesForPath(path) {
       '.dockerignore',
     ].includes(path)
   ) {
-    return appAndWorker;
+    return sharedRuntimes;
   }
   // New, unclassified build inputs deploy everything rather than silently going
   // stale. Add a narrower rule when introducing a new directory or root config.
