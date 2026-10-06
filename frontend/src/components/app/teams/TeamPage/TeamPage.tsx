@@ -7,6 +7,7 @@ import { TeamNavigation } from './TeamNavigation.tsx';
 import TeamNonMemberView from './TeamNonMemberView.tsx';
 import { TeamProfileLayout, TeamProfileSkeleton } from './TeamProfileLayout.tsx';
 import { TeamSidebar } from './TeamSidebar.tsx';
+import { TeamBookmarks } from './TeamBookmarks.tsx';
 import type { ErrorWithStatus } from '../../../../../../types/ErrorWithStatus.ts';
 
 interface TeamPageProps {
@@ -50,6 +51,7 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
       {team.membership ? (
         <TeamProfileLayout
           team={team}
+          actions={<TeamBookmarks key={team.id} teamId={team.id} />}
           sidebar={
             <TeamNavigation
               key={team.id}

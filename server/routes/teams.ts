@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import type { AuthExtension } from '../auth/auth.ts';
+import { teamsIdBookmarksRoute } from './teams/_id/bookmarks/index.ts';
 import { teamsPostRoute } from './teams/post.ts';
 import { teamsGetRoute } from './teams/get.ts';
 import { teamsIdGetRoute } from './teams/_id/get.ts';
@@ -23,6 +24,7 @@ export const teamsRoute = new Hono<AuthExtension>()
   .route('/', teamsPostRoute)
   .route('/', teamsGetRoute)
   .route('/:id', teamsIdGetRoute)
+  .route('/:id/bookmarks', teamsIdBookmarksRoute)
   .route('/:id/events', teamsIdEventsGetRoute)
   .route('/:id', teamsIdPatchRoute)
   .route('/:id', teamsIdDeleteRoute)
