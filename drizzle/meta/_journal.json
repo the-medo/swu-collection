@@ -512,6 +512,13 @@
       "when": 1791228545414,
       "tag": "0072_deck_folders",
       "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1791275958835,
+      "tag": "0073_team_bookmarks",
+      "breakpoints": true
     }
   ]
 }

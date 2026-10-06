@@ -18,10 +18,12 @@ const contentClassName =
 export function TeamProfileLayout({
   team,
   sidebar,
+  actions,
   children,
 }: {
   team: Pick<Team, 'name' | 'logoUrl'>;
   sidebar: ReactNode;
+  actions?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -40,10 +42,11 @@ export function TeamProfileLayout({
             </AvatarFallback>
           </Avatar>
         </div>
-        <header className="col-start-2 row-start-1 min-w-0 p-4">
-          <h1 className="m-0! min-w-0 p-0 text-[clamp(28px,3.2cqi,44px)]! leading-[1.15]! font-bold! tracking-[-0.045em]! [overflow-wrap:anywhere]">
+        <header className="col-start-2 row-start-1 flex min-w-0 flex-wrap items-center gap-3 p-4">
+          <h1 className="m-0! min-w-0 flex-1 basis-60 p-0 text-[clamp(28px,3.2cqi,44px)]! leading-[1.15]! font-bold! tracking-[-0.045em]! [overflow-wrap:anywhere]">
             {team.name}
           </h1>
+          {actions}
         </header>
         <aside className={sidebarClassName} aria-label="Team sidebar">
           {sidebar}

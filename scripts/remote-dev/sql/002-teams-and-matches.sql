@@ -20,6 +20,14 @@ $$;
 -- Delete dependent records explicitly. Production backups can contain legacy
 -- rows from before the current cascading foreign keys existed.
 DELETE FROM team_deck;
+-- Older backups may predate the bookmark table.
+DO $team_bookmarks$
+BEGIN
+  IF to_regclass('public.team_bookmark') IS NOT NULL THEN
+    DELETE FROM team_bookmark;
+  END IF;
+END
+$team_bookmarks$;
 DELETE FROM team_join_request;
 DELETE FROM team_member;
 DELETE FROM team;
@@ -51,6 +59,12 @@ DROP TABLE development_cleanup_user;
 
 DO $$
 BEGIN
+  IF to_regclass('public.team_bookmark') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM team_bookmark) THEN
+      RAISE EXCEPTION 'Private team bookmarks remain in the contributor dump.';
+    END IF;
+  END IF;
+
   IF (SELECT count(*) FROM team) <> 1
     OR NOT EXISTS (SELECT 1 FROM team WHERE name = 'Swubase dev team!') THEN
     RAISE EXCEPTION 'The contributor dump must contain exactly one development team.';
