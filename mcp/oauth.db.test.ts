@@ -1,13 +1,28 @@
 import { afterAll, beforeAll, expect, test } from 'bun:test';
 import postgres from 'postgres';
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { and, eq, inArray } from 'drizzle-orm';
+import { deck } from '../server/db/schema/deck.ts';
+import { deckCard } from '../server/db/schema/deck_card.ts';
+import { cardPools, cardPoolCards } from '../server/db/schema/card_pool.ts';
+import { cardPoolDeckCards } from '../server/db/schema/card_pool_deck.ts';
+import { deckListInput } from './decks.ts';
+import { deckFolder, deckFolderDeck, deckFolderShare } from '../server/db/schema/deck_folder.ts';
+import { team } from '../server/db/schema/team.ts';
+import { teamMember } from '../server/db/schema/team_member.ts';
 import { serializeSignedCookie } from 'better-call';
 import { Hono } from 'hono';
 import { oauthProviderAuthServerMetadata } from '@better-auth/oauth-provider';
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
 import { createMcpApp } from './app.ts';
 import { createMcpRepository } from './database.ts';
-import { MCP_SCOPE } from '../shared/mcp/config.ts';
+import {
+  MCP_AUTH_SCOPES,
+  MCP_DECK_SCOPE,
+  MCP_DEFAULT_SCOPES,
+  MCP_RESOURCE_SCOPES,
+  MCP_SCOPE,
+} from '../shared/mcp/config.ts';
 import { readFile } from 'node:fs/promises';
 
 const enabled = process.env.SWUBASE_MCP_DB_TEST === '1';
@@ -31,6 +46,23 @@ let requestedScopes = MCP_SCOPE;
 let signingAuth: typeof import('../server/auth/auth.ts').auth;
 const userId = `mcp-test-${crypto.randomUUID()}`;
 const sessionId = crypto.randomUUID();
+const foreignUserId = `mcp-foreign-${crypto.randomUUID()}`;
+const deckIds = {
+  linkShared: crypto.randomUUID(),
+  teamShared: crypto.randomUUID(),
+  own: crypto.randomUUID(),
+  limited: crypto.randomUUID(),
+  literal: crypto.randomUUID(),
+  huge: crypto.randomUUID(),
+  private: crypto.randomUUID(),
+  public: crypto.randomUUID(),
+  unlisted: crypto.randomUUID(),
+};
+const folderIds = [crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID()];
+const teamId = crypto.randomUUID();
+const poolIds = [crypto.randomUUID(), crypto.randomUUID()];
+const leader = 'qui-gon-jinn--student-of-the-living-force';
+const base = 'echo-base';
 const oldEnv: Record<string, string | undefined> = {};
 
 async function authRequest(path: string, options: RequestInit = {}) {
@@ -123,6 +155,7 @@ beforeAll(async () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       client_name: 'SWUBASE test agent',
+      scope: MCP_DEFAULT_SCOPES.join(' '),
       redirect_uris: ['http://127.0.0.1:8391/callback'],
       token_endpoint_auth_method: 'none',
       application_type: 'native',
@@ -136,12 +169,154 @@ beforeAll(async () => {
       `Registration failed: ${registered.error ?? registered.code}: ${registered.error_description ?? registered.message}`,
     );
   expect(registration.status).toBe(201);
+  expect(registered.scope.split(' ')).toEqual([...MCP_AUTH_SCOPES]);
   clientId = registered.client_id;
+  await sql`insert into "user" (id, name, display_name, email, email_verified, currency, role, created_at, updated_at)
+    values (${foreignUserId}, 'Other owner', ${foreignUserId}, ${`${foreignUserId}@invalid.local`}, false, 'USD', 'user', now(), now())`;
+  await database.insert(cardPools).values(poolIds.map(id => ({ id, userId, set: 'twi' })));
+  await database.insert(deck).values([
+    {
+      id: deckIds.own,
+      userId,
+      format: 1,
+      name: 'Qui-Gon MCP fixture',
+      public: 0,
+      leaderCardId1: leader,
+      baseCardId: base,
+      description: 'My deck plan',
+      updatedAt: new Date('2026-01-01T00:00:00Z'),
+    },
+    {
+      id: deckIds.limited,
+      userId,
+      format: 3,
+      name: 'Limited MCP fixture',
+      public: 0,
+      leaderCardId1: 'preview-selected-leader',
+      baseCardId: base,
+      cardPoolId: poolIds[0],
+      updatedAt: new Date('2025-01-01T00:00:00Z'),
+    },
+    {
+      id: deckIds.literal,
+      userId,
+      format: 1,
+      name: '%_literal MCP fixture',
+      public: 0,
+      leaderCardId2: leader,
+      baseCardId: base,
+      updatedAt: new Date('2024-01-01T00:00:00Z'),
+    },
+    {
+      id: deckIds.huge,
+      userId,
+      format: 1,
+      name: 'Oversized MCP fixture',
+      public: 0,
+      updatedAt: new Date('2023-01-01T00:00:00Z'),
+    },
+    ...(['linkShared', 'teamShared'] as const).map(key => ({
+      id: deckIds[key],
+      userId: foreignUserId,
+      format: 1,
+      name: 'Shared private MCP fixture',
+      public: 0,
+    })),
+    ...(['private', 'public', 'unlisted'] as const).map((visibility, i) => ({
+      id: deckIds[visibility],
+      userId: foreignUserId,
+      format: 1,
+      name: `Foreign ${visibility} MCP fixture`,
+      public: i,
+    })),
+  ]);
+  await database.insert(team).values({ id: teamId, name: 'MCP sharing fixture' });
+  await database.insert(teamMember).values([
+    { teamId, userId: foreignUserId, role: 'owner' },
+    { teamId, userId },
+  ]);
+  await database.insert(deckFolder).values([
+    { id: folderIds[0], userId: foreignUserId, name: 'Link share' },
+    { id: folderIds[1], userId: foreignUserId, name: 'Team share' },
+  ]);
+  await database.insert(deckFolder).values({
+    id: folderIds[2],
+    userId: foreignUserId,
+    name: 'Inherited link share',
+    parentId: folderIds[0],
+  });
+  await database.insert(deckFolderShare).values([
+    { folderId: folderIds[0]!, userId: foreignUserId, audience: 'link' },
+    { folderId: folderIds[1]!, userId: foreignUserId, audience: 'team', teamId },
+  ]);
+  await database.insert(deckFolderDeck).values([
+    { deckId: deckIds.linkShared, folderId: folderIds[2]! },
+    { deckId: deckIds.teamShared, folderId: folderIds[1]! },
+  ]);
+  await database.insert(deckCard).values([
+    {
+      deckId: deckIds.own,
+      cardId: 'coruscant-guard',
+      board: 1,
+      quantity: 3,
+      note: 'PRIVATE CARD NOTE',
+    },
+    { deckId: deckIds.own, cardId: 'agent-kallus--seeking-the-rebels', board: 2, quantity: 1 },
+    {
+      deckId: deckIds.own,
+      cardId: 'preview-card-not-in-official-catalog',
+      board: 3,
+      quantity: 2,
+    },
+    { deckId: deckIds.own, cardId: 'zero-count-card', board: 1, quantity: 0 },
+    ...Array.from({ length: 501 }, (_, i) => ({
+      deckId: deckIds.huge,
+      cardId: `overflow-${i}`,
+      board: 1,
+      quantity: 1,
+    })),
+  ]);
+  const poolCards = [
+    'coruscant-guard',
+    'coruscant-guard',
+    'agent-kallus--seeking-the-rebels',
+    'agent-kallus--seeking-the-rebels',
+    'preview-selected-leader',
+    base,
+    'preview-unit-not-in-official-catalog',
+    leader,
+    'preview-unselected-base',
+  ];
+  await database
+    .insert(cardPoolCards)
+    .values([
+      ...poolCards.map((cardId, i) => ({ cardPoolId: poolIds[0]!, cardPoolNumber: i + 1, cardId })),
+      { cardPoolId: poolIds[1]!, cardPoolNumber: 1, cardId: 'another-pool-private-card' },
+    ]);
+  await database.insert(cardPoolDeckCards).values(
+    poolCards.map((_, i) => ({
+      deckId: deckIds.limited,
+      cardPoolNumber: i + 1,
+      location:
+        i === 2 || i === 8 ? ('pool' as const) : i === 3 ? ('trash' as const) : ('deck' as const),
+    })),
+  );
 }, 20_000);
 
 afterAll(async () => {
   if (!enabled) return;
   try {
+    await database.delete(deckFolder).where(inArray(deckFolder.id, folderIds));
+    await database.delete(teamMember).where(eq(teamMember.teamId, teamId));
+    await database.delete(team).where(eq(team.id, teamId));
+    await database
+      .delete(cardPoolDeckCards)
+      .where(inArray(cardPoolDeckCards.deckId, Object.values(deckIds)));
+    await database.delete(deckCard).where(inArray(deckCard.deckId, Object.values(deckIds)));
+    await database.delete(deck).where(inArray(deck.id, Object.values(deckIds)));
+    await database.delete(cardPoolCards).where(inArray(cardPoolCards.cardPoolId, poolIds));
+    await database.delete(cardPools).where(inArray(cardPools.id, poolIds));
+    await sql`delete from "user" where id = ${foreignUserId}`;
     if (clientId) await sql`delete from oauth_client where client_id = ${clientId}`;
     await sql`delete from "user" where id = ${userId}`;
     await sql`delete from oauth_resource where identifier = ${resource}`;
@@ -157,7 +332,7 @@ afterAll(async () => {
 });
 
 test.skipIf(!enabled)(
-  'OAuth discovery, login, signed consent, PKCE and refresh work with real SWUBASE auth',
+  'OAuth login, card-only consent, deck permission upgrade, PKCE and refresh work with real auth',
   async () => {
     const metadata = await fetch(
       `${authServer.url.origin}/.well-known/oauth-authorization-server/api/auth`,
@@ -173,14 +348,14 @@ test.skipIf(!enabled)(
       '/.well-known/oauth-protected-resource/mcp',
     );
     requestedScopes = anonymous.headers.get('WWW-Authenticate')!.match(/\bscope="([^"]+)"/)![1]!;
-    expect(requestedScopes.split(' ')).toEqual(['cards:read', 'offline_access']);
+    expect(requestedScopes.split(' ')).toEqual([...MCP_DEFAULT_SCOPES]);
     const protectedMetadata = await fetch(
       `${mcpServer.url.origin}/.well-known/oauth-protected-resource/mcp`,
     );
     expect(await protectedMetadata.json()).toMatchObject({
       resource,
       authorization_servers: [issuer],
-      scopes_supported: [MCP_SCOPE],
+      scopes_supported: [...MCP_RESOURCE_SCOPES],
     });
     expect((await authorizationQuery(false)).location.pathname).toBe('/mcp/login');
     const missingResource = await authorizationQuery(true, []);
@@ -263,11 +438,61 @@ test.skipIf(!enabled)(
       resource,
     });
     expect(replay.status).toBe(400);
+    const callDeck = (accessToken: string) =>
+      fetch(resource, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json, text/event-stream',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tools/call',
+          params: { name: 'get_deck', arguments: { deckId: deckIds.own } },
+        }),
+      });
+    const stepUp = await callDeck(token);
+    expect(stepUp.status).toBe(403);
+    expect(stepUp.headers.get('WWW-Authenticate')).toContain('insufficient_scope');
+    requestedScopes = stepUp.headers.get('WWW-Authenticate')!.match(/\bscope="([^"]+)"/)![1]!;
+    expect(requestedScopes.split(' ')).toEqual([...MCP_AUTH_SCOPES]);
+    const upgraded = await authorizationQuery(true);
+    expect(upgraded.location.pathname).toBe('/mcp/consent');
+    const approved = await authRequest('/oauth2/consent', {
+      method: 'POST',
+      headers: sessionHeaders(),
+      body: JSON.stringify({ accept: true, oauth_query: upgraded.location.search.slice(1) }),
+    });
+    expect(approved.status).toBe(200);
+    const callback = new URL((await approved.json()).url);
+    const upgradedExchange = await tokenRequest({
+      grant_type: 'authorization_code',
+      client_id: clientId,
+      redirect_uri: 'http://127.0.0.1:8391/callback',
+      code: callback.searchParams.get('code')!,
+      code_verifier: upgraded.verifier,
+      resource,
+    });
+    expect(upgradedExchange.status).toBe(200);
+    const upgradedTokens = await upgradedExchange.json();
+    expect(upgradedTokens.refresh_token).toBeString();
+    const upgradedRefresh = await tokenRequest({
+      grant_type: 'refresh_token',
+      client_id: clientId,
+      refresh_token: upgradedTokens.refresh_token,
+      resource,
+    });
+    expect(upgradedRefresh.status).toBe(200);
+    token = (await upgradedRefresh.json()).access_token;
+    expect((await callDeck(token)).status).toBe(200);
+    await sql`delete from mcp_tool_usage where user_id = ${userId}`;
   },
 );
 
 test.skipIf(!enabled)(
-  'both MCP protocol eras list and call the tool, with bounded results and user/client usage',
+  'both MCP protocol eras call all four tools and meter their actual result counts',
   async () => {
     for (const mode of ['legacy', 'auto'] as const) {
       const client = new Client(
@@ -279,7 +504,12 @@ test.skipIf(!enabled)(
       });
       try {
         await client.connect(transport);
-        expect((await client.listTools()).tools.map(tool => tool.name)).toEqual(['search_cards']);
+        expect((await client.listTools()).tools.map(tool => tool.name)).toEqual([
+          'search_cards',
+          'get_cards',
+          'list_my_decks',
+          'get_deck',
+        ]);
         const result = await client.callTool({
           name: 'search_cards',
           arguments: { query: 'luke', limit: 2 },
@@ -288,6 +518,67 @@ test.skipIf(!enabled)(
         expect(result.structuredContent).toMatchObject({
           cards: expect.arrayContaining([expect.any(Object), expect.any(Object)]),
         });
+        const filtered = await client.callTool({
+          name: 'search_cards',
+          arguments: {
+            aspects: ['Command'],
+            keywords: ['Ambush'],
+            cardTypes: ['Unit'],
+            cost: { max: 5 },
+            limit: 2,
+          },
+        });
+        expect(filtered.isError).not.toBe(true);
+        expect(filtered.structuredContent).toMatchObject({
+          cards: expect.arrayContaining([
+            expect.objectContaining({ keywords: expect.arrayContaining(['Ambush']) }),
+          ]),
+        });
+        const details = await client.callTool({
+          name: 'get_cards',
+          arguments: { cardIds: ['coruscant-guard', 'missing-preview'] },
+        });
+        expect(details.structuredContent).toMatchObject({
+          cards: [expect.objectContaining({ cardId: 'coruscant-guard', text: expect.any(String) })],
+          missingCardIds: ['missing-preview'],
+        });
+        const decks = await client.callTool({
+          name: 'list_my_decks',
+          arguments: { query: 'Qui-Gon', leaderCardId: leader, baseCardId: base, formatId: 1 },
+        });
+        expect(decks.structuredContent).toMatchObject({
+          total: 1,
+          decks: [
+            expect.objectContaining({
+              deckId: deckIds.own,
+              visibility: 'private',
+              leaders: [expect.objectContaining({ cardId: leader })],
+            }),
+          ],
+        });
+        const saved = await client.callTool({
+          name: 'get_deck',
+          arguments: { deckId: deckIds.own },
+        });
+        expect(saved.structuredContent).toMatchObject({
+          deckId: deckIds.own,
+          boards: {
+            main: [expect.objectContaining({ cardId: 'coruscant-guard', quantity: 3 })],
+            sideboard: [
+              expect.objectContaining({ cardId: 'agent-kallus--seeking-the-rebels', quantity: 1 }),
+            ],
+            maybeboard: [
+              expect.objectContaining({
+                cardId: 'preview-card-not-in-official-catalog',
+                quantity: 2,
+                catalogAvailable: false,
+              }),
+            ],
+          },
+          missingCardIds: ['preview-card-not-in-official-catalog'],
+        });
+        expect(JSON.stringify(saved.structuredContent)).not.toContain('PRIVATE CARD NOTE');
+        expect(JSON.stringify(saved.structuredContent)).not.toContain(userId);
         const invalid = await client.callTool({ name: 'search_cards', arguments: { query: ' ' } });
         expect(invalid.isError).toBe(true);
       } finally {
@@ -295,12 +586,204 @@ test.skipIf(!enabled)(
       }
     }
     const usage = await sql`select * from mcp_tool_usage where user_id = ${userId}`;
-    expect(usage).toHaveLength(2);
+    expect(usage).toHaveLength(10);
     for (const row of usage) {
       expect(row.client_id).toBe(clientId);
       expect(row.outcome).toBe('success');
-      expect(row.result_count).toBe(2);
+      expect(row.result_count).toBe(row.tool === 'search_cards' ? 2 : 1);
       expect(row.duration_ms).toBeGreaterThanOrEqual(0);
+    }
+  },
+);
+
+test.skipIf(!enabled)(
+  'deck tools enforce ownership, visibility, bounded results and card-pool identity',
+  async () => {
+    const client = new Client({ name: 'deck-test', version: '1.0' });
+    await client.connect(
+      new StreamableHTTPClientTransport(new URL(resource), {
+        requestInit: { headers: { Authorization: `Bearer ${token}` } },
+      }),
+    );
+    try {
+      const first = await client.callTool({ name: 'list_my_decks', arguments: { limit: 1 } });
+      expect(first.structuredContent).toMatchObject({
+        total: 4,
+        offset: 0,
+        decks: [expect.objectContaining({ deckId: deckIds.own })],
+      });
+      const second = await client.callTool({
+        name: 'list_my_decks',
+        arguments: { limit: 1, offset: 1 },
+      });
+      expect(second.structuredContent).toMatchObject({
+        total: 4,
+        decks: [expect.objectContaining({ deckId: deckIds.limited })],
+      });
+      const literal = await client.callTool({
+        name: 'list_my_decks',
+        arguments: { query: '%_', leaderCardId: leader },
+      });
+      expect(literal.structuredContent).toMatchObject({
+        total: 1,
+        decks: [expect.objectContaining({ deckId: deckIds.literal })],
+      });
+      const spoof = await client.callTool({
+        name: 'list_my_decks',
+        arguments: { userId: foreignUserId },
+      });
+      expect(spoof.isError).toBe(true);
+      const denied = await client.callTool({
+        name: 'get_deck',
+        arguments: { deckId: deckIds.private },
+      });
+      const absent = await client.callTool({
+        name: 'get_deck',
+        arguments: { deckId: crypto.randomUUID() },
+      });
+      expect(denied.isError).toBe(true);
+      expect(denied).toEqual(absent);
+      for (const visibility of ['public', 'unlisted'] as const) {
+        const allowed = await client.callTool({
+          name: 'get_deck',
+          arguments: { deckId: deckIds[visibility] },
+        });
+        expect(allowed.isError).not.toBe(true);
+        expect(allowed.structuredContent).toMatchObject({
+          deckId: deckIds[visibility],
+          visibility,
+        });
+      }
+      const limited = await client.callTool({
+        name: 'get_deck',
+        arguments: { deckId: deckIds.limited },
+      });
+      expect(limited.structuredContent).toMatchObject({
+        kind: 'card_pool',
+        boards: {
+          main: [
+            expect.objectContaining({ cardId: 'coruscant-guard', quantity: 2 }),
+            expect.objectContaining({
+              cardId: 'preview-unit-not-in-official-catalog',
+              quantity: 1,
+              catalogAvailable: false,
+            }),
+          ],
+          sideboard: [
+            expect.objectContaining({ cardId: 'agent-kallus--seeking-the-rebels', quantity: 2 }),
+            expect.objectContaining({
+              cardId: 'preview-unselected-base',
+              quantity: 1,
+              type: null,
+              catalogAvailable: false,
+            }),
+          ],
+          maybeboard: [],
+        },
+        missingCardIds: [
+          'preview-selected-leader',
+          'preview-unit-not-in-official-catalog',
+          'preview-unselected-base',
+        ],
+      });
+      expect(JSON.stringify(limited.structuredContent)).not.toContain('another-pool-private-card');
+      const huge = await client.callTool({ name: 'get_deck', arguments: { deckId: deckIds.huge } });
+      expect(huge.isError).toBe(true);
+      expect(huge.content).toMatchObject([
+        { text: 'This deck exceeds the supported content limit.' },
+      ]);
+      const failures =
+        await sql`select outcome, result_count from mcp_tool_usage where user_id = ${userId} and outcome = 'error'`;
+      expect(failures).toHaveLength(3);
+      expect(failures.every(row => row.result_count === 0)).toBe(true);
+    } finally {
+      await client.close();
+    }
+  },
+);
+
+test.skipIf(!enabled)(
+  'deck folder link/team access and revocation match the main app without disclosing folder metadata',
+  async () => {
+    const repository = createMcpRepository(database, resource, 60);
+    for (const id of [deckIds.linkShared, deckIds.teamShared]) {
+      expect(await repository.getDeck(userId, id)).toMatchObject({ deck: { id, public: 0 } });
+    }
+    expect(await repository.getDeck(foreignUserId + '-outsider', deckIds.teamShared)).toBeNull();
+    await database.delete(deckFolderShare).where(eq(deckFolderShare.folderId, folderIds[0]!));
+    await database
+      .delete(teamMember)
+      .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, userId)));
+    try {
+      expect(await repository.getDeck(userId, deckIds.linkShared)).toBeNull();
+      expect(await repository.getDeck(userId, deckIds.teamShared)).toBeNull();
+    } finally {
+      await database
+        .insert(deckFolderShare)
+        .values({ folderId: folderIds[0]!, userId: foreignUserId, audience: 'link' });
+      await database.insert(teamMember).values({ teamId, userId });
+    }
+  },
+);
+
+test.skipIf(!enabled)(
+  'deck reads require both token scope and live consent while card-only clients keep working',
+  async () => {
+    const now = Math.floor(Date.now() / 1000);
+    const cardsOnly = await signingAuth.api.signJWT({
+      body: {
+        payload: {
+          sub: userId,
+          sid: sessionId,
+          azp: clientId,
+          scope: MCP_SCOPE,
+          iss: issuer,
+          aud: resource,
+          iat: now,
+          exp: now + 300,
+        },
+      },
+    });
+    const call = (accessToken: string, name: string, args: Record<string, unknown>) =>
+      fetch(resource, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json, text/event-stream',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tools/call',
+          params: { name, arguments: args },
+        }),
+      });
+    const before =
+      await sql`select count(*)::integer as calls from mcp_tool_usage where user_id = ${userId}`;
+    for (const name of ['list_my_decks', 'get_deck']) {
+      const denied = await call(
+        cardsOnly.token,
+        name,
+        name === 'get_deck' ? { deckId: deckIds.own } : {},
+      );
+      expect(denied.status).toBe(403);
+      expect(denied.headers.get('WWW-Authenticate')).toContain('insufficient_scope');
+      expect(denied.headers.get('WWW-Authenticate')).toContain(MCP_DECK_SCOPE);
+      expect(denied.headers.get('WWW-Authenticate')).toContain('offline_access');
+    }
+    const after =
+      await sql`select count(*)::integer as calls from mcp_tool_usage where user_id = ${userId}`;
+    expect(after[0]!.calls).toBe(before[0]!.calls);
+    expect(
+      (await call(cardsOnly.token, 'get_cards', { cardIds: ['coruscant-guard'] })).status,
+    ).toBe(200);
+    await sql`update oauth_consent set scopes = array['cards:read'] where user_id = ${userId} and client_id = ${clientId}`;
+    try {
+      expect((await call(token, 'get_deck', { deckId: deckIds.own })).status).toBe(403);
+      expect((await call(token, 'search_cards', { query: 'luke' })).status).toBe(200);
+    } finally {
+      await sql`update oauth_consent set scopes = ${sql.array([...MCP_AUTH_SCOPES])} where user_id = ${userId} and client_id = ${clientId}`;
     }
   },
 );
@@ -364,7 +847,7 @@ test.skipIf(!enabled)(
       `resource_metadata="${mcpServer.url.origin}/.well-known/oauth-protected-resource/mcp"`,
     );
     expect(reconnect.headers.get('WWW-Authenticate')).toContain(
-      'scope="cards:read offline_access"',
+      'scope="' + MCP_DEFAULT_SCOPES.join(' ') + '"',
     );
     expect(reconnect.headers.get('WWW-Authenticate')).toContain('error="invalid_token"');
     await sql`update session set expires_at = now() + interval '1 day' where id = ${sessionId}`;
@@ -379,7 +862,9 @@ test.skipIf(!enabled)(
     await sql`delete from mcp_tool_usage where user_id = ${userId}`;
     const repository = createMcpRepository(database, resource, 3);
     const admissions = await Promise.all(
-      Array.from({ length: 10 }, (_, i) => repository.admit({ userId, clientId: `client-${i}` })),
+      Array.from({ length: 10 }, (_, i) =>
+        repository.admit({ userId, clientId: `client-${i}` }, i % 2 ? 'get_cards' : 'search_cards'),
+      ),
     );
     expect(admissions.filter(Boolean)).toHaveLength(3);
     expect(
@@ -414,12 +899,28 @@ test.skipIf(!enabled)(
           sub: userId,
           azp: clientId,
           sid: sessionId,
+          scope: MCP_SCOPE,
           iat: now,
           exp: now + 300,
         }),
-      ).toEqual({ userId, clientId });
+      ).toEqual({ userId, clientId, scopes: [MCP_SCOPE] });
+      const listed = await repository.listDecks(userId, deckListInput.parse({}));
+      expect(listed.decks).toHaveLength(4);
+      expect(await repository.getDeck(userId, deckIds.own)).toMatchObject({
+        deck: { id: deckIds.own },
+      });
+      expect(await repository.getDeck(userId, deckIds.limited)).toMatchObject({
+        deck: { id: deckIds.limited },
+      });
+      expect(await repository.getDeck(userId, deckIds.private)).toBeNull();
+      expect(await repository.getDeck(userId, deckIds.linkShared)).toMatchObject({
+        deck: { id: deckIds.linkShared },
+      });
+      expect(await repository.getDeck(userId, deckIds.teamShared)).toMatchObject({
+        deck: { id: deckIds.teamShared },
+      });
       await repository.health();
-      const id = await repository.admit({ userId, clientId });
+      const id = await repository.admit({ userId, clientId }, 'get_cards');
       expect(id).toBeString();
       await repository.finish(id!, 'success', 1, 2);
       for (const query of [
@@ -427,6 +928,12 @@ test.skipIf(!enabled)(
         'select email from "user"',
         'select client_secret from oauth_client',
         'select private_key from jwks',
+        'select note from deck_card',
+        'select name from deck_folder',
+        'select role from team_member',
+        "update deck set name = 'unauthorized'",
+        'delete from deck_card',
+        "update card_pool_deck_cards set location = 'trash'",
       ]) {
         await expect(runtimeSql.unsafe(query).execute()).rejects.toMatchObject({ code: '42501' });
       }
