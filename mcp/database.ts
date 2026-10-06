@@ -3,7 +3,8 @@ import { and, arrayContains, count, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { z } from 'zod';
 import { hasActiveAccountRestriction } from '../server/auth/accountRestriction.ts';
-import { MCP_SCOPE } from '../shared/mcp/config.ts';
+import { MCP_RESOURCE_SCOPES, MCP_SCOPE } from '../shared/mcp/config.ts';
+import { createDeckRepository, type DeckRepository } from './decks.ts';
 import {
   oauthClient,
   oauthClientResource,
@@ -20,11 +21,13 @@ const identityClaims = z.object({
   sid: z.string().min(1).max(256),
   iat: z.number().int(),
   exp: z.number().int(),
+  scope: z.string().max(1000),
 });
-export type Identity = { userId: string; clientId: string };
-export interface McpRepository {
+export type Identity = { userId: string; clientId: string; scopes: string[] };
+export type McpToolName = 'search_cards' | 'get_cards' | 'list_my_decks' | 'get_deck';
+export interface McpRepository extends DeckRepository {
   authorize(claims: unknown): Promise<Identity | 'invalid' | 'restricted'>;
-  admit(identity: Identity): Promise<string | null>;
+  admit(identity: Pick<Identity, 'userId' | 'clientId'>, tool: McpToolName): Promise<string | null>;
   finish(
     id: string,
     outcome: 'success' | 'error',
@@ -40,6 +43,7 @@ export function createMcpRepository(
   callsPerMinute: number,
 ): McpRepository {
   return {
+    ...createDeckRepository(database),
     async authorize(claims) {
       const parsed = identityClaims.safeParse(claims);
       if (!parsed.success) return 'invalid';
@@ -47,6 +51,7 @@ export function createMcpRepository(
       const [grant] = await database
         .select({
           banned: user.banned,
+          scopes: oauthConsent.scopes,
           banExpires: sql`${user.banExpires} at time zone 'UTC'`.mapWith((value: string | null) =>
             value === null ? null : new Date(value),
           ),
@@ -98,9 +103,14 @@ export function createMcpRepository(
       // consent in SQL and return a timezone-bearing ban expiry to JS.
       if (!grant) return 'invalid';
       if (hasActiveAccountRestriction(grant)) return 'restricted';
-      return { userId: sub, clientId: azp };
+      const tokenScopes = new Set(parsed.data.scope.split(/\s+/).filter(Boolean));
+      const scopes = MCP_RESOURCE_SCOPES.filter(
+        scope => tokenScopes.has(scope) && grant.scopes.includes(scope),
+      );
+      if (!scopes.includes(MCP_SCOPE)) return 'invalid';
+      return { userId: sub, clientId: azp, scopes };
     },
-    async admit(identity) {
+    async admit(identity, tool) {
       return database.transaction(async transaction => {
         // Serialize only this user's admissions, including across replicas.
         await transaction.execute(
@@ -118,7 +128,7 @@ export function createMcpRepository(
         if (usage!.calls >= callsPerMinute) return null;
         const [row] = await transaction
           .insert(mcpToolUsage)
-          .values({ userId: identity.userId, clientId: identity.clientId, tool: 'search_cards' })
+          .values({ userId: identity.userId, clientId: identity.clientId, tool })
           .returning({ id: mcpToolUsage.id });
         return row!.id;
       });

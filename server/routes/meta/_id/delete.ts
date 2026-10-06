@@ -17,7 +17,7 @@ export const metaIdDeleteRoute = new Hono<AuthExtension>().delete('/', async c =
   const hasPermission = await auth.api.userHasPermission({
     body: {
       userId: user.id,
-      permission: {
+      permissions: {
         meta: ['delete'],
       },
     },

@@ -23,7 +23,7 @@ export const metaIdPutRoute = new Hono<AuthExtension>().put(
     const hasPermission = await auth.api.userHasPermission({
       body: {
         userId: user.id,
-        permission: {
+        permissions: {
           meta: ['update'],
         },
       },

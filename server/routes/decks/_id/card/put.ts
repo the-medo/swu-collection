@@ -20,7 +20,7 @@ export const deckIdCardPutRoute = new Hono<AuthExtension>().put(
     const isAdmin = await auth.api.userHasPermission({
       body: {
         userId: user.id,
-        permission: {
+        permissions: {
           admin: ['access'],
         },
       },

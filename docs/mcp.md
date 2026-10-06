@@ -1,10 +1,76 @@
 # SWUBASE MCP
 
 The separate Bun/Hono service lives in `mcp/` and exposes Streamable HTTP at
-**`https://mcp.swubase.com/mcp`**. Its only tool is `search_cards`: a case-insensitive
-card-name/ID search of the checked-in official catalog, with card text and detail
-links. `limit` defaults to 10 and is capped at 25; `offset` supports pagination.
-Preview cards are excluded. No collections, decks or account mutations are exposed.
+**`https://mcp.swubase.com/mcp`**. It provides four read-only tools:
+
+| Tool            | Scope        | Behaviour                                                                                                                                                                                 |
+| --------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search_cards`  | `cards:read` | Search the official catalog by name/ID, rules text, aspects, keywords, traits, type, arena, set and numeric stats.                                                                        |
+| `get_cards`     | `cards:read` | Fetch full details for up to 25 exact logical card IDs; preserve requested order, deduplicate and report `missingCardIds`.                                                                |
+| `list_my_decks` | `decks:read` | List only the authenticated user's decks, including private decks; filter by name, leader/base ID and format.                                                                             |
+| `get_deck`      | `decks:read` | Read a deck by UUID using the main app's ownership, visibility and folder-sharing access rule. Return leader/base, format, description and separate main/sideboard/maybeboard quantities. |
+
+Every connection requires `cards:read`. Deck tools additionally require
+`decks:read` in **both** the token and the user's live consent. Existing card-only
+connections keep working; calling a deck tool returns an insufficient-scope
+challenge so the client can request fresh consent. The consent screen describes
+private and shared deck access only when deck permission is requested. If a client
+asks for both, users can approve card access only, including refresh support when
+requested, without approving deck reads.
+Preview cards are excluded from card discovery and details. Deck reads retain
+unknown/preview IDs and quantities with `catalogAvailable: false` and
+`missingCardIds`; agents must not invent their text.
+
+## Tool inputs and examples
+
+Search requires a name/ID `query` or at least one filter. All filter groups combine
+with AND. `query` and `text` require every supplied word; text covers card text,
+rules, deploy box and epic action. `keywords`, `traits`, `cardTypes`, `arenas` and
+`sets` each match any requested value. Labels are case-insensitive. Aspects use
+canonical names: green=`Command`, blue=`Vigilance`, red=`Aggression`,
+yellow=`Cunning`, white=`Heroism`, black=`Villainy`.
+`aspectMatch` defaults to `all`, including repeated aspects; `any` matches one and
+`exact` excludes additional aspects. Numeric `cost`, `power` and `hp` accept
+inclusive `{min, max}` bounds and exclude cards without that stat. Sort by `name`
+(default) or `cost`, ascending (default) or descending; missing costs sort last.
+Search and deck listing default to `limit: 10`, cap it at 25, and allow `offset`
+up to 10,000. Results include totals and SWUBASE links.
+
+For “green cards with Ambush for my Qui-Gon deck”, an agent can:
+
+1. Call `list_my_decks` with `{"query":"Qui-Gon"}` and select the intended deck.
+2. Call `get_deck` with `{"deckId":"UUID_FROM_LIST"}` to read its actual leader,
+   base and boards.
+3. Call `search_cards` with
+   `{"aspects":["Command"],"keywords":["Ambush"],"cardTypes":["Unit"],"cost":{"max":5},"sort":"cost","limit":25}`.
+4. Call `get_cards` with `{"cardIds":["coruscant-guard","agent-kallus--seeking-the-rebels"]}`
+   for exact candidates or deck references.
+
+The search matches catalog keywords, including conditional keywords, and printed
+costs. It does not decide deck legality, aspect penalties or whether an ability
+will be active; the agent must reason from the returned text and deck context.
+
+Deck-name `query` is a literal, case-insensitive substring. Optional
+`leaderCardId` matches either leader, `baseCardId` matches the base, and `formatId`
+uses SWUBASE's format IDs (for example Premier=1, Twin Suns=2, Eternal=6).
+Listing sorts by latest update, then UUID; its owner comes from authentication,
+not a tool argument. Foreign private decks and nonexistent IDs produce the same
+error. Public/unlisted decks and decks shared through a link or the user's team
+are readable by ID; revoking a folder share or team membership removes that
+access on the next request. Listing does not discover other users' decks.
+
+Normal deck boards 1/2/3 map to main/sideboard/maybeboard; zero quantities are
+omitted. Limited/card-pool reads join physical card numbers within the deck's
+own pool, aggregate duplicates and map `deck` to main and `pool`/`trash` to
+sideboard, matching the app's location mapping. Official leaders/bases and the
+selected leader/base IDs are omitted. Other unknown/preview IDs retain their
+quantity and an unverified type; this can include unselected preview leaders or
+bases that the app's merged preview catalog would hide. Agents must not treat
+unclassified rows as confirmed units. Reads fail explicitly above 500
+normal card rows or 1,000 physical pool cards rather than silently truncating.
+Descriptions are capped at 4,000 characters with `descriptionTruncated`; card
+notes, user identifiers and folder metadata are not returned. There are no deck
+mutations, collection tools or server-computed deck analysis in this version.
 
 Login stays on the main application. The Better Auth MCP/OAuth provider uses
 existing Google/GitHub accounts, signed consent requests, authorization codes and
@@ -12,9 +78,14 @@ PKCE S256. Clients discover the issuer and register dynamically. The provider
 limits dynamic registration to five requests per IP per minute in
 production. No automatic cleanup of abandoned client registrations is included;
 review their retention with an owner/admin connection.
-Only `cards:read` and optional `offline_access` are available; client-credentials grants
-are disabled. Dynamic client names are self-reported and shown with their client ID.
-The initial authentication challenge requests `offline_access`, so discovery-driven
+`cards:read`, `decks:read` and optional `offline_access` are available;
+client-credentials grants are disabled. Dynamic registration preserves the full
+supported capability set even when SDK clients submit only the initial card
+scopes; user consent still determines which scopes tokens may use. See
+[Better Auth registration scopes](https://better-auth.com/docs/plugins/oauth-provider#dynamic-client-registration-scopes). Dynamic client names are self-reported and shown with their client ID.
+The initial authentication challenge requests `cards:read` and `offline_access`;
+deck access is requested when a deck tool is first called. Both challenges include
+`offline_access`, so discovery-driven
 clients receive a refresh token. Access tokens last five minutes. The MCP service also checks the live user,
 session, client, resource and consent on every request, so bans, expired/deleted
 sessions, disabled clients and removed consent deny access immediately.
@@ -46,7 +117,7 @@ describe the underlying authorization and transport.
    credentials. Do not enable cross-subdomain cookies. Google/GitHub callbacks
    stay on the main app; no new provider callback for the MCP hostname is needed.
 
-3. Deploy the main app after merging this branch. Migration `0072` adds the OAuth
+3. Deploy the main app after merging this branch. Migration `0074_mcp` adds the OAuth
    tables and usage ledger without modifying existing account tables. Startup
    completes migrations before auth initialization and HTTP admission. Verify
    `Migration complete` and `Server running` in Coolify, then check
@@ -64,7 +135,8 @@ describe the underlying authorization and transport.
 
    The grant script reads only the columns needed for access checks and inserts/
    updates usage. It cannot read session tokens, OAuth secrets, signing keys,
-   email addresses, collections or decks. No schema ownership or migration rights
+   email addresses or collections. Deck and card-pool content is SELECT-only;
+   folder/team columns are restricted to those needed for access checks. No schema ownership or migration rights
    are required. Apply the script using a checkout containing this branch, or
    copy its SQL into your administrator session. `DBNAME` is a built-in psql
    variable for the connected database.
@@ -157,12 +229,13 @@ Coolify Auto Deploy if GitHub Actions owns deployments, as described in
 [deployment.md](deployment.md).
 
 `mcp/` and `Dockerfile.mcp*` select only MCP. Root dependencies, shared contracts,
-auth, database schema and catalog changes also select MCP. The workflow offers a
+auth, database schema and catalog changes also select MCP, as do the shared
+deck-access and card-pool conversion helpers copied into the MCP image. The workflow offers a
 manual `mcp` selection. Migration pushes hold **both MCP and Crossfire** until the
 main app's migrations are verified: manually deploy each held service afterward.
 Re-running the push retains the hold. A separate `Check MCP` workflow runs the
 focused typecheck and unit tests without database or production credentials.
-OAuth, reconnect challenges, revocation and database grants are covered by the
+OAuth, reconnect challenges, revocation, all four tools, deck privacy, folder-sharing access and database grants are covered by the
 opt-in local database integration test, which CI skips. The maintainer is selected
 for sanitizer changes; re-enable its schedule after migrations and its deployment
 finish.
@@ -170,8 +243,9 @@ finish.
 ## Usage and revocation
 
 `mcp_tool_usage` stores user ID, registered client ID, tool, start time, outcome,
-returned-card count and duration. It records admitted, validated tool executions,
-including empty searches and failures. Authentication failures, discovery,
+result count and duration. It records admitted, validated tool executions,
+including empty searches and failures. Counts mean returned cards for card tools,
+returned summaries for `list_my_decks`, and one for a successful `get_deck`. Authentication failures, discovery,
 validation failures and rate-limit denials are not tool executions. Browser and
 server telemetry omit OAuth pages, API requests and their signed query strings. Admission is
 limited per user across clients/replicas (60 per minute by default); it is not a
@@ -182,7 +256,7 @@ Inspect usage through an **owner/admin database connection**:
 ```sql
 SELECT u.display_name, t.user_id, t.client_id, t.tool, count(*) AS calls,
        count(*) FILTER (WHERE t.outcome = 'success') AS successful,
-       sum(t.result_count) AS cards_returned, sum(t.duration_ms) AS total_ms
+       sum(t.result_count) AS results_returned, sum(t.duration_ms) AS total_ms
 FROM mcp_tool_usage t JOIN "user" u ON u.id = t.user_id
 WHERE t.started_at >= now() - interval '30 days'
 GROUP BY u.display_name, t.user_id, t.client_id, t.tool
@@ -240,7 +314,7 @@ and removes its fixtures. The sanitizer test executes the real cleanup and
 privacy assertions in a transaction that always rolls back; run it separately
 from the OAuth tests and browser check. The browser check uses the running app,
 real signed login/consent requests and a synthetic session. It verifies initial
-load, refresh, social sign-in initiation, approval/denial and the agent's PKCE
+load, refresh, social sign-in initiation, card-only versus deck consent, reduced approval for scope-less clients, approval/denial and the agent's PKCE
 exchange without completing a real Google login, and removes its fixtures.
 Keep each simultaneous worktree's MCP port and resource
 URL distinct; the worktree launcher does not allocate or start MCP. Apply migrations

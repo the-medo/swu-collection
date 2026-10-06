@@ -11,7 +11,7 @@ export const tournamentGroupIdRecomputePostRoute = new Hono<AuthExtension>().pos
   const hasPermission = await auth.api.userHasPermission({
     body: {
       userId: user.id,
-      permission: {
+      permissions: {
         statistics: ['compute'],
       },
     },

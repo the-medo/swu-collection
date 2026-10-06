@@ -25,7 +25,7 @@ export const tournamentGroupIdTournamentsDeleteRoute = new Hono<AuthExtension>()
     const hasPermission = await auth.api.userHasPermission({
       body: {
         userId: user.id,
-        permission: {
+        permissions: {
           tournamentGroup: ['removeTournament'],
         },
       },

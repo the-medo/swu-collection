@@ -3,9 +3,12 @@ import { api } from '@/lib/api.ts';
 import { DeckCardResponse } from './useGetDeckCards.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { DeckCard, ZDeckCardCreateRequest } from '../../../../types/ZDeckCard.ts';
+import { useUser } from '@/hooks/useUser.ts';
+import { deckKeys } from './queryKeys.ts';
 
 export const usePostDeckCard = (deckId: string | undefined) => {
   const queryClient = useQueryClient();
+  const viewer = useUser();
 
   return useMutation({
     // The mutation function posts the card to the deck.
@@ -32,7 +35,7 @@ export const usePostDeckCard = (deckId: string | undefined) => {
     // On success, update the cache for the GET query.
     onSuccess: result => {
       // result should be something like { data: newCard }
-      queryClient.setQueryData<DeckCardResponse>(['deck-content', deckId], oldData => {
+      queryClient.setQueryData<DeckCardResponse>(deckKeys.cards(deckId, viewer?.id), oldData => {
         if (!oldData) {
           return { data: [result.data] };
         }

@@ -12,8 +12,12 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY package.json ./
 COPY mcp ./mcp
 COPY shared/mcp ./shared/mcp
+COPY types/enums.ts types/Format.ts ./types/
+COPY lib/swu-resources/set-info.ts ./lib/swu-resources/set-info.ts
+COPY server/lib/decks/transformCardPoolDeckCards.ts server/lib/decks/deckFolderAccess.ts ./server/lib/decks/
 COPY server/auth/accountRestriction.ts ./server/auth/accountRestriction.ts
 COPY server/db/schema/auth-schema.ts server/db/schema/mcp-usage.ts ./server/db/schema/
+COPY server/db/schema/deck.ts server/db/schema/deck_card.ts server/db/schema/card_pool.ts server/db/schema/card_pool_deck.ts server/db/schema/format.ts ./server/db/schema/
 COPY types/TournamentCalendar.ts ./types/TournamentCalendar.ts
 COPY server/db/json/card-list.json ./server/db/json/card-list.json
 EXPOSE 3210

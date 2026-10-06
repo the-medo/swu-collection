@@ -1,7 +1,10 @@
 export const MCP_SCOPE = 'cards:read';
-// offline_access is an authorization-server scope, advertised in the challenge
-// so discovery-driven clients also request a refresh token.
-export const MCP_AUTH_SCOPES = [MCP_SCOPE, 'offline_access'] as const;
+export const MCP_DECK_SCOPE = 'decks:read';
+export const MCP_RESOURCE_SCOPES = [MCP_SCOPE, MCP_DECK_SCOPE] as const;
+// Supported authorization scopes also form the deck-permission upgrade challenge.
+export const MCP_AUTH_SCOPES = [...MCP_RESOURCE_SCOPES, 'offline_access'] as const;
+// Start with card access and refresh support; request deck permission on use.
+export const MCP_DEFAULT_SCOPES = [MCP_SCOPE, 'offline_access'] as const;
 
 function secureUrl(value: string, name: string): URL {
   const url = new URL(value);

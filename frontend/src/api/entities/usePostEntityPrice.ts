@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
+import { useUser } from '@/hooks/useUser.ts';
+import { updateDeckPricesCache } from '@/api/decks/deckAccessCache.ts';
 
 /**
  * Hook to trigger (re)computation of an entity's prices and fetch the latest data.
@@ -9,6 +11,7 @@ import { toast } from '@/hooks/use-toast.ts';
  */
 export const usePostEntityPrice = (entityId: string | undefined, entityType: string) => {
   const queryClient = useQueryClient();
+  const viewer = useUser();
 
   return useMutation({
     mutationFn: async () => {
@@ -61,13 +64,7 @@ export const usePostEntityPrice = (entityId: string | undefined, entityType: str
       if (updatedEntityId && Array.isArray(prices)) {
         if (entityType === 'deck') {
           // 1) Update the single deck detail cache (useGetDeck)
-          queryClient.setQueryData(['deck', updatedEntityId], (oldData: any) => {
-            if (!oldData) return oldData;
-            return {
-              ...oldData,
-              entityPrices: prices,
-            };
-          });
+          updateDeckPricesCache(queryClient, updatedEntityId, viewer?.id, prices);
 
           // 2) Update all cached useGetDecks queries (infinite queries)
           const deckQueries = queryClient.getQueriesData({ queryKey: ['decks'] });

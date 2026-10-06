@@ -27,7 +27,7 @@ export const tournamentGroupIdTournamentsPostRoute = new Hono<AuthExtension>().p
     const hasPermission = await auth.api.userHasPermission({
       body: {
         userId: user.id,
-        permission: {
+        permissions: {
           tournamentGroup: ['assignTournament'],
         },
       },

@@ -3,6 +3,8 @@ import { db } from '../../db';
 import { deck as deckTable } from '../../db/schema/deck.ts';
 import { deckCard as deckCardTable } from '../../db/schema/deck_card.ts';
 import { deckImportSource } from '../../db/schema/deck_import_source.ts';
+import { deckFolderDeck } from '../../db/schema/deck_folder.ts';
+import { requireDeckFolderForCreation } from './deckFolders.ts';
 import { getMergedCardList } from '../cards/cardListProvider.ts';
 import {
   type DeckBuilder,
@@ -18,18 +20,21 @@ export const importDeckForUser = async ({
   deckId,
   sourceDeck,
   format,
+  folderId,
 }: {
   userId: string;
   builder: DeckBuilder;
   deckId: string;
   sourceDeck: ExternalDeck;
   format: number;
+  folderId?: string | null;
 }) => {
   const parsedDeck = parseImportedDeck(sourceDeck, await getMergedCardList());
   const description = describeImportErrors(parsedDeck.errors);
   const now = new Date();
 
   const newDeck = await db.transaction(async tx => {
+    await requireDeckFolderForCreation(tx, userId, folderId);
     const [createdDeck] = await tx
       .insert(deckTable)
       .values({
@@ -45,6 +50,7 @@ export const importDeckForUser = async ({
       .returning();
 
     if (!createdDeck) throw new Error('Failed to create imported deck.');
+    if (folderId) await tx.insert(deckFolderDeck).values({ deckId: createdDeck.id, folderId });
 
     if (parsedDeck.cards.length > 0) {
       await tx

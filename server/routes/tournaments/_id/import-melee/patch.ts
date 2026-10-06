@@ -25,7 +25,7 @@ export const tournamentIdImportMeleePatchRoute = new Hono<AuthExtension>().patch
     const hasPermission = await auth.api.userHasPermission({
       body: {
         userId: user.id,
-        permission: {
+        permissions: {
           tournament: ['import'],
         },
       },

@@ -14,7 +14,7 @@ export const checkDeletedVariantsGetRoute = new Hono<AuthExtension>().get('/', a
   const hasPermission = await auth.api.userHasPermission({
     body: {
       userId: user.id,
-      permission: {
+      permissions: {
         admin: ['access'],
       },
     },

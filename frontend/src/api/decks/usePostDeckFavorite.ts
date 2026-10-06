@@ -5,6 +5,7 @@ import { useUser } from '@/hooks/useUser.ts';
 import { ZDeckFavoriteRequest } from '../../../../types/ZDeck.ts';
 import { InferResponseType } from 'hono';
 import { formatISO } from 'date-fns';
+import { deckKeys } from './queryKeys.ts';
 
 /**
  * Hook to favorite or unfavorite a deck.
@@ -41,7 +42,7 @@ export const usePostDeckFavorite = (deckId: string | undefined) => {
       const $getDeck = api.deck[':id'].$get;
       type ResType = InferResponseType<typeof $getDeck>;
 
-      queryClient.setQueryData(['deck', deckId], (oldData: ResType) => ({
+      queryClient.setQueryData(deckKeys.detail(deckId, user?.id), (oldData: ResType) => ({
         ...oldData,
         isFavorite: variables.isFavorite ? formatISO(new Date()) : null,
       }));

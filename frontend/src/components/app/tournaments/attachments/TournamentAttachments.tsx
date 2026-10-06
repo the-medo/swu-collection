@@ -3,6 +3,7 @@ import { LockKeyhole } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { useFeatureSettings } from '@/api/user/useFeatureSettings.ts';
 import { useUser } from '@/hooks/useUser.ts';
+import { useSavedTournaments } from '@/api/tournaments/useSavedTournaments.ts';
 import {
   useTournamentAttachments,
   useMutateTournamentAttachments,
@@ -39,7 +40,9 @@ import { AttachmentItem } from './AttachmentItem.tsx';
 export function TournamentAttachments({ tournamentId }: { tournamentId: string }) {
   const user = useUser();
   const settings = useFeatureSettings();
-  if (user && settings.isError && !settings.data)
+  const saves = useSavedTournaments();
+  if (!user || !saves.data?.some(row => row.tournamentId === tournamentId)) return null;
+  if (settings.isError && !settings.data)
     return (
       <div role="alert" className="rounded-md border p-3 text-sm">
         Could not load your attachment preferences.{' '}
@@ -48,7 +51,7 @@ export function TournamentAttachments({ tournamentId }: { tournamentId: string }
         </Button>
       </div>
     );
-  return user && settings.data?.use_tournament_attachments ? (
+  return settings.data?.use_tournament_attachments ? (
     <Attachments key={`${user.id}:${tournamentId}`} tournamentId={tournamentId} />
   ) : null;
 }

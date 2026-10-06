@@ -16,6 +16,8 @@ import { getStatisticsTimestampMs } from '@/components/app/statistics/lib/date.t
 import { useGetBulkDecks } from '@/api/decks/useGetBulkDecks.ts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { DeckData } from '../../../../../../../types/Deck.ts';
+import { useUser } from '@/hooks/useUser.ts';
+import { deckKeys } from '@/api/decks/queryKeys.ts';
 
 export interface LeaderBaseInfoThumbnailProps {
   teamId?: string;
@@ -100,6 +102,7 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
     missingDeckNameIds.length > 0 ? missingDeckNameIds : undefined,
   );
   const queryClient = useQueryClient();
+  const viewer = useUser();
 
   const hydratedDeckStatistics = useMemo(() => {
     if (missingDeckNameIds.length > 0 && !bulkDecksLoaded) return deckStatistics;
@@ -109,12 +112,21 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
       const statistics = result[deck.deckId];
       if (!statistics || statistics.deckName) return;
 
-      const cachedDeck = queryClient.getQueryData<DeckData>(['deck', deck.deckId]);
+      const cachedDeck = queryClient.getQueryData<DeckData>(
+        deckKeys.detail(deck.deckId, viewer?.id),
+      );
       const deckName = deck.deckName ?? cachedDeck?.deck.name;
       if (deckName) result[deck.deckId] = { ...statistics, deckName };
     });
     return result;
-  }, [bulkDecksLoaded, deckStatistics, missingDeckNameIds.length, queryClient, recentDecks]);
+  }, [
+    bulkDecksLoaded,
+    deckStatistics,
+    missingDeckNameIds.length,
+    queryClient,
+    recentDecks,
+    viewer?.id,
+  ]);
 
   const { leaderCard, baseCard } = useMemo(() => {
     const leader = leaderCardId ? cardListData?.cards[leaderCardId] : undefined;
@@ -133,7 +145,11 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
       params={{
         teamId,
       }}
-      search={prev => ({ ...prev, sLeaderCardId: leaderCardId, sBaseCardKey: baseCardKey })}
+      search={(prev: Record<string, unknown>) => ({
+        ...prev,
+        sLeaderCardId: leaderCardId,
+        sBaseCardKey: baseCardKey,
+      })}
       className="max-sm:block max-sm:w-full max-sm:min-w-0"
     >
       <Card className="overflow-hidden relative w-full h-full min-h-[200px] min-w-[350px] max-sm:min-w-0 hover:shadow-md">

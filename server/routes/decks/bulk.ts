@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { and, eq, gte, inArray, or, sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
+import { deckReadAccess } from '../../lib/decks/deckFolderAccess.ts';
 import { deck as deckTable } from '../../db/schema/deck.ts';
 import { deckCard as deckCardTable } from '../../db/schema/deck_card.ts';
 import { db } from '../../db';
@@ -36,8 +37,8 @@ export const decksBulkGetRoute = new Hono<AuthExtension>().get(
     const { ids } = c.req.valid('query');
     const user = c.get('user');
 
-    const isPublicOrUnlisted = gte(deckTable.public, 1);
-    const isOwner = user ? eq(deckTable.userId, user.id) : null;
+    const readAccess = deckReadAccess(user?.id);
+    c.header('Cache-Control', 'private, no-store');
 
     // Query 1: Get deck data for all requested deck IDs
     let query = db
@@ -59,12 +60,7 @@ export const decksBulkGetRoute = new Hono<AuthExtension>().get(
     }
 
     // Apply where condition
-    query = query.where(
-      and(
-        inArray(deckTable.id, ids),
-        isOwner ? or(isOwner, isPublicOrUnlisted) : isPublicOrUnlisted,
-      ),
-    );
+    query = query.where(and(inArray(deckTable.id, ids), readAccess));
 
     const decksData = await query;
 

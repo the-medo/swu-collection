@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { authClient, useSession } from '@/lib/auth-client.ts';
 import { useMcpAuthorization } from '@/api/mcp/useMcpAuthorization.ts';
+import { MCP_DECK_SCOPE } from '../../../../../shared/mcp/config.ts';
 
 export default function McpConsent() {
   const session = useSession();
@@ -9,11 +10,18 @@ export default function McpConsent() {
   const request = useMcpAuthorization(session.data?.user.id, oauthQuery);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
-  async function respond(accept: boolean) {
+  async function respond(accept: boolean, cardOnly = false) {
+    if (!request.data) return;
     setPending(true);
     setError(undefined);
     try {
-      const result = await authClient.oauth2.consent({ accept, oauth_query: oauthQuery });
+      const result = await authClient.oauth2.consent({
+        accept,
+        oauth_query: oauthQuery,
+        ...(cardOnly
+          ? { scope: request.data.scopes.filter(scope => scope !== MCP_DECK_SCOPE).join(' ') }
+          : {}),
+      });
       if (result.error || !result.data?.url)
         throw new Error(
           result.error?.message ?? 'Unable to complete authorization. Reconnect from your agent.',
@@ -47,15 +55,26 @@ export default function McpConsent() {
           </p>
           <ul className="list-disc space-y-2 pl-5">
             <li>Search the official Star Wars Unlimited card catalog.</li>
+            {request.data.scopes.includes(MCP_DECK_SCOPE) ? (
+              <li>
+                Read your saved decks, including private decks, and decks shared with you or
+                available by link.
+              </li>
+            ) : null}
             {request.data.scopes.includes('offline_access') ? (
               <li>Stay connected until you revoke access or your SWUBASE session expires.</li>
             ) : null}
-            <li>Record card-search call counts and timing against your account.</li>
+            <li>Record tool call counts and timing against your account.</li>
           </ul>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button disabled={pending} onClick={() => respond(true)}>
               {pending ? 'Continuing…' : 'Allow access'}
             </Button>
+            {request.data.scopes.includes(MCP_DECK_SCOPE) ? (
+              <Button variant="outline" disabled={pending} onClick={() => respond(true, true)}>
+                Allow card access only
+              </Button>
+            ) : null}
             <Button variant="outline" disabled={pending} onClick={() => respond(false)}>
               Deny
             </Button>

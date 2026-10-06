@@ -19,6 +19,9 @@ test('service boundaries follow independently deployed build/runtime inputs', ()
     [['frontend/src/main.tsx', 'frontend/bun.lock'], ['main']],
     [['mcp/app.ts', 'Dockerfile.mcp', 'Dockerfile.mcp.dockerignore'], ['mcp']],
     [['mcp/cards.test.ts', 'docs/mcp.md'], []],
+    [['server/lib/decks/transformCardPoolDeckCards.ts'], ['main', 'mcp']],
+    [['server/lib/decks/deckFolderAccess.ts'], ['main', 'mcp']],
+    [['lib/swu-resources/set-info.ts'], ['main', 'crossfire', 'mcp']],
     [
       ['server/db/json/card-list.json', 'server/auth/auth.ts'],
       ['main', 'crossfire', 'mcp'],
