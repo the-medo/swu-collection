@@ -43,6 +43,13 @@ export function servicesForPath(path) {
     return ['crossfire'];
   }
 
+  if (
+    [
+      'server/lib/decks/transformCardPoolDeckCards.ts',
+      'server/lib/decks/deckFolderAccess.ts',
+    ].includes(path)
+  )
+    return ['main', 'mcp'];
   if (path.startsWith('server/')) {
     // Worker imports Crossfire adapters, Discord delivery and Drizzle schemas.
     // Auth and catalog changes are conservative shared-dependency triggers too.

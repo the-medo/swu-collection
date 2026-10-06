@@ -6,7 +6,7 @@ import { auth, mcpResourceUrl, type AuthExtension } from '../auth/auth.ts';
 import { db } from '../db/index.ts';
 import { oauthClient } from '../db/schema/auth-schema.ts';
 import { mcpAuthorizationQuery } from '../../shared/mcp/authorization.ts';
-import { MCP_SCOPE } from '../../shared/mcp/config.ts';
+import { MCP_AUTH_SCOPES, MCP_SCOPE } from '../../shared/mcp/config.ts';
 
 export const mcpRoute = new Hono<AuthExtension>().get(
   '/authorization',
@@ -30,7 +30,7 @@ export const mcpRoute = new Hono<AuthExtension>().get(
     const resources = query.getAll('resource');
     if (
       !scopes.includes(MCP_SCOPE) ||
-      scopes.some(scope => ![MCP_SCOPE, 'offline_access'].includes(scope)) ||
+      scopes.some(scope => !(MCP_AUTH_SCOPES as readonly string[]).includes(scope)) ||
       resources.length !== 1 ||
       resources[0] !== mcpResourceUrl
     )

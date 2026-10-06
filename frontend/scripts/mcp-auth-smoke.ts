@@ -4,6 +4,12 @@ import { chromium, expect } from 'playwright/test';
 import postgres from 'postgres';
 import { serializeSignedCookie } from 'better-call';
 import { verifyOAuthQueryParams } from '@better-auth/oauth-provider';
+import {
+  MCP_AUTH_SCOPES,
+  MCP_DEFAULT_SCOPES,
+  MCP_DECK_SCOPE,
+  MCP_SCOPE,
+} from '../../shared/mcp/config.ts';
 
 const databaseUrl = new URL(process.env.DATABASE_URL!);
 if (
@@ -47,7 +53,7 @@ await context.route(`${redirectUri}*`, route => {
   return route.fulfill({ contentType: 'text/html', body: 'Agent callback captured.' });
 });
 
-async function authorization() {
+async function authorization(scopes: string | null = MCP_AUTH_SCOPES.join(' ')) {
   const verifier =
     crypto.randomUUID().replaceAll('-', '') + crypto.randomUUID().replaceAll('-', '');
   const challenge = Buffer.from(
@@ -57,13 +63,13 @@ async function authorization() {
     response_type: 'code',
     client_id: clientId!,
     redirect_uri: redirectUri,
-    scope: 'cards:read offline_access',
     resource,
     code_challenge: challenge,
     code_challenge_method: 'S256',
     state,
     prompt: 'consent',
   });
+  if (scopes !== null) query.set('scope', scopes);
   const response = await context.request.get(`${origin}/api/auth/oauth2/authorize?${query}`, {
     maxRedirects: 0,
   });
@@ -83,6 +89,7 @@ try {
   const registration = await context.request.post(`${origin}/api/auth/oauth2/register`, {
     data: {
       client_name: 'MCP browser fixture',
+      scope: MCP_DEFAULT_SCOPES.join(' '),
       redirect_uris: [redirectUri],
       token_endpoint_auth_method: 'none',
       application_type: 'native',
@@ -134,7 +141,7 @@ try {
       sameSite: 'Lax',
     },
   ]);
-  const denied = await authorization();
+  const denied = await authorization(MCP_SCOPE + ' offline_access');
   expect(denied.location.pathname).toBe('/mcp/consent');
   await page.goto(denied.location.href);
   await expect(page.getByRole('button', { name: 'Allow access', exact: true })).toBeEnabled();
@@ -142,6 +149,7 @@ try {
   await page.reload();
   await expect(page.getByRole('button', { name: 'Allow access', exact: true })).toBeEnabled();
   await checkBrowserSignature();
+  await expect(page.getByText('Read your saved decks', { exact: false })).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => document.documentElement.classList.remove('dark'));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -150,11 +158,40 @@ try {
   expect(callback?.searchParams.get('state') === state).toBe(true);
 
   callback = undefined;
+  const reduced = await authorization(null);
+  await page.goto(reduced.location.href);
+  await checkBrowserSignature();
+  await expect(page.getByText('Read your saved decks', { exact: false })).toBeVisible();
+  const cardOnly = page.getByRole('button', { name: 'Allow card access only', exact: true });
+  await expect(cardOnly).toBeEnabled();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await cardOnly.click();
+  await expect.poll(() => Boolean(callback?.searchParams.get('code'))).toBe(true);
+  const reducedToken = await fetch(`${origin}/api/auth/oauth2/token`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      client_id: clientId!,
+      code: callback!.searchParams.get('code')!,
+      redirect_uri: redirectUri,
+      code_verifier: reduced.verifier,
+      resource,
+    }),
+  });
+  expect(reducedToken.status).toBe(200);
+  const reducedTokens = await reducedToken.json();
+  expect(reducedTokens.scope.split(' ')).toEqual([...MCP_DEFAULT_SCOPES]);
+  expect(typeof reducedTokens.refresh_token).toBe('string');
+  expect(reducedTokens.scope).not.toContain(MCP_DECK_SCOPE);
+
+  callback = undefined;
   const approved = await authorization();
   await page.goto(approved.location.href);
   await page.evaluate(() => document.documentElement.classList.add('dark'));
   await expect(page.getByRole('button', { name: 'Allow access', exact: true })).toBeEnabled();
   await checkBrowserSignature();
+  await expect(page.getByText('Read your saved decks', { exact: false })).toBeVisible();
   await page.getByRole('button', { name: 'Allow access', exact: true }).click();
   await expect.poll(() => Boolean(callback?.searchParams.get('code'))).toBe(true);
   expect(callback?.searchParams.get('state') === state).toBe(true);
@@ -177,7 +214,7 @@ try {
   expect(typeof tokens.refresh_token).toBe('string');
   expect(pageErrors).toBe(0);
   console.log(
-    'MCP browser checks passed: signed login, reload, consent, deny/approve and PKCE exchange.',
+    'MCP browser checks passed: signed login, reload, scoped and card-only consent, deny/approve and PKCE exchange.',
   );
 } finally {
   await browser.close();
