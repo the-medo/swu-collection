@@ -13,7 +13,7 @@ import { CardVariantPicker } from '@/components/app/cards/CardVariantPicker.tsx'
 import { Link } from '@tanstack/react-router';
 import { getCardImageUrl } from '@/components/app/global/cardImageLib.ts';
 import { AvatarCropEditor } from './AvatarCropEditor.tsx';
-import { AvatarImagePicker } from './AvatarImagePicker.tsx';
+import { UploadedImagePicker } from '@/components/app/global/UploadedImagePicker.tsx';
 import type { CardVariant } from '../../../../../../lib/swu-resources/types.ts';
 import type { AvatarCrop } from '../../../../../../types/UserAvatar.ts';
 import type { UserFile } from '../../../../../../types/UserFile.ts';
@@ -126,7 +126,7 @@ export default function AvatarSettings() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="images">
-          <AvatarImagePicker
+          <UploadedImagePicker
             userId={user!.id}
             upload={upload}
             selectedId={file?.id}

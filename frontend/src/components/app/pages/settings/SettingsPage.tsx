@@ -31,7 +31,7 @@ export function SettingsPage() {
     <>
       <Helmet title={`${current.label} · User settings | SWUBase`} />
       <div className="flex min-h-dvh min-w-0 flex-col">
-        <ProfileHeader />
+        <ProfileHeader userId={user.id} />
         <div className="grid min-w-0 flex-1 grid-cols-[92px_minmax(0,1fr)] grid-rows-[auto_auto_1fr] @[401px]/main-body:grid-cols-[112px_minmax(0,1fr)] @[761px]/main-body:grid-cols-[208px_minmax(0,1fr)] @[761px]/main-body:grid-rows-[auto_1fr] @[1001px]/main-body:grid-cols-[240px_minmax(0,1fr)]">
           <ProfileAvatar user={user} canEdit />
           <header className="col-start-2 row-start-1 flex min-w-0 flex-wrap items-center justify-between gap-3 p-4">

@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { ProfileHeader } from '@/components/app/users/UserDetail/ProfileHeader.tsx';
+import { ProfileHeaderPreview } from '@/components/app/users/UserDetail/ProfileHeader.tsx';
+import { useTeamHeader } from '@/api/teams/useTeamHeader.ts';
 import type { Team } from '../../../../../../server/db/schema/team.ts';
 
 const columnsClassName =
@@ -21,14 +22,14 @@ export function TeamProfileLayout({
   actions,
   children,
 }: {
-  team: Pick<Team, 'name' | 'logoUrl'>;
+  team: Pick<Team, 'id' | 'name' | 'logoUrl'>;
   sidebar: ReactNode;
   actions?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <div className="flex min-h-dvh min-w-0 flex-col">
-      <ProfileHeader />
+      <TeamProfileHeader teamId={team.id} />
       <div className={columnsClassName}>
         <div className={avatarColumnClassName}>
           <Avatar className={avatarClassName}>
@@ -57,6 +58,13 @@ export function TeamProfileLayout({
   );
 }
 
+function TeamProfileHeader({ teamId }: { teamId: string }) {
+  const query = useTeamHeader(teamId);
+  if (query.isPending)
+    return <Skeleton className="h-40 shrink-0 rounded-none @[761px]/main-body:h-56" />;
+  return <ProfileHeaderPreview header={query.data} />;
+}
+
 export function TeamProfileSkeleton() {
   return (
     <div
@@ -65,7 +73,7 @@ export function TeamProfileSkeleton() {
       aria-label="Loading team"
       aria-busy="true"
     >
-      <ProfileHeader />
+      <Skeleton className="h-40 shrink-0 rounded-none @[761px]/main-body:h-56" />
       <div className={columnsClassName}>
         <div className={avatarColumnClassName}>
           <Skeleton className={avatarClassName} />

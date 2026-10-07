@@ -20,6 +20,15 @@ $$;
 -- Delete dependent records explicitly. Production backups can contain legacy
 -- rows from before the current cascading foreign keys existed.
 DELETE FROM team_deck;
+-- Cropped team headers and private source metadata never belong in contributor data.
+-- Backups created before the header migration do not have this table.
+DO $team_headers$
+BEGIN
+  IF to_regclass('public.team_header') IS NOT NULL THEN
+    DELETE FROM team_header;
+  END IF;
+END
+$team_headers$;
 -- Older backups may predate the bookmark table.
 DO $team_bookmarks$
 BEGIN
@@ -59,6 +68,12 @@ DROP TABLE development_cleanup_user;
 
 DO $$
 BEGIN
+  IF to_regclass('public.team_header') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM team_header) THEN
+      RAISE EXCEPTION 'Private team headers remain in the contributor dump.';
+    END IF;
+  END IF;
+
   IF to_regclass('public.team_bookmark') IS NOT NULL THEN
     IF EXISTS (SELECT 1 FROM team_bookmark) THEN
       RAISE EXCEPTION 'Private team bookmarks remain in the contributor dump.';

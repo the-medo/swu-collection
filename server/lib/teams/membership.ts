@@ -3,6 +3,9 @@ import { db } from '../../db';
 import { team } from '../../db/schema/team.ts';
 import { teamMember } from '../../db/schema/team_member.ts';
 import { teamJoinRequest } from '../../db/schema/team_join_request.ts';
+import { teamHeader } from '../../db/schema/team_header.ts';
+import { cleanupHeaderObject } from '../headers/storage.ts';
+import { createUserFileStorage, type UserFileObjectStorage } from '../user-files/storage.ts';
 import {
   createNotifications,
   retractUnseenNotifications,
@@ -134,8 +137,13 @@ export async function patchTeamMember(
   });
 }
 
-export async function deleteTeam(teamId: string, ownerId: string) {
-  return db.transaction(async tx => {
+export async function deleteTeam(
+  teamId: string,
+  ownerId: string,
+  storage: UserFileObjectStorage = createUserFileStorage(),
+) {
+  let headerKey: string | null = null;
+  const result = await db.transaction(async tx => {
     if ((await lockMembership(tx, teamId, ownerId))?.role !== 'owner')
       return { status: 403 as const, message: 'Only team owners can delete teams' };
     const members = await tx
@@ -148,8 +156,15 @@ export async function deleteTeam(teamId: string, ownerId: string) {
         status: 400 as const,
         message: 'Kick all other players out of the team before deleting it',
       };
+    const [header] = await tx
+      .select({ key: teamHeader.imageKey })
+      .from(teamHeader)
+      .where(eq(teamHeader.teamId, teamId));
+    headerKey = header?.key ?? null;
     await tx.delete(team).where(eq(team.id, teamId));
     await notifyUser(tx, ownerId);
     return { status: 200 as const, data: { success: true } };
   });
+  if (result.status === 200) await cleanupHeaderObject(storage, headerKey, 'Team header');
+  return result;
 }

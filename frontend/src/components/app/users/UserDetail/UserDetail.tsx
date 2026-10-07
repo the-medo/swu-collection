@@ -107,7 +107,7 @@ const UserDetail: React.FC = () => {
         title={`${user?.displayName}${userTab === 'calendar' ? ' · Calendar' : userTab === 'tournaments' ? ' · Tournaments' : userTab === 'reports' ? ' · Reports' : ''} | SWUBase`}
       />
       <div className={pageClassName}>
-        <ProfileHeader />
+        <ProfileHeader userId={user.id} />
         <div className={columnsClassName}>
           <ProfileAvatar user={user} canEdit={currentUser?.id === userId} />
           <div className={nameClassName}>

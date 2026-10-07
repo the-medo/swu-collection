@@ -116,6 +116,14 @@ TRUNCATE TABLE user_tournament_attachment, user_tournament_preparation;
 TRUNCATE TABLE user_calendar_subscription;
 -- Never export uploads, filenames, or account-specific storage entitlements.
 TRUNCATE TABLE user_file, user_file_storage;
+-- Local admins must not be able to delete production gallery objects from the shared bucket.
+DO $image_gallery$
+BEGIN
+  IF to_regclass('public.image_gallery') IS NOT NULL THEN
+    TRUNCATE TABLE image_gallery;
+  END IF;
+END
+$image_gallery$;
 -- Patreon credentials, supporter identities and credit awards always stay private.
 TRUNCATE TABLE user_credits, patreon_member, patreon_connection;
 
@@ -483,6 +491,12 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_file) OR EXISTS (SELECT 1 FROM user_file_storage) THEN
     RAISE EXCEPTION 'User uploads or storage entitlements remain in the contributor dump.';
+  END IF;
+
+  IF to_regclass('public.image_gallery') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM image_gallery) THEN
+      RAISE EXCEPTION 'Production gallery object references remain in the contributor dump.';
+    END IF;
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_credits) OR EXISTS (SELECT 1 FROM patreon_member)

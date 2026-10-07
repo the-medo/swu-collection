@@ -100,3 +100,26 @@ test('image storage requires R2 credentials in every environment', async () => {
   });
   expect(createUserFileStorage({ ENVIRONMENT: 'local' }).available()).toBe(false);
 });
+test('header uploads preserve portrait resolution and accept smaller images without enlarging them', async () => {
+  const bytes = await sharp({
+    create: { width: 2000, height: 4000, channels: 3, background: '#abc' },
+  })
+    .png()
+    .toBuffer();
+  const file = new File([new Uint8Array(bytes)], 'portrait.png');
+  expect(await optimizeUserImage(file)).toMatchObject({ width: 1280, height: 2560 });
+  expect(await optimizeUserImage(file, { preserveWidth: 1500 })).toMatchObject({
+    width: 1500,
+    height: 3000,
+  });
+  const small = await sharp({
+    create: { width: 1499, height: 800, channels: 3, background: '#abc' },
+  })
+    .png()
+    .toBuffer();
+  expect(
+    await optimizeUserImage(new File([new Uint8Array(small)], 'small.png'), {
+      preserveWidth: 1500,
+    }),
+  ).toMatchObject({ width: 1499, height: 800 });
+});

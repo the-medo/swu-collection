@@ -2,6 +2,7 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { userFile as files, userFileStorage as quotas } from '../../db/schema/user_file.ts';
 import { userFilesPageSize, type UserFile, type UserFiles } from '../../../types/UserFile.ts';
+import { recommendedHeaderImageWidth } from '../../../types/ImageGallery.ts';
 import { UserFileError } from './errors.ts';
 import { optimizeUserImage } from './optimize.ts';
 import {
@@ -49,9 +50,12 @@ export function createUserFileService(storage: UserFileObjectStorage = createUse
         { isolationLevel: 'repeatable read', accessMode: 'read only' },
       );
     },
-    async create(userId: string, file: File) {
+    async create(userId: string, file: File, purpose: 'image' | 'header' = 'image') {
       if (!storage.available()) throw new UserFileError('Image storage is not configured.', 503);
-      const optimized = await optimizeUserImage(file);
+      const optimized = await optimizeUserImage(
+        file,
+        purpose === 'header' ? { preserveWidth: recommendedHeaderImageWidth } : {},
+      );
       const id = crypto.randomUUID();
       const keys = userFileObjectKeys(userId, id);
       let attemptedUpload = false;

@@ -9,18 +9,22 @@ import {
   maxUserFileBytes,
   userFileMimeTypes,
   type UserFile,
-} from '../../../../../../types/UserFile.ts';
-import { minimumAvatarCropSize } from '../../../../../../types/UserAvatar.ts';
-import { formatBytes } from './uploads/formatBytes.ts';
+} from '../../../../../types/UserFile.ts';
+import { recommendedHeaderImageWidth } from '../../../../../types/ImageGallery.ts';
+import { minimumHeaderCropWidth } from '../../../../../types/UserHeader.ts';
+import { minimumAvatarCropSize } from '../../../../../types/UserAvatar.ts';
+import { formatBytes } from '../pages/settings/uploads/formatBytes.ts';
 
-export function AvatarImagePicker({
+export function UploadedImagePicker({
   userId,
+  purpose = 'avatar',
   upload,
   selectedId,
   disabled,
   onSelect,
 }: {
   userId: string;
+  purpose?: 'avatar' | 'header';
   upload: ReturnType<typeof useUploadUserFile>;
   selectedId?: string;
   disabled: boolean;
@@ -35,6 +39,10 @@ export function AvatarImagePicker({
   const data = query.data;
   const busy = disabled || upload.isPending;
   const full = !!data && data.usedBytes >= data.quotaBytes;
+  const tooSmallForPurpose = (file: Pick<UserFile, 'width' | 'height'>) =>
+    purpose === 'header'
+      ? file.width < minimumHeaderCropWidth
+      : Math.min(file.width, file.height) < minimumAvatarCropSize;
   const uploadImage = async (file: File) => {
     if (busy || activeUpload.current) return;
     setError(undefined);
@@ -46,12 +54,17 @@ export function AvatarImagePicker({
     const controller = new AbortController();
     activeUpload.current = controller;
     try {
-      const result = await upload.mutateAsync({ userId, file, signal: controller.signal });
+      const result = await upload.mutateAsync({
+        userId,
+        file,
+        signal: controller.signal,
+        purpose: purpose === 'header' ? 'header' : undefined,
+      });
       if (controller.signal.aborted) return;
       setPage(0);
-      if (Math.min(result.width, result.height) < minimumAvatarCropSize) {
+      if (tooSmallForPurpose(result)) {
         setError(
-          'Image uploaded, but avatars need an image of at least 100 × 100 pixels. Choose a larger image.',
+          `Image uploaded, but ${purpose === 'header' ? 'this image is too narrow for a 4:1 header crop' : 'avatars need an image of at least 100 × 100 pixels'}. Choose a larger image.`,
         );
       } else {
         onSelect(result);
@@ -76,7 +89,7 @@ export function AvatarImagePicker({
           accept={userFileMimeTypes.join(',')}
           className="sr-only"
           tabIndex={-1}
-          aria-label="Choose avatar image"
+          aria-label={`Choose ${purpose} image`}
           disabled={busy || !data?.uploadsEnabled || full}
           onChange={event => {
             const file = event.target.files?.[0];
@@ -97,8 +110,11 @@ export function AvatarImagePicker({
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">
-        JPEG, PNG, WebP or still GIF, up to 10 MB. At least 100 × 100 pixels. New images are saved
-        to your Uploads library and count toward its storage limit.
+        JPEG, PNG, WebP or still GIF, up to 10 MB.{' '}
+        {purpose === 'header'
+          ? '1500 pixels wide is recommended; smaller images can still be used.'
+          : 'At least 100 × 100 pixels.'}{' '}
+        New images are saved to your Uploads library and count toward its storage limit.
       </p>
       {query.isPending && (
         <p role="status" className="text-sm">
@@ -142,18 +158,20 @@ export function AvatarImagePicker({
             <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
               {page
                 ? 'No more images. Return to the previous page.'
-                : 'No images yet. Upload an image to create your avatar.'}
+                : `No images yet. Upload an image to create your ${purpose}.`}
             </p>
           ) : (
             <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3 @lg:grid-cols-4">
               {data.files.map(file => {
-                const tooSmall = Math.min(file.width, file.height) < minimumAvatarCropSize;
+                const tooSmall = tooSmallForPurpose(file);
+                const lowResolution =
+                  purpose === 'header' && !tooSmall && file.width < recommendedHeaderImageWidth;
                 return (
                   <button
                     type="button"
                     key={file.id}
                     disabled={busy || tooSmall}
-                    aria-label={`Select ${file.fileName}${tooSmall ? ' (too small)' : ''}`}
+                    aria-label={`Select ${file.fileName}${tooSmall ? ' (too small)' : lowResolution ? ' (low resolution)' : ''}`}
                     aria-pressed={file.id === selectedId}
                     className={cn(
                       'min-w-0 overflow-hidden rounded-lg border bg-card text-left hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
@@ -173,8 +191,15 @@ export function AvatarImagePicker({
                     <div className="space-y-1 p-2">
                       <p className="truncate text-sm">{file.fileName}</p>
                       <p className="text-xs text-muted-foreground">
-                        {tooSmall ? 'Too small for an avatar' : `${file.width} × ${file.height}`}
+                        {tooSmall
+                          ? purpose === 'header'
+                            ? 'Too narrow for a 4:1 crop'
+                            : 'Too small for a square avatar'
+                          : `${file.width} × ${file.height}`}
                       </p>
+                      {lowResolution && (
+                        <p className="text-xs text-amber-700 dark:text-amber-300">Low resolution</p>
+                      )}
                     </div>
                   </button>
                 );
@@ -183,7 +208,7 @@ export function AvatarImagePicker({
           )}
           {(page > 0 || data.hasMore) && (
             <nav
-              aria-label="Avatar image pages"
+              aria-label={`${purpose} image pages`}
               className="flex items-center justify-between gap-2"
             >
               <Button variant="outline" disabled={!page || busy} onClick={() => setPage(page - 1)}>
