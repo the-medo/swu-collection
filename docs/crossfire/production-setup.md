@@ -14,8 +14,8 @@ After initial setup, use the [selective deployment workflow](../deployment.md)
 to trigger only affected Coolify applications on pushes to `main`. Shared engine
 changes select both the web/API and worker because both execute engine code.
 Migration pushes automatically hold the worker deployment until an operator
-verifies the web migration and manually deploys Crossfire; see the workflow's
-[migration handoff](../deployment.md#migration-handoff).
+verifies the web migration and approves Crossfire in the same Actions run; see
+the workflow's [migration handoff](../deployment.md#migration-handoff).
 
 ## 1. Prepare the release and database
 

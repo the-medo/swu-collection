@@ -8,7 +8,7 @@ The production PostgreSQL resource is not a deployment target.
 
 Automatic webhook calls are disabled until the GitHub repository variable
 `COOLIFY_DEPLOY_ENABLED` is set to `true`. Pull requests always run the tooling
-tests and show a plan without secrets or deployment calls.
+tests and show a plan without deployment secrets or deployment calls.
 
 ## What gets deployed
 
@@ -24,7 +24,9 @@ tests and show a plan without secrets or deployment calls.
 | Deployment workflow/tooling changes or otherwise unclassified paths | All three |
 
 Migration inputs (`drizzle/`, `migrate.ts`, `server/db/migrate.ts`) hold the automatic
-Crossfire request and report a failed job requiring the [migration handoff](#migration-handoff).
+Crossfire request for a separate manual approval job in the same run; see the
+[migration handoff](#migration-handoff). Ordinary Crossfire changes still deploy
+automatically. The approval job is skipped when it is not needed.
 
 The maintained rules live in [services.mjs](../scripts/deploy/services.mjs).
 Unknown paths select all services so new build inputs cannot silently go stale.
@@ -81,31 +83,46 @@ affect contributor data; deploying does not update those rules automatically.
    | `COOLIFY_WEBHOOK_MAINTAINER` | Maintainer's authenticated deploy URL |
    | `COOLIFY_WEBHOOK_CROSSFIRE` | Crossfire's authenticated deploy URL |
 
-6. **Merge the workflow to `main` and inspect its plan.** While
+6. **Configure migration approval before enabling automatic deployments.** Under
+   **Settings → Environments**, create `crossfire-migrations`. Enable **Required
+   reviewers** and add the operator (for this repository, `the-medo`). Leave
+   **Prevent self-review** unchecked so the operator can approve their own pushes.
+   Save protection rules and restrict deployment branches to `main`. No additional
+   environment secrets are needed; the job uses the existing repository secrets.
+   This is GitHub's native [deployment approval flow](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/review-deployments).
+   A YAML environment name alone does **not** require approval. The planner checks
+   that required reviewers are configured and self-review is allowed before making
+   the approval job available. If the environment is missing, unprotected, blocks
+   self-review, or its rules cannot be read, Crossfire stays held and the run receives
+   a warning with the reason. The summary explains how to complete the
+   handoff; this does not fail the run.
+7. **Merge the workflow to `main` and inspect its plan.** While
    `COOLIFY_DEPLOY_ENABLED` is absent/false, GitHub makes no automatic webhook
    calls. Existing Coolify auto-deploy behavior continues until the next step.
    Once the workflow is on the default branch, **Actions → Deploy changed services
    → Run workflow** also offers a service selector and a dry-run checkbox (on by
    default). Select branch `main`; deployment jobs refuse other branches.
-7. **Switch deployment ownership during a quiet push window.** For all three
+8. **Switch deployment ownership during a quiet push window.** For all three
    applications, turn off **Configuration → Advanced → Deployment & Git → Auto
    Deploy** and save. On some versions it appears directly under Advanced.
    Keep the GitHub App/source connection so Coolify can fetch/build the repo.
    Disable/remove any separately configured GitHub repository push webhooks that
    also trigger these resources. Leave unrelated integrations intact.
-8. **Verify a manual deployment for each of the three services**, selecting one
+9. **Verify a manual deployment for each of the three services**, selecting one
    service at a time and unchecking **dry run**. This works while automatic GitHub
    deployments are disabled. Confirm the deployment appears under the **expected
    application**, and verify its new commit and healthy runtime. This catches
    accidentally swapped webhook secrets. Then create the GitHub Actions
    repository **variable** `COOLIFY_DEPLOY_ENABLED` with the exact value `true`.
    Subsequent pushes to `main` call only the selected application webhooks.
-9. **Verify the automatic path with the next real code change.** Confirm the plan
-   says automatic deployments are enabled, that each expected `Request … deployment`
-   job ran rather than being skipped, and that the corresponding application
-   deployment appears in Coolify. Check that unrelated services stayed untouched.
-   If jobs are skipped, verify `COOLIFY_DEPLOY_ENABLED` is an Actions **variable**
-   with value `true`, not a secret. Keep deployment ownership consistent while fixing it.
+10. **Verify the automatic path with the next real code change.** Confirm the plan
+    says automatic deployments are enabled, that each expected `Request … deployment`
+    job ran rather than being skipped, and that the corresponding application
+    deployment appears in Coolify. Check that unrelated services stayed untouched.
+    If jobs are skipped, verify `COOLIFY_DEPLOY_ENABLED` is an Actions **variable**
+    with value `true`, not a secret. Keep deployment ownership consistent while fixing it.
+    For a migration push, expect **Approve Crossfire deployment after migrations**
+    to wait for approval instead of an automatic Crossfire request.
 
 Coolify's authenticated deployment webhooks keep working when its Git auto-deploy
 is disabled. Watch Paths are not needed: this workflow owns path selection.
@@ -178,16 +195,37 @@ deployments.
 
 The main app applies migrations; Crossfire has no migrator. For a push that
 changes migration inputs, the main app (and maintainer when selected) can deploy,
-but the Crossfire job **fails before sending its webhook**, with a required-action
-message. The same guard applies when the previous commit is unavailable.
+but **Approve Crossfire deployment after migrations** waits for the protected
+`crossfire-migrations` environment. GitHub shows **Review deployments** in the
+run; waiting for approval does not mark it failed. The same hold applies when
+the previous commit is unavailable. On other pushes the approval job is skipped;
+selected Crossfire deployments continue automatically.
 This prevents the worker's faster build from starting before that push's migration.
 
 Pause further production pushes during this handoff; the guard is per push, not a
 persistent deployment lock. Verify `=== Migration complete ===` followed by
-`Server running` in the new main app's logs, then **Run workflow → main branch →
-service crossfire → dry run unchecked**. Confirm it completes in Coolify. Re-running
-the original push keeps the hold; its failed job is an intentional handoff signal.
-Manual selection bypasses the guard, so do not manually select `all` before migrations finish.
+`Server running` in the new main app's logs, then open the same Actions run and
+click **Review deployments → crossfire-migrations → Approve and deploy**. Confirm
+the worker deployment completes in Coolify. The main app's Actions job only queues
+its deployment; its green status alone does not prove the migration completed.
+
+If approval setup cannot be verified, no Crossfire webhook is sent and the
+approval job is skipped. The run warning and summary include a short reason
+(such as an HTTP status, missing reviewers, or an unavailable GitHub API). Check
+the environment's required reviewers, verify the main app's logs, then use
+**Run workflow → main branch → service crossfire → dry run unchecked**. **Re-run
+all jobs** also checks approval setup again, but resends every selected service's
+webhook, including main and maintainer. Coolify builds the current `main` branch
+when it receives those requests.
+
+The approval wait does not occupy the Crossfire request concurrency group.
+After approval, the webhook job joins the same group as automatic and manual
+Crossfire requests. Cancel obsolete approval runs to avoid deploying twice after
+a manual fallback. Manual selections remain explicit operator actions and bypass
+the approval job; do not select `all` before migrations finish.
+Rejecting an approval fails the run; cancel an obsolete run
+instead of rejecting it if no deployment is wanted. GitHub also
+[fails approval jobs left waiting for 30 days](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/control-deployments#using-required-reviews-in-workflows).
 
 Wire-breaking releases and incompatible database changes still need a planned
 maintenance window; this is not an atomic multi-service rollout system. For those

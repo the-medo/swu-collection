@@ -4,7 +4,8 @@ import { mkdtempSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'node:
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
-import { planDeployments } from './plan.mjs';
+import { deploymentJobs, deploymentSummary, planDeployments } from './plan.mjs';
+import { crossfireApprovalStatus } from './approval.mjs';
 import { deploymentMatrix, selectServices } from './services.mjs';
 import { triggerDeployment } from './trigger.mjs';
 
@@ -98,13 +99,18 @@ test('a multi-commit push selects all affected services, including unusual filen
   assert.equal(planDeployments('push', { before: f.before, after }, f.cwd).migrationChanges, false);
 });
 
-test('migration inputs require a manual worker handoff; operator selections acknowledge it', t => {
+test('migration pushes keep main automatic and route Crossfire to a separate approval job', t => {
   const f = fixture(t);
   f.write('drizzle/0058_new-schema.sql');
   const after = f.commit();
   const plan = planDeployments('push', { before: f.before, after }, f.cwd);
   assert.deepEqual(plan.selected, ['main', 'crossfire']);
   assert.equal(plan.migrationChanges, true);
+  assert.deepEqual(deploymentJobs(plan, 'push'), {
+    matrix: deploymentMatrix(['main']),
+    hasChanges: true,
+    crossfireApprovalRequired: true,
+  });
   assert.equal(
     planDeployments('workflow_dispatch', {
       inputs: { service: 'crossfire' },
@@ -121,6 +127,128 @@ test('migration inputs require a manual worker handoff; operator selections ackn
   assert.equal(
     planDeployments('push', { before: docs, after: f.commit() }, f.cwd).migrationChanges,
     true,
+  );
+});
+
+test('ordinary Crossfire changes stay automatic and unchanged Crossfire has no approval job', () => {
+  for (const selected of [['crossfire'], ['main', 'crossfire'], ['main'], []]) {
+    assert.deepEqual(deploymentJobs({ selected, migrationChanges: false }, 'push'), {
+      matrix: deploymentMatrix(selected),
+      hasChanges: selected.length > 0,
+      crossfireApprovalRequired: false,
+    });
+  }
+  assert.equal(
+    deploymentJobs({ selected: ['main'], migrationChanges: true }, 'push')
+      .crossfireApprovalRequired,
+    false,
+  );
+});
+
+test('PR previews and explicit manual selections do not create migration approval jobs', () => {
+  const plan = { selected: ['main', 'crossfire'], migrationChanges: true };
+  for (const event of ['pull_request', 'workflow_dispatch']) {
+    assert.deepEqual(deploymentJobs(plan, event), {
+      matrix: deploymentMatrix(plan.selected),
+      hasChanges: true,
+      crossfireApprovalRequired: false,
+    });
+  }
+});
+
+test('unavailable previous revision keeps all other services automatic and Crossfire held', t => {
+  const f = fixture(t);
+  const plan = planDeployments('push', { before: '0'.repeat(40), after: f.before }, f.cwd);
+  assert.deepEqual(deploymentJobs(plan, 'push'), {
+    matrix: deploymentMatrix(['main', 'maintainer']),
+    hasChanges: true,
+    crossfireApprovalRequired: true,
+  });
+});
+
+test('migration summaries explain approval, missing setup, and PR previews without reporting failure', () => {
+  const plan = { selected: ['main', 'crossfire'], migrationChanges: true, reason: 'Test plan.' };
+  const options = { eventName: 'push', autoDeployEnabled: true, crossfireApprovalReady: true };
+  const ready = deploymentSummary(plan, options);
+  assert.match(ready, /Review deployments/);
+  assert.match(ready, /Migration complete.*Server running/);
+  assert.doesNotMatch(ready, /fails explicitly|failed job/);
+  const missing = deploymentSummary(plan, { ...options, crossfireApprovalReady: false });
+  assert.match(missing, /required reviewers/);
+  assert.match(missing, /not requested/);
+  assert.doesNotMatch(missing, /click.*Review deployments/);
+  const preview = deploymentSummary(plan, { ...options, eventName: 'pull_request' });
+  assert.match(preview, /would wait/);
+  assert.doesNotMatch(preview, /click.*Review deployments/);
+});
+
+test('migration approval requires a configured reviewer, rather than an unprotected environment', async () => {
+  const settings = { repository: 'the-medo/swu-collection', token: 'github-test-token' };
+  for (const protection_rules of [
+    [],
+    [{ type: 'wait_timer', wait_timer: 5 }],
+    [{ type: 'required_reviewers', reviewers: [] }],
+    [{ type: 'required_reviewers' }],
+  ]) {
+    assert.equal(
+      (await crossfireApprovalStatus(settings, async () => Response.json({ protection_rules })))
+        .ready,
+      false,
+    );
+  }
+  assert.deepEqual(
+    await crossfireApprovalStatus(settings, async () =>
+      Response.json({
+        protection_rules: [
+          {
+            type: 'required_reviewers',
+            prevent_self_review: true,
+            reviewers: [{ type: 'User', reviewer: { id: 8963255 } }],
+          },
+        ],
+      }),
+    ),
+    { ready: false, reason: 'Prevent self-review must be disabled for operator approval.' },
+  );
+  assert.deepEqual(
+    await crossfireApprovalStatus(settings, async (url, options) => {
+      assert.equal(
+        url,
+        'https://api.github.com/repos/the-medo/swu-collection/environments/crossfire-migrations',
+      );
+      assert.equal(options.headers.Authorization, 'Bearer github-test-token');
+      assert.equal(options.redirect, 'error');
+      assert.ok(options.signal instanceof AbortSignal);
+      return Response.json({
+        protection_rules: [
+          { type: 'required_reviewers', reviewers: [{ type: 'User', reviewer: { id: 8963255 } }] },
+        ],
+      });
+    }),
+    { ready: true },
+  );
+});
+
+test('missing environment, denied reads and GitHub API failures keep the migration webhook held', async () => {
+  const settings = { repository: 'the-medo/swu-collection', token: 'github-test-token' };
+  for (const response of [
+    new Response('', { status: 404 }),
+    new Response('', { status: 403 }),
+    new Response('', { status: 500 }),
+    new Response('<html>login</html>'),
+    Response.json({}),
+  ]) {
+    const status = await crossfireApprovalStatus(settings, async () => response);
+    assert.equal(status.ready, false);
+    assert.ok(status.reason);
+    if (!response.ok) assert.match(status.reason, new RegExp(`HTTP ${response.status}`));
+    assert.doesNotMatch(status.reason, /github-test-token|login/);
+  }
+  assert.deepEqual(
+    await crossfireApprovalStatus(settings, async () => {
+      throw new Error('network timeout');
+    }),
+    { ready: false, reason: 'GitHub environment check failed or timed out.' },
   );
 });
 
