@@ -28,10 +28,14 @@ jobs:
     name: Check deployment routing and select services
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read # Read the migration approval environment's protection rules.
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
       has_changes: ${{ steps.plan.outputs.has_changes }}
-      migration_changes: ${{ steps.plan.outputs.migration_changes }}
+      crossfire_approval_required: ${{ steps.plan.outputs.crossfire_approval_required }}
+      crossfire_approval_ready: ${{ steps.plan.outputs.crossfire_approval_ready }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -47,6 +51,7 @@ jobs:
         id: plan
         env:
           AUTO_DEPLOY_ENABLED: ${{ vars.COOLIFY_DEPLOY_ENABLED }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/deploy/plan.mjs
 
   deploy:
@@ -67,13 +72,6 @@ jobs:
       group: coolify-${{ matrix.service }}
       cancel-in-progress: false
     steps:
-      - name: Hold Crossfire until the main app migrations are verified
-        if: >-
-          github.event_name == 'push' && matrix.service == 'crossfire' &&
-          needs.plan.outputs.migration_changes == 'true'
-        run: |
-          echo '::error::Crossfire was not deployed because migration inputs changed or the previous revision is unavailable. Pause further production pushes, wait for the main app deployment, verify Migration complete and Server running in its logs, then run this workflow manually for crossfire. Rerunning this push will keep this guard.'
-          exit 1
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
@@ -86,4 +84,51 @@ jobs:
           DEPLOY_SERVICE: ${{ matrix.service }}
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
           COOLIFY_WEBHOOK: ${{ secrets[matrix.webhook_secret] }}
+        run: node scripts/deploy/trigger.mjs
+
+  crossfire_migration_approval:
+    name: Approve Crossfire deployment after migrations
+    needs: plan
+    if: >-
+      github.repository == 'the-medo/swu-collection' &&
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'push' && vars.COOLIFY_DEPLOY_ENABLED == 'true' &&
+      needs.plan.outputs.crossfire_approval_required == 'true' &&
+      needs.plan.outputs.crossfire_approval_ready == 'true'
+    environment: crossfire-migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Approval waits outside the request queue, so an obsolete waiting run
+    # does not block an explicit manual Crossfire deployment.
+    steps:
+      - name: Confirm migration handoff approval
+        run: echo 'Crossfire deployment approved after verification of the main app migration.'
+
+  crossfire_after_migrations:
+    name: Request crossfire deployment after migrations
+    needs: [plan, crossfire_migration_approval]
+    if: >-
+      github.repository == 'the-medo/swu-collection' &&
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'push' && vars.COOLIFY_DEPLOY_ENABLED == 'true' &&
+      needs.plan.outputs.crossfire_approval_required == 'true' &&
+      needs.plan.outputs.crossfire_approval_ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: coolify-crossfire
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Trigger Coolify after migration approval
+        env:
+          DEPLOY_SERVICE: crossfire
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK_CROSSFIRE }}
         run: node scripts/deploy/trigger.mjs
