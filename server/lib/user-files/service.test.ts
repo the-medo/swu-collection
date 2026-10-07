@@ -62,10 +62,11 @@ test.skipIf(process.env.USER_FILES_DB_TEST !== '1')(
       .png()
       .toBuffer();
     const file = new File([new Uint8Array(input)], 'picture.png', { type: 'image/png' });
-    const upload = async (image = file, extras = false) => {
+    const upload = async (image = file, extras = false, purpose?: 'header') => {
       const form = new FormData();
       form.set('file', image);
       if (extras) form.set('userId', users[1]);
+      if (purpose) form.set('purpose', purpose);
       const req = new Request('http://localhost/api/user-files', {
         method: 'POST',
         headers: { 'X-Requested-With': 'swubase' },
@@ -111,6 +112,11 @@ test.skipIf(process.env.USER_FILES_DB_TEST !== '1')(
       expect(failure.status).toBe(500);
       expect(await failure.text()).not.toContain('SQL private filename');
       failDatabase = false;
+      const smallHeader = await upload(file, false, 'header');
+      expect(smallHeader.status).toBe(201);
+      const smallHeaderImage = (await smallHeader.json()).data;
+      expect(smallHeaderImage).toMatchObject({ width: 800, height: 400 });
+      await service.remove(users[0], smallHeaderImage.id);
       const uploaded = await upload();
       expect(uploaded.status).toBe(201);
       const item = (await uploaded.json()).data;

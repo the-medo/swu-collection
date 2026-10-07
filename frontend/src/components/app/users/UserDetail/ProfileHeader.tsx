@@ -1,4 +1,64 @@
-export function ProfileHeader() {
+import { useState } from 'react';
+import { useUserHeader } from '@/api/user-header/useUserHeader.ts';
+import type { UserHeader } from '../../../../../../types/UserHeader.ts';
+
+export function ProfileHeader({ userId }: { userId?: string }) {
+  const query = useUserHeader(userId);
+  if (userId && query.isPending)
+    return (
+      <div
+        className="h-40 shrink-0 animate-pulse bg-muted @[761px]/main-body:h-56"
+        aria-hidden="true"
+      />
+    );
+  return <ProfileHeaderPreview header={query.data} />;
+}
+
+export function ProfileHeaderPreview({
+  header,
+}: {
+  header?: Pick<UserHeader, 'image' | 'width' | 'height'>;
+}) {
+  return header?.image ? (
+    <ImageHeader
+      key={header.image}
+      src={header.image}
+      width={header.width}
+      height={header.height}
+    />
+  ) : (
+    <BattlefieldHeader />
+  );
+}
+
+function ImageHeader({
+  src,
+  width,
+  height,
+}: {
+  src: string;
+  width: number | null;
+  height: number | null;
+}) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return <BattlefieldHeader />;
+  return (
+    <div
+      className="relative min-h-24 max-h-[400px] shrink-0 overflow-hidden bg-muted"
+      style={{ aspectRatio: `${width ?? 1600} / ${height ?? 400}` }}
+      aria-hidden="true"
+    >
+      <img
+        src={src}
+        alt=""
+        className="h-full w-full object-contain"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
+
+function BattlefieldHeader() {
   return (
     <div
       className="relative h-40 shrink-0 overflow-hidden bg-[radial-gradient(ellipse_at_75%_130%,#5d7981_0%,#263f50_24%,#122431_48%,#0a141e_78%)] @[761px]/main-body:h-56"

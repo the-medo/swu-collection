@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch.tsx';
 import type { Team } from '../../../../../../server/db/schema/team.ts';
 import { useNavigate } from '@tanstack/react-router';
 import { useUser } from '@/hooks/useUser.ts';
+import { TeamHeaderSettings } from './TeamHeaderSettings.tsx';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -94,8 +95,8 @@ const TeamSettingsTab: React.FC<TeamSettingsTabProps> = ({ team }) => {
   };
 
   return (
-    <div className="flex flex-col gap-6 py-4 max-w-lg">
-      <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-6 py-4 max-w-3xl">
+      <div className="flex max-w-lg flex-col gap-3">
         <Label>Team Logo</Label>
         <div className="flex items-center gap-4">
           {team.logoUrl ? (
@@ -130,8 +131,10 @@ const TeamSettingsTab: React.FC<TeamSettingsTabProps> = ({ team }) => {
         </div>
       </div>
 
+      <TeamHeaderSettings teamId={team.id} />
+
       <form
-        className="flex flex-col gap-4"
+        className="flex max-w-lg flex-col gap-4"
         onSubmit={e => {
           e.preventDefault();
           e.stopPropagation();
@@ -190,7 +193,7 @@ const TeamSettingsTab: React.FC<TeamSettingsTabProps> = ({ team }) => {
         </Button>
       </form>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex max-w-lg flex-col gap-3">
         <Label>Default "Auto-add deck" value for new members:</Label>
         <div className="flex items-center gap-3">
           <Switch
@@ -213,7 +216,7 @@ const TeamSettingsTab: React.FC<TeamSettingsTabProps> = ({ team }) => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-lg border border-destructive/40 bg-destructive/5 p-4">
+      <div className="flex max-w-lg flex-col gap-3 rounded-lg border border-destructive/40 bg-destructive/5 p-4">
         <div className="flex flex-col gap-1">
           <h3 className="text-sm font-semibold text-destructive">Danger zone</h3>
           {isCheckingDeleteEligibility ? (

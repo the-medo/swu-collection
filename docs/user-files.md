@@ -12,7 +12,8 @@ normal paste behavior. All three methods share validation and sequential uploads
 Profile settings offers Cards and Images tabs for avatar creation. Images can
 be selected from this library or uploaded directly from the avatar picker, with
 the same optimization and quota enforcement. Header and article editors can
-use copied links; dedicated selectors for those editors are not included.
+use copied links. Profile headers also have dedicated upload and gallery selectors;
+article editors currently use copied links.
 
 Both avatar sources use the square crop editor and save a separate 256 × 256
 WebP to the existing per-user avatar object in R2. The API accepts either the
@@ -24,10 +25,84 @@ upload preserves the saved avatar. The avatar copy is outside the image-library
 quota, as with card avatars; an image uploaded in the picker counts normally.
 The contributor sanitizer clears all avatar metadata.
 
+Profile settings also offers Battlefield, My images, and Gallery for headers.
+Battlefield retains the basic planet display. Images use a rectangular crop with
+a minimum 4:1 width-to-height ratio. The height limit is the crop width divided by
+four, rounded down: 1500 × 375, 1500 × 300, and 2000 × 500 are all valid. Crops can
+be up to 8192 pixels wide. A width of 1500 pixels is recommended; smaller uploads,
+gallery images, and crops can be selected and saved with a low-resolution warning.
+Sources need at least four pixels of width to form a one-pixel-high 4:1 crop.
+Images are never enlarged to meet the recommendation.
+
+Avatars and profile/team headers share `ImageCropCanvas` for framing and corner
+resizing. The corner keeps the selected ratio and top-left position while resizing
+within the image. Header width and height sliders allow wider ratios; avatar crops
+remain square. Controls also support dragging, keyboard sliders, and touch input.
+Reducing a header's width automatically reduces an oversized crop height, and older
+selections are adjusted to the same ratio when reopened. The API and image processor
+enforce that ratio. The initial header selection suggests 1600 × 400 when the source
+is large enough. Settings and the public profile display the same complete crop,
+scaled to fit their header area. Very short crops are centered in a cover area at
+least 96 pixels tall; the displayed area remains at most 400 pixels tall.
+
+Header crop and source policies are validated by the API and image processor.
+The database stores header metadata without policy CHECK constraints, so tightening
+these rules does not block existing headers or unrelated profile updates. Existing
+images remain readable; the crop editor adjusts older selections to current rules
+when reopened, and subsequent saves must satisfy the current validation.
+
+Header uploads submit `purpose=header` to preserve 1500 pixels of width in portrait
+images that already have it. Smaller sources are accepted and optimized without
+enlargement, and existing small library images can also be selected for a header.
+
+Admins manage the shared artwork gallery at `/admin?page=image-gallery`. The
+`/api/image-gallery` list is public; uploads and deletion require admin access.
+Artwork of any positive dimensions can be uploaded. Its public title is prefilled
+from the selected filename without the extension and can be edited before uploading;
+successful uploads clear both title and file. Artwork has a public thumbnail, keeps
+high-resolution pixels up to 8192 pixels wide, and preserves header-ready width
+for tall sources that already have it. Images narrower than 1500 pixels can be
+selected for profile or team headers with a low-resolution warning. The gallery uses the
+same input formats, metadata removal and 40 MP limit as personal uploads.
+The contributor sanitizer removes production gallery references so a local admin
+cannot delete production artwork from the shared bucket.
+
+Saved headers are separate WebP objects at
+`user-data/<user-id>/headers/<random-uuid>.webp`, outside the library quota.
+The API accepts an owned upload ID or gallery image ID plus crop coordinates;
+it never accepts an arbitrary source URL. `user_profile` records the source and
+crop without foreign keys to the originals, so deleting an original preserves
+the header. Replacements and Battlefield resets remove the previous cropped
+object after the database update; failed or skipped cleanup logs its exact key
+for operator reconciliation. Public header responses contain only source kind,
+image URL and dimensions. Private settings include the original choice and crop.
+All header metadata is removed by the existing `user_profile` sanitizer.
+
+Team owners can choose My images or Gallery in their team's Settings tab, using
+the same ratio, resolution recommendation, and crop controls. Teams have no Battlefield choice;
+without a saved image, the existing planet header is displayed. Remove header
+image clears the saved crop and restores that default. Owners can select only
+their own personal uploads; another owner's original upload is not exposed in
+settings. The cropped team header remains visible even if its original is deleted
+or its uploader leaves the team.
+
+Team crops are separate WebP objects at `teams/headers/<team-id>/<random-uuid>.webp`,
+outside the uploader's library quota. Private source and crop metadata lives in
+`team_header`; public responses expose only source kind, image URL and dimensions.
+Saves recheck team ownership inside the transaction that publishes the crop.
+Replacing or removing an image and deleting a team clean up the cropped object
+after the database commit, logging any failed cleanup. The contributor sanitizer
+clears team headers and supports older backups without the table.
+Team header saves allow five admitted processing attempts per account per minute.
+Processing failures count toward that bound; requests rejected because another
+image operation is busy do not. Team deletion is independent of image admission.
+
 The server decodes JPEG, PNG, WebP, and still GIF uploads of at most 10,000,000
 bytes and 40 million pixels. Animated images and SVG are rejected. It applies
 orientation, strips embedded metadata (including EXIF/GPS), resizes within
-2560 × 2560 without enlargement, and encodes WebP at quality 82. Gallery previews
+2560 × 2560 without enlargement, and encodes WebP at quality 82. Header-purpose
+uploads may keep a taller result to preserve their recommended width, and their
+processed source must also fit within 10 MB. Gallery previews
 fit within 400 × 400 at quality 75. Originals are not retained. Each server process allows two uploads and two deletions at once, with at most
 one mutation per account; additional requests receive HTTP 429. Upload bodies
 have a 60-second deadline, after which the input stream is cancelled (HTTP 408).
@@ -101,9 +176,14 @@ and storage entitlements, including those belonging to opted-in accounts.
 Run against the isolated worktree database:
 
 ```bash
-USER_FILES_DB_TEST=1 bun --env-file=.env.worktree test server/lib/user-files
+USER_FILES_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/user-files
 USER_UPLOADS_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/user-uploads.browser.ts
+USER_HEADER_DB_TEST=1 IMAGE_GALLERY_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/user-header server/lib/image-gallery server/routes/user/header.test.ts server/routes/image-gallery.test.ts
+USER_HEADER_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/profile-header.browser.ts
+TEAM_HEADER_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/team-header server/routes/teams/_id/header
+TEAM_HEADER_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/team-header.browser.ts
 bun run --cwd frontend build
+bun test frontend/src/components/app/global/imageCropGeometry.test.ts
 ```
 
 The integration tests use in-memory object storage and cover ownership,

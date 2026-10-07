@@ -60,8 +60,10 @@ export function createUserFilesRoute(service = userFileService) {
           await next();
         },
         zValidator('form', userFileUploadInput),
-        async c =>
-          c.json({ data: await service.create(c.get('user')!.id, c.req.valid('form').file) }, 201),
+        async c => {
+          const { file, purpose } = c.req.valid('form');
+          return c.json({ data: await service.create(c.get('user')!.id, file, purpose) }, 201);
+        },
       )
       .delete(
         '/:id',

@@ -17,6 +17,7 @@ import { postsRoute } from './routes/posts.ts';
 import { userRoute } from './routes/user.ts';
 import { userReportsRoute } from './routes/user-reports.ts';
 import { userFilesRoute } from './routes/user-files.ts';
+import { imageGalleryRoute } from './routes/image-gallery.ts';
 import { userSettingsRoute } from './routes/user-settings.ts';
 import { userTournamentSavesRoute } from './routes/user-tournament-saves.ts';
 import { userCalendarRoute } from './routes/user-calendar.ts';
@@ -181,6 +182,7 @@ const apiRoutes = app
   .route('/posts', postsRoute)
   .route('/user-settings', userSettingsRoute)
   .route('/user-files', userFilesRoute)
+  .route('/image-gallery', imageGalleryRoute)
   .route('/notifications', notificationsRoute)
   .route('/messages', messagesRoute)
   .route('/user-tournament-saves', userTournamentSavesRoute)
