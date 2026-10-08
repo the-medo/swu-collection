@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="gold" x1="6" y1="7" x2="25" y2="23" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF0AD" />
+      <stop offset=".48" stop-color="#E7BA54" />
+      <stop offset="1" stop-color="#B98229" />
+    </linearGradient>
+  </defs>
+  <g transform="rotate(-14 16 16)">
+    <path d="M5 11h22l2 2v10l-2 2H5l-2-2V13l2-2Z" fill="#926322" stroke="#6F4A1B" />
+    <path d="M5 7h22l2 2v11l-2 2H5l-2-2V9l2-2Z" fill="url(#gold)" stroke="#8A601F" />
+    <path d="M6 9h20M5 10v9" stroke="#FFF3C5" stroke-linecap="round" />
+    <path
+      d="M9 11h5v7m-7-5h5m-5 3h5m7-5h5v3h-5v4h5"
+      stroke="#80561C"
+      stroke-width="1.6"
+      stroke-linecap="square"
+      stroke-linejoin="bevel"
+    />
+    <path d="M26 11v7" stroke="#B28639" />
+  </g>
+</svg>

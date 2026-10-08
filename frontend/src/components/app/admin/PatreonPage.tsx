@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { usePatreonOverview } from '@/api/patreon/usePatreonOverview';
 import { useSyncPatreon } from '@/api/patreon/useSyncPatreon';
 import { useReviewPatreonMember } from '@/api/patreon/useReviewPatreonMember';
+import { formatBeskar } from '../../../../../shared/types/credits';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -41,7 +42,7 @@ export function PatreonPage() {
         <div>
           <h2 className="text-xl font-semibold">Patreon supporters</h2>
           <p className="text-sm text-muted-foreground">
-            1 USD of support earns 1,000 credits. Accounts match by verified email.
+            1 USD of support earns 1,000 credits and 1 beskar. Accounts match by verified email.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -53,14 +54,15 @@ export function PatreonPage() {
             Refresh view
           </Button>
           <Button disabled={!data?.configured || sync.isPending} onClick={() => sync.mutate()}>
-            {sync.isPending ? 'Synchronizing…' : 'Sync supporters and award credits'}
+            {sync.isPending ? 'Synchronizing…' : 'Sync supporters and award currencies'}
           </Button>
         </div>
       </div>
       {sync.isSuccess && (
         <p role="status" className="text-sm">
           Checked {sync.data.members} supporters and awarded {sync.data.credits.toLocaleString()}{' '}
-          credits across {sync.data.awards} {sync.data.awards === 1 ? 'award' : 'awards'}.
+          credits and {formatBeskar(sync.data.credits / 10)} beskar across {sync.data.awards}{' '}
+          {sync.data.awards === 1 ? 'award' : 'awards'}.
         </p>
       )}
       {sync.isError && (
@@ -70,8 +72,8 @@ export function PatreonPage() {
       )}
       {review.isSuccess && (
         <p role="status" className="text-sm">
-          Review completed. {review.data.credits.toLocaleString()} credits awarded; previous awards
-          preserved.
+          Review completed. {review.data.credits.toLocaleString()} credits and{' '}
+          {formatBeskar(review.data.credits / 10)} beskar awarded; previous awards preserved.
         </p>
       )}
       {review.isError && (
@@ -128,8 +130,8 @@ export function PatreonPage() {
                       <TableHead>SWUBASE account</TableHead>
                       <TableHead>Membership</TableHead>
                       <TableHead>Lifetime support</TableHead>
-                      <TableHead>Credits awarded</TableHead>
-                      <TableHead>Account balance</TableHead>
+                      <TableHead>Currencies awarded</TableHead>
+                      <TableHead>Credit balance</TableHead>
                       <TableHead>Last charge attempt</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -181,7 +183,12 @@ export function PatreonPage() {
                         <TableCell className="whitespace-nowrap">
                           {money(member.lifetimeCents)}
                         </TableCell>
-                        <TableCell>{(member.creditedCents * 10).toLocaleString()}</TableCell>
+                        <TableCell>
+                          <div>{(member.creditedCents * 10).toLocaleString()} credits</div>
+                          <div className="text-xs text-muted-foreground">
+                            {formatBeskar(member.creditedCents)} beskar
+                          </div>
+                        </TableCell>
                         <TableCell>{member.balance?.toLocaleString() ?? '—'}</TableCell>
                         <TableCell className="min-w-40">
                           <div>{date(member.lastChargeAt)}</div>

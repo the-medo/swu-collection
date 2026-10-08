@@ -24,8 +24,10 @@ import type { AuthExtension } from '../auth/auth.ts';
 import { eventHighlightsRoute } from './admin/event-highlights/index.ts';
 import { resourceSubmissionsRoute } from './admin/resource-submissions/index.ts';
 import { patreonAdminRoute } from './admin/patreon/index.ts';
+import { creditsAdminRoute } from './admin/credits/index.ts';
 
 export const adminRoute = new Hono<AuthExtension>()
+  .route('/credits', creditsAdminRoute)
   .route('/patreon', patreonAdminRoute)
   .route('/user-reports', reportModerationRoute)
   .route('/resource-submissions', resourceSubmissionsRoute)

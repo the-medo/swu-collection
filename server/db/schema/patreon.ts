@@ -11,6 +11,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 import { user } from './auth-schema.ts';
+import type { CreditCurrency, ShopItemId } from '../../../shared/types/credits.ts';
 
 export const patreonConnection = pgTable('patreon_connection', {
   clientId: text('client_id').primaryKey(),
@@ -59,7 +60,8 @@ export const patreonMember = pgTable(
   ],
 );
 
-// Append-only awards (and, in future, spends). Balance is SUM(amount).
+// Shared transaction ledger. A database trigger maintains user_profile balances.
+// Credits are whole units; beskar amounts are hundredths. Shop debits are negative.
 export const userCredits = pgTable(
   'user_credits',
   {
@@ -68,11 +70,18 @@ export const userCredits = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     amount: bigint('amount', { mode: 'number' }).notNull(),
+    currency: text('currency').$type<CreditCurrency>().notNull().default('credits'),
+    itemId: text('item_id').$type<ShopItemId>(),
     source: text('source').notNull(),
     sourceKey: text('source_key').notNull().unique(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   table => [
+    check('user_credits_currency_check', sql`${table.currency} IN ('credits', 'beskar')`),
+    check(
+      'user_credits_item_check',
+      sql`${table.itemId} IS NULL OR ${table.itemId} IN ('achievement-slot', 'battlefield-slot')`,
+    ),
     index('user_credits_user_created_idx').on(table.userId, table.createdAt),
     check(
       'user_credits_amount_check',

@@ -49,6 +49,7 @@ export const adminSections = [
   {
     title: 'Users',
     items: [
+      { id: 'credits', label: 'User currencies', icon: CircleDollarSign },
       { id: 'image-gallery', label: 'Image gallery', icon: Image },
       { id: 'user-reports', label: 'User reports', icon: Flag },
       { id: 'patreon', label: 'Patreon supporters', icon: CircleDollarSign },

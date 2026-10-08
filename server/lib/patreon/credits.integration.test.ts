@@ -6,6 +6,8 @@ import { patreonMember, userCredits } from '../../db/schema/patreon.ts';
 import { createPatreonCredits } from './credits.ts';
 import type { MemberSnapshot } from './model.ts';
 import { auth } from '../../auth/auth.ts';
+import { STARTING_CREDITS } from '../credits/service.ts';
+import { userProfile } from '../../db/schema/user_profile.ts';
 
 test.skipIf(process.env.PATREON_DB_TEST !== '1')(
   'credit backfill, concurrent retries, matching, holds and transactional rollback',
@@ -46,7 +48,7 @@ test.skipIf(process.env.PATREON_DB_TEST !== '1')(
         await db
           .select({ amount: sql<number>`coalesce(sum(${userCredits.amount}), 0)`.mapWith(Number) })
           .from(userCredits)
-          .where(eq(userCredits.userId, id))
+          .where(and(eq(userCredits.userId, id), eq(userCredits.currency, 'credits')))
       )[0].amount;
     try {
       await db.insert(user).values(
@@ -70,6 +72,9 @@ test.skipIf(process.env.PATREON_DB_TEST !== '1')(
         ),
       ).toBe(3000);
       expect(await balance()).toBe(15500);
+      expect(
+        (await db.select().from(userProfile).where(eq(userProfile.userId, users[0])))[0],
+      ).toMatchObject({ creditBalance: 15500, beskarBalanceCents: 1550 });
       expect((await member('member')).creditedCents).toBe(1550);
       // Old in-flight pages cannot flag a false decrease or revert a current email.
       expect(
@@ -99,6 +104,10 @@ test.skipIf(process.env.PATREON_DB_TEST !== '1')(
       await auth.options.databaseHooks!.user!.update!.after!(verifiedAccount);
       await credits.reconcileUser(users[1]);
       expect(await balance(users[1])).toBe(2250);
+      expect(
+        (await db.select().from(userProfile).where(eq(userProfile.userId, users[1])))[0]
+          .beskarBalanceCents,
+      ).toBe(225);
 
       const lateId = crypto.randomUUID();
       users.push(lateId);
@@ -117,7 +126,11 @@ test.skipIf(process.env.PATREON_DB_TEST !== '1')(
       });
       const [createdAccount] = await db.select().from(user).where(eq(user.id, lateId));
       await auth.options.databaseHooks!.user!.create!.after!(createdAccount);
-      expect(await balance(lateId)).toBe(990);
+      expect(await balance(lateId)).toBe(STARTING_CREDITS + 990);
+      expect(
+        (await db.select().from(userProfile).where(eq(userProfile.userId, lateId)))[0]
+          .beskarBalanceCents,
+      ).toBe(99);
 
       expect(await credits.apply(snapshot('missing-email', 100, { email: null }))).toBe(0);
       expect((await member('missing-email')).reviewReason).toBe('email_unavailable');
@@ -190,6 +203,25 @@ test.skipIf(process.env.PATREON_DB_TEST !== '1')(
       expect((await member('rollback')).creditedCents).toBe(10);
       await db.delete(userCredits).where(eq(userCredits.sourceKey, key));
       expect(await credits.apply(snapshot('rollback', 20))).toBe(100);
+      // Failure in the second currency rolls back the first award, both caches and the checkpoint.
+      const beskarKey = `patreon-beskar:${campaignId}:rollback:30`;
+      await db
+        .insert(userCredits)
+        .values({
+          userId: users[0],
+          currency: 'beskar',
+          amount: 1,
+          source: 'fixture',
+          sourceKey: beskarKey,
+        });
+      const [before] = await db.select().from(userProfile).where(eq(userProfile.userId, users[0]));
+      await expect(credits.apply(snapshot('rollback', 30))).rejects.toThrow();
+      const [after] = await db.select().from(userProfile).where(eq(userProfile.userId, users[0]));
+      expect(after.creditBalance).toBe(before.creditBalance);
+      expect(after.beskarBalanceCents).toBe(before.beskarBalanceCents);
+      expect((await member('rollback')).creditedCents).toBe(20);
+      await db.delete(userCredits).where(eq(userCredits.sourceKey, beskarKey));
+      expect(await credits.apply(snapshot('rollback', 30))).toBe(100);
 
       const old = snapshot('deleted', 100);
       await credits.markDeleted(campaignId, 'deleted', new Date(++clock));

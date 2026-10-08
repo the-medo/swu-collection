@@ -1,11 +1,11 @@
 import { publicBattlefieldScene } from '../../../shared/battlefield/layers.ts';
 import { normalizeBattlefieldScene } from '../../../shared/battlefield/normalize.ts';
 import { battlefieldCopyName, cloneBattlefieldScene } from '../../../shared/battlefield/editing.ts';
-import { and, asc, eq, sql } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import { db } from '../../db';
 import { user } from '../../db/schema/auth-schema.ts';
 import { userProfile } from '../../db/schema/user_profile.ts';
-import { userCredits } from '../../db/schema/patreon.ts';
+import { userCreditBalance, CreditsError } from '../credits/service.ts';
 import { battlefield } from '../../db/schema/battlefield.ts';
 import { battlefieldCost, BattlefieldSceneError } from '../../../shared/battlefield/cost.ts';
 import { persistUserHeader } from '../user-header/service.ts';
@@ -52,13 +52,13 @@ async function lockProfile(tx: Transaction, userId: string) {
   return profile;
 }
 async function balance(database: typeof db | Transaction, userId: string) {
-  const [row] = await database
-    .select({ balance: sql<number>`coalesce(sum(${userCredits.amount}),0)`.mapWith(Number) })
-    .from(userCredits)
-    .where(eq(userCredits.userId, userId));
-  if (!Number.isSafeInteger(row.balance))
-    throw new BattlefieldError('Your credit balance requires review.', 400);
-  return row.balance;
+  try {
+    return await userCreditBalance(database, userId);
+  } catch (error) {
+    if (error instanceof CreditsError)
+      throw new BattlefieldError('Your credit balance requires review.', error.status);
+    throw error;
+  }
 }
 export function validateBattlefieldScene(
   scene: BattlefieldScene,
