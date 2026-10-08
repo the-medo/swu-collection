@@ -4,6 +4,7 @@ import { useUser } from '@/hooks/useUser.ts';
 import { createApiError } from '@/api/errors.ts';
 import { meleeConnectionKeys } from './queryKeys.ts';
 import { userTournamentKeys } from '@/api/user/tournamentKeys.ts';
+import { userProfileKeys } from '@/api/user-profile/queryKeys.ts';
 
 type Action = { action: 'start'; username: string } | { action: 'verify' | 'disconnect' };
 
@@ -29,6 +30,7 @@ export function useMeleeConnectionMutation() {
       queryClient.setQueryData(queryKey, data);
       await queryClient.invalidateQueries({ queryKey });
       await queryClient.invalidateQueries({ queryKey: userTournamentKeys.profile(userId) });
+      await queryClient.invalidateQueries({ queryKey: userProfileKeys.achievements(userId) });
     },
   });
 }

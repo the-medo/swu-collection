@@ -18,6 +18,7 @@ import { CollectionType } from '../../../../../../types/enums.ts';
 import { Helmet } from 'react-helmet-async';
 import { ProfileBio } from './ProfileBio.tsx';
 import { ProfileHeader } from './ProfileHeader.tsx';
+import { ProfileAchievements } from './ProfileAchievements.tsx';
 import { ProfileFavorites, ProfileFavoritesSkeleton } from './ProfileFavorites.tsx';
 import {
   ProfileAvatar,
@@ -34,7 +35,8 @@ const routeApi = getRouteApi('/users/$userId/');
 const pageClassName = 'flex min-h-dvh min-w-0 flex-col';
 const columnsClassName =
   'grid min-w-0 flex-1 grid-cols-[92px_minmax(0,1fr)] grid-rows-[auto_auto_auto_1fr] @[401px]/main-body:grid-cols-[112px_minmax(0,1fr)] @[761px]/main-body:grid-cols-[208px_minmax(0,1fr)] @[761px]/main-body:grid-rows-[auto_auto_1fr] @[1001px]/main-body:grid-cols-[240px_minmax(0,1fr)]';
-const nameClassName = 'col-start-2 row-start-1 min-w-0 p-4';
+const nameClassName =
+  'col-start-2 row-start-1 flex min-w-0 flex-col gap-4 p-4 @[761px]/main-body:flex-row @[761px]/main-body:items-center';
 const bioClassName =
   'col-span-2 row-start-2 min-w-0 @[761px]/main-body:col-span-1 @[761px]/main-body:col-start-2';
 const contentClassName =
@@ -111,9 +113,14 @@ const UserDetail: React.FC = () => {
         <div className={columnsClassName}>
           <ProfileAvatar user={user} canEdit={currentUser?.id === userId} />
           <div className={nameClassName}>
-            <h1 className="m-0! min-w-0 p-0 text-[clamp(28px,3.2cqi,44px)]! leading-[1.15]! font-bold! tracking-[-0.045em]! [overflow-wrap:anywhere]">
+            <h1 className="m-0! min-w-0 flex-1 p-0 text-[clamp(28px,3.2cqi,44px)]! leading-[1.15]! font-bold! tracking-[-0.045em]! [overflow-wrap:anywhere]">
               {user.displayName}
             </h1>
+            <ProfileAchievements
+              key={userId}
+              userId={userId}
+              canEdit={currentUser?.id === userId}
+            />
           </div>
           <div className={bioClassName}>
             <hr className={dividerClassName} />
