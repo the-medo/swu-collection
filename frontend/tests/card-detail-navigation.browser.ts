@@ -44,6 +44,9 @@ async function expectSearch(values: Record<string, string | null>) {
 }
 
 try {
+  await page.route('**/api/deck/card/*', route =>
+    route.fulfill({ status: 200, json: { data: [] } }),
+  );
   await page.goto(
     `${origin}/cards/detail/${card.cardId}?cardTab=variants&cardVariantId=${weekly.variantId}&deckFormat=1`,
   );
@@ -62,8 +65,8 @@ try {
   await expect(addSection).toContainText(variantLabel(weekly));
   await page.goForward();
   await expect(addSection).toContainText(variantLabel(foil));
-  await page.getByRole('tab', { name: 'Card Details', exact: true }).click();
-  await expectSearch({ cardTab: null, cardVariantId: foil.variantId, deckFormat: '1' });
+  await page.getByRole('tab', { name: 'Decks', exact: true }).click();
+  await expectSearch({ cardTab: 'decks', cardVariantId: foil.variantId, deckFormat: '1' });
   await page.goBack();
   await expect(variantsTab).toHaveAttribute('aria-selected', 'true');
   await expect(addSection).toContainText(variantLabel(foil));
@@ -152,9 +155,9 @@ try {
 
   // Dispatch the existing search-result action while a dialog is open to exercise an in-app card switch.
   await page.goto(
-    `${origin}/cards/search?name=${encodeURIComponent(nextCard.name)}&resultsLayout=tableSmall&modalCardId=${card.cardId}&modalCardTab=variants&modalCardVariantId=${weekly.variantId}`,
+    `${origin}/cards/search?name=${encodeURIComponent(nextCard.name)}&resultsLayout=tableSmall&modalCardId=${card.cardId}&modalCardTab=decks&modalCardVariantId=${weekly.variantId}`,
   );
-  await expect(dialog.getByRole('tab', { name: /^Variants/ })).toHaveAttribute(
+  await expect(dialog.getByRole('tab', { name: 'Decks', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );

@@ -27,4 +27,5 @@ export function updateDeckPricesCache(
   client.setQueryData<DeckData>(deckKeys.detail(id, viewerId), current =>
     current ? { ...current, entityPrices: prices } : current,
   );
+  void client.invalidateQueries({ queryKey: deckKeys.forCardAll });
 }

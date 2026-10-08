@@ -27,6 +27,12 @@ test('price refresh updates the viewer-scoped detail without leaking into anothe
   } as unknown as DeckData;
   client.setQueryData(deckKeys.detail('deck', 'owner'), data);
   client.setQueryData(deckKeys.detail('deck', 'member'), data);
+  const cardLookupKey = deckKeys.forCard('fleet-lieutenant');
+  const statisticsKey = ['card-decks', 'fleet-lieutenant', 'meta', 'tournament', 'leader', 'base'];
+  const lookup = { data: [{ deck: { id: 'deck', public: 1 }, entityPrices: [] }] };
+  const statistics = { data: [{ deck: { id: 'tournament-deck', public: 1 } }] };
+  client.setQueryData(cardLookupKey, lookup);
+  client.setQueryData(statisticsKey, statistics);
   const prices = [
     { entityId: 'deck', sourceType: 'fixture', price: 12 },
   ] as unknown as DeckData['entityPrices'];
@@ -38,6 +44,10 @@ test('price refresh updates the viewer-scoped detail without leaking into anothe
     expect(client.getQueryData<DeckData>(deckKeys.detail('deck', 'member'))?.entityPrices).toEqual(
       [],
     );
+    expect(client.getQueryState(cardLookupKey)?.isInvalidated).toBe(true);
+    expect(client.getQueryData<typeof lookup>(cardLookupKey)).toEqual(lookup);
+    expect(client.getQueryState(statisticsKey)?.isInvalidated).toBe(false);
+    expect(client.getQueryData<typeof statistics>(statisticsKey)).toEqual(statistics);
     updateDeckPricesCache(client, 'missing', 'owner', prices);
     expect(client.getQueryData(deckKeys.detail('missing', 'owner'))).toBeUndefined();
   } finally {

@@ -16,6 +16,7 @@ import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
 import { CardVariantPicker } from '../CardVariantPicker.tsx';
 import CardDetailAddToList from './CardDetailAddToList.tsx';
 import CardDetailInLists from './CardDetailInLists.tsx';
+import CardDetailDecks from './CardDetailDecks.tsx';
 import { useRole } from '@/hooks/useRole.ts';
 import { cardDetailTabSchema, type CardDetailTab } from './cardDetailSearchParams.ts';
 
@@ -157,9 +158,10 @@ const CardDetail: React.FC<CardDetailProps> = ({
                   onTabChange(cardDetailTabSchema.parse(value));
                 }}
               >
-                <TabsList className="mb-2 w-full grid grid-cols-2">
+                <TabsList className="mb-2 w-full grid grid-cols-3">
                   <TabsTrigger value="details">Card Details</TabsTrigger>
                   <TabsTrigger value="variants">Variants ({allVariants.length})</TabsTrigger>
+                  <TabsTrigger value="decks">Decks</TabsTrigger>
                 </TabsList>
 
                 {/* Card Details Tab */}
@@ -346,6 +348,9 @@ const CardDetail: React.FC<CardDetailProps> = ({
                       )}
                     </div>
                   )}
+                </TabsContent>
+                <TabsContent value="decks" className="mt-0">
+                  <CardDetailDecks cardId={cardId} />
                 </TabsContent>
               </Tabs>
             </CardContent>

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const cardDetailTabSchema = z.enum(['details', 'variants']);
+export const cardDetailTabSchema = z.enum(['details', 'variants', 'decks']);
 export type CardDetailTab = z.infer<typeof cardDetailTabSchema>;
 
 export const cardDetailVariantIdSchema = z
