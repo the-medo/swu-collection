@@ -9,22 +9,6 @@ const bundle = await Bun.build({
   target: 'browser',
   format: 'iife',
   define: { 'process.env.NODE_ENV': JSON.stringify('development') },
-  plugins: [
-    {
-      name: 'standalone-textures',
-      setup(build) {
-        build.onLoad({ filter: /\.png$/ }, async ({ path }) => ({
-          loader: 'js',
-          contents:
-            'export default ' +
-            JSON.stringify(
-              'data:image/png;base64,' +
-                Buffer.from(await Bun.file(path).arrayBuffer()).toString('base64'),
-            ),
-        }));
-      },
-    },
-  ],
 });
 if (!bundle.success) throw new Error(bundle.logs.join('\n'));
 const browser = await chromium.launch();

@@ -1,8 +1,8 @@
 // BATTLEFIELD_ART_BROWSER_TEST=1 bun frontend/tests/battlefield-art.browser.ts
 // Rasterize the production SVG renderer in Chromium; no app, auth or database fixtures needed.
+// Requires network access to images.swubase.com for the published texture assets.
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { readFileSync } from 'node:fs';
 import { chromium, expect } from 'playwright/test';
 import { BattlefieldCanvas } from '../src/components/app/battlefield/BattlefieldCanvas';
 import { BattlefieldArt } from '../src/components/app/battlefield/BattlefieldArt';
@@ -16,16 +16,23 @@ import {
 
 if (process.env.BATTLEFIELD_ART_BROWSER_TEST !== '1')
   throw new Error('Explicitly enable the rendering check.');
+// Standalone serialized SVGs need their real texture assets embedded to rasterize.
+const textures = await Promise.all(
+  [...Object.values(battlefieldPlanetTextureImages), battlefieldPlanetGrainImage].map(async url => {
+    const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    if (!response.ok || !response.headers.get('Content-Type')?.startsWith('image/png'))
+      throw new Error(`Could not load Battlefield texture ${url}: HTTP ${response.status}`);
+    return [
+      url,
+      'data:image/png;base64,' + Buffer.from(await response.arrayBuffer()).toString('base64'),
+    ];
+  }),
+);
 const browser = await chromium.launch({ timeout: 30_000 });
 const timeout = setTimeout(() => {
   void browser.close({ reason: 'Battlefield rendering check timed out.' });
 }, 30_000);
 let sequence = 0;
-// Standalone serialized SVGs need their real texture assets embedded to rasterize.
-const textures = [
-  ...Object.values(battlefieldPlanetTextureImages),
-  battlefieldPlanetGrainImage,
-].map(path => [path, 'data:image/png;base64,' + readFileSync(path).toString('base64')]);
 const render = (node: Parameters<typeof renderToStaticMarkup>[0]) => {
   let svg = renderToStaticMarkup(node, { identifierPrefix: `art-check-${sequence++}-` });
   for (const [path, data] of textures) svg = svg.replaceAll(`href="${path}"`, `href="${data}"`);

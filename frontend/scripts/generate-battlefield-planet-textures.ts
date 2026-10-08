@@ -1,11 +1,13 @@
 // bun frontend/scripts/generate-battlefield-planet-textures.ts
 // Bake deterministic SVG noise once; lighting and zoom can reuse these pixels.
+// Output stays in ignored local state; upload these files to battlefields/textures in the images bucket.
+// For changed published tiles, use new filenames and update battlefieldPlanetTextureImages.ts to avoid stale caches.
 import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright/test';
 import sharp from 'sharp';
 import { battlefieldPlanetTextures } from '../../shared/battlefield/planets.ts';
 
-const directory = new URL('../src/assets/battlefield/planets/', import.meta.url);
+const directory = new URL('../../.swubase/battlefield-textures/', import.meta.url);
 await mkdir(directory, { recursive: true });
 const textures = [
   ...Object.entries(battlefieldPlanetTextures).map(([name, texture]) => ({
@@ -36,7 +38,9 @@ try {
       .toBuffer();
     await Bun.write(new URL(name + '.png', directory), compact);
   }
-  console.log('Generated six 256px Battlefield planet noise tiles.');
+  console.log(
+    'Generated six 256px Battlefield planet noise tiles in .swubase/battlefield-textures.',
+  );
 } finally {
   await browser.close();
 }
