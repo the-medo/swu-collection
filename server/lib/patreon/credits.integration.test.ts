@@ -6,6 +6,7 @@ import { patreonMember, userCredits } from '../../db/schema/patreon.ts';
 import { createPatreonCredits } from './credits.ts';
 import type { MemberSnapshot } from './model.ts';
 import { auth } from '../../auth/auth.ts';
+import { STARTING_CREDITS } from '../credits/service.ts';
 
 test.skipIf(process.env.PATREON_DB_TEST !== '1')(
   'credit backfill, concurrent retries, matching, holds and transactional rollback',
@@ -117,7 +118,7 @@ test.skipIf(process.env.PATREON_DB_TEST !== '1')(
       });
       const [createdAccount] = await db.select().from(user).where(eq(user.id, lateId));
       await auth.options.databaseHooks!.user!.create!.after!(createdAccount);
-      expect(await balance(lateId)).toBe(990);
+      expect(await balance(lateId)).toBe(STARTING_CREDITS + 990);
 
       expect(await credits.apply(snapshot('missing-email', 100, { email: null }))).toBe(0);
       expect((await member('missing-email')).reviewReason).toBe('email_unavailable');

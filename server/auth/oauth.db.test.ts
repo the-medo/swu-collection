@@ -3,6 +3,8 @@ import { and, eq } from 'drizzle-orm';
 import { auth } from './auth.ts';
 import { db } from '../db';
 import { account, session, user } from '../db/schema/auth-schema.ts';
+import { STARTING_CREDITS, userCreditBalance } from '../lib/credits/service.ts';
+import { userCredits } from '../db/schema/patreon.ts';
 
 const enabled = process.env.SWUBASE_USER_REPORTS_DB_TEST === '1';
 if (enabled) {
@@ -110,6 +112,18 @@ for (const providerId of ['google', 'github'] as const) {
             expect(current?.user.currency).toBe('USD');
           }
           const userId = current!.user.id;
+          expect(await userCreditBalance(db, userId)).toBe(STARTING_CREDITS);
+          // A continuously active account can recover a missed grant on routine
+          // session refresh without registering or signing in again.
+          await db.delete(userCredits).where(eq(userCredits.sourceKey, `starting:${userId}`));
+          await db
+            .update(session)
+            .set({ expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000) })
+            .where(eq(session.userId, userId));
+          expect(
+            (await auth.api.getSession({ headers, query: { disableCookieCache: true } }))?.user.id,
+          ).toBe(userId);
+          expect(await userCreditBalance(db, userId)).toBe(STARTING_CREDITS);
           expect(await db.select().from(user).where(eq(user.email, email))).toHaveLength(1);
           expect(
             await db
@@ -136,6 +150,7 @@ for (const providerId of ['google', 'github'] as const) {
           );
           expect(update.status).toBe(200);
           expect((await auth.api.getSession({ headers }))?.user.displayName).toBe(id + '-updated');
+          expect(await userCreditBalance(db, userId)).toBe(STARTING_CREDITS);
           const logout = await auth.handler(
             new Request(origin + '/api/auth/sign-out', { method: 'POST', headers, body: '{}' }),
           );

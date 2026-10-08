@@ -59,7 +59,8 @@ export const patreonMember = pgTable(
   ],
 );
 
-// Append-only awards (and, in future, spends). Balance is SUM(amount).
+// Shared append-only credit ledger for starting grants, admins and all providers.
+// Balance is SUM(amount). Battlefield layouts use it as a reusable budget.
 export const userCredits = pgTable(
   'user_credits',
   {

@@ -85,6 +85,8 @@ They never create, edit or delete a Patreon subscription or register webhooks.
   A member already linked to an account is never transferred automatically.
 - `user_credits` is an append-only ledger. `SUM(amount)` is the user's balance.
   Patreon grants have a unique source key identifying member and credited total.
+  The same balance includes starting and admin grants. See [user credits](user-credits.md)
+  for registration grants, administration and future provider integration.
 - `patreon_member.credited_cents` records lifetime USD support already awarded.
   First award: lifetime cents × 10. Later award: new lifetime cents minus credited
   cents, multiplied by 10. A row lock and one transaction protect award/checkpoint

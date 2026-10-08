@@ -291,7 +291,11 @@ export async function withBattlefieldFixture(
     page.on('dialog', dialog => void (dialogs.accept ? dialog.accept() : dialog.dismiss()));
     await sql`INSERT INTO "user"(id,name,display_name,email,email_verified,currency,role,created_at,updated_at) VALUES(${userId},'Battlefield fixture',${userId},${userId + '@invalid.local'},false,'USD','user',now(),now())`;
     await sql`INSERT INTO session(id,token,user_id,expires_at,created_at,updated_at) VALUES(${crypto.randomUUID()},${token},${userId},now()+interval '1 hour',now(),now())`;
-    await sql`INSERT INTO user_credits(user_id,amount,source,source_key) VALUES(${userId},200000,'battlefield-browser',${crypto.randomUUID()})`;
+    // Include the starting grant in the fixture's 200,000-credit budget so a
+    // routine auth session refresh cannot add it a second time.
+    await sql`INSERT INTO user_credits(user_id,amount,source,source_key) VALUES
+      (${userId},10000,'starting',${'starting:' + userId}),
+      (${userId},190000,'battlefield-browser',${crypto.randomUUID()})`;
     const cookieName = getCookies({
       baseURL: origin,
       advanced: { cookiePrefix: process.env.BETTER_AUTH_COOKIE_PREFIX },
