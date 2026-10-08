@@ -13,6 +13,7 @@ import { toast } from '@/hooks/use-toast.ts';
 import DebouncedInput from '@/components/app/global/DebouncedInput/DebouncedInput.tsx';
 import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { useNavigate } from '@tanstack/react-router';
+import { getCardDetailDialogSearch } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 import { DeckCardInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import DeckCardBoardMoveButtons from '@/components/app/decks/DeckContents/DeckCards/DeckCardBoardMoveButtons.tsx';
@@ -144,7 +145,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
           onClick={() => {
             void navigate({
               to: '.',
-              search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
+              search: previous => getCardDetailDialogSearch(previous, deckCard.cardId),
             });
           }}
         >

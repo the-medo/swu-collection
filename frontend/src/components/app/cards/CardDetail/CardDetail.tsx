@@ -6,7 +6,6 @@ import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectD
 import { Badge } from '@/components/ui/badge.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
-import { Button } from '@/components/ui/button.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
@@ -15,12 +14,28 @@ import { PriceBadge } from '@/components/app/card-prices';
 import { CardPriceSourceType } from '../../../../../../types/CardPrices.ts';
 import PreviewCardBadge from '@/components/app/global/PreviewCardBadge.tsx';
 import { CardVariantPicker } from '../CardVariantPicker.tsx';
+import CardDetailAddToList from './CardDetailAddToList.tsx';
+import CardDetailInLists from './CardDetailInLists.tsx';
+import CardDetailDecks from './CardDetailDecks.tsx';
+import { useRole } from '@/hooks/useRole.ts';
+import { cardDetailTabSchema, type CardDetailTab } from './cardDetailSearchParams.ts';
 
 interface CardDetailProps {
   cardId: string;
+  tab: CardDetailTab;
+  variantId?: string;
+  onTabChange: (tab: CardDetailTab) => void;
+  onVariantChange: (variantId: string) => void;
 }
 
-const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
+const CardDetail: React.FC<CardDetailProps> = ({
+  cardId,
+  tab,
+  variantId,
+  onTabChange,
+  onVariantChange,
+}) => {
+  const hasRole = useRole();
   const { data: cardList, isFetching: isFetchingCardList } = useCardList();
 
   const card = useMemo(() => {
@@ -33,23 +48,26 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
     return card ? selectDefaultVariant(card) : undefined;
   }, [card]);
 
-  // State to track the selected variant
-  const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(undefined);
+  const [visitedVariantsCardId, setVisitedVariantsCardId] = useState<string | undefined>();
+  const activeVariantId = variantId && card?.variants[variantId] ? variantId : defaultVariantId;
+
+  // Retain the lazy form after Variants opens, including through URL/history navigation.
+  if (tab === 'variants' && visitedVariantsCardId !== cardId) {
+    setVisitedVariantsCardId(cardId);
+  }
 
   // Get the current variant object based on selected id
   const selectedVariant = useMemo(() => {
     if (!card) return undefined;
-    if (!selectedVariantId && defaultVariantId) return card.variants[defaultVariantId];
-    return selectedVariantId ? card.variants[selectedVariantId] : undefined;
-  }, [card, defaultVariantId, selectedVariantId]);
+    return activeVariantId ? card.variants[activeVariantId] : undefined;
+  }, [card, activeVariantId]);
 
   // Get all variants for the card
   const allVariants = useMemo(() => {
     if (!card) return [];
-    return Object.entries(card.variants).map(([variantId, variantData]) => ({
-      id: variantId,
-      ...variantData,
-    }));
+    return Object.entries(card.variants).flatMap(([variantId, variantData]) =>
+      variantData ? [{ id: variantId, ...variantData }] : [],
+    );
   }, [card]);
 
   if (!card) {
@@ -67,23 +85,29 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
   return (
     <>
       <Helmet title={`${card.name} | SWUBase`} />
-      <div className="flex flex-col gap-4 p-2">
-        <Link to={`/cards/detail/$cardId`} params={{ cardId }}>
+      <div className="@container/card-detail flex flex-col gap-4 p-2">
+        <Link
+          to="/cards/detail/$cardId"
+          params={{ cardId }}
+          search={previous => ({
+            formatId: previous.formatId,
+            metaId: previous.metaId,
+            deckFormat: previous.deckFormat,
+            cardTab: tab === 'details' ? undefined : tab,
+            cardVariantId: activeVariantId,
+          })}
+        >
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="text-xl font-bold">{card.name}</h2>
             {card.preview && <PreviewCardBadge size="default" />}
           </div>
         </Link>
 
-        <div className="grid grid-cols-1 md:grid-cols-[350px_1fr_300px] gap-4">
+        <div className="grid grid-cols-1 gap-4 @[720px]/card-detail:grid-cols-[300px_minmax(0,1fr)] @[1100px]/card-detail:grid-cols-[350px_minmax(0,1fr)]">
           {/* Left Column - Card Image and Variant Info */}
           <div className="flex flex-col gap-3">
             <div className="flex justify-center">
-              <CardImage
-                size="w300"
-                card={card}
-                cardVariantId={selectedVariantId ?? defaultVariantId}
-              />
+              <CardImage size="w300" card={card} cardVariantId={activeVariantId} />
             </div>
 
             {/* Card Variant Information */}
@@ -123,13 +147,21 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
             )}
           </div>
 
-          {/* Middle Column - Card Details with Tabs */}
-          <Card className="overflow-hidden">
+          {/* Main Content - Card Details with Tabs */}
+          <Card className="min-w-0 overflow-hidden">
             <CardContent className="pt-4 px-4">
-              <Tabs defaultValue="details" className="w-full">
-                <TabsList className="mb-2 w-full grid grid-cols-2">
+              <Tabs
+                key={cardId}
+                value={tab}
+                className="w-full"
+                onValueChange={value => {
+                  onTabChange(cardDetailTabSchema.parse(value));
+                }}
+              >
+                <TabsList className="mb-2 w-full grid grid-cols-3">
                   <TabsTrigger value="details">Card Details</TabsTrigger>
                   <TabsTrigger value="variants">Variants ({allVariants.length})</TabsTrigger>
+                  <TabsTrigger value="decks">Decks</TabsTrigger>
                 </TabsList>
 
                 {/* Card Details Tab */}
@@ -272,74 +304,55 @@ const CardDetail: React.FC<CardDetailProps> = ({ cardId }) => {
                 </TabsContent>
 
                 {/* Variants Tab */}
-                <TabsContent value="variants" className="mt-0">
-                  <div className="space-y-3">
-                    <CardVariantPicker
-                      card={card}
-                      variants={allVariants}
-                      selectedVariantId={selectedVariantId ?? defaultVariantId}
-                      onSelect={setSelectedVariantId}
-                      showBackSide
-                      renderDetails={variant => (
-                        <>
-                          <PriceBadge
-                            cardId={cardId}
-                            sourceType={CardPriceSourceType.CARDMARKET}
-                            variantId={variant.variantId}
-                          />
-                          <PriceBadge
-                            cardId={cardId}
-                            sourceType={CardPriceSourceType.TCGPLAYER}
-                            variantId={variant.variantId}
-                          />
-                        </>
-                      )}
-                    />
-
-                    {/* Price Administration for selected variant */}
-                    {selectedVariantId && (
-                      <CardVariantPriceAdministration
-                        cardId={cardId}
-                        variantId={selectedVariantId}
+                <TabsContent
+                  value="variants"
+                  forceMount
+                  className="mt-0 data-[state=inactive]:hidden"
+                >
+                  {(tab === 'variants' || visitedVariantsCardId === cardId) && (
+                    <div className="space-y-3">
+                      <CardVariantPicker
+                        card={card}
+                        variants={allVariants}
+                        selectedVariantId={activeVariantId}
+                        onSelect={onVariantChange}
+                        showBackSide
+                        renderDetails={variant => (
+                          <>
+                            <PriceBadge
+                              cardId={cardId}
+                              sourceType={CardPriceSourceType.CARDMARKET}
+                              variantId={variant.variantId}
+                            />
+                            <PriceBadge
+                              cardId={cardId}
+                              sourceType={CardPriceSourceType.TCGPLAYER}
+                              variantId={variant.variantId}
+                            />
+                          </>
+                        )}
                       />
-                    )}
-                  </div>
+                      {selectedVariant && (
+                        <CardDetailAddToList
+                          cardId={cardId}
+                          variant={selectedVariant}
+                          variants={card.variants}
+                        />
+                      )}
+                      <CardDetailInLists card={card} selectedVariantId={activeVariantId} />
+                      {hasRole('admin') && activeVariantId && (
+                        <CardVariantPriceAdministration
+                          cardId={cardId}
+                          variantId={activeVariantId}
+                        />
+                      )}
+                    </div>
+                  )}
+                </TabsContent>
+                <TabsContent value="decks" className="mt-0">
+                  <CardDetailDecks cardId={cardId} />
                 </TabsContent>
               </Tabs>
-            </CardContent>
-          </Card>
-
-          {/* Right Column - Related Information */}
-          <Card className="overflow-hidden">
-            <CardContent className="pt-4 px-4">
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <h3 className="text-base font-semibold">Related Information</h3>
-                  <Separator className="my-1" />
-
-                  {/* Placeholder for decks containing this card */}
-                  <div className="py-2">
-                    <h4 className="font-medium text-sm mb-2">Decks with this card:</h4>
-                    <div className="text-sm text-muted-foreground">Not implemented yet.</div>
-                  </div>
-
-                  {/* Placeholder for collections containing this card */}
-                  <div className="py-2">
-                    <h4 className="font-medium text-sm mb-2">Collections containing this card:</h4>
-                    <div className="text-sm text-muted-foreground">Not implemented yet.</div>
-                  </div>
-
-                  {/* Actions buttons */}
-                  <div className="flex flex-col gap-2 mt-4">
-                    <Button size="sm" className="w-full" disabled={true}>
-                      Add to Collection
-                    </Button>
-                    <Button size="sm" variant="outline" className="w-full" disabled={true}>
-                      Add to Wantlist
-                    </Button>
-                  </div>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>

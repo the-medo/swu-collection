@@ -4,6 +4,7 @@ import { DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdow
 import DeckCardQuantitySelector from '@/components/app/decks/DeckContents/DeckCards/DeckCardQuantitySelector.tsx';
 import { DeckCardDropdownMenuProps } from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 import { useNavigate } from '@tanstack/react-router';
+import { getCardDetailDialogSearch } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { selectDefaultVariant } from '../../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { getCardImageUrl } from '@/components/app/global/cardImageLib.ts';
@@ -48,7 +49,7 @@ const DeckCardActions: React.FC<DeckCardActionsProps> = ({
           onSelect={() => {
             navigate({
               to: '.',
-              search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
+              search: previous => getCardDetailDialogSearch(previous, deckCard.cardId),
             });
           }}
         >

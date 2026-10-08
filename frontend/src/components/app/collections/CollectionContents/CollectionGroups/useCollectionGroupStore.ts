@@ -95,10 +95,15 @@ const setCollectionStoreData = (
  * 3. Merges groupCards by adding new groups or adding elements to existing groups
  * 4. Updates cardCount for each group based on the number of records in groupCards
  */
-const mergeToCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>) =>
+const mergeToCollectionStoreData = (
+  data: Omit<CollectionGroupStore, 'loading'>,
+  collectionId?: string,
+) =>
   store.setState(state => {
+    if (collectionId && state.loadedCollectionId !== collectionId) return state;
+
     // 1. Merge groupInfo
-    let mergedGroupInfo: CardGroupInfo = { ...data.groupInfo, ...state.groupInfo };
+    const mergedGroupInfo: CardGroupInfo = { ...data.groupInfo, ...state.groupInfo };
 
     // Add new groups or update existing ones
     Object.entries(data.groupInfo || {}).forEach(([groupId, groupData]) => {
@@ -134,6 +139,7 @@ const mergeToCollectionStoreData = (data: Omit<CollectionGroupStore, 'loading'>)
             ...existingCard.collectionCard,
             // Update only editable properties
             amount: cardData.collectionCard.amount,
+            amount2: cardData.collectionCard.amount2,
             note: cardData.collectionCard.note,
             price: cardData.collectionCard.price,
           },
@@ -215,11 +221,11 @@ const setGroupInfo = (groupId: string, info: CardGroupInfoData) =>
 
 const clearStore = () => store.setState(() => defaultState);
 
-const forceRefreshCollectionGroupStore = () =>
-  store.setState(state => ({
-    ...state,
-    forceRefreshId: Date.now().toString(),
-  }));
+const forceRefreshCollectionGroupStore = (collectionId?: string) =>
+  store.setState(state => {
+    if (collectionId && state.loadedCollectionId !== collectionId) return state;
+    return { ...state, forceRefreshId: Date.now().toString() };
+  });
 
 // Hook to access the store state
 export function useCollectionGroupStoreLoading() {

@@ -5,6 +5,7 @@ import { Collection } from '../../../../types/Collection.ts';
 import type { ZCollectionUpdateRequest } from '../../../../types/ZCollection.ts';
 import { InferResponseType } from 'hono';
 import { updateGetUserCollections } from '@/api/user/useGetUserCollections.ts';
+import { cardInListsQueryKeys } from './cardInListsQueryKeys.ts';
 
 export interface CollectionResponse {
   data: Collection[];
@@ -31,8 +32,8 @@ export const usePutCollection = () => {
       return response.json();
     },
     onSuccess: result => {
-      const $getCollection = api.collection[':id'].$get;
-      type ResType = InferResponseType<typeof $getCollection>;
+      void queryClient.invalidateQueries({ queryKey: cardInListsQueryKeys.all });
+      type ResType = InferResponseType<(typeof api.collection)[':id']['$get']>;
 
       queryClient.setQueryData(['collection', result.data.id], (oldData: ResType) => ({
         ...oldData,
@@ -49,7 +50,7 @@ export const usePutCollection = () => {
         return { ...oldData, collections: updatedCollections };
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         variant: 'destructive',
         title: 'Error while updating collection',

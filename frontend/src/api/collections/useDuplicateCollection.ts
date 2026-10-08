@@ -3,6 +3,7 @@ import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { CollectionType } from '../../../../types/enums.ts';
+import { cardInListsQueryKeys } from './cardInListsQueryKeys.ts';
 
 export type DuplicateCollectionRequest = {
   collectionId: string;
@@ -34,6 +35,7 @@ export const useDuplicateCollection = () => {
       return response.json();
     },
     onSuccess: result => {
+      void queryClient.invalidateQueries({ queryKey: cardInListsQueryKeys.all });
       if (user?.id) {
         void queryClient.invalidateQueries({ queryKey: ['collections'], exact: false });
 

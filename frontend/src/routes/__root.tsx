@@ -8,6 +8,10 @@ import { Toaster } from '@/components/ui/toaster.tsx';
 import { PriceFetcher } from '@/dexie';
 import { z } from 'zod';
 import CardDetailDialog from '@/components/app/cards/CardDetailDialog/CardDetailDialog.tsx';
+import {
+  cardDetailTabSchema,
+  cardDetailVariantIdSchema,
+} from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 import SidebarTriggerButton from '@/components/app/navigation/TopMenu/SidebarTriggerButton.tsx';
 import { DeckSortField } from '../../../types/ZDeck.ts';
 import { SwuAspect, SwuSet } from '../../../types/enums.ts';
@@ -30,6 +34,8 @@ const globalSearchParams = z.object({
 
   // Card detail dialog
   modalCardId: z.string().optional(),
+  modalCardTab: cardDetailTabSchema.optional().catch(undefined),
+  modalCardVariantId: cardDetailVariantIdSchema,
   modalDecksForModalOpen: z.boolean().optional(),
   modalCardDecksId: z.string().optional(),
   modalCardDecksLeaderCardId: z.string().optional(),

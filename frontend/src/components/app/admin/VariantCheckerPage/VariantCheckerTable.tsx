@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCheckDeletedVariants } from '@/api/admin/useCheckDeletedVariants';
 import { useNavigate } from '@tanstack/react-router';
+import { getCardDetailDialogSearch } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { useVariantCheckerTableColumns, VariantCheckerRow } from './useVariantCheckerTableColumns';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
@@ -14,7 +15,7 @@ export const VariantCheckerTable: React.FC = () => {
   const handleViewCard = (cardId: string) => {
     navigate({
       to: '.',
-      search: prev => ({ ...prev, modalCardId: cardId }),
+      search: previous => getCardDetailDialogSearch(previous, cardId),
     });
   };
 

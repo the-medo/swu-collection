@@ -9,6 +9,7 @@ import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStor
 import { usePutDeckCard } from '@/api/decks/usePutDeckCard.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useNavigate } from '@tanstack/react-router';
+import { getCardDetailDialogSearch } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 import { DeckCardInBoards } from '@/components/app/decks/DeckContents/DeckCards/deckCardsLib.ts';
 import DeckCardDropdownMenu from '@/components/app/decks/DeckContents/DeckCards/DeckCardDropdownMenu.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
@@ -122,7 +123,7 @@ const DeckCardVisualItem: React.FC<DeckCardVisualItemProps> = ({
         onClick={() => {
           void navigate({
             to: '.',
-            search: prev => ({ ...prev, modalCardId: deckCard.cardId }),
+            search: previous => getCardDetailDialogSearch(previous, deckCard.cardId),
           });
         }}
       >

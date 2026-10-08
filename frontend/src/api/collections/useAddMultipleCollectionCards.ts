@@ -3,6 +3,7 @@ import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import type { ZCollectionCardCreateRequest } from '../../../../types/ZCollectionCard.ts';
+import { cardInListsQueryKeys } from './cardInListsQueryKeys.ts';
 
 export type AddMultipleCollectionCardsItem = Omit<ZCollectionCardCreateRequest, 'amount'> & {
   // allow negative and positive values as per backend schema
@@ -38,6 +39,7 @@ export const useAddMultipleCollectionCards = () => {
       return response.json();
     },
     onSuccess: (result, variables) => {
+      void queryClient.invalidateQueries({ queryKey: cardInListsQueryKeys.all });
       queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
       queryClient.invalidateQueries({
         queryKey: ['collection', variables.collectionId],

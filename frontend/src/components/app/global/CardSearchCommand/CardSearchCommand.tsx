@@ -18,6 +18,7 @@ import CostIcon from '@/components/app/global/icons/CostIcon.tsx';
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import RarityIcon from '@/components/app/global/icons/RarityIcon.tsx';
 import { useNavigate } from '@tanstack/react-router';
+import { getCardDetailDialogSearch } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 interface CardSearchCommandProps {
@@ -120,7 +121,7 @@ const CardSearchCommand: React.FC<CardSearchCommandProps> = ({
                     }
                     void navigate({
                       to: '.',
-                      search: prev => ({ ...prev, modalCardId: i.cardId }),
+                      search: previous => getCardDetailDialogSearch(previous, i.cardId),
                     });
                   }}
                 >

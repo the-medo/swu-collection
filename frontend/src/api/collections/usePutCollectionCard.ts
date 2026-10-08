@@ -8,6 +8,14 @@ import { useCollectionLayoutStore } from '@/components/app/collections/Collectio
 import { processCollectionData } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import { useCollectionGroupStoreActions } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
 import { CollectionCardResponse } from './useGetCollectionCards.ts';
+import { createApiError } from '@/api/errors.ts';
+import { useUser } from '@/hooks/useUser.ts';
+import { cardInListsQueryKeys } from './cardInListsQueryKeys.ts';
+import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
+import type {
+  CollectionCardLookupResponse,
+  CollectionCardLookupRow,
+} from '../../../../shared/types/CollectionCardLookup.ts';
 
 export type CollectionCardIdentification = {
   cardId: string;
@@ -39,11 +47,16 @@ type CollectionCardUpdateRequest = {
 
 export const usePutCollectionCard = (collectionId: string | undefined) => {
   const queryClient = useQueryClient();
+  const user = useUser();
   const { data: cardList } = useCardList();
   const { groupBy } = useCollectionLayoutStore();
-  const { mergeToCollectionStoreData } = useCollectionGroupStoreActions();
+  const { mergeToCollectionStoreData, forceRefreshCollectionGroupStore } =
+    useCollectionGroupStoreActions();
 
   return useMutation({
+    mutationKey: ['collection-card', user?.id, collectionId, 'update'],
+    // Keep single-card writes in order across the collection page and card-detail tables.
+    scope: collectionId ? { id: `collection-card:${collectionId}` } : undefined,
     mutationFn: async (cardData: CollectionCardUpdateRequest) => {
       if (!collectionId) {
         throw new Error('Collection id is required');
@@ -59,18 +72,48 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
       });
 
       if (!response.ok) {
-        throw new Error(
-          response.statusText === 'Internal Server Error'
-            ? 'Something went wrong while updating the card'
-            : response.statusText,
-        );
+        throw await createApiError(response, 'Something went wrong while updating the card');
       }
 
-      return response.json() as unknown as { data: CollectionCard };
+      const result = (await response.json()) as unknown as { data?: CollectionCard };
+      if (!result.data) {
+        const error = new Error('This card is no longer in this list.') as Error & ErrorWithStatus;
+        error.status = 404;
+        throw error;
+      }
+      return { data: result.data };
     },
     onSuccess: (result, vars) => {
-      if (!cardList) return;
-
+      if (user) {
+        const savedRow = result.data as unknown as CollectionCardLookupRow;
+        queryClient.setQueryData<CollectionCardLookupResponse>(
+          cardInListsQueryKeys.card(user.id, vars.id.cardId),
+          oldData => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              data: oldData.data
+                .map(list => {
+                  if (list.collection.id !== collectionId) return list;
+                  const matches = (row: CollectionCardLookupRow) =>
+                    row.cardId === vars.id.cardId &&
+                    row.variantId === vars.id.variantId &&
+                    row.foil === vars.id.foil &&
+                    row.condition === vars.id.condition &&
+                    row.language === vars.id.language;
+                  return {
+                    ...list,
+                    cards:
+                      savedRow.amount === 0 && !savedRow.amount2
+                        ? list.cards.filter(row => !matches(row))
+                        : list.cards.map(row => (matches(row) ? savedRow : row)),
+                  };
+                })
+                .filter(list => list.cards.length > 0),
+            };
+          },
+        );
+      }
       toast({
         title: `Updated!`,
       });
@@ -96,10 +139,6 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
           if (cardIndex >= 0) {
             const updatedCard = result.data;
 
-            toast({
-              title: `Updated!`,
-            });
-
             return {
               ...oldData,
               data:
@@ -120,11 +159,32 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
         },
       );
 
-      const updatedCards = [result.data];
-      const processedData = processCollectionData(updatedCards, cardList, groupBy);
-      mergeToCollectionStoreData(processedData);
+      if (cardList) {
+        if (result.data.amount === 0 && !result.data.amount2) {
+          forceRefreshCollectionGroupStore(collectionId);
+        } else {
+          const processedData = processCollectionData([result.data], cardList, groupBy);
+          mergeToCollectionStoreData(processedData, collectionId);
+        }
+      }
+      void queryClient.invalidateQueries({ queryKey: cardInListsQueryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
+      void queryClient.invalidateQueries({ queryKey: ['collection', collectionId] });
+      if (user) {
+        void queryClient.invalidateQueries({
+          queryKey: ['collections', user.id],
+          refetchType: 'none',
+        });
+      }
     },
     onError: error => {
+      if ((error as Error & ErrorWithStatus).status === 404) {
+        void queryClient.invalidateQueries({ queryKey: cardInListsQueryKeys.all });
+        void queryClient.invalidateQueries({ queryKey: ['collection-content', collectionId] });
+        void queryClient.invalidateQueries({ queryKey: ['collection', collectionId] });
+        void queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
+        forceRefreshCollectionGroupStore(collectionId);
+      }
       toast({
         variant: 'destructive',
         title: 'Error while updating the card',

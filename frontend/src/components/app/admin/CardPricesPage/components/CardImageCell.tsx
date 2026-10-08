@@ -3,6 +3,7 @@ import CardImage from '@/components/app/global/CardImage.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { ParsedCardData } from '../lib/parseCardmarketHtml';
 import { useNavigate } from '@tanstack/react-router';
+import { getCardDetailDialogSearch } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 
 interface CardImageCellProps {
   card: ParsedCardData;
@@ -14,9 +15,11 @@ const CardImageCell: React.FC<CardImageCellProps> = ({ card, variantId }) => {
   const navigate = useNavigate();
 
   const handleViewCard = () => {
+    const cardId = card.cardId;
+    if (!cardId) return;
     navigate({
       to: '.',
-      search: prev => ({ ...prev, modalCardId: card.cardId }),
+      search: previous => getCardDetailDialogSearch(previous, cardId),
     });
   };
 

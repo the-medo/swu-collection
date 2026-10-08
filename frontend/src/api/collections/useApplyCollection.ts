@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useCollectionGroupStoreActions } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
+import { cardInListsQueryKeys } from './cardInListsQueryKeys.ts';
 
 export type ApplyCollectionOperation = 'add' | 'remove';
 
@@ -31,7 +32,7 @@ export function useApplyCollection() {
       });
 
       if (!response.ok) {
-        const error = await response.json().catch(() => ({}) as any);
+        const error = (await response.json().catch(() => ({}))) as { message?: string };
         const message =
           (error && (error.message as string)) || 'Failed to apply collection changes';
         throw new Error(message);
@@ -41,6 +42,7 @@ export function useApplyCollection() {
       return json;
     },
     onSuccess: async (result, variables) => {
+      void queryClient.invalidateQueries({ queryKey: cardInListsQueryKeys.all });
       // Invalidate affected queries (same pattern as other collection mutations)
       queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
       queryClient.invalidateQueries({ queryKey: ['collection', variables.collectionId] });

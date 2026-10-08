@@ -4,6 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useAdvancedCardSearchStore } from '../useAdvancedCardSearchStore.ts';
 import { useNavigate } from '@tanstack/react-router';
+import { getCardDetailDialogSearch } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 import SearchCardLayout, { SearchCardLayoutProps } from './SearchCardLayout';
 import { cn } from '@/lib/utils.ts';
 import AdvancedSearchLayoutSelectors from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/AdvancedSearchLayoutSelectors.tsx';
@@ -30,7 +31,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
   const handleViewCard = (cardId: string) => {
     navigate({
       to: '.',
-      search: prev => ({ ...prev, modalCardId: cardId }),
+      search: previous => getCardDetailDialogSearch(previous, cardId),
     });
   };
 

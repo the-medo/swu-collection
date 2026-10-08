@@ -1,6 +1,6 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { UserCollectionsResponse } from '../../../../server/routes/user.ts';
+import type { UserCollectionsResponse } from '../../../../server/routes/user.ts';
 import { queryClient } from '@/queryClient.ts';
 
 export const useGetUserCollections = (
@@ -8,7 +8,7 @@ export const useGetUserCollections = (
   includeEntityPrices: boolean = false,
 ) => {
   return useQuery({
-    queryKey: ['collections', userId],
+    queryKey: ['collections', userId, { includeEntityPrices }],
     queryFn: userId
       ? async () => {
           const response = await api.user[':id'].collection.$get({
@@ -36,8 +36,8 @@ export const updateGetUserCollections = (
     data: UserCollectionsResponse | undefined,
   ) => UserCollectionsResponse | undefined,
 ) => {
-  queryClient.setQueryData<UserCollectionsResponse | undefined>(
-    ['collections', userId],
+  queryClient.setQueriesData<UserCollectionsResponse | undefined>(
+    { queryKey: ['collections', userId] },
     (oldData: UserCollectionsResponse | undefined) => {
       return updateCallback(oldData);
     },

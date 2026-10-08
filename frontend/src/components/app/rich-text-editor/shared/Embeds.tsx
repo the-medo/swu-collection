@@ -1,4 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
+import { getCardDetailDialogSearch } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useSession } from '@/lib/auth-client.ts';
 import { getCardImageUrl } from '@/components/app/global/cardImageLib.ts';
@@ -30,7 +31,8 @@ export function CardLink({ card }: { card: CardReference }) {
           event.preventDefault();
           void navigate({
             to: '.',
-            search: (prev: Record<string, unknown>) => ({ ...prev, modalCardId: card.cardId }),
+            search: (previous: Record<string, unknown>) =>
+              getCardDetailDialogSearch(previous, card.cardId),
           });
         }}
       >

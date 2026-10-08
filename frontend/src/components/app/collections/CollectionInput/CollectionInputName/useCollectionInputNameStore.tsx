@@ -110,7 +110,7 @@ export function useCollectionInputNameStore() {
   const defaultLanguage = useStore(store, state => state.defaultLanguage);
   const defaultCondition = useStore(store, state => state.defaultCondition);
 
-  let { data: cardList, isFetching } = useCardList();
+  const { data: cardList, isFetching } = useCardList();
 
   const setSelectedVariant = useCallback(
     (selectedVariantId: string | undefined) => {
@@ -118,16 +118,17 @@ export function useCollectionInputNameStore() {
         setSelectedVariantId(undefined);
         return;
       }
-      const cardVariant = cardList?.cards[selectedCardId]?.variants[selectedVariantId];
+      const selectedCard = cardList?.cards[selectedCardId];
+      const cardVariant = selectedCard?.variants[selectedVariantId];
       if (cardVariant) {
         setSelectedVariantId(selectedVariantId);
-        setFoil(getFoilBasedOnVariantAndSet(cardVariant, defaultFoil));
+        setFoil(getFoilBasedOnVariantAndSet(cardVariant, defaultFoil, selectedCard?.variants));
       } else {
         setSelectedCardId(undefined);
         setSelectedVariantId(undefined);
       }
     },
-    [selectedCardId, defaultFoil],
+    [selectedCardId, defaultFoil, cardList],
   );
 
   const options = useMemo(() => searchForCommandOptions(cardList, search), [cardList, search]);
