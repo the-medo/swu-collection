@@ -1,8 +1,8 @@
-# Patreon supporters and credits
+# Patreon supporters and currencies
 
 SWUBASE reads its creator campaign through Patreon API v2. There is no Patreon
 login or account-linking flow. The admin page at `/admin?page=patreon` lists
-supporters, matching accounts, lifetime support and credit awards.
+supporters, matching accounts, lifetime support and credit/beskar awards.
 
 ## Configuration
 
@@ -42,7 +42,7 @@ connection with fresh credentials. No automatic fallback overwrites stored token
    `members:pledge:create`, `members:pledge:update`, and `members:pledge:delete`.
 4. Save that webhook's signing secret as `PATREON_WEBHOOK_SECRET` and restart the
    application. Send a test delivery from Patreon and check its delivery status.
-5. Open the Patreon admin page and use **Sync supporters and award credits**.
+5. Open the Patreon admin page and use **Sync supporters and award currencies**.
    This imports all pages, including former members, and awards historical support.
 
 The webhook authenticates the raw body using Patreon's HMAC-MD5 signature, checks
@@ -71,7 +71,7 @@ bun run patreon:sync
 bun --env-file=.env --env-file=.env.worktree run patreon:sync
 ```
 
-These commands award credits; repeated runs are safe. Partial imports commit per
+These commands award credits and beskar; repeated runs are safe. Partial imports commit per
 member, so retrying after a failed page resumes without repeating earlier awards.
 They never create, edit or delete a Patreon subscription or register webhooks.
 
@@ -83,18 +83,24 @@ They never create, edit or delete a Patreon subscription or register webhooks.
 - Unmatched members keep their uncredited support. Account creation/updates retry
   matching against locally stored membership data; a manual sync also retries.
   A member already linked to an account is never transferred automatically.
-- `user_credits` is an append-only ledger. `SUM(amount)` is the user's balance.
-  Patreon grants have a unique source key identifying member and credited total.
+- `user_credits` is the shared transaction ledger, distinguished by `currency`.
+  `user_profile.credit_balance` and `beskar_balance_cents` hold current totals,
+  maintained by a database trigger. Credits are whole units; beskar is stored in
+  hundredths. See [user currencies](user-credits.md) for registration grants,
+  administration, the shop and future provider integration.
 - `patreon_member.credited_cents` records lifetime USD support already awarded.
-  First award: lifetime cents × 10. Later award: new lifetime cents minus credited
-  cents, multiplied by 10. A row lock and one transaction protect award/checkpoint
-  updates. Integer cents avoid floating-point conversion of dollars.
+  Each new USD cent awards 10 credits and one hundredth of beskar ($2.50 awards
+  2,500 credits and 2.5 beskar). First award uses lifetime support; later awards
+  use the increase above the checkpoint. A row lock and one transaction protect
+  both ledger entries, cached totals and checkpoint updates. Credit keys are
+  `patreon:<campaignId>:<memberId>:<lifetimeCents>`; beskar keys are
+  `patreon-beskar:<campaignId>:<memberId>:<lifetimeCents>`.
 - Support totals and membership status live in the Patreon records. The unused
   `user_profile.total_support` and `active_supporter` placeholders are removed;
   profile favorites remain independent of support accounting.
 - Current membership status and the most recent charge attempt do not replace
   lifetime paid support. A former or currently declined member can still have
-  paid historical support. Cancellation never removes earned credits.
+  paid historical support. Cancellation never removes earned credits or beskar.
 - Missing amounts, changed emails, deleted credited accounts, refund/fraud charge
   statuses and decreases in lifetime support are visible in the admin list.
   Refund/fraud statuses and monetary decreases stay on hold
@@ -105,8 +111,9 @@ They never create, edit or delete a Patreon subscription or register webhooks.
   previous awards and grants only the difference. Otherwise it returns a conflict
   and keeps the hold; it never transfers a membership to another account.
   Restore the original verified email to resolve an email-change hold. A deleted
-  credited account is deliberately not reassigned. This version has no refund
-  debit or spending endpoint. Do not reset credited totals to clear a discrepancy,
+  credited account is deliberately not reassigned. Support reconciliation does
+  not automatically debit refunds. Beskar spending is handled separately by the
+  shop. Do not reset credited totals to clear a discrepancy,
   because that could award the same support twice.
 - An older in-flight snapshot cannot overwrite a newer observation. Deleted
   memberships retain a tombstone and their credited checkpoint.

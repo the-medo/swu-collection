@@ -9,6 +9,7 @@ import type {
 } from '../../../../shared/types/battlefield.ts';
 
 export const battlefieldKeys = {
+  editors: ['battlefields', 'editor'] as const,
   editor: (userId?: string) => ['battlefields', 'editor', userId] as const,
   profile: (userId: string) => ['battlefields', 'profile', userId] as const,
 };

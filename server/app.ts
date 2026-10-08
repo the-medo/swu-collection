@@ -34,6 +34,7 @@ import { metaRoute } from './routes/meta.ts';
 import { cardStatsRoute } from './routes/card-stats.ts';
 import { setRoute } from './routes/set.ts';
 import { adminRoute } from './routes/admin.ts';
+import { shopRoute } from './routes/shop.ts';
 import { cardPricesRoute } from './routes/card-prices.ts';
 import { cardPoolsRoute } from './routes/card-pools.ts';
 import { dailySnapshotRoute } from './routes/daily-snapshot.ts';
@@ -200,6 +201,7 @@ const apiRoutes = app
   .route('/card-stats', cardStatsRoute)
   .route('/set', setRoute)
   .route('/admin', adminRoute)
+  .route('/shop', shopRoute)
   .route('/card-prices', cardPricesRoute)
   .route('/card-pools', cardPoolsRoute)
   .route('/daily-snapshot', dailySnapshotRoute)

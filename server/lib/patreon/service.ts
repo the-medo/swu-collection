@@ -1,7 +1,8 @@
-import { count, desc, eq, sql } from 'drizzle-orm';
+import { count, desc, eq } from 'drizzle-orm';
 import { db } from '../../db';
 import { user } from '../../db/schema/auth-schema.ts';
-import { patreonConnection, patreonMember, userCredits } from '../../db/schema/patreon.ts';
+import { patreonConnection, patreonMember } from '../../db/schema/patreon.ts';
+import { userProfile } from '../../db/schema/user_profile.ts';
 import { patreonClient } from './client.ts';
 import { patreonCredits } from './credits.ts';
 import { PatreonError, patreonConfigured } from './config.ts';
@@ -77,19 +78,15 @@ export function createPatreonService({
       const pageSize = 50;
       const where = eq(patreonMember.campaignId, campaignId ?? '');
       const [total] = await database.select({ count: count() }).from(patreonMember).where(where);
-      const balances = database
-        .select({
-          userId: userCredits.userId,
-          balance: sql<number>`sum(${userCredits.amount})`.mapWith(Number).as('balance'),
-        })
-        .from(userCredits)
-        .groupBy(userCredits.userId)
-        .as('balances');
       const rows = await database
-        .select({ member: patreonMember, displayName: user.displayName, balance: balances.balance })
+        .select({
+          member: patreonMember,
+          displayName: user.displayName,
+          balance: userProfile.creditBalance,
+        })
         .from(patreonMember)
         .leftJoin(user, eq(user.id, patreonMember.userId))
-        .leftJoin(balances, eq(balances.userId, patreonMember.userId))
+        .leftJoin(userProfile, eq(userProfile.userId, patreonMember.userId))
         .where(where)
         .orderBy(desc(patreonMember.lifetimeCents), patreonMember.memberId)
         .limit(pageSize)

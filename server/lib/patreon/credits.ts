@@ -55,8 +55,16 @@ export function createPatreonCredits(database = db) {
       await tx.insert(userCredits).values({
         userId: matched.id,
         amount,
+        currency: 'credits',
         source: 'patreon',
         sourceKey: `patreon:${member.campaignId}:${member.memberId}:${member.lifetimeCents}`,
+      });
+      await tx.insert(userCredits).values({
+        userId: matched.id,
+        amount: cents,
+        currency: 'beskar',
+        source: 'patreon',
+        sourceKey: `patreon-beskar:${member.campaignId}:${member.memberId}:${member.lifetimeCents}`,
       });
     }
     await tx

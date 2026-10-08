@@ -14,6 +14,7 @@ import {
   Scale,
   ScrollText,
   Search,
+  ShoppingBag,
   Star,
   TrophyIcon,
   Package,
@@ -392,6 +393,28 @@ export function LeftSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
         {user && <SidebarYourTournaments key={user.id} />}
+        {user && (
+          <SidebarGroup className="py-0">
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      to="/users/$userId"
+                      params={{ userId: user.id }}
+                      search={{ userTab: 'currencies', currencyPage: 'shop' }}
+                      onClick={() => setOpenMobile(false)}
+                      className="[&.active]:font-bold"
+                    >
+                      <ShoppingBag />
+                      <span>Shop</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
         {groups.map(g => (
           <SidebarGroup key={g.id} className="py-0">
             <SidebarGroupLabel>{g.title}</SidebarGroupLabel>

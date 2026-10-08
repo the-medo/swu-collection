@@ -39,6 +39,7 @@ import { Route as CollectionsYourRouteImport } from './routes/collections/your'
 import { Route as CollectionsPublicRouteImport } from './routes/collections/public'
 import { Route as CardsSearchRouteImport } from './routes/cards/search'
 import { Route as AuthErrorRouteImport } from './routes/auth.error'
+import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedBattlefieldRouteImport } from './routes/_authenticated/battlefield'
@@ -234,6 +235,11 @@ const AuthErrorRoute = AuthErrorRouteImport.update({
   id: '/auth/error',
   path: '/auth/error',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedShopRoute = AuthenticatedShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedNotificationsRoute =
   AuthenticatedNotificationsRouteImport.update({
@@ -548,6 +554,7 @@ export interface FileRoutesByFullPath {
   '/battlefield': typeof AuthenticatedBattlefieldRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/shop': typeof AuthenticatedShopRoute
   '/auth/error': typeof AuthErrorRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -627,6 +634,7 @@ export interface FileRoutesByTo {
   '/battlefield': typeof AuthenticatedBattlefieldRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/shop': typeof AuthenticatedShopRoute
   '/auth/error': typeof AuthErrorRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -707,6 +715,7 @@ export interface FileRoutesById {
   '/_authenticated/battlefield': typeof AuthenticatedBattlefieldRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/_authenticated/shop': typeof AuthenticatedShopRoute
   '/auth/error': typeof AuthErrorRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -791,6 +800,7 @@ export interface FileRouteTypes {
     | '/battlefield'
     | '/messages'
     | '/notifications'
+    | '/shop'
     | '/auth/error'
     | '/cards/search'
     | '/collections/public'
@@ -870,6 +880,7 @@ export interface FileRouteTypes {
     | '/battlefield'
     | '/messages'
     | '/notifications'
+    | '/shop'
     | '/auth/error'
     | '/cards/search'
     | '/collections/public'
@@ -949,6 +960,7 @@ export interface FileRouteTypes {
     | '/_authenticated/battlefield'
     | '/_authenticated/messages'
     | '/_authenticated/notifications'
+    | '/_authenticated/shop'
     | '/auth/error'
     | '/cards/search'
     | '/collections/public'
@@ -1270,6 +1282,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/error'
       preLoaderRoute: typeof AuthErrorRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/shop': {
+      id: '/_authenticated/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof AuthenticatedShopRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/notifications': {
       id: '/_authenticated/notifications'
@@ -1650,6 +1669,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedBattlefieldRoute: typeof AuthenticatedBattlefieldRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedShopRoute: typeof AuthenticatedShopRoute
   AuthenticatedCrossfireLobbyIdRoute: typeof AuthenticatedCrossfireLobbyIdRoute
   AuthenticatedCrossfireIndexRoute: typeof AuthenticatedCrossfireIndexRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
@@ -1664,6 +1684,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBattlefieldRoute: AuthenticatedBattlefieldRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedShopRoute: AuthenticatedShopRoute,
   AuthenticatedCrossfireLobbyIdRoute: AuthenticatedCrossfireLobbyIdRoute,
   AuthenticatedCrossfireIndexRoute: AuthenticatedCrossfireIndexRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,

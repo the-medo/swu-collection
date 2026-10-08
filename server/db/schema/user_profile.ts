@@ -1,4 +1,4 @@
-import { check, integer, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { bigint, check, integer, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 import { user } from './auth-schema.ts';
 import type { SwuAspect } from '../../../types/enums.ts';
@@ -17,6 +17,9 @@ export const userProfile = pgTable(
     battlefieldLimit: integer('battlefield_limit').notNull().default(1),
     // Entitlements are managed separately from owner-editable profile preferences.
     achievementLimit: integer('achievement_limit').notNull().default(1),
+    // Maintained by the shared transaction ledger. Beskar is stored in hundredths.
+    creditBalance: bigint('credit_balance', { mode: 'number' }).notNull().default(0),
+    beskarBalanceCents: bigint('beskar_balance_cents', { mode: 'number' }).notNull().default(0),
     headerSource: text('header_source').$type<HeaderSourceKind>().notNull().default('battlefield'),
     headerImageKey: text('header_image_key'),
     // Provenance only: a cropped header survives deletion of its original upload or gallery image.
@@ -28,6 +31,14 @@ export const userProfile = pgTable(
     headerHeight: integer('header_height'),
   },
   table => [
+    check(
+      'user_profile_credit_balance_check',
+      sql`${table.creditBalance} BETWEEN -9007199254740991 AND 9007199254740991`,
+    ),
+    check(
+      'user_profile_beskar_balance_check',
+      sql`${table.beskarBalanceCents} BETWEEN 0 AND 9007199254740991`,
+    ),
     check('user_profile_achievement_limit_check', sql`${table.achievementLimit} >= 0`),
     check(
       'user_profile_battlefield_limit_check',

@@ -29,6 +29,8 @@ import {
 import { UserCalendarTab } from './UserCalendarTab.tsx';
 import { UserTournamentsTab } from './UserTournamentsTab.tsx';
 import { ReportUserButton } from '../ReportUserButton.tsx';
+import { ProfileWallet } from './ProfileWallet.tsx';
+import { UserCurrenciesTab } from './UserCurrenciesTab.tsx';
 
 const routeApi = getRouteApi('/users/$userId/');
 
@@ -56,7 +58,11 @@ const UserDetail: React.FC = () => {
     userId !== 'swubase';
   const { userTab: requestedTab = 'decks' } = routeApi.useSearch();
   const isAdmin = useRole()('admin');
-  const userTab = requestedTab === 'reports' && !isAdmin ? 'decks' : requestedTab;
+  const isOwner = currentUser?.id === userId;
+  const userTab =
+    (requestedTab === 'reports' && !isAdmin) || (requestedTab === 'currencies' && !isOwner)
+      ? 'decks'
+      : requestedTab;
   const navigate = routeApi.useNavigate();
   const { data: countryData } = useCountryList();
   const { data: user, isFetching, error } = useGetUser(userId);
@@ -106,7 +112,7 @@ const UserDetail: React.FC = () => {
   return (
     <>
       <Helmet
-        title={`${user?.displayName}${userTab === 'calendar' ? ' · Calendar' : userTab === 'tournaments' ? ' · Tournaments' : userTab === 'reports' ? ' · Reports' : ''} | SWUBase`}
+        title={`${user?.displayName}${userTab === 'calendar' ? ' · Calendar' : userTab === 'tournaments' ? ' · Tournaments' : userTab === 'reports' ? ' · Reports' : userTab === 'currencies' ? ' · Beskar & Credits' : ''} | SWUBase`}
       />
       <div className={pageClassName}>
         <ProfileHeader userId={user.id} canEdit={currentUser?.id === userId} />
@@ -136,6 +142,7 @@ const UserDetail: React.FC = () => {
               <ProfileFavorites key={userId} userId={userId} canEdit={currentUser?.id === userId} />
             }
           >
+            {isOwner && <ProfileWallet key={userId} userId={userId} />}
             {currentUser?.id === userId && (
               <Button asChild variant="outline">
                 <Link to="/settings" search={{ page: 'profile' }}>
@@ -173,10 +180,15 @@ const UserDetail: React.FC = () => {
                     value === 'wantlists' ||
                     value === 'calendar' ||
                     value === 'tournaments' ||
+                    (value === 'currencies' && isOwner) ||
                     (value === 'reports' && isAdmin)
                   )
                     void navigate({
-                      search: previous => ({ ...previous, userTab: value }),
+                      search: previous => ({
+                        ...previous,
+                        userTab: value,
+                        currencyPage: value === 'currencies' ? previous.currencyPage : undefined,
+                      }),
                       resetScroll: false,
                     });
                 }}
@@ -201,12 +213,22 @@ const UserDetail: React.FC = () => {
                   <TabsTrigger value="tournaments" className={tabTriggerClassName}>
                     Tournaments
                   </TabsTrigger>
+                  {isOwner && (
+                    <TabsTrigger value="currencies" className={tabTriggerClassName}>
+                      Beskar &amp; Credits
+                    </TabsTrigger>
+                  )}
                   {isAdmin && (
                     <TabsTrigger value="reports" className={tabTriggerClassName}>
                       Reports
                     </TabsTrigger>
                   )}
                 </TabsList>
+                {isOwner && (
+                  <TabsContent value="currencies">
+                    <UserCurrenciesTab key={userId} userId={userId} />
+                  </TabsContent>
+                )}
                 {isAdmin && (
                   <TabsContent value="reports">
                     <UserReportHistory userId={userId} />

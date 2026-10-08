@@ -23,6 +23,7 @@ import { EventHighlightsPage } from './EventHighlightsPage';
 import { ResourceSubmissionsPage } from './ResourceSubmissionsPage';
 import { PatreonPage } from './PatreonPage';
 import { ImageGalleryPage } from './ImageGalleryPage';
+import { UserCreditsPage } from './UserCreditsPage';
 
 export function AdminPage() {
   const hasRole = useRole();
@@ -51,6 +52,7 @@ export function AdminPage() {
           <Card className="min-w-0" key={page}>
             <CardContent className="p-4">
               {page === 'user-reports' && <UserReportsPage />}
+              {page === 'credits' && <UserCreditsPage />}
               {page === 'patreon' && <PatreonPage />}
               {page === 'image-gallery' && <ImageGalleryPage />}
               {page === 'crossfire-access' && <CrossfireAccessPage />}
