@@ -118,6 +118,9 @@ function RootShell() {
   const currentUser = useUser();
   const matchRoute = useMatchRoute();
   const messenger = !!matchRoute({ to: '/messages', fuzzy: true });
+  const battlefield =
+    !!matchRoute({ to: '/battlefield', fuzzy: false }) ||
+    !!matchRoute({ to: '/battlefield-showcase', fuzzy: false });
   const userProfile = !!matchRoute({ to: '/users/$userId', fuzzy: true });
   const teamProfile = !!matchRoute({ to: '/teams/$teamId', fuzzy: true });
   const userSettings = !!currentUser && !!matchRoute({ to: '/settings', fuzzy: false });
@@ -128,7 +131,13 @@ function RootShell() {
     !!matchRoute({ to: '/crossfire/reports/$reportId', fuzzy: false });
   const { streamId } = Route.useSearch();
   const { open, isMobile, setOpen, setOpenMobile } = useSidebar();
-  const collapseReason = streamId ? `stream:${streamId}` : teamStatistics ? 'team-statistics' : null;
+  const collapseReason = streamId
+    ? `stream:${streamId}`
+    : battlefield
+      ? 'battlefield'
+      : teamStatistics
+        ? 'team-statistics'
+        : null;
   const collapsedForContext = useRef<{
     reason: string;
     isMobile: boolean;
@@ -181,7 +190,7 @@ function RootShell() {
     <>
       <LeftSidebar />
       <main
-        className={`w-full min-w-0 ${userProfile || teamProfile || userSettings ? '' : 'p-2'} ${messenger ? 'h-dvh overflow-hidden' : 'h-screen max-h-screen overflow-y-scroll'}`}
+        className={`w-full min-w-0 ${userProfile || teamProfile || userSettings || battlefield ? '' : 'p-2'} ${messenger ? 'h-dvh overflow-hidden' : 'h-screen max-h-screen overflow-y-scroll'}`}
       >
         <div
           className={`flex w-full flex-col @container/main-body ${messenger ? 'h-full min-h-0' : ''}`}

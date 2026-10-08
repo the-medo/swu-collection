@@ -14,6 +14,7 @@ export const userProfile = pgTable(
     favoriteLeaderCardId: text('favorite_leader_card_id'),
     favoriteCardId: text('favorite_card_id'),
     favoriteAspects: text('favorite_aspects').array().$type<SwuAspect[]>().notNull().default([]),
+    battlefieldLimit: integer('battlefield_limit').notNull().default(1),
     headerSource: text('header_source').$type<HeaderSourceKind>().notNull().default('battlefield'),
     headerImageKey: text('header_image_key'),
     // Provenance only: a cropped header survives deletion of its original upload or gallery image.
@@ -25,6 +26,10 @@ export const userProfile = pgTable(
     headerHeight: integer('header_height'),
   },
   table => [
+    check(
+      'user_profile_battlefield_limit_check',
+      sql`${table.battlefieldLimit} >= 1 AND ${table.battlefieldLimit} <= 100`,
+    ),
     check(
       'user_profile_favorite_aspects_check',
       sql`cardinality(${table.favoriteAspects}) <= 3

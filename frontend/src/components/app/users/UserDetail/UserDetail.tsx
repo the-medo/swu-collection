@@ -65,7 +65,7 @@ const UserDetail: React.FC = () => {
   if (isFetching) {
     return (
       <div className={pageClassName} role="status" aria-label="Loading profile" aria-busy="true">
-        <Skeleton className="h-40 shrink-0 rounded-none bg-[radial-gradient(ellipse_at_75%_130%,#5d7981_0%,#263f50_24%,#122431_48%,#0a141e_78%)] @[761px]/main-body:h-56" />
+        <Skeleton className="aspect-[4/1] w-full shrink-0 rounded-none bg-[radial-gradient(ellipse_at_75%_130%,#5d7981_0%,#263f50_24%,#122431_48%,#0a141e_78%)]" />
         <div className={columnsClassName}>
           <ProfileAvatarSkeleton />
           <div className={nameClassName}>
@@ -107,7 +107,7 @@ const UserDetail: React.FC = () => {
         title={`${user?.displayName}${userTab === 'calendar' ? ' · Calendar' : userTab === 'tournaments' ? ' · Tournaments' : userTab === 'reports' ? ' · Reports' : ''} | SWUBase`}
       />
       <div className={pageClassName}>
-        <ProfileHeader userId={user.id} />
+        <ProfileHeader userId={user.id} canEdit={currentUser?.id === userId} />
         <div className={columnsClassName}>
           <ProfileAvatar user={user} canEdit={currentUser?.id === userId} />
           <div className={nameClassName}>

@@ -90,7 +90,7 @@ function HeaderSettingsEditor({
       <div className="space-y-2">
         <p className="text-sm font-medium">Current header</p>
         <div className="overflow-hidden rounded-lg border">
-          <ProfileHeaderPreview header={settings.header} />
+          <ProfileHeaderPreview header={settings.header} userId={userId} />
         </div>
       </div>
       {settings.header.image && !settings.selection && (
@@ -121,11 +121,11 @@ function HeaderSettingsEditor({
         </TabsList>
         <TabsContent value="battlefield" className="space-y-3">
           <div className="overflow-hidden rounded-lg border">
-            <ProfileHeaderPreview />
+            <ProfileHeaderPreview userId={userId} />
           </div>
           <p className="text-sm text-muted-foreground">
-            Use the planet battlefield as your profile header. More battlefield customization is
-            coming.
+            Use your active Battlefield as your profile header. Customize it in the Battlefield
+            editor.
           </p>
           <Button
             disabled={busy || settings.header.source === 'battlefield'}

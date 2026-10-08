@@ -106,6 +106,8 @@ TRUNCATE TABLE direct_message, direct_conversation;
 TRUNCATE TABLE user_avatar;
 -- Profile preferences stay out of contributor dumps.
 TRUNCATE TABLE user_profile;
+-- Battlefield layouts and entitlements never enter contributor dumps.
+TRUNCATE TABLE battlefield;
 -- Moderation reports and their Discord payloads stay private for every user.
 TRUNCATE TABLE user_report, user_report_action;
 DELETE FROM discord_notification WHERE notification_type = 'user-report';
@@ -469,6 +471,10 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_profile) THEN
     RAISE EXCEPTION 'Profile preferences remain in the contributor dump.';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM battlefield) THEN
+    RAISE EXCEPTION 'Battlefield layouts remain in the contributor dump.';
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_report_action) OR EXISTS (SELECT 1 FROM user_report)

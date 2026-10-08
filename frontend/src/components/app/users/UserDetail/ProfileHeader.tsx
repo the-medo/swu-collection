@@ -1,23 +1,69 @@
-import { useState } from 'react';
-import { useUserHeader } from '@/api/user-header/useUserHeader.ts';
+import { Link } from '@tanstack/react-router';
+import { useMemo, useRef, useState } from 'react';
+import { useUserHeader } from '@/api/user-header/useUserHeader';
 import type { UserHeader } from '../../../../../../types/UserHeader.ts';
+import { Orbit, GalleryHorizontal, Pencil } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { usePublicBattlefield } from '@/api/battlefield/useBattlefield';
+import { BattlefieldCanvas } from '@/components/app/battlefield/BattlefieldCanvas';
+import { useBattlefieldLightMotion } from '@/components/app/battlefield/useBattlefieldLightMotion';
+import { defaultBattlefieldScene } from '../../../../../../shared/types/battlefield.ts';
 
-export function ProfileHeader({ userId }: { userId?: string }) {
+export function ProfileHeader({ userId, canEdit = false }: { userId?: string; canEdit?: boolean }) {
   const query = useUserHeader(userId);
   if (userId && query.isPending)
     return (
-      <div
-        className="h-40 shrink-0 animate-pulse bg-muted @[761px]/main-body:h-56"
-        aria-hidden="true"
-      />
+      <div className="aspect-[4/1] w-full shrink-0 animate-pulse bg-muted" aria-hidden="true" />
     );
-  return <ProfileHeaderPreview header={query.data} />;
+  return (
+    <div className="relative w-full shrink-0 overflow-hidden">
+      <ProfileHeaderPreview header={query.data} userId={userId} />
+      {canEdit && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="absolute right-4 bottom-4 inline-flex items-center gap-2 rounded-md border border-white/20 bg-black/40 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/60 focus-visible:outline-2 focus-visible:outline-white">
+              <Orbit className="size-3.5" aria-hidden="true" />
+              Battlefield
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link
+                to="/battlefield"
+                search={{
+                  battlefieldPreset: undefined,
+                  battlefieldSlot: undefined,
+                  battlefieldPresetMode: undefined,
+                }}
+              >
+                <Pencil className="size-4" />
+                Battlefield editor
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/battlefield-showcase">
+                <GalleryHorizontal className="size-4" />
+                Battlefield showcase
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </div>
+  );
 }
 
 export function ProfileHeaderPreview({
   header,
+  userId,
 }: {
   header?: Pick<UserHeader, 'image' | 'width' | 'height'>;
+  userId?: string;
 }) {
   return header?.image ? (
     <ImageHeader
@@ -25,9 +71,12 @@ export function ProfileHeaderPreview({
       src={header.image}
       width={header.width}
       height={header.height}
+      userId={userId}
     />
+  ) : userId ? (
+    <SavedProfileBattlefield userId={userId} />
   ) : (
-    <BattlefieldHeader />
+    <DefaultProfileHeader />
   );
 }
 
@@ -35,13 +84,16 @@ function ImageHeader({
   src,
   width,
   height,
+  userId,
 }: {
   src: string;
   width: number | null;
   height: number | null;
+  userId?: string;
 }) {
   const [failed, setFailed] = useState(false);
-  if (failed) return <BattlefieldHeader />;
+  if (failed)
+    return userId ? <SavedProfileBattlefield userId={userId} /> : <DefaultProfileHeader />;
   return (
     <div
       className="relative min-h-24 max-h-[400px] shrink-0 overflow-hidden bg-muted"
@@ -58,10 +110,32 @@ function ImageHeader({
   );
 }
 
-function BattlefieldHeader() {
+function SavedProfileBattlefield({ userId }: { userId: string }) {
+  const { data } = usePublicBattlefield(userId);
+  const fallback = useMemo(
+    () => defaultBattlefieldScene('00000000-0000-4000-8000-000000000000'),
+    [],
+  );
+  const scene = data?.scene ?? fallback;
+  const viewport = useRef<SVGSVGElement>(null);
+  const light = useBattlefieldLightMotion(scene.light, viewport);
+  return (
+    <div className="relative aspect-[4/1] w-full shrink-0 overflow-hidden">
+      <BattlefieldCanvas
+        ref={viewport}
+        scene={scene}
+        light={light}
+        className="absolute inset-0 size-full"
+        decorative
+      />
+    </div>
+  );
+}
+
+function DefaultProfileHeader() {
   return (
     <div
-      className="relative h-40 shrink-0 overflow-hidden bg-[radial-gradient(ellipse_at_75%_130%,#5d7981_0%,#263f50_24%,#122431_48%,#0a141e_78%)] @[761px]/main-body:h-56"
+      className="relative h-40 shrink-0 overflow-hidden @[761px]/main-body:h-56 bg-[radial-gradient(ellipse_at_75%_130%,#5d7981_0%,#263f50_24%,#122431_48%,#0a141e_78%)]"
       aria-hidden="true"
     >
       <div className="absolute inset-0 bg-[radial-gradient(1px_1px_at_12%_21%,white_98%,transparent),radial-gradient(1px_1px_at_24%_64%,white_98%,transparent),radial-gradient(1px_1px_at_38%_16%,white_98%,transparent),radial-gradient(1px_1px_at_51%_46%,white_98%,transparent),radial-gradient(2px_2px_at_63%_19%,#f8e4a1_98%,transparent),radial-gradient(1px_1px_at_89%_36%,white_98%,transparent)] bg-size-[460px_190px] opacity-65" />

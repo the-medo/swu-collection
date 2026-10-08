@@ -14,6 +14,7 @@ import { meleeTournamentService } from '../lib/melee/tournaments.ts';
 import { userAvatarPostRoute } from './user/avatar/post.ts';
 import { userHeaderRoute } from './user/header.ts';
 import { userProfileRoute } from './user/profile.ts';
+import { publicBattlefieldRoute } from './battlefields.ts';
 
 const { email, emailVerified, calendarPrivacy, ...selectUser } = getTableColumns(user);
 export { selectUser };
@@ -30,6 +31,7 @@ export const userRoute = new Hono<AuthExtension>()
   .route('/avatar', userAvatarPostRoute)
   .route('/', userHeaderRoute)
   .route('/', userProfileRoute)
+  .route('/', publicBattlefieldRoute)
   .get('/:id/collection', async c => {
     const paramUserId = c.req.param('id');
     const user = c.get('user');

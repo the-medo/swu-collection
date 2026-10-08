@@ -95,8 +95,9 @@ export async function persistUserHeader(
   userId: string,
   input: UserHeaderInput,
   key: string | null,
+  database: typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0] = db,
 ) {
-  return db.transaction(async tx => {
+  return database.transaction(async tx => {
     const [owner] = await tx
       .select({ id: user.id })
       .from(user)
