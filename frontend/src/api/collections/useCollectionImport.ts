@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient, UseMutationResult } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
+import { cardInListsQueryKeys } from './cardInListsQueryKeys.ts';
 
 interface ImportCard {
   cardId: string;
@@ -16,7 +17,7 @@ interface ImportCardsRequest {
 interface ImportCardsResponse {
   data: {
     inserted: number;
-    cards: any[];
+    cards: unknown[];
   };
 }
 
@@ -44,6 +45,7 @@ export const useCollectionImport = (
       return response.json();
     },
     onSuccess: data => {
+      void queryClient.invalidateQueries({ queryKey: cardInListsQueryKeys.all });
       // Invalidate queries to refresh the collection data
       queryClient.invalidateQueries({ queryKey: ['collection', collectionId] });
       queryClient.invalidateQueries({ queryKey: ['collection-content', collectionId] });

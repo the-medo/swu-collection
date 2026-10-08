@@ -47,6 +47,7 @@ export const collectionIdCardPutRoute = new Hono<AuthExtension>().put(
       .returning();
 
     const result = updatedCollectionCard[0];
+    if (!result) return c.json({ message: 'This card is no longer in this list.' }, 404);
 
     // in case that updated card has amount === 0 and amount2 is missing/also 0, we can delete it
     if (result?.amount === 0 && !result?.amount2) {

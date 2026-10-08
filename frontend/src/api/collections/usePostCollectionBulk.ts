@@ -3,6 +3,7 @@ import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import type { ZCollectionBulkInsertRequest } from '../../../../types/ZCollectionCard.ts';
+import { cardInListsQueryKeys } from './cardInListsQueryKeys.ts';
 
 export type PostCollectionBulkResponse = {
   changed: number;
@@ -30,6 +31,7 @@ export const usePostCollectionBulk = (collectionId: string) => {
       return data;
     },
     onSuccess: ({ data }) => {
+      void queryClient.invalidateQueries({ queryKey: cardInListsQueryKeys.all });
       queryClient.invalidateQueries({ queryKey: ['collection-content', collectionId] });
 
       toast({
@@ -42,7 +44,7 @@ export const usePostCollectionBulk = (collectionId: string) => {
         window.location.reload();
       }, 1000);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         variant: 'destructive',
         title: 'Error while doing bulk action',

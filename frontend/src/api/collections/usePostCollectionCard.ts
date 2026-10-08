@@ -1,13 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import { CardLanguage } from '../../../../types/enums.ts';
-import { CollectionCard } from '../../../../types/CollectionCard.ts';
+import type { CardLanguage } from '../../../../types/enums.ts';
+import type { CollectionCard } from '../../../../types/CollectionCard.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCollectionLayoutStore } from '@/components/app/collections/CollectionContents/CollectionSettings/useCollectionLayoutStore.ts';
 import { processCollectionData } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import { useCollectionGroupStoreActions } from '@/components/app/collections/CollectionContents/CollectionGroups/useCollectionGroupStore.ts';
-import { CollectionCardResponse } from '@/api/collections/useGetCollectionCards.ts';
+import type { CollectionCardResponse } from '@/api/collections/useGetCollectionCards.ts';
+import { createApiError } from '@/api/errors.ts';
+import { useUser } from '@/hooks/useUser.ts';
+import { cardInListsQueryKeys } from './cardInListsQueryKeys.ts';
 
 export type CardUpdateData = {
   cardId: string;
@@ -23,11 +26,14 @@ export type CardUpdateData = {
 
 export const usePostCollectionCard = (collectionId: string | undefined) => {
   const queryClient = useQueryClient();
+  const user = useUser();
   const { data: cardList } = useCardList();
   const { groupBy } = useCollectionLayoutStore();
   const { mergeToCollectionStoreData } = useCollectionGroupStoreActions();
 
   return useMutation({
+    mutationKey: ['collection-card', user?.id, collectionId, 'add'],
+    scope: collectionId ? { id: `collection-card:${collectionId}` } : undefined,
     mutationFn: async (cardData: CardUpdateData) => {
       if (!collectionId) {
         throw new Error('Collection id is required');
@@ -39,11 +45,7 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
       });
 
       if (!response.ok) {
-        throw new Error(
-          response.statusText === 'Internal Server Error'
-            ? 'Something went wrong while updating the card'
-            : response.statusText,
-        );
+        throw await createApiError(response, 'Something went wrong while adding the card');
       }
 
       return response.json() as unknown as { data: CollectionCard };
@@ -52,7 +54,6 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
       toast({
         title: `Card added!`,
       });
-      if (!cardList) return;
 
       queryClient.setQueryData<CollectionCardResponse>(
         ['collection-content', collectionId],
@@ -71,19 +72,11 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
           );
 
           if (cardIndex >= 0) {
-            const updatedCard = {
-              ...existingCards[cardIndex],
-              amount: (existingCards[cardIndex].amount || 0) + (result.data.amount || 0),
-              amount2: (existingCards[cardIndex].amount2 || 0) + (result.data.amount2 || 0),
-              note: result.data.note ?? existingCards[cardIndex].note,
-              price: result.data.price ?? existingCards[cardIndex].price,
-            } as CollectionCard;
-
             return {
               ...oldData,
               data: [
                 ...existingCards.slice(0, cardIndex),
-                updatedCard,
+                result.data,
                 ...existingCards.slice(cardIndex + 1),
               ],
             };
@@ -96,9 +89,21 @@ export const usePostCollectionCard = (collectionId: string | undefined) => {
         },
       );
 
-      const newCards = [result.data];
-      const processedData = processCollectionData(newCards, cardList, groupBy);
-      mergeToCollectionStoreData(processedData);
+      if (cardList) {
+        const processedData = processCollectionData([result.data], cardList, groupBy);
+        mergeToCollectionStoreData(processedData, collectionId);
+      }
+
+      // The sync refresh also updates the persistent rows and deck ownership totals.
+      void queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
+      void queryClient.invalidateQueries({ queryKey: ['collection', collectionId] });
+      void queryClient.invalidateQueries({ queryKey: cardInListsQueryKeys.all });
+      if (user) {
+        void queryClient.invalidateQueries({
+          queryKey: ['collections', user.id],
+          refetchType: 'none',
+        });
+      }
     },
     onError: error => {
       toast({

@@ -51,7 +51,7 @@ interface DataTableProps<TData, TValue> {
   onRowMouseLeave?: (row: Row<TData>) => void;
   onCellMouseEnter?: (cell: Cell<TData, unknown>, row: Row<TData>) => void;
   onTableMouseLeave?: () => void;
-  isRowHighlighted?: (row: Row<TData>) => void;
+  isRowHighlighted?: (row: Row<TData>) => boolean;
   view?: DataTableViewMode;
   infiniteScrollObserver?: RefObject<HTMLDivElement>;
   infiniteScrollLoading?: boolean;

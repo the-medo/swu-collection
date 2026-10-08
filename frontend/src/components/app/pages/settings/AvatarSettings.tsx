@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs.t
 import CardSearchCommand from '@/components/app/global/CardSearchCommand/CardSearchCommand.tsx';
 import { CardVariantPicker } from '@/components/app/cards/CardVariantPicker.tsx';
 import { Link } from '@tanstack/react-router';
+import { getCardDetailDialogSearch } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 import { getCardImageUrl } from '@/components/app/global/cardImageLib.ts';
 import { AvatarCropEditor } from './AvatarCropEditor.tsx';
 import { UploadedImagePicker } from '@/components/app/global/UploadedImagePicker.tsx';
@@ -86,7 +87,7 @@ export default function AvatarSettings() {
               {sourceCard ? (
                 <Link
                   to="."
-                  search={previous => ({ ...previous, modalCardId: cardSource.cardId })}
+                  search={previous => getCardDetailDialogSearch(previous, cardSource.cardId)}
                   className="text-primary underline"
                 >
                   {sourceCard.name}

@@ -100,7 +100,7 @@ export function useCollectionInputNumberStore() {
   const defaultLanguage = useStore(store, state => state.defaultLanguage);
   const defaultCondition = useStore(store, state => state.defaultCondition);
 
-  let { data: cardList, isFetching } = useCardList();
+  const { data: cardList, isFetching } = useCardList();
 
   const setCardByNumber = useCallback(
     (n: number) => {
@@ -108,7 +108,13 @@ export function useCollectionInputNumberStore() {
       if (card) {
         setSelectedCardId(card.cardId);
         setSelectedVariantId(card.variant.variantId);
-        setFoil(getFoilBasedOnVariantAndSet(card.variant, defaultFoil));
+        setFoil(
+          getFoilBasedOnVariantAndSet(
+            card.variant,
+            defaultFoil,
+            cardList?.cards[card.cardId]?.variants,
+          ),
+        );
       } else {
         setSelectedCardId(undefined);
         setSelectedVariantId(undefined);
@@ -129,7 +135,7 @@ export function useCollectionInputNumberStore() {
     const card = cardList.cards[selectedCardId];
     if (!card) return emptyResult;
 
-    let variant = selectedVariantId ? card.variants[selectedVariantId] : undefined;
+    const variant = selectedVariantId ? card.variants[selectedVariantId] : undefined;
 
     return {
       card,

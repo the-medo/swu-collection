@@ -530,13 +530,9 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
           order: sortOrder || 'asc',
         };
 
-        (Object.keys(searchParams) as (keyof ZAdvancedSearchParams)[]).forEach(key => {
-          if (searchParams[key] === undefined) delete searchParams[key];
-        });
-
         setSearchResults(results);
         navigate({
-          search: () => ({ ...searchParams, ...searchParamsBasedOnRoute }),
+          search: previous => ({ ...previous, ...searchParams, ...searchParamsBasedOnRoute }),
         });
 
         toast({

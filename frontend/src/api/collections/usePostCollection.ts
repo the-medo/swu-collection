@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
-import { UserCollectionsResponse } from '../../../../server/routes/user.ts';
-import { CollectionType } from '../../../../types/enums.ts';
+import type { UserCollectionsResponse } from '../../../../server/routes/user.ts';
+import type { CollectionType } from '../../../../types/enums.ts';
 
 export type PostCollectionRequest = {
   title: string;
@@ -36,16 +36,15 @@ export const usePostCollection = () => {
       return data;
     },
     onSuccess: result => {
-      console.log('onSuccess 1');
-      queryClient.setQueryData<UserCollectionsResponse>(['collections', user?.id], oldData => {
-        if (!user?.id) return undefined;
-        if (!oldData) {
-          return { userId: user.id, collections: [result.data[0]] };
-        }
-        return { userId: user.id, collections: [...oldData.collections, result.data[0]] };
-      });
+      if (!user) return;
+      queryClient.setQueriesData<UserCollectionsResponse>(
+        { queryKey: ['collections', user.id] },
+        oldData =>
+          oldData ? { ...oldData, collections: [...oldData.collections, result.data[0]] } : oldData,
+      );
+      void queryClient.invalidateQueries({ queryKey: ['collections', user.id] });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         variant: 'destructive',
         title: 'Error while creating collection',

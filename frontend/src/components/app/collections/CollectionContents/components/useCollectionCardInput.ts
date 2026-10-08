@@ -5,19 +5,18 @@ import { CollectionCardInputProps } from '@/components/app/collections/Collectio
 export const useCollectionCardInput = (
   collectionId: string,
 ): CollectionCardInputProps['onChange'] => {
-  const mutation = usePutCollectionCard(collectionId);
+  const { mutateAsync } = usePutCollectionCard(collectionId);
 
   return useCallback(
-    // @ts-ignore
     async (id, field, value) => {
       if (!id) return;
-      await mutation.mutateAsync({
-        id: id,
+      await mutateAsync({
+        id,
         data: {
           [field]: value,
         },
       });
     },
-    [],
+    [mutateAsync],
   );
 };

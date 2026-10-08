@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { updateGetUserCollections } from '@/api/user/useGetUserCollections.ts';
+import { cardInListsQueryKeys } from './cardInListsQueryKeys.ts';
 
 export const useDeleteCollection = () => {
   const queryClient = useQueryClient();
@@ -17,6 +18,7 @@ export const useDeleteCollection = () => {
       return response.json();
     },
     onSuccess: result => {
+      void queryClient.invalidateQueries({ queryKey: cardInListsQueryKeys.all });
       const deletedCollection = result.data;
 
       queryClient.invalidateQueries({
@@ -32,7 +34,7 @@ export const useDeleteCollection = () => {
         };
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         variant: 'destructive',
         title: 'Error while deleting collection',

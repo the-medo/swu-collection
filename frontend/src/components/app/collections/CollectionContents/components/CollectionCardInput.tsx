@@ -32,8 +32,8 @@ type CollectionCardInputVariantProps =
 export type CollectionCardInputOnChange = (
   id: CollectionCardIdentification | undefined,
   field: CollectionCardInputField,
-  value: string | number | undefined,
-) => void;
+  value: string | number | null | undefined,
+) => void | Promise<void>;
 
 export type CollectionCardInputProps = {
   inputId: string;
@@ -53,36 +53,48 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   value,
   onChange,
 }) => {
-  const [inputValue, setInputValue] = React.useState<string | number | undefined>(value ?? '');
-
-  useEffect(() => {
-    setInputValue(value ?? '');
-  }, [value]);
+  const [draft, setDraft] = React.useState({
+    inputValue: value ?? '',
+    dirty: false,
+    failed: false,
+    revision: 0,
+  });
+  const [focused, setFocused] = React.useState(false);
 
   const debouncedOnChange = React.useMemo(
     () =>
-      debounce((value: unknown) => {
-        // if (field === 'deckCardQuantity') {
-        //   onChange(value as number);
-        // } else {
-        onChange(id, field as never, value as never);
-        // }
+      debounce(async (nextValue: string | number | null | undefined, revision: number) => {
+        setDraft(current =>
+          current.revision === revision ? { ...current, failed: false } : current,
+        );
+        try {
+          await onChange(id, field, nextValue);
+          setDraft(current =>
+            current.revision === revision ? { ...current, dirty: false, failed: false } : current,
+          );
+        } catch {
+          // The mutation displays the error. Keep the draft available for retry.
+          setDraft(current =>
+            current.revision === revision ? { ...current, failed: true } : current,
+          );
+        }
       }, DEBOUNCE_DELAY),
     [id, field, onChange],
   );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let newValue = undefined;
+    let newValue: string | number | null | undefined;
 
     if (field === 'note' || field === 'price') {
       newValue = event.target.value;
     } else if (field === 'amount') {
       newValue = Number(event.target.value);
     } else {
-      newValue = Number(event.target.value) || undefined;
+      newValue = event.target.value === '' ? null : Number(event.target.value);
     }
-    setInputValue(newValue);
-    debouncedOnChange(newValue);
+    const revision = draft.revision + 1;
+    setDraft({ inputValue: newValue ?? '', dirty: true, failed: false, revision });
+    debouncedOnChange(newValue, revision);
   };
 
   useEffect(() => {
@@ -92,20 +104,51 @@ const CollectionCardInput: React.FC<CollectionCardInputProps> = ({
   }, [debouncedOnChange]);
 
   return (
-    <Input
-      id={inputId}
-      placeholder=""
-      className={cn('h-8', {
-        'px-1 pl-2 text-right': field !== 'note',
-        'w-16': (field === 'amount' || field === 'amount2') && !wide,
-        'w-20': field === 'price' && !wide,
-        'w-full': wide,
-        'px-1 pl-1 text-right border-0': ghost,
-      })}
-      type={field === 'note' ? 'text' : 'number'}
-      value={inputValue}
-      onChange={handleChange}
-    />
+    <div className={wide ? 'w-full' : undefined}>
+      <Input
+        id={inputId}
+        placeholder=""
+        className={cn(
+          'h-8',
+          {
+            'px-1 pl-2 text-right': field !== 'note',
+            'w-16': (field === 'amount' || field === 'amount2') && !wide,
+            'w-20': field === 'price' && !wide,
+            'w-full': wide,
+            'px-1 pl-1 text-right border-0': ghost,
+          },
+          draft.failed && 'border border-destructive focus-visible:ring-destructive',
+        )}
+        type={field === 'note' ? 'text' : 'number'}
+        value={focused || draft.dirty ? draft.inputValue : (value ?? '')}
+        aria-invalid={draft.failed || undefined}
+        onChange={handleChange}
+        onFocus={() => {
+          if (!draft.dirty) setDraft(current => ({ ...current, inputValue: value ?? '' }));
+          setFocused(true);
+        }}
+        onBlur={() => {
+          setFocused(false);
+          void debouncedOnChange.flush();
+        }}
+      />
+      {draft.failed && (
+        <button
+          type="button"
+          aria-label={`Retry saving ${field === 'amount' || field === 'amount2' ? 'quantity' : field}`}
+          className="mt-1 block text-xs font-medium text-destructive underline underline-offset-2"
+          onClick={() => {
+            debouncedOnChange(
+              field === 'amount2' && draft.inputValue === '' ? null : draft.inputValue,
+              draft.revision,
+            );
+            void debouncedOnChange.flush();
+          }}
+        >
+          Retry save
+        </button>
+      )}
+    </div>
   );
 };
 
