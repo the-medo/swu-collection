@@ -4,6 +4,15 @@ export enum CardPriceSourceType {
   SWUBASE = 'swubase',
 }
 
+// Covers three calendar months, including the first day's samples.
+export const CARD_PRICE_HISTORY_MAX_DAYS = 93;
+
+export interface CardPriceExchangeRate {
+  date: string;
+  usdPerEur: number;
+  stale?: boolean;
+}
+
 export type CardPriceSourceInfo = {
   id: CardPriceSourceType;
   name: string;

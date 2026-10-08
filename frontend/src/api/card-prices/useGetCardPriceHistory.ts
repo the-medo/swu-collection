@@ -1,6 +1,7 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
+import { createApiError } from '@/api/errors.ts';
 
 /**
  * Card variant price history data structure
@@ -41,7 +42,7 @@ export const useGetCardPriceHistory = (params: CardPriceHistoryParams) => {
   const { cardId, variantId, sourceType, days } = params;
 
   // Either cardId or variantId must be provided
-  const isValidQuery = cardId !== undefined || variantId !== undefined;
+  const isValidQuery = Boolean(cardId || variantId);
 
   return useQuery<CardPriceHistoryResponse, ErrorWithStatus>({
     queryKey: ['card-price-history', cardId, variantId, sourceType, days],
@@ -58,12 +59,7 @@ export const useGetCardPriceHistory = (params: CardPriceHistoryParams) => {
           });
 
           if (!response.ok) {
-            if (response.status === 404) {
-              const error: ErrorWithStatus = new Error('Card price history not found');
-              error.status = 404;
-              throw error;
-            }
-            throw new Error('Something went wrong');
+            throw await createApiError(response, 'Failed to load card price history');
           }
 
           const data = await response.json();

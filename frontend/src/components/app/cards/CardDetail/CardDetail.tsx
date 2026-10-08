@@ -17,6 +17,7 @@ import { CardVariantPicker } from '../CardVariantPicker.tsx';
 import CardDetailAddToList from './CardDetailAddToList.tsx';
 import CardDetailInLists from './CardDetailInLists.tsx';
 import CardDetailDecks from './CardDetailDecks.tsx';
+import { CardPriceHistory } from './CardPriceHistory.tsx';
 import { useRole } from '@/hooks/useRole.ts';
 import { cardDetailTabSchema, type CardDetailTab } from './cardDetailSearchParams.ts';
 
@@ -81,6 +82,30 @@ const CardDetail: React.FC<CardDetailProps> = ({
       </>
     );
   }
+
+  const variantPicker = (
+    <CardVariantPicker
+      card={card}
+      variants={allVariants}
+      selectedVariantId={activeVariantId}
+      onSelect={onVariantChange}
+      showBackSide
+      renderDetails={variant => (
+        <>
+          <PriceBadge
+            cardId={cardId}
+            sourceType={CardPriceSourceType.CARDMARKET}
+            variantId={variant.variantId}
+          />
+          <PriceBadge
+            cardId={cardId}
+            sourceType={CardPriceSourceType.TCGPLAYER}
+            variantId={variant.variantId}
+          />
+        </>
+      )}
+    />
+  );
 
   return (
     <>
@@ -148,7 +173,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
           </div>
 
           {/* Main Content - Card Details with Tabs */}
-          <Card className="min-w-0 overflow-hidden">
+          <Card className="@container/card-detail-content min-w-0 overflow-hidden">
             <CardContent className="pt-4 px-4">
               <Tabs
                 key={cardId}
@@ -158,10 +183,11 @@ const CardDetail: React.FC<CardDetailProps> = ({
                   onTabChange(cardDetailTabSchema.parse(value));
                 }}
               >
-                <TabsList className="mb-2 w-full grid grid-cols-3">
+                <TabsList className="mb-2 grid h-auto w-full grid-cols-2 gap-1 @[560px]/card-detail-content:grid-cols-4">
                   <TabsTrigger value="details">Card Details</TabsTrigger>
                   <TabsTrigger value="variants">Variants ({allVariants.length})</TabsTrigger>
                   <TabsTrigger value="decks">Decks</TabsTrigger>
+                  <TabsTrigger value="price-history">Price history</TabsTrigger>
                 </TabsList>
 
                 {/* Card Details Tab */}
@@ -311,27 +337,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
                 >
                   {(tab === 'variants' || visitedVariantsCardId === cardId) && (
                     <div className="space-y-3">
-                      <CardVariantPicker
-                        card={card}
-                        variants={allVariants}
-                        selectedVariantId={activeVariantId}
-                        onSelect={onVariantChange}
-                        showBackSide
-                        renderDetails={variant => (
-                          <>
-                            <PriceBadge
-                              cardId={cardId}
-                              sourceType={CardPriceSourceType.CARDMARKET}
-                              variantId={variant.variantId}
-                            />
-                            <PriceBadge
-                              cardId={cardId}
-                              sourceType={CardPriceSourceType.TCGPLAYER}
-                              variantId={variant.variantId}
-                            />
-                          </>
-                        )}
-                      />
+                      {variantPicker}
                       {selectedVariant && (
                         <CardDetailAddToList
                           cardId={cardId}
@@ -351,6 +357,10 @@ const CardDetail: React.FC<CardDetailProps> = ({
                 </TabsContent>
                 <TabsContent value="decks" className="mt-0">
                   <CardDetailDecks cardId={cardId} />
+                </TabsContent>
+                <TabsContent value="price-history" className="mt-0 space-y-4">
+                  {variantPicker}
+                  <CardPriceHistory cardId={cardId} variantId={activeVariantId} />
                 </TabsContent>
               </Tabs>
             </CardContent>

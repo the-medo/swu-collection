@@ -8,6 +8,7 @@ import { cardPricesGetSingleRoute } from './card-prices/get-single.ts';
 import { cardPricesGetSourcesRoute } from './card-prices/get-sources.ts';
 import { cardPricesTcgPlayerRoute } from './card-prices/tcgplayer.ts';
 import { cardPricesMatchedVariantsRoute } from './card-prices/matched-variants.ts';
+import { cardPricesExchangeRateRoute } from './card-prices/exchange-rate.ts';
 
 export const cardPricesRoute = new Hono<AuthExtension>()
   .route('/', cardPricesGetSingleRoute)
@@ -17,4 +18,5 @@ export const cardPricesRoute = new Hono<AuthExtension>()
   .route('/bulk-load', cardPricesBulkLoadRoute)
   .route('/matched-variants', cardPricesMatchedVariantsRoute)
   .route('/tcgplayer', cardPricesTcgPlayerRoute)
+  .route('/exchange-rate', cardPricesExchangeRateRoute)
   .route('/history', cardPricesGetHistoryRoute);
