@@ -15,6 +15,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as Statistics2RouteImport } from './routes/statistics2'
 import { Route as StatisticsRouteImport } from './routes/statistics'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as BattlefieldShowcaseRouteImport } from './routes/battlefield-showcase'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
@@ -40,6 +41,7 @@ import { Route as CardsSearchRouteImport } from './routes/cards/search'
 import { Route as AuthErrorRouteImport } from './routes/auth.error'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
+import { Route as AuthenticatedBattlefieldRouteImport } from './routes/_authenticated/battlefield'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as WantlistsWantlistIdIndexRouteImport } from './routes/wantlists/$wantlistId/index'
 import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId/index'
@@ -112,6 +114,11 @@ const StatisticsRoute = StatisticsRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BattlefieldShowcaseRoute = BattlefieldShowcaseRouteImport.update({
+  id: '/battlefield-showcase',
+  path: '/battlefield-showcase',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -239,6 +246,12 @@ const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedBattlefieldRoute =
+  AuthenticatedBattlefieldRouteImport.update({
+    id: '/battlefield',
+    path: '/battlefield',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -526,11 +539,13 @@ const TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/battlefield-showcase': typeof BattlefieldShowcaseRoute
   '/privacy': typeof PrivacyRoute
   '/statistics': typeof StatisticsStatisticsLayoutRouteWithChildren
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/battlefield': typeof AuthenticatedBattlefieldRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/auth/error': typeof AuthErrorRoute
@@ -604,10 +619,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/battlefield-showcase': typeof BattlefieldShowcaseRoute
   '/privacy': typeof PrivacyRoute
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/battlefield': typeof AuthenticatedBattlefieldRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/auth/error': typeof AuthErrorRoute
@@ -681,11 +698,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/battlefield-showcase': typeof BattlefieldShowcaseRoute
   '/privacy': typeof PrivacyRoute
   '/statistics': typeof StatisticsRouteWithChildren
   '/statistics2': typeof Statistics2Route
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/battlefield': typeof AuthenticatedBattlefieldRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/auth/error': typeof AuthErrorRoute
@@ -763,11 +782,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/battlefield-showcase'
     | '/privacy'
     | '/statistics'
     | '/statistics2'
     | '/terms'
     | '/admin'
+    | '/battlefield'
     | '/messages'
     | '/notifications'
     | '/auth/error'
@@ -841,10 +862,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/battlefield-showcase'
     | '/privacy'
     | '/statistics2'
     | '/terms'
     | '/admin'
+    | '/battlefield'
     | '/messages'
     | '/notifications'
     | '/auth/error'
@@ -917,11 +940,13 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/battlefield-showcase'
     | '/privacy'
     | '/statistics'
     | '/statistics2'
     | '/terms'
     | '/_authenticated/admin'
+    | '/_authenticated/battlefield'
     | '/_authenticated/messages'
     | '/_authenticated/notifications'
     | '/auth/error'
@@ -999,6 +1024,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  BattlefieldShowcaseRoute: typeof BattlefieldShowcaseRoute
   PrivacyRoute: typeof PrivacyRoute
   StatisticsRoute: typeof StatisticsRouteWithChildren
   Statistics2Route: typeof Statistics2Route
@@ -1075,6 +1101,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/battlefield-showcase': {
+      id: '/battlefield-showcase'
+      path: '/battlefield-showcase'
+      fullPath: '/battlefield-showcase'
+      preLoaderRoute: typeof BattlefieldShowcaseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -1250,6 +1283,13 @@ declare module '@tanstack/react-router' {
       path: '/messages'
       fullPath: '/messages'
       preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/battlefield': {
+      id: '/_authenticated/battlefield'
+      path: '/battlefield'
+      fullPath: '/battlefield'
+      preLoaderRoute: typeof AuthenticatedBattlefieldRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin': {
@@ -1607,6 +1647,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedBattlefieldRoute: typeof AuthenticatedBattlefieldRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedCrossfireLobbyIdRoute: typeof AuthenticatedCrossfireLobbyIdRoute
@@ -1620,6 +1661,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedBattlefieldRoute: AuthenticatedBattlefieldRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedCrossfireLobbyIdRoute: AuthenticatedCrossfireLobbyIdRoute,
@@ -1752,6 +1794,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+  BattlefieldShowcaseRoute: BattlefieldShowcaseRoute,
   PrivacyRoute: PrivacyRoute,
   StatisticsRoute: StatisticsRouteWithChildren,
   Statistics2Route: Statistics2Route,

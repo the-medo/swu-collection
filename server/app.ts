@@ -1,4 +1,6 @@
 import { APIError } from 'better-auth/api';
+import { battlefieldsRoute } from './routes/battlefields.ts';
+import { battlefieldPresetsRoute } from './routes/battlefield-presets.ts';
 import { Hono } from 'hono';
 import { requestLogger } from './lib/ws/requestLogger.ts';
 import { messagesRoute } from './routes/messages.ts';
@@ -178,6 +180,8 @@ const apiRoutes = app
   .route('/crossfire', crossfireRoute)
   .route('/cards', cardsRoute)
   .route('/user', userRoute)
+  .route('/battlefields', battlefieldsRoute)
+  .route('/battlefield-presets', battlefieldPresetsRoute)
   .route('/user-reports', userReportsRoute)
   .route('/posts', postsRoute)
   .route('/user-settings', userSettingsRoute)
