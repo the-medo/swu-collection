@@ -3,6 +3,7 @@ export { useCreateCardPriceSource } from './useCreateCardPriceSource';
 export { useDeleteCardPriceSource } from './useDeleteCardPriceSource';
 export { useGetAllCardPriceSources } from './useGetAllCardPriceSources';
 export { useGetCardPriceHistory } from './useGetCardPriceHistory';
+export { useGetCardPriceExchangeRate } from './useGetCardPriceExchangeRate';
 export { useGetSingleCardPrice } from './useGetSingleCardPrice';
 export { useGetTcgPlayerGroups, useGetTcgPlayerProducts } from './tcgPlayer';
 export { useGetMatchedCardPriceVariants } from './useGetMatchedCardPriceVariants';

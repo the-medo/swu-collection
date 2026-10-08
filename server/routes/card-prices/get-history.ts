@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { db } from '../../db';
 import { cardVariantPriceHistory } from '../../db/schema/card_variant_price_history.ts';
 import { and, eq, gte } from 'drizzle-orm';
+import { CARD_PRICE_HISTORY_MAX_DAYS } from '../../../types/CardPrices.ts';
 
 // Define query parameters schema
 const getHistorySchema = z
@@ -12,7 +13,7 @@ const getHistorySchema = z
     cardId: z.string().optional(),
     variantId: z.string().optional(),
     sourceType: z.string().optional(),
-    days: z.coerce.number().min(1).max(60).default(30),
+    days: z.coerce.number().int().min(1).max(CARD_PRICE_HISTORY_MAX_DAYS).default(30),
   })
   .refine(data => data.cardId || data.variantId, {
     message: 'At least one of cardId or variantId must be provided',
