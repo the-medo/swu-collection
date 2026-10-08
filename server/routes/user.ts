@@ -15,6 +15,7 @@ import { userAvatarPostRoute } from './user/avatar/post.ts';
 import { userHeaderRoute } from './user/header.ts';
 import { userProfileRoute } from './user/profile.ts';
 import { publicBattlefieldRoute } from './battlefields.ts';
+import { userAchievementsRoute } from './user/achievements.ts';
 
 const { email, emailVerified, calendarPrivacy, ...selectUser } = getTableColumns(user);
 export { selectUser };
@@ -32,6 +33,7 @@ export const userRoute = new Hono<AuthExtension>()
   .route('/', userHeaderRoute)
   .route('/', userProfileRoute)
   .route('/', publicBattlefieldRoute)
+  .route('/', userAchievementsRoute)
   .get('/:id/collection', async c => {
     const paramUserId = c.req.param('id');
     const user = c.get('user');

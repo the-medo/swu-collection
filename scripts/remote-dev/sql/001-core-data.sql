@@ -130,7 +130,15 @@ $image_gallery$;
 TRUNCATE TABLE user_credits, patreon_member, patreon_connection;
 
 -- Account ownership proofs and connected Melee identities always stay private.
-TRUNCATE TABLE user_melee_tournaments, user_melee_tournament_sync, melee_verification, melee_connection;
+DO $user_achievements$
+BEGIN
+  IF to_regclass('public.user_achievement') IS NOT NULL THEN
+    TRUNCATE TABLE user_achievement, user_melee_tournaments, user_melee_tournament_sync, melee_verification, melee_connection;
+  ELSE
+    TRUNCATE TABLE user_melee_tournaments, user_melee_tournament_sync, melee_verification, melee_connection;
+  END IF;
+END
+$user_achievements$;
 
 -- Posts contain arbitrary personal prose and references, even for opted-in users.
 TRUNCATE TABLE post;
@@ -475,6 +483,12 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM battlefield) THEN
     RAISE EXCEPTION 'Battlefield layouts remain in the contributor dump.';
+  END IF;
+
+  IF to_regclass('public.user_achievement') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM user_achievement) THEN
+      RAISE EXCEPTION 'Profile achievements remain in the contributor dump.';
+    END IF;
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_report_action) OR EXISTS (SELECT 1 FROM user_report)

@@ -533,6 +533,13 @@
       "when": 1791446364367,
       "tag": "0075_battlefields",
       "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1791474890665,
+      "tag": "0076_profile_achievements",
+      "breakpoints": true
     }
   ]
 }

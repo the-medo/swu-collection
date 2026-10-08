@@ -16,7 +16,8 @@ export function useUpdateUserProfile(userId: string) {
       return (await response.json()).data;
     },
     onSuccess: async data => {
-      await queryClient.cancelQueries({ queryKey: userProfileKeys.detail(userId) });
+      // Achievement queries share this prefix and must keep loading during a favorites save.
+      await queryClient.cancelQueries({ queryKey: userProfileKeys.detail(userId), exact: true });
       queryClient.setQueryData(userProfileKeys.detail(userId), data);
     },
   });

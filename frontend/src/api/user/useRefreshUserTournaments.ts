@@ -3,6 +3,7 @@ import { api } from '@/lib/api.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { createApiError } from '@/api/errors.ts';
 import { userTournamentKeys } from './tournamentKeys.ts';
+import { userProfileKeys } from '@/api/user-profile/queryKeys.ts';
 
 export function useRefreshUserTournaments(userId: string) {
   const user = useUser();
@@ -19,6 +20,7 @@ export function useRefreshUserTournaments(userId: string) {
       await queryClient.cancelQueries({ queryKey });
       queryClient.setQueryData(queryKey, data);
       await queryClient.invalidateQueries({ queryKey });
+      await queryClient.invalidateQueries({ queryKey: userProfileKeys.achievements(userId) });
     },
     onError: async () => {
       // A failed upstream attempt still starts the server's refresh cooldown.
