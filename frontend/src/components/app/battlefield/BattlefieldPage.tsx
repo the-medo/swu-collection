@@ -65,7 +65,6 @@ import { moveBattlefieldLight } from '../../../../../shared/battlefield/lighting
 import { normalizeBattlefieldScene } from '../../../../../shared/battlefield/normalize.ts';
 import {
   battlefieldDrawOrder,
-  battlefieldLayerRows,
   bringBattlefieldSelection,
   bringBattlefieldLayer,
   createBattlefieldLayer,
@@ -80,42 +79,13 @@ import { BattlefieldSidebar } from './BattlefieldSidebar';
 import { BattlefieldLightControls } from './BattlefieldLightControls';
 import { BattlefieldCanvas } from './BattlefieldCanvas';
 import { useBattlefieldZoom } from './useBattlefieldZoom';
+import { useBattlefieldHistory } from './useBattlefieldHistory';
+import { battlefieldFingerprint } from './battlefieldFingerprint';
 import { BattlefieldSlotSelect } from './BattlefieldSlotSelect';
 import { BattlefieldFactions } from './BattlefieldFactions';
 import type { ErrorWithStatus } from '../../../../../types/ErrorWithStatus';
 const credits = (value: number) => value.toLocaleString();
 type SliderKind = 'rotation' | 'scale' | 'light-x' | 'light-y';
-// PostgreSQL JSONB reorders object keys; compare scene values in a fixed order.
-const fingerprint = (name: string, scene: BattlefieldScene, factions: BattlefieldFaction[] = []) =>
-  JSON.stringify([
-    name,
-    scene.width,
-    scene.height,
-    scene.backgroundId,
-    (scene.light ?? battlefieldDefaultLight).x,
-    (scene.light ?? battlefieldDefaultLight).y,
-    // Include all records so repairing an invalid or duplicate layer is a change,
-    // even if that layer cannot currently appear in the tree.
-    [...scene.layers]
-      .sort((a, b) => a.id.localeCompare(b.id))
-      .map(layer => [layer.id, layer.parentId, layer.name, layer.visible]),
-    [...scene.placements]
-      .sort((a, b) => a.id.localeCompare(b.id))
-      .map(p => [
-        p.id,
-        p.itemId,
-        p.x,
-        p.y,
-        p.rotation,
-        p.scale,
-        p.colorId,
-        p.textureId ?? 'rocky',
-        p.layerId,
-        p.visible,
-      ]),
-    battlefieldLayerRows(scene).map(entry => [entry.kind, entry.id]),
-    [...factions].sort(),
-  ]);
 
 export function BattlefieldPage({
   presetId,
@@ -331,7 +301,7 @@ function BattlefieldWorkspace({
   const [publishOpen, setPublishOpen] = useState(false);
   const [factions, setFactions] = useState<BattlefieldFaction[]>(presetSource?.factions ?? []);
   const [publishFactions, setPublishFactions] = useState<BattlefieldFaction[]>([]);
-  const initialScene = normalizeBattlefieldScene(base.scene);
+  const [initialScene] = useState(() => normalizeBattlefieldScene(base.scene));
   const [name, setName] = useState(base.name);
   const [persistedId, setPersistedId] = useState<string | undefined>(
     imported ? undefined : base.id,
@@ -351,23 +321,28 @@ function BattlefieldWorkspace({
       ? (presetSource?.revision ?? 0)
       : (data.battlefields.find(b => b.id === initialDestination)?.revision ?? base.revision),
   );
-  const [history, setHistory] = useState({
-    scene: initialScene,
-    past: [] as BattlefieldScene[],
-    future: [] as BattlefieldScene[],
-  });
+  const {
+    scene,
+    rendered,
+    commit: commitScene,
+    undo: undoScene,
+    redo: redoScene,
+    reset: resetHistory,
+    setPreview,
+    canUndo,
+    canRedo,
+  } = useBattlefieldHistory(initialScene);
   const [saved, setSaved] = useState(
     editingPreset
-      ? fingerprint(base.name, initialScene, factions)
+      ? battlefieldFingerprint(base.name, initialScene, factions)
       : imported
         ? ''
-        : fingerprint(base.name, initialScene),
+        : battlefieldFingerprint(base.name, initialScene),
   );
   const [selected, setSelected] = useState<string[]>([]);
   const [selectedLayerId, setSelectedLayerId] = useState<string>();
   const [lightSelected, setLightSelected] = useState(false);
   const [activeLayerId, setActiveLayerId] = useState(initialScene.layers[0].id);
-  const [preview, setPreview] = useState<BattlefieldScene>();
   const [error, setError] = useState<string>();
   const [notice, setNotice] = useState<string>();
   const [conflict, setConflict] = useState(false);
@@ -395,8 +370,6 @@ function BattlefieldWorkspace({
     ids: string[];
     rotation: number;
   } | null>(null);
-  const scene = history.scene;
-  const rendered = preview ?? scene;
   const light = rendered.light ?? battlefieldDefaultLight;
   const currentLayerId = scene.layers.some(layer => layer.id === activeLayerId)
     ? activeLayerId
@@ -414,7 +387,7 @@ function BattlefieldWorkspace({
     setLightSelected(true);
   };
   const currentFingerprint = useMemo(
-    () => fingerprint(name, scene, editingPreset ? factions : []),
+    () => battlefieldFingerprint(name, scene, editingPreset ? factions : []),
     [name, scene, editingPreset, factions],
   );
   const dirty = currentFingerprint !== saved;
@@ -449,15 +422,7 @@ function BattlefieldWorkspace({
   const sceneIssue = assessment.error;
   const overBudget = !editingPreset && cost !== undefined && cost > data.balance;
   const commit = (next: BattlefieldScene) => {
-    setHistory(h =>
-      fingerprint('', next) === fingerprint('', h.scene)
-        ? h
-        : {
-            scene: next,
-            past: [...h.past, h.scene].slice(-50),
-            future: [],
-          },
-    );
+    commitScene(next);
     setNotice(undefined);
   };
   const startSlider = (kind: SliderKind) => {
@@ -530,23 +495,11 @@ function BattlefieldWorkspace({
     setPreview(undefined);
   };
   const undo = () => {
-    setHistory(h =>
-      h.past.length
-        ? {
-            scene: h.past[h.past.length - 1],
-            past: h.past.slice(0, -1),
-            future: [h.scene, ...h.future],
-          }
-        : h,
-    );
+    undoScene();
     if (!lightSelected) select([]);
   };
   const redo = () => {
-    setHistory(h =>
-      h.future.length
-        ? { scene: h.future[0], past: [...h.past, h.scene], future: h.future.slice(1) }
-        : h,
-    );
+    redoScene();
     if (!lightSelected) select([]);
   };
   const changeSelected = (change: (p: BattlefieldPlacement) => BattlefieldPlacement) =>
@@ -627,7 +580,7 @@ function BattlefieldWorkspace({
         });
         setRevision(result.revision);
         setName(current => (current === name ? result.name : current));
-        setSaved(fingerprint(result.name, result.scene, result.factions));
+        setSaved(battlefieldFingerprint(result.name, result.scene, result.factions));
         setConflict(false);
         setError(undefined);
         setNotice('Preset updated. Users’ saved copies keep their existing layouts.');
@@ -664,7 +617,7 @@ function BattlefieldWorkspace({
       setDestination(result.id);
       setRevision(result.revision);
       setName(current => (current === name ? result.name : current));
-      setSaved(fingerprint(result.name, result.scene));
+      setSaved(battlefieldFingerprint(result.name, result.scene));
       setError(undefined);
       setConflict(false);
       setNotice('Battlefield saved.');
@@ -701,8 +654,8 @@ function BattlefieldWorkspace({
           setName(latest.name);
           setRevision(latest.revision);
           setFactions(latest.factions);
-          setHistory({ scene: latest.scene, past: [], future: [] });
-          setSaved(fingerprint(latest.name, latest.scene, latest.factions));
+          resetHistory(latest.scene);
+          setSaved(battlefieldFingerprint(latest.name, latest.scene, latest.factions));
           select([]);
           setConflict(false);
           setError(undefined);
@@ -718,8 +671,8 @@ function BattlefieldWorkspace({
         setPersistedId(latest.id);
         setName(latest.name);
         setRevision(latest.revision);
-        setHistory({ scene: latest.scene, past: [], future: [] });
-        setSaved(fingerprint(latest.name, latest.scene));
+        resetHistory(latest.scene);
+        setSaved(battlefieldFingerprint(latest.name, latest.scene));
         select([]);
         setConflict(false);
         setError(undefined);
@@ -1112,7 +1065,7 @@ function BattlefieldWorkspace({
                 variant="ghost"
                 size="sm"
                 aria-label="Undo"
-                disabled={!history.past.length}
+                disabled={!canUndo}
                 onClick={undo}
               >
                 <Undo2 className="size-4" />
@@ -1121,7 +1074,7 @@ function BattlefieldWorkspace({
                 variant="ghost"
                 size="sm"
                 aria-label="Redo"
-                disabled={!history.future.length}
+                disabled={!canRedo}
                 onClick={redo}
               >
                 <Redo2 className="size-4" />
