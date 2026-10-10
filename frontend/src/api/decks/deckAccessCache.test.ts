@@ -7,6 +7,8 @@ import {
   updateDeckPricesCache,
 } from './deckAccessCache.ts';
 import { deckKeys } from './queryKeys.ts';
+import { deckDiscussionKeys } from './discussionKeys.ts';
+import { discussionKeys } from '../discussions/queryKeys.ts';
 
 test('fresh access is required for private viewers while owner/public editor caches stay stable', () => {
   const data = (visibility: number) =>
@@ -64,6 +66,15 @@ test('revocation clears cached private data and notifies active observers withou
   client.setQueryData(deckKeys.cards('deck', 'member'), privateCards);
   client.setQueryData(deckKeys.detail('inactive', 'member'), privateData);
   client.setQueryData(deckKeys.cards('inactive', 'member'), privateCards);
+  client.setQueryData(deckDiscussionKeys.article('deck', 'member'), privateData);
+  client.setQueryData(deckDiscussionKeys.comments('deck', 'member'), privateData);
+  client.setQueryData(deckDiscussionKeys.article('deck', 'owner'), privateData);
+  client.setQueryData(deckDiscussionKeys.ownComments('deck', 'member'), privateData);
+  client.setQueryData(deckDiscussionKeys.discussion('deck', 'member'), { id: 'discussion' });
+  client.setQueryData(discussionKeys.info('discussion', 'member'), { total: 2 });
+  client.setQueryData(discussionKeys.comments('discussion', 'member'), privateData);
+  client.setQueryData(discussionKeys.comments('discussion', 'member', 'parent'), privateData);
+  client.setQueryData(discussionKeys.comments('discussion', 'owner'), privateData);
   const observers = [deckKeys.detail('deck', 'member'), deckKeys.cards('deck', 'member')].map(
     queryKey =>
       new QueryObserver(client, {
@@ -79,6 +90,22 @@ test('revocation clears cached private data and notifies active observers withou
   try {
     expect(observers.every(observer => observer.getCurrentResult().data !== undefined)).toBe(true);
     await resetDeniedDeckAccess(client, 'deck', 'member');
+    expect(client.getQueryData(discussionKeys.info('discussion', 'member'))).toBeUndefined();
+    expect(client.getQueryData(discussionKeys.comments('discussion', 'member'))).toBeUndefined();
+    expect(
+      client.getQueryData(discussionKeys.comments('discussion', 'member', 'parent')),
+    ).toBeUndefined();
+    expect(client.getQueryData<DeckData>(discussionKeys.comments('discussion', 'owner'))).toEqual(
+      privateData,
+    );
+    expect(client.getQueryData(deckDiscussionKeys.article('deck', 'member'))).toBeUndefined();
+    expect(client.getQueryData(deckDiscussionKeys.comments('deck', 'member'))).toBeUndefined();
+    expect(client.getQueryData<DeckData>(deckDiscussionKeys.article('deck', 'owner'))).toEqual(
+      privateData,
+    );
+    expect(client.getQueryData<DeckData>(deckDiscussionKeys.ownComments('deck', 'member'))).toEqual(
+      privateData,
+    );
     for (const observer of observers) {
       expect(observer.getCurrentResult().isError).toBe(true);
       expect(observer.getCurrentResult().data).toBeUndefined();

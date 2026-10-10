@@ -10,6 +10,8 @@ import { booleanPreprocessor } from './zod/booleanPreprocessor.ts';
 
 export interface UserSettings {
   notifications_deck_favorites: boolean;
+  notifications_deck_comments: boolean;
+  notifications_comment_replies: boolean;
   notifications_team_members: boolean;
   use_tournament_attachments: boolean;
   left_sidebar_collections_and_lists: boolean;
@@ -69,6 +71,8 @@ export const sidebarTournamentDaysSchema = z.preprocess(
 
 export const userSettingsSchema = z.object({
   notifications_deck_favorites: booleanPreprocessor.default(true),
+  notifications_deck_comments: booleanPreprocessor.default(true),
+  notifications_comment_replies: booleanPreprocessor.default(true),
   notifications_team_members: booleanPreprocessor.default(true),
   use_tournament_attachments: booleanPreprocessor.default(true),
   left_sidebar_collections_and_lists: booleanPreprocessor.default(true),
@@ -121,6 +125,8 @@ export type FeatureSettingsValues = z.infer<typeof featureSettingsSchema>;
 
 export const notificationSettingsSchema = userSettingsSchema.pick({
   notifications_deck_favorites: true,
+  notifications_deck_comments: true,
+  notifications_comment_replies: true,
   notifications_team_members: true,
 });
 export type NotificationSettingsValues = z.infer<typeof notificationSettingsSchema>;

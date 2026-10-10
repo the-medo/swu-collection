@@ -3,6 +3,8 @@ import type { GetDecksRequest } from '@/api/decks/useGetDecks.ts';
 import type { DeckFolder, SharedDeckFolder } from '../../../../types/DeckFolder.ts';
 import { getDeckFolderDescendants } from '../../../../shared/lib/deckFolders.ts';
 import { deckFolderKeys } from './queryKeys.ts';
+import { deckDiscussionKeys } from '../decks/discussionKeys.ts';
+import { discussionKeys } from '../discussions/queryKeys.ts';
 
 export const invalidateDeckFolderCaches = (client: QueryClient) =>
   Promise.all([
@@ -11,6 +13,8 @@ export const invalidateDeckFolderCaches = (client: QueryClient) =>
     client.invalidateQueries({ queryKey: ['deck'] }),
     client.invalidateQueries({ queryKey: ['deck-content'] }),
     client.invalidateQueries({ queryKey: ['decks-bulk'] }),
+    client.invalidateQueries({ queryKey: deckDiscussionKeys.all }),
+    client.invalidateQueries({ queryKey: discussionKeys.all }),
   ]);
 
 export async function applyDeletedDeckFolderCaches(client: QueryClient, id: string) {

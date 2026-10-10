@@ -2,6 +2,7 @@ import { APIError } from 'better-auth/api';
 import { battlefieldsRoute } from './routes/battlefields.ts';
 import { battlefieldPresetsRoute } from './routes/battlefield-presets.ts';
 import { Hono } from 'hono';
+import { discussionsRoute } from './routes/discussions.ts';
 import { requestLogger } from './lib/ws/requestLogger.ts';
 import { messagesRoute } from './routes/messages.ts';
 import { notificationsRoute } from './routes/notifications.ts';
@@ -70,7 +71,8 @@ Sentry.init({
       return null;
     if (
       event.request?.url?.includes('/api/user-tournament-attachments') ||
-      event.request?.url?.includes('/api/user-files')
+      event.request?.url?.includes('/api/user-files') ||
+      /\/api\/(?:deck\/[^/]+\/(?:article|comments)|discussions\/[^/]+\/comments)(?:[/?#]|$)/.test(event.request?.url ?? '')
     ) {
       delete event.request.data;
     }
@@ -177,6 +179,7 @@ const apiRoutes = app
   .route('/world', worldRoute)
   .route('/collection', collectionRoute)
   .route('/deck', deckRoute)
+  .route('/discussions', discussionsRoute)
   .route('/deck-folders', deckFoldersRoute)
   .route('/crossfire', crossfireRoute)
   .route('/cards', cardsRoute)

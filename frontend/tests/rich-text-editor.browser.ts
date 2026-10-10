@@ -51,6 +51,16 @@ await page.addLocatorHandler(page.getByRole('button', { name: 'Dismiss', exact: 
 );
 const screenshots = new URL('../../.swubase/editor-screenshots/', import.meta.url).pathname;
 await mkdir(screenshots, { recursive: true });
+const insertionCommands = [
+  ['card-image', 'Card image'],
+  ['card-link', 'Card link'],
+  ['decklist', 'Decklist'],
+  ['meta-analysis', 'Meta analysis'],
+  ['matchup', 'Matchup'],
+  ['card-group', 'Card group'],
+  ['callout', 'Strategy callout'],
+  ['mention', 'Mention a user'],
+] as const;
 
 async function endOfDocument() {
   await page.locator('[contenteditable=true]').first().focus();
@@ -60,6 +70,9 @@ async function endOfDocument() {
 async function slash(command: string) {
   await endOfDocument();
   await page.keyboard.type(`/${command}`, { delay: 20 });
+  const label = insertionCommands.find(([id]) => id === command)?.[1];
+  if (!label) throw new Error(`Unknown insertion command: ${command}`);
+  await expect(page.getByRole('option', { name: new RegExp(`^${label}`) })).toBeVisible();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('dialog')).toBeVisible();
 }
@@ -195,6 +208,7 @@ try {
     await page.goto(profileUrl);
     await expect(page.locator('[contenteditable=true]').first()).toBeVisible();
     const surface = page.locator('.rte-surface');
+    await expect(page.getByRole('group', { name: 'Insert SWUBASE content' })).toHaveCount(0);
     await exerciseFormatting(page);
     await slash('card-image');
     await page.getByLabel('Card size', { exact: true }).selectOption('small');
@@ -344,18 +358,14 @@ try {
   await page.getByRole('option', { name: /^Heading 2/ }).click();
   await page.keyboard.type('Slash heading probe');
   await expect(surface.locator('h2')).toContainText('Slash heading probe');
-  for (const command of [
-    'card-image',
-    'card-link',
-    'decklist',
-    'meta-analysis',
-    'matchup',
-    'card-group',
-    'callout',
-  ]) {
+  for (const [command] of insertionCommands) {
     await endOfDocument();
     await page.keyboard.type(`/${command}`);
-    await expect(page.getByRole('option', { name: command })).toHaveCount(0);
+    await expect(
+      page.getByRole('option', {
+        name: /Card image|Card link|Decklist|Meta analysis|Matchup|Card group|Strategy callout|Mention a user/i,
+      }),
+    ).toHaveCount(0);
     await page.keyboard.press('Escape');
     await page.keyboard.press('Enter');
     await expect(page.getByRole('dialog')).toHaveCount(0);

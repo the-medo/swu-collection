@@ -45,6 +45,14 @@ team names are resolved when reading. No private deck snapshot is copied into a 
   Removing a member retracts their untouched join notifications. Former recipients
   lose access to that team's notification history and receive a cache invalidation.
   If they rejoin, their retained history becomes visible again.
+- A comment or reply on a deck creates `deck.comment` for its owner. A reply
+  also creates `comment.reply` for the parent comment's author. Authors receive
+  no notification about their own action. If the owner is also the parent author,
+  one entry is saved, preferring the reply type when that preference is enabled.
+  Both rows commit with the comment. Links open the Article/Comments subpage,
+  expand the ancestor threads and focus the comment, including older pages.
+  Reads hide entries after source-comment deletion or loss of deck access; no
+  comment prose is copied into notifications. Mentions alone do not notify users.
 - No historical favorites are backfilled. Disabling a preference stops new rows;
   it does not delete existing rows. Re-enabling does not replay missed activity.
 
@@ -62,7 +70,8 @@ visible. A failed page request pauses automatic loading until Retry. Existing
 loaded pages are refreshed on notification changes to keep cursors and read
 state consistent without discarding the user's visible history.
 
-`notifications_deck_favorites` and `notifications_team_members` use the existing
+`notifications_deck_favorites`, `notifications_deck_comments`,
+`notifications_comment_replies` and `notifications_team_members` use the existing
 account user-settings table and default to true. Mandatory invitations have no
 disable key. The settings UI uses account-scoped Query data rather than the
 legacy browser-wide settings cache.
@@ -131,9 +140,10 @@ invalidations as inbox entries.
 Use an isolated, migrated worktree database:
 
 ```bash
-NOTIFICATIONS_DB_TEST=1 bun --env-file=.env.worktree test \
+DECK_DISCUSSION_DB_TEST=1 NOTIFICATIONS_DB_TEST=1 bun --env-file=.env.worktree test \
   server/lib/notifications/notifications.integration.test.ts \
   server/lib/notifications/lifecycle.integration.test.ts \
+  server/routes/discussions.db.test.ts \
   server/lib/ws/appRealtime.integration.test.ts \
   server/lib/ws/requestLogger.test.ts frontend/src/lib/appRealtime.test.ts
 bun run --cwd frontend build

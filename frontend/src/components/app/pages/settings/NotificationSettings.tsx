@@ -75,6 +75,38 @@ export default function NotificationSettings() {
           />
         )}
       </div>
+      {(
+        [
+          {
+            key: 'notifications_deck_comments',
+            type: 'deck.comment',
+            description: 'When someone comments on a deck you own.',
+          },
+          {
+            key: 'notifications_comment_replies',
+            type: 'comment.reply',
+            description: 'When someone replies to your comment.',
+          },
+        ] as const
+      ).map(setting => (
+        <div key={setting.key} className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <Label htmlFor={setting.key}>{notificationDefinitions[setting.type].label}</Label>
+            <p className="text-sm text-muted-foreground">{setting.description}</p>
+          </div>
+          {query.data && (
+            <Switch
+              id={setting.key}
+              checked={query.data[setting.key]}
+              disabled={!user || mutation.isPending || query.isError}
+              onCheckedChange={enabled => {
+                if (user)
+                  mutation.mutate({ userId: user.id, settings: { [setting.key]: enabled } });
+              }}
+            />
+          )}
+        </div>
+      ))}
       {query.isPending && (
         <p role="status" className="text-sm">
           Loading notification settings…

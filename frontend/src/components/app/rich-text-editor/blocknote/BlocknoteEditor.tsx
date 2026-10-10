@@ -1,5 +1,6 @@
 import {
   toSimplePostDocument,
+  trimTrailingEmptyBlocks,
   type EditorType,
   type PostDocument,
 } from '../../../../../../shared/posts/content.ts';
@@ -9,17 +10,19 @@ import {
   useCreateBlockNote,
   SuggestionMenuController,
   getDefaultReactSlashMenuItems,
+  blockTypeSelectItems,
+  FormattingToolbar,
+  FormattingToolbarController,
 } from '@blocknote/react';
 import { filterSuggestionItems } from '@blocknote/core/extensions';
 import { BlockNoteView } from '@blocknote/shadcn';
 import { closeHistory } from '@tiptap/pm/history';
 import './blocknote.css';
-import { InsertButtons } from '../shared/EditorToolbar.tsx';
 import { useInsertionPicker } from '../shared/insertionContext.ts';
 import { editorCommands, isInlineInsertion, type InsertKind } from '../shared/model.ts';
 import { useTheme } from '@/components/theme-provider.tsx';
 import { EditorSurface } from '../shared/EditorSurface.tsx';
-import { schema, simpleSchema } from './schema.tsx';
+import { commentsSchema, schema, simpleSchema } from './schema.tsx';
 
 type EditorProps = {
   type: EditorType;
@@ -36,6 +39,7 @@ function RichEditorBody({ initialContent, onChange, disabled = false }: EditorPr
     initialContent: initialContent.blocks as (typeof schema.PartialBlock)[],
   });
   const insert = async (kind: InsertKind, literalOnCancel = false) => {
+    if (disabled) return;
     const selection = editor.prosemirrorState.selection.getBookmark();
     const value = await request(kind);
     if (editor.prosemirrorView.isDestroyed) return;
@@ -76,9 +80,15 @@ function RichEditorBody({ initialContent, onChange, disabled = false }: EditorPr
   };
   return (
     <EditorSurface onMention={() => void insert('mention', true)}>
-      {!disabled && <InsertButtons onInsert={kind => void insert(kind)} />}
       <BlockNoteView
-        onChange={() => onChange({ version: 1, blocks: editor.document as PostDocument['blocks'] })}
+        onChange={() =>
+          onChange(
+            trimTrailingEmptyBlocks({
+              version: 1,
+              blocks: editor.document as PostDocument['blocks'],
+            }),
+          )
+        }
         editable={!disabled}
         editor={editor}
         slashMenu={false}
@@ -90,7 +100,7 @@ function RichEditorBody({ initialContent, onChange, disabled = false }: EditorPr
             filterSuggestionItems(
               [
                 ...editorCommands.map(command => ({
-                  title: command.id,
+                  title: command.label,
                   subtext: command.description,
                   aliases: [command.id],
                   group: 'SWUBASE',
@@ -98,11 +108,105 @@ function RichEditorBody({ initialContent, onChange, disabled = false }: EditorPr
                     void insert(command.id);
                   },
                 })),
+                {
+                  title: 'Mention a user',
+                  subtext: 'Link to a player inside your text.',
+                  aliases: ['mention', 'user'],
+                  group: 'SWUBASE',
+                  onItemClick: () => void insert('mention'),
+                },
                 ...getDefaultReactSlashMenuItems(editor),
               ],
               query,
             )
           }
+        />
+      </BlockNoteView>
+    </EditorSurface>
+  );
+}
+
+function CommentsEditorBody({ initialContent, onChange, disabled = false }: EditorProps) {
+  const request = useInsertionPicker();
+  const { theme } = useTheme();
+  const editor = useCreateBlockNote({
+    schema: commentsSchema,
+    initialContent: initialContent.blocks as (typeof commentsSchema.PartialBlock)[],
+  });
+  const insert = async (kind: 'mention' | 'card-link', literalOnCancel = false) => {
+    if (disabled) return;
+    const selection = editor.prosemirrorState.selection.getBookmark();
+    const value = await request(kind);
+    if (editor.prosemirrorView.isDestroyed) return;
+    editor.transact(tr => {
+      tr.setSelection(selection.resolve(tr.doc));
+      if (!value || value.kind !== kind) {
+        if (literalOnCancel) editor.insertInlineContent('@');
+        return;
+      }
+      closeHistory(tr);
+      const current = editor.getTextCursorPosition().block;
+      if (current.content === undefined) {
+        const paragraph = editor.insertBlocks([{ type: 'paragraph' }], current, 'after')[0];
+        editor.setTextCursorPosition(paragraph, 'start');
+      }
+      editor.insertInlineContent([
+        { type: 'swuInline', props: { data: JSON.stringify(value) } },
+        ' ',
+      ]);
+    });
+    editor.focus();
+  };
+  return (
+    <EditorSurface onMention={() => void insert('mention', true)}>
+      <BlockNoteView
+        onChange={() =>
+          onChange(
+            trimTrailingEmptyBlocks({
+              version: 1,
+              blocks: editor.document as PostDocument['blocks'],
+            }),
+          )
+        }
+        editable={!disabled}
+        editor={editor}
+        slashMenu={false}
+        formattingToolbar={false}
+        theme={theme === 'system' ? undefined : theme}
+      >
+        <SuggestionMenuController
+          triggerCharacter="/"
+          getItems={async query =>
+            filterSuggestionItems(
+              [
+                {
+                  title: 'Card link',
+                  subtext: 'Search for a card to reference in your comment.',
+                  aliases: ['card-link', 'card'],
+                  group: 'SWUBASE',
+                  onItemClick: () => void insert('card-link'),
+                },
+                {
+                  title: 'Mention a user',
+                  subtext: 'Link to a player inside your comment.',
+                  aliases: ['mention', 'user'],
+                  group: 'SWUBASE',
+                  onItemClick: () => void insert('mention'),
+                },
+                ...getDefaultReactSlashMenuItems(editor),
+              ],
+              query,
+            )
+          }
+        />
+        <FormattingToolbarController
+          formattingToolbar={() => (
+            <FormattingToolbar
+              blockTypeSelectItems={blockTypeSelectItems(editor.dictionary).filter(
+                item => item.type !== 'heading' || Number(item.props?.level) >= 4,
+              )}
+            />
+          )}
         />
       </BlockNoteView>
     </EditorSurface>
@@ -119,7 +223,14 @@ function SimpleEditorBody({ initialContent, onChange, disabled = false }: Editor
   return (
     <EditorSurface>
       <BlockNoteView
-        onChange={() => onChange({ version: 1, blocks: editor.document as PostDocument['blocks'] })}
+        onChange={() =>
+          onChange(
+            trimTrailingEmptyBlocks({
+              version: 1,
+              blocks: editor.document as PostDocument['blocks'],
+            }),
+          )
+        }
         editable={!disabled}
         editor={editor}
         theme={theme === 'system' ? undefined : theme}
@@ -131,9 +242,13 @@ function SimpleEditorBody({ initialContent, onChange, disabled = false }: Editor
 export default function PostEditor(props: EditorProps) {
   return (
     <div className="rte-page rte-editing" data-editor-type={props.type}>
-      {props.type === 'rich' ? (
+      {props.type === 'rich' || props.type === 'comments' ? (
         <InsertionProvider>
-          <RichEditorBody {...props} />
+          {props.type === 'comments' ? (
+            <CommentsEditorBody {...props} />
+          ) : (
+            <RichEditorBody {...props} />
+          )}
         </InsertionProvider>
       ) : (
         <SimpleEditorBody {...props} />
@@ -147,8 +262,10 @@ export function PostContent({ content, type }: { content: PostDocument; type: Ed
   const editor = useCreateBlockNote(
     {
       schema,
-      initialContent: (type === 'simple' ? toSimplePostDocument(content) : content)
-        .blocks as (typeof schema.PartialBlock)[],
+      trailingBlock: false,
+      initialContent: trimTrailingEmptyBlocks(
+        type === 'simple' ? toSimplePostDocument(content) : content,
+      ).blocks as (typeof schema.PartialBlock)[],
     },
     [type],
   );

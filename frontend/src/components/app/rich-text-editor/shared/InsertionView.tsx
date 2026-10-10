@@ -22,7 +22,7 @@ export function InsertionView({
   if (value.kind === 'mention')
     return (
       <a
-        className="rte-mention rounded bg-accent px-1 font-medium"
+        className="rte-mention box-decoration-clone rounded-md border border-primary/50 bg-primary/15 px-1.5 py-0.5 font-semibold outline-offset-2 hover:bg-primary/25 focus-visible:outline-2 focus-visible:outline-ring"
         href={profileHref(value.user.id)}
         target="_blank"
         rel="noopener noreferrer"

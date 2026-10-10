@@ -12,6 +12,7 @@ import {
   postDocumentSchemas,
   postValidationMessage,
   toSimplePostDocument,
+  trimTrailingEmptyBlocks,
   type Post,
   type PostDocument,
 } from '../../../../../../shared/posts/content.ts';
@@ -37,8 +38,9 @@ function BioForm({
     formRef.current?.focus();
   }, []);
   const [content, setContent] = useState<PostDocument>(() =>
-    toSimplePostDocument(post?.content ?? emptyPostDocument()),
+    trimTrailingEmptyBlocks(toSimplePostDocument(post?.content ?? emptyPostDocument())),
   );
+  const contentRef = useRef(content);
   const [initialContent, setInitialContent] = useState(content);
   const [editorGeneration, setEditorGeneration] = useState(0);
   const [legacyWidgets, setLegacyWidgets] = useState(
@@ -52,7 +54,7 @@ function BioForm({
   const busy = save.isPending || recovering;
   const conflict = !!save.error && 'status' in save.error && save.error.status === 409;
   const persist = async (expectedRevision: number | null) => {
-    const result = postDocumentSchemas.simple.safeParse(content);
+    const result = postDocumentSchemas.simple.safeParse(trimTrailingEmptyBlocks(content));
     if (!result.success) {
       setError(postValidationMessage(result.error));
       return;
@@ -82,8 +84,11 @@ function BioForm({
         setRevision(latest?.revision ?? null);
         await persist(latest?.revision ?? null);
       } else {
-        const next = toSimplePostDocument(latest?.content ?? emptyPostDocument());
+        const next = trimTrailingEmptyBlocks(
+          toSimplePostDocument(latest?.content ?? emptyPostDocument()),
+        );
         setContent(next);
+        contentRef.current = next;
         setInitialContent(next);
         setEditorGeneration(generation => generation + 1);
         setRevision(latest?.revision ?? null);
@@ -125,7 +130,10 @@ function BioForm({
           initialContent={initialContent}
           disabled={busy}
           onChange={next => {
+            const changed = JSON.stringify(contentRef.current) !== JSON.stringify(next);
+            contentRef.current = next;
             setContent(next);
+            if (!changed) return;
             setDirty(true);
             setError(undefined);
           }}
@@ -172,6 +180,7 @@ function BioForm({
               return;
             const empty = emptyPostDocument();
             setContent(empty);
+            contentRef.current = empty;
             setInitialContent(empty);
             setLegacyWidgets(false);
             setEditorGeneration(generation => generation + 1);
