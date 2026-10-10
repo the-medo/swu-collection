@@ -65,7 +65,9 @@ adapts SWUBASE block/inline widgets, with shared payload schemas in
 
 Deck widgets store only the deck ID and render the existing `DeckDetail` with
 its access checks and controls. Current data loads when content opens; there
-is no deck polling or WebSocket subscription. Mentions link to profiles and send
+is no deck polling or WebSocket subscription. Mentions open the same profile popup
+as comment authors, including an avatar, header, achievements and a profile link.
+Public avatar data is fetched only when a mention's popup opens. Mentions send
 no notifications. Visitors can explore chart filters without changing the
 author's saved configuration.
 
@@ -109,10 +111,15 @@ archived or migrated to a different card ID, the author must replace that link
 with an available card before saving further edits to the comment.
 Single replies open automatically. Threads with two or more replies have a
 toggle to the left of Reply in the same action row. Reply and edit composers
-appear beneath their comment; the same editor moves to a fallback location if
-the comment disappears or access refresh hides it, preserving unsaved drafts.
+appear beneath their comment. Each draft has its own editor and mutation state;
+several replies or edits can remain open at once. Opening another composer closes
+empty, idle new-comment/reply forms, while preserving typed drafts and ongoing saves.
+Saving or cancelling one draft closes only its editor. Each editor moves to a
+fallback location if its comment disappears or access refresh hides it, preserving
+the draft and editor instance. Drafts live in page memory, with one navigation
+warning for unsaved comment drafts; they are not automatically persisted across reloads.
 Automatically opened threads stay open as more replies arrive. Hiding replies
-is disabled while writing. Comments responses include complete single-reply
+is disabled when that thread contains an open composer. Comments responses include complete single-reply
 lists, including deleted ancestors, and the frontend fills the corresponding
 reply caches before displaying the page. Larger threads load when opened.
 The deck discussion response initializes the generic discussion cache; both
@@ -122,8 +129,10 @@ writes and failed writes that require access/draft recovery refresh the affected
 caches; manual reloads fetch current discussion data. Guide saves refresh metadata
 without reloading comment pages or expanded threads. The own-comments view also
 stays cached on window focus and refreshes after comment deletion or explicit retry.
-Once the deck/discussion binding is known, deck updates and access resets also
-refresh only the shared metadata query. Included replies remain visible after
+Once the deck/discussion binding is known, its viewer-scoped ID is retained separately
+from private metadata. Deck updates, access resets and page remounts then reuse
+the shared metadata query instead of rediscovering the binding. Access resets
+clear private content while keeping only the immutable ID. Included replies remain visible after
 descendant cache expiry, while access resets clear the cached comment data.
 
 Deletion clears prose and author identity while retaining a placeholder when

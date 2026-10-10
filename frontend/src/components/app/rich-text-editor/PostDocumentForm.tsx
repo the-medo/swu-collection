@@ -15,6 +15,7 @@ import type { ErrorWithStatus } from '../../../../../types/ErrorWithStatus.ts';
 
 const PostEditor = lazy(() => import('./blocknote/BlocknoteEditor.tsx'));
 type SavedDocument = { content: PostDocument; revision: number };
+export type PostDraftState = { empty: boolean; dirty: boolean; busy: boolean };
 
 export default function PostDocumentForm({
   type,
@@ -26,6 +27,8 @@ export default function PostDocumentForm({
   onClose,
   getLatest,
   onSaveAsNew,
+  onDraftStateChange,
+  protectNavigation = true,
 }: {
   type: EditorType;
   documentLabel?: string;
@@ -36,6 +39,8 @@ export default function PostDocumentForm({
   onClose: () => void;
   getLatest?: () => Promise<SavedDocument | null>;
   onSaveAsNew?: (content: PostDocument) => Promise<unknown>;
+  onDraftStateChange?: (state: PostDraftState) => void;
+  protectNavigation?: boolean;
 }) {
   const label = documentLabel ?? (type === 'rich' ? 'article' : 'comment');
   const form = useRef<HTMLDivElement>(null);
@@ -55,13 +60,17 @@ export default function PostDocumentForm({
   const [recovering, setRecovering] = useState(false);
   const disabled = busy || recovering;
   const conflict = error?.status === 409;
+  useEffect(() => {
+    onDraftStateChange?.({ empty: isPostEmpty(content), dirty, busy: disabled });
+  }, [content, dirty, disabled, onDraftStateChange]);
   useBlocker({
     shouldBlockFn: ({ current, next }) =>
+      protectNavigation &&
       dirtyRef.current &&
       (current.pathname !== next.pathname ||
         JSON.stringify(current.search) !== JSON.stringify(next.search)) &&
       !window.confirm(`Leave without saving your ${label}?`),
-    enableBeforeUnload: dirty,
+    enableBeforeUnload: protectNavigation && dirty,
   });
   const save = async (expectedRevision: number | null, asNew = false) => {
     const validation = (

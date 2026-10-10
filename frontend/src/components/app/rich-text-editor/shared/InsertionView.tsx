@@ -6,7 +6,8 @@ import { CardArtwork, CardLink, DecklistEmbed } from './Embeds.tsx';
 import { MetaEmbed } from './MetaEmbed.tsx';
 import { useContext } from 'react';
 import { InsertionContext } from './insertionContext.ts';
-import { profileHref, type Insertion } from './model.ts';
+import type { Insertion } from './model.ts';
+import { UserProfilePopover } from '@/components/app/users/UserProfilePopover.tsx';
 
 export function InsertionView({
   value,
@@ -21,14 +22,14 @@ export function InsertionView({
   if (value.kind === 'decklist') return <DecklistEmbed deck={value.deck} />;
   if (value.kind === 'mention')
     return (
-      <a
-        className="rte-mention box-decoration-clone rounded-md border border-primary/50 bg-primary/15 px-1.5 py-0.5 font-semibold outline-offset-2 hover:bg-primary/25 focus-visible:outline-2 focus-visible:outline-ring"
-        href={profileHref(value.user.id)}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        @{value.user.displayName}
-      </a>
+      <UserProfilePopover user={value.user}>
+        <button
+          type="button"
+          className="rte-mention max-w-full box-decoration-clone rounded-md border border-primary/50 bg-primary/15 px-1.5 py-0.5 text-left align-baseline font-semibold whitespace-normal outline-offset-2 hover:bg-primary/25 focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          @{value.user.displayName}
+        </button>
+      </UserProfilePopover>
     );
   const Icon =
     value.kind === 'callout' && value.tone === 'warning'

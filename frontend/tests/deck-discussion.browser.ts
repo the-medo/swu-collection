@@ -97,6 +97,8 @@ try {
   ]) {
     await sql`INSERT INTO "user" (id, name, email, email_verified, created_at, updated_at, display_name, currency, role) VALUES (${id!}, ${name!}, ${id + '@invalid.local'}, false, now(), now(), ${name + ' ' + id!.slice(-8)}, 'USD', 'user')`;
   }
+  const ownerAvatar = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect width="40" height="40" fill="gold"/></svg>')}`;
+  await sql`UPDATE "user" SET image = ${ownerAvatar} WHERE id = ${ownerId}`;
   for (const [index, id] of deckIds.entries()) {
     await sql`INSERT INTO deck (id, user_id, format, name, public, leader_card_id_1, base_card_id) VALUES (${id}, ${ownerId}, 1, ${'Article fixture ' + ['public', 'private', 'unlisted'][index]}, ${[1, 0, 2][index]!}, 'sabine-wren--galvanized-revolutionary', 'command-center')`;
     await sql`INSERT INTO deck_information (deck_id) VALUES (${id})`;
@@ -331,7 +333,23 @@ try {
   await users.getByRole('combobox', { name: 'Search users' }).fill(ownerId.slice(-8));
   await users.getByRole('option').filter({ hasText: 'Deck article author' }).click();
   await expect(users).toBeHidden();
-  await expect(commentForm.locator('.rte-mention')).toHaveAttribute('href', `/users/${ownerId}`);
+  const mentionedOwner = (await sql`SELECT display_name FROM "user" WHERE id = ${ownerId}`)[0]!
+    .display_name;
+  const mentionProfile = readerPage.getByRole('dialog', {
+    name: `${mentionedOwner}'s profile`,
+    exact: true,
+  });
+  const mentionUrl = readerPage.url();
+  await commentForm.locator('.rte-mention').click();
+  await expect(mentionProfile.getByRole('link', { name: 'Open profile' })).toHaveAttribute(
+    'href',
+    `/users/${ownerId}`,
+  );
+  await expect(
+    mentionProfile.getByRole('img', { name: mentionedOwner, exact: true }),
+  ).toHaveAttribute('src', ownerAvatar);
+  expect(readerPage.url()).toBe(mentionUrl);
+  await readerPage.keyboard.press('Escape');
   await commentEditor.focus();
   await readerPage.keyboard.press('Control+End');
   await readerPage.keyboard.type(' /card-link');
@@ -356,9 +374,20 @@ try {
   await expect(comments).toContainText('I like this matchup guide.');
   await expect(comments.getByRole('heading', { name: /Comments\s*\(1\)/ })).toBeVisible();
   await expect(readerPage.getByRole('tab', { name: 'Guide (1)', exact: true })).toBeVisible();
-  await expect(comments.locator('.rte-mention')).toHaveAttribute('href', `/users/${ownerId}`);
+  await comments.locator('.rte-mention').click();
+  await expect(mentionProfile.getByRole('link', { name: 'Open profile' })).toHaveAttribute(
+    'href',
+    `/users/${ownerId}`,
+  );
+  await readerPage.keyboard.press('Escape');
   await readerPage.reload();
-  await expect(comments.locator('.rte-mention')).toHaveAttribute('href', `/users/${ownerId}`);
+  await comments.locator('.rte-mention').focus();
+  await readerPage.keyboard.press('Enter');
+  await expect(
+    mentionProfile.getByRole('img', { name: mentionedOwner, exact: true }),
+  ).toHaveAttribute('src', ownerAvatar);
+  await readerPage.keyboard.press('Escape');
+  await expect(comments.locator('.rte-mention')).toBeFocused();
   await expect(comments.locator('.rte-card-link')).toHaveAttribute(
     'href',
     '/cards/detail/battlefield-marine',
@@ -671,6 +700,165 @@ try {
 
   await readerPage.goto(`${origin}/decks/${unlistedId}?deckTab=article`);
   const threads = readerPage.getByRole('region', { name: 'Deck comments', exact: true });
+  await expect(threads.locator('[data-comment-thread]')).toHaveCount(20);
+  const multipleRootIds = await threads
+    .locator('[data-comment-thread]')
+    .evaluateAll(nodes => nodes.slice(0, 5).map(node => node.getAttribute('data-comment-thread')!));
+  const multiThread = (id: string) => threads.locator(`[data-comment-thread="${id}"]`);
+  const multiForm = (id: string) =>
+    readerPage
+      .locator(`[data-comment-composer="${id}"]`)
+      .getByRole('group', { name: 'Edit comment', exact: true });
+  const startReply = (id: string) =>
+    threads
+      .locator(`[data-comment-id="${id}"]`)
+      .getByRole('button', { name: 'Reply', exact: true })
+      .click();
+  await startReply(multipleRootIds[0]!);
+  await expect(multiForm(multipleRootIds[0]!)).toBeVisible();
+  await startReply(multipleRootIds[1]!);
+  await expect(multiForm(multipleRootIds[0]!)).toHaveCount(0);
+  await expect(commentForm).toHaveCount(1);
+  await multiForm(multipleRootIds[1]!)
+    .locator('[contenteditable=true]')
+    .first()
+    .fill('Independent reply draft A.');
+  await startReply(multipleRootIds[2]!);
+  await multiForm(multipleRootIds[2]!)
+    .locator('[contenteditable=true]')
+    .first()
+    .fill('Independent reply draft B.');
+  await expect(commentForm).toHaveCount(2);
+  await expect(
+    multiThread(multipleRootIds[1]!).getByRole('group', { name: 'Edit comment', exact: true }),
+  ).toContainText('Independent reply draft A.');
+  await expect(
+    multiThread(multipleRootIds[2]!).getByRole('group', { name: 'Edit comment', exact: true }),
+  ).toContainText('Independent reply draft B.');
+  const editorB = await multiForm(multipleRootIds[2]!)
+    .locator('[contenteditable=true]')
+    .first()
+    .elementHandle();
+  let leavePrompts = 0;
+  readerPage.once('dialog', dialog => {
+    leavePrompts++;
+    return dialog.dismiss();
+  });
+  await readerPage.getByRole('tab', { name: 'Decklist', exact: true }).click();
+  await expect(readerPage).toHaveURL(/deckTab=article/);
+  expect(leavePrompts).toBe(1);
+  await expect(commentForm).toHaveCount(2);
+  await readerPage.setViewportSize({ width: 390, height: 844 });
+  expect(
+    await readerPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBe(true);
+  await multiThread(multipleRootIds[2]!).screenshot({
+    path: `${screenshots}/multiple-replies-mobile.png`,
+  });
+  await readerPage.setViewportSize({ width: 1440, height: 1000 });
+  let releaseFirstWrite!: () => void;
+  const firstWriteGate = new Promise<void>(resolve => {
+    releaseFirstWrite = resolve;
+  });
+  const commentWriteUrl = '**/api/discussions/*/comments';
+  await readerPage.route(commentWriteUrl, async route => {
+    if (
+      route.request().method() === 'POST' &&
+      route.request().postDataJSON().parentId === multipleRootIds[1]
+    )
+      await firstWriteGate;
+    await route.continue();
+  });
+  try {
+    await multiForm(multipleRootIds[1]!)
+      .getByRole('button', { name: 'Post reply', exact: true })
+      .click();
+    await expect(
+      multiForm(multipleRootIds[1]!).getByRole('button', { name: 'Saving…', exact: true }),
+    ).toBeVisible();
+    await expect(
+      multiForm(multipleRootIds[2]!).getByRole('button', { name: 'Post reply', exact: true }),
+    ).toBeEnabled();
+    expect(
+      await multiForm(multipleRootIds[2]!)
+        .locator('[contenteditable=true]')
+        .first()
+        .evaluate((node, previous) => node === previous, editorB),
+    ).toBe(true);
+    await multiForm(multipleRootIds[2]!)
+      .locator('[contenteditable=true]')
+      .first()
+      .fill('Independent reply draft B. Still editable while A saves.');
+    await multiForm(multipleRootIds[2]!)
+      .getByRole('button', { name: 'Post reply', exact: true })
+      .click();
+    await expect(multiForm(multipleRootIds[2]!)).toHaveCount(0);
+    await expect(multiForm(multipleRootIds[1]!)).toContainText('Independent reply draft A.');
+    await expect(
+      multiForm(multipleRootIds[1]!).getByRole('button', { name: 'Saving…', exact: true }),
+    ).toBeVisible();
+  } finally {
+    releaseFirstWrite();
+  }
+  await expect(commentForm).toHaveCount(0);
+  await readerPage.unroute(commentWriteUrl);
+  for (const [id, text] of [
+    [multipleRootIds[1]!, 'Independent reply draft A.'],
+    [multipleRootIds[2]!, 'Independent reply draft B.'],
+  ]) {
+    const saved = (
+      await (await readerPage.request.get(`${unlistedCommentsUrl}?parentId=${id}`)).json()
+    ).data;
+    expect(
+      saved.some(
+        comment => comment.parentId === id && JSON.stringify(comment.content).includes(text!),
+      ),
+    ).toBe(true);
+  }
+  await startReply(multipleRootIds[3]!);
+  await multiForm(multipleRootIds[3]!)
+    .locator('[contenteditable=true]')
+    .first()
+    .fill('Draft whose parent disappears.');
+  const movingEditor = await multiForm(multipleRootIds[3]!)
+    .locator('[contenteditable=true]')
+    .first()
+    .elementHandle();
+  await startReply(multipleRootIds[4]!);
+  await multiForm(multipleRootIds[4]!)
+    .locator('[contenteditable=true]')
+    .first()
+    .fill('Draft that stays inline.');
+  expect((await page.request.delete(`${unlistedCommentsUrl}/${multipleRootIds[3]}`)).status()).toBe(
+    200,
+  );
+  const multiDiscussion = (
+    await (await readerPage.request.get(`${unlistedCommentsUrl}?limit=1`)).json()
+  ).data[0].discussionId;
+  await readerPage.evaluate(async id => {
+    const { queryClient } = await import('/src/queryClient.ts');
+    const { discussionKeys } = await import('/src/api/discussions/queryKeys.ts');
+    await queryClient.invalidateQueries({ queryKey: discussionKeys.discussion(id) });
+  }, multiDiscussion);
+  await expect(threads.locator(`[data-comment-id="${multipleRootIds[3]}"]`)).toHaveCount(0);
+  await expect(multiForm(multipleRootIds[3]!)).toContainText('Draft whose parent disappears.');
+  expect(
+    await multiForm(multipleRootIds[3]!)
+      .locator('[contenteditable=true]')
+      .first()
+      .evaluate((node, previous) => node === previous, movingEditor),
+  ).toBe(true);
+  await expect(
+    multiThread(multipleRootIds[4]!).getByRole('group', { name: 'Edit comment', exact: true }),
+  ).toContainText('Draft that stays inline.');
+  for (const id of [multipleRootIds[3]!, multipleRootIds[4]!]) {
+    readerPage.once('dialog', dialog => dialog.accept());
+    await multiForm(id).getByRole('button', { name: 'Cancel', exact: true }).click();
+  }
+  await expect(commentForm).toHaveCount(0);
+  console.log(
+    'Multiple inline replies, empty-editor switching, independent saves, navigation protection, mobile and fallback drafts passed.',
+  );
   const parentThread = threads.locator('[data-comment-thread]').first();
   const parentId = await parentThread.getAttribute('data-comment-thread');
   await parentThread.getByRole('button', { name: 'Reply', exact: true }).click();

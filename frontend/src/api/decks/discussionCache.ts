@@ -6,11 +6,11 @@ import type { DiscussionInfo } from '../../../../shared/types/discussions.ts';
 export function cachedDeckDiscussionIds(client: QueryClient, deckId: string) {
   return new Set(
     client
-      .getQueriesData<DiscussionInfo>({
+      .getQueriesData<DiscussionInfo | string>({
         queryKey: deckDiscussionKeys.deck(deckId),
-        predicate: query => query.queryKey[2] === 'discussion',
+        predicate: query => ['discussion', 'binding'].includes(String(query.queryKey[2])),
       })
-      .flatMap(([, info]) => (info ? [info.id] : [])),
+      .flatMap(([, info]) => (typeof info === 'string' ? [info] : info ? [info.id] : [])),
   );
 }
 
@@ -31,7 +31,7 @@ export async function invalidateDeckDiscussion(
     client.invalidateQueries({
       queryKey: deckDiscussionKeys.deck(deckId),
       // Recheck guide access after writes as well as comments, including failed writes.
-      predicate: query => query.queryKey[2] !== 'discussion',
+      predicate: query => !['discussion', 'binding'].includes(String(query.queryKey[2])),
     }),
     ...(articleChanged
       ? [...cachedDeckDiscussionIds(client, deckId)].map(id =>

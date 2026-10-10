@@ -3,6 +3,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { invalidateDeckDiscussion } from './discussionCache.ts';
 import { deckDiscussionKeys } from './discussionKeys.ts';
 import { discussionKeys } from '../discussions/queryKeys.ts';
+import { applyDeletedDeckCaches } from './deckDeletionCache.ts';
 
 test('comment counts refresh lists containing the deck without refreshing unrelated lists', async () => {
   const client = new QueryClient();
@@ -24,22 +25,47 @@ test('comment counts refresh lists containing the deck without refreshing unrela
 test('comment mutations do not trigger a second metadata fetch through the deck binding', async () => {
   const client = new QueryClient();
   const binding = deckDiscussionKeys.discussion('deck', 'reader');
+  const bindingId = deckDiscussionKeys.binding('deck', 'reader');
   const info = discussionKeys.info('discussion', 'reader');
   const own = deckDiscussionKeys.ownComments('deck', 'reader');
   const article = deckDiscussionKeys.article('deck', 'reader');
   client.setQueryData(binding, { id: 'discussion', total: 2, canModerate: false });
+  client.setQueryData(bindingId, 'discussion');
   client.setQueryData(info, { id: 'discussion', total: 2, canModerate: false });
   client.setQueryData(own, { pages: [] });
   client.setQueryData(article, { content: 'Cached guide' });
   try {
     await invalidateDeckDiscussion(client, 'deck');
     expect(client.getQueryState(binding)?.isInvalidated).toBe(false);
+    expect(client.getQueryState(bindingId)?.isInvalidated).toBe(false);
     expect(client.getQueryState(info)?.isInvalidated).toBe(false);
     expect(client.getQueryState(own)?.isInvalidated).toBe(true);
     expect(client.getQueryState(article)?.isInvalidated).toBe(true);
     await invalidateDeckDiscussion(client, 'deck', true);
     expect(client.getQueryState(binding)?.isInvalidated).toBe(false);
+    expect(client.getQueryState(bindingId)?.isInvalidated).toBe(false);
     expect(client.getQueryState(info)?.isInvalidated).toBe(true);
+  } finally {
+    client.clear();
+  }
+});
+
+test('deleting a deck clears discussion caches even when only its ID binding remains', () => {
+  const client = new QueryClient();
+  const binding = deckDiscussionKeys.binding('deck', 'reader');
+  const comments = discussionKeys.comments('discussion', 'reader');
+  const ownerComments = discussionKeys.comments('discussion', 'owner');
+  const unrelatedComments = discussionKeys.comments('other-discussion', 'reader');
+  client.setQueryData(binding, 'discussion');
+  client.setQueryData(comments, { pages: [{ data: ['Reply'] }] });
+  client.setQueryData(ownerComments, { pages: [{ data: ['Reply'] }] });
+  client.setQueryData(unrelatedComments, { pages: [] });
+  try {
+    applyDeletedDeckCaches(client, ['deck'], []);
+    expect(client.getQueryData(binding)).toBeUndefined();
+    expect(client.getQueryData(comments)).toBeUndefined();
+    expect(client.getQueryData(ownerComments)).toBeUndefined();
+    expect(client.getQueryData(unrelatedComments)).toEqual({ pages: [] });
   } finally {
     client.clear();
   }

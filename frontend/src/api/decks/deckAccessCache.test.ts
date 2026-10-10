@@ -122,3 +122,29 @@ test('revocation clears cached private data and notifies active observers withou
     client.clear();
   }
 });
+
+test('access resets retain only the viewer-scoped binding when deck metadata has expired', async () => {
+  const client = new QueryClient();
+  const memberBinding = deckDiscussionKeys.binding('deck', 'member');
+  const ownerBinding = deckDiscussionKeys.binding('deck', 'owner');
+  const memberInfo = discussionKeys.info('discussion', 'member');
+  const memberReplies = discussionKeys.comments('discussion', 'member', 'parent');
+  const ownerReplies = discussionKeys.comments('discussion', 'owner', 'parent');
+  const privateReplies = { pages: [{ data: ['Private reply'] }] };
+  client.setQueryData(memberBinding, 'discussion');
+  client.setQueryData(ownerBinding, 'discussion');
+  client.setQueryData(memberInfo, { id: 'discussion', total: 2 });
+  client.setQueryData(memberReplies, privateReplies);
+  client.setQueryData(ownerReplies, privateReplies);
+  try {
+    await resetDeniedDeckAccess(client, 'deck', 'member');
+    expect(client.getQueryData(memberInfo)).toBeUndefined();
+    expect(client.getQueryData(memberReplies)).toBeUndefined();
+    expect(client.getQueryData(ownerReplies)).toEqual(privateReplies);
+    expect(client.getQueryData(memberBinding)).toBe('discussion');
+    expect(client.getQueryData(ownerBinding)).toBe('discussion');
+    expect(client.getQueryData(deckDiscussionKeys.binding('deck'))).toBeUndefined();
+  } finally {
+    client.clear();
+  }
+});

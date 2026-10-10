@@ -1,42 +1,46 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { createPortal } from 'react-dom';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useBlocker } from '@tanstack/react-router';
 import { MessageCircle, MessageSquarePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { Card, CardContent, CardHeader } from '@/components/ui/card.tsx';
 import SignInWrapper from '@/components/app/auth/SignInWrapper.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import {
-  getDiscussionComment,
   useDiscussion,
   useDiscussionComments,
-  useDiscussionCommentMutation,
   useDiscussionThread,
 } from '@/api/discussions/useDiscussion.ts';
 import type { DiscussionComment } from '../../../../../shared/types/discussions.ts';
-import PostDocumentForm from '../rich-text-editor/PostDocumentForm.tsx';
+import type { PostDraftState } from '../rich-text-editor/PostDocumentForm.tsx';
+import { isPostEmpty } from '../../../../../shared/posts/content.ts';
 import CommentCard from './CommentCard.tsx';
-import { useCommentComposerPortal } from './useCommentComposerPortal.ts';
+import DiscussionCommentComposer, { type CommentComposer } from './DiscussionCommentComposer.tsx';
+import { useCommentComposerSlots } from './useCommentComposerPortal.ts';
 
 type ThreadProps = {
   discussionId: string;
   canModerate: boolean;
-  editing: boolean;
+  writingThreads: ReadonlySet<string>;
+  composerTargets: ReadonlySet<string>;
+  ancestors: string[];
   expanded: Map<string, boolean>;
   focusPath: DiscussionComment[];
   focusCommentId?: string;
-  composerTargetId?: string;
-  composerSlot: (node: HTMLDivElement | null) => void;
+  composerSlotFor: (id: string) => (node: HTMLDivElement | null) => void;
   onToggle: (id: string, open: boolean) => void;
-  onEdit: (comment: DiscussionComment) => void;
-  onReply: (comment: DiscussionComment) => void;
+  onEdit: (comment: DiscussionComment, path: string[]) => void;
+  onReply: (comment: DiscussionComment, path: string[]) => void;
   onChanged?: () => void;
 };
 function CommentThread({
   comment,
-  composerSlot,
+  composerSlotFor,
   ...props
 }: ThreadProps & { comment: DiscussionComment }) {
   const linkedReply = props.focusPath.find(node => node.parentId === comment.id);
+  const path = [...props.ancestors, comment.id];
+  const writingHere = props.composerTargets.has(comment.id);
+  const writingInThread = props.writingThreads.has(comment.id);
   const expanded = props.expanded.get(comment.id);
   const onToggle = props.onToggle;
   const open = comment.replyCount === 1 || (expanded ?? !!linkedReply);
@@ -76,9 +80,9 @@ function CommentThread({
       <CommentCard
         comment={comment}
         canModerate={props.canModerate}
-        editing={props.editing}
-        onEdit={() => props.onEdit(comment)}
-        onReply={() => props.onReply(comment)}
+        editing={writingHere}
+        onEdit={() => props.onEdit(comment, path)}
+        onReply={() => props.onReply(comment, path)}
         onChanged={props.onChanged}
         focused={comment.id === props.focusCommentId}
         threadAction={
@@ -88,9 +92,9 @@ function CommentThread({
               variant="ghost"
               className="h-6 px-1 text-xs text-muted-foreground"
               aria-expanded={open}
-              disabled={open && props.editing}
+              disabled={open && writingInThread}
               title={
-                open && props.editing
+                open && writingInThread
                   ? 'Finish or cancel your comment before hiding replies.'
                   : undefined
               }
@@ -101,9 +105,9 @@ function CommentThread({
           ) : undefined
         }
       />
-      {props.composerTargetId === comment.id && (
+      {writingHere && (
         <div
-          ref={composerSlot}
+          ref={composerSlotFor(comment.id)}
           data-comment-composer-for={comment.id}
           className="mb-3 min-w-0 empty:hidden sm:ml-11"
         />
@@ -135,8 +139,9 @@ function CommentThread({
                   <CommentThread
                     key={reply.id}
                     comment={reply}
-                    composerSlot={composerSlot}
+                    composerSlotFor={composerSlotFor}
                     {...props}
+                    ancestors={path}
                   />
                 ))}
               {query.hasNextPage && (
@@ -175,15 +180,60 @@ export default function DiscussionComments({
   const denied = accessDenied || info.error?.status === 403 || info.error?.status === 404;
   const query = useDiscussionComments(discussionId, undefined, !denied);
   const focused = useDiscussionThread(discussionId, focusCommentId);
-  const mutation = useDiscussionCommentMutation(discussionId, onChanged);
   const user = useUser();
-  const [composer, setComposer] = useState<{
-    draft: DiscussionComment | null;
-    replyTo: DiscussionComment | null;
-  } | null>(null);
-  const [composerHost] = useState(() => document.createElement('div'));
-  const { inlineSlot, fallbackSlot } = useCommentComposerPortal(composerHost);
-  const composerTargetId = composer?.draft?.id ?? composer?.replyTo?.id;
+  const [composers, setComposers] = useState<CommentComposer[]>([]);
+  const composersRef = useRef(composers);
+  useLayoutEffect(() => {
+    composersRef.current = composers;
+  }, [composers]);
+  const { inlineSlotFor, registerInlineSlot } = useCommentComposerSlots();
+  const composerTargets = new Set(composers.map(composer => composer.id));
+  const writingThreads = new Set(composers.flatMap(composer => composer.path));
+  const hasUnsavedDrafts = composers.some(composer => composer.dirty);
+  useBlocker({
+    shouldBlockFn: ({ current, next }) =>
+      composersRef.current.some(composer => composer.dirty) &&
+      (current.pathname !== next.pathname ||
+        JSON.stringify(current.search) !== JSON.stringify(next.search)) &&
+      !window.confirm('Leave without saving your comment drafts?'),
+    enableBeforeUnload: hasUnsavedDrafts,
+  });
+  const openComposer = (
+    draft: DiscussionComment | null,
+    replyTo: DiscussionComment | null,
+    path: string[],
+  ) => {
+    const id = draft?.id ?? replyTo?.id ?? 'new';
+    setComposers(previous =>
+      previous.some(composer => composer.id === id)
+        ? previous
+        : [
+            ...previous.filter(composer => composer.draft || !composer.empty || composer.busy),
+            {
+              id,
+              draft,
+              replyTo,
+              path,
+              empty: draft ? isPostEmpty(draft.content) : true,
+              dirty: false,
+              busy: false,
+            },
+          ],
+    );
+  };
+  const reportDraft = useCallback((id: string, state: PostDraftState) => {
+    setComposers(previous => {
+      const current = previous.find(composer => composer.id === id);
+      if (
+        !current ||
+        (current.empty === state.empty &&
+          current.dirty === state.dirty &&
+          current.busy === state.busy)
+      )
+        return previous;
+      return previous.map(composer => (composer.id === id ? { ...composer, ...state } : composer));
+    });
+  }, []);
   const [expanded, setExpanded] = useState(new Map<string, boolean>());
   const toggleThread = useCallback((id: string, open: boolean) => {
     setExpanded(previous =>
@@ -287,11 +337,15 @@ export default function DiscussionComments({
       if (attempt.cancel === stop) attempt.cancel = undefined;
     };
   }, [denied, discussionId, focusCommentId, focused.data, focused.isError]);
-  const close = () => {
-    const parentId = composer?.replyTo?.id ?? composer?.draft?.parentId;
-    if (parentId) setExpanded(previous => new Map(previous).set(parentId, true));
-    setComposer(null);
-  };
+  const close = useCallback(
+    (id: string) => {
+      const composer = composersRef.current.find(entry => entry.id === id);
+      const parentId = composer?.replyTo?.id ?? composer?.draft?.parentId;
+      if (parentId) toggleThread(parentId, true);
+      setComposers(previous => previous.filter(entry => entry.id !== id));
+    },
+    [toggleThread],
+  );
   return (
     <section ref={section} aria-label={ariaLabel} className="min-w-0">
       <Card className="min-w-0 rounded-xl shadow-none">
@@ -307,13 +361,13 @@ export default function DiscussionComments({
               </span>
             )}
           </h3>
-          {!denied && !info.isError && !query.isError && !composer && (
+          {!denied && !info.isError && !query.isError && !composerTargets.has('new') && (
             <SignInWrapper text="Sign in to comment">
               <Button
                 variant="outline"
                 size="sm"
                 disabled={!info.data}
-                onClick={() => setComposer({ draft: null, replyTo: null })}
+                onClick={() => openComposer(null, null, [])}
               >
                 <MessageSquarePlus aria-hidden="true" />
                 Write a comment
@@ -341,79 +395,18 @@ export default function DiscussionComments({
               </Button>
             </div>
           ) : null}
-          {composer && user && (
-            <>
-              <div ref={fallbackSlot} className="min-w-0 empty:hidden" />
-              {createPortal(
-                <div className="space-y-3 rounded-lg bg-muted/20 p-3 sm:p-4">
-                  {composer.replyTo && (
-                    <p className="text-xs text-muted-foreground">
-                      Replying to {composer.replyTo.author?.displayName ?? 'a comment'}
-                    </p>
-                  )}
-                  {composer.draft && (
-                    <p className="text-xs text-muted-foreground">Editing your comment</p>
-                  )}
-                  <PostDocumentForm
-                    key={composer.draft?.id ?? composer.replyTo?.id ?? 'new'}
-                    type="comments"
-                    initialPost={composer.draft}
-                    submitLabel={
-                      composer.draft
-                        ? 'Save comment'
-                        : composer.replyTo
-                          ? 'Post reply'
-                          : 'Post comment'
-                    }
-                    busy={mutation.isPending}
-                    onSave={(content, revision) =>
-                      mutation.mutateAsync(
-                        composer.draft
-                          ? {
-                              action: 'edit',
-                              commentId: composer.draft.id,
-                              content,
-                              revision: revision!,
-                            }
-                          : { action: 'create', content, parentId: composer.replyTo?.id },
-                      )
-                    }
-                    getLatest={
-                      composer.draft
-                        ? () => getDiscussionComment(discussionId, composer.draft!.id)
-                        : undefined
-                    }
-                    onSaveAsNew={
-                      composer.draft || composer.replyTo
-                        ? async content => {
-                            const parentId = composer.draft?.parentId ?? composer.replyTo?.id;
-                            try {
-                              return await mutation.mutateAsync({
-                                action: 'create',
-                                content,
-                                parentId,
-                              });
-                            } catch (error) {
-                              if (
-                                !parentId ||
-                                !(error instanceof Error) ||
-                                !('status' in error) ||
-                                error.status !== 410
-                              )
-                                throw error;
-                              return mutation.mutateAsync({ action: 'create', content });
-                            }
-                          }
-                        : undefined
-                    }
-                    onClose={close}
-                  />
-                </div>,
-                composerHost,
-                composer.draft?.id ?? composer.replyTo?.id ?? 'new',
-              )}
-            </>
-          )}
+          {user &&
+            composers.map(composer => (
+              <DiscussionCommentComposer
+                key={composer.id}
+                discussionId={discussionId}
+                composer={composer}
+                registerInlineSlot={registerInlineSlot}
+                onChanged={onChanged}
+                onDraftStateChange={reportDraft}
+                onClose={close}
+              />
+            ))}
           {denied && unavailableContent}
           {!denied && focusCommentId && focused.isError && (
             <p role="alert" className="text-sm">
@@ -427,7 +420,7 @@ export default function DiscussionComments({
                   Loading comments…
                 </p>
               )}
-              {!query.isPending && !roots.size && !composer && (
+              {!query.isPending && !roots.size && !composers.length && (
                 <div className="flex items-start gap-3 rounded-lg bg-muted/20 p-4 sm:gap-4 sm:p-5">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-full border bg-card text-muted-foreground">
                     <MessageCircle aria-hidden="true" className="size-5" />
@@ -448,15 +441,16 @@ export default function DiscussionComments({
                     comment={comment}
                     discussionId={discussionId}
                     canModerate={info.data?.canModerate ?? false}
-                    editing={!!composer}
+                    writingThreads={writingThreads}
+                    composerTargets={composerTargets}
+                    ancestors={[]}
                     expanded={expanded}
                     focusPath={focusPath}
                     focusCommentId={focusCommentId}
-                    composerTargetId={composerTargetId}
-                    composerSlot={inlineSlot}
+                    composerSlotFor={inlineSlotFor}
                     onToggle={toggleThread}
-                    onEdit={draft => setComposer({ draft, replyTo: null })}
-                    onReply={replyTo => setComposer({ draft: null, replyTo })}
+                    onEdit={(draft, path) => openComposer(draft, null, path)}
+                    onReply={(replyTo, path) => openComposer(null, replyTo, path)}
                     onChanged={onChanged}
                   />
                 ))}

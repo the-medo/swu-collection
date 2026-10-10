@@ -330,6 +330,44 @@ try {
   const resetCache = await metadataCache(owner, ownerId);
   expect(resetCache.deck).toEqual(resetCache.generic);
   expect(resetCache.generic).toMatchObject({ total: 21 });
+  // A reset binding must also survive the deck component being unmounted.
+  const beforeRemount = owned.requests.length;
+  await owner.evaluate(
+    async ({ deckId, viewer }) => {
+      const { queryClient } = await import('/src/queryClient.ts');
+      const { deckDiscussionKeys } = await import('/src/api/decks/discussionKeys.ts');
+      await queryClient.resetQueries({
+        queryKey: deckDiscussionKeys.discussion(deckId, viewer),
+        exact: true,
+      });
+    },
+    { deckId, viewer: ownerId },
+  );
+  await owned.comments
+    .locator('[data-comment-id]')
+    .first()
+    .getByRole('button', { name: ownerId, exact: true })
+    .click();
+  await owner
+    .getByRole('dialog', { name: `${ownerId}'s profile`, exact: true })
+    .getByRole('link', { name: 'Open profile', exact: true })
+    .click();
+  await expect(owner).toHaveURL(new RegExp(`/users/${ownerId}$`));
+  await owner.goBack();
+  await expect(owned.comments).toContainText('A new comment without a reply-request burst.');
+  await settled(owner);
+  const remountRequests = owned.requests.slice(beforeRemount);
+  expect(
+    remountRequests.filter(url => url.pathname === `/api/deck/${deckId}/discussion`),
+  ).toHaveLength(0);
+  expect(
+    remountRequests.filter(url => url.pathname === `/api/discussions/${discussionId}`),
+  ).toHaveLength(0);
+  const remountedCache = await metadataCache(owner, ownerId);
+  expect(remountedCache.deck).toEqual(remountedCache.generic);
+  console.log(
+    'The deck/discussion binding survives a metadata reset and route remount without another discovery request.',
+  );
   const after = owned.requests.length;
   await owner.clock.fastForward(120_000);
   await owner.clock.runFor(100);

@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, type ReactNode } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
-export type PublicProfileSummary = { id: string; displayName: string; image: string | null };
+export type PublicProfileSummary = { id: string; displayName: string; image?: string | null };
 const ProfilePreview = lazy(() => import('./UserProfilePreview.tsx'));
 export function UserProfilePopover({
   user,

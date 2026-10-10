@@ -4,9 +4,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx'
 import { Button } from '@/components/ui/button.tsx';
 import { ProfileHeader } from './UserDetail/ProfileHeader.tsx';
 import { useUserAchievements } from '@/api/user-profile/useUserAchievements.ts';
+import { useGetUser } from '@/api/user/useGetUser.ts';
 import type { PublicProfileSummary } from './UserProfilePopover.tsx';
 export default function UserProfilePreview({ user }: { user: PublicProfileSummary }) {
   const achievements = useUserAchievements(user.id);
+  // Mention documents store identity and label, so load their public avatar on opening.
+  const profile = useGetUser(user.image === undefined ? user.id : undefined);
+  const image = profile.data?.image ?? user.image;
+  const displayName = profile.data?.displayName ?? user.displayName;
   return (
     <div>
       <div className="h-24 overflow-hidden [&>div]:h-full">
@@ -14,10 +19,10 @@ export default function UserProfilePreview({ user }: { user: PublicProfileSummar
       </div>
       <div className="relative space-y-3 px-4 pb-4">
         <Avatar className="-mt-8 size-16 border-4 border-popover">
-          <AvatarImage src={user.image ?? undefined} alt={user.displayName} />
-          <AvatarFallback>{user.displayName.slice(0, 2).toUpperCase()}</AvatarFallback>
+          <AvatarImage src={image ?? undefined} alt={displayName} />
+          <AvatarFallback>{displayName.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
-        <p className="break-words font-semibold">{user.displayName}</p>
+        <p className="break-words font-semibold">{displayName}</p>
         {!!achievements.data?.achievements.length && (
           <ul aria-label="Player achievements" className="space-y-2">
             {achievements.data.achievements.slice(0, 3).map(result => (
