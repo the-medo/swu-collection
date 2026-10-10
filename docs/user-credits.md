@@ -119,15 +119,19 @@ layouts checks their cost but does not debit credits.
 separate from the wallet. Each verified new USD cent awards 10 credits and one
 hundredth of beskar in the same transaction as its credited checkpoint.
 
-A future Stripe integration should append both currency awards with
-`source = 'stripe'` and a distinct, stable source key per payment and currency,
-such as `stripe:credits:<paymentId>` and `stripe:beskar:<paymentId>`. Keep
-payment/refund verification and reconciliation records provider-specific, and
-write both awards/checkpoints transactionally. The trigger then updates the
-same balances automatically. Stripe is not implemented yet.
+[Stripe](stripe-integration.md) supports monthly and one-time contributions in
+EUR and USD at `/support`. It derives ownership from the authenticated checkout,
+verifies successful PaymentIntents against Stripe, and appends both awards with
+`source = 'stripe'`, `stripe:credits:<paymentIntentId>` and
+`stripe:beskar:<paymentIntentId>`. EUR support uses the most recent available ECB
+reference rate on the payment date, rounded half-up to USD cents. Every verified
+USD cent awards 10 credits and one hundredth of beskar. Both awards and the
+provider receipt commit together. Refunds and disputes place a sticky review
+hold; cancellation alone preserves rewards and allows another subscription
+after the previous one ends.
 
 The existing contributor sanitizer clears the entire profile and ledger,
-including currencies, entitlements, purchases and admin attribution, regardless
+including currencies, entitlements, purchases, Stripe receipts and admin attribution, regardless
 of opt-in. Restored dumps retain migration history; development accounts regain
 the starting grant on session creation/refresh.
 

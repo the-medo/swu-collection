@@ -10,8 +10,10 @@ import { karabastMockGameResultPostRoute } from './integration/karabast/mock/pos
 import { createMeleeConnectionRouter } from './integration/melee/router.ts';
 import { meleeConnectionService } from '../lib/melee/connection.ts';
 import { patreonWebhookRoute } from './integration/patreon/webhook.ts';
+import { stripeWebhookRoute } from './integration/stripe/webhook.ts';
 
 export const integrationRoute = new Hono<AuthExtension>()
+  .route('/stripe/webhook', stripeWebhookRoute)
   .route('/patreon/webhook', patreonWebhookRoute)
   .route('/melee', createMeleeConnectionRouter(meleeConnectionService))
   .route('/link-create', linkCreatePostRoute)

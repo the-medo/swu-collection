@@ -39,7 +39,7 @@ await withBattlefieldFixture('currencies-shop', async f => {
   await balances.getByRole('link', { name: 'More info', exact: true }).click();
   const about = f.page.getByRole('region', { name: 'About beskar and credits', exact: true });
   await expect(about).toContainText('Saving a layout does not spend credits');
-  await expect(about).toContainText('2.5 beskar');
+  await expect(about).toContainText('Every $1 USD of support earns 1,000 credits and 1 beskar.');
   await expect(
     currencyPages.getByRole('tab', { name: 'What is this', exact: true }),
   ).toHaveAttribute('data-state', 'active');
@@ -56,9 +56,7 @@ await withBattlefieldFixture('currencies-shop', async f => {
   // More info should bring the newly opened section into view on narrow screens.
   await f.page.setViewportSize({ width: 390, height: 844 });
   await balances.getByRole('link', { name: 'More info', exact: true }).click();
-  await expect(
-    about.getByRole('heading', { name: 'A thank-you to our supporters', exact: true }),
-  ).toBeInViewport();
+  await expect(about.getByRole('heading', { name: 'Credits', exact: true })).toBeInViewport();
   await f.page.setViewportSize({ width: 1500, height: 1000 });
   // Neither anonymous nor another authenticated profile visitor gets private data or requests it.
   const privateRequests: string[] = [];

@@ -36,6 +36,7 @@ import { cardStatsRoute } from './routes/card-stats.ts';
 import { setRoute } from './routes/set.ts';
 import { adminRoute } from './routes/admin.ts';
 import { shopRoute } from './routes/shop.ts';
+import { supportRoute } from './routes/support.ts';
 import { cardPricesRoute } from './routes/card-prices.ts';
 import { cardPoolsRoute } from './routes/card-pools.ts';
 import { dailySnapshotRoute } from './routes/daily-snapshot.ts';
@@ -64,7 +65,7 @@ Sentry.init({
   beforeSend(event) {
     if (
       isCalendarFeedRequest(event.request?.url) ||
-      /\/api\/(?:messages|(?:admin\/)?user-reports|(?:admin|integration)\/patreon)(?:[/?#]|$)/.test(
+      /\/api\/(?:support|messages|(?:admin\/)?user-reports|(?:admin|integration)\/(?:patreon|stripe))(?:[/?#]|$)/.test(
         event.request?.url ?? '',
       )
     )
@@ -80,7 +81,7 @@ Sentry.init({
   },
   beforeSendTransaction(event) {
     return isCalendarFeedRequest(event.request?.url) ||
-      /\/api\/(?:messages|(?:admin\/)?user-reports|(?:admin|integration)\/patreon)(?:[/?#]|$)/.test(
+      /\/api\/(?:support|messages|(?:admin\/)?user-reports|(?:admin|integration)\/(?:patreon|stripe))(?:[/?#]|$)/.test(
         event.request?.url ?? '',
       )
       ? null
@@ -205,6 +206,7 @@ const apiRoutes = app
   .route('/set', setRoute)
   .route('/admin', adminRoute)
   .route('/shop', shopRoute)
+  .route('/support', supportRoute)
   .route('/card-prices', cardPricesRoute)
   .route('/card-pools', cardPoolsRoute)
   .route('/daily-snapshot', dailySnapshotRoute)

@@ -128,6 +128,15 @@ END
 $image_gallery$;
 -- Patreon credentials, supporter identities and credit awards always stay private.
 TRUNCATE TABLE user_credits, patreon_member, patreon_connection;
+-- Stripe identifiers, hosted checkout URLs and supporter receipts stay private,
+-- including for contributors who opt into sharing their application data.
+DO $stripe_support$
+BEGIN
+  IF to_regclass('public.stripe_customer') IS NOT NULL THEN
+    TRUNCATE TABLE stripe_payment, stripe_checkout, stripe_customer;
+  END IF;
+END
+$stripe_support$;
 
 -- Account ownership proofs and connected Melee identities always stay private.
 DO $user_achievements$
@@ -550,6 +559,12 @@ BEGIN
   IF EXISTS (SELECT 1 FROM user_credits) OR EXISTS (SELECT 1 FROM patreon_member)
     OR EXISTS (SELECT 1 FROM patreon_connection) THEN
     RAISE EXCEPTION 'Patreon credentials, membership or credits remain in the contributor dump.';
+  END IF;
+  IF to_regclass('public.stripe_customer') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM stripe_customer) OR EXISTS (SELECT 1 FROM stripe_checkout)
+      OR EXISTS (SELECT 1 FROM stripe_payment) THEN
+      RAISE EXCEPTION 'Stripe supporter identities or receipts remain in the contributor dump.';
+    END IF;
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_calendar_subscription) THEN
