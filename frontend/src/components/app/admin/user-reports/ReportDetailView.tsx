@@ -6,6 +6,7 @@ import { RestrictionBadge, UserReportHistory } from './UserReportHistory';
 import { ModerationHistory } from './ModerationHistory';
 import { ReportDecisionForm } from './ReportDecisionForm';
 import { Helmet } from 'react-helmet-async';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 
 export function ReportDetailView({ reportId }: { reportId: string }) {
   const query = useAdminReport(reportId);
@@ -39,9 +40,22 @@ export function ReportDetailView({ reportId }: { reportId: string }) {
             From {report.source === 'conversation' ? 'a conversation' : 'a profile'}
           </span>
         </div>
-        <p className="break-words text-sm">
-          <strong>{report.reporterDisplayName ?? 'Unknown user'}</strong> reported{' '}
-          <strong>{report.reportedDisplayName ?? 'Unknown user'}</strong>
+        <p className="flex flex-wrap items-center gap-1 text-sm">
+          <UserDisplay
+            user={{
+              id: reporter?.exists ? reporter.id : null,
+              displayName: report.reporterDisplayName ?? 'Unknown user',
+              image: reporter?.image,
+            }}
+          />
+          reported
+          <UserDisplay
+            user={{
+              id: reported?.exists ? reported.id : null,
+              displayName: report.reportedDisplayName ?? 'Unknown user',
+              image: reported?.image,
+            }}
+          />
         </p>
         <p className="whitespace-pre-wrap break-words text-sm">{report.description}</p>
         <p className="break-all text-xs text-muted-foreground">Report ID: {report.id}</p>

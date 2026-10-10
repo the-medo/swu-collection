@@ -17,6 +17,8 @@ export class CrossfireAccessError extends Error {
 type Account = {
   id: string;
   name: string;
+  displayName?: string;
+  image?: string | null;
   email: string;
   role: string | null;
   banned: boolean | null;
@@ -25,6 +27,8 @@ function view(account: Account): CrossfireAccessUser {
   return {
     id: account.id,
     name: account.name,
+    displayName: account.displayName ?? account.name,
+    image: account.image ?? null,
     email: account.email,
     roles: userRoles(account.role),
     enabled: hasCrossfireAccess(account.role),
@@ -56,11 +60,13 @@ export class CrossfireAccess {
       await lockSession(tx, principal);
       const [actor] = await tx<
         Account[]
-      >`SELECT id,name,email,role,banned FROM public."user" WHERE id=${principal.userId} FOR SHARE`;
+      >`SELECT id,name,display_name AS "displayName",image,email,role,banned FROM public."user" WHERE id=${principal.userId} FOR SHARE`;
       requireManager(actor);
       // Search is literal text; SQL parameters and escaped wildcards prevent query injection.
       const pattern = `%${search.replace(/[\\%_]/g, '\\$&')}%`;
-      const users = await tx<Account[]>`SELECT id,name,email,role,banned FROM public."user"
+      const users = await tx<
+        Account[]
+      >`SELECT id,name,display_name AS "displayName",image,email,role,banned FROM public."user"
         WHERE name ILIKE ${pattern} OR display_name ILIKE ${pattern} OR email ILIKE ${pattern}
         ORDER BY (id=${principal.userId}) DESC, name, id LIMIT 26`;
       return { users: users.slice(0, 25).map(view), hasMore: users.length > 25 };
@@ -77,7 +83,7 @@ export class CrossfireAccess {
       // keeps unrelated roles even when another role update is already in progress.
       const users = await tx<
         Account[]
-      >`SELECT id,name,email,role,banned FROM public."user" WHERE id = ANY(${[...new Set([principal.userId, targetId])]}) ORDER BY id FOR UPDATE`;
+      >`SELECT id,name,display_name AS "displayName",image,email,role,banned FROM public."user" WHERE id = ANY(${[...new Set([principal.userId, targetId])]}) ORDER BY id FOR UPDATE`;
       requireManager(users.find(u => u.id === principal.userId));
       await lockSession(tx, principal); // Recheck expiry after waiting for account locks.
       const target = users.find(u => u.id === targetId);

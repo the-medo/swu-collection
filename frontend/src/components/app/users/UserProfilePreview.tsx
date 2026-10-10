@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+import type { MouseEventHandler } from 'react';
 import { Trophy } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -6,12 +7,21 @@ import { ProfileHeader } from './UserDetail/ProfileHeader.tsx';
 import { useUserAchievements } from '@/api/user-profile/useUserAchievements.ts';
 import { useGetUser } from '@/api/user/useGetUser.ts';
 import type { PublicProfileSummary } from './UserProfilePopover.tsx';
-export default function UserProfilePreview({ user }: { user: PublicProfileSummary }) {
+export default function UserProfilePreview({
+  user,
+  onLinkClick,
+}: {
+  user: PublicProfileSummary;
+  onLinkClick?: MouseEventHandler<HTMLAnchorElement>;
+}) {
   const achievements = useUserAchievements(user.id);
   // Mention documents store identity and label, so load their public avatar on opening.
   const profile = useGetUser(user.image === undefined ? user.id : undefined);
   const image = profile.data?.image ?? user.image;
   const displayName = profile.data?.displayName ?? user.displayName;
+  const onAuxClick: MouseEventHandler<HTMLAnchorElement> = event => {
+    if (event.button === 1) onLinkClick?.(event);
+  };
   return (
     <div>
       <div className="h-24 overflow-hidden [&>div]:h-full">
@@ -32,6 +42,8 @@ export default function UserProfilePreview({ user }: { user: PublicProfileSummar
                   to="/tournaments/$tournamentId"
                   params={{ tournamentId: result.tournamentId }}
                   className="hover:underline"
+                  onClick={onLinkClick}
+                  onAuxClick={onAuxClick}
                 >
                   <span className="font-semibold">#{result.placement}</span> · {result.name}
                 </Link>
@@ -40,7 +52,12 @@ export default function UserProfilePreview({ user }: { user: PublicProfileSummar
           </ul>
         )}
         <Button asChild variant="outline" size="sm" className="w-full">
-          <Link to="/users/$userId" params={{ userId: user.id }}>
+          <Link
+            to="/users/$userId"
+            params={{ userId: user.id }}
+            onClick={onLinkClick}
+            onAuxClick={onAuxClick}
+          >
             Open profile
           </Link>
         </Button>

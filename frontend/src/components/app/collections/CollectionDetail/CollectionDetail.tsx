@@ -1,5 +1,6 @@
 import { useGetCollection } from '@/api/collections/useGetCollection.ts';
-import { getRouteApi, Link } from '@tanstack/react-router';
+import { getRouteApi } from '@tanstack/react-router';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import { useUser } from '@/hooks/useUser';
 import LoadingTitle from '../../global/LoadingTitle';
 import CollectionInputSection from '@/components/app/collections/CollectionInput/CollectionInputSection.tsx';
@@ -92,12 +93,10 @@ const CollectionDetail: React.FC = () => {
         <LoadingTitle
           mainTitle={data?.collection.title}
           subTitle={
-            <>
-              {cardListString.toLowerCase()} by{' '}
-              <Link to={`/users/$userId`} params={{ userId: collectionUserId }}>
-                {data?.user.displayName}
-              </Link>
-            </>
+            <span className="inline-flex max-w-full items-center gap-1">
+              <span className="shrink-0">{cardListString.toLowerCase()} by</span>
+              {data?.user && <UserDisplay user={data.user} size="md" />}
+            </span>
           }
           loading={loading}
         />

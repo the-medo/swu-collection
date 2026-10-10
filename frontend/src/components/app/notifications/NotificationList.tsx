@@ -1,5 +1,6 @@
 import { useEffect, useId, useState, type MouseEvent } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import { Archive, Gamepad2, Mail, MailOpen, MessageSquare, Star, Users } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button.tsx';
@@ -8,7 +9,10 @@ import type { NotificationItem } from '../../../../../shared/types/notifications
 
 interface NotificationListProps {
   items: NotificationItem[];
-  onAction: (input: { id: string; action: 'read' | 'unread' | 'archive' }) => void;
+  onAction: (
+    input: { id: string; action: 'read' | 'unread' | 'archive' },
+    focusTarget?: HTMLElement,
+  ) => void;
   disabled?: boolean;
   compact?: boolean;
   onNavigate?: () => void;
@@ -56,7 +60,7 @@ export function NotificationList({
         const createdAt = new Date(item.createdAt);
         const fullTimestamp = createdAt.toLocaleString();
         const markRead = (event: MouseEvent<HTMLAnchorElement>) => {
-          if (!item.readAt) onAction({ id: item.id, action: 'read' });
+          if (!item.readAt) onAction({ id: item.id, action: 'read' }, event.currentTarget);
           if (
             !event.metaKey &&
             !event.ctrlKey &&
@@ -71,6 +75,7 @@ export function NotificationList({
         return (
           <li
             key={item.id}
+            data-notification-id={item.id}
             className={cn(
               'flex flex-col gap-2 px-2 py-3',
               !compact && 'sm:flex-row sm:items-center sm:gap-4',
@@ -89,14 +94,14 @@ export function NotificationList({
                 {!item.readAt && <span className="sr-only">Unread notification. </span>}
                 {newMember && <>You have a new team member! </>}
                 {item.actorUserId ? (
-                  <Link
-                    to="/users/$userId"
-                    params={{ userId: item.actorUserId }}
-                    className={linkClassName}
-                    onClick={markRead}
-                  >
-                    {item.actorName ?? 'A player'}
-                  </Link>
+                  <UserDisplay
+                    onPreviewLinkClick={markRead}
+                    user={{
+                      id: item.actorUserId,
+                      displayName: item.actorName ?? 'A player',
+                      image: item.actorImage,
+                    }}
+                  />
                 ) : (
                   <span>{item.actorName ?? 'A player'}</span>
                 )}
@@ -189,6 +194,7 @@ export function NotificationList({
                   size="iconMedium"
                   variant="ghost"
                   aria-label={item.readAt ? 'Mark unread' : 'Mark read'}
+                  data-notification-action={item.readAt ? 'unread' : 'read'}
                   aria-describedby={descriptionId}
                   title={item.readAt ? 'Mark unread' : 'Mark read'}
                   disabled={disabled}
@@ -200,6 +206,7 @@ export function NotificationList({
                   size="iconMedium"
                   variant="ghost"
                   aria-label="Archive"
+                  data-notification-action="archive"
                   aria-describedby={descriptionId}
                   title="Archive"
                   disabled={disabled}

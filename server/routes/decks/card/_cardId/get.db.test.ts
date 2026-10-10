@@ -116,7 +116,11 @@ test.skipIf(process.env.CARD_DECKS_DB_TEST !== '1')(
       expect(
         result.data.every((item: { deck: { public: number } }) => item.deck.public === 1),
       ).toBe(true);
-      expect(result.data[0].user).toEqual({ id: userId, displayName: 'Public deck owner' });
+      expect(result.data[0].user).toEqual({
+        id: userId,
+        displayName: 'Public deck owner',
+        image: null,
+      });
       expect(result.data[0].entityPrices).toHaveLength(1);
       expect(result.data[0].entityPrices[0].price).toBe('25.50');
       expect(result.data[0].deck.updatedAt).toBe(fixtures[18].updatedAt!.toISOString());

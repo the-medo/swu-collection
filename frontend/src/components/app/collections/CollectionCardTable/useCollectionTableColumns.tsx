@@ -26,6 +26,27 @@ import { forDecksRenderer } from '@/lib/table/forDecksRenderer.tsx';
 import { getPriceSourceSortValue } from '../../../../../../shared/lib/card-prices/source-type-sorters.ts';
 import { cn } from '@/lib/utils.ts';
 import EntityPriceBadge from '@/components/app/card-prices/EntityPriceBadge.tsx';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
+
+type CollectionOwnerMeta = {
+  view?: DataTableViewMode;
+  showState?: boolean;
+  renderState: Exclude<ExtendedColumnDef<UserCollectionData>['cell'], string | undefined>;
+};
+
+// Keep the identity mounted when country/currency data or mutation state refreshes.
+const renderCollectionOwner: ExtendedColumnDef<UserCollectionData>['cell'] = context => {
+  const { view, showState, renderState } = context.column.columnDef.meta as CollectionOwnerMeta;
+  const identity = <UserDisplay user={context.row.original.user} />;
+  return showState && view === 'box' ? (
+    <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
+      {identity}
+      {renderState(context)}
+    </div>
+  ) : (
+    identity
+  );
+};
 
 interface CollectionTableColumnsProps {
   view?: DataTableViewMode;
@@ -105,29 +126,8 @@ export function useCollectionTableColumns({
         header: 'Owner',
         size: 64,
         displayBoxHeader: false,
-        cell: context => {
-          const { getValue, row } = context;
-          const userId = row.original.user.id as string;
-          const displayName = getValue() as string;
-
-          if (showState && view === 'box') {
-            return (
-              <Link
-                to={'/users/' + userId}
-                className="text-xs flex flex-wrap gap-4 justify-center "
-              >
-                <span className="font-bold">{displayName}</span>
-                {stateRenderer(context)}
-              </Link>
-            );
-          }
-
-          return (
-            <Link to={'/users/' + userId} className="text-xs">
-              {displayName}
-            </Link>
-          );
-        },
+        meta: { view, showState, renderState: stateRenderer } satisfies CollectionOwnerMeta,
+        cell: renderCollectionOwner,
       });
     }
 

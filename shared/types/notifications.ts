@@ -30,6 +30,7 @@ export interface NotificationItem {
   entityId: string;
   actorUserId: string | null;
   actorName: string | null;
+  actorImage?: string | null;
   entityName: string | null;
   /** @deprecated Older clients use this during the discussion rollout. */
   targetDeckId?: string | null;

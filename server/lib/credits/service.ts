@@ -126,6 +126,7 @@ export function createCreditsService(database = db) {
           id: user.id,
           name: user.name,
           displayName: user.displayName,
+          image: user.image,
           email: user.email,
           balance: sql<number>`coalesce(${userProfile.creditBalance}, 0)`.mapWith(Number),
           beskarCents: sql<number>`coalesce(${userProfile.beskarBalanceCents}, 0)`.mapWith(Number),

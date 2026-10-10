@@ -52,7 +52,7 @@ export const decksForCardGetRoute = new Hono<AuthExtension>().get(
     const decks = await db
       .select({
         deck,
-        user: { id: user.id, displayName: user.displayName },
+        user: { id: user.id, displayName: user.displayName, image: user.image },
       })
       .from(deck)
       .innerJoin(user, eq(deck.userId, user.id))

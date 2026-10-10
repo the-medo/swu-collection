@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import type { ReportPage } from '../../../../../../shared/types/userReportModeration';
 
 export function ReportPagination({
@@ -44,12 +45,7 @@ export function ReportList({ data, onPage }: { data: ReportPage; onPage: (page: 
         </p>
       )}
       {data.reports.map(report => (
-        <Link
-          key={report.id}
-          to="/admin"
-          search={previous => ({ ...previous, page: 'user-reports', reportId: report.id })}
-          className="block min-w-0 space-y-2 rounded-md border p-3 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
+        <div key={report.id} className="min-w-0 space-y-2 rounded-md border p-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <Badge variant={report.status === 'open' ? 'warning' : 'secondary'}>
               {report.status === 'open' ? 'Open' : 'Resolved'}
@@ -58,15 +54,34 @@ export function ReportList({ data, onPage }: { data: ReportPage; onPage: (page: 
               {new Date(report.createdAt).toLocaleString()}
             </time>
           </div>
-          <div className="break-words text-sm">
-            <strong>{report.reporterDisplayName ?? 'Unknown user'}</strong> reported{' '}
-            <strong>{report.reportedDisplayName ?? 'Unknown user'}</strong>
+          <div className="flex flex-wrap items-center gap-1 text-sm">
+            <UserDisplay
+              user={{
+                id: report.reporterUserId,
+                displayName: report.reporterDisplayName ?? 'Unknown user',
+                image: report.reporterImage,
+              }}
+            />
+            reported
+            <UserDisplay
+              user={{
+                id: report.reportedUserId,
+                displayName: report.reportedDisplayName ?? 'Unknown user',
+                image: report.reportedImage,
+              }}
+            />
           </div>
           <p className="line-clamp-2 whitespace-pre-wrap break-words text-sm text-muted-foreground">
             {report.description}
           </p>
-          <span className="text-xs font-medium text-primary">Open report</span>
-        </Link>
+          <Link
+            to="/admin"
+            search={previous => ({ ...previous, page: 'user-reports', reportId: report.id })}
+            className="rounded-sm text-xs font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Open report
+          </Link>
+        </div>
       ))}
       <ReportPagination {...data} onPage={onPage} />
     </div>

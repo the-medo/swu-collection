@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { Check, CircleHelp, MapPin, Star } from 'lucide-react';
+import { CalendarDays, Check, CircleHelp, MapPin, Star } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { useTeamEvents } from '@/api/teams/useTeamEvents.ts';
 import { useToday } from '@/hooks/useToday.ts';
@@ -7,7 +7,7 @@ import { useUser } from '@/hooks/useUser.ts';
 import { cn } from '@/lib/utils.ts';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import { calendarEventEnd } from '../../tournaments/calendar/calendarData.ts';
 import { locationText } from '../../tournaments/pages/TournamentsMap/mapData.ts';
 import { savedTournamentMarkers } from '../../tournaments/pages/TournamentsMap/savedTournamentMarkers.ts';
@@ -95,26 +95,35 @@ export function TeamEventsTab({ teamId }: { teamId: string }) {
                       const Icon = icons[member.status];
                       return (
                         <li key={member.userId} className="max-w-full">
-                          <Link
-                            to="/users/$userId"
-                            params={{ userId: member.userId }}
-                            search={{ userTab: 'calendar' }}
+                          <span
                             className={cn(
                               'flex min-w-0 items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs transition-colors',
                               attendeeColors[member.status],
                             )}
                             title={`${member.displayName} — ${savedTournamentMarkers[member.status].label}`}
                           >
-                            <Avatar className="size-4 shrink-0">
-                              <AvatarImage src={member.image ?? undefined} alt="" />
-                              <AvatarFallback>{member.displayName.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <span className="min-w-0 break-words">{member.displayName}</span>
+                            <UserDisplay
+                              user={{
+                                id: member.userId,
+                                displayName: member.displayName,
+                                image: member.image,
+                              }}
+                            />
                             <Icon className="size-3 shrink-0" aria-hidden="true" />
                             <span className="sr-only">
                               {savedTournamentMarkers[member.status].label}
                             </span>
-                          </Link>
+                            <Link
+                              to="/users/$userId"
+                              params={{ userId: member.userId }}
+                              search={{ userTab: 'calendar' }}
+                              aria-label={`View ${member.displayName}'s calendar`}
+                              title="View calendar"
+                              className="rounded-sm p-1 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              <CalendarDays className="size-3 shrink-0" aria-hidden="true" />
+                            </Link>
+                          </span>
                         </li>
                       );
                     })}

@@ -47,6 +47,7 @@ export type ReportHistoryCounts = { sent: number; received: number; openReceived
 export type ModerationUser = {
   id: string;
   displayName: string;
+  image?: string | null;
   exists: boolean;
   protected: boolean;
   restriction: 'none' | 'suspended' | 'banned';
@@ -61,6 +62,8 @@ export type AdminUserReport = {
   reportedIdAtSubmission: string | null;
   reporterDisplayName: string | null;
   reportedDisplayName: string | null;
+  reporterImage?: string | null;
+  reportedImage?: string | null;
   description: string;
   source: 'profile' | 'conversation';
   createdAt: string;
