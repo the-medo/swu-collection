@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CrossfireLogo } from '@/components/app/crossfire/CrossfireLogo';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 export function CrossfireAccessPage() {
   const [search, setSearch] = useState(''),
     [query, setQuery] = useState('');
@@ -59,10 +60,14 @@ export function CrossfireAccessPage() {
             {users.data.users.map(user => (
               <li key={user.id} className="flex flex-wrap items-center gap-3 p-3">
                 <div className="min-w-0 flex-1 basis-48">
-                  <div className="font-medium break-words">
-                    {user.name}
+                  <div className="flex flex-wrap items-center gap-1">
+                    <UserDisplay
+                      user={{ ...user, displayName: user.displayName ?? user.name }}
+                      size="md"
+                    />
                     {user.id === session?.user.id && ' (you)'}
                   </div>
+                  <div className="text-sm text-muted-foreground break-words">{user.name}</div>
                   <div className="text-sm text-muted-foreground break-all">{user.email}</div>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {(user.roles.length ? user.roles : ['user']).map(role => (

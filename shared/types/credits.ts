@@ -34,6 +34,7 @@ export type CreditUser = {
   id: string;
   name: string;
   displayName: string;
+  image?: string | null;
   email: string;
   balance: number | null;
   beskarCents: number;

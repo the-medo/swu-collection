@@ -90,6 +90,7 @@ function NotificationPreview({ onNavigate }: { onNavigate: () => void }) {
   const query = useUnreadNotifications();
   const mutation = useUpdateNotification();
   const viewAllRef = useRef<HTMLAnchorElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const pendingFocus = useRef<{ control: HTMLElement; nextControl?: HTMLElement | null } | null>(
     null,
   );
@@ -105,24 +106,33 @@ function NotificationPreview({ onNavigate }: { onNavigate: () => void }) {
       (target.nextControl?.isConnected ? target.nextControl : viewAllRef.current)?.focus();
     }
   }, [query.data, mutation.isPending]);
-  const update = (input: Parameters<typeof mutation.mutate>[0]) => {
-    const previousFocus = document.activeElement;
-    if (previousFocus instanceof HTMLButtonElement) {
+  const update = (input: Parameters<typeof mutation.mutate>[0], focusTarget?: HTMLElement) => {
+    const previousFocus = focusTarget ?? document.activeElement;
+    if (previousFocus instanceof HTMLButtonElement || previousFocus instanceof HTMLAnchorElement) {
       // Restore focus after the refetched unread list removes the activated control.
+      const row =
+        'id' in input
+          ? listRef.current?.querySelector(`[data-notification-id="${CSS.escape(input.id)}"]`)
+          : null;
+      const nextAction = input.action === 'archive' ? 'archive' : 'read';
       pendingFocus.current = {
         control: previousFocus,
-        nextControl: previousFocus
-          .closest('li')
-          ?.nextElementSibling?.querySelector<HTMLElement>('button'),
+        nextControl: row?.nextElementSibling?.querySelector<HTMLElement>(
+          `button[data-notification-action="${nextAction}"]`,
+        ),
       };
     }
     mutation.mutate(input);
+  };
+  const closeForNavigation = () => {
+    pendingFocus.current = null;
+    onNavigate();
   };
 
   return (
     <>
       <h3 className="m-0 shrink-0 border-b px-4 py-3 text-base">Notifications</h3>
-      <div className="min-h-0 overflow-y-auto p-2">
+      <div ref={listRef} className="min-h-0 overflow-y-auto p-2">
         {query.isPending && (
           <p role="status" className="p-4 text-sm">
             Loading notifications…
@@ -150,7 +160,7 @@ function NotificationPreview({ onNavigate }: { onNavigate: () => void }) {
             onAction={update}
             disabled={mutation.isPending}
             compact
-            onNavigate={onNavigate}
+            onNavigate={closeForNavigation}
           />
         )}
       </div>
@@ -172,7 +182,7 @@ function NotificationPreview({ onNavigate }: { onNavigate: () => void }) {
             to="/notifications"
             onClick={event => {
               if (!event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0)
-                onNavigate();
+                closeForNavigation();
             }}
           >
             View all

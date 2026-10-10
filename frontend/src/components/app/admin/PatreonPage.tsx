@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import { usePatreonOverview } from '@/api/patreon/usePatreonOverview';
 import { useSyncPatreon } from '@/api/patreon/useSyncPatreon';
 import { useReviewPatreonMember } from '@/api/patreon/useReviewPatreonMember';
@@ -145,7 +146,17 @@ export function PatreonPage() {
                           </div>
                         </TableCell>
                         <TableCell className="min-w-48">
-                          <div>{member.displayName || 'Awaiting matching account'}</div>
+                          {member.userId && member.displayName ? (
+                            <UserDisplay
+                              user={{
+                                id: member.userId,
+                                displayName: member.displayName,
+                                image: member.image,
+                              }}
+                            />
+                          ) : (
+                            <span>Awaiting matching account</span>
+                          )}
                           {member.reviewReason && (
                             <div className="text-xs text-destructive">
                               {reviewLabels[member.reviewReason] || 'Review required'}

@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import FormFieldError from '@/components/app/global/FormFieldError';
 import { CurrencyIcon } from '@/components/app/global/CurrencyIcon';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import {
   creditGrantAmount,
   beskarGrantAmount,
@@ -85,7 +86,7 @@ export function UserCreditsPage() {
             {users.data.users.map(user => (
               <li key={user.id} className="flex flex-wrap items-center gap-3 p-3">
                 <div className="min-w-0 flex-1 basis-48">
-                  <div className="font-medium break-words">{user.displayName}</div>
+                  <UserDisplay user={user} size="md" />
                   <div className="text-sm text-muted-foreground break-words">{user.name}</div>
                   <div className="text-sm text-muted-foreground break-all">{user.email}</div>
                 </div>

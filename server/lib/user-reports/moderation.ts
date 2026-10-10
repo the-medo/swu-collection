@@ -1,4 +1,5 @@
 import { and, count, desc, eq, or, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { db } from '../../db';
 import { session, user } from '../../db/schema/auth-schema.ts';
 import { userReport } from '../../db/schema/user_report.ts';
@@ -17,6 +18,8 @@ import type {
 import { UserReportError } from './service.ts';
 
 const pageSize = 20;
+const reporterAccount = alias(user, 'reporter_account');
+const reportedAccount = alias(user, 'reported_account');
 const sentBy = (id: string) =>
   or(eq(userReport.reporterIdAtSubmission, id), eq(userReport.reporterUserId, id));
 const receivedBy = (id: string) =>
@@ -56,15 +59,30 @@ export function createReportModerationService(database = db) {
     );
     const [rows, [total]] = await Promise.all([
       database
-        .select()
+        .select({
+          report: userReport,
+          reporterImage: reporterAccount.image,
+          reportedImage: reportedAccount.image,
+        })
         .from(userReport)
+        .leftJoin(reporterAccount, eq(reporterAccount.id, userReport.reporterUserId))
+        .leftJoin(reportedAccount, eq(reportedAccount.id, userReport.reportedUserId))
         .where(where)
         .orderBy(desc(userReport.createdAt), desc(userReport.id))
         .limit(pageSize)
         .offset((input.page - 1) * pageSize),
       database.select({ value: count() }).from(userReport).where(where),
     ]);
-    return { reports: rows.map(reportDto), total: total!.value, page: input.page, pageSize };
+    return {
+      reports: rows.map(({ report, reporterImage, reportedImage }) => ({
+        ...reportDto(report),
+        reporterImage,
+        reportedImage,
+      })),
+      total: total!.value,
+      page: input.page,
+      pageSize,
+    };
   }
   async function profile(id: string, fallbackName?: string | null): Promise<ModerationUser> {
     const [[account], [sent], [received], [open]] = await Promise.all([
@@ -72,6 +90,7 @@ export function createReportModerationService(database = db) {
         .select({
           id: user.id,
           displayName: user.displayName,
+          image: user.image,
           role: user.role,
           banned: user.banned,
           banExpires: user.banExpires,
@@ -90,6 +109,7 @@ export function createReportModerationService(database = db) {
     return {
       id,
       displayName: account?.displayName ?? fallbackName ?? 'Deleted user',
+      image: account?.image ?? null,
       exists: !!account,
       protected: id === 'swubase' || hasRole(account?.role, 'admin'),
       restriction: active ? (account!.banExpires ? 'suspended' : 'banned') : 'none',

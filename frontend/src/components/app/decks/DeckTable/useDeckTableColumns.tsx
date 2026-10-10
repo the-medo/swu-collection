@@ -22,6 +22,12 @@ import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
 import { EntityPriceBadge } from '@/components/app/card-prices/EntityPriceBadge.tsx';
 import { getPriceSourceSortValue } from '../../../../../../shared/lib/card-prices/source-type-sorters.ts';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
+
+// A stable cell component keeps an open preview mounted as catalog/mutation data changes.
+const renderDeckOwner: ExtendedColumnDef<UserDeckData>['cell'] = ({ row }) => (
+  <UserDisplay user={row.original.user} />
+);
 
 interface DeckTableColumnsProps {
   view?: DataTableViewMode;
@@ -250,15 +256,7 @@ export function useDeckTableColumns({
         accessorKey: 'user.displayName',
         header: 'Owner',
         size: 40,
-        cell: ({ getValue, row }) => {
-          const userId = row.original.user.id as string;
-          const displayName = getValue() as string;
-          return (
-            <Link to={'/users/' + userId} className="text-xs text-wrap">
-              {displayName}
-            </Link>
-          );
-        },
+        cell: renderDeckOwner,
       });
     }
 

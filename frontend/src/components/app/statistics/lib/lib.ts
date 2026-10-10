@@ -64,6 +64,7 @@ export const createMatchResultBasedOnGameResult = (
   matchId: string,
   game: GameResult,
   teamDataMapMembers: TeamDataMap['members'],
+  teamDataMapProfiles: TeamDataMap['profiles'] = {},
 ): MatchResult => {
   return {
     id: matchId,
@@ -77,6 +78,7 @@ export const createMatchResultBasedOnGameResult = (
     opponentBaseCardKey: game.opponentBaseCardKey ?? undefined,
     deckId: game.deckId ?? undefined,
     userName: teamDataMapMembers[game.userId],
+    user: teamDataMapProfiles[game.userId],
     userEventId: game.userEventId ?? undefined,
     exclude: false,
     manuallyEdited: false,

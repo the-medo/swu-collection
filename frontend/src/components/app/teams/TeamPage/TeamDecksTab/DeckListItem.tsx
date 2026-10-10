@@ -8,6 +8,7 @@ import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import type { TeamDeckExpanded } from '../../../../../../../server/routes/teams/_id/decks/get.ts';
 import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/components/CopyLinkButton.tsx';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 
 type DeckListItemDeck = Pick<
   TeamDeckExpanded['deck'],
@@ -42,7 +43,6 @@ const DeckListItem: React.FC<DeckListItemProps> = props => {
 
   if (variant === 'team-deck') {
     const { teamDeck, onRemove, removeDisabled } = props;
-    const userName = teamDeck.user.displayName ?? teamDeck.user.name;
     return (
       <div className="flex items-center gap-3 p-3 rounded-lg border relative overflow-hidden min-h-14">
         {leader && (
@@ -69,8 +69,8 @@ const DeckListItem: React.FC<DeckListItemProps> = props => {
               <span className="truncate">{deck.name}</span>
             </Button>
           </Link>
-          <span className="text-xs text-muted-foreground">
-            {getFormatName(deck.format)} · by {userName}
+          <span className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+            {getFormatName(deck.format)} · by <UserDisplay user={teamDeck.user} />
           </span>
         </div>
         <CopyLinkButton deckId={deck.id} isPublic={true} compact={true} size="iconMedium" />

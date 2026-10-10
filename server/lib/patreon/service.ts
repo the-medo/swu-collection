@@ -82,6 +82,7 @@ export function createPatreonService({
         .select({
           member: patreonMember,
           displayName: user.displayName,
+          image: user.image,
           balance: userProfile.creditBalance,
         })
         .from(patreonMember)
@@ -102,12 +103,13 @@ export function createPatreonService({
         page,
         pageSize,
         total: total.count,
-        members: rows.map(({ member: m, displayName, balance }) => ({
+        members: rows.map(({ member: m, displayName, image, balance }) => ({
           memberId: m.memberId,
           email: m.email,
           name: m.name,
           userId: m.userId,
           displayName,
+          image,
           patronStatus: m.patronStatus,
           lastChargeAt: m.lastChargeAt?.toISOString() ?? null,
           lastChargeStatus: m.lastChargeStatus,

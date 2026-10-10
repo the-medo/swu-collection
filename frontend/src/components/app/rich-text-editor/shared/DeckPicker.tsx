@@ -7,6 +7,7 @@ import { MatchupArtwork } from '@/components/app/global/MatchupCard.tsx';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs.tsx';
 import type { DeckReference } from './model.ts';
 
@@ -62,22 +63,26 @@ function DeckChoices({
           </p>
         )}
         {rows.map(({ deck, user }) => (
-          <button
-            type="button"
+          <div
             key={deck.id}
-            aria-pressed={selected === deck.id}
-            onClick={() => onSelect(deck.id)}
-            className="relative isolate flex min-h-20 w-full items-center overflow-hidden border-b p-3 text-left hover:bg-accent focus-visible:outline focus-visible:outline-ring aria-pressed:bg-accent"
+            className={`relative isolate flex min-h-20 w-full items-center overflow-hidden border-b p-3 text-left ${selected === deck.id ? 'bg-accent' : ''}`}
           >
             <MatchupArtwork leaderCardId={deck.leaderCardId1} baseCardKey={deck.baseCardId} />
-            <span className="relative ml-28 min-w-0">
-              <strong className="block truncate">{deck.name || 'Untitled deck'}</strong>
-              <span className="block text-xs text-muted-foreground">
-                {deck.leaderCardId1 ? catalog?.cards[deck.leaderCardId1]?.name : 'No leader'} ·{' '}
-                {user.name}
-              </span>
-            </span>
-          </button>
+            <div className="relative ml-28 min-w-0 flex-1">
+              <button
+                type="button"
+                aria-pressed={selected === deck.id}
+                onClick={() => onSelect(deck.id)}
+                className="block w-full rounded-sm text-left hover:text-primary focus-visible:outline focus-visible:outline-ring"
+              >
+                <strong className="block truncate">{deck.name || 'Untitled deck'}</strong>
+                <span className="block text-xs text-muted-foreground">
+                  {deck.leaderCardId1 ? catalog?.cards[deck.leaderCardId1]?.name : 'No leader'}
+                </span>
+              </button>
+              <UserDisplay user={user} className="text-muted-foreground" />
+            </div>
+          </div>
         ))}
         {decks.hasNextPage && (
           <Button

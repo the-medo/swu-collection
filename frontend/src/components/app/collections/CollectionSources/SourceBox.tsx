@@ -2,6 +2,7 @@ import * as React from 'react';
 import type { CollectionSourceRow } from '@/api/collections/useGetCollectionSources.ts';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 
 interface SourceBoxProps {
   row: CollectionSourceRow;
@@ -11,8 +12,6 @@ interface SourceBoxProps {
 
 const SourceBox: React.FC<SourceBoxProps> = ({ row, selected = false, onSelect }) => {
   const collectionId = row.collection.id;
-  const userId = row.user.id;
-  const userName = (row.user as any).displayName ?? (row.user as any).name ?? 'User';
 
   return (
     <div
@@ -21,16 +20,17 @@ const SourceBox: React.FC<SourceBoxProps> = ({ row, selected = false, onSelect }
       role={onSelect ? 'button' : undefined}
       aria-pressed={onSelect ? (selected ? 'true' : 'false') : undefined}
     >
-      <div className="flex flex-col">
+      <div className="flex min-w-0 flex-col">
         <span className="font-medium">{row.collection.title}</span>
-        <span className="text-xs text-muted-foreground">
-          by{' '}
-          <Link to={`/users/$userId`} params={{ userId }} className="underline hover:no-underline" onClick={e => e.stopPropagation()}>
-            {userName}
-          </Link>
+        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+          by <UserDisplay user={row.user} />
         </span>
       </div>
-      <Link to={`/collections/$collectionId`} params={{ collectionId }} onClick={e => e.stopPropagation()}>
+      <Link
+        to={`/collections/$collectionId`}
+        params={{ collectionId }}
+        onClick={e => e.stopPropagation()}
+      >
         <Button size="sm" variant="secondary">
           Open
         </Button>

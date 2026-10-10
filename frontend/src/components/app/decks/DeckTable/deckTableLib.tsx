@@ -4,7 +4,7 @@ import { formatDataById } from '../../../../../../types/Format.ts';
 import { EntityPrice } from '../../../../../../server/db/schema/entity_price.ts';
 
 export type UserDeckData = {
-  user: Pick<User, 'id' | 'displayName'>;
+  user: Pick<User, 'id' | 'displayName'> & Partial<Pick<User, 'image'>>;
   deck: Deck;
   entityPrices?: EntityPrice[];
 };

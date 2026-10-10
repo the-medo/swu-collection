@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
@@ -47,13 +47,16 @@ const MemberRow: React.FC<MemberRowProps> = ({
 }) => {
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg border">
-      <Avatar className="w-10 h-10">
-        <AvatarImage src={member.image ?? undefined} alt={member.name ?? 'User'} />
-        <AvatarFallback>{(member.name ?? 'U').charAt(0).toUpperCase()}</AvatarFallback>
-      </Avatar>
-      <div className="flex flex-col flex-1">
-        <span className="font-medium">
-          {member.name ?? 'Unknown user'}
+      <div className="flex min-w-0 flex-col flex-1">
+        <span className="flex flex-wrap items-center gap-1">
+          <UserDisplay
+            user={{
+              id: member.userId,
+              displayName: member.name ?? 'Unknown user',
+              image: member.image,
+            }}
+            size="lg"
+          />
           {isSelf && <span className="text-muted-foreground font-normal"> (you)</span>}
         </span>
         <span className="text-xs text-muted-foreground">

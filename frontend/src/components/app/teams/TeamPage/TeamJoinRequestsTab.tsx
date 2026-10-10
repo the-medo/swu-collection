@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useJoinRequests, useHandleJoinRequest, useDeleteJoinRequest } from '@/api/teams';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { Check, X, Trash2 } from 'lucide-react';
@@ -39,12 +39,15 @@ const TeamJoinRequestsTab: React.FC<TeamJoinRequestsTabProps> = ({ teamId }) => 
       )}
       {pendingRequests.map(request => (
         <div key={request.id} className="flex items-center gap-3 p-3 rounded-lg border">
-          <Avatar className="w-10 h-10">
-            <AvatarImage src={request.userImage ?? undefined} alt={request.userName ?? 'User'} />
-            <AvatarFallback>{(request.userName ?? 'U').charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col flex-1">
-            <span className="font-medium">{request.userName ?? 'Unknown user'}</span>
+          <div className="flex min-w-0 flex-col flex-1">
+            <UserDisplay
+              user={{
+                id: request.userId,
+                displayName: request.userName ?? 'Unknown user',
+                image: request.userImage,
+              }}
+              size="lg"
+            />
             <span className="text-xs text-muted-foreground">
               Requested {new Date(request.createdAt).toLocaleDateString()}
             </span>
@@ -94,17 +97,15 @@ const TeamJoinRequestsTab: React.FC<TeamJoinRequestsTabProps> = ({ teamId }) => 
                   key={request.id}
                   className="flex items-center gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5"
                 >
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage
-                      src={request.userImage ?? undefined}
-                      alt={request.userName ?? 'User'}
+                  <div className="flex min-w-0 flex-col flex-1">
+                    <UserDisplay
+                      user={{
+                        id: request.userId,
+                        displayName: request.userName ?? 'Unknown user',
+                        image: request.userImage,
+                      }}
+                      size="lg"
                     />
-                    <AvatarFallback>
-                      {(request.userName ?? 'U').charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col flex-1">
-                    <span className="font-medium">{request.userName ?? 'Unknown user'}</span>
                     <span className="text-xs text-muted-foreground">
                       Rejected {new Date(request.updatedAt).toLocaleDateString()}
                     </span>

@@ -1,10 +1,16 @@
 import { useTeamDeckMap, useTeamMembers } from '@/api/teams';
 import { useMemo } from 'react';
+import type { PublicProfileSummary } from '@/components/app/users/UserProfilePopover.tsx';
 
-export type TeamDataMap = { members: Record<string, string>; decks: Record<string, string> };
+export type TeamDataMap = {
+  members: Record<string, string>;
+  profiles: Record<string, PublicProfileSummary>;
+  decks: Record<string, string>;
+};
 
 const emptyTeamDataMap: TeamDataMap = {
   members: {},
+  profiles: {},
   decks: {},
 };
 
@@ -17,6 +23,7 @@ export const useTeamDataMap = (teamId: string | undefined): TeamDataMap => {
 
     const teamDataMap: TeamDataMap = {
       members: {},
+      profiles: {},
       decks: {},
     };
 
@@ -26,6 +33,13 @@ export const useTeamDataMap = (teamId: string | undefined): TeamDataMap => {
         return map;
       },
       {} as TeamDataMap['members'],
+    );
+
+    teamDataMap.profiles = Object.fromEntries(
+      members.map(member => [
+        member.userId,
+        { id: member.userId, displayName: member.name, image: member.image },
+      ]),
     );
 
     teamDataMap.decks = decks.reduce(

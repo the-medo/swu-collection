@@ -13,6 +13,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
 import { parseStatisticsTimestamp } from '@/components/app/statistics/lib/date.ts';
 import { ReplayButton } from '@/components/app/crossfire/ReplayButton.tsx';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 
 interface MatchResultBoxProps {
   match: MatchResult;
@@ -131,9 +132,17 @@ const MatchResultBox: React.FC<MatchResultBoxProps> = ({
             </div>
 
             <div className="flex absolute gap-2 left-1 right-1 top-14 justify-between text-[10px]">
-              <span className="bg-background/90 rounded p-0.5">{match.userName}</span>
+              <span className="max-w-[45%] rounded bg-background/90 p-0.5">
+                {match.user ? <UserDisplay user={match.user} /> : match.userName}
+              </span>
               {match.inTeamOppUserName && (
-                <span className="bg-background/90 rounded p-0.5">{match.inTeamOppUserName}</span>
+                <span className="max-w-[45%] rounded bg-background/90 p-0.5">
+                  {match.inTeamOpponent ? (
+                    <UserDisplay user={match.inTeamOpponent} />
+                  ) : (
+                    match.inTeamOppUserName
+                  )}
+                </span>
               )}
             </div>
             {showMetadata && (

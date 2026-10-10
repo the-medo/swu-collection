@@ -119,6 +119,8 @@ export const toOpponentPerspectiveMatchResult = (match: MatchResult): MatchResul
     userEventId: undefined,
     userName: match.inTeamOppUserName ?? match.userName,
     inTeamOppUserName: match.userName,
+    user: match.inTeamOpponent ?? match.user,
+    inTeamOpponent: match.user,
   };
 };
 

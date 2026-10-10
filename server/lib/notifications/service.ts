@@ -59,6 +59,7 @@ export const notifications = {
         >`CASE WHEN ${n.entityType} = 'discussion_comment' THEN ${commentTarget.url} END`,
         actorUserId: user.id,
         actorName: user.displayName,
+        actorImage: user.image,
         entityName: sql<
           string | null
         >`CASE WHEN ${n.type} = 'deck.favorite' THEN (SELECT d.name FROM deck d WHERE d.id = ${targetUuid})

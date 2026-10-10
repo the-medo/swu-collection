@@ -7,6 +7,8 @@ export const crossfireAccessChange = z.strictObject({ enabled: z.boolean() });
 export type CrossfireAccessUser = {
   id: string;
   name: string;
+  displayName?: string;
+  image?: string | null;
   email: string;
   roles: string[];
   enabled: boolean;

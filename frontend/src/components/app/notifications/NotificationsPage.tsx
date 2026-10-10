@@ -79,7 +79,11 @@ function Inbox() {
           </p>
         </div>
       )}
-      <NotificationList items={items} onAction={mutation.mutate} disabled={mutation.isPending} />
+      <NotificationList
+        items={items}
+        onAction={input => mutation.mutate(input)}
+        disabled={mutation.isPending}
+      />
       <div
         ref={observerTarget}
         role="status"

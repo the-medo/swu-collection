@@ -7,6 +7,7 @@ import {
 import type { DiscussionComment } from '../../../../../shared/types/discussions.ts';
 import PostDocumentForm, { type PostDraftState } from '../rich-text-editor/PostDocumentForm.tsx';
 import { useCommentComposerPortal } from './useCommentComposerPortal.ts';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 
 export type CommentComposer = PostDraftState & {
   id: string;
@@ -50,8 +51,13 @@ export default function DiscussionCommentComposer({
           data-comment-composer={composer.id}
         >
           {composer.replyTo && (
-            <p className="text-xs text-muted-foreground">
-              Replying to {composer.replyTo.author?.displayName ?? 'a comment'}
+            <p className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+              Replying to{' '}
+              {composer.replyTo.author ? (
+                <UserDisplay user={composer.replyTo.author} />
+              ) : (
+                'a comment'
+              )}
             </p>
           )}
           {composer.draft && <p className="text-xs text-muted-foreground">Editing your comment</p>}

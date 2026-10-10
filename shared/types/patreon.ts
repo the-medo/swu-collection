@@ -10,6 +10,7 @@ export type PatreonMemberView = {
   name: string | null;
   userId: string | null;
   displayName: string | null;
+  image?: string | null;
   patronStatus: string | null;
   lastChargeAt: string | null;
   lastChargeStatus: string | null;

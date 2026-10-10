@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ReportList, ReportPagination, ReportQueryError } from './ReportList';
 import { ModerationHistory } from './ModerationHistory';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import type { ModerationUser } from '../../../../../../shared/types/userReportModeration';
 
 export function RestrictionBadge({ user }: { user: ModerationUser }) {
@@ -58,16 +59,22 @@ function History({
         <>
           <div className="flex flex-wrap items-center gap-2">
             {profile.data.exists ? (
-              <Link
-                className="break-words font-medium text-primary hover:underline"
-                to="/users/$userId"
-                params={{ userId }}
-                search={{ userTab: 'reports' }}
-              >
-                {profile.data.displayName}
-              </Link>
+              <>
+                <UserDisplay user={profile.data} size="md" />
+                <Link
+                  className="text-xs text-primary hover:underline"
+                  to="/users/$userId"
+                  params={{ userId }}
+                  search={{ userTab: 'reports' }}
+                >
+                  View reports
+                </Link>
+              </>
             ) : (
-              <strong className="break-words">{fallbackName ?? profile.data.displayName}</strong>
+              <UserDisplay
+                user={{ displayName: fallbackName ?? profile.data.displayName, image: null }}
+                size="md"
+              />
             )}
             <RestrictionBadge user={profile.data} />
           </div>

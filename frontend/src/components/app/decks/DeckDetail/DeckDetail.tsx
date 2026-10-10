@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
-import { Link } from '@tanstack/react-router';
+import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import { useUser } from '@/hooks/useUser';
 import LoadingTitle from '../../global/LoadingTitle';
 import { Button } from '@/components/ui/button.tsx';
@@ -40,11 +40,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
   onArticleEditingChange,
 }) => {
   const user = useUser();
-  const { data, loading, error, owned, deckUserId, refetch } = useSetDeckInfo(
-    deckId,
-    adminEdit,
-    embedded,
-  );
+  const { data, loading, error, owned, refetch } = useSetDeckInfo(deckId, adminEdit, embedded);
   const contents = useGetDeckCards(embedded ? deckId : undefined, embedded);
   const [resolvedDeckId, setResolvedDeckId] = useState<string>();
   if (
@@ -119,12 +115,10 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
         <LoadingTitle
           mainTitle={data?.deck.name}
           subTitle={
-            <>
-              deck by{' '}
-              <Link to={`/users/$userId`} params={{ userId: deckUserId }}>
-                {data?.user.displayName}
-              </Link>
-            </>
+            <span className="inline-flex max-w-full items-center gap-1">
+              <span className="shrink-0">deck by</span>
+              {data?.user && <UserDisplay user={data.user} size="md" />}
+            </span>
           }
           loading={loading}
         />

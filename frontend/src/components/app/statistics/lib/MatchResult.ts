@@ -1,4 +1,5 @@
 import { GameResult } from '../../../../../../server/db/schema/game_result.ts';
+import type { PublicProfileSummary } from '@/components/app/users/UserProfilePopover.tsx';
 
 export type MatchResult = {
   id: string;
@@ -25,6 +26,8 @@ export type MatchResult = {
   inTeam?: boolean;
   inTeamOppUserName?: string;
   userName?: string;
+  user?: PublicProfileSummary;
+  inTeamOpponent?: PublicProfileSummary;
   deckId?: string;
   userEventId?: string;
   firstGameCreatedAt: string;

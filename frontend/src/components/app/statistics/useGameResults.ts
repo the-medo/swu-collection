@@ -168,12 +168,14 @@ export const useGameResults = (
           matchId,
           game,
           teamDataMap.members,
+          teamDataMap.profiles,
         );
       } else {
         if (game.inTeam) {
           const existingMatchUserId = matchesObject[matchId]?.games[0]?.userId;
           if (game.userId !== existingMatchUserId) {
             matchesObject[matchId].inTeamOppUserName = teamDataMap.members[game.userId];
+            matchesObject[matchId].inTeamOpponent = teamDataMap.profiles[game.userId];
             //we just want to divide this match into two, so it display correctly in statistics - so we create fake ID for this match
             matchId = `inTeam-${matchId}`;
 
@@ -182,8 +184,10 @@ export const useGameResults = (
                 matchId,
                 game,
                 teamDataMap.members,
+                teamDataMap.profiles,
               );
               matchesObject[matchId].inTeamOppUserName = teamDataMap.members[existingMatchUserId];
+              matchesObject[matchId].inTeamOpponent = teamDataMap.profiles[existingMatchUserId];
             }
           }
         }
