@@ -1,5 +1,5 @@
 {
-  "id": "95b878a0-b011-4ef4-8cf2-fe23b2ae915a",
+  "id": "fc4ad112-e608-41a8-9b32-035f2d8c3364",
   "prevId": "a00b5458-e55c-4872-86aa-2eb41e68b38c",
   "version": "7",
   "dialect": "postgresql",
@@ -6430,105 +6430,28 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.deck_comment": {
-      "name": "deck_comment",
+    "public.deck_discussion": {
+      "name": "deck_discussion",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
         "deck_id": {
           "name": "deck_id",
           "type": "uuid",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
-        "author_id": {
-          "name": "author_id",
-          "type": "text",
+        "discussion_id": {
+          "name": "discussion_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
-        },
-        "content": {
-          "name": "content",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "revision": {
-          "name": "revision",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 1
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
         }
       },
-      "indexes": {
-        "deck_comment_deck_created_idx": {
-          "name": "deck_comment_deck_created_idx",
-          "columns": [
-            {
-              "expression": "deck_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "created_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "deck_comment_author_idx": {
-          "name": "deck_comment_author_idx",
-          "columns": [
-            {
-              "expression": "author_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
-        "deck_comment_deck_id_deck_id_fk": {
-          "name": "deck_comment_deck_id_deck_id_fk",
-          "tableFrom": "deck_comment",
+        "deck_discussion_deck_id_deck_id_fk": {
+          "name": "deck_discussion_deck_id_deck_id_fk",
+          "tableFrom": "deck_discussion",
           "tableTo": "deck",
           "columnsFrom": [
             "deck_id"
@@ -6539,12 +6462,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "deck_comment_author_id_user_id_fk": {
-          "name": "deck_comment_author_id_user_id_fk",
-          "tableFrom": "deck_comment",
-          "tableTo": "user",
+        "deck_discussion_discussion_id_discussion_id_fk": {
+          "name": "deck_discussion_discussion_id_discussion_id_fk",
+          "tableFrom": "deck_discussion",
+          "tableTo": "discussion",
           "columnsFrom": [
-            "author_id"
+            "discussion_id"
           ],
           "columnsTo": [
             "id"
@@ -6554,7 +6477,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "deck_discussion_discussion_id_unique": {
+          "name": "deck_discussion_discussion_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "discussion_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -7980,6 +7911,228 @@
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.discussion": {
+      "name": "discussion",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.discussion_comment": {
+      "name": "discussion_comment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "discussion_id": {
+          "name": "discussion_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "depth": {
+          "name": "depth",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revision": {
+          "name": "revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "discussion_comment_discussion_id_idx": {
+          "name": "discussion_comment_discussion_id_idx",
+          "columns": [
+            {
+              "expression": "discussion_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "discussion_comment_thread_created_idx": {
+          "name": "discussion_comment_thread_created_idx",
+          "columns": [
+            {
+              "expression": "discussion_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "discussion_comment_author_idx": {
+          "name": "discussion_comment_author_idx",
+          "columns": [
+            {
+              "expression": "author_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "discussion_comment_discussion_id_discussion_id_fk": {
+          "name": "discussion_comment_discussion_id_discussion_id_fk",
+          "tableFrom": "discussion_comment",
+          "tableTo": "discussion",
+          "columnsFrom": [
+            "discussion_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "discussion_comment_author_id_user_id_fk": {
+          "name": "discussion_comment_author_id_user_id_fk",
+          "tableFrom": "discussion_comment",
+          "tableTo": "user",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "discussion_comment_parent_fk": {
+          "name": "discussion_comment_parent_fk",
+          "tableFrom": "discussion_comment",
+          "tableTo": "discussion_comment",
+          "columnsFrom": [
+            "discussion_id",
+            "parent_id"
+          ],
+          "columnsTo": [
+            "discussion_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "discussion_comment_depth_check": {
+          "name": "discussion_comment_depth_check",
+          "value": "\"discussion_comment\".\"depth\" BETWEEN 0 AND 5"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.entity_price": {

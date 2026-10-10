@@ -150,9 +150,6 @@ BEGIN
   IF to_regclass('public.deck_article') IS NOT NULL THEN
     TRUNCATE TABLE deck_article;
   END IF;
-  IF to_regclass('public.deck_comment') IS NOT NULL THEN
-    TRUNCATE TABLE deck_comment;
-  END IF;
   IF to_regclass('public.discussion_comment') IS NOT NULL THEN
     TRUNCATE TABLE discussion_comment;
   END IF;
@@ -524,11 +521,6 @@ BEGIN
   IF to_regclass('public.deck_article') IS NOT NULL THEN
     IF EXISTS (SELECT 1 FROM deck_article) THEN
       RAISE EXCEPTION 'Personal deck articles remain in the contributor dump.';
-    END IF;
-  END IF;
-  IF to_regclass('public.deck_comment') IS NOT NULL THEN
-    IF EXISTS (SELECT 1 FROM deck_comment) THEN
-      RAISE EXCEPTION 'Personal deck comments remain in the contributor dump.';
     END IF;
   END IF;
   IF EXISTS (SELECT 1 FROM deck_information WHERE comments_count <> 0) THEN
