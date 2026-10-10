@@ -6,6 +6,7 @@ import {
   postDocumentSchemas,
   postValidationMessage,
   toSimplePostDocument,
+  trimTrailingEmptyBlocks,
 } from './content.ts';
 
 const paragraph = (content: unknown[] = []) => ({
@@ -19,6 +20,156 @@ const text = (value = 'Hello') => ({ type: 'text', text: value, styles: { bold: 
 const document = (blocks: unknown[]) => ({ version: 1, blocks });
 
 describe('persisted post content', () => {
+  test('all editor modes trim trailing blanks while retaining interior spacing and meaningful nested content', () => {
+    const source = postDocumentSchema.parse(
+      document([
+        paragraph([text('First paragraph')]),
+        paragraph(),
+        {
+          ...paragraph([text('Last paragraph')]),
+          children: [paragraph([text('Nested text')]), paragraph([text('  ')])],
+        },
+        paragraph([{ type: 'link', href: 'https://swubase.com', content: [text(' ')] }]),
+        { ...paragraph(), type: 'heading', props: { level: 4 } },
+        paragraph([text('\n ')]),
+      ]),
+    );
+    const original = structuredClone(source);
+    const result = trimTrailingEmptyBlocks(source);
+    expect(result.blocks).toHaveLength(3);
+    expect(result.blocks[1]).toEqual(source.blocks[1]);
+    expect(result.blocks[2].children).toHaveLength(1);
+    expect(source).toEqual(original);
+    expect(trimTrailingEmptyBlocks(result)).toBe(result);
+    for (const schema of Object.values(postDocumentSchemas))
+      expect(schema.safeParse(result).success).toBe(true);
+  });
+
+  test('trimming preserves tables, media, dividers, checkboxes, widgets, and user mentions', () => {
+    const mention = {
+      type: 'swuInline',
+      props: {
+        data: JSON.stringify({ kind: 'mention', user: { id: 'player', displayName: 'Player' } }),
+      },
+    };
+    const blocks = [
+      { ...paragraph(), type: 'divider', props: {}, content: undefined },
+      {
+        ...paragraph(),
+        type: 'image',
+        props: { url: 'https://swubase.com/image.png' },
+        content: undefined,
+      },
+      {
+        ...paragraph(),
+        type: 'table',
+        content: { type: 'tableContent', columnWidths: [null], rows: [{ cells: [[]] }] },
+      },
+      { ...paragraph(), type: 'checkListItem', props: { checked: true } },
+      {
+        ...paragraph(),
+        type: 'swuBlock',
+        props: {
+          data: JSON.stringify({ kind: 'decklist', deck: { deckId: crypto.randomUUID() } }),
+        },
+        content: undefined,
+      },
+      paragraph([mention]),
+      { ...paragraph(), children: [paragraph([text('Nested content')]), paragraph()] },
+    ];
+    for (const block of blocks) {
+      const source = postDocumentSchema.parse(document([block, paragraph()]));
+      const result = trimTrailingEmptyBlocks(source);
+      expect(result.blocks).toHaveLength(1);
+      expect(result.blocks[0].id).toBe(source.blocks[0].id);
+      expect(isPostEmpty(result)).toBe(false);
+    }
+  });
+
+  test('all-empty documents retain one valid empty paragraph for clearing a guide or bio', () => {
+    const source = postDocumentSchema.parse(
+      document([{ ...paragraph(), type: 'heading', props: { level: 4 } }, paragraph([text(' ')])]),
+    );
+    const result = trimTrailingEmptyBlocks(source);
+    expect(result.blocks).toHaveLength(1);
+    expect(result.blocks[0].id).toBe(source.blocks[0].id);
+    expect(isPostEmpty(result)).toBe(true);
+    for (const schema of Object.values(postDocumentSchemas))
+      expect(schema.safeParse(result).success).toBe(true);
+  });
+
+  test('comments retain user mentions, card links and formatting in paragraphs, nested blocks and tables', () => {
+    const mention = {
+      type: 'swuInline',
+      props: {
+        data: JSON.stringify({ kind: 'mention', user: { id: 'player', displayName: 'Player' } }),
+      },
+    };
+    const cardLink = {
+      type: 'swuInline',
+      props: {
+        data: JSON.stringify({
+          kind: 'card-link',
+          card: { cardId: 'battlefield-marine', variantId: '', name: 'Battlefield Marine' },
+        }),
+      },
+    };
+    const comments = document([
+      {
+        ...paragraph([text(), mention, cardLink]),
+        children: [paragraph([mention, cardLink])],
+      },
+      {
+        ...paragraph(),
+        type: 'table',
+        content: {
+          type: 'tableContent',
+          columnWidths: [null, null],
+          rows: [
+            { cells: [[mention, cardLink], { type: 'tableCell', props: {}, content: [cardLink] }] },
+          ],
+        },
+      },
+      { ...paragraph([text()]), type: 'heading', props: { level: 4 } },
+    ]);
+    expect(postDocumentSchemas.comments.parse(comments)).toEqual(
+      postDocumentSchema.parse(comments),
+    );
+    expect(postDocumentSchemas.simple.safeParse(comments).success).toBe(false);
+  });
+
+  test('comments reject H1–H3 and block widgets at every placement while rich articles allow them', () => {
+    const deck = {
+      id: crypto.randomUUID(),
+      type: 'swuBlock',
+      props: { data: JSON.stringify({ kind: 'decklist', deck: { deckId: crypto.randomUUID() } }) },
+      children: [],
+    };
+    const image = {
+      ...deck,
+      props: {
+        data: JSON.stringify({
+          kind: 'card-image',
+          card: { cardId: 'battlefield-marine', variantId: '', name: 'Battlefield Marine' },
+          size: 'medium',
+        }),
+      },
+    };
+    for (const blocks of [
+      ...[1, 2, 3].flatMap(level => {
+        const heading = { ...paragraph([text()]), type: 'heading', props: { level } };
+        return [[heading], [{ ...paragraph(), children: [heading] }]];
+      }),
+      [deck],
+      [{ ...paragraph(), children: [deck] }],
+      [image],
+      [{ ...paragraph(), children: [image] }],
+    ]) {
+      expect(postDocumentSchemas.rich.safeParse(document(blocks)).success).toBe(true);
+      expect(postDocumentSchemas.comments.safeParse(document(blocks)).success).toBe(false);
+    }
+  });
+
   test('simple content retains formatting and links while rejecting every placement of SWUBASE nodes', () => {
     const mention = {
       type: 'swuInline',

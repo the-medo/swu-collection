@@ -12,6 +12,11 @@
   text-decoration-color: hsl(var(--primary));
   text-underline-offset: 3px;
 }
+.rte-page .rte-mention,
+.rte-page .rte-mention:visited {
+  color: hsl(var(--foreground));
+  text-decoration: none;
+}
 .rte-card-artwork {
   width: fit-content;
   max-width: 100%;
@@ -82,6 +87,10 @@
 
 .rte-editing .bn-editor {
   min-height: 240px;
+}
+.rte-editing[data-editor-type='comments'] .bn-editor {
+  min-height: 96px;
+  padding-block: 12px;
 }
 .rte-published .bn-editor {
   padding: 0;

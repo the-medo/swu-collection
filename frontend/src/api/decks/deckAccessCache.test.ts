@@ -7,6 +7,8 @@ import {
   updateDeckPricesCache,
 } from './deckAccessCache.ts';
 import { deckKeys } from './queryKeys.ts';
+import { deckDiscussionKeys } from './discussionKeys.ts';
+import { discussionKeys } from '../discussions/queryKeys.ts';
 
 test('fresh access is required for private viewers while owner/public editor caches stay stable', () => {
   const data = (visibility: number) =>
@@ -64,6 +66,15 @@ test('revocation clears cached private data and notifies active observers withou
   client.setQueryData(deckKeys.cards('deck', 'member'), privateCards);
   client.setQueryData(deckKeys.detail('inactive', 'member'), privateData);
   client.setQueryData(deckKeys.cards('inactive', 'member'), privateCards);
+  client.setQueryData(deckDiscussionKeys.article('deck', 'member'), privateData);
+  client.setQueryData(deckDiscussionKeys.comments('deck', 'member'), privateData);
+  client.setQueryData(deckDiscussionKeys.article('deck', 'owner'), privateData);
+  client.setQueryData(deckDiscussionKeys.ownComments('deck', 'member'), privateData);
+  client.setQueryData(deckDiscussionKeys.discussion('deck', 'member'), { id: 'discussion' });
+  client.setQueryData(discussionKeys.info('discussion', 'member'), { total: 2 });
+  client.setQueryData(discussionKeys.comments('discussion', 'member'), privateData);
+  client.setQueryData(discussionKeys.comments('discussion', 'member', 'parent'), privateData);
+  client.setQueryData(discussionKeys.comments('discussion', 'owner'), privateData);
   const observers = [deckKeys.detail('deck', 'member'), deckKeys.cards('deck', 'member')].map(
     queryKey =>
       new QueryObserver(client, {
@@ -79,6 +90,22 @@ test('revocation clears cached private data and notifies active observers withou
   try {
     expect(observers.every(observer => observer.getCurrentResult().data !== undefined)).toBe(true);
     await resetDeniedDeckAccess(client, 'deck', 'member');
+    expect(client.getQueryData(discussionKeys.info('discussion', 'member'))).toBeUndefined();
+    expect(client.getQueryData(discussionKeys.comments('discussion', 'member'))).toBeUndefined();
+    expect(
+      client.getQueryData(discussionKeys.comments('discussion', 'member', 'parent')),
+    ).toBeUndefined();
+    expect(client.getQueryData<DeckData>(discussionKeys.comments('discussion', 'owner'))).toEqual(
+      privateData,
+    );
+    expect(client.getQueryData(deckDiscussionKeys.article('deck', 'member'))).toBeUndefined();
+    expect(client.getQueryData(deckDiscussionKeys.comments('deck', 'member'))).toBeUndefined();
+    expect(client.getQueryData<DeckData>(deckDiscussionKeys.article('deck', 'owner'))).toEqual(
+      privateData,
+    );
+    expect(client.getQueryData<DeckData>(deckDiscussionKeys.ownComments('deck', 'member'))).toEqual(
+      privateData,
+    );
     for (const observer of observers) {
       expect(observer.getCurrentResult().isError).toBe(true);
       expect(observer.getCurrentResult().data).toBeUndefined();
@@ -92,6 +119,32 @@ test('revocation clears cached private data and notifies active observers withou
     expect(client.getQueryData<DeckData>(deckKeys.detail('deck', 'owner'))).toEqual(privateData);
   } finally {
     unsubscribe.forEach(stop => stop());
+    client.clear();
+  }
+});
+
+test('access resets retain only the viewer-scoped binding when deck metadata has expired', async () => {
+  const client = new QueryClient();
+  const memberBinding = deckDiscussionKeys.binding('deck', 'member');
+  const ownerBinding = deckDiscussionKeys.binding('deck', 'owner');
+  const memberInfo = discussionKeys.info('discussion', 'member');
+  const memberReplies = discussionKeys.comments('discussion', 'member', 'parent');
+  const ownerReplies = discussionKeys.comments('discussion', 'owner', 'parent');
+  const privateReplies = { pages: [{ data: ['Private reply'] }] };
+  client.setQueryData(memberBinding, 'discussion');
+  client.setQueryData(ownerBinding, 'discussion');
+  client.setQueryData(memberInfo, { id: 'discussion', total: 2 });
+  client.setQueryData(memberReplies, privateReplies);
+  client.setQueryData(ownerReplies, privateReplies);
+  try {
+    await resetDeniedDeckAccess(client, 'deck', 'member');
+    expect(client.getQueryData(memberInfo)).toBeUndefined();
+    expect(client.getQueryData(memberReplies)).toBeUndefined();
+    expect(client.getQueryData(ownerReplies)).toEqual(privateReplies);
+    expect(client.getQueryData(memberBinding)).toBe('discussion');
+    expect(client.getQueryData(ownerBinding)).toBe('discussion');
+    expect(client.getQueryData(deckDiscussionKeys.binding('deck'))).toBeUndefined();
+  } finally {
     client.clear();
   }
 });

@@ -5,6 +5,8 @@ import { InferResponseType } from 'hono';
 import { ZDeckUpdateRequest } from '../../../../types/ZDeck.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { deckKeys } from './queryKeys.ts';
+import { deckDiscussionKeys } from './discussionKeys.ts';
+import { invalidateBoundDiscussion } from './discussionCache.ts';
 
 export const usePutDeck = (deckId: string | undefined) => {
   const queryClient = useQueryClient();
@@ -32,6 +34,8 @@ export const usePutDeck = (deckId: string | undefined) => {
       return response.json() as unknown as { data: any };
     },
     onSuccess: result => {
+      void queryClient.invalidateQueries({ queryKey: deckDiscussionKeys.deck(result.data.id) });
+      void invalidateBoundDiscussion(queryClient, result.data.id);
       const $getDeck = api.deck[':id'].$get;
       type ResType = InferResponseType<typeof $getDeck>;
 

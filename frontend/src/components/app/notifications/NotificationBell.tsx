@@ -20,6 +20,7 @@ export function NotificationBell() {
 
 function BellPopover() {
   const [open, setOpen] = useState(false);
+  const navigating = useRef(false);
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
   const triggerRef = useCallback((button: HTMLButtonElement | null) => {
     // Keep the popup inside the mobile Sheet's scroll-lock boundary.
@@ -33,7 +34,13 @@ function BellPopover() {
   const label = unreadCount ? `Notifications, ${unreadCount} unread` : 'Notifications';
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={next => {
+        if (next) navigating.current = false;
+        setOpen(next);
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           ref={triggerRef}
@@ -55,6 +62,10 @@ function BellPopover() {
         </Button>
       </PopoverTrigger>
       <PopoverContent
+        onCloseAutoFocus={event => {
+          if (navigating.current) event.preventDefault();
+          navigating.current = false;
+        }}
         container={portalContainer ?? undefined}
         aria-label="Unread notifications"
         side={isMobile ? 'top' : 'right'}
@@ -65,6 +76,7 @@ function BellPopover() {
       >
         <NotificationPreview
           onNavigate={() => {
+            navigating.current = true;
             setOpen(false);
             setOpenMobile(false);
           }}

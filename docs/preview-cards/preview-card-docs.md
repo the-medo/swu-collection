@@ -215,6 +215,12 @@ Variant mapping prefers matching `variantName`. If no match is found, the varian
 
 After the transaction, affected deck information is refreshed best-effort with `updateDeckInformation()`. A failure there is logged but does not roll back the reference migration.
 
+Migration does not rewrite card links in saved comment documents. Comment saves
+validate links against the official and active-preview catalog, so archiving a
+preview or migrating it to a different card ID requires authors to replace its
+link with an available card before saving further comment edits. See
+[posts and discussions](../posts.md).
+
 The same file also contains a reconciliation runner. Without `--apply`, it reports active preview rows that match official cards by `cardId` or default variant `set + cardNo`; with `--apply`, it migrates matched rows.
 
 ## Operating Checklist

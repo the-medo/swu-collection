@@ -1,6 +1,6 @@
 import { useEffect, useId, useState, type MouseEvent } from 'react';
 import { Link } from '@tanstack/react-router';
-import { Archive, Gamepad2, Mail, MailOpen, Star, Users } from 'lucide-react';
+import { Archive, Gamepad2, Mail, MailOpen, MessageSquare, Star, Users } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button.tsx';
 import { cn } from '@/lib/utils.ts';
@@ -40,9 +40,10 @@ export function NotificationList({
       {items.map(item => {
         const invite = item.type === 'crossfire.invitation';
         const newMember = item.type === 'team.member.joined';
+        const comment = item.type === 'deck.comment' || item.type === 'comment.reply';
         const available =
           item.available && (!item.expiresAt || new Date(item.expiresAt).getTime() > now);
-        const Icon = invite ? Gamepad2 : newMember ? Users : Star;
+        const Icon = invite ? Gamepad2 : newMember ? Users : comment ? MessageSquare : Star;
         const descriptionId = `${listId}-${item.id}-description`;
         const createdAt = new Date(item.createdAt);
         const fullTimestamp = createdAt.toLocaleString();
@@ -120,10 +121,15 @@ export function NotificationList({
                   </>
                 ) : (
                   <>
-                    {' favorited '}
+                    {comment
+                      ? item.type === 'comment.reply'
+                        ? ' replied to your comment on '
+                        : ' commented on '
+                      : ' favorited '}
                     <Link
                       to="/decks/$deckId"
-                      params={{ deckId: item.entityId }}
+                      params={{ deckId: comment ? item.targetDeckId! : item.entityId }}
+                      search={comment ? { deckTab: 'article', deckComment: item.entityId } : {}}
                       className={linkClassName}
                       onClick={markRead}
                     >

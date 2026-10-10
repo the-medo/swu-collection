@@ -5,8 +5,9 @@ import { cardSearchParams } from '@/components/app/cards/AdvancedCardSearch/adva
 import Deckbuilder from '@/components/app/decks/Deckbuilder/Deckbuilder.tsx';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
 import { useEffect } from 'react';
+import { deckDetailSearchSchema } from '@/components/app/decks/DeckDetail/deckDetailSearch.ts';
 
-const searchParams = cardSearchParams.merge(
+const searchParams = cardSearchParams.merge(deckDetailSearchSchema).merge(
   z.object({
     deckbuilder: z.boolean().optional().default(false),
   }),
@@ -23,7 +24,7 @@ const fromRoute = {
 
 function RouteComponent() {
   const { deckId } = Route.useParams();
-  const { deckbuilder } = useSearch(fromRoute);
+  const { deckbuilder, deckTab, deckArticleEdit } = useSearch(fromRoute);
   const navigate = useNavigate(fromRoute);
 
   const { data: deckInfo, isPending } = useGetDeck(deckId);
@@ -37,7 +38,7 @@ function RouteComponent() {
         }),
       });
     }
-  }, [deckInfo?.deck.cardPoolId]);
+  }, [deckInfo?.deck.cardPoolId, navigate]);
 
   if (isPending) return <div>Loading...</div>;
 
@@ -45,5 +46,32 @@ function RouteComponent() {
     return <Deckbuilder deckId={deckId} />;
   }
 
-  return <DeckDetail adminEdit={true} deckId={deckId} deckbuilder={deckbuilder} />;
+  return (
+    <DeckDetail
+      key={deckId}
+      adminEdit={true}
+      deckId={deckId}
+      deckbuilder={deckbuilder}
+      tab={deckTab ?? 'decklist'}
+      onTabChange={tab => {
+        void navigate({
+          resetScroll: false,
+          search: previous => ({
+            ...previous,
+            deckTab: tab === 'decklist' ? undefined : tab,
+            deckArticleEdit: undefined,
+            deckComment: undefined,
+          }),
+        });
+      }}
+      articleEditing={deckArticleEdit ?? false}
+      onArticleEditingChange={editing => {
+        void navigate({
+          resetScroll: false,
+          replace: true,
+          search: previous => ({ ...previous, deckArticleEdit: editing || undefined }),
+        });
+      }}
+    />
+  );
 }

@@ -11,6 +11,8 @@ import DeckContents from '../DeckContents/DeckContents';
 import { useSetDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { Helmet } from 'react-helmet-async';
 import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
+import OwnDeckComments from '../DeckDiscussion/OwnDeckComments.tsx';
+import type { DeckDetailTab } from './deckDetailSearch.ts';
 import {
   deckBuilderSourceLabels,
   getDeckBuilderDeckLink,
@@ -21,6 +23,10 @@ interface DeckDetailProps {
   deckId: string;
   deckbuilder?: boolean;
   embedded?: boolean;
+  tab?: DeckDetailTab;
+  onTabChange?: (tab: DeckDetailTab) => void;
+  articleEditing?: boolean;
+  onArticleEditingChange?: (editing: boolean) => void;
 }
 
 const DeckDetail: React.FC<DeckDetailProps> = ({
@@ -28,6 +34,10 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
   deckId,
   deckbuilder,
   embedded = false,
+  tab,
+  onTabChange,
+  articleEditing,
+  onArticleEditingChange,
 }) => {
   const user = useUser();
   const { data, loading, error, owned, deckUserId, refetch } = useSetDeckInfo(
@@ -82,6 +92,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
           title={`Deck not found`}
           description={`The deck you are looking for does not exist. It is possible that it was deleted or it is not public.`}
         />
+        {!embedded && <OwnDeckComments key={deckId} deckId={deckId} />}
       </>
     );
   }
@@ -136,8 +147,22 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
           Imported from {deckBuilderSourceLabels[data.importSource.source]}
         </a>
       )}
-      <div className="flex grow flex-col gap-0">
-        <DeckContents deckId={deckId} embedded={embedded} />
+      <div className="min-w-0 grow">
+        <DeckContents
+          deckId={deckId}
+          embedded={embedded}
+          tab={tab}
+          onTabChange={onTabChange}
+          discussion={
+            !embedded && !deckbuilder && data && !error
+              ? {
+                  ownerId: data.deck.userId,
+                  editing: articleEditing ?? false,
+                  onEditingChange: onArticleEditingChange,
+                }
+              : undefined
+          }
+        />
       </div>
     </>
   );

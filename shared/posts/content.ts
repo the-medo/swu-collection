@@ -208,7 +208,7 @@ export const postDocumentSchema = boundedJson
     visit(document.blocks, 1);
   });
 export type PostDocument = z.infer<typeof postDocumentSchema>;
-export type EditorType = 'simple' | 'rich';
+export type EditorType = 'simple' | 'rich' | 'comments';
 
 export function hasSwubaseContent(document: PostDocument): boolean {
   const visit = (value: unknown): boolean => {
@@ -224,6 +224,38 @@ export const postDocumentSchemas = {
     message: 'SWUBASE widgets and mentions are not available in this editor.',
   }),
   rich: postDocumentSchema,
+  comments: postDocumentSchema.superRefine((document, ctx) => {
+    const visit = (value: unknown, path: (string | number)[]) => {
+      if (!value || typeof value !== 'object') return;
+      if ('type' in value) {
+        if (value.type === 'heading' && 'props' in value) {
+          const props = value.props as { level: number };
+          if (props.level <= 3)
+            ctx.addIssue({
+              code: 'custom',
+              path,
+              message: 'H1–H3 headings are not available in comments.',
+            });
+        }
+        if (
+          value.type === 'swuBlock' ||
+          (value.type === 'swuInline' &&
+            'props' in value &&
+            !['mention', 'card-link'].includes(
+              JSON.parse((value.props as { data: string }).data).kind,
+            ))
+        )
+          ctx.addIssue({
+            code: 'custom',
+            path,
+            message: 'Comments support user mentions and card links only.',
+          });
+      }
+      for (const [key, child] of Object.entries(value))
+        visit(child, [...path, Array.isArray(value) ? Number(key) : key]);
+    };
+    visit(document.blocks, ['blocks']);
+  }),
 } satisfies Record<EditorType, typeof postDocumentSchema>;
 
 // Older bios can contain rich widgets. Preserve their labels, prose, links, and
@@ -288,6 +320,47 @@ export const emptyPostDocument = (): PostDocument => ({
   version: 1,
   blocks: [{ id: crypto.randomUUID(), type: 'paragraph', props: {}, content: [], children: [] }],
 });
+
+// Normalize persisted/displayed content without removing the paragraph the
+// live editor needs for typing. Keep interior spacing and structural blocks.
+export function trimTrailingEmptyBlocks(document: PostDocument): PostDocument {
+  const empty = (block: PostBlock) => {
+    if (block.children.length || !('content' in block) || !Array.isArray(block.content))
+      return false;
+    if (block.type === 'checkListItem') return false;
+    return block.content.every(item =>
+      item.type === 'text'
+        ? !item.text.trim()
+        : item.type === 'link' && item.content.every(text => !text.text.trim()),
+    );
+  };
+  const trim = (blocks: PostBlock[]): PostBlock[] => {
+    const normalized = blocks.map(block => {
+      const children = trim(block.children);
+      return children === block.children ? block : { ...block, children };
+    });
+    let end = normalized.length;
+    while (end && empty(normalized[end - 1])) end--;
+    if (end !== normalized.length) return normalized.slice(0, end);
+    return normalized.every((block, index) => block === blocks[index]) ? blocks : normalized;
+  };
+  const blocks = trim(document.blocks);
+  if (!blocks.length)
+    return {
+      ...document,
+      blocks: [
+        {
+          id: document.blocks[0]?.id ?? crypto.randomUUID(),
+          type: 'paragraph',
+          props: {},
+          content: [],
+          children: [],
+        },
+      ],
+    };
+  return blocks === document.blocks ? document : { ...document, blocks };
+}
+
 export function isPostEmpty(document: PostDocument) {
   return document.blocks.every(
     block =>

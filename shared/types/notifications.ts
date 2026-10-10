@@ -4,12 +4,16 @@ import { messageChangeSchema, type MessageChange } from './messages.ts';
 export const notificationTypes = [
   'crossfire.invitation',
   'deck.favorite',
+  'deck.comment',
+  'comment.reply',
   'team.member.joined',
 ] as const;
 export type NotificationType = (typeof notificationTypes)[number];
 export const notificationDefinitions = {
   'crossfire.invitation': { label: 'Crossfire game invitations', mandatory: true },
   'deck.favorite': { label: 'Deck favorites', mandatory: false },
+  'deck.comment': { label: 'Deck comments', mandatory: false },
+  'comment.reply': { label: 'Comment replies', mandatory: false },
   'team.member.joined': { label: 'New team members', mandatory: false },
 } as const;
 export const notificationCursorSchema = z.strictObject({
@@ -27,6 +31,7 @@ export interface NotificationItem {
   actorUserId: string | null;
   actorName: string | null;
   entityName: string | null;
+  targetDeckId?: string | null;
   createdAt: string;
   readAt: string | null;
   archivedAt: string | null;

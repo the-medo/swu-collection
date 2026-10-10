@@ -2,7 +2,7 @@ import { eq, gte, or, sql, type SQL } from 'drizzle-orm';
 import { deck } from '../../db/schema/deck.ts';
 
 // Each request checks current grants and membership. UNION also bounds malformed cyclic trees.
-export function sharedDeckFolderAccess(folderId: string | SQL, viewerId?: string) {
+export function sharedDeckFolderAccess(folderId: string | SQL, viewerId?: string | SQL) {
   const teamAccess = viewerId
     ? sql`EXISTS (
         SELECT 1 FROM team_member viewer
@@ -23,7 +23,7 @@ export function sharedDeckFolderAccess(folderId: string | SQL, viewerId?: string
   )`;
 }
 
-export function deckReadAccess(viewerId?: string) {
+export function deckReadAccess(viewerId?: string | SQL) {
   const folderAccess = sharedDeckFolderAccess(sql`membership.folder_id`, viewerId);
   return or(
     gte(deck.public, 1),

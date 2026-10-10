@@ -16,6 +16,8 @@ type NewNotification = Pick<
 const preferenceKeys: Record<NotificationType, keyof NotificationSettingsValues | null> = {
   'crossfire.invitation': null,
   'deck.favorite': 'notifications_deck_favorites',
+  'deck.comment': 'notifications_deck_comments',
+  'comment.reply': 'notifications_comment_replies',
   'team.member.joined': 'notifications_team_members',
 };
 

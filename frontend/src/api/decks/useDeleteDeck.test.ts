@@ -6,6 +6,8 @@ import {
   removeDecksFromListCache,
 } from './deckDeletionCache.ts';
 import { getNextDecksPageParam } from './useGetDecks.ts';
+import { deckDiscussionKeys } from './discussionKeys.ts';
+import { discussionKeys } from '../discussions/queryKeys.ts';
 
 type TestDeckListCache = {
   pages: {
@@ -107,10 +109,30 @@ describe('deck deletion cache update', () => {
     queryClient.setQueryData(['deck-content', 'deleted-deck', 'viewer'], { data: [] });
     queryClient.setQueryData(['decks-bulk', 'deleted-deck'], true);
     queryClient.setQueryData(['card-pool', 'pool-1'], { id: 'pool-1' });
+    queryClient.setQueryData(deckDiscussionKeys.discussion('deleted-deck', 'viewer'), {
+      id: 'deleted-discussion',
+    });
+    queryClient.setQueryData(discussionKeys.info('deleted-discussion', 'viewer'), { total: 2 });
+    queryClient.setQueryData(discussionKeys.comments('deleted-discussion', 'viewer', 'parent'), {
+      data: [],
+    });
+    queryClient.setQueryData(discussionKeys.info('kept-discussion', 'viewer'), { total: 1 });
 
     applyDeletedDeckCaches(queryClient, ['deleted-deck'], ['pool-1']);
 
     expect(queryClient.getQueryData(['deck', 'deleted-deck'])).toBeUndefined();
+    expect(
+      queryClient.getQueryData(deckDiscussionKeys.discussion('deleted-deck', 'viewer')),
+    ).toBeUndefined();
+    expect(
+      queryClient.getQueryData(discussionKeys.info('deleted-discussion', 'viewer')),
+    ).toBeUndefined();
+    expect(
+      queryClient.getQueryData(discussionKeys.comments('deleted-discussion', 'viewer', 'parent')),
+    ).toBeUndefined();
+    expect(queryClient.getQueryData(discussionKeys.info('kept-discussion', 'viewer'))).toEqual({
+      total: 1,
+    });
     expect(queryClient.getQueryData(['deck-content', 'deleted-deck'])).toBeUndefined();
     expect(queryClient.getQueryData(['deck', 'deleted-deck', 'viewer'])).toBeUndefined();
     expect(queryClient.getQueryData(['deck-content', 'deleted-deck', 'viewer'])).toBeUndefined();

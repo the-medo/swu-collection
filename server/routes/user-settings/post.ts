@@ -50,6 +50,8 @@ export const userSettingsPostRoute = new Hono<AuthExtension>().post('/', async c
     }
     if (
       Object.prototype.hasOwnProperty.call(settings, 'notifications_deck_favorites') ||
+      Object.prototype.hasOwnProperty.call(settings, 'notifications_deck_comments') ||
+      Object.prototype.hasOwnProperty.call(settings, 'notifications_comment_replies') ||
       Object.prototype.hasOwnProperty.call(settings, 'notifications_team_members')
     )
       await notifyUser(tx, user.id, 'user.settings.changed');

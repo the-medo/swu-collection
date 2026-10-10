@@ -143,6 +143,20 @@ $user_achievements$;
 -- Posts contain arbitrary personal prose and references, even for opted-in users.
 TRUNCATE TABLE post;
 
+-- Discussion prose is personal content even when its resource is retained. Older backups
+-- may predate these tables.
+DO $deck_discussion$
+BEGIN
+  IF to_regclass('public.deck_article') IS NOT NULL THEN
+    TRUNCATE TABLE deck_article;
+  END IF;
+  IF to_regclass('public.discussion_comment') IS NOT NULL THEN
+    TRUNCATE TABLE discussion_comment;
+  END IF;
+END
+$deck_discussion$;
+UPDATE deck_information SET comments_count = 0;
+
 -- Folder names and hierarchy are private organisation metadata, even for opted-in decks.
 TRUNCATE TABLE deck_folder_share, deck_folder_deck, deck_folder;
 
@@ -502,6 +516,20 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM post) THEN
     RAISE EXCEPTION 'Personal post content remains in the contributor dump.';
+  END IF;
+
+  IF to_regclass('public.deck_article') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM deck_article) THEN
+      RAISE EXCEPTION 'Personal deck articles remain in the contributor dump.';
+    END IF;
+  END IF;
+  IF EXISTS (SELECT 1 FROM deck_information WHERE comments_count <> 0) THEN
+    RAISE EXCEPTION 'Personal deck comment counts remain in the contributor dump.';
+  END IF;
+  IF to_regclass('public.discussion_comment') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM discussion_comment) THEN
+      RAISE EXCEPTION 'Personal discussion comments remain in the contributor dump.';
+    END IF;
   END IF;
 
   IF EXISTS (SELECT 1 FROM deck_folder) OR EXISTS (SELECT 1 FROM deck_folder_deck)
