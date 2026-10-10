@@ -1,21 +1,25 @@
 import { Button } from '@/components/ui/button.tsx';
 import { useUser } from '@/hooks/useUser.ts';
-import { useGetOwnDeckComments } from '@/api/decks/useGetOwnDeckComments.ts';
-import CommentCard from '../../discussions/CommentCard.tsx';
-import { useQueryClient } from '@tanstack/react-query';
-import { invalidateDeckDiscussion } from '@/api/decks/discussionCache.ts';
+import { useOwnDiscussionComments } from '@/api/discussions/useOwnDiscussionComments.ts';
+import CommentCard from './CommentCard.tsx';
+import type { DiscussionTarget } from '../../../../../shared/types/discussions.ts';
 import { cn } from '@/lib/utils.ts';
 
-export default function OwnDeckComments({
-  deckId,
+export default function OwnDiscussionComments({
+  target,
+  onChanged,
+  title = 'Your comments',
+  description = 'You can remove your comments even though this discussion is unavailable.',
   embedded = false,
 }: {
-  deckId: string;
+  target: DiscussionTarget;
+  onChanged?: () => void;
+  title?: string;
+  description?: string;
   embedded?: boolean;
 }) {
   const user = useUser();
-  const client = useQueryClient();
-  const query = useGetOwnDeckComments(deckId);
+  const query = useOwnDiscussionComments(target);
   if (!user) return null;
   if (query.isPending)
     return (
@@ -37,26 +41,17 @@ export default function OwnDeckComments({
   const Heading = embedded ? 'h4' : 'h3';
   return (
     <section
-      aria-label="Your comments on this deck"
+      aria-label={title}
       className={cn(
         'min-w-0 space-y-4',
         !embedded && 'mx-auto my-6 w-full max-w-3xl rounded-lg border bg-card p-4',
       )}
     >
-      <Heading className="mb-0! text-base!">Your comments on this deck</Heading>
-      <p className="text-sm text-muted-foreground">
-        You can remove your comments even though this deck is unavailable.
-      </p>
+      <Heading className="mb-0! text-base!">{title}</Heading>
+      <p className="text-sm text-muted-foreground">{description}</p>
       <div className="divide-y">
         {comments.map(comment => (
-          <CommentCard
-            key={comment.id}
-            comment={comment}
-            editing={false}
-            onChanged={() => {
-              void invalidateDeckDiscussion(client, deckId);
-            }}
-          />
+          <CommentCard key={comment.id} comment={comment} editing={false} onChanged={onChanged} />
         ))}
       </div>
       {query.hasNextPage && (

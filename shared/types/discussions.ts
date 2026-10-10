@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { isPostEmpty, postDocumentSchemas, type PostDocument } from '../posts/content.ts';
 
+export const discussionTypes = ['deck'] as const;
+export type DiscussionType = (typeof discussionTypes)[number];
+export type DiscussionTarget =
+  | { discussionId: string }
+  | { attachmentType: DiscussionType; attachmentId: string };
+
 export const MAX_COMMENT_BYTES = 16_000;
 export const commentContentSchema = postDocumentSchemas.comments
   .refine(content => !isPostEmpty(content), 'Write a comment before posting.')
@@ -70,3 +76,23 @@ export type DiscussionComment = {
 export type CommentsPage = { data: DiscussionComment[]; total: number; nextCursor: string | null };
 export type DiscussionInfo = { id: string; canModerate: boolean; total: number };
 export type DiscussionThread = { path: DiscussionComment[] };
+
+// The author-only view can resolve an attachment even after read access was revoked.
+export const ownCommentsQuerySchema = z.union([
+  z
+    .object({
+      discussionId: z.guid(),
+      cursor: commentsQuerySchema.shape.cursor,
+      limit: commentsQuerySchema.shape.limit,
+    })
+    .strict(),
+  z
+    .object({
+      attachmentType: z.enum(discussionTypes),
+      // Resource IDs belong to their attachment type (UUIDs, card IDs, etc.).
+      attachmentId: z.string().min(1).max(200),
+      cursor: commentsQuerySchema.shape.cursor,
+      limit: commentsQuerySchema.shape.limit,
+    })
+    .strict(),
+]);

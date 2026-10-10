@@ -27,7 +27,10 @@ test('comment mutations do not trigger a second metadata fetch through the deck 
   const binding = deckDiscussionKeys.discussion('deck', 'reader');
   const bindingId = deckDiscussionKeys.binding('deck', 'reader');
   const info = discussionKeys.info('discussion', 'reader');
-  const own = deckDiscussionKeys.ownComments('deck', 'reader');
+  const own = discussionKeys.ownComments(
+    { attachmentType: 'deck', attachmentId: 'deck' },
+    'reader',
+  );
   const article = deckDiscussionKeys.article('deck', 'reader');
   client.setQueryData(binding, { id: 'discussion', total: 2, canModerate: false });
   client.setQueryData(bindingId, 'discussion');
@@ -39,7 +42,8 @@ test('comment mutations do not trigger a second metadata fetch through the deck 
     expect(client.getQueryState(binding)?.isInvalidated).toBe(false);
     expect(client.getQueryState(bindingId)?.isInvalidated).toBe(false);
     expect(client.getQueryState(info)?.isInvalidated).toBe(false);
-    expect(client.getQueryState(own)?.isInvalidated).toBe(true);
+    // Author-only comment caches are now owned by discussion mutations.
+    expect(client.getQueryState(own)?.isInvalidated).toBe(false);
     expect(client.getQueryState(article)?.isInvalidated).toBe(true);
     await invalidateDeckDiscussion(client, 'deck', true);
     expect(client.getQueryState(binding)?.isInvalidated).toBe(false);
@@ -56,16 +60,26 @@ test('deleting a deck clears discussion caches even when only its ID binding rem
   const comments = discussionKeys.comments('discussion', 'reader');
   const ownerComments = discussionKeys.comments('discussion', 'owner');
   const unrelatedComments = discussionKeys.comments('other-discussion', 'reader');
+  const ownById = discussionKeys.ownComments({ discussionId: 'discussion' }, 'reader');
+  const ownByAttachment = discussionKeys.ownComments(
+    { attachmentType: 'deck', attachmentId: 'deck' },
+    'reader',
+  );
+  const otherOwn = discussionKeys.ownComments({ discussionId: 'other-discussion' }, 'reader');
   client.setQueryData(binding, 'discussion');
   client.setQueryData(comments, { pages: [{ data: ['Reply'] }] });
   client.setQueryData(ownerComments, { pages: [{ data: ['Reply'] }] });
   client.setQueryData(unrelatedComments, { pages: [] });
+  for (const key of [ownById, ownByAttachment, otherOwn]) client.setQueryData(key, { pages: [] });
   try {
     applyDeletedDeckCaches(client, ['deck'], []);
     expect(client.getQueryData(binding)).toBeUndefined();
     expect(client.getQueryData(comments)).toBeUndefined();
     expect(client.getQueryData(ownerComments)).toBeUndefined();
-    expect(client.getQueryData(unrelatedComments)).toEqual({ pages: [] });
+    expect(client.getQueryData<{ pages: unknown[] }>(unrelatedComments)).toEqual({ pages: [] });
+    expect(client.getQueryData(ownById)).toBeUndefined();
+    expect(client.getQueryData(ownByAttachment)).toBeUndefined();
+    expect(client.getQueryData<{ pages: unknown[] }>(otherOwn)).toEqual({ pages: [] });
   } finally {
     client.clear();
   }

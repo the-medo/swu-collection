@@ -9,21 +9,14 @@ import type {
 } from '../../../shared/types/notifications.ts';
 import { notifyUser } from './publish.ts';
 import { canReceiveNotifications } from './policy.ts';
-import { deckReadAccess } from '../decks/deckFolderAccess.ts';
-import { deck } from '../../db/schema/deck.ts';
-import { deckDiscussion } from '../../db/schema/deck_discussion.ts';
-import { discussionComment } from '../../db/schema/discussion.ts';
+import { commentNotificationTarget } from '../discussions/notifications.ts';
 
 // Only UUID-backed targets exist today. Guard the cast so future target kinds
 // cannot break reads of older notifications.
 const targetUuid = sql`CASE WHEN ${n.entityId} ~* '^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$' THEN ${n.entityId}::uuid END`;
 const deckTarget = sql`EXISTS (SELECT 1 FROM deck d WHERE d.id = ${targetUuid} AND d.user_id = ${n.recipientUserId})`;
 const teamTarget = sql`EXISTS (SELECT 1 FROM team_member m WHERE m.team_id = ${targetUuid} AND m.user_id = ${n.recipientUserId})`;
-const commentTarget = sql`EXISTS (SELECT 1 FROM ${discussionComment}
-  JOIN ${deckDiscussion} ON ${deckDiscussion.discussionId} = ${discussionComment.discussionId}
-  JOIN ${deck} ON ${deck.id} = ${deckDiscussion.deckId}
-  WHERE ${discussionComment.id} = ${targetUuid} AND ${discussionComment.deletedAt} IS NULL
-    AND ${deckReadAccess(sql`${n.recipientUserId}`)})`;
+const commentTarget = commentNotificationTarget(targetUuid, sql`${n.recipientUserId}`);
 const invitationTarget = sql`EXISTS (SELECT 1 FROM play.invitations i JOIN play.lobbies l ON l.id = i.lobby_id
   WHERE i.lobby_id = ${n.entityId} AND i.recipient_user_id = ${n.recipientUserId})`;
 const visible = (userId: string, crossfire: boolean) =>
@@ -34,7 +27,7 @@ const visible = (userId: string, crossfire: boolean) =>
     sql`((${n.type} = 'deck.favorite' AND ${n.entityType} = 'deck' AND ${deckTarget})
     OR (${crossfire} AND ${n.type} = 'crossfire.invitation' AND ${n.entityType} = 'crossfire_lobby' AND ${invitationTarget})
     OR (${n.type} = 'team.member.joined' AND ${n.entityType} = 'team' AND ${teamTarget})
-    OR (${n.type} IN ('deck.comment', 'comment.reply') AND ${n.entityType} = 'discussion_comment' AND ${commentTarget}))`,
+    OR (${n.type} IN ('deck.comment', 'comment.reply') AND ${n.entityType} = 'discussion_comment' AND ${commentTarget.visible}))`,
   );
 
 export const notifications = {
@@ -57,19 +50,20 @@ export const notifications = {
         id: n.id,
         type: n.type,
         entityId: n.entityId,
+        // Keep the previous field during rollout; new clients follow targetUrl.
         targetDeckId: sql<
           string | null
-        >`CASE WHEN ${n.type} IN ('deck.comment', 'comment.reply') THEN
-          (SELECT ${deckDiscussion.deckId}::text FROM ${discussionComment} JOIN ${deckDiscussion} ON ${deckDiscussion.discussionId} = ${discussionComment.discussionId} WHERE ${discussionComment.id} = ${targetUuid}) END`,
+        >`CASE WHEN ${n.entityType} = 'discussion_comment' THEN ${commentTarget.legacyDeckId} END`,
+        targetUrl: sql<
+          string | null
+        >`CASE WHEN ${n.entityType} = 'discussion_comment' THEN ${commentTarget.url} END`,
         actorUserId: user.id,
         actorName: user.displayName,
         entityName: sql<
           string | null
         >`CASE WHEN ${n.type} = 'deck.favorite' THEN (SELECT d.name FROM deck d WHERE d.id = ${targetUuid})
           WHEN ${n.type} = 'team.member.joined' THEN (SELECT t.name FROM team t WHERE t.id = ${targetUuid})
-          WHEN ${n.type} IN ('deck.comment', 'comment.reply') THEN (SELECT ${deck.name} FROM ${discussionComment}
-            JOIN ${deckDiscussion} ON ${deckDiscussion.discussionId} = ${discussionComment.discussionId}
-            JOIN ${deck} ON ${deck.id} = ${deckDiscussion.deckId} WHERE ${discussionComment.id} = ${targetUuid}) END`,
+          WHEN ${n.type} IN ('deck.comment', 'comment.reply') THEN ${commentTarget.name} END`,
         createdAt: sql<string>`to_char(${n.createdAt} AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`,
         readAt: n.readAt,
         archivedAt: n.archivedAt,

@@ -11,7 +11,7 @@ import DeckContents from '../DeckContents/DeckContents';
 import { useSetDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { Helmet } from 'react-helmet-async';
 import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
-import OwnDeckComments from '../DeckDiscussion/OwnDeckComments.tsx';
+import OwnDiscussionComments from '../../discussions/OwnDiscussionComments.tsx';
 import type { DeckDetailTab } from './deckDetailSearch.ts';
 import {
   deckBuilderSourceLabels,
@@ -92,7 +92,14 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
           title={`Deck not found`}
           description={`The deck you are looking for does not exist. It is possible that it was deleted or it is not public.`}
         />
-        {!embedded && <OwnDeckComments key={deckId} deckId={deckId} />}
+        {!embedded && (
+          <OwnDiscussionComments
+            key={deckId}
+            target={{ attachmentType: 'deck', attachmentId: deckId }}
+            title="Your comments on this deck"
+            description="You can remove your comments even though this deck is unavailable."
+          />
+        )}
       </>
     );
   }

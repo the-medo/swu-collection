@@ -2,7 +2,7 @@ import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { deckFolderKeys } from '@/api/deck-folders/queryKeys.ts';
 import { deckDiscussionKeys } from './discussionKeys.ts';
 import { cachedDeckDiscussionIds } from './discussionCache.ts';
-import { discussionKeys } from '../discussions/queryKeys.ts';
+import { removeDiscussionCaches } from '../discussions/cache.ts';
 
 type DeckListCache = InfiniteData<{
   data?: { deck?: { id?: string } }[];
@@ -48,8 +48,10 @@ export const applyDeletedDeckCaches = (
   void queryClient.invalidateQueries({ queryKey: deckFolderKeys.all });
 
   deckIds.forEach(deckId => {
-    for (const id of cachedDeckDiscussionIds(queryClient, deckId))
-      queryClient.removeQueries({ queryKey: discussionKeys.discussion(id) });
+    removeDiscussionCaches(queryClient, cachedDeckDiscussionIds(queryClient, deckId), {
+      attachmentType: 'deck',
+      attachmentId: deckId,
+    });
     queryClient.removeQueries({ queryKey: deckDiscussionKeys.deck(deckId) });
     queryClient.removeQueries({ queryKey: ['deck', deckId], exact: false });
     queryClient.removeQueries({ queryKey: ['deck-content', deckId], exact: false });

@@ -6,13 +6,14 @@ import { z } from 'zod';
 import type { AuthExtension } from '../auth/auth.ts';
 import {
   commentsQuerySchema,
+  ownCommentsQuerySchema,
   createCommentSchema,
   updateCommentSchema,
   MAX_COMMENT_BYTES,
 } from '../../shared/types/discussions.ts';
 import { postValidationMessage } from '../../shared/posts/content.ts';
 import * as service from '../lib/discussions/service.ts';
-import { discussionPolicy } from '../lib/discussions/access.ts';
+import { resolveDiscussionPolicy } from '../lib/discussions/attachments.ts';
 const params = z.object({ id: z.guid() });
 const commentParams = params.extend({ commentId: z.guid() });
 const privateResponse = createMiddleware<AuthExtension>(async (c, next) => {
@@ -29,10 +30,15 @@ const size = bodyLimit({
 });
 export const discussionsRoute = new Hono<AuthExtension>()
   .use('*', privateResponse)
+  .get('/own-comments', signedIn, zValidator('query', ownCommentsQuerySchema), async c => {
+    const { cursor, limit, ...target } = c.req.valid('query');
+    const result = await service.getOwnCommentsForTarget(target, c.get('user')!.id, cursor, limit);
+    return c.json(result.data);
+  })
   .get('/:id', zValidator('param', params), async c => {
     const result = await service.getDiscussionInfo(
       c.req.valid('param').id,
-      discussionPolicy(c.get('user')?.id),
+      await resolveDiscussionPolicy(c.req.valid('param').id, c.get('user')?.id),
     );
     if ('error' in result) return c.json({ error: result.error }, result.status);
     return c.json({ data: result.data });
@@ -45,7 +51,7 @@ export const discussionsRoute = new Hono<AuthExtension>()
       const { cursor, limit, parentId } = c.req.valid('query');
       const result = await service.getComments(
         c.req.valid('param').id,
-        discussionPolicy(c.get('user')?.id),
+        await resolveDiscussionPolicy(c.req.valid('param').id, c.get('user')?.id),
         cursor,
         limit,
         parentId,
@@ -68,7 +74,7 @@ export const discussionsRoute = new Hono<AuthExtension>()
         c.req.valid('param').id,
         c.get('user')!.id,
         content,
-        discussionPolicy(c.get('user')!.id),
+        await resolveDiscussionPolicy(c.req.valid('param').id, c.get('user')!.id),
         parentId,
       );
       if ('error' in result) return c.json({ error: result.error }, result.status);
@@ -77,7 +83,11 @@ export const discussionsRoute = new Hono<AuthExtension>()
   )
   .get('/:id/comments/:commentId', zValidator('param', commentParams), async c => {
     const { id, commentId } = c.req.valid('param');
-    const result = await service.getComment(id, commentId, discussionPolicy(c.get('user')?.id));
+    const result = await service.getComment(
+      id,
+      commentId,
+      await resolveDiscussionPolicy(c.req.valid('param').id, c.get('user')?.id),
+    );
     if ('error' in result) return c.json({ error: result.error }, result.status);
     return c.json({ data: result.data });
   })
@@ -86,7 +96,7 @@ export const discussionsRoute = new Hono<AuthExtension>()
     const result = await service.getCommentThread(
       id,
       commentId,
-      discussionPolicy(c.get('user')?.id),
+      await resolveDiscussionPolicy(c.req.valid('param').id, c.get('user')?.id),
     );
     if ('error' in result) return c.json({ error: result.error }, result.status);
     return c.json({ data: result.data });
@@ -108,7 +118,7 @@ export const discussionsRoute = new Hono<AuthExtension>()
         c.get('user')!.id,
         content,
         revision,
-        discussionPolicy(c.get('user')!.id),
+        await resolveDiscussionPolicy(c.req.valid('param').id, c.get('user')!.id),
       );
       if ('error' in result) return c.json({ error: result.error }, result.status);
       return c.json({ data: result.data });
@@ -120,7 +130,7 @@ export const discussionsRoute = new Hono<AuthExtension>()
       id,
       commentId,
       c.get('user')!.id,
-      discussionPolicy(c.get('user')!.id),
+      await resolveDiscussionPolicy(c.req.valid('param').id, c.get('user')!.id),
     );
     if ('error' in result) return c.json({ error: result.error }, result.status);
     return c.json({ data: result.data });

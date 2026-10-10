@@ -1,8 +1,10 @@
+import { getDiscussionAttachment, resolveDiscussionPolicy } from './attachments.ts';
 import { and, count, eq, getTableColumns, inArray, isNull, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { discussion, discussionComment as c } from '../../db/schema/discussion.ts';
 import { user } from '../../db/schema/auth-schema.ts';
 import { userNotification } from '../../db/schema/user_notification.ts';
+import { createNotifications, type NewNotification } from '../notifications/write.ts';
 import { notifyUser } from '../notifications/publish.ts';
 import { emptyPostDocument, type PostDocument } from '../../../shared/posts/content.ts';
 import type {
@@ -11,6 +13,8 @@ import type {
   DiscussionComment,
   DiscussionInfo,
   DiscussionThread,
+  DiscussionTarget,
+  DiscussionType,
 } from '../../../shared/types/discussions.ts';
 import type { DiscussionPolicy, DiscussionResult, DiscussionTransaction } from './policy.ts';
 import { canonicalCommentReferences, prepareCommentReferences } from './references.ts';
@@ -52,7 +56,7 @@ async function lock(
   const [record] = await tx
     .select({ id: discussion.id })
     .from(discussion)
-    .where(eq(discussion.id, id))
+    .where(and(eq(discussion.id, id), policy.type ? eq(discussion.type, policy.type) : undefined))
     .for('update');
   return record ? resource : undefined;
 }
@@ -223,7 +227,7 @@ export async function getOwnComments(
   viewerId: string,
   cursor: CommentCursor | undefined,
   limit: number,
-): Promise<DiscussionResult<CommentsPage>> {
+): Promise<{ data: CommentsPage }> {
   const owned = and(eq(c.discussionId, id), eq(c.authorId, viewerId), isNull(c.deletedAt));
   const [rows, totals] = await Promise.all([
     db
@@ -277,7 +281,21 @@ export async function createComment(
       })
       .returning({ id: c.id });
     const result = (await readOne(tx, id, saved.id))!;
-    await policy.onCreated?.(tx, result, parent);
+    const recipients = (await policy.notificationRecipients?.(tx, result)) ?? [];
+    const events: NewNotification[] = [];
+    // Reply notifications take precedence when the resource owner is also the
+    // parent author; createNotifications applies preferences before deduplication.
+    if (parent?.authorId && parent.authorId !== viewerId)
+      recipients.unshift({ recipientUserId: parent.authorId, type: 'comment.reply' });
+    for (const recipient of recipients)
+      events.push({
+        ...recipient,
+        actorUserId: viewerId,
+        entityType: 'discussion_comment',
+        entityId: result.id,
+        dedupeKey: `discussion.comment:${result.id}`,
+      });
+    await createNotifications(tx, events);
     return { data: result };
   });
 }
@@ -354,4 +372,31 @@ export async function deleteComment(
     for (const recipient of new Set(recipients.map(row => row.id))) await notifyUser(tx, recipient);
     return { data: saved };
   });
+}
+
+// Resource pages discover their discussion once, then use the same metadata/cache
+// and endpoints as any other discussion consumer.
+export async function getAttachedDiscussion(
+  type: DiscussionType,
+  resourceId: string,
+  viewerId?: string,
+) {
+  const id = await getDiscussionAttachment(type)?.findDiscussionId(resourceId);
+  return id ? getDiscussionInfo(id, await resolveDiscussionPolicy(id, viewerId)) : unavailable;
+}
+
+export async function getOwnCommentsForTarget(
+  target: DiscussionTarget,
+  viewerId: string,
+  cursor: CommentCursor | undefined,
+  limit: number,
+) {
+  const id =
+    'discussionId' in target
+      ? target.discussionId
+      : await getDiscussionAttachment(target.attachmentType)?.findDiscussionId(target.attachmentId);
+  // Only the author's rows are returned, never the attachment's private metadata.
+  return id
+    ? getOwnComments(id, viewerId, cursor, limit)
+    : { data: { data: [], total: 0, nextCursor: null } };
 }

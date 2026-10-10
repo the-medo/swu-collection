@@ -7,7 +7,7 @@ import { useGetDeckDiscussion } from '@/api/decks/useGetDeckDiscussion.ts';
 import { useGetDeckArticle } from '@/api/decks/useGetDeckArticle.ts';
 import { invalidateDeckDiscussion } from '@/api/decks/discussionCache.ts';
 import DiscussionComments from '../../discussions/DiscussionComments.tsx';
-import OwnDeckComments from './OwnDeckComments.tsx';
+import OwnDiscussionComments from '../../discussions/OwnDiscussionComments.tsx';
 export default function DeckComments({ deckId }: { deckId: string }) {
   const query = useGetDeckDiscussion(deckId);
   const access = useGetDeckArticle(deckId);
@@ -43,7 +43,17 @@ export default function DeckComments({ deckId }: { deckId: string }) {
                 </Button>
               </div>
             )}
-            {denied && <OwnDeckComments deckId={deckId} embedded />}
+            {denied && (
+              <OwnDiscussionComments
+                target={{ attachmentType: 'deck', attachmentId: deckId }}
+                embedded
+                title="Your comments on this deck"
+                description="You can remove your comments even though this deck is unavailable."
+                onChanged={() => {
+                  void invalidateDeckDiscussion(client, deckId);
+                }}
+              />
+            )}
           </CardContent>
         </Card>
       </section>
@@ -55,7 +65,17 @@ export default function DeckComments({ deckId }: { deckId: string }) {
       focusCommentId={deckComment}
       ariaLabel="Deck comments"
       accessDenied={denied}
-      unavailableContent={<OwnDeckComments deckId={deckId} embedded />}
+      unavailableContent={
+        <OwnDiscussionComments
+          target={{ attachmentType: 'deck', attachmentId: deckId }}
+          embedded
+          title="Your comments on this deck"
+          description="You can remove your comments even though this deck is unavailable."
+          onChanged={() => {
+            void invalidateDeckDiscussion(client, deckId);
+          }}
+        />
+      }
       onChanged={() => {
         void invalidateDeckDiscussion(client, deckId);
       }}
