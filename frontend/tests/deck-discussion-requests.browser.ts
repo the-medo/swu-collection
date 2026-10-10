@@ -46,7 +46,7 @@ async function preparePage(page: Page, expectedComments = 17) {
       (url.pathname.startsWith(`/api/discussions/${discussionId}`) ||
         url.pathname === `/api/deck/${deckId}/discussion` ||
         url.pathname === `/api/deck/${deckId}/article` ||
-        url.pathname === `/api/deck/${deckId}/comments/own`)
+        url.pathname === '/api/discussions/own-comments')
     )
       requests.push(url);
   });
@@ -72,7 +72,9 @@ async function settled(page: Page) {
           .getQueryCache()
           .findAll({
             predicate: query =>
-              ['discussions', 'deck-discussion'].includes(String(query.queryKey[0])),
+              ['discussions', 'deck-discussion', 'discussion-own-comments'].includes(
+                String(query.queryKey[0]),
+              ),
           })
           .filter(query => query.state.fetchStatus === 'fetching').length;
       }),
@@ -407,7 +409,7 @@ try {
   await expect(ownComments).toHaveCount(0);
   await settled(reader);
   expect(
-    reading.requests.slice(beforeFocus).filter(url => url.pathname.endsWith('/comments/own')),
+    reading.requests.slice(beforeFocus).filter(url => url.pathname.endsWith('/own-comments')),
   ).toHaveLength(1);
   console.log(
     'Own comments stay cached on focus and refresh after deleting a comment without deck access.',

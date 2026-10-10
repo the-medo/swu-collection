@@ -28,8 +28,7 @@ export async function resetDeniedDeckAccess(
     client.resetQueries({
       queryKey: deckDiscussionKeys.deck(id),
       predicate: query =>
-        query.queryKey[3] === (viewerId ?? 'anonymous') &&
-        !['own-comments', 'binding'].includes(String(query.queryKey[2])),
+        query.queryKey[3] === (viewerId ?? 'anonymous') && query.queryKey[2] !== 'binding',
     }),
   ]);
 }

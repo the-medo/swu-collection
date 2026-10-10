@@ -1,5 +1,9 @@
+import type { DiscussionTarget } from '../../../../shared/types/discussions.ts';
 export const discussionKeys = {
   all: ['discussions'] as const,
+  ownCommentsAll: ['discussion-own-comments'] as const,
+  ownComments: (target: DiscussionTarget, viewer?: string) =>
+    ['discussion-own-comments', viewer ?? 'anonymous', target] as const,
   discussion: (id: string) => ['discussions', id] as const,
   thread: (id: string, viewer: string | undefined, commentId: string | undefined) =>
     ['discussions', id, 'thread', viewer ?? 'anonymous', commentId] as const,

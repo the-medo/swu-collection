@@ -67,9 +67,11 @@ test('revocation clears cached private data and notifies active observers withou
   client.setQueryData(deckKeys.detail('inactive', 'member'), privateData);
   client.setQueryData(deckKeys.cards('inactive', 'member'), privateCards);
   client.setQueryData(deckDiscussionKeys.article('deck', 'member'), privateData);
-  client.setQueryData(deckDiscussionKeys.comments('deck', 'member'), privateData);
   client.setQueryData(deckDiscussionKeys.article('deck', 'owner'), privateData);
-  client.setQueryData(deckDiscussionKeys.ownComments('deck', 'member'), privateData);
+  client.setQueryData(
+    discussionKeys.ownComments({ attachmentType: 'deck', attachmentId: 'deck' }, 'member'),
+    privateData,
+  );
   client.setQueryData(deckDiscussionKeys.discussion('deck', 'member'), { id: 'discussion' });
   client.setQueryData(discussionKeys.info('discussion', 'member'), { total: 2 });
   client.setQueryData(discussionKeys.comments('discussion', 'member'), privateData);
@@ -99,13 +101,14 @@ test('revocation clears cached private data and notifies active observers withou
       privateData,
     );
     expect(client.getQueryData(deckDiscussionKeys.article('deck', 'member'))).toBeUndefined();
-    expect(client.getQueryData(deckDiscussionKeys.comments('deck', 'member'))).toBeUndefined();
     expect(client.getQueryData<DeckData>(deckDiscussionKeys.article('deck', 'owner'))).toEqual(
       privateData,
     );
-    expect(client.getQueryData<DeckData>(deckDiscussionKeys.ownComments('deck', 'member'))).toEqual(
-      privateData,
-    );
+    expect(
+      client.getQueryData<DeckData>(
+        discussionKeys.ownComments({ attachmentType: 'deck', attachmentId: 'deck' }, 'member'),
+      ),
+    ).toEqual(privateData);
     for (const observer of observers) {
       expect(observer.getCurrentResult().isError).toBe(true);
       expect(observer.getCurrentResult().data).toBeUndefined();
@@ -140,9 +143,9 @@ test('access resets retain only the viewer-scoped binding when deck metadata has
     await resetDeniedDeckAccess(client, 'deck', 'member');
     expect(client.getQueryData(memberInfo)).toBeUndefined();
     expect(client.getQueryData(memberReplies)).toBeUndefined();
-    expect(client.getQueryData(ownerReplies)).toEqual(privateReplies);
-    expect(client.getQueryData(memberBinding)).toBe('discussion');
-    expect(client.getQueryData(ownerBinding)).toBe('discussion');
+    expect(client.getQueryData<typeof privateReplies>(ownerReplies)).toEqual(privateReplies);
+    expect(client.getQueryData<string>(memberBinding)).toBe('discussion');
+    expect(client.getQueryData<string>(ownerBinding)).toBe('discussion');
     expect(client.getQueryData(deckDiscussionKeys.binding('deck'))).toBeUndefined();
   } finally {
     client.clear();

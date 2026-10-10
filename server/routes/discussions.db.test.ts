@@ -112,6 +112,17 @@ test.skipIf(process.env.DECK_DISCUSSION_DB_TEST !== '1')(
       const privateId = bindings.find(row => row.deckId === privateDeck)!.discussionId;
       expect(publicId).not.toBe(publicDeck);
       const commentsPath = `/discussions/${publicId}/comments`;
+      expect((await db.select().from(discussion).where(eq(discussion.id, publicId)))[0].type).toBe(
+        'deck',
+      );
+      // A mismatched/unknown type must never gain deck access via its binding.
+      await db.update(discussion).set({ type: 'unregistered' }).where(eq(discussion.id, publicId));
+      expect((await request(`/discussions/${publicId}`, owner)).status).toBe(404);
+      expect((await request(commentsPath, owner, { content: doc('Denied type') })).status).toBe(
+        404,
+      );
+      await db.update(discussion).set({ type: 'deck' }).where(eq(discussion.id, publicId));
+
       const post = async (viewer: string, text: string, parentId?: string, path = commentsPath) => {
         const response = await request(path, viewer, { content: doc(text), parentId });
         expect(response.status).toBe(201);
@@ -287,10 +298,17 @@ test.skipIf(process.env.DECK_DISCUSSION_DB_TEST !== '1')(
       const ownerInbox = (await notifications.list(owner, false)).items;
       expect(ownerInbox.find(item => item.entityId === reply.id)).toMatchObject({
         targetDeckId: publicDeck,
+        targetUrl: `/decks/${publicDeck}?deckTab=article&deckComment=${reply.id}`,
         entityName: 'Thread fixture',
         type: 'deck.comment',
       });
       expect(JSON.stringify(ownerInbox)).not.toContain('personal prose');
+      await db.update(discussion).set({ type: 'unregistered' }).where(eq(discussion.id, publicId));
+      expect(
+        (await notifications.list(owner, false)).items.some(item => item.entityId === reply.id),
+      ).toBe(false);
+      await db.update(discussion).set({ type: 'deck' }).where(eq(discussion.id, publicId));
+
       expect(reply.parentId).toBe(parent.id);
       expect(reply.depth).toBe(1);
       const rootWithReply = (await roots()).data.find(row => row.id === parent.id);
@@ -480,7 +498,43 @@ test.skipIf(process.env.DECK_DISCUSSION_DB_TEST !== '1')(
           item => item.targetDeckId === privateDeck,
         ),
       ).toBe(false);
-      const own = await (await request(`/deck/${privateDeck}/comments/own`, author)).json();
+      const own = await (
+        await request(`/discussions/own-comments?discussionId=${privateId}`, author)
+      ).json();
+      const attachedOwn = await (
+        await request(
+          `/discussions/own-comments?attachmentType=deck&attachmentId=${privateDeck}`,
+          author,
+        )
+      ).json();
+      expect(attachedOwn.data.map(row => row.id)).toEqual([privateComment.id]);
+      expect((await request(`/discussions/own-comments?discussionId=${privateId}`)).status).toBe(
+        401,
+      );
+      expect(
+        (
+          await request(
+            `/discussions/own-comments?attachmentType=unknown&attachmentId=${privateDeck}`,
+            author,
+          )
+        ).status,
+      ).toBe(400);
+      expect(
+        (
+          await request(
+            `/discussions/own-comments?discussionId=${privateId}&attachmentType=deck&attachmentId=${privateDeck}`,
+            author,
+          )
+        ).status,
+      ).toBe(400);
+      const invalidResource = await request(
+        '/discussions/own-comments?attachmentType=deck&attachmentId=not-a-deck-uuid',
+        author,
+      );
+      expect(invalidResource.status).toBe(200);
+      expect((await invalidResource.json()).data).toEqual([]);
+      expect((await request(`/deck/${privateDeck}/comments/own`, author)).status).toBe(404);
+
       expect(own.data.map(row => row.id)).toEqual([privateComment.id]);
       expect(own.data[0].replyCount).toBe(0);
       expect(
@@ -494,7 +548,7 @@ test.skipIf(process.env.DECK_DISCUSSION_DB_TEST !== '1')(
         ).status,
       ).toBe(200);
       // The same persistence/service works without any deck binding.
-      await db.insert(discussion).values({ id: standaloneId });
+      await db.insert(discussion).values({ id: standaloneId, type: 'unregistered' });
       const policy: DiscussionPolicy = {
         readable: sql`true`,
         moderator: sql`false`,
@@ -507,8 +561,21 @@ test.skipIf(process.env.DECK_DISCUSSION_DB_TEST !== '1')(
         policy,
       );
       expect('data' in independent).toBe(true);
+      if ('error' in independent) throw new Error(independent.error);
+      const independentReply = await core.createComment(
+        standaloneId,
+        owner,
+        doc('Standalone reply'),
+        policy,
+        independent.data.id,
+      );
+      if ('error' in independentReply) throw new Error(independentReply.error);
+      expect(await events(independentReply.data.id)).toMatchObject([
+        { recipientUserId: author, type: 'comment.reply' },
+      ]);
+
       expect(await core.getComments(standaloneId, policy, undefined, 20)).toMatchObject({
-        data: { total: 1 },
+        data: { total: 2 },
       });
       expect(
         await db.select().from(deckDiscussion).where(eq(deckDiscussion.discussionId, standaloneId)),

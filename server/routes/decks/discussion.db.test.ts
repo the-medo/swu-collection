@@ -14,6 +14,7 @@ import { deckInformation } from '../../db/schema/deck_information.ts';
 import { deleteDecksOwnedByUser } from '../../lib/decks/deleteDecks.ts';
 import { updateDeckInformation } from '../../lib/decks/updateDeckInformation.ts';
 import { emptyPostDocument, type PostDocument } from '../../../shared/posts/content.ts';
+import { discussionsRoute } from '../discussions.ts';
 import { deckDiscussionRoute } from './discussion.ts';
 
 test.skipIf(process.env.DECK_DISCUSSION_DB_TEST !== '1')(
@@ -33,22 +34,41 @@ test.skipIf(process.env.DECK_DISCUSSION_DB_TEST !== '1')(
     const deckIds = [publicId, privateId, unlistedId, limitedId];
     const poolId = crypto.randomUUID();
     const folderId = crypto.randomUUID();
-    let viewer: NonNullable<AuthExtension['Variables']['user']> | null = null;
     const app = new Hono<AuthExtension>()
       .use('*', async (c, next) => {
-        c.set('user', viewer);
+        const viewerId = c.req.header('x-fixture-user');
+        c.set(
+          'user',
+          viewerId ? ({ id: viewerId } as NonNullable<AuthExtension['Variables']['user']>) : null,
+        );
         await next();
       })
-      .route('/deck', deckDiscussionRoute);
-    const request = (viewerId: string | null, method: string, path: string, body?: unknown) => {
-      viewer = viewerId
-        ? ({ id: viewerId } as NonNullable<AuthExtension['Variables']['user']>)
-        : null;
+      .route('/deck', deckDiscussionRoute)
+      .route('/discussions', discussionsRoute);
+    const request = async (
+      viewerId: string | null,
+      method: string,
+      path: string,
+      body?: unknown,
+    ) => {
       const serialized = body === undefined ? undefined : JSON.stringify(body);
-      return app.request(`/deck/${path}`, {
+      let url = `/deck/${path}`;
+      const match = path.match(/^([^/]+)\/comments(.*)$/);
+      if (match) {
+        const [binding] = await db
+          .select()
+          .from(deckDiscussion)
+          .where(eq(deckDiscussion.deckId, match[1]));
+        url =
+          match[2] === '/own'
+            ? `/discussions/own-comments?attachmentType=deck&attachmentId=${match[1]}`
+            : `/discussions/${binding?.discussionId ?? match[1]}/comments${match[2]}`;
+      }
+      return app.request(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
+          ...(viewerId ? { 'x-fixture-user': viewerId } : {}),
           ...(serialized === undefined
             ? {}
             : { 'Content-Length': String(new TextEncoder().encode(serialized).length) }),

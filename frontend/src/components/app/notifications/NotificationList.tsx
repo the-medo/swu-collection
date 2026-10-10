@@ -1,5 +1,5 @@
 import { useEffect, useId, useState, type MouseEvent } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { Archive, Gamepad2, Mail, MailOpen, MessageSquare, Star, Users } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button.tsx';
@@ -21,6 +21,7 @@ export function NotificationList({
   compact = false,
   onNavigate,
 }: NotificationListProps) {
+  const navigate = useNavigate();
   const listId = useId();
   const [now, setNow] = useState(Date.now);
   const nextExpiry = Math.min(
@@ -41,6 +42,13 @@ export function NotificationList({
         const invite = item.type === 'crossfire.invitation';
         const newMember = item.type === 'team.member.joined';
         const comment = item.type === 'deck.comment' || item.type === 'comment.reply';
+        const commentUrl =
+          item.targetUrl?.startsWith('/') &&
+          !item.targetUrl.startsWith('//') &&
+          !item.targetUrl.includes('\\')
+            ? item.targetUrl
+            : `/decks/${item.targetDeckId}?deckTab=article&deckComment=${item.entityId}`;
+
         const available =
           item.available && (!item.expiresAt || new Date(item.expiresAt).getTime() > now);
         const Icon = invite ? Gamepad2 : newMember ? Users : comment ? MessageSquare : Star;
@@ -49,7 +57,13 @@ export function NotificationList({
         const fullTimestamp = createdAt.toLocaleString();
         const markRead = (event: MouseEvent<HTMLAnchorElement>) => {
           if (!item.readAt) onAction({ id: item.id, action: 'read' });
-          if (!event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0)
+          if (
+            !event.metaKey &&
+            !event.ctrlKey &&
+            !event.shiftKey &&
+            !event.altKey &&
+            event.button === 0
+          )
             onNavigate?.();
         };
         const linkClassName =
@@ -126,15 +140,36 @@ export function NotificationList({
                         ? ' replied to your comment on '
                         : ' commented on '
                       : ' favorited '}
-                    <Link
-                      to="/decks/$deckId"
-                      params={{ deckId: comment ? item.targetDeckId! : item.entityId }}
-                      search={comment ? { deckTab: 'article', deckComment: item.entityId } : {}}
-                      className={linkClassName}
-                      onClick={markRead}
-                    >
-                      {item.entityName ?? 'your deck'}
-                    </Link>
+                    {comment ? (
+                      <a
+                        href={commentUrl}
+                        className={linkClassName}
+                        onClick={event => {
+                          markRead(event);
+                          if (
+                            !event.metaKey &&
+                            !event.ctrlKey &&
+                            !event.shiftKey &&
+                            !event.altKey &&
+                            event.button === 0
+                          ) {
+                            event.preventDefault();
+                            void navigate({ href: commentUrl });
+                          }
+                        }}
+                      >
+                        {item.entityName ?? 'the discussion'}
+                      </a>
+                    ) : (
+                      <Link
+                        to="/decks/$deckId"
+                        params={{ deckId: item.entityId }}
+                        className={linkClassName}
+                        onClick={markRead}
+                      >
+                        {item.entityName ?? 'your deck'}
+                      </Link>
+                    )}
                     .
                   </>
                 )}

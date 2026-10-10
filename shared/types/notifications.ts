@@ -31,7 +31,9 @@ export interface NotificationItem {
   actorUserId: string | null;
   actorName: string | null;
   entityName: string | null;
+  /** @deprecated Older clients use this during the discussion rollout. */
   targetDeckId?: string | null;
+  targetUrl?: string | null;
   createdAt: string;
   readAt: string | null;
   archivedAt: string | null;

@@ -17,6 +17,7 @@ import type { PostDocument } from '../../../shared/posts/content.ts';
 // Resource-specific bindings own access and lifetime; comments only know a discussion.
 export const discussion = pgTable('discussion', {
   id: uuid('id').defaultRandom().primaryKey(),
+  type: text('type').notNull(),
   createdAt: timestamp('created_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
 });
 export const discussionComment = pgTable(

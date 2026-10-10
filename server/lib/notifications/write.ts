@@ -8,7 +8,7 @@ import { canReceiveNotifications } from './policy.ts';
 import { notifyUser } from './publish.ts';
 
 export type NotificationTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
-type NewNotification = Pick<
+export type NewNotification = Pick<
   typeof n.$inferInsert,
   'recipientUserId' | 'actorUserId' | 'type' | 'entityType' | 'entityId' | 'dedupeKey'
 >;

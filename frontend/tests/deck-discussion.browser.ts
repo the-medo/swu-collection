@@ -81,6 +81,8 @@ async function authenticate(context: BrowserContext, userId: string) {
 const articleUrl = `${origin}/api/deck/${publicId}/article`;
 let commentsUrl: string;
 let publicDiscussionId: string;
+let privateDiscussionId: string;
+let unlistedDiscussionId: string;
 const commentWrites: { status: number; revision: number }[] = [];
 readerPage.on('response', response => {
   if (response.url().startsWith(commentsUrl + '/') && response.request().method() === 'PUT') {
@@ -106,6 +108,12 @@ try {
   }
   publicDiscussionId = (
     await sql`SELECT discussion_id FROM deck_discussion WHERE deck_id = ${publicId}`
+  )[0]!.discussion_id;
+  privateDiscussionId = (
+    await sql`SELECT discussion_id FROM deck_discussion WHERE deck_id = ${privateId}`
+  )[0]!.discussion_id;
+  unlistedDiscussionId = (
+    await sql`SELECT discussion_id FROM deck_discussion WHERE deck_id = ${unlistedId}`
   )[0]!.discussion_id;
   commentsUrl = `${origin}/api/discussions/${publicDiscussionId}/comments`;
   await sql`INSERT INTO user_settings (user_id, key, value) VALUES (${ownerId}, 'collectionInfoInDecks', 'true')`;
@@ -616,7 +624,7 @@ try {
   await expect(privateComments).toContainText('Private share comment to remove.');
   expect(
     (
-      await page.request.post(`${origin}/api/deck/${privateId}/comments`, {
+      await page.request.post(`${origin}/api/discussions/${privateDiscussionId}/comments`, {
         data: { content: makeDocument('Owner private comment stays hidden.') },
       })
     ).status(),
@@ -649,7 +657,9 @@ try {
   await ownComments.getByRole('button', { name: 'Delete comment' }).click();
   await expect(ownComments).toHaveCount(0);
   const privateRemaining = (
-    await (await page.request.get(`${origin}/api/deck/${privateId}/comments`)).json()
+    await (
+      await page.request.get(`${origin}/api/discussions/${privateDiscussionId}/comments`)
+    ).json()
   ).data;
   expect(privateRemaining).toHaveLength(1);
   expect(JSON.stringify(privateRemaining[0].content)).toContain(
@@ -661,7 +671,7 @@ try {
   await expect(visitor.getByRole('region', { name: 'Deck guide', exact: true })).toContainText(
     'Unlisted strategy.',
   );
-  const unlistedCommentsUrl = `${origin}/api/deck/${unlistedId}/comments`;
+  const unlistedCommentsUrl = `${origin}/api/discussions/${unlistedDiscussionId}/comments`;
   for (let index = 0; index < 25; index++)
     expect(
       (
@@ -1136,12 +1146,30 @@ try {
   const notificationUrl = new URL((await notificationLink.getAttribute('href'))!, origin);
   expect(notificationUrl.searchParams.get('deckComment')).toBe(linkedReply.id);
   expect(notificationUrl.searchParams.has('deckArticleEdit')).toBe(false);
+  const navigationToken = randomUUID();
+  await page.evaluate(
+    token => Reflect.set(window, 'discussionNavigationToken', token),
+    navigationToken,
+  );
+
   await notificationLink.click();
   await expect(page).toHaveURL(new RegExp(`deckComment=${linkedReply.id}`));
   const linkedCard = page.locator(`[data-comment-id="${linkedReply.id}"]`);
   await expect(linkedCard).toContainText('Reply reached from its notification.');
   await expect(linkedCard).toBeInViewport();
   await expect(linkedCard).toBeFocused();
+  expect(await page.evaluate(() => Reflect.get(window, 'discussionNavigationToken'))).toBe(
+    navigationToken,
+  );
+  await expect
+    .poll(
+      async () =>
+        (
+          await sql`SELECT read_at IS NOT NULL AS was_read FROM user_notification WHERE recipient_user_id = ${ownerId} AND entity_id = ${linkedReply.id}`
+        )[0]?.was_read,
+    )
+    .toBe(true);
+
   await expect(page.getByRole('group', { name: 'Edit guide', exact: true })).toHaveCount(0);
   await page.screenshot({ path: `${screenshots}/notification-thread.png`, fullPage: true });
   console.log(
@@ -1178,9 +1206,6 @@ try {
   });
   expect(scrollTopAfterResize.initialTop).toBeGreaterThan(0);
   expect(scrollTopAfterResize.top).toBe(0);
-  const unlistedDiscussionId = (
-    await sql`SELECT discussion_id FROM deck_discussion WHERE deck_id = ${unlistedId}`
-  )[0]!.discussion_id;
   let releaseThread!: () => void;
   const pausedThread = new Promise<void>(resolve => {
     releaseThread = resolve;

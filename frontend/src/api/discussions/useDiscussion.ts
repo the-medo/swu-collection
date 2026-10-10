@@ -50,7 +50,7 @@ export function useDiscussionComments(
     // A display fallback lets access resets clear the real cache.
     placeholderData:
       parentId && includedReplies
-        ? {
+        ? ({
             pages: [
               {
                 data: includedReplies,
@@ -60,7 +60,7 @@ export function useDiscussionComments(
               },
             ],
             pageParams: [undefined],
-          } satisfies InfiniteData<CommentsPage>
+          } satisfies InfiniteData<CommentsPage>)
         : undefined,
     queryFn: async context => {
       const { pageParam } = context;
@@ -144,6 +144,7 @@ export function useDiscussionCommentMutation(id: string, onChanged?: () => void)
     },
     onSettled: () => {
       void client.invalidateQueries({ queryKey: discussionKeys.discussion(id) });
+      void client.invalidateQueries({ queryKey: discussionKeys.ownCommentsAll });
       onChanged?.();
     },
   });

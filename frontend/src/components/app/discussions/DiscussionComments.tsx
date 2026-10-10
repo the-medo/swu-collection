@@ -14,6 +14,7 @@ import type { DiscussionComment } from '../../../../../shared/types/discussions.
 import type { PostDraftState } from '../rich-text-editor/PostDocumentForm.tsx';
 import { isPostEmpty } from '../../../../../shared/posts/content.ts';
 import CommentCard from './CommentCard.tsx';
+import OwnDiscussionComments from './OwnDiscussionComments.tsx';
 import DiscussionCommentComposer, { type CommentComposer } from './DiscussionCommentComposer.tsx';
 import { useCommentComposerSlots } from './useCommentComposerPortal.ts';
 
@@ -407,7 +408,10 @@ export default function DiscussionComments({
                 onClose={close}
               />
             ))}
-          {denied && unavailableContent}
+          {denied &&
+            (unavailableContent ?? (
+              <OwnDiscussionComments target={{ discussionId }} embedded onChanged={onChanged} />
+            ))}
           {!denied && focusCommentId && focused.isError && (
             <p role="alert" className="text-sm">
               {focused.error.message}
