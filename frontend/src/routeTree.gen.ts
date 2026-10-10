@@ -12,6 +12,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SupportRouteImport } from './routes/support'
 import { Route as Statistics2RouteImport } from './routes/statistics2'
 import { Route as StatisticsRouteImport } from './routes/statistics'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -100,6 +101,11 @@ const TeamsTeamIdStatisticsRouteImport = createFileRoute(
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Statistics2Route = Statistics2RouteImport.update({
@@ -549,6 +555,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/statistics': typeof StatisticsStatisticsLayoutRouteWithChildren
   '/statistics2': typeof Statistics2Route
+  '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/battlefield': typeof AuthenticatedBattlefieldRoute
@@ -629,6 +636,7 @@ export interface FileRoutesByTo {
   '/battlefield-showcase': typeof BattlefieldShowcaseRoute
   '/privacy': typeof PrivacyRoute
   '/statistics2': typeof Statistics2Route
+  '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/battlefield': typeof AuthenticatedBattlefieldRoute
@@ -710,6 +718,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/statistics': typeof StatisticsRouteWithChildren
   '/statistics2': typeof Statistics2Route
+  '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/battlefield': typeof AuthenticatedBattlefieldRoute
@@ -795,6 +804,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/statistics'
     | '/statistics2'
+    | '/support'
     | '/terms'
     | '/admin'
     | '/battlefield'
@@ -875,6 +885,7 @@ export interface FileRouteTypes {
     | '/battlefield-showcase'
     | '/privacy'
     | '/statistics2'
+    | '/support'
     | '/terms'
     | '/admin'
     | '/battlefield'
@@ -955,6 +966,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/statistics'
     | '/statistics2'
+    | '/support'
     | '/terms'
     | '/_authenticated/admin'
     | '/_authenticated/battlefield'
@@ -1040,6 +1052,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   StatisticsRoute: typeof StatisticsRouteWithChildren
   Statistics2Route: typeof Statistics2Route
+  SupportRoute: typeof SupportRoute
   TermsRoute: typeof TermsRoute
   AuthErrorRoute: typeof AuthErrorRoute
   CardsSearchRoute: typeof CardsSearchRoute
@@ -1092,6 +1105,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/statistics2': {
@@ -1819,6 +1839,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   StatisticsRoute: StatisticsRouteWithChildren,
   Statistics2Route: Statistics2Route,
+  SupportRoute: SupportRoute,
   TermsRoute: TermsRoute,
   AuthErrorRoute: AuthErrorRoute,
   CardsSearchRoute: CardsSearchRoute,

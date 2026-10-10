@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { DISCORD_LINK, PATREON_LINK } from '../../../../../shared/consts/constants.ts';
+import { Link } from '@tanstack/react-router';
+import { Heart } from 'lucide-react';
+import { DISCORD_LINK } from '../../../../../shared/consts/constants.ts';
 
 export type SocialButtonsProps = {
   location: 'footer' | 'header';
@@ -15,9 +17,9 @@ const SocialButtons: React.FC<SocialButtonsProps> = ({ location }) => {
     ? 'flex items-center gap-2 px-3 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-lg transition-colors duration-200 text-[11px] font-medium opacity-80'
     : 'flex items-center gap-2 px-2 py-1 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-md transition-colors duration-200 text-[12px] font-medium';
 
-  const patreonClass = isHeader
-    ? 'flex items-center gap-2 px-3 py-2 bg-[#FF424D] hover:bg-[#E63946] text-white rounded-lg transition-colors duration-200 text-[11px] font-medium opacity-80'
-    : 'flex items-center gap-2 px-2 py-1 bg-[#FF424D] hover:bg-[#E63946] text-white rounded-md transition-colors duration-200 text-[12px] font-medium';
+  const supportClass = isHeader
+    ? 'support-accent flex items-center gap-2 px-3 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors duration-200 text-[11px] font-medium'
+    : 'support-accent flex items-center gap-2 px-2 py-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors duration-200 text-[12px] font-medium';
 
   return (
     <div className={containerClass}>
@@ -32,18 +34,10 @@ const SocialButtons: React.FC<SocialButtonsProps> = ({ location }) => {
         </svg>
         Discord
       </a>
-      <a href={PATREON_LINK} target="_blank" rel="noopener noreferrer" className={patreonClass}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 436 476"
-          className="w-4 h-4"
-          fill="currentColor"
-        >
-          <title>Patreon logo</title>
-          <path d="M436 143c-.084-60.778-47.57-110.591-103.285-128.565C263.528-7.884 172.279-4.649 106.214 26.424 26.142 64.089.988 146.596.051 228.883c-.77 67.653 6.004 245.841 106.83 247.11 74.917.948 86.072-95.279 120.737-141.623 24.662-32.972 56.417-42.285 95.507-51.929C390.309 265.865 436.097 213.011 436 143Z"></path>
-        </svg>
-        Patreon
-      </a>
+      <Link to="/support" className={supportClass}>
+        <Heart className="size-4 fill-current" strokeWidth={2.5} aria-hidden="true" />
+        Support
+      </Link>
     </div>
   );
 };

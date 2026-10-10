@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link } from '@tanstack/react-router';
 import { Separator } from '@/components/ui/separator.tsx';
 import SocialButtons from '@/components/app/global/SocialButtons.tsx';
-import { DISCORD_LINK, PATREON_LINK } from '../../../../../shared/consts/constants.ts';
+import { DISCORD_LINK } from '../../../../../shared/consts/constants.ts';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -17,19 +17,15 @@ const Footer: React.FC = () => {
             </div>
             <SocialButtons location="footer" />
             <div className="flex gap-4 items-center">
+              <Link to="/support" className="hidden hover:text-foreground md:block">
+                Support SWUBASE
+              </Link>
               <a
                 href={DISCORD_LINK}
                 target="_blank"
                 className="hover:text-foreground hidden md:block"
               >
                 Discord
-              </a>
-              <a
-                href={PATREON_LINK}
-                target="_blank"
-                className="hover:text-foreground hidden md:block"
-              >
-                Patreon
               </a>
               <Link to="/terms" className="hover:text-foreground">
                 Terms of Service

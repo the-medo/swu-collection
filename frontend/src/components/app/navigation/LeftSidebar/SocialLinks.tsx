@@ -4,14 +4,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import packageInfo from '../../../../../package.json';
 import { cn } from '@/lib/utils.ts';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Heart } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 import { useTheme } from '@/components/theme-provider.tsx';
 import { useCallback } from 'react';
-import {
-  DISCORD_LINK,
-  GITHUB_LINK,
-  PATREON_LINK,
-} from '../../../../../../shared/consts/constants.ts';
+import { DISCORD_LINK, GITHUB_LINK } from '../../../../../../shared/consts/constants.ts';
 
 const SocialLinks: React.FC = () => {
   const { open } = useSidebar();
@@ -111,27 +108,17 @@ const SocialLinks: React.FC = () => {
                   className="h-8 w-8 [&_svg]:size-4 fill-foreground stroke-foreground"
                   asChild
                 >
-                  <a
-                    href={PATREON_LINK}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Support on Patreon"
-                  >
-                    <svg
-                      role="img"
-                      className="overflow-visible opacity-50"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 436 476"
-                      fill="currentColor"
-                    >
-                      <title>Patreon logo</title>
-                      <path d="M436 143c-.084-60.778-47.57-110.591-103.285-128.565C263.528-7.884 172.279-4.649 106.214 26.424 26.142 64.089.988 146.596.051 228.883c-.77 67.653 6.004 245.841 106.83 247.11 74.917.948 86.072-95.279 120.737-141.623 24.662-32.972 56.417-42.285 95.507-51.929C390.309 265.865 436.097 213.011 436 143Z"></path>
-                    </svg>
-                  </a>
+                  <Link to="/support" aria-label="Support SWUBASE">
+                    <Heart
+                      className="overflow-visible fill-current opacity-80"
+                      strokeWidth={2.5}
+                      aria-hidden="true"
+                    />
+                  </Link>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Support on Patreon</p>
+                <p>Support SWUBASE</p>
               </TooltipContent>
             </Tooltip>
 

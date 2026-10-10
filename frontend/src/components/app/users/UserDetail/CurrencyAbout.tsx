@@ -1,25 +1,12 @@
 import { CurrencyIcon } from '@/components/app/global/CurrencyIcon';
-import { PATREON_LINK } from '../../../../../../shared/consts/constants';
+import { Link } from '@tanstack/react-router';
+import { Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { SupportArtwork } from '@/components/app/support/SupportArtwork';
 
 export function CurrencyAbout() {
   return (
-    <section aria-label="About beskar and credits" className="space-y-5">
-      <div className="space-y-3 rounded-lg border bg-card p-4 sm:p-5">
-        <h2 className="m-0! border-0! p-0! text-lg! font-semibold!">
-          A thank-you to our supporters
-        </h2>
-        <p className="text-sm">
-          SWUBASE is free to use, and I plan to keep it that way for as long as possible.
-        </p>
-        <p className="text-sm text-muted-foreground">
-          To thank everyone who helps keep the site running, supporters automatically receive two
-          currencies: beskar and extra credits.
-        </p>
-        <p className="rounded-md bg-muted/50 p-3 text-sm">
-          <span className="font-medium">Purely cosmetic.</span> Use them to show off, customize your
-          Battlefields and make your profile your own.
-        </p>
-      </div>
+    <section aria-label="About beskar and credits" className="@container space-y-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <article className="space-y-3 rounded-lg border bg-card p-4">
           <h2 className="m-0! flex items-center gap-2 border-0! p-0! text-lg! font-semibold!">
@@ -50,24 +37,33 @@ export function CurrencyAbout() {
           </p>
         </article>
       </div>
-      <div className="space-y-3 rounded-lg border p-4">
-        <h2 className="m-0! border-0! p-0! text-base! font-semibold!">How to get more</h2>
-        <p className="text-sm">
-          Supporting SWUBASE on Patreon earns 1,000 credits and 1 beskar per $1 USD of support.
-          Fractional amounts count too: $2.50 earns 2,500 credits and 2.5 beskar.
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="grid @3xl:grid-cols-[1.1fr_1fr]">
+          <div className="flex flex-col justify-center gap-3 p-5 sm:p-6">
+            <h2 className="m-0! border-0! p-0! text-xl! font-semibold!">
+              A thank-you to our supporters
+            </h2>
+            <p className="text-sm">
+              SWUBASE is free to use, and I plan to keep it that way for as long as possible.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              To thank everyone who helps keep the site running, supporters automatically receive
+              two currencies: beskar and extra credits.
+            </p>
+            <p className="text-sm">Every $1 USD of support earns 1,000 credits and 1 beskar.</p>
+            <Button asChild className="support-accent w-fit rounded-xl">
+              <Link to="/support">
+                <Heart className="size-4 fill-current" strokeWidth={2.5} aria-hidden="true" />
+                Support SWUBASE
+              </Link>
+            </Button>
+          </div>
+          <SupportArtwork className="min-h-56 @3xl:min-h-80" />
+        </div>
+        <p className="border-t border-border bg-muted/50 px-5 py-3 text-sm sm:px-6">
+          <span className="font-medium">Purely cosmetic.</span> Use them to show off, customize your
+          Battlefields and make your profile your own.
         </p>
-        <p className="text-sm text-muted-foreground">
-          Use the same email for Patreon and your verified SWUBASE account so your support can be
-          matched. Administrators can also award either currency.
-        </p>
-        <a
-          href={PATREON_LINK}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex text-sm font-medium text-foreground underline underline-offset-4 hover:text-muted-foreground"
-        >
-          Support on Patreon
-        </a>
       </div>
       <p className="text-sm text-muted-foreground">
         Your balances and transaction history are private on your profile.
