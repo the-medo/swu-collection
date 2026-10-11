@@ -39,6 +39,7 @@ export const useDeleteDeckCard = (deckId: string | undefined) => {
       return response.json();
     },
     onSuccess: (_, variables) => {
+      void queryClient.invalidateQueries({ queryKey: ['decks'] });
       queryClient.setQueryData<DeckCardResponse>(deckKeys.cards(deckId, viewer?.id), oldData => {
         if (!oldData) {
           return { data: [] };

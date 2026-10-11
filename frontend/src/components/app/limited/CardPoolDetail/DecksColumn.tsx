@@ -7,12 +7,16 @@ import { useUser } from '@/hooks/useUser.ts';
 import EditCustomPoolCardsSection from './EditCustomPoolCardsSection.tsx';
 import { Alert } from '@/components/ui/alert.tsx';
 import { TriangleAlert } from 'lucide-react';
+import { Visibility } from '../../../../../../shared/types/visibility.ts';
 
 export interface DecksColumnProps {
   pool?: CardPoolWithDeckState;
+  initialDeckVisibility?: Visibility;
 }
 
-const DecksColumn: React.FC<DecksColumnProps> = ({ pool }) => {
+const DecksColumn: React.FC<DecksColumnProps> = ({ pool, initialDeckVisibility }) => {
+  const defaultVisibility =
+    initialDeckVisibility ?? (pool?.visibility as Visibility | null) ?? Visibility.Unlisted;
   const { data, isFetching, isError } = useGetCardPoolDecks({ id: pool?.id });
   const user = useUser();
 
@@ -34,7 +38,12 @@ const DecksColumn: React.FC<DecksColumnProps> = ({ pool }) => {
   return (
     <div className="h-full rounded-lg border border-border bg-card p-3">
       <h3 className="text-sm font-semibold mb-2">Decks</h3>
-      <CreateDeckSection pool={pool} className="mb-3" />
+      <CreateDeckSection
+        key={`${pool?.id}:${defaultVisibility}`}
+        pool={pool}
+        initialVisibility={defaultVisibility}
+        className="mb-3"
+      />
       {pool && canManageCustomPool && (
         <>
           <EditCustomPoolCardsSection pool={pool} />

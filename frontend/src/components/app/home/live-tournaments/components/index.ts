@@ -1,6 +1,7 @@
 export { ExternalButton } from './ExternalButton.tsx';
 export { LiveSectionHeader } from './LiveSectionHeader.tsx';
-export { TournamentCard, TournamentInfoRow } from './TournamentCard.tsx';
+export { TournamentCard } from './TournamentCard.tsx';
+export { TournamentInfoRow } from './TournamentInfoRow.tsx';
 export { TournamentWeekendPendingResourceReviewDialog } from './TournamentWeekendPendingResourceReviewDialog.tsx';
 export { TournamentWeekendResourceSubmissionDialog } from './TournamentWeekendResourceSubmissionDialog.tsx';
 export { TournamentWeekendResourceTable } from './TournamentWeekendResourceTable.tsx';

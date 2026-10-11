@@ -10,12 +10,14 @@ import { Button } from '@/components/ui/button.tsx';
 import EditCardPoolDialog from '@/components/app/dialogs/EditCardPoolDialog.tsx';
 import { cardPoolVisibilityRenderer } from '@/components/app/limited/components/cardPoolVisibilityRenderer.tsx';
 import CPExplainerTooltip from '@/components/app/limited/CardPoolDetail/CPExplainerTooltip.tsx';
+import type { Visibility } from '../../../../../../shared/types/visibility.ts';
 
 export interface CardPoolDetailProps {
   poolId: string | undefined;
+  initialDeckVisibility?: Visibility;
 }
 
-const CardPoolDetail: React.FC<CardPoolDetailProps> = ({ poolId }) => {
+const CardPoolDetail: React.FC<CardPoolDetailProps> = ({ poolId, initialDeckVisibility }) => {
   const { data, isFetching, error } = useGetCardPool(poolId);
   const user = useUser();
 
@@ -31,7 +33,6 @@ const CardPoolDetail: React.FC<CardPoolDetailProps> = ({ poolId }) => {
     );
   }
 
-  // We will mock the inner layout for now, but we already fetched the pool info
   const pool = data?.data;
 
   return (
@@ -44,7 +45,7 @@ const CardPoolDetail: React.FC<CardPoolDetailProps> = ({ poolId }) => {
         </div>
         {user && pool && (
           <div className="flex flex-row gap-4 items-center">
-            {pool.visibility ? cardPoolVisibilityRenderer(pool.visibility as any) : null}
+            {pool.visibility ? cardPoolVisibilityRenderer(pool.visibility) : null}
             {user.id === pool.userId && (
               <EditCardPoolDialog pool={pool} trigger={<Button>Edit card pool</Button>} />
             )}
@@ -55,7 +56,7 @@ const CardPoolDetail: React.FC<CardPoolDetailProps> = ({ poolId }) => {
 
       <div className="grid gap-4 grid-cols-1 md:[grid-template-columns:300px_minmax(0,1fr)] lg:[grid-template-columns:300px_minmax(0,1fr)_minmax(0,1fr)] xl:[grid-template-columns:300px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <div className="col-span-1">
-          <DecksColumn pool={pool} />
+          <DecksColumn pool={pool} initialDeckVisibility={initialDeckVisibility} />
         </div>
         <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-3 flex flex-col gap-4">
           <LeadersSection pool={pool} />

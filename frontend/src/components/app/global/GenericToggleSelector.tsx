@@ -11,12 +11,16 @@ interface GenericToggleSelectorProps {
   options: ToggleOption[];
   value: string;
   onValueChange: (value: string) => void;
+  ariaLabel?: string;
+  className?: string;
 }
 
-const GenericToggleSelector: React.FC<GenericToggleSelectorProps> = ({ 
-  options, 
-  value, 
-  onValueChange 
+const GenericToggleSelector: React.FC<GenericToggleSelectorProps> = ({
+  options,
+  value,
+  onValueChange,
+  ariaLabel,
+  className,
 }) => {
   const handleValueChange = useCallback(
     (v: string) => {
@@ -29,8 +33,14 @@ const GenericToggleSelector: React.FC<GenericToggleSelectorProps> = ({
   );
 
   return (
-    <ToggleGroup type="single" value={value} onValueChange={handleValueChange}>
-      {options.map((option) => (
+    <ToggleGroup
+      type="single"
+      value={value}
+      onValueChange={handleValueChange}
+      aria-label={ariaLabel}
+      className={className}
+    >
+      {options.map(option => (
         <ToggleGroupItem key={option.value} value={option.value}>
           {option.label}
         </ToggleGroupItem>

@@ -1,5 +1,5 @@
+import { cn } from '@/lib/utils.ts';
 import * as React from 'react';
-import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
 import GridSection, {
   SectionCardSizing,
 } from '@/components/app/global/GridSection/GridSection.tsx';
@@ -30,13 +30,24 @@ const TournamentDetailSection: React.FC<TournamentDetailSectionProps> = ({ maTou
 
   return (
     <GridSection key="tournament-detail" sizing={size} id={`s-tournament-detail`} className="z-10">
-      <GridSectionContent>
+      <div
+        className={cn(
+          'meta-panel meta-tournament-detail @container/meta-panel h-full min-w-0 p-5 border border-border',
+          'rounded-[20px] bg-card',
+          '[#s-meta-share-2-weeks_>_&]:border-[color:var(--meta-line)]',
+          '[#s-meta-share-2-weeks_>_&]:[background:linear-gradient(130deg,_var(--meta-tint),_hsl(var(--card))_65%)]',
+          '[#s-recent-tournaments_>_&]:p-4',
+          '[#s-upcoming-tournaments_>_&]:p-4',
+          'max-tablet-small:p-4 max-tablet-small:rounded-[17px]',
+          'relative shadow-[0_8px_30px_hsl(var(--foreground)_/_0.12)]',
+        )}
+      >
         <TournamentDetailContent
           tournamentId={maTournamentId}
           expanded={expanded}
           setExpanded={setExpanded}
         />
-      </GridSectionContent>
+      </div>
     </GridSection>
   );
 };

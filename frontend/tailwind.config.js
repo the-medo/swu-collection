@@ -1,3 +1,5 @@
+import plugin from 'tailwindcss/plugin';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ['class'],
@@ -62,6 +64,10 @@ export default {
         },
       },
       keyframes: {
+        'homepage-weekend-glow': {
+          '0%, 100%': { boxShadow: '0 0 3px 0 #49ad7120' },
+          '50%': { boxShadow: '0 0 12px 1px #49ad7145' },
+        },
         'accordion-down': {
           from: {
             height: '0',
@@ -80,9 +86,21 @@ export default {
         },
       },
       animation: {
+        'homepage-weekend-glow': 'homepage-weekend-glow 3.5s ease-in-out infinite',
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
     },
   },
+  plugins: [
+    plugin(({ addVariant }) => {
+      // Inclusive queries, widest first. Using variants keeps the shared .container widths intact.
+      addVariant('max-desktop', '@media (max-width: 1200px)');
+      addVariant('max-tablet', '@media (max-width: 1000px)');
+      addVariant('max-tablet-small', '@media (max-width: 767px)');
+      addVariant('max-mobile', '@media (max-width: 640px)');
+      addVariant('max-phone', '@media (max-width: 480px)');
+      addVariant('max-small-phone', '@media (max-width: 380px)');
+    }),
+  ],
 };

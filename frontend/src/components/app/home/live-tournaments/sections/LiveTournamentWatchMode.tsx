@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils.ts';
 import { useMemo, useState } from 'react';
 import { ExternalLink, RefreshCw, X } from 'lucide-react';
 import { Link, useNavigate } from '@tanstack/react-router';
@@ -68,11 +69,11 @@ function WatchModeHeader({
   const meleeUrl = tournament ? getMeleeUrl(tournament.tournament.meleeId) : null;
 
   return (
-    <div className="rounded-md border bg-background px-4 py-3">
-      <div className="flex items-start justify-between gap-3">
+    <div className="live-watch-header py-4.5 px-5 border border-border rounded-[14px] bg-card">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="mb-2 flex flex-wrap items-center gap-2">
-            <h2 className="mb-0! text-xl font-semibold leading-tight">
+            <h2 className="mb-0! text-xl font-semibold leading-tight border-0! p-0!">
               {tournament?.tournament.name ?? resourceTitle}
             </h2>
             {tournament && (
@@ -170,7 +171,12 @@ export function LiveTournamentWatchMode({
   };
 
   return (
-    <div className="grid min-h-0 w-full grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_350px]">
+    <div
+      className={cn(
+        'live-watch-layout grid grid-cols-[minmax(0,_1fr)_340px] gap-6',
+        'max-desktop:grid-cols-1',
+      )}
+    >
       <section className="min-w-0 space-y-3">
         <WatchModeHeader
           resourceTitle={resourceTitle}
@@ -182,13 +188,24 @@ export function LiveTournamentWatchMode({
         {selectedResource && hasVideo ? (
           <YouTubeEmbed url={selectedResource.resourceUrl} title={resourceTitle} />
         ) : (
-          <div className="flex min-h-[22rem] items-center justify-center rounded-md border border-dashed bg-muted/20 p-6 text-center text-sm text-muted-foreground">
+          <div
+            className={cn(
+              'flex min-h-[22rem] items-center justify-center rounded-md border border-dashed bg-muted/20 p-6',
+              'text-center text-sm text-muted-foreground',
+            )}
+          >
             Stream video is unavailable.
           </div>
         )}
       </section>
 
-      <aside className="grid content-start gap-4 lg:sticky lg:top-2 lg:max-h-[calc(100vh-1rem)] lg:overflow-y-auto lg:pr-1">
+      <aside
+        className={cn(
+          'live-watch-sidebar sticky top-4 max-h-[calc(100dvh_-_48px)] overflow-y-auto overscroll-contain grid',
+          'content-start min-w-0 gap-6 p-5 border border-border rounded-[16px] bg-card',
+          'max-desktop:static max-desktop:max-h-none max-desktop:overflow-visible max-desktop:overscroll-auto',
+        )}
+      >
         <WatchedPlayersSection detail={detail} />
         <div className="border-t pt-4">
           <WatchModeInProgressSection running={running} detail={detail} />

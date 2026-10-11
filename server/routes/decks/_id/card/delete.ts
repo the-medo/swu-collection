@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { zValidator } from '@hono/zod-validator';
 import { zDeckCardDeleteRequest } from '../../../../../types/ZDeckCard.ts';
 import { db } from '../../../../db';
@@ -29,7 +29,18 @@ export const deckIdCardDeleteRoute = new Hono<AuthExtension>().delete(
 
     const primaryKeyFilters = [deckId, cardId, board];
 
-    const deletedDeckCard = (await db.delete(deckCardTable).where(and(...primaryKeyFilters)))[0];
+    const deletedDeckCard = await db.transaction(async tx => {
+      const [deleted] = await tx
+        .delete(deckCardTable)
+        .where(and(...primaryKeyFilters))
+        .returning();
+      if (deleted)
+        await tx
+          .update(deckTable)
+          .set({ updatedAt: sql`NOW()` })
+          .where(deckTableId);
+      return deleted;
+    });
 
     return c.json({ data: deletedDeckCard });
   },

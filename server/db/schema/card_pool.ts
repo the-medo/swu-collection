@@ -8,6 +8,8 @@ import {
   pgEnum,
   boolean,
   primaryKey,
+  date,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { user } from './auth-schema.ts';
 import type { InferSelectModel } from 'drizzle-orm';
@@ -37,6 +39,8 @@ export const cardPools = pgTable(
     custom: boolean('custom').notNull().default(false),
     status: poolStatusEnum('status'),
     visibility: visibilityEnum('visibility'),
+    // UTC challenge day. Ordinary pools leave this null; the cron owns this field.
+    dailyDate: date('daily_date', { mode: 'string' }),
     archivedAt: timestamp('archived_at', { mode: 'string' }),
     createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
@@ -49,6 +53,7 @@ export const cardPools = pgTable(
     visIdx: index('cp-vis_idx').on(table.visibility),
     createdIdx: index('cp-created_idx').on(table.createdAt),
     updatedIdx: index('cp-updated_idx').on(table.updatedAt),
+    dailyDateUnique: uniqueIndex('cp-daily_date_unique').on(table.dailyDate),
   }),
 );
 

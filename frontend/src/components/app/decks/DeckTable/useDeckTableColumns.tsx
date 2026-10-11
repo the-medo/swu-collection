@@ -12,10 +12,8 @@ import { MoreHorizontal } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { dateRenderer } from '@/lib/table/dateRenderer.tsx';
 import { usePutDeck } from '@/api/decks/usePutDeck.ts';
-import { useCardList } from '@/api/lists/useCardList.ts';
 import { getFormatName, UserDeckData } from './deckTableLib.tsx';
-import CardImage from '@/components/app/global/CardImage.tsx';
-import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { DeckArtwork } from '@/components/app/decks/DeckArtwork.tsx';
 import { cn } from '@/lib/utils.ts';
 import { DataTableViewMode, ExtendedColumnDef } from '@/components/ui/data-table.tsx';
 import { deckPrivacyRenderer } from '@/lib/table/deckPrivacyRenderer.tsx';
@@ -46,7 +44,6 @@ export function useDeckTableColumns({
   showSelection,
   selectionLimit,
 }: DeckTableColumnsProps): ExtendedColumnDef<UserDeckData>[] {
-  const { data: cardList } = useCardList();
   const putDeckMutation = usePutDeck(undefined);
 
   return useMemo(() => {
@@ -106,47 +103,13 @@ export function useDeckTableColumns({
       cell: ({ row }) => {
         const deck = row.original.deck;
 
-        const leader1 = deck.leaderCardId1 ? cardList?.cards[deck.leaderCardId1] : undefined;
-        const leader2 = deck.leaderCardId2 ? cardList?.cards[deck.leaderCardId2] : undefined;
-        const base = deck.baseCardId ? cardList?.cards[deck.baseCardId] : undefined;
-
         return (
-          <div
-            className={cn('flex gap-1', {
-              'justify-center': view === 'box',
-            })}
-          >
-            <CardImage
-              card={leader1}
-              cardVariantId={leader1 ? selectDefaultVariant(leader1) : undefined}
-              forceHorizontal={true}
-              size="w100"
-              backSideButton={false}
-            >
-              No leader
-            </CardImage>
-            {leader2 && (
-              <div className="-ml-14">
-                <CardImage
-                  card={leader2}
-                  cardVariantId={leader1 ? selectDefaultVariant(leader2) : undefined}
-                  forceHorizontal={true}
-                  size="w100"
-                  backSideButton={false}
-                />
-              </div>
-            )}
-            <div className={cn({ '-ml-12': !!leader2 })}>
-              <CardImage
-                card={base}
-                cardVariantId={base ? selectDefaultVariant(base) : undefined}
-                forceHorizontal={true}
-                size="w100"
-                backSideButton={false}
-              >
-                No base
-              </CardImage>
-            </div>
+          <div className={cn('flex min-h-[76px] px-1 py-4', { 'justify-center': view === 'box' })}>
+            <DeckArtwork
+              leaderId={deck.leaderCardId1}
+              leader2Id={deck.leaderCardId2}
+              baseId={deck.baseCardId}
+            />
           </div>
         );
       },
@@ -315,7 +278,6 @@ export function useDeckTableColumns({
 
     return definitions;
   }, [
-    cardList,
     putDeckMutation,
     view,
     isCompactBoxView,

@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils.ts';
 import * as React from 'react';
 import { useMemo, useState } from 'react';
 import type { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
@@ -185,7 +186,12 @@ const WeeklyChangeAreaBumpTooltip: React.FC<WeeklyChangeAreaBumpTooltipProps> = 
     <div className="flex items-center justify-end gap-1">
       <span className="font-semibold tabular-nums text-sm">{isPercent ? formatPct(v) : v}</span>
       {place ? (
-        <span className="inline-flex items-center rounded-full bg-muted px-1 py-px text-[9px] font-medium text-muted-foreground">
+        <span
+          className={cn(
+            'inline-flex items-center rounded-full bg-muted px-1 py-px text-[9px] font-medium',
+            'text-muted-foreground',
+          )}
+        >
           {toOrdinal(place)}
         </span>
       ) : null}
@@ -207,7 +213,12 @@ const WeeklyChangeAreaBumpTooltip: React.FC<WeeklyChangeAreaBumpTooltipProps> = 
   const showAsPercent = !showCounts;
 
   return (
-    <div className="bg-card p-1 xrounded-md xshadow-md xborder">
+    <div
+      className={cn(
+        'meta-weekly-detail p-3 border border-[color:var(--meta-line)] rounded-[14px] bg-[var(--meta-tint)]',
+        '[&_th]:font-medium',
+      )}
+    >
       <div className="flex flex-col gap-2">
         <div className="w-full flex items-center justify-center gap-2 font-medium">
           {labelRenderer(deckKey, metaInfo, 'image-small')}
@@ -288,7 +299,11 @@ const WeeklyChangeAreaBumpTooltip: React.FC<WeeklyChangeAreaBumpTooltipProps> = 
           <div className="mt-1">
             <button
               type="button"
-              className="text-[11px] text-muted-foreground hover:text-foreground underline"
+              className={cn(
+                'text-[11px] text-muted-foreground',
+                'hover:text-foreground',
+                'underline',
+              )}
               onClick={() => setShowCounts(prev => !prev)}
             >
               {showAsPercent ? 'Display counts' : 'Display percentages'}

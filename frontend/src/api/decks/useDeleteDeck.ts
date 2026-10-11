@@ -25,6 +25,7 @@ export const useDeleteDeck = () => {
         [deckId],
         result.data.cardPoolId ? [result.data.cardPoolId] : [],
       );
+      void queryClient.invalidateQueries({ queryKey: ['decks'] });
     },
     onError: error => {
       toast({

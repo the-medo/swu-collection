@@ -1,2 +1,1 @@
-export type HomepageMode = 'snapshot' | 'live';
-export type UserHomepageMode = 'default' | HomepageMode;
+export type { HomepageMode, UserHomepageMode } from '../../../../../shared/types/homepage.ts';

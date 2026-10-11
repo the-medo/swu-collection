@@ -3,6 +3,7 @@ import { db } from '../../db';
 import { discussion } from '../../db/schema/discussion.ts';
 import type { DiscussionType } from '../../../shared/types/discussions.ts';
 import type { DiscussionPolicy } from './policy.ts';
+import { dailyPoolDiscussionAttachment } from '../card-pools/discussionAttachment.ts';
 import { deckDiscussionAttachment } from '../decks/discussionAttachment.ts';
 import { cardDiscussionAttachment } from '../cards/discussionAttachment.ts';
 
@@ -24,6 +25,7 @@ const attachments: ReadonlyMap<string, DiscussionAttachment> = new Map(
   Object.entries({
     deck: deckDiscussionAttachment,
     'card-detail': cardDiscussionAttachment,
+    'daily-pool': dailyPoolDiscussionAttachment,
   } satisfies Record<DiscussionType, DiscussionAttachment>),
 );
 export function getDiscussionAttachment(type: string): DiscussionAttachment | undefined {

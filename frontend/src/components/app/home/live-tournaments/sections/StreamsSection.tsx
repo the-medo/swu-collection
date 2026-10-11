@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils.ts';
 import { useMemo, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
@@ -60,7 +61,8 @@ export function StreamsSection({
     <>
       <section className="flex w-full flex-col gap-3">
         <LiveSectionHeader
-          title="Streams"
+          title="Streams & coverage"
+          detail="Find your table."
           action={
             <div className="flex items-center gap-2">
               {pendingResourceCount > 0 ? (
@@ -82,23 +84,29 @@ export function StreamsSection({
           }
         />
         {streamEntries.length === 0 ? (
-          <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+          <div
+            className={cn(
+              'live-quiet-state m-0 py-5.5 px-4 border border-dashed border-border rounded-[12px]',
+              'text-muted-foreground text-[12px] leading-[1.8]!',
+            )}
+          >
             No approved stream links yet.
           </div>
         ) : (
           <div className="space-y-3">
             <div className="grid gap-3">
-              {visibleResources.map(({ resource, tournament }) => (
+              {visibleResources.map(({ resource, tournament }, index) => (
                 <TournamentWeekendStreamCard
                   key={resource.id}
                   resource={resource}
+                  compact={index > 0}
                   tournament={tournament}
                 />
               ))}
             </div>
             {hasMoreStreams ? (
               <Button type="button" variant="outline" onClick={() => setAllStreamsDialogOpen(true)}>
-                View all
+                View all {streamEntries.length} streams
               </Button>
             ) : null}
           </div>

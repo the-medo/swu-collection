@@ -7,6 +7,8 @@ export type DailySnapshotMetaView = 'leaders' | 'leadersAndBase';
 interface MetaViewSelectorProps {
   value: DailySnapshotMetaView;
   onChange: (value: DailySnapshotMetaView) => void;
+  ariaLabel?: string;
+  className?: string;
 }
 
 const options: ToggleOption[] = [
@@ -14,7 +16,12 @@ const options: ToggleOption[] = [
   { value: 'leadersAndBase', label: 'Leaders & Base' },
 ];
 
-const MetaViewSelector: React.FC<MetaViewSelectorProps> = ({ value, onChange }) => {
+const MetaViewSelector: React.FC<MetaViewSelectorProps> = ({
+  value,
+  onChange,
+  ariaLabel,
+  className,
+}) => {
   const onValueChange = useCallback(
     (v: string) => {
       onChange(v as DailySnapshotMetaView);
@@ -22,7 +29,15 @@ const MetaViewSelector: React.FC<MetaViewSelectorProps> = ({ value, onChange }) 
     [onChange],
   );
 
-  return <GenericToggleSelector options={options} value={value} onValueChange={onValueChange} />;
+  return (
+    <GenericToggleSelector
+      options={options}
+      value={value}
+      onValueChange={onValueChange}
+      ariaLabel={ariaLabel}
+      className={className}
+    />
+  );
 };
 
 export default MetaViewSelector;

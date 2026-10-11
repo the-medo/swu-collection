@@ -1,9 +1,11 @@
+import { cn } from '@/lib/utils.ts';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { ResponsivePie } from '@nivo/pie';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { useChartColorsAndGradients } from '@/components/app/tournaments/TournamentMeta/useChartColorsAndGradients.tsx';
 import type { DailySnapshotMetaView } from './MetaViewSelector.tsx';
+import { useReducedMotion } from 'motion/react';
 
 export interface ProcessedDataItem {
   key: string;
@@ -25,6 +27,7 @@ const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({
   onClick,
 }) => {
   const labelRenderer = useLabel();
+  const reducedMotion = useReducedMotion();
   const pieChartColorDefinitions = useChartColorsAndGradients();
 
   // Transform processed data into chart data
@@ -101,35 +104,35 @@ const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({
   }
 
   return (
-    <div className="flex flex-col overflow-visible max-w-[250px] @[850px]/meta-2-weeks:max-w-[350px]">
-      <div className="mx-auto aspect-square h-[300px] max-h-[350px] w-full overflow-visible">
-        <ResponsivePie
-          data={chartData}
-          margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-          innerRadius={0.5}
-          padAngle={0.7}
-          cornerRadius={3}
-          activeOuterRadiusOffset={8}
-          arcLinkLabelsSkipAngle={10}
-          colors={['#3B3B3B']}
-          arcLinkLabelsThickness={0}
-          arcLinkLabel={() => ''}
-          arcLabelsSkipAngle={10}
-          arcLabelsTextColor="#fff"
-          defs={chartDefs}
-          fill={fill}
-          onClick={node => onClick?.(node.id as string)}
-          tooltip={({ datum }) => (
-            <div className="bg-card p-2 rounded-md shadow-md border">
-              <div className="flex items-center gap-2">
-                {labelRenderer(datum.id as string, metaInfo, 'compact')}
-                <span className="font-bold">{datum.value}</span>
-                <span className="text-xs">({((datum.value / totalCount) * 100).toFixed(1)}%)</span>
-              </div>
+    <div className={cn('meta-share-donut w-full max-w-70 aspect-[1]', 'max-tablet-small:max-w-60')}>
+      <ResponsivePie
+        data={chartData}
+        margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+        innerRadius={0.5}
+        padAngle={0.7}
+        cornerRadius={3}
+        activeOuterRadiusOffset={8}
+        arcLinkLabelsSkipAngle={10}
+        colors={['#3B3B3B']}
+        arcLinkLabelsThickness={0}
+        arcLinkLabel={() => ''}
+        arcLabelsSkipAngle={10}
+        arcLabelsTextColor="#fff"
+        defs={chartDefs}
+        fill={fill}
+        animate={!reducedMotion}
+        layers={['arcs', 'arcLabels']}
+        onClick={node => onClick?.(node.id as string)}
+        tooltip={({ datum }) => (
+          <div className="bg-card p-2 rounded-md shadow-md border">
+            <div className="flex items-center gap-2">
+              {labelRenderer(datum.id as string, metaInfo, 'compact')}
+              <span className="font-bold">{datum.value}</span>
+              <span className="text-xs">({((datum.value / totalCount) * 100).toFixed(1)}%)</span>
             </div>
-          )}
-        />
-      </div>
+          </div>
+        )}
+      />
     </div>
   );
 };

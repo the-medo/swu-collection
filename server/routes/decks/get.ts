@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { and, eq, gt, inArray, notExists, or, sql } from 'drizzle-orm';
+import { and, eq, gt, inArray, ne, notExists, or, sql } from 'drizzle-orm';
 import { deckFolder, deckFolderDeck } from '../../db/schema/deck_folder.ts';
 import { deck as deckTable } from '../../db/schema/deck.ts';
 import { db } from '../../db';
@@ -21,6 +21,7 @@ import { getSharedDeckFolder } from '../../lib/decks/deckFolders.ts';
 
 export const zDeckQueryParams = zPaginationParams.extend({
   userId: z.string().optional(),
+  excludeUserId: z.string().min(1).optional(),
   folderId: z.union([z.guid(), z.literal('unfiled')]).optional(),
   sharedFolderId: z.guid().optional(),
   favorite: booleanPreprocessor.optional().default(false),
@@ -55,6 +56,7 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
     const user = c.get('user');
     const {
       userId,
+      excludeUserId,
       folderId,
       sharedFolderId,
       favorite,
@@ -127,6 +129,9 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
 
     if (userId) {
       filters.push(eq(deckTable.userId, userId));
+    }
+    if (excludeUserId) {
+      filters.push(ne(deckTable.userId, excludeUserId));
     }
 
     // Format filter

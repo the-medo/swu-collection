@@ -7,6 +7,7 @@ import { useUser } from '@/hooks/useUser.ts';
 import { deckKeys } from './queryKeys.ts';
 import { deckDiscussionKeys } from './discussionKeys.ts';
 import { invalidateBoundDiscussion } from './discussionCache.ts';
+import { dailySealedKeys } from '@/api/card-pools/dailySealedKeys.ts';
 
 export const usePutDeck = (deckId: string | undefined) => {
   const queryClient = useQueryClient();
@@ -36,6 +37,7 @@ export const usePutDeck = (deckId: string | undefined) => {
     onSuccess: result => {
       void queryClient.invalidateQueries({ queryKey: deckDiscussionKeys.deck(result.data.id) });
       void invalidateBoundDiscussion(queryClient, result.data.id);
+      void queryClient.invalidateQueries({ queryKey: dailySealedKeys.all });
       const $getDeck = api.deck[':id'].$get;
       type ResType = InferResponseType<typeof $getDeck>;
 
@@ -69,6 +71,8 @@ export const usePutDeck = (deckId: string | undefined) => {
           queryClient.setQueryData(qk, { ...qd, pages: newPages });
         }
       });
+      // A changed timestamp or format can alter both list order and membership.
+      void queryClient.invalidateQueries({ queryKey: ['decks'] });
 
       toast({
         title: 'Deck updated successfully',

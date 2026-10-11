@@ -24,9 +24,17 @@ export const getNextDecksPageParam = (
   return allPages.reduce((offset, page) => offset + (page.data?.length ?? 0), 0);
 };
 
-export const useGetDecks = (props: GetDecksRequest) => {
+type DeckListOptions = {
+  enabled?: boolean;
+  sessionScoped?: boolean;
+  staleTime?: number;
+  refetchOnMount?: boolean | 'always';
+};
+
+export const useGetDecks = (props: GetDecksRequest, options: DeckListOptions = {}) => {
   const {
     userId,
+    excludeUserId,
     folderId,
     sharedFolderId,
     favorite,
@@ -37,6 +45,7 @@ export const useGetDecks = (props: GetDecksRequest) => {
     aspects,
     sort = 'deck.updated_at',
     order = 'desc',
+    limit = PAGE_SIZE,
   } = props;
   const session = useSession();
   const viewer = session.data?.user;
@@ -47,9 +56,10 @@ export const useGetDecks = (props: GetDecksRequest) => {
     favorite ? 'favorite' : 'all',
     {
       userId,
+      excludeUserId,
       folderId,
       sharedFolderId,
-      ...(sharedFolderId ? { viewerId: viewer?.id ?? 'anonymous' } : {}),
+      ...(sharedFolderId || options.sessionScoped ? { viewerId: viewer?.id ?? 'anonymous' } : {}),
       format,
       leaders,
       base,
@@ -57,33 +67,41 @@ export const useGetDecks = (props: GetDecksRequest) => {
       aspects,
       sort,
       order,
+      limit,
     },
   ];
 
   return useInfiniteQuery({
     queryKey: qk,
-    enabled: !sharedFolderId || !session.isPending,
-    queryFn: async ({ pageParam }) => {
+    enabled:
+      options.enabled !== false &&
+      (!sharedFolderId || !session.isPending) &&
+      (!options.sessionScoped || (!session.isPending && !session.error)),
+    queryFn: async ({ pageParam, signal }) => {
       const leadersParam = Array.isArray(leaders) ? leaders.join(',') : leaders;
       const aspectsParam = aspects && aspects.length > 0 ? aspects.join(',') : undefined;
 
-      const response = await api.deck.$get({
-        query: {
-          userId,
-          folderId,
-          sharedFolderId,
-          favorite: favorite ? 'true' : undefined,
-          format: format?.toString(),
-          leaders: leadersParam,
-          base,
-          baseAspect,
-          aspects: aspectsParam,
-          sort,
-          order,
-          limit: PAGE_SIZE.toString(),
-          offset: pageParam.toString(),
+      const response = await api.deck.$get(
+        {
+          query: {
+            userId,
+            excludeUserId,
+            folderId,
+            sharedFolderId,
+            favorite: favorite ? 'true' : undefined,
+            format: format?.toString(),
+            leaders: leadersParam,
+            base,
+            baseAspect,
+            aspects: aspectsParam,
+            sort,
+            order,
+            limit: limit.toString(),
+            offset: pageParam.toString(),
+          },
         },
-      });
+        { init: { signal } },
+      );
 
       if (!response.ok) {
         throw await createApiError(response, 'Failed to load decks');
@@ -94,7 +112,8 @@ export const useGetDecks = (props: GetDecksRequest) => {
     },
     initialPageParam: 0,
     getNextPageParam: getNextDecksPageParam,
-    staleTime: sharedFolderId ? 0 : Infinity,
+    staleTime: options.staleTime ?? (sharedFolderId ? 0 : Infinity),
+    refetchOnMount: options.refetchOnMount,
     refetchInterval: sharedFolderId ? 30_000 : false,
   });
 };

@@ -1,3 +1,4 @@
+import { TrendingUp } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { ResponsiveAreaBump } from '@nivo/bump';
@@ -9,12 +10,8 @@ import type {
 } from '../../../../../../../types/DailySnapshots.ts';
 import { useChartColorsAndGradients } from '@/components/app/tournaments/TournamentMeta/useChartColorsAndGradients.tsx';
 import type { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
-import MetaPartSelector, {
-  type DailySnapshotMetaPart,
-} from '../MetaShareTwoWeeks/MetaPartSelector.tsx';
-import MetaViewSelector, {
-  type DailySnapshotMetaView,
-} from '../MetaShareTwoWeeks/MetaViewSelector.tsx';
+import { type DailySnapshotMetaPart } from '../MetaShareTwoWeeks/MetaPartSelector.tsx';
+import { type DailySnapshotMetaView } from '../MetaShareTwoWeeks/MetaViewSelector.tsx';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
@@ -23,6 +20,9 @@ import WeeklyChangeAreaBumpTooltip from '@/components/app/daily-snapshots/sectio
 import { ArrowCell } from '@/components/app/daily-snapshots/sections/WeeklyChange/ArrowCell.tsx';
 import WeeklyChangeDropdownMenu from '@/components/app/daily-snapshots/sections/WeeklyChange/WeeklyChangeDropdownMenu.tsx';
 import SectionHeader from '../components/SectionHeader.tsx';
+import MetaFilters from '../components/MetaFilters.tsx';
+import MetaEmptyState from '../components/MetaEmptyState.tsx';
+import { useReducedMotion } from 'motion/react';
 
 export interface WeeklyChangeProps {
   payload: DailySnapshotSectionData<SectionWeeklyChange>;
@@ -53,6 +53,7 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
   const metaInfo: MetaInfo = metaView === 'leaders' ? 'leaders' : 'leadersAndBase';
   const colorDefsFactory = useChartColorsAndGradients();
   const labelRenderer = useLabel();
+  const reducedMotion = useReducedMotion();
 
   // active series for the always-visible details panel (defaults to top series)
   const [activeDeckKey, setActiveDeckKey] = useState<string | null>(null);
@@ -181,14 +182,13 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
   }, [chartData]);
 
   return (
-    <div className="h-full w-full flex flex-col gap-2">
+    <div className="meta-section-content flex flex-col gap-4.5 w-full h-full min-w-0">
       <SectionHeader
-        headerAndTooltips={
+        title="Weekly change"
+        icon={TrendingUp}
+        description="Last two weeks · How the field is shifting"
+        info={
           <>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h4>Weekly change</h4>
-              <h5>(last 2 weeks)</h5>
-            </div>
             <SectionInfoTooltip
               dailySnapshot={dailySnapshot}
               sectionUpdatedAt={sectionUpdatedAt}
@@ -198,10 +198,10 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
               <div>This section compares meta share over last two weeks.</div>
               <div>
                 Values in chart are sorted from the most played (on top) to less played.
-                <ul className={'list-disc ml-4'}>
+                <ul className="list-disc ml-4">
                   <li>
-                    <span className="font-bold">total / top 8</span> - compares meta share of {TOP_X}{' '}
-                    most played leaders (+bases) from both weeks
+                    <span className="font-bold">total / top 8</span> - compares meta share of{' '}
+                    {TOP_X} most played leaders (+bases) from both weeks
                   </li>
                   <li>
                     <span className="font-bold">champions</span> - all winning leaders (+bases) are
@@ -210,8 +210,9 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
                 </ul>
               </div>
               <div>
-                In table, multiple leaders (+bases) can show the same placement (eg. 1st, 2nd, 3rd) in
-                case they have the same count. In this case, the "best" shared placement is shown.
+                In table, multiple leaders (+bases) can show the same placement (eg. 1st, 2nd, 3rd)
+                in case they have the same count. In this case, the "best" shared placement is
+                shown.
               </div>
               <div>
                 Arrows in the table <ArrowCell p1={10} p2={1} /> <ArrowCell p1={1} p2={10} /> show
@@ -223,26 +224,25 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
         }
         dropdownMenu={<WeeklyChangeDropdownMenu />}
       />
-      <div className="flex gap-2 justify-start items-center">
-        <div className="flex gap-2 justify-start items-center flex-wrap mb-2">
-          <div className="mr-4">
-            <MetaPartSelector value={metaPart} onChange={setMetaPart} />
-          </div>
-          <MetaViewSelector value={metaView} onChange={setMetaView} />
-        </div>
-      </div>
+      <MetaFilters
+        metaPart={metaPart}
+        setMetaPart={setMetaPart}
+        metaView={metaView}
+        setMetaView={setMetaView}
+      />
 
-      <div className="w-full overflow-visible">
-        <div className="flex flex-wrap gap-3">
-          <div className="min-w-[250px] flex-2 overflow-visible">
-            <div className="h-[250px] w-full">
-              {chartData.length === 0 ? (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                  No data available for weekly change
-                </div>
-              ) : (
+      {chartData.length === 0 ? (
+        <MetaEmptyState title="Waiting for the weekly picture" icon={TrendingUp}>
+          Compare the rise and fall of leaders once results from both weeks are available.
+        </MetaEmptyState>
+      ) : (
+        <div className="w-full overflow-visible">
+          <div className="meta-weekly-layout flex items-start flex-wrap gap-4.5">
+            <div className="meta-weekly-chart flex-[2_1_250px] min-w-0">
+              <div className="h-[250px] w-full">
                 <ResponsiveAreaBump
                   data={chartData}
+                  animate={!reducedMotion}
                   margin={{ top: 0, right: 10, bottom: 0, left: 10 }}
                   spacing={4}
                   colors={['#3B3B3B']}
@@ -261,9 +261,7 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onClick={(serie: any) => setActiveDeckKey(serie.id as string)}
                 />
-              )}
-            </div>
-            {chartData.length > 0 && (
+              </div>
               <div className="mt-1 text-xs text-muted-foreground flex justify-between px-1 w-full">
                 <span className="truncate" title={x1LabelRender}>
                   {x1LabelRender}
@@ -272,29 +270,25 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
                   {x2LabelRender}
                 </span>
               </div>
-            )}
-          </div>
+            </div>
 
-          <div className="min-w-[230px] shrink-0 flex-1">
-            {chartData.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                No selection
-              </div>
-            ) : activeDeckKey ? (
-              <WeeklyChangeAreaBumpTooltip
-                deckKey={activeDeckKey}
-                metaInfo={metaInfo}
-                payload={payload}
-                labelRenderer={labelRenderer}
-              />
-            ) : (
-              <div className="text-sm text-muted-foreground">
-                Hover or click a line to see details.
-              </div>
-            )}
+            <div className="meta-weekly-selection flex-[1_1_230px] min-w-0">
+              {activeDeckKey ? (
+                <WeeklyChangeAreaBumpTooltip
+                  deckKey={activeDeckKey}
+                  metaInfo={metaInfo}
+                  payload={payload}
+                  labelRenderer={labelRenderer}
+                />
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  Hover or click a line to see details.
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

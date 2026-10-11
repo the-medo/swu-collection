@@ -1,221 +1,101 @@
-import { ExternalLink, Trophy } from 'lucide-react';
 import type { ReactNode } from 'react';
-import Flag from '@/components/app/global/Flag.tsx';
-import TournamentDetailDialogButton from '@/components/app/tournaments/TournamentDetailDialog/TournamentDetailDialogButton.tsx';
-import { Badge } from '@/components/ui/badge.tsx';
+import { cva } from 'class-variance-authority';
+import { Link } from '@tanstack/react-router';
+import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils.ts';
 import type { LiveTournamentWeekendTournamentEntry } from '../liveTournamentTypes.ts';
-import {
-  formatDateTime,
-  getMeleeUrl,
-  getPlayerCount,
-  getRoundLabel,
-  getUndefeatedPlayers,
-} from '../liveTournamentUtils.ts';
-import { formatDataById } from '../../../../../../../types/Format.ts';
-import type { CountryCode } from '../../../../../../../server/db/lists.ts';
-import { BracketPreview } from './BracketPreview.tsx';
-import { LiveStatusBadge } from './LiveStatusBadge.tsx';
+import { getMeleeUrl } from '../liveTournamentUtils.ts';
+import type { TournamentLayout } from '../useTournamentLayout.ts';
 import { TournamentCardActionsMenu } from './TournamentCardActionsMenu.tsx';
-import { WinnerDeckDecoration } from './WinnerDeckDecoration.tsx';
-import { Link } from '@tanstack/react-router';
+import { TournamentRow } from './TournamentRow.tsx';
+import { TournamentBox } from './TournamentBox.tsx';
 
-function getMatchesRemainingLabel(entry: LiveTournamentWeekendTournamentEntry) {
-  const remaining = entry.weekendTournament.matchesRemaining;
-  const total = entry.weekendTournament.matchesTotal;
+const tournamentCardVariants = cva(
+  'live-event-card min-w-0 border border-border bg-card shadow-[0_4px_14px_-14px_#161c20a0]',
+  {
+    variants: {
+      layout: {
+        boxes: cn(
+          'flex flex-col gap-3 rounded-[14px] p-4',
+          'data-[status=running]:border-t-2 data-[status=running]:border-t-[var(--live-accent)] data-[status=running]:pt-[15px]',
+          '[&_.live-event-details:has(.live-event-champion)]:mt-auto',
+        ),
+        rows: cn(
+          'grid min-h-15.5 grid-cols-[minmax(0,1fr)_auto] items-center content-center gap-x-2.5 gap-y-0.5 rounded-[9px] px-2.5 py-[7px]',
+          "[grid-template-areas:'title_controls'_'info_controls'_'progress_controls']",
+          'data-[result=true]:grid-cols-[184px_minmax(0,1fr)_auto]',
+          "data-[result=true]:[grid-template-areas:'result_title_controls'_'result_info_controls'_'result_progress_controls']",
+          'data-[status=running]:border-l-3 data-[status=running]:border-l-[var(--live-accent)] data-[status=running]:pl-2',
+          '@max-[700.01px]:data-[result=true]:grid-cols-[152px_minmax(0,1fr)_auto]',
+          "@max-[560.01px]:[grid-template-areas:'title_title'_'info_info'_'bracket_controls'_'progress_progress']",
+          '@max-[560.01px]:data-[result=true]:grid-cols-[66px_minmax(0,1fr)_auto] @max-[560.01px]:data-[result=true]:gap-x-2',
+          "@max-[560.01px]:data-[result=true]:[grid-template-areas:'result_title_title'_'result_info_info'_'result_bracket_controls'_'result_progress_progress']",
+        ),
+      },
+    },
+  },
+);
 
-  if (remaining === null || remaining === undefined) return null;
-
-  const matchWord = remaining === 1 ? 'match' : 'matches';
-  if (total === null || total === undefined) return `${remaining} ${matchWord} remaining`;
-
-  return `${remaining}/${total} ${matchWord} remaining`;
-}
-
-function getRunningProgressLabel(entry: LiveTournamentWeekendTournamentEntry) {
-  const roundLabel = getRoundLabel(entry);
-  const matchesRemainingLabel = getMatchesRemainingLabel(entry);
-
-  if (roundLabel && matchesRemainingLabel) return `${roundLabel} - ${matchesRemainingLabel}`;
-  return roundLabel ?? matchesRemainingLabel;
-}
-
-function getChampionName(entry: LiveTournamentWeekendTournamentEntry) {
-  const meleePlayerUsername = entry.winningDeck?.tournamentDeck.meleePlayerUsername?.trim();
-
-  if (meleePlayerUsername) return meleePlayerUsername;
-
-  return entry.championStanding?.playerDisplayName ?? 'Champion';
-}
-
-export function TournamentInfoRow({
-  entry,
-  meleeUrl,
-  showProgress,
-}: {
-  entry: LiveTournamentWeekendTournamentEntry;
-  meleeUrl: string | null;
-  showProgress: boolean;
-}) {
-  const countryCode = entry.tournament.location as CountryCode | undefined;
-  const formatLabel = formatDataById[entry.tournament.format]?.name ?? 'Unknown format';
-  const progressLabel = showProgress ? getRunningProgressLabel(entry) : null;
-
-  return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-      <span className="inline-flex items-center gap-1.5">
-        {countryCode && <Flag countryCode={countryCode} className="h-3 w-5 rounded-sm" />}
-        <span>{entry.tournament.location || 'Country unknown'}</span>
-        <span>-</span>
-        <span>{getPlayerCount(entry)}</span>
-      </span>
-      <span>{formatLabel}</span>
-      {meleeUrl ? (
-        <a
-          href={meleeUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="flex gap-1 items-center underline"
-        >
-          Melee
-          <ExternalLink className="size-3" />
-        </a>
-      ) : (
-        <span>Melee missing</span>
-      )}
-      {progressLabel && <span>{progressLabel}</span>}
-    </div>
-  );
-}
-
-function TournamentDetailActions({
-  entry,
-  weekendId,
-}: {
+export type TournamentCardContentProps = {
   entry: LiveTournamentWeekendTournamentEntry;
   weekendId: string;
-}) {
-  return (
-    <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
-      <BracketPreview
-        weekendId={weekendId}
-        tournamentId={entry.tournament.id}
-        hasBracketMatches={entry.hasBracketMatches}
-      />
-      {entry.tournament.imported && (
-        <TournamentDetailDialogButton tournamentId={entry.tournament.id} />
-      )}
-    </div>
-  );
-}
-
-function ChampionCallout({
-  entry,
-  actions,
-}: {
-  entry: LiveTournamentWeekendTournamentEntry;
-  actions: ReactNode;
-}) {
-  return (
-    <div className="relative z-20 flex w-full max-w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 py-2">
-      <div className="flex min-w-0 flex-1 items-center gap-2">
-        <Trophy className="h-5 w-5 shrink-0 text-amber-500" />
-        <div className="min-w-0">
-          <div className="truncate text-xl font-bold leading-tight">{getChampionName(entry)}</div>
-        </div>
-      </div>
-      {actions}
-    </div>
-  );
-}
+  title: ReactNode;
+  actionsMenu: ReactNode;
+};
 
 export function TournamentCard({
   entry,
   weekendId,
   weekendTournaments,
+  layout = 'boxes',
 }: {
   entry: LiveTournamentWeekendTournamentEntry;
   weekendId: string;
   weekendTournaments: LiveTournamentWeekendTournamentEntry[];
+  layout?: TournamentLayout;
 }) {
   const meleeUrl = getMeleeUrl(entry.tournament.meleeId);
-  const startTime = formatDateTime(entry.weekendTournament.exactStart);
-  const undefeatedPlayers = getUndefeatedPlayers(entry);
-  const isUpcoming = entry.weekendTournament.status === 'upcoming';
-  const isRunning = entry.weekendTournament.status === 'running';
-  const isFinished = entry.weekendTournament.status === 'finished';
-
-  return (
-    <article
+  const status = entry.weekendTournament.status;
+  const title = (
+    <h4
       className={cn(
-        'relative isolate overflow-hidden rounded-md border bg-background p-3 shadow-xs min-w-[290px] xl:min-w-[340px]',
-        'space-y-3',
+        'live-event-title flex-1 min-w-0 mx-0! mt-[3px]! mb-0! text-[14px]! font-semibold! leading-[1.45]!',
+        '[&_a]:wrap-anywhere',
+        '[&_a:hover]:underline [&_a:hover]:underline-offset-3',
+        '[&_svg]:inline [&_svg]:ml-[7px] [&_svg]:text-muted-foreground',
       )}
     >
-      {isFinished && <WinnerDeckDecoration entry={entry} />}
-
-      <div className="relative z-20 flex items-start justify-between gap-3">
-        <div
-          className={cn('min-w-0 flex-1', {
-            'max-w-[calc(100%-150px)]': isFinished && entry.winningDeck,
-          })}
-        >
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <h6 className="font-semibold leading-tight mb-0!">{entry.tournament.name}</h6>
-            <Link
-              to="/tournaments/$tournamentId"
-              params={{ tournamentId: entry.tournament.id }}
-              target="_blank"
-            >
-              <ExternalLink className="mr-2 size-3" />
-            </Link>
-            {!isFinished && <LiveStatusBadge status={entry.weekendTournament.status} />}
-            {isUpcoming && startTime && (
-              <span className="text-xs text-muted-foreground">{startTime}</span>
-            )}
-          </div>
-          <TournamentInfoRow entry={entry} meleeUrl={meleeUrl} showProgress={isRunning} />
-        </div>
-        <TournamentCardActionsMenu
-          meleeUrl={meleeUrl}
-          isLiveCheckEnabled={entry.weekendTournament.isLiveCheckEnabled}
-          tournamentId={entry.tournament.id}
-          tournamentName={entry.tournament.name}
-          weekendId={weekendId}
-          weekendTournaments={weekendTournaments}
-        />
-      </div>
-
-      {isFinished && (
-        <ChampionCallout
-          entry={entry}
-          actions={<TournamentDetailActions entry={entry} weekendId={weekendId} />}
-        />
-      )}
-
-      {!isFinished && undefeatedPlayers.length > 0 && (
-        <div className="relative z-20 flex flex-wrap items-center gap-2">
-          <div className="text-xs font-medium uppercase text-muted-foreground">Undefeated</div>
-          <div className="flex flex-wrap gap-1.5">
-            {undefeatedPlayers.slice(0, 3).map(row => (
-              <Badge key={row.playerDisplayName} variant="outline" className="rounded-md">
-                {row.playerDisplayName} {row.matchRecord}
-              </Badge>
-            ))}
-            {undefeatedPlayers.length > 3 && (
-              <Badge variant="outline" className="rounded-md">
-                +{undefeatedPlayers.length - 3}
-              </Badge>
-            )}
-          </div>
-        </div>
-      )}
-
-      {!isFinished && (
-        <div className="relative z-20">
-          <TournamentDetailActions entry={entry} weekendId={weekendId} />
-        </div>
-      )}
+      <Link
+        to="/tournaments/$tournamentId"
+        params={{ tournamentId: entry.tournament.id }}
+        target="_blank"
+        rel="noreferrer"
+        title={entry.tournament.name}
+      >
+        {entry.tournament.name}
+        <ExternalLink size={12} aria-hidden="true" />
+      </Link>
+    </h4>
+  );
+  const actionsMenu = (
+    <TournamentCardActionsMenu
+      meleeUrl={meleeUrl}
+      isLiveCheckEnabled={entry.weekendTournament.isLiveCheckEnabled}
+      tournamentId={entry.tournament.id}
+      tournamentName={entry.tournament.name}
+      weekendId={weekendId}
+      weekendTournaments={weekendTournaments}
+    />
+  );
+  const Content = layout === 'rows' ? TournamentRow : TournamentBox;
+  return (
+    <article
+      className={tournamentCardVariants({ layout })}
+      data-status={status}
+      data-layout={layout}
+      data-result={layout === 'rows' ? status === 'finished' : undefined}
+    >
+      <Content entry={entry} weekendId={weekendId} title={title} actionsMenu={actionsMenu} />
     </article>
   );
 }

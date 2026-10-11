@@ -34,6 +34,7 @@ export const usePostDeckCard = (deckId: string | undefined) => {
     },
     // On success, update the cache for the GET query.
     onSuccess: result => {
+      void queryClient.invalidateQueries({ queryKey: ['decks'] });
       // result should be something like { data: newCard }
       queryClient.setQueryData<DeckCardResponse>(deckKeys.cards(deckId, viewer?.id), oldData => {
         if (!oldData) {

@@ -14,7 +14,7 @@ const zParams = z.object({ id: z.uuid() });
 const zBody = z.object({
   name: z.string().min(1).max(200).optional(),
   description: z.string().max(2000).optional(),
-  visibility: z.enum(Visibility).default(Visibility.Unlisted),
+  visibility: z.enum(Visibility).optional(),
 });
 
 export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
@@ -41,6 +41,8 @@ export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
       if (!pool) return { status: 'not_found' as const };
       if (pool.status === 'in_progress') return { status: 'not_ready' as const };
 
+      const visibility = body.visibility ?? pool.visibility ?? Visibility.Unlisted;
+
       // format 3 => sealed/prerelease, format 4 => draft
       const formatId = pool.type === 'draft' ? 4 : 3;
 
@@ -52,7 +54,7 @@ export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
           format: formatId,
           name: body.name ?? '',
           description: body.description ?? '',
-          public: visibilityToPublicMap[body.visibility],
+          public: visibilityToPublicMap[visibility],
           cardPoolId: id,
         })
         .returning();
@@ -65,7 +67,7 @@ export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
         deckId: newDeckId,
         cardPoolId: id,
         userId: user.id,
-        visibility: body.visibility,
+        visibility,
       });
 
       // Pre-populate card_pool_deck_cards from card_pool_cards
