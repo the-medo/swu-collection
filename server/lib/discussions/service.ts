@@ -262,42 +262,54 @@ export async function createComment(
   parentId?: string | null,
 ): Promise<DiscussionResult<DiscussionComment>> {
   const references = await prepareCommentReferences(content);
-  return db.transaction(async tx => {
-    if (!(await lock(tx, id, policy))) return unavailable;
-    const parent = parentId ? await readOne(tx, id, parentId) : undefined;
-    if (parentId && (!parent || parent.deletedAt)) return gone;
-    if (parent && parent.depth >= 5)
-      return { error: 'This thread is too deep. Reply to an earlier comment.', status: 400 };
-    const normalized = await canonicalCommentReferences(tx, references);
-    if ('error' in normalized) return normalized;
-    const [saved] = await tx
-      .insert(c)
-      .values({
-        discussionId: id,
-        authorId: viewerId,
-        content: normalized.data,
-        parentId: parentId ?? null,
-        depth: parent ? parent.depth + 1 : 0,
-      })
-      .returning({ id: c.id });
-    const result = (await readOne(tx, id, saved.id))!;
-    const recipients = (await policy.notificationRecipients?.(tx, result)) ?? [];
-    const events: NewNotification[] = [];
-    // Reply notifications take precedence when the resource owner is also the
-    // parent author; createNotifications applies preferences before deduplication.
-    if (parent?.authorId && parent.authorId !== viewerId)
-      recipients.unshift({ recipientUserId: parent.authorId, type: 'comment.reply' });
-    for (const recipient of recipients)
-      events.push({
-        ...recipient,
-        actorUserId: viewerId,
-        entityType: 'discussion_comment',
-        entityId: result.id,
-        dedupeKey: `discussion.comment:${result.id}`,
-      });
-    await createNotifications(tx, events);
-    return { data: result };
-  });
+  return db.transaction(tx =>
+    createPreparedComment(tx, id, viewerId, references, policy, parentId),
+  );
+}
+
+// Resource integrations prepare catalog references before opening their transaction.
+export async function createPreparedComment(
+  tx: DiscussionTransaction,
+  id: string,
+  viewerId: string,
+  references: Awaited<ReturnType<typeof prepareCommentReferences>>,
+  policy: DiscussionPolicy,
+  parentId?: string | null,
+): Promise<DiscussionResult<DiscussionComment>> {
+  if (!(await lock(tx, id, policy))) return unavailable;
+  const parent = parentId ? await readOne(tx, id, parentId) : undefined;
+  if (parentId && (!parent || parent.deletedAt)) return gone;
+  if (parent && parent.depth >= 5)
+    return { error: 'This thread is too deep. Reply to an earlier comment.', status: 400 };
+  const normalized = await canonicalCommentReferences(tx, references);
+  if ('error' in normalized) return normalized;
+  const [saved] = await tx
+    .insert(c)
+    .values({
+      discussionId: id,
+      authorId: viewerId,
+      content: normalized.data,
+      parentId: parentId ?? null,
+      depth: parent ? parent.depth + 1 : 0,
+    })
+    .returning({ id: c.id });
+  const result = (await readOne(tx, id, saved.id))!;
+  const recipients = (await policy.notificationRecipients?.(tx, result)) ?? [];
+  const events: NewNotification[] = [];
+  // Reply notifications take precedence when the resource owner is also the
+  // parent author; createNotifications applies preferences before deduplication.
+  if (parent?.authorId && parent.authorId !== viewerId)
+    recipients.unshift({ recipientUserId: parent.authorId, type: 'comment.reply' });
+  for (const recipient of recipients)
+    events.push({
+      ...recipient,
+      actorUserId: viewerId,
+      entityType: 'discussion_comment',
+      entityId: result.id,
+      dedupeKey: `discussion.comment:${result.id}`,
+    });
+  await createNotifications(tx, events);
+  return { data: result };
 }
 export async function updateComment(
   id: string,

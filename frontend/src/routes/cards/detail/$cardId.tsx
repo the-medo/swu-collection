@@ -9,7 +9,7 @@ export const Route = createFileRoute('/cards/detail/$cardId')({
 
 function RouteComponent() {
   const { cardId } = Route.useParams();
-  const { cardTab, cardVariantId } = Route.useSearch();
+  const { cardTab, cardVariantId, cardComment } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 
   return (
@@ -17,9 +17,14 @@ function RouteComponent() {
       cardId={cardId}
       tab={cardTab ?? 'details'}
       variantId={cardVariantId}
+      focusCommentId={cardComment}
       onTabChange={tab =>
         void navigate({
-          search: previous => ({ ...previous, cardTab: tab === 'details' ? undefined : tab }),
+          search: previous => ({
+            ...previous,
+            cardTab: tab === 'details' ? undefined : tab,
+            cardComment: tab === 'rules-discussion' ? previous.cardComment : undefined,
+          }),
           resetScroll: false,
         })
       }

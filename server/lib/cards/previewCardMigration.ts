@@ -15,6 +15,7 @@ import type {
 import { selectDefaultVariant } from './selectDefaultVariant.ts';
 import { normalizePreviewCardPayload } from './previewCardPayload.ts';
 import { updateDeckInformation } from '../decks/updateDeckInformation.ts';
+import { migrateCardDiscussion } from './discussionBinding.ts';
 
 export type PreviewCardMigrationSummary = {
   previewCardId: string;
@@ -170,6 +171,8 @@ export async function migratePreviewCardToOfficial(
     const nowIso = now.toISOString();
     const migration = createMigrationSummary(previewRow.id, fromCardId, officialCardId);
     const variantMap = buildPreviewVariantIdMap(previewPayload, officialCard);
+
+    await migrateCardDiscussion(tx, fromCardId, officialCardId, officialCard.name);
 
     if (fromCardId !== officialCardId) {
       const leader1Decks = await tx

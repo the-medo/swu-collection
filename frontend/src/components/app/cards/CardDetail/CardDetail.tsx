@@ -21,11 +21,15 @@ import CardDetailDecks from './CardDetailDecks.tsx';
 import { CardPriceHistory } from './CardPriceHistory.tsx';
 import { useRole } from '@/hooks/useRole.ts';
 import { cardDetailTabSchema, type CardDetailTab } from './cardDetailSearchParams.ts';
+import CardRulesDiscussion from './CardRulesDiscussion.tsx';
+import { useCardDiscussion } from '@/api/cards/useCardDiscussion.ts';
+import { useDiscussion } from '@/api/discussions/useDiscussion.ts';
 
 interface CardDetailProps {
   cardId: string;
   tab: CardDetailTab;
   variantId?: string;
+  focusCommentId?: string;
   onTabChange: (tab: CardDetailTab) => void;
   onVariantChange: (variantId: string) => void;
 }
@@ -34,6 +38,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
   cardId,
   tab,
   variantId,
+  focusCommentId,
   onTabChange,
   onVariantChange,
 }) => {
@@ -44,6 +49,9 @@ const CardDetail: React.FC<CardDetailProps> = ({
     if (!cardList) return undefined;
     return cardList.cards[cardId];
   }, [cardList, cardId]);
+
+  const discussionBinding = useCardDiscussion(card ? cardId : '');
+  const discussion = useDiscussion(discussionBinding.data ?? '');
 
   // Default variant as initial state
   const defaultVariantId = useMemo(() => {
@@ -121,6 +129,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
             deckFormat: previous.deckFormat,
             cardTab: tab === 'details' ? undefined : tab,
             cardVariantId: activeVariantId,
+            cardComment: tab === 'rules-discussion' ? focusCommentId : undefined,
           })}
         >
           <div className="flex flex-wrap items-center gap-2">
@@ -204,11 +213,15 @@ const CardDetail: React.FC<CardDetailProps> = ({
                   onTabChange(cardDetailTabSchema.parse(value));
                 }}
               >
-                <TabsList className="mb-2 grid h-auto w-full grid-cols-2 gap-1 @[560px]/card-detail-content:grid-cols-4">
+                <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1 [&>button]:grow">
                   <TabsTrigger value="details">Card Details</TabsTrigger>
                   <TabsTrigger value="variants">Variants ({allVariants.length})</TabsTrigger>
                   <TabsTrigger value="decks">Decks</TabsTrigger>
                   <TabsTrigger value="price-history">Price history</TabsTrigger>
+                  <TabsTrigger value="rules-discussion">
+                    Rules &amp; Discussion
+                    {discussion.data && !discussion.isError && ` (${discussion.data.total})`}
+                  </TabsTrigger>
                 </TabsList>
 
                 {/* Card Details Tab */}
@@ -382,6 +395,13 @@ const CardDetail: React.FC<CardDetailProps> = ({
                 <TabsContent value="price-history" className="mt-0 space-y-4">
                   {variantPicker}
                   <CardPriceHistory cardId={cardId} variantId={activeVariantId} />
+                </TabsContent>
+                <TabsContent value="rules-discussion" className="mt-0">
+                  <CardRulesDiscussion
+                    key={cardId}
+                    cardId={cardId}
+                    focusCommentId={focusCommentId}
+                  />
                 </TabsContent>
               </Tabs>
             </CardContent>
