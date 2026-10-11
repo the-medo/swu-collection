@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { isPostEmpty, postDocumentSchemas, type PostDocument } from '../posts/content.ts';
 
-export const discussionTypes = ['deck'] as const;
+export const discussionTypes = ['deck', 'card-detail'] as const;
 export type DiscussionType = (typeof discussionTypes)[number];
 export type DiscussionTarget =
   | { discussionId: string }

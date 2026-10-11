@@ -11,6 +11,7 @@ import {
 import { getKarabastUnimplementedMap } from '../lib/karabast/unimplementedCardsCache.ts';
 import type { KarabastUnimplementedMap } from '../lib/karabast/unimplementedCards.ts';
 import type { AuthExtension } from '../auth/auth.ts';
+import { cardDiscussionRoute } from './cards/discussion.ts';
 
 // Re-exported for backward compatibility with any code still importing from here.
 export const cardListLastUpdated = getOfficialCardListVersion();
@@ -40,6 +41,7 @@ async function getKarabastUnimplementedMapForResponse(): Promise<KarabastUnimple
 }
 
 export const cardsRoute = new Hono<AuthExtension>()
+  .route('/', cardDiscussionRoute)
   .get('/:id/decks', zValidator('query', cardDecksQuerySchema), async c => {
     const cardId = c.req.param('id');
     const { tournamentId, tournamentGroupId, metaId, leaderCardId, baseCardId } =

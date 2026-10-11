@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-export const cardDetailTabSchema = z.enum(['details', 'variants', 'decks', 'price-history']);
+export const cardDetailTabSchema = z.enum([
+  'details',
+  'variants',
+  'decks',
+  'price-history',
+  'rules-discussion',
+]);
 export type CardDetailTab = z.infer<typeof cardDetailTabSchema>;
 
 export const cardDetailVariantIdSchema = z
@@ -14,6 +20,7 @@ export const cardDetailVariantIdSchema = z
 export const cardDetailSearchParams = z.object({
   cardTab: cardDetailTabSchema.optional().catch(undefined),
   cardVariantId: cardDetailVariantIdSchema,
+  cardComment: z.guid().optional().catch(undefined),
 });
 
 export function getCardDetailDialogSearch<T extends object>(

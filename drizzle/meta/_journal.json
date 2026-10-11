@@ -575,6 +575,13 @@
       "when": 1791721542544,
       "tag": "0081_artist_showcase",
       "breakpoints": true
+    },
+    {
+      "idx": 82,
+      "version": "7",
+      "when": 1791731096009,
+      "tag": "0082_card_discussion",
+      "breakpoints": true
     }
   ]
 }

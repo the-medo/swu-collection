@@ -4,6 +4,7 @@ import { discussion } from '../../db/schema/discussion.ts';
 import type { DiscussionType } from '../../../shared/types/discussions.ts';
 import type { DiscussionPolicy } from './policy.ts';
 import { deckDiscussionAttachment } from '../decks/discussionAttachment.ts';
+import { cardDiscussionAttachment } from '../cards/discussionAttachment.ts';
 
 export type DiscussionAttachment = {
   findDiscussionId: (resourceId: string) => Promise<string | undefined>;
@@ -20,10 +21,10 @@ export type DiscussionAttachment = {
 // The single registration point for resource integrations. The comment service,
 // HTTP handlers and UI do not import individual resource implementations.
 const attachments: ReadonlyMap<string, DiscussionAttachment> = new Map(
-  Object.entries({ deck: deckDiscussionAttachment } satisfies Record<
-    DiscussionType,
-    DiscussionAttachment
-  >),
+  Object.entries({
+    deck: deckDiscussionAttachment,
+    'card-detail': cardDiscussionAttachment,
+  } satisfies Record<DiscussionType, DiscussionAttachment>),
 );
 export function getDiscussionAttachment(type: string): DiscussionAttachment | undefined {
   return attachments.get(type);

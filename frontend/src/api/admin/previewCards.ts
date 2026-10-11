@@ -1,4 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { cardDiscussionKeys } from '@/api/cards/useCardDiscussion.ts';
+import { discussionKeys } from '@/api/discussions/queryKeys.ts';
 import { api } from '@/lib/api.ts';
 import type {
   CardDataWithVariants,
@@ -217,6 +219,9 @@ export function useMigratePreviewCard() {
       queryClient.invalidateQueries({ queryKey: ['collection'], exact: false });
       queryClient.invalidateQueries({ queryKey: ['collection-content'], exact: false });
       queryClient.invalidateQueries({ queryKey: ['user-collections-sync'] });
+      queryClient.invalidateQueries({ queryKey: cardDiscussionKeys.all });
+      queryClient.invalidateQueries({ queryKey: discussionKeys.all });
+      queryClient.invalidateQueries({ queryKey: discussionKeys.ownCommentsAll });
     },
   });
 }
