@@ -28,7 +28,8 @@ export type CardLayoutType =
 
 export interface CardLayoutProps {
   searchResults: string[];
-  onCardClick: (cardId: string) => void;
+  onCardClick: (cardId: string, variantId?: string) => void;
+  resultVariants?: Record<string, string | undefined>;
 }
 
 export interface SearchCardLayoutProps extends CardLayoutProps {
@@ -40,6 +41,7 @@ export interface SearchCardLayoutProps extends CardLayoutProps {
 const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
   searchResults,
   onCardClick,
+  resultVariants,
   layoutType,
   cardSubcomponent,
   showKarabastUnimplementedNameIcon = false,
@@ -80,8 +82,8 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
         comparison = rarityValueA - rarityValueB;
       } else if (sortField === 'cardNumber') {
         // Get default variants for both cards to extract card numbers
-        const variantA = cardA.variants[selectDefaultVariant(cardA) || ''];
-        const variantB = cardB.variants[selectDefaultVariant(cardB) || ''];
+        const variantA = cardA.variants[resultVariants?.[a] ?? selectDefaultVariant(cardA) ?? ''];
+        const variantB = cardB.variants[resultVariants?.[b] ?? selectDefaultVariant(cardB) ?? ''];
 
         if (variantA && variantB) {
           // First compare by set
@@ -101,7 +103,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
 
       return sortOrder === 'asc' ? comparison : -comparison;
     });
-  }, [cardListData, name, searchResults, sortField, sortOrder]);
+  }, [cardListData, name, searchResults, resultVariants, sortField, sortOrder]);
 
   // Configure infinite scrolling
   // Grid layouts need more initial items but smaller batches for smooth scrolling
@@ -124,8 +126,8 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
 
   // Memoize the data transformation for the table
   const tableData = useMemo<SearchCardData[]>(() => {
-    return visibleResults.map(cardId => ({ cardId }));
-  }, [visibleResults]);
+    return visibleResults.map(cardId => ({ cardId, variantId: resultVariants?.[cardId] }));
+  }, [visibleResults, resultVariants]);
 
   const onSortChange = useCallback(
     (field: SortField) => {
@@ -163,7 +165,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
               const card = cardListData.cards[cardId];
               if (!card) return null;
 
-              const defaultVariant = selectDefaultVariant(card);
+              const defaultVariant = resultVariants?.[cardId] ?? selectDefaultVariant(card);
               const cardWidthClass =
                 layoutType === 'imageBig'
                   ? 'w-[300px]'
@@ -178,9 +180,9 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
                     'hover:scale-105 transition-transform': !cardSubcomponent,
                   })}
                   onClick={() => {
-                    onCardClick(cardId);
+                    onCardClick(cardId, defaultVariant);
                   }}
-                  onMouseDown={openCardOnMiddleButton(cardId)}
+                  onMouseDown={openCardOnMiddleButton(cardId, defaultVariant)}
                 >
                   <div className="relative">
                     <CardImage
@@ -248,7 +250,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
           <DataTable
             columns={columns}
             data={tableData}
-            onRowClick={row => onCardClick(row.original.cardId)}
+            onRowClick={row => onCardClick(row.original.cardId, row.original.variantId)}
           />
 
           {/* Loading indicator and sentinel for infinite scroll */}

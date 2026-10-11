@@ -15,6 +15,7 @@ import KarabastUnimplementedWarningIcon from '@/components/app/decks/KarabastUni
 
 export type SearchCardData = {
   cardId: string;
+  variantId?: string;
 };
 
 export type SortField = 'name' | 'cardNumber' | 'cost' | 'type' | 'rarity' | 'aspect' | 'relevance';
@@ -53,7 +54,7 @@ export function useSearchCardTableColumns({
           const card = cardListData?.cards[cardId];
           if (!card) return null;
 
-          const defaultVariant = selectDefaultVariant(card);
+          const defaultVariant = row.original.variantId ?? selectDefaultVariant(card);
 
           return (
             <div className="flex items-center justify-center">
@@ -232,7 +233,7 @@ export function useSearchCardTableColumns({
       accessorFn: row => {
         const card = cardListData?.cards[row.cardId];
         if (!card) return '';
-        const defaultVariant = selectDefaultVariant(card) ?? '';
+        const defaultVariant = row.variantId ?? selectDefaultVariant(card) ?? '';
         const variant = card.variants[defaultVariant];
         return `${variant?.set.toUpperCase() || ''}-${variant?.cardNo.toString().padStart(3, '0') || ''}`;
       },
@@ -252,7 +253,7 @@ export function useSearchCardTableColumns({
         const card = cardListData?.cards[cardId];
         if (!card) return null;
 
-        const defaultVariant = selectDefaultVariant(card);
+        const defaultVariant = row.original.variantId ?? selectDefaultVariant(card);
         if (!defaultVariant) return null;
 
         const variant = card.variants[defaultVariant];

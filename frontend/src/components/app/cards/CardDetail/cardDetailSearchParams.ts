@@ -16,11 +16,19 @@ export const cardDetailSearchParams = z.object({
   cardVariantId: cardDetailVariantIdSchema,
 });
 
-export function getCardDetailDialogSearch<T extends object>(previous: T, cardId: string) {
+export function getCardDetailDialogSearch<T extends object>(
+  previous: T,
+  cardId: string,
+  variantId?: string,
+): Omit<T, 'modalCardId' | 'modalCardTab' | 'modalCardVariantId'> & {
+  modalCardId: string;
+  modalCardTab: undefined;
+  modalCardVariantId: string | undefined;
+} {
   return {
     ...previous,
     modalCardId: cardId,
     modalCardTab: undefined,
-    modalCardVariantId: undefined,
+    modalCardVariantId: variantId,
   };
 }

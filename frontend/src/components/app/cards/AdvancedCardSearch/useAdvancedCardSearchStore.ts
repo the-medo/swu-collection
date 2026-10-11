@@ -2,7 +2,10 @@ import { Store, useStore } from '@tanstack/react-store';
 import { SwuAspect } from '../../../../../../types/enums';
 import { SwuArena, SwuRarity, SwuSet } from '../../../../../../types/enums.ts';
 import { RangeFilterType } from '@/components/app/global/RangeFilter/RangeFilter.tsx';
-import { filterCards } from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
+import {
+  filterCards,
+  selectSearchVariant,
+} from '@/components/app/cards/AdvancedCardSearch/searchService.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { CardListResponse } from '@/api/lists/useCardList.ts';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -62,6 +65,7 @@ export interface AdvancedCardSearchStore {
   // Search state
   isSearching: boolean;
   searchResults: string[]; // Array of card IDs
+  searchResultVariants: Record<string, string | undefined>;
 
   // UI state
   filtersExpanded: boolean;
@@ -101,6 +105,7 @@ const defaultState: AdvancedCardSearchStore = {
 
   isSearching: false,
   searchResults: [],
+  searchResultVariants: {},
 
   filtersExpanded: true,
   resultsLayout: 'imageMedium',
@@ -189,6 +194,7 @@ export const useInitializeStoreFromUrlParams = (
       sortOrder: (order ?? defaultState.sortOrder) as SortOrder,
       isSearching: state.activeSearchFrom === searchFrom ? state.isSearching : false,
       searchResults: state.activeSearchFrom === searchFrom ? state.searchResults : [],
+      searchResultVariants: state.activeSearchFrom === searchFrom ? state.searchResultVariants : {},
     }));
   }, [
     name,
@@ -376,8 +382,11 @@ const setUpgradeHpRange = (upgradeHp: RangeFilterType) =>
 const setIsSearching = (isSearching: boolean) =>
   store.setState(state => ({ ...state, isSearching }));
 
-const setSearchResults = (searchResults: string[]) =>
-  store.setState(state => ({ ...state, searchResults, isSearching: false }));
+const setSearchResults = (
+  searchResults: string[],
+  searchResultVariants: Record<string, string | undefined> = {},
+) =>
+  store.setState(state => ({ ...state, searchResults, searchResultVariants, isSearching: false }));
 
 // UI state
 const setFiltersExpanded = (filtersExpanded: boolean) =>
@@ -397,6 +406,7 @@ const resetFilters = () =>
     activeSearchFrom: state.activeSearchFrom,
     isSearching: state.isSearching,
     searchResults: state.searchResults,
+    searchResultVariants: state.searchResultVariants,
     filtersExpanded: state.filtersExpanded,
     resultsLayout: state.resultsLayout,
     sortField: state.sortField,
@@ -424,6 +434,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
   const name = useStore(store, state => state.name);
   const text = useStore(store, state => state.text);
   const artist = useStore(store, state => state.artist);
+  const searchResultVariants = useStore(store, state => state.searchResultVariants);
 
   const sets = useStore(store, state => state.sets);
   const rarities = useStore(store, state => state.rarities);
@@ -530,7 +541,19 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
           order: sortOrder || 'asc',
         };
 
-        setSearchResults(results);
+        // Snapshot the selected printings with the results, not the editable filter inputs.
+        setSearchResults(
+          results,
+          Object.fromEntries(
+            results.map(cardId => {
+              const card = cardListData.cards[cardId];
+              return [
+                cardId,
+                card ? selectSearchVariant(card, { artist, sets, variants }) : undefined,
+              ];
+            }),
+          ),
+        );
         navigate({
           search: previous => ({ ...previous, ...searchParams, ...searchParamsBasedOnRoute }),
         });
@@ -639,6 +662,7 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
     handleSearch,
     isSearching,
     searchResults,
+    searchResultVariants,
 
     // UI state
     hasActiveFilters,

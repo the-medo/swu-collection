@@ -27,6 +27,7 @@ import { Route as StatisticsIndexRouteImport } from './routes/statistics/index'
 import { Route as MetaIndexRouteImport } from './routes/meta/index'
 import { Route as LimitedIndexRouteImport } from './routes/limited/index'
 import { Route as ComparerIndexRouteImport } from './routes/comparer/index'
+import { Route as ArtistsIndexRouteImport } from './routes/artists/index'
 import { Route as WantlistsYourRouteImport } from './routes/wantlists/your'
 import { Route as WantlistsPublicRouteImport } from './routes/wantlists/public'
 import { Route as TeamsTeamIdRouteImport } from './routes/teams/$teamId'
@@ -40,6 +41,7 @@ import { Route as CollectionsYourRouteImport } from './routes/collections/your'
 import { Route as CollectionsPublicRouteImport } from './routes/collections/public'
 import { Route as CardsSearchRouteImport } from './routes/cards/search'
 import { Route as AuthErrorRouteImport } from './routes/auth.error'
+import { Route as ArtistsArtistKeyRouteImport } from './routes/artists/$artistKey'
 import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
@@ -177,6 +179,11 @@ const ComparerIndexRoute = ComparerIndexRouteImport.update({
   path: '/comparer/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArtistsIndexRoute = ArtistsIndexRouteImport.update({
+  id: '/artists/',
+  path: '/artists/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WantlistsYourRoute = WantlistsYourRouteImport.update({
   id: '/wantlists/your',
   path: '/wantlists/your',
@@ -240,6 +247,11 @@ const CardsSearchRoute = CardsSearchRouteImport.update({
 const AuthErrorRoute = AuthErrorRouteImport.update({
   id: '/auth/error',
   path: '/auth/error',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtistsArtistKeyRoute = ArtistsArtistKeyRouteImport.update({
+  id: '/artists/$artistKey',
+  path: '/artists/$artistKey',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedShopRoute = AuthenticatedShopRouteImport.update({
@@ -562,6 +574,7 @@ export interface FileRoutesByFullPath {
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/shop': typeof AuthenticatedShopRoute
+  '/artists/$artistKey': typeof ArtistsArtistKeyRoute
   '/auth/error': typeof AuthErrorRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -574,6 +587,7 @@ export interface FileRoutesByFullPath {
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
+  '/artists': typeof ArtistsIndexRoute
   '/comparer': typeof ComparerIndexRoute
   '/limited': typeof LimitedIndexRoute
   '/meta': typeof MetaIndexRoute
@@ -643,6 +657,7 @@ export interface FileRoutesByTo {
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/shop': typeof AuthenticatedShopRoute
+  '/artists/$artistKey': typeof ArtistsArtistKeyRoute
   '/auth/error': typeof AuthErrorRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -655,6 +670,7 @@ export interface FileRoutesByTo {
   '/statistics': typeof StatisticsIndexRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
+  '/artists': typeof ArtistsIndexRoute
   '/comparer': typeof ComparerIndexRoute
   '/limited': typeof LimitedIndexRoute
   '/meta': typeof MetaIndexRoute
@@ -725,6 +741,7 @@ export interface FileRoutesById {
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/shop': typeof AuthenticatedShopRoute
+  '/artists/$artistKey': typeof ArtistsArtistKeyRoute
   '/auth/error': typeof AuthErrorRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -738,6 +755,7 @@ export interface FileRoutesById {
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
+  '/artists/': typeof ArtistsIndexRoute
   '/comparer/': typeof ComparerIndexRoute
   '/limited/': typeof LimitedIndexRoute
   '/meta/': typeof MetaIndexRoute
@@ -811,6 +829,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/notifications'
     | '/shop'
+    | '/artists/$artistKey'
     | '/auth/error'
     | '/cards/search'
     | '/collections/public'
@@ -823,6 +842,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId'
     | '/wantlists/public'
     | '/wantlists/your'
+    | '/artists'
     | '/comparer'
     | '/limited'
     | '/meta'
@@ -892,6 +912,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/notifications'
     | '/shop'
+    | '/artists/$artistKey'
     | '/auth/error'
     | '/cards/search'
     | '/collections/public'
@@ -904,6 +925,7 @@ export interface FileRouteTypes {
     | '/statistics'
     | '/wantlists/public'
     | '/wantlists/your'
+    | '/artists'
     | '/comparer'
     | '/limited'
     | '/meta'
@@ -973,6 +995,7 @@ export interface FileRouteTypes {
     | '/_authenticated/messages'
     | '/_authenticated/notifications'
     | '/_authenticated/shop'
+    | '/artists/$artistKey'
     | '/auth/error'
     | '/cards/search'
     | '/collections/public'
@@ -986,6 +1009,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId'
     | '/wantlists/public'
     | '/wantlists/your'
+    | '/artists/'
     | '/comparer/'
     | '/limited/'
     | '/meta/'
@@ -1054,6 +1078,7 @@ export interface RootRouteChildren {
   Statistics2Route: typeof Statistics2Route
   SupportRoute: typeof SupportRoute
   TermsRoute: typeof TermsRoute
+  ArtistsArtistKeyRoute: typeof ArtistsArtistKeyRoute
   AuthErrorRoute: typeof AuthErrorRoute
   CardsSearchRoute: typeof CardsSearchRoute
   CollectionsPublicRoute: typeof CollectionsPublicRoute
@@ -1066,6 +1091,7 @@ export interface RootRouteChildren {
   TeamsTeamIdRoute: typeof TeamsTeamIdRouteWithChildren
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
+  ArtistsIndexRoute: typeof ArtistsIndexRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
   LimitedIndexRoute: typeof LimitedIndexRoute
   MetaIndexRoute: typeof MetaIndexRoute
@@ -1212,6 +1238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ComparerIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/artists/': {
+      id: '/artists/'
+      path: '/artists'
+      fullPath: '/artists'
+      preLoaderRoute: typeof ArtistsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/wantlists/your': {
       id: '/wantlists/your'
       path: '/wantlists/your'
@@ -1301,6 +1334,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/error'
       fullPath: '/auth/error'
       preLoaderRoute: typeof AuthErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artists/$artistKey': {
+      id: '/artists/$artistKey'
+      path: '/artists/$artistKey'
+      fullPath: '/artists/$artistKey'
+      preLoaderRoute: typeof ArtistsArtistKeyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/shop': {
@@ -1841,6 +1881,7 @@ const rootRouteChildren: RootRouteChildren = {
   Statistics2Route: Statistics2Route,
   SupportRoute: SupportRoute,
   TermsRoute: TermsRoute,
+  ArtistsArtistKeyRoute: ArtistsArtistKeyRoute,
   AuthErrorRoute: AuthErrorRoute,
   CardsSearchRoute: CardsSearchRoute,
   CollectionsPublicRoute: CollectionsPublicRoute,
@@ -1853,6 +1894,7 @@ const rootRouteChildren: RootRouteChildren = {
   TeamsTeamIdRoute: TeamsTeamIdRouteWithChildren,
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
+  ArtistsIndexRoute: ArtistsIndexRoute,
   ComparerIndexRoute: ComparerIndexRoute,
   LimitedIndexRoute: LimitedIndexRoute,
   MetaIndexRoute: MetaIndexRoute,
