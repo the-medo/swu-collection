@@ -88,6 +88,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
           />
           <AdvancedSearchResults
             hasActiveFilters={hasActiveFilters}
+            showArtistShowcaseLink={searchFrom === SearchFrom.CARD_SEARCH}
             showKarabastUnimplementedNameIcon={showKarabastUnimplementedNameIcon}
           />
         </div>
@@ -138,6 +139,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
           >
             <AdvancedSearchResults
               hasActiveFilters={hasActiveFilters}
+              showArtistShowcaseLink={searchFrom === SearchFrom.CARD_SEARCH}
               classNames={{
                 title: 'hidden @[1080px]/main-body:flex',
               }}

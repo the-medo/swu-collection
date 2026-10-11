@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getArtistKey, hasArtistCredit } from '../../../../../../shared/lib/artists.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useMemo, useState } from 'react';
 import CardImage from '@/components/app/global/CardImage.tsx';
@@ -148,7 +149,27 @@ const CardDetail: React.FC<CardDetailProps> = ({
                     />
                     <PropertyRow label="Card Number" value={selectedVariant.cardNo.toString()} />
                     <PropertyRow label="Variant" value={selectedVariant.variantName} />
-                    <PropertyRow label="Artist" value={selectedVariant.artist || 'Unknown'} />
+                    <PropertyRow
+                      label="Artist"
+                      value={
+                        hasArtistCredit(selectedVariant.artist) ? (
+                          <Link
+                            to="/artists/$artistKey"
+                            params={{ artistKey: getArtistKey(selectedVariant.artist) }}
+                            search={previous => ({
+                              formatId: previous.formatId,
+                              metaId: previous.metaId,
+                              deckFormat: previous.deckFormat,
+                            })}
+                            className="text-primary hover:underline"
+                          >
+                            {selectedVariant.artist}
+                          </Link>
+                        ) : (
+                          'Unknown'
+                        )
+                      }
+                    />
                   </div>
                   <Separator className="my-1" />
                   <div

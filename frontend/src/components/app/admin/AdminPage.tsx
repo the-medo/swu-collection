@@ -24,6 +24,7 @@ import { ResourceSubmissionsPage } from './ResourceSubmissionsPage';
 import { PatreonPage } from './PatreonPage';
 import { ImageGalleryPage } from './ImageGalleryPage';
 import { UserCreditsPage } from './UserCreditsPage';
+import { ArtistTransferPage } from './artists/ArtistTransferPage';
 
 export function AdminPage() {
   const hasRole = useRole();
@@ -70,6 +71,7 @@ export function AdminPage() {
               {page === 'card-prices' && <CardPricePairingAdministrationPage />}
               {page === 'variant-checker' && <VariantCheckerPage />}
               {page === 'preview-cards' && <PreviewCardsPage />}
+              {page === 'artists' && <ArtistTransferPage />}
               {page === 'tournament-results' && (
                 <TournamentResultsPage tournamentId={tournamentId} view={view} round={round} />
               )}

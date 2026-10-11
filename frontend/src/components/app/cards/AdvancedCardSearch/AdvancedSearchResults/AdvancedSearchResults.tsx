@@ -3,7 +3,7 @@ import { Loader2, Search } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useAdvancedCardSearchStore } from '../useAdvancedCardSearchStore.ts';
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { getCardDetailDialogSearch } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
 import SearchCardLayout, { SearchCardLayoutProps } from './SearchCardLayout';
 import { cn } from '@/lib/utils.ts';
@@ -16,6 +16,7 @@ interface AdvancedSearchResultsProps {
   };
   cardSubcomponent?: SearchCardLayoutProps['cardSubcomponent'];
   showKarabastUnimplementedNameIcon?: boolean;
+  showArtistShowcaseLink?: boolean;
 }
 
 const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
@@ -23,15 +24,17 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
   classNames,
   cardSubcomponent,
   showKarabastUnimplementedNameIcon = false,
+  showArtistShowcaseLink = false,
 }) => {
   const navigate = useNavigate();
   const { isLoading: isLoadingCardList } = useCardList();
-  const { searchResults, isSearching, resultsLayout } = useAdvancedCardSearchStore();
+  const { searchResults, searchResultVariants, isSearching, resultsLayout } =
+    useAdvancedCardSearchStore();
 
-  const handleViewCard = (cardId: string) => {
+  const handleViewCard = (cardId: string, variantId?: string) => {
     navigate({
       to: '.',
-      search: previous => getCardDetailDialogSearch(previous, cardId),
+      search: previous => getCardDetailDialogSearch(previous, cardId, variantId),
     });
   };
 
@@ -51,7 +54,14 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
             </span>
           )}
         </h3>
-        <AdvancedSearchLayoutSelectors />
+        <div className="flex flex-wrap items-center gap-3">
+          {showArtistShowcaseLink && (
+            <Link to="/artists" className="text-sm text-primary hover:underline">
+              Artist showcase
+            </Link>
+          )}
+          <AdvancedSearchLayoutSelectors />
+        </div>
       </div>
       <div>
         {isLoadingCardList ? (
@@ -79,6 +89,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
             <ScrollArea className="h-[calc(100vh-90px)]">
               <SearchCardLayout
                 searchResults={searchResults}
+                resultVariants={searchResultVariants}
                 onCardClick={handleViewCard}
                 layoutType={resultsLayout}
                 cardSubcomponent={cardSubcomponent}

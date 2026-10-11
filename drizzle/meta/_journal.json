@@ -568,6 +568,13 @@
       "when": 1791660400987,
       "tag": "0080_stripe_support",
       "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1791721542544,
+      "tag": "0081_artist_showcase",
+      "breakpoints": true
     }
   ]
 }

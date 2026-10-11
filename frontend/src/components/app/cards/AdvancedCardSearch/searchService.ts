@@ -221,7 +221,7 @@ export function searchForCommandOptions(
   return filteredOptions;
 }
 
-interface SearchFilters {
+export interface SearchFilters {
   name?: string;
   text?: string;
   artist?: string;
@@ -242,6 +242,24 @@ interface SearchFilters {
   hp?: RangeFilterType;
   upgradePower?: RangeFilterType;
   upgradeHp?: RangeFilterType;
+}
+
+/** Select within the same printing when artist, set and treatment filters are combined. */
+export function selectSearchVariant(
+  card: CardDataWithVariants<CardListVariants>,
+  filters: Pick<SearchFilters, 'artist' | 'sets' | 'variants'>,
+) {
+  if (!filters.artist?.trim()) return selectDefaultVariant(card);
+  const variants = Object.fromEntries(
+    Object.entries(card.variants).filter(
+      ([, variant]) =>
+        variant &&
+        containsAllWords(variant.artist, filters.artist!) &&
+        (!filters.sets?.length || filters.sets.includes(variant.set)) &&
+        (!filters.variants?.length || filters.variants.includes(variant.variantName)),
+    ),
+  );
+  return selectDefaultVariant({ ...card, variants });
 }
 
 /**
@@ -276,14 +294,8 @@ export const filterCards = async (
           }
         }
 
-        if (filters.artist) {
-          const hasMatchingArtist = Object.values(card.variants).some(
-            variant => variant?.artist && containsAllWords(variant.artist, filters.artist!),
-          );
-
-          if (!hasMatchingArtist) {
-            return false;
-          }
+        if (filters.artist?.trim() && !selectSearchVariant(card, filters)) {
+          return false;
         }
 
         // Check sets filter

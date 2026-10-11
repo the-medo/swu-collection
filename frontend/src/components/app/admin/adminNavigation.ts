@@ -9,6 +9,7 @@ import {
   Image,
   Inbox,
   Layers,
+  Palette,
   ListChecks,
   ScanSearch,
   Sparkles,
@@ -42,6 +43,7 @@ export const adminSections = [
     items: [
       { id: 'sets', label: 'Sets', icon: Database },
       { id: 'preview-cards', label: 'Preview cards', icon: Sparkles },
+      { id: 'artists', label: 'Artist showcase', icon: Palette },
       { id: 'card-prices', label: 'Prices', icon: CircleDollarSign },
       { id: 'variant-checker', label: 'Variant checker', icon: ScanSearch },
     ],

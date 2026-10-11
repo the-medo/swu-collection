@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ImageOff } from 'lucide-react';
+import { useInView } from 'motion/react';
 import { cn } from '@/lib/utils.ts';
 import { getCardImageUrl } from './cardImageLib.ts';
 import { getCardArtRegion, portraitArtRegion } from './cardArtCropLib.ts';
@@ -14,6 +15,8 @@ type CardArtCropProps = {
   cardVariantId?: string;
   className?: string;
   alt?: string;
+  fit?: 'contain' | 'cover';
+  loading?: 'eager' | 'lazy';
 };
 
 /** Measured artwork windows, using leader backs and other card fronts.
@@ -24,6 +27,8 @@ export default function CardArtCrop({
   cardVariantId,
   className,
   alt = card.name,
+  fit = 'contain',
+  loading = 'eager',
 }: CardArtCropProps) {
   const variantId = cardVariantId ?? selectDefaultVariant(card);
   const variant = card.variants[variantId ?? ''];
@@ -49,6 +54,8 @@ export default function CardArtCrop({
       viewBox={viewBox}
       alt={alt}
       className={className}
+      fit={fit}
+      loading={loading}
     />
   );
 }
@@ -62,6 +69,8 @@ function ArtworkImage({
   viewBox,
   alt,
   className,
+  fit,
+  loading,
 }: {
   src?: string;
   width: number;
@@ -71,39 +80,45 @@ function ArtworkImage({
   viewBox: string;
   alt: string;
   className?: string;
+  fit: 'contain' | 'cover';
+  loading: 'eager' | 'lazy';
 }) {
   const [failed, setFailed] = useState(false);
-  if (!src || failed) {
-    return (
-      <span
-        role="img"
-        aria-label={`${alt}: artwork unavailable`}
-        className={cn(
-          'flex size-full items-center justify-center bg-muted text-muted-foreground',
-          className,
-        )}
-      >
-        <ImageOff className="size-5" aria-hidden="true" />
-      </span>
-    );
-  }
+  const ref = useRef<SVGSVGElement>(null);
+  const inView = useInView(ref, { once: true, margin: '200px' });
+  const unavailable = !src || failed;
   return (
     <svg
+      ref={loading === 'lazy' ? ref : undefined}
       role="img"
-      aria-label={alt}
-      viewBox={viewBox}
+      aria-label={unavailable ? `${alt}: artwork unavailable` : alt}
+      viewBox={unavailable ? `0 0 ${cropWidth} ${cropHeight}` : viewBox}
       width={cropWidth}
       height={cropHeight}
-      preserveAspectRatio="xMidYMid meet"
+      preserveAspectRatio={fit === 'cover' ? 'xMidYMid slice' : 'xMidYMid meet'}
       className={cn('block h-auto w-full overflow-hidden', className)}
     >
-      <image
-        href={src}
-        width={width}
-        height={height}
-        preserveAspectRatio="xMinYMin meet"
-        onError={() => setFailed(true)}
-      />
+      {unavailable ? (
+        <>
+          <rect width={cropWidth} height={cropHeight} className="fill-muted" />
+          <ImageOff
+            x={(cropWidth - 20) / 2}
+            y={(cropHeight - 20) / 2}
+            width={20}
+            height={20}
+            className="text-muted-foreground"
+            aria-hidden="true"
+          />
+        </>
+      ) : (
+        <image
+          href={loading === 'eager' || inView ? src : undefined}
+          width={width}
+          height={height}
+          preserveAspectRatio="xMinYMin meet"
+          onError={() => setFailed(true)}
+        />
+      )}
     </svg>
   );
 }
