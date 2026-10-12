@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { createApiError } from '@/api/errors.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import type { UserCollectionsResponse } from '../../../../server/routes/user.ts';
@@ -30,7 +31,7 @@ export const usePostCollection = () => {
         json: payload,
       });
       if (!response.ok) {
-        throw new Error(response.statusText);
+        throw await createApiError(response, 'Failed to create list');
       }
       const data = await response.json();
       return data;

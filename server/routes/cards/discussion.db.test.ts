@@ -80,6 +80,45 @@ test.skipIf(process.env.CARD_DISCUSSION_DB_TEST !== '1')(
       expect((await request(path)).status).toBe(200);
       expect(await (await request(path, users[0])).json()).toEqual({ data: null });
       expect(await bindings()).toHaveLength(0);
+      const rejectedComment = await request(`${path}/comments`, users[0], {
+        content: doc('f.u.c.k'),
+      });
+      expect(rejectedComment.status).toBe(400);
+      expect(await rejectedComment.json()).toMatchObject({ code: 'PROFANITY_NOT_ALLOWED' });
+      expect(await bindings()).toHaveLength(0);
+      // A legacy display name is only resolved after first-comment creation has
+      // provisionally inserted a discussion and binding. Rejection must undo both.
+      await db.update(user).set({ displayName: 'fuck' }).where(eq(user.id, users[1]));
+      const legacyMention = emptyPostDocument();
+      legacyMention.blocks = [
+        {
+          id: 'legacy-mention',
+          type: 'paragraph',
+          props: {},
+          children: [],
+          content: [
+            {
+              type: 'swuInline',
+              props: {
+                data: JSON.stringify({
+                  kind: 'mention',
+                  user: { id: users[1], displayName: 'An ordinary label' },
+                }),
+              },
+            },
+          ],
+        },
+      ];
+      const rejectedMention = await request(`${path}/comments`, users[0], {
+        content: legacyMention,
+      });
+      await db.update(user).set({ displayName: users[1] }).where(eq(user.id, users[1]));
+      expect(rejectedMention.status).toBe(400);
+      expect(await rejectedMention.json()).toMatchObject({ code: 'PROFANITY_NOT_ALLOWED' });
+      expect(await bindings()).toHaveLength(0);
+      expect(
+        await db.select().from(discussion).where(eq(discussion.type, 'card-detail')),
+      ).toHaveLength(beforeDiscussions.length);
       expect(
         (await request(`${path}/comments`, undefined, { content: doc('Anonymous') })).status,
       ).toBe(401);

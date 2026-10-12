@@ -1,4 +1,5 @@
 import { APIError } from 'better-auth/api';
+import { ProfanityError } from './lib/moderation/content.ts';
 import { battlefieldsRoute } from './routes/battlefields.ts';
 import { battlefieldPresetsRoute } from './routes/battlefield-presets.ts';
 import { Hono } from 'hono';
@@ -74,7 +75,9 @@ Sentry.init({
     if (
       event.request?.url?.includes('/api/user-tournament-attachments') ||
       event.request?.url?.includes('/api/user-files') ||
-      /\/api\/(?:deck\/[^/]+\/(?:article|comments)|discussions\/[^/]+\/comments)(?:[/?#]|$)/.test(event.request?.url ?? '')
+      /\/api\/(?:deck\/[^/]+\/(?:article|comments)|discussions\/[^/]+\/comments)(?:[/?#]|$)/.test(
+        event.request?.url ?? '',
+      )
     ) {
       delete event.request.data;
     }
@@ -97,6 +100,7 @@ Sentry.init({
 });
 
 const app = new Hono<AuthExtension>().onError((err, c) => {
+  if (err instanceof ProfanityError) return err.getResponse();
   Sentry.withScope(scope => {
     scope.setTransactionName((c.req as any).routePath || c.req.path);
     const user = c.get('user');

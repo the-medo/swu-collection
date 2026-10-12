@@ -5,6 +5,7 @@ import type { AuthExtension } from '../../../auth/auth.ts';
 import { db } from '../../../db';
 import { and, eq } from 'drizzle-orm';
 import { cardPools as cardPoolsTable } from '../../../db/schema/card_pool.ts';
+import { assertNamedTextAllowed, ProfanityError } from '../../../lib/moderation/content.ts';
 
 const zParams = z.object({ id: z.uuid() });
 const zBody = z.object({
@@ -27,7 +28,12 @@ export const cardPoolsIdPatchRoute = new Hono<AuthExtension>().patch(
     try {
       // Ensure the pool exists and is owned by the user
       const [existing] = await db
-        .select({ id: cardPoolsTable.id, userId: cardPoolsTable.userId })
+        .select({
+          id: cardPoolsTable.id,
+          userId: cardPoolsTable.userId,
+          name: cardPoolsTable.name,
+          description: cardPoolsTable.description,
+        })
         .from(cardPoolsTable)
         .where(eq(cardPoolsTable.id, id))
         .limit(1);
@@ -38,6 +44,12 @@ export const cardPoolsIdPatchRoute = new Hono<AuthExtension>().patch(
       }
 
       const updates: Record<string, unknown> = {};
+      assertNamedTextAllowed(
+        body.visibility !== undefined && body.visibility !== 'private'
+          ? { ...existing, ...body }
+          : body,
+        'Card pool',
+      );
       if (typeof body.name !== 'undefined') updates.name = body.name;
       if (typeof body.description !== 'undefined') updates.description = body.description;
       if (typeof body.visibility !== 'undefined') updates.visibility = body.visibility;
@@ -53,6 +65,7 @@ export const cardPoolsIdPatchRoute = new Hono<AuthExtension>().patch(
 
       return c.json({ data: updated });
     } catch (e) {
+      if (e instanceof ProfanityError) throw e;
       return c.json({ message: 'Failed to update card pool' }, 500);
     }
   },

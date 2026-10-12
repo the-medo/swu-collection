@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { CardPool } from '../../../../server/db/schema/card_pool.ts';
+import { createApiError } from '@/api/errors.ts';
 
 export interface UpdateCardPoolBody {
   name?: string;
@@ -19,7 +20,7 @@ export const useUpdateCardPool = (id: string | undefined) => {
         json: body,
       });
       if (!res.ok) {
-        throw new Error('Failed to update card pool');
+        throw await createApiError(res, 'Failed to update card pool');
       }
       return (await res.json()) as { data: CardPool };
     },

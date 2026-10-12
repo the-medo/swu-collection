@@ -11,6 +11,7 @@ import { generateDeckThumbnail } from '../../../lib/decks/generateDeckThumbnail.
 import { runInBackground } from '../../../lib/utils/backgroundProcess.ts';
 import { cardPoolDecks } from '../../../db/schema/card_pool_deck.ts';
 import { publicToVisibilityMap, Visibility } from '../../../../shared/types/visibility.ts';
+import { assertDeckTextAllowed } from '../../../lib/moderation/content.ts';
 
 export const deckIdPutRoute = new Hono<AuthExtension>().put(
   '/',
@@ -51,6 +52,11 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
         404,
       );
     }
+
+    // Recheck stored text when publishing/sharing an older private deck too.
+    assertDeckTextAllowed(
+      data.public !== undefined && data.public !== 0 ? { ...currentDeck, ...data } : data,
+    );
 
     // Check if leader or base card is being updated
     const isLeaderUpdated =

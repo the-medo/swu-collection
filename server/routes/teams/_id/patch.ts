@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm';
 import type { AuthExtension } from '../../../auth/auth.ts';
 import { z } from 'zod';
 import { getTeamMembership } from '../../../lib/getTeamMembership.ts';
+import { assertNamedTextAllowed, assertTextAllowed } from '../../../lib/moderation/content.ts';
 
 export const teamsIdPatchRoute = new Hono<AuthExtension>().patch(
   '/',
@@ -24,6 +25,16 @@ export const teamsIdPatchRoute = new Hono<AuthExtension>().patch(
     if (!membership || membership.role !== 'owner') {
       return c.json({ message: 'Only team owners can update team settings' }, 403);
     }
+
+    let text: { name?: string | null; shortcut?: string | null; description?: string | null } =
+      data;
+    if (data.privacy === 'public') {
+      const [current] = await db.select().from(teamTable).where(eq(teamTable.id, teamId));
+      if (!current) return c.json({ message: 'Team not found' }, 404);
+      text = { ...current, ...data };
+    }
+    assertNamedTextAllowed(text, 'Team');
+    assertTextAllowed(text.shortcut, 'shortcut', 'Team shortcut');
 
     // Check shortcut uniqueness if changing
     if (data.shortcut) {

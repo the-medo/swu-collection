@@ -4,6 +4,7 @@ import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import type { AuthExtension } from '../auth/auth.ts';
 import { postsService, type PostsService } from '../lib/posts/service.ts';
+import { assertPostAllowed } from '../lib/moderation/content.ts';
 import {
   MAX_POST_BYTES,
   saveProfilePostSchema,
@@ -39,6 +40,7 @@ export function createPostsRoute(service: PostsService = postsService) {
       }),
       async c => {
         const { content, revision } = c.req.valid('json');
+        assertPostAllowed(content, 'Bio');
         const data = await service.saveProfile(c.get('user')!.id, content, revision);
         if (!data)
           return c.json(

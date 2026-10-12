@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { and, eq, sql } from 'drizzle-orm';
 import { collection as collectionTable } from '../../../db/schema/collection.ts';
 import { db } from '../../../db';
+import { assertCollectionTextAllowed } from '../../../lib/moderation/content.ts';
 
 /**
  * Update parameters of collection (or wantlist) :id
@@ -22,6 +23,9 @@ export const collectionIdPutRoute = new Hono<AuthExtension>().put(
 
     const isOwner = eq(collectionTable.userId, user.id);
     const collectionId = eq(collectionTable.id, paramCollectionId);
+    const [current] = await db.select().from(collectionTable).where(and(isOwner, collectionId));
+    if (!current) return c.json({ message: 'List not found' }, 404);
+    assertCollectionTextAllowed(data.public === true ? { ...current, ...data } : data);
 
     const updatedCollection = (
       await db

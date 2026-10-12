@@ -42,6 +42,13 @@ const EditCardPoolDialog: React.FC<EditCardPoolDialogProps> = ({ trigger, pool }
             toast({ title: 'Card pool updated!' });
             setOpen(false);
           },
+          onError: error => {
+            toast({
+              variant: 'destructive',
+              title: 'Error while updating the card pool',
+              description: error.message,
+            });
+          },
         },
       );
     },
@@ -56,7 +63,7 @@ const EditCardPoolDialog: React.FC<EditCardPoolDialogProps> = ({ trigger, pool }
         form.setFieldValue('visibility', (pool.visibility as Visibility) ?? Visibility.Public);
       }
     },
-    [pool.name, pool.description, pool.visibility],
+    [pool.name, pool.description, pool.visibility, form],
   );
 
   return (

@@ -3,6 +3,7 @@ import { api } from '@/lib/api.ts';
 import { Deck } from '../../../../types/Deck.ts';
 import { Visibility } from '../../../../shared/types/visibility.ts';
 import { dailySealedKeys } from './dailySealedKeys.ts';
+import { createApiError } from '@/api/errors.ts';
 
 export interface UpdateCardPoolDeckBody {
   name?: string;
@@ -28,7 +29,7 @@ export const useUpdateCardPoolDeck = (
         json: body,
       });
       if (!res.ok) {
-        throw new Error('Failed to update card pool deck');
+        throw await createApiError(res, 'Failed to update card pool deck');
       }
       return (await res.json()) as UpdateCardPoolDeckResponse;
     },

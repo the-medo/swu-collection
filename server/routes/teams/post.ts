@@ -6,6 +6,7 @@ import { team as teamTable } from '../../db/schema/team.ts';
 import { teamMember } from '../../db/schema/team_member.ts';
 import { eq, count } from 'drizzle-orm';
 import type { AuthExtension } from '../../auth/auth.ts';
+import { assertNamedTextAllowed, assertTextAllowed } from '../../lib/moderation/content.ts';
 
 const MAX_TEAMS_PER_USER = 2;
 
@@ -17,6 +18,8 @@ export const teamsPostRoute = new Hono<AuthExtension>().post(
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
     const data = c.req.valid('json');
+    assertNamedTextAllowed(data, 'Team');
+    assertTextAllowed(data.shortcut, 'shortcut', 'Team shortcut');
 
     // Check team limit
     const [membershipCount] = await db

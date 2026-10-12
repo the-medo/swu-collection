@@ -17,7 +17,7 @@ const UserSettings = () => {
     defaultValues: {
       displayName: user?.displayName ?? '',
     },
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: async ({ value }) => {
       try {
         const { error } = await authClient.updateUser({ displayName: value.displayName });
         if (!error) {
@@ -26,7 +26,7 @@ const UserSettings = () => {
             description: value.displayName,
           });
         } else {
-          throw new Error(error.statusText);
+          throw new Error(error.message || error.statusText);
         }
       } catch (e: unknown) {
         toast({
@@ -34,7 +34,6 @@ const UserSettings = () => {
           title: 'Error while updating display name',
           description: (e as Error).toString(),
         });
-        formApi.setFieldValue('displayName', user?.displayName ?? '');
       }
     },
   });

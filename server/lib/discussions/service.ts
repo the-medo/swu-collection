@@ -18,6 +18,7 @@ import type {
 } from '../../../shared/types/discussions.ts';
 import type { DiscussionPolicy, DiscussionResult, DiscussionTransaction } from './policy.ts';
 import { canonicalCommentReferences, prepareCommentReferences } from './references.ts';
+import { assertPostAllowed } from '../moderation/content.ts';
 
 const unavailable = {
   error: 'This discussion is unavailable, or you do not have access to it.',
@@ -261,6 +262,7 @@ export async function createComment(
   policy: DiscussionPolicy,
   parentId?: string | null,
 ): Promise<DiscussionResult<DiscussionComment>> {
+  assertPostAllowed(content, 'Comment');
   const references = await prepareCommentReferences(content);
   return db.transaction(tx =>
     createPreparedComment(tx, id, viewerId, references, policy, parentId),
@@ -276,6 +278,7 @@ export async function createPreparedComment(
   policy: DiscussionPolicy,
   parentId?: string | null,
 ): Promise<DiscussionResult<DiscussionComment>> {
+  assertPostAllowed(references.result, 'Comment');
   if (!(await lock(tx, id, policy))) return unavailable;
   const parent = parentId ? await readOne(tx, id, parentId) : undefined;
   if (parentId && (!parent || parent.deletedAt)) return gone;
@@ -283,6 +286,7 @@ export async function createPreparedComment(
     return { error: 'This thread is too deep. Reply to an earlier comment.', status: 400 };
   const normalized = await canonicalCommentReferences(tx, references);
   if ('error' in normalized) return normalized;
+  assertPostAllowed(normalized.data, 'Comment');
   const [saved] = await tx
     .insert(c)
     .values({
@@ -319,6 +323,7 @@ export async function updateComment(
   revision: number,
   policy: DiscussionPolicy,
 ): Promise<DiscussionResult<DiscussionComment>> {
+  assertPostAllowed(content, 'Comment');
   const references = await prepareCommentReferences(content);
   return db.transaction(async tx => {
     if (!(await lock(tx, id, policy))) return unavailable;
@@ -328,6 +333,7 @@ export async function updateComment(
       return { error: 'You can only edit your own comments.', status: 403 };
     const normalized = await canonicalCommentReferences(tx, references);
     if ('error' in normalized) return normalized;
+    assertPostAllowed(normalized.data, 'Comment');
     const [saved] = await tx
       .update(c)
       .set({ content: normalized.data, revision: sql`${c.revision} + 1`, updatedAt: sql`now()` })

@@ -40,6 +40,25 @@ function setup(viewerId?: string, overrides: Partial<PostsService> = {}) {
   return { app, put, service };
 }
 describe('profile post API', () => {
+  test('profanity never reaches persistence on creation or editing', async () => {
+    const owner = setup('owner');
+    const rejected = emptyPostDocument();
+    rejected.blocks = [
+      {
+        id: 'rejected',
+        type: 'paragraph',
+        props: {},
+        children: [],
+        content: [{ type: 'text', text: 'fuck', styles: {} }],
+      },
+    ];
+    for (const revision of [null, 1]) {
+      const response = await owner.put({ content: rejected, revision });
+      expect(response.status).toBe(400);
+      expect((await response.json()).message).toContain('Bio contains language');
+    }
+    expect(owner.service.saveProfile).not.toHaveBeenCalled();
+  });
   test('rejects rich widgets even when an owner requests rich editor permissions', async () => {
     const owner = setup('owner');
     const rich = {

@@ -8,6 +8,7 @@ import { createPreparedComment, getDiscussionInfo } from '../discussions/service
 import { prepareCommentReferences } from '../discussions/references.ts';
 import { lockCardDiscussions } from './discussionBinding.ts';
 import { previewCard } from '../../db/schema/preview_card.ts';
+import { assertPostAllowed } from '../moderation/content.ts';
 import type { PostDocument } from '../../../shared/posts/content.ts';
 import type { DiscussionInfo } from '../../../shared/types/discussions.ts';
 import type { DiscussionResult } from '../discussions/policy.ts';
@@ -23,6 +24,7 @@ export async function getCardDiscussion(
 }
 
 export async function createCardComment(cardId: string, viewerId: string, content: PostDocument) {
+  assertPostAllowed(content, 'Comment');
   const cards = await getMergedCardList();
   if (!Object.hasOwn(cards, cardId)) return missingCard;
   const references = await prepareCommentReferences(content);
