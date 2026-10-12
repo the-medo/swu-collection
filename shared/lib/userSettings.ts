@@ -7,6 +7,7 @@ import {
   type DeckImageViewMode,
 } from '../../types/DeckImageCustomization.tsx';
 import { booleanPreprocessor } from './zod/booleanPreprocessor.ts';
+import { homepageModes, type UserHomepageMode } from '../types/homepage.ts';
 
 export interface UserSettings {
   notifications_deck_favorites: boolean;
@@ -19,7 +20,7 @@ export interface UserSettings {
   left_sidebar_my_tournaments_days_before: number;
   left_sidebar_my_tournaments_days_after: number;
   calendarWeekStartsOn: 0 | 1 | 2 | 3 | 4 | 5 | 6;
-  homepageMode: 'default' | 'snapshot' | 'live';
+  homepageMode: UserHomepageMode;
   deckLayout: DeckLayout; // default: DeckLayout.TEXT
   deckGroupBy: DeckGroupBy; // default: DeckGroupBy.CARD_TYPE
   deckPrices: boolean; // default: false
@@ -80,7 +81,7 @@ export const userSettingsSchema = z.object({
   left_sidebar_my_tournaments_days_before: sidebarTournamentDaysSchema.default(3),
   left_sidebar_my_tournaments_days_after: sidebarTournamentDaysSchema.default(30),
   calendarWeekStartsOn: calendarWeekStartSchema.default(1),
-  homepageMode: z.enum(['default', 'snapshot', 'live']).default('default'),
+  homepageMode: z.enum(['default', ...homepageModes]).default('default'),
   deckLayout: z.enum(DeckLayout).default(DeckLayout.TEXT),
   deckGroupBy: z.enum(DeckGroupBy).default(DeckGroupBy.CARD_TYPE),
   deckPrices: booleanPreprocessor.default(false),

@@ -96,6 +96,7 @@ export const usePutDeckCard = (deckId: string | undefined) => {
       return response.json() as unknown as { data: DeckCard };
     },
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['decks'] });
       toast({
         title: `Updated!`,
       });

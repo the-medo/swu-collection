@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { Deck } from '../../../../types/Deck.ts';
 import { Visibility } from '../../../../shared/types/visibility.ts';
+import { dailySealedKeys } from './dailySealedKeys.ts';
 
 export interface UpdateCardPoolDeckBody {
   name?: string;
@@ -32,6 +33,7 @@ export const useUpdateCardPoolDeck = (
       return (await res.json()) as UpdateCardPoolDeckResponse;
     },
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: dailySealedKeys.all });
       void queryClient.invalidateQueries({ queryKey: ['card-pool-decks', id], exact: false });
       void queryClient.invalidateQueries({ queryKey: ['deck', deckId] });
     },

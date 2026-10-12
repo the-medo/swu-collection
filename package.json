@@ -3,6 +3,12 @@
   "module": "server/index.ts",
   "type": "module",
   "scripts": {
+    "test:browser:headers": "HOMEPAGE_HEADER_BROWSER_TEST=1 bun frontend/tests/homepage-header.browser.ts",
+    "export:header-artwork": "bun scripts/export-homepage-header-artwork.ts",
+    "check:header-artwork": "bun scripts/export-homepage-header-artwork.ts --check",
+    "test:browser:live": "LIVE_HOME_BROWSER_TEST=1 bun frontend/tests/live-home.browser.ts",
+    "test:browser:today": "TODAY_HOME_BROWSER_TEST=1 bun frontend/tests/today-home.browser.ts",
+    "test:browser:weekend-action": "WEEKEND_ACTION_BROWSER_TEST=1 bun frontend/tests/weekend-action.browser.ts",
     "patreon:sync": "bun scripts/patreon/sync.ts",
     "play:browser:editors": "RICH_TEXT_EDITOR_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/rich-text-editor.browser.ts",
     "play:check": "bun run --cwd play check",

@@ -85,10 +85,16 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
     <Dialog>
       <section className="flex w-full flex-col gap-3">
         <LiveSectionHeader
-          title="Watched Players"
+          title="Your watchlist"
+          detail="Keep your players in sight."
           action={
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="shrink-0 -mt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="shrink-0"
+                aria-label="Manage watched players"
+              >
                 <Pencil className="h-4 w-4" />
               </Button>
             </DialogTrigger>
@@ -96,16 +102,30 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
         />
 
         {!user ? (
-          <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+          <div
+            className={cn(
+              'live-quiet-state m-0 py-5.5 px-4 border border-dashed border-border rounded-[12px]',
+              'text-muted-foreground text-[12px] leading-[1.8]!',
+            )}
+          >
             Sign in to follow players.
           </div>
         ) : detail.watchlist.length === 0 ? (
-          <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-            You are not watching any players yet. Use the pencil button above to manage your
-            watchlist.
+          <div
+            className={cn(
+              'live-quiet-state m-0 py-5.5 px-4 border border-dashed border-border rounded-[12px]',
+              'text-muted-foreground text-[12px] leading-[1.8]!',
+            )}
+          >
+            Add players to your watchlist to follow their standings and latest matches here.
           </div>
         ) : watchedTournamentGroups.length === 0 ? (
-          <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+          <div
+            className={cn(
+              'live-quiet-state m-0 py-5.5 px-4 border border-dashed border-border rounded-[12px]',
+              'text-muted-foreground text-[12px] leading-[1.8]!',
+            )}
+          >
             None of your watched players are active in the current live tournament weekend.
           </div>
         ) : (
@@ -119,16 +139,22 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
               return (
                 <div
                   key={group.tournament.tournament.id}
-                  className="overflow-hidden rounded-md border"
+                  className={cn(
+                    'live-watched-group overflow-hidden border border-border rounded-[10px]',
+                    '[&_.text-sm]:text-[11px]',
+                    '[&_.text-xs]:text-[10px]',
+                  )}
                 >
-                  <div className="border-b bg-background px-3 py-2">
-                    <div className="flex items-center justify-between gap-3">
+                  <div className="live-watched-group-heading py-2.5 px-3 border-b border-b-border bg-muted/35">
+                    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                       <div className="flex min-w-0 items-center gap-2">
                         <Flag
                           countryCode={group.tournament.tournament.location as CountryCode}
                           className="h-4 w-5 shrink-0 rounded-sm"
                         />
-                        <h6 className="mb-0! truncate">{group.tournament.tournament.name}</h6>
+                        <h6 className="mb-0! truncate text-xs">
+                          {group.tournament.tournament.name}
+                        </h6>
                       </div>
 
                       {roundLabel && (
@@ -154,7 +180,7 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
                               'bg-red-50/70 dark:bg-red-950/20',
                           )}
                         >
-                          <div className="flex items-center justify-between gap-3">
+                          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                             <div className="flex min-w-0 items-center gap-2">
                               <div className="truncate font-medium">{player.displayName}</div>
 
@@ -191,7 +217,7 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
         )}
       </section>
 
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-3xl">
+      <DialogContent className={cn('max-h-[85vh] overflow-y-auto', 'sm:max-w-3xl')}>
         <DialogHeader>
           <DialogTitle>Watched Players</DialogTitle>
         </DialogHeader>

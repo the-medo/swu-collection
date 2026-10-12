@@ -15,9 +15,20 @@ import GridSection, {
 } from '@/components/app/global/GridSection/GridSection.tsx';
 import type { DailySnapshotSectionData } from '../../../../../types/DailySnapshots.ts';
 import FallbackPage from '@/components/app/daily-snapshots/FallbackPage.tsx';
-import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
 import TournamentDetailSection from '@/components/app/daily-snapshots/special-sections/TournamentDetailSection/TournamentDetailSection.tsx';
 import { useSearch } from '@tanstack/react-router';
+import { AlertCircle, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button.tsx';
+
+const metaPanelClassName = cn(
+  'meta-panel @container/meta-panel h-full min-w-0 p-5 border border-border rounded-[20px] bg-card',
+  'shadow-[0_2px_8px_hsl(var(--foreground)_/_0.025)]',
+  '[#s-meta-share-2-weeks_>_&]:border-[color:var(--meta-line)]',
+  '[#s-meta-share-2-weeks_>_&]:[background:linear-gradient(130deg,_var(--meta-tint),_hsl(var(--card))_65%)]',
+  '[#s-recent-tournaments_>_&]:p-4',
+  '[#s-upcoming-tournaments_>_&]:p-4',
+  'max-tablet-small:p-4 max-tablet-small:rounded-[17px]',
+);
 
 const formatToday = (): string => {
   const d = new Date();
@@ -97,7 +108,7 @@ export const specialSectionSizing: Record<string, SectionCardSizing> = {
 
 const DailySnapshots: React.FC = () => {
   const today = React.useMemo(() => formatToday(), []);
-  const { data, isLoading, isError, error } = useDailySnapshot(today);
+  const { data, isLoading, isError, refetch, isFetching } = useDailySnapshot(today);
   const { maTournamentId } = useSearch({ strict: false });
 
   const sections = data?.sections ?? {};
@@ -114,12 +125,71 @@ const DailySnapshots: React.FC = () => {
   return (
     <>
       <Helmet title="SWUBase | Star Wars: Unlimited Meta Analysis & Deckbuilding" />
-      <div className="w-full mx-auto px-2 py-2" id="section-container">
-        {isLoading && <div className="text-sm text-muted-foreground">Loading daily snapshot…</div>}
+      <div
+        className={cn(
+          'meta-home [--meta-accent:#326149] [--meta-tint:#edf2e9] [--meta-line:#d5e0cd] w-full max-w-380 my-0',
+          'mx-auto px-4 pt-2 pb-9',
+          'dark:[--meta-accent:#b9d4a8] dark:[--meta-tint:#1d2720] dark:[--meta-line:#364437]',
+          'max-tablet-small:pb-6',
+          'max-mobile:px-2',
+        )}
+        id="section-container"
+      >
+        {isLoading && (
+          <div
+            className={cn(
+              'meta-loading grid grid-cols-[2fr_1fr] gap-4',
+              'max-tablet-small:grid-cols-1',
+            )}
+            role="status"
+            aria-label="Loading two-week meta"
+          >
+            <span className="sr-only">Loading two-week meta…</span>
+            {[0, 1, 2].map(index => (
+              <div
+                key={index}
+                className={cn(
+                  'meta-panel meta-skeleton @container/meta-panel h-full min-w-0 p-5 border border-border rounded-[20px]',
+                  'bg-card shadow-[0_2px_8px_hsl(var(--foreground)_/_0.025)]',
+                  '[#s-meta-share-2-weeks_>_&]:border-[color:var(--meta-line)]',
+                  '[#s-meta-share-2-weeks_>_&]:[background:linear-gradient(130deg,_var(--meta-tint),_hsl(var(--card))_65%)]',
+                  '[#s-recent-tournaments_>_&]:p-4',
+                  '[#s-upcoming-tournaments_>_&]:p-4',
+                  'max-tablet-small:p-4 max-tablet-small:rounded-[17px]',
+                  'min-h-67.5 [background:linear-gradient(120deg,_var(--meta-tint),_hsl(var(--muted)_/_0.3))]',
+                  'first-of-type:row-span-2',
+                )}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+        )}
 
         {isError && (
-          <div className="text-sm text-red-500">
-            Error: {error?.message ?? 'Failed to load daily snapshot'}
+          <div
+            className={cn(
+              'meta-error flex items-center flex-wrap gap-3.5 p-6 mb-4 border border-border rounded-[20px] bg-card',
+              '[&_>_svg]:text-muted-foreground',
+              '[&_>_div]:flex-1 [&_>_div]:min-w-45 [&_>_div]:text-[14px]',
+            )}
+            role="alert"
+          >
+            <AlertCircle size={20} aria-hidden="true" />
+            <div>
+              <strong>Unable to load the meta snapshot</strong>
+              <p className="mx-0! mt-1! mb-0! text-[12px]! text-muted-foreground">
+                Please try again in a moment.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isFetching}
+              onClick={() => void refetch()}
+            >
+              <RefreshCw size={14} aria-hidden="true" />
+              {isFetching ? 'Retrying…' : 'Try again'}
+            </Button>
           </div>
         )}
 
@@ -147,10 +217,7 @@ const DailySnapshots: React.FC = () => {
             if (!sizing) {
               // Unknown sections: let the grid auto-place them as 1x1 cards.
               return (
-                <div
-                  key={sectionName}
-                  className={cn('border rounded-lg bg-card p-4 shadow-xs h-full min-w-0')}
-                >
+                <div key={sectionName} className={metaPanelClassName}>
                   <div className="font-medium mb-2 wrap-break-word">{sectionName}</div>
                   {Comp ? (
                     <Comp
@@ -168,8 +235,13 @@ const DailySnapshots: React.FC = () => {
             }
 
             return (
-              <GridSection key={sectionName} sizing={sizing} id={`s-${sectionName}`}>
-                <GridSectionContent>
+              <GridSection
+                key={sectionName}
+                sizing={sizing}
+                id={`s-${sectionName}`}
+                className="meta-section"
+              >
+                <div className={metaPanelClassName}>
                   {Comp ? (
                     <Comp
                       payload={payload}
@@ -181,7 +253,7 @@ const DailySnapshots: React.FC = () => {
                       {JSON.stringify(payload, null, 2)}
                     </pre>
                   )}
-                </GridSectionContent>
+                </div>
               </GridSection>
             );
           })}

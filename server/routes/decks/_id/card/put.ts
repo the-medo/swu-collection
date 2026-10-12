@@ -38,37 +38,44 @@ export const deckIdCardPutRoute = new Hono<AuthExtension>().put(
 
     const primaryKeyFilters = [deckId, cardId, board];
 
-    const updatedDeckCard = await db
-      .insert(deckCardTable)
-      .values({
-        deckId: paramDeckId,
-        cardId: id.cardId,
-        board: id.board,
-        note: data.note ?? '',
-        quantity: data.quantity ?? 0,
-      })
-      .onConflictDoUpdate({
-        target: [deckCardTable.deckId, deckCardTable.cardId, deckCardTable.board],
-        set: {
-          ...data,
-          note: data.note ?? undefined,
-        },
-      })
-      .returning();
+    const result = await db.transaction(async tx => {
+      const updatedDeckCard = await tx
+        .insert(deckCardTable)
+        .values({
+          deckId: paramDeckId,
+          cardId: id.cardId,
+          board: id.board,
+          note: data.note ?? '',
+          quantity: data.quantity ?? 0,
+        })
+        .onConflictDoUpdate({
+          target: [deckCardTable.deckId, deckCardTable.cardId, deckCardTable.board],
+          set: {
+            ...data,
+            note: data.note ?? undefined,
+          },
+        })
+        .returning();
 
-    const result = updatedDeckCard[0];
+      const result = updatedDeckCard[0];
+      await tx
+        .update(deckTable)
+        .set({ updatedAt: sql`NOW()` })
+        .where(deckTableId);
 
-    // in case that updated card has quantity === 0, we can delete it
-    if (result.quantity === 0) {
-      const deletedDeckCard = (
-        await db
-          .delete(deckCardTable)
-          .where(and(...primaryKeyFilters))
-          .returning()
-      )[0];
+      // in case that updated card has quantity === 0, we can delete it
+      if (result.quantity === 0) {
+        const deletedDeckCard = (
+          await tx
+            .delete(deckCardTable)
+            .where(and(...primaryKeyFilters))
+            .returning()
+        )[0];
 
-      return c.json({ data: deletedDeckCard }, 201);
-    }
+        return deletedDeckCard;
+      }
+      return result;
+    });
 
     return c.json({ data: result }, 201);
   },

@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { dailySealedKeys } from './dailySealedKeys.ts';
+import type { GetCardPoolDeckCardsResponse } from '../../../../server/routes/card-pools/_id/decks/_deckId/card/get.ts';
 
 export type CardLocation = 'pool' | 'deck' | 'trash';
 
@@ -33,19 +35,22 @@ export const useUpdateCardPoolDeckCard = (id: string | undefined, deckId: string
     },
     onSuccess: res => {
       // Directly update the cache used by useGetCardPoolDeckCards
-      queryClient.setQueryData(['card-pool-deck-cards', id, deckId], (oldData: any) => {
-        if (!oldData || typeof oldData !== 'object') return oldData;
-        const next = { ...oldData } as Record<string, { location: CardLocation; cardId: string }>;
+      queryClient.setQueryData<GetCardPoolDeckCardsResponse>(
+        ['card-pool-deck-cards', id, deckId],
+        oldData => {
+          if (!oldData || typeof oldData !== 'object') return oldData;
+          const next = { ...oldData };
 
-        for (const num of res.data.cardPoolNumbers ?? []) {
-          const key = String(num);
-          if (next[key]) {
-            next[key] = { ...next[key], location: res.data.location };
+          for (const num of res.data.cardPoolNumbers ?? []) {
+            const card = next[num];
+            if (card) {
+              next[num] = { ...card, location: res.data.location };
+            }
           }
-        }
 
-        return next;
-      });
+          return next;
+        },
+      );
 
       /**
        * Invalidate whole deck-content, because the card location has changed
@@ -54,6 +59,10 @@ export const useUpdateCardPoolDeckCard = (id: string | undefined, deckId: string
        * Also, I probably just should've just written this to AI instead of writing this comment and it would be done by now, instead of the future..
        */
       void queryClient.invalidateQueries({ queryKey: ['deck-content', deckId] });
+      void queryClient.invalidateQueries({ queryKey: ['deck', deckId] });
+      void queryClient.invalidateQueries({ queryKey: ['decks'] });
+      void queryClient.invalidateQueries({ queryKey: ['card-pool-decks', id] });
+      void queryClient.invalidateQueries({ queryKey: dailySealedKeys.all });
     },
   });
 };

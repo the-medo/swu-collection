@@ -14,13 +14,21 @@ export interface CreateDeckSectionProps {
   pool?: CardPool;
   className?: string;
   onCreated?: () => void;
+  initialVisibility?: Visibility;
 }
 
-const CreateDeckSection: React.FC<CreateDeckSectionProps> = ({ pool, className, onCreated }) => {
+const CreateDeckSection: React.FC<CreateDeckSectionProps> = ({
+  pool,
+  className,
+  onCreated,
+  initialVisibility,
+}) => {
   const navigate = useNavigate();
   const { resetAll } = useCardPoolDeckDetailStoreActions();
   const [name, setName] = React.useState<string>('');
-  const [visibility, setVisibility] = React.useState<Visibility>(Visibility.Unlisted);
+  const [visibility, setVisibility] = React.useState<Visibility>(
+    initialVisibility ?? (pool?.visibility as Visibility | null) ?? Visibility.Unlisted,
+  );
 
   const defaultName = React.useMemo(() => {
     return pool?.name ? `Deck from ${pool.name}` : '';

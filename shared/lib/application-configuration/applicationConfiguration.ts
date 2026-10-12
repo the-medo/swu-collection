@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { homepageModes } from '../../types/homepage.ts';
 
 export const applicationConfigurationSchema = z
   .object({
-    homepageMode: z.enum(['snapshot', 'live']).default('snapshot'),
+    homepageMode: z.enum(homepageModes).default('snapshot'),
   })
   .strict();
 

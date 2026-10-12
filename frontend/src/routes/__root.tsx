@@ -24,12 +24,13 @@ import { UserSettingsLoader } from '@/components/app/users/UserSettingsLoader.ts
 import { useUser } from '@/hooks/useUser.ts';
 import { CardPoolType } from '../../../shared/types/cardPools.ts';
 import TournamentDetailDialog from '@/components/app/tournaments/TournamentDetailDialog/TournamentDetailDialog.tsx';
+import { homepageModes } from '../../../shared/types/homepage.ts';
 
 const globalSearchParams = z.object({
   // global filters
   formatId: z.number().int().positive().optional(),
   metaId: z.number().int().positive().optional(),
-  homeMode: z.enum(['snapshot', 'live']).optional(),
+  homeMode: z.enum(homepageModes).optional(),
   streamId: z.string().optional(),
 
   // Card detail dialog

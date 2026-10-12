@@ -33,18 +33,25 @@ export const deckIdCardPostRoute = new Hono<AuthExtension>().post(
     if (deck.userId !== user.id && !isAdmin.success)
       return c.json({ message: 'Unauthorized' }, 401);
 
-    const newDeckCard = await db
-      .insert(deckCardTable)
-      .values({ ...data, deckId: paramDeckId, note: data.note ?? '' })
-      .onConflictDoUpdate({
-        target: [deckCardTable.deckId, deckCardTable.cardId, deckCardTable.board],
-        set: {
-          quantity: sql`${deckCardTable.quantity} + ${data.quantity ?? 0}`,
-          note: sql`${data.note ?? deckCardTable.note}`,
-        },
-      })
-      .returning();
+    const newDeckCard = await db.transaction(async tx => {
+      const inserted = await tx
+        .insert(deckCardTable)
+        .values({ ...data, deckId: paramDeckId, note: data.note ?? '' })
+        .onConflictDoUpdate({
+          target: [deckCardTable.deckId, deckCardTable.cardId, deckCardTable.board],
+          set: {
+            quantity: sql`${deckCardTable.quantity} + ${data.quantity ?? 0}`,
+            note: sql`${data.note ?? deckCardTable.note}`,
+          },
+        })
+        .returning();
+      await tx
+        .update(deckTable)
+        .set({ updatedAt: sql`NOW()` })
+        .where(deckId);
+      return inserted[0];
+    });
 
-    return c.json({ data: newDeckCard[0] }, 201);
+    return c.json({ data: newDeckCard }, 201);
   },
 );

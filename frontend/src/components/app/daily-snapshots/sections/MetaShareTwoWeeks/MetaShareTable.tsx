@@ -11,6 +11,7 @@ interface MetaShareTableProps {
   metaPart: DailySnapshotMetaPart;
   metaView: DailySnapshotMetaView;
   onClick: (key: string) => void;
+  selectedDeckKey: string | null;
 }
 
 const TOP_DISPLAY_COUNT = 5;
@@ -20,6 +21,7 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({
   metaPart,
   metaView,
   onClick,
+  selectedDeckKey,
 }) => {
   const labelRenderer = useLabel();
 
@@ -111,8 +113,29 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({
   }
 
   return (
-    <div className="flex-none min-w-0 w-full max-w-[500px] @[850px]/meta-2-weeks:max-w-[700px]">
-      <div className="rounded-lg border w-full overflow-x-auto overscroll-x-contain">
+    <div
+      className={cn(
+        'meta-share-table w-full min-w-0',
+        '[&_table]:bg-card/80 [&_table]:tabular-nums',
+        '[&_thead]:bg-muted/40 [&_thead]:text-muted-foreground',
+        '[&_th]:text-[11px] [&_th]:py-1 [&_th]:h-auto',
+        '[&_td]:py-1 [&_td]:h-auto',
+        '[&_td:first-child_>_div_>_span:first-child]:text-[11px]',
+        '[&_tbody_tr:hover]:bg-[var(--meta-tint)]',
+        '[&_tr[data-selected]]:bg-[var(--meta-tint)]',
+        '[&_tr[data-selected]_td:first-child]:shadow-[inset_3px_0_var(--meta-accent)]',
+        '[&_.meta-active-column]:bg-[color-mix(in_srgb,_var(--meta-tint)_70%,_transparent)]',
+      )}
+    >
+      <div
+        className={cn(
+          'meta-table-scroll w-full overflow-x-auto overscroll-x-contain border border-border rounded-[8px]',
+          'focus-visible:outline-2 focus-visible:outline-[var(--meta-accent)] focus-visible:outline-offset-3',
+        )}
+        role="region"
+        aria-label="Meta share rankings"
+        tabIndex={0}
+      >
         <table className="min-w-[450px] w-full table-fixed">
           <thead className="bg-muted/50">
             <tr>
@@ -128,6 +151,7 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({
             {tableData.map((item, index) => (
               <tr
                 key={item.key}
+                data-selected={selectedDeckKey === item.key || undefined}
                 className={cn('hover:bg-muted/30', item.key !== 'Others' && 'cursor-pointer')}
                 onClick={item.key !== 'Others' ? () => onClick(item.key) : undefined}
               >
@@ -141,20 +165,34 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({
                     {item.key === 'Others' ? (
                       <span className="text-sm font-medium">Others</span>
                     ) : (
-                      labelRenderer(item.key, metaInfo, 'compact')
+                      <button
+                        type="button"
+                        className={cn(
+                          'meta-leader-button min-w-0 max-w-full text-left cursor-pointer rounded-[5px]',
+                          'focus-visible:outline-2 focus-visible:outline-[var(--meta-accent)] focus-visible:outline-offset-3',
+                        )}
+                        onClick={event => {
+                          event.stopPropagation();
+                          onClick(item.key);
+                        }}
+                        aria-label={`Select ${labelRenderer(item.key, metaInfo, 'text')}`}
+                        aria-pressed={selectedDeckKey === item.key}
+                      >
+                        {labelRenderer(item.key, metaInfo, 'compact')}
+                      </button>
                     )}
                   </div>
                 </td>
                 <td
                   className={`px-2 py-1 text-right text-sm font-medium w-20 ${
-                    metaPart === 'total' ? 'bg-primary/10' : ''
+                    metaPart === 'total' ? 'meta-active-column' : ''
                   }`}
                 >
                   {formatWithPercentage(item.total, columnTotals.total)}
                 </td>
                 <td
                   className={`px-2 py-1 text-right text-sm font-medium w-20 ${
-                    metaPart === 'top8' ? 'bg-primary/10' : ''
+                    metaPart === 'top8' ? 'meta-active-column' : ''
                   }`}
                 >
                   {columnTotals.top8 === 0 ? (
@@ -184,7 +222,7 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({
                 </td>
                 <td
                   className={`px-2 py-1 text-right text-sm font-medium w-20 ${
-                    metaPart === 'winners' ? 'bg-primary/10' : ''
+                    metaPart === 'winners' ? 'meta-active-column' : ''
                   }`}
                 >
                   {columnTotals.winners === 0 ? (

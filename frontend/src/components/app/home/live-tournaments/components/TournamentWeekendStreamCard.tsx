@@ -1,85 +1,84 @@
-import { ExternalLink } from 'lucide-react';
+import { cn } from '@/lib/utils.ts';
+import { ExternalLink, Play } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
-import Flag from '@/components/app/global/Flag.tsx';
-import { formatDataById } from '../../../../../../../types/Format.ts';
-import type { CountryCode } from '../../../../../../../server/db/lists.ts';
 import type {
   LiveTournamentWeekendTournamentEntry,
   TournamentWeekendResource,
 } from '../liveTournamentTypes.ts';
-import { getPlayerCount } from '../liveTournamentUtils.ts';
 import { YouTubeEmbed } from './YouTubeEmbed.tsx';
-
-function TournamentStreamInfoRow({
-  tournament,
-}: {
-  tournament: LiveTournamentWeekendTournamentEntry;
-}) {
-  const countryCode = tournament.tournament.location as CountryCode | undefined;
-  const formatLabel = formatDataById[tournament.tournament.format]?.name ?? 'Unknown format';
-
-  return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-      <span className="inline-flex items-center gap-1.5">
-        {countryCode && <Flag countryCode={countryCode} className="h-3 w-5 rounded-sm" />}
-        <span>{tournament.tournament.location || 'Country unknown'}</span>
-        <span>-</span>
-        <span>{getPlayerCount(tournament)}</span>
-      </span>
-      <span>{formatLabel}</span>
-    </div>
-  );
-}
 
 export function TournamentWeekendStreamCard({
   resource,
   tournament,
   footerAction,
   showWatchLink = true,
+  compact = false,
 }: {
   resource: TournamentWeekendResource;
   tournament?: LiveTournamentWeekendTournamentEntry;
   footerAction?: ReactNode;
   showWatchLink?: boolean;
+  compact?: boolean;
 }) {
   const title = tournament?.tournament.name || resource.title || 'Tournament stream';
   const embedTitle = resource.title || `${title} stream`;
-
+  const status = tournament?.weekendTournament.status;
   return (
-    <div className="rounded-md border bg-background p-3">
-      <div className="mb-2 flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="truncate font-medium leading-tight">{title}</div>
-          {tournament && <TournamentStreamInfoRow tournament={tournament} />}
-        </div>
-        <div className="flex shrink-0 flex-col items-end gap-1">
+    <article
+      className={cn(
+        'live-stream-card overflow-hidden rounded-[12px] border border-border bg-background/50',
+        '[&_>_div:first-child:has(iframe)]:border-0 [&_>_div:first-child:has(iframe)]:rounded-none',
+        compact &&
+          'live-stream-compact [&_.live-stream-copy]:py-[11px] [&_.live-stream-copy]:px-[13px] [&_h4]:text-[12px]! [&_h4]:mb-2!',
+      )}
+    >
+      {!compact && <YouTubeEmbed url={resource.resourceUrl} title={embedTitle} />}
+      <div className="live-stream-copy p-[13px]">
+        <span
+          className={cn(
+            'live-stream-status inline-flex gap-[5px] items-center text-muted-foreground text-[9px]',
+            'data-[status=running]:text-[#27804b]',
+            'dark:data-[status=running]:text-[#a7d6b1]',
+            "[&[data-status=running]::before]:content-[''] [&[data-status=running]::before]:h-[5px]",
+            '[&[data-status=running]::before]:w-[5px] [&[data-status=running]::before]:rounded-full',
+            '[&[data-status=running]::before]:bg-current',
+          )}
+          data-status={status}
+        >
+          {status === 'running' ? 'At the tables' : status === 'finished' ? 'Replay' : 'Stream'}
+        </span>
+        <h4 className="mx-0! mt-1.5! mb-3! text-[13px]! font-medium! leading-[1.5]! wrap-anywhere">
+          {title}
+        </h4>
+        <div
+          className={cn(
+            'live-stream-actions flex items-center flex-wrap gap-3',
+            '[&_a]:inline-flex [&_a]:gap-[5px] [&_a]:items-center [&_a]:text-[10px] [&_a]:text-muted-foreground',
+            '[&_a:hover]:underline',
+            '[&_.live-stream-watch]:text-foreground [&_.live-stream-watch]:font-medium',
+          )}
+        >
+          {showWatchLink && (
+            <Link
+              to="/"
+              search={previous => ({ ...previous, homeMode: 'live', streamId: resource.id })}
+              className="live-stream-watch"
+            >
+              <Play size={12} fill="currentColor" /> Watch here
+            </Link>
+          )}
           <a
             href={resource.resourceUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 text-xs underline"
+            aria-label={`Open ${title} on YouTube`}
           >
-            YouTube
-            <ExternalLink className="h-3.5 w-3.5" />
+            YouTube <ExternalLink size={12} />
           </a>
-          {showWatchLink && (
-            <Link
-              to="/"
-              search={previous => ({
-                ...previous,
-                homeMode: 'live',
-                streamId: resource.id,
-              })}
-              className="text-xs font-medium text-foreground underline"
-            >
-              Watch here
-            </Link>
-          )}
         </div>
+        {footerAction && <div className="mt-3">{footerAction}</div>}
       </div>
-      <YouTubeEmbed url={resource.resourceUrl} title={embedTitle} />
-      {footerAction && <div className="mt-3">{footerAction}</div>}
-    </div>
+    </article>
   );
 }

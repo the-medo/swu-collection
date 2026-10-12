@@ -7,6 +7,8 @@ export type DailySnapshotMetaPart = 'total' | 'top8' | 'winners';
 interface MetaPartSelectorProps {
   value: DailySnapshotMetaPart;
   onChange: (value: DailySnapshotMetaPart) => void;
+  ariaLabel?: string;
+  className?: string;
 }
 
 const options: ToggleOption[] = [
@@ -15,7 +17,12 @@ const options: ToggleOption[] = [
   { value: 'winners', label: 'Champions' },
 ];
 
-const MetaPartSelector: React.FC<MetaPartSelectorProps> = ({ value, onChange }) => {
+const MetaPartSelector: React.FC<MetaPartSelectorProps> = ({
+  value,
+  onChange,
+  ariaLabel,
+  className,
+}) => {
   const onValueChange = useCallback(
     (v: string) => {
       onChange(v as DailySnapshotMetaPart);
@@ -23,7 +30,15 @@ const MetaPartSelector: React.FC<MetaPartSelectorProps> = ({ value, onChange }) 
     [onChange],
   );
 
-  return <GenericToggleSelector options={options} value={value} onValueChange={onValueChange} />;
+  return (
+    <GenericToggleSelector
+      options={options}
+      value={value}
+      onValueChange={onValueChange}
+      ariaLabel={ariaLabel}
+      className={className}
+    />
+  );
 };
 
 export default MetaPartSelector;

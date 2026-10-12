@@ -4,6 +4,7 @@ import type { Visibility } from '../../../../shared/types/visibility.ts';
 import type { Deck } from '../../../../types/Deck.ts';
 import { createApiError } from '@/api/errors.ts';
 import type { CardPoolDataResponse } from './useGetCardPool.ts';
+import { dailySealedKeys } from './dailySealedKeys.ts';
 
 export interface CreateCardPoolDeckBody {
   name?: string;
@@ -34,6 +35,7 @@ export const useCreateCardPoolDeck = (id: string | undefined) => {
       return (await res.json()) as CreateCardPoolDeckResponse;
     },
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: dailySealedKeys.all });
       void queryClient.invalidateQueries({ queryKey: ['card-pool-decks', id], exact: false });
       queryClient.setQueryData<CardPoolDataResponse>(['card-pool', id], current =>
         current ? { ...current, data: { ...current.data, hasDecks: true } } : current,

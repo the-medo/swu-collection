@@ -1,8 +1,7 @@
 import React from 'react';
+import { toast } from '@/hooks/use-toast.ts';
 import type { Deck } from '../../../../../../types/Deck.ts';
-import { useCardList } from '@/api/lists/useCardList.ts';
-import CardImage from '@/components/app/global/CardImage.tsx';
-import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
+import { DeckArtwork } from '@/components/app/decks/DeckArtwork.tsx';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { Link as LinkIcon } from 'lucide-react';
@@ -14,16 +13,13 @@ export interface DeckCardProps {
 }
 
 const DeckCard: React.FC<DeckCardProps> = ({ deck, className }) => {
-  const { data: cardList } = useCardList();
-
-  const leader1 = deck.leaderCardId1 ? cardList?.cards[deck.leaderCardId1] : undefined;
-  const leader2 = deck.leaderCardId2 ? cardList?.cards[deck.leaderCardId2] : undefined;
-  const base = deck.baseCardId ? cardList?.cards[deck.baseCardId] : undefined;
-
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(`https://swubase.com/decks/${deck.id}`);
-    } catch (e) {}
+      await navigator.clipboard.writeText(`${window.location.origin}/limited/deck/${deck.id}`);
+      toast({ title: 'Deck link copied' });
+    } catch {
+      toast({ variant: 'destructive', title: 'Could not copy the deck link.' });
+    }
   };
 
   return (
@@ -33,51 +29,27 @@ const DeckCard: React.FC<DeckCardProps> = ({ deck, className }) => {
         className,
       )}
     >
-      <div className="flex items-start justify-between gap-2 mb-2">
+      <div className="flex w-full min-w-0 items-center justify-between gap-2 mb-2">
         <Link to={`/limited/deck/$deckId`} params={{ deckId: deck.id }} className="flex-1 min-w-0">
           <div className="text-sm font-semibold truncate">{deck.name || 'Untitled deck'}</div>
         </Link>
-        <Button variant="ghost" size="iconMedium" className="shrink-0" onClick={handleCopy}>
+        <Button
+          variant="ghost"
+          size="iconMedium"
+          className="shrink-0"
+          onClick={handleCopy}
+          aria-label="Copy deck link"
+        >
           <LinkIcon className="w-4 h-4" />
         </Button>
       </div>
 
-      <div className="relative w-full max-w-full overflow-hidden">
-        <div className="flex justify-center items-center w-full gap-1 min-w-0">
-          <div className="shrink-0">
-            <CardImage
-              card={leader1}
-              cardVariantId={leader1 ? selectDefaultVariant(leader1) : undefined}
-              forceHorizontal={true}
-              size="w100"
-              backSideButton={false}
-            >
-              No leader
-            </CardImage>
-          </div>
-          {leader2 && (
-            <div className="-ml-14 shrink-0">
-              <CardImage
-                card={leader2}
-                cardVariantId={leader2 ? selectDefaultVariant(leader2) : undefined}
-                forceHorizontal={true}
-                size="w100"
-                backSideButton={false}
-              />
-            </div>
-          )}
-          <div className={cn('shrink-0', { '-ml-12': !!leader2 })}>
-            <CardImage
-              card={base}
-              cardVariantId={base ? selectDefaultVariant(base) : undefined}
-              forceHorizontal={true}
-              size="w100"
-              backSideButton={false}
-            >
-              No base
-            </CardImage>
-          </div>
-        </div>
+      <div className="flex justify-center w-full py-4">
+        <DeckArtwork
+          leaderId={deck.leaderCardId1}
+          leader2Id={deck.leaderCardId2}
+          baseId={deck.baseCardId}
+        />
       </div>
     </div>
   );

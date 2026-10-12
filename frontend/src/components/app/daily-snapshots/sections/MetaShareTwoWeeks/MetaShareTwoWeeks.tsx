@@ -1,7 +1,8 @@
+import { ChartPie } from 'lucide-react';
 import * as React from 'react';
 import { useState, useMemo, useEffect } from 'react';
-import MetaPartSelector from './MetaPartSelector.tsx';
-import MetaViewSelector from './MetaViewSelector.tsx';
+import MetaFilters from '../components/MetaFilters.tsx';
+import MetaEmptyState from '../components/MetaEmptyState.tsx';
 import MetaSharePieChart from './MetaSharePieChart.tsx';
 import MetaShareTable from './MetaShareTable.tsx';
 import MetaShareTwoWeeksInfoTooltip from './MetaShareTwoWeeksInfoTooltip.tsx';
@@ -20,6 +21,7 @@ import type {
 import LeaderAvatar from '@/components/app/global/LeaderAvatar.tsx';
 import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import { DialogTitle } from '@/components/ui/dialog.tsx';
 
 export interface MetaShareTwoWeeksProps {
   payload: DailySnapshotSectionData<SectionMetaShare2Weeks>;
@@ -115,21 +117,20 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
     () => (
       <div className="flex items-center gap-2">
         {leaderAndBaseContent}
-        <h4 className="mb-0!"> Decks - last 2 weeks</h4>
+        <DialogTitle className="mb-0!">Decks - last 2 weeks</DialogTitle>
       </div>
     ),
     [leaderAndBaseContent],
   );
 
   return (
-    <div className="h-full w-full flex flex-col gap-2 ">
+    <div className="meta-section-content flex flex-col gap-4.5 w-full h-full min-w-0">
       <SectionHeader
-        headerAndTooltips={
+        title="Meta share"
+        icon={ChartPie}
+        description="Last two weeks · Leaders, top cuts and champions"
+        info={
           <>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h4>Meta share</h4>
-              <h5>(last 2 weeks)</h5>
-            </div>
             <MetaShareTwoWeeksInfoTooltip
               dailySnapshot={dailySnapshot}
               sectionUpdatedAt={sectionUpdatedAt}
@@ -141,48 +142,63 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
         }
         dropdownMenu={<MetaShareDropdownMenu tournamentGroupId={tournamentGroupId} />}
       />
-      <div
-        className="flex gap-4 justify-center flex-wrap @container/meta-2-weeks"
-        id="section-meta-2-weeks"
-      >
-        {/* Center - Pie Chart */}
-        <div className="flex flex-1 flex-col justify-center items-center">
-          <MetaSharePieChart
-            processedData={processedData}
-            metaView={metaView}
-            onClick={setSelectedDeckKey}
-          />
-          {selectedLeaderCardId && tournamentGroupId && (
-            <div className="mt-4">
-              <DecksForModalDialog
-                trigger={trigger}
-                header={header}
-                tournamentGroupId={tournamentGroupId}
-                leaderCardId={selectedLeaderCardId}
-                baseCardId={selectedBaseCardId}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Right side - Table */}
-        <div className="flex-[1_1_450px] min-w-0 max-w-full gap-4 flex-wrap justify-center">
-          <div className="flex gap-2 justify-center items-center flex-wrap mb-2">
-            <div className="mr-4">
-              <MetaPartSelector value={metaPart} onChange={setMetaPart} />
-            </div>
-            <MetaViewSelector value={metaView} onChange={setMetaView} />
-          </div>
-          <div className="min-w-0 flex justify-center items-center">
-            <MetaShareTable
+      <MetaFilters
+        metaPart={metaPart}
+        setMetaPart={setMetaPart}
+        metaView={metaView}
+        setMetaView={setMetaView}
+      />
+      {processedData.length === 0 ? (
+        <MetaEmptyState title="The next meta is taking shape">
+          Leader shares will appear here as tournament results become available.
+        </MetaEmptyState>
+      ) : (
+        <div
+          className="meta-share-layout @container/meta-2-weeks flex items-center flex-wrap gap-5.5"
+          id="section-meta-2-weeks"
+        >
+          {/* Center - Pie Chart */}
+          <div className="meta-share-chart flex-[1_1_220px] min-w-0 flex flex-col items-center">
+            <MetaSharePieChart
               processedData={processedData}
-              metaPart={metaPart}
               metaView={metaView}
               onClick={setSelectedDeckKey}
             />
+            <p className="meta-chart-hint m-0! text-center text-[11px]! text-muted-foreground">
+              Select a leader to explore its decks
+            </p>
+            <span role="status" className="sr-only">
+              {selectedLeaderCardId && tournamentGroupId
+                ? 'Leader selected. The Show decks button is now available.'
+                : ''}
+            </span>
+            {selectedLeaderCardId && tournamentGroupId && (
+              <div className="mt-4">
+                <DecksForModalDialog
+                  trigger={trigger}
+                  header={header}
+                  tournamentGroupId={tournamentGroupId}
+                  leaderCardId={selectedLeaderCardId}
+                  baseCardId={selectedBaseCardId}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Right side - Table */}
+          <div className="meta-share-ranking flex-[2_1_450px] min-w-0 max-w-full">
+            <div className="min-w-0 flex justify-center items-center">
+              <MetaShareTable
+                processedData={processedData}
+                metaPart={metaPart}
+                metaView={metaView}
+                onClick={setSelectedDeckKey}
+                selectedDeckKey={selectedDeckKey}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

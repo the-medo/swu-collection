@@ -5,7 +5,6 @@ import type {
 } from './liveTournamentTypes.ts';
 
 export const topEightBracketRoundOrder = ['Quarterfinals', 'Semifinals', 'Finals'] as const;
-const topCutRoundNames = new Set<string>(topEightBracketRoundOrder);
 export const topEightBracketMatchCountByRound: Record<
   (typeof topEightBracketRoundOrder)[number],
   number
@@ -191,4 +190,16 @@ export function getStatusLabel(
     case 'unknown':
       return 'Unknown';
   }
+}
+
+export function getMatchesRemainingLabel(entry: LiveTournamentWeekendTournamentEntry) {
+  const remaining = entry.weekendTournament.matchesRemaining;
+  const total = entry.weekendTournament.matchesTotal;
+
+  if (remaining === null || remaining === undefined) return null;
+
+  const matchWord = remaining === 1 ? 'match' : 'matches';
+  if (total === null || total === undefined) return `${remaining} ${matchWord} remaining`;
+
+  return `${remaining}/${total} ${matchWord} remaining`;
 }

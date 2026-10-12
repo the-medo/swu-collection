@@ -1,6 +1,5 @@
+import { cn } from '@/lib/utils.ts';
 import type { ReactNode } from 'react';
-import SectionHeader from '@/components/app/daily-snapshots/sections/components/SectionHeader.tsx';
-import { Badge } from '@/components/ui/badge.tsx';
 
 export function LiveSectionHeader({
   title,
@@ -14,20 +13,26 @@ export function LiveSectionHeader({
   action?: ReactNode;
 }) {
   return (
-    <SectionHeader
-      headerAndTooltips={
-        <div className="min-w-0">
-          <h4 className="truncate text-base font-semibold">{title}</h4>
-          {detail && <p className="text-xs text-muted-foreground">{detail}</p>}
-        </div>
-      }
-      dropdownMenu={
-        action ?? (count !== undefined ? (
-          <Badge variant="outline" className="rounded-md">
+    <header
+      className={cn(
+        'live-section-heading flex items-start justify-between gap-3 mb-1.5',
+        '[&_>_div]:min-w-0',
+      )}
+    >
+      <div>
+        <h3 className="m-0! p-0! text-[17px]! font-semibold! tracking-[-0.025em]!">{title}</h3>
+        {detail && (
+          <p className="mx-0! mt-1.5! mb-0! text-muted-foreground text-[11px]! leading-[1.5]!">
+            {detail}
+          </p>
+        )}
+      </div>
+      {action ??
+        (count !== undefined ? (
+          <span className="live-section-count py-[3px] px-[7px] border border-border rounded-[5px] text-[11px]">
             {count}
-          </Badge>
-        ) : undefined)
-      }
-    />
+          </span>
+        ) : null)}
+    </header>
   );
 }
