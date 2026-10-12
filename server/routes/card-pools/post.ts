@@ -4,6 +4,7 @@ import { z } from 'zod';
 import type { AuthExtension } from '../../auth/auth.ts';
 import { SwuSet } from '../../../types/enums.ts';
 import { Visibility } from '../../../shared/types/visibility.ts';
+import { assertNamedTextAllowed } from '../../lib/moderation/content.ts';
 import {
   CARD_POOL_BOOSTER_COUNTS,
   CardPoolType,
@@ -89,6 +90,7 @@ export const cardPoolsPostRoute = new Hono<AuthExtension>().post(
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
     const body = c.req.valid('json');
+    assertNamedTextAllowed(body, 'Card pool');
     const defaultName = `${body.set} ${body.type}`;
 
     try {

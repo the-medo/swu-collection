@@ -12,6 +12,7 @@ import { admin as adminPlugin } from 'better-auth/plugins';
 import { ac, applicationRoles } from './permissions';
 import { reconcilePatreonAccount } from '../lib/patreon/account.ts';
 import { userCreditHooks } from './userCredits.ts';
+import { validateDisplayName } from './displayNamePolicy.ts';
 
 export type AuthExtension = {
   Variables: {
@@ -24,8 +25,8 @@ export const auth = betterAuth({
   onAPIError: { errorURL: '/auth/error' },
   databaseHooks: {
     user: {
-      create: { after: userCreditHooks.created },
-      update: { after: reconcilePatreonAccount },
+      create: { before: validateDisplayName, after: userCreditHooks.created },
+      update: { before: validateDisplayName, after: reconcilePatreonAccount },
     },
     session: {
       create: { after: userCreditHooks.sessionChanged },

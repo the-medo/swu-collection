@@ -8,6 +8,7 @@ import { deck as deckTable } from '../../../../../db/schema/deck.ts';
 import { cardPoolDecks } from '../../../../../db/schema/card_pool_deck.ts';
 import { and, eq } from 'drizzle-orm';
 import { getCardPoolBasedOnIdAndUser } from '../../../../../lib/card-pools/card-pool-access.ts';
+import { assertDeckTextAllowed } from '../../../../../lib/moderation/content.ts';
 
 const zParams = z.object({ id: z.uuid(), deckId: z.uuid() });
 const zBody = z.object({
@@ -41,6 +42,11 @@ export const cardPoolsIdDecksDeckIdPatchRoute = new Hono<AuthExtension>().patch(
 
     if (!existing) return c.json({ message: 'Deck not found in this pool' }, 404);
     if (existing.userId !== user.id) return c.json({ message: 'Forbidden' }, 403);
+    assertDeckTextAllowed(
+      body.visibility !== undefined && body.visibility !== Visibility.Private
+        ? { ...existing, ...body }
+        : body,
+    );
 
     // Build updates
     const deckUpdates: any = { updatedAt: new Date() };

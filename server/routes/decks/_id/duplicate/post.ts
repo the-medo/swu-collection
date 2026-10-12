@@ -9,6 +9,7 @@ import { updateDeckInformation } from '../../../../lib/decks/updateDeckInformati
 import { cardPoolDecks, cardPoolDeckCards } from '../../../../db/schema/card_pool_deck.ts';
 import { CardPoolLocation } from '../../../../../shared/types/cardPools.ts';
 import { deckReadAccess } from '../../../../lib/decks/deckFolderAccess.ts';
+import { assertDeckTextAllowed } from '../../../../lib/moderation/content.ts';
 
 export const deckIdDuplicatePostRoute = new Hono<AuthExtension>().post('/', async c => {
   const paramDeckId = z.guid().parse(c.req.param('id'));
@@ -29,6 +30,7 @@ export const deckIdDuplicatePostRoute = new Hono<AuthExtension>().post('/', asyn
 
   // 3. Create a new deck as a copy
   const newDeckName = `Copy of ${sourceDeck.name}`;
+  assertDeckTextAllowed({ name: newDeckName, description: sourceDeck.description });
 
   const newDeck = (
     await db

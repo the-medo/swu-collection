@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { zCollectionCreateRequest } from '../../../types/ZCollection.ts';
 import { db } from '../../db';
 import { collection as collectionTable } from '../../db/schema/collection.ts';
+import { assertCollectionTextAllowed } from '../../lib/moderation/content.ts';
 
 /**
  * Create new collection (or wantlist)
@@ -15,6 +16,7 @@ export const collectionPostRoute = new Hono<AuthExtension>().post(
     const user = c.get('user');
     const data = c.req.valid('json');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
+    assertCollectionTextAllowed(data);
 
     const newCollection = await db
       .insert(collectionTable)

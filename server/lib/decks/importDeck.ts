@@ -13,6 +13,7 @@ import {
   type ParsedImportedDeck,
 } from './deckBuilders.ts';
 import { updateDeckInformation } from './updateDeckInformation.ts';
+import { assertDeckTextAllowed } from '../moderation/content.ts';
 
 export const importDeckForUser = async ({
   userId,
@@ -31,6 +32,7 @@ export const importDeckForUser = async ({
 }) => {
   const parsedDeck = parseImportedDeck(sourceDeck, await getMergedCardList());
   const description = describeImportErrors(parsedDeck.errors);
+  assertDeckTextAllowed({ name: parsedDeck.name, description });
   const now = new Date();
 
   const newDeck = await db.transaction(async tx => {

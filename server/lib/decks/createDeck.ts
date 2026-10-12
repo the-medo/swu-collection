@@ -4,8 +4,10 @@ import { deckFolderDeck } from '../../db/schema/deck_folder.ts';
 import type { ZDeckCreateRequest } from '../../../types/ZDeck.ts';
 import { requireDeckFolderForCreation } from './deckFolders.ts';
 import { updateDeckInformation } from './updateDeckInformation.ts';
+import { assertDeckTextAllowed } from '../moderation/content.ts';
 
 export async function createDeckForUser(userId: string, input: ZDeckCreateRequest) {
+  assertDeckTextAllowed(input);
   const { folderId, ...data } = input;
   const created = await db.transaction(async tx => {
     await requireDeckFolderForCreation(tx, userId, folderId);

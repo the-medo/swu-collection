@@ -28,6 +28,7 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
   const { toast } = useToast();
   const putDeckMutation = usePutDeck(deck.id);
   const updateCardPoolDeckMutation = useUpdateCardPoolDeck(deck.cardPoolId, deck.id);
+  const pending = putDeckMutation.isPending || updateCardPoolDeckMutation.isPending;
 
   const form = useForm({
     defaultValues: {
@@ -49,6 +50,13 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
             onSuccess: () => {
               toast({ title: `Deck updated!` });
               setOpen(false);
+            },
+            onError: error => {
+              toast({
+                variant: 'destructive',
+                title: 'Error while updating the deck',
+                description: error.message,
+              });
             },
           },
         );
@@ -82,7 +90,7 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
         form.setFieldValue('format', deck.format);
       }
     },
-    [deck.public, deck.format],
+    [deck.public, deck.format, form],
   );
 
   return (
@@ -151,8 +159,8 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
               />
             )}
           />
-          <Button type="submit" disabled={form.state.isSubmitting}>
-            {form.state.isSubmitting ? '...' : 'Update'}
+          <Button type="submit" disabled={pending}>
+            {pending ? '...' : 'Update'}
           </Button>
         </form>
       ) : (

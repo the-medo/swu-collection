@@ -148,6 +148,93 @@ test.skipIf(!enabled)(
       expect(contents.data.map((row: { deck: { id: string } }) => row.deck.id).sort()).toEqual(
         deckIds.slice(0, 2).sort(),
       );
+      await db.update(deck).set({ description: 'fuck' }).where(eq(deck.id, deckIds[0]!));
+      const rejectedShare = await request(owner, `/folders/${root}/sharing`, 'PUT', {
+        linkEnabled: true,
+        teamIds: [],
+      });
+      expect(rejectedShare.status).toBe(400);
+      expect(await rejectedShare.json()).toMatchObject({
+        code: 'PROFANITY_NOT_ALLOWED',
+        field: 'description',
+      });
+      await db.update(deck).set({ description: '' }).where(eq(deck.id, deckIds[0]!));
+      expect(
+        (
+          await request(owner, `/folders/${root}/sharing`, 'PUT', {
+            linkEnabled: true,
+            teamIds: [],
+          })
+        ).status,
+      ).toBe(200);
+      const legacy = (await (await request(owner, '/folders', 'POST', { name: 'Legacy' })).json())
+        .data.id;
+      const legacyChild = (
+        await (
+          await request(owner, '/folders', 'POST', {
+            name: 'Legacy child',
+            parentId: legacy,
+          })
+        ).json()
+      ).data.id;
+      const moveLegacyDeck = (folderId: string) =>
+        request(owner, '/folders/move', 'POST', {
+          deckIds: [deckIds[0]],
+          folderId,
+        });
+      expect((await moveLegacyDeck(legacy)).status).toBe(200);
+      await db.update(deck).set({ description: 'fuck' }).where(eq(deck.id, deckIds[0]!));
+      expect((await moveLegacyDeck(leaf)).status).toBe(400);
+      expect(
+        (await db.select().from(deckFolderDeck).where(eq(deckFolderDeck.deckId, deckIds[0]!)))[0]!
+          .folderId,
+      ).toBe(legacy);
+      for (const [path, payload] of [
+        [`/folders/${legacy}`, { name: 'Legacy', parentId: leaf }],
+        [`/folders/${legacy}/position`, { targetId: leaf, placement: 'inside' }],
+      ] as const) {
+        const response = await request(owner, path, 'PUT', payload);
+        expect(response.status).toBe(400);
+        expect(await response.json()).toMatchObject({
+          code: 'PROFANITY_NOT_ALLOWED',
+          field: 'description',
+        });
+      }
+      expect(
+        (await db.select().from(deckFolder).where(eq(deckFolder.id, legacy)))[0]!.parentId,
+      ).toBeNull();
+      await db.update(deck).set({ description: '' }).where(eq(deck.id, deckIds[0]!));
+      await db.update(deckFolder).set({ name: 'fuck' }).where(eq(deckFolder.id, legacyChild));
+      const rejectedChild = await request(owner, `/folders/${legacy}/position`, 'PUT', {
+        targetId: leaf,
+        placement: 'inside',
+      });
+      expect(rejectedChild.status).toBe(400);
+      expect(await rejectedChild.json()).toMatchObject({ field: 'name' });
+      await db
+        .update(deckFolder)
+        .set({ name: 'Legacy child' })
+        .where(eq(deckFolder.id, legacyChild));
+      await db.update(deckFolder).set({ name: 'fuck' }).where(eq(deckFolder.id, legacy));
+      // Renaming the root and sharing it in the same operation validates the new name.
+      expect(
+        (
+          await request(owner, `/folders/${legacy}`, 'PUT', {
+            name: 'Corrected legacy',
+            parentId: leaf,
+          })
+        ).status,
+      ).toBe(200);
+      expect((await moveLegacyDeck(leaf)).status).toBe(200);
+      expect((await request(owner, `/folders/${legacy}`, 'DELETE')).status).toBe(200);
+      expect(
+        (
+          await request(owner, `/folders/${root}/sharing`, 'PUT', {
+            linkEnabled: false,
+            teamIds: [],
+          })
+        ).status,
+      ).toBe(200);
       expect(
         (await (await owner.request(`/deck?userId=${ids[0]}&folderId=unfiled`)).json()).data,
       ).toHaveLength(0);

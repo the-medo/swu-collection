@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { createApiError } from '@/api/errors.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { Collection } from '../../../../types/Collection.ts';
 import type { ZCollectionUpdateRequest } from '../../../../types/ZCollection.ts';
@@ -26,7 +27,7 @@ export const usePutCollection = () => {
       });
 
       if (!response.ok) {
-        throw new Error(response.statusText);
+        throw await createApiError(response, 'Failed to update list');
       }
 
       return response.json();

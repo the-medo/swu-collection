@@ -7,6 +7,7 @@ import { team } from '../../db/schema/team.ts';
 import { teamMember } from '../../db/schema/team_member.ts';
 import { sharedDeckFolderAccess } from './deckFolderAccess.ts';
 import { getDeckFolderDescendants } from '../../../shared/lib/deckFolders.ts';
+import { assertDeckTextAllowed, assertTextAllowed } from '../moderation/content.ts';
 import type {
   DeckFolderUpdateRequest,
   DeckFolderPositionRequest,
@@ -23,6 +24,32 @@ export class DeckFolderNotFoundError extends Error {
 }
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+type FolderText = Pick<typeof deckFolder.$inferSelect, 'id' | 'parentId' | 'name'>;
+
+async function assertSharedFolderTextAllowed(tx: Transaction, folders: FolderText[], id: string) {
+  const sharedIds = getDeckFolderDescendants(folders, id);
+  for (const folder of folders)
+    if (sharedIds.has(folder.id)) assertTextAllowed(folder.name, 'name', 'Folder name');
+  const sharedDecks = await tx
+    .select({ name: deck.name, description: deck.description })
+    .from(deckFolderDeck)
+    .innerJoin(deck, eq(deck.id, deckFolderDeck.deckId))
+    .where(inArray(deckFolderDeck.folderId, [...sharedIds]));
+  for (const sharedDeck of sharedDecks) assertDeckTextAllowed(sharedDeck);
+}
+
+async function folderHasSharing(tx: Transaction, userId: string, id: string) {
+  // Owners must belong to every team they share with (enforced by the grant FK).
+  // Passing the owner detects both inherited link and team grants.
+  const [shared] = await tx
+    .select({ id: deckFolder.id })
+    .from(deckFolder)
+    .where(
+      and(eq(deckFolder.id, id), eq(deckFolder.userId, userId), sharedDeckFolderAccess(id, userId)),
+    )
+    .limit(1);
+  return Boolean(shared);
+}
 
 export async function requireDeckFolderForCreation(
   tx: Transaction,
@@ -133,6 +160,23 @@ export async function saveDeckFolderSharing(
         .for('key share');
       if (memberships.length !== input.teamIds.length) return 'forbidden_team' as const;
     }
+    if (input.linkEnabled || input.teamIds.length) {
+      const existing = await tx
+        .select({ audience: deckFolderShare.audience, teamId: deckFolderShare.teamId })
+        .from(deckFolderShare)
+        .where(eq(deckFolderShare.folderId, id));
+      const expandsAccess =
+        (input.linkEnabled && !existing.some(grant => grant.audience === 'link')) ||
+        input.teamIds.some(teamId => !existing.some(grant => grant.teamId === teamId));
+      // Legacy text must never prevent revoking or reducing existing grants.
+      if (expandsAccess) {
+        const folders = await tx
+          .select({ id: deckFolder.id, parentId: deckFolder.parentId, name: deckFolder.name })
+          .from(deckFolder)
+          .where(eq(deckFolder.userId, userId));
+        await assertSharedFolderTextAllowed(tx, folders, id);
+      }
+    }
     await tx.delete(deckFolderShare).where(eq(deckFolderShare.folderId, id));
     const grants = [
       ...(input.linkEnabled
@@ -155,6 +199,7 @@ export async function saveDeckFolder(
   input: DeckFolderUpdateRequest,
   id?: string,
 ): Promise<FolderResult> {
+  assertTextAllowed(input.name, 'name', 'Folder name');
   return db.transaction(async tx => {
     // Serialise hierarchy edits per account so concurrent reparenting cannot form a cycle.
     await tx.select({ id: user.id }).from(user).where(eq(user.id, userId)).for('update');
@@ -165,6 +210,17 @@ export async function saveDeckFolder(
     if (parentId && !folders.some(folder => folder.id === parentId)) return { status: 'not_found' };
     if (id && parentId && getDeckFolderDescendants(folders, id).has(parentId))
       return { status: 'cycle' };
+    if (
+      id &&
+      parentId &&
+      parentId !== existing?.parentId &&
+      (await folderHasSharing(tx, userId, parentId))
+    )
+      await assertSharedFolderTextAllowed(
+        tx,
+        folders.map(folder => (folder.id === id ? { ...folder, name: input.name } : folder)),
+        id,
+      );
     const position =
       existing && existing.parentId === parentId
         ? existing.position
@@ -207,6 +263,8 @@ export async function positionDeckFolder(
     const parentId = target ? (input.placement === 'inside' ? target.id : target.parentId) : null;
     if (target?.id === id || (parentId && getDeckFolderDescendants(folders, id).has(parentId)))
       return { status: 'cycle' };
+    if (parentId && parentId !== moving.parentId && (await folderHasSharing(tx, userId, parentId)))
+      await assertSharedFolderTextAllowed(tx, folders, id);
     const siblings = folders.filter(folder => folder.parentId === parentId && folder.id !== id);
     const index =
       target && input.placement !== 'inside'
@@ -239,20 +297,23 @@ export async function removeDeckFolder(userId: string, id: string) {
 export async function moveDecksToFolder(userId: string, input: MoveDecksToFolderRequest) {
   return db.transaction(async tx => {
     await tx.select({ id: user.id }).from(user).where(eq(user.id, userId)).for('update');
+    let sharedDestination = false;
     if (input.folderId) {
       const [destination] = await tx
-        .select({ id: deckFolder.id })
+        .select({ id: deckFolder.id, shared: sharedDeckFolderAccess(input.folderId, userId) })
         .from(deckFolder)
         .where(and(eq(deckFolder.id, input.folderId), eq(deckFolder.userId, userId)));
       if (!destination) return false;
+      sharedDestination = destination.shared;
     }
     const owned = await tx
-      .select({ id: deck.id })
+      .select({ id: deck.id, name: deck.name, description: deck.description })
       .from(deck)
       .where(and(eq(deck.userId, userId), inArray(deck.id, input.deckIds)))
       .orderBy(deck.id)
       .for('update');
     if (owned.length !== input.deckIds.length) return false;
+    if (sharedDestination) for (const moved of owned) assertDeckTextAllowed(moved);
     if (input.folderId) {
       await tx
         .insert(deckFolderDeck)

@@ -9,6 +9,7 @@ import { cardPoolDecks, cardPoolDeckCards } from '../../../../db/schema/card_poo
 import { cardPoolCards, cardPools as cardPoolsTable } from '../../../../db/schema/card_pool.ts';
 import { eq } from 'drizzle-orm';
 import { buildCardPoolVisibilityWhere } from '../../../../lib/card-pools/card-pool-access.ts';
+import { assertDeckTextAllowed } from '../../../../lib/moderation/content.ts';
 
 const zParams = z.object({ id: z.uuid() });
 const zBody = z.object({
@@ -27,6 +28,7 @@ export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
 
     const { id } = c.req.valid('param');
     const body = c.req.valid('json');
+    assertDeckTextAllowed(body);
 
     const result = await db.transaction(async tx => {
       // Lock the pool before either creating a deck or replacing its cards. This makes

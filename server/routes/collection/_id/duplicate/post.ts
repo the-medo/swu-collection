@@ -7,6 +7,7 @@ import { and, eq, or } from 'drizzle-orm';
 import { collection as collectionTable } from '../../../../db/schema/collection.ts';
 import { db } from '../../../../db';
 import { collectionCard as collectionCardTable } from '../../../../db/schema/collection_card.ts';
+import { assertCollectionTextAllowed } from '../../../../lib/moderation/content.ts';
 
 export const collectionIdDuplicatePostRoute = new Hono<AuthExtension>().post(
   '/',
@@ -39,6 +40,7 @@ export const collectionIdDuplicatePostRoute = new Hono<AuthExtension>().post(
     }
 
     // Create a new collection with copied data
+    assertCollectionTextAllowed({ ...data, description: sourceCollection.description });
     const newCollection = await db
       .insert(collectionTable)
       .values({

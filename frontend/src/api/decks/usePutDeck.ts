@@ -8,6 +8,7 @@ import { deckKeys } from './queryKeys.ts';
 import { deckDiscussionKeys } from './discussionKeys.ts';
 import { invalidateBoundDiscussion } from './discussionCache.ts';
 import { dailySealedKeys } from '@/api/card-pools/dailySealedKeys.ts';
+import { createApiError } from '@/api/errors.ts';
 
 export const usePutDeck = (deckId: string | undefined) => {
   const queryClient = useQueryClient();
@@ -25,11 +26,7 @@ export const usePutDeck = (deckId: string | undefined) => {
       });
 
       if (!response.ok) {
-        throw new Error(
-          response.statusText === 'Internal Server Error'
-            ? 'Something went wrong while updating the deck'
-            : response.statusText,
-        );
+        throw await createApiError(response, 'Something went wrong while updating the deck');
       }
 
       return response.json() as unknown as { data: any };

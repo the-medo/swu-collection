@@ -6,6 +6,7 @@ import { deckReadAccess } from './deckFolderAccess.ts';
 import type { PostDocument } from '../../../shared/posts/content.ts';
 import type { DeckArticle } from '../../../shared/types/deck-discussion.ts';
 import type { DiscussionResult as Result } from '../discussions/policy.ts';
+import { assertPostAllowed } from '../moderation/content.ts';
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 const unavailable = {
   error: 'This deck is unavailable, or you do not have access to it.',
@@ -43,6 +44,7 @@ export async function saveDeckArticle(
   content: PostDocument,
   revision: number | null,
 ): Promise<Result<DeckArticle>> {
+  assertPostAllowed(content, 'Deck guide');
   return db.transaction(async tx => {
     const current = await lockReadableDeck(tx, deckId, viewerId);
     if (!current) return unavailable;
