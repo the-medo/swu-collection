@@ -2,6 +2,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import type { DeckData } from '../../../../types/Deck.ts';
 import type { DeckCardResponse } from './useGetDeckCards.ts';
 import type { DeckCard } from '../../../../types/ZDeckCard.ts';
+import { invalidateDeckReferences } from './deckCache.ts';
 import { deckKeys } from './queryKeys.ts';
 
 type DeckMutation = {
@@ -36,14 +37,7 @@ export async function refreshDeckAfterWrite(
 }
 
 export async function refreshDeckForSave(client: QueryClient, deckId: string, viewerId?: string) {
-  // Read metadata before cards: a later server edit leaves an older timestamp,
-  // which the save endpoint rejects instead of sealing unseen changes.
-  await client.invalidateQueries({ queryKey: deckKeys.detail(deckId, viewerId), exact: true });
-  await Promise.all([
-    client.invalidateQueries({ queryKey: deckKeys.cards(deckId, viewerId), exact: true }),
-    client.invalidateQueries({ queryKey: ['deck-versions', deckId] }),
-    client.invalidateQueries({ queryKey: ['deck-version-diff', deckId] }),
-  ]);
+  await invalidateDeckReferences(client, deckId, viewerId);
 }
 
 export function assertDeckReadyToSave(

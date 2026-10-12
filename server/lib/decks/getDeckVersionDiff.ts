@@ -2,6 +2,8 @@ import { eq } from 'drizzle-orm';
 import { db } from '../../db/index.ts';
 import { deckVersionCard as deckVersionCardTable } from '../../db/schema/deck_version.ts';
 import { DeckVersionError } from './deckVersionErrors.ts';
+import type { DeckVersionDiff } from '../../../types/Deck.ts';
+import type { DeckDbExecutor } from './deckVersionRepository.ts';
 import {
   loadCurrentVersionedCards,
   loadDeck,
@@ -15,10 +17,24 @@ import {
   type VersionedDeckCard,
 } from './versionedDeckState.ts';
 
-export async function getDeckVersionDiff(deckId: string, versionId: string) {
-  const parent = await loadDeck(db, deckId);
+export async function getDeckVersionDiff(
+  deckId: string,
+  versionId: string,
+): Promise<DeckVersionDiff> {
+  return db.transaction(tx => readDeckVersionDiff(tx, deckId, versionId), {
+    isolationLevel: 'repeatable read',
+    accessMode: 'read only',
+  });
+}
+
+async function readDeckVersionDiff(
+  executor: DeckDbExecutor,
+  deckId: string,
+  versionId: string,
+): Promise<DeckVersionDiff> {
+  const parent = await loadDeck(executor, deckId);
   if (!parent) throw new DeckVersionError("Deck doesn't exist", 'DECK_NOT_FOUND');
-  const versions = await loadOrderedDeckVersions(db, deckId);
+  const versions = await loadOrderedDeckVersions(executor, deckId);
   const version = versions.find(item => item.id === versionId);
   if (!version) {
     throw new DeckVersionError(
@@ -30,7 +46,7 @@ export async function getDeckVersionDiff(deckId: string, versionId: string) {
   const previousState =
     version.versionNumber === 1
       ? null
-      : await reconstructDeckVersion(db, deckId, version.versionNumber - 1);
+      : await reconstructDeckVersion(executor, deckId, version.versionNumber - 1);
   const previousCards = previousState?.cards ?? [];
   const previousMetadata = previousState?.metadata ?? null;
 
@@ -43,9 +59,12 @@ export async function getDeckVersionDiff(deckId: string, versionId: string) {
         'INVALID_VERSION_HISTORY',
       );
     }
-    cards = createDeckVersionDelta(previousCards, await loadCurrentVersionedCards(db, deckId));
+    cards = createDeckVersionDelta(
+      previousCards,
+      await loadCurrentVersionedCards(executor, deckId),
+    );
   } else {
-    const rows = await db
+    const rows = await executor
       .select()
       .from(deckVersionCardTable)
       .where(eq(deckVersionCardTable.deckVersionId, version.id));
@@ -71,6 +90,14 @@ export async function getDeckVersionDiff(deckId: string, versionId: string) {
       card.quantity - (previousQuantities.get(`${card.board}\u0000${card.cardId}`) ?? 0);
     return quantityChange === 0 ? [] : [{ cardId: card.cardId, board: card.board, quantityChange }];
   });
+  const previousNotes = new Map(
+    previousCards.map(card => [`${card.board}\u0000${card.cardId}`, card.note]),
+  );
+  const noteChanges = cards.flatMap(card => {
+    const before = previousNotes.get(`${card.board}\u0000${card.cardId}`) ?? '';
+    const after = card.quantity > 0 ? card.note : '';
+    return before === after ? [] : [{ cardId: card.cardId, board: card.board, before, after }];
+  });
 
   return {
     versionId: version.id,
@@ -78,6 +105,7 @@ export async function getDeckVersionDiff(deckId: string, versionId: string) {
     state: version.sealedAt ? ('sealed' as const) : ('open' as const),
     cards,
     changes,
+    noteChanges,
     summary: summarizeDeckVersionDelta(cards, previousCards),
     metadata: {
       before: previousMetadata,

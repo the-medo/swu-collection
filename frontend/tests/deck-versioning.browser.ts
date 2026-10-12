@@ -3,6 +3,7 @@
 import { chromium, expect as baseExpect } from 'playwright/test';
 import { resolve } from 'node:path';
 import { cardList } from '../../server/db/lists.ts';
+import type { DeckVersionDiff, DeckVersionMetadata } from '../../types/Deck.ts';
 
 if (process.env.DECK_VERSION_BROWSER_TEST !== '1')
   throw new Error('Enable DECK_VERSION_BROWSER_TEST=1.');
@@ -17,6 +18,37 @@ let revision = 0,
 let releaseWrite: (() => void) | undefined;
 let holdWrite = false;
 const saves: Array<{ changeNote?: string; expectedUpdatedAt: string }> = [];
+let diffMode: 'full' | 'empty' | 'notes' | 'metadata' | 'error' = 'full';
+let releaseDiff: (() => void) | undefined;
+let holdDiff = false;
+const beforeMetadata: DeckVersionMetadata = {
+  name: 'Old name',
+  description: 'Before description',
+  format: 1,
+  leaderCardId1: 'sabine-wren--galvanized-revolutionary',
+  leaderCardId2: null,
+  baseCardId: 'command-center',
+};
+const afterMetadata: DeckVersionMetadata = {
+  name: 'New name',
+  description: 'After description',
+  format: 6,
+  leaderCardId1: null,
+  leaderCardId2: 'unknown-preview-leader',
+  baseCardId: null,
+};
+const fullDiff: DeckVersionDiff = {
+  versionId: openId,
+  versionNumber: 2,
+  state: 'open',
+  cards: [],
+  changes: [{ cardId: 'battlefield-marine', board: 1, quantityChange: 1 }],
+  noteChanges: [
+    { cardId: 'battlefield-marine', board: 1, before: 'Old card note', after: 'New card note' },
+  ],
+  summary: { addedCards: 0, removedCards: 0, changedCards: 1 },
+  metadata: { before: beforeMetadata, after: afterMetadata },
+};
 const stamp = () => new Date(Date.UTC(2026, 9, 12, 0, 0, revision)).toISOString();
 const actor = {
   id: ownerId,
@@ -90,6 +122,25 @@ async function fixture(request: Request) {
   if (pathname === `/api/deck/${deckId}/tournament`) return Response.json({ data: null });
   if (pathname === `/api/deck/${deckId}/article`)
     return Response.json({ message: 'No article' }, { status: 404 });
+  if (pathname === `/api/deck/${deckId}/versions/${openId}/diff`) {
+    if (holdDiff)
+      await new Promise<void>(resolve => {
+        releaseDiff = resolve;
+      });
+    if (diffMode === 'error')
+      return Response.json({ message: 'Fixture diff failure' }, { status: 500 });
+    return Response.json({
+      data: {
+        ...fullDiff,
+        changes: diffMode === 'full' ? fullDiff.changes : [],
+        noteChanges: diffMode === 'full' || diffMode === 'notes' ? fullDiff.noteChanges : [],
+        metadata:
+          diffMode === 'full' || diffMode === 'metadata'
+            ? fullDiff.metadata
+            : { before: beforeMetadata, after: beforeMetadata },
+      },
+    });
+  }
   if (pathname === `/api/deck/${deckId}/card`) {
     if (request.method === 'PUT') {
       const body = await request.json();
@@ -116,7 +167,15 @@ async function fixture(request: Request) {
           { message: 'The deck changed since this page was loaded' },
           { status: 409 },
         );
-      return Response.json({ data: {} }, { status: 201 });
+      return Response.json(
+        {
+          data: {
+            sealedVersion: { id: openId },
+            openVersion: { id: '44444444-4444-4444-8444-444444444444' },
+          },
+        },
+        { status: 201 },
+      );
     }
     return Response.json({
       deckId,
@@ -259,12 +318,67 @@ try {
     second.getByRole('button', { name: 'Save current version', exact: true }),
   ).toBeEnabled();
   expect(saves).toHaveLength(2);
+  const expandChanges = () => second.getByRole('button', { name: '~1', exact: true });
+  holdDiff = true;
+  await expandChanges().click();
+  await expect(second.getByText('Loading changes…', { exact: true })).toBeVisible();
+  await expect.poll(() => !!releaseDiff).toBe(true);
+  holdDiff = false;
+  releaseDiff!();
+  releaseDiff = undefined;
+  await expect(second.getByText('Before: Old name', { exact: true })).toBeVisible();
+  await expect(second.getByText('After: New name', { exact: true })).toBeVisible();
+  await expect(second.getByText('Before: Before description', { exact: true })).toBeVisible();
+  await expect(second.getByText('After: After description', { exact: true })).toBeVisible();
+  await expect(second.getByText('Second leader', { exact: true })).toBeVisible();
+  await expect(second.getByText('After: unknown-preview-leader', { exact: true })).toBeVisible();
+  await expect(second.getByText('Before: Command Center', { exact: true })).toBeVisible();
+  await expect(
+    second.getByText('Before: Sabine Wren, Galvanized Revolutionary', { exact: true }),
+  ).toBeVisible();
+  await expect(second.getByText('Before: Premier', { exact: true })).toBeVisible();
+  await expect(second.getByText('After: Eternal', { exact: true })).toBeVisible();
+  await expect(second.getByText('Before: Old card note', { exact: true })).toBeVisible();
+  await expect(second.getByText('After: New card note', { exact: true })).toBeVisible();
+  await expect(second.getByText('+1 Battlefield Marine', { exact: true })).toBeVisible();
+  // Remounting a stale diff exercises all response states, including cached-data errors.
+  for (const mode of ['notes', 'metadata', 'empty', 'error'] as const) {
+    await expandChanges().click();
+    diffMode = mode;
+    await expandChanges().click();
+    if (mode === 'notes') {
+      await expect(second.getByText('After: New card note', { exact: true })).toBeVisible();
+      await expect(second.getByText('After: New name', { exact: true })).not.toBeVisible();
+    } else if (mode === 'metadata') {
+      await expect(second.getByText('After: New name', { exact: true })).toBeVisible();
+      await expect(second.getByText('After: New card note', { exact: true })).not.toBeVisible();
+    } else if (mode === 'empty') {
+      await expect(second.getByText('No changes in this version.', { exact: true })).toBeVisible();
+    } else {
+      await expect(
+        second.getByText('Could not load version changes.', { exact: true }),
+      ).toBeVisible();
+      await expect(
+        second.getByText('No changes in this version.', { exact: true }),
+      ).not.toBeVisible();
+      diffMode = 'full';
+      await second.getByRole('button', { name: 'Retry changes', exact: true }).click();
+      await expect(second.getByText('After: New card note', { exact: true })).toBeVisible();
+    }
+  }
+  await second.setViewportSize({ width: 390, height: 844 });
+  await second.evaluate(() => document.documentElement.classList.add('dark'));
+  await expect(second.getByText('After: New card note', { exact: true })).toBeVisible();
+  expect(
+    await second.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBe(true);
   expect(browserErrors).toEqual([]);
   console.log(
-    'PASS: queued writes, stale two-editor save, preserved note, explicit retry, and failed-edit rollback.',
+    'PASS: queued writes, stale saves, rollback; metadata/notes/empty/loading/error/retry diffs and narrow dark layout.',
   );
 } finally {
   releaseWrite?.();
+  releaseDiff?.();
   await Promise.all(contexts.map(context => context.close()));
   await browser.close();
   server.stop(true);

@@ -1,3 +1,4 @@
+import { needsDeckReferenceFetch } from './deckCache.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { useSession } from '@/lib/auth-client.ts';
@@ -25,13 +26,7 @@ export const useGetBulkDecks = (deckIds: string[] | undefined) => {
         return false;
       }
 
-      // Filter out deck IDs that already have both deck data and deck cards in cache
-      const idsToFetch = deckIds.filter(deckId => {
-        const deckData = queryClient.getQueryData<DeckData>(deckKeys.detail(deckId, viewer?.id));
-        const deckCards = queryClient.getQueryData(deckKeys.cards(deckId, viewer?.id));
-        // Only include IDs where either deck data or deck cards are missing from cache
-        return !deckData || !deckCards || isSharedPrivateDeck(deckData, viewer?.id);
-      });
+      const idsToFetch = deckIds.filter(id => needsDeckReferenceFetch(queryClient, id, viewer?.id));
 
       // If all decks are already in cache, return early
       if (idsToFetch.length === 0) {

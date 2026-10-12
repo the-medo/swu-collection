@@ -16,11 +16,7 @@ export const useRefreshImportedDeck = () => {
       if (!response.ok) throw await createApiError(response, 'Failed to refresh imported deck');
       return response.json();
     },
-    onSuccess: (_data, deckId) => {
-      void queryClient.invalidateQueries({ queryKey: ['deck-versions', deckId] });
-      void queryClient.invalidateQueries({ queryKey: ['deck-version-diff', deckId] });
-      void queryClient.invalidateQueries({ queryKey: ['deck', deckId] });
-      void queryClient.invalidateQueries({ queryKey: ['deck-content', deckId] });
+    onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });
     },
     onSettled: (_data, _error, deckId) => refreshDeckAfterWrite(queryClient, deckId, viewer?.id),

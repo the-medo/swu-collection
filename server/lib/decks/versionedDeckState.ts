@@ -1,20 +1,10 @@
 import { createHash } from 'node:crypto';
 
-export type VersionedDeckCard = {
-  cardId: string;
-  board: 1 | 2;
-  note: string;
-  quantity: number;
-};
-
-export type VersionedDeckMetadata = {
-  name: string;
-  description: string;
-  format: number;
-  leaderCardId1: string | null;
-  leaderCardId2: string | null;
-  baseCardId: string | null;
-};
+import type {
+  DeckVersionCard as VersionedDeckCard,
+  DeckVersionMetadata as VersionedDeckMetadata,
+} from '../../../types/Deck.ts';
+export type { VersionedDeckCard, VersionedDeckMetadata };
 
 export type PlayableDeckState = Pick<
   VersionedDeckMetadata,

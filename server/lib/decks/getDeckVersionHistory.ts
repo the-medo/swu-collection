@@ -1,3 +1,4 @@
+import type { DeckDbExecutor } from './deckVersionRepository.ts';
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '../../db/index.ts';
 import { deckVersionCard as deckVersionCardTable } from '../../db/schema/deck_version.ts';
@@ -25,7 +26,7 @@ export async function getDeckVersionHistory(deckId: string): Promise<DeckVersion
 
 async function readDeckVersionHistory(
   deckId: string,
-  executor: Parameters<Parameters<typeof db.transaction>[0]>[0],
+  executor: DeckDbExecutor,
 ): Promise<DeckVersionSummary[]> {
   const versions = await loadOrderedDeckVersions(executor, deckId);
   if (versions.length === 0) {

@@ -1,3 +1,4 @@
+import { getEffectiveDeck } from '../../../../lib/decks/getEffectiveDeck.ts';
 import { Hono } from 'hono';
 import type { AuthExtension } from '../../../../auth/auth.ts';
 import { z } from 'zod';
@@ -40,16 +41,7 @@ export const deckIdDuplicatePostRoute = new Hono<AuthExtension>().post('/', asyn
   }
 
   // 3. Create a new deck as a copy
-  const sourceMetadata = resolved!.version?.sealedAt
-    ? {
-        name: resolved!.version.name ?? sourceDeck.name,
-        description: resolved!.version.description ?? '',
-        format: resolved!.version.format ?? sourceDeck.format,
-        leaderCardId1: resolved!.version.leaderCardId1,
-        leaderCardId2: resolved!.version.leaderCardId2,
-        baseCardId: resolved!.version.baseCardId,
-      }
-    : sourceDeck;
+  const sourceMetadata = getEffectiveDeck(sourceDeck, resolved!.version);
   const newDeckName = `Copy of ${sourceMetadata.name}`;
 
   const newDeck = (

@@ -1,3 +1,4 @@
+import { getEffectiveDeck } from '../decks/getEffectiveDeck.ts';
 import type { IntegrationGameData } from '../../db/schema/integration.ts';
 import type { DeckCard } from '../../../types/ZDeckCard.ts';
 import { normalizeKarabastDeckId, type IntegrationGameDataContent } from './karabastGameData.ts';
@@ -41,13 +42,13 @@ export async function resolveKarabastDeckReferences(
         deckId: reference.deck.id,
         deckVersionId: reference.version?.id ?? null,
       });
-      const effectiveVersion = reference.version?.sealedAt ? reference.version : null;
+      const effectiveDeck = getEffectiveDeck(reference.deck, reference.version);
       resolved[index] = {
         ...version,
         deckInfo: {
-          name: effectiveVersion?.name ?? reference.deck.name,
+          name: effectiveDeck.name,
           cardPoolId: reference.deck.cardPoolId,
-          formatId: effectiveVersion?.format ?? reference.deck.format,
+          formatId: effectiveDeck.format,
         },
       };
     } catch (error) {

@@ -1,3 +1,5 @@
+import type { DeckDbExecutor } from './deckVersionRepository.ts';
+import { getEffectiveDeck } from './getEffectiveDeck.ts';
 import { and, asc, eq, inArray, isNotNull, lte, or } from 'drizzle-orm';
 import { db } from '../../db';
 import { deck } from '../../db/schema/deck.ts';
@@ -15,8 +17,6 @@ import {
   type VersionedDeckCard,
 } from './versionedDeckState.ts';
 import { DeckVersionError } from './deckVersionErrors.ts';
-
-type BulkDeckExecutor = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 export interface DecksBulkResponse {
   decks: Record<string, DeckData | undefined>;
@@ -38,7 +38,7 @@ async function readBulkDecks(
   ids: string[],
   actorId: string | null,
   isAdmin: boolean,
-  executor: BulkDeckExecutor,
+  executor: DeckDbExecutor,
 ): Promise<DecksBulkResponse> {
   const result: DecksBulkResponse = { decks: {}, cards: {} };
   const requestedIds = [...new Set(ids)];
@@ -191,18 +191,7 @@ async function readBulkDecks(
 
   for (const resolved of allowed) {
     const version = resolved.version;
-    const effectiveDeck = version?.sealedAt
-      ? {
-          ...resolved.deck,
-          name: version.name ?? resolved.deck.name,
-          description: version.description ?? '',
-          format: version.format ?? resolved.deck.format,
-          leaderCardId1: version.leaderCardId1,
-          leaderCardId2: version.leaderCardId2,
-          baseCardId: version.baseCardId,
-          updatedAt: version.sourceDeckUpdatedAt ?? version.sealedAt,
-        }
-      : resolved.deck;
+    const effectiveDeck = getEffectiveDeck(resolved.deck, version);
     result.decks[resolved.reference.id] = {
       deck: effectiveDeck as unknown as DeckData['deck'],
       user: owners.get(resolved.deck.userId) as unknown as DeckData['user'],

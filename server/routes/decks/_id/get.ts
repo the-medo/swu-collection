@@ -1,3 +1,4 @@
+import { getEffectiveDeck } from '../../../lib/decks/getEffectiveDeck.ts';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { and, eq, sql } from 'drizzle-orm';
@@ -59,18 +60,7 @@ export const deckIdGetRoute = new Hono<AuthExtension>().get('/', async c => {
   const deckData = (await query.where(eq(deckTable.id, resolved.deck.id)).limit(1))[0];
   if (!deckData) return c.json({ message: "Deck doesn't exist" }, 404);
 
-  if (resolved.version?.sealedAt) {
-    deckData.deck = {
-      ...deckData.deck,
-      name: resolved.version.name ?? deckData.deck.name,
-      description: resolved.version.description ?? '',
-      format: resolved.version.format ?? deckData.deck.format,
-      leaderCardId1: resolved.version.leaderCardId1,
-      leaderCardId2: resolved.version.leaderCardId2,
-      baseCardId: resolved.version.baseCardId,
-      updatedAt: resolved.version.sourceDeckUpdatedAt ?? resolved.version.sealedAt,
-    };
-  }
+  deckData.deck = getEffectiveDeck(deckData.deck, resolved.version);
 
   return c.json({ ...deckData, reference: resolved.reference, permissions });
 });

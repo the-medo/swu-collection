@@ -1,16 +1,14 @@
 import { describe, expect, test } from 'bun:test';
+import type { DeckDbExecutor } from './deckVersionRepository.ts';
 import type { Deck } from '../../db/schema/deck.ts';
 import { canReadDeck, getDeckPermissions } from './getDeckPermissions.ts';
 
 const privateDeck = { id: 'deck', userId: 'owner', public: 0, cardPoolId: null } as Deck;
-const noDatabase = new Proxy(
-  {},
-  {
-    get() {
-      throw new Error('Unexpected database access');
-    },
+const noDatabase = new Proxy({} as DeckDbExecutor, {
+  get() {
+    throw new Error('Unexpected database access');
   },
-);
+});
 
 describe('deck reference permissions', () => {
   test.each(['parent', 'sealed-version', 'open-version'] as const)(

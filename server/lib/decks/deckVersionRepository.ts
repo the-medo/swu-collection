@@ -7,6 +7,7 @@ import {
   type DeckVersion,
 } from '../../db/schema/deck_version.ts';
 import { DeckVersionError } from './deckVersionErrors.ts';
+import type { db } from '../../db/index.ts';
 import {
   applyDeckVersionDelta,
   deckMetadataFromRow,
@@ -15,9 +16,8 @@ import {
   type VersionedDeckMetadata,
 } from './versionedDeckState.ts';
 
-// Both the top-level Drizzle client and a transaction expose the methods used here.
-// Keeping the executor structural avoids coupling the deck domain to a driver transaction type.
-export type DeckDbExecutor = any;
+// Shared by the Drizzle client and its transactions, with full query inference.
+export type DeckDbExecutor = Pick<typeof db, 'select' | 'insert' | 'update' | 'delete' | 'execute'>;
 
 export type ReconstructedDeckVersion = {
   version: DeckVersion;
@@ -33,9 +33,7 @@ export async function loadDeck(
   executor: DeckDbExecutor,
   deckId: string,
 ): Promise<Deck | undefined> {
-  return (await executor.select().from(deckTable).where(eq(deckTable.id, deckId)).limit(1))[0] as
-    | Deck
-    | undefined;
+  return (await executor.select().from(deckTable).where(eq(deckTable.id, deckId)).limit(1))[0];
 }
 
 export async function loadCurrentVersionedCards(
@@ -58,11 +56,11 @@ export async function loadOrderedDeckVersions(
   executor: DeckDbExecutor,
   deckId: string,
 ): Promise<DeckVersion[]> {
-  return (await executor
+  return executor
     .select()
     .from(deckVersionTable)
     .where(eq(deckVersionTable.deckId, deckId))
-    .orderBy(asc(deckVersionTable.versionNumber))) as DeckVersion[];
+    .orderBy(asc(deckVersionTable.versionNumber));
 }
 
 export async function reconstructDeckVersion(
@@ -70,7 +68,7 @@ export async function reconstructDeckVersion(
   deckId: string,
   targetVersionNumber: number,
 ): Promise<ReconstructedDeckVersion> {
-  const versions = (await executor
+  const versions = await executor
     .select()
     .from(deckVersionTable)
     .where(
@@ -80,7 +78,7 @@ export async function reconstructDeckVersion(
         isNotNull(deckVersionTable.sealedAt),
       ),
     )
-    .orderBy(asc(deckVersionTable.versionNumber))) as DeckVersion[];
+    .orderBy(asc(deckVersionTable.versionNumber));
 
   const target = versions.find(version => version.versionNumber === targetVersionNumber);
   if (!target) {

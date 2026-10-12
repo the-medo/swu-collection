@@ -1,23 +1,11 @@
 import { useSession } from '@/lib/auth-client.ts';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
-import type { DeckVersionState } from '../../../../types/Deck.ts';
-import type { DeckCard } from '../../../../types/ZDeckCard.ts';
+import type { DeckVersionDiff } from '../../../../types/Deck.ts';
+import { deckKeys } from './queryKeys.ts';
+import { createApiError } from '@/api/errors.ts';
 
-export type DeckVersionDiffResponse = {
-  data: {
-    versionId: string;
-    versionNumber: number;
-    state: DeckVersionState;
-    cards: Array<Omit<DeckCard, 'deckId'>>;
-    changes: Array<{
-      cardId: string;
-      board: 1 | 2;
-      quantityChange: number;
-    }>;
-    summary: { addedCards: number; removedCards: number; changedCards: number };
-  };
-};
+export type DeckVersionDiffResponse = { data: DeckVersionDiff };
 
 export const useGetDeckVersionDiff = (
   deckId: string | undefined,
@@ -26,14 +14,15 @@ export const useGetDeckVersionDiff = (
   const session = useSession();
   return useQuery<DeckVersionDiffResponse>({
     enabled: !session.isPending,
-    queryKey: ['deck-version-diff', deckId, versionId, session.data?.user.id ?? 'anonymous'],
+    queryKey: deckKeys.diff(deckId, versionId, session.data?.user.id),
     queryFn:
       deckId && versionId
         ? async () => {
             const response = await api.deck[':id'].versions[':versionId'].diff.$get({
               param: { id: deckId, versionId },
             });
-            if (!response.ok) throw new Error('Unable to load version changes');
+            if (!response.ok)
+              throw await createApiError(response, 'Unable to load version changes');
             return (await response.json()) as DeckVersionDiffResponse;
           }
         : skipToken,

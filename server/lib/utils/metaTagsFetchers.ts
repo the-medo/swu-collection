@@ -1,3 +1,4 @@
+import { getEffectiveDeck } from '../decks/getEffectiveDeck.ts';
 import { db } from '../../db';
 import { tournament } from '../../db/schema/tournament';
 import { meta } from '../../db/schema/meta';
@@ -181,16 +182,9 @@ export async function getDeckMetaTags(deckId: string) {
 
     // Regular deck handling for valid UUIDs
     const resolvedDeck = await resolveDeckReference(deckId);
-    const deckData = resolvedDeck?.version?.sealedAt
-      ? {
-          ...resolvedDeck.deck,
-          name: resolvedDeck.version.name ?? resolvedDeck.deck.name,
-          description: resolvedDeck.version.description ?? '',
-          leaderCardId1: resolvedDeck.version.leaderCardId1,
-          leaderCardId2: resolvedDeck.version.leaderCardId2,
-          baseCardId: resolvedDeck.version.baseCardId,
-        }
-      : resolvedDeck?.deck;
+    const deckData = resolvedDeck
+      ? getEffectiveDeck(resolvedDeck.deck, resolvedDeck.version)
+      : undefined;
 
     if (!deckData || !deckData.leaderCardId1 || !deckData.baseCardId || !deckData.public) {
       return null;

@@ -56,12 +56,9 @@ export const usePutDeckCard = (deckId: string | undefined) => {
         return response.json() as unknown as { data: DeckCard };
       });
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['decks'] });
-      if (variables.id.board !== 3) {
-        void queryClient.invalidateQueries({ queryKey: ['deck-versions'] });
-        void queryClient.invalidateQueries({ queryKey: ['deck-version-diff'] });
-      }
+
       toast({
         title: `Updated!`,
       });

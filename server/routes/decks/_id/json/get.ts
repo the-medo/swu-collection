@@ -1,3 +1,4 @@
+import { getEffectiveDeck } from '../../../../lib/decks/getEffectiveDeck.ts';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { and, eq, inArray } from 'drizzle-orm';
@@ -92,17 +93,7 @@ export const deckIdJsonGetRoute = new Hono<AuthExtension>().get('/', async c => 
     deckCards = transformCardPoolDeckCardsToDeckCards(poolRows, resolved.deck.id, cardList);
   }
 
-  const effectiveDeck = resolved.version?.sealedAt
-    ? {
-        ...resolved.deck,
-        name: resolved.version.name ?? resolved.deck.name,
-        description: resolved.version.description ?? '',
-        format: resolved.version.format ?? resolved.deck.format,
-        leaderCardId1: resolved.version.leaderCardId1,
-        leaderCardId2: resolved.version.leaderCardId2,
-        baseCardId: resolved.version.baseCardId,
-      }
-    : resolved.deck;
+  const effectiveDeck = getEffectiveDeck(resolved.deck, resolved.version);
 
   return c.json(
     createDeckJsonExport(
