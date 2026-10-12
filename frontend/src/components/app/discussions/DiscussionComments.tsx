@@ -27,6 +27,7 @@ type ThreadProps = {
   expanded: Map<string, boolean>;
   focusPath: DiscussionComment[];
   focusCommentId?: string;
+  openingCommentId?: string;
   composerSlotFor: (id: string) => (node: HTMLDivElement | null) => void;
   onToggle: (id: string, open: boolean) => void;
   onEdit: (comment: DiscussionComment, path: string[]) => void;
@@ -81,9 +82,12 @@ function CommentThread({
       <CommentCard
         comment={comment}
         canModerate={props.canModerate}
+        canDelete={comment.id !== props.openingCommentId}
         editing={writingHere}
         onEdit={() => props.onEdit(comment, path)}
-        onReply={() => props.onReply(comment, path)}
+        onReply={
+          comment.id === props.openingCommentId ? undefined : () => props.onReply(comment, path)
+        }
         onChanged={props.onChanged}
         focused={comment.id === props.focusCommentId}
         threadAction={
@@ -169,6 +173,7 @@ export default function DiscussionComments({
   unavailableContent,
   onChanged,
   focusCommentId,
+  openingCommentId,
 }: {
   discussionId: string;
   ariaLabel?: string;
@@ -176,11 +181,13 @@ export default function DiscussionComments({
   unavailableContent?: ReactNode;
   onChanged?: () => void;
   focusCommentId?: string;
+  openingCommentId?: string;
 }) {
   const info = useDiscussion(discussionId);
   const denied = accessDenied || info.error?.status === 403 || info.error?.status === 404;
   const query = useDiscussionComments(discussionId, undefined, !denied);
   const focused = useDiscussionThread(discussionId, focusCommentId);
+  const opening = useDiscussionThread(discussionId, openingCommentId);
   const user = useUser();
   const [composers, setComposers] = useState<CommentComposer[]>([]);
   const composersRef = useRef(composers);
@@ -257,6 +264,15 @@ export default function DiscussionComments({
   );
   const linkedRoot = focusPath[0];
   if (linkedRoot && !roots.has(linkedRoot.id)) roots.set(linkedRoot.id, linkedRoot);
+  const openingComment = opening.data?.path[0];
+  if (!denied && !opening.isError && openingComment && !roots.has(openingComment.id))
+    roots.set(openingComment.id, openingComment);
+  const pinnedOpening = openingCommentId ? roots.get(openingCommentId) : undefined;
+  if (openingCommentId) roots.delete(openingCommentId);
+  const commentCount =
+    info.data && (!openingCommentId || pinnedOpening)
+      ? Math.max(0, info.data.total - (openingCommentId ? 1 : 0) - (pinnedOpening?.replyCount ?? 0))
+      : undefined;
   useEffect(() => {
     const attempt: { key: string; done: boolean; cancel?: () => void } = {
       key: `${discussionId}:${focusCommentId}`,
@@ -347,18 +363,60 @@ export default function DiscussionComments({
     },
     [toggleThread],
   );
+  const threadProps: ThreadProps = {
+    discussionId,
+    canModerate: info.data?.canModerate ?? false,
+    writingThreads,
+    composerTargets,
+    ancestors: [],
+    expanded,
+    focusPath,
+    focusCommentId,
+    openingCommentId,
+    composerSlotFor: inlineSlotFor,
+    onToggle: toggleThread,
+    onEdit: (draft, path) => openComposer(draft, null, path),
+    onReply: (replyTo, path) => openComposer(null, replyTo, path),
+    onChanged,
+  };
   return (
-    <section ref={section} aria-label={ariaLabel} className="min-w-0">
-      <Card className="min-w-0 rounded-xl shadow-none">
+    <section ref={section} aria-label={ariaLabel} className="min-w-0 space-y-6">
+      {openingCommentId && !denied && (
+        <Card role="region" aria-label="Opening post" className="min-w-0 rounded-xl shadow-none">
+          <CardContent className="min-w-0 px-5 py-2 sm:px-7">
+            {pinnedOpening ? (
+              <CommentThread comment={pinnedOpening} {...threadProps} />
+            ) : opening.isError ? (
+              <div role="alert" className="space-y-2 py-3 text-sm">
+                <p>{opening.error.message}</p>
+                <Button variant="outline" size="sm" onClick={() => void opening.refetch()}>
+                  Try again
+                </Button>
+              </div>
+            ) : (
+              <p role="status" className="py-3 text-sm text-muted-foreground">
+                Loading opening post…
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+      <Card
+        role={openingCommentId ? 'region' : undefined}
+        aria-label={openingCommentId ? 'Comments' : undefined}
+        className="min-w-0 rounded-xl shadow-none"
+      >
         <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 space-y-0 border-b px-5 py-4 sm:px-7">
           <h3
-            aria-label={!denied && info.data ? `Comments (${info.data.total})` : undefined}
+            aria-label={
+              !denied && commentCount !== undefined ? `Comments (${commentCount})` : undefined
+            }
             className="mb-0! flex items-center gap-2.5 text-lg!"
           >
             Comments
-            {!denied && info.data && (
+            {!denied && commentCount !== undefined && (
               <span className="rounded-full bg-muted/40 px-2 py-0.5 text-xs font-medium tracking-normal text-muted-foreground">
-                {info.data.total}
+                {commentCount}
               </span>
             )}
           </h3>
@@ -424,15 +482,19 @@ export default function DiscussionComments({
                   Loading comments…
                 </p>
               )}
-              {!query.isPending && !roots.size && !composers.length && (
+              {!query.isPending && !roots.size && !composerTargets.has('new') && (
                 <div className="flex items-start gap-3 rounded-lg bg-muted/20 p-4 sm:gap-4 sm:p-5">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-full border bg-card text-muted-foreground">
                     <MessageCircle aria-hidden="true" className="size-5" />
                   </div>
                   <div className="min-w-0 space-y-1">
-                    <p className="text-sm font-medium leading-5!">No comments yet.</p>
+                    <p className="text-sm font-medium leading-5!">
+                      {pinnedOpening?.replyCount ? 'Have more to add?' : 'No comments yet.'}
+                    </p>
                     <p className="text-sm leading-6! text-muted-foreground">
-                      Have a question or a suggestion? Start the conversation.
+                      {pinnedOpening?.replyCount
+                        ? 'Add a new comment to the discussion.'
+                        : 'Have a question or a suggestion? Start the conversation.'}
                     </p>
                   </div>
                 </div>
@@ -440,23 +502,7 @@ export default function DiscussionComments({
               {[...roots.values()]
                 .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id.localeCompare(a.id))
                 .map(comment => (
-                  <CommentThread
-                    key={comment.id}
-                    comment={comment}
-                    discussionId={discussionId}
-                    canModerate={info.data?.canModerate ?? false}
-                    writingThreads={writingThreads}
-                    composerTargets={composerTargets}
-                    ancestors={[]}
-                    expanded={expanded}
-                    focusPath={focusPath}
-                    focusCommentId={focusCommentId}
-                    composerSlotFor={inlineSlotFor}
-                    onToggle={toggleThread}
-                    onEdit={(draft, path) => openComposer(draft, null, path)}
-                    onReply={(replyTo, path) => openComposer(null, replyTo, path)}
-                    onChanged={onChanged}
-                  />
+                  <CommentThread key={comment.id} comment={comment} {...threadProps} />
                 ))}
               {query.hasNextPage && (
                 <Button

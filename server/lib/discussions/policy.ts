@@ -12,7 +12,7 @@ export type DiscussionPolicy = {
     tx: DiscussionTransaction,
     discussionId: string,
     ownCommentId?: string,
-  ) => Promise<{ canModerate: boolean } | undefined>;
+  ) => Promise<{ canModerate: boolean; openingCommentId?: string } | undefined>;
   notificationRecipients?: (
     tx: DiscussionTransaction,
     comment: DiscussionComment,

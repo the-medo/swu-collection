@@ -64,7 +64,14 @@ export const deckDiscussionAttachment: DiscussionAttachment = {
     return row?.id;
   },
   readable: readableDeckDiscussion,
+  discoverable: () =>
+    sql`EXISTS (SELECT 1 FROM ${deckDiscussion} JOIN ${deck} ON ${deck.id} = ${deckDiscussion.deckId}
+      WHERE ${deckDiscussion.discussionId} = ${discussion.id} AND ${deck.public} = 1)`,
   policy: deckDiscussionPolicy,
+  thumbnail: sql`(SELECT jsonb_build_object('kind', 'deck',
+    'leaderId', ${deck.leaderCardId1}, 'leader2Id', ${deck.leaderCardId2}, 'baseId', ${deck.baseCardId})
+    FROM ${deckDiscussion} JOIN ${deck} ON ${deck.id} = ${deckDiscussion.deckId}
+    WHERE ${deckDiscussion.discussionId} = ${discussion.id})`,
   notificationTarget: {
     name: sql`(SELECT ${deck.name} FROM ${deckDiscussion} JOIN ${deck} ON ${deck.id} = ${deckDiscussion.deckId} WHERE ${deckDiscussion.discussionId} = ${discussion.id})`,
     url: commentId =>

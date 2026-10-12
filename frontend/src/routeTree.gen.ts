@@ -26,6 +26,7 @@ import { Route as TeamsIndexRouteImport } from './routes/teams/index'
 import { Route as StatisticsIndexRouteImport } from './routes/statistics/index'
 import { Route as MetaIndexRouteImport } from './routes/meta/index'
 import { Route as LimitedIndexRouteImport } from './routes/limited/index'
+import { Route as ForumIndexRouteImport } from './routes/forum/index'
 import { Route as ComparerIndexRouteImport } from './routes/comparer/index'
 import { Route as ArtistsIndexRouteImport } from './routes/artists/index'
 import { Route as WantlistsYourRouteImport } from './routes/wantlists/your'
@@ -33,6 +34,8 @@ import { Route as WantlistsPublicRouteImport } from './routes/wantlists/public'
 import { Route as TeamsTeamIdRouteImport } from './routes/teams/$teamId'
 import { Route as StatisticsStatisticsLayoutRouteImport } from './routes/statistics/_statisticsLayout'
 import { Route as ListsYourRouteImport } from './routes/lists/your'
+import { Route as ForumNewRouteImport } from './routes/forum/new'
+import { Route as ForumDiscussionIdRouteImport } from './routes/forum/$discussionId'
 import { Route as DecksYourRouteImport } from './routes/decks/your'
 import { Route as DecksTournamentRouteImport } from './routes/decks/tournament'
 import { Route as DecksPublicRouteImport } from './routes/decks/public'
@@ -174,6 +177,11 @@ const LimitedIndexRoute = LimitedIndexRouteImport.update({
   path: '/limited/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForumIndexRoute = ForumIndexRouteImport.update({
+  id: '/forum/',
+  path: '/forum/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ComparerIndexRoute = ComparerIndexRouteImport.update({
   id: '/comparer/',
   path: '/comparer/',
@@ -207,6 +215,16 @@ const StatisticsStatisticsLayoutRoute =
 const ListsYourRoute = ListsYourRouteImport.update({
   id: '/lists/your',
   path: '/lists/your',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForumNewRoute = ForumNewRouteImport.update({
+  id: '/forum/new',
+  path: '/forum/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForumDiscussionIdRoute = ForumDiscussionIdRouteImport.update({
+  id: '/forum/$discussionId',
+  path: '/forum/$discussionId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DecksYourRoute = DecksYourRouteImport.update({
@@ -583,12 +601,15 @@ export interface FileRoutesByFullPath {
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
+  '/forum/$discussionId': typeof ForumDiscussionIdRoute
+  '/forum/new': typeof ForumNewRoute
   '/lists/your': typeof ListsYourRoute
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
   '/artists': typeof ArtistsIndexRoute
   '/comparer': typeof ComparerIndexRoute
+  '/forum': typeof ForumIndexRoute
   '/limited': typeof LimitedIndexRoute
   '/meta': typeof MetaIndexRoute
   '/statistics/': typeof StatisticsIndexRoute
@@ -666,12 +687,15 @@ export interface FileRoutesByTo {
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
+  '/forum/$discussionId': typeof ForumDiscussionIdRoute
+  '/forum/new': typeof ForumNewRoute
   '/lists/your': typeof ListsYourRoute
   '/statistics': typeof StatisticsIndexRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
   '/artists': typeof ArtistsIndexRoute
   '/comparer': typeof ComparerIndexRoute
+  '/forum': typeof ForumIndexRoute
   '/limited': typeof LimitedIndexRoute
   '/meta': typeof MetaIndexRoute
   '/teams': typeof TeamsIndexRoute
@@ -750,6 +774,8 @@ export interface FileRoutesById {
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
   '/decks/your': typeof DecksYourRoute
+  '/forum/$discussionId': typeof ForumDiscussionIdRoute
+  '/forum/new': typeof ForumNewRoute
   '/lists/your': typeof ListsYourRoute
   '/statistics/_statisticsLayout': typeof StatisticsStatisticsLayoutRouteWithChildren
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
@@ -757,6 +783,7 @@ export interface FileRoutesById {
   '/wantlists/your': typeof WantlistsYourRoute
   '/artists/': typeof ArtistsIndexRoute
   '/comparer/': typeof ComparerIndexRoute
+  '/forum/': typeof ForumIndexRoute
   '/limited/': typeof LimitedIndexRoute
   '/meta/': typeof MetaIndexRoute
   '/statistics/': typeof StatisticsIndexRoute
@@ -838,12 +865,15 @@ export interface FileRouteTypes {
     | '/decks/public'
     | '/decks/tournament'
     | '/decks/your'
+    | '/forum/$discussionId'
+    | '/forum/new'
     | '/lists/your'
     | '/teams/$teamId'
     | '/wantlists/public'
     | '/wantlists/your'
     | '/artists'
     | '/comparer'
+    | '/forum'
     | '/limited'
     | '/meta'
     | '/statistics/'
@@ -921,12 +951,15 @@ export interface FileRouteTypes {
     | '/decks/public'
     | '/decks/tournament'
     | '/decks/your'
+    | '/forum/$discussionId'
+    | '/forum/new'
     | '/lists/your'
     | '/statistics'
     | '/wantlists/public'
     | '/wantlists/your'
     | '/artists'
     | '/comparer'
+    | '/forum'
     | '/limited'
     | '/meta'
     | '/teams'
@@ -1004,6 +1037,8 @@ export interface FileRouteTypes {
     | '/decks/public'
     | '/decks/tournament'
     | '/decks/your'
+    | '/forum/$discussionId'
+    | '/forum/new'
     | '/lists/your'
     | '/statistics/_statisticsLayout'
     | '/teams/$teamId'
@@ -1011,6 +1046,7 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/artists/'
     | '/comparer/'
+    | '/forum/'
     | '/limited/'
     | '/meta/'
     | '/statistics/'
@@ -1087,12 +1123,15 @@ export interface RootRouteChildren {
   DecksPublicRoute: typeof DecksPublicRoute
   DecksTournamentRoute: typeof DecksTournamentRoute
   DecksYourRoute: typeof DecksYourRoute
+  ForumDiscussionIdRoute: typeof ForumDiscussionIdRoute
+  ForumNewRoute: typeof ForumNewRoute
   ListsYourRoute: typeof ListsYourRoute
   TeamsTeamIdRoute: typeof TeamsTeamIdRouteWithChildren
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
+  ForumIndexRoute: typeof ForumIndexRoute
   LimitedIndexRoute: typeof LimitedIndexRoute
   MetaIndexRoute: typeof MetaIndexRoute
   TeamsIndexRoute: typeof TeamsIndexRoute
@@ -1231,6 +1270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LimitedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forum/': {
+      id: '/forum/'
+      path: '/forum'
+      fullPath: '/forum'
+      preLoaderRoute: typeof ForumIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/comparer/': {
       id: '/comparer/'
       path: '/comparer'
@@ -1278,6 +1324,20 @@ declare module '@tanstack/react-router' {
       path: '/lists/your'
       fullPath: '/lists/your'
       preLoaderRoute: typeof ListsYourRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forum/new': {
+      id: '/forum/new'
+      path: '/forum/new'
+      fullPath: '/forum/new'
+      preLoaderRoute: typeof ForumNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forum/$discussionId': {
+      id: '/forum/$discussionId'
+      path: '/forum/$discussionId'
+      fullPath: '/forum/$discussionId'
+      preLoaderRoute: typeof ForumDiscussionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/decks/your': {
@@ -1890,12 +1950,15 @@ const rootRouteChildren: RootRouteChildren = {
   DecksPublicRoute: DecksPublicRoute,
   DecksTournamentRoute: DecksTournamentRoute,
   DecksYourRoute: DecksYourRoute,
+  ForumDiscussionIdRoute: ForumDiscussionIdRoute,
+  ForumNewRoute: ForumNewRoute,
   ListsYourRoute: ListsYourRoute,
   TeamsTeamIdRoute: TeamsTeamIdRouteWithChildren,
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,
   ComparerIndexRoute: ComparerIndexRoute,
+  ForumIndexRoute: ForumIndexRoute,
   LimitedIndexRoute: LimitedIndexRoute,
   MetaIndexRoute: MetaIndexRoute,
   TeamsIndexRoute: TeamsIndexRoute,

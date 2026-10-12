@@ -366,6 +366,11 @@ export async function deleteComment(
         error: 'Only the author or a discussion moderator can delete this comment.',
         status: 403,
       };
+    if (resource.openingCommentId === commentId)
+      return {
+        error: 'Use Delete discussion to remove this discussion and its opening post.',
+        status: 409,
+      };
     const [saved] = await tx
       .update(c)
       .set({

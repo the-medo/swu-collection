@@ -1,10 +1,19 @@
-import type { DiscussionTarget } from '../../../../shared/types/discussions.ts';
+import type {
+  DiscussionFeedKind,
+  DiscussionTarget,
+  DiscussionType,
+} from '../../../../shared/types/discussions.ts';
 export const discussionKeys = {
   all: ['discussions'] as const,
+  recent: ['discussions', 'recent'] as const,
+  feed: (kind: DiscussionFeedKind, type?: DiscussionType) =>
+    ['discussions', 'recent', 'feed', kind, type ?? 'all'] as const,
   ownCommentsAll: ['discussion-own-comments'] as const,
   ownComments: (target: DiscussionTarget, viewer?: string) =>
     ['discussion-own-comments', viewer ?? 'anonymous', target] as const,
   discussion: (id: string) => ['discussions', id] as const,
+  forumThread: (id: string, viewer?: string) =>
+    ['discussions', id, 'forum', viewer ?? 'anonymous'] as const,
   thread: (id: string, viewer: string | undefined, commentId: string | undefined) =>
     ['discussions', id, 'thread', viewer ?? 'anonymous', commentId] as const,
   info: (id: string, viewer?: string) =>

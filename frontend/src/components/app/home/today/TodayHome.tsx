@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils.ts';
 import { getDailySealedDate } from '../../../../../../shared/types/dailySealed.ts';
 import ContinueDecks from './ContinueDecks.tsx';
 import CommunityBrewing from './CommunityBrewing.tsx';
+import RecentDiscussions from './RecentDiscussions.tsx';
 import WeekendAction from './WeekendAction.tsx';
 import { DailyPoolPanel } from './DailyPoolPanel.tsx';
 import { PoolDatePicker } from './PoolDatePicker.tsx';
@@ -132,6 +133,7 @@ export default function TodayHome({
         <div className="today-community-column flex flex-col gap-6 min-w-0">
           <WeekendAction />
           <CommunityBrewing />
+          <RecentDiscussions />
           <ContinueDecks />
         </div>
       </div>

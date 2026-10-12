@@ -17,6 +17,9 @@ export const cardDiscussionAttachment: DiscussionAttachment = {
     return row?.id;
   },
   readable,
+  discoverable: readable,
+  thumbnail: sql`(SELECT jsonb_build_object('kind', 'card', 'cardId', ${cardDiscussion.cardId})
+    FROM ${cardDiscussion} WHERE ${cardDiscussion.discussionId} = ${discussion.id})`,
   // Card discussions have no resource owner; authors manage their own comments.
   policy: () => ({
     type: 'card-detail',

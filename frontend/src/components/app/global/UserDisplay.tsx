@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils.ts';
 type UserDisplayProps = {
   user: Omit<PublicProfileSummary, 'id'> & { id?: string | null };
   size?: 'sm' | 'md' | 'lg';
+  showName?: boolean;
   className?: string;
   onPreviewLinkClick?: MouseEventHandler<HTMLAnchorElement>;
 };
@@ -17,12 +18,14 @@ type UserDisplayProps = {
 export function UserDisplay({
   user,
   size = 'sm',
+  showName = true,
   className,
   onPreviewLinkClick,
 }: UserDisplayProps) {
   const displayName = user.displayName.trim() || 'Unknown user';
   const classes = cn(
-    'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md p-0.5 pr-1.5 align-middle text-left text-xs font-medium leading-tight',
+    'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md p-0.5 align-middle text-left text-xs font-medium leading-tight',
+    showName && 'pr-1.5',
     size !== 'sm' && 'gap-2 text-sm',
     className,
   );
@@ -40,7 +43,9 @@ export function UserDisplay({
           {displayName.slice(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
-      <span className="min-w-0 break-words [overflow-wrap:anywhere]">{displayName}</span>
+      <span className={showName ? 'min-w-0 break-words [overflow-wrap:anywhere]' : 'sr-only'}>
+        {displayName}
+      </span>
     </>
   );
 

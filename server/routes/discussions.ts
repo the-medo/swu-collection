@@ -6,6 +6,9 @@ import { z } from 'zod';
 import type { AuthExtension } from '../auth/auth.ts';
 import {
   commentsQuerySchema,
+  discussionFeedQuerySchema,
+  createForumThreadSchema,
+  updateForumTitleSchema,
   ownCommentsQuerySchema,
   createCommentSchema,
   updateCommentSchema,
@@ -14,6 +17,8 @@ import {
 import { postValidationMessage } from '../../shared/posts/content.ts';
 import * as service from '../lib/discussions/service.ts';
 import { resolveDiscussionPolicy } from '../lib/discussions/attachments.ts';
+import { getDiscussionFeed, getRecentDiscussions } from '../lib/discussions/recent.ts';
+import { createForumThread, getForumThread, manageForumThread } from '../lib/discussions/forum.ts';
 const params = z.object({ id: z.guid() });
 const commentParams = params.extend({ commentId: z.guid() });
 const privateResponse = createMiddleware<AuthExtension>(async (c, next) => {
@@ -30,6 +35,52 @@ const size = bodyLimit({
 });
 export const discussionsRoute = new Hono<AuthExtension>()
   .use('*', privateResponse)
+  .get('/recent', async c => c.json({ data: await getRecentDiscussions() }))
+  .post(
+    '/forum',
+    signedIn,
+    size,
+    zValidator('json', createForumThreadSchema, (result, c) => {
+      if (!result.success) return c.json({ error: postValidationMessage(result.error) }, 400);
+    }),
+    async c => {
+      const { title, content } = c.req.valid('json');
+      const result = await createForumThread(c.get('user')!.id, title, content);
+      if ('error' in result) return c.json({ error: result.error }, result.status);
+      return c.json({ data: result.data }, 201);
+    },
+  )
+  .get('/forum/:id', zValidator('param', params), async c => {
+    const result = await getForumThread(c.req.valid('param').id, c.get('user')?.id);
+    if ('error' in result) return c.json({ error: result.error }, result.status);
+    return c.json({ data: result.data });
+  })
+  .patch(
+    '/forum/:id',
+    signedIn,
+    zValidator('param', params),
+    size,
+    zValidator('json', updateForumTitleSchema, (result, c) => {
+      if (!result.success) return c.json({ error: postValidationMessage(result.error) }, 400);
+    }),
+    async c => {
+      const result = await manageForumThread(
+        c.req.valid('param').id,
+        c.get('user')!.id,
+        c.req.valid('json').title,
+      );
+      if ('error' in result) return c.json({ error: result.error }, result.status);
+      return c.json({ data: result.data });
+    },
+  )
+  .delete('/forum/:id', signedIn, zValidator('param', params), async c => {
+    const result = await manageForumThread(c.req.valid('param').id, c.get('user')!.id);
+    if ('error' in result) return c.json({ error: result.error }, result.status);
+    return c.json({ data: result.data });
+  })
+  .get('/feed', zValidator('query', discussionFeedQuerySchema), async c =>
+    c.json(await getDiscussionFeed(c.req.valid('query'))),
+  )
   .get('/own-comments', signedIn, zValidator('query', ownCommentsQuerySchema), async c => {
     const { cursor, limit, ...target } = c.req.valid('query');
     const result = await service.getOwnCommentsForTarget(target, c.get('user')!.id, cursor, limit);

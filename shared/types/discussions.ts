@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { isPostEmpty, postDocumentSchemas, type PostDocument } from '../posts/content.ts';
 
-export const discussionTypes = ['deck', 'card-detail', 'daily-pool'] as const;
+export const discussionTypes = ['deck', 'card-detail', 'daily-pool', 'forum'] as const;
 export type DiscussionType = (typeof discussionTypes)[number];
 export type DiscussionTarget =
   | { discussionId: string }
@@ -76,6 +76,47 @@ export type DiscussionComment = {
 export type CommentsPage = { data: DiscussionComment[]; total: number; nextCursor: string | null };
 export type DiscussionInfo = { id: string; canModerate: boolean; total: number };
 export type DiscussionThread = { path: DiscussionComment[] };
+
+export type RecentDiscussionThumbnail =
+  | { kind: 'card'; cardId: string }
+  | { kind: 'deck'; leaderId: string | null; leader2Id: string | null; baseId: string | null }
+  | { kind: 'set'; set: string | null };
+
+export type RecentDiscussion = {
+  id: string;
+  discussionId: string;
+  type: DiscussionType;
+  targetName: string | null;
+  targetUrl: string;
+  thumbnail: RecentDiscussionThumbnail | null;
+  preview: string;
+  createdAt: string;
+  author: DiscussionComment['author'];
+};
+
+export const discussionFeedQuerySchema = z.object({
+  kind: z.enum(['discussions', 'comments']),
+  type: z.enum(discussionTypes).optional(),
+  cursor: commentsQuerySchema.shape.cursor,
+  limit: commentsQuerySchema.shape.limit,
+});
+export type DiscussionFeedKind = z.infer<typeof discussionFeedQuerySchema>['kind'];
+export type DiscussionFeedPage = { data: RecentDiscussion[]; nextCursor: string | null };
+
+export const forumTitleSchema = z.string().trim().min(1, 'Give your discussion a title.').max(160);
+export const createForumThreadSchema = z
+  .object({
+    title: forumTitleSchema,
+    content: commentContentSchema,
+  })
+  .strict();
+export const updateForumTitleSchema = z.object({ title: forumTitleSchema }).strict();
+export type ForumThread = {
+  id: string;
+  title: string;
+  openingCommentId: string;
+  canManage: boolean;
+};
 
 // The author-only view can resolve an attachment even after read access was revoked.
 export const ownCommentsQuerySchema = z.union([

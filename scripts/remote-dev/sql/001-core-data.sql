@@ -159,7 +159,11 @@ BEGIN
   IF to_regclass('public.deck_article') IS NOT NULL THEN
     TRUNCATE TABLE deck_article;
   END IF;
-  IF to_regclass('public.discussion_comment') IS NOT NULL THEN
+  IF to_regclass('public.forum_thread') IS NOT NULL THEN
+    -- Titles are personal prose too; the opening-comment FK requires a joint truncate.
+    TRUNCATE TABLE forum_thread, discussion_comment;
+    DELETE FROM discussion WHERE type = 'forum';
+  ELSIF to_regclass('public.discussion_comment') IS NOT NULL THEN
     TRUNCATE TABLE discussion_comment;
   END IF;
 END
@@ -538,6 +542,12 @@ BEGIN
   IF to_regclass('public.discussion_comment') IS NOT NULL THEN
     IF EXISTS (SELECT 1 FROM discussion_comment) THEN
       RAISE EXCEPTION 'Personal discussion comments remain in the contributor dump.';
+    END IF;
+  END IF;
+
+  IF to_regclass('public.forum_thread') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM forum_thread) THEN
+      RAISE EXCEPTION 'Personal forum titles remain in the contributor dump.';
     END IF;
   END IF;
 

@@ -143,6 +143,7 @@ export function useDiscussionCommentMutation(id: string, onChanged?: () => void)
       return response.json();
     },
     onSettled: () => {
+      void client.invalidateQueries({ queryKey: discussionKeys.recent });
       void client.invalidateQueries({ queryKey: discussionKeys.discussion(id) });
       void client.invalidateQueries({ queryKey: discussionKeys.ownCommentsAll });
       onChanged?.();

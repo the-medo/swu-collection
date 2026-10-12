@@ -15,6 +15,7 @@ const PostContent = lazy(() =>
 export default function CommentCard({
   comment,
   canModerate = false,
+  canDelete = true,
   editing = false,
   onEdit,
   onReply,
@@ -24,6 +25,7 @@ export default function CommentCard({
 }: {
   comment: DiscussionComment;
   canModerate?: boolean;
+  canDelete?: boolean;
   editing?: boolean;
   onEdit?: () => void;
   onReply?: () => void;
@@ -91,7 +93,7 @@ export default function CommentCard({
                   <Pencil />
                 </Button>
               )}
-              {(owned || canModerate) && (
+              {canDelete && (owned || canModerate) && (
                 <Button
                   size="iconSmall"
                   variant="ghost"
