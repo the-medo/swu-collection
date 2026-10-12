@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useIsMutating } from '@tanstack/react-query';
+import { useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
+import { isDeckWrite } from '@/api/decks/deckWriteState.ts';
 import { Link } from '@tanstack/react-router';
 import { GitBranch, Loader2, Save } from 'lucide-react';
 import { useGetDeck } from '@/api/decks/useGetDeck.ts';
@@ -23,12 +26,16 @@ const ChangeCounts = ({ version }: { version: DeckVersionSummary }) => {
 };
 
 const DeckVersions = ({ deckId }: { deckId: string }) => {
-  const { data: deckData } = useGetDeck(deckId);
+  const { data: deckData, isFetching: deckFetching, isError: deckError } = useGetDeck(deckId);
+  const cards = useGetDeckCards(deckId);
   const canonicalDeckId = deckData?.reference?.deckId ?? deckData?.deck.id ?? deckId;
   const supportsVersions = Boolean(deckData && !deckData.deck.cardPoolId);
   const { data, isLoading, isError } = useGetDeckVersions(
     supportsVersions ? canonicalDeckId : undefined,
   );
+  const pendingWrites = useIsMutating({
+    predicate: mutation => isDeckWrite(mutation, canonicalDeckId),
+  });
   const saveVersion = useSaveDeckVersion(canonicalDeckId);
   const [changeNote, setChangeNote] = useState('');
   const [expandedVersionIds, setExpandedVersionIds] = useState<Set<string>>(() => new Set());
@@ -44,8 +51,13 @@ const DeckVersions = ({ deckId }: { deckId: string }) => {
   const canSave = Boolean(deckData?.permissions?.canSaveVersion && isParent);
 
   const handleSave = async () => {
-    await saveVersion.mutateAsync(changeNote);
-    setChangeNote('');
+    if (!deckData) return;
+    try {
+      await saveVersion.mutateAsync({ changeNote, expectedUpdatedAt: deckData.deck.updatedAt });
+      setChangeNote('');
+    } catch {
+      // The mutation presents the error; retain the note for an explicit retry.
+    }
   };
 
   const toggleChanges = (versionId: string) => {
@@ -72,10 +84,23 @@ const DeckVersions = ({ deckId }: { deckId: string }) => {
         className="w-full"
         size="sm"
         onClick={() => void handleSave()}
-        disabled={saveVersion.isPending || (!isFirstVersion && openVersion?.hasChanges === false)}
+        disabled={
+          saveVersion.isPending ||
+          pendingWrites > 0 ||
+          deckFetching ||
+          deckError ||
+          cards.isFetching ||
+          cards.isError ||
+          !cards.data ||
+          (!isFirstVersion && openVersion?.hasChanges === false)
+        }
       >
         {saveVersion.isPending ? <Loader2 className="animate-spin" /> : <Save />}
-        {isFirstVersion ? 'Create first version' : 'Save current version'}
+        {pendingWrites > 0
+          ? 'Waiting for deck edits…'
+          : isFirstVersion
+            ? 'Create first version'
+            : 'Save current version'}
       </Button>
     </div>
   );

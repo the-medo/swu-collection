@@ -42,6 +42,7 @@ export type DebouncedInputProps = VariantProps<typeof inputVariants> & {
   min?: number;
   max?: number;
   placeholder?: string;
+  flushOnBlur?: boolean;
 } & (
     | {
         type: 'text';
@@ -69,6 +70,7 @@ const DebouncedInput: React.FC<DebouncedInputProps> = ({
   min,
   max,
   placeholder,
+  flushOnBlur = false,
 }) => {
   const [inputValue, setInputValue] = React.useState<string | undefined>(
     type === 'number' ? value?.toString() : value,
@@ -111,6 +113,7 @@ const DebouncedInput: React.FC<DebouncedInputProps> = ({
       type={type}
       value={inputValue}
       onChange={handleChange}
+      onBlur={flushOnBlur ? () => debouncedOnChange.flush() : undefined}
       min={min}
       max={max}
     />

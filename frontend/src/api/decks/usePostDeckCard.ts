@@ -5,12 +5,15 @@ import { toast } from '@/hooks/use-toast.ts';
 import { DeckCard, ZDeckCardCreateRequest } from '../../../../types/ZDeckCard.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { deckKeys } from './queryKeys.ts';
+import { refreshDeckAfterWrite } from './deckWriteState.ts';
 
 export const usePostDeckCard = (deckId: string | undefined) => {
   const queryClient = useQueryClient();
   const viewer = useUser();
 
   return useMutation({
+    mutationKey: ['deck-write', deckId],
+    scope: { id: `deck-write:${deckId}` },
     // The mutation function posts the card to the deck.
     mutationFn: async (cardData: ZDeckCardCreateRequest) => {
       if (!deckId) {
@@ -79,6 +82,7 @@ export const usePostDeckCard = (deckId: string | undefined) => {
         title: 'Card added to deck',
       });
     },
+    onSettled: () => (deckId ? refreshDeckAfterWrite(queryClient, deckId, viewer?.id) : undefined),
     onError: error => {
       toast({
         variant: 'destructive',

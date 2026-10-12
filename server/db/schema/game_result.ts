@@ -100,6 +100,7 @@ export const gameResult = pgTable(
     ),
     idxGameResultsUserMatch: index('idx_game_result_user_match').on(table.userId, table.matchId),
     idxGameResultsUserDeck: index('idx_game_result_user_deck').on(table.userId, table.deckId),
+    idxGameResultsDeckVersion: index('gr_dv_idx').on(table.deckVersionId),
     idxGameResultsUserDeckVersion: index('gr_user_dv_idx').on(table.userId, table.deckVersionId),
     userGameIdUnique: unique().on(table.userId, table.gameId),
   }),

@@ -1,0 +1,1 @@
+CREATE INDEX "gr_dv_idx" ON "game_result" USING btree ("deck_version_id");

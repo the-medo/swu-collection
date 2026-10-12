@@ -4,6 +4,7 @@ import { DeckCardResponse } from './useGetDeckCards.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { deckKeys } from './queryKeys.ts';
+import { refreshDeckAfterWrite } from './deckWriteState.ts';
 
 export type DeckCardDeleteData = {
   cardId: string;
@@ -15,6 +16,8 @@ export const useDeleteDeckCard = (deckId: string | undefined) => {
   const viewer = useUser();
 
   return useMutation({
+    mutationKey: ['deck-write', deckId],
+    scope: { id: `deck-write:${deckId}` },
     mutationFn: async (cardData: DeckCardDeleteData) => {
       if (!deckId) {
         throw new Error('Deck id is required');
@@ -65,6 +68,7 @@ export const useDeleteDeckCard = (deckId: string | undefined) => {
         };
       });
     },
+    onSettled: () => (deckId ? refreshDeckAfterWrite(queryClient, deckId, viewer?.id) : undefined),
     onError: error => {
       toast({
         variant: 'destructive',

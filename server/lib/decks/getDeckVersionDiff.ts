@@ -27,6 +27,13 @@ export async function getDeckVersionDiff(deckId: string, versionId: string) {
     );
   }
 
+  const previousState =
+    version.versionNumber === 1
+      ? null
+      : await reconstructDeckVersion(db, deckId, version.versionNumber - 1);
+  const previousCards = previousState?.cards ?? [];
+  const previousMetadata = previousState?.metadata ?? null;
+
   let cards: VersionedDeckCard[];
   if (!version.sealedAt) {
     const previous = versions[versions.length - 2];
@@ -36,11 +43,7 @@ export async function getDeckVersionDiff(deckId: string, versionId: string) {
         'INVALID_VERSION_HISTORY',
       );
     }
-    const previousState = await reconstructDeckVersion(db, deckId, previous.versionNumber);
-    cards = createDeckVersionDelta(
-      previousState.cards,
-      await loadCurrentVersionedCards(db, deckId),
-    );
+    cards = createDeckVersionDelta(previousCards, await loadCurrentVersionedCards(db, deckId));
   } else {
     const rows = await db
       .select()
@@ -57,14 +60,6 @@ export async function getDeckVersionDiff(deckId: string, versionId: string) {
     });
   }
 
-  const previousCards =
-    version.versionNumber === 1
-      ? []
-      : (await reconstructDeckVersion(db, deckId, version.versionNumber - 1)).cards;
-  const previousMetadata =
-    version.versionNumber === 1
-      ? null
-      : (await reconstructDeckVersion(db, deckId, version.versionNumber - 1)).metadata;
   const targetMetadata = version.sealedAt
     ? deckMetadataFromRow(version)
     : deckMetadataFromRow(parent);

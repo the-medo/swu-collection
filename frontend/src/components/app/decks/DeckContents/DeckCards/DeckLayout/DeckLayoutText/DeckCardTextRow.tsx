@@ -54,7 +54,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
   const { isMobile } = useSidebar();
   const deckInfo = useDeckInfo(deckId);
   const editable = !readOnly && deckInfo.editable;
-  const mutation = usePutDeckCard(deckId);
+  const { mutate } = usePutDeckCard(deckId);
   const { data: displayDeckPrice } = useGetUserSetting('deckPrices');
 
   const missingAmount = missingCardInBoards?.[deckCard.board] ?? 0;
@@ -79,7 +79,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
 
   const quantityChangeHandler = useCallback(
     (quantity: number | undefined, board?: number) => {
-      mutation.mutate(
+      mutate(
         {
           id: {
             cardId: deckCard.cardId,
@@ -98,7 +98,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
         },
       );
     },
-    [deckCard, mutation],
+    [deckCard.cardId, deckCard.board, mutate],
   );
 
   return (
@@ -121,6 +121,7 @@ const DeckCardTextRow: React.FC<DeckCardTextRowProps> = ({
           )}
           {editable ? (
             <DebouncedInput
+              flushOnBlur
               type="number"
               onChange={quantityChangeHandler}
               value={deckCard.quantity}
