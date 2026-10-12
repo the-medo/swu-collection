@@ -55,5 +55,11 @@ export const discussionComment = pgTable(
       table.id,
     ),
     index('discussion_comment_author_idx').on(table.authorId),
+    index('discussion_comment_recent_idx')
+      .on(table.createdAt.desc(), table.id.desc())
+      .where(sql`${table.parentId} IS NULL AND ${table.deletedAt} IS NULL`),
+    index('discussion_comment_latest_idx')
+      .on(table.createdAt.desc(), table.id.desc())
+      .where(sql`${table.deletedAt} IS NULL`),
   ],
 );

@@ -46,6 +46,7 @@ export function useCreateCardComment(cardId: string) {
       return (await response.json()).data;
     },
     onSuccess: async comment => {
+      void client.invalidateQueries({ queryKey: discussionKeys.recent });
       await client.cancelQueries({ queryKey: cardDiscussionKeys.binding(cardId) });
       client.setQueryData(cardDiscussionKeys.binding(cardId), comment.discussionId);
       void client.invalidateQueries({ queryKey: discussionKeys.discussion(comment.discussionId) });

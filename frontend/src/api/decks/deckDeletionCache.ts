@@ -4,6 +4,7 @@ import { deckDiscussionKeys } from './discussionKeys.ts';
 import { cachedDeckDiscussionIds } from './discussionCache.ts';
 import { removeDiscussionCaches } from '../discussions/cache.ts';
 import { dailySealedKeys } from '@/api/card-pools/dailySealedKeys.ts';
+import { discussionKeys } from '../discussions/queryKeys.ts';
 
 type DeckListCache = InfiniteData<{
   data?: { deck?: { id?: string } }[];
@@ -46,6 +47,7 @@ export const applyDeletedDeckCaches = (
   affectedCardPoolIds: string[],
 ) => {
   removeDecksFromListCache(queryClient, deckIds);
+  void queryClient.invalidateQueries({ queryKey: discussionKeys.recent });
   void queryClient.invalidateQueries({ queryKey: dailySealedKeys.all });
   void queryClient.invalidateQueries({ queryKey: deckFolderKeys.all });
 

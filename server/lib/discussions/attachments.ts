@@ -1,15 +1,22 @@
 import { and, eq, sql, type SQL } from 'drizzle-orm';
 import { db } from '../../db';
 import { discussion } from '../../db/schema/discussion.ts';
-import type { DiscussionType } from '../../../shared/types/discussions.ts';
+import type {
+  DiscussionType,
+  RecentDiscussionThumbnail,
+} from '../../../shared/types/discussions.ts';
 import type { DiscussionPolicy } from './policy.ts';
 import { dailyPoolDiscussionAttachment } from '../card-pools/discussionAttachment.ts';
 import { deckDiscussionAttachment } from '../decks/discussionAttachment.ts';
 import { cardDiscussionAttachment } from '../cards/discussionAttachment.ts';
+import { forumDiscussionAttachment } from './forumAttachment.ts';
 
 export type DiscussionAttachment = {
   findDiscussionId: (resourceId: string) => Promise<string | undefined>;
   readable: (viewerId?: string | SQL) => SQL;
+  // Homepage discovery is stricter than direct-link access (for example, unlisted decks).
+  discoverable: () => SQL;
+  thumbnail: SQL<RecentDiscussionThumbnail | null>;
   policy: (viewerId?: string) => DiscussionPolicy;
   notificationTarget: {
     name: SQL<string | null>;
@@ -26,6 +33,7 @@ const attachments: ReadonlyMap<string, DiscussionAttachment> = new Map(
     deck: deckDiscussionAttachment,
     'card-detail': cardDiscussionAttachment,
     'daily-pool': dailyPoolDiscussionAttachment,
+    forum: forumDiscussionAttachment,
   } satisfies Record<DiscussionType, DiscussionAttachment>),
 );
 export function getDiscussionAttachment(type: string): DiscussionAttachment | undefined {

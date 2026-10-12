@@ -5,7 +5,7 @@ import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { cardList } from '../../server/db/lists.ts';
 import { getCardPoolMap } from '../../server/lib/card-pools/card-pool-map-by-set.ts';
-import type { DiscussionComment } from '../../shared/types/discussions.ts';
+import type { DiscussionComment, RecentDiscussion } from '../../shared/types/discussions.ts';
 import { SwuSet } from '../../types/enums.ts';
 import { getDailySealedDate, type DailySealedResponse } from '../../shared/types/dailySealed.ts';
 
@@ -82,6 +82,44 @@ const ownerId = 'today-owner';
 let signedIn = true;
 let deckState: 'ready' | 'empty' | 'error' = 'ready';
 let communityState: 'ready' | 'empty' | 'error' = 'ready';
+let recentDiscussionState: 'ready' | 'empty' | 'error' = 'ready';
+const recentDiscussions: RecentDiscussion[] = (['deck', 'card-detail', 'daily-pool'] as const).map(
+  (type, index) => ({
+    id: `77777777-7777-4777-8777-77777777777${index}`,
+    discussionId: `88888888-8888-4888-8888-88888888888${index}`,
+    type,
+    thumbnail:
+      index === 0
+        ? { kind: 'deck' as const, leaderId: leaders[0]!, leader2Id: null, baseId }
+        : index === 1
+          ? { kind: 'card' as const, cardId: leaders[0]! }
+          : { kind: 'set' as const, set: SwuSet.HMW },
+    targetName: [
+      'Unexpected allies',
+      'A card with a long name and subtitle to check the compact layout',
+      `Daily sealed · ${today}`,
+    ][index]!,
+    targetUrl: [
+      '/decks/55555555-5555-4555-8555-555555555554?deckTab=article&deckComment=77777777-7777-4777-8777-777777777770',
+      `/cards/detail/${leaders[0]}?cardTab=rules-discussion&cardComment=77777777-7777-4777-8777-777777777771`,
+      `/?homeMode=today&poolDate=${today}&poolDiscussion=true&poolComment=77777777-7777-4777-8777-777777777772`,
+    ][index]!,
+    preview: [
+      'What would you change in this list?',
+      'How does this ability work with an exhausted unit?',
+      'Which leader would you pick for this pool?',
+    ][index]!,
+    createdAt: new Date(Date.now() - (index + 1) * 3_600_000).toISOString(),
+    author:
+      index === 1
+        ? null
+        : {
+            id: `discussion-author-${index}`,
+            displayName: ['Mira', '', 'Jules'][index]!,
+            image: index === 0 ? '/fixture-avatar.svg' : null,
+          },
+  }),
+);
 let poolVisibility: 'public' | 'unlisted' | 'private' = 'public';
 let poolDetailDecks = false;
 let deckTableFixture = false;
@@ -161,14 +199,19 @@ const server = Bun.serve({
   port: 0,
   async fetch(request) {
     const { pathname, searchParams } = new URL(request.url);
+    if (pathname === '/api/discussions/recent') {
+      if (recentDiscussionState === 'error')
+        return Response.json({ error: 'Fixture error' }, { status: 503 });
+      return Response.json({ data: recentDiscussionState === 'empty' ? [] : recentDiscussions });
+    }
     if (pathname === '/fixture-avatar.svg')
       return new Response(
         '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="#326149"/><circle cx="40" cy="30" r="15" fill="#dce7a0"/></svg>',
         { headers: { 'Content-Type': 'image/svg+xml' } },
       );
-    if (/^\/api\/user\/community-[^/]+\/achievements$/.test(pathname))
+    if (/^\/api\/user\/(community-|discussion-author-)[^/]+\/achievements$/.test(pathname))
       return Response.json({ data: { achievements: [] } });
-    if (/^\/api\/user\/community-[^/]+\/header$/.test(pathname))
+    if (/^\/api\/user\/(community-|discussion-author-)[^/]+\/header$/.test(pathname))
       return Response.json({ data: { image: '/fixture-avatar.svg', width: 1600, height: 400 } });
     if (pathname === '/api/deck') {
       if (deckTableFixture)
@@ -421,6 +464,46 @@ try {
   await openToday();
   const brewing = page.getByRole('region', { name: 'What others are brewing' });
   await expect(brewing).toBeVisible();
+  const recent = page.getByRole('region', { name: 'Recent discussions' });
+  await expect(recent.locator('ul').getByRole('link')).toHaveCount(3);
+  expect(
+    await recent.evaluate(el => el.previousElementSibling?.classList.contains('today-brewing')),
+  ).toBe(true);
+  for (const [index, thread] of recentDiscussions.entries()) {
+    await expect(recent.locator('ul').getByRole('link').nth(index)).toHaveAttribute('href', thread.targetUrl);
+    await expect(recent.locator('ul').getByRole('link').nth(index)).toContainText(thread.preview);
+  }
+  await expect(recent).toContainText('Deleted user');
+  await expect(recent.locator('.today-discussion-thumbnail')).toHaveCount(3);
+  await expect(recent.locator('.deck-artwork img')).toHaveCount(2);
+  await expect(recent.locator('.today-discussion-thumbnail').nth(1).locator('img')).toHaveCount(1);
+  await expect(recent.locator('.today-discussion-thumbnail').nth(2).locator('img')).toHaveAttribute(
+    'src',
+    `https://images.swubase.com/logos/${SwuSet.HMW}.png`,
+  );
+  await recent.locator('ul').getByRole('link').first().focus();
+  await page.keyboard.press('Tab');
+  const discussionAuthor = recent.getByRole('button', { name: "View Mira's profile" });
+  await expect(discussionAuthor).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(recent.locator('ul').getByRole('link').nth(1)).toBeFocused();
+  await expect(recent.getByRole('button')).toHaveCount(2);
+  await expect(recent.getByRole('button', { name: "View Jules's profile" })).toContainText('JU');
+  await expect(discussionAuthor.locator('img')).toHaveAttribute('src', '/fixture-avatar.svg');
+  const beforeDiscussionProfile = page.url();
+  await discussionAuthor.locator('img').click();
+  const discussionProfile = page.getByRole('dialog', { name: "Mira's profile" });
+  await expect(discussionProfile.getByRole('link', { name: 'Open profile' })).toHaveAttribute(
+    'href',
+    '/users/discussion-author-0',
+  );
+  expect(page.url()).toBe(beforeDiscussionProfile);
+  await page.keyboard.press('Escape');
+  await expect(discussionAuthor).toBeFocused();
+  await discussionAuthor.press('Enter');
+  await expect(discussionProfile).toBeVisible();
+  expect(page.url()).toBe(beforeDiscussionProfile);
+  await page.keyboard.press('Escape');
   await expect(page.locator('.today-community-deck h3')).toHaveText([
     'Unexpected allies',
     'New leader, new plan',
@@ -1229,6 +1312,67 @@ try {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: `${output}/your-decks-mobile-artwork.png`, fullPage: true });
   expect(errors).toEqual([]);
+  recentDiscussionState = 'empty';
+  await openToday();
+  await expect(recent).toContainText('No discussions yet.');
+  recentDiscussionState = 'error';
+  await openToday();
+  await expect(recent.getByRole('alert')).toContainText('Recent discussions couldn’t be loaded.');
+  recentDiscussionState = 'ready';
+  await recent.getByRole('button', { name: 'Retry discussions' }).click();
+  await expect(recent.locator('ul').getByRole('link')).toHaveCount(3);
+  let releaseRecent: () => void = () => {};
+  const recentGate = new Promise<void>(resolve => {
+    releaseRecent = resolve;
+  });
+  await page.route('**/api/discussions/recent', async route => {
+    await recentGate;
+    await route.continue();
+  });
+  try {
+    await openToday();
+    await expect(recent.getByRole('status', { name: 'Loading recent discussions' })).toBeVisible();
+    releaseRecent();
+    await expect(recent.locator('ul').getByRole('link')).toHaveCount(3);
+  } finally {
+    releaseRecent();
+    await page.unroute('**/api/discussions/recent');
+  }
+  expect(errors).toEqual([]);
+  // Follow the homepage URL with its embedded search parameters and focus the exact thread.
+  const thread = recentDiscussions[2]!;
+  const poolDiscussionId = data.pool!.id.replace(/^1/, '9');
+  poolComments.set(poolDiscussionId, [
+    {
+      id: thread.id,
+      discussionId: poolDiscussionId,
+      parentId: null,
+      depth: 0,
+      authorId: ownerId,
+      author: { id: ownerId, displayName: 'Mira', image: null },
+      content: {
+        version: 1,
+        blocks: [
+          {
+            id: 'recent-thread-paragraph',
+            type: 'paragraph',
+            props: {},
+            content: [{ type: 'text', text: thread.preview, styles: {} }],
+            children: [],
+          },
+        ],
+      },
+      revision: 1,
+      createdAt: thread.createdAt,
+      updatedAt: thread.createdAt,
+      deletedAt: null,
+      replyCount: 0,
+    },
+  ]);
+  await recent.locator('ul').getByRole('link').nth(2).focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(`${String(server.url).replace(/\/$/, '')}${thread.targetUrl}`);
+  await expect(page.locator(`[data-comment-id="${thread.id}"]`)).toContainText(thread.preview);
   console.log(`Today browser checks passed. Screenshots: ${output}`);
 } finally {
   await browser.close();

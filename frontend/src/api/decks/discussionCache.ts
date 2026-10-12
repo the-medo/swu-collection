@@ -15,11 +15,12 @@ export function cachedDeckDiscussionIds(client: QueryClient, deckId: string) {
 }
 
 export function invalidateBoundDiscussion(client: QueryClient, deckId: string) {
-  return Promise.all(
-    [...cachedDeckDiscussionIds(client, deckId)].map(id =>
+  return Promise.all([
+    client.invalidateQueries({ queryKey: discussionKeys.recent }),
+    ...[...cachedDeckDiscussionIds(client, deckId)].map(id =>
       client.invalidateQueries({ queryKey: discussionKeys.discussion(id) }),
     ),
-  );
+  ]);
 }
 
 export async function invalidateDeckDiscussion(

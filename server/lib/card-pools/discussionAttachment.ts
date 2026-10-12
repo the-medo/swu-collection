@@ -76,7 +76,11 @@ export const dailyPoolDiscussionAttachment: DiscussionAttachment = {
     return row?.id;
   },
   readable: readableDailyPoolDiscussion,
+  discoverable: readableDailyPoolDiscussion,
   policy: dailyPoolDiscussionPolicy,
+  thumbnail: sql`(SELECT jsonb_build_object('kind', 'set', 'set', ${cardPools.set})
+    FROM ${dailyPoolDiscussion} JOIN ${cardPools} ON ${cardPools.id} = ${dailyPoolDiscussion.cardPoolId}
+    WHERE ${dailyPoolDiscussion.discussionId} = ${discussion.id})`,
   notificationTarget: {
     name: sql`(SELECT ${cardPools.name} FROM ${dailyPoolDiscussion}
       JOIN ${cardPools} ON ${cardPools.id} = ${dailyPoolDiscussion.cardPoolId}

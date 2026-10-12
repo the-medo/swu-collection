@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { cn } from '@/lib/utils.ts';
+import { TodayFeedFooter, TodayFeedHeading } from './TodayFeedLayout.tsx';
 
 function DeckFeedState({ children, error = false }: { children: ReactNode; error?: boolean }) {
   return (
@@ -58,15 +59,7 @@ export function DeckFeedPanel({
       )}
       aria-labelledby={`${id}-title`}
     >
-      <header className="today-deck-panel-heading">
-        <h2
-          id={`${id}-title`}
-          className="mx-0! mt-0! mb-2! p-0! border-0! text-[25px]! font-semibold! leading-[1.2]! tracking-[-0.04em]!"
-        >
-          {title}
-        </h2>
-        <p className="m-0! text-[12px]! leading-[1.7]! text-muted-foreground">{description}</p>
-      </header>
+      <TodayFeedHeading id={`${id}-title`} title={title} description={description} />
       {isPending ? (
         <div role="status" aria-label={loadingLabel} className={listClassName}>
           {Array.from({ length: 3 }, (_, i) => (
@@ -87,15 +80,7 @@ export function DeckFeedPanel({
       ) : (
         <div className={listClassName}>{children}</div>
       )}
-      <footer
-        className={cn(
-          'today-deck-panel-footer flex items-center justify-between gap-3 pt-5 mt-0 text-[11px]',
-          '[&_a]:flex [&_a]:items-center [&_a]:gap-2 [&_a]:text-[color:var(--today-accent)]',
-          '[&_a:hover]:underline [&_>_span]:text-muted-foreground',
-        )}
-      >
-        {footer}
-      </footer>
+      <TodayFeedFooter>{footer}</TodayFeedFooter>
     </section>
   );
 }
