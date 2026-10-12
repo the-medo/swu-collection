@@ -75,7 +75,12 @@ export const deckIdPutRoute = new Hono<AuthExtension>().put(
         404,
       );
     }
-    if (result === false) return c.json({ message: 'Unauthorized' }, 403);
+    if (result === false) {
+      return c.json(
+        { message: "Deck doesn't exist or you don't have permission to update it" },
+        404,
+      );
+    }
 
     const { updatedDeck, isLeaderUpdated, isBaseUpdated } = result;
 

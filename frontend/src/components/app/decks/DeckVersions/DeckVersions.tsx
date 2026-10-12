@@ -26,12 +26,14 @@ const DeckVersions = ({ deckId }: { deckId: string }) => {
   const { data: deckData } = useGetDeck(deckId);
   const canonicalDeckId = deckData?.reference?.deckId ?? deckData?.deck.id ?? deckId;
   const supportsVersions = Boolean(deckData && !deckData.deck.cardPoolId);
-  const { data, isLoading } = useGetDeckVersions(supportsVersions ? canonicalDeckId : undefined);
+  const { data, isLoading, isError } = useGetDeckVersions(
+    supportsVersions ? canonicalDeckId : undefined,
+  );
   const saveVersion = useSaveDeckVersion(canonicalDeckId);
   const [changeNote, setChangeNote] = useState('');
   const [expandedVersionIds, setExpandedVersionIds] = useState<Set<string>>(() => new Set());
 
-  if (!supportsVersions) return null;
+  if (!supportsVersions || isError) return null;
   const versions = data?.data ?? [];
   const selectedVersionId =
     deckData?.reference?.kind === 'parent'

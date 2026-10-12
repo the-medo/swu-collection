@@ -1,3 +1,4 @@
+import { useSession } from '@/lib/auth-client.ts';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { DeckVersionState } from '../../../../types/Deck.ts';
@@ -18,9 +19,14 @@ export type DeckVersionDiffResponse = {
   };
 };
 
-export const useGetDeckVersionDiff = (deckId: string | undefined, versionId: string | undefined) =>
-  useQuery<DeckVersionDiffResponse>({
-    queryKey: ['deck-version-diff', deckId, versionId],
+export const useGetDeckVersionDiff = (
+  deckId: string | undefined,
+  versionId: string | undefined,
+) => {
+  const session = useSession();
+  return useQuery<DeckVersionDiffResponse>({
+    enabled: !session.isPending,
+    queryKey: ['deck-version-diff', deckId, versionId, session.data?.user.id ?? 'anonymous'],
     queryFn:
       deckId && versionId
         ? async () => {
@@ -32,3 +38,4 @@ export const useGetDeckVersionDiff = (deckId: string | undefined, versionId: str
           }
         : skipToken,
   });
+};

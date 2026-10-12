@@ -13,6 +13,8 @@ export const useRefreshImportedDeck = () => {
       return response.json();
     },
     onSuccess: (_data, deckId) => {
+      void queryClient.invalidateQueries({ queryKey: ['deck-versions', deckId] });
+      void queryClient.invalidateQueries({ queryKey: ['deck-version-diff', deckId] });
       void queryClient.invalidateQueries({ queryKey: ['deck', deckId] });
       void queryClient.invalidateQueries({ queryKey: ['deck-content', deckId] });
       void queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });

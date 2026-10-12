@@ -51,11 +51,20 @@ export async function getDeckPermissions(
   const canOwn = isParent && (isOwner || isAdmin);
   const canCollaborate = isParent && isCollaborator;
   const canEdit = canOwn || canCollaborate;
-  const canRead = parent.public >= 1 || isOwner || isAdmin || isCollaborator || Boolean(
-    (await executor.select({ id: deckTable.id }).from(deckTable)
-      .where(and(eq(deckTable.id, parent.id), deckReadAccess(actorId ?? undefined)))
-      .limit(1))[0],
-  );
+  const canRead =
+    parent.public >= 1 ||
+    isOwner ||
+    isAdmin ||
+    isCollaborator ||
+    Boolean(
+      (
+        await executor
+          .select({ id: deckTable.id })
+          .from(deckTable)
+          .where(and(eq(deckTable.id, parent.id), deckReadAccess(actorId ?? undefined)))
+          .limit(1)
+      )[0],
+    );
 
   return {
     canRead,
@@ -68,6 +77,6 @@ export async function getDeckPermissions(
   };
 }
 
-export function canReadDeck(parent: Deck, permissions: DeckPermissions): boolean {
+export function canReadDeck(_parent: Deck, permissions: DeckPermissions): boolean {
   return permissions.canRead;
 }

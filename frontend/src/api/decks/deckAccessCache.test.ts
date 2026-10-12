@@ -9,6 +9,53 @@ import {
 import { deckKeys } from './queryKeys.ts';
 import { deckDiscussionKeys } from './discussionKeys.ts';
 import { discussionKeys } from '../discussions/queryKeys.ts';
+import type { DeckVersionsResponse } from './useGetDeckVersions.ts';
+
+test.each(['deck', 'version', 'expired-version'])(
+  'revocation through %s clears every cached reference for that viewer',
+  async deniedId => {
+    const client = new QueryClient();
+    const cards = { data: [{ cardId: 'fleet-lieutenant', quantity: 3 }] };
+    const privateData = {
+      deck: { id: 'deck', userId: 'owner', public: 0 },
+      reference: { deckId: 'deck' },
+    } as DeckData;
+    const history = {
+      deckId: 'deck',
+      data: [{ id: 'version' }, { id: 'expired-version' }],
+    } as DeckVersionsResponse;
+    for (const viewer of ['owner', 'member']) {
+      for (const id of ['deck', 'version', 'expired-version']) {
+        if (id !== 'expired-version') client.setQueryData(deckKeys.detail(id, viewer), privateData);
+        client.setQueryData(deckKeys.cards(id, viewer), cards);
+      }
+      client.setQueryData(['deck-versions', 'deck', viewer], history);
+      client.setQueryData(['deck-version-diff', 'deck', 'version', viewer], cards);
+    }
+    const unrelatedData = { deck: { id: 'unrelated', public: 0 } } as DeckData;
+    client.setQueryData(deckKeys.detail('unrelated', 'member'), unrelatedData);
+    try {
+      await resetDeniedDeckAccess(client, deniedId, 'member');
+      for (const id of ['deck', 'version', 'expired-version']) {
+        expect(client.getQueryData(deckKeys.detail(id, 'member'))).toBeUndefined();
+        expect(client.getQueryData(deckKeys.cards(id, 'member'))).toBeUndefined();
+        expect(client.getQueryData<typeof cards>(deckKeys.cards(id, 'owner'))).toEqual(cards);
+      }
+      expect(client.getQueryData(['deck-versions', 'deck', 'member'])).toBeUndefined();
+      expect(
+        client.getQueryData(['deck-version-diff', 'deck', 'version', 'member']),
+      ).toBeUndefined();
+      expect(client.getQueryData<DeckVersionsResponse>(['deck-versions', 'deck', 'owner'])).toEqual(
+        history,
+      );
+      expect(client.getQueryData<DeckData>(deckKeys.detail('unrelated', 'member'))).toEqual(
+        unrelatedData,
+      );
+    } finally {
+      client.clear();
+    }
+  },
+);
 
 test('fresh access is required for private viewers while owner/public editor caches stay stable', () => {
   const data = (visibility: number) =>
@@ -64,6 +111,10 @@ test('revocation clears cached private data and notifies active observers withou
   client.setQueryData(deckKeys.detail('deck', 'owner'), privateData);
   client.setQueryData(deckKeys.detail('deck', 'member'), privateData);
   client.setQueryData(deckKeys.cards('deck', 'member'), privateCards);
+  client.setQueryData(['deck-versions', 'deck', 'member'], privateData);
+  client.setQueryData(['deck-versions', 'deck', 'owner'], privateData);
+  client.setQueryData(['deck-version-diff', 'deck', 'version', 'member'], privateCards);
+  client.setQueryData(['deck-version-diff', 'deck', 'version', 'owner'], privateCards);
   client.setQueryData(deckKeys.detail('inactive', 'member'), privateData);
   client.setQueryData(deckKeys.cards('inactive', 'member'), privateCards);
   client.setQueryData(deckDiscussionKeys.article('deck', 'member'), privateData);
@@ -92,6 +143,12 @@ test('revocation clears cached private data and notifies active observers withou
   try {
     expect(observers.every(observer => observer.getCurrentResult().data !== undefined)).toBe(true);
     await resetDeniedDeckAccess(client, 'deck', 'member');
+    expect(client.getQueryData(['deck-versions', 'deck', 'member'])).toBeUndefined();
+    expect(client.getQueryData(['deck-version-diff', 'deck', 'version', 'member'])).toBeUndefined();
+    expect(client.getQueryData<DeckData>(['deck-versions', 'deck', 'owner'])).toEqual(privateData);
+    expect(
+      client.getQueryData<typeof privateCards>(['deck-version-diff', 'deck', 'version', 'owner']),
+    ).toEqual(privateCards);
     expect(client.getQueryData(discussionKeys.info('discussion', 'member'))).toBeUndefined();
     expect(client.getQueryData(discussionKeys.comments('discussion', 'member'))).toBeUndefined();
     expect(

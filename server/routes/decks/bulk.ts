@@ -35,7 +35,7 @@ export const decksBulkGetRoute = new Hono<AuthExtension>().get(
   async c => {
     const { ids } = c.req.valid('query');
     const user = c.get('user');
-  c.header('Cache-Control', 'private, no-store');
+    c.header('Cache-Control', 'private, no-store');
     const isAdmin = user
       ? (
           await auth.api.userHasPermission({
@@ -57,7 +57,11 @@ export const decksBulkGetRoute = new Hono<AuthExtension>().get(
       if (!canReadDeck(resolved.deck, permissions)) continue;
 
       const owner = (
-        await db.select(selectUser).from(userTable).where(eq(userTable.id, resolved.deck.userId)).limit(1)
+        await db
+          .select(selectUser)
+          .from(userTable)
+          .where(eq(userTable.id, resolved.deck.userId))
+          .limit(1)
       )[0];
       const favorite = user
         ? ((

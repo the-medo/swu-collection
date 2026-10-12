@@ -7,6 +7,7 @@ import { deckCard as deckCardTable } from '../../../../db/schema/deck_card.ts';
 import { cardPoolDeckCards } from '../../../../db/schema/card_pool_deck.ts';
 import { cardPoolCards } from '../../../../db/schema/card_pool.ts';
 import { user as userTable } from '../../../../db/schema/auth-schema.ts';
+import { selectUser } from '../../../user.ts';
 import { db } from '../../../../db';
 import { getMergedCardList } from '../../../../lib/cards/cardListProvider.ts';
 import { createDeckJsonExport } from '../../../../lib/decks/deckExport.ts';
@@ -52,7 +53,11 @@ export const deckIdJsonGetRoute = new Hono<AuthExtension>().get('/', async c => 
   }
 
   const deckOwner = (
-    await db.select().from(userTable).where(eq(userTable.id, resolved.deck.userId)).limit(1)
+    await db
+      .select(selectUser)
+      .from(userTable)
+      .where(eq(userTable.id, resolved.deck.userId))
+      .limit(1)
   )[0];
   const cardList = await getMergedCardList();
   let deckCards: DeckCard[];

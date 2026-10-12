@@ -58,7 +58,11 @@ export function useDeckInfoStoreActions() {
   };
 }
 
-export const useSetDeckInfo = (deckId: string, adminEdit: boolean = false, refreshOnMount = false) => {
+export const useSetDeckInfo = (
+  deckId: string,
+  adminEdit: boolean = false,
+  refreshOnMount = false,
+) => {
   const user = useUser();
   const hasRole = useRole();
   const isAdmin = hasRole('admin');
@@ -70,9 +74,10 @@ export const useSetDeckInfo = (deckId: string, adminEdit: boolean = false, refre
   const format = data?.deck.format ?? 1;
   const owned = (user?.id === deckUserId || (isAdmin && adminEdit)) ?? false;
   const serverEditable = data?.permissions?.canEditContent ?? (owned && !data?.deck.cardPoolId);
-  const editable =
+  const editable = Boolean(
     serverEditable &&
-    (!isAdmin || user?.id === deckUserId || adminEdit || data?.permissions?.canEditAsTeamMember);
+      (!isAdmin || user?.id === deckUserId || adminEdit || data?.permissions?.canEditAsTeamMember),
+  );
   const canSaveVersion = Boolean(data?.permissions?.canSaveVersion && editable);
 
   useEffect(() => {

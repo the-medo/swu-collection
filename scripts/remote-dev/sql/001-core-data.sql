@@ -371,6 +371,22 @@ WHERE dc.deck_id = d.id
   AND d.user_id = dcu.user_id
   AND dcu.retain_data;
 
+-- Historical copies must follow the same free-text sanitization as current decks.
+UPDATE deck_version dv
+SET description = '', change_note = NULL, content_hash = NULL
+FROM deck d, development_cleanup_user dcu
+WHERE dv.deck_id = d.id
+  AND d.user_id = dcu.user_id
+  AND dcu.retain_data;
+
+UPDATE deck_version_card dvc
+SET note = ''
+FROM deck_version dv, deck d, development_cleanup_user dcu
+WHERE dvc.deck_version_id = dv.id
+  AND dv.deck_id = d.id
+  AND d.user_id = dcu.user_id
+  AND dcu.retain_data;
+
 -- Tournament data is globally useful but must not retain the production user
 -- who created it. Assign it to the synthetic system user before user deletion.
 UPDATE tournament

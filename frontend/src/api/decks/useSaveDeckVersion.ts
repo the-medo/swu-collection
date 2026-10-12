@@ -19,7 +19,9 @@ export const useSaveDeckVersion = (deckId: string) => {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['deck-versions'] });
       void queryClient.invalidateQueries({ queryKey: ['deck-version-diff'] });
-      void queryClient.invalidateQueries({ queryKey: ['deck', deckId] });
+      void queryClient.invalidateQueries({ queryKey: ['deck'] });
+      void queryClient.invalidateQueries({ queryKey: ['deck-content'] });
+      void queryClient.invalidateQueries({ queryKey: ['decks-bulk'] });
       toast({ title: 'Deck version saved' });
     },
     onError: (error: Error) =>
