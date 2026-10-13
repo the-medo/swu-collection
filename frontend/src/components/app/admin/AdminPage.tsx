@@ -1,4 +1,6 @@
 import { UserReportsPage } from './user-reports/UserReportsPage';
+import { CreationReportsPage } from './CreationReportsPage';
+import { CreatorImportsPage } from './CreatorImportsPage';
 import { CrossfireAccessPage } from './CrossfireAccessPage';
 import { CrossfireCardsPage } from './CrossfireCardsPage';
 import { CrossfireOperationsPage } from './CrossfireOperationsPage';
@@ -53,6 +55,8 @@ export function AdminPage() {
           <Card className="min-w-0" key={page}>
             <CardContent className="p-4">
               {page === 'user-reports' && <UserReportsPage />}
+              {page === 'creation-reports' && <CreationReportsPage />}
+              {page === 'creator-imports' && <CreatorImportsPage />}
               {page === 'credits' && <UserCreditsPage />}
               {page === 'patreon' && <PatreonPage />}
               {page === 'image-gallery' && <ImageGalleryPage />}

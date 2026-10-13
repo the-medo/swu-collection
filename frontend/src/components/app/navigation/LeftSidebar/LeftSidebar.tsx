@@ -76,6 +76,7 @@ const getGroups = (
     action: () => {},
     icon: BookCheck,
     items: [
+      // Creator hub routes stay available by direct link during monitoring.
       {
         title: 'Meta analysis',
         url: '/meta',

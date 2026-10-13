@@ -1,3 +1,4 @@
+import { creatorHubRoute } from './routes/creator-hub.ts';
 import { APIError } from 'better-auth/api';
 import { ProfanityError } from './lib/moderation/content.ts';
 import { battlefieldsRoute } from './routes/battlefields.ts';
@@ -66,6 +67,8 @@ Sentry.init({
   enableLogs: process.env.ENVIRONMENT !== 'local',
   beforeSend(event) {
     if (
+      event.request?.url?.includes('/api/creator-hub') ||
+      event.request?.url?.includes('/api/admin/creator-imports') ||
       isCalendarFeedRequest(event.request?.url) ||
       /\/api\/(?:support|messages|(?:admin\/)?user-reports|(?:admin|integration)\/(?:patreon|stripe))(?:[/?#]|$)/.test(
         event.request?.url ?? '',
@@ -84,7 +87,9 @@ Sentry.init({
     return event;
   },
   beforeSendTransaction(event) {
-    return isCalendarFeedRequest(event.request?.url) ||
+    return event.request?.url?.includes('/api/creator-hub') ||
+      event.request?.url?.includes('/api/admin/creator-imports') ||
+      isCalendarFeedRequest(event.request?.url) ||
       /\/api\/(?:support|messages|(?:admin\/)?user-reports|(?:admin|integration)\/(?:patreon|stripe))(?:[/?#]|$)/.test(
         event.request?.url ?? '',
       )
@@ -113,7 +118,15 @@ const app = new Hono<AuthExtension>().onError((err, c) => {
 // Calendar clients authenticate with the secret URL. Mount before session and
 // request logging middleware so tokens never enter the application access log.
 app.route('/api/calendar', calendarFeedRoute);
-app.use('*', requestLogger());
+const logRequest = requestLogger();
+app.use('*', async (c, next) => {
+  if (
+    c.req.path.startsWith('/api/creator-hub') ||
+    c.req.path.startsWith('/api/admin/creator-imports')
+  )
+    return next();
+  return logRequest(c, next);
+});
 app.use('*', async (c, next) => {
   let session;
   try {
@@ -190,6 +203,7 @@ const apiRoutes = app
   .route('/crossfire', crossfireRoute)
   .route('/cards', cardsRoute)
   .route('/artists', artistsRoute)
+  .route('/creator-hub', creatorHubRoute)
   .route('/user', userRoute)
   .route('/battlefields', battlefieldsRoute)
   .route('/battlefield-presets', battlefieldPresetsRoute)

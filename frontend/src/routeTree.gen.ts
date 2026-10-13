@@ -27,6 +27,8 @@ import { Route as StatisticsIndexRouteImport } from './routes/statistics/index'
 import { Route as MetaIndexRouteImport } from './routes/meta/index'
 import { Route as LimitedIndexRouteImport } from './routes/limited/index'
 import { Route as ForumIndexRouteImport } from './routes/forum/index'
+import { Route as CreatorsIndexRouteImport } from './routes/creators/index'
+import { Route as ContentIndexRouteImport } from './routes/content/index'
 import { Route as ComparerIndexRouteImport } from './routes/comparer/index'
 import { Route as ArtistsIndexRouteImport } from './routes/artists/index'
 import { Route as WantlistsYourRouteImport } from './routes/wantlists/your'
@@ -40,6 +42,8 @@ import { Route as DecksYourRouteImport } from './routes/decks/your'
 import { Route as DecksTournamentRouteImport } from './routes/decks/tournament'
 import { Route as DecksPublicRouteImport } from './routes/decks/public'
 import { Route as DecksFavoriteRouteImport } from './routes/decks/favorite'
+import { Route as CreatorsSlugRouteImport } from './routes/creators/$slug'
+import { Route as ContentCreationIdRouteImport } from './routes/content/$creationId'
 import { Route as CollectionsYourRouteImport } from './routes/collections/your'
 import { Route as CollectionsPublicRouteImport } from './routes/collections/public'
 import { Route as CardsSearchRouteImport } from './routes/cards/search'
@@ -48,6 +52,7 @@ import { Route as ArtistsArtistKeyRouteImport } from './routes/artists/$artistKe
 import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
+import { Route as AuthenticatedCreatorStudioRouteImport } from './routes/_authenticated/creator-studio'
 import { Route as AuthenticatedBattlefieldRouteImport } from './routes/_authenticated/battlefield'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as WantlistsWantlistIdIndexRouteImport } from './routes/wantlists/$wantlistId/index'
@@ -182,6 +187,16 @@ const ForumIndexRoute = ForumIndexRouteImport.update({
   path: '/forum/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorsIndexRoute = CreatorsIndexRouteImport.update({
+  id: '/creators/',
+  path: '/creators/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContentIndexRoute = ContentIndexRouteImport.update({
+  id: '/content/',
+  path: '/content/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ComparerIndexRoute = ComparerIndexRouteImport.update({
   id: '/comparer/',
   path: '/comparer/',
@@ -247,6 +262,16 @@ const DecksFavoriteRoute = DecksFavoriteRouteImport.update({
   path: '/decks/favorite',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorsSlugRoute = CreatorsSlugRouteImport.update({
+  id: '/creators/$slug',
+  path: '/creators/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContentCreationIdRoute = ContentCreationIdRouteImport.update({
+  id: '/content/$creationId',
+  path: '/content/$creationId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollectionsYourRoute = CollectionsYourRouteImport.update({
   id: '/collections/your',
   path: '/collections/your',
@@ -288,6 +313,12 @@ const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedCreatorStudioRoute =
+  AuthenticatedCreatorStudioRouteImport.update({
+    id: '/creator-studio',
+    path: '/creator-studio',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedBattlefieldRoute =
   AuthenticatedBattlefieldRouteImport.update({
     id: '/battlefield',
@@ -589,6 +620,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/battlefield': typeof AuthenticatedBattlefieldRoute
+  '/creator-studio': typeof AuthenticatedCreatorStudioRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/shop': typeof AuthenticatedShopRoute
@@ -597,6 +629,8 @@ export interface FileRoutesByFullPath {
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
+  '/content/$creationId': typeof ContentCreationIdRoute
+  '/creators/$slug': typeof CreatorsSlugRoute
   '/decks/favorite': typeof DecksFavoriteRoute
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
@@ -609,6 +643,8 @@ export interface FileRoutesByFullPath {
   '/wantlists/your': typeof WantlistsYourRoute
   '/artists': typeof ArtistsIndexRoute
   '/comparer': typeof ComparerIndexRoute
+  '/content': typeof ContentIndexRoute
+  '/creators': typeof CreatorsIndexRoute
   '/forum': typeof ForumIndexRoute
   '/limited': typeof LimitedIndexRoute
   '/meta': typeof MetaIndexRoute
@@ -675,6 +711,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/battlefield': typeof AuthenticatedBattlefieldRoute
+  '/creator-studio': typeof AuthenticatedCreatorStudioRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/shop': typeof AuthenticatedShopRoute
@@ -683,6 +720,8 @@ export interface FileRoutesByTo {
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
+  '/content/$creationId': typeof ContentCreationIdRoute
+  '/creators/$slug': typeof CreatorsSlugRoute
   '/decks/favorite': typeof DecksFavoriteRoute
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
@@ -695,6 +734,8 @@ export interface FileRoutesByTo {
   '/wantlists/your': typeof WantlistsYourRoute
   '/artists': typeof ArtistsIndexRoute
   '/comparer': typeof ComparerIndexRoute
+  '/content': typeof ContentIndexRoute
+  '/creators': typeof CreatorsIndexRoute
   '/forum': typeof ForumIndexRoute
   '/limited': typeof LimitedIndexRoute
   '/meta': typeof MetaIndexRoute
@@ -762,6 +803,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/battlefield': typeof AuthenticatedBattlefieldRoute
+  '/_authenticated/creator-studio': typeof AuthenticatedCreatorStudioRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/shop': typeof AuthenticatedShopRoute
@@ -770,6 +812,8 @@ export interface FileRoutesById {
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
+  '/content/$creationId': typeof ContentCreationIdRoute
+  '/creators/$slug': typeof CreatorsSlugRoute
   '/decks/favorite': typeof DecksFavoriteRoute
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
@@ -783,6 +827,8 @@ export interface FileRoutesById {
   '/wantlists/your': typeof WantlistsYourRoute
   '/artists/': typeof ArtistsIndexRoute
   '/comparer/': typeof ComparerIndexRoute
+  '/content/': typeof ContentIndexRoute
+  '/creators/': typeof CreatorsIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/limited/': typeof LimitedIndexRoute
   '/meta/': typeof MetaIndexRoute
@@ -853,6 +899,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/admin'
     | '/battlefield'
+    | '/creator-studio'
     | '/messages'
     | '/notifications'
     | '/shop'
@@ -861,6 +908,8 @@ export interface FileRouteTypes {
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
+    | '/content/$creationId'
+    | '/creators/$slug'
     | '/decks/favorite'
     | '/decks/public'
     | '/decks/tournament'
@@ -873,6 +922,8 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/artists'
     | '/comparer'
+    | '/content'
+    | '/creators'
     | '/forum'
     | '/limited'
     | '/meta'
@@ -939,6 +990,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/admin'
     | '/battlefield'
+    | '/creator-studio'
     | '/messages'
     | '/notifications'
     | '/shop'
@@ -947,6 +999,8 @@ export interface FileRouteTypes {
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
+    | '/content/$creationId'
+    | '/creators/$slug'
     | '/decks/favorite'
     | '/decks/public'
     | '/decks/tournament'
@@ -959,6 +1013,8 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/artists'
     | '/comparer'
+    | '/content'
+    | '/creators'
     | '/forum'
     | '/limited'
     | '/meta'
@@ -1025,6 +1081,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/admin'
     | '/_authenticated/battlefield'
+    | '/_authenticated/creator-studio'
     | '/_authenticated/messages'
     | '/_authenticated/notifications'
     | '/_authenticated/shop'
@@ -1033,6 +1090,8 @@ export interface FileRouteTypes {
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
+    | '/content/$creationId'
+    | '/creators/$slug'
     | '/decks/favorite'
     | '/decks/public'
     | '/decks/tournament'
@@ -1046,6 +1105,8 @@ export interface FileRouteTypes {
     | '/wantlists/your'
     | '/artists/'
     | '/comparer/'
+    | '/content/'
+    | '/creators/'
     | '/forum/'
     | '/limited/'
     | '/meta/'
@@ -1119,6 +1180,8 @@ export interface RootRouteChildren {
   CardsSearchRoute: typeof CardsSearchRoute
   CollectionsPublicRoute: typeof CollectionsPublicRoute
   CollectionsYourRoute: typeof CollectionsYourRoute
+  ContentCreationIdRoute: typeof ContentCreationIdRoute
+  CreatorsSlugRoute: typeof CreatorsSlugRoute
   DecksFavoriteRoute: typeof DecksFavoriteRoute
   DecksPublicRoute: typeof DecksPublicRoute
   DecksTournamentRoute: typeof DecksTournamentRoute
@@ -1131,6 +1194,8 @@ export interface RootRouteChildren {
   WantlistsYourRoute: typeof WantlistsYourRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
   ComparerIndexRoute: typeof ComparerIndexRoute
+  ContentIndexRoute: typeof ContentIndexRoute
+  CreatorsIndexRoute: typeof CreatorsIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
   LimitedIndexRoute: typeof LimitedIndexRoute
   MetaIndexRoute: typeof MetaIndexRoute
@@ -1277,6 +1342,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForumIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creators/': {
+      id: '/creators/'
+      path: '/creators'
+      fullPath: '/creators'
+      preLoaderRoute: typeof CreatorsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/content/': {
+      id: '/content/'
+      path: '/content'
+      fullPath: '/content'
+      preLoaderRoute: typeof ContentIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/comparer/': {
       id: '/comparer/'
       path: '/comparer'
@@ -1368,6 +1447,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DecksFavoriteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creators/$slug': {
+      id: '/creators/$slug'
+      path: '/creators/$slug'
+      fullPath: '/creators/$slug'
+      preLoaderRoute: typeof CreatorsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/content/$creationId': {
+      id: '/content/$creationId'
+      path: '/content/$creationId'
+      fullPath: '/content/$creationId'
+      preLoaderRoute: typeof ContentCreationIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collections/your': {
       id: '/collections/your'
       path: '/collections/your'
@@ -1422,6 +1515,13 @@ declare module '@tanstack/react-router' {
       path: '/messages'
       fullPath: '/messages'
       preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/creator-studio': {
+      id: '/_authenticated/creator-studio'
+      path: '/creator-studio'
+      fullPath: '/creator-studio'
+      preLoaderRoute: typeof AuthenticatedCreatorStudioRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/battlefield': {
@@ -1787,6 +1887,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBattlefieldRoute: typeof AuthenticatedBattlefieldRoute
+  AuthenticatedCreatorStudioRoute: typeof AuthenticatedCreatorStudioRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedShopRoute: typeof AuthenticatedShopRoute
@@ -1802,6 +1903,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBattlefieldRoute: AuthenticatedBattlefieldRoute,
+  AuthenticatedCreatorStudioRoute: AuthenticatedCreatorStudioRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedShopRoute: AuthenticatedShopRoute,
@@ -1946,6 +2048,8 @@ const rootRouteChildren: RootRouteChildren = {
   CardsSearchRoute: CardsSearchRoute,
   CollectionsPublicRoute: CollectionsPublicRoute,
   CollectionsYourRoute: CollectionsYourRoute,
+  ContentCreationIdRoute: ContentCreationIdRoute,
+  CreatorsSlugRoute: CreatorsSlugRoute,
   DecksFavoriteRoute: DecksFavoriteRoute,
   DecksPublicRoute: DecksPublicRoute,
   DecksTournamentRoute: DecksTournamentRoute,
@@ -1958,6 +2062,8 @@ const rootRouteChildren: RootRouteChildren = {
   WantlistsYourRoute: WantlistsYourRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,
   ComparerIndexRoute: ComparerIndexRoute,
+  ContentIndexRoute: ContentIndexRoute,
+  CreatorsIndexRoute: CreatorsIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
   LimitedIndexRoute: LimitedIndexRoute,
   MetaIndexRoute: MetaIndexRoute,

@@ -61,6 +61,7 @@ crosses their boundary. For implementation or code review, also use
 
 | Task pattern | Primary skill | Companion skills |
 | --- | --- | --- |
+| Research/parse YouTube creators or prepare public profiles and optional video inventories for the admin JSON importer | `swubase-creator-imports` | `swubase-backend-endpoints`/frontend skills only when changing the importer; `swubase-validation` for tracked changes |
 | Add/change Discord payloads, announcement publishing, notification identity, retries, dry runs, or triggers | `swubase-discord-notifications` | `swubase-screenshotter` for result media; `swubase-cron-jobs` if scheduled; `swubase-validation` |
 | Add/change a one-shot Bun cron, Coolify scheduled command, Sentry monitor, queue claim, or overlap safety | `swubase-cron-jobs` | Domain/integration skill for its effects; `swubase-validation` |
 | Add/change authenticated WebSocket routes, rooms, event DTOs, publishers, reconnect, or Query patch/refetch logic | `swubase-websockets` | `swubase-auth-permissions` for session/origin policy; `swubase-frontend-api` for Query cache changes; relevant domain skill; `swubase-worktree-dev` for generated URLs/ports; `swubase-validation` |

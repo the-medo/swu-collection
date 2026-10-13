@@ -15,6 +15,67 @@ import {
 import { updateDeckInformation } from './updateDeckInformation.ts';
 import { assertDeckTextAllowed } from '../moderation/content.ts';
 
+type ImportTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+/** Shared persistence for interactive imports and the trusted creator worker. */
+export async function insertImportedDeck(
+  tx: ImportTransaction,
+  {
+    userId,
+    builder,
+    deckId,
+    parsedDeck,
+    format,
+    folderId,
+    visibility = 2,
+  }: {
+    userId: string;
+    builder: DeckBuilder;
+    deckId: string;
+    parsedDeck: ParsedImportedDeck;
+    format: number;
+    folderId?: string | null;
+    visibility?: 1 | 2;
+  },
+) {
+  const description = describeImportErrors(parsedDeck.errors);
+  assertDeckTextAllowed({ name: parsedDeck.name, description });
+  const now = new Date();
+  await requireDeckFolderForCreation(tx, userId, folderId);
+  const [createdDeck] = await tx
+    .insert(deckTable)
+    .values({
+      userId,
+      format,
+      name: parsedDeck.name,
+      leaderCardId1: parsedDeck.leaderCardId1,
+      leaderCardId2: parsedDeck.leaderCardId2,
+      baseCardId: parsedDeck.baseCardId,
+      public: visibility,
+      description,
+    })
+    .returning();
+
+  if (!createdDeck) throw new Error('Failed to create imported deck.');
+  if (folderId) await tx.insert(deckFolderDeck).values({ deckId: createdDeck.id, folderId });
+
+  if (parsedDeck.cards.length > 0) {
+    await tx
+      .insert(deckCardTable)
+      .values(parsedDeck.cards.map(card => ({ ...card, deckId: createdDeck.id })));
+  }
+
+  await tx.insert(deckImportSource).values({
+    deckId: createdDeck.id,
+    source: builder.source,
+    sourceDeckId: deckId,
+    createdAt: now,
+    refreshedAt: now,
+  });
+
+  return createdDeck;
+}
+
 export const importDeckForUser = async ({
   userId,
   builder,
@@ -33,42 +94,9 @@ export const importDeckForUser = async ({
   const parsedDeck = parseImportedDeck(sourceDeck, await getMergedCardList());
   const description = describeImportErrors(parsedDeck.errors);
   assertDeckTextAllowed({ name: parsedDeck.name, description });
-  const now = new Date();
 
   const newDeck = await db.transaction(async tx => {
-    await requireDeckFolderForCreation(tx, userId, folderId);
-    const [createdDeck] = await tx
-      .insert(deckTable)
-      .values({
-        userId,
-        format,
-        name: parsedDeck.name,
-        leaderCardId1: parsedDeck.leaderCardId1,
-        leaderCardId2: parsedDeck.leaderCardId2,
-        baseCardId: parsedDeck.baseCardId,
-        public: 2,
-        description,
-      })
-      .returning();
-
-    if (!createdDeck) throw new Error('Failed to create imported deck.');
-    if (folderId) await tx.insert(deckFolderDeck).values({ deckId: createdDeck.id, folderId });
-
-    if (parsedDeck.cards.length > 0) {
-      await tx
-        .insert(deckCardTable)
-        .values(parsedDeck.cards.map(card => ({ ...card, deckId: createdDeck.id })));
-    }
-
-    await tx.insert(deckImportSource).values({
-      deckId: createdDeck.id,
-      source: builder.source,
-      sourceDeckId: deckId,
-      createdAt: now,
-      refreshedAt: now,
-    });
-
-    return createdDeck;
+    return insertImportedDeck(tx, { userId, builder, deckId, parsedDeck, format, folderId });
   });
 
   await updateDeckInformation(newDeck.id);

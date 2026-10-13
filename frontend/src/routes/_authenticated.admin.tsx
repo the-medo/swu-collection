@@ -6,6 +6,8 @@ import { adminPageIds } from '@/components/app/admin/adminNavigation';
 
 const searchParams = z.object({
   page: z.enum(adminPageIds).default('metas'),
+  creationReportStatus: z.enum(['open', 'resolved']).default('open').catch('open'),
+  creationReportPage: z.coerce.number().int().min(1).max(10000).default(1).catch(1),
   reportId: z.uuid().optional().catch(undefined),
   reportUserId: z.string().min(1).max(200).optional().catch(undefined),
   reportStatus: z.enum(['open', 'resolved', 'all']).default('open').catch('open'),
