@@ -1,3 +1,4 @@
+import { RelatedCreations } from '@/components/app/creators/CreationCards.tsx';
 import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import LoadingTitle from '@/components/app/global/LoadingTitle.tsx';
@@ -426,6 +427,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
         <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} mode={mode} />
         {activeTab === 'details' || tournament?.imported ? children : null}
         {showDataNotice && <NoTournamentData tournamentId={tournamentId} />}
+        {displayHeader && tournament && <RelatedCreations type="tournament" id={tournamentId} />}
       </div>
     </>
   );

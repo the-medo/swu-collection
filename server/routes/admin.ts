@@ -26,8 +26,10 @@ import { resourceSubmissionsRoute } from './admin/resource-submissions/index.ts'
 import { patreonAdminRoute } from './admin/patreon/index.ts';
 import { creditsAdminRoute } from './admin/credits/index.ts';
 import { artistTransferAdminRoute } from './admin/artists/index.ts';
+import { creatorImportAdminRoute } from './admin/creator-imports/index.ts';
 
 export const adminRoute = new Hono<AuthExtension>()
+  .route('/creator-imports', creatorImportAdminRoute)
   .route('/artists', artistTransferAdminRoute)
   .route('/credits', creditsAdminRoute)
   .route('/patreon', patreonAdminRoute)

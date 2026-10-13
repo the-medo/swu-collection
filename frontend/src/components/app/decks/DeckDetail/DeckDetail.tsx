@@ -1,3 +1,4 @@
+import { RelatedCreations } from '@/components/app/creators/CreationCards.tsx';
 import { useState } from 'react';
 import { useGetDeckCards } from '@/api/decks/useGetDeckCards.ts';
 import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
@@ -165,6 +166,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
           }
         />
       </div>
+      {!embedded && !deckbuilder && data && !error && <RelatedCreations type="deck" id={deckId} />}
     </>
   );
 };

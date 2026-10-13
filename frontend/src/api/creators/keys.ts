@@ -1,0 +1,32 @@
+import type { DiscoveryQuery, EntityReference } from '../../../../shared/creators/contracts.ts';
+const root = ['creator-hub'] as const;
+const publicRoot = [...root, 'public'] as const;
+const privateRoot = [...root, 'private'] as const;
+export const creatorKeys = {
+  all: root,
+  reports: [...privateRoot, 'reports'] as const,
+  reportList: (status: 'open' | 'resolved', page: number) =>
+    [...privateRoot, 'reports', status, page] as const,
+  reportStatus: (id: string) => [...privateRoot, 'report-status', id] as const,
+  directories: [...publicRoot, 'directory'] as const,
+  directory: (q: string, page: number, language: string, tags: string[]) =>
+    [...publicRoot, 'directory', { q, page, language, tags }] as const,
+  profiles: [...publicRoot, 'profile'] as const,
+  profile: (slug: string) => [...publicRoot, 'profile', slug] as const,
+  discoveries: [...publicRoot, 'discovery'] as const,
+  discovery: (query: Partial<DiscoveryQuery>) => [...publicRoot, 'discovery', query] as const,
+  creations: [...publicRoot, 'creation'] as const,
+  creation: (id: string) => [...publicRoot, 'creation', id] as const,
+  collectionsRoot: [...publicRoot, 'collections'] as const,
+  collections: (id?: string) => [...publicRoot, 'collections', id] as const,
+  mine: [...privateRoot, 'mine'] as const,
+  studios: [...privateRoot, 'studio'] as const,
+  studio: (id?: string, page?: number) =>
+    [...privateRoot, 'studio', id, ...(page === undefined ? [] : [page])] as const,
+  draft: (id?: string) => [...privateRoot, 'draft', id] as const,
+  revisions: (id?: string) => [...privateRoot, 'revisions', id] as const,
+  youtube: (id: string) => [...privateRoot, 'youtube', id] as const,
+  members: (id: string) => [...privateRoot, 'members', id] as const,
+  subjects: (type: EntityReference['type'], q: string, scope: 'discovery' | 'authoring') =>
+    [...root, 'subjects', { type, q, scope }] as const,
+};

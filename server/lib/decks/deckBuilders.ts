@@ -48,6 +48,7 @@ export class DeckBuilderError extends Error {
   public constructor(
     message: string,
     public readonly status: 400 | 404 | 502,
+    public readonly reason?: 'unavailable' | 'invalid-data',
   ) {
     super(message);
     this.name = 'DeckBuilderError';
@@ -114,13 +115,20 @@ export abstract class DeckBuilder {
       throw new DeckBuilderError(
         `Unable to load the deck from ${this.displayName} (${response.status}).`,
         502,
+        response.status >= 400 && response.status < 500 && response.status !== 429
+          ? 'unavailable'
+          : undefined,
       );
     }
 
     const payload = await response.json().catch(() => null);
     const parsed = zExternalDeck.safeParse(payload);
     if (!parsed.success) {
-      throw new DeckBuilderError(`Invalid deck data returned by ${this.displayName}.`, 502);
+      throw new DeckBuilderError(
+        `Invalid deck data returned by ${this.displayName}.`,
+        502,
+        'invalid-data',
+      );
     }
 
     return parsed.data;
@@ -211,7 +219,13 @@ class MeleeDeckBuilder extends DeckBuilder {
       throw new DeckBuilderError('Deck not found on Melee. Make sure it is publicly shared.', 404);
     }
     if (!response.ok) {
-      throw new DeckBuilderError(`Unable to load the deck from Melee (${response.status}).`, 502);
+      throw new DeckBuilderError(
+        `Unable to load the deck from Melee (${response.status}).`,
+        502,
+        response.status >= 400 && response.status < 500 && response.status !== 429
+          ? 'unavailable'
+          : undefined,
+      );
     }
 
     let html: string;
@@ -224,7 +238,11 @@ class MeleeDeckBuilder extends DeckBuilder {
     const { document } = parseHTML(html);
     const text = readMeleeDecklistText(document);
     if (!text.trim()) {
-      throw new DeckBuilderError('Melee did not provide a SWU text export for this deck.', 502);
+      throw new DeckBuilderError(
+        'Melee did not provide a SWU text export for this deck.',
+        502,
+        'invalid-data',
+      );
     }
 
     return {
@@ -275,7 +293,11 @@ export const parseImportedDeck = (deck: ExternalDeck, cardList: CardList): Parse
     // Tournament imports use this same converter. No deck ID exists yet for a new import.
     const parsed = parseTextToSwubase(deck.text, cardList, '');
     if (!parsed.leader1 || !parsed.base) {
-      throw new DeckBuilderError('Melee did not provide a parseable leader and base.', 502);
+      throw new DeckBuilderError(
+        'Melee did not provide a parseable leader and base.',
+        502,
+        'invalid-data',
+      );
     }
 
     const cards = new Map<string, Omit<DeckCard, 'deckId'>>();
@@ -363,18 +385,29 @@ const getDeckName = (name: string, author: string) => {
 };
 
 const buildCardsBySetAndNumber = (cardList: CardList) => {
-  const cardsBySetAndNumber = new Map<string, string>();
+  const candidates = new Map<string, { cardId: string | null; priority: number }>();
 
   for (const [cardId, card] of Object.entries(cardList)) {
     if (!card || card.type.includes('Token')) continue;
 
     for (const variant of Object.values(card.variants ?? {})) {
       if (!variant || variant.cardNo <= 0 || (!card.preview && !variant.baseSet)) continue;
-      cardsBySetAndNumber.set(`${variant.set}_${variant.cardNo}`.toUpperCase(), cardId);
+      const key = `${variant.set}_${variant.cardNo}`.toUpperCase();
+      // Promo numbering restarts at 1 even when the catalog associates it with a
+      // playable set. TWI_11 must resolve to standard Ahsoka, not OP Promo B1.
+      // Official identities take precedence over previews; ambiguous alternatives
+      // are rejected instead of depending on object iteration order.
+      const priority = (card.preview ? 0 : 100) + (variant.variantName === 'Standard' ? 10 : 0);
+      const existing = candidates.get(key);
+      if (!existing || priority > existing.priority) candidates.set(key, { cardId, priority });
+      else if (priority === existing.priority && existing.cardId !== cardId)
+        candidates.set(key, { cardId: null, priority });
     }
   }
 
-  return cardsBySetAndNumber;
+  return new Map(
+    [...candidates].flatMap(([key, value]) => (value.cardId ? [[key, value.cardId]] : [])),
+  );
 };
 
 const normalizeExternalCardId = (cardId: string) => {

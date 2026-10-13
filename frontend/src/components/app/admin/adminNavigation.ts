@@ -3,6 +3,7 @@ import {
   ChartNoAxesCombined,
   CircleDollarSign,
   Database,
+  FileJson,
   Flag,
   Gauge,
   Group,
@@ -60,6 +61,8 @@ export const adminSections = [
   {
     title: 'Operations',
     items: [
+      { id: 'creator-imports', label: 'Creator imports', icon: FileJson },
+      { id: 'creation-reports', label: 'Video reports', icon: Flag },
       { id: 'deck-thumbnails', label: 'Deck thumbnails', icon: Image },
       { id: 'special-actions', label: 'Maintenance', icon: Wrench },
     ],

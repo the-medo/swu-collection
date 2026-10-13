@@ -2,13 +2,41 @@ import { afterEach, expect, mock, spyOn, test } from 'bun:test';
 import { db } from '../../db';
 import { deck as deckTable } from '../../db/schema/deck.ts';
 import { deckImportSource } from '../../db/schema/deck_import_source.ts';
-import { importDeckForUser, refreshImportedDeckForUser } from './importDeck.ts';
+import { importDeckForUser, insertImportedDeck, refreshImportedDeckForUser } from './importDeck.ts';
 import * as deckInformation from './updateDeckInformation.ts';
 import * as cardListProvider from '../cards/cardListProvider.ts';
 import { getDeckBuilderForSource } from './deckBuilders.ts';
 import { formatData } from '../../../types/Format.ts';
+import { ProfanityError } from '../moderation/content.ts';
 
 afterEach(() => mock.restore());
+
+test.each([
+  { name: 'fuck', errors: [] },
+  { name: 'Imported title', errors: ['Unknown card: fuck'] },
+])('shared creator deck imports reject profanity before writes: %j', async input => {
+  const insert = mock(() => {
+    throw new Error('Rejected content reached persistence.');
+  });
+  type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+  await expect(
+    insertImportedDeck({ insert } as unknown as Transaction, {
+      userId: 'swubase',
+      builder: getDeckBuilderForSource('swudb'),
+      deckId: 'source-deck',
+      parsedDeck: {
+        ...input,
+        leaderCardId1: undefined,
+        leaderCardId2: undefined,
+        baseCardId: undefined,
+        cards: [],
+      },
+      format: 1,
+      visibility: 1,
+    }),
+  ).rejects.toBeInstanceOf(ProfanityError);
+  expect(insert).not.toHaveBeenCalled();
+});
 
 test.each([
   { name: 'My custom title', description: 'My matchup notes' },

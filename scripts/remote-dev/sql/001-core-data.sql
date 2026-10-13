@@ -98,6 +98,35 @@ CREATE INDEX development_tournament_match_p2_deck_id_idx ON tournament_match (p2
 -- game-provider payloads. Opted-in integration rows remain for UI and schema
 -- testing, but their provider-specific identity, arbitrary provider metadata,
 -- and credentials are replaced below.
+-- Creator identities, unpublished prose and provider credentials never enter public dumps.
+DO $creator_hub$
+BEGIN
+  IF to_regclass('public.creator_channel_resolution') IS NOT NULL THEN
+    TRUNCATE TABLE creator_channel_resolution;
+  END IF;
+  IF to_regclass('public.creator_profile') IS NOT NULL THEN
+    IF to_regclass('public.creation_report') IS NOT NULL THEN
+      TRUNCATE TABLE creation_report, creator_video_job, creator_video_spend, creator_imported_deck,
+        creation_reference, creation_tag, creation_revision, creation,
+        creator_member, creator_oauth_state, creator_youtube, creator_channel,
+        creator_youtube_channel, creator_profile;
+    ELSIF to_regclass('public.creator_channel') IS NOT NULL THEN
+      TRUNCATE TABLE creator_video_job, creator_video_spend, creator_imported_deck,
+        creation_reference, creation_tag, creation_revision, creation,
+        creator_member, creator_oauth_state, creator_youtube, creator_channel,
+        creator_youtube_channel, creator_profile;
+    ELSIF to_regclass('public.creator_video_job') IS NOT NULL THEN
+      -- Include referencing tables in the same TRUNCATE; support older backups too.
+      TRUNCATE TABLE creator_video_job, creator_video_spend, creator_imported_deck,
+        creation_reference, creation_tag, creation_revision, creation,
+        creator_member, creator_oauth_state, creator_youtube, creator_profile;
+    ELSE
+      TRUNCATE TABLE creation_reference, creation_tag, creation_revision, creation,
+        creator_member, creator_oauth_state, creator_youtube, creator_profile;
+    END IF;
+  END IF;
+END
+$creator_hub$;
 TRUNCATE TABLE account, session, verification;
 TRUNCATE TABLE user_notification;
 -- Private conversations are never part of contributor data, regardless of opt-in.
