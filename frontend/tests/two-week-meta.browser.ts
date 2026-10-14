@@ -6,6 +6,7 @@ import { resolve } from 'node:path';
 import { cardList } from '../../server/db/lists.ts';
 import { getCardPoolMap } from '../../server/lib/card-pools/card-pool-map-by-set.ts';
 import { SwuSet } from '../../types/enums.ts';
+import { countBaseDistribution } from '../../server/lib/daily-snapshots/section/base-distribution-counts.ts';
 
 if (process.env.TWO_WEEK_META_BROWSER_TEST !== '1')
   throw new Error('Enable TWO_WEEK_META_BROWSER_TEST=1.');
@@ -91,7 +92,7 @@ const split = (force: number, nonforce: number) => ({
   top8: { force: 30, nonforce: 30 },
   champions: { force: 3, nonforce: 3 },
 });
-let state: 'ready' | 'empty-sections' | 'empty' | 'error' | 'loading' = 'ready';
+let state: 'ready' | 'legacy-sections' | 'empty-sections' | 'empty' | 'error' | 'loading' = 'ready';
 let releaseLoading: (() => void) | undefined;
 function snapshot() {
   const empty = state === 'empty-sections';
@@ -130,6 +131,30 @@ function snapshot() {
       week1GroupExt: week1,
       week2GroupExt: week2,
     },
+    'base-distribution': {
+      twoWeeks: countBaseDistribution(
+        empty
+          ? []
+          : [
+              ['otoh-gunga', 100, 20, 3],
+              ['daimyo-s-palace', 40, 5, 1],
+              ['lake-country', 10, 2, 1],
+              ['nightsister-lair', 20, 2, 0],
+              ['shield-generator-complex', 30, 3, 1],
+              ['kachirho', 10, 0, 0],
+              ['tarkintown', 20, 2, 0],
+              ['massassi-temple', 10, 0, 0],
+            ].map(([baseCardId, total, top8, winner]) => ({
+              baseCardId: baseCardId as string,
+              leaderCardId: 'doctor-hemlock--emotion-has-no-place-here',
+              total: total as number,
+              top8: top8 as number,
+              winner: winner as number,
+            })),
+        cardList,
+      ),
+      twoWeeksGroupExt: twoWeeks,
+    },
     'weekly-change': {
       week1Ext: week1,
       week2Ext: week2,
@@ -166,12 +191,14 @@ function snapshot() {
       sections:
         state === 'empty'
           ? []
-          : Object.entries(sections).map(([section, data]) => ({
-              date: '2026-10-05',
-              section,
-              updatedAt: stamp,
-              data: JSON.stringify({ id: section, title: section, data }),
-            })),
+          : Object.entries(sections)
+              .filter(([section]) => state !== 'legacy-sections' || section !== 'base-distribution')
+              .map(([section, data]) => ({
+                date: '2026-10-05',
+                section,
+                updatedAt: stamp,
+                data: JSON.stringify({ id: section, title: section, data }),
+              })),
     },
   };
 }
@@ -297,15 +324,15 @@ async function cardsFitTiles(page: Page) {
   );
   expect(overflow, 'Card art stays within each gallery tile').toBe(false);
 }
-async function forceColors(page: Page) {
+async function baseColors(page: Page) {
   return page
-    .locator('#s-force-vs-nonforce path')
+    .locator('#s-base-distribution [role="img"] path')
     .evaluateAll(paths => paths.map(path => getComputedStyle(path).fill));
 }
 const ids = [
   'meta-share-2-weeks',
   'weekly-change',
-  'force-vs-nonforce',
+  'base-distribution',
   'recent-tournaments',
   'upcoming-tournaments',
   'most-played-cards',
@@ -328,6 +355,20 @@ async function checkPlacements(page: Page, columns: number) {
     expect(weekly.y).toBeGreaterThanOrEqual(meta.y + meta.height);
     sameRow(weekly, force);
     expect(force.x).toBeGreaterThan(weekly.x);
+    const grid = await page.locator('#s-weekly-change').evaluate(el => {
+      const style = getComputedStyle(el.parentElement!);
+      return {
+        widths: style.gridTemplateColumns.split(' ').map(parseFloat),
+        gap: parseFloat(style.columnGap),
+      };
+    });
+    const baseColumn = columns === 2 ? 1 : 2;
+    const originalWeeklyWidth =
+      grid.widths.slice(0, baseColumn).reduce((sum, width) => sum + width, 0) +
+      grid.gap * (baseColumn - 1);
+    expect(Math.abs(force.width - grid.widths[baseColumn] - 50)).toBeLessThan(2);
+    expect(Math.abs(weekly.width - originalWeeklyWidth + 50)).toBeLessThan(2);
+    expect(Math.abs(force.x - weekly.x - weekly.width - grid.gap)).toBeLessThan(2);
     if (columns >= 3) {
       sameRow(meta, recent);
       sameRow(cards, upcoming);
@@ -358,7 +399,159 @@ try {
   await checkPlacements(page, 4);
   await noOverflow(page);
   await cardsFitTiles(page);
-  expect(await forceColors(page)).toContain('rgb(50, 97, 73)');
+  const distribution = page.locator('#s-base-distribution');
+  await expect(page.locator('#s-force-vs-nonforce')).toHaveCount(0);
+  await expect(page.getByText('force-vs-nonforce', { exact: true })).toHaveCount(0);
+  await expect(distribution.getByRole('table')).toBeHidden();
+  const showAspects = distribution.getByRole('button', { name: 'Show by aspect', exact: true });
+  await expect(showAspects).toHaveAttribute('aria-expanded', 'false');
+  await expect(distribution.locator('dl dd')).toHaveText([
+    '110',
+    '40',
+    '40',
+    '30',
+    '30',
+    '20',
+    '10',
+    '10',
+  ]);
+  expect((await baseColors(page))[0]).toBe('rgb(59, 130, 246)');
+  await distribution
+    .getByRole('img', { name: /290 base category matches/ })
+    .hover({ position: { x: 130, y: 72 } });
+  const pieTooltip = page.getByText('Naboo: 110 decks', { exact: false });
+  await expect(pieTooltip).toBeVisible();
+  expect((await pieTooltip.boundingBox())!.width).toBeGreaterThanOrEqual(200);
+  await showAspects.click();
+  await expect(
+    distribution.getByRole('button', { name: 'Hide by aspect', exact: true }),
+  ).toHaveAttribute('aria-expanded', 'true');
+  await expect(distribution.locator('tbody tr')).toHaveCount(9);
+  await expect(distribution.locator('tbody th')).toHaveText([
+    'Endor',
+    'Tatooine',
+    'Kashyyyk',
+    'Naboo',
+    'Force',
+    'Splash',
+    'Nonbasic',
+    'Other basic',
+    'Total',
+  ]);
+  await expect(distribution.locator('thead tr')).toHaveCSS('border-bottom-width', '3px');
+  await expect(distribution.locator('tbody tr').nth(3)).toHaveCSS('border-bottom-width', '3px');
+  await expect(distribution.locator('tbody tr').nth(7)).toHaveCSS('border-bottom-width', '3px');
+  await expect(distribution.locator('tbody tr').first().locator('td').first()).toHaveCSS(
+    'border-right-width',
+    '3px',
+  );
+  const regularBorderColor = await distribution
+    .locator('tbody tr')
+    .first()
+    .evaluate(row => getComputedStyle(row).borderBottomColor);
+  await expect(distribution.locator('thead tr')).not.toHaveCSS(
+    'border-bottom-color',
+    regularBorderColor,
+  );
+  await expect(distribution.locator('tbody tr').first().locator('td').first()).not.toHaveCSS(
+    'border-right-color',
+    regularBorderColor,
+  );
+  await expect(distribution.locator('[role="img"] svg text')).toHaveText('290');
+  await expect(distribution.locator('tbody tr').last().locator('td')).toHaveText([
+    '710',
+    '290',
+    '0',
+    '30',
+    '100',
+    '290',
+    '0',
+  ]);
+  await expect(distribution.locator('thead th')).toHaveCount(8);
+  const naboo = distribution
+    .getByRole('row')
+    .filter({ has: page.getByRole('rowheader', { name: 'Naboo', exact: true }) });
+  await expect(naboo.locator('td')).toHaveText(['320', '110', '0', '0', '100', '110', '0']);
+  const pieArcs = distribution.locator('[role="img"] path');
+  const restingNabooArc = await pieArcs.first().getAttribute('d');
+  await naboo.locator('td').nth(4).hover();
+  await expect(pieArcs.first()).not.toHaveAttribute('d', restingNabooArc!);
+  expect((await baseColors(page))[0]).toBe('rgb(59, 130, 246)');
+  expect((await baseColors(page))[1]).toBe('rgba(217, 119, 6, 0.4)');
+  const highlight = await distribution
+    .locator('thead th')
+    .nth(5)
+    .evaluate(el => getComputedStyle(el).backgroundColor);
+  expect(highlight).not.toBe('rgba(0, 0, 0, 0)');
+  await expect(naboo.getByRole('rowheader')).toHaveCSS('background-color', highlight);
+  await expect(naboo.locator('td').first()).toHaveCSS('background-color', highlight);
+  await expect(distribution.locator('tbody tr').first().locator('td').nth(4)).toHaveCSS(
+    'background-color',
+    highlight,
+  );
+  await expect(distribution.locator('tbody tr').first().locator('td').first()).toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
+  await expect(naboo.locator('td').nth(4)).not.toHaveCSS('background-color', highlight);
+  await distribution.getByRole('button', { name: 'Hide by aspect', exact: true }).hover();
+  await expect(naboo.locator('td').first()).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await distribution.locator('thead th').nth(5).hover();
+  await expect(naboo.locator('td').nth(4)).toHaveCSS('background-color', highlight);
+  await distribution.locator('caption').hover();
+  await expect(naboo.locator('td').nth(4)).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(pieArcs.first()).toHaveAttribute('d', restingNabooArc!);
+  await distribution
+    .getByRole('img', { name: /290 base category matches/ })
+    .hover({ position: { x: 130, y: 72 } });
+  await expect(naboo.getByRole('rowheader')).toHaveCSS('background-color', highlight);
+  await expect(naboo.locator('td').nth(4)).toHaveCSS('background-color', highlight);
+  await expect(distribution.locator('thead th').nth(5)).toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
+  await distribution.screenshot({ path: resolve(output, 'base-distribution-linked-hover.png') });
+  await distribution.getByRole('rowheader', { name: 'Force', exact: true }).hover();
+  await expect(pieArcs.first()).toHaveCSS('fill', 'rgba(59, 130, 246, 0.4)');
+  expect(await baseColors(page)).toContain('rgb(139, 92, 246)');
+  await distribution.getByRole('rowheader', { name: 'Total', exact: true }).hover();
+  await expect(pieArcs.first()).toHaveAttribute('d', restingNabooArc!);
+  await expect(
+    distribution.getByRole('img', { name: /290 base category matches across 240 decks/ }),
+  ).toBeVisible();
+  await distribution.getByRole('radio', { name: 'Top 8', exact: true }).click();
+  await expect(naboo.locator('td')).toHaveText(['64', '22', '0', '0', '20', '22', '0']);
+  await expect(distribution.locator('tbody tr').last().locator('td')).toHaveText([
+    '104',
+    '41',
+    '0',
+    '2',
+    '20',
+    '41',
+    '0',
+  ]);
+  await distribution.getByRole('rowheader', { name: 'Other basic', exact: true }).hover();
+  await expect(pieArcs.first()).toHaveCSS('fill', 'rgb(59, 130, 246)');
+  await distribution.getByRole('radio', { name: 'Champions', exact: true }).focus();
+  await page.keyboard.press('Space');
+  await expect(naboo.locator('td')).toHaveText(['11', '4', '0', '0', '3', '4', '0']);
+  await expect(distribution.locator('tbody tr').last().locator('td')).toHaveText([
+    '19',
+    '8',
+    '0',
+    '0',
+    '3',
+    '8',
+    '0',
+  ]);
+  await distribution.getByRole('radio', { name: 'Total', exact: true }).click();
+  expect(await baseColors(page)).toContain('rgb(139, 92, 246)');
+  await distribution.screenshot({ path: resolve(output, 'base-distribution.png') });
+  await distribution.getByRole('button', { name: 'Hide by aspect', exact: true }).click();
+  await expect(distribution.getByRole('table')).toBeHidden();
+  await showAspects.focus();
+  await page.keyboard.press('Enter');
+  await expect(distribution.getByRole('table')).toBeVisible();
   const firstLeader = meta.getByRole('button', { name: /^Select / }).first();
   const firstName = await firstLeader.getAttribute('aria-label');
   await meta.getByRole('radio', { name: 'Top 8', exact: true }).click();
@@ -489,7 +682,15 @@ try {
   });
   const dark = await newPage('dark');
   await expect(dark.locator('#s-meta-share-2-weeks table')).toBeVisible();
-  expect(await forceColors(dark)).toContain('rgb(185, 212, 168)');
+  expect(await baseColors(dark)).toContain('rgb(139, 92, 246)');
+  await expect(dark.locator('#s-base-distribution').getByRole('table')).toBeHidden();
+  await dark
+    .locator('#s-base-distribution')
+    .getByRole('button', { name: 'Show by aspect', exact: true })
+    .click();
+  await dark
+    .locator('#s-base-distribution')
+    .screenshot({ path: resolve(output, 'base-distribution-dark.png') });
   await dark.screenshot({
     path: resolve(output, 'populated-dark.png'),
     fullPage: true,
@@ -538,6 +739,35 @@ try {
     page.getByRole('heading', { name: 'Sector Qualifier — Copenhagen', exact: true }).first(),
   ).toBeVisible();
   await page.context().close();
+  // An existing IndexedDB snapshot must request the new section on refresh and hide the old one.
+  state = 'legacy-sections';
+  const cached = await newPage();
+  await expect(cached.locator('#s-meta-share-2-weeks table')).toBeVisible();
+  await expect(cached.locator('#s-base-distribution, #s-force-vs-nonforce')).toHaveCount(0);
+  await expect(cached.getByText('force-vs-nonforce', { exact: true })).toHaveCount(0);
+  state = 'ready';
+  const refreshRequest = cached.waitForRequest(request =>
+    request.url().endsWith('/api/daily-snapshot'),
+  );
+  await cached.reload();
+  const requestedSections = (await refreshRequest).postDataJSON().sections;
+  expect(requestedSections).toContainEqual({
+    section: 'base-distribution',
+    lastUpdatedAt: new Date(1970, 1, 1, 0, 0, 0, 0).toISOString(),
+  });
+  await expect(
+    cached
+      .locator('#s-base-distribution')
+      .getByRole('button', { name: 'Show by aspect', exact: true }),
+  ).toBeVisible();
+  await expect(cached.locator('#s-base-distribution').getByRole('table')).toBeHidden();
+  await cached
+    .locator('#s-base-distribution')
+    .getByRole('button', { name: 'Show by aspect', exact: true })
+    .click();
+  await expect(cached.locator('#s-base-distribution tbody tr')).toHaveCount(9);
+  await expect(cached.getByText('force-vs-nonforce', { exact: true })).toHaveCount(0);
+  await cached.context().close();
   state = 'empty-sections';
   const emptySections = await newPage();
   await expect(emptySections.locator('.meta-empty-state')).toHaveCount(6);

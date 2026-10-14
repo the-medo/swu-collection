@@ -2,6 +2,7 @@ import type { TournamentGroup } from '../server/db/schema/tournament_group.ts';
 import type { TournamentGroupStats } from '../server/db/schema/tournament_group_stats.ts';
 import type { TournamentStringDate } from './Tournament.ts';
 import type { TournamentOverviewTableItem } from '../frontend/src/components/app/tournaments/components/TournamentOverviewTable.tsx';
+import type { SwuAspect } from './enums.ts';
 
 export type DailySnapshotSectionData<T> = {
   id: string;
@@ -92,4 +93,29 @@ export type SectionForceVsNonForceCounts = {
   twoWeeksGroupExt?: TournamentGroupExtendedInfo | null;
   week1GroupExt?: TournamentGroupExtendedInfo | null;
   week2GroupExt?: TournamentGroupExtendedInfo | null;
+};
+
+export const baseDistributionCategories = [
+  'force',
+  'endor',
+  'tatooine',
+  'kashyyyk',
+  'naboo',
+  'splash',
+  'nonbasic',
+  'other-basic',
+] as const;
+
+export type BaseDistributionCategory = (typeof baseDistributionCategories)[number];
+export type BaseDistributionCounts = Record<
+  BaseDistributionCategory,
+  { count: number; aspects: Record<SwuAspect, number> }
+>;
+export type BaseDistributionSplit = Record<
+  'total' | 'top8' | 'champions',
+  { deckCount: number; categories: BaseDistributionCounts }
+>;
+export type SectionBaseDistribution = {
+  twoWeeks: BaseDistributionSplit;
+  twoWeeksGroupExt?: TournamentGroupExtendedInfo | null;
 };
